@@ -1,24 +1,24 @@
 # opennem-fe
 
 To start:
-
+* installing packages
 ```bash
 $ npm install
 ```
 
 To develop:
-
+* run code in local dev environment
 ```bash
 $ npm run dev```
 
 To build for production:
-
+* built inside `/dist`
 ```bash
 $ npm run build
 ```
 
-To lint you code:
-
+Code linting:
+* code check
 ```bash
 $ npm run lint
 ```
