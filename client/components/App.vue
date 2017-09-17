@@ -6,8 +6,8 @@
 
 <style>
 /*TODO: import these from node modules*/
-@import "//cdn.rawgit.com/necolas/normalize.css/master/normalize.css";
-@import "//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css";
+/*@import "//cdn.rawgit.com/necolas/normalize.css/master/normalize.css";
+@import "//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css";*/
 
 #app {
   margin: 3rem 0;
