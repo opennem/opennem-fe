@@ -47,7 +47,7 @@ export default {
           columns.push([ft, ...data[ft].data])
         })
 
-        setup(self.id, columns, price)
+        setup(self.id, columns, price, 'line')
       })
     }
 
@@ -84,7 +84,7 @@ export default {
   },
 }
 
-function setup(id, columns, groups) {
+function setup(id, columns, groups, type) {
   //TODO: create opennem-chart config options
   bb.generate({
     bindto: `#${id}`,
@@ -107,7 +107,7 @@ function setup(id, columns, groups) {
     },
     data: {
       x: 'x',
-      type: 'area-spline',
+      type: type ? type : 'area-spline',
       columns,
       groups: [groups],
       order: 'desc'
