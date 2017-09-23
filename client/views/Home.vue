@@ -13,7 +13,6 @@
 
 <script>
 import * as d3 from 'd3'
-import * as moment from 'moment'
 
 import FuelTechChart from 'components/FuelTechChart'
 import PriceChart from 'components/PriceChart'

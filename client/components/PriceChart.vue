@@ -1,21 +1,21 @@
 <template>
   <div class="price-chart-wrapper">
-    <billboardChart
+<!--     <billboardChart
       :id="id"
       :type="type"
       :colgroups="colgroups"
     >
     </billboardChart>
-  </div>
+ -->  </div>
 </template>
 
 <script>
-import billboardDataTransform from 'components/chart/billboard-data-transform'
-import billboardChart from 'components/chart/billboard'
+// import billboardDataTransform from 'components/chart/billboard-data-transform'
+// import billboardChart from 'components/chart/billboard'
 
 export default {
   components: {
-    billboardChart
+    // billboardChart
   },
   props: {
   	priceData: Object
@@ -29,7 +29,7 @@ export default {
   },
   watch: {
     priceData: function() {
-      this.colgroups = billboardDataTransform(this.priceData)
+      // this.colgroups = billboardDataTransform(this.priceData)
     }
   }
 }

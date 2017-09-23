@@ -1,7 +1,7 @@
 import * as moment from 'moment'
 
 export default function(data) {
-	let columns = []
+  let columns = []
   let groups = []
 
   groups = Object.keys(data)
