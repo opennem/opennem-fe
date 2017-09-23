@@ -23,19 +23,22 @@ export default {
     FuelTechChart,
     PriceChart
   },
-  data: function() {
+  data() {
     return {
-      genData: {},
-      priceData: {}
+      genData: null,
+      priceData: null,
     }
   },
   mounted() {
     const self = this;
 
     d3.json('/samples/gen_sample.json', function(error, data) {
-      self.genData = data;
-      console.log(self.genData)
+      self.genData = data
     });
+    d3.json('/samples/price_sample.json', function(error, data) {
+      self.priceData = data
+    });
+
   }
 }
 </script>

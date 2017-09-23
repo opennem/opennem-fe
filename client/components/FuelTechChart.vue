@@ -1,10 +1,16 @@
 <template>
   <div class="fuel-tech-chart-wrapper">
-    <billboardChart name="fuel-tech" :dMe="d"></billboardChart>
+    <billboardChart
+      :id="id"
+      :type="type"
+      :colgroups="colgroups"
+    >       
+    </billboardChart>
   </div>
 </template>
 
 <script>
+import billboardDataTransform from 'components/chart/billboard-data-transform'
 import billboardChart from 'components/chart/billboard'
 
 export default {
@@ -16,17 +22,16 @@ export default {
   },
   data() {
   	return {
-  		d: {}
+  		id: `fuel-tech-${this._uid}`,
+      type: 'area-spline',
+      colgroups: null,
   	}
   },
-  mounted() {
-  	this.d = this.$props.genData
-
-  	console.log(this.d)
+  watch: {
+    genData: function() {
+      this.colgroups = billboardDataTransform(this.genData)
+    }
   }
 }
+
 </script>
-
-<style>
-
-</style>
