@@ -31,7 +31,7 @@ export default {
   mounted() {
     const self = this;
 
-    d3.json('/samples/gen_sample.json', function(error, data) {
+    d3.json('/samples/combined_sample.json', function(error, data) {
       self.genData = data
     });
     d3.json('/samples/price_sample.json', function(error, data) {

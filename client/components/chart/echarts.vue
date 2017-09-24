@@ -23,7 +23,8 @@ export default {
   },
   watch: {
     eData: function() {
-     this.area.xAxis.data = this.eData.dates
+     this.area.xAxis[0].data = this.eData.dates
+     this.area.xAxis[1].data = this.eData.dates
      this.area.series = this.eData.series
      this.area.legend.data = this.eData.groups
      this.area.color = this.eData.colours
@@ -34,16 +35,79 @@ export default {
       area: {
         color: [],
         animation: false,
-        tooltip: {trigger: 'axis'},
-        legend: { data: []},
-        xAxis: {
-          type: 'category',
-          data: []
+        tooltip: {trigger: 'axis', axisPointer: {
+            animation: false
+        }},
+        legend: { data: [] },
+        dataZoom: [
+          {
+            show: true,
+            realtime: true,
+            start: 30,
+            end: 70,
+            xAxisIndex: [0, 1]
+          },
+          {
+            type: 'inside',
+            realtime: true,
+            start: 30,
+            end: 70,
+            xAxisIndex: [0, 1]
+          }
+        ],
+        grid: [{
+          left: 50,
+          right: 50,
+          height: '35%'
+        }, {
+          left: 50,
+          right: 50,
+          top: '55%',
+          height: '35%'
+        }],
+        axisPointer: {
+          link: {xAxisIndex: 'all'}
         },
-        yAxis: {
-          type: 'value',
-          // logBase: 200
-        },
+        xAxis: [
+          {
+            type: 'category',
+            boundaryGap: false,
+            axisPointer: {
+              show: true,
+              label: {
+                show: true
+              }
+            },
+            axisLine: {onZero: true},
+            data: []
+          },
+          {
+            gridIndex: 1,
+            type : 'category',
+            boundaryGap: false,
+            data: [],
+            axisLine: {onZero: true},
+            axisPointer: {
+              show: true,
+              label: {
+                show: true
+              }
+            },
+            position: 'top'
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            // logBase: 200
+          },
+          {
+            gridIndex: 1,
+            type: 'log',
+            logBase: 300,
+            max: 15000
+          }
+        ],
         series: [{
           smooth: true,
           type: 'line',
@@ -59,5 +123,6 @@ export default {
 
 #area {
   width: 100%;
-  }
+  height: 600px;
+}
 </style>
