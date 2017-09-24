@@ -4,6 +4,14 @@ export default function(data) {
   let series = []
   let groups = []
   let legend = []
+  let colours = {
+    'rooftop_solar': '#ffffb3',
+    'distillate': '#000',
+    'gas_ocgt': '#FFCD96',
+    'gas_ccgt': '#FDB462',
+    'gas_steam': '#F48E1B',
+    'wind': '#417505',
+  }
 
   groups = Object.keys(data)
 
@@ -17,27 +25,41 @@ export default function(data) {
     dates.push(moment(now).format('LT'))
   }
 
-  groups.forEach(ft => {
+  groups = []
+
+  Object.entries(colours).forEach(([key,colourCode]) => {
+    console.log(key + ' ' + colourCode)
+
     series.push({
-      name: ft,
+      name: key,
       type: 'line',
       stack: 'total-ft',
-      areaStyle: {normal: {}},
+      areaStyle: {normal: {color: colourCode}},
+      lineStyle: {normal: {color: 'transparent'}},
       symbol: 'roundRect',
-      data: data[ft].data
+      data: data[key].data
     })
 
     legend.push({
-      name: ft,
+      name: key,
       icon: 'roundRect'
     })
+
+    groups.push(key)
   })
+
+  console.log(legend)
+
+  // groups.forEach(ft => {
+    
+  // })
 
   console.log(groups)
 
   return {
     dates,
     series,
-    groups
+    groups,
+    colours: Object.values(colours)
   }
 }

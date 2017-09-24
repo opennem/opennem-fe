@@ -26,11 +26,13 @@ export default {
      this.area.xAxis.data = this.eData.dates
      this.area.series = this.eData.series
      this.area.legend.data = this.eData.groups
+     this.area.color = this.eData.colours
     }
   },
   data: function () {
     return {
       area: {
+        color: [],
         animation: false,
         tooltip: {trigger: 'axis'},
         legend: { data: []},
@@ -39,10 +41,11 @@ export default {
           data: []
         },
         yAxis: {
-          type: 'value'
+          type: 'value',
+          // logBase: 200
         },
         series: [{
-          name: 'Sales',
+          smooth: true,
           type: 'line',
           data: []
         }]
