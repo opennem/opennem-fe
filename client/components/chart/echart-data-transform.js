@@ -1,18 +1,20 @@
 import * as moment from 'moment'
 
+/* transform the dataset */
+
 export default function(data) {
   let series = []
   let groups = []
   let legend = []
   let colours = {
-    'rooftop_solar': '#F8E71C',
-    'distillate': '#F35020',
-    'wind': '#417505',
-    'gas_ocgt': '#FFCD96',
-    'gas_ccgt': '#FDB462',
-    'gas_steam': '#F48E1B',
+    'NETINTERCHANGE': 'steelblue',
     'DEMAND_AND_NONSCHEDGEN': '#C3D6E7',
-    'NETINTERCHANGE': 'steelblue'
+    'gas_steam': '#F48E1B',
+    'gas_ccgt': '#FDB462',
+    'gas_ocgt': '#FFCD96',
+    'wind': '#417505',
+    'distillate': '#F35020',
+    'rooftop_solar': '#F8E71C',
   }
 
   groups = Object.keys(data)
@@ -20,30 +22,31 @@ export default function(data) {
   let dataLength = data[groups[0]].data.length
   let start = moment(data[groups[0]].start, moment.ISO_8601)
   let interval = 5
-  let dates = [moment(start).format('LT, L')]
-
-  let rrpData = data['RRP'].data
-  let priceData = []
+  let dates = [moment(start).format('LT')]
 
   for (let i=1; i<=dataLength; i++) {
     let now = moment(start).add(interval*i, 'm')
     dates.push(moment(now).format('LT'))
   }
 
+  let rrp = data['RRP']
+  let rrpData = rrp.data
+
+  let priceData = []
   let rrpIndex = 0
-  dates.forEach((value, index) => {
-    if (index && index % 5 === 0) {
-      // console.log(index)
+  let dateIndex = 5
+
+  dates.forEach((date, index) => {
+    if (dateIndex === index) {
       priceData.push(rrpData[rrpIndex])
+      dateIndex += 6 // go to next 30m period
       rrpIndex++
     } else {
       priceData.push(null)
     }
   })
 
-  console.log(priceData)
-
-  // reset groups so to be re-ordered based on the colour ordering
+  // reset groups to be re-ordered based on the colour ordering
   groups = []
 
   Object.entries(colours).forEach(([key,colourCode]) => {
@@ -52,6 +55,7 @@ export default function(data) {
     let areaStyle = (key === 'DEMAND_AND_NONSCHEDGEN' || key === 'NETINTERCHANGE' ? {normal: {color: 'transparent'}} : {normal: {color: colourCode}})
     let lineStyle = (key === 'DEMAND_AND_NONSCHEDGEN' || key === 'NETINTERCHANGE' ? {normal: {color: '#666'}} : {normal: {color: 'transparent'}})
     let seriesData = []
+
     if (key === 'NETINTERCHANGE') {
       data[key].data.forEach((value) => {
         seriesData.push(-value)
@@ -67,6 +71,7 @@ export default function(data) {
       areaStyle: areaStyle,
       lineStyle: lineStyle,
       symbol: 'roundRect',
+      symbolSize: 0,
       data: seriesData
     })
 
@@ -78,12 +83,11 @@ export default function(data) {
     groups.push(key)
   })
 
-  series.reverse()
-
   series.push({
     name: 'price',
     type: 'line',
     symbol: 'roundRect',
+    symbolSize: 0,
     data: priceData,
     xAxisIndex: 1,
     yAxisIndex: 1,
@@ -91,11 +95,8 @@ export default function(data) {
     lineStyle: {normal: {color: '#999'}},
   })
 
-  groups.reverse()
 
   let coloursCode = Object.values(colours)
-  coloursCode.reverse()
-
 
   return {
     dates,

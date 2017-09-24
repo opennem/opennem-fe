@@ -70,12 +70,13 @@ export default {
         },
         xAxis: [
           {
+            show: false,
             type: 'category',
             boundaryGap: false,
             axisPointer: {
               show: true,
               label: {
-                show: true
+                show: false
               }
             },
             axisLine: {onZero: true},
@@ -84,6 +85,7 @@ export default {
           {
             gridIndex: 1,
             type : 'category',
+            offset: 20,
             boundaryGap: false,
             data: [],
             axisLine: {onZero: true},
