@@ -12,7 +12,7 @@ module.exports = {
   },
   externals: {
     echarts: 'echarts'
-  }
+  },
   output: {
     path: _.outputPath,
     filename: '[name].js',
