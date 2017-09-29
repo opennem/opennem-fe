@@ -1,10 +1,6 @@
 <template>
   <div>
-    <h5>Electricity production in
-      [region]
-      for the week of
-      [date selector]
-    </h5>
+    <h2>Electricity Production</h2>
 
     <FuelTechChart :genData="genData"></FuelTechChart>
     <PriceChart :priceData="priceData"></PriceChart>
@@ -37,13 +33,18 @@ export default {
     d3.json('/samples/price_sample.json', function(error, data) {
       self.priceData = data
     });
-
   }
 }
 </script>
 
 <style>
-  h5 {
-    text-align: center;
-  }
+@import url('https://fonts.googleapis.com/css?family=Raleway:700');
+h2 {
+  font-family: 'Raleway', sans-serif;
+  font-weight: 900;
+  margin: 0;
+  padding: 0 0 10px;
+  border-bottom: 1px solid #000;
+
+}
 </style>

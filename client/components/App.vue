@@ -10,10 +10,11 @@
 @import "//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css";*/
 
 #app {
-  margin: 3rem 0;
+  margin: 2rem 0;
 }
 body {
-  font-family: -apple-system, BlinkMacSystemFont,
+  background-color: #fcfcfc;
+ font-family: -apple-system, BlinkMacSystemFont,
                'avenir next', avenir,
                helvetica, 'helvetica neue',
                Ubuntu,
