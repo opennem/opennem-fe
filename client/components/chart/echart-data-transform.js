@@ -17,11 +17,11 @@ export default function(data) {
     'rooftop_solar': '#F8E71C',
   }
   let labels = {
-    'NETINTERCHANGE': 'Net Interchange',
-    'DEMAND_AND_NONSCHEDGEN': 'Demand & Non-Scheduled Generation',
+    'NETINTERCHANGE': 'Interconnectors',
+    'DEMAND_AND_NONSCHEDGEN': 'Demand',
     'gas_steam': 'Gas (Steam)',
-    'gas_ccgt': 'Gas (Steam)',
-    'gas_ocgt': 'Gas (Steam)',
+    'gas_ccgt': 'Gas (CCGT)',
+    'gas_ocgt': 'Gas (OCGT)',
     'wind': 'Wind',
     'distillate': 'Distillate',
     'rooftop_solar': 'Solar',
