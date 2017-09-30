@@ -10,7 +10,7 @@
 @import "//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css";*/
 
 #app {
-  margin: 2rem 0;
+  margin: 2rem;
 }
 body {
   background-color: #fcfcfc;
