@@ -178,9 +178,9 @@ export default {
           },
           {
             gridIndex: 1,
-            type: 'log',
-            logBase: 300,
-            max: 10000,
+            type: 'value',
+            //logBase: 300,
+            //max: 15000,
             axisLine: {lineStyle: {color: '#ababab'}},
             splitLine: {lineStyle: {color: ['#ddd'], type: 'dashed'}}
           }
