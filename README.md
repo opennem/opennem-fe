@@ -9,7 +9,8 @@ $ npm install
 To develop:
 * run code in local dev environment
 ```bash
-$ npm run dev```
+$ npm run dev
+```
 
 To build for production:
 * built inside `/dist`
