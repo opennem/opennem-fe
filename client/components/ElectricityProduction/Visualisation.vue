@@ -28,7 +28,7 @@ export default {
 
   	return {
   		id: `fuel-tech-${this._uid}`,
-      myChart: null,
+      chart: null,
       series: [{date: ''}],
       eData: null,
       area: config
@@ -61,14 +61,14 @@ export default {
       //  }
       // })
 
-      this.myChart.setOption(this.area);
+      this.chart.setOption(this.area);
     }
   },
   mounted() {
-    this.myChart = echarts.init(document.getElementById(this.id))
+    this.chart = echarts.init(document.getElementById(this.id))
 
     window.onresize = (event) => {
-      this.myChart.resize()
+      this.chart.resize()
     };
   },
   methods: {
