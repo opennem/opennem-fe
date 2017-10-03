@@ -58,7 +58,7 @@ export const ChartConfig = {
     }
   },
   xAxis: [{
-    show: false,
+    show: true,
     type: 'category',
     boundaryGap: false,
     axisPointer: {
@@ -69,6 +69,12 @@ export const ChartConfig = {
     },
     axisLine: {
       onZero: true
+    },
+    axisLabel: {
+      show: false
+    },
+    splitLine: {
+      show: true
     },
     data: []
   }, {
@@ -82,6 +88,9 @@ export const ChartConfig = {
       lineStyle: {
         color: '#000'
       }
+    },
+    splitLine: {
+      show: true
     },
     axisPointer: {
       show: true,

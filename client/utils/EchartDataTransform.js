@@ -109,6 +109,14 @@ export default function(data) {
     yAxisIndex: 1,
     connectNulls: true,
     lineStyle: {normal: {color: '#444', width: 1}},
+    markLine: {
+      symbol: 'circle',
+      symbolSize: 0,
+      precision: 1,
+      label: {normal: {position: 'start'}},
+      lineStyle: {normal: {width: 1}},
+      data: [{yAxis: 0}, {yAxis: 50}, {yAxis: 100}, {yAxis: 1000}, {yAxis: 5000}]
+    }
   })
 
   let coloursCode = Object.values(colours)
