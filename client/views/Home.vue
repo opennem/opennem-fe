@@ -2,49 +2,28 @@
   <div>
     <h2>Electricity Production</h2>
 
-    <FuelTechChart :genData="genData"></FuelTechChart>
-    <PriceChart :priceData="priceData"></PriceChart>
+    <EPVisualisation :genData="genData"></EPVisualisation>
   </div>
 </template>
 
 <script>
-import * as d3 from 'd3'
-
-import FuelTechChart from 'components/FuelTechChart'
-import PriceChart from 'components/PriceChart'
+import axios from 'axios'
+import EPVisualisation from 'components/ElectricityProduction/Visualisation'
 
 export default {
   components: {
-    FuelTechChart,
-    PriceChart
+    EPVisualisation
   },
   data() {
     return {
-      genData: null,
-      priceData: null,
+      genData: null
     }
   },
   mounted() {
-    const self = this;
-
-    d3.json('/samples/combined_sample.json', function(error, data) {
-      self.genData = data
-    });
-    d3.json('/samples/price_sample.json', function(error, data) {
-      self.priceData = data
-    });
+    axios.get('/samples/combined_sample.json')
+      .then(function(response) {
+        this.genData = response.data
+      }.bind(this))
   }
 }
 </script>
-
-<style>
-@import url('https://fonts.googleapis.com/css?family=Raleway:700');
-h2 {
-  font-family: 'Raleway', sans-serif;
-  font-weight: 900;
-  margin: 0;
-  padding: 0 0 10px;
-  border-bottom: 1px solid #000;
-
-}
-</style>

@@ -5,20 +5,23 @@
 </template>
 
 <style>
-/*TODO: import these from node modules*/
-/*@import "//cdn.rawgit.com/necolas/normalize.css/master/normalize.css";
-@import "//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css";*/
+@import url('https://fonts.googleapis.com/css?family=Raleway:700');
 
-#app {
-  margin: 2rem 0;
-}
 body {
   background-color: #fcfcfc;
- font-family: -apple-system, BlinkMacSystemFont,
-               'avenir next', avenir,
-               helvetica, 'helvetica neue',
-               Ubuntu,
-               'segoe ui', arial,
-               sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', Ubuntu, 'segoe ui', arial, sans-serif;
 }
+
+h2 {
+  font-family: 'Raleway', sans-serif;
+  font-weight: 700;
+  margin: 0;
+  padding: 0 0 10px;
+  border-bottom: 1px solid #000;
+}
+
+#app {
+  margin: 2rem;
+}
+
 </style>

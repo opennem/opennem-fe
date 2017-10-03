@@ -7,8 +7,8 @@ export default function(data) {
   let groups = []
   let legend = []
   let colours = {
-    'NETINTERCHANGE': '#333',
-    'DEMAND_AND_NONSCHEDGEN': '#666',
+    'NETINTERCHANGE': '#44146F',
+    'DEMAND_AND_NONSCHEDGEN': '#333',
     'gas_steam': '#F48E1B',
     'gas_ccgt': '#FDB462',
     'gas_ocgt': '#FFCD96',
@@ -24,7 +24,7 @@ export default function(data) {
     'gas_ocgt': 'Gas (OCGT)',
     'wind': 'Wind',
     'distillate': 'Distillate',
-    'rooftop_solar': 'Solar',
+    'rooftop_solar': 'Solar (Rooftop)',
   }
 
   groups = Object.keys(data)
@@ -62,8 +62,8 @@ export default function(data) {
   Object.entries(colours).forEach(([key,colourCode]) => {
 
     let stack = (key === 'DEMAND_AND_NONSCHEDGEN' ? null : 'total-ft')
-    let areaStyle = (key === 'DEMAND_AND_NONSCHEDGEN' || key === 'NETINTERCHANGE' ? {normal: {color: 'transparent'}} : {normal: {color: colourCode}})
-    let lineStyle = (key === 'DEMAND_AND_NONSCHEDGEN' || key === 'NETINTERCHANGE' ? {normal: {color: colourCode, width: 1}} : {normal: {color: 'transparent'}})
+    let areaStyle = (key === 'DEMAND_AND_NONSCHEDGEN' ? {normal: {color: 'transparent'}} : {normal: {color: colourCode}})
+    let lineStyle = (key === 'DEMAND_AND_NONSCHEDGEN' ? {normal: {color: colourCode, width: 1}} : {normal: {color: 'transparent'}})
     let seriesData = []
 
     if (key === 'NETINTERCHANGE') {
