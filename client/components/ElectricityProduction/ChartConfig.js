@@ -106,9 +106,9 @@ export const ChartConfig = {
     }
   }, {
     gridIndex: 1,
-    type: 'value',
-    //logBase: 300,
-    //max: 15000,
+    type: 'log',
+    logBase: 300,
+    max: 15000,
     axisLine: {
       lineStyle: {
         color: '#ababab'
