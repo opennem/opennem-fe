@@ -26,6 +26,18 @@ export default function(data) {
     'distillate': 'Distillate',
     'rooftop_solar': 'Solar (Rooftop)',
   }
+  let datesGridLines = [
+    { name: '\n2 Mar', xAxis: '12:00 AM, Mar 2' }, { name: '\n3 Mar', xAxis: '12:00 AM, Mar 3' }, { name: '\n4 Mar', xAxis: '12:00 AM, Mar 4' }, 
+    { name: '\n5 Mar', xAxis: '12:00 AM, Mar 5' }, { name: '\n6 Mar', xAxis: '12:00 AM, Mar 6' }, { name: '\n7 Mar', xAxis: '12:00 AM, Mar 7' }, { name: '\n8 Mar', xAxis: '12:00 AM, Mar 8' }
+  ]
+  
+  let priceGridLines = [
+    { name: '$0', yAxis: 0 }, { name: '$50', yAxis: 50 }, { name: '$100', yAxis: 100 }, { name: '$1000', yAxis: 1000 }, { name: '$5000', yAxis: 5000 }, { name: '', xAxis: '12:00 AM, Mar 2' }, { name: '', xAxis: '12:00 AM, Mar 3' }, 
+    { name: '', xAxis: '12:00 AM, Mar 4' },  { name: '', xAxis: '12:00 AM, Mar 5' }, { name: '', xAxis: '12:00 AM, Mar 6' }, { name: '', xAxis: '12:00 AM, Mar 7' }, 
+    { name: '', xAxis: '12:00 AM, Mar 8' }
+  ]
+
+  console.log(priceGridLines)
 
   groups = Object.keys(data)
 
@@ -96,6 +108,17 @@ export default function(data) {
     groups.push(key)
   })
 
+  series[series.length-1].markLine = {
+    silent: true,
+    symbolSize: 0,
+    precision: 1,
+    label: {normal: {show: true, position: 'start', formatter: '{b}'}},
+    lineStyle: {
+      normal: {width: 1, color: '#333', type: 'solid', opacity: 0.2}
+    },
+    data: datesGridLines
+  }
+
   series.push({
     name: 'price',
     label: 'Price',
@@ -110,12 +133,18 @@ export default function(data) {
     connectNulls: true,
     lineStyle: {normal: {color: '#444', width: 1}},
     markLine: {
-      symbol: 'circle',
+      silent: true,
       symbolSize: 0,
       precision: 1,
-      label: {normal: {position: 'start'}},
-      lineStyle: {normal: {width: 1}},
-      data: [{yAxis: 0}, {yAxis: 50}, {yAxis: 100}, {yAxis: 1000}, {yAxis: 5000}]
+      label: {normal: {
+        show: true, 
+        position: 'start',
+        formatter: '{b}'
+      }},
+      lineStyle: {
+        normal: {width: 1, color: '#333', type: 'solid', opacity: 0.2}
+      },
+      data: priceGridLines
     }
   })
 

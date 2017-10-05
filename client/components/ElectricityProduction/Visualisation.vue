@@ -73,21 +73,20 @@ export default {
   },
   methods: {
     updateTime: function(params) {
-      let newSeries = []
-      
-      params.forEach((param) => {
-        const name = param.seriesName
-        const item = this.series.find((item) => {
-          return item.name === name
+      try {
+        params.forEach((param) => {
+          const name = param.seriesName
+          const item = this.series.find((item) => {
+            return item.name === name
+          })
+
+          item.value = param.data
+          item.date = param.axisValue
+
         })
-
-        item.value = param.data
-        item.date = param.axisValue
-
-        newSeries.push(item)
-      })
-
-      this.series = newSeries
+      } catch(e) {
+        console.log(e)
+      }
     }
   },
 }

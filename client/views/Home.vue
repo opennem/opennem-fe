@@ -1,6 +1,11 @@
 <template>
   <div>
-    <h2>Electricity Production</h2>
+    <header>
+      <h2>Electricity Production</h2>
+      <div>
+        <time>2 Mar '17</time>
+      </div>
+    </header>
 
     <EPVisualisation :genData="genData"></EPVisualisation>
   </div>

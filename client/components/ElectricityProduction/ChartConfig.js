@@ -45,7 +45,7 @@ export const ChartConfig = {
     top: 30,
     left: 60,
     right: 26,
-    height: '45%'
+    height: '47%'
   }, {
     left: 60,
     right: 26,
@@ -58,26 +58,23 @@ export const ChartConfig = {
     }
   },
   xAxis: [{
-    show: true,
+    show: false,
     type: 'category',
     boundaryGap: false,
     axisPointer: {
       show: true,
       label: {
-        show: false
+        show: true,
+        padding: [8, 10],
+        margin: 10
       }
     },
     axisLine: {
       onZero: true
     },
-    axisLabel: {
-      show: false
-    },
-    splitLine: {
-      show: true
-    },
     data: []
   }, {
+    show: false,
     gridIndex: 1,
     type: 'category',
     offset: 20,
@@ -87,15 +84,6 @@ export const ChartConfig = {
       onZero: true,
       lineStyle: {
         color: '#000'
-      }
-    },
-    splitLine: {
-      show: true
-    },
-    axisPointer: {
-      show: true,
-      label: {
-        show: true
       }
     },
     position: 'top'
