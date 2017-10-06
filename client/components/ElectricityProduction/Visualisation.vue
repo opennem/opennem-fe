@@ -1,7 +1,7 @@
 <template>
   <div class="fuel-tech-chart-wrapper">
     <div :id="id" v-on:mouseout="onChartMouseout" class="chart"></div>
-    <SummaryTable :series="series"></SummaryTable>
+    <SummaryTable :series="series" :showTotals="showTotals"></SummaryTable>
   </div>
 </template>
 
@@ -30,6 +30,7 @@ export default {
   		id: `fuel-tech-${this._uid}`,
       chart: null,
       series: [{date: ''}],
+      showTotals: true,
       eData: null,
       area: config
   	}
@@ -88,6 +89,8 @@ export default {
       } catch(e) {
         console.log(e)
       }
+
+      this.showTotals = false
     },
     onChartMouseout: function(event) {
       // TODO: refactor this part
@@ -100,6 +103,8 @@ export default {
           date: ''
         }
       })
+
+      this.showTotals = true
     }
   },
 }

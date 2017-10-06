@@ -2,8 +2,10 @@
   <table>
     <thead>
       <tr>
-        <th colspan="3" class="date">{{series[0].date}}</th>
-        <th>Total</th>
+        <th colspan="3">
+          <span v-if="showTotals">Total</span>
+          <span v-if="!showTotals">{{series[0].date}}</span>
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -12,9 +14,10 @@
           <div class="colour-sq" v-bind:style="{backgroundColor: item.colour}"></div>
         </td>
         <td>{{item.label}}</td>
-        <td class="value">{{item.value}}</td>
-        <!-- <td class="value">0.0%</td> -->
-        <td class="value">{{item.sum}}</td>
+        <td v-if="!showTotals" class="value">
+          {{item.value}} (0.0%)
+        </td>
+        <td v-if="showTotals" class="value">{{item.sum}}</td>
       </tr>
     </tbody>
   </table>
@@ -23,7 +26,8 @@
 <script>
 export default {
   props: {
-  	series: Array
+  	series: Array,
+    showTotals: Boolean
   }
 }
 
@@ -41,6 +45,7 @@ table {
 
   .value {
     padding-left: 10px;
+    width: 200px;
   }
 
   td, th {
