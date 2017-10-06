@@ -2,7 +2,7 @@
   <table>
     <thead>
       <tr>
-        <th colspan="3">{{series[0].date}}</th>
+        <th colspan="3" class="date">{{series[0].date}}</th>
         <th>Total</th>
       </tr>
     </thead>
@@ -13,6 +13,7 @@
         </td>
         <td>{{item.label}}</td>
         <td class="value">{{item.value}}</td>
+        <!-- <td class="value">0.0%</td> -->
         <td class="value">{{item.sum}}</td>
       </tr>
     </tbody>
@@ -31,7 +32,7 @@ export default {
 <style scoped>
 table {
   font-size: 0.8rem;
-  width: 330px;
+  width: 400px;
   flex: 0 0 400px;
   border-collapse: collapse;
   margin-top: 5px;

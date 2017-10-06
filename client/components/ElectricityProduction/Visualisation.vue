@@ -1,6 +1,6 @@
 <template>
   <div class="fuel-tech-chart-wrapper">
-    <div :id="id" class="chart"></div>
+    <div :id="id" v-on:mouseout="onChartMouseout" class="chart"></div>
     <SummaryTable :series="series"></SummaryTable>
   </div>
 </template>
@@ -42,6 +42,7 @@ export default {
       this.area.series = this.eData.series
       // this.area.legend.data = this.eData.groups
       this.area.color = this.eData.colours
+
       this.series = this.eData.series.map((item) => {
         return {
           name: item.name,
@@ -87,6 +88,18 @@ export default {
       } catch(e) {
         console.log(e)
       }
+    },
+    onChartMouseout: function(event) {
+      // TODO: refactor this part
+      this.series = this.eData.series.map((item) => {
+        return {
+          name: item.name,
+          label: item.label,
+          sum: item.dataSum.toFixed(2),
+          colour: item.colour,
+          date: ''
+        }
+      })
     }
   },
 }
