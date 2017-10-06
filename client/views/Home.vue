@@ -2,8 +2,8 @@
   <div>
     <header>
       <h2>Electricity Production</h2>
-      <div>
-        <time>2 Mar '17</time>
+      <div class="date-range">
+        <time>2 Mar '17</time> — <time>7 Mar '17</time>
       </div>
     </header>
 
@@ -32,3 +32,14 @@ export default {
   }
 }
 </script>
+
+<style>
+  .date-range {
+    color: #666;
+    position: absolute;
+    right: 2rem;
+    top: 2rem;
+    margin-right: 1rem;
+    margin-top: 1rem;
+  }
+</style>
