@@ -27,20 +27,20 @@ export default function(data) {
     'rooftop_solar': 'Solar (Rooftop)',
   }
   let datesGridLines = [
-    { name: '\n2 Mar', xAxis: '12:00 AM, Mar 2' }, { name: '\n3 Mar', xAxis: '12:00 AM, Mar 3' }, { name: '\n4 Mar', xAxis: '12:00 AM, Mar 4' }, 
-    { name: '\n5 Mar', xAxis: '12:00 AM, Mar 5' }, { name: '\n6 Mar', xAxis: '12:00 AM, Mar 6' }, { name: '\n7 Mar', xAxis: '12:00 AM, Mar 7' }, { name: '\n8 Mar', xAxis: '12:00 AM, Mar 8' }
+    { name: '\n2 Mar', xAxis: '12:00 AM, 2 Mar' }, { name: '\n3 Mar', xAxis: '12:00 AM, 3 Mar' }, { name: '\n4 Mar', xAxis: '12:00 AM, 4 Mar' }, 
+    { name: '\n5 Mar', xAxis: '12:00 AM, 5 Mar' }, { name: '\n6 Mar', xAxis: '12:00 AM, 6 Mar' }, { name: '\n7 Mar', xAxis: '12:00 AM, 7 Mar' }, { name: '\n8 Mar', xAxis: '12:00 AM, 8 Mar' }
   ]
   // 
   let priceGridLines1 = [
-    { name: '1,000', yAxis: 1000 }, { name: '5,000', yAxis: 5000 }, { name: '', xAxis: '12:00 AM, Mar 2' }, { name: '', xAxis: '12:00 AM, Mar 3' }, 
-    { name: '', xAxis: '12:00 AM, Mar 4' },  { name: '', xAxis: '12:00 AM, Mar 5' }, { name: '', xAxis: '12:00 AM, Mar 6' }, { name: '', xAxis: '12:00 AM, Mar 7' }, 
-    { name: '', xAxis: '12:00 AM, Mar 8' }
+    { name: '1,000', yAxis: 1000 }, { name: '5,000', yAxis: 5000 }, { name: '', xAxis: '12:00 AM, 2 Mar' }, { name: '', xAxis: '12:00 AM, 3 Mar' }, 
+    { name: '', xAxis: '12:00 AM, 4 Mar' },  { name: '', xAxis: '12:00 AM, 5 Mar' }, { name: '', xAxis: '12:00 AM, 6 Mar' }, { name: '', xAxis: '12:00 AM, 7 Mar' }, 
+    { name: '', xAxis: '12:00 AM, 8 Mar' }
   ]
   //{ name: '$0', yAxis: 0 }, { name: '$50', yAxis: 50 }, { name: '$100', yAxis: 100 }, 
   let priceGridLines2 = [
-    { name: '', xAxis: '12:00 AM, Mar 2' }, { name: '', xAxis: '12:00 AM, Mar 3' }, 
-    { name: '', xAxis: '12:00 AM, Mar 4' },  { name: '', xAxis: '12:00 AM, Mar 5' }, { name: '', xAxis: '12:00 AM, Mar 6' }, { name: '', xAxis: '12:00 AM, Mar 7' }, 
-    { name: '', xAxis: '12:00 AM, Mar 8' }
+    { name: '', xAxis: '12:00 AM, 2 Mar' }, { name: '', xAxis: '12:00 AM, 3 Mar' }, 
+    { name: '', xAxis: '12:00 AM, 4 Mar' },  { name: '', xAxis: '12:00 AM, 5 Mar' }, { name: '', xAxis: '12:00 AM, 6 Mar' }, { name: '', xAxis: '12:00 AM, 7 Mar' }, 
+    { name: '', xAxis: '12:00 AM, 8 Mar' }
   ]
 
   groups = Object.keys(data)
@@ -48,11 +48,11 @@ export default function(data) {
   let dataLength = data[groups[0]].data.length
   let start = moment(data[groups[0]].start, moment.ISO_8601)
   let interval = 5
-  let dates = [moment(start).format('LT, MMM D')]
+  let dates = [moment(start).format('LT, D MMM')]
 
   for (let i=1; i<=dataLength; i++) {
     let now = moment(start).add(interval*i, 'm')
-    dates.push(moment(now).format('LT, MMM D'))
+    dates.push(moment(now).format('LT, D MMM'))
   }
 
   let rrp = data['RRP']
@@ -95,6 +95,7 @@ export default function(data) {
       label: labels[key],
       type: 'line',
       stack: stack,
+      sampling: 'average',
       areaStyle: areaStyle,
       lineStyle: lineStyle,
       symbol: 'roundRect',
