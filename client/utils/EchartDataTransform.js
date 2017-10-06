@@ -8,7 +8,7 @@ export default function(data) {
   let legend = []
   let colours = {
     'NETINTERCHANGE': '#44146F',
-    'DEMAND_AND_NONSCHEDGEN': '#333',
+    // 'DEMAND_AND_NONSCHEDGEN': '#333',
     'gas_steam': '#F48E1B',
     'gas_ccgt': '#FDB462',
     'gas_ocgt': '#FFCD96',
@@ -18,7 +18,7 @@ export default function(data) {
   }
   let labels = {
     'NETINTERCHANGE': 'Interconnectors',
-    'DEMAND_AND_NONSCHEDGEN': 'Demand',
+    // 'DEMAND_AND_NONSCHEDGEN': 'Demand',
     'gas_steam': 'Gas (Steam)',
     'gas_ccgt': 'Gas (CCGT)',
     'gas_ocgt': 'Gas (OCGT)',
@@ -30,14 +30,18 @@ export default function(data) {
     { name: '\n2 Mar', xAxis: '12:00 AM, Mar 2' }, { name: '\n3 Mar', xAxis: '12:00 AM, Mar 3' }, { name: '\n4 Mar', xAxis: '12:00 AM, Mar 4' }, 
     { name: '\n5 Mar', xAxis: '12:00 AM, Mar 5' }, { name: '\n6 Mar', xAxis: '12:00 AM, Mar 6' }, { name: '\n7 Mar', xAxis: '12:00 AM, Mar 7' }, { name: '\n8 Mar', xAxis: '12:00 AM, Mar 8' }
   ]
-  
-  let priceGridLines = [
-    { name: '$0', yAxis: 0 }, { name: '$50', yAxis: 50 }, { name: '$100', yAxis: 100 }, { name: '$1000', yAxis: 1000 }, { name: '$5000', yAxis: 5000 }, { name: '', xAxis: '12:00 AM, Mar 2' }, { name: '', xAxis: '12:00 AM, Mar 3' }, 
+  // 
+  let priceGridLines1 = [
+    { name: '1,000', yAxis: 1000 }, { name: '5,000', yAxis: 5000 }, { name: '', xAxis: '12:00 AM, Mar 2' }, { name: '', xAxis: '12:00 AM, Mar 3' }, 
     { name: '', xAxis: '12:00 AM, Mar 4' },  { name: '', xAxis: '12:00 AM, Mar 5' }, { name: '', xAxis: '12:00 AM, Mar 6' }, { name: '', xAxis: '12:00 AM, Mar 7' }, 
     { name: '', xAxis: '12:00 AM, Mar 8' }
   ]
-
-  console.log(priceGridLines)
+  //{ name: '$0', yAxis: 0 }, { name: '$50', yAxis: 50 }, { name: '$100', yAxis: 100 }, 
+  let priceGridLines2 = [
+    { name: '', xAxis: '12:00 AM, Mar 2' }, { name: '', xAxis: '12:00 AM, Mar 3' }, 
+    { name: '', xAxis: '12:00 AM, Mar 4' },  { name: '', xAxis: '12:00 AM, Mar 5' }, { name: '', xAxis: '12:00 AM, Mar 6' }, { name: '', xAxis: '12:00 AM, Mar 7' }, 
+    { name: '', xAxis: '12:00 AM, Mar 8' }
+  ]
 
   groups = Object.keys(data)
 
@@ -131,6 +135,35 @@ export default function(data) {
     xAxisIndex: 1,
     yAxisIndex: 1,
     connectNulls: true,
+    lineStyle: {normal: {color: '#444', type:'dotted', width: 1}},
+    markLine: {
+      silent: true,
+      symbolSize: 0,
+      precision: 1,
+      label: {normal: {
+        show: true, 
+        position: 'start',
+        formatter: '{b}'
+      }},
+      lineStyle: {
+        normal: {width: 1, color: '#666', type: 'solid', opacity: 0.2}
+      },
+      data: priceGridLines1
+    }
+  })
+
+  series.push({
+    name: 'price2',
+    label: 'Price',
+    type: 'line',
+    step: 'end',
+    data: priceData,
+    dataSum: priceData.reduce((a, b) => a + b, 0),
+    colour: '#444',
+    symbolSize: 0,
+    xAxisIndex: 2,
+    yAxisIndex: 2,
+    connectNulls: true,
     lineStyle: {normal: {color: '#444', width: 1}},
     markLine: {
       silent: true,
@@ -142,9 +175,9 @@ export default function(data) {
         formatter: '{b}'
       }},
       lineStyle: {
-        normal: {width: 1, color: '#333', type: 'solid', opacity: 0.2}
+        normal: {width: 1, color: '#666', type: 'solid', opacity: 0.2}
       },
-      data: priceGridLines
+      data: priceGridLines2
     }
   })
 

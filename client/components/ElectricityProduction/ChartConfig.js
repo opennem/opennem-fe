@@ -39,7 +39,7 @@ export const ChartConfig = {
     realtime: true,
     start: 0,
     end: 100,
-    xAxisIndex: [0, 1]
+    xAxisIndex: [0, 1, 2]
   }],
   grid: [{
     top: 30,
@@ -50,7 +50,12 @@ export const ChartConfig = {
     left: 60,
     right: 26,
     top: '60%',
-    height: '38%'
+    height: '10%'
+  }, {
+    left: 60,
+    right: 26,
+    top: '70%',
+    height: '28%'
   }],
   axisPointer: {
     link: {
@@ -87,9 +92,24 @@ export const ChartConfig = {
       }
     },
     position: 'top'
+  }, {
+    show: false,
+    gridIndex: 2,
+    type: 'category',
+    offset: 20,
+    boundaryGap: false,
+    data: [],
+    axisLine: {
+      onZero: true,
+      lineStyle: {
+        color: '#000'
+      }
+    },
+    position: 'top'
   }],
   yAxis: [{
     type: 'value',
+    scale: true,
     axisLine: {
       lineStyle: {
         color: '#ababab'
@@ -104,8 +124,24 @@ export const ChartConfig = {
   }, {
     gridIndex: 1,
     type: 'log',
+    min: 300,
     logBase: 300,
     max: 15000,
+    axisLine: {
+      lineStyle: {
+        color: '#ababab'
+      }
+    },
+    splitLine: {
+      lineStyle: {
+        color: ['#ddd'],
+        type: 'dashed'
+      }
+    }
+  }, {
+    gridIndex: 2,
+    type: 'value',
+    max: 300,
     axisLine: {
       lineStyle: {
         color: '#ababab'

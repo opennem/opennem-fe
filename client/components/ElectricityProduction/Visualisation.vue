@@ -40,6 +40,7 @@ export default {
       this.eData = echartDataTransform(this.genData)
       this.area.xAxis[0].data = this.eData.dates
       this.area.xAxis[1].data = this.eData.dates
+      this.area.xAxis[2].data = this.eData.dates
       this.area.series = this.eData.series
       // this.area.legend.data = this.eData.groups
       this.area.color = this.eData.colours
