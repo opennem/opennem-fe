@@ -14,12 +14,36 @@
           <div class="colour-sq" v-bind:style="{backgroundColor: item.colour}"></div>
         </td>
         <td>{{item.label}}</td>
-        <td v-if="!showTotals" class="value">
-          {{item.value}} (0.0%)
+        <td class="value">
+          <span v-if="showTotals">{{item.sum.toFixed(2)}}</span>
+          <span v-if="!showTotals">{{item.value}}</span>
         </td>
-        <td v-if="showTotals" class="value">{{item.sum}}</td>
       </tr>
     </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="2">Total Volume</td>
+        <td class="value">{{totalVol.toFixed(2)}}</td>
+      </tr>
+      <tr>
+        <td colspan="2">{{price.label}}</td>
+        <td class="value">
+          <span v-if="showTotals">${{price.sum.toFixed(2)}}</span>
+          <span v-if="!showTotals">${{price.value}}</span>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">Total Revenue</td>
+        <td class="value">
+          <span v-if="showTotals">${{calTotalRev(price.sum)}}</span>
+          <span v-if="!showTotals">${{calTotalRev(price.value)}}</span>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">Average Price</td>
+        <td class="value">${{averagePrice(totalRev, totalVol)}}</td>
+      </tr>
+    </tfoot>
   </table>
 </template>
 
@@ -27,7 +51,33 @@
 export default {
   props: {
   	series: Array,
+    price: Object,
     showTotals: Boolean
+  },
+  data() {
+    return {
+      totalRev: 0,
+      totalVol: 0,
+    }
+  },
+  watch: {
+    series: {
+      handler: function(fuelType) {
+        this.totalVol = this.showTotals ? 
+          fuelType.map(item => item.sum).reduce((a, b) => a + b, 0) :
+          fuelType.map(item => item.value).reduce((a, b) => a + b, 0)
+      },
+      deep: true
+    }
+  },
+  methods: {
+    calTotalRev: function(currentPrice) {
+      this.totalRev = (currentPrice * this.totalVol)
+      return this.totalRev.toFixed(2)
+    },
+    averagePrice: function(rev, vol) {
+      return (rev/vol).toFixed(2)
+    }
   }
 }
 

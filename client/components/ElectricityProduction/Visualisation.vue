@@ -1,7 +1,7 @@
 <template>
   <div class="fuel-tech-chart-wrapper">
     <div :id="id" v-on:mouseout="onChartMouseout" class="chart"></div>
-    <SummaryTable :series="series" :showTotals="showTotals"></SummaryTable>
+    <SummaryTable :series="series" :price="price" :showTotals="showTotals"></SummaryTable>
   </div>
 </template>
 
@@ -29,7 +29,17 @@ export default {
   	return {
   		id: `fuel-tech-${this._uid}`,
       chart: null,
-      series: [{date: ''}],
+      series: [{
+        date: '', 
+        sum: 0,
+        value: 0
+      }],
+      price: {
+        name: 'price',
+        label: 'Price',
+        sum: 0,
+        value: 0
+      },
       showTotals: true,
       eData: null,
       area: config
@@ -41,19 +51,23 @@ export default {
       this.area.xAxis[0].data = this.eData.dates
       this.area.xAxis[1].data = this.eData.dates
       this.area.xAxis[2].data = this.eData.dates
+
       this.area.series = this.eData.series
       // this.area.legend.data = this.eData.groups
       this.area.color = this.eData.colours
 
-      this.series = this.eData.series.map((item) => {
+      this.series = this.eData.ftSeries.map((item) => {
         return {
           name: item.name,
           label: item.label,
-          sum: item.dataSum.toFixed(2),
+          sum: item.dataSum,
           colour: item.colour,
-          date: ''
+          date: '',
+          value: 0
         }
       })
+
+      this.price.sum = this.eData.priceSeries[0].dataSum
 
       // this.eData.series.forEach((item) => {
       //  this.series[item.name] = {
@@ -79,12 +93,18 @@ export default {
       try {
         params.forEach((param) => {
           const name = param.seriesName
-          const item = this.series.find((item) => {
+          const ft = this.series.find((item) => {
             return item.name === name
           })
 
-          item.value = param.data
-          item.date = param.axisValue
+          if (name === 'price') {
+            this.price.value = param.data
+          }
+
+          if (ft) {
+            ft.value = param.data
+            ft.date = param.axisValue
+          }
 
         })
       } catch(e) {
@@ -95,13 +115,14 @@ export default {
     },
     onChartMouseout: function(event) {
       // TODO: refactor this part
-      this.series = this.eData.series.map((item) => {
+      this.series = this.eData.ftSeries.map((item) => {
         return {
           name: item.name,
           label: item.label,
-          sum: item.dataSum.toFixed(2),
+          sum: item.dataSum,
           colour: item.colour,
-          date: ''
+          date: '',
+          value: 0
         }
       })
 

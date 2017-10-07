@@ -2,8 +2,26 @@ import * as moment from 'moment'
 
 /* transform the dataset */
 
+/* TODO: Refactor 
+  - split the data tranform from the echart config settings
+  - pull out constants (colours, labels)
+
+  DATA
+  - ft -> colours and labels
+  - ft ordering
+
+
+  CHART SETTINGS
+  - midnight gridlines
+  - price gridlines(?)
+  - series line/area styles
+
+*/
+
 export default function(data) {
   let series = []
+  let ftSeries = []
+  let priceSeries = []
   let groups = []
   let legend = []
   let colours = {
@@ -43,6 +61,7 @@ export default function(data) {
     { name: '', xAxis: '12:00 AM, 8 Mar' }
   ]
 
+  let coloursCode = Object.values(colours)
   groups = Object.keys(data)
 
   let dataLength = data[groups[0]].data.length
@@ -68,7 +87,8 @@ export default function(data) {
       dateIndex += 6 // go to next 30m period
       rrpIndex++
     } else {
-      priceData.push(rrpData[rrpIndex-1])
+      let prevPrice = rrpData[rrpIndex-1]
+      priceData.push(prevPrice ? prevPrice : 0)
     }
   })
 
@@ -90,7 +110,7 @@ export default function(data) {
       seriesData = data[key].data
     }
 
-    series.push({
+    let seriesObj = {
       name: key,
       label: labels[key],
       type: 'line',
@@ -103,16 +123,18 @@ export default function(data) {
       data: seriesData,
       dataSum: seriesData.reduce((a, b) => a + b, 0),
       colour: colourCode
-    })
+    }
 
+    series.push(seriesObj)
+    ftSeries.push(seriesObj)
     legend.push({
       name: key,
       icon: 'roundRect'
     })
-
     groups.push(key)
   })
 
+  // add markLine only to the last item in the series
   series[series.length-1].markLine = {
     silent: true,
     symbolSize: 0,
@@ -124,7 +146,8 @@ export default function(data) {
     data: datesGridLines
   }
 
-  series.push({
+  // setup price obj
+  let priceTopChart = {
     name: 'price',
     label: 'Price',
     type: 'line',
@@ -151,15 +174,13 @@ export default function(data) {
       },
       data: priceGridLines1
     }
-  })
-
-  series.push({
+  }
+  let priceBottomChart = {
     name: 'price2',
     label: 'Price',
     type: 'line',
     step: 'end',
     data: priceData,
-    dataSum: priceData.reduce((a, b) => a + b, 0),
     colour: '#444',
     symbolSize: 0,
     xAxisIndex: 2,
@@ -180,13 +201,18 @@ export default function(data) {
       },
       data: priceGridLines2
     }
-  })
+  }
 
-  let coloursCode = Object.values(colours)
+  series.push(priceTopChart)
+  series.push(priceBottomChart)
+  priceSeries.push(priceTopChart)
+  priceSeries.push(priceBottomChart)
 
   return {
     dates,
     series,
+    ftSeries,
+    priceSeries,
     groups,
     colours: coloursCode
   }
