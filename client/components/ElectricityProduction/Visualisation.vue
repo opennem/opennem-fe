@@ -53,7 +53,6 @@ export default {
       this.area.xAxis[2].data = this.eData.dates
 
       this.area.series = this.eData.series
-      // this.area.legend.data = this.eData.groups
       this.area.color = this.eData.colours
 
       this.series = this.eData.ftSeries.map((item) => {
@@ -63,20 +62,19 @@ export default {
           sum: item.dataSum,
           colour: item.colour,
           date: '',
-          value: 0
+          value: 0,
+          show: true,
+          toggle: (ftRow) => {
+            ftRow.show = !ftRow.show
+            this.chart.dispatchAction({
+              type: 'legendToggleSelect',
+              name: item.name
+            })
+          }
         }
       })
 
       this.price.sum = this.eData.priceSeries[0].dataSum
-
-      // this.eData.series.forEach((item) => {
-      //  this.series[item.name] = {
-      //    name: item.name,
-      //    sum: item.dataSum.toFixed(2),
-      //    colour: item.colour,
-      //    value: 0,
-      //  }
-      // })
 
       this.chart.setOption(this.area);
     }
@@ -114,18 +112,9 @@ export default {
       this.showTotals = false
     },
     onChartMouseout: function(event) {
-      // TODO: refactor this part
-      this.series = this.eData.ftSeries.map((item) => {
-        return {
-          name: item.name,
-          label: item.label,
-          sum: item.dataSum,
-          colour: item.colour,
-          date: '',
-          value: 0
-        }
+      this.eData.series.forEach((ft) => {
+        ft.value = 0
       })
-
       this.showTotals = true
     }
   },

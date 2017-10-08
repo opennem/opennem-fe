@@ -9,7 +9,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="item in series">
+      <tr v-for="item in series" v-on:click="item.toggle(item)" v-bind:class="{ active: item.show }">
         <td>
           <div class="colour-sq" v-bind:style="{backgroundColor: item.colour}"></div>
         </td>
@@ -107,6 +107,27 @@ table {
     width: 15px;
     height: 15px;
     background-color: #999;
+  }
+
+  tbody tr {
+    cursor: pointer;
+    opacity: 0.3;
+
+    .value span {
+      visibility: hidden;
+    }
+
+    &.active {
+      opacity: 1;
+
+      .value  span {
+        visibility: visible;
+      }
+    }
+
+    &:hover {
+      background-color: #eee;
+    }
   }
 }
 </style>
