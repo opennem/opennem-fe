@@ -51,6 +51,7 @@ export default {
       this.area.xAxis[0].data = this.eData.dates
       this.area.xAxis[1].data = this.eData.dates
       this.area.xAxis[2].data = this.eData.dates
+      this.area.xAxis[3].data = this.eData.dates
 
       this.area.series = this.eData.series
       this.area.color = this.eData.colours
@@ -60,6 +61,7 @@ export default {
           name: item.name,
           label: item.label,
           sum: item.dataSum,
+          dataPriceSum: item.dataPriceSum,
           colour: item.colour,
           date: '',
           value: 0,
@@ -73,6 +75,8 @@ export default {
           }
         }
       })
+
+      this.series.reverse()
 
       this.price.sum = this.eData.priceSeries[0].dataSum
 

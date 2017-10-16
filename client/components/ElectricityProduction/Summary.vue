@@ -2,9 +2,15 @@
   <table>
     <thead>
       <tr>
-        <th colspan="3">
-          <span v-if="showTotals">Total</span>
-          <span v-if="!showTotals">{{series[0].date}}</span>
+        <th colspan="2" style="text-align: left"><span v-if="!showTotals">{{series[0].date}}</span></th>
+        <th>
+          <span v-if="showTotals">Energy (GWh)</span>
+          <span v-if="!showTotals">Power (MW)</span>
+        </th>
+        <th>Contribution</th>
+        <th>
+          <span v-if="showTotals">Average Value</span>
+          <span v-if="!showTotals">Price</span>
         </th>
       </tr>
     </thead>
@@ -13,41 +19,44 @@
         <td>
           <div class="colour-sq" v-bind:style="{backgroundColor: item.colour}"></div>
         </td>
-        <td>{{item.label}}</td>
+        <td style="width: 150px;">{{item.label}}</td>
         <td class="value">
-          <span v-if="showTotals">{{item.sum.toFixed(2)}}</span>
-          <span v-if="!showTotals">{{item.value}}</span>
+          <span v-if="showTotals">{{ format(item.sum/12000) }} </span>
+          <span v-if="!showTotals">{{ format(item.value) }} </span>
+        </td>
+        <td class="value">
+          <span v-if="showTotals">{{ calPercent( item.sum, calTotalVol() ) }}</span>
+          <span v-if="!showTotals">{{ calPercent( item.value, calTotalVol() ) }}</span>
+        </td>
+        </td>
+        <td class="value">
+          <span v-if="showTotals">${{ format(item.dataPriceSum/item.sum, '0,0.00') }}</span>
+          <span v-if="!showTotals">${{ format(price.value, '0,0.00') }}</span>
+          
         </td>
       </tr>
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="2">Total Volume</td>
-        <td class="value">{{totalVol.toFixed(2)}}</td>
-      </tr>
-      <tr>
-        <td colspan="2">{{price.label}}</td>
+        <td colspan="2"></td>
         <td class="value">
-          <span v-if="showTotals">${{price.sum.toFixed(2)}}</span>
-          <span v-if="!showTotals">${{price.value}}</span>
+          <span v-if="showTotals">{{ format(calTotalVol()/12000) }}</span>
+          <span v-if="!showTotals">{{ format(calTotalVol()) }}</span>
+        </td>
+        <td class="value"></td>
+        <td class="value">
+          <span v-if="showTotals">${{ calTotalAveragePrice() }}</span>
+          <span v-if="!showTotals">${{ format(price.value, '0,0.00') }}</span>
         </td>
       </tr>
-      <tr>
-        <td colspan="2">Total Revenue</td>
-        <td class="value">
-          <span v-if="showTotals">${{calTotalRev(price.sum)}}</span>
-          <span v-if="!showTotals">${{calTotalRev(price.value)}}</span>
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2">Average Price</td>
-        <td class="value">${{averagePrice(totalRev, totalVol)}}</td>
-      </tr>
+      
     </tfoot>
   </table>
 </template>
 
 <script>
+import numeral from 'numeral'
+
 export default {
   props: {
   	series: Array,
@@ -55,28 +64,33 @@ export default {
     showTotals: Boolean
   },
   data() {
-    return {
-      totalRev: 0,
-      totalVol: 0,
-    }
-  },
-  watch: {
-    series: {
-      handler: function(fuelType) {
-        this.totalVol = this.showTotals ? 
-          fuelType.map(item => item.sum).reduce((a, b) => a + b, 0) :
-          fuelType.map(item => item.value).reduce((a, b) => a + b, 0)
-      },
-      deep: true
-    }
+    return {}
   },
   methods: {
-    calTotalRev: function(currentPrice) {
-      this.totalRev = (currentPrice * this.totalVol)
-      return this.totalRev.toFixed(2)
+    calTotalAveragePrice: function() {
+      let totalDataPriceSum = 0
+      let totalSum = 0
+      this.series.forEach((ft) => {
+        totalDataPriceSum += ft.dataPriceSum
+        totalSum += ft.sum
+      })
+      return this.format(totalDataPriceSum/totalSum, '0,0.00')
     },
-    averagePrice: function(rev, vol) {
-      return (rev/vol).toFixed(2)
+    calPercent: function(vol, tolVol) {
+      let percent = (vol / tolVol) * 100
+      let formatted = numeral(percent).format('0,0')
+      return `${formatted}%`
+    },
+    calTotalVol: function() {
+      let total = this.showTotals ? 
+        this.series.map(item => item.sum).reduce((a, b) => a + b, 0) :
+        this.series.map(item => item.value).reduce((a, b) => a + b, 0)
+      return total
+    },
+    format: function(number, precision) {
+      let formatter = precision ? precision : '0,0'
+      let formatted = (number === 0 || isNaN(number)) ? '-' : numeral(number).format(formatter)
+      return formatted
     }
   }
 }
@@ -86,8 +100,8 @@ export default {
 <style scoped>
 table {
   font-size: 0.8rem;
-  width: 400px;
-  flex: 0 0 400px;
+  width: 500px;
+  flex: 0 0 500px;
   border-collapse: collapse;
   margin-top: 5px;
 
@@ -126,6 +140,13 @@ table {
     }
 
     &:hover {
+      background-color: #eee;
+    }
+  }
+
+  tfoot {
+    td {
+      font-weight: bold;
       background-color: #eee;
     }
   }

@@ -18,7 +18,39 @@ import * as moment from 'moment'
 
 */
 
+const FUEL_TECH_CONFIG = {
+  'NETINTERCHANGE': {
+    colour: '#44146F',
+    label: 'Import/Export'
+  },
+  'gas_steam':{
+    colour: '#F48E1B',
+    label: 'Gas (Steam)'
+  },
+  'gas_ccgt':{
+    colour: '#FDB462',
+    label: 'Gas (CCGT)'
+  },
+  'gas_ocgt':{
+    colour: '#FFCD96',
+    label: 'Gas (OCGT)'
+  },
+  'wind':{
+    colour: '#417505',
+    label: 'Wind'
+  },
+  'distillate':{
+    colour: '#F35020',
+    label: 'Distillate'
+  },
+  'rooftop_solar':{
+    colour: '#F8E71C',
+    label: 'Solar (Rooftop)'
+  },
+}
+
 export default function(data) {
+
   let series = []
   let ftSeries = []
   let priceSeries = []
@@ -26,7 +58,6 @@ export default function(data) {
   let legend = []
   let colours = {
     'NETINTERCHANGE': '#44146F',
-    // 'DEMAND_AND_NONSCHEDGEN': '#333',
     'gas_steam': '#F48E1B',
     'gas_ccgt': '#FDB462',
     'gas_ocgt': '#FFCD96',
@@ -35,8 +66,7 @@ export default function(data) {
     'rooftop_solar': '#F8E71C',
   }
   let labels = {
-    'NETINTERCHANGE': 'Interconnectors',
-    // 'DEMAND_AND_NONSCHEDGEN': 'Demand',
+    'NETINTERCHANGE': 'Import/Export',
     'gas_steam': 'Gas (Steam)',
     'gas_ccgt': 'Gas (CCGT)',
     'gas_ocgt': 'Gas (OCGT)',
@@ -45,6 +75,7 @@ export default function(data) {
     'rooftop_solar': 'Solar (Rooftop)',
   }
   let datesGridLines = [
+    // { name: '0', yAxis: 200 },
     { name: '\n2 Mar', xAxis: '12:00 AM, 2 Mar' }, { name: '\n3 Mar', xAxis: '12:00 AM, 3 Mar' }, { name: '\n4 Mar', xAxis: '12:00 AM, 4 Mar' }, 
     { name: '\n5 Mar', xAxis: '12:00 AM, 5 Mar' }, { name: '\n6 Mar', xAxis: '12:00 AM, 6 Mar' }, { name: '\n7 Mar', xAxis: '12:00 AM, 7 Mar' }, { name: '\n8 Mar', xAxis: '12:00 AM, 8 Mar' }
   ]
@@ -59,6 +90,9 @@ export default function(data) {
     { name: '', xAxis: '12:00 AM, 2 Mar' }, { name: '', xAxis: '12:00 AM, 3 Mar' }, 
     { name: '', xAxis: '12:00 AM, 4 Mar' },  { name: '', xAxis: '12:00 AM, 5 Mar' }, { name: '', xAxis: '12:00 AM, 6 Mar' }, { name: '', xAxis: '12:00 AM, 7 Mar' }, 
     { name: '', xAxis: '12:00 AM, 8 Mar' }
+  ]
+  let priceGridLines3 = [
+    { name: '', yAxis: 300 }
   ]
 
   let coloursCode = Object.values(colours)
@@ -78,6 +112,7 @@ export default function(data) {
   let rrpData = rrp.data
 
   let priceData = []
+  let emptyData = []
   let rrpIndex = 0
   let dateIndex = 5
 
@@ -90,6 +125,7 @@ export default function(data) {
       let prevPrice = rrpData[rrpIndex-1]
       priceData.push(prevPrice ? prevPrice : 0)
     }
+    emptyData.push(null);
   })
 
   // reset groups to be re-ordered based on the colour ordering
@@ -103,12 +139,20 @@ export default function(data) {
     let seriesData = []
 
     if (key === 'NETINTERCHANGE') {
+      let max = Math.max(...data[key].data);
+      // alert(max) //216.89
+
       data[key].data.forEach((value) => {
         seriesData.push(-value)
       })
     } else {
       seriesData = data[key].data
     }
+
+    // sum
+    let dataPrice = seriesData.map((ft, i) => ft * priceData[i])
+    let dataSum = seriesData.reduce((a, b) => a + b, 0)
+    let dataPriceSum = dataPrice.reduce((a, b) => a + b, 0)
 
     let seriesObj = {
       name: key,
@@ -121,7 +165,9 @@ export default function(data) {
       symbol: 'roundRect',
       symbolSize: 0,
       data: seriesData,
-      dataSum: seriesData.reduce((a, b) => a + b, 0),
+      dataPrice: dataPrice,
+      dataSum: dataSum,
+      dataPriceSum: dataPriceSum,
       colour: colourCode
     }
 
@@ -132,7 +178,32 @@ export default function(data) {
       icon: 'roundRect'
     })
     groups.push(key)
-  })
+  }) 
+
+  /*  sum vertical */
+  // let ftTotalIntervalSum = []
+  // let ftTotalIntervalPrice = []
+
+  // let length = ftSeries[0].data.length
+
+  // for (let i=0; i<length; i++) {
+  //   let ftIntervalSum = 0
+  //   let ftIntervalPrice = 0
+  //   ftSeries.forEach((ft, index) => {
+  //     ftIntervalSum += ft.data[i]
+  //     ftIntervalPrice += (ft.data[i] * priceData[i])
+  //   })
+
+  //   ftTotalIntervalSum.push(ftIntervalSum)
+  //   ftTotalIntervalPrice.push(ftIntervalPrice)
+
+  // }
+
+  // let intervalSum = ftTotalIntervalSum.reduce((a, b) => a + b, 0)
+  // let intervalPrice = ftTotalIntervalPrice.reduce((a, b) => a + b, 0)
+
+  // console.log(intervalSum, intervalPrice)
+  // console.log(intervalPrice/intervalSum)
 
   // add markLine only to the last item in the series
   series[series.length-1].markLine = {
@@ -203,8 +274,37 @@ export default function(data) {
     }
   }
 
+  let priceGrids = {
+    name: 'priceGrids',
+    label: 'Price Grids',
+    type: 'line',
+    data: emptyData,
+    colour: '#444',
+    symbolSize: 0,
+    xAxisIndex: 3,
+    yAxisIndex: 3,
+    connectNulls: true,
+    lineStyle: {normal: {color: '#444', width: 1}},
+    markLine: {
+      silent: true,
+      symbolSize: 0,
+      precision: 1,
+      label: {normal: {
+        show: true, 
+        position: 'start',
+        formatter: '{b}'
+      }},
+      lineStyle: {
+        normal: {width: 1, color: '#666', type: 'dashed', opacity: 0.8}
+      },
+      data: priceGridLines3
+    }
+  }
+
   series.push(priceTopChart)
   series.push(priceBottomChart)
+  series.push(priceGrids)
+
   priceSeries.push(priceTopChart)
   priceSeries.push(priceBottomChart)
 

@@ -39,7 +39,7 @@ export const ChartConfig = {
     realtime: true,
     start: 0,
     end: 100,
-    xAxisIndex: [0, 1, 2]
+    xAxisIndex: [0, 1, 2, 3]
   }],
   grid: [{
     top: 30,
@@ -51,6 +51,11 @@ export const ChartConfig = {
     right: 26,
     top: '60%',
     height: '10%'
+  }, {
+    left: 60,
+    right: 26,
+    top: '70%',
+    height: '28%'
   }, {
     left: 60,
     right: 26,
@@ -106,13 +111,31 @@ export const ChartConfig = {
       }
     },
     position: 'top'
+  }, {
+    show: false,
+    gridIndex: 3,
+    type: 'category',
+    offset: 20,
+    boundaryGap: false,
+    data: [],
+    axisLine: {
+      onZero: true,
+      lineStyle: {
+        color: '#000'
+      }
+    },
+    position: 'top'
   }],
   yAxis: [{
     type: 'value',
-    scale: true,
     axisLine: {
       lineStyle: {
         color: '#ababab'
+      }
+    },
+    axisLabel: {
+      formatter: function(value, index) {
+        return value
       }
     },
     splitLine: {
@@ -140,6 +163,22 @@ export const ChartConfig = {
     }
   }, {
     gridIndex: 2,
+    type: 'value',
+    max: 300,
+    axisLine: {
+      lineStyle: {
+        color: '#ababab'
+      }
+    },
+    splitLine: {
+      lineStyle: {
+        color: ['#ddd'],
+        type: 'dashed'
+      }
+    }
+  }, {
+    show: false,
+    gridIndex: 3,
     type: 'value',
     max: 300,
     axisLine: {
