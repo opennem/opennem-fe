@@ -16,7 +16,7 @@
     </thead>
     <tbody>
       <tr v-for="item in series" v-on:click="item.toggle(item)" v-bind:class="{ active: item.show }">
-        <td>
+        <td style="width: 20px;">
           <div class="colour-sq" v-bind:style="{backgroundColor: item.colour}"></div>
         </td>
         <td style="width: 150px;">{{item.label}}</td>
@@ -100,10 +100,9 @@ export default {
 <style scoped>
 table {
   font-size: 0.8rem;
-  width: 500px;
-  flex: 0 0 500px;
+  width: 100%;
   border-collapse: collapse;
-  margin-top: 5px;
+  margin-top: 30px;
 
   thead th, .value { text-align: right }
 
@@ -149,6 +148,21 @@ table {
       font-weight: bold;
       background-color: #eee;
     }
+  }
+}
+@media only screen and (min-width: 769px) {
+  table {
+    width: 330px;
+    flex: 0 0 330px;
+    margin-top: 5px;
+  }
+}
+
+@media only screen and (min-width: 1025px) {
+  table {
+    width: 500px;
+    flex: 0 0 500px;
+    margin-top: 5px;
   }
 }
 </style>

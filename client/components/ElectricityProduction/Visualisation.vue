@@ -128,11 +128,18 @@ export default {
 
 <style scoped>
 .fuel-tech-chart-wrapper {
-  display: flex;
+  display: block;
 }
 
 .chart {
   width: 100%;
   height: 600px;
 }
+
+@media only screen and (min-width: 1024px) {
+  .fuel-tech-chart-wrapper {
+    display: flex;
+  }
+}
+
 </style>
