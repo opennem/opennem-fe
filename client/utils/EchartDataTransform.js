@@ -49,57 +49,34 @@ const FUEL_TECH_CONFIG = {
   },
 }
 
-export default function(data) {
+const datesGridLines = [
+  // { name: '0', yAxis: 200 },
+  { name: '\n2 Mar', xAxis: '12:00 AM, 2 Mar' }, { name: '\n3 Mar', xAxis: '12:00 AM, 3 Mar' }, { name: '\n4 Mar', xAxis: '12:00 AM, 4 Mar' }, 
+  { name: '\n5 Mar', xAxis: '12:00 AM, 5 Mar' }, { name: '\n6 Mar', xAxis: '12:00 AM, 6 Mar' }, { name: '\n7 Mar', xAxis: '12:00 AM, 7 Mar' }, { name: '\n8 Mar', xAxis: '12:00 AM, 8 Mar' }
+]
+// 
+const priceGridLines1 = [
+  { name: '1,000', yAxis: 1000 }, { name: '5,000', yAxis: 5000 }, { name: '', xAxis: '12:00 AM, 2 Mar' }, { name: '', xAxis: '12:00 AM, 3 Mar' }, 
+  { name: '', xAxis: '12:00 AM, 4 Mar' },  { name: '', xAxis: '12:00 AM, 5 Mar' }, { name: '', xAxis: '12:00 AM, 6 Mar' }, { name: '', xAxis: '12:00 AM, 7 Mar' }, 
+  { name: '', xAxis: '12:00 AM, 8 Mar' }
+]
+// { name: '$0', yAxis: 0 }, { name: '$50', yAxis: 50 }, { name: '$100', yAxis: 100 }, 
+const priceGridLines2 = [
+  { name: '', xAxis: '12:00 AM, 2 Mar' }, { name: '', xAxis: '12:00 AM, 3 Mar' }, 
+  { name: '', xAxis: '12:00 AM, 4 Mar' },  { name: '', xAxis: '12:00 AM, 5 Mar' }, { name: '', xAxis: '12:00 AM, 6 Mar' }, { name: '', xAxis: '12:00 AM, 7 Mar' }, 
+  { name: '', xAxis: '12:00 AM, 8 Mar' }
+]
 
+export default function(data) {
   let series = []
   let ftSeries = []
   let priceSeries = []
   let groups = []
   let legend = []
-  let colours = {
-    'NETINTERCHANGE': '#44146F',
-    'gas_steam': '#F48E1B',
-    'gas_ccgt': '#FDB462',
-    'gas_ocgt': '#FFCD96',
-    'wind': '#417505',
-    'distillate': '#F35020',
-    'rooftop_solar': '#F8E71C',
-  }
-  let labels = {
-    'NETINTERCHANGE': 'Import/Export',
-    'gas_steam': 'Gas (Steam)',
-    'gas_ccgt': 'Gas (CCGT)',
-    'gas_ocgt': 'Gas (OCGT)',
-    'wind': 'Wind',
-    'distillate': 'Distillate',
-    'rooftop_solar': 'Solar (Rooftop)',
-  }
-  let datesGridLines = [
-    // { name: '0', yAxis: 200 },
-    { name: '\n2 Mar', xAxis: '12:00 AM, 2 Mar' }, { name: '\n3 Mar', xAxis: '12:00 AM, 3 Mar' }, { name: '\n4 Mar', xAxis: '12:00 AM, 4 Mar' }, 
-    { name: '\n5 Mar', xAxis: '12:00 AM, 5 Mar' }, { name: '\n6 Mar', xAxis: '12:00 AM, 6 Mar' }, { name: '\n7 Mar', xAxis: '12:00 AM, 7 Mar' }, { name: '\n8 Mar', xAxis: '12:00 AM, 8 Mar' }
-  ]
-  // 
-  let priceGridLines1 = [
-    { name: '1,000', yAxis: 1000 }, { name: '5,000', yAxis: 5000 }, { name: '', xAxis: '12:00 AM, 2 Mar' }, { name: '', xAxis: '12:00 AM, 3 Mar' }, 
-    { name: '', xAxis: '12:00 AM, 4 Mar' },  { name: '', xAxis: '12:00 AM, 5 Mar' }, { name: '', xAxis: '12:00 AM, 6 Mar' }, { name: '', xAxis: '12:00 AM, 7 Mar' }, 
-    { name: '', xAxis: '12:00 AM, 8 Mar' }
-  ]
-  //{ name: '$0', yAxis: 0 }, { name: '$50', yAxis: 50 }, { name: '$100', yAxis: 100 }, 
-  let priceGridLines2 = [
-    { name: '', xAxis: '12:00 AM, 2 Mar' }, { name: '', xAxis: '12:00 AM, 3 Mar' }, 
-    { name: '', xAxis: '12:00 AM, 4 Mar' },  { name: '', xAxis: '12:00 AM, 5 Mar' }, { name: '', xAxis: '12:00 AM, 6 Mar' }, { name: '', xAxis: '12:00 AM, 7 Mar' }, 
-    { name: '', xAxis: '12:00 AM, 8 Mar' }
-  ]
-  let priceGridLines3 = [
-    { name: '', yAxis: 300 }
-  ]
-
-  let coloursCode = Object.values(colours)
-  groups = Object.keys(data)
-
-  let dataLength = data[groups[0]].data.length
-  let start = moment(data[groups[0]].start, moment.ISO_8601)
+  const colours = Object.keys(FUEL_TECH_CONFIG).map((key) => FUEL_TECH_CONFIG[key].colour)
+  const firstSeries = Object.keys(data)[0]
+  const dataLength = data[firstSeries].data.length
+  let start = moment(data[firstSeries].start, moment.ISO_8601)
   let interval = 5
   let dates = [moment(start).format('LT, D MMM')]
 
@@ -108,9 +85,7 @@ export default function(data) {
     dates.push(moment(now).format('LT, D MMM'))
   }
 
-  let rrp = data['RRP']
-  let rrpData = rrp.data
-
+  const rrpData = data['RRP'].data
   let priceData = []
   let emptyData = []
   let rrpIndex = 0
@@ -128,19 +103,15 @@ export default function(data) {
     emptyData.push(null);
   })
 
-  // reset groups to be re-ordered based on the colour ordering
-  groups = []
-
-  Object.entries(colours).forEach(([key,colourCode]) => {
-
-    let stack = (key === 'DEMAND_AND_NONSCHEDGEN' ? null : 'total-ft')
-    let areaStyle = (key === 'DEMAND_AND_NONSCHEDGEN' ? {normal: {color: 'transparent'}} : {normal: {color: colourCode}})
-    let lineStyle = (key === 'DEMAND_AND_NONSCHEDGEN' ? {normal: {color: colourCode, width: 1}} : {normal: {color: 'transparent'}})
+  Object.entries(FUEL_TECH_CONFIG).forEach(([key, ftConfig]) => {
+    let stack = 'total-ft'
+    let areaStyle = { normal: { color: ftConfig.colour } }
+    let lineStyle = { normal: { color: 'transparent' } }
     let seriesData = []
 
     if (key === 'NETINTERCHANGE') {
-      let max = Math.max(...data[key].data);
-      // alert(max) //216.89
+      /* find out the MAX of this series to recalculate the data series */
+      // let max = Math.max(...data[key].data);
 
       data[key].data.forEach((value) => {
         seriesData.push(-value)
@@ -156,7 +127,7 @@ export default function(data) {
 
     let seriesObj = {
       name: key,
-      label: labels[key],
+      label: ftConfig.label,
       type: 'line',
       stack: stack,
       sampling: 'average',
@@ -168,7 +139,7 @@ export default function(data) {
       dataPrice: dataPrice,
       dataSum: dataSum,
       dataPriceSum: dataPriceSum,
-      colour: colourCode
+      colour: ftConfig.colour
     }
 
     series.push(seriesObj)
@@ -180,32 +151,7 @@ export default function(data) {
     groups.push(key)
   }) 
 
-  /*  sum vertical */
-  // let ftTotalIntervalSum = []
-  // let ftTotalIntervalPrice = []
-
-  // let length = ftSeries[0].data.length
-
-  // for (let i=0; i<length; i++) {
-  //   let ftIntervalSum = 0
-  //   let ftIntervalPrice = 0
-  //   ftSeries.forEach((ft, index) => {
-  //     ftIntervalSum += ft.data[i]
-  //     ftIntervalPrice += (ft.data[i] * priceData[i])
-  //   })
-
-  //   ftTotalIntervalSum.push(ftIntervalSum)
-  //   ftTotalIntervalPrice.push(ftIntervalPrice)
-
-  // }
-
-  // let intervalSum = ftTotalIntervalSum.reduce((a, b) => a + b, 0)
-  // let intervalPrice = ftTotalIntervalPrice.reduce((a, b) => a + b, 0)
-
-  // console.log(intervalSum, intervalPrice)
-  // console.log(intervalPrice/intervalSum)
-
-  // add markLine only to the last item in the series
+  // add markLine only to the last item in the series, TODO: due to series toggle, better to add markline to an 'empty series'.
   series[series.length-1].markLine = {
     silent: true,
     symbolSize: 0,
@@ -217,7 +163,6 @@ export default function(data) {
     data: datesGridLines
   }
 
-  // setup price obj
   let priceTopChart = {
     name: 'price',
     label: 'Price',
@@ -246,6 +191,7 @@ export default function(data) {
       data: priceGridLines1
     }
   }
+
   let priceBottomChart = {
     name: 'price2',
     label: 'Price',
@@ -274,36 +220,8 @@ export default function(data) {
     }
   }
 
-  let priceGrids = {
-    name: 'priceGrids',
-    label: 'Price Grids',
-    type: 'line',
-    data: emptyData,
-    colour: '#444',
-    symbolSize: 0,
-    xAxisIndex: 3,
-    yAxisIndex: 3,
-    connectNulls: true,
-    lineStyle: {normal: {color: '#444', width: 1}},
-    markLine: {
-      silent: true,
-      symbolSize: 0,
-      precision: 1,
-      label: {normal: {
-        show: true, 
-        position: 'start',
-        formatter: '{b}'
-      }},
-      lineStyle: {
-        normal: {width: 1, color: '#666', type: 'dashed', opacity: 0.8}
-      },
-      data: priceGridLines3
-    }
-  }
-
   series.push(priceTopChart)
   series.push(priceBottomChart)
-  series.push(priceGrids)
 
   priceSeries.push(priceTopChart)
   priceSeries.push(priceBottomChart)
@@ -314,6 +232,6 @@ export default function(data) {
     ftSeries,
     priceSeries,
     groups,
-    colours: coloursCode
+    colours
   }
 }

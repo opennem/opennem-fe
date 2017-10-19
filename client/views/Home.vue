@@ -3,7 +3,7 @@
     <header>
       <h2>Electricity Production</h2>
       <div class="date-range">
-        <time>2 Mar '17</time> — <time>7 Mar '17</time>
+        <time>2 Mar '17</time> — <time>7 Mar '17</time>    
       </div>
     </header>
 

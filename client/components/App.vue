@@ -23,20 +23,4 @@ h2 {
 #app {
   margin: 2rem;
 }
-
-$break-small: 320px;
-$break-large: 1024px;
-
-@mixin respond-to($media) {
-  @if $media == handhelds {
-    @media only screen and (max-width: $break-small) { @content; }
-  }
-  @else if $media == medium-screens {
-    @media only screen and (min-width: $break-small + 1) and (max-width: $break-large - 1) { @content; }
-  }
-  @else if $media == wide-screens {
-    @media only screen and (min-width: $break-large) { @content; }
-  }
-}
-
 </style>
