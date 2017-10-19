@@ -21,17 +21,17 @@
         </td>
         <td style="width: 150px;">{{item.label}}</td>
         <td class="value">
-          <span v-if="showTotals">{{ format(item.sum/12000) }} </span>
-          <span v-if="!showTotals">{{ format(item.value) }} </span>
+          <span v-if="showTotals">{{ format(null, item.sum/12000) }} </span>
+          <span v-if="!showTotals">{{ format(item.offset, item.value) }} </span>
         </td>
         <td class="value">
-          <span v-if="showTotals">{{ calPercent( item.sum, calTotalVol() ) }}</span>
-          <span v-if="!showTotals">{{ calPercent( item.value, calTotalVol() ) }}</span>
+          <span v-if="showTotals">{{ calPercent(null,  item.sum, calTotalVol() ) }}</span>
+          <span v-if="!showTotals">{{ calPercent(item.offset, item.value, calTotalVol() ) }}</span>
         </td>
         </td>
         <td class="value">
-          <span v-if="showTotals">${{ format(item.dataPriceSum/item.sum, '0,0.00') }}</span>
-          <span v-if="!showTotals">${{ format(price.value, '0,0.00') }}</span>
+          <span v-if="showTotals">${{ format(null, item.dataPriceSum/item.sum, '0,0.00') }}</span>
+          <span v-if="!showTotals">${{ format(null, price.value, '0,0.00') }}</span>
           
         </td>
       </tr>
@@ -40,13 +40,13 @@
       <tr>
         <td colspan="2"></td>
         <td class="value">
-          <span v-if="showTotals">{{ format(calTotalVol()/12000) }}</span>
-          <span v-if="!showTotals">{{ format(calTotalVol()) }}</span>
+          <span v-if="showTotals">{{ format(null, calTotalVol()/12000) }}</span>
+          <span v-if="!showTotals">{{ format(null, calTotalVol()) }}</span>
         </td>
         <td class="value"></td>
         <td class="value">
           <span v-if="showTotals">${{ calTotalAveragePrice() }}</span>
-          <span v-if="!showTotals">${{ format(price.value, '0,0.00') }}</span>
+          <span v-if="!showTotals">${{ format(null, price.value, '0,0.00') }}</span>
         </td>
       </tr>
       
@@ -74,22 +74,34 @@ export default {
         totalDataPriceSum += ft.dataPriceSum
         totalSum += ft.sum
       })
-      return this.format(totalDataPriceSum/totalSum, '0,0.00')
+      return this.format(null, totalDataPriceSum/totalSum, '0,0.00')
     },
-    calPercent: function(vol, tolVol) {
-      let percent = (vol / tolVol) * 100
+    calPercent: function(offset, vol, tolVol) {
+      let v = offset ? vol-offset : vol
+      let percent = (v / tolVol) * 100
       let formatted = numeral(percent).format('0,0')
       return `${formatted}%`
     },
     calTotalVol: function() {
-      let total = this.showTotals ? 
-        this.series.map(item => item.sum).reduce((a, b) => a + b, 0) :
-        this.series.map(item => item.value).reduce((a, b) => a + b, 0)
+      let total
+
+      if (this.showTotals) {
+        total = this.series.map(item => item.sum).reduce((a, b) => a + b, 0)
+      } else {
+        total = this.series.map(item => {
+          if (item.offset) {
+            return item.value-item.offset
+          } else {
+            return item.value
+          }
+        }).reduce((a, b) => a + b, 0)
+      }
       return total
     },
-    format: function(number, precision) {
+    format: function(offset, number, precision) {
       let formatter = precision ? precision : '0,0'
-      let formatted = (number === 0 || isNaN(number)) ? '-' : numeral(number).format(formatter)
+      let num = offset ? number-offset : number
+      let formatted = (num === 0 || isNaN(num)) ? '-' : numeral(num).format(formatter)
       return formatted
     }
   }

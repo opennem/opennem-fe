@@ -50,7 +50,6 @@ const FUEL_TECH_CONFIG = {
 }
 
 const datesGridLines = [
-  // { name: '0', yAxis: 200 },
   { name: '\n2 Mar', xAxis: '12:00 AM, 2 Mar' }, { name: '\n3 Mar', xAxis: '12:00 AM, 3 Mar' }, { name: '\n4 Mar', xAxis: '12:00 AM, 4 Mar' }, 
   { name: '\n5 Mar', xAxis: '12:00 AM, 5 Mar' }, { name: '\n6 Mar', xAxis: '12:00 AM, 6 Mar' }, { name: '\n7 Mar', xAxis: '12:00 AM, 7 Mar' }, { name: '\n8 Mar', xAxis: '12:00 AM, 8 Mar' }
 ]
@@ -103,43 +102,60 @@ export default function(data) {
     emptyData.push(null);
   })
 
+  let hasOffset = null
+
   Object.entries(FUEL_TECH_CONFIG).forEach(([key, ftConfig]) => {
     let stack = 'total-ft'
     let areaStyle = { normal: { color: ftConfig.colour } }
     let lineStyle = { normal: { color: 'transparent' } }
     let seriesData = []
+    let nonOffsetData = []
+    let offset = null
 
     if (key === 'NETINTERCHANGE') {
       /* find out the MAX of this series to recalculate the data series */
-      // let max = Math.max(...data[key].data);
+      offset = Math.max(...data[key].data);
+
+      if (!hasOffset) {
+        hasOffset = offset
+      }
 
       data[key].data.forEach((value) => {
-        seriesData.push(-value)
+        seriesData.push(-value+offset)
+        nonOffsetData.push(-value)
       })
     } else {
       seriesData = data[key].data
     }
 
     // sum
-    let dataPrice = seriesData.map((ft, i) => ft * priceData[i])
-    let dataSum = seriesData.reduce((a, b) => a + b, 0)
-    let dataPriceSum = dataPrice.reduce((a, b) => a + b, 0)
+    let dataPrice, dataSum,  dataPriceSum
+    if (offset) {
+      dataPrice = nonOffsetData.map((ft, i) => ft * priceData[i])
+      dataSum = nonOffsetData.reduce((a, b) => a + b, 0)
+    } else {
+      dataPrice = seriesData.map((ft, i) => ft * priceData[i])
+      dataSum = seriesData.reduce((a, b) => a + b, 0)
+    }
+    dataPriceSum = dataPrice.reduce((a, b) => a + b, 0)
 
     let seriesObj = {
       name: key,
       label: ftConfig.label,
       type: 'line',
-      stack: stack,
+      stack,
       sampling: 'average',
-      areaStyle: areaStyle,
-      lineStyle: lineStyle,
+      areaStyle,
+      lineStyle,
       symbol: 'roundRect',
       symbolSize: 0,
       data: seriesData,
-      dataPrice: dataPrice,
-      dataSum: dataSum,
-      dataPriceSum: dataPriceSum,
-      colour: ftConfig.colour
+      dataPrice,
+      dataSum,
+      dataPriceSum,
+      colour: ftConfig.colour,
+      offset,
+      nonOffsetData
     }
 
     series.push(seriesObj)
@@ -152,13 +168,26 @@ export default function(data) {
   }) 
 
   // add markLine only to the last item in the series, TODO: due to series toggle, better to add markline to an 'empty series'.
+  if (hasOffset) {
+    let updatedYAxis = []
+
+    for (let i=0; i<10; i++) {
+      datesGridLines.push({
+        name: (i*500).toString(),
+        yAxis: (i*500)+hasOffset
+      })
+    }
+
+    console.log(datesGridLines)
+  }
+
   series[series.length-1].markLine = {
     silent: true,
     symbolSize: 0,
     precision: 1,
-    label: {normal: {show: true, position: 'start', formatter: '{b}'}},
+    label: {normal: {color: '#999', show: true, position: 'start', formatter: '{b}'}},
     lineStyle: {
-      normal: {width: 1, color: '#333', type: 'solid', opacity: 0.2}
+      normal: {width: 1, color: '#333', type: 'dotted', opacity: 0.2}
     },
     data: datesGridLines
   }

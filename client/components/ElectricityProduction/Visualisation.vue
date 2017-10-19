@@ -47,6 +47,7 @@ export default {
   },
   watch: {
     genData: function() {
+      let hasOffset = null
       this.eData = echartDataTransform(this.genData)
       this.area.xAxis[0].data = this.eData.dates
       this.area.xAxis[1].data = this.eData.dates
@@ -56,13 +57,18 @@ export default {
       this.area.series = this.eData.series
       this.area.color = this.eData.colours
 
+
       this.series = this.eData.ftSeries.map((item) => {
+        if (!hasOffset) {
+          hasOffset = item.offset.toFixed(0)
+        }
         return {
           name: item.name,
           label: item.label,
           sum: item.dataSum,
           dataPriceSum: item.dataPriceSum,
           colour: item.colour,
+          offset: item.offset,
           date: '',
           value: 0,
           show: true,
@@ -75,6 +81,13 @@ export default {
           }
         }
       })
+
+      this.area.yAxis[0].axisLabel = {
+        formatter: function(value, index) {
+          return ''
+        }
+      }
+
 
       this.series.reverse()
 
@@ -136,7 +149,7 @@ export default {
   height: 600px;
 }
 
-@media only screen and (min-width: 1024px) {
+@media only screen and (min-width: 769px) {
   .fuel-tech-chart-wrapper {
     display: flex;
   }

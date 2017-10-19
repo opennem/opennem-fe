@@ -133,12 +133,16 @@ export const ChartConfig = {
         color: '#ababab'
       }
     },
+    axisTick: {
+      show: false
+    },
     axisLabel: {
       formatter: function(value, index) {
         return value
       }
     },
     splitLine: {
+      show: false,
       lineStyle: {
         color: ['#ddd'],
         type: 'dashed'
