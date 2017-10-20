@@ -169,16 +169,27 @@ export default function(data) {
 
   // add markLine only to the last item in the series, TODO: due to series toggle, better to add markline to an 'empty series'.
   if (hasOffset) {
-    let updatedYAxis = []
+    let interchangeMarkLines = []
 
     for (let i=0; i<10; i++) {
-      datesGridLines.push({
+      interchangeMarkLines.push({
         name: (i*500).toString(),
         yAxis: (i*500)+hasOffset
       })
     }
 
-    console.log(datesGridLines)
+    series[0].markLine = {
+      silent: true,
+      symbolSize: 0,
+      precision: 1,
+      label: {normal: {color: '#999', show: true, position: 'start', formatter: '{b}'}},
+      lineStyle: {
+        normal: {width: 1, color: '#333', type: 'dotted', opacity: 0.2}
+      },
+      data: interchangeMarkLines
+    }
+
+    console.log(interchangeMarkLines)
   }
 
   series[series.length-1].markLine = {

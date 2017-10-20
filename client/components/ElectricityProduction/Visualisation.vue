@@ -73,6 +73,26 @@ export default {
           value: 0,
           show: true,
           toggle: (ftRow) => {
+            if (ftRow.name === 'NETINTERCHANGE') {
+              let toggle = !this.area.yAxis[0].splitLine.show
+              this.area.yAxis[0].splitLine.show = toggle
+              if (toggle) {
+                this.area.yAxis[0].axisLabel = {
+                  formatter: function(value) {
+                    return value
+                  }
+                }
+              } else {
+                this.area.yAxis[0].axisLabel = {
+                  formatter: function(value) {
+                    return ''
+                  }
+                }
+              }
+            } 
+
+            this.chart.setOption(this.area)
+
             ftRow.show = !ftRow.show
             this.chart.dispatchAction({
               type: 'legendToggleSelect',
@@ -83,17 +103,16 @@ export default {
       })
 
       this.area.yAxis[0].axisLabel = {
-        formatter: function(value, index) {
+        formatter: function(value) {
           return ''
         }
       }
-
 
       this.series.reverse()
 
       this.price.sum = this.eData.priceSeries[0].dataSum
 
-      this.chart.setOption(this.area);
+      this.chart.setOption(this.area)
     }
   },
   mounted() {
