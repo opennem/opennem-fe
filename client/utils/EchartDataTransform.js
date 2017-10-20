@@ -20,7 +20,8 @@ import * as moment from 'moment'
 
 const FUEL_TECH_CONFIG = {
   'NETINTERCHANGE': {
-    colour: '#44146F',
+    // colour: '#44146F',
+    colour: '#fff',
     label: 'Import/Export'
   },
   'gas_steam':{
@@ -52,6 +53,8 @@ const FUEL_TECH_CONFIG = {
 const datesGridLines = [
   { name: '\n2 Mar', xAxis: '12:00 AM, 2 Mar' }, { name: '\n3 Mar', xAxis: '12:00 AM, 3 Mar' }, { name: '\n4 Mar', xAxis: '12:00 AM, 4 Mar' }, 
   { name: '\n5 Mar', xAxis: '12:00 AM, 5 Mar' }, { name: '\n6 Mar', xAxis: '12:00 AM, 6 Mar' }, { name: '\n7 Mar', xAxis: '12:00 AM, 7 Mar' }, { name: '\n8 Mar', xAxis: '12:00 AM, 8 Mar' }
+]
+let zeroGridLine = [
 ]
 // 
 const priceGridLines1 = [
@@ -116,6 +119,8 @@ export default function(data) {
       /* find out the MAX of this series to recalculate the data series */
       offset = Math.max(...data[key].data);
 
+      lineStyle = { normal: { color: '#44146F' }}
+
       if (!hasOffset) {
         hasOffset = offset
       }
@@ -167,15 +172,23 @@ export default function(data) {
     groups.push(key)
   }) 
 
-  // add markLine only to the last item in the series, TODO: due to series toggle, better to add markline to an 'empty series'.
+  // add to the series, TODO: due to series toggle, better to add markline to an 'empty series'.
   if (hasOffset) {
     let interchangeMarkLines = []
+    let zeroGridLine = []
 
     for (let i=0; i<10; i++) {
       interchangeMarkLines.push({
         name: (i*500).toString(),
         yAxis: (i*500)+hasOffset
       })
+
+      if (i === 0) {
+        zeroGridLine.push({
+          name: '',
+          yAxis: (i*500)+hasOffset
+        })
+      }
     }
 
     series[0].markLine = {
@@ -187,6 +200,17 @@ export default function(data) {
         normal: {width: 1, color: '#333', type: 'dotted', opacity: 0.2}
       },
       data: interchangeMarkLines
+    }
+
+    series[1].markLine = {
+      silent: true,
+      symbolSize: 0,
+      precision: 1,
+      label: {normal: {color: '#999', show: true, position: 'start', formatter: '{b}'}},
+      lineStyle: {
+        normal: {width: 1, color: '#000', type: 'solid', opacity: 1}
+      },
+      data: zeroGridLine
     }
 
     console.log(interchangeMarkLines)
