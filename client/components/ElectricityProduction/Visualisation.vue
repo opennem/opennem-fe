@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import numeral from 'numeral'
 import echartDataTransform from '../../utils/EchartDataTransform'
 import { ChartConfig } from './ChartConfig'
 import Summary from './Summary'
@@ -77,21 +78,22 @@ export default {
               let toggle = !this.area.yAxis[0].splitLine.show
               this.area.yAxis[0].splitLine.show = toggle
               if (toggle) {
+                this.area.series[1].markLine.lineStyle.normal.opacity = 0
                 this.area.yAxis[0].axisLabel = {
                   formatter: function(value) {
-                    return value
+                    return numeral(value).format('0,0')
                   }
                 }
               } else {
+                this.area.series[1].markLine.lineStyle.normal.opacity = 1
                 this.area.yAxis[0].axisLabel = {
                   formatter: function(value) {
                     return ''
                   }
                 }
               }
+              this.chart.setOption(this.area)
             } 
-
-            this.chart.setOption(this.area)
 
             ftRow.show = !ftRow.show
             this.chart.dispatchAction({
