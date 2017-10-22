@@ -45,22 +45,22 @@ export const ChartConfig = {
     top: 30,
     left: 60,
     right: 26,
-    height: '47%'
+    height: '42%'
   }, {
     left: 60,
     right: 26,
-    top: '60%',
+    top: '55%',
     height: '10%'
   }, {
     left: 60,
     right: 26,
-    top: '70%',
-    height: '28%'
+    top: '65%',
+    height: '26%'
   }, {
     left: 60,
     right: 26,
-    top: '70%',
-    height: '28%'
+    top: '91%',
+    height: '5%'
   }],
   axisPointer: {
     link: {
@@ -145,7 +145,7 @@ export const ChartConfig = {
       show: false,
       lineStyle: {
         color: ['#ddd'],
-        type: 'dashed'
+        type: 'dotted'
       }
     }
   }, {
@@ -156,19 +156,26 @@ export const ChartConfig = {
     max: 15000,
     axisLine: {
       lineStyle: {
-        color: '#ababab'
+        color: '#ddd'
       }
     },
     splitLine: {
       lineStyle: {
         color: ['#ddd'],
-        type: 'dashed'
+        type: 'dotted'
       }
     }
   }, {
     gridIndex: 2,
     type: 'value',
+    min: -100,
     max: 300,
+    axisLabel: {
+      color: '#000'
+    },
+    axisTick: {
+      show: true
+    },
     axisLine: {
       lineStyle: {
         color: '#ababab'
@@ -176,24 +183,30 @@ export const ChartConfig = {
     },
     splitLine: {
       lineStyle: {
-        color: ['#ddd'],
-        type: 'dashed'
+        color: ['#aaa'],
+        type: 'dotted'
       }
     }
   }, {
-    show: false,
     gridIndex: 3,
-    type: 'value',
-    max: 300,
+    type: 'log',
+    logBase: 100,
+    min: 100,
+    max: 5000,
+    inverse: true,
+    splitNumber: 1,
     axisLine: {
       lineStyle: {
-        color: '#ababab'
+        color: '#ddd'
       }
+    },
+    axisLabel: {
+      show: false
     },
     splitLine: {
       lineStyle: {
         color: ['#ddd'],
-        type: 'dashed'
+        type: 'dotted'
       }
     }
   }],

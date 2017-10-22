@@ -38,16 +38,24 @@ const datesGridLines = [
   { name: '\n2 Mar', xAxis: '12:00 AM, 2 Mar' }, { name: '\n3 Mar', xAxis: '12:00 AM, 3 Mar' }, { name: '\n4 Mar', xAxis: '12:00 AM, 4 Mar' }, 
   { name: '\n5 Mar', xAxis: '12:00 AM, 5 Mar' }, { name: '\n6 Mar', xAxis: '12:00 AM, 6 Mar' }, { name: '\n7 Mar', xAxis: '12:00 AM, 7 Mar' }, { name: '\n8 Mar', xAxis: '12:00 AM, 8 Mar' }
 ]
-let zeroGridLine = [
-]
-// 
+
 const priceGridLines1 = [
-  { name: '1,000', yAxis: 1000 }, { name: '5,000', yAxis: 5000 }, { name: '', xAxis: '12:00 AM, 2 Mar' }, { name: '', xAxis: '12:00 AM, 3 Mar' }, 
+  { name: '1,000', yAxis: 1000 }, { name: '5,000', yAxis: 5000 }, 
+  { name: '', yAxis: 300 },
+  { name: '', xAxis: '12:00 AM, 2 Mar' }, { name: '', xAxis: '12:00 AM, 3 Mar' }, 
   { name: '', xAxis: '12:00 AM, 4 Mar' },  { name: '', xAxis: '12:00 AM, 5 Mar' }, { name: '', xAxis: '12:00 AM, 6 Mar' }, { name: '', xAxis: '12:00 AM, 7 Mar' }, 
   { name: '', xAxis: '12:00 AM, 8 Mar' }
 ]
-// { name: '$0', yAxis: 0 }, { name: '$50', yAxis: 50 }, { name: '$100', yAxis: 100 }, 
+
 const priceGridLines2 = [
+  { name: '', yAxis: 0 },
+  { name: '', xAxis: '12:00 AM, 2 Mar' }, { name: '', xAxis: '12:00 AM, 3 Mar' }, 
+  { name: '', xAxis: '12:00 AM, 4 Mar' },  { name: '', xAxis: '12:00 AM, 5 Mar' }, { name: '', xAxis: '12:00 AM, 6 Mar' }, { name: '', xAxis: '12:00 AM, 7 Mar' }, 
+  { name: '', xAxis: '12:00 AM, 8 Mar' }
+]
+
+const priceGridLines3 = [
+  { name: '-5,000', yAxis: 5000 }, 
   { name: '', xAxis: '12:00 AM, 2 Mar' }, { name: '', xAxis: '12:00 AM, 3 Mar' }, 
   { name: '', xAxis: '12:00 AM, 4 Mar' },  { name: '', xAxis: '12:00 AM, 5 Mar' }, { name: '', xAxis: '12:00 AM, 6 Mar' }, { name: '', xAxis: '12:00 AM, 7 Mar' }, 
   { name: '', xAxis: '12:00 AM, 8 Mar' }
@@ -104,13 +112,12 @@ function generatePricePositiveLogChartObj(data, gridLines) {
     type: 'line',
     step: 'end',
     data: data,
-    dataSum: data.reduce((a, b) => a + b, 0),
-    colour: '#444',
+    colour: '#999',
     symbolSize: 0,
     xAxisIndex: 1,
     yAxisIndex: 1,
     connectNulls: true,
-    lineStyle: {normal: {color: '#444', type:'dotted', width: 1}},
+    lineStyle: {normal: {color: '#999', type:'dotted', width: 1}},
     markLine: {
       silent: true,
       symbolSize: 0,
@@ -121,7 +128,7 @@ function generatePricePositiveLogChartObj(data, gridLines) {
         formatter: '{b}'
       }},
       lineStyle: {
-        normal: {width: 1, color: '#666', type: 'solid', opacity: 0.2}
+        normal: {width: 1, color: '#999', type: 'dotted', opacity: 0.2}
       },
       data: gridLines
     }
@@ -140,7 +147,18 @@ function generatePriceLinearChartObj(data, gridLines) {
     xAxisIndex: 2,
     yAxisIndex: 2,
     connectNulls: true,
-    lineStyle: {normal: {color: '#444', width: 1}},
+    lineStyle: {normal: {color: '#000', width: 1}},
+    markArea: {
+      silent: true,
+      itemStyle: {
+        normal: { color: '#ccc', opacity: 0.1}
+      },
+      data: [[{
+        yAxis: 0
+      },{
+        yAxis: 300
+      }]]
+    },
     markLine: {
       silent: true,
       symbolSize: 0,
@@ -151,7 +169,37 @@ function generatePriceLinearChartObj(data, gridLines) {
         formatter: '{b}'
       }},
       lineStyle: {
-        normal: {width: 1, color: '#666', type: 'solid', opacity: 0.2}
+        normal: {width: 1, color: '#ddd', type: 'dotted', opacity: 1}
+      },
+      data: gridLines
+    }
+  }
+}
+
+function generatePriceNegativeLogChartObj(data, gridLines) {
+  return {
+    name: 'price3',
+    label: 'Price',
+    type: 'line',
+    step: 'end',
+    data: data,
+    colour: '#999',
+    symbolSize: 0,
+    xAxisIndex: 3,
+    yAxisIndex: 3,
+    connectNulls: true,
+    lineStyle: {normal: {color: '#999', type:'dotted', width: 1}},
+    markLine: {
+      silent: true,
+      symbolSize: 0,
+      precision: 1,
+      label: {normal: {
+        show: true, 
+        position: 'start',
+        formatter: '{b}'
+      }},
+      lineStyle: {
+        normal: {width: 1, color: '#999', type: 'dotted', opacity: 0.2}
       },
       data: gridLines
     }
@@ -170,6 +218,18 @@ export default function(data) {
   const rrpData = data['RRP'].data
   const priceData = generatePriceDataIn5minInterval(dates, rrpData)
   const emptyData = generateNullDataIn5minInterval(dates)
+
+  let inversePriceData = []
+
+  priceData.forEach((item) => {
+    if (item >= 0) {
+      inversePriceData.push(1)
+    } else {
+      inversePriceData.push(-item)
+    }
+  })
+
+  console.log(inversePriceData)
 
   let series = []
   let ftSeries = []
@@ -325,12 +385,15 @@ export default function(data) {
 
   let pricePositiveLogChart = generatePricePositiveLogChartObj(priceData, priceGridLines1)
   let priceLinearChart = generatePriceLinearChartObj(priceData, priceGridLines2)
+  let priceNegativeLogChart = generatePriceNegativeLogChartObj(inversePriceData, priceGridLines3)
 
   series.push(pricePositiveLogChart)
   series.push(priceLinearChart)
+  series.push(priceNegativeLogChart)
 
   priceSeries.push(pricePositiveLogChart)
   priceSeries.push(priceLinearChart)
+  priceSeries.push(priceNegativeLogChart)
 
   return {
     dates,
