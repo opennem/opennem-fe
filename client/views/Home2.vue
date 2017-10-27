@@ -30,8 +30,8 @@ export default {
 
         var chart = AmCharts.makeChart('chartdiv', {
           type: 'stock',
-          "categoryAxesSettings": {
-            "minPeriod": "5mm"
+          categoryAxesSettings: {
+            minPeriod: "5mm",
           },
           dataSets: [
             {
@@ -61,12 +61,18 @@ export default {
               }, {
                 fromField: 'NETINTERCHANGE',
                 toField: 'NETINTERCHANGE'
+              }, {
+                fromField: 'DEMAND_AND_NONSCHEDGEN',
+                toField: 'DEMAND_AND_NONSCHEDGEN'
+              }, {
+                fromField: 'RRP',
+                toField: 'RRP'
               }]
             },
             {
               dataProvider: chartData,
               categoryField: 'date',
-              color: '#000',
+              color: '#666',
               fieldMappings: [{
                 fromField: 'RRP',
                 toField: 'RRP'
@@ -81,7 +87,6 @@ export default {
               dashLength: 5,
               stackType: "regular"
             } ],
-            
             stockGraphs: [
             {
               id: 'g1',
@@ -154,6 +159,11 @@ export default {
               lineAlpha: 0,
               lineColor: '#F8E71C',
               useDataSetColors: false
+            }, {
+              id: 'g8',
+              valueField: 'DEMAND_AND_NONSCHEDGEN',
+              type: 'line',
+              fillAlphas: 0
             }],
             stockLegend: {
               // valueTextRegular: ' ',
@@ -162,13 +172,24 @@ export default {
           }, {
             title: 'Price',
             percentHeight: 30,
+            valueAxes: [ {
+              id: "v2"
+            } ],
             stockGraphs: [{
+              id: 'p1',
+              valueAxis: 'v2',
               valueField: 'RRP',
-              type: 'line'
-            }]
+              type: 'step',
+              lineAlpha: 0.5,
+              lineColor: '#000',
+              useDataSetColors: false
+            }], stockLegend: {
+              // valueTextRegular: ' ',
+              // markerType: 'none'
+            }
           }],
           chartScrollbarSettings: {
-            graph: 'g1',
+            graph: 'g8',
             usePeriod: 'DD'
           }
 
@@ -176,35 +197,88 @@ export default {
       }.bind(this)
     );
   }
-};
+}
+
+function generatePriceData(data) {
+  let chartData = []
+  const rrp = data['RRP']
+  const rrpKey = 'price'
+  let startDate = rrp.start
+  let interval = 30 // rrp.interval
+  let rrpData = rrp.data
+
+  const start = moment(startDate, moment.ISO_8601)
+
+  chartData[0] = {
+    date: moment(start).toDate()
+  }
+  chartData[0][rrpKey] = rrpData[0]
+
+  for (let i=1; i<rrpData.length; i++) {
+    const now = moment(start).add(interval*i, 'm')
+
+    chartData[i] = {
+      date: moment(now).toDate()
+    }
+
+    chartData[i][rrpKey] = rrpData[i]
+  }
+  console.log(chartData)
+
+  return chartData
+}
 
 function generateChartData(data) {
   let chartData = []
 
-  console.log(data)
-
   Object.keys(data).forEach(ftKey => {
     let ft = data[ftKey]
     let startDate = ft.start
-    let interval = 5 // ft.interval
+    let interval = ftKey === 'RRP' ? 30 : 5 // ft.interval
     let ftData = ft.data
 
     const start = moment(startDate, moment.ISO_8601)
 
     if (chartData.length > 0) {
-      for (let i=0; i<chartData.length; i++) {
-        const d = ftKey === 'NETINTERCHANGE' ? -ftData[i] : ftData[i]
-        chartData[i][ftKey] = d
+      if (ftKey === 'RRP') {
+
+        for (let x=0; x<ftData.length; x++) {
+          const now = moment(start).add(interval*x, 'm')
+
+          const findDate = chartData.find(item => {
+            return item.date.toString() === now.toDate().toString()
+          })
+
+          findDate[ftKey] = ftData[x]
+
+          // console.log(now.toDate().toString())
+          // if (now.toDate().toString() === chartData[i].date.toString()) {
+          //   chartData[i][ftKey] = ftData[x]
+          // } else {
+          //   chartData[i][ftKey] = null
+          // }
+        }
+        
+
+        // if (start.toDate().toString() === chartData[i].date.toString()) {
+        //   chartData[i][ftKey] = ftData[0]
+        // } else {
+          
+        // }
+      } else {
+        for (let i=0; i<chartData.length; i++) {
+          const d = ftKey === 'NETINTERCHANGE' ? -ftData[i] : ftData[i]
+          chartData[i][ftKey] = d
+        }
       }
+      
     } else {
+
+      // add the first data
       chartData[0] = {
         date: moment(start).toDate()
       }
       chartData[0][ftKey] = ftData[0]
-      // chartData[0][key] = [{
-      //   date: moment(start).toDate(),
-      //   value: ftData[0]
-      // }]
 
       for (let i=1; i<ftData.length; i++) {
         const now = moment(start).add(interval*i, 'm')
@@ -214,12 +288,6 @@ function generateChartData(data) {
         }
 
         chartData[i][ftKey] = ftData[i]
-
-
-        // chartData.push({
-        //   date: moment(now).toDate(),
-        //   value: ftData[i]
-        // })
       }
     }
   })
