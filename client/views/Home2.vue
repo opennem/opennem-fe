@@ -8,34 +8,47 @@
     </header>
 
     <div id="chartdiv"></div>
+
+    <Summary :fuelTechSeries="filteredData"></Summary>
   </div>
 </template>
 
 <script>
 import * as moment from 'moment'
 import axios from "axios"
+import Summary from '../components/ElectricityProduction/Summary2'
 
 export default {
-  components: {},
+  components: {
+    Summary
+  },
   data() {
     return {
       genData: null,
-      chartData: []
+      chartData: [],
+      filteredData: [],
     };
   },
   mounted() {
     axios.get("/samples/combined_sample.json").then(
       function(response) {
-        const chartData = generateChartData(response.data)
+        this.chartData = generateChartData(response.data)
 
         var chart = AmCharts.makeChart('chartdiv', {
           type: 'stock',
+          // mouseWheelScrollEnabled: true,
+          mouseWheelZoomEnabled: true,
           categoryAxesSettings: {
             minPeriod: "5mm",
           },
+          chartCursorSettings: {
+            pan: true,
+            categoryBalloonColor: '#000',
+            cursorColor: '#000',
+          },
           dataSets: [
             {
-              dataProvider: chartData,
+              dataProvider: this.chartData,
               categoryField: 'date',
               fieldMappings: [{
                 fromField: 'wind',
@@ -62,15 +75,12 @@ export default {
                 fromField: 'NETINTERCHANGE',
                 toField: 'NETINTERCHANGE'
               }, {
-                fromField: 'DEMAND_AND_NONSCHEDGEN',
-                toField: 'DEMAND_AND_NONSCHEDGEN'
-              }, {
                 fromField: 'RRP',
                 toField: 'RRP'
               }]
             },
             {
-              dataProvider: chartData,
+              dataProvider: this.chartData,
               categoryField: 'date',
               color: '#666',
               fieldMappings: [{
@@ -80,8 +90,68 @@ export default {
             }
           ],
           panels: [{
-            title: 'Generation',
-            percentHeight: 60,
+            title: 'Generation (MW)',
+            percentHeight: 70,
+            showCategoryAxis: false,
+            listeners: [
+              {
+                event: 'zoomed',
+                method: (event) => {
+                  const start = event.startDate
+                  const end = event.endDate
+
+                  this.filteredData = this.chartData.filter((item) => {
+                    return moment(item.date).isBetween(start, end)
+                  })
+
+                  let summaryDS = []
+
+                  Object.keys(this.filteredData[0]).forEach(ft => {
+
+                    if (ft !== 'date') {
+                      const totalPower = this.filteredData.reduce((a, b) => {
+                        return a + b[ft]
+                      }, 0)
+
+                      summaryDS.push({
+                        id: ft,
+                        range: {
+                          totalPower,
+                          energy: totalPower/12000
+                        }
+                      })
+                    }
+                  })
+
+                  console.log(summaryDS)
+
+                  // summary object
+
+                  /**@argument
+                   * id: 
+                   * label: 
+                   * 
+                   * range: {
+                   *  dateFrom:
+                   *  dateTo:
+                   *  totalPower:
+                   *  energy:
+                   *  contribution:
+                   *  averageValue:
+                   * }
+                   * 
+                   * point: {
+                   *  date:
+                   *  power:
+                   *  conribution:
+                   *  price:
+                   * }
+                   * 
+                   */
+
+                }
+              }
+            ],
             valueAxes: [ {
               id: "v1",
               dashLength: 5,
@@ -159,41 +229,80 @@ export default {
               lineAlpha: 0,
               lineColor: '#F8E71C',
               useDataSetColors: false
-            }, {
-              id: 'g8',
-              valueField: 'DEMAND_AND_NONSCHEDGEN',
-              type: 'line',
-              fillAlphas: 0
             }],
             stockLegend: {
-              // valueTextRegular: ' ',
-              // markerType: 'none'
+              valueTextRegular: ' ',
+              markerType: 'none'
             }
-          }, {
-            title: 'Price',
+          }, 
+          // {
+          //   title: 'Price',
+          //   percentHeight: 30,
+          //   valueAxes: [ {
+          //     id: 'v2',
+          //     logarithmic: true,
+          //     minimum: 300,
+          //     maximum: 15000,
+          //     strictMinMax: true,
+          //     includeGuidesInMinMax: false,
+          //     guides: [{ value: 300 }, { value: 1000 }, { value: 5000 }]
+          //   } ],
+          //   stockGraphs: [{
+          //     id: 'p1',
+          //     valueAxis: 'v2',
+          //     valueField: 'RRP',
+          //     type: 'step',
+          //     lineAlpha: 0.5,
+          //     lineColor: '#000',
+          //     useDataSetColors: false
+          //   }], stockLegend: {
+          //     // valueTextRegular: ' ',
+          //     // markerType: 'none'
+          //   }
+          // }, 
+          {
+            title: 'Price ($)',
             percentHeight: 30,
             valueAxes: [ {
-              id: "v2"
+              id: 'v3',
+              logarithmic: false,
+              dashLength: 5,
+              maximum: 300,
+              minimum: 0
             } ],
             stockGraphs: [{
-              id: 'p1',
-              valueAxis: 'v2',
+              id: 'p2',
+              valueAxis: 'v3',
               valueField: 'RRP',
               type: 'step',
               lineAlpha: 0.5,
               lineColor: '#000',
               useDataSetColors: false
             }], stockLegend: {
-              // valueTextRegular: ' ',
-              // markerType: 'none'
+              valueTextRegular: ' ',
+              markerType: 'none'
             }
           }],
           chartScrollbarSettings: {
-            graph: 'g8',
-            usePeriod: 'DD'
+            graph: 'g7',
+            usePeriod: 'DD',
+            position: 'top',
+            color: '#000',
+            graphFillAlpha: 0,
+            graphLineAlpha: 0,
+            selectedGraphFillAlpha: 0,
+            selectedGraphLineAlpha: 0,
+            backgroundColor: '#eee',
+            backgroundAlpha: 0.1,
+            selectedBackgroundAlpha: 0.2,
+            selectedBackgroundColor: 'steelblue',
+            dragIcon: 'dragIconRectSmallBlack',
+            dragIconHeight: 24,
+            dragIconWidth: 24,
+            scrollbarHeight: 50
           }
-
         })
+
       }.bind(this)
     );
   }
@@ -236,81 +345,69 @@ function generateChartData(data) {
     let startDate = ft.start
     let interval = ftKey === 'RRP' ? 30 : 5 // ft.interval
     let ftData = ft.data
+    let hasChartData = chartData.length ? true : false
+    // let ftDataSum
+
+    console.log(ftKey)
+    console.log(ftData.reduce((a, b) => a + b, 0)/12000)
 
     const start = moment(startDate, moment.ISO_8601)
 
-    if (chartData.length > 0) {
-      if (ftKey === 'RRP') {
-
-        for (let x=0; x<ftData.length; x++) {
-          const now = moment(start).add(interval*x, 'm')
-
-          const findDate = chartData.find(item => {
-            return item.date.toString() === now.toDate().toString()
-          })
-
-          findDate[ftKey] = ftData[x]
-
-          // console.log(now.toDate().toString())
-          // if (now.toDate().toString() === chartData[i].date.toString()) {
-          //   chartData[i][ftKey] = ftData[x]
-          // } else {
-          //   chartData[i][ftKey] = null
-          // }
-        }
-        
-
-        // if (start.toDate().toString() === chartData[i].date.toString()) {
-        //   chartData[i][ftKey] = ftData[0]
-        // } else {
-          
-        // }
-      } else {
-        for (let i=0; i<chartData.length; i++) {
-          const d = ftKey === 'NETINTERCHANGE' ? -ftData[i] : ftData[i]
-          chartData[i][ftKey] = d
-        }
+    if (ftKey === 'RRP') {
+      for (let x=0; x<ftData.length; x++) {
+        const now = moment(start).add(interval*x, 'm')
+        const findDate = chartData.find(item => {
+          return item.date.toString() === now.toDate().toString()
+        })
+        /*** for RRP, any negative price cannot be logathrmic *****/
+        // findDate[ftKey] = ftData[x] < 0 ? -ftData[x] : ftData[x]
+        findDate[ftKey] = ftData[x]
       }
-      
     } else {
-
-      // add the first data
-      chartData[0] = {
-        date: moment(start).toDate()
-      }
-      chartData[0][ftKey] = ftData[0]
-
-      for (let i=1; i<ftData.length; i++) {
+      for (let i=0; i<ftData.length; i++) {
         const now = moment(start).add(interval*i, 'm')
+        const d = ftKey === 'NETINTERCHANGE' ? -ftData[i] : ftData[i]
 
-        chartData[i] = {
-          date: moment(now).toDate()
+        if (!hasChartData) {
+          chartData[i] = {
+            date: now.toDate()
+          }
+
         }
-
-        chartData[i][ftKey] = ftData[i]
+        chartData[i][ftKey] = d
       }
     }
+
+    // if (chartData.length > 0) {
+    //   if (ftKey === 'RRP') {
+    //     for (let x=0; x<ftData.length; x++) {
+    //       const now = moment(start).add(interval*x, 'm')
+    //       const findDate = chartData.find(item => {
+    //         return item.date.toString() === now.toDate().toString()
+    //       })
+    //       // findDate[ftKey] = ftData[x] < 0 ? -ftData[x] : ftData[x]
+    //       findDate[ftKey] = ftData[x]
+    //     }
+    //   } else {
+    //     for (let i=0; i<chartData.length; i++) {
+    //       const d = ftKey === 'NETINTERCHANGE' ? -ftData[i] : ftData[i]
+    //       chartData[i][ftKey] = d
+    //     }
+    //   }
+    // } else {
+    //   for (let i=0; i<ftData.length; i++) {
+    //     const now = moment(start).add(interval*i, 'm')
+
+    //     chartData[i] = {
+    //       date: moment(now).toDate()
+    //     }
+
+    //     chartData[i][ftKey] = ftData[i]
+    //   }
+    // }
+
   })
 
-  console.log(chartData)
-
-  // var firstDate = new Date(2012, 0, 1);
-  // firstDate.setDate(firstDate.getDate() - 500);
-  // firstDate.setHours(0, 0, 0, 0);
-
-  // for (var i = 0; i < 50000; i++) {
-  //   var newDate = new Date(firstDate);
-  //   newDate.setDate(newDate.getDate() + i);
-
-  //   var a = Math.round(Math.random() * (40 + i)) + 100 + i;
-  //   var b = Math.round(Math.random() * 100000000);
-
-  //   chartData.push({
-  //     date: newDate,
-  //     value: a,
-  //     volume: b
-  //   });
-  // }
 
   return chartData
 }
