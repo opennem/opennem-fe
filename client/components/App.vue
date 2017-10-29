@@ -5,7 +5,7 @@
 </template>
 
 <style>
-/* @import url('https://fonts.googleapis.com/css?family=Raleway:700'); */
+@import url('https://fonts.googleapis.com/css?family=Raleway:700');
 
 body {
   background-color: #fcfcfc;

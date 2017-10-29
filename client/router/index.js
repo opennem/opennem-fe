@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '../views/Home'
-import Home2 from '../views/Home2'
+import MarketByRegion from '../views/MarketByRegion'
 
 Vue.use(Router)
 
@@ -14,7 +14,7 @@ export default new Router({
     },
     {
       path: '/amcharts',
-      component: Home2
+      component: MarketByRegion
     }
   ]
 })
