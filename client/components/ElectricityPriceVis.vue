@@ -113,6 +113,9 @@ function makeChart(chartData, context) {
     mouseWheelZoomEnabled: true,
     categoryAxesSettings: {
       minPeriod: "5mm",
+      startOnAxis: true,
+      equalSpacing: true,
+      groupToPeriods: ['5mm', 'hh']
     },
     chartCursorSettings: {
       pan: true,
@@ -144,6 +147,27 @@ function makeChart(chartData, context) {
         }, {
           fromField: 'gas_steam',
           toField: 'gas_steam'
+        }, {
+          fromField: 'hydro',
+          toField: 'hydro'
+        }, {
+          fromField: 'solar',
+          toField: 'solar'
+        }, {
+          fromField: 'brown_coal',
+          toField: 'brown_coal'
+        }, {
+          fromField: 'black_coal',
+          toField: 'black_coal'
+        }, {
+          fromField: 'biomass',
+          toField: 'biomass'
+        }, {
+          fromField: 'pumps',
+          toField: 'pump'
+        }, {
+          fromField: 'gas_recip',
+          toField: 'gas_recip'
         }, {
           fromField: 'NETINTERCHANGE',
           toField: 'NETINTERCHANGE'
@@ -181,6 +205,61 @@ function makeChart(chartData, context) {
         useDataSetColors: false
       },
       {
+        id: 'g10',
+        valueField: 'black_coal',
+        type: 'line',
+        fillAlphas: 0.8,
+        negativeFillAlphas: 0.8,
+        negativeFillColors: '#000',
+        lineAlpha: 0,
+        lineColor: '#000',
+        useDataSetColors: false
+      },
+      {
+        id: 'g9',
+        valueField: 'brown_coal',
+        type: 'line',
+        fillAlphas: 0.8,
+        negativeFillAlphas: 0.8,
+        negativeFillColors: '#8B572A',
+        lineAlpha: 0,
+        lineColor: '#8B572A',
+        useDataSetColors: false
+      },
+      {
+        id: 'g12',
+        valueField: 'biomass',
+        type: 'line',
+        fillAlphas: 0.8,
+        negativeFillAlphas: 0.8,
+        negativeFillColors: '#A3886F',
+        lineAlpha: 0,
+        lineColor: '#A3886F',
+        useDataSetColors: false
+      },
+      {
+        id: 'g13',
+        valueField: 'pumps',
+        type: 'line',
+        fillAlphas: 0.8,
+        negativeFillAlphas: 0.8,
+        negativeFillColors: '#4A90E2',
+        lineAlpha: 0,
+        lineColor: '#4A90E2',
+        useDataSetColors: false
+      },
+      {
+        id: 'g8',
+        valueField: 'hydro',
+        type: 'line',
+        fillAlphas: 0.8,
+        negativeFillAlphas: 0.8,
+        negativeFillColors: 'steelblue',
+        lineAlpha: 0,
+        lineColor: 'steelblue',
+        useDataSetColors: false
+      },
+      {
         id: 'g2',
         valueField: 'gas_steam',
         type: 'line',
@@ -211,6 +290,17 @@ function makeChart(chartData, context) {
         lineColor: '#FFCD96',
         useDataSetColors: false
       }, {
+        id: 'g14',
+        valueField: 'gas_recip',
+        type: 'line',
+        fillAlphas: 0.8,
+        negativeFillAlphas: 0.8,
+        negativeFillColors: '#F9DCBC',
+        lineAlpha: 0,
+        lineColor: '#F9DCBC',
+        useDataSetColors: false
+      },
+      {
         id: 'g5',
         valueField: 'wind',
         type: 'line',
@@ -233,6 +323,16 @@ function makeChart(chartData, context) {
       }, {
         id: 'g7',
         valueField: 'rooftop_solar',
+        type: 'line',
+        fillAlphas: 0.8,
+        negativeFillAlphas: 0.8,
+        negativeFillColors: '#DFCF00',
+        lineAlpha: 0,
+        lineColor: '#DFCF00',
+        useDataSetColors: false
+      }, {
+        id: 'g11',
+        valueField: 'solar',
         type: 'line',
         fillAlphas: 0.8,
         negativeFillAlphas: 0.8,
@@ -296,7 +396,7 @@ function makeChart(chartData, context) {
     }],
     chartScrollbarSettings: {
       graph: 'g7',
-      usePeriod: 'DD',
+      usePeriod: 'hh',
       position: 'top',
       color: '#000',
       graphFillAlpha: 0,

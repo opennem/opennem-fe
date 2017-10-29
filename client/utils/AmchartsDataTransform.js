@@ -10,39 +10,43 @@ export function generateChartData(data) {
   let chartData = []
 
   Object.keys(FUEL_TECH_CONFIG).forEach(ftKey => {
-    const ftLabel = FUEL_TECH_CONFIG[ftKey] 
-    let ft = data[ftKey]
-    let startDate = ft.start
-    let interval = ftKey === 'RRP' ? 30 : 5 // ft.interval
-    let ftData = ft.data
-    let hasChartData = chartData.length ? true : false
-
-    const start = moment(startDate, moment.ISO_8601)
-
-    if (ftKey === 'RRP') {
-      for (let x=0; x<ftData.length; x++) {
-        const now = moment(start).add(interval*x, 'm')
-        const findDate = chartData.find(item => {
-          return item.date.toString() === now.toDate().toString()
-        })
-        /*** for RRP, any negative price cannot be logathrmic *****/
-        // findDate[ftKey] = ftData[x] < 0 ? -ftData[x] : ftData[x]
-        findDate[ftKey] = ftData[x]
-      }
-    } else {
-      for (let i=0; i<ftData.length; i++) {
-        const now = moment(start).add(interval*i, 'm')
-        const d = ftKey === 'NETINTERCHANGE' ? -ftData[i] : ftData[i]
-
-        if (!hasChartData) {
-          chartData[i] = {
-            date: now.toDate()
-          }
-
+    if (data[ftKey]) {
+      const ftLabel = FUEL_TECH_CONFIG[ftKey] 
+      let ft = data[ftKey]
+      let startDate = ft.start
+      let interval = ftKey === 'RRP' ? 30 : 5 // ft.interval
+      let ftData = ft.data
+      let hasChartData = chartData.length ? true : false
+  
+      const start = moment(startDate, moment.ISO_8601)
+  
+      if (ftKey === 'RRP') {
+        for (let x=0; x<ftData.length; x++) {
+          const now = moment(start).add(interval*x, 'm')
+          const findDate = chartData.find(item => {
+            return item.date.toString() === now.toDate().toString()
+          })
+          /*** for RRP, any negative price cannot be logathrmic *****/
+          // findDate[ftKey] = ftData[x] < 0 ? -ftData[x] : ftData[x]
+          findDate[ftKey] = ftData[x]
         }
-        chartData[i][ftKey] = d
+      } else {
+        for (let i=0; i<ftData.length; i++) {
+          const now = moment(start).add(interval*i, 'm')
+          const d = ftKey === 'NETINTERCHANGE' ? -ftData[i] : ftData[i]
+  
+          if (!hasChartData) {
+            chartData[i] = {
+              date: now.toDate()
+            }
+  
+          }
+          chartData[i][ftKey] = d
+        }
       }
     }
+
+    
 
     // if (chartData.length > 0) {
     //   if (ftKey === 'RRP') {

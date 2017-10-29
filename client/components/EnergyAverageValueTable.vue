@@ -3,13 +3,19 @@
     <thead>
       <tr>
         <th colspan="2"></th>
-        <th colspan="3">{{formatDate(dateFrom)}} — {{formatDate(dateTo)}}</th>
+        <th colspan="3" class="instant-values">{{formatDate(dateFrom)}} — {{formatDate(dateTo)}}</th>
+
+        <th colspan="3" class="instant-values">-</th>
       </tr>
       <tr>
         <th colspan="2"></th>
-        <th>Energy (GWh)</th>
+        <th class="instant-values">Energy (GWh)</th>
         <th>Power (MW)</th>
         <th>Average Value ($)</th>
+
+        <th class="instant-values">Power (GWh)</th>
+        <th>Contribution (%)</th>
+        <th>Price ($)</th>
       </tr>
     </thead>
     <tbody>
@@ -18,9 +24,13 @@
           <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id)}"></div>
         </td>
         <td>{{getLabel(item.id)}}</td>
-        <td>{{formatNumber(item.range.energy)}}</td>
+        <td class="instant-values">{{formatNumber(item.range.energy)}}</td>
         <td>{{formatNumber(item.range.totalPower)}}</td>
-        <td>{{formatNumber(item.range.totalPower)}}</td>
+        <td></td>
+
+        <td class="instant-values"></td>
+        <td></td>
+        <td></td>
       </tr>
     </tbody>
     
@@ -118,5 +128,9 @@ table {
       background-color: #eee;
     }
   }
+}
+
+.instant-values {
+  border-left: 1px solid #999;
 }
 </style>

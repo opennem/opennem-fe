@@ -1,9 +1,15 @@
 <template>
   <div>
     <header>
-      <h2>Electricity Production</h2>
+      <h2><select class="region-selector" v-on:change="onRegionSelectorChange">
+        <option value="all_nsw1.json">New South Wales</option>
+        <option value="all_qld1.json">Queensland</option>
+        <option value="all_sa1.json">South Australia</option>
+        <option value="all_tas1.json">Tasmania</option>
+        <option value="all_vic1.json">Victoria</option>
+      </select></h2>
       <div class="date-range">
-        <time>2 Mar '17</time> — <time>7 Mar '17</time>    
+        <!-- <time>2 Mar '17</time> — <time>7 Mar '17</time>     -->
       </div>
     </header>
     <Vis></Vis>
@@ -18,13 +24,28 @@ export default {
     Vis
   },
   created() {
-    this.$store.dispatch('fetchData')
+    this.$store.dispatch('fetchData', 'all_sa1.json')
   },
+  methods: {
+    onRegionSelectorChange(event) {
+      console.log(event.target.value)
+      this.$store.dispatch('fetchData', event.target.value)
+    }
+  }
 }
 
 </script>
 
 <style>
+
+.region-selector {
+  background: none;
+  font-size: 1.5rem;
+  border: none;
+  padding: 0 1rem;
+  -webkit-appearance: none;
+}
+
 .date-range {
   color: #666;
   position: absolute;
