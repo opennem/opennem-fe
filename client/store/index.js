@@ -28,10 +28,9 @@ const getters = {
 }
 
 const actions = {
-  fetchData({commit}, filename) {
-    const fetchGen = axios.get(`/data/${filename}`)
-    //const fetchGen = axios.get("/samples/combined_sample.json")
-    const fetchPrice = axios.get(`/data/${filename}`)
+  fetchData({commit}, region) {
+    const fetchGen = axios.get(`/data/all_${region}.json`)
+    const fetchPrice = axios.get(`/data/price_30m_${region}.json`)
     
     axios.all([fetchGen, fetchPrice])
       .then(axios.spread(function (gen, price) {

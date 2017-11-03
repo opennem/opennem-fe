@@ -2,11 +2,11 @@
   <div>
     <header>
       <h2><select class="region-selector" v-on:change="onRegionSelectorChange">
-        <option value="all_nsw1.json">New South Wales</option>
-        <option value="all_qld1.json">Queensland</option>
-        <option value="all_sa1.json">South Australia</option>
-        <option value="all_tas1.json">Tasmania</option>
-        <option value="all_vic1.json">Victoria</option>
+        <option value="nsw1">New South Wales</option>
+        <option value="qld1">Queensland</option>
+        <option value="sa1">South Australia</option>
+        <option value="tas1">Tasmania</option>
+        <option value="vic1">Victoria</option>
       </select></h2>
       <div class="date-range">
         <!-- <time>2 Mar '17</time> — <time>7 Mar '17</time>     -->
@@ -24,7 +24,7 @@ export default {
     Vis
   },
   created() {
-    this.$store.dispatch('fetchData', 'all_sa1.json')
+    this.$store.dispatch('fetchData', 'nsw1')
   },
   methods: {
     onRegionSelectorChange(event) {

@@ -1,5 +1,6 @@
 /**
  * Transform the data to suit Amcharts model
+ * TODO: use config to generate field mappings and graph settings.
  */
 
 import * as moment from 'moment'
@@ -11,7 +12,6 @@ export function generateChartData(data) {
 
   Object.keys(FUEL_TECH_CONFIG).forEach(ftKey => {
     if (data[ftKey]) {
-      const ftLabel = FUEL_TECH_CONFIG[ftKey] 
       let ft = data[ftKey]
       let startDate = ft.start
       let interval = ftKey === 'RRP' ? 30 : 5 // ft.interval
@@ -20,64 +20,20 @@ export function generateChartData(data) {
   
       const start = moment(startDate, moment.ISO_8601)
   
-      if (ftKey === 'RRP') {
-        for (let x=0; x<ftData.length; x++) {
-          const now = moment(start).add(interval*x, 'm')
-          const findDate = chartData.find(item => {
-            return item.date.toString() === now.toDate().toString()
-          })
-          /*** for RRP, any negative price cannot be logathrmic *****/
-          // findDate[ftKey] = ftData[x] < 0 ? -ftData[x] : ftData[x]
-          findDate[ftKey] = ftData[x]
-        }
-      } else {
-        for (let i=0; i<ftData.length; i++) {
-          const now = moment(start).add(interval*i, 'm')
-          const d = ftKey === 'NETINTERCHANGE' ? -ftData[i] : ftData[i]
-  
-          if (!hasChartData) {
-            chartData[i] = {
-              date: now.toDate()
-            }
-  
+      for (let i=0; i<ftData.length; i++) {
+        const now = moment(start).add(interval*i, 'm')
+        const d = ftKey === 'NETINTERCHANGE' ? -ftData[i] : ftData[i]
+
+        if (!hasChartData) {
+          chartData[i] = {
+            date: now.toDate()
           }
-          chartData[i][ftKey] = d
+
         }
+        chartData[i][ftKey] = d
       }
     }
-
-    
-
-    // if (chartData.length > 0) {
-    //   if (ftKey === 'RRP') {
-    //     for (let x=0; x<ftData.length; x++) {
-    //       const now = moment(start).add(interval*x, 'm')
-    //       const findDate = chartData.find(item => {
-    //         return item.date.toString() === now.toDate().toString()
-    //       })
-    //       // findDate[ftKey] = ftData[x] < 0 ? -ftData[x] : ftData[x]
-    //       findDate[ftKey] = ftData[x]
-    //     }
-    //   } else {
-    //     for (let i=0; i<chartData.length; i++) {
-    //       const d = ftKey === 'NETINTERCHANGE' ? -ftData[i] : ftData[i]
-    //       chartData[i][ftKey] = d
-    //     }
-    //   }
-    // } else {
-    //   for (let i=0; i<ftData.length; i++) {
-    //     const now = moment(start).add(interval*i, 'm')
-
-    //     chartData[i] = {
-    //       date: moment(now).toDate()
-    //     }
-
-    //     chartData[i][ftKey] = ftData[i]
-    //   }
-    // }
-
   })
-
 
   return chartData
 }
@@ -106,4 +62,64 @@ export function generatePriceData(chartSeries, payload) {
   // findDate[ftKey] = ftData[x] < 0 ? -ftData[x] : ftData[x]
 
   return priceData
+}
+
+export function generateFieldMappings() {
+  const mappings = [{
+    fromField: 'RRP',
+    toField: 'RRP'
+  }]
+
+  Object.keys(FUEL_TECH_CONFIG).forEach(ftKey => {
+    mappings.push({
+      fromField: ftKey,
+      toField: ftKey
+    })
+  })
+
+  return mappings
+}
+
+export function generateStockGraphs() {
+  const graphs = []
+
+  Object.keys(FUEL_TECH_CONFIG).forEach((ftKey, index) => {
+    const colour = FUEL_TECH_CONFIG[ftKey].colour
+    const negativeFillAlphas = ftKey === 'NETINTERCHANGE' ? 0 : 0.8
+    
+    graphs.push({
+      id: `g${index}`,
+      valueField: ftKey,
+      type: 'line',
+      fillAlphas: 0.8,
+      negativeFillAlphas,
+      negativeFillColors: colour,
+      lineAlpha: 0,
+      lineColor: colour,
+      useDataSetColors: false
+    })
+  })
+
+  return graphs
+}
+
+export function generateChartScrollbarSettings() {
+  return {
+    graph: 'g7',
+    usePeriod: '15mm',
+    position: 'top',
+    color: '#000',
+    graphFillAlpha: 0,
+    graphLineAlpha: 0,
+    selectedGraphFillAlpha: 0,
+    selectedGraphLineAlpha: 0,
+    backgroundColor: '#eee',
+    backgroundAlpha: 0.1,
+    selectedBackgroundAlpha: 0.2,
+    selectedBackgroundColor: 'steelblue',
+    dragIcon: 'dragIconRectSmallBlack',
+    dragIconHeight: 24,
+    dragIconWidth: 24,
+    scrollbarHeight: 50
+  }
 }
