@@ -153,8 +153,17 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
       ],
       valueAxes: [ {
         id: "v1",
-        dashLength: 5,
-        stackType: "regular"
+        dashLength: 6,
+        zeroGridAlpha: 0,
+        stackType: "regular",
+        guides: [{ 
+          includeGuidesInMinMax: false,
+          value: 0,
+          dashLength: 0,
+          lineColor: '#000',
+          lineThickness: 1,
+          lineAlpha: 1
+        }],
       } ],
       stockGraphs,
       stockLegend: {
@@ -193,9 +202,18 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
       valueAxes: [ {
         id: 'v3',
         logarithmic: false,
-        dashLength: 5,
+        dashLength: 6,
+        zeroGridAlpha: 0,
         maximum: 300,
-        minimum: 0
+        minimum: 0,
+        guides: [{ 
+          includeGuidesInMinMax: false,
+          value: 0,
+          dashLength: 0,
+          lineColor: '#000',
+          lineThickness: 1,
+          lineAlpha: 1
+        }],
       } ],
       stockGraphs: [{
         id: 'p2',
