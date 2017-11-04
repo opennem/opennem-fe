@@ -1,11 +1,12 @@
 <template>
   <div class="fuel-tech-chart-wrapper">
     <div :id="id" v-on:mouseout="onChartMouseout" class="chart"></div>
-    <SummaryTable :series="series" :showTotals="showTotals"></SummaryTable>
+    <SummaryTable :series="series" :price="price" :showTotals="showTotals"></SummaryTable>
   </div>
 </template>
 
 <script>
+import numeral from 'numeral'
 import echartDataTransform from '../../utils/EchartDataTransform'
 import { ChartConfig } from './ChartConfig'
 import Summary from './Summary'
@@ -29,7 +30,17 @@ export default {
   	return {
   		id: `fuel-tech-${this._uid}`,
       chart: null,
-      series: [{date: ''}],
+      series: [{
+        date: '', 
+        sum: 0,
+        value: 0
+      }],
+      price: {
+        name: 'price',
+        label: 'Price',
+        sum: 0,
+        value: 0
+      },
       showTotals: true,
       eData: null,
       area: config
@@ -37,33 +48,73 @@ export default {
   },
   watch: {
     genData: function() {
+      let hasOffset = null
       this.eData = echartDataTransform(this.genData)
       this.area.xAxis[0].data = this.eData.dates
       this.area.xAxis[1].data = this.eData.dates
+      this.area.xAxis[2].data = this.eData.dates
+      this.area.xAxis[3].data = this.eData.dates
+
       this.area.series = this.eData.series
-      // this.area.legend.data = this.eData.groups
       this.area.color = this.eData.colours
 
-      this.series = this.eData.series.map((item) => {
+
+      this.series = this.eData.ftSeries.map((item) => {
+        if (!hasOffset) {
+          hasOffset = item.offset.toFixed(0)
+        }
         return {
           name: item.name,
           label: item.label,
-          sum: item.dataSum.toFixed(2),
+          sum: item.dataSum,
+          dataPriceSum: item.dataPriceSum,
           colour: item.colour,
-          date: ''
+          offset: item.offset,
+          date: '',
+          value: 0,
+          show: true,
+          toggle: (ftRow) => {
+            if (ftRow.name === 'NETINTERCHANGE') {
+              let toggle = !this.area.yAxis[0].splitLine.show
+              this.area.yAxis[0].splitLine.show = toggle
+              if (toggle) {
+                this.area.series[1].markLine.lineStyle.normal.opacity = 0
+                this.area.yAxis[0].axisLabel = {
+                  formatter: function(value) {
+                    return numeral(value).format('0,0')
+                  }
+                }
+              } else {
+                this.area.series[1].markLine.lineStyle.normal.opacity = 1
+                this.area.yAxis[0].axisLabel = {
+                  formatter: function(value) {
+                    return ''
+                  }
+                }
+              }
+              this.chart.setOption(this.area)
+            } 
+
+            ftRow.show = !ftRow.show
+            this.chart.dispatchAction({
+              type: 'legendToggleSelect',
+              name: item.name
+            })
+          }
         }
       })
 
-      // this.eData.series.forEach((item) => {
-      //  this.series[item.name] = {
-      //    name: item.name,
-      //    sum: item.dataSum.toFixed(2),
-      //    colour: item.colour,
-      //    value: 0,
-      //  }
-      // })
+      this.area.yAxis[0].axisLabel = {
+        formatter: function(value) {
+          return ''
+        }
+      }
 
-      this.chart.setOption(this.area);
+      this.series.reverse()
+
+      this.price.sum = this.eData.priceSeries[0].dataSum
+
+      this.chart.setOption(this.area)
     }
   },
   mounted() {
@@ -78,12 +129,18 @@ export default {
       try {
         params.forEach((param) => {
           const name = param.seriesName
-          const item = this.series.find((item) => {
+          const ft = this.series.find((item) => {
             return item.name === name
           })
 
-          item.value = param.data
-          item.date = param.axisValue
+          if (name === 'price') {
+            this.price.value = param.data
+          }
+
+          if (ft) {
+            ft.value = param.data
+            ft.date = param.axisValue
+          }
 
         })
       } catch(e) {
@@ -93,17 +150,9 @@ export default {
       this.showTotals = false
     },
     onChartMouseout: function(event) {
-      // TODO: refactor this part
-      this.series = this.eData.series.map((item) => {
-        return {
-          name: item.name,
-          label: item.label,
-          sum: item.dataSum.toFixed(2),
-          colour: item.colour,
-          date: ''
-        }
+      this.eData.series.forEach((ft) => {
+        ft.value = 0
       })
-
       this.showTotals = true
     }
   },
@@ -113,11 +162,18 @@ export default {
 
 <style scoped>
 .fuel-tech-chart-wrapper {
-  display: flex;
+  display: block;
 }
 
 .chart {
   width: 100%;
   height: 600px;
 }
+
+@media only screen and (min-width: 769px) {
+  .fuel-tech-chart-wrapper {
+    display: flex;
+  }
+}
+
 </style>

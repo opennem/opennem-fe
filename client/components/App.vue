@@ -23,5 +23,4 @@ h2 {
 #app {
   margin: 2rem;
 }
-
 </style>

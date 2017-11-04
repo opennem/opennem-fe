@@ -39,18 +39,28 @@ export const ChartConfig = {
     realtime: true,
     start: 0,
     end: 100,
-    xAxisIndex: [0, 1]
+    xAxisIndex: [0, 1, 2, 3]
   }],
   grid: [{
     top: 30,
     left: 60,
     right: 26,
-    height: '47%'
+    height: '42%'
   }, {
     left: 60,
     right: 26,
-    top: '60%',
-    height: '38%'
+    top: '55%',
+    height: '10%'
+  }, {
+    left: 60,
+    right: 26,
+    top: '65%',
+    height: '26%'
+  }, {
+    left: 60,
+    right: 26,
+    top: '91%',
+    height: '5%'
   }],
   axisPointer: {
     link: {
@@ -87,6 +97,34 @@ export const ChartConfig = {
       }
     },
     position: 'top'
+  }, {
+    show: false,
+    gridIndex: 2,
+    type: 'category',
+    offset: 20,
+    boundaryGap: false,
+    data: [],
+    axisLine: {
+      onZero: true,
+      lineStyle: {
+        color: '#000'
+      }
+    },
+    position: 'top'
+  }, {
+    show: false,
+    gridIndex: 3,
+    type: 'category',
+    offset: 20,
+    boundaryGap: false,
+    data: [],
+    axisLine: {
+      onZero: true,
+      lineStyle: {
+        color: '#000'
+      }
+    },
+    position: 'top'
   }],
   yAxis: [{
     type: 'value',
@@ -95,17 +133,49 @@ export const ChartConfig = {
         color: '#ababab'
       }
     },
+    axisTick: {
+      show: false
+    },
+    axisLabel: {
+      formatter: function(value, index) {
+        return value
+      }
+    },
     splitLine: {
+      show: false,
       lineStyle: {
         color: ['#ddd'],
-        type: 'dashed'
+        type: 'dotted'
       }
     }
   }, {
     gridIndex: 1,
     type: 'log',
+    min: 300,
     logBase: 300,
     max: 15000,
+    axisLine: {
+      lineStyle: {
+        color: '#ddd'
+      }
+    },
+    splitLine: {
+      lineStyle: {
+        color: ['#ddd'],
+        type: 'dotted'
+      }
+    }
+  }, {
+    gridIndex: 2,
+    type: 'value',
+    min: -100,
+    max: 300,
+    axisLabel: {
+      color: '#000'
+    },
+    axisTick: {
+      show: true
+    },
     axisLine: {
       lineStyle: {
         color: '#ababab'
@@ -113,8 +183,30 @@ export const ChartConfig = {
     },
     splitLine: {
       lineStyle: {
+        color: ['#aaa'],
+        type: 'dotted'
+      }
+    }
+  }, {
+    gridIndex: 3,
+    type: 'log',
+    logBase: 100,
+    min: 100,
+    max: 5000,
+    inverse: true,
+    splitNumber: 1,
+    axisLine: {
+      lineStyle: {
+        color: '#ddd'
+      }
+    },
+    axisLabel: {
+      show: false
+    },
+    splitLine: {
+      lineStyle: {
         color: ['#ddd'],
-        type: 'dashed'
+        type: 'dotted'
       }
     }
   }],
