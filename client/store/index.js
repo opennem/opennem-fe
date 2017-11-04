@@ -31,6 +31,8 @@ const actions = {
   fetchData({commit}, region) {
     const fetchGen = axios.get(`/data/all_${region}.json`)
     const fetchPrice = axios.get(`/data/price_30m_${region}.json`)
+    // const fetchGen = axios.get(`/samples/combined_sample.json`)
+    // const fetchPrice = axios.get(`/samples/combined_sample.json`)
     
     axios.all([fetchGen, fetchPrice])
       .then(axios.spread(function (gen, price) {

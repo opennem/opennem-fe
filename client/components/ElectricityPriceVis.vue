@@ -2,7 +2,7 @@
   <div class="fuel-tech-chart-wrapper">
     <div class="loader" v-if="!chartRendered"></div>
     <div id="chartdiv"></div>
-    <Summary :tableData="summaryData" :dateFrom="start" :dateTo="end"></Summary>
+    <Summary :tableData="summaryData" :pointData="pointData" :dateFrom="start" :dateTo="end"></Summary>
   </div>
 </template>
 
@@ -19,6 +19,7 @@ import {
   generateChartScrollbarSettings
 } from '../utils/AmchartsDataTransform'
 import Summary from './EnergyAverageValueTable'
+import { FUEL_TECH_CONFIG } from '../utils/FuelTechConfig.js'
 
 export default {
   components: {
@@ -31,12 +32,13 @@ export default {
       chart: null,
       chartData: [],
       summaryData: [],
+      pointData: {},
       start: null,
       end: null
     }
   },
   methods: {
-    onZoomedEvent(event) {
+    onZoom(event) {
       this.start = event.startDate
       this.end = event.endDate
 
@@ -44,51 +46,51 @@ export default {
         return moment(item.date).isBetween(this.start, this.end)
       })
 
-      this.summaryData = []
+      if (filteredData[0]) {
+        const summaryData = []
 
-      Object.keys(filteredData[0]).forEach(ft => {
+        Object.keys(filteredData[0]).forEach(ft => {
+          if (ft !== 'date' && ft !== 'DEMAND_AND_NONSCHEDGEN' && ft !== 'RRP') {
+            const totalPower = filteredData.reduce((a, b) => {
+              return a + b[ft]
+            }, 0)
+            const dataPrice = filteredData.map((d, i) => {
+              const rrp = filteredData[i]['RRP'] ? filteredData[i]['RRP'] : 0
+              return d[ft] * rrp
+            })
+            const averagePrice = dataPrice.reduce((a, b) => a + b, 0) / totalPower
 
-        if (ft !== 'date' && ft !== 'DEMAND_AND_NONSCHEDGEN' && ft !== 'RRP') {
-          const totalPower = filteredData.reduce((a, b) => {
-            return a + b[ft]
-          }, 0)
+            summaryData.push({
+              id: ft,
+              range: {
+                totalPower,
+                energy: totalPower/12000,
+                averagePrice
+              }
+            })
+          }
+        })
 
-          this.summaryData.push({
-            id: ft,
-            range: {
-              totalPower,
-              energy: totalPower/12000
-            }
-          })
+        summaryData.reverse()
+        this.summaryData = summaryData
+      }
+      
+    },
+    onCursorHover(event) {
+      if (typeof event.index !== 'undefined') {
+        const data = event.target.categoryLineAxis.data[event.index]
+        const dataContext = data.dataContext
+        const pointData = {
+          date: data.category,
+          rrp: dataContext['RRPAverage']
         }
-      })
 
-      this.summaryData.reverse()
+        Object.keys(FUEL_TECH_CONFIG).forEach(ft => {
+          pointData[ft] = dataContext[`${ft}Average`]
+        })
 
-      console.log(this.summaryData)
-
-      // summary object
-      /**@argument
-       * id: 
-       * label: 
-       * 
-       * range: {
-       *  dateFrom:
-       *  dateTo:
-       *  totalPower:
-       *  energy:
-       *  contribution:
-       *  averageValue:
-       * }
-       * 
-       * point: {
-       *  date:
-       *  power:
-       *  conribution:
-       *  price:
-       * }
-       * 
-       */
+        this.pointData = pointData
+      }
     }
   },
   computed: {
@@ -127,20 +129,22 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
       minPeriod: "5mm",
       startOnAxis: true,
       equalSpacing: true,
-      groupToPeriods: ['5mm', '15mm']
+      groupToPeriods: ['5mm', '15mm', '30mm', 'hh']
     },
     chartCursorSettings: {
       pan: true,
       categoryBalloonColor: '#000',
       cursorColor: '#000',
+      showNextAvailable: true
     },
+    
     dataSets: [
       {
         dataProvider: chartData,
         categoryField: 'date',
         fieldMappings
       }
-    ],
+    ], 
     panels: [{
       title: 'Generation (MW)',
       percentHeight: 70,
@@ -148,7 +152,11 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
       listeners: [
         {
           event: 'zoomed',
-          method: context.onZoomedEvent
+          method: context.onZoom
+        },
+        {
+          event: 'changed',
+          method: context.onCursorHover
         }
       ],
       valueAxes: [ {

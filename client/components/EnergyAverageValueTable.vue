@@ -3,17 +3,22 @@
     <thead>
       <tr>
         <th colspan="2"></th>
-        <th colspan="3" class="instant-values">{{formatDate(dateFrom)}} — {{formatDate(dateTo)}}</th>
-
-        <th colspan="3" class="instant-values">-</th>
+        <!-- range info -->
+        <th colspan="4" class="instant-values">{{formatDate(dateFrom)}} — {{formatDate(dateTo)}}</th>
+        <!-- point info -->
+        <th colspan="3" class="instant-values">{{formatDate(pointData.date)}}</th>
       </tr>
       <tr>
         <th colspan="2"></th>
+
+        <!-- range info -->
         <th class="instant-values">Energy (GWh)</th>
         <th>Power (MW)</th>
+        <th>Contribution (%)</th>
         <th>Average Value ($)</th>
 
-        <th class="instant-values">Power (GWh)</th>
+        <!-- point info -->
+        <th class="instant-values">Power (MW)</th>
         <th>Contribution (%)</th>
         <th>Price ($)</th>
       </tr>
@@ -23,16 +28,35 @@
         <td style="width: 20px;">
           <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id)}"></div>
         </td>
-        <td>{{getLabel(item.id)}}</td>
+        <td style="text-align:left">{{getLabel(item.id)}}</td>
+
+        <!-- range info -->
         <td class="instant-values">{{formatNumber(item.range.energy)}}</td>
         <td>{{formatNumber(item.range.totalPower)}}</td>
+        <td>{{formatNumber(item.range.totalPower/rangeTotal*100)}}%</td>
+        <td>{{formatNumber(item.range.averagePrice, '0,0.00')}}</td>
+        
+        <!-- point info -->
+        <td class="instant-values">{{formatNumber(pointData[item.id])}}</td>
+        <td>{{formatNumber(pointData[item.id]/pointTotal*100)}}%</td>
+        <td>{{formatNumber(pointData.rrp, '0,0.00')}}</td>
+      </tr>
+    </tbody>
+
+    <tfoot>
+      <tr>
+        <td colspan="2"></td>
+
+        <td></td>
+        <td>{{formatNumber(rangeTotal)}}</td>
+        <td></td>
         <td></td>
 
-        <td class="instant-values"></td>
+        <td>{{formatNumber(pointTotal)}}</td>
         <td></td>
         <td></td>
       </tr>
-    </tbody>
+    </tfoot>
     
   </table>
 </template>
@@ -49,10 +73,32 @@ export default {
     dateFrom: Date,
     dateTo: Date,
     priceSeries: Object,
-    showTotals: Boolean
+    showTotals: Boolean,
+    pointData: Object
   },
   data() {
-    return {}
+    return {
+      pointTotal: 0,
+      rangeTotal: 0
+    }
+  },
+  watch: {
+    tableData: function(newData) {
+      let rangeTotal = 0
+      newData.forEach(ft => {
+        rangeTotal += ft.range.totalPower
+      })
+      this.rangeTotal = rangeTotal
+    },
+    pointData: function(newData) {
+      let pointTotal = 0
+      Object.keys(FUEL_TECH_CONFIG).forEach(ft => {
+        if (newData[ft]) {
+          pointTotal += newData[ft]
+        }
+      })
+      this.pointTotal = pointTotal
+    }
   },
   methods: {
     formatDate(date) {
@@ -90,7 +136,7 @@ table {
   }
 
   td, th {
-    text-align: left;
+    text-align: right;
     padding: 5px;
     border-bottom: 1px solid #999;
   }

@@ -96,7 +96,7 @@ export function generateStockGraphs() {
       negativeFillColors: colour,
       lineAlpha: 0,
       lineColor: colour,
-      useDataSetColors: false
+      useDataSetColors: false,
     })
   })
 
@@ -106,7 +106,7 @@ export function generateStockGraphs() {
 export function generateChartScrollbarSettings() {
   return {
     graph: 'g7',
-    usePeriod: '15mm',
+    usePeriod: 'hh',
     position: 'top',
     color: '#000',
     graphFillAlpha: 0,
