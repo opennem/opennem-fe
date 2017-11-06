@@ -1,15 +1,20 @@
 <template>
   <div>
     <header>
-      <h2><select class="region-selector" v-on:change="onRegionSelectorChange">
+      <h2>
+      <select class="region-selector" v-on:change="onRegionSelectorChange">
         <option value="nsw1">New South Wales</option>
         <option value="qld1">Queensland</option>
         <option value="sa1">South Australia</option>
         <option value="tas1">Tasmania</option>
         <option value="vic1">Victoria</option>
-      </select></h2>
+      </select>
+      </h2>
       <div class="date-range">
-        <!-- <time>2 Mar '17</time> — <time>7 Mar '17</time>     -->
+        <select class="week-selector" v-on:change="onWeekRangeChange">
+          <option value="2017-10-14">Week starting 14 Oct 2017</option>
+          <option value="2017-10-02">Week starting 02 Oct 2017</option>
+        </select>
       </div>
     </header>
     <Vis></Vis>
@@ -23,13 +28,28 @@ export default {
   components: {
     Vis
   },
+  data() {
+    return {
+      selectedRegion: 'nsw1',
+      weekStarting: '2017-10-14'
+    }
+  },
   created() {
-    this.$store.dispatch('fetchData', 'nsw1')
+    this.fetchData()
   },
   methods: {
     onRegionSelectorChange(event) {
       console.log(event.target.value)
-      this.$store.dispatch('fetchData', event.target.value)
+      this.selectedRegion = event.target.value
+      this.fetchData()
+    },
+    onWeekRangeChange(event) {
+      console.log(event.target.value)
+      this.weekStarting = event.target.value
+      this.fetchData()
+    },
+    fetchData() {
+      this.$store.dispatch('fetchData', { region: this.selectedRegion, week: this.weekStarting })
     }
   }
 }
@@ -44,6 +64,10 @@ export default {
   border: none;
   padding: 0 1rem;
   -webkit-appearance: none;
+}
+.week-selector {
+  position: relative;
+  top: -10px;
 }
 
 .date-range {

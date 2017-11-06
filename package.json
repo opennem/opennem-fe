@@ -42,7 +42,7 @@
   "dependencies": {
     "axios": "^0.16.2",
     "babel-runtime": "^6.18.0",
-    "ejs": "^2.5.7",    
+    "ejs": "^2.5.7",
     "moment": "^2.18.1",
     "numeral": "^2.0.6",
     "promise-polyfill": "^6.0.2",
