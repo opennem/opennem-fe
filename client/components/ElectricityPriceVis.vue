@@ -19,7 +19,7 @@ import {
   generateChartScrollbarSettings
 } from '../utils/AmchartsDataTransform'
 import Summary from './EnergyAverageValueTable'
-import { FUEL_TECH_CONFIG } from '../utils/FuelTechConfig.js'
+import { FUEL_TECH } from '../utils/FuelTechConfig.js'
 
 export default {
   components: {
@@ -85,7 +85,7 @@ export default {
           rrp: dataContext['RRPAverage']
         }
 
-        Object.keys(FUEL_TECH_CONFIG).forEach(ft => {
+        Object.keys(FUEL_TECH).forEach(ft => {
           pointData[ft] = dataContext[`${ft}Average`]
         })
 
@@ -137,7 +137,6 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
       cursorColor: '#000',
       showNextAvailable: true
     },
-    
     dataSets: [
       {
         dataProvider: chartData,
@@ -145,6 +144,9 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
         fieldMappings
       }
     ], 
+    panelsSettings: {
+      fontFamily: 'Merriweather',
+    },
     panels: [{
       title: 'Generation (MW)',
       percentHeight: 70,
@@ -244,7 +246,7 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
 <style>
 #chartdiv {
   width: 100%;
-  height: 500px;
+  height: 600px;
 }
 a[title='JavaScript charts'] {
   display: none !important;

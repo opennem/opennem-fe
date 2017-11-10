@@ -1,5 +1,4 @@
-/* transform the dataset */
-export const FUEL_TECH_CONFIG = {
+export const FUEL_TECH = {
   'NETINTERCHANGE': {
     colour: '#44146F',
     label: 'Import/Export'

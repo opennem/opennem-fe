@@ -65,7 +65,7 @@
 import * as moment from 'moment'
 import numeral from 'numeral'
 
-import { FUEL_TECH_CONFIG } from '../utils/FuelTechConfig.js'
+import { FUEL_TECH } from '../utils/FuelTechConfig.js'
 
 export default {
   props: {
@@ -92,7 +92,7 @@ export default {
     },
     pointData: function(newData) {
       let pointTotal = 0
-      Object.keys(FUEL_TECH_CONFIG).forEach(ft => {
+      Object.keys(FUEL_TECH).forEach(ft => {
         if (newData[ft]) {
           pointTotal += newData[ft]
         }
@@ -110,11 +110,11 @@ export default {
       return formatted
     },
     getLabel(id) {
-      const label = FUEL_TECH_CONFIG[id] ? FUEL_TECH_CONFIG[id].label : id
+      const label = FUEL_TECH[id] ? FUEL_TECH[id].label : id
       return label
     },
     getColour(id) {
-      const colour = FUEL_TECH_CONFIG[id] ? FUEL_TECH_CONFIG[id].colour : '#fff'
+      const colour = FUEL_TECH[id] ? FUEL_TECH[id].colour : '#fff'
       return colour
     }
   }

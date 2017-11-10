@@ -5,12 +5,12 @@
 
 import * as moment from 'moment'
 import numeral from 'numeral'
-import { FUEL_TECH_CONFIG } from './FuelTechConfig.js'
+import { FUEL_TECH } from './FuelTechConfig.js'
 
 export function generateChartData(data) {
   let chartData = []
 
-  Object.keys(FUEL_TECH_CONFIG).forEach(ftKey => {
+  Object.keys(FUEL_TECH).forEach(ftKey => {
     if (data[ftKey]) {
       let ft = data[ftKey]
       let startDate = ft.start
@@ -70,7 +70,7 @@ export function generateFieldMappings() {
     toField: 'RRP'
   }]
 
-  Object.keys(FUEL_TECH_CONFIG).forEach(ftKey => {
+  Object.keys(FUEL_TECH).forEach(ftKey => {
     mappings.push({
       fromField: ftKey,
       toField: ftKey
@@ -83,8 +83,8 @@ export function generateFieldMappings() {
 export function generateStockGraphs() {
   const graphs = []
 
-  Object.keys(FUEL_TECH_CONFIG).forEach((ftKey, index) => {
-    const colour = FUEL_TECH_CONFIG[ftKey].colour
+  Object.keys(FUEL_TECH).forEach((ftKey, index) => {
+    const colour = FUEL_TECH[ftKey].colour
     const negativeFillAlphas = ftKey === 'NETINTERCHANGE' ? 0 : 0.8
     
     graphs.push({
