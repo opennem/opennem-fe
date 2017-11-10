@@ -2,7 +2,7 @@
   <div class="fuel-tech-chart-wrapper">
     <div class="loader" v-if="!chartRendered"></div>
     <div id="chartdiv"></div>
-    <Summary :tableData="summaryData" :pointData="pointData" :dateFrom="start" :dateTo="end"></Summary>
+    <FtSummary :tableData="summaryData" :pointData="pointData" :dateFrom="start" :dateTo="end"></FtSummary>
   </div>
 </template>
 
@@ -18,12 +18,12 @@ import {
   generateStockGraphs,
   generateChartScrollbarSettings
 } from '../utils/AmchartsDataTransform'
-import Summary from './EnergyAverageValueTable'
+import FtSummary from './EnergyAverageValueTable'
 import { FUEL_TECH } from '../utils/FuelTechConfig.js'
 
 export default {
   components: {
-    Summary
+    FtSummary
   },
   props: {},
   data() {
