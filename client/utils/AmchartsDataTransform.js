@@ -2,9 +2,7 @@
  * Transform the data to suit Amcharts model
  * TODO: use config to generate field mappings and graph settings.
  */
-
 import * as moment from 'moment'
-import numeral from 'numeral'
 import { FUEL_TECH } from './FuelTechConfig.js'
 
 export function generateChartData(data) {
@@ -122,4 +120,21 @@ export function generateChartScrollbarSettings() {
     dragIconWidth: 24,
     scrollbarHeight: 50
   }
+}
+
+export function calculateHorizonValues(dataset) {
+  let x = dataset
+  let r = x/4000
+  let v = []
+  
+  for (var y=0; y<3; y++) {
+    if (r > 1) {
+      v[y] = 1
+      r = r - 1
+    } else {
+      v[y] = r ? r : 0
+      r = null
+    }
+  }
+  return v
 }

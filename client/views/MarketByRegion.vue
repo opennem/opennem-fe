@@ -3,12 +3,15 @@
     <header>
       <h2>
       <select class="region-selector" v-on:change="onRegionSelectorChange">
-        <option value="nsw1">New South Wales</option>
+        <option value="nsw1" v-bind:checked="checked">New South Wales</option>
         <option value="qld1">Queensland</option>
         <option value="sa1">South Australia</option>
         <option value="tas1">Tasmania</option>
         <option value="vic1">Victoria</option>
       </select>
+      <!-- <select class="region-selector" v-model="selectedRegion">
+        <option v-repeat="regions" :value="regionId">{{label}}</option>
+      </select> -->
       </h2>
       <div class="date-range">
         <select class="week-selector" v-on:change="onWeekRangeChange">
@@ -24,13 +27,37 @@
 <script>
 import Vis from '../components/ElectricityPriceVis'
 
+const regions = [
+  {
+    regionId: 'nsw1',
+    label: 'New South Wales'
+  },
+  {
+    regionId: 'qld1',
+    label: 'Queensland'
+  },
+  {
+    regionId: 'sa1',
+    label: 'South Australia'
+  },
+  {
+    regionId: 'tas1',
+    label: 'Tasmania'
+  },
+  {
+    regionId: 'vic1',
+    label: 'Victoria'
+  }
+]
+
 export default {
   components: {
     Vis
   },
   data() {
     return {
-      selectedRegion: 'nsw1',
+      regions,
+      selectedRegion: this.$route.params.region + '1',
       weekStarting: '2017-10-14'
     }
   },
@@ -50,6 +77,9 @@ export default {
     },
     fetchData() {
       this.$store.dispatch('fetchData', { region: this.selectedRegion, week: this.weekStarting })
+    },
+    checked(val) {
+      console.log(val)
     }
   }
 }
