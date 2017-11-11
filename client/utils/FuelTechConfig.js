@@ -1,3 +1,26 @@
+export const REGIONS = [
+  {
+    id: 'nsw',
+    label: 'New South Wales'
+  },
+  {
+    id: 'qld',
+    label: 'Queensland'
+  },
+  {
+    id: 'sa',
+    label: 'South Australia'
+  },
+  {
+    id: 'tas',
+    label: 'Tasmania'
+  },
+  {
+    id: 'vic',
+    label: 'Victoria'
+  }
+]
+
 export const FUEL_TECH = {
   'NETINTERCHANGE': {
     colour: '#44146F',

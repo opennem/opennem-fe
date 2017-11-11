@@ -4,6 +4,7 @@ import axios from 'axios'
 import * as moment from 'moment'
 
 import { calculateHorizonValues } from '../utils/AmchartsDataTransform'
+import { REGIONS, FUEL_TECH } from '../utils/FuelTechConfig'
 
 Vue.use(Vuex)
 
@@ -16,6 +17,7 @@ const state = {
   generationData: null,
   priceData: null,
   demandData: [],
+  ftGenData: []
 }
 
 const mutations = {
@@ -27,6 +29,9 @@ const mutations = {
   },
   updateDemandData(state, data) {
     state.demandData = data
+  },
+  updateFtGenData(state, data) {
+    state.ftGenData = data
   }
 }
 
@@ -39,6 +44,9 @@ const getters = {
   },
   getDemand: state => {
     return state.demandData
+  },
+  getFtGen: state => {
+    return state.ftGenData
   }
 }
 
@@ -55,6 +63,43 @@ const actions = {
         commit('updateGenerationData', Object.assign(gen.data, dispatch.data))
         commit('updatePriceData', price.data)
       }));
+  },
+  fetchFtGen({commit}, data) {
+    const week = '2017-10-14'
+    const fetchGen1 = http.get(`/data/${week}/gen_5m_nsw1.json`)
+    const fetchGen2 = http.get(`/data/${week}/gen_5m_qld1.json`)
+    const fetchGen3 = http.get(`/data/${week}/gen_5m_sa1.json`)
+    const fetchGen4 = http.get(`/data/${week}/gen_5m_tas1.json`)
+    const fetchGen5 = http.get(`/data/${week}/gen_5m_vic1.json`)
+
+    axios.all([fetchGen1, fetchGen2, fetchGen3, fetchGen4, fetchGen5])
+      .then(axios.spread(function (gen1, gen2, gen3, gen4, gen5) {
+        const regionData = {
+          'nsw': gen1.data,
+          'qld': gen2.data,
+          'sa': gen3.data,
+          'tas': gen4.data,
+          'vic': gen5.data
+        }
+        const data = []
+        
+        REGIONS.forEach(region => {
+          const ftRegionObj = {
+            regionId: region.id
+          }
+
+          Object.keys(FUEL_TECH).forEach(((ft, index) => {
+            if (index > 0) {
+              // ignore NETINTERCHANGE
+              const gen = regionData[region.id][ft]
+              ftRegionObj[ft] = gen ? gen.data.reduce((a, b) => a + b, 0) : 0
+            }
+          }))
+
+          data.push(ftRegionObj)          
+        })
+        commit('updateFtGenData', data)
+      }))
   },
   fetchDemand({commit}, data) {
     const week = '2017-10-14'

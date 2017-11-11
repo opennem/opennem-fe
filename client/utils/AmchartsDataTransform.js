@@ -3,7 +3,7 @@
  * TODO: use config to generate field mappings and graph settings.
  */
 import * as moment from 'moment'
-import { FUEL_TECH } from './FuelTechConfig.js'
+import { FUEL_TECH } from './FuelTechConfig'
 
 export function generateChartData(data) {
   let chartData = []

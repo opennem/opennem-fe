@@ -65,7 +65,7 @@
 import * as moment from 'moment'
 import numeral from 'numeral'
 
-import { FUEL_TECH } from '../utils/FuelTechConfig.js'
+import { FUEL_TECH } from '../utils/FuelTechConfig'
 
 export default {
   props: {

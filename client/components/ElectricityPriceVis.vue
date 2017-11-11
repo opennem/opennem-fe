@@ -19,7 +19,7 @@ import {
   generateChartScrollbarSettings
 } from '../utils/AmchartsDataTransform'
 import FtSummary from './EnergyAverageValueTable'
-import { FUEL_TECH } from '../utils/FuelTechConfig.js'
+import { FUEL_TECH } from '../utils/FuelTechConfig'
 
 export default {
   components: {
