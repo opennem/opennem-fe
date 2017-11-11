@@ -1,11 +1,15 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import axios from "axios"
+import axios from 'axios'
 import * as moment from 'moment'
 
 import { calculateHorizonValues } from '../utils/AmchartsDataTransform'
 
 Vue.use(Vuex)
+
+const http = axios.create({
+	baseURL: '/',
+})
 
 const state = {
   weekStarting: '',
@@ -40,11 +44,11 @@ const getters = {
 
 const actions = {
   fetchData({commit}, data) {
-    const fetchGen = axios.get(`/data/${data.week}/gen_5m_${data.region}.json`)
-    const fetchDispatch = axios.get(`/data/${data.week}/dispatch_5m_${data.region}.json`)
-    const fetchPrice = axios.get(`/data/${data.week}/price_30m_${data.region}.json`)
-    // const fetchGen = axios.get(`/samples/combined_sample.json`)
-    // const fetchPrice = axios.get(`/samples/combined_sample.json`)
+    const fetchGen = http.get(`/data/${data.week}/gen_5m_${data.region}.json`)
+    const fetchDispatch = http.get(`/data/${data.week}/dispatch_5m_${data.region}.json`)
+    const fetchPrice = http.get(`/data/${data.week}/price_30m_${data.region}.json`)
+    // const fetchGen = http.get(`/samples/combined_sample.json`)
+    // const fetchPrice = http.get(`/samples/combined_sample.json`)
     
     axios.all([fetchGen, fetchDispatch, fetchPrice])
       .then(axios.spread(function (gen, dispatch, price) {
@@ -54,11 +58,11 @@ const actions = {
   },
   fetchDemand({commit}, data) {
     const week = '2017-10-14'
-    const fetchDispatch1 = axios.get(`/data/${week}/dispatch_5m_nsw1.json`)
-    const fetchDispatch2 = axios.get(`/data/${week}/dispatch_5m_qld1.json`)
-    const fetchDispatch3 = axios.get(`/data/${week}/dispatch_5m_sa1.json`)
-    const fetchDispatch4 = axios.get(`/data/${week}/dispatch_5m_tas1.json`)
-    const fetchDispatch5 = axios.get(`/data/${week}/dispatch_5m_vic1.json`)
+    const fetchDispatch1 = http.get(`/data/${week}/dispatch_5m_nsw1.json`)
+    const fetchDispatch2 = http.get(`/data/${week}/dispatch_5m_qld1.json`)
+    const fetchDispatch3 = http.get(`/data/${week}/dispatch_5m_sa1.json`)
+    const fetchDispatch4 = http.get(`/data/${week}/dispatch_5m_tas1.json`)
+    const fetchDispatch5 = http.get(`/data/${week}/dispatch_5m_vic1.json`)
     
     axios.all([fetchDispatch1, fetchDispatch2, fetchDispatch3, fetchDispatch4, fetchDispatch5])
       .then(axios.spread(function (dispatch1, dispatch2, dispatch3, dispatch4, dispatch5) {

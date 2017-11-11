@@ -1,7 +1,7 @@
 <template>
   <div class="fuel-tech-chart-wrapper">
     <div class="loader" v-if="!chartRendered"></div>
-    <div id="chartdiv"></div>
+    <div id="ft-vis"></div>
     <FtSummary :tableData="summaryData" :pointData="pointData" :dateFrom="start" :dateTo="end"></FtSummary>
   </div>
 </template>
@@ -121,7 +121,7 @@ export default {
 }
 
 function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings, context) {
-  return AmCharts.makeChart('chartdiv', {
+  return AmCharts.makeChart('ft-vis', {
     type: 'stock',
     // mouseWheelScrollEnabled: true,
     mouseWheelZoomEnabled: true,
@@ -244,7 +244,7 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
 </script>
 
 <style>
-#chartdiv {
+#ft-vis {
   width: 100%;
   height: 600px;
 }
