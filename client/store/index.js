@@ -11,7 +11,7 @@ const state = {
   weekStarting: '',
   generationData: null,
   priceData: null,
-  demandData: null,
+  demandData: [],
 }
 
 const mutations = {
@@ -85,22 +85,27 @@ const actions = {
           demand[i] = {
             date: now.toDate(),
             nsw: nswDemandData[i],
+            nswMid: 0.5,
             nsw1: nsw[0],
             nsw2: nsw[1],
             nsw3: nsw[2],            
             qld: qldDemandData[i],
+            qldMid: 0.5,
             qld1: qld[0],
             qld2: qld[1],
             qld3: qld[2], 
             sa: saDemandData[i],
+            saMid: 0.5,
             sa1: sa[0],
             sa2: sa[1],
             sa3: sa[2], 
             tas: tasDemandData[i],
+            tasMid: 0.5,
             tas1: tas[0],
             tas2: tas[1],
             tas3: tas[2], 
             vic: vicDemandData[i],
+            vicMid: 0.5,
             vic1: vic[0],
             vic2: vic[1],
             vic3: vic[2]

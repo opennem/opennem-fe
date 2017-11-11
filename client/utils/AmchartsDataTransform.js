@@ -122,8 +122,8 @@ export function generateChartScrollbarSettings() {
   }
 }
 
-export function calculateHorizonValues(dataset) {
-  let x = dataset
+export function calculateHorizonValues(data) {
+  let x = data
   let r = x/4000
   let v = []
   

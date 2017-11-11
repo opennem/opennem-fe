@@ -54,6 +54,14 @@ export default {
             categoryField: "date",
             fieldMappings: [
               {
+                fromField: "nsw",
+                toField: "nsw"
+              },
+              {
+                fromField: "nswMid",
+                toField: "nswMid"
+              },
+              {
                 fromField: "nsw1",
                 toField: "nsw1"
               },
@@ -64,6 +72,14 @@ export default {
               {
                 fromField: "nsw3",
                 toField: "nsw3"
+              },
+              {
+                fromField: "qld",
+                toField: "qld"
+              },
+              {
+                fromField: "qldMid",
+                toField: "qldMid"
               },
               {
                 fromField: "qld1",
@@ -78,6 +94,14 @@ export default {
                 toField: "qld3"
               },
               {
+                fromField: "sa",
+                toField: "sa"
+              },
+              {
+                fromField: "saMid",
+                toField: "saMid"
+              },
+              {
                 fromField: "sa1",
                 toField: "sa1"
               },
@@ -90,6 +114,14 @@ export default {
                 toField: "sa3"
               },
               {
+                fromField: "tas",
+                toField: "tas"
+              },
+              {
+                fromField: "tasMid",
+                toField: "tasMid"
+              },
+              {
                 fromField: "tas1",
                 toField: "tas1"
               },
@@ -100,6 +132,14 @@ export default {
               {
                 fromField: "tas3",
                 toField: "tas3"
+              },
+              {
+                fromField: "vic",
+                toField: "vic"
+              },
+              {
+                fromField: "vicMid",
+                toField: "vicMid"
               },
               {
                 fromField: "vic1",
@@ -118,7 +158,6 @@ export default {
         ],
         panels: [
           {
-            title: "NSW",
             percentHeight: 20,
             showCategoryAxis: false,
             allLabels: [{
@@ -139,21 +178,31 @@ export default {
               valueField: 'nsw1',
               type: 'line',
               fillAlphas: 0.1,
-              lineAlpha: 0
+              lineAlpha: 0,
+              showBalloon: false,
             }, {
               valueField: 'nsw2',
               type: 'line',
               fillAlphas: 0.2,
-              lineAlpha: 0
+              lineAlpha: 0,
+              showBalloon: false,
             }, {
               valueField: 'nsw3',
               type: 'line',
               fillAlphas: 0.3,
-              lineAlpha: 0
+              lineAlpha: 0,
+              showBalloon: false,
+            }, {
+              valueField: 'nsw',
+              openField: 'nswMid',
+              type: 'line',
+              fillAlphas: 0,
+              lineAlpha: 0,
+              showBalloon: true,
+              showBalloonAt: 'open'
             }]
           },
           {
-            title: "QLD",
             percentHeight: 20,
             showCategoryAxis: false,
             allLabels: [{
@@ -174,21 +223,31 @@ export default {
               valueField: 'qld1',
               type: 'line',
               fillAlphas: 0.1,
-              lineAlpha: 0
+              lineAlpha: 0,
+              showBalloon: false,
             }, {
               valueField: 'qld2',
               type: 'line',
               fillAlphas: 0.2,
-              lineAlpha: 0
+              lineAlpha: 0,
+              showBalloon: false,
             }, {
               valueField: 'qld3',
               type: 'line',
               fillAlphas: 0.3,
-              lineAlpha: 0
+              lineAlpha: 0,
+              showBalloon: false,
+            }, {
+              valueField: 'qld',
+              openField: 'qldMid',
+              type: 'line',
+              fillAlphas: 0,
+              lineAlpha: 0,
+              showBalloon: true,
+              showBalloonAt: 'open'
             }]
           },
           {
-            title: "SA",
             percentHeight: 20,
             showCategoryAxis: false,
             allLabels: [{
@@ -209,21 +268,31 @@ export default {
               valueField: 'sa1',
               type: 'line',
               fillAlphas: 0.1,
-              lineAlpha: 0
+              lineAlpha: 0,
+              showBalloon: false,
             }, {
               valueField: 'sa2',
               type: 'line',
               fillAlphas: 0.2,
-              lineAlpha: 0
+              lineAlpha: 0,
+              showBalloon: false,
             }, {
               valueField: 'sa3',
               type: 'line',
               fillAlphas: 0.3,
-              lineAlpha: 0
+              lineAlpha: 0,
+              showBalloon: false,
+            }, {
+              valueField: 'sa',
+              openField: 'saMid',
+              type: 'line',
+              fillAlphas: 0,
+              lineAlpha: 0,
+              showBalloon: true,
+              showBalloonAt: 'open'
             }]
           },
           {
-            title: "TAS",
             percentHeight: 20,
             showCategoryAxis: false,
             allLabels: [{
@@ -244,21 +313,31 @@ export default {
               valueField: 'tas1',
               type: 'line',
               fillAlphas: 0.1,
-              lineAlpha: 0
+              lineAlpha: 0,
+              showBalloon: false,
             }, {
               valueField: 'tas2',
               type: 'line',
               fillAlphas: 0.2,
-              lineAlpha: 0
+              lineAlpha: 0,
+              showBalloon: false,
             }, {
               valueField: 'tas3',
               type: 'line',
               fillAlphas: 0.3,
-              lineAlpha: 0
+              lineAlpha: 0,
+              showBalloon: false,
+            }, {
+              valueField: 'tas',
+              openField: 'tasMid',
+              type: 'line',
+              fillAlphas: 0,
+              lineAlpha: 0,
+              showBalloon: true,
+              showBalloonAt: 'open'
             }]
           },
           {
-            title: "VIC",
             percentHeight: 20,
             showCategoryAxis: false,
             allLabels: [{
@@ -279,17 +358,28 @@ export default {
               valueField: 'vic1',
               type: 'line',
               fillAlphas: 0.1,
-              lineAlpha: 0
+              lineAlpha: 0,
+              showBalloon: false,
             }, {
               valueField: 'vic2',
               type: 'line',
               fillAlphas: 0.2,
-              lineAlpha: 0
+              lineAlpha: 0,
+              showBalloon: false,
             }, {
               valueField: 'vic3',
               type: 'line',
               fillAlphas: 0.3,
-              lineAlpha: 0
+              lineAlpha: 0,
+              showBalloon: false,
+            }, {
+              valueField: 'vic',
+              openField: 'vicMid',
+              type: 'line',
+              fillAlphas: 0,
+              lineAlpha: 0,
+              showBalloon: true,
+              showBalloonAt: 'open'
             }]
           }
         ],
