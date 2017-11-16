@@ -1,17 +1,18 @@
 <template>
   <div class="demand-chart-wrapper">
     <div class="loader" v-if="!chartRendered"></div>
+    <h3>Demand and Non-scheduled Generation from xxxx — xxxx</h3>
     <div id="demand-vis"></div>
   </div>
 </template>
 
 <script>
-import * as moment from "moment";
-import { mapGetters } from "vuex";
+import * as moment from 'moment';
+import { mapGetters } from 'vuex';
 
 export default {
   created() {
-    this.$store.dispatch("fetchDemand");
+    this.$store.dispatch('fetchDemand');
   },
   data() {
     return {
@@ -20,18 +21,18 @@ export default {
   },
   computed: {
     ...mapGetters({
-      demand: "getDemand"
+      demand: 'getDemand'
     })
   },
   watch: {
     demand(newData) {
       console.log(newData);
 
-      AmCharts.makeChart("demand-vis", {
-        type: "stock",
+      AmCharts.makeChart('demand-vis', {
+        type: 'stock',
         categoryAxesSettings: {
-          minPeriod: "5mm",
-          groupToPeriods: ["5mm", "15mm", "30mm", "hh"],
+          minPeriod: '5mm',
+          groupToPeriods: ['5mm', '15mm', '30mm', 'hh'],
           gridAlpha: 0,
           axisAlpha: 0
         },
@@ -51,107 +52,107 @@ export default {
         dataSets: [
           {
             dataProvider: newData,
-            categoryField: "date",
+            categoryField: 'date',
             fieldMappings: [
               {
-                fromField: "nsw",
-                toField: "nsw"
+                fromField: 'nsw',
+                toField: 'nsw'
               },
               {
-                fromField: "nswMid",
-                toField: "nswMid"
+                fromField: 'nswMid',
+                toField: 'nswMid'
               },
               {
-                fromField: "nsw1",
-                toField: "nsw1"
+                fromField: 'nsw1',
+                toField: 'nsw1'
               },
               {
-                fromField: "nsw2",
-                toField: "nsw2"
+                fromField: 'nsw2',
+                toField: 'nsw2'
               },
               {
-                fromField: "nsw3",
-                toField: "nsw3"
+                fromField: 'nsw3',
+                toField: 'nsw3'
               },
               {
-                fromField: "qld",
-                toField: "qld"
+                fromField: 'qld',
+                toField: 'qld'
               },
               {
-                fromField: "qldMid",
-                toField: "qldMid"
+                fromField: 'qldMid',
+                toField: 'qldMid'
               },
               {
-                fromField: "qld1",
-                toField: "qld1"
+                fromField: 'qld1',
+                toField: 'qld1'
               },
               {
-                fromField: "qld2",
-                toField: "qld2"
+                fromField: 'qld2',
+                toField: 'qld2'
               },
               {
-                fromField: "qld3",
-                toField: "qld3"
+                fromField: 'qld3',
+                toField: 'qld3'
               },
               {
-                fromField: "sa",
-                toField: "sa"
+                fromField: 'sa',
+                toField: 'sa'
               },
               {
-                fromField: "saMid",
-                toField: "saMid"
+                fromField: 'saMid',
+                toField: 'saMid'
               },
               {
-                fromField: "sa1",
-                toField: "sa1"
+                fromField: 'sa1',
+                toField: 'sa1'
               },
               {
-                fromField: "sa2",
-                toField: "sa2"
+                fromField: 'sa2',
+                toField: 'sa2'
               },
               {
-                fromField: "sa3",
-                toField: "sa3"
+                fromField: 'sa3',
+                toField: 'sa3'
               },
               {
-                fromField: "tas",
-                toField: "tas"
+                fromField: 'tas',
+                toField: 'tas'
               },
               {
-                fromField: "tasMid",
-                toField: "tasMid"
+                fromField: 'tasMid',
+                toField: 'tasMid'
               },
               {
-                fromField: "tas1",
-                toField: "tas1"
+                fromField: 'tas1',
+                toField: 'tas1'
               },
               {
-                fromField: "tas2",
-                toField: "tas2"
+                fromField: 'tas2',
+                toField: 'tas2'
               },
               {
-                fromField: "tas3",
-                toField: "tas3"
+                fromField: 'tas3',
+                toField: 'tas3'
               },
               {
-                fromField: "vic",
-                toField: "vic"
+                fromField: 'vic',
+                toField: 'vic'
               },
               {
-                fromField: "vicMid",
-                toField: "vicMid"
+                fromField: 'vicMid',
+                toField: 'vicMid'
               },
               {
-                fromField: "vic1",
-                toField: "vic1"
+                fromField: 'vic1',
+                toField: 'vic1'
               },
               {
-                fromField: "vic2",
-                toField: "vic2"
+                fromField: 'vic2',
+                toField: 'vic2'
               },
               {
-                fromField: "vic3",
-                toField: "vic3"
+                fromField: 'vic3',
+                toField: 'vic3'
               },
             ]
           }
@@ -384,7 +385,7 @@ export default {
           }
         ],
         panelsSettings: {
-          fontFamily: "Merriweather",
+          fontFamily: 'Merriweather',
           panelSpacing: 1
         }
         // panels:
@@ -402,7 +403,7 @@ export default {
   width: 100%;
   height: 400px;
 }
-a[title="JavaScript charts"] {
+a[title='JavaScript charts'] {
   display: none !important;
 }
 </style>

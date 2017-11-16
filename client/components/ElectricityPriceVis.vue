@@ -126,7 +126,7 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
     // mouseWheelScrollEnabled: true,
     mouseWheelZoomEnabled: true,
     categoryAxesSettings: {
-      minPeriod: "5mm",
+      minPeriod: '5mm',
       startOnAxis: true,
       equalSpacing: true,
       groupToPeriods: ['5mm', '15mm', '30mm', 'hh']
@@ -162,10 +162,10 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
         }
       ],
       valueAxes: [ {
-        id: "v1",
+        id: 'v1',
         dashLength: 6,
         zeroGridAlpha: 0,
-        stackType: "regular",
+        stackType: 'regular',
         guides: [{ 
           includeGuidesInMinMax: false,
           value: 0,

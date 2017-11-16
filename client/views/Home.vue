@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>National Electricity Market</h1>
-    <!-- <Vis></Vis> -->
+    <Vis></Vis>
     <FTRegionVis></FTRegionVis>
   </div>
 </template>
@@ -19,5 +19,8 @@ export default {
 </script>
 
 <style>
+h3 {
+  border-bottom: 1px solid #000;
+}
 
 </style>

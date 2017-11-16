@@ -4,7 +4,7 @@ import axios from 'axios'
 import * as moment from 'moment'
 
 import { calculateHorizonValues } from '../utils/AmchartsDataTransform'
-import { REGIONS, FUEL_TECH } from '../utils/FuelTechConfig'
+import { REGIONS, FUEL_TECH_GROUPS, FUEL_TECH } from '../utils/FuelTechConfig'
 
 Vue.use(Vuex)
 
@@ -87,14 +87,25 @@ const actions = {
           const ftRegionObj = {
             regionId: region.id
           }
+          let total = 0
 
-          Object.keys(FUEL_TECH).forEach(((ft, index) => {
-            if (index > 0) {
+          Object.keys(FUEL_TECH).forEach(((key, index) => {
+            if (key !== 'NETINTERCHANGE') {
               // ignore NETINTERCHANGE
-              const gen = regionData[region.id][ft]
-              ftRegionObj[ft] = gen ? gen.data.reduce((a, b) => a + b, 0) : 0
+              const ft = regionData[region.id][key]
+              const ftTotal = ft ? ft.data.reduce((a, b) => a + b, 0) : 0
+              total += ftTotal
+              ftRegionObj[key] = ftTotal
             }
           }))
+
+          total = total.toFixed(0)
+
+          Object.keys(ftRegionObj).forEach((key) => {
+            if (key !== 'regionId') {
+              ftRegionObj[key] = ftRegionObj[key]/total*100
+            }
+          })
 
           data.push(ftRegionObj)          
         })
