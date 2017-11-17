@@ -12,6 +12,9 @@
       </h2>
       <div class="date-range">
         <select class="week-selector" v-on:change="onWeekRangeChange">
+          <option value="2017-11-04">Week starting 04 Nov 2017</option>
+          <option value="2017-10-28">Week starting 28 Oct 2017</option>
+          <option value="2017-10-21">Week starting 21 Oct 2017</option>
           <option value="2017-10-14">Week starting 14 Oct 2017</option>
           <option value="2017-10-02">Week starting 02 Oct 2017</option>
         </select>
