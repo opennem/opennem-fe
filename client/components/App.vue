@@ -29,7 +29,12 @@ h2 {
   border-bottom: 1px solid #000;
 }
 
-#app {
-  margin: 2rem;
+a[title='JavaScript charts'],
+a[title='Interactive JavaScript maps'] {
+  display: none !important;
 }
+ 
+/* #app {
+  margin: 2rem;
+} */
 </style>

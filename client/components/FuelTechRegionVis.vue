@@ -134,7 +134,5 @@ h4 {
   width: 100%;
   height: 300px;
 }
-a[title='JavaScript charts'] {
-  display: none !important;
-}
+
 </style>
