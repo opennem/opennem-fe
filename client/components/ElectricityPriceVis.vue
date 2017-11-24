@@ -2,7 +2,7 @@
   <div class="fuel-tech-chart-wrapper">
     <div class="loader" v-if="!chartRendered"></div>
     <div id="ft-vis"></div>
-    <FtSummary :tableData="summaryData" :pointData="pointData" :dateFrom="start" :dateTo="end"></FtSummary>
+    <FtSummary :tableData="summaryData" :pointData="pointData" :dateFrom="start" :dateTo="end" :showPrice="true"></FtSummary>
   </div>
 </template>
 

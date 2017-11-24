@@ -4,9 +4,9 @@
       <tr>
         <th colspan="2"></th>
         <!-- range info -->
-        <th colspan="4" class="instant-values">{{formatDate(dateFrom)}} — {{formatDate(dateTo)}}</th>
+        <th class="instant-values" v-bind:colspan="showPrice ? 4 : 3">{{formatDate(dateFrom)}} — {{formatDate(dateTo)}}</th>
         <!-- point info -->
-        <th colspan="3" class="instant-values">{{formatDate(pointData.date)}}</th>
+        <th class="instant-values" v-bind:colspan="showPrice ? 3 : 2">{{formatDate(pointData.date)}}</th>
       </tr>
       <tr>
         <th colspan="2"></th>
@@ -15,12 +15,12 @@
         <th class="instant-values">Energy (GWh)</th>
         <th>Power (MW)</th>
         <th>Contribution (%)</th>
-        <th>Average Value ($)</th>
+        <th v-if="showPrice">Average Value ($)</th>
 
         <!-- point info -->
         <th class="instant-values">Power (MW)</th>
         <th>Contribution (%)</th>
-        <th>Price ($)</th>
+        <th v-if="showPrice">Price ($)</th>
       </tr>
     </thead>
     <tbody>
@@ -34,12 +34,12 @@
         <td class="instant-values">{{formatNumber(item.range.energy)}}</td>
         <td>{{formatNumber(item.range.totalPower)}}</td>
         <td>{{formatNumber(item.range.totalPower/rangeTotal*100)}}%</td>
-        <td>{{formatNumber(item.range.averagePrice, '0,0.00')}}</td>
+        <td v-if="showPrice">{{formatNumber(item.range.averagePrice, '0,0.00')}}</td>
         
         <!-- point info -->
         <td class="instant-values">{{formatNumber(pointData[item.id])}}</td>
         <td>{{formatNumber(pointData[item.id]/pointTotal*100)}}%</td>
-        <td>{{formatNumber(pointData.rrp, '0,0.00')}}</td>
+        <td v-if="showPrice">{{formatNumber(pointData.rrp, '0,0.00')}}</td>
       </tr>
     </tbody>
 
@@ -50,11 +50,11 @@
         <td></td>
         <td>{{formatNumber(rangeTotal)}}</td>
         <td></td>
-        <td></td>
+        <td v-if="showPrice"></td>
 
         <td>{{formatNumber(pointTotal)}}</td>
         <td></td>
-        <td></td>
+        <td v-if="showPrice"></td>
       </tr>
     </tfoot>
     
@@ -74,7 +74,8 @@ export default {
     dateTo: Date,
     priceSeries: Object,
     showTotals: Boolean,
-    pointData: Object
+    pointData: Object,
+    showPrice: Boolean
   },
   data() {
     return {

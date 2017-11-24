@@ -2,7 +2,7 @@
   <div class="fuel-tech-chart-wrapper">
     <div class="loader" v-if="!chartRendered"></div>
     <div id="ft-vis"></div>
-    <FtSummary :tableData="summaryData" :pointData="pointData" :dateFrom="start" :dateTo="end"></FtSummary>
+    <FtSummary :tableData="summaryData" :pointData="pointData" :dateFrom="start" :dateTo="end" :showPrice="false"></FtSummary>
   </div>
 </template>
 
@@ -147,7 +147,6 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
     },
     panels: [{
       title: 'Generation (MW)',
-      percentHeight: 70,
       showCategoryAxis: false,
       listeners: [
         {
@@ -164,6 +163,7 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
         dashLength: 6,
         zeroGridAlpha: 0,
         stackType: 'regular',
+        minimum: 0,
         guides: [{ 
           includeGuidesInMinMax: false,
           value: 0,
@@ -178,48 +178,18 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
         valueTextRegular: ' ',
         markerType: 'none'
       }
-    }, 
-    {
-      title: 'Price ($)',
-      percentHeight: 30,
-      valueAxes: [ {
-        id: 'v3',
-        logarithmic: false,
-        dashLength: 6,
-        zeroGridAlpha: 0,
-        maximum: 300,
-        minimum: 0,
-        guides: [{ 
-          includeGuidesInMinMax: false,
-          value: 0,
-          dashLength: 0,
-          lineColor: '#000',
-          lineThickness: 1,
-          lineAlpha: 1
-        }],
-      } ],
-      stockGraphs: [{
-        id: 'p2',
-        valueAxis: 'v3',
-        valueField: 'RRP',
-        type: 'step',
-        lineAlpha: 0.5,
-        lineColor: '#000',
-        useDataSetColors: false
-      }], stockLegend: {
-        valueTextRegular: ' ',
-        markerType: 'none'
-      }
     }],
-    chartScrollbarSettings
+    chartScrollbarSettings: {
+      enabled: false
+    }
   })
 }
 </script>
 
-<style>
+<style scoped>
 #ft-vis {
   width: 100%;
-  height: 600px;
+  height: 350px;
 }
 
 </style>
