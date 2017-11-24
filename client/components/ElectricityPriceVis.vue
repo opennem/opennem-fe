@@ -1,8 +1,8 @@
 <template>
   <div class="fuel-tech-chart-wrapper">
     <div class="loader" v-if="!chartRendered"></div>
-    <div id="chartdiv"></div>
-    <Summary :tableData="summaryData" :pointData="pointData" :dateFrom="start" :dateTo="end"></Summary>
+    <div id="ft-vis"></div>
+    <FtSummary :tableData="summaryData" :pointData="pointData" :dateFrom="start" :dateTo="end" :showPrice="true"></FtSummary>
   </div>
 </template>
 
@@ -18,12 +18,12 @@ import {
   generateStockGraphs,
   generateChartScrollbarSettings
 } from '../utils/AmchartsDataTransform'
-import Summary from './EnergyAverageValueTable'
-import { FUEL_TECH_CONFIG } from '../utils/FuelTechConfig.js'
+import FtSummary from './EnergyAverageValueTable'
+import { FUEL_TECH } from '../utils/FuelTechConfig'
 
 export default {
   components: {
-    Summary
+    FtSummary
   },
   props: {},
   data() {
@@ -85,7 +85,7 @@ export default {
           rrp: dataContext['RRPAverage']
         }
 
-        Object.keys(FUEL_TECH_CONFIG).forEach(ft => {
+        Object.keys(FUEL_TECH).forEach(ft => {
           pointData[ft] = dataContext[`${ft}Average`]
         })
 
@@ -121,12 +121,12 @@ export default {
 }
 
 function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings, context) {
-  return AmCharts.makeChart('chartdiv', {
+  return AmCharts.makeChart('ft-vis', {
     type: 'stock',
     // mouseWheelScrollEnabled: true,
     mouseWheelZoomEnabled: true,
     categoryAxesSettings: {
-      minPeriod: "5mm",
+      minPeriod: '5mm',
       startOnAxis: true,
       equalSpacing: true,
       groupToPeriods: ['5mm', '15mm', '30mm', 'hh']
@@ -137,7 +137,6 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
       cursorColor: '#000',
       showNextAvailable: true
     },
-    
     dataSets: [
       {
         dataProvider: chartData,
@@ -145,6 +144,9 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
         fieldMappings
       }
     ], 
+    panelsSettings: {
+      fontFamily: 'Merriweather',
+    },
     panels: [{
       title: 'Generation (MW)',
       percentHeight: 70,
@@ -160,10 +162,10 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
         }
       ],
       valueAxes: [ {
-        id: "v1",
+        id: 'v1',
         dashLength: 6,
         zeroGridAlpha: 0,
-        stackType: "regular",
+        stackType: 'regular',
         guides: [{ 
           includeGuidesInMinMax: false,
           value: 0,
@@ -242,12 +244,9 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
 </script>
 
 <style>
-#chartdiv {
+#ft-vis {
   width: 100%;
-  height: 500px;
-}
-a[title='JavaScript charts'] {
-  display: none !important;
+  height: 600px;
 }
 
 </style>
