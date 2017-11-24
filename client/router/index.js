@@ -18,6 +18,10 @@ export default new Router({
       component: MarketByRegion
     },
     {
+      path: '/regions/:region/:ft',
+      component: EchartDemo
+    },
+    {
       path: '/echart',
       component: EchartDemo
     }

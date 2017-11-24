@@ -28,7 +28,7 @@
         <td style="width: 20px;">
           <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id)}"></div>
         </td>
-        <td style="text-align:left">{{getLabel(item.id)}}</td>
+        <td style="text-align:left"><a v-bind:href="`/#/regions/${region}/${item.id}`">{{getLabel(item.id)}}</a></td>
 
         <!-- range info -->
         <td class="instant-values">{{formatNumber(item.range.energy)}}</td>
@@ -80,7 +80,8 @@ export default {
   data() {
     return {
       pointTotal: 0,
-      rangeTotal: 0
+      rangeTotal: 0,
+      region: this.$route.params.region
     }
   },
   watch: {
