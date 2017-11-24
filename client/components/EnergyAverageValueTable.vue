@@ -28,8 +28,11 @@
         <td style="width: 20px;">
           <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id)}"></div>
         </td>
-        <td style="text-align:left"><a v-bind:href="`/#/regions/${region}/${item.id}`">{{getLabel(item.id)}}</a></td>
-
+        <td style="text-align:left">
+          <a v-if="showPrice" v-bind:href="`/#/regions/${region}/${item.id}`">{{getLabel(item.id)}}</a>
+          <span v-if="!showPrice">{{getLabel(item.id)}}</span>
+        </td>
+      
         <!-- range info -->
         <td class="instant-values">{{formatNumber(item.range.energy)}}</td>
         <td>{{formatNumber(item.range.totalPower)}}</td>
