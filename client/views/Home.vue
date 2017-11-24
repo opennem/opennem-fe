@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>openNEM</h1>
+    <!-- <h1>openNEM</h1> -->
 
     <div style="display: flex">
       <div id="mapDiv"></div>
@@ -12,7 +12,8 @@
 </template>
 
 <script>
-import Vis2 from '../components/ElectricityPriceVis'
+import { mapGetters } from 'vuex'
+import Vis2 from '../components/GenerationVis'
 import Vis from '../components/DemandVis'
 import FTRegionVis from '../components/FuelTechRegionVis'
 import { australiaSvg } from '../components/australiaSvg'
@@ -24,7 +25,7 @@ export default {
     FTRegionVis
   },
   created() {
-    this.$store.dispatch('fetchData', { region: 'sa1', week: '2017-10-14' })
+    this.$store.dispatch('fetchAllRegionsFtGen', { week: '2017-10-14' })
   },
   mounted() {
     const targetSVG = "M9,0C4.029,0,0,4.029,0,9s4.029,9,9,9s9-4.029,9-9S13.971,0,9,0z M9,15.93 c-3.83,0-6.93-3.1-6.93-6.93S5.17,2.07,9,2.07s6.93,3.1,6.93,6.93S12.83,15.93,9,15.93 M12.5,9c0,1.933-1.567,3.5-3.5,3.5S5.5,10.933,5.5,9S7.067,5.5,9,5.5 S12.5,7.067,12.5,9z";
@@ -88,7 +89,7 @@ h3 {
 }
 #mapDiv {
   width: 30%;
-  height: 400px;
+  height: 800px;
 }
 
 </style>

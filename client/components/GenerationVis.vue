@@ -46,10 +46,13 @@ export default {
         return moment(item.date).isBetween(this.start, this.end)
       })
 
+      console.log(filteredData)
+
       if (filteredData[0]) {
         const summaryData = []
 
         Object.keys(filteredData[0]).forEach(ft => {
+          console.log(ft)
           if (ft !== 'date' && ft !== 'DEMAND_AND_NONSCHEDGEN' && ft !== 'RRP') {
             const totalPower = filteredData.reduce((a, b) => {
               return a + b[ft]
@@ -95,15 +98,16 @@ export default {
   },
   computed: {
     ...mapGetters({
-       genData: 'getGenerationData',
-       priceData: 'getPriceData'
+       genData: 'getAllRegionsFtGen'
     })
   },
   watch: {
     genData(newData) {
-      this.chartData = generateChartData(newData)
+      console.log(newData)
+
+      this.chartData = newData
       this.chart = makeChart(
-        this.chartData, 
+        newData, 
         generateFieldMappings(),
         generateStockGraphs(),
         generateChartScrollbarSettings(),
@@ -111,12 +115,6 @@ export default {
       )
       this.chartRendered = true
     },
-    priceData(newData) {
-      if (this.chart) {
-        this.chart.dataSets[0].dataProvider = generatePriceData(this.chartData, newData)
-        this.chart.validateData()
-      }
-    }
   },
 }
 
@@ -181,31 +179,6 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
         markerType: 'none'
       }
     }, 
-    // {
-    //   title: 'Price',
-    //   percentHeight: 30,
-    //   valueAxes: [ {
-    //     id: 'v2',
-    //     logarithmic: true,
-    //     minimum: 300,
-    //     maximum: 15000,
-    //     strictMinMax: true,
-    //     includeGuidesInMinMax: false,
-    //     guides: [{ value: 300 }, { value: 1000 }, { value: 5000 }]
-    //   } ],
-    //   stockGraphs: [{
-    //     id: 'p1',
-    //     valueAxis: 'v2',
-    //     valueField: 'RRP',
-    //     type: 'step',
-    //     lineAlpha: 0.5,
-    //     lineColor: '#000',
-    //     useDataSetColors: false
-    //   }], stockLegend: {
-    //     // valueTextRegular: ' ',
-    //     // markerType: 'none'
-    //   }
-    // }, 
     {
       title: 'Price ($)',
       percentHeight: 30,

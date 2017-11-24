@@ -36,6 +36,37 @@ export function generateChartData(data) {
   return chartData
 }
 
+export function generateAlRegionsFTChartData(data) {
+  let chartData = []
+
+  Object.keys(FUEL_TECH).forEach(ftKey => {
+    if (data[ftKey]) {
+      let ft = data[ftKey]
+      let startDate = ft.start
+      let interval = ftKey === 'RRP' ? 30 : 5 // ft.interval
+      let ftData = ft.data
+      let hasChartData = chartData.length ? true : false
+  
+      const start = moment(startDate, moment.ISO_8601)
+  
+      for (let i=0; i<ftData.length; i++) {
+        const now = moment(start).add(interval*i, 'm')
+        const d = ftKey === 'NETINTERCHANGE' ? -ftData[i] : ftData[i]
+
+        if (!hasChartData) {
+          chartData[i] = {
+            date: now.toDate()
+          }
+
+        }
+        chartData[i][ftKey] = d
+      }
+    }
+  })
+
+  return chartData
+}
+
 export function generatePriceData(chartSeries, payload) {
   const priceData = [].concat(chartSeries)
   const rrp = payload['RRP']

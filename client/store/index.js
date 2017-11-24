@@ -2,8 +2,9 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import * as moment from 'moment'
+import * as _ from 'lodash'
 
-import { calculateHorizonValues } from '../utils/AmchartsDataTransform'
+import { calculateHorizonValues, generateChartData } from '../utils/AmchartsDataTransform'
 import { REGIONS, FUEL_TECH_GROUPS, FUEL_TECH } from '../utils/FuelTechConfig'
 
 Vue.use(Vuex)
@@ -17,7 +18,8 @@ const state = {
   generationData: null,
   priceData: null,
   demandData: [],
-  ftGenData: []
+  ftGenData: [],
+  allRegionsFtGenData: null
 }
 
 const mutations = {
@@ -32,6 +34,9 @@ const mutations = {
   },
   updateFtGenData(state, data) {
     state.ftGenData = data
+  },
+  updateAllRegionsFtGenData(state, data) {
+    state.allRegionsFtGenData = data
   }
 }
 
@@ -47,6 +52,9 @@ const getters = {
   },
   getFtGen: state => {
     return state.ftGenData
+  },
+  getAllRegionsFtGen: state => {
+    return state.allRegionsFtGenData
   }
 }
 
@@ -63,6 +71,54 @@ const actions = {
         commit('updateGenerationData', Object.assign(gen.data, dispatch.data))
         commit('updatePriceData', price.data)
       }));
+  },
+  fetchAllRegionsFtGen({commit}, data) {
+    const week = '2017-10-14'
+    const fetchGen1 = http.get(`/data/${week}/gen_5m_nsw1.json`)
+    const fetchGen2 = http.get(`/data/${week}/gen_5m_qld1.json`)
+    const fetchGen3 = http.get(`/data/${week}/gen_5m_sa1.json`)
+    const fetchGen4 = http.get(`/data/${week}/gen_5m_tas1.json`)
+    const fetchGen5 = http.get(`/data/${week}/gen_5m_vic1.json`)
+
+    axios.all([fetchGen1, fetchGen2, fetchGen3, fetchGen4, fetchGen5])
+      .then(axios.spread(function (gen1, gen2, gen3, gen4, gen5) {
+        const regionData = {
+          'nsw': gen1.data,
+          'qld': gen2.data,
+          'sa': gen3.data,
+          'tas': gen4.data,
+          'vic': gen5.data
+        }
+        let data = null
+
+        console.log(regionData)
+
+        Object.keys(regionData).forEach((regionKey, regionIndex) => {
+          const regionFtData = regionData[regionKey]
+          if (!data) {
+            data = _.cloneDeep(regionFtData)
+          } else {
+            data = _.mergeWith(data, regionFtData, function(objValue, srcValue) {
+              if (objValue) {
+                const objData = objValue.data
+                const srcData = srcValue.data
+
+                objData.forEach((value, index) => {
+                  objData[index] = value + srcData[index]
+                })
+
+                objValue.data = objData
+
+                return objValue
+              } else {
+                return srcValue
+              }
+            })
+          }
+        })
+        
+        commit('updateAllRegionsFtGenData', generateChartData(data))
+      }))
   },
   fetchFtGen({commit}, data) {
     const week = '2017-10-14'
