@@ -2,7 +2,7 @@
   <div class="fuel-tech-chart-wrapper">
     <div class="loader" v-if="!chartRendered"></div>
     <div id="ft-vis"></div>
-    <FtSummary :tableData="summaryData" :pointData="pointData" :dateFrom="start" :dateTo="end" :showPrice="true"></FtSummary>
+    <FtSummary :tableData="summaryData" :pointData="pointData" :dateFrom="start" :dateTo="end" :showPrice="false"></FtSummary>
   </div>
 </template>
 
@@ -46,10 +46,13 @@ export default {
         return moment(item.date).isBetween(this.start, this.end)
       })
 
+      console.log(filteredData)
+
       if (filteredData[0]) {
         const summaryData = []
 
         Object.keys(filteredData[0]).forEach(ft => {
+          console.log(ft)
           if (ft !== 'date' && ft !== 'DEMAND_AND_NONSCHEDGEN' && ft !== 'RRP') {
             const totalPower = filteredData.reduce((a, b) => {
               return a + b[ft]
@@ -95,15 +98,16 @@ export default {
   },
   computed: {
     ...mapGetters({
-       genData: 'getGenerationData',
-       priceData: 'getPriceData'
+       genData: 'getAllRegionsFtGen'
     })
   },
   watch: {
     genData(newData) {
-      this.chartData = generateChartData(newData)
+      console.log(newData)
+
+      this.chartData = newData
       this.chart = makeChart(
-        this.chartData, 
+        newData, 
         generateFieldMappings(),
         generateStockGraphs(),
         generateChartScrollbarSettings(),
@@ -111,12 +115,6 @@ export default {
       )
       this.chartRendered = true
     },
-    priceData(newData) {
-      if (this.chart) {
-        this.chart.dataSets[0].dataProvider = generatePriceData(this.chartData, newData)
-        this.chart.validateData()
-      }
-    }
   },
 }
 
@@ -149,7 +147,6 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
     },
     panels: [{
       title: 'Generation (MW)',
-      percentHeight: 70,
       showCategoryAxis: false,
       listeners: [
         {
@@ -166,6 +163,7 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
         dashLength: 6,
         zeroGridAlpha: 0,
         stackType: 'regular',
+        minimum: 0,
         guides: [{ 
           includeGuidesInMinMax: false,
           value: 0,
@@ -180,73 +178,18 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
         valueTextRegular: ' ',
         markerType: 'none'
       }
-    }, 
-    // {
-    //   title: 'Price',
-    //   percentHeight: 30,
-    //   valueAxes: [ {
-    //     id: 'v2',
-    //     logarithmic: true,
-    //     minimum: 300,
-    //     maximum: 15000,
-    //     strictMinMax: true,
-    //     includeGuidesInMinMax: false,
-    //     guides: [{ value: 300 }, { value: 1000 }, { value: 5000 }]
-    //   } ],
-    //   stockGraphs: [{
-    //     id: 'p1',
-    //     valueAxis: 'v2',
-    //     valueField: 'RRP',
-    //     type: 'step',
-    //     lineAlpha: 0.5,
-    //     lineColor: '#000',
-    //     useDataSetColors: false
-    //   }], stockLegend: {
-    //     // valueTextRegular: ' ',
-    //     // markerType: 'none'
-    //   }
-    // }, 
-    {
-      title: 'Price ($)',
-      percentHeight: 30,
-      valueAxes: [ {
-        id: 'v3',
-        logarithmic: false,
-        dashLength: 6,
-        zeroGridAlpha: 0,
-        maximum: 300,
-        minimum: 0,
-        guides: [{ 
-          includeGuidesInMinMax: false,
-          value: 0,
-          dashLength: 0,
-          lineColor: '#000',
-          lineThickness: 1,
-          lineAlpha: 1
-        }],
-      } ],
-      stockGraphs: [{
-        id: 'p2',
-        valueAxis: 'v3',
-        valueField: 'RRP',
-        type: 'step',
-        lineAlpha: 0.5,
-        lineColor: '#000',
-        useDataSetColors: false
-      }], stockLegend: {
-        valueTextRegular: ' ',
-        markerType: 'none'
-      }
     }],
-    chartScrollbarSettings
+    chartScrollbarSettings: {
+      enabled: false
+    }
   })
 }
 </script>
 
-<style>
+<style scoped>
 #ft-vis {
   width: 100%;
-  height: 600px;
+  height: 350px;
 }
 
 </style>

@@ -2,15 +2,44 @@
  * Transform the data to suit Amcharts model
  * TODO: use config to generate field mappings and graph settings.
  */
-
 import * as moment from 'moment'
-import numeral from 'numeral'
-import { FUEL_TECH_CONFIG } from './FuelTechConfig.js'
+import { FUEL_TECH } from './FuelTechConfig'
 
 export function generateChartData(data) {
   let chartData = []
 
-  Object.keys(FUEL_TECH_CONFIG).forEach(ftKey => {
+  Object.keys(FUEL_TECH).forEach(ftKey => {
+    if (data[ftKey]) {
+      let ft = data[ftKey]
+      let startDate = ft.start
+      let interval = ftKey === 'RRP' ? 30 : 5 // ft.interval
+      let ftData = ft.data
+      let hasChartData = chartData.length ? true : false
+  
+      const start = moment(startDate, moment.ISO_8601)
+  
+      for (let i=0; i<ftData.length; i++) {
+        const now = moment(start).add(interval*i, 'm')
+        const d = ftKey === 'NETINTERCHANGE' ? -ftData[i] : ftData[i]
+
+        if (!hasChartData) {
+          chartData[i] = {
+            date: now.toDate()
+          }
+
+        }
+        chartData[i][ftKey] = d
+      }
+    }
+  })
+
+  return chartData
+}
+
+export function generateAlRegionsFTChartData(data) {
+  let chartData = []
+
+  Object.keys(FUEL_TECH).forEach(ftKey => {
     if (data[ftKey]) {
       let ft = data[ftKey]
       let startDate = ft.start
@@ -70,7 +99,7 @@ export function generateFieldMappings() {
     toField: 'RRP'
   }]
 
-  Object.keys(FUEL_TECH_CONFIG).forEach(ftKey => {
+  Object.keys(FUEL_TECH).forEach(ftKey => {
     mappings.push({
       fromField: ftKey,
       toField: ftKey
@@ -83,8 +112,8 @@ export function generateFieldMappings() {
 export function generateStockGraphs() {
   const graphs = []
 
-  Object.keys(FUEL_TECH_CONFIG).forEach((ftKey, index) => {
-    const colour = FUEL_TECH_CONFIG[ftKey].colour
+  Object.keys(FUEL_TECH).forEach((ftKey, index) => {
+    const colour = FUEL_TECH[ftKey].colour
     const negativeFillAlphas = ftKey === 'NETINTERCHANGE' ? 0 : 0.8
     
     graphs.push({
@@ -122,4 +151,21 @@ export function generateChartScrollbarSettings() {
     dragIconWidth: 24,
     scrollbarHeight: 50
   }
+}
+
+export function calculateHorizonValues(data) {
+  let x = data
+  let r = x/4000
+  let v = []
+  
+  for (var y=0; y<3; y++) {
+    if (r > 1) {
+      v[y] = 1
+      r = r - 1
+    } else {
+      v[y] = r ? r : 0
+      r = null
+    }
+  }
+  return v
 }
