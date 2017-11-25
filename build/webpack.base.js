@@ -75,8 +75,8 @@ module.exports = {
     new webpack.LoaderOptionsPlugin(_.loadersOptions()),
     new CopyWebpackPlugin([
       {
-        from: _.cwd('./static'),
-        // to the roor of dist path
+        from: _.cwd('./static2'),
+        // to the root of dist path
         to: './'
       }
     ])
