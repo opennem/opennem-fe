@@ -16,7 +16,7 @@ import { mapGetters } from 'vuex'
 import Vis2 from '../components/GenerationVis'
 import Vis from '../components/DemandVis'
 import FTRegionVis from '../components/FuelTechRegionVis'
-import { australiaSvg } from '../components/australiaSvg'
+import { australiaSvg } from '../components/AustraliaSvg'
 
 export default {
   components: {
