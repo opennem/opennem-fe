@@ -4,17 +4,24 @@
   </div>
 </template>
 
+<script>
+
+export default {}
+</script>
+
+
 <style>
 /* @import url('https://fonts.googleapis.com/css?family=Raleway:700'); */
-@import url('https://fonts.googleapis.com/css?family=Merriweather:300,400,700');
+@import url("https://fonts.googleapis.com/css?family=Merriweather:300,400,700");
 
 body {
-  background: #ECE9E6;
+  background: #ece9e6;
   /* font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', Ubuntu, 'segoe ui', arial, sans-serif; */
-  font-family: 'Merriweather', serif;
+  font-family: "Merriweather", serif;
 }
-select, option {
-  font-family: 'Merriweather', serif;
+select,
+option {
+  font-family: "Merriweather", serif;
 }
 
 h2 {
@@ -24,8 +31,8 @@ h2 {
   border-bottom: 1px solid #000;
 }
 
-a[title='JavaScript charts'],
-a[title='Interactive JavaScript maps'] {
+a[title="JavaScript charts"],
+a[title="Interactive JavaScript maps"] {
   display: none !important;
 }
 
@@ -42,11 +49,11 @@ a[title='Interactive JavaScript maps'] {
   height: 2em;
   border-radius: 50%;
   background: #000000;
-  background: -moz-linear-gradient(left, #000000 10%, rgba(0,0,0, 0) 42%);
-  background: -webkit-linear-gradient(left, #000000 10%, rgba(0,0,0, 0) 42%);
-  background: -o-linear-gradient(left, #000000 10%, rgba(0,0,0, 0) 42%);
-  background: -ms-linear-gradient(left, #000000 10%, rgba(0,0,0, 0) 42%);
-  background: linear-gradient(to right, #000000 10%, rgba(0,0,0, 0) 42%);
+  background: -moz-linear-gradient(left, #000000 10%, rgba(0, 0, 0, 0) 42%);
+  background: -webkit-linear-gradient(left, #000000 10%, rgba(0, 0, 0, 0) 42%);
+  background: -o-linear-gradient(left, #000000 10%, rgba(0, 0, 0, 0) 42%);
+  background: -ms-linear-gradient(left, #000000 10%, rgba(0, 0, 0, 0) 42%);
+  background: linear-gradient(to right, #000000 10%, rgba(0, 0, 0, 0) 42%);
   position: relative;
   -webkit-animation: load3 0.5s infinite linear;
   animation: load3 0.5s infinite linear;
@@ -62,14 +69,14 @@ a[title='Interactive JavaScript maps'] {
   position: absolute;
   top: 0;
   left: 0;
-  content: '';
+  content: "";
 }
 .loader:after {
-  background: #ECE9E6;
+  background: #ece9e6;
   width: 75%;
   height: 75%;
   border-radius: 50%;
-  content: '';
+  content: "";
   margin: auto;
   position: absolute;
   top: 0;
@@ -97,6 +104,4 @@ a[title='Interactive JavaScript maps'] {
     transform: rotate(360deg);
   }
 }
- 
-
 </style>

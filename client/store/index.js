@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import * as firebase from 'firebase';
 import * as moment from 'moment'
 import * as _ from 'lodash'
 
@@ -8,6 +9,17 @@ import { calculateHorizonValues, generateChartData } from '../utils/AmchartsData
 import { REGIONS, FUEL_TECH_GROUPS, FUEL_TECH } from '../utils/FuelTechConfig'
 
 Vue.use(Vuex)
+
+let config = {
+  apiKey: "AIzaSyBb_0dWQMoQdkoJC45bBQ_Z7W4JnvT5dj8",
+  authDomain: "opennem-1.firebaseapp.com",
+  projectId: "opennem-1",
+  storageBucket: "opennem-1.appspot.com",
+};
+firebase.initializeApp(config)
+
+// Get a reference to the storage service, which is used to create references in your storage bucket
+let storage = firebase.storage()
 
 const http = axios.create({
 	baseURL: '/',
@@ -70,17 +82,26 @@ const actions = {
       .then(axios.spread(function (gen, dispatch, price) {
         commit('updateGenerationData', Object.assign(gen.data, dispatch.data))
         commit('updatePriceData', price.data)
-      }));
+      }))
   },
   fetchAllRegionsFtGen({commit}, data) {
     const week = '2017-10-14'
-    const fetchGen1 = http.get(`/data/${week}/gen_5m_nsw1.json`)
-    const fetchGen2 = http.get(`/data/${week}/gen_5m_qld1.json`)
-    const fetchGen3 = http.get(`/data/${week}/gen_5m_sa1.json`)
-    const fetchGen4 = http.get(`/data/${week}/gen_5m_tas1.json`)
-    const fetchGen5 = http.get(`/data/${week}/gen_5m_vic1.json`)
 
-    axios.all([fetchGen1, fetchGen2, fetchGen3, fetchGen4, fetchGen5])
+    const fetchNsw = storage.ref(`${week}/gen_5m_nsw1.json`).getDownloadURL()
+    const fetchQld = storage.ref(`${week}/gen_5m_qld1.json`).getDownloadURL()
+    const fetchSa = storage.ref(`${week}/gen_5m_sa1.json`).getDownloadURL()
+    const fetchTas = storage.ref(`${week}/gen_5m_tas1.json`).getDownloadURL()
+    const fetchVic = storage.ref(`${week}/gen_5m_vic1.json`).getDownloadURL()
+
+    Promise.all([fetchNsw, fetchQld, fetchSa, fetchTas, fetchVic]).then(urls => {
+
+      const fetchGen1 = http.get(urls[0])
+      const fetchGen2 = http.get(urls[1])
+      const fetchGen3 = http.get(urls[2])
+      const fetchGen4 = http.get(urls[3])
+      const fetchGen5 = http.get(urls[4])
+  
+      axios.all([fetchGen1, fetchGen2, fetchGen3, fetchGen4, fetchGen5])
       .then(axios.spread(function (gen1, gen2, gen3, gen4, gen5) {
         const regionData = {
           'nsw': gen1.data,
@@ -119,6 +140,8 @@ const actions = {
         
         commit('updateAllRegionsFtGenData', generateChartData(data))
       }))
+    })
+    
   },
   fetchFtGen({commit}, data) {
     const week = '2017-10-14'
