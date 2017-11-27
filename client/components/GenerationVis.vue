@@ -46,13 +46,11 @@ export default {
         return moment(item.date).isBetween(this.start, this.end)
       })
 
-      console.log(filteredData)
 
       if (filteredData[0]) {
         const summaryData = []
 
         Object.keys(filteredData[0]).forEach(ft => {
-          console.log(ft)
           if (ft !== 'date' && ft !== 'DEMAND_AND_NONSCHEDGEN' && ft !== 'RRP') {
             const totalPower = filteredData.reduce((a, b) => {
               return a + b[ft]
@@ -103,7 +101,6 @@ export default {
   },
   watch: {
     genData(newData) {
-      console.log(newData)
 
       this.chartData = newData
       this.chart = makeChart(
