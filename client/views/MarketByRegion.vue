@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import Vis from '../components/ElectricityPriceVis'
 
 const regions = [
@@ -69,17 +70,16 @@ export default {
   },
   methods: {
     onRegionSelectorChange(event) {
-      console.log(event.target.value)
       this.selectedRegion = event.target.value
       this.fetchData()
     },
     onWeekRangeChange(event) {
-      console.log(event.target.value)
       this.weekStarting = event.target.value
+      this.$store.commit('updateWeekStarting', event.target.value)
       this.fetchData()
     },
     fetchData() {
-      this.$store.dispatch('fetchData', { region: this.selectedRegion, week: this.weekStarting })
+      this.$store.dispatch('fetchData', { region: this.selectedRegion })
     },
     checked(val) {
       console.log(val)

@@ -26,7 +26,7 @@ const http = axios.create({
 })
 
 const state = {
-  weekStarting: '',
+  weekStarting: '2017-10-14',
   generationData: null,
   priceData: null,
   demandData: [],
@@ -35,6 +35,9 @@ const state = {
 }
 
 const mutations = {
+  updateWeekStarting(state, data) {
+    state.weekStarting = data
+  },
   updateGenerationData(state, data) {
     state.generationData = data
   },
@@ -53,6 +56,9 @@ const mutations = {
 }
 
 const getters = {
+  getWeekStarting: state => {
+    return state.weekStarting
+  },
   getGenerationData: state => {
     return state.generationData
   },
@@ -71,10 +77,11 @@ const getters = {
 }
 
 const actions = {
-  fetchData({commit}, data) {
-    const getGenURL = storage.ref(`${data.week}/gen_5m_${data.region}.json`).getDownloadURL()
-    const getDispatchURL = storage.ref(`${data.week}/dispatch_5m_${data.region}.json`).getDownloadURL()
-    const getPriceURL = storage.ref(`${data.week}/price_30m_${data.region}.json`).getDownloadURL()
+  fetchData({commit, state}, data) {
+    const week = state.weekStarting
+    const getGenURL = storage.ref(`${week}/gen_5m_${data.region}.json`).getDownloadURL()
+    const getDispatchURL = storage.ref(`${week}/dispatch_5m_${data.region}.json`).getDownloadURL()
+    const getPriceURL = storage.ref(`${week}/price_30m_${data.region}.json`).getDownloadURL()
 
     Promise.all([getGenURL, getDispatchURL, getPriceURL]).then(urls => {
       const fetchGen = http.get(urls[0])
@@ -88,8 +95,8 @@ const actions = {
         }))
     })
   },
-  fetchAllRegionsFtGen({commit}, data) {
-    const week = '2017-10-14'
+  fetchAllRegionsFtGen({commit, state}, data) {
+    const week = state.weekStarting
 
     const fetchNsw = storage.ref(`${week}/gen_5m_nsw1.json`).getDownloadURL()
     const fetchQld = storage.ref(`${week}/gen_5m_qld1.json`).getDownloadURL()
@@ -147,8 +154,8 @@ const actions = {
     })
     
   },
-  fetchFtGen({commit}, data) {
-    const week = '2017-10-14'
+  fetchFtGen({commit, state}, data) {
+    const week = state.weekStarting
 
     const fetchNsw = storage.ref(`${week}/gen_5m_nsw1.json`).getDownloadURL()
     const fetchQld = storage.ref(`${week}/gen_5m_qld1.json`).getDownloadURL()
@@ -206,8 +213,8 @@ const actions = {
     })
     
   },
-  fetchDemand({commit}, data) {
-    const week = '2017-10-14'
+  fetchDemand({commit, state}, data) {
+    const week = state.weekStarting
     const fetchNsw = storage.ref(`${week}/dispatch_5m_nsw1.json`).getDownloadURL()
     const fetchQld = storage.ref(`${week}/dispatch_5m_qld1.json`).getDownloadURL()
     const fetchSa = storage.ref(`${week}/dispatch_5m_sa1.json`).getDownloadURL()
