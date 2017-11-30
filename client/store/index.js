@@ -31,7 +31,8 @@ const state = {
   priceData: null,
   demandData: [],
   ftGenData: [],
-  allRegionsFtGenData: null
+  allRegionsFtGenData: null,
+  regionFtByGeneratorsData: null
 }
 
 const mutations = {
@@ -52,6 +53,9 @@ const mutations = {
   },
   updateAllRegionsFtGenData(state, data) {
     state.allRegionsFtGenData = data
+  },
+  updateRegionFtByGeneratorsData(state, data) {
+    state.regionFtByGeneratorsData = data
   }
 }
 
@@ -73,6 +77,9 @@ const getters = {
   },
   getAllRegionsFtGen: state => {
     return state.allRegionsFtGenData
+  },
+  getRegionFtByGeneratorsData: state => {
+    return state.regionFtByGeneratorsData
   }
 }
 
@@ -286,7 +293,25 @@ const actions = {
 
 
     
-  }
+  },
+  fetchRegionFtByGeneratorsData({commit, state}, data) {
+    const week = state.weekStarting
+    const getURL = storage.ref(`${week}/gen_5m_${data.region}1_${data.ft}.json`).getDownloadURL()
+
+    getURL.then(url => {
+      http.get(url).then(generators => {
+        console.log(generators)
+        console.log(typeof generators.data)
+        let res = generators.data
+
+        if (typeof generators.data === 'string') {
+          res = generators.data.replace(/NaN/g, 'null')
+          res = JSON.parse(res)
+        }
+        commit('updateRegionFtByGeneratorsData', res)
+      })
+    })
+  },
 }
 
 const store = new Vuex.Store({
