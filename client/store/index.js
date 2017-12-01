@@ -75,7 +75,8 @@ const actions = {
 
     axios.all([fetchGen, fetchDispatch, fetchPrice])
       .then(axios.spread((gen, dispatch, price) => {
-        commit('updateGenerationData', Object.assign(gen.data, dispatch.data))
+        const data = Object.assign(gen.data, dispatch.data)
+        commit('updateGenerationData', data)
         commit('updatePriceData', price.data)
       })
     )
