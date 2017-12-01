@@ -1,25 +1,17 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
-import * as firebase from 'firebase';
 import * as moment from 'moment'
 import * as _ from 'lodash'
 
 import { calculateHorizonValues, generateChartData } from '../utils/AmchartsDataTransform'
 import { REGIONS, FUEL_TECH_GROUPS, FUEL_TECH } from '../utils/FuelTechConfig'
+import { FirebaseStorage } from '../utils/Firebase'
 
 Vue.use(Vuex)
 
-let config = {
-  apiKey: "AIzaSyBb_0dWQMoQdkoJC45bBQ_Z7W4JnvT5dj8",
-  authDomain: "opennem-1.firebaseapp.com",
-  projectId: "opennem-1",
-  storageBucket: "opennem-1.appspot.com",
-};
-firebase.initializeApp(config)
-
 // Get a reference to the storage service, which is used to create references in your storage bucket
-let storage = firebase.storage()
+let storage = FirebaseStorage
 
 const http = axios.create({
 	baseURL: '/',
@@ -32,7 +24,7 @@ const state = {
   demandData: [],
   ftGenData: [],
   allRegionsFtGenData: null,
-  regionFtByGeneratorsData: null
+  regionFtByGeneratorsData: null,
 }
 
 const mutations = {
@@ -290,9 +282,6 @@ const actions = {
         })
       )
     })
-
-
-    
   },
   fetchRegionFtByGeneratorsData({commit, state}, data) {
     const week = state.weekStarting
