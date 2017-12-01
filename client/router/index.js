@@ -15,6 +15,7 @@ export default new Router({
       component: Home
     },
     {
+      name: 'regions',
       path: '/regions/:region',
       component: MarketByRegion
     },
