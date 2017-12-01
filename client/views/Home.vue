@@ -4,10 +4,10 @@
 
     <div style="display: flex">
       <MapVis style="width: 30%"></MapVis>
-      <Vis2 style="width: 70%"></Vis2>
+      <Vis2 style="width: 70%" :genData="genData"></Vis2>
     </div>
-    <!-- <Vis></Vis>
-    <FTRegionVis></FTRegionVis> -->
+    <Vis></Vis>
+    <FTRegionVis></FTRegionVis>
   </div>
 </template>
 
@@ -25,10 +25,14 @@ export default {
     FTRegionVis,
     MapVis
   },
-  created() {
+  mounted() {
     this.$store.dispatch('fetchAllRegionsFtGen', { week: '2017-10-14' })
   },
-  
+  computed: {
+    ...mapGetters({
+       genData: 'getAllRegionsFtGen'
+    })
+  },
 }
 </script>
 
@@ -36,6 +40,4 @@ export default {
 h3 {
   border-bottom: 1px solid #000;
 }
-
-
 </style>

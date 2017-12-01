@@ -25,7 +25,9 @@ export default {
   components: {
     FtSummary
   },
-  props: {},
+  props: {
+    genData: Array
+  },
   data() {
     return {
       chartRendered: false,
@@ -94,14 +96,8 @@ export default {
       }
     }
   },
-  computed: {
-    ...mapGetters({
-       genData: 'getAllRegionsFtGen'
-    })
-  },
   watch: {
     genData(newData) {
-
       this.chartData = newData
       this.chart = makeChart(
         newData, 

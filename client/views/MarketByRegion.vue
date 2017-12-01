@@ -65,7 +65,7 @@ export default {
       weekStarting: '2017-10-14'
     }
   },
-  created() {
+  mounted() {
     this.fetchData()
   },
   methods: {
