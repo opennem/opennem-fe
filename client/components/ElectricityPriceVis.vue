@@ -7,8 +7,6 @@
 </template>
 
 <script>
-import numeral from 'numeral'
-import { mapGetters } from 'vuex'
 import * as moment from 'moment'
 
 import { 
@@ -25,7 +23,10 @@ export default {
   components: {
     FtSummary
   },
-  props: {},
+  props: {
+    genData: {},
+    priceData: {}
+  },
   data() {
     return {
       chartRendered: false,
@@ -93,12 +94,7 @@ export default {
       }
     }
   },
-  computed: {
-    ...mapGetters({
-       genData: 'getGenerationData',
-       priceData: 'getPriceData'
-    })
-  },
+  
   watch: {
     genData(newData) {
       this.chartData = generateChartData(newData)

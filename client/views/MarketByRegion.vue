@@ -23,7 +23,7 @@
         </select>
       </div>
     </header>
-    <Vis></Vis>
+    <Vis :genData="genData" :priceData="priceData"></Vis>
   </div>
 </template>
 
@@ -67,6 +67,12 @@ export default {
   },
   mounted() {
     this.fetchData()
+  },
+  computed: {
+    ...mapGetters({
+       genData: 'getGenerationData',
+       priceData: 'getPriceData'
+    })
   },
   methods: {
     onRegionSelectorChange(event) {
