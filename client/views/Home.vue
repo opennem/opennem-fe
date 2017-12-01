@@ -4,26 +4,28 @@
 
     <div style="display: flex">
       <MapVis style="width: 30%"></MapVis>
-      <Vis2 style="width: 70%" :genData="genData"></Vis2>
+      <GenerationVis style="width: 70%" :genData="genData"></GenerationVis>
     </div>
-    <Vis></Vis>
-    <FTRegionVis></FTRegionVis>
+    <!-- <Vis></Vis>
+    <FTRegionVis></FTRegionVis> -->
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import Vis2 from '../components/GenerationVis'
-import Vis from '../components/DemandVis'
+
 import MapVis from '../components/Map'
-import FTRegionVis from '../components/FuelTechRegionVis'
+import GenerationVis from '../components/GenerationVis'
+
+// import Vis from '../components/DemandVis'
+// import FTRegionVis from '../components/FuelTechRegionVis'
 
 export default {
   components: {
-    Vis2,
-    Vis,
-    FTRegionVis,
-    MapVis
+    GenerationVis,
+    MapVis,
+    // Vis,
+    // FTRegionVis,
   },
   mounted() {
     this.$store.dispatch('fetchAllRegionsFtGen', { week: '2017-10-14' })
@@ -37,7 +39,5 @@ export default {
 </script>
 
 <style>
-h3 {
-  border-bottom: 1px solid #000;
-}
+
 </style>
