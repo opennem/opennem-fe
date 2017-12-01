@@ -2,16 +2,11 @@
   <div>
     <header>
       <h2>
-      <select class="region-selector" v-on:change="onRegionSelectorChange">
-        <option value="nsw1" v-bind:checked="checked">New South Wales</option>
-        <option value="qld1">Queensland</option>
-        <option value="sa1">South Australia</option>
-        <option value="tas1">Tasmania</option>
-        <option value="vic1">Victoria</option>
+      <select class="region-selector" v-model="selectedRegion" v-on:change="onRegionChange">
+        <option v-for="region in regions" :value="region.regionId">
+          {{ region.label }}
+        </option>
       </select>
-      <!-- <select class="region-selector" v-model="selectedRegion">
-        <option v-repeat="regions" :value="regionId">{{label}}</option>
-      </select> -->
       </h2>
       <div class="date-range">
         <select class="week-selector" v-on:change="onWeekRangeChange">
@@ -23,7 +18,8 @@
         </select>
       </div>
     </header>
-    <Vis :genData="genData" :priceData="priceData"></Vis>
+    <div class="loader" v-if="!dataReady"></div>
+    <Vis v-show="dataReady" :genData="genData" :priceData="priceData"></Vis>
   </div>
 </template>
 
@@ -33,23 +29,23 @@ import Vis from '../components/ElectricityPriceVis'
 
 const regions = [
   {
-    regionId: 'nsw1',
+    regionId: 'nsw',
     label: 'New South Wales'
   },
   {
-    regionId: 'qld1',
+    regionId: 'qld',
     label: 'Queensland'
   },
   {
-    regionId: 'sa1',
+    regionId: 'sa',
     label: 'South Australia'
   },
   {
-    regionId: 'tas1',
+    regionId: 'tas',
     label: 'Tasmania'
   },
   {
-    regionId: 'vic1',
+    regionId: 'vic',
     label: 'Victoria'
   }
 ]
@@ -61,12 +57,20 @@ export default {
   data() {
     return {
       regions,
-      selectedRegion: this.$route.params.region + '1',
-      weekStarting: '2017-10-14'
+      selectedRegion: this.$route.params.region,
+      weekStarting: '2017-10-14',
+      dataReady: false
     }
   },
   mounted() {
     this.fetchData()
+  },
+  watch: {
+    // call again the method if the route changes
+    '$route': 'fetchData',
+    genData() {
+      this.dataReady = true
+    }
   },
   computed: {
     ...mapGetters({
@@ -75,9 +79,8 @@ export default {
     })
   },
   methods: {
-    onRegionSelectorChange(event) {
-      this.selectedRegion = event.target.value
-      this.fetchData()
+    onRegionChange(event) {
+      this.$router.replace({ name: 'regions', params: { region: event.target.value } })
     },
     onWeekRangeChange(event) {
       this.weekStarting = event.target.value
@@ -85,11 +88,9 @@ export default {
       this.fetchData()
     },
     fetchData() {
+      this.dataReady = false
       this.$store.dispatch('fetchData', { region: this.selectedRegion })
     },
-    checked(val) {
-      console.log(val)
-    }
   }
 }
 

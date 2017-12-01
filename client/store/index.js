@@ -69,9 +69,9 @@ const getters = {
 const actions = {
   fetchData({ commit, state }, data) {
     const week = state.weekStarting
-    const fetchGen = getJSON(`${week}/gen_5m_${data.region}.json`)
-    const fetchDispatch = getJSON(`${week}/dispatch_5m_${data.region}.json`)
-    const fetchPrice = getJSON(`${week}/price_30m_${data.region}.json`)
+    const fetchGen = getJSON(`${week}/gen_5m_${data.region}1.json`)
+    const fetchDispatch = getJSON(`${week}/dispatch_5m_${data.region}1.json`)
+    const fetchPrice = getJSON(`${week}/price_30m_${data.region}1.json`)
 
     axios.all([fetchGen, fetchDispatch, fetchPrice])
       .then(axios.spread((gen, dispatch, price) => {
