@@ -9,7 +9,7 @@ import { sumRegionsFuelTech, sumFuelTechByRegion, sumDemandByRegion } from './da
 Vue.use(Vuex)
 
 const state = {
-  weekStarting: '2017-10-14',
+  weekStarting: '2017-11-04',
   generationData: null,
   priceData: null,
   demandData: [],

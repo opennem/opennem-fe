@@ -24,7 +24,7 @@
       </tr>
     </thead>
     <tbody>
-       <tr v-for="item in tableData" class="active">
+       <tr v-for="item in tableData" :key="item.id" class="active">
         <td style="width: 20px;">
           <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id)}"></div>
         </td>

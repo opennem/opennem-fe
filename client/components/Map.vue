@@ -81,7 +81,7 @@ export default {
           break
       }
       console.log(event.mapObject)
-      this.$router.push({ name: 'regions', params: { region } })
+      this.$router.replace({ name: 'regions', params: { region } })
     })
   }
 }

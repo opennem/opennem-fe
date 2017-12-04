@@ -1,27 +1,94 @@
 <template>
   <div id="app">
+    <header>
+      <h2>
+      <select v-model="selectedRegion" v-on:change="onRegionChange">
+        <option v-for="region in regions" :key="region.id" :value="region.id">
+          {{ region.label }}
+        </option>
+      </select>
+      </h2>
+      <div class="date-range">
+        <select class="week-selector" v-on:change="onWeekRangeChange">
+          <option value="2017-11-04">Week starting 04 Nov 2017</option>
+          <option value="2017-10-28">Week starting 28 Oct 2017</option>
+          <option value="2017-10-21">Week starting 21 Oct 2017</option>
+          <option value="2017-10-14">Week starting 14 Oct 2017</option>
+          <option value="2017-10-02">Week starting 02 Oct 2017</option>
+        </select>
+      </div>
+    </header>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
+const regions = [
+  {
+    id: 'all',
+    label: 'All NEM Regions'
+  },
+  {
+    id: 'nsw',
+    label: 'New South Wales'
+  },
+  {
+    id: 'qld',
+    label: 'Queensland'
+  },
+  {
+    id: 'sa',
+    label: 'South Australia'
+  },
+  {
+    id: 'tas',
+    label: 'Tasmania'
+  },
+  {
+    id: 'vic',
+    label: 'Victoria'
+  }
+]
 
-export default {}
+export default {
+  data() {
+    return {
+      regions,
+      selectedRegion: this.$route.params.region
+    }
+  },
+  methods: {
+    onRegionChange(event) {
+      console.log(this.$route.params.region)
+      console.log(event.target.value)
+      if (event.target.value === 'all') {
+        this.$router.replace({ name: 'home' })
+      } else {
+        this.$router.replace({ name: 'regions', params: { region: event.target.value } })
+      }
+    },
+    onWeekRangeChange(event) {
+      // this.weekStarting = event.target.value
+      this.$store.commit('updateWeekStarting', event.target.value)
+      // this.fetchData()
+    },
+  }
+}
 </script>
 
 
 <style>
 /* @import url('https://fonts.googleapis.com/css?family=Raleway:700'); */
-@import url("https://fonts.googleapis.com/css?family=Merriweather:300,400,700");
+/* @import url("https://fonts.googleapis.com/css?family=Merriweather:300,400,700"); */
 
 body {
   background: #ece9e6;
-  /* font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', Ubuntu, 'segoe ui', arial, sans-serif; */
-  font-family: "Merriweather", serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', Ubuntu, 'segoe ui', arial, sans-serif;
+  /* font-family: "Merriweather", serif; */
 }
 select,
 option {
-  font-family: "Merriweather", serif;
+  /* font-family: "Merriweather", serif; */
 }
 
 h2 {
@@ -38,6 +105,18 @@ a[title="Interactive JavaScript maps"] {
 
 #app {
   padding: 2rem;
+}
+
+.region-selector {
+  background: none;
+  font-size: 1.5rem;
+  border: none;
+  padding: 0 1rem;
+  -webkit-appearance: none;
+}
+.week-selector {
+  position: relative;
+  top: -10px;
 }
 
 /* loading icon */

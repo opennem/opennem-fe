@@ -3,8 +3,8 @@
     <!-- <h1>openNEM</h1> -->
 
     <div style="display: flex">
-      <MapVis style="width: 30%"></MapVis>
-      <GenerationVis style="width: 70%" :genData="genData"></GenerationVis>
+      <!-- <MapVis style="width: 30%"></MapVis> -->
+      <GenerationVis style="width: 100%" :genData="genData"></GenerationVis>
     </div>
     <!-- <Vis></Vis>
     <FTRegionVis></FTRegionVis> -->

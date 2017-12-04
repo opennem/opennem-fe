@@ -57,7 +57,7 @@ export function getJSON(ref) {
         resolve(data)
       })
     } else {
-      console.log('existing data')
+      console.log('existing data', storageData[ref])
       resolve(storageData[ref])
     }
   })

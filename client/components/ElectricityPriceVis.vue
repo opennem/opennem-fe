@@ -122,7 +122,7 @@ function makeChart(
       }
     ],
     panelsSettings: {
-      fontFamily: "Merriweather"
+      fontFamily: "helvetica"
     },
     panels: [
       {
