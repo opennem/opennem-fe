@@ -51,6 +51,7 @@ function fetchJSON(ref) {
 }
 
 export function getJSON(ref) {
+  console.log(ref)
   return new Promise((resolve, reject) => {
     if (storageData[ref] === undefined) {
       fetchJSON(ref).then(data => {

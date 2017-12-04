@@ -1,28 +1,67 @@
 <template>
-  <div id="app">
+  <div id="app" v-on:click="hideSelectors()">
     <header>
-      <h2>
-      <select v-model="selectedRegion" v-on:change="onRegionChange">
-        <option v-for="region in regions" :key="region.id" :value="region.id">
-          {{ region.label }}
-        </option>
-      </select>
-      </h2>
-      <div class="date-range">
-        <select class="week-selector" v-on:change="onWeekRangeChange">
-          <option value="2017-11-04">Week starting 04 Nov 2017</option>
-          <option value="2017-10-28">Week starting 28 Oct 2017</option>
-          <option value="2017-10-21">Week starting 21 Oct 2017</option>
-          <option value="2017-10-14">Week starting 14 Oct 2017</option>
-          <option value="2017-10-02">Week starting 02 Oct 2017</option>
-        </select>
+      <div class="selection" style="width: 190px;">
+        <div class="selected" 
+          v-on:click.stop="toggleRegionSelector(true)"
+          >
+          {{getRegionLabel(selectedRegion)}}
+        </div>
+
+        <transition name="fade">
+        <ol class="selection-options" v-if="showRegionSelector">
+          <li 
+            v-for="region in regions" 
+            :key="region.id"
+            v-on:click="onRegionChange(region.id)"
+            v-if="selectedRegion !== region.id">{{region.label}}</li>
+        </ol>
+        </transition>
       </div>
+
+      <!-- <div class="selection" style="width: 190px;" v-if="showFTSelector">
+        <div class="selected" 
+          v-on:click.stop="toggleRegionSelector(true)"
+          >
+          {{getRegionLabel(selectedRegion)}}
+        </div>
+
+        <transition name="fade">
+        <ol class="selection-options" v-if="showRegionSelector">
+          <li 
+            v-for="region in regions" 
+            :key="region.id"
+            v-on:click="onRegionChange(region.id)"
+            v-if="selectedRegion !== region.id">{{region.label}}</li>
+        </ol>
+        </transition>
+      </div> -->
+
+      <div class="selection" style="width: 300px;">
+        <div class="selected" 
+          v-on:click.stop="toggleWeekSelector(true)"
+          >
+          {{getWeekLabel(selectedWeek)}}
+        </div>
+
+        <transition name="fade">
+        <ol class="selection-options" v-if="showWeekSelector">
+          <li 
+            v-for="week in weeks" 
+            :key="week.id"
+            v-on:click="onWeekRangeChange(week.id)"
+            v-if="selectedWeek !== week.id">{{week.label}}</li>
+        </ol>
+        </transition>
+      </div>
+      
     </header>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
+import { FUEL_TECH } from "../utils/FuelTechConfig";
 const regions = [
   {
     id: 'all',
@@ -49,29 +88,85 @@ const regions = [
     label: 'Victoria'
   }
 ]
+const weeks = [
+  {
+    id: '2017-11-04',
+    label: 'Week starting 04 Nov 2017'
+  },
+  {
+    id: '2017-10-28',
+    label: 'Week starting 28 Oct 2017'
+  },
+  {
+    id: '2017-10-21',
+    label: 'Week starting 21 Oct 2017'
+  },
+  {
+    id: '2017-10-14',
+    label: 'Week starting 14 Oct 2017'
+  },
+  {
+    id: '2017-10-02',
+    label: 'Week starting 02 Oct 2017'
+  },
+]
 
 export default {
   data() {
     return {
       regions,
-      selectedRegion: this.$route.params.region
+      weeks,
+      selectedRegion: regions[0].id,
+      selectedWeek: weeks[4].id,
+      showRegionSelector: false,
+      showWeekSelector: false,
+      showFTSelector: false
     }
   },
+  mounted() {
+    this.checkRoute(this.$route)
+    this.selectedRegion = this.$route.name === 'home' ? regions[0].id : this.$route.params.region 
+    this.onWeekRangeChange(weeks[4].id)
+  },
+  watch: {
+    $route: 'checkRoute',
+  },
   methods: {
-    onRegionChange(event) {
-      console.log(this.$route.params.region)
-      console.log(event.target.value)
-      if (event.target.value === 'all') {
+    onRegionChange(regionId) {
+      this.selectedRegion = regionId
+      if (regionId === 'all') {
         this.$router.replace({ name: 'home' })
       } else {
-        this.$router.replace({ name: 'regions', params: { region: event.target.value } })
+        this.$router.replace({ name: 'regions', params: { region: regionId } })
+        this.$store.dispatch('fetchData', { region: regionId })
       }
     },
-    onWeekRangeChange(event) {
+    onWeekRangeChange(week) {
       // this.weekStarting = event.target.value
-      this.$store.commit('updateWeekStarting', event.target.value)
+      this.$store.commit('updateWeekStarting', week)
       // this.fetchData()
     },
+    getRegionLabel(id) {
+      const region = id === undefined ? regions[0] : this.regions.find(r => r.id === id)
+      return region.label
+    },
+    getWeekLabel(id) {
+      const week = this.weeks.find(r => r.id === id)
+      return week.label
+    },
+    toggleRegionSelector(toggle) {
+      this.showRegionSelector = toggle
+    },
+    toggleWeekSelector(toggle) {
+      this.showWeekSelector = toggle
+    },
+    checkRoute(route) {
+      this.showFTSelector = route.name === 'generators' ? true : false
+    },
+    hideSelectors() {
+      this.toggleRegionSelector(false)
+      this.toggleWeekSelector(false)
+    }
   }
 }
 </script>
@@ -80,7 +175,12 @@ export default {
 <style>
 /* @import url('https://fonts.googleapis.com/css?family=Raleway:700'); */
 /* @import url("https://fonts.googleapis.com/css?family=Merriweather:300,400,700"); */
-
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
 body {
   background: #ece9e6;
   font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', Ubuntu, 'segoe ui', arial, sans-serif;
@@ -91,13 +191,17 @@ option {
   /* font-family: "Merriweather", serif; */
 }
 
-h2 {
+header {
   font-weight: 700;
   margin: 0;
   padding: 0 0 10px;
   border-bottom: 1px solid #000;
 }
 
+a {
+  color: steelblue;
+  text-decoration: none;
+}
 a[title="JavaScript charts"],
 a[title="Interactive JavaScript maps"] {
   display: none !important;
@@ -105,6 +209,40 @@ a[title="Interactive JavaScript maps"] {
 
 #app {
   padding: 2rem;
+}
+
+.selection {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+
+  .selected {
+    width: 100%;
+    background: #D5D1CF;
+    padding: 10px 20px;
+  }
+  .selection-options {
+    list-style-type: none;
+    position: absolute;
+    background: #D5D1CF;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    z-index: 99;
+    
+    li {
+      padding: 10px 20px;
+
+      &:hover {
+        background: #B9B6B5;
+      }
+
+      &:last-child {
+        /* padding-bottom: 15px; */
+      }
+    }
+  }
+
 }
 
 .region-selector {
@@ -117,6 +255,13 @@ a[title="Interactive JavaScript maps"] {
 .week-selector {
   position: relative;
   top: -10px;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0
 }
 
 /* loading icon */

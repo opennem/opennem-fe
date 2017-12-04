@@ -21,6 +21,7 @@ export default new Router({
       component: MarketByRegion
     },
     {
+      name: 'generators',
       path: '/regions/:region/:ft',
       component: RegionByFT
     },

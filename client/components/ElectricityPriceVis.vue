@@ -1,7 +1,14 @@
 <template>
-  <div class="fuel-tech-chart-wrapper">
-    <div id="ft-vis"></div>
-    <FtSummary :tableData="summaryData" :pointData="pointData" :dateFrom="start" :dateTo="end" :showPrice="true"></FtSummary>
+  <div class="fuel-tech-chart-wrapper" style="display: flex">
+    <div id="ft-vis" style="width: 65%"></div>
+    <FtSummary style="width: 34%; margin-left: 1%"
+      :tableData="summaryData" 
+      :pointData="pointData" 
+      :dateFrom="start" 
+      :dateTo="end" 
+      :showPrice="true"
+      :hidePoint="hidePoint">
+    </FtSummary>
   </div>
 </template>
 
@@ -33,7 +40,8 @@ export default {
       summaryData: [],
       pointData: {},
       start: null,
-      end: null
+      end: null,
+      hidePoint: true
     }
   },
   methods: {
@@ -45,7 +53,7 @@ export default {
       )
     },
     onCursorHover(event) {
-      if (typeof event.index !== "undefined") {
+      if (event.index !== undefined) {
         const data = event.target.categoryLineAxis.data[event.index]
         const dataContext = data.dataContext
         const pointData = {
@@ -58,6 +66,9 @@ export default {
         })
 
         this.pointData = pointData
+        this.hidePoint = false
+      } else {
+        this.hidePoint = true
       }
     }
   },

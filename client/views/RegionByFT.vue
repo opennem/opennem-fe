@@ -1,9 +1,5 @@
 <template>
   <div>
-    <header>
-      {{getFTLabel(ft)}}
-    </header>
-
     <GeneratorsVis :genData="generatorsData"></GeneratorsVis>
   </div>
 </template>
@@ -27,11 +23,6 @@ export default {
     }
   },
   created() {
-    // this.$store.dispatch('fetchRegionFtByGeneratorsData', { 
-    //   region: this.region,
-    //   ft: this.ft
-    // })
-
     this.fetchRegionFtByGeneratorsData({
       region: this.region,
       ft: this.ft

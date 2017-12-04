@@ -2,25 +2,25 @@
   <table>
     <thead>
       <tr>
-        <th colspan="2"></th>
+        <th colspan="2" style="width: 30%"></th>
         <!-- range info -->
-        <th class="instant-values" v-bind:colspan="showPrice ? 4 : 3">{{formatDate(dateFrom)}} — {{formatDate(dateTo)}}</th>
+        <th class="instant-values" v-if="hidePoint" v-bind:colspan="showPrice ? 3 : 2">{{formatDate(dateFrom)}} — {{formatDate(dateTo)}}</th>
         <!-- point info -->
-        <th class="instant-values" v-bind:colspan="showPrice ? 3 : 2">{{formatDate(pointData.date)}}</th>
+        <th class="instant-values" v-if="!hidePoint" v-bind:colspan="showPrice ? 3 : 2">{{formatDate(pointData.date)}}</th>
       </tr>
       <tr>
         <th colspan="2"></th>
 
         <!-- range info -->
-        <th class="instant-values">Energy (GWh)</th>
-        <th>Power (MW)</th>
-        <th>Contribution (%)</th>
-        <th v-if="showPrice">Average Value ($)</th>
+        <th v-if="hidePoint" class="instant-values">Energy (GWh)</th>
+        <!-- <th v-if="hidePoint">Power (MW)</th> -->
+        <th v-if="hidePoint">Contribution (%)</th>
+        <th v-if="showPrice && hidePoint">Average Value ($)</th>
 
         <!-- point info -->
-        <th class="instant-values">Power (MW)</th>
-        <th>Contribution (%)</th>
-        <th v-if="showPrice">Price ($)</th>
+        <th v-if="!hidePoint" class="instant-values">Power (MW)</th>
+        <th v-if="!hidePoint">Contribution (%)</th>
+        <th v-if="showPrice && !hidePoint">Price ($)</th>
       </tr>
     </thead>
     <tbody>
@@ -34,15 +34,15 @@
         </td>
       
         <!-- range info -->
-        <td class="instant-values">{{formatNumber(item.range.energy)}}</td>
-        <td>{{formatNumber(item.range.totalPower)}}</td>
-        <td>{{formatNumber(item.range.totalPower/rangeTotal*100)}}%</td>
-        <td v-if="showPrice">{{formatNumber(item.range.averagePrice, '0,0.00')}}</td>
+        <td v-if="hidePoint" class="instant-values">{{formatNumber(item.range.energy)}}</td>
+        <!-- <td v-if="hidePoint">{{formatNumber(item.range.totalPower)}}</td> -->
+        <td v-if="hidePoint">{{formatNumber(item.range.totalPower/rangeTotal*100)}}%</td>
+        <td v-if="showPrice && hidePoint">{{formatNumber(item.range.averagePrice, '0,0.00')}}</td>
         
         <!-- point info -->
-        <td class="instant-values">{{formatNumber(pointData[item.id])}}</td>
-        <td>{{formatNumber(pointData[item.id]/pointTotal*100)}}%</td>
-        <td v-if="showPrice">{{formatNumber(pointData.rrp, '0,0.00')}}</td>
+        <td v-if="!hidePoint" class="instant-values">{{formatNumber(pointData[item.id])}}</td>
+        <td v-if="!hidePoint">{{formatNumber(pointData[item.id]/pointTotal*100)}}%</td>
+        <td v-if="showPrice && !hidePoint">{{formatNumber(pointData.rrp, '0,0.00')}}</td>
       </tr>
     </tbody>
 
@@ -50,14 +50,14 @@
       <tr>
         <td colspan="2"></td>
 
-        <td></td>
-        <td>{{formatNumber(rangeTotal)}}</td>
-        <td></td>
-        <td v-if="showPrice"></td>
+        <td v-if="hidePoint">{{formatNumber(energyTotal)}}</td>
+        <!-- <td v-if="hidePoint">{{formatNumber(rangeTotal)}}</td> -->
+        <td v-if="hidePoint"></td>
+        <td v-if="showPrice && hidePoint"></td>
 
-        <td>{{formatNumber(pointTotal)}}</td>
-        <td></td>
-        <td v-if="showPrice"></td>
+        <td v-if="!hidePoint">{{formatNumber(pointTotal)}}</td>
+        <td v-if="!hidePoint"></td>
+        <td v-if="showPrice && !hidePoint"></td>
       </tr>
     </tfoot>
     
@@ -78,22 +78,27 @@ export default {
     priceSeries: Object,
     showTotals: Boolean,
     pointData: Object,
-    showPrice: Boolean
+    showPrice: Boolean,
+    hidePoint: Boolean
   },
   data() {
     return {
       pointTotal: 0,
       rangeTotal: 0,
+      energyTotal: 0,
       region: this.$route.params.region
     }
   },
   watch: {
     tableData: function(newData) {
       let rangeTotal = 0
+      let energyTotal = 0
       newData.forEach(ft => {
         rangeTotal += ft.range.totalPower
+        energyTotal += ft.range.energy
       })
       this.rangeTotal = rangeTotal
+      this.energyTotal = energyTotal
     },
     pointData: function(newData) {
       let pointTotal = 0

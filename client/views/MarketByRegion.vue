@@ -23,13 +23,14 @@ export default {
       dataReady: false
     }
   },
-  mounted() {
+  created() {
     this.fetchData()
   },
   watch: {
     // call again the method if the route changes
-    '$route': 'fetchData',
-    genData() {
+    // '$route': 'fetchData',
+    genData(newData) {
+      console.log(newData)
       this.dataReady = true
     }
   },
@@ -41,12 +42,13 @@ export default {
   },
   methods: {
     onRegionChange(event) {
-      this.$router.replace({ name: 'regions', params: { region: event.target.value } })
+      this.selectedRegion =  event.target.value
+      this.$router.push({ name: 'regions', params: { region: this.selectedRegion } })
     },
     onWeekRangeChange(event) {
       this.weekStarting = event.target.value
       this.$store.commit('updateWeekStarting', event.target.value)
-      this.fetchData()
+      // this.fetchData()
     },
     fetchData() {
       this.dataReady = false

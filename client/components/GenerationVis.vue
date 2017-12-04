@@ -1,14 +1,23 @@
 <template>
   <div class="fuel-tech-chart-wrapper">
     <div class="loader" v-if="!chartRendered"></div>
-    <div id="ft-vis"></div>
-    <FtSummary :tableData="summaryData" :pointData="pointData" :dateFrom="start" :dateTo="end" :showPrice="false"></FtSummary>
+
+    <div style="display: flex">
+      <div id="ft-vis" style="width: 70%"></div>
+      <FtSummary style="width: 30%" 
+        :tableData="summaryData" 
+        :pointData="pointData" 
+        :dateFrom="start" 
+        :dateTo="end" 
+        :showPrice="false"
+        :hidePoint="hidePoint">
+      </FtSummary>
+    </div>
   </div>
 </template>
 
 <script>
 import numeral from 'numeral'
-import { mapGetters } from 'vuex'
 import * as moment from 'moment'
 
 import { 
@@ -36,7 +45,8 @@ export default {
       summaryData: [],
       pointData: {},
       start: null,
-      end: null
+      end: null,
+      hidePoint: true
     }
   },
   methods: {
@@ -80,7 +90,7 @@ export default {
       
     },
     onCursorHover(event) {
-      if (typeof event.index !== 'undefined') {
+      if (event.index !== undefined) {
         const data = event.target.categoryLineAxis.data[event.index]
         const dataContext = data.dataContext
         const pointData = {
@@ -93,6 +103,9 @@ export default {
         })
 
         this.pointData = pointData
+        this.hidePoint = false
+      } else {
+        this.hidePoint = true
       }
     }
   },
@@ -181,8 +194,7 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
 
 <style scoped>
 #ft-vis {
-  width: 100%;
-  height: 350px;
+  height: 450px;
 }
 
 </style>

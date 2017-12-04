@@ -1,11 +1,10 @@
 <template>
   <div>
-    <!-- <h1>openNEM</h1> -->
+    <GenerationVis style="width: 100%" :genData="genData"></GenerationVis>
 
-    <div style="display: flex">
-      <!-- <MapVis style="width: 30%"></MapVis> -->
-      <GenerationVis style="width: 100%" :genData="genData"></GenerationVis>
-    </div>
+    <!-- <h1>openNEM</h1> -->
+    <!-- <MapVis style="width: 30%"></MapVis> -->
+    
     <!-- <Vis></Vis>
     <FTRegionVis></FTRegionVis> -->
   </div>
@@ -27,12 +26,13 @@ export default {
     // Vis,
     // FTRegionVis,
   },
-  mounted() {
-    this.$store.dispatch('fetchAllRegionsFtGen', { week: '2017-10-14' })
+  created() {
+    this.$store.dispatch('fetchAllRegionsFtGen', { week: this.weekStarting })
   },
   computed: {
     ...mapGetters({
-       genData: 'getAllRegionsFtGen'
+      genData: 'getAllRegionsFtGen',
+      weekStarting: "getWeekStarting"
     })
   },
 }

@@ -4,10 +4,11 @@
 
     <div style="display: flex">
       <div id="generators-vis" style="width: 70%"></div>
-      <table style="width: 30%" v-if="chartRendered">
+      <table style="width: 29%; margin-left: 1%" v-if="chartRendered">
         <thead>
           <tr>
-            <th colspan="2"></th>
+            <th colspan="2" style="text-align: left; width: 30%" >{{getFTLabel(ft)}}</th>
+
             <!-- range info -->
             <th v-if="hidePoint" class="instant-values" colspan="2">
               {{formatDate(start)}} — {{formatDate(end)}}
@@ -16,8 +17,7 @@
             <th v-if="!hidePoint" class="instant-values" colspan="2">{{formatDate(pointData.date)}}</th>
           </tr>
           <tr>
-            <th></th>
-            <th style="text-align: left">Generators</th>
+            <th colspan="2" style="text-align: left">Generators</th>
 
             <!-- range info -->
             <th v-if="hidePoint" class="instant-values">Energy (GWh)</th>
@@ -75,17 +75,14 @@ export default {
       pointDataTotal: {},
       hidePoint: true,
       start: null,
-      end: null
+      end: null,
+      ft: this.$route.params.ft
     };
   },
   methods: {
     onZoom(event) {},
-    rollOutGraph(event) {
-      this.hidePoint = true
-    },
     onCursorHover(event) {
       if (event.index !== undefined) {
-        
         const data = event.target.categoryLineAxis.data[event.index]
         const dataContext = data.dataContext
         const pointData = {
@@ -101,6 +98,8 @@ export default {
         this.pointDataTotal = pointDataTotal
 
         this.hidePoint = false
+      } else {
+        this.hidePoint = true
       }
     },
     formatDate(date) {
@@ -111,6 +110,9 @@ export default {
       let formatted = (number === 0 || isNaN(number)) ? '-' : numeral(number).format(formatter)
       return formatted
     },
+    getFTLabel(ft) {
+      return FUEL_TECH[ft].label
+    }
   },
   watch: {
     genData(newData) {
@@ -270,10 +272,6 @@ function makeChart(chartData, fieldMappings, stockGraphs, context) {
             event: "changed",
             method: context.onCursorHover
           },
-          {
-            event: "rollOutGraph",
-            method: context.rollOutGraph
-          }
         ],
         valueAxes: [
           {
@@ -281,6 +279,7 @@ function makeChart(chartData, fieldMappings, stockGraphs, context) {
             dashLength: 6,
             zeroGridAlpha: 0,
             stackType: "regular",
+            minimum: 0,
             guides: [
               {
                 includeGuidesInMinMax: false,
@@ -307,7 +306,7 @@ function makeChart(chartData, fieldMappings, stockGraphs, context) {
 
 <style scoped>
 #generators-vis {
-  height: 350px;
+  height: 450px;
 }
 
 table {
