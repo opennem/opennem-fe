@@ -4,7 +4,7 @@
 
     <div style="display: flex">
       <div id="ft-vis" style="width: 70%"></div>
-      <FtSummary style="width: 30%" 
+      <FtSummary style="width: 29%; margin-left: 1%" 
         :tableData="summaryData" 
         :pointData="pointData" 
         :dateFrom="start" 

@@ -215,6 +215,7 @@ a[title="Interactive JavaScript maps"] {
   display: inline-block;
   position: relative;
   cursor: pointer;
+  margin-right: 7px;
 
   .selected {
     width: 100%;
