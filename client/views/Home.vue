@@ -35,6 +35,11 @@ export default {
       weekStarting: "getWeekStarting"
     })
   },
+  watch: {
+    weekStarting(newValue) {
+      this.$store.dispatch('fetchAllRegionsFtGen', { week: newValue })
+    }
+  }
 }
 </script>
 

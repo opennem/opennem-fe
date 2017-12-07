@@ -33,6 +33,14 @@ export default {
       weekStarting: "getWeekStarting"
     })
   },
+  watch: {
+    weekStarting(newValue) {
+      this.fetchRegionFtByGeneratorsData({
+        region: this.region,
+        ft: this.ft
+      })
+    }
+  },
   methods: {
     fetchRegionFtByGeneratorsData(data) {
       const week = this.weekStarting  

@@ -33,10 +33,11 @@ export default {
       this.dataReady = true
     },
     regionId(newData) {
-      this.dataReady = false
-      this.fetchGenerationByRegionData({
-        region: newData
-      })
+      this.region = newData
+      this.fetchData()
+    },
+    weekStarting(newData) {
+      this.fetchData()
     }
   },
   computed: {

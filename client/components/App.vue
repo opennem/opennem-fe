@@ -140,11 +140,12 @@ export default {
         this.$router.replace({ name: 'home' })
       } else {
         this.$router.replace({ name: 'regions', params: { region: regionId } })
-        this.$store.dispatch('fetchData', { region: regionId })
+        // this.$store.dispatch('fetchData', { region: regionId })
       }
     },
     onWeekRangeChange(week) {
       // this.weekStarting = event.target.value
+      this.selectedWeek = week
       this.$store.commit('updateWeekStarting', week)
       // this.fetchData()
     },
