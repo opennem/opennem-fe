@@ -29,7 +29,7 @@
           <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id)}"></div>
         </td>
         <td style="text-align:left">
-          <a v-if="showPrice" v-bind:href="`/#/regions/${region}/${item.id}`">{{getLabel(item.id)}}</a>
+          <a v-if="showPrice" v-on:click="goToFT(item.id)">{{getLabel(item.id)}}</a>
           <span v-if="!showPrice">{{getLabel(item.id)}}</span>
         </td>
       
@@ -67,6 +67,8 @@
 <script>
 import * as moment from 'moment'
 import numeral from 'numeral'
+import { mapGetters } from "vuex";
+
 
 import { FUEL_TECH } from '../utils/FuelTechConfig'
 
@@ -88,6 +90,11 @@ export default {
       energyTotal: 0,
       region: this.$route.params.region
     }
+  },
+  computed: {
+    ...mapGetters({
+      regionId: 'getRegionId'
+    })
   },
   watch: {
     tableData: function(newData) {
@@ -126,6 +133,15 @@ export default {
     getColour(id) {
       const colour = FUEL_TECH[id] ? FUEL_TECH[id].colour : '#fff'
       return colour
+    },
+    goToFT(ft) {
+      this.$router.push({ 
+        name: 'generators', 
+        params: { 
+          region: this.regionId ,
+          ft: ft
+        }
+      })
     }
   }
 }

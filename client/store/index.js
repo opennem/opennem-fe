@@ -10,6 +10,7 @@ Vue.use(Vuex)
 
 const state = {
   weekStarting: '2017-10-02',
+  regionId: 'all',
   generationData: null,
   priceData: null,
   demandData: [],
@@ -21,6 +22,9 @@ const state = {
 const mutations = {
   updateWeekStarting(state, data) {
     state.weekStarting = data
+  },
+  updateRegionId(state, data) {
+    state.regionId = data
   },
   updateGenerationData(state, data) {
     state.generationData = data
@@ -45,6 +49,9 @@ const mutations = {
 const getters = {
   getWeekStarting: state => {
     return state.weekStarting
+  },
+  getRegionId: state => {
+    return state.regionId
   },
   getGenerationData: state => {
     return state.generationData

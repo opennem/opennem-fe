@@ -126,6 +126,7 @@ export default {
   mounted() {
     this.checkRoute(this.$route)
     this.selectedRegion = this.$route.name === 'home' ? regions[0].id : this.$route.params.region 
+    this.$store.commit('updateRegionId', this.selectedRegion)
     this.onWeekRangeChange(weeks[4].id)
   },
   watch: {
@@ -134,6 +135,7 @@ export default {
   methods: {
     onRegionChange(regionId) {
       this.selectedRegion = regionId
+      this.$store.commit('updateRegionId', regionId)
       if (regionId === 'all') {
         this.$router.replace({ name: 'home' })
       } else {
