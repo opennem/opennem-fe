@@ -17,6 +17,7 @@ import * as moment from "moment"
 
 import {
   generateChartData,
+  generateNightGuides,
   generatePriceData,
   generateFieldMappings,
   generateStockGraphs,
@@ -41,7 +42,8 @@ export default {
       pointData: {},
       start: null,
       end: null,
-      hidePoint: true
+      hidePoint: true,
+      region: this.$route.params.region
     }
   },
   methods: {
@@ -78,6 +80,7 @@ export default {
       this.chartData = generateChartData(newData)
       this.chart = makeChart(
         this.chartData,
+        generateNightGuides(this.chartData[0].date, this.chartData[this.chartData.length-1].date),
         generateFieldMappings(),
         generateStockGraphs(),
         generateChartScrollbarSettings(),
@@ -104,6 +107,7 @@ export default {
 
 function makeChart(
   chartData,
+  guides,
   fieldMappings,
   stockGraphs,
   chartScrollbarSettings,
@@ -112,6 +116,10 @@ function makeChart(
   return AmCharts.makeChart("ft-vis", {
     type: "stock",
     // mouseWheelScrollEnabled: true,
+    export: {
+      enabled: true,
+      fileName: `${context.region}-generation`
+    },
     mouseWheelZoomEnabled: true,
     categoryAxesSettings: {
       minPeriod: "5mm",
@@ -169,9 +177,9 @@ function makeChart(
           }
         ],
         stockGraphs,
+        guides,
         stockLegend: {
-          valueTextRegular: " ",
-          markerType: "none"
+          enabled: false
         }
       },
       // {

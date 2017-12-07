@@ -58,6 +58,7 @@ import * as moment from "moment";
 import * as chroma from 'chroma-js'
 
 import { FUEL_TECH } from "../utils/FuelTechConfig";
+import { generateNightGuides } from "../utils/AmchartsDataTransform"
 
 export default {
   components: {},
@@ -131,6 +132,7 @@ export default {
 
       this.chart = makeChart(
         this.chartData,
+        generateNightGuides(this.start, this.end),
         generateFieldMappings(newData),
         generateStockGraphs(newData, this.$route.params.ft),
         this
@@ -231,7 +233,7 @@ function generateStockGraphs(data, ft) {
   return graphs;
 }
 
-function makeChart(chartData, fieldMappings, stockGraphs, context) {
+function makeChart(chartData, guides, fieldMappings, stockGraphs, context) {
   return AmCharts.makeChart("generators-vis", {
     type: "stock",
     // mouseWheelScrollEnabled: true,
@@ -262,7 +264,7 @@ function makeChart(chartData, fieldMappings, stockGraphs, context) {
     panels: [
       {
         title: "Generation (MW)",
-        showCategoryAxis: false,
+        showCategoryAxis: true,
         listeners: [
           {
             event: "zoomed",
@@ -293,9 +295,9 @@ function makeChart(chartData, fieldMappings, stockGraphs, context) {
           }
         ],
         stockGraphs,
+        guides,
         stockLegend: {
-          valueTextRegular: " ",
-          markerType: "none"
+          enabled: false
         }
       }
     ],

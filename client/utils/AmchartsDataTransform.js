@@ -169,3 +169,27 @@ export function calculateHorizonValues(data) {
   }
   return v
 }
+
+export function generateNightGuides(start, end) {
+  let startDate = moment(start)
+  let endDate = moment(end)
+  endDate.add(1, 'days')
+  const guides = []
+
+  while (moment(startDate).isBefore(endDate)) {
+    const dayBefore = startDate.clone()
+    dayBefore.subtract(1, 'days')
+
+    guides.push({
+      fillColor: '#001f3f',
+      fillAlpha: 0.07,
+      lineAlpha: 0,
+      date: dayBefore.set({'hour': 18, 'minute': 0, 'second': 0}).toDate(),
+      toDate: startDate.set({'hour': 6, 'minute': 0, 'second': 0}).toDate()
+    })
+
+    startDate.add(1, 'days')
+  }
+
+  return guides
+}

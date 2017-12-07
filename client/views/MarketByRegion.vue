@@ -2,58 +2,78 @@
   <div>
     
     <div class="loader" v-if="!dataReady"></div>
-    <Vis v-show="dataReady" :genData="genData" :priceData="priceData"></Vis>
+    <ElectricityPriceVis v-show="dataReady" :genData="generatorsData" :priceData="pData"></ElectricityPriceVis>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import Vis from '../components/ElectricityPriceVis'
+import axios from 'axios'
+import { getJSON } from '../utils/Firebase'
 
-
+import ElectricityPriceVis from '../components/ElectricityPriceVis'
 
 export default {
   components: {
-    Vis
+    ElectricityPriceVis
   },
   data() {
     return {
-      selectedRegion: this.$route.params.region,
-      weekStarting: '2017-10-14',
-      dataReady: false
+      region: this.$route.params.region,
+      dataReady: false,
+      generatorsData: null,
+      pData: null
     }
   },
   created() {
     this.fetchData()
   },
   watch: {
-    // call again the method if the route changes
-    // '$route': 'fetchData',
-    genData(newData) {
-      console.log(newData)
+    generatorsData(newData) {
       this.dataReady = true
+    },
+    regionId(newData) {
+      this.dataReady = false
+      this.fetchGenerationByRegionData({
+        region: newData
+      })
     }
   },
   computed: {
     ...mapGetters({
-       genData: 'getGenerationData',
-       priceData: 'getPriceData'
+      regionId: 'getRegionId',
+      weekStarting: "getWeekStarting"
     })
   },
   methods: {
     onRegionChange(event) {
-      this.selectedRegion =  event.target.value
-      this.$router.push({ name: 'regions', params: { region: this.selectedRegion } })
+      this.region =  event.target.value
+      this.$router.push({ name: 'regions', params: { region: this.region } })
     },
     onWeekRangeChange(event) {
       this.weekStarting = event.target.value
       this.$store.commit('updateWeekStarting', event.target.value)
-      // this.fetchData()
     },
     fetchData() {
       this.dataReady = false
-      this.$store.dispatch('fetchData', { region: this.selectedRegion })
+      this.fetchGenerationByRegionData({
+        region: this.region
+      })
     },
+    fetchGenerationByRegionData(data) {
+      const week = this.weekStarting
+      const fetchGen = getJSON(`${week}/gen_5m_${data.region}1.json`)
+      const fetchDispatch = getJSON(`${week}/dispatch_5m_${data.region}1.json`)
+      const fetchPrice = getJSON(`${week}/price_30m_${data.region}1.json`)
+
+      axios.all([fetchGen, fetchDispatch, fetchPrice])
+        .then(axios.spread((gen, dispatch, price) => {
+          const data = Object.assign(gen.data, dispatch.data)
+          this.generatorsData = data
+          this.pData = price.data
+        })
+      )
+    }
   }
 }
 
