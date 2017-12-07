@@ -21,7 +21,7 @@ import numeral from 'numeral'
 import * as moment from 'moment'
 
 import { 
-  generateChartData, 
+  generateNightGuides, 
   generatePriceData, 
   generateFieldMappings,
   generateStockGraphs,
@@ -57,7 +57,6 @@ export default {
       let filteredData = this.chartData.filter((item) => {
         return moment(item.date).isBetween(this.start, this.end)
       })
-
 
       if (filteredData[0]) {
         const summaryData = []
@@ -114,6 +113,7 @@ export default {
       this.chartData = newData
       this.chart = makeChart(
         newData, 
+        generateNightGuides(newData[0].date, newData[newData.length-1].date),
         generateFieldMappings(),
         generateStockGraphs(),
         generateChartScrollbarSettings(),
@@ -124,14 +124,18 @@ export default {
   },
 }
 
-function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings, context) {
+function makeChart(chartData, guides, fieldMappings, stockGraphs, chartScrollbarSettings, context) {
   return AmCharts.makeChart('ft-vis', {
     type: 'stock',
     // mouseWheelScrollEnabled: true,
     mouseWheelZoomEnabled: true,
+    export: {
+      enabled: true,
+      fileName: 'all-regions-generation'
+    },
     categoryAxesSettings: {
       minPeriod: '5mm',
-      startOnAxis: true,
+      startOnAxis: false,
       equalSpacing: true,
       groupToPeriods: ['5mm', '15mm', '30mm', 'hh']
     },
@@ -153,7 +157,7 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
     },
     panels: [{
       title: 'Generation (MW)',
-      showCategoryAxis: false,
+      showCategoryAxis: true,
       listeners: [
         {
           event: 'zoomed',
@@ -180,9 +184,9 @@ function makeChart(chartData, fieldMappings, stockGraphs, chartScrollbarSettings
         }],
       } ],
       stockGraphs,
+      guides,
       stockLegend: {
-        valueTextRegular: ' ',
-        markerType: 'none'
+        enabled: false,
       }
     }],
     chartScrollbarSettings: {
