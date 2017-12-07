@@ -198,7 +198,7 @@ function makeChart(chartData, guides, fieldMappings, stockGraphs, chartScrollbar
 
 <style scoped>
 #ft-vis {
-  height: 450px;
+  height: 490px;
 }
 
 </style>

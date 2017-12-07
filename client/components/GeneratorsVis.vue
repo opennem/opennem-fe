@@ -308,7 +308,7 @@ function makeChart(chartData, guides, fieldMappings, stockGraphs, context) {
 
 <style scoped>
 #generators-vis {
-  height: 450px;
+  height: 500px;
 }
 
 table {
