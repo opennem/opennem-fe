@@ -184,8 +184,8 @@ export function generateNightGuides(start, end) {
       fillColor: '#001f3f',
       fillAlpha: 0.07,
       lineAlpha: 0,
-      date: dayBefore.set({'hour': 18, 'minute': 0, 'second': 0}).toDate(),
-      toDate: startDate.set({'hour': 6, 'minute': 0, 'second': 0}).toDate()
+      date: dayBefore.set({'hour': 22, 'minute': 0, 'second': 0}).toDate(),
+      toDate: startDate.set({'hour': 7, 'minute': 0, 'second': 0}).toDate()
     })
 
     startDate.add(1, 'days')
