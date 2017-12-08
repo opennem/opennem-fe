@@ -241,6 +241,7 @@ function makeChart(
             useDataSetColors: false
           }
         ],
+        guides,
         stockLegend: {
           valueTextRegular: " ",
           markerType: "none"
