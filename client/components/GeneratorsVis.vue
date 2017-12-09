@@ -259,7 +259,7 @@ function makeChart(chartData, guides, fieldMappings, stockGraphs, context) {
       }
     ],
     panelsSettings: {
-      fontFamily: "helvetica"
+      fontFamily: "Merriweather"
     },
     panels: [
       {

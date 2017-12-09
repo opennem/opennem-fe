@@ -4,7 +4,7 @@ export const ChartConfig = {
   },
   color: [],
   textStyle: {
-    fontFamily: '-apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif'
+    fontFamily: 'Merriweather'
   },
   animation: false,
   tooltip: {

@@ -153,7 +153,7 @@ function makeChart(chartData, guides, fieldMappings, stockGraphs, chartScrollbar
       }
     ], 
     panelsSettings: {
-      fontFamily: 'helvetica',
+      fontFamily: 'Merriweather',
     },
     panels: [{
       title: 'Generation (MW)',

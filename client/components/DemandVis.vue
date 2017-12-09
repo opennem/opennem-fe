@@ -385,7 +385,7 @@ export default {
           }
         ],
         panelsSettings: {
-          fontFamily: 'helvetica',
+          fontFamily: 'Merriweather',
           panelSpacing: 1
         }
         // panels:

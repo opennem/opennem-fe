@@ -141,7 +141,7 @@ function makeChart(
       }
     ],
     panelsSettings: {
-      fontFamily: "helvetica"
+      fontFamily: "Merriweather"
     },
     panels: [
       {

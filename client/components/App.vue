@@ -177,7 +177,7 @@ export default {
 
 <style>
 /* @import url('https://fonts.googleapis.com/css?family=Raleway:700'); */
-/* @import url("https://fonts.googleapis.com/css?family=Merriweather:300,400,700"); */
+@import url("https://fonts.googleapis.com/css?family=Merriweather:300,400,700");
 html {
   box-sizing: border-box;
 }
@@ -186,12 +186,12 @@ html {
 }
 body {
   background: #ece9e6;
-  font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', Ubuntu, 'segoe ui', arial, sans-serif;
-  /* font-family: "Merriweather", serif; */
+  /* font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', Ubuntu, 'segoe ui', arial, sans-serif; */
+  font-family: "Merriweather", serif;
 }
 select,
 option {
-  /* font-family: "Merriweather", serif; */
+  font-family: "Merriweather", serif;
 }
 
 header {
