@@ -36,12 +36,12 @@
         <!-- range info -->
         <td v-if="hidePoint" class="instant-values">{{formatNumber(item.range.energy)}}</td>
         <!-- <td v-if="hidePoint">{{formatNumber(item.range.totalPower)}}</td> -->
-        <td v-if="hidePoint">{{formatNumber(item.range.totalPower/rangeTotal*100)}}%</td>
+        <td v-if="hidePoint">{{formatNumber(item.range.totalPower/rangeTotal*100, '0,0', '%')}}</td>
         <td v-if="showPrice && hidePoint">{{formatNumber(item.range.averagePrice, '0,0.00')}}</td>
         
         <!-- point info -->
         <td v-if="!hidePoint" class="instant-values">{{formatNumber(pointData[item.id])}}</td>
-        <td v-if="!hidePoint">{{formatNumber(pointData[item.id]/pointTotal*100)}}%</td>
+        <td v-if="!hidePoint">{{formatNumber(pointData[item.id]/pointTotal*100, '0,0', '%')}}</td>
         <td v-if="showPrice && !hidePoint">{{formatNumber(pointData.rrp, '0,0.00')}}</td>
       </tr>
     </tbody>
@@ -121,9 +121,10 @@ export default {
     formatDate(date) {
       return moment(date).format('lll')
     },
-    formatNumber: function(number, precision) {
+    formatNumber: function(number, precision, unit) {
       let formatter = precision ? precision : '0,0'
-      let formatted = (number === 0 || isNaN(number)) ? '-' : numeral(number).format(formatter)
+      unit = unit === undefined ? '' : unit
+      let formatted = (number === 0 || isNaN(number)) ? '-' : numeral(number).format(formatter) + unit
       return formatted
     },
     getLabel(id) {
