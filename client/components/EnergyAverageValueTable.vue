@@ -42,7 +42,7 @@
         <!-- point info -->
         <td v-if="!hidePoint" class="instant-values">{{formatNumber(pointData[item.id])}}</td>
         <td v-if="!hidePoint">{{formatNumber(pointData[item.id]/pointTotal*100, '0,0', '%')}}</td>
-        <td v-if="showPrice && !hidePoint">{{formatNumber(pointData.rrp, '0,0.00')}}</td>
+        <td v-if="showPrice && !hidePoint"></td>
       </tr>
     </tbody>
 
@@ -57,7 +57,7 @@
 
         <td v-if="!hidePoint">{{formatNumber(pointTotal)}}</td>
         <td v-if="!hidePoint"></td>
-        <td v-if="showPrice && !hidePoint"></td>
+        <td v-if="showPrice && !hidePoint">${{formatNumber(pointData.rrp, '0,0.00')}}</td>
       </tr>
     </tfoot>
     
