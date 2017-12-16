@@ -2,7 +2,7 @@
   <table>
     <thead>
       <tr>
-        <th colspan="2" style="width: 30%"></th>
+        <th colspan="2"></th>
         <!-- range info -->
         <th class="instant-values" v-if="hidePoint" v-bind:colspan="showPrice ? 3 : 2">{{formatDate(dateFrom)}} — {{formatDate(dateTo)}}</th>
         <!-- point info -->
@@ -12,15 +12,15 @@
         <th colspan="2"></th>
 
         <!-- range info -->
-        <th v-if="hidePoint" class="instant-values">Energy (GWh)</th>
+        <th v-if="hidePoint" class="instant-values" style="width: 120px">Energy (GWh)</th>
         <!-- <th v-if="hidePoint">Power (MW)</th> -->
-        <th v-if="hidePoint">Contribution (%)</th>
-        <th v-if="showPrice && hidePoint">Average Value ($)</th>
+        <th v-if="hidePoint" style="width: 130px">Contribution (%)</th>
+        <th v-if="showPrice && hidePoint" style="width: 150px">Average Value ($)</th>
 
         <!-- point info -->
-        <th v-if="!hidePoint" class="instant-values">Power (MW)</th>
-        <th v-if="!hidePoint">Contribution (%)</th>
-        <th v-if="showPrice && !hidePoint">Price ($)</th>
+        <th v-if="!hidePoint" class="instant-values" style="width: 120px">Power (MW)</th>
+        <th v-if="!hidePoint" style="width: 130px">Contribution (%)</th>
+        <th v-if="showPrice && !hidePoint" style="width: 150px">Price ($)</th>
       </tr>
     </thead>
     <tbody>
@@ -28,17 +28,17 @@
         <td style="width: 20px;">
           <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id)}"></div>
         </td>
-        <td style="text-align:left">
+        <td style="text-align:left; width: 150px">
           <a v-if="showPrice" v-on:click="goToFT(item.id)">{{getLabel(item.id)}}</a>
           <span v-if="!showPrice">{{getLabel(item.id)}}</span>
         </td>
-      
+
         <!-- range info -->
         <td v-if="hidePoint" class="instant-values">{{formatNumber(item.range.energy)}}</td>
         <!-- <td v-if="hidePoint">{{formatNumber(item.range.totalPower)}}</td> -->
         <td v-if="hidePoint">{{formatNumber(item.range.totalPower/rangeTotal*100, '0,0', '%')}}</td>
         <td v-if="showPrice && hidePoint">{{formatNumber(item.range.averagePrice, '0,0.00')}}</td>
-        
+
         <!-- point info -->
         <td v-if="!hidePoint" class="instant-values">{{formatNumber(pointData[item.id])}}</td>
         <td v-if="!hidePoint">{{formatNumber(pointData[item.id]/pointTotal*100, '0,0', '%')}}</td>
@@ -60,7 +60,7 @@
         <td v-if="showPrice && !hidePoint">${{formatNumber(pointData.rrp, '0,0.00')}}</td>
       </tr>
     </tfoot>
-    
+
   </table>
 </template>
 
@@ -136,9 +136,9 @@ export default {
       return colour
     },
     goToFT(ft) {
-      this.$router.push({ 
-        name: 'generators', 
-        params: { 
+      this.$router.push({
+        name: 'generators',
+        params: {
           region: this.regionId ,
           ft: ft
         }
@@ -154,7 +154,8 @@ table {
   font-size: 0.8rem;
   width: 100%;
   border-collapse: collapse;
-  margin-top: 30px;
+  border-top: 1px solid #999;
+
 
   .value {
     padding-left: 10px;

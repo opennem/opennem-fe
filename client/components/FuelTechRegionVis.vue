@@ -34,7 +34,7 @@ export default {
   methods: {
     focusFt(key) {
       const newArray = this.ftGen.concat([])
-      updateFTValue(key, newArray)
+      // updateFTValue(key, newArray)
 
       this.chart.dataProvider = newArray
       this.chart.validateData()
@@ -72,10 +72,10 @@ export default {
           },
         }],
         graphs: generateGraphsArr()
-        
+
       })
 
-      updateFTValue(focusFt, newArray)
+      // updateFTValue(focusFt, newArray)
       this.chart.dataProvider = newArray
       this.chart.validateData()
       this.chartRendered = true
@@ -91,7 +91,7 @@ function updateFTValue(ft, data) {
       }
     })
   })
-  
+
   data.sort((a, b) => {
     return b[ft] - a[ft]
   })
@@ -110,9 +110,9 @@ function generateGraphsArr() {
         lineAlpha: 0,
         lineColor: FUEL_TECH[key].colour,
         useDataSetColors: false,
-        
+
       })
-    } 
+    }
   })
 
   return graphArr

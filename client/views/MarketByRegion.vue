@@ -1,6 +1,5 @@
 <template>
   <div>
-    
     <div class="loader" v-if="!dataReady"></div>
     <ElectricityPriceVis v-show="dataReady" :genData="generatorsData" :priceData="pData"></ElectricityPriceVis>
   </div>
@@ -79,27 +78,3 @@ export default {
 }
 
 </script>
-
-<style>
-
-.region-selector {
-  background: none;
-  font-size: 1.5rem;
-  border: none;
-  padding: 0 1rem;
-  -webkit-appearance: none;
-}
-.week-selector {
-  position: relative;
-  top: -10px;
-}
-
-.date-range {
-  color: #666;
-  position: absolute;
-  right: 2rem;
-  top: 2rem;
-  margin-right: 1rem;
-  margin-top: 1rem;
-}
-</style>

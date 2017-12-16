@@ -1,48 +1,74 @@
 <template>
   <div>
-    <GenerationVis style="width: 100%" :genData="genData"></GenerationVis>
-
-    <!-- <h1>openNEM</h1> -->
-    <!-- <MapVis style="width: 30%"></MapVis> -->
-    
-    <!-- <Vis></Vis>
-    <FTRegionVis></FTRegionVis> -->
+    <AllRegionsChart :genData="chartData" :refreshing="refreshing"></AllRegionsChart>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-
-import MapVis from '../components/Map'
-import GenerationVis from '../components/GenerationVis'
-
-// import Vis from '../components/DemandVis'
-// import FTRegionVis from '../components/FuelTechRegionVis'
+import axios from 'axios'
+import { getJSON } from '../utils/Firebase'
+import { generateChartData } from '../utils/DataHelpers'
+import { sumRegionsFuelTech } from '../store/dataHelpers'
+import AllRegionsChart from '../components/AllRegionsChart'
 
 export default {
   components: {
-    GenerationVis,
-    MapVis,
-    // Vis,
-    // FTRegionVis,
+    AllRegionsChart
+  },
+  data() {
+    return {
+      chartData: [],
+      refreshing: false
+    }
   },
   created() {
-    this.$store.dispatch('fetchAllRegionsFtGen', { week: this.weekStarting })
+    this.refreshing = true
+    this.fetch()
   },
   computed: {
     ...mapGetters({
-      genData: 'getAllRegionsFtGen',
       weekStarting: "getWeekStarting"
     })
   },
   watch: {
-    weekStarting(newValue) {
-      this.$store.dispatch('fetchAllRegionsFtGen', { week: newValue })
+    weekStarting() {
+      this.refreshing = true
+      this.fetch()
+    },
+    chartData() {
+      this.refreshing = false
     }
+  },
+  methods: {
+    fetch(data) {
+      const week = this.weekStarting
+      const interval = '5m'
+
+      const fetchNsw = getJSON(`${week}/gen_${interval}_nsw1.json`)
+      const fetchQld = getJSON(`${week}/gen_${interval}_qld1.json`)
+      const fetchSa = getJSON(`${week}/gen_${interval}_sa1.json`)
+      const fetchTas = getJSON(`${week}/gen_${interval}_tas1.json`)
+      const fetchVic = getJSON(`${week}/gen_${interval}_vic1.json`)
+
+      axios.all([fetchNsw, fetchQld, fetchSa, fetchTas, fetchVic])
+        .then(axios.spread((nsw, qld, sa, tas, vic) => {
+          const data = sumRegionsFuelTech({
+            'nsw': nsw.data,
+            'qld': qld.data,
+            'sa': sa.data,
+            'tas': tas.data,
+            'vic': vic.data
+          })
+
+          // !! Take out Pumps since it is classified as a load, not source
+          delete data.pumps
+          delete data.NETINTERCHANGE
+
+          this.chartData = generateChartData(data)
+        })
+      )
+    },
   }
 }
 </script>
-
-<style>
-
-</style>

@@ -53,13 +53,19 @@ function fetchJSON(ref) {
 export function getJSON(ref) {
   console.log(ref)
   return new Promise((resolve, reject) => {
-    if (storageData[ref] === undefined) {
-      fetchJSON(ref).then(data => {
-        resolve(data)
-      })
-    } else {
-      console.log('existing data', storageData[ref])
-      resolve(storageData[ref])
-    }
+    /*** Fetch New Data everytime ***/
+    fetchJSON(ref).then(data => {
+      resolve(data)
+    })
+
+    /*** Check whether there is a cache copy ***/
+    // if (storageData[ref] === undefined) {
+    //   fetchJSON(ref).then(data => {
+    //     resolve(data)
+    //   })
+    // } else {
+    //   console.log('existing data', storageData[ref])
+    //   resolve(storageData[ref])
+    // }
   })
 }

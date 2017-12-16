@@ -1,8 +1,8 @@
 /**
  * Transform the data to suit Amcharts model
- * TODO: use config to generate field mappings and graph settings.
  */
 import * as moment from 'moment'
+import * as _ from 'lodash'
 import { FUEL_TECH } from './FuelTechConfig'
 
 export function generateChartData(data) {
@@ -15,9 +15,9 @@ export function generateChartData(data) {
       let interval = ftKey === 'RRP' ? 30 : 5 // ft.interval
       let ftData = ft.data
       let hasChartData = chartData.length ? true : false
-  
+
       const start = moment(startDate, moment.ISO_8601)
-  
+
       for (let i=0; i<ftData.length; i++) {
         const now = moment(start).add(interval*i, 'm')
         const d = ftKey === 'NETINTERCHANGE' ? -ftData[i] : ftData[i]
@@ -46,9 +46,9 @@ export function generateAlRegionsFTChartData(data) {
       let interval = ftKey === 'RRP' ? 30 : 5 // ft.interval
       let ftData = ft.data
       let hasChartData = chartData.length ? true : false
-  
+
       const start = moment(startDate, moment.ISO_8601)
-  
+
       for (let i=0; i<ftData.length; i++) {
         const now = moment(start).add(interval*i, 'm')
         const d = ftKey === 'NETINTERCHANGE' ? -ftData[i] : ftData[i]
@@ -115,7 +115,7 @@ export function generateStockGraphs() {
   Object.keys(FUEL_TECH).forEach((ftKey, index) => {
     const colour = FUEL_TECH[ftKey].colour
     const negativeFillAlphas = ftKey === 'NETINTERCHANGE' ? 0 : 0.8
-    
+
     graphs.push({
       id: `g${index}`,
       valueField: ftKey,
@@ -157,7 +157,7 @@ export function calculateHorizonValues(data) {
   let x = data
   let r = x/4000
   let v = []
-  
+
   for (var y=0; y<3; y++) {
     if (r > 1) {
       v[y] = 1
@@ -192,4 +192,36 @@ export function generateNightGuides(start, end) {
   }
 
   return guides
+}
+
+export function chartConfig(config) {
+  const defaultConfig = {
+    type: 'stock',
+    // mouseWheelScrollEnabled: true,
+    mouseWheelZoomEnabled: true,
+    export: {
+      enabled: true,
+      fileName: 'all-regions-generation'
+    },
+    categoryAxesSettings: {
+      minPeriod: '5mm',
+      startOnAxis: false,
+      equalSpacing: true,
+      groupToPeriods: ['5mm', '15mm', '30mm', 'hh']
+    },
+    chartCursorSettings: {
+      pan: true,
+      categoryBalloonColor: '#000',
+      cursorColor: '#000',
+      showNextAvailable: true
+    },
+    panelsSettings: {
+      fontFamily: 'Merriweather',
+    },
+    chartScrollbarSettings: {
+      enabled: false
+    }
+  }
+
+  return _.assign(defaultConfig, config)
 }

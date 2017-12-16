@@ -1,62 +1,56 @@
 <template>
-  <div id="app" v-on:click="hideSelectors()">
-    <header>
-      <div class="selection" style="width: 190px;">
-        <div class="selected" 
-          v-on:click.stop="toggleRegionSelector(true)"
-          >
-          {{getRegionLabel(selectedRegion)}}
-        </div>
-
-        <transition name="fade">
-        <ol class="selection-options" v-if="showRegionSelector">
-          <li 
-            v-for="region in regions" 
-            :key="region.id"
-            v-on:click="onRegionChange(region.id)"
-            v-if="selectedRegion !== region.id">{{region.label}}</li>
-        </ol>
-        </transition>
+  <div id="app" style="max-width: 1400px; margin: 0 auto;" v-on:click="hideSelectors()">
+    <header style="text-align: left; margin-bottom: 20px;">
+      <div class="" style="padding: 3px 0 13px;">
+        <h1 style="font-size: 1.1em; font-weight: 200">
+          Visualising how Australia generates its electricity<br>
+          <small style="color: #999;">(WA and NT coming soon) </small>
+        </h1>
       </div>
 
-      <!-- <div class="selection" style="width: 190px;" v-if="showFTSelector">
-        <div class="selected" 
-          v-on:click.stop="toggleRegionSelector(true)"
-          >
-          {{getRegionLabel(selectedRegion)}}
-        </div>
 
-        <transition name="fade">
-        <ol class="selection-options" v-if="showRegionSelector">
-          <li 
-            v-for="region in regions" 
-            :key="region.id"
-            v-on:click="onRegionChange(region.id)"
-            v-if="selectedRegion !== region.id">{{region.label}}</li>
-        </ol>
-        </transition>
-      </div> -->
-
-      <div class="selection" style="width: 300px;">
-        <div class="selected" 
-          v-on:click.stop="toggleWeekSelector(true)"
-          >
+      <div class="selection" style="width: 130px; margin: 0; font-size: 13px;">
+        <div class="selected" v-on:click.stop="toggleWeekSelector(true)">
           {{getWeekLabel(selectedWeek)}}
         </div>
 
         <transition name="fade">
         <ol class="selection-options" v-if="showWeekSelector">
-          <li 
-            v-for="week in weeks" 
+          <li
+            v-for="week in weeks"
             :key="week.id"
             v-on:click="onWeekRangeChange(week.id)"
             v-if="selectedWeek !== week.id">{{week.label}}</li>
         </ol>
         </transition>
       </div>
-      
+      <br>
+      <div class="selection" style="width: 300px; margin: 0; font-weight: 500; font-size: 24px;">
+        <div class="selected" v-on:click.stop="toggleRegionSelector(true)">
+          {{getRegionLabel(selectedRegion)}}
+        </div>
+
+        <transition name="fade">
+        <ol class="selection-options" v-if="showRegionSelector">
+          <li
+            v-for="region in regions"
+            :key="region.id"
+            v-on:click="onRegionChange(region.id)"
+            v-if="selectedRegion !== region.id">{{region.label}}</li>
+        </ol>
+        </transition>
+      </div>
+
+      <div class="" v-if="showFTSelector">
+        / {{selectedFT}}
+      </div>
+
     </header>
-    <router-view></router-view>
+    <router-view style="min-height: 400px;"></router-view>
+
+    <footer>
+      sources: <a href="https://www.aemo.com.au/">Australia Electricity Market Operator</a>
+    </footer>
   </div>
 </template>
 
@@ -65,7 +59,7 @@ import { FUEL_TECH } from "../utils/FuelTechConfig";
 const regions = [
   {
     id: 'all',
-    label: 'All NEM Regions'
+    label: 'All Regions'
   },
   {
     id: 'nsw',
@@ -91,23 +85,23 @@ const regions = [
 const weeks = [
   {
     id: '2017-11-04',
-    label: 'Week starting 04 Nov 2017'
+    label: '04 Nov 2017'
   },
   {
     id: '2017-10-28',
-    label: 'Week starting 28 Oct 2017'
+    label: '28 Oct 2017'
   },
   {
     id: '2017-10-21',
-    label: 'Week starting 21 Oct 2017'
+    label: '21 Oct 2017'
   },
   {
     id: '2017-10-14',
-    label: 'Week starting 14 Oct 2017'
+    label: '14 Oct 2017'
   },
   {
     id: '2017-10-02',
-    label: 'Week starting 02 Oct 2017'
+    label: '02 Oct 2017'
   },
 ]
 
@@ -118,6 +112,7 @@ export default {
       weeks,
       selectedRegion: regions[0].id,
       selectedWeek: weeks[4].id,
+      selectedFT: null,
       showRegionSelector: false,
       showWeekSelector: false,
       showFTSelector: false
@@ -125,7 +120,8 @@ export default {
   },
   mounted() {
     this.checkRoute(this.$route)
-    this.selectedRegion = this.$route.name === 'home' ? regions[0].id : this.$route.params.region 
+    this.selectedRegion = this.$route.name === 'home' ? regions[0].id : this.$route.params.region
+    this.selectedFT = this.$route.name === 'generators' ? this.$route.params.ft : null
     this.$store.commit('updateRegionId', this.selectedRegion)
     this.onWeekRangeChange(weeks[4].id)
   },
@@ -158,9 +154,11 @@ export default {
       return week.label
     },
     toggleRegionSelector(toggle) {
+      this.showWeekSelector = false
       this.showRegionSelector = toggle
     },
     toggleWeekSelector(toggle) {
+      this.showRegionSelector = false
       this.showWeekSelector = toggle
     },
     checkRoute(route) {
@@ -195,14 +193,17 @@ option {
 }
 
 header {
-  font-weight: 700;
-  margin: 0;
-  padding: 0 0 10px;
-  border-bottom: 1px solid #000;
+}
+
+footer {
+  font-size: 0.8em;
+  color: #999;
+  margin: 40px 0 20px;
+  padding-top: 13px;
 }
 
 a {
-  color: steelblue;
+  color: #C74523;
   text-decoration: none;
 }
 a[title="JavaScript charts"],
@@ -211,34 +212,39 @@ a[title="Interactive JavaScript maps"] {
 }
 
 #app {
-  padding: 2rem;
+  padding: 0;
 }
+
+
 
 .selection {
   display: inline-block;
   position: relative;
   cursor: pointer;
-  margin-right: 7px;
+  color: #C74523;
+  font-weight: 200;
 
   .selected {
     width: 100%;
-    background: #D5D1CF;
-    padding: 10px 20px;
+    /* background: #D5D1CF; */
+    padding: 3px 0;
+    font-size: 1.3em;
   }
   .selection-options {
     list-style-type: none;
     position: absolute;
-    background: #D5D1CF;
+    background: rgba(255,255,255,0.9);
     margin: 0;
     padding: 0;
     width: 100%;
     z-index: 99;
-    
+    box-shadow: rgba(0,0,0,0.2) 0px 10px 20px;
+
     li {
-      padding: 10px 20px;
+      padding: 5px 10px;
 
       &:hover {
-        background: #B9B6B5;
+        background: rgba(255,255,255,1);
       }
 
       &:last-child {

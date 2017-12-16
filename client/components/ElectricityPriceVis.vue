@@ -1,14 +1,21 @@
 <template>
-  <div class="fuel-tech-chart-wrapper" style="display: flex">
-    <div id="ft-vis" style="width: 65%"></div>
-    <FtSummary style="width: 34%; margin-left: 1%"
-      :tableData="summaryData" 
-      :pointData="pointData" 
-      :dateFrom="start" 
-      :dateTo="end" 
-      :showPrice="true"
-      :hidePoint="hidePoint">
-    </FtSummary>
+  <div class="chart-wrapper">
+
+    <div class="vis" v-show="!refreshing">
+      <div class="chart">
+        <div id="ft-vis"></div>
+      </div>
+      <div class="datagrid">
+        <FtSummary
+          :tableData="summaryData"
+          :pointData="pointData"
+          :dateFrom="start"
+          :dateTo="end"
+          :showPrice="true"
+          :hidePoint="hidePoint">
+        </FtSummary>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -248,7 +255,9 @@ function makeChart(
         }
       }
     ],
-    chartScrollbarSettings
+    chartScrollbarSettings: {
+      enabled: false
+    }
   })
 }
 
@@ -291,7 +300,29 @@ function getSummaryData(chartData, start, end) {
 
 <style>
 #ft-vis {
+  height: 400px;
+}
+.vis {
+  display: block;
+}
+.chart {
   width: 100%;
-  height: 600px;
+}
+.datagrid {
+  margin: 0;
+  max-width: 550px
+}
+
+@media only screen and (min-width: 1200px) {
+  #ft-vis {
+    height: 500px;
+  }
+  .vis {
+    display: flex;
+  }
+  .datagrid {
+    margin-left: 20px;
+    min-width: 550px
+  }
 }
 </style>
