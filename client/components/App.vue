@@ -1,52 +1,46 @@
 <template>
-  <div id="app" style="max-width: 1400px; margin: 0 auto;" v-on:click="hideSelectors()">
-    <header style="text-align: left; margin-bottom: 20px;">
-      <div class="" style="padding: 3px 0 13px;">
-        <h1 style="font-size: 1.1em; font-weight: 200">
-          Visualising how Australia generates its electricity<br>
-          <small style="color: #999;">(WA and NT coming soon) </small>
-        </h1>
-      </div>
+  <div id="app" v-on:click="hideSelectors()">
+    <header>
+      <h1>Visualising how Australia generates its electricity</h1>
 
-
-      <div class="selection" style="width: 130px; margin: 0; font-size: 13px;">
+      <div class="selection week-selection">
         <div class="selected" v-on:click.stop="toggleWeekSelector(true)">
           {{getWeekLabel(selectedWeek)}}
         </div>
 
         <transition name="fade">
-        <ol class="selection-options" v-if="showWeekSelector">
-          <li
-            v-for="week in weeks"
-            :key="week.id"
-            v-on:click="onWeekRangeChange(week.id)"
-            v-if="selectedWeek !== week.id">{{week.label}}</li>
-        </ol>
+          <ol class="selection-options" v-if="showWeekSelector">
+            <li
+              v-for="week in weeks"
+              :key="week.id"
+              v-on:click="onWeekRangeChange(week.id)"
+              v-if="selectedWeek !== week.id">{{week.label}}</li>
+          </ol>
         </transition>
       </div>
       <br>
-      <div class="selection" style="width: 300px; margin: 0; font-weight: 500; font-size: 24px;">
+      <div class="selection region-selection">
         <div class="selected" v-on:click.stop="toggleRegionSelector(true)">
           {{getRegionLabel(selectedRegion)}}
         </div>
 
         <transition name="fade">
-        <ol class="selection-options" v-if="showRegionSelector">
-          <li
-            v-for="region in regions"
-            :key="region.id"
-            v-on:click="onRegionChange(region.id)"
-            v-if="selectedRegion !== region.id">{{region.label}}</li>
-        </ol>
+          <ol class="selection-options" v-if="showRegionSelector">
+            <li
+              v-for="region in regions"
+              :key="region.id"
+              v-on:click="onRegionChange(region.id)"
+              v-if="selectedRegion !== region.id">{{region.label}}</li>
+          </ol>
         </transition>
       </div>
 
-      <div class="" v-if="showFTSelector">
+      <div v-if="showFTSelector">
         {{getFTLabel(selectedFT)}}
       </div>
-
     </header>
-    <router-view style="min-height: 400px;"></router-view>
+
+    <router-view class="router-view"></router-view>
 
     <footer>
       sources: <a href="https://www.aemo.com.au/">Australia Electricity Market Operator</a>
@@ -189,7 +183,6 @@ export default {
 
 
 <style>
-/* @import url('https://fonts.googleapis.com/css?family=Raleway:700'); */
 @import url("https://fonts.googleapis.com/css?family=Merriweather:300,400,700");
 html {
   box-sizing: border-box;
@@ -208,6 +201,14 @@ option {
 }
 
 header {
+  text-align: left;
+  margin-bottom: 20px;
+
+  h1 {
+    font-size: 1.1em;
+    font-weight: 200;
+    padding: 3px 0 13px;
+  }
 }
 
 footer {
@@ -228,9 +229,13 @@ a[title="Interactive JavaScript maps"] {
 
 #app {
   padding: 0;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-
+.router-view {
+  min-height: 400px;
+}
 
 .selection {
   display: inline-block;
@@ -238,6 +243,19 @@ a[title="Interactive JavaScript maps"] {
   cursor: pointer;
   color: #C74523;
   font-weight: 200;
+
+  &.week-selection {
+    width: 130px;
+    margin: 0;
+    font-size: 13px;
+  }
+
+  &.region-selection {
+    width: 300px;
+    margin: 0;
+    font-weight: 500;
+    font-size: 24px;
+  }
 
   .selected {
     width: 100%;
