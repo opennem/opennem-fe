@@ -62,8 +62,10 @@ export default {
     },
     fetchGenerationByRegionData(data) {
       const week = this.weekStarting
-      const fetchGen = getJSON(`${week}/gen_5m_${data.region}1.json`)
-      const fetchDispatch = getJSON(`${week}/dispatch_5m_${data.region}1.json`)
+      const interval = '5m'
+
+      const fetchGen = getJSON(`${week}/gen_${interval}_${data.region}1.json`)
+      const fetchDispatch = getJSON(`${week}/dispatch_${interval}_${data.region}1.json`)
       const fetchPrice = getJSON(`${week}/price_30m_${data.region}1.json`)
 
       axios.all([fetchGen, fetchDispatch, fetchPrice])
@@ -76,5 +78,4 @@ export default {
     }
   }
 }
-
 </script>

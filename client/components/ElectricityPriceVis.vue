@@ -1,7 +1,7 @@
 <template>
   <div class="chart-wrapper">
 
-    <div class="vis" v-show="!refreshing">
+    <div class="vis">
       <div class="chart">
         <div id="ft-vis"></div>
       </div>
@@ -55,6 +55,8 @@ export default {
   },
   methods: {
     onZoom(event) {
+      this.start = event.startDate
+      this.end = event.endDate
       this.summaryData = getSummaryData(
         this.chartData,
         event.startDate,

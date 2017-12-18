@@ -14,8 +14,23 @@ export function chartConfig(config) {
     categoryAxesSettings: {
       minPeriod: '5mm',
       startOnAxis: false,
-      equalSpacing: true,
-      groupToPeriods: ['5mm', '15mm', '30mm', 'hh']
+      axisAlpha: 1,
+      tickLength: 20,
+      axisColor: 'black',
+      dashLength: 5,
+      equalSpacing: false,
+      parseDates: true,
+      groupToPeriods: ['5mm', '15mm', '30mm', 'hh'],
+      dateFormats: [
+        {period:'fff',format:'JJ:NN'},
+        {period:'ss',format:'JJ:NN'},
+        {period:'mm',format:'JJ:NN'},
+        {period:'hh',format:'JJ:NN'},
+        {period:'DD',format:'D MMM'},
+        {period:'WW',format:'D MMM'},
+        {period:'MM',format:'MMM'},
+        {period:'YYYY',format:'YYYY'}
+      ]
     },
     chartCursorSettings: {
       pan: true,
@@ -91,6 +106,7 @@ export function guides(start, end) {
       fillColor: '#001f3f',
       fillAlpha: 0.07,
       lineAlpha: 0,
+      tickLength: 0,
       date: dayBefore.set({'hour': 22, 'minute': 0, 'second': 0}).toDate(),
       toDate: startDate.set({'hour': 7, 'minute': 0, 'second': 0}).toDate()
     })
