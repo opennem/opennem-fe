@@ -1,67 +1,45 @@
 <template>
-  <div class="generators-chart-wrapper">
+  <div class="chart-wrapper">
     <div class="loader" v-if="!chartRendered"></div>
 
-    <div style="display: flex">
-      <div id="generators-vis" style="width: 70%"></div>
-      <table style="width: 29%; margin-left: 1%" v-if="chartRendered">
-        <thead>
-          <tr>
-            <th colspan="2" style="text-align: left; width: 30%" >{{getFTLabel(ft)}}</th>
-
-            <!-- range info -->
-            <th v-if="hidePoint" class="instant-values" colspan="2">
-              {{formatDate(start)}} — {{formatDate(end)}}
-            </th>
-            <!-- point info -->
-            <th v-if="!hidePoint" class="instant-values" colspan="2">{{formatDate(pointData.date)}}</th>
-          </tr>
-          <tr>
-            <th colspan="2" style="text-align: left">Generators</th>
-
-            <!-- range info -->
-            <th v-if="hidePoint" class="instant-values">Energy (GWh)</th>
-            <th v-if="hidePoint">Power (MW)</th>
-            <!-- <th>Contribution (%)</th> -->
-
-            <!-- point info -->
-            <th v-if="!hidePoint" class="instant-values">Power (MW)</th>
-            <th v-if="!hidePoint"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in summaryData" :key="item.id" class="active">
-            <td style="width: 20px;">
-              <div class="colour-sq" v-bind:style="{ backgroundColor: item.colour }"></div>
-            </td>
-            <td style="text-align:left">{{item.id}}</td>
-
-            <td v-if="hidePoint" class="instant-values">{{formatNumber(item.range.energy)}}</td>
-            <td v-if="hidePoint">{{formatNumber(item.range.totalPower)}}</td>
-            <!-- <td>{{formatNumber(item.range.totalPower)}}</td> -->
-
-            <td v-if="!hidePoint" class="instant-values">
-              {{formatNumber(pointData[item.id])}}</td>
-            <td v-if="!hidePoint" style="width: 50px">{{formatNumber(pointData[item.id]/pointDataTotal*100)}}%</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="vis" v-show="chartRendered">
+      <div class="chart">
+        <div id="generators-vis"></div>
+      </div>
+      <div class="datagrid">
+        <FtSummary
+          class="ft-summary"
+          :tableData="summaryData"
+          :pointData="pointData"
+          :dateFrom="start"
+          :dateTo="end"
+          :showPrice="false"
+          :hidePoint="hidePoint">
+        </FtSummary>
+      </div>
     </div>
-    
   </div>
 </template>
 
 <script>
-import numeral from "numeral";
-import { mapGetters } from "vuex";
 import * as moment from "moment";
 import * as chroma from 'chroma-js'
 
+import {
+  chartConfig,
+  fieldMappings,
+  stockGraphs,
+  guides
+} from "../utils/ChartHelpers"
 import { FUEL_TECH } from "../utils/FuelTechConfig";
+import FtSummary from "./EnergyAverageValueTable";
+
 import { generateNightGuides } from "../utils/AmchartsDataTransform"
 
 export default {
-  components: {},
+  components: {
+    FtSummary
+  },
   props: {
     genData: Object
   },
@@ -73,7 +51,6 @@ export default {
       summaryData: [],
       dataKeys: [],
       pointData: {},
-      pointDataTotal: {},
       hidePoint: true,
       start: null,
       end: null,
@@ -90,37 +67,25 @@ export default {
           date: data.category,
         }
         let pointDataTotal = 0
-        
+
         this.dataKeys.forEach(key => {
           pointData[key] = dataContext[`${key}Average`]
           pointDataTotal += pointData[key]
         })
         this.pointData = pointData
-        this.pointDataTotal = pointDataTotal
+        this.pointData['pointTotal'] = pointDataTotal
 
         this.hidePoint = false
       } else {
         this.hidePoint = true
       }
-    },
-    formatDate(date) {
-      return moment(date).format('lll')
-    },
-    formatNumber: function(number, precision) {
-      let formatter = precision ? precision : '0,0'
-      let formatted = (number === 0 || isNaN(number)) ? '-' : numeral(number).format(formatter)
-      return formatted
-    },
-    getFTLabel(ft) {
-      return FUEL_TECH[ft].label
     }
   },
   watch: {
     genData(newData) {
       this.dataKeys = Object.keys(newData)
-      console.log(this.dataKeys.length)
 
-      const colourFrom = FUEL_TECH[this.$route.params.ft].colour
+      const colourFrom = FUEL_TECH[this.ft].colour
       const colourTo = chroma(colourFrom).brighten(2.6)
       const colours = chroma.scale([colourFrom, colourTo]).colors(this.dataKeys.length)
 
@@ -130,15 +95,18 @@ export default {
       this.start = this.chartData[0].date
       this.end = this.chartData[this.chartData.length-1].date
 
-      this.chart = makeChart(
-        this.chartData,
-        generateNightGuides(this.start, this.end),
-        generateFieldMappings(newData),
-        generateStockGraphs(newData, this.$route.params.ft),
-        this
-      )
+      if (this.chart) {
+        this.chart.clear()
+        this.chart = null
+      }
+
+      this.chart = makeChart(this.chartData, this.ft, this)
       this.chartRendered = true
     }
+  },
+  beforeDestroy() {
+    this.chart.clear()
+    this.chart = null
   }
 }
 
@@ -196,21 +164,7 @@ function generateChartData(data) {
   return chartData
 }
 
-function generateFieldMappings(data) {
-  const mappings = [];
-
-  Object.keys(data).forEach(generator => {
-    mappings.push({
-      fromField: generator,
-      toField: generator
-    });
-  });
-
-  return mappings;
-}
-
-function generateStockGraphs(data, ft) {
-  const generators = Object.keys(data)
+function generateStockGraphs(generators, ft) {
   const graphs = []
   const colourFrom = FUEL_TECH[ft].colour
   const colourTo = chroma(colourFrom).brighten(2.6)
@@ -233,24 +187,45 @@ function generateStockGraphs(data, ft) {
   return graphs;
 }
 
-function makeChart(chartData, guides, fieldMappings, stockGraphs, context) {
-  return AmCharts.makeChart("generators-vis", {
-    type: "stock",
-    // mouseWheelScrollEnabled: true,
-    mouseWheelZoomEnabled: true,
-    categoryAxesSettings: {
-      minPeriod: "5mm",
-      startOnAxis: true,
-      equalSpacing: true,
-      groupToPeriods: ["5mm", "15mm", "30mm", "hh"]
+function makeChart(data, ft, context) {
+  let firstObj = Object.assign({}, data[0]);
+  const lastIndex = data.length - 1;
+  const startDate = firstObj.date;
+  const endDate = data[lastIndex].date;
+
+  delete firstObj.date;
+  const keys = Object.keys(firstObj);
+
+  const config = makeConfig(
+    data,
+    guides(startDate, endDate),
+    fieldMappings(keys),
+    generateStockGraphs(keys, ft),
+    this
+  );
+  config.panels[0].listeners = [
+    {
+      event: "zoomed",
+      method: context.onZoom
     },
-    chartCursorSettings: {
-      pan: true,
-      categoryBalloonColor: "#000",
-      cursorColor: "#000",
-      showNextAvailable: true,
-      
-    },
+    {
+      event: "changed",
+      method: context.onCursorHover
+    }
+  ];
+
+  return AmCharts.makeChart("generators-vis", config);
+}
+
+function makeConfig(
+  chartData,
+  guides,
+  fieldMappings,
+  stockGraphs,
+  chartScrollbarSettings,
+  context
+) {
+  return chartConfig({
     dataSets: [
       {
         dataProvider: chartData,
@@ -258,23 +233,10 @@ function makeChart(chartData, guides, fieldMappings, stockGraphs, context) {
         fieldMappings
       }
     ],
-    panelsSettings: {
-      fontFamily: "Merriweather"
-    },
     panels: [
       {
         title: "Generation (MW)",
         showCategoryAxis: true,
-        listeners: [
-          {
-            event: "zoomed",
-            method: context.onZoom
-          },
-          {
-            event: "changed",
-            method: context.onCursorHover
-          },
-        ],
         valueAxes: [
           {
             id: "v1",
@@ -296,74 +258,38 @@ function makeChart(chartData, guides, fieldMappings, stockGraphs, context) {
         ],
         stockGraphs,
         guides,
-        stockLegend: {
-          enabled: false
-        }
+        stockLegend: { enabled: false }
       }
-    ],
-    chartScrollbarSettings: {enabled: false}
+    ]
   });
 }
 </script>
 
 <style scoped>
 #generators-vis {
-  height: 500px;
+  height: 300px;
+}
+.vis {
+  display: block;
+}
+.chart {
+  width: 100%;
+}
+.datagrid {
+  margin: 0;
+  max-width: 500px
 }
 
-table {
-  font-size: 0.8rem;
-  border-collapse: collapse;
-  margin-top: 30px;
-
-  .value {
-    padding-left: 10px;
-    width: 200px;
-    text-align: right;
+@media only screen and (min-width: 1200px) {
+  #generators-vis {
+    height: 442px;
   }
-
-  td, th {
-    text-align: right;
-    padding: 5px;
-    border-bottom: 1px solid #999;
+  .vis {
+    display: flex;
   }
-
-  .colour-sq {
-    width: 15px;
-    height: 15px;
-    background-color: #999;
+  .datagrid {
+    margin-left: 10px;
+    min-width: 500px
   }
-
-  tbody tr {
-    cursor: pointer;
-    opacity: 0.3;
-
-    .value span {
-      visibility: hidden;
-    }
-
-    &.active {
-      opacity: 1;
-
-      .value  span {
-        visibility: visible;
-      }
-    }
-
-    &:hover {
-      background-color: #eee;
-    }
-  }
-
-  tfoot {
-    td {
-      font-weight: bold;
-      background-color: #eee;
-    }
-  }
-}
-
-.instant-values {
-  border-left: 1px solid #999;
 }
 </style>

@@ -43,7 +43,7 @@ function fetchJSON(ref) {
   return new Promise((resolve, reject) => {
     getStorageLink(ref).then(url => {
       http.get(url).then(data => {
-        storageData[ref] = data
+        // storageData[ref] = data
         resolve(data)
       })
     })

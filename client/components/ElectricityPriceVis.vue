@@ -105,9 +105,16 @@ export default {
       this.chartData = generateChartData(newData)
 
       // console.log(generatePriceData(this.chartData, newData))
-
+      if (this.chart) {
+        this.chart.clear()
+        this.chart = null
+      }
       this.chart = makeChart(this.chartData, this)
     },
+  },
+  beforeDestroy() {
+    this.chart.clear()
+    this.chart = null
   }
 }
 

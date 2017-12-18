@@ -26,7 +26,7 @@
     <tbody>
        <tr v-for="item in tableData" :key="item.id" class="active">
         <td style="width: 20px;">
-          <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id)}"></div>
+          <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id, item.colour)}"></div>
         </td>
         <td style="text-align:left; width: 150px">
           <a v-if="showPrice" v-on:click="goToFT(item.id)">{{getLabel(item.id)}}</a>
@@ -41,7 +41,7 @@
 
         <!-- point info -->
         <td v-if="!hidePoint" class="instant-values">{{formatNumber(pointData[item.id])}}</td>
-        <td v-if="!hidePoint">{{formatNumber(pointData[item.id]/pointTotal*100, '0,0', '%')}}</td>
+        <td v-if="!hidePoint">{{displayPointTotalPercent(item)}}</td>
         <td v-if="showPrice && !hidePoint"></td>
       </tr>
     </tbody>
@@ -131,8 +131,13 @@ export default {
       const label = FUEL_TECH[id] ? FUEL_TECH[id].label : id
       return label
     },
-    getColour(id) {
-      const colour = FUEL_TECH[id] ? FUEL_TECH[id].colour : '#fff'
+    getColour(id, itemColour) {
+      let colour = '#fff'
+      if (itemColour !== undefined) {
+        colour = itemColour
+      } else if (FUEL_TECH[id] !== undefined) {
+        colour = FUEL_TECH[id].colour
+      }
       return colour
     },
     goToFT(ft) {
@@ -143,6 +148,10 @@ export default {
           ft: ft
         }
       })
+    },
+    displayPointTotalPercent(item) {
+      const pointTotal = this.pointData.pointTotal || this.pointTotal
+      return this.formatNumber(this.pointData[item.id]/pointTotal*100, '0,0', '%')
     }
   }
 }

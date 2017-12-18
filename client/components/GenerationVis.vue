@@ -4,11 +4,11 @@
 
     <div style="display: flex">
       <div id="ft-vis" style="width: 70%"></div>
-      <FtSummary style="width: 29%; margin-left: 1%" 
-        :tableData="summaryData" 
-        :pointData="pointData" 
-        :dateFrom="start" 
-        :dateTo="end" 
+      <FtSummary style="width: 29%; margin-left: 1%"
+        :tableData="summaryData"
+        :pointData="pointData"
+        :dateFrom="start"
+        :dateTo="end"
         :showPrice="false"
         :hidePoint="hidePoint">
       </FtSummary>
@@ -20,9 +20,9 @@
 import numeral from 'numeral'
 import * as moment from 'moment'
 
-import { 
-  generateNightGuides, 
-  generatePriceData, 
+import {
+  generateNightGuides,
+  generatePriceData,
   generateFieldMappings,
   generateStockGraphs,
   generateChartScrollbarSettings
@@ -86,7 +86,7 @@ export default {
         summaryData.reverse()
         this.summaryData = summaryData
       }
-      
+
     },
     onCursorHover(event) {
       if (event.index !== undefined) {
@@ -112,7 +112,7 @@ export default {
     genData(newData) {
       this.chartData = newData
       this.chart = makeChart(
-        newData, 
+        newData,
         generateNightGuides(newData[0].date, newData[newData.length-1].date),
         generateFieldMappings(),
         generateStockGraphs(),
@@ -151,7 +151,7 @@ function makeChart(chartData, guides, fieldMappings, stockGraphs, chartScrollbar
         categoryField: 'date',
         fieldMappings
       }
-    ], 
+    ],
     panelsSettings: {
       fontFamily: 'Merriweather',
     },
@@ -174,7 +174,7 @@ function makeChart(chartData, guides, fieldMappings, stockGraphs, chartScrollbar
         zeroGridAlpha: 0,
         stackType: 'regular',
         minimum: 0,
-        guides: [{ 
+        guides: [{
           includeGuidesInMinMax: false,
           value: 0,
           dashLength: 0,

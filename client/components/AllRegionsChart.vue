@@ -93,9 +93,17 @@ export default {
   watch: {
     genData(newData) {
       this.chartData = newData;
+      if (this.chart) {
+        this.chart.clear()
+        this.chart = null
+      }
       this.chart = makeChart(this.chartData, this)
       this.chartRendered = true;
     }
+  },
+  beforeDestroy() {
+    this.chart.clear()
+    this.chart = null
   }
 };
 

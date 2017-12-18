@@ -42,7 +42,7 @@
       </div>
 
       <div class="" v-if="showFTSelector">
-        / {{selectedFT}}
+        {{getFTLabel(selectedFT)}}
       </div>
 
     </header>
@@ -147,6 +147,10 @@ export default {
       const region = id === undefined ? regions[0] : this.regions.find(r => r.id === id)
       return region.label
     },
+    getFTLabel(id) {
+      const label = FUEL_TECH[id] ? FUEL_TECH[id].label : id
+      return label
+    },
     getWeekLabel(id) {
       const week = this.weeks.find(r => r.id === id)
       return week.label
@@ -161,11 +165,18 @@ export default {
     },
     checkRoute(route) {
       const regionId = route.params.region
+      const ft = route.params.ft
       this.showFTSelector = route.name === 'generators' ? true : false
 
       if (regionId !== undefined) {
         this.selectedRegion = regionId
         this.$store.commit('updateRegionId', regionId)
+      } else {
+        this.selectedRegion = 'all'
+        this.$store.commit('updateRegionId', 'all')
+      }
+      if (ft !== undefined) {
+        this.selectedFT = ft
       }
     },
     hideSelectors() {
