@@ -132,18 +132,16 @@ export default {
     onRegionChange(regionId) {
       this.selectedRegion = regionId
       this.$store.commit('updateRegionId', regionId)
+
       if (regionId === 'all') {
-        this.$router.replace({ name: 'home' })
+        this.$router.push({ name: 'home' })
       } else {
-        this.$router.replace({ name: 'regions', params: { region: regionId } })
-        // this.$store.dispatch('fetchData', { region: regionId })
+        this.$router.push({ name: 'regions', params: { region: regionId } })
       }
     },
     onWeekRangeChange(week) {
-      // this.weekStarting = event.target.value
       this.selectedWeek = week
       this.$store.commit('updateWeekStarting', week)
-      // this.fetchData()
     },
     getRegionLabel(id) {
       const region = id === undefined ? regions[0] : this.regions.find(r => r.id === id)
@@ -162,7 +160,13 @@ export default {
       this.showWeekSelector = toggle
     },
     checkRoute(route) {
+      const regionId = route.params.region
       this.showFTSelector = route.name === 'generators' ? true : false
+
+      if (regionId !== undefined) {
+        this.selectedRegion = regionId
+        this.$store.commit('updateRegionId', regionId)
+      }
     },
     hideSelectors() {
       this.toggleRegionSelector(false)

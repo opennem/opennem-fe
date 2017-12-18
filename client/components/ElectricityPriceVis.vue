@@ -41,7 +41,6 @@ export default {
   },
   props: {
     genData: Object,
-    priceData: Object
   },
   data() {
     return {
@@ -83,29 +82,32 @@ export default {
       } else {
         this.hidePoint = true
       }
+    },
+    updateChartProvider() {
+      // if (this.chart) {
+      //   this.chart.dataSets[0].dataProvider = generatePriceData(
+      //     this.chartData,
+      //     newData
+      //   )
+      //   this.chart.validateData()
+      //
+      //   this.summaryData = generateSummaryData(
+      //     this.chartData,
+      //     this.chartData[0].date,
+      //     this.chartData[this.chartData.length - 1].date
+      //   )
+      // }
     }
   },
 
   watch: {
     genData(newData) {
       this.chartData = generateChartData(newData)
+
+      // console.log(generatePriceData(this.chartData, newData))
+
       this.chart = makeChart(this.chartData, this)
     },
-    priceData(newData) {
-      if (this.chart) {
-        this.chart.dataSets[0].dataProvider = generatePriceData(
-          this.chartData,
-          newData
-        )
-        this.chart.validateData()
-
-        this.summaryData = generateSummaryData(
-          this.chartData,
-          this.chartData[0].date,
-          this.chartData[this.chartData.length - 1].date
-        )
-      }
-    }
   }
 }
 
@@ -115,7 +117,10 @@ function makeChart(data, context) {
   const startDate = firstObj.date;
   const endDate = data[lastIndex].date;
 
+  // remove date and rrp to generate proper keys for chart obj
   delete firstObj.date;
+  delete firstObj.RRP
+
   const keys = Object.keys(firstObj);
   const mappings = [{fromField: 'RRP', toField: 'RRP'}, ...fieldMappings(keys)]
 
@@ -250,7 +255,7 @@ function makeConfig(
     display: flex;
   }
   .datagrid {
-    margin-left: 20px;
+    margin-left: 10px;
     min-width: 550px
   }
 }
