@@ -46,14 +46,6 @@ export default {
     })
   },
   methods: {
-    onRegionChange(event) {
-      this.region =  event.target.value
-      this.$router.push({ name: 'regions', params: { region: this.region } })
-    },
-    onWeekRangeChange(event) {
-      this.weekStarting = event.target.value
-      this.$store.commit('updateWeekStarting', event.target.value)
-    },
     fetchData() {
       this.dataReady = false
       this.fetchGenerationByRegionData({

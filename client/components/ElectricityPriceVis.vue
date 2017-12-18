@@ -1,6 +1,5 @@
 <template>
   <div class="chart-wrapper">
-
     <div class="vis">
       <div class="chart">
         <div id="ft-vis"></div>
@@ -23,13 +22,16 @@
 import * as moment from "moment"
 
 import {
+  chartConfig,
+  fieldMappings,
+  stockGraphs,
+  guides
+} from "../utils/ChartHelpers";
+import {
   generateChartData,
-  generateNightGuides,
   generatePriceData,
-  generateFieldMappings,
-  generateStockGraphs,
-  generateChartScrollbarSettings
-} from "../utils/AmchartsDataTransform"
+  generateSummaryData
+} from '../utils/DataHelpers'
 import FtSummary from "./EnergyAverageValueTable"
 import { FUEL_TECH } from "../utils/FuelTechConfig"
 
@@ -38,8 +40,8 @@ export default {
     FtSummary
   },
   props: {
-    genData: {},
-    priceData: {}
+    genData: Object,
+    priceData: Object
   },
   data() {
     return {
@@ -57,7 +59,7 @@ export default {
     onZoom(event) {
       this.start = event.startDate
       this.end = event.endDate
-      this.summaryData = getSummaryData(
+      this.summaryData = generateSummaryData(
         this.chartData,
         event.startDate,
         event.endDate
@@ -87,14 +89,7 @@ export default {
   watch: {
     genData(newData) {
       this.chartData = generateChartData(newData)
-      this.chart = makeChart(
-        this.chartData,
-        generateNightGuides(this.chartData[0].date, this.chartData[this.chartData.length-1].date),
-        generateFieldMappings(),
-        generateStockGraphs(),
-        generateChartScrollbarSettings(),
-        this
-      )
+      this.chart = makeChart(this.chartData, this)
     },
     priceData(newData) {
       if (this.chart) {
@@ -104,7 +99,7 @@ export default {
         )
         this.chart.validateData()
 
-        this.summaryData = getSummaryData(
+        this.summaryData = generateSummaryData(
           this.chartData,
           this.chartData[0].date,
           this.chartData[this.chartData.length - 1].date
@@ -114,7 +109,37 @@ export default {
   }
 }
 
-function makeChart(
+function makeChart(data, context) {
+  let firstObj = Object.assign({}, data[0]);
+  const lastIndex = data.length - 1;
+  const startDate = firstObj.date;
+  const endDate = data[lastIndex].date;
+
+  delete firstObj.date;
+  const keys = Object.keys(firstObj);
+  const mappings = [{fromField: 'RRP', toField: 'RRP'}, ...fieldMappings(keys)]
+
+  const config = makeConfig(
+    data,
+    guides(startDate, endDate),
+    mappings,
+    stockGraphs(keys),
+    this
+  );
+  config.panels[0].listeners = [
+    {
+      event: "zoomed",
+      method: context.onZoom
+    },
+    {
+      event: "changed",
+      method: context.onCursorHover
+    }
+  ];
+
+  return AmCharts.makeChart("ft-vis", config);
+}
+function makeConfig(
   chartData,
   guides,
   fieldMappings,
@@ -122,26 +147,7 @@ function makeChart(
   chartScrollbarSettings,
   context
 ) {
-  return AmCharts.makeChart("ft-vis", {
-    type: "stock",
-    // mouseWheelScrollEnabled: true,
-    export: {
-      enabled: true,
-      fileName: `${context.region}-generation`
-    },
-    mouseWheelZoomEnabled: true,
-    categoryAxesSettings: {
-      minPeriod: "5mm",
-      startOnAxis: true,
-      equalSpacing: true,
-      groupToPeriods: ["5mm", "15mm", "30mm", "hh"]
-    },
-    chartCursorSettings: {
-      pan: true,
-      categoryBalloonColor: "#000",
-      cursorColor: "#000",
-      showNextAvailable: true
-    },
+  return chartConfig({
     dataSets: [
       {
         dataProvider: chartData,
@@ -149,24 +155,11 @@ function makeChart(
         fieldMappings
       }
     ],
-    panelsSettings: {
-      fontFamily: "Merriweather"
-    },
     panels: [
       {
         title: "Generation (MW)",
         percentHeight: 70,
         showCategoryAxis: false,
-        listeners: [
-          {
-            event: "zoomed",
-            method: context.onZoom
-          },
-          {
-            event: "changed",
-            method: context.onCursorHover
-          }
-        ],
         valueAxes: [
           {
             id: "v1",
@@ -187,35 +180,8 @@ function makeChart(
         ],
         stockGraphs,
         guides,
-        stockLegend: {
-          enabled: false
-        }
+        stockLegend: { enabled: false }
       },
-      // {
-      //   title: 'Price',
-      //   percentHeight: 30,
-      //   valueAxes: [ {
-      //     id: 'v2',
-      //     logarithmic: true,
-      //     minimum: 300,
-      //     maximum: 15000,
-      //     strictMinMax: true,
-      //     includeGuidesInMinMax: false,
-      //     guides: [{ value: 300 }, { value: 1000 }, { value: 5000 }]
-      //   } ],
-      //   stockGraphs: [{
-      //     id: 'p1',
-      //     valueAxis: 'v2',
-      //     valueField: 'RRP',
-      //     type: 'step',
-      //     lineAlpha: 0.5,
-      //     lineColor: '#000',
-      //     useDataSetColors: false
-      //   }], stockLegend: {
-      //     // valueTextRegular: ' ',
-      //     // markerType: 'none'
-      //   }
-      // },
       {
         title: "Price ($)",
         percentHeight: 30,
@@ -256,47 +222,8 @@ function makeChart(
           markerType: "none"
         }
       }
-    ],
-    chartScrollbarSettings: {
-      enabled: false
-    }
-  })
-}
-
-function getSummaryData(chartData, start, end) {
-  let filteredData = chartData.filter(item => {
-    return moment(item.date).isBetween(start, end)
-  })
-
-  if (filteredData[0]) {
-    const summaryData = []
-
-    Object.keys(filteredData[0]).forEach(ft => {
-      if (ft !== "date" && ft !== "DEMAND_AND_NONSCHEDGEN" && ft !== "RRP") {
-        const totalPower = filteredData.reduce((a, b) => {
-          return a + b[ft]
-        }, 0)
-        const dataPrice = filteredData.map((d, i) => {
-          const rrp = filteredData[i]["RRP"] ? filteredData[i]["RRP"] : 0
-          return d[ft] * rrp
-        })
-        const averagePrice = dataPrice.reduce((a, b) => a + b, 0) / totalPower
-
-        summaryData.push({
-          id: ft,
-          range: {
-            totalPower,
-            energy: totalPower / 12000,
-            averagePrice
-          }
-        })
-      }
-    })
-
-    return summaryData.reverse()
-  } else {
-    return []
-  }
+    ]
+  });
 }
 </script>
 

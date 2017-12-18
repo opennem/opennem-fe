@@ -36,7 +36,8 @@ import {
   fieldMappings,
   stockGraphs,
   guides
-} from "../utils/ChartHelpers";
+} from "../utils/ChartHelpers"
+import { generateSummaryData } from '../utils/DataHelpers'
 import FtSummary from "./EnergyAverageValueTable";
 import FTRegionVis from '../components/FuelTechRegionVis'
 import { FUEL_TECH } from "../utils/FuelTechConfig";
@@ -67,43 +68,7 @@ export default {
       this.start = event.startDate;
       this.end = event.endDate;
 
-      let filteredData = this.chartData.filter(item => {
-        return moment(item.date).isBetween(this.start, this.end);
-      });
-
-      if (filteredData[0]) {
-        const summaryData = [];
-
-        Object.keys(filteredData[0]).forEach(ft => {
-          if (
-            ft !== "date" &&
-            ft !== "DEMAND_AND_NONSCHEDGEN" &&
-            ft !== "RRP"
-          ) {
-            const totalPower = filteredData.reduce((a, b) => {
-              return a + b[ft];
-            }, 0);
-            const dataPrice = filteredData.map((d, i) => {
-              const rrp = filteredData[i]["RRP"] ? filteredData[i]["RRP"] : 0;
-              return d[ft] * rrp;
-            });
-            const averagePrice =
-              dataPrice.reduce((a, b) => a + b, 0) / totalPower;
-
-            summaryData.push({
-              id: ft,
-              range: {
-                totalPower,
-                energy: totalPower / 12000,
-                averagePrice
-              }
-            });
-          }
-        });
-
-        summaryData.reverse();
-        this.summaryData = summaryData;
-      }
+      this.summaryData = generateSummaryData(this.chartData, this.start, this.end)
     },
     onCursorHover(event) {
       if (event.index !== undefined) {
@@ -127,39 +92,42 @@ export default {
   },
   watch: {
     genData(newData) {
-      console.log(newData);
       this.chartData = newData;
-
-      let firstObj = Object.assign({}, this.chartData[0]);
-      const lastIndex = this.chartData.length - 1;
-      const startDate = firstObj.date;
-      const endDate = this.chartData[lastIndex].date;
-
-      delete firstObj.date;
-      const keys = Object.keys(firstObj);
-
-      const config = makeConfig(
-        newData,
-        guides(startDate, endDate),
-        fieldMappings(keys),
-        stockGraphs(keys),
-        this
-      );
-      config.panels[0].listeners = [
-        {
-          event: "zoomed",
-          method: this.onZoom
-        },
-        {
-          event: "changed",
-          method: this.onCursorHover
-        }
-      ];
-      this.chart = AmCharts.makeChart("ft-vis", config);
+      this.chart = makeChart(this.chartData, this)
       this.chartRendered = true;
     }
   }
 };
+
+function makeChart(data, context) {
+  let firstObj = Object.assign({}, data[0]);
+  const lastIndex = data.length - 1;
+  const startDate = firstObj.date;
+  const endDate = data[lastIndex].date;
+
+  delete firstObj.date;
+  const keys = Object.keys(firstObj);
+
+  const config = makeConfig(
+    data,
+    guides(startDate, endDate),
+    fieldMappings(keys),
+    stockGraphs(keys),
+    this
+  );
+  config.panels[0].listeners = [
+    {
+      event: "zoomed",
+      method: context.onZoom
+    },
+    {
+      event: "changed",
+      method: context.onCursorHover
+    }
+  ];
+
+  return AmCharts.makeChart("ft-vis", config);
+}
 
 function makeConfig(
   chartData,
@@ -226,13 +194,13 @@ function makeConfig(
 
 @media only screen and (min-width: 1200px) {
   #ft-vis {
-    height: 408px;
+    height: 442px;
   }
   .vis {
     display: flex;
   }
   .datagrid {
-    margin-left: 20px;
+    margin-left: 10px;
     min-width: 500px
   }
 }

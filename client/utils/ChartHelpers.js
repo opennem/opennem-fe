@@ -7,35 +7,38 @@ export function chartConfig(config) {
   const defaultConfig = {
     type: 'stock',
     mouseWheelZoomEnabled: true,
+    mouseWheelScrollEnabled: true,
     export: {
       enabled: true,
       fileName: 'all-regions-generation'
     },
     categoryAxesSettings: {
       minPeriod: '5mm',
-      startOnAxis: false,
+      startOnAxis: true,
       axisAlpha: 1,
-      tickLength: 20,
-      axisColor: 'black',
-      dashLength: 5,
+      tickLength: 35,
+      axisHeight: 35,
+      axisColor: '#999',
+      color: '#000',
+      dashLength: 7,
       equalSpacing: false,
-      parseDates: true,
+      centerLabelOnFullPeriod: false,
       groupToPeriods: ['5mm', '15mm', '30mm', 'hh'],
       dateFormats: [
         {period:'fff',format:'JJ:NN'},
         {period:'ss',format:'JJ:NN'},
         {period:'mm',format:'JJ:NN'},
         {period:'hh',format:'JJ:NN'},
-        {period:'DD',format:'D MMM'},
-        {period:'WW',format:'D MMM'},
-        {period:'MM',format:'MMM'},
+        {period:'DD',format:'EEE\nD MMM'},
+        {period:'WW',format:'EEE\nD MMM'},
+        {period:'MM',format:'EEE\nD MMM'},
         {period:'YYYY',format:'YYYY'}
       ]
     },
     chartCursorSettings: {
       pan: true,
-      categoryBalloonColor: '#000',
-      cursorColor: '#000',
+      categoryBalloonColor: '#C74523',
+      cursorColor: '#C74523',
       showNextAvailable: true
     },
     panelsSettings: {
