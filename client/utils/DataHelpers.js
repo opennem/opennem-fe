@@ -22,7 +22,7 @@ export function generateChartData(data) {
 
       for (let i=0; i<ftData.length; i++) {
         const now = moment(start).add(duration.value*i, duration.key)
-        const d = ftKey === 'NETINTERCHANGE' ? -ftData[i] : ftData[i]
+        const d = (ftKey === 'NETINTERCHANGE' || ftKey === 'pumps') ? -ftData[i] : ftData[i]
 
         if (!hasChartData) {
           chartData[i] = {

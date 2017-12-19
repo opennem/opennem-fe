@@ -49,14 +49,14 @@ export const FUEL_TECH_GROUPS = [
 ]
 
 export const FUEL_TECH = {
-  'NETINTERCHANGE': {
-    colour: '#44146F',
-    label: 'Import/Export'
-  },
   'pumps': {
     colour: '#4A90E2',
     label: 'Pumps',
     categoryId: 'hydro'
+  },
+  'NETINTERCHANGE': {
+    colour: '#44146F',
+    label: 'Import/Export'
   },
   'black_coal': {
     colour: '#000',
