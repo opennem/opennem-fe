@@ -4,7 +4,7 @@
       <tr>
         <th colspan="2"></th>
         <!-- range info -->
-        <th class="instant-values" v-if="hidePoint" v-bind:colspan="showPrice ? 3 : 2">{{formatDate(dateFrom)}} — {{formatDate(dateTo)}}</th>
+        <th class="instant-values" v-if="hidePoint" v-bind:colspan="showPrice ? 3 : 2">{{formatDate(dateFrom)}} – {{formatDate(dateTo)}}</th>
         <!-- point info -->
         <th class="instant-values" v-if="!hidePoint" v-bind:colspan="showPrice ? 3 : 2">{{formatDate(pointData.date)}}</th>
       </tr>
