@@ -100,6 +100,34 @@ export function generatePriceData(chartSeries, payload) {
   return priceData
 }
 
+export function sumRegionsFuelTech(regions) {
+  let data = null
+  Object.keys(regions).forEach((regionKey, regionIndex) => {
+    const regionFtData = regions[regionKey]
+    if (!data) {
+      data = _.cloneDeep(regionFtData)
+    } else {
+      data = _.mergeWith(data, regionFtData, (objValue, srcValue) => {
+        if (objValue) {
+          const objData = objValue.data
+          const srcData = srcValue.data
+
+          objData.forEach((value, index) => {
+            objData[index] = value + srcData[index]
+          })
+
+          objValue.data = objData
+
+          return objValue
+        } else {
+          return srcValue
+        }
+      })
+    }
+  })
+  return data
+}
+
 /*** Parse interval:
     - years = y
     - months = M

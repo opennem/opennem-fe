@@ -8,8 +8,7 @@
 import { mapGetters } from 'vuex'
 import axios from 'axios'
 import { getJSON } from '../utils/Firebase'
-import { generateChartData } from '../utils/DataHelpers'
-import { sumRegionsFuelTech } from '../store/dataHelpers'
+import { generateChartData, sumRegionsFuelTech } from '../utils/DataHelpers'
 import AllRegionsChart from '../components/AllRegionsChart'
 
 export default {
