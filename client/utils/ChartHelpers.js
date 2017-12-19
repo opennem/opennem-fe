@@ -5,6 +5,7 @@ import { FUEL_TECH } from './FuelTechConfig'
 /*** Default amCharts config **/
 export function chartConfig(config) {
   const defaultConfig = {
+    path: 'dist/amcharts/',
     type: 'stock',
     mouseWheelZoomEnabled: true,
     mouseWheelScrollEnabled: true,
