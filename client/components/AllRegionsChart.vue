@@ -17,13 +17,7 @@
           :hidePoint="hidePoint">
         </FtSummary>
       </div>
-
-      <!-- <div class="">
-        <p><strong>Gigawatt hours</strong>, abbreviated as GWh, is a unit of energy representing one billion (1 000 000 000) watt hours and is equivalent to one million kilowatt hours.</p>
-      </div> -->
-      <!-- <FTRegionVis></FTRegionVis> -->
     </div>
-
   </div>
 </template>
 
@@ -39,13 +33,11 @@ import {
 } from "../utils/ChartHelpers"
 import { generateSummaryData } from '../utils/DataHelpers'
 import FtSummary from "./EnergyAverageValueTable";
-import FTRegionVis from '../components/FuelTechRegionVis'
 import { FUEL_TECH } from "../utils/FuelTechConfig";
 
 export default {
   components: {
     FtSummary,
-    FTRegionVis
   },
   props: {
     genData: Array,
