@@ -10,7 +10,7 @@ export function chartConfig(config) {
     mouseWheelZoomEnabled: true,
     mouseWheelScrollEnabled: true,
     export: {
-      enabled: true,
+      enabled: false,
       fileName: 'all-regions-generation'
     },
     categoryAxesSettings: {

@@ -81,8 +81,6 @@ module.exports = {
       }
     ]),
     new CopyWebpackPlugin([{ from: 'node_modules/amstock3/amcharts/images', to: 'amcharts/images' },]),
-    new CopyWebpackPlugin([{ from: 'node_modules/amstock3/amcharts/plugins/export/libs', to: 'amcharts/plugins/export/libs' },]),
-    new CopyWebpackPlugin([{ from: 'node_modules/amstock3/amcharts/plugins/export/export.css', to: 'amcharts/plugins/export/' },])
   ],
   target: _.target
 }
