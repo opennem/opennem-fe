@@ -1,5 +1,7 @@
 # opennem-fe
 
+[Demo site](http://188.166.217.232/)
+
 To start:
 * installing packages
 ```bash
