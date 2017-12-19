@@ -53,6 +53,11 @@ export const FUEL_TECH = {
     colour: '#44146F',
     label: 'Import/Export'
   },
+  'pumps': {
+    colour: '#4A90E2',
+    label: 'Pumps',
+    categoryId: 'hydro'
+  },
   'black_coal': {
     colour: '#000',
     label: 'Black Coal',
@@ -68,14 +73,14 @@ export const FUEL_TECH = {
     label: 'Biomass',
     categoryId: 'other'
   },
+  'distillate': {
+    colour: '#F35020',
+    label: 'Distillate',
+    categoryId: 'other'
+  },
   'hydro': {
     colour: 'steelblue',
     label: 'Hydro',
-    categoryId: 'hydro'
-  },
-  'pumps': {
-    colour: '#4A90E2',
-    label: 'Pumps',
     categoryId: 'hydro'
   },
   'gas_steam': {
@@ -103,11 +108,6 @@ export const FUEL_TECH = {
     label: 'Wind',
     categoryId: 'wind'
   },
-  'distillate': {
-    colour: '#F35020',
-    label: 'Distillate',
-    categoryId: 'other'
-  },
   'rooftop_solar': {
     colour: '#DFCF00',
     label: 'Solar (Rooftop)',
@@ -118,5 +118,5 @@ export const FUEL_TECH = {
     label: 'Solar',
     categoryId: 'solar'
   },
-  
+
 }
