@@ -9,7 +9,8 @@
       <div class="datagrid">
         <FtSummary
           class="ft-summary"
-          :tableData="summaryData"
+          :tableData="sourcesData"
+          :loadsData="[]"
           :pointData="pointData"
           :dateFrom="start"
           :dateTo="end"
@@ -48,7 +49,8 @@ export default {
       chartRendered: false,
       chart: null,
       chartData: [],
-      summaryData: [],
+      summaryData: {},
+      sourcesData: [],
       pointData: {},
       start: null,
       end: null,
@@ -61,6 +63,7 @@ export default {
       this.end = event.endDate;
 
       this.summaryData = generateSummaryData(this.chartData, this.start, this.end)
+      this.sourcesData = this.summaryData.sourcesData
     },
     onCursorHover(event) {
       if (event.index !== undefined) {

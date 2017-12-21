@@ -51,70 +51,84 @@ export const FUEL_TECH_GROUPS = [
 export const FUEL_TECH = {
   'pumps': {
     colour: '#4A90E2',
+    type: 'loads',
     label: 'Pumps',
     categoryId: 'hydro'
   },
   'NETINTERCHANGE': {
     colour: '#44146F',
+    type: 'loads',
     label: 'Import/Export'
   },
   'black_coal': {
     colour: '#000',
+    type: 'sources',
     label: 'Black Coal',
     categoryId: 'coal'
   },
   'brown_coal': {
     colour: '#8B572A',
+    type: 'sources',
     label: 'Brown Coal',
     categoryId: 'coal'
   },
   'biomass': {
     colour: '#A3886F',
+    type: 'sources',
     label: 'Biomass',
-    categoryId: 'other'
-  },
-  'distillate': {
-    colour: '#F35020',
-    label: 'Distillate',
     categoryId: 'other'
   },
   'hydro': {
     colour: 'steelblue',
+    type: 'sources',
     label: 'Hydro',
     categoryId: 'hydro'
   },
+  'distillate': {
+    colour: '#F35020',
+    type: 'sources',
+    label: 'Distillate',
+    categoryId: 'other'
+  },
   'gas_steam': {
     colour: '#F48E1B',
+    type: 'sources',
     label: 'Gas (Steam)',
     categoryId: 'gas'
   },
   'gas_ccgt': {
     colour: '#FDB462',
+    type: 'sources',
     label: 'Gas (CCGT)',
     categoryId: 'gas'
   },
   'gas_ocgt': {
     colour: '#FFCD96',
+    type: 'sources',
     label: 'Gas (OCGT)',
     categoryId: 'gas'
   },
   'gas_recip': {
     colour: '#F9DCBC',
+    type: 'sources',
     label: 'Gas (Reciprocating)',
     categoryId: 'gas'
   },
   'wind': {
     colour: '#417505',
+    type: 'sources',
     label: 'Wind',
     categoryId: 'wind'
   },
   'rooftop_solar': {
     colour: '#DFCF00',
+    type: 'sources',
     label: 'Solar (Rooftop)',
     categoryId: 'solar'
   },
   'solar': {
     colour: '#F8E71C',
+    type: 'sources',
     label: 'Solar',
     categoryId: 'solar'
   },

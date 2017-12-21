@@ -24,24 +24,105 @@
       </tr>
     </thead>
     <tbody>
-       <tr v-for="item in tableData" :key="item.id" class="active">
+      <tr class="active">
+        <td colspan="5" style="text-align: left; color: #000; background: #f7ece0; font-weight: bold">Sources</td>
+      </tr>
+      <tr v-for="item in tableData" :key="item.id" class="active">
         <td style="width: 20px;">
           <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id, item.colour)}"></div>
         </td>
         <td style="text-align:left; width: 150px">
-          <a v-if="showPrice" v-on:click="goToFT(item.id)">{{getLabel(item.id)}}</a>
-          <span v-if="!showPrice">{{getLabel(item.id)}}</span>
+          <div v-if="isNetInterchange(item.id)">
+            Import
+          </div>
+          <div v-else>
+            <a v-if="showPrice" v-on:click="goToFT(item.id)">{{getLabel(item.id)}}</a>
+            <span v-if="!showPrice">{{getLabel(item.id)}}</span>
+          </div>
         </td>
 
         <!-- range info -->
-        <td v-if="hidePoint" class="instant-values">{{formatNumber(item.range.energy)}}</td>
+        <td v-if="hidePoint" class="instant-values">
+          <span v-if="
+            !isNetInterchange(item.id) || 
+            (isNetInterchange(item.id) && item.range.energy > 0)">
+            {{formatNumber(item.range.energy)}}
+          </span>
+          <span v-else>-</span>
+        </td>
         <!-- <td v-if="hidePoint">{{formatNumber(item.range.totalPower)}}</td> -->
-        <td v-if="hidePoint">{{formatNumber(item.range.totalPower/rangeTotal*100, '0,0', '%')}}</td>
+        <td v-if="hidePoint">
+          <span v-if="
+            !isNetInterchange(item.id) || 
+            (isNetInterchange(item.id) && item.range.energy > 0)">
+            {{formatNumber(item.range.totalPower/rangeTotal*100, '0,0', '%')}}
+          </span>
+          <span v-else>-</span>
+        </td>
         <td v-if="showPrice && hidePoint">{{formatNumber(item.range.averagePrice, '0,0.00')}}</td>
 
         <!-- point info -->
-        <td v-if="!hidePoint" class="instant-values">{{formatNumber(pointData[item.id])}}</td>
-        <td v-if="!hidePoint">{{displayPointTotalPercent(item)}}</td>
+        <td v-if="!hidePoint" class="instant-values">
+          <span v-if="
+            !isNetInterchange(item.id) || 
+            (isNetInterchange(item.id) &&pointData[item.id] > 0)">
+            {{formatNumber(pointData[item.id])}}
+          </span>
+          <span v-else>-</span>
+        </td>
+        <td v-if="!hidePoint">
+           <span v-if="
+            !isNetInterchange(item.id) || 
+            (isNetInterchange(item.id) &&pointData[item.id] > 0)">
+            {{displayPointTotalPercent(item)}}
+          </span>
+          <span v-else>-</span>
+        </td>
+        <td v-if="showPrice && !hidePoint"></td>
+      </tr>
+    </tbody>
+
+    <tbody v-show="loadsData.length > 0">
+      <tr class="active">
+        <td colspan="5" style="text-align: left; color: #333; background: #f7ece0; font-weight: bold">Loads</td>
+      </tr>
+      <tr v-for="item in loadsData" :key="item.id" class="active">
+        <td style="width: 20px;">
+          <div class="colour-sq" style="background: rgba(255,255,255,0.9); border: 1px solid #aaa;"></div>
+        </td>
+        <td style="text-align:left; width: 150px">
+          <div v-if="isNetInterchange(item.id)">
+            Export
+          </div>
+          <div v-else>
+            <a v-if="showPrice" v-on:click="goToFT(item.id)">{{getLabel(item.id)}}</a>
+            <span v-if="!showPrice">{{getLabel(item.id)}}</span>
+          </div>
+        </td>
+
+        <!-- range info -->
+        <td v-if="hidePoint" class="instant-values">
+          <span v-if="item.range.energy <= 0">{{formatNumber(item.range.energy)}}</span>
+          <span v-else>-</span>
+        </td>
+        <!-- <td v-if="hidePoint">{{formatNumber(item.range.totalPower)}}</td> -->
+        <td v-if="hidePoint">
+          <span v-if="item.range.energy <= 0">
+            {{formatNumber(item.range.totalPower/rangeTotal*100, '0,0', '%')}}
+          </span>
+          <span v-else>-</span>
+        </td>
+        <td v-if="showPrice && hidePoint">{{formatNumber(item.range.averagePrice, '0,0.00')}}</td>
+
+        <!-- point info -->
+        <td v-if="!hidePoint" class="instant-values">
+          <span v-if="pointData[item.id] <= 0">{{formatNumber(pointData[item.id])}}</span>
+          <span v-else>-</span>
+        </td>
+        <td v-if="!hidePoint">
+          <span v-if="pointData[item.id] <= 0">{{displayPointTotalPercent(item)}}</span>
+          <span v-else>-</span>
+        </td>
         <td v-if="showPrice && !hidePoint"></td>
       </tr>
     </tbody>
@@ -65,16 +146,16 @@
 </template>
 
 <script>
-import * as moment from 'moment'
-import numeral from 'numeral'
+import * as moment from "moment";
+import numeral from "numeral";
 import { mapGetters } from "vuex";
 
-
-import { FUEL_TECH } from '../utils/FuelTechConfig'
+import { FUEL_TECH } from "../utils/FuelTechConfig";
 
 export default {
   props: {
-  	tableData: Array,
+    tableData: Array,
+    loadsData: Array,
     dateFrom: Date,
     dateTo: Date,
     priceSeries: Object,
@@ -89,73 +170,86 @@ export default {
       rangeTotal: 0,
       energyTotal: 0,
       region: this.$route.params.region
-    }
+    };
   },
   computed: {
     ...mapGetters({
-      regionId: 'getRegionId'
+      regionId: "getRegionId"
     })
   },
   watch: {
     tableData: function(newData) {
-      let rangeTotal = 0
-      let energyTotal = 0
+      let rangeTotal = 0;
+      let energyTotal = 0;
+      console.log(newData);
       newData.forEach(ft => {
-        rangeTotal += ft.range.totalPower
-        energyTotal += ft.range.energy
-      })
-      this.rangeTotal = rangeTotal
-      this.energyTotal = energyTotal
+        rangeTotal += ft.range.totalPower;
+        energyTotal += ft.range.energy;
+      });
+      this.rangeTotal = rangeTotal;
+      this.energyTotal = energyTotal;
+    },
+    loadsData: function(newData) {
+      // console.log(newData)
     },
     pointData: function(newData) {
-      let pointTotal = 0
+      let pointTotal = 0;
       Object.keys(FUEL_TECH).forEach(ft => {
         if (newData[ft]) {
-          pointTotal += newData[ft]
+          pointTotal += newData[ft];
         }
-      })
-      this.pointTotal = pointTotal
+      });
+      this.pointTotal = pointTotal;
     }
   },
   methods: {
     formatDate(date) {
-      return moment(date).format('D MMM, h:mma')
+      return moment(date).format("D MMM, h:mma");
     },
     formatNumber: function(number, precision, unit) {
-      let formatter = precision ? precision : '0,0'
-      unit = unit === undefined ? '' : unit
-      let formatted = (number === 0 || isNaN(number)) ? '-' : numeral(number).format(formatter) + unit
-      return formatted
+      let formatter = precision ? precision : "0,0";
+      unit = unit === undefined ? "" : unit;
+      let formatted =
+        number === 0 || isNaN(number)
+          ? "-"
+          : numeral(number).format(formatter) + unit;
+      return formatted;
+    },
+    isNetInterchange(id) {
+      return id === 'NETINTERCHANGE'
     },
     getLabel(id) {
-      const label = FUEL_TECH[id] ? FUEL_TECH[id].label : id
-      return label
+      const label = FUEL_TECH[id] ? FUEL_TECH[id].label : id;
+      return label;
     },
     getColour(id, itemColour) {
-      let colour = '#fff'
+      let colour = "#fff";
       if (itemColour !== undefined) {
-        colour = itemColour
+        colour = itemColour;
       } else if (FUEL_TECH[id] !== undefined) {
-        colour = FUEL_TECH[id].colour
+        colour = FUEL_TECH[id].colour;
       }
-      return colour
+      return colour;
     },
     goToFT(ft) {
       this.$router.push({
-        name: 'generators',
+        name: "generators",
         params: {
-          region: this.regionId ,
+          region: this.regionId,
           ft: ft
         }
-      })
+      });
     },
     displayPointTotalPercent(item) {
-      const pointTotal = this.pointData.pointTotal || this.pointTotal
-      return this.formatNumber(this.pointData[item.id]/pointTotal*100, '0,0', '%')
+      const pointTotal = this.pointData.pointTotal || this.pointTotal;
+      return this.formatNumber(
+        this.pointData[item.id] / pointTotal * 100,
+        "0,0",
+        "%"
+      );
     }
   }
-}
-
+};
 </script>
 
 <style scoped>
@@ -165,14 +259,14 @@ table {
   border-collapse: collapse;
   border-top: 1px solid #999;
 
-
   .value {
     padding-left: 10px;
     width: 200px;
     text-align: right;
   }
 
-  td, th {
+  td,
+  th {
     text-align: right;
     padding: 5px;
     border-bottom: 1px solid #999;
@@ -195,7 +289,7 @@ table {
     &.active {
       opacity: 1;
 
-      .value  span {
+      .value span {
         visibility: visible;
       }
     }

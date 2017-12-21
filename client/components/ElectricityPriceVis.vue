@@ -6,7 +6,8 @@
       </div>
       <div class="datagrid">
         <FtSummary
-          :tableData="summaryData"
+          :tableData="sourcesData"
+          :loadsData="loadsData"
           :pointData="pointData"
           :dateFrom="start"
           :dateTo="end"
@@ -46,7 +47,9 @@ export default {
     return {
       chart: null,
       chartData: [],
-      summaryData: [],
+      summaryData: null,
+      sourcesData: [],
+      loadsData: [],
       pointData: {},
       start: null,
       end: null,
@@ -63,6 +66,9 @@ export default {
         event.startDate,
         event.endDate
       )
+
+      this.loadsData = this.summaryData.loadsData
+      this.sourcesData = this.summaryData.sourcesData
     },
     onCursorHover(event) {
       if (event.index !== undefined) {

@@ -44,7 +44,8 @@ export function generateSummaryData(chartData, start, end) {
   })
 
   if (filteredData[0]) {
-    const summaryData = []
+    const sourcesData = []
+    const loadsData = []
 
     Object.keys(filteredData[0]).forEach(ft => {
       if (ft !== "date" && ft !== "DEMAND_AND_NONSCHEDGEN" && ft !== "RRP") {
@@ -56,21 +57,37 @@ export function generateSummaryData(chartData, start, end) {
           return d[ft] * rrp
         })
         const averagePrice = dataPrice.reduce((a, b) => a + b, 0) / totalPower
-
-        summaryData.push({
+        const row = {
           id: ft,
           range: {
             totalPower,
             energy: totalPower / 12000,
             averagePrice
           }
-        })
+        }
+
+        // Split into loads and sources
+        // - add Netinterchange into source because it contains both load and source data
+        if (ft === "pumps" || ft === "NETINTERCHANGE") {
+          loadsData.push(row)
+        } 
+        if (ft !== "pumps") {
+          sourcesData.push(row)
+        }
       }
     })
 
-    return summaryData.reverse()
+    console.log(loadsData)
+
+    return {
+      sourcesData: sourcesData.reverse(),
+      loadsData
+    }
   } else {
-    return []
+    return {
+      sourcesData: [],
+      loadsData: []
+    }
   }
 }
 

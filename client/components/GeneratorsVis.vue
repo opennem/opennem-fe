@@ -10,6 +10,7 @@
         <FtSummary
           class="ft-summary"
           :tableData="summaryData"
+          :loadsData="[]"
           :pointData="pointData"
           :dateFrom="start"
           :dateTo="end"
