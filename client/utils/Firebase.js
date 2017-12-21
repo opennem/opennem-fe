@@ -43,7 +43,7 @@ function fetchJSON(ref) {
   return new Promise((resolve, reject) => {
     getStorageLink(ref).then(url => {
       http.get(url).then(data => {
-        // storageData[ref] = data
+        storageData[ref] = data
         resolve(data)
       })
     })
@@ -54,18 +54,18 @@ export function getJSON(ref) {
   console.log(ref)
   return new Promise((resolve, reject) => {
     /*** Fetch New Data everytime ***/
-    fetchJSON(ref).then(data => {
-      resolve(data)
-    })
+    // fetchJSON(ref).then(data => {
+    //   resolve(data)
+    // })
 
     /*** Check whether there is a cache copy ***/
-    // if (storageData[ref] === undefined) {
-    //   fetchJSON(ref).then(data => {
-    //     resolve(data)
-    //   })
-    // } else {
-    //   console.log('existing data', storageData[ref])
-    //   resolve(storageData[ref])
-    // }
+    if (storageData[ref] === undefined) {
+      fetchJSON(ref).then(data => {
+        resolve(data)
+      })
+    } else {
+      console.log('existing data', storageData[ref])
+      resolve(storageData[ref])
+    }
   })
 }
