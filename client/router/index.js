@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '../views/Home'
+import Max from '../views/Max'
 import MarketByRegion from '../views/MarketByRegion'
 import RegionByFT from '../views/RegionByFT'
 import EchartDemo from '../views/EchartDemo'
@@ -14,6 +15,11 @@ export default new Router({
       name: 'home',
       path: '/',
       component: Home
+    },
+    {
+      name: 'max',
+      path: '/max/:region',
+      component: Max
     },
     {
       name: 'regions',

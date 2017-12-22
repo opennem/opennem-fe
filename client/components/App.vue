@@ -97,6 +97,10 @@ const weeks = [
     id: '2017-10-02',
     label: '02 Oct 2017'
   },
+  {
+    id: 'all',
+    label: 'Max'
+  },
 ]
 
 export default {
@@ -135,6 +139,11 @@ export default {
     },
     onWeekRangeChange(week) {
       this.selectedWeek = week
+
+      if (week === 'all') {
+        this.$router.push({ name: 'max', params: { region: 'sa' } })
+      }
+
       this.$store.commit('updateWeekStarting', week)
     },
     getRegionLabel(id) {

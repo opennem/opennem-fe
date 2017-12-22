@@ -42,7 +42,8 @@ export default {
   },
   props: {
     genData: Array,
-    refreshing: Boolean
+    refreshing: Boolean,
+    noGuides: Boolean
   },
   data() {
     return {
@@ -92,28 +93,31 @@ export default {
         this.chart.clear()
         this.chart = null
       }
-      this.chart = makeChart(this.chartData, this)
+      this.chart = makeChart(this.chartData, this.noGuides, this)
       this.chartRendered = true;
     }
   },
   beforeDestroy() {
-    this.chart.clear()
-    this.chart = null
+    if (this.chart) {
+      this.chart.clear()
+      this.chart = null
+    }
   }
 };
 
-function makeChart(data, context) {
+function makeChart(data, noGuides, context) {
   let firstObj = Object.assign({}, data[0]);
   const lastIndex = data.length - 1;
   const startDate = firstObj.date;
   const endDate = data[lastIndex].date;
+  const guides = noGuides ? [] : guides(startDate, endDate)
 
   delete firstObj.date;
   const keys = Object.keys(firstObj);
 
   const config = makeConfig(
     data,
-    guides(startDate, endDate),
+    guides,
     fieldMappings(keys),
     stockGraphs(keys),
     this

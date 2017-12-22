@@ -119,8 +119,10 @@ export default {
     },
   },
   beforeDestroy() {
-    this.chart.clear()
-    this.chart = null
+    if (this.chart) {
+      this.chart.clear()
+      this.chart = null
+    }
   }
 }
 
