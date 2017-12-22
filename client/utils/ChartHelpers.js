@@ -7,6 +7,7 @@ export function chartConfig(config) {
   const defaultConfig = {
     path: 'dist/amcharts/',
     type: 'stock',
+    addClassNames: true,
     mouseWheelZoomEnabled: true,
     mouseWheelScrollEnabled: true,
     export: {
@@ -15,25 +16,25 @@ export function chartConfig(config) {
     },
     categoryAxesSettings: {
       minPeriod: '5mm',
-      startOnAxis: true,
+      labelOffset: -35,
       axisAlpha: 1,
       tickLength: 35,
       axisHeight: 35,
       axisColor: '#999',
       color: '#000',
       dashLength: 7,
-      equalSpacing: false,
+      equalSpacing: true,
       centerLabelOnFullPeriod: false,
       groupToPeriods: ['5mm', '15mm', '30mm', 'hh'],
       dateFormats: [
-        {period:'fff',format:'JJ:NN'},
-        {period:'ss',format:'JJ:NN'},
-        {period:'mm',format:'JJ:NN'},
-        {period:'hh',format:'JJ:NN'},
-        {period:'DD',format:'EEE\nD MMM'},
-        {period:'WW',format:'EEE\nD MMM'},
-        {period:'MM',format:'EEE\nD MMM'},
-        {period:'YYYY',format:'YYYY'}
+        {period:'fff',format:'  JJ:NN'},
+        {period:'ss',format:'  JJ:NN'},
+        {period:'mm',format:'  JJ:NN'},
+        {period:'hh',format:'  JJ:NN'},
+        {period:'DD',format:'  EEE\n  D MMM'},
+        {period:'WW',format:'  EEE\n  D MMM'},
+        {period:'MM',format:'  EEE\n  D MMM'},
+        {period:'YYYY',format:'  YYYY'}
       ]
     },
     chartCursorSettings: {

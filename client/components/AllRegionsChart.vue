@@ -152,6 +152,7 @@ function makeConfig(
       {
         title: "Generation (MW)",
         showCategoryAxis: true,
+        addClassNames: true,
         valueAxes: [
           {
             id: "v1",

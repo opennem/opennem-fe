@@ -227,6 +227,15 @@ a[title="Interactive JavaScript maps"] {
   display: none !important;
 }
 
+.amcharts-axis-label {
+  text-anchor: start;
+
+  tspan {
+    white-space: pre;
+  }
+}
+
+
 #app {
   padding: 0;
   max-width: 1400px;
