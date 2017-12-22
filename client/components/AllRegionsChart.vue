@@ -110,14 +110,14 @@ function makeChart(data, noGuides, context) {
   const lastIndex = data.length - 1;
   const startDate = firstObj.date;
   const endDate = data[lastIndex].date;
-  const guides = noGuides ? [] : guides(startDate, endDate)
+  const chartGuides = noGuides ? [] : guides(startDate, endDate)
 
   delete firstObj.date;
   const keys = Object.keys(firstObj);
 
   const config = makeConfig(
     data,
-    guides,
+    chartGuides,
     fieldMappings(keys),
     stockGraphs(keys),
     this
