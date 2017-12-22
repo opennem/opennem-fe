@@ -4,34 +4,34 @@
       <tr>
         <th colspan="2"></th>
         <!-- range info -->
-        <th class="instant-values" v-if="hidePoint" v-bind:colspan="showPrice ? 3 : 2">{{formatDate(dateFrom)}} – {{formatDate(dateTo)}}</th>
+        <th class="border-left" v-if="hidePoint" v-bind:colspan="showPrice ? 3 : 2">{{formatDate(dateFrom)}} – {{formatDate(dateTo)}}</th>
         <!-- point info -->
-        <th class="instant-values" v-if="!hidePoint" v-bind:colspan="showPrice ? 3 : 2">{{formatDate(pointData.date)}}</th>
+        <th class="border-left" v-if="!hidePoint" v-bind:colspan="showPrice ? 3 : 2">{{formatDate(pointData.date)}}</th>
       </tr>
       <tr>
         <th colspan="2"></th>
 
         <!-- range info -->
-        <th v-if="hidePoint" class="instant-values" style="width: 120px">Energy (GWh)</th>
+        <th v-if="hidePoint" class="border-left" style="width: 120px">Energy (GWh)</th>
         <!-- <th v-if="hidePoint">Power (MW)</th> -->
         <th v-if="hidePoint" style="width: 130px">Contribution (%)</th>
         <th v-if="showPrice && hidePoint" style="width: 150px">Average Value ($)</th>
 
         <!-- point info -->
-        <th v-if="!hidePoint" class="instant-values" style="width: 120px">Power (MW)</th>
+        <th v-if="!hidePoint" class="border-left" style="width: 120px">Power (MW)</th>
         <th v-if="!hidePoint" style="width: 130px">Contribution (%)</th>
         <th v-if="showPrice && !hidePoint" style="width: 150px">Price ($)</th>
       </tr>
     </thead>
     <tbody>
       <tr class="active">
-        <td colspan="5" style="text-align: left; color: #000; background: #f7ece0; font-weight: bold">Sources</td>
+        <td colspan="5" class="group-header">Sources</td>
       </tr>
       <tr v-for="item in tableData" :key="item.id" class="active">
         <td style="width: 20px;">
           <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id, item.colour)}"></div>
         </td>
-        <td style="text-align:left; width: 150px">
+        <td class="align-left" style="width: 150px">
           <div v-if="isNetInterchange(item.id)">
             Import
           </div>
@@ -42,7 +42,7 @@
         </td>
 
         <!-- range info -->
-        <td v-if="hidePoint" class="instant-values">
+        <td v-if="hidePoint" class="border-left">
           <span v-if="
             !isNetInterchange(item.id) || 
             (isNetInterchange(item.id) && item.range.energy > 0)">
@@ -62,7 +62,7 @@
         <td v-if="showPrice && hidePoint">{{formatNumber(item.range.averagePrice, '0,0.00')}}</td>
 
         <!-- point info -->
-        <td v-if="!hidePoint" class="instant-values">
+        <td v-if="!hidePoint" class="border-left">
           <span v-if="
             !isNetInterchange(item.id) || 
             (isNetInterchange(item.id) &&pointData[item.id] > 0)">
@@ -84,13 +84,13 @@
 
     <tbody v-show="loadsData.length > 0">
       <tr class="active">
-        <td colspan="5" style="text-align: left; color: #333; background: #f7ece0; font-weight: bold">Loads</td>
+        <td colspan="5" class="group-header">Loads</td>
       </tr>
       <tr v-for="item in loadsData" :key="item.id" class="active">
         <td style="width: 20px;">
           <div class="colour-sq" style="background: rgba(255,255,255,0.9); border: 1px solid #aaa;"></div>
         </td>
-        <td style="text-align:left; width: 150px">
+        <td class="align-left" style="width: 150px">
           <div v-if="isNetInterchange(item.id)">
             Export
           </div>
@@ -101,7 +101,7 @@
         </td>
 
         <!-- range info -->
-        <td v-if="hidePoint" class="instant-values">
+        <td v-if="hidePoint" class="border-left">
           <span v-if="item.range.energy <= 0">{{formatNumber(item.range.energy)}}</span>
           <span v-else>-</span>
         </td>
@@ -115,7 +115,7 @@
         <td v-if="showPrice && hidePoint">{{formatNumber(item.range.averagePrice, '0,0.00')}}</td>
 
         <!-- point info -->
-        <td v-if="!hidePoint" class="instant-values">
+        <td v-if="!hidePoint" class="border-left">
           <span v-if="pointData[item.id] <= 0">{{formatNumber(pointData[item.id])}}</span>
           <span v-else>-</span>
         </td>
@@ -259,6 +259,17 @@ table {
   border-collapse: collapse;
   border-top: 1px solid #999;
 
+  .group-header {
+    text-align: left;
+    color: #000;
+    background: #f7ece0;
+    font-weight: bold;
+  }
+
+  .align-left {
+    text-align: left;
+  }
+
   .value {
     padding-left: 10px;
     width: 200px;
@@ -307,7 +318,7 @@ table {
   }
 }
 
-.instant-values {
+.border-left {
   border-left: 1px solid #999;
 }
 </style>
