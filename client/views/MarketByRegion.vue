@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="loader" v-if="!dataReady"></div>
-    <ElectricityPriceVis v-show="dataReady" :genData="sourceLoadPriceData"></ElectricityPriceVis>
+    <SourcesLoadsPrice v-show="dataReady" :genData="sourceLoadPriceData"></SourcesLoadsPrice>
   </div>
 </template>
 
@@ -10,11 +10,11 @@ import { mapGetters } from 'vuex'
 import axios from 'axios'
 import { getJSON } from '../utils/Firebase'
 
-import ElectricityPriceVis from '../components/ElectricityPriceVis'
+import SourcesLoadsPrice from '../components/SourcesLoadsPrice'
 
 export default {
   components: {
-    ElectricityPriceVis
+    SourcesLoadsPrice
   },
   mounted() {
     this.fetchData()

@@ -95,13 +95,18 @@ export function generatePriceData (chartSeries, payload) {
   const rrp = payload['RRP']
   const rrpKey = 'RRP'
   const startDate = rrp.start
-  const interval = 30 // rrp.interval
   const rrpData = rrp.data
   const start = moment(startDate, moment.ISO_8601)
+  let duration
+  try {
+    duration = parseInterval(rrp.interval)
+  } catch (e) {
+    console.error(e)
+  }
 
   let rrpIndex = 0
   priceData.forEach(item => {
-    const now = moment(start).add(interval * rrpIndex, 'm')
+    const now = moment(start).add(duration.value * rrpIndex, duration.key)
     if (item.date.toString() === now.toDate().toString()) {
       item[rrpKey] = rrpData[rrpIndex]
       rrpIndex++
