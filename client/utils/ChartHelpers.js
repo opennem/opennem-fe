@@ -71,19 +71,20 @@ export function fieldMappings(keys) {
 /*** amCharts Stock graphs
     - for 'load' series (i.e. NETINTERCHANGE), hide Fill colour
  **/
-export function stockGraphs(keys) {
+export function stockGraphs(keys, chartType) {
   const graphs = []
 
   keys.forEach((ftKey, index) => {
     const colour = FUEL_TECH[ftKey].colour
     const negativeFillAlphas = (ftKey === 'NETINTERCHANGE' || ftKey === 'pumps') ? 0 : 0.8
     const fillAlphas = 0.8
+    const type = chartType || 'line' 
 
     graphs.push({
       // id: `g${index}`,
       id: ftKey,
       valueField: ftKey,
-      type: 'line',
+      type,
       fillAlphas,
       negativeFillAlphas,
       negativeFillColors: colour,

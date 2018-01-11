@@ -3,7 +3,8 @@
     <AllRegionsChart 
       :genData="chartData" 
       :noGuides="true" 
-      :refreshing="refreshing">
+      :refreshing="refreshing"
+      :chartType="'column'">
     </AllRegionsChart>
   </div>
 </template>

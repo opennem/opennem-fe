@@ -53,7 +53,8 @@ export default {
   props: {
     genData: Array,
     refreshing: Boolean,
-    noGuides: Boolean
+    noGuides: Boolean,
+    chartType: String
   },
   data() {
     return {
@@ -145,7 +146,7 @@ function makeChart(data, noGuides, context) {
     data,
     chartGuides,
     fieldMappings(keys),
-    stockGraphs(keys),
+    stockGraphs(keys, context.chartType),
     this
   );
   config.panels[0].listeners = [
