@@ -27,7 +27,7 @@
       <tr class="active">
         <td colspan="5" class="group-header">Sources</td>
       </tr>
-      <tr v-for="item in tableData" :key="item.id" class="active">
+      <tr v-for="item in tableData" :key="item.id" v-on:mouseover="emitDataHoverEvent(item)" v-on:mouseout="emitDataOutEvent()" class="active">
         <td style="width: 20px;">
           <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id, item.colour)}"></div>
         </td>
@@ -150,6 +150,7 @@ import * as moment from "moment";
 import numeral from "numeral";
 import { mapGetters } from "vuex";
 
+import EventBus from '../utils/EventBus';
 import { FUEL_TECH } from "../utils/FuelTechConfig";
 
 export default {
@@ -247,6 +248,12 @@ export default {
         "0,0",
         "%"
       );
+    },
+    emitDataHoverEvent(row) {
+      EventBus.$emit('row-hover', row.id);
+    },
+    emitDataOutEvent() {
+      EventBus.$emit('row-out');
     }
   }
 };

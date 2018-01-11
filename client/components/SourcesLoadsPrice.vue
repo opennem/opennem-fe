@@ -62,6 +62,7 @@ import {
 } from '../utils/DataHelpers'
 import FtSummary from './EnergyAverageValueTable'
 import { FUEL_TECH } from '../utils/FuelTechConfig'
+import EventBus from '../utils/EventBus'
 
 export default {
   components: {
@@ -84,7 +85,29 @@ export default {
       region: this.$route.params.region
     }
   },
+  mounted() {
+    EventBus.$on('row-hover', (name) => {
+      this.showHoverSeries(name)
+    });
+    EventBus.$on('row-out', (name) => {
+      this.showAllSeries()
+    });
+  },
   methods: {
+    showHoverSeries(name) {
+      this.chart.panels[0].graphs.forEach((graph) => {
+        if (graph.id === name) {
+          graph.changeOpacity(1)
+        } else {
+          graph.changeOpacity(0.1)
+        }
+      })
+    },
+    showAllSeries() {
+      this.chart.panels[0].graphs.forEach((graph) => {
+        graph.changeOpacity(1)
+      })
+    },
     onZoom (event) {
       this.start = event.startDate
       this.end = event.endDate
@@ -146,6 +169,9 @@ export default {
     }
   },
   beforeDestroy () {
+    EventBus.$off('row-hover')
+    EventBus.$off('row-out')
+
     if (this.chart) {
       this.chart.clear()
       this.chart = null

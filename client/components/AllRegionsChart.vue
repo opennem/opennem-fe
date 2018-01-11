@@ -35,10 +35,20 @@ import {
 import { generateSummaryData } from '../utils/DataHelpers'
 import FtSummary from "./EnergyAverageValueTable";
 import { FUEL_TECH } from "../utils/FuelTechConfig";
+import EventBus from '../utils/EventBus';
+
 
 export default {
   components: {
     FtSummary,
+  },
+  mounted() {
+    EventBus.$on('row-hover', (name) => {
+      this.showHoverSeries(name)
+    });
+    EventBus.$on('row-out', (name) => {
+      this.showAllSeries()
+    });
   },
   props: {
     genData: Array,
@@ -59,6 +69,20 @@ export default {
     };
   },
   methods: {
+    showHoverSeries(name) {
+      this.chart.panels[0].graphs.forEach((graph) => {
+        if (graph.id === name) {
+          graph.changeOpacity(1)
+        } else {
+          graph.changeOpacity(0.1)
+        }
+      })
+    },
+    showAllSeries() {
+      this.chart.panels[0].graphs.forEach((graph) => {
+        graph.changeOpacity(1)
+      })
+    },
     onZoom(event) {
       this.start = event.startDate;
       this.end = event.endDate;
@@ -98,6 +122,8 @@ export default {
     }
   },
   beforeDestroy() {
+    EventBus.$off('row-hover')
+    EventBus.$off('row-out')
     if (this.chart) {
       this.chart.clear()
       this.chart = null
@@ -182,6 +208,44 @@ function makeConfig(
       }
     ]
   });
+}
+
+function setOpacity(graph, opacity) {
+  console.log(graph)
+  console.log(graph.id)
+  var container = graph.chart.div;
+  var className = "amcharts-graph-" + graph.id;
+  var items = container.getElementsByClassName(className);
+  if (undefined === items)
+    return;
+  for (var x in items) {
+    if ("object" !== typeof items[x])
+      continue;
+    var path = items[x].getElementsByTagName("path")[0];
+    console.log(path)
+    if (undefined !== path) {
+      // set line opacity
+      path.style.strokeOpacity = opacity;
+      path.style.fillOpacity = opacity;
+    }
+
+    // set bullet opacity
+    var bullets = items[x].getElementsByClassName("amcharts-graph-bullet");
+    for (var y in bullets) {
+      if ("object" !== typeof bullets[y])
+        continue;
+      bullets[y].style.fillOpacity = opacity;
+    }
+
+    // set label opacity
+    var labels = items[x].getElementsByClassName("amcharts-graph-label");
+    for (var y in labels) {
+      if ("object" !== typeof labels[y])
+        continue;
+      labels[y].style.opacity = opacity == 1 ? 1 : 0;
+    }
+
+  }
 }
 </script>
 

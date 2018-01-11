@@ -80,7 +80,8 @@ export function stockGraphs(keys) {
     const fillAlphas = 0.8
 
     graphs.push({
-      id: `g${index}`,
+      // id: `g${index}`,
+      id: ftKey,
       valueField: ftKey,
       type: 'line',
       fillAlphas,
