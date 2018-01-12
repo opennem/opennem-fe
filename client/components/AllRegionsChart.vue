@@ -54,7 +54,8 @@ export default {
     genData: Array,
     refreshing: Boolean,
     noGuides: Boolean,
-    chartType: String
+    chartType: String,
+    forceGridCount: Boolean
   },
   data() {
     return {
@@ -147,7 +148,7 @@ function makeChart(data, noGuides, context) {
     chartGuides,
     fieldMappings(keys),
     stockGraphs(keys, context.chartType),
-    this
+    context
   );
   config.panels[0].listeners = [
     {
@@ -168,7 +169,6 @@ function makeConfig(
   guides,
   fieldMappings,
   stockGraphs,
-  chartScrollbarSettings,
   context
 ) {
   return chartConfig({
@@ -208,12 +208,10 @@ function makeConfig(
         stockLegend: { enabled: false }
       }
     ]
-  });
+  }, context.forceGridCount);
 }
 
 function setOpacity(graph, opacity) {
-  console.log(graph)
-  console.log(graph.id)
   var container = graph.chart.div;
   var className = "amcharts-graph-" + graph.id;
   var items = container.getElementsByClassName(className);

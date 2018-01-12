@@ -3,7 +3,11 @@ import * as moment from 'moment'
 import { FUEL_TECH } from './FuelTechConfig'
 
 /*** Default amCharts config **/
-export function chartConfig(config) {
+export function chartConfig(config, forceGridCount) {
+
+  const autoGridCount = forceGridCount ? false : true
+  const gridCount = 16
+
   const defaultConfig = {
     path: 'dist/amcharts/',
     type: 'stock',
@@ -15,6 +19,8 @@ export function chartConfig(config) {
       fileName: 'all-regions-generation'
     },
     categoryAxesSettings: {
+      autoGridCount,
+      gridCount,
       minPeriod: '5mm',
       labelOffset: -35,
       axisAlpha: 1,

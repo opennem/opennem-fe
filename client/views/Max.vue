@@ -4,7 +4,8 @@
       :genData="chartData" 
       :noGuides="true" 
       :refreshing="refreshing"
-      :chartType="'column'">
+      :chartType="'column'"
+      :forceGridCount="true">
     </AllRegionsChart>
   </div>
 </template>
