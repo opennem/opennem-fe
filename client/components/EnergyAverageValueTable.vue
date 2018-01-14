@@ -59,13 +59,20 @@
           </span>
           <span v-else>-</span>
         </td>
-        <td v-if="showPrice && hidePoint">{{formatNumber(item.range.averagePrice, '0,0.00')}}</td>
+        <td v-if="showPrice && hidePoint">
+          <span v-if="
+            !isNetInterchange(item.id) || 
+            (isNetInterchange(item.id) && item.range.energy > 0)">
+            {{formatNumber(item.range.averagePrice, '0,0.00')}}
+          </span>
+          <span v-else>-</span>
+        </td>
 
         <!-- point info -->
         <td v-if="!hidePoint" class="border-left">
           <span v-if="
             !isNetInterchange(item.id) || 
-            (isNetInterchange(item.id) &&pointData[item.id] > 0)">
+            (isNetInterchange(item.id) && pointData[item.id] > 0)">
             {{formatNumber(pointData[item.id])}}
           </span>
           <span v-else>-</span>
@@ -73,7 +80,7 @@
         <td v-if="!hidePoint">
            <span v-if="
             !isNetInterchange(item.id) || 
-            (isNetInterchange(item.id) &&pointData[item.id] > 0)">
+            (isNetInterchange(item.id) && pointData[item.id] > 0)">
             {{displayPointTotalPercent(item)}}
           </span>
           <span v-else>-</span>
@@ -112,7 +119,12 @@
           </span>
           <span v-else>-</span>
         </td>
-        <td v-if="showPrice && hidePoint">{{formatNumber(item.range.averagePrice, '0,0.00')}}</td>
+        <td v-if="showPrice && hidePoint">
+          <span v-if="item.range.energy <= 0">
+            {{formatNumber(item.range.averagePrice, '0,0.00')}}
+          </span>
+          <span v-else>-</span>
+        </td>
 
         <!-- point info -->
         <td v-if="!hidePoint" class="border-left">
