@@ -12,20 +12,27 @@
         <th colspan="2"></th>
 
         <!-- range info -->
-        <th v-if="hidePoint" class="border-left" style="width: 120px">Energy (GWh)</th>
-        <!-- <th v-if="hidePoint">Power (MW)</th> -->
-        <th v-if="hidePoint" style="width: 130px">Contribution (%)</th>
-        <th v-if="showPrice && hidePoint" style="width: 150px">Average Value ($)</th>
+        <th v-if="hidePoint" class="border-left" style="width: 120px">Energy <span class="unit">GWh</span></th>
+        <th v-if="hidePoint" style="width: 130px">Contribution <span class="unit">%</span></th>
+        <th v-if="showPrice && hidePoint" style="width: 150px">Av. Value <span class="unit">$</span></th>
 
         <!-- point info -->
-        <th v-if="!hidePoint" class="border-left" style="width: 120px">Power (MW)</th>
-        <th v-if="!hidePoint" style="width: 130px">Contribution (%)</th>
-        <th v-if="showPrice && !hidePoint" style="width: 150px">Price ($)</th>
+        <th v-if="!hidePoint" class="border-left" style="width: 120px">Power <span class="unit">MW</span></th>
+        <th v-if="!hidePoint" style="width: 130px">Contribution <span class="unit">%</span></th>
+        <th v-if="showPrice && !hidePoint" style="width: 150px">Price <span class="unit">$</span></th>
       </tr>
     </thead>
     <tbody>
-      <tr class="active">
-        <td colspan="5" class="group-header">Sources</td>
+      <tr class="active totals-row">
+        <td colspan="2" class="group-header">Sources</td>
+
+        <td v-if="hidePoint" class="border-left">{{formatNumber(energyTotal)}}</td>
+        <td v-if="!hidePoint">{{formatNumber(pointTotal)}}</td>
+
+        <td></td>
+
+        <td v-if="showPrice && hidePoint">${{formatNumber(totalAveragePrice, '0,0.00')}}</td>
+        <td v-if="showPrice && !hidePoint">${{formatNumber(pointData.rrp, '0,0.00')}}</td>
       </tr>
       <tr v-for="item in tableData" :key="item.id" v-on:mouseover="emitDataHoverEvent(item)" v-on:mouseout="emitDataOutEvent()" class="active">
         <td style="width: 20px;">
@@ -90,8 +97,9 @@
     </tbody>
 
     <tbody v-show="loadsData.length > 0">
-      <tr class="active">
-        <td colspan="5" class="group-header">Loads</td>
+      <tr class="active totals-row">
+        <td colspan="2" class="group-header">Loads</td>
+        <td colspan="3" class="border-left"></td>
       </tr>
       <tr v-for="item in loadsData" :key="item.id" class="active">
         <td style="width: 20px;">
@@ -141,16 +149,16 @@
 
     <tfoot>
       <tr class="totals-row">
-        <td colspan="2" class="align-left">Net</td>
+        <td colspan="2" class="group-header">Net</td>
 
-        <td v-if="hidePoint">{{formatNumber(energyTotal)}}</td>
+        <td v-if="hidePoint" class="border-left">{{formatNumber(energyTotal)}}</td>
         <!-- <td v-if="hidePoint">{{formatNumber(rangeTotal)}}</td> -->
         <td v-if="hidePoint"></td>
-        <td v-if="showPrice && hidePoint">${{formatNumber(totalAveragePrice, '0,0.00')}}</td>
 
         <td v-if="!hidePoint">{{formatNumber(pointTotal)}}</td>
         <td v-if="!hidePoint"></td>
-        <td v-if="showPrice && !hidePoint">${{formatNumber(pointData.rrp, '0,0.00')}}</td>
+
+        <td></td>
       </tr>
     </tfoot>
 
@@ -278,16 +286,16 @@ table {
   border-collapse: collapse;
   border-top: 1px solid #999;
 
-  .group-header {
-    text-align: left;
-    color: #000;
-    background: #f7ece0;
-    font-weight: bold;
-  }
-
   .totals-row td {
     color: #000;
     background: #f5f1ed;
+    font-weight: bold;
+  }
+
+  td.group-header {
+    text-align: left;
+    color: #000;
+    background: #f7ece0;
     font-weight: bold;
   }
 
@@ -299,6 +307,12 @@ table {
     padding-left: 10px;
     width: 200px;
     text-align: right;
+  }
+
+  .unit {
+    font-size: 0.9em;
+    color: #777;
+    font-weight: 200;
   }
 
   td,
