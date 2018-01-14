@@ -128,13 +128,13 @@
     </tbody>
 
     <tfoot>
-      <tr>
-        <td colspan="2"></td>
+      <tr class="totals-row">
+        <td colspan="2" class="align-left">Net</td>
 
         <td v-if="hidePoint">{{formatNumber(energyTotal)}}</td>
         <!-- <td v-if="hidePoint">{{formatNumber(rangeTotal)}}</td> -->
         <td v-if="hidePoint"></td>
-        <td v-if="showPrice && hidePoint"></td>
+        <td v-if="showPrice && hidePoint">${{formatNumber(totalAveragePrice, '0,0.00')}}</td>
 
         <td v-if="!hidePoint">{{formatNumber(pointTotal)}}</td>
         <td v-if="!hidePoint"></td>
@@ -157,6 +157,7 @@ export default {
   props: {
     tableData: Array,
     loadsData: Array,
+    totalAveragePrice: Number,
     dateFrom: Date,
     dateTo: Date,
     priceSeries: Object,
@@ -182,7 +183,6 @@ export default {
     tableData: function(newData) {
       let rangeTotal = 0;
       let energyTotal = 0;
-      console.log(newData);
       newData.forEach(ft => {
         rangeTotal += ft.range.totalPower;
         energyTotal += ft.range.energy;
@@ -270,6 +270,12 @@ table {
     text-align: left;
     color: #000;
     background: #f7ece0;
+    font-weight: bold;
+  }
+
+  .totals-row td {
+    color: #000;
+    background: #f5f1ed;
     font-weight: bold;
   }
 

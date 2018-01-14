@@ -8,6 +8,7 @@
         <FtSummary
           :tableData="sourcesData"
           :loadsData="loadsData"
+          :totalAveragePrice="totalAveragePrice"
           :pointData="pointData"
           :dateFrom="start"
           :dateTo="end"
@@ -78,6 +79,7 @@ export default {
       summaryData: null,
       sourcesData: [],
       loadsData: [],
+      totalAveragePrice: 0,
       pointData: {},
       start: null,
       end: null,
@@ -119,6 +121,7 @@ export default {
 
       this.loadsData = this.summaryData.loadsData
       this.sourcesData = this.summaryData.sourcesData
+      this.totalAveragePrice = this.summaryData.totalAveragePrice
     },
     onCursorHover (event) {
       if (event.index !== undefined) {

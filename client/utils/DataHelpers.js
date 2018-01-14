@@ -37,31 +37,85 @@ export function generateChartData (data) {
   return chartData
 }
 
-export function generateSummaryData (chartData, start, end) {
-  const filteredData = chartData.filter(item => {
+/**
+ * @param {*} chartData: {date, ft1, ft2, etc}
+ * @param {*} start: start date
+ * @param {*} end: end date
+ *
+ * Returns:
+ * {
+ *  sources: []
+ *  loads: []
+ * }
+ *
+ * Also calculates total power, total energy and average prices
+ * - totals include NETINTERCHANGE data
+ */
+export function generateSummaryData (data, start, end) {
+
+  // Check if it is a valid fuel tech name
+  function isValidFT (name) {
+    return name !== 'date' &&
+      name !== 'DEMAND_AND_NONSCHEDGEN' &&
+      name !== 'RRP'
+  }
+
+  // Get only data between the start and end dates
+  const filteredData = data.filter(item => {
     return moment(item.date).isBetween(start, end)
   })
 
   if (filteredData[0]) {
     const sourcesData = []
     const loadsData = []
+    let totalPower = 0
+
+    // create a new array with the ft totals
+    const dataSum = filteredData.map((d, i) => {
+      let p = 0
+      Object.keys(d).forEach(ft => {
+        if (isValidFT(ft)) {
+          p += d[ft]
+        }
+      })
+      return p
+    })
+
+    // sum up all the ft totals
+    const dataSumTotal = dataSum.reduce((a, b) => { return a + b}, 0)
+
+    // calculate the price * total
+    const dataSumTotalPrice = dataSum.map((d, i) => {
+      const rrp = filteredData[i]['RRP'] ? filteredData[i]['RRP'] : 0
+      return d * rrp
+    })
+
+    // calculate the total average price
+    const totalAveragePrice = dataSumTotalPrice.reduce((a, b) => a + b, 0) / dataSumTotal
 
     Object.keys(filteredData[0]).forEach(ft => {
-      if (ft !== 'date' && ft !== 'DEMAND_AND_NONSCHEDGEN' && ft !== 'RRP') {
-        const totalPower = filteredData.reduce((a, b) => {
+      if (isValidFT(ft)) {
+
+        // sum up each ft total
+        const totalFTPower = filteredData.reduce((a, b) => {
           return a + b[ft]
         }, 0)
-        const dataPrice = filteredData.map((d, i) => {
+        totalPower += totalFTPower
+
+        // calculate the price * ft total
+        const dataFTPrice = filteredData.map((d, i) => {
           const rrp = filteredData[i]['RRP'] ? filteredData[i]['RRP'] : 0
           return d[ft] * rrp
         })
-        const averagePrice = dataPrice.reduce((a, b) => a + b, 0) / totalPower
+
+        // calculate the ft average price
+        const averageFTPrice = dataFTPrice.reduce((a, b) => a + b, 0) / totalFTPower
         const row = {
           id: ft,
           range: {
-            totalPower,
-            energy: totalPower / 12000,
-            averagePrice
+            totalPower: totalFTPower,
+            energy: totalFTPower / 12000,
+            averagePrice: averageFTPrice
           }
         }
 
@@ -76,16 +130,18 @@ export function generateSummaryData (chartData, start, end) {
       }
     })
 
-    console.log(loadsData)
-
     return {
       sourcesData: sourcesData.reverse(),
-      loadsData
+      loadsData,
+      totalPower,
+      totalAveragePrice
     }
   } else {
     return {
       sourcesData: [],
-      loadsData: []
+      loadsData: [],
+      totalPower: 0,
+      totalAveragePrice: 0
     }
   }
 }
