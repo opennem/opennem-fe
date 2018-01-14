@@ -26,8 +26,8 @@
       <tr class="active totals-row">
         <td colspan="2" class="group-header">Sources</td>
 
-        <td v-if="hidePoint" class="border-left">{{formatNumber(energyTotal)}}</td>
-        <td v-if="!hidePoint">{{formatNumber(pointTotal)}}</td>
+        <td v-if="hidePoint" class="border-left">{{formatNumber(grossEnergyTotal)}}</td>
+        <td v-if="!hidePoint">{{formatNumber(grossPointTotal)}}</td>
 
         <td></td>
 
@@ -151,7 +151,7 @@
       <tr class="totals-row">
         <td colspan="2" class="group-header">Net</td>
 
-        <td v-if="hidePoint" class="border-left">{{formatNumber(energyTotal)}}</td>
+        <td v-if="hidePoint" class="border-left">{{formatNumber(netEnergyTotal)}}</td>
         <!-- <td v-if="hidePoint">{{formatNumber(rangeTotal)}}</td> -->
         <td v-if="hidePoint"></td>
 
@@ -189,8 +189,10 @@ export default {
   data() {
     return {
       pointTotal: 0,
+      grossPointTotal: 0,
       rangeTotal: 0,
-      energyTotal: 0,
+      netEnergyTotal: 0,
+      grossEnergyTotal: 0,
       region: this.$route.params.region
     };
   },
@@ -202,25 +204,34 @@ export default {
   watch: {
     tableData: function(newData) {
       let rangeTotal = 0;
-      let energyTotal = 0;
+      let netEnergyTotal = 0;
+      let grossEnergyTotal = 0;
+      console.log(newData)
       newData.forEach(ft => {
         rangeTotal += ft.range.totalPower;
-        energyTotal += ft.range.energy;
+        netEnergyTotal += ft.range.energy;
+        grossEnergyTotal += (ft.range.energy > 0 ? ft.range.energy : 0)
       });
       this.rangeTotal = rangeTotal;
-      this.energyTotal = energyTotal;
+      this.netEnergyTotal = netEnergyTotal;
+      this.grossEnergyTotal = grossEnergyTotal;
+
+      console.log(grossEnergyTotal)
     },
     loadsData: function(newData) {
       // console.log(newData)
     },
     pointData: function(newData) {
       let pointTotal = 0;
+      let grossPointTotal = 0;
       Object.keys(FUEL_TECH).forEach(ft => {
         if (newData[ft]) {
           pointTotal += newData[ft];
+          grossPointTotal += (newData[ft] > 0 ? newData[ft] : 0)
         }
       });
       this.pointTotal = pointTotal;
+      this.grossPointTotal = grossPointTotal;
     }
   },
   methods: {
