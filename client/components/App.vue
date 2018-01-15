@@ -192,6 +192,8 @@ export default {
 
 
 <style>
+@import url('../../node_modules/formbase/dist/formbase.min.css');
+@import url("../../node_modules/amstock3/amcharts/plugins/export/export.css");
 @import url("https://fonts.googleapis.com/css?family=Merriweather:300,400,700");
 html {
   box-sizing: border-box;

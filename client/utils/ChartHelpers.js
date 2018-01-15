@@ -15,7 +15,8 @@ export function chartConfig(config, forceGridCount) {
     mouseWheelZoomEnabled: true,
     mouseWheelScrollEnabled: true,
     export: {
-      enabled: false,
+      enabled: true,
+      menu: [],
       fileName: 'all-regions-generation'
     },
     categoryAxesSettings: {

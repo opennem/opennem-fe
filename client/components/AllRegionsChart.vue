@@ -1,12 +1,32 @@
 <template>
-  <div class="chart-wrapper">
+  <div class="chart-wrapper" style="position: relative">
+    <button v-on:click="exportPng()" style="position: absolute; right: 0; top: -40px; border: 1px solid #ccc; padding: 10px 20px">export to png</button>
+
     <div class="loader" v-if="refreshing"></div>
 
-    <div class="vis" v-show="!refreshing">
+    <div class="vis" v-show="!refreshing" v-bind:class="{ export: showExport }">
       <div class="chart">
+        <div class="export-annotations export-annotations-top" v-show="showExport">
+          <h1>Title</h1>
+          <p>Some description</p>
+        </div>
+        
         <div id="ft-vis"></div>
+
+        <div class="export-annotations export-annotations-bottom" v-show="showExport">
+          <span>
+            chart from: <a href="#">OpenNEM</a>
+          </span>
+          <span>
+            source: <a href="#">AEMO</a>
+          </span>
+          <span>
+            shared by: @chienleng
+          </span>
+        </div>
       </div>
-      <div class="datagrid">
+
+      <div class="datagrid" v-show="!showExport">
         <FtSummary
           class="ft-summary"
           :tableData="sourcesData"
@@ -17,6 +37,24 @@
           :showPrice="false"
           :hidePoint="hidePoint">
         </FtSummary>
+      </div>
+
+      <div v-if="showExport" class="export-options">
+        <h3>Personalise the chart</h3>
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" class="input" />
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea cols="30" rows="3" class="input"></textarea>
+        </div>
+        <div class="form-group">
+          <label>By</label>
+          <input type="text" class="input" placeholder="i.e. @mytwittername" />
+        </div>
+
+        <button style="border: 1px solid #ccc; padding: 10px 20px">Export to PNG</button>
       </div>
     </div>
   </div>
@@ -67,7 +105,8 @@ export default {
       pointData: {},
       start: null,
       end: null,
-      hidePoint: true
+      hidePoint: true,
+      showExport: false,
     };
   },
   methods: {
@@ -110,6 +149,20 @@ export default {
       } else {
         this.hidePoint = true;
       }
+    },
+    exportPng() {
+      if (this.showExport) {
+        this.showExport = false;
+      } else {
+        this.showExport = true;
+      }
+      // if (this.chart) {
+      //   this.chart.export.capture( {}, function() {
+      //     this.toPNG( {}, function( data ) {
+      //       this.download(data, this.defaults.formats.PNG.mimeType, 'amCharts.png')
+      //     } );
+      //   })
+      // }
     }
   },
   watch: {
@@ -249,6 +302,18 @@ function setOpacity(graph, opacity) {
 </script>
 
 <style scoped>
+.export-annotations {
+  font-size: 0.8em;
+
+  &.export-annotations-bottom {
+    font-size: 0.8em;
+    margin-top: 20px;
+
+    span {
+      display: block;
+    }
+  }
+}
 #ft-vis {
   height: 300px;
 }
@@ -257,8 +322,26 @@ function setOpacity(graph, opacity) {
 }
 .chart {
   width: 100%;
+  transition: all 0.25s ease-out;
 }
-.datagrid {
+.export {
+  /* margin: -1em 0 0 -1em; */
+  .chart {
+    width: 640px;
+    background: #fff;
+    border: 1px solid #ddd;
+
+
+    #ft-vis {
+      height: 480px;
+    }
+  }
+  & > div {
+    padding: 1em;
+  }
+} 
+.datagrid,
+.export-options {
   margin: 0;
   max-width: 500px
 }
@@ -273,6 +356,10 @@ function setOpacity(graph, opacity) {
   .datagrid {
     margin-left: 10px;
     min-width: 500px
+  }
+  .export-options {
+    margin-left: 20px;
+    min-width: 400px;
   }
 }
 </style>
