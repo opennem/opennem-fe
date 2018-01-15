@@ -153,10 +153,10 @@
 
         <td v-if="hidePoint" class="border-left">{{formatNumber(netEnergyTotal)}}</td>
         <!-- <td v-if="hidePoint">{{formatNumber(rangeTotal)}}</td> -->
-        <td v-if="hidePoint"></td>
+        <td v-if="showPrice && hidePoint"></td>
 
         <td v-if="!hidePoint">{{formatNumber(pointTotal)}}</td>
-        <td v-if="!hidePoint"></td>
+        <td v-if="showPrice && !hidePoint"></td>
 
         <td></td>
       </tr>
