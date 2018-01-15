@@ -206,7 +206,6 @@ export default {
       let rangeTotal = 0;
       let netEnergyTotal = 0;
       let grossEnergyTotal = 0;
-      console.log(newData)
       newData.forEach(ft => {
         rangeTotal += ft.range.totalPower;
         netEnergyTotal += ft.range.energy;
@@ -215,8 +214,6 @@ export default {
       this.rangeTotal = rangeTotal;
       this.netEnergyTotal = netEnergyTotal;
       this.grossEnergyTotal = grossEnergyTotal;
-
-      console.log(grossEnergyTotal)
     },
     loadsData: function(newData) {
       // console.log(newData)
