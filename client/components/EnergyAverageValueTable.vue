@@ -34,11 +34,11 @@
         <td v-if="showPrice && hidePoint">${{formatNumber(totalAveragePrice, '0,0.00')}}</td>
         <td v-if="showPrice && !hidePoint">${{formatNumber(pointData.rrp, '0,0.00')}}</td>
       </tr>
-      <tr v-for="item in tableData" :key="item.id" v-on:mouseover="emitDataHoverEvent(item)" v-on:mouseout="emitDataOutEvent()" class="active">
+      <tr v-for="item in tableData" :key="item.id" class="active">
         <td style="width: 20px;">
           <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id, item.colour)}"></div>
         </td>
-        <td class="align-left" style="width: 150px">
+        <td class="align-left" v-on:mouseover="emitDataHoverEvent(item)" v-on:mouseout="emitDataOutEvent()" style="width: 150px">
           <div v-if="isNetInterchange(item.id)">
             Import
           </div>
