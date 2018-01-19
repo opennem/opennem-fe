@@ -70,7 +70,7 @@
           <span v-if="
             !isNetInterchange(item.id) || 
             (isNetInterchange(item.id) && item.range.energy > 0)">
-            {{formatNumber(item.range.averagePrice, '0,0.00')}}
+            {{formatNumber(item.range.averagePrice, '$0,0.00')}}
           </span>
           <span v-else>-</span>
         </td>
@@ -129,7 +129,7 @@
         </td>
         <td v-if="showPrice && hidePoint">
           <span v-if="item.range.energy <= 0">
-            {{formatNumber(item.range.averagePrice, '0,0.00')}}
+            {{formatNumber(item.range.averagePrice, '$0,0.00')}}
           </span>
           <span v-else>-</span>
         </td>
