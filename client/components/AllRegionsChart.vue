@@ -1,29 +1,49 @@
 <template>
-  <div class="chart-wrapper" style="position: relative">
-    <button v-on:click="exportPng()" style="position: absolute; right: 0; top: -40px; border: 1px solid #ccc; padding: 10px 20px">export to png</button>
-
+  <div class="chart-wrapper" v-bind:class="{ 'export-overlay': showExport }">
     <div class="loader" v-if="refreshing"></div>
 
     <div class="vis" v-show="!refreshing" v-bind:class="{ export: showExport }">
-      <div class="chart">
-        <div class="export-annotations export-annotations-top" v-show="showExport">
-          <h1>Title</h1>
-          <p>Some description</p>
-        </div>
-        
-        <div id="ft-vis"></div>
+      <div style="width: 100%">
+        <div class="buttons">
+          <button class="button clear" v-show="!showExport" v-on:click="toggleExportOptions()" style="position: absolute; right: 0; border: 0; padding: 5px;">
+            <img src="/share-icon.png" alt="" style="height: 15px;">
+          </button>
 
-        <div class="export-annotations export-annotations-bottom" v-show="showExport">
-          <span>
-            chart from: <a href="#">OpenNEM</a>
-          </span>
-          <span>
-            source: <a href="#">AEMO</a>
-          </span>
-          <span>
-            shared by: @chienleng
-          </span>
+          <button class="button clear" v-show="showExport" v-on:click="downloadPNG()">
+            <img src="/download-icon.png" alt="" style="height: 15px;">
+            PNG
+          </button>
+
+          <button class="button clear" v-show="showExport" v-on:click="toggleExportOptions()" style="position: absolute; right: 0; border: 0; padding: 10px;">
+            <img src="/close-icon.png" alt="" style="height: 15px;">
+          </button>
         </div>
+
+        <div class="chart">
+          <div id="export-container">
+            <div class="export-annotations export-annotations-top" v-show="showExport">
+              <h1 contenteditable="true" v-on:keyup="onKeyup">Title</h1>
+              <p contenteditable="true">Description</p>
+            </div>
+            
+            <div style="padding: 5px; font-size: 0.9em;"><small>Generation (MW)</small></div>
+            <div id="ft-vis"></div>
+
+            <div class="export-annotations export-annotations-bottom" v-show="showExport">
+              <span>
+                generated from: <strong>OpenNEM</strong>
+              </span>
+              <span>
+                sources: <strong>AEMO, OpenNEM</strong>
+              </span>
+              <span>
+                shared by: <strong contenteditable="true">@chienleng</strong>  
+              </span>
+            </div>
+          </div>
+        </div>
+
+        
       </div>
 
       <div class="datagrid" v-show="!showExport">
@@ -39,7 +59,7 @@
         </FtSummary>
       </div>
 
-      <div v-if="showExport" class="export-options">
+      <!-- <div v-if="showExport" class="export-options">
         <h3>Personalise the chart</h3>
         <div class="form-group">
           <label>Title</label>
@@ -54,8 +74,8 @@
           <input type="text" class="input" placeholder="i.e. @mytwittername" />
         </div>
 
-        <button style="border: 1px solid #ccc; padding: 10px 20px">Export to PNG</button>
-      </div>
+        <button style="border: 1px solid #ccc; padding: 10px 20px" v-on:click="exportTest()">Export to PNG</button>
+      </div> -->
     </div>
   </div>
 </template>
@@ -63,6 +83,8 @@
 <script>
 import numeral from "numeral";
 import * as moment from "moment";
+import domtoimage from 'dom-to-image';
+import FileSaver from 'file-saver';
 
 import {
   chartConfig,
@@ -150,7 +172,7 @@ export default {
         this.hidePoint = true;
       }
     },
-    exportPng() {
+    toggleExportOptions() {
       if (this.showExport) {
         this.showExport = false;
       } else {
@@ -163,6 +185,17 @@ export default {
       //     } );
       //   })
       // }
+    },
+    downloadPNG() {
+      domtoimage.toBlob(document.getElementById('export-container'))
+        .then(function(blob) {
+          FileSaver.saveAs(blob, 'chart.png');
+          this.showExport = false;
+        })
+    },
+    onKeyup(e) {
+      console.log(e.target.innerText);
+
     }
   },
   watch: {
@@ -305,6 +338,16 @@ function setOpacity(graph, opacity) {
 .export-annotations {
   font-size: 0.8em;
 
+  h1,
+  strong {
+    color: #CB573A;
+    margin: 0;
+  }
+
+  p {
+    font-weight: 600;
+  }
+
   &.export-annotations-bottom {
     font-size: 0.8em;
     margin-top: 20px;
@@ -314,6 +357,66 @@ function setOpacity(graph, opacity) {
     }
   }
 }
+#export-container {
+  transition: all 0.2s ease-in-out;
+}
+.chart-wrapper {
+  position: relative;
+  transition: all 0.2s ease-in-out;
+
+  &.export-overlay {
+    padding: 0;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    background-color: rgba(255,255,255,0.9);
+    overflow: auto;
+
+    .buttons {
+      text-align: center;
+      max-width: 640px;
+      margin: 10px auto;
+    }
+
+    #export-container {
+      padding: 1em;
+    }
+  }
+}
+.buttons {
+  position: relative;
+}
+button {
+  padding: 6px 6px 5px;
+  text-transform: uppercase;
+  border-radius: 5px;
+  border: 1px dashed #bbb;
+  transition: all 0.2s ease-in-out;
+  color: #CB573A;
+  font-weight: 600;
+  font-size: 1.1em;
+
+  &:hover {
+    border-style: solid;
+    border-color: #999;
+  }
+
+  &.clear {
+    background: none;
+
+    &:hover {
+      background-color: #fff;
+    }
+  }
+}
+.toggle-save-options {
+  /* position: absolute; 
+  right: 0; 
+  top: 0;  */
+}
 #ft-vis {
   height: 300px;
 }
@@ -322,22 +425,28 @@ function setOpacity(graph, opacity) {
 }
 .chart {
   width: 100%;
-  transition: all 0.25s ease-out;
+  transition: all 0.2s ease-in-out;
 }
 .export {
   /* margin: -1em 0 0 -1em; */
+  #ft-vis {
+    height: 300px;
+  }
+
   .chart {
-    width: 640px;
-    background: #fff;
-    border: 1px solid #ddd;
+    max-width: 640px;
+    margin: 0 auto;
 
-
-    #ft-vis {
-      height: 480px;
+    #export-container {
+      background: #ece9e6;
+      border: 1px solid #ddd;
+      border-radius: 5px;
     }
+
+    
   }
   & > div {
-    padding: 1em;
+
   }
 } 
 .datagrid,
@@ -355,11 +464,18 @@ function setOpacity(graph, opacity) {
   }
   .datagrid {
     margin-left: 10px;
+    margin-top: 28px;
     min-width: 500px
+  }
+  .export-overlay {
+    padding: 50px;
   }
   .export-options {
     margin-left: 20px;
     min-width: 400px;
   }
+  .export #ft-vis {
+    height: 400px;
+  }      
 }
 </style>

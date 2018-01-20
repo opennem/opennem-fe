@@ -8,7 +8,6 @@ import store from './store'
 import 'amstock3/amcharts/amcharts'
 import 'amstock3/amcharts/serial'
 import 'amstock3/amcharts/amstock'
-import 'amstock3/amcharts/plugins/export/export'
 
 sync(store, router)
 

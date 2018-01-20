@@ -1,9 +1,9 @@
 <template>
   <div id="app" v-on:click="hideSelectors()">
     <header>
-      <h1>Visualising how Australia generates its electricity</h1>
+      <h1 style=""><img src="/logo.png" alt=""></h1>
 
-      <div class="selection week-selection">
+      <!-- <div class="selection week-selection">
         <div class="selected" v-on:click.stop="toggleWeekSelector(true)">
           {{getWeekLabel(selectedWeek)}}
         </div>
@@ -17,26 +17,29 @@
               v-if="selectedWeek !== week.id">{{week.label}}</li>
           </ol>
         </transition>
-      </div>
-      <br>
-      <div class="selection region-selection">
-        <div class="selected" v-on:click.stop="toggleRegionSelector(true)">
-          {{getRegionLabel(selectedRegion)}}
+      </div> -->
+      <!-- <br> -->
+
+      <div class="menu-options">
+        <div class="selection region-selection">
+          <div class="selected" v-on:click.stop="toggleRegionSelector(true)">
+            {{getRegionLabel(selectedRegion)}}
+          </div>
+
+          <transition name="fade">
+            <ol class="selection-options" v-if="showRegionSelector">
+              <li
+                v-for="region in regions"
+                :key="region.id"
+                v-on:click="onRegionChange(region.id)"
+                v-if="selectedRegion !== region.id">{{region.label}}</li>
+            </ol>
+          </transition>
         </div>
 
-        <transition name="fade">
-          <ol class="selection-options" v-if="showRegionSelector">
-            <li
-              v-for="region in regions"
-              :key="region.id"
-              v-on:click="onRegionChange(region.id)"
-              v-if="selectedRegion !== region.id">{{region.label}}</li>
-          </ol>
-        </transition>
-      </div>
-
-      <div v-if="showFTSelector">
-        {{getFTLabel(selectedFT)}}
+        <div class="selection" v-if="showFTSelector">
+          <span style="color: #333; font-size: 24px;">/ {{getFTLabel(selectedFT)}}</span>  
+        </div>
       </div>
     </header>
 
@@ -193,32 +196,52 @@ export default {
 
 <style>
 @import url('../../node_modules/formbase/dist/formbase.min.css');
-@import url("../../node_modules/amstock3/amcharts/plugins/export/export.css");
 @import url("https://fonts.googleapis.com/css?family=Merriweather:300,400,700");
-html {
-  box-sizing: border-box;
-}
-*, *:before, *:after {
-  box-sizing: inherit;
-}
-body {
-  background: #ece9e6;
-  /* font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', Ubuntu, 'segoe ui', arial, sans-serif; */
-  font-family: "Merriweather", serif;
-}
+
 select,
-option {
+option,
+button {
   font-family: "Merriweather", serif;
 }
 
 header {
-  text-align: left;
-  margin-bottom: 20px;
+  /* position: sticky;
+  top: 40px;
+  z-index: 99; */
+  display: flex;
+  flex: 1;
 
   h1 {
     font-size: 1.1em;
     font-weight: 200;
-    padding: 3px 0 13px;
+    /* padding: 3px 0 13px; */
+    flex-grow: 1;
+    text-align: right;
+    padding-right: 20px;
+    border-right: 1px dashed #ccc;
+  }
+
+  .menu-options {
+    flex-grow: 1;
+    width: 100%;
+    padding-left: 20px;
+  }
+
+  img {
+    height: 40px;
+    transition: all 0.25s linear;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  header {
+
+    h1 {
+    }
+
+    img {
+      height: 45px;
+    }
   }
 }
 
@@ -248,7 +271,7 @@ a[title="Interactive JavaScript maps"] {
 
 
 #app {
-  padding: 0;
+  padding: 0 20px;
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -262,26 +285,25 @@ a[title="Interactive JavaScript maps"] {
   position: relative;
   cursor: pointer;
   color: #C74523;
-  font-weight: 200;
+  position: relative;
+  top: 15px;
 
   &.week-selection {
     width: 130px;
     margin: 0;
-    font-size: 13px;
+    font-size: 12px;
   }
 
   &.region-selection {
-    width: 300px;
     margin: 0;
     font-weight: 500;
     font-size: 24px;
   }
 
   .selected {
-    width: 100%;
-    /* background: #D5D1CF; */
     padding: 3px 0;
-    font-size: 1.3em;
+    font-size: 1.1em;
+    margin-right: 5px;
   }
   .selection-options {
     list-style-type: none;
@@ -289,7 +311,7 @@ a[title="Interactive JavaScript maps"] {
     background: rgba(255,255,255,0.9);
     margin: 0;
     padding: 0;
-    width: 100%;
+    width: 250px;
     z-index: 99;
     box-shadow: rgba(0,0,0,0.2) 0px 10px 20px;
 

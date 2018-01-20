@@ -2,6 +2,7 @@
   <div class="chart-wrapper">
     <div class="vis">
       <div class="chart">
+        <div style="padding: 5px; font-size: 0.9em;"><small>Generation (MW)</small></div>
         <div id="ft-vis"></div>
       </div>
       <div class="datagrid">
@@ -44,6 +45,7 @@
   }
   .datagrid {
     margin-left: 10px;
+    margin-top: 28px;
     min-width: 550px
   }
 }
