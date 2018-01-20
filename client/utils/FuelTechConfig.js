@@ -126,6 +126,12 @@ export const FUEL_TECH = {
     label: 'Solar (Rooftop)',
     categoryId: 'solar'
   },
+  'rooftop_forecast': {
+    colour: '#DFCF00',
+    type: 'sources',
+    label: 'Solar (Rooftop) — Forecast',
+    categoryId: 'solar'
+  },
   'solar': {
     colour: '#F8E71C',
     type: 'sources',

@@ -85,20 +85,31 @@ export function stockGraphs(keys, chartType) {
     const colour = FUEL_TECH[ftKey].colour
     const negativeFillAlphas = (ftKey === 'NETINTERCHANGE' || ftKey === 'pumps') ? 0 : 0.8
     const fillAlphas = 0.8
-    const type = chartType || 'line' 
+    const lineAlpha = 0
+    const type = chartType || 'line'
 
-    graphs.push({
-      // id: `g${index}`,
+    const graph = {
       id: ftKey,
       valueField: ftKey,
       type,
       fillAlphas,
       negativeFillAlphas,
       negativeFillColors: colour,
-      lineAlpha: 0,
+      lineAlpha: lineAlpha,
       lineColor: colour,
       useDataSetColors: false,
-    })
+    }
+
+    if (ftKey === 'rooftop_forecast') {
+      graph.patternField = 'pattern'
+      graph.pattern = {
+        url: '/pattern.png',
+        width: 10,
+        height: 10
+      }
+    }
+
+    graphs.push(graph)
   })
 
   return graphs
