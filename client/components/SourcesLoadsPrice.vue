@@ -33,10 +33,9 @@
 }
 .datagrid {
   margin: 0;
-  max-width: 550px
 }
 
-@media only screen and (min-width: 1200px) {
+@media only screen and (min-width: 960px) {
   #ft-vis {
     height: 500px;
   }

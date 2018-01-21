@@ -435,7 +435,7 @@ button {
   }
 
   .chart {
-    max-width: 640px;
+    max-width: 550px;
     margin: 0 auto;
 
     #export-container {
@@ -453,10 +453,9 @@ button {
 .datagrid,
 .export-options {
   margin: 0;
-  max-width: 500px
 }
 
-@media only screen and (min-width: 1200px) {
+@media only screen and (min-width: 960px) {
   #ft-vis {
     height: 442px;
   }
