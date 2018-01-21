@@ -45,7 +45,8 @@ export function chartConfig(config, forceGridCount) {
       ]
     },
     chartCursorSettings: {
-      pan: true,
+      pan: false, // If pan is set to true, zoomable is switched to false automatically.
+      zoomable: false,
       categoryBalloonColor: '#C74523',
       cursorColor: '#C74523',
       showNextAvailable: true
@@ -54,7 +55,7 @@ export function chartConfig(config, forceGridCount) {
       fontFamily: 'Merriweather',
     },
     chartScrollbarSettings: {
-      enabled: true
+      enabled: false
     }
   }
 
