@@ -6,17 +6,17 @@
       <div style="width: 100%">
         <div class="buttons">
           <button class="button clear" v-show="!showExport" v-on:click="toggleExportOptions()" style="position: absolute; right: 3px; top: -5px; border: 0; ">
-            <img src="/share-icon.png" alt="" style="height: 15px;">
+            <img src="/icons/share-icon.png" alt="" style="height: 15px;">
             Share
           </button>
 
           <button class="button clear" v-show="showExport" v-on:click="downloadPNG()">
-            <img src="/download-icon.png" alt="" style="height: 15px;">
+            <img src="/icons/download-icon.png" alt="" style="height: 15px;">
             PNG
           </button>
 
           <button class="button clear" v-show="showExport" v-on:click="toggleExportOptions()" style="position: absolute; right: 0; border: 0; padding: 10px;">
-            <img src="/close-icon.png" alt="" style="height: 15px;">
+            <img src="/icons/close-icon.png" alt="" style="height: 15px;">
           </button>
         </div>
 
