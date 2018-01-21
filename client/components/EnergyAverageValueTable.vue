@@ -26,7 +26,7 @@
       <tr class="active totals-row">
         <td colspan="2" class="group-header">Sources</td>
 
-        <td v-if="hidePoint" class="border-left">{{formatNumber(grossEnergyTotal)}}</td>
+        <td v-if="hidePoint" class="border-left">{{formatNumber(grossEnergyTotal, '0,0.0')}}</td>
         <td v-if="!hidePoint">{{formatNumber(grossPointTotal)}}</td>
 
         <td></td>
@@ -54,7 +54,7 @@
           <span v-if="
             !isNetInterchange(item.id) || 
             (isNetInterchange(item.id) && item.range.energy > 0)">
-            {{formatNumber(item.range.energy)}}
+            {{formatNumber(item.range.energy, '0,0.0')}}
           </span>
           <span v-else>-</span>
         </td>
@@ -119,7 +119,7 @@
 
         <!-- range info -->
         <td v-if="hidePoint" class="border-left">
-          <span v-if="item.range.energy <= 0">{{formatNumber(item.range.energy)}}</span>
+          <span v-if="item.range.energy <= 0">{{formatNumber(item.range.energy, '0,0.0')}}</span>
           <span v-else>-</span>
         </td>
         <!-- <td v-if="hidePoint">{{formatNumber(item.range.totalPower)}}</td> -->
@@ -153,7 +153,7 @@
       <tr class="totals-row">
         <td colspan="2" class="group-header">Net</td>
 
-        <td v-if="hidePoint" class="border-left">{{formatNumber(netEnergyTotal)}}</td>
+        <td v-if="hidePoint" class="border-left">{{formatNumber(netEnergyTotal, '0,0.0')}}</td>
         <!-- <td v-if="hidePoint">{{formatNumber(rangeTotal)}}</td> -->
         <td v-if="showPrice && hidePoint"></td>
 
