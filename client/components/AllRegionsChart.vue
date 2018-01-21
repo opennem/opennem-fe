@@ -157,7 +157,7 @@ export default {
         const dataContext = data.dataContext;
         const pointData = {
           date: data.category,
-          rrp: dataContext["RRPAverage"]
+          rrp: dataContext["priceAverage"]
         };
 
         Object.keys(FUEL_TECH).forEach(ft => {

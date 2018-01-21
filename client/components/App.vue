@@ -46,7 +46,7 @@
     <router-view class="router-view"></router-view>
 
     <footer>
-      sources: <a href="https://www.aemo.com.au/">Australia Electricity Market Operator</a>
+      sources: <a href="https://www.aemo.com.au/">Australian Energy Market Operator</a>
     </footer>
   </div>
 </template>
@@ -132,6 +132,7 @@ export default {
   methods: {
     onRegionChange(regionId) {
       this.selectedRegion = regionId
+      this.showRegionSelector = false
       this.$store.commit('updateRegionId', regionId)
 
       if (regionId === 'all') {

@@ -62,7 +62,6 @@ export default {
 
         // TODO: handle error
         fetchData.then((response) => {
-          console.log(response.data)
           this.sourceLoadPriceData = response.data
         })
 

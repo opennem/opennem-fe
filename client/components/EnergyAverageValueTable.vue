@@ -14,7 +14,7 @@
         <!-- range info -->
         <th v-if="hidePoint" class="border-left" style="width: 120px">Energy <span class="unit">GWh</span></th>
         <th v-if="hidePoint" style="width: 130px">Contribution <span class="unit">%</span></th>
-        <th v-if="showPrice && hidePoint" style="width: 150px">Av. Value <span class="unit">$</span></th>
+        <th v-if="showPrice && hidePoint" style="width: 150px">Av. Value <span class="unit">$/MWh</span></th>
 
         <!-- point info -->
         <th v-if="!hidePoint" class="border-left" style="width: 120px">Power <span class="unit">MW</span></th>
@@ -43,8 +43,9 @@
             Import
           </div>
           <div v-else>
-            <a v-if="showPrice" v-on:click="goToFT(item.id)">{{getLabel(item.id)}}</a>
-            <span v-if="!showPrice">{{getLabel(item.id)}}</span>
+            <!-- <a v-if="showPrice" v-on:click="goToFT(item.id)">{{getLabel(item.id)}}</a>
+            <span v-if="!showPrice">{{getLabel(item.id)}}</span> -->
+            <span>{{getLabel(item.id)}}</span>
           </div>
         </td>
 
@@ -110,8 +111,9 @@
             Export
           </div>
           <div v-else>
-            <a v-if="showPrice" v-on:click="goToFT(item.id)">{{getLabel(item.id)}}</a>
-            <span v-if="!showPrice">{{getLabel(item.id)}}</span>
+            <!-- <a v-if="showPrice" v-on:click="goToFT(item.id)">{{getLabel(item.id)}}</a>
+            <span v-if="!showPrice">{{getLabel(item.id)}}</span> -->
+            <span>{{getLabel(item.id)}}</span>
           </div>
         </td>
 

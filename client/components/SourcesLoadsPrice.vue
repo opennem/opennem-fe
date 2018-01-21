@@ -121,7 +121,7 @@ export default {
         event.startDate,
         event.endDate
       )
-
+      console.log(this.summaryData)
       this.loadsData = this.summaryData.loadsData
       this.sourcesData = this.summaryData.sourcesData
       this.totalAveragePrice = this.summaryData.totalAveragePrice
@@ -132,7 +132,7 @@ export default {
         const dataContext = data.dataContext
         const pointData = {
           date: data.category,
-          rrp: dataContext['RRPAverage']
+          rrp: dataContext['priceAverage']
         }
 
         Object.keys(FUEL_TECH).forEach(ft => {
@@ -169,14 +169,11 @@ export default {
 
       Object.keys(FUEL_TECH).forEach(ftKey => {
         const find = newData.find(ft => ft.fuel_tech === ftKey)
-        if (find) {
-          keys.push(find.fuel_tech)
+        const hasPrice = newData.find(ft => ft.type === ftKey)
+        if (find || hasPrice) {
+          keys.push(ftKey)
         }
       })
-
-      console.log(keys)
-      
-      // this.chartData = generatePriceData(stackedData, newData)
 
       if (this.chart) {
         this.chart.clear()
@@ -202,11 +199,7 @@ function makeChart (data, keys, context) {
   const startDate = firstObj.date
   const endDate = data[lastIndex].date
 
-  // remove date and rrp to generate proper keys for chart obj
-  delete firstObj.date
-  delete firstObj.RRP
-
-  const mappings = [{ fromField: 'RRP', toField: 'RRP' }, ...fieldMappings(keys)]
+  const mappings = [...fieldMappings(keys)]
 
   const config = makeConfig(
     data,
@@ -216,6 +209,16 @@ function makeChart (data, keys, context) {
     this
   )
   config.panels[0].listeners = [
+    {
+      event: 'zoomed',
+      method: context.onZoom
+    },
+    {
+      event: 'changed',
+      method: context.onCursorHover
+    }
+  ]
+  config.panels[1].listeners = [
     {
       event: 'zoomed',
       method: context.onZoom
@@ -298,7 +301,7 @@ function makeConfig (
           {
             id: 'p2',
             valueAxis: 'v3',
-            valueField: 'RRP',
+            valueField: 'price',
             type: 'step',
             lineAlpha: 0.5,
             lineColor: '#000',

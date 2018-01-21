@@ -2,9 +2,16 @@ import * as moment from 'moment'
 import { FUEL_TECH } from './FuelTechConfig'
 
 export function generateChartData2 (data) {
-  const chartData = []
   const container = new Object()
 
+  const keys = []
+  Object.keys(FUEL_TECH).forEach(ftKey => {
+    const find = data.find(ft => ft.fuel_tech === ftKey)
+    const hasPrice = data.find(ft => ft.type === ftKey)
+    if (find || hasPrice) {
+      keys.push(ftKey)
+    }
+  })
 
   // const ft = data[0]
   // const history = ft['history']
@@ -35,68 +42,104 @@ export function generateChartData2 (data) {
   //   })
   // }
 
+  function createContainerObj (history, ftKey) {
+    const startDate = history.start
+    const seriesData = history.data
+
+    let duration
+
+    try {
+      duration = parseInterval(history.interval)
+    } catch (e) {
+      console.error(e)
+    }
+
+    const start = moment(startDate, moment.ISO_8601)
+
+    for (let i=0; i<seriesData.length; i++) {
+      const now = moment(start).add(duration.value * i, duration.key)
+      const d = (ftKey === 'exports' || ftKey === 'imports' || ftKey === 'pumps') ? -seriesData[i] : seriesData[i]
+
+      const nowISO = moment(now).toISOString()
+
+      if (!container[nowISO]) {
+        container[nowISO] = {}
+        keys.forEach(key => {
+          container[nowISO][key] = null
+        })
+      }
+      container[nowISO][ftKey] = d
+    }
+  }
+
   Object.keys(FUEL_TECH).forEach(ftKey => {
-    const ft = data.find(ft => ft.fuel_tech === ftKey)
-    if (ft) {
+    const ft = data.find(ft => {
+      return ft.fuel_tech === ftKey
+    })
+
+    const price = data.find(ft => ft.type === ftKey)
+    const history = ft ? ft['history'] : (price ? price['history'] : null)
+
+    if (ft || price) {
+      createContainerObj(history, ftKey)
+
       // TODO: also check for forecast data
-      const history = ft['history']
-  
-      const startDate = history.start
-      const seriesData = history.data
-      const hasChartData = chartData.length ? true : false
-  
-      let duration
-  
-      try {
-        duration = parseInterval(history.interval)
-      } catch (e) {
-        console.error(e)
-      }
-  
-      const start = moment(startDate, moment.ISO_8601)
-  
-      for (let i=0; i<seriesData.length; i++) {
-        const now = moment(start).add(duration.value * i, duration.key)
-        const d = (ftKey === 'exports' 
-          || ftKey === 'imports' 
-          || ftKey === 'pumps') ? 
-            -seriesData[i] : seriesData[i]
-
-        const nowISO = moment(now).toISOString()
-        // console.log(nowISO)
-        // container[nowISO][ftKey] = d
-
-        if (!container[nowISO]) {
-          container[nowISO] = {}
-        }
-        container[nowISO][ftKey] = d
-
-        if (!hasChartData) {
-          chartData[i] = {
-            date: now.toDate()
-          }
-        }
-        chartData[i][ftKey] = d
-      }
+      // if (ft && ft.forecast) {
+      //   createContainerObj(ft.forecast, ftKey)
+      // }
     }
   })
 
-  console.log(container)
-  let newChartData = []
+  const newChartData = []
+  let current = null
   Object.keys(container).forEach(dateKey => {
-    let obj = Object.assign({}, container[dateKey]);
+    const obj = Object.assign({}, container[dateKey])
     obj.date = moment(dateKey).toDate()
+
+    if (obj['rooftop_solar'] !== null) {
+      current = obj['rooftop_solar']
+    } else if (obj['rooftop_solar'] === null) {
+      obj['rooftop_solar'] = current
+    }
+
     newChartData.push(obj)
   })
-  // console.log(chartData)
-
   newChartData.sort((a, b) => {
     return moment(a.date).valueOf() - moment(b.date).valueOf()
   })
 
-  console.log(newChartData)
-
   return newChartData.slice()
+}
+
+export function generatePriceData2 (chartSeries, payload) {
+  const priceData = [].concat(chartSeries)
+  const rrp = payload['RRP']
+  const rrpKey = 'RRP'
+  const startDate = rrp.start
+  const rrpData = rrp.data
+  const start = moment(startDate, moment.ISO_8601)
+  let duration
+  try {
+    duration = parseInterval(rrp.interval)
+  } catch (e) {
+    console.error(e)
+  }
+
+  let rrpIndex = 0
+  priceData.forEach(item => {
+    const now = moment(start).add(duration.value * rrpIndex, duration.key)
+    if (item.date.toString() === now.toDate().toString()) {
+      item[rrpKey] = rrpData[rrpIndex]
+      rrpIndex++
+    } else {
+      item[rrpKey] = rrpData[rrpIndex - 1]
+    }
+  })
+
+  /** negative price cannot be logathrmic **/
+  // findDate[ftKey] = ftData[x] < 0 ? -ftData[x] : ftData[x]
+
+  return priceData
 }
 
 export function generateChartData (data) {
@@ -155,7 +198,7 @@ export function generateSummaryData (data, start, end) {
   function isValidFT (name) {
     return name !== 'date' &&
       name !== 'DEMAND_AND_NONSCHEDGEN' &&
-      name !== 'RRP'
+      name !== 'price'
   }
 
   // Get only data between the start and end dates
@@ -184,7 +227,7 @@ export function generateSummaryData (data, start, end) {
 
     // calculate the price * total
     const dataSumTotalPrice = dataSum.map((d, i) => {
-      const rrp = filteredData[i]['RRP'] ? filteredData[i]['RRP'] : 0
+      const rrp = filteredData[i]['price'] ? filteredData[i]['price'] : 0
       return d * rrp
     })
 
@@ -192,8 +235,8 @@ export function generateSummaryData (data, start, end) {
     const totalAveragePrice = dataSumTotalPrice.reduce((a, b) => a + b, 0) / dataSumTotal
 
     Object.keys(filteredData[0]).forEach(ft => {
-      if (isValidFT(ft)) {
 
+      if (isValidFT(ft)) {
         // sum up each ft total
         const totalFTPower = filteredData.reduce((a, b) => {
           return a + b[ft]
@@ -202,7 +245,7 @@ export function generateSummaryData (data, start, end) {
 
         // calculate the price * ft total
         const dataFTPrice = filteredData.map((d, i) => {
-          const rrp = filteredData[i]['RRP'] ? filteredData[i]['RRP'] : 0
+          const rrp = filteredData[i]['price'] ? filteredData[i]['price'] : 0
           return d[ft] * rrp
         })
 
@@ -219,11 +262,13 @@ export function generateSummaryData (data, start, end) {
 
         // Split into loads and sources
         // - add Netinterchange into source because it contains both load and source data
-        if (ft === 'pumps' || ft === 'NETINTERCHANGE') {
-          loadsData.push(row)
-        }
-        if (ft !== 'pumps') {
+        // if (ft === 'pumps' || ft === 'NETINTERCHANGE') {
+        //   loadsData.push(row)
+        // }
+        if (ft !== 'pumps' && ft !== 'exports') {
           sourcesData.push(row)
+        } else {
+          loadsData.push(row)
         }
       }
     })
@@ -276,31 +321,38 @@ export function generatePriceData (chartSeries, payload) {
 }
 
 export function sumRegionsFuelTech (regions) {
-  let data = null
+  let data = []
   Object.keys(regions).forEach((regionKey, regionIndex) => {
     const regionFtData = regions[regionKey]
-    if (!data) {
-      data = _.cloneDeep(regionFtData)
+
+    if (!data.length) {
+      data = regionFtData.slice()
+      data.forEach(d => {
+        delete d.id
+        delete d.region
+      })
     } else {
-      data = _.mergeWith(data, regionFtData, (objValue, srcValue) => {
-        if (objValue) {
-          const objData = objValue.data
-          const srcData = srcValue.data
+      regionFtData.forEach(region => {
+        const findFT = data.find(d => d.fuel_tech === region.fuel_tech)
+        if (findFT) {
+          const objData = findFT.history.data
+          const srcData = region.history.data
 
           objData.forEach((value, index) => {
             objData[index] = value + srcData[index]
           })
-
-          objValue.data = objData
-
-          return objValue
         } else {
-          return srcValue
+          delete region.id
+          delete region.region
+          data.push(region)
         }
       })
     }
   })
-  return data
+
+  return data.filter(d => {
+    return d.fuel_tech !== 'pumps' & d.fuel_tech !== 'exports' & d.fuel_tech !== 'imports' & d.type !== 'price'
+  })
 }
 
 /** Parse interval:

@@ -148,5 +148,10 @@ export const FUEL_TECH = {
     label: 'Solar',
     categoryId: 'solar'
   },
-
+  'price': {
+    colour: '#000',
+    type: 'sources',
+    label: 'Price',
+    categoryId: 'price'
+  },
 }

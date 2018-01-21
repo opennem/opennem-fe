@@ -54,7 +54,7 @@ export function chartConfig(config, forceGridCount) {
       fontFamily: 'Merriweather',
     },
     chartScrollbarSettings: {
-      enabled: false
+      enabled: true
     }
   }
 
@@ -82,38 +82,40 @@ export function stockGraphs(keys, chartType) {
   const graphs = []
 
   keys.forEach((ftKey, index) => {
-    console.log(ftKey)
-    const colour = FUEL_TECH[ftKey].colour
-    const negativeFillAlphas = (ftKey === 'exports' 
-      || ftKey === 'imports' 
-      || ftKey === 'pumps') 
-        ? 0 : 0.8
-    const fillAlphas = 0.8
-    const lineAlpha = 0
-    const type = chartType || 'line'
-
-    const graph = {
-      id: ftKey,
-      valueField: ftKey,
-      type,
-      fillAlphas,
-      negativeFillAlphas,
-      negativeFillColors: colour,
-      lineAlpha: lineAlpha,
-      lineColor: colour,
-      useDataSetColors: false,
-    }
-
-    if (ftKey === 'rooftop_forecast') {
-      graph.patternField = 'pattern'
-      graph.pattern = {
-        url: '/pattern.png',
-        width: 10,
-        height: 10
+    if (ftKey !== 'price') {
+      const colour = FUEL_TECH[ftKey].colour
+      const negativeFillAlphas = (ftKey === 'exports' 
+        || ftKey === 'imports' 
+        || ftKey === 'pumps') 
+          ? 0 : 0.8
+      const fillAlphas = 0.8
+      const lineAlpha = 0
+      const type = chartType || 'line'
+  
+      const graph = {
+        id: ftKey,
+        valueField: ftKey,
+        type,
+        fillAlphas,
+        negativeFillAlphas,
+        negativeFillColors: colour,
+        lineAlpha: lineAlpha,
+        lineColor: colour,
+        useDataSetColors: false
       }
+  
+      if (ftKey === 'rooftop_forecast') {
+        graph.patternField = 'pattern'
+        graph.pattern = {
+          url: '/pattern.png',
+          width: 10,
+          height: 10
+        }
+      }
+  
+      graphs.push(graph)
     }
-
-    graphs.push(graph)
+    
   })
 
   return graphs
