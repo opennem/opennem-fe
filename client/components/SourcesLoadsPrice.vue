@@ -60,6 +60,7 @@ import {
 } from '../utils/ChartHelpers'
 import {
   generateChartData,
+  generateChartData2,
   generatePriceData,
   generateSummaryData
 } from '../utils/DataHelpers'
@@ -72,7 +73,7 @@ export default {
     FtSummary
   },
   props: {
-    genData: Object
+    genData: Array
   },
   data () {
     return {
@@ -163,14 +164,25 @@ export default {
 
   watch: {
     genData (newData) {
-      const stackedData = generateChartData(newData)
-      this.chartData = generatePriceData(stackedData, newData)
+      const keys = []
+      this.chartData = generateChartData2(newData)
+
+      Object.keys(FUEL_TECH).forEach(ftKey => {
+        const find = newData.find(ft => ft.fuel_tech === ftKey)
+        if (find) {
+          keys.push(find.fuel_tech)
+        }
+      })
+
+      console.log(keys)
+      
+      // this.chartData = generatePriceData(stackedData, newData)
 
       if (this.chart) {
         this.chart.clear()
         this.chart = null
       }
-      this.chart = makeChart(this.chartData, this)
+      this.chart = makeChart(this.chartData, keys, this)
     }
   },
   beforeDestroy () {
@@ -184,7 +196,7 @@ export default {
   }
 }
 
-function makeChart (data, context) {
+function makeChart (data, keys, context) {
   const firstObj = Object.assign({}, data[0])
   const lastIndex = data.length - 1
   const startDate = firstObj.date
@@ -194,7 +206,6 @@ function makeChart (data, context) {
   delete firstObj.date
   delete firstObj.RRP
 
-  const keys = Object.keys(firstObj)
   const mappings = [{ fromField: 'RRP', toField: 'RRP' }, ...fieldMappings(keys)]
 
   const config = makeConfig(

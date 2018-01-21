@@ -1,6 +1,104 @@
 import * as moment from 'moment'
 import { FUEL_TECH } from './FuelTechConfig'
 
+export function generateChartData2 (data) {
+  const chartData = []
+  const container = new Object()
+
+
+  // const ft = data[0]
+  // const history = ft['history']
+  // const startDate = history.start
+  // const seriesData = history.data
+  // let duration
+
+  // try {
+  //   duration = parseInterval(history.interval)
+  // } catch (e) {
+  //   console.error(e)
+  // }
+
+  // const start = moment(startDate, moment.ISO_8601)
+
+  // for (let i=0; i<seriesData.length; i++) {
+  //   const now = moment(start).add(duration.value * i, duration.key)
+  //   const nowISO = moment(now).toISOString()
+  //   if (!container[nowISO]) {
+  //     container[nowISO] = {}
+  //   }
+
+  //   Object.keys(FUEL_TECH).forEach(ftKey => {
+  //     const find = data.find(ft => ft.fuel_tech === ftKey)
+  //     if (find) {
+  //       container[nowISO][ftKey] = 0
+  //     }
+  //   })
+  // }
+
+  Object.keys(FUEL_TECH).forEach(ftKey => {
+    const ft = data.find(ft => ft.fuel_tech === ftKey)
+    if (ft) {
+      // TODO: also check for forecast data
+      const history = ft['history']
+  
+      const startDate = history.start
+      const seriesData = history.data
+      const hasChartData = chartData.length ? true : false
+  
+      let duration
+  
+      try {
+        duration = parseInterval(history.interval)
+      } catch (e) {
+        console.error(e)
+      }
+  
+      const start = moment(startDate, moment.ISO_8601)
+  
+      for (let i=0; i<seriesData.length; i++) {
+        const now = moment(start).add(duration.value * i, duration.key)
+        const d = (ftKey === 'exports' 
+          || ftKey === 'imports' 
+          || ftKey === 'pumps') ? 
+            -seriesData[i] : seriesData[i]
+
+        const nowISO = moment(now).toISOString()
+        // console.log(nowISO)
+        // container[nowISO][ftKey] = d
+
+        if (!container[nowISO]) {
+          container[nowISO] = {}
+        }
+        container[nowISO][ftKey] = d
+
+        if (!hasChartData) {
+          chartData[i] = {
+            date: now.toDate()
+          }
+        }
+        chartData[i][ftKey] = d
+      }
+    }
+  })
+
+  console.log(container)
+  let newChartData = []
+  Object.keys(container).forEach(dateKey => {
+    let obj = Object.assign({}, container[dateKey]);
+    obj.date = moment(dateKey).toDate()
+    newChartData.push(obj)
+  })
+  // console.log(chartData)
+
+  newChartData.sort((a, b) => {
+    return moment(a.date).valueOf() - moment(b.date).valueOf()
+  })
+
+  console.log(newChartData)
+
+  return newChartData.slice()
+}
+
 export function generateChartData (data) {
   const chartData = []
 

@@ -54,16 +54,24 @@ export default {
       if (week !== undefined) {
         const interval = '5m'
 
-        const fetchGen = getJSON(`${week}/gen_${interval}_${data.region}1.json`)
-        const fetchDispatch = getJSON(`${week}/dispatch_${interval}_${data.region}1.json`)
-        const fetchPrice = getJSON(`${week}/price_30m_${data.region}1.json`)
+        // const fetchGen = getJSON(`${week}/gen_${interval}_${data.region}1.json`)
+        // const fetchDispatch = getJSON(`${week}/dispatch_${interval}_${data.region}1.json`)
+        // const fetchPrice = getJSON(`${week}/price_30m_${data.region}1.json`)
 
-        axios.all([fetchGen, fetchDispatch, fetchPrice])
-          .then(axios.spread((gen, dispatch, price) => {
-            const data = Object.assign(gen.data, dispatch.data, price.data)
-            this.sourceLoadPriceData = data
-          })
-        )
+        const fetchData =  getJSON(`data/${data.region}1.json`)
+
+        // TODO: handle error
+        fetchData.then((response) => {
+          console.log(response.data)
+          this.sourceLoadPriceData = response.data
+        })
+
+        // axios.all([fetchGen, fetchDispatch, fetchPrice])
+        //   .then(axios.spread((gen, dispatch, price) => {
+        //     const data = Object.assign(gen.data, dispatch.data, price.data)
+        //     this.sourceLoadPriceData = data
+        //   })
+        // )
       }
     }
   }

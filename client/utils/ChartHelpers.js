@@ -82,8 +82,12 @@ export function stockGraphs(keys, chartType) {
   const graphs = []
 
   keys.forEach((ftKey, index) => {
+    console.log(ftKey)
     const colour = FUEL_TECH[ftKey].colour
-    const negativeFillAlphas = (ftKey === 'NETINTERCHANGE' || ftKey === 'pumps') ? 0 : 0.8
+    const negativeFillAlphas = (ftKey === 'exports' 
+      || ftKey === 'imports' 
+      || ftKey === 'pumps') 
+        ? 0 : 0.8
     const fillAlphas = 0.8
     const lineAlpha = 0
     const type = chartType || 'line'

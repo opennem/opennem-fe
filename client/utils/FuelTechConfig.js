@@ -60,6 +60,16 @@ export const FUEL_TECH = {
     type: 'loads',
     label: 'Import/Export'
   },
+  'exports': {
+    colour: '#44146F',
+    type: 'loads',
+    label: 'Exports'
+  },
+  'imports': {
+    colour: '#44146F',
+    type: 'sources',
+    label: 'Imports'
+  },
   'black_coal': {
     colour: '#000',
     type: 'sources',
