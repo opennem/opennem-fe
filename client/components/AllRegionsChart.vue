@@ -5,8 +5,9 @@
     <div class="vis" v-show="!refreshing" v-bind:class="{ export: showExport }">
       <div style="width: 100%">
         <div class="buttons">
-          <button class="button clear" v-show="!showExport" v-on:click="toggleExportOptions()" style="position: absolute; right: 0; border: 0; padding: 5px;">
+          <button class="button clear" v-show="!showExport" v-on:click="toggleExportOptions()" style="position: absolute; right: 3px; top: -5px; border: 0; ">
             <img src="/share-icon.png" alt="" style="height: 15px;">
+            Share
           </button>
 
           <button class="button clear" v-show="showExport" v-on:click="downloadPNG()">
@@ -31,13 +32,10 @@
 
             <div class="export-annotations export-annotations-bottom" v-show="showExport">
               <span>
-                generated from: <strong>OpenNEM</strong>
+                sources <strong>AEMO, OpenNEM</strong>
               </span>
-              <span>
-                sources: <strong>AEMO, OpenNEM</strong>
-              </span>
-              <span>
-                shared by: <strong contenteditable="true">@chienleng</strong>  
+              <span style="float: right; margin-top: -15px;">
+                shared by <strong contenteditable="true">@chienleng</strong>  
               </span>
             </div>
           </div>
@@ -391,13 +389,16 @@ function setOpacity(graph, opacity) {
 }
 button {
   padding: 6px 6px 5px;
-  text-transform: uppercase;
   border-radius: 5px;
   border: 1px dashed #bbb;
   transition: all 0.2s ease-in-out;
   color: #CB573A;
-  font-weight: 600;
-  font-size: 1.1em;
+  font-size: 0.85em;
+
+  img {
+    position: relative;
+    top: 1px;
+  }
 
   &:hover {
     border-style: solid;
