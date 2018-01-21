@@ -4,7 +4,6 @@ import Home from '../views/Home'
 import Max from '../views/Max'
 import MarketByRegion from '../views/MarketByRegion'
 import RegionByFT from '../views/RegionByFT'
-import EchartDemo from '../views/EchartDemo'
 
 Vue.use(Router)
 
@@ -30,10 +29,6 @@ export default new Router({
       name: 'generators',
       path: '/regions/:region/:ft',
       component: RegionByFT
-    },
-    {
-      path: '/echart',
-      component: EchartDemo
     }
   ]
 })
