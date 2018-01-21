@@ -1,7 +1,8 @@
 import * as moment from 'moment'
 import { FUEL_TECH } from './FuelTechConfig'
 
-export function generateChartData2 (data) {
+// TODO: refactor to data parasing code
+export function generateChartData (data) {
   const container = new Object()
 
   const keys = []
@@ -12,35 +13,6 @@ export function generateChartData2 (data) {
       keys.push(ftKey)
     }
   })
-
-  // const ft = data[0]
-  // const history = ft['history']
-  // const startDate = history.start
-  // const seriesData = history.data
-  // let duration
-
-  // try {
-  //   duration = parseInterval(history.interval)
-  // } catch (e) {
-  //   console.error(e)
-  // }
-
-  // const start = moment(startDate, moment.ISO_8601)
-
-  // for (let i=0; i<seriesData.length; i++) {
-  //   const now = moment(start).add(duration.value * i, duration.key)
-  //   const nowISO = moment(now).toISOString()
-  //   if (!container[nowISO]) {
-  //     container[nowISO] = {}
-  //   }
-
-  //   Object.keys(FUEL_TECH).forEach(ftKey => {
-  //     const find = data.find(ft => ft.fuel_tech === ftKey)
-  //     if (find) {
-  //       container[nowISO][ftKey] = 0
-  //     }
-  //   })
-  // }
 
   function createContainerObj (history, ftKey) {
     const startDate = history.start
@@ -96,6 +68,7 @@ export function generateChartData2 (data) {
     const obj = Object.assign({}, container[dateKey])
     obj.date = moment(dateKey).toDate()
 
+    // TODO: fill in values when intervals are different - check with highest res interval first
     if (obj['rooftop_solar'] !== null) {
       current = obj['rooftop_solar']
     } else if (obj['rooftop_solar'] === null) {
@@ -109,73 +82,6 @@ export function generateChartData2 (data) {
   })
 
   return newChartData.slice()
-}
-
-export function generatePriceData2 (chartSeries, payload) {
-  const priceData = [].concat(chartSeries)
-  const rrp = payload['RRP']
-  const rrpKey = 'RRP'
-  const startDate = rrp.start
-  const rrpData = rrp.data
-  const start = moment(startDate, moment.ISO_8601)
-  let duration
-  try {
-    duration = parseInterval(rrp.interval)
-  } catch (e) {
-    console.error(e)
-  }
-
-  let rrpIndex = 0
-  priceData.forEach(item => {
-    const now = moment(start).add(duration.value * rrpIndex, duration.key)
-    if (item.date.toString() === now.toDate().toString()) {
-      item[rrpKey] = rrpData[rrpIndex]
-      rrpIndex++
-    } else {
-      item[rrpKey] = rrpData[rrpIndex - 1]
-    }
-  })
-
-  /** negative price cannot be logathrmic **/
-  // findDate[ftKey] = ftData[x] < 0 ? -ftData[x] : ftData[x]
-
-  return priceData
-}
-
-export function generateChartData (data) {
-  const chartData = []
-
-  Object.keys(FUEL_TECH).forEach(ftKey => {
-    if (data[ftKey]) {
-      const ft = data[ftKey]
-      const startDate = ft.start
-      const ftData = ft.data
-      const hasChartData = chartData.length ? true : false
-      let duration
-
-      try {
-        duration = parseInterval(ft.interval)
-      } catch (e) {
-        console.error(e)
-      }
-
-      const start = moment(startDate, moment.ISO_8601)
-
-      for (let i=0; i<ftData.length; i++) {
-        const now = moment(start).add(duration.value * i, duration.key)
-        const d = (ftKey === 'NETINTERCHANGE' || ftKey === 'pumps') ? -ftData[i] : ftData[i]
-
-        if (!hasChartData) {
-          chartData[i] = {
-            date: now.toDate()
-          }
-        }
-        chartData[i][ftKey] = d
-      }
-    }
-  })
-
-  return chartData
 }
 
 /**

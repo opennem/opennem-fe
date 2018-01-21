@@ -59,8 +59,6 @@ import {
 } from '../utils/ChartHelpers'
 import {
   generateChartData,
-  generateChartData2,
-  generatePriceData,
   generateSummaryData
 } from '../utils/DataHelpers'
 import FtSummary from './EnergyAverageValueTable'
@@ -120,7 +118,6 @@ export default {
         event.startDate,
         event.endDate
       )
-      console.log(this.summaryData)
       this.loadsData = this.summaryData.loadsData
       this.sourcesData = this.summaryData.sourcesData
       this.totalAveragePrice = this.summaryData.totalAveragePrice
@@ -164,7 +161,7 @@ export default {
   watch: {
     genData (newData) {
       const keys = []
-      this.chartData = generateChartData2(newData)
+      this.chartData = generateChartData(newData)
 
       Object.keys(FUEL_TECH).forEach(ftKey => {
         const find = newData.find(ft => ft.fuel_tech === ftKey)
