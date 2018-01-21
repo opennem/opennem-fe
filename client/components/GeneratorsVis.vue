@@ -35,7 +35,7 @@ import {
 import { FUEL_TECH } from "../utils/FuelTechConfig";
 import FtSummary from "./EnergyAverageValueTable";
 
-import { generateNightGuides } from "../utils/AmchartsDataTransform"
+import { guides as ChartGuides } from "../utils/ChartHelpers.js"
 
 export default {
   components: {
