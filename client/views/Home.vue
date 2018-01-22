@@ -66,7 +66,6 @@ export default {
             'tas': tas.data,
             'vic': vic.data
           })
-
           this.chartData = generateChartData(data)
         })
       )

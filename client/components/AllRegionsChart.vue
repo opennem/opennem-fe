@@ -48,7 +48,7 @@
         <FtSummary
           class="ft-summary"
           :tableData="sourcesData"
-          :loadsData="[]"
+          :loadsData="loadsData"
           :pointData="pointData"
           :dateFrom="start"
           :dateTo="end"
@@ -122,6 +122,7 @@ export default {
       chartData: [],
       summaryData: {},
       sourcesData: [],
+      loadsData: [],
       pointData: {},
       start: null,
       end: null,
@@ -150,6 +151,7 @@ export default {
 
       this.summaryData = generateSummaryData(this.chartData, this.start, this.end)
       this.sourcesData = this.summaryData.sourcesData
+      this.loadsData = this.summaryData.loadsData
     },
     onCursorHover(event) {
       if (event.index !== undefined) {
@@ -457,7 +459,7 @@ button {
 
 @media only screen and (min-width: 960px) {
   #ft-vis {
-    height: 442px;
+    height: 609px;
   }
   .vis {
     display: flex;

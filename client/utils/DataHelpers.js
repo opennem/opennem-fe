@@ -257,7 +257,7 @@ export function sumRegionsFuelTech (regions) {
   })
 
   return data.filter(d => {
-    return d.fuel_tech !== 'pumps' && d.fuel_tech !== 'exports' && d.fuel_tech !== 'imports' && d.type !== 'price' && d.type !== 'battery_charging'
+    return d.type !== 'price'
   })
 }
 
