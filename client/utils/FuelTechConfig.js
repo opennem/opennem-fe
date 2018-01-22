@@ -55,10 +55,10 @@ export const FUEL_TECH = {
     label: 'Pumps',
     categoryId: 'hydro'
   },
-  'battery_discharging': {
+  'battery_charging': {
     colour: '#000',
     type: 'loads',
-    label: 'Battery (Discharging)',
+    label: 'Battery (Charging)',
     categoryId: 'other'
   },
   'NETINTERCHANGE': {
@@ -94,10 +94,10 @@ export const FUEL_TECH = {
     label: 'Biomass',
     categoryId: 'other'
   },
-  'battery_charging': {
+  'battery_discharging': {
     colour: '#D2BEAB',
     type: 'sources',
-    label: 'Battery (Charging)',
+    label: 'Battery (Discharging)',
     categoryId: 'other'
   },
   'hydro': {

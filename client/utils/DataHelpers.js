@@ -30,7 +30,7 @@ export function generateChartData (data) {
 
     for (let i=0; i<seriesData.length; i++) {
       const now = moment(start).add(duration.value * i, duration.key)
-      const d = (ftKey === 'exports' || ftKey === 'imports' || ftKey === 'pumps' || ftKey === 'battery_discharging') ? -seriesData[i] : seriesData[i]
+      const d = (ftKey === 'exports' || ftKey === 'imports' || ftKey === 'pumps' || ftKey === 'battery_charging') ? -seriesData[i] : seriesData[i]
 
       const nowISO = moment(now).toISOString()
 
@@ -171,7 +171,7 @@ export function generateSummaryData (data, start, end) {
         // if (ft === 'pumps' || ft === 'NETINTERCHANGE') {
         //   loadsData.push(row)
         // }
-        if (ft !== 'pumps' && ft !== 'exports' && ft !== 'battery_discharging') {
+        if (ft !== 'pumps' && ft !== 'exports' && ft !== 'battery_charging') {
           sourcesData.push(row)
         } else {
           loadsData.push(row)
@@ -257,7 +257,7 @@ export function sumRegionsFuelTech (regions) {
   })
 
   return data.filter(d => {
-    return d.fuel_tech !== 'pumps' && d.fuel_tech !== 'exports' && d.fuel_tech !== 'imports' && d.type !== 'price' && d.type !== 'battery_discharging'
+    return d.fuel_tech !== 'pumps' && d.fuel_tech !== 'exports' && d.fuel_tech !== 'imports' && d.type !== 'price' && d.type !== 'battery_charging'
   })
 }
 

@@ -88,7 +88,7 @@ export function stockGraphs(keys, chartType) {
       const negativeFillAlphas = (ftKey === 'exports' 
         || ftKey === 'imports' 
         || ftKey === 'pumps'
-        || ftKey === 'battery_discharging') 
+        || ftKey === 'battery_charging') 
           ? 0 : 0.8
       const fillAlphas = 0.8
       const lineAlpha = 0
