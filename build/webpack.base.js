@@ -10,9 +10,7 @@ module.exports = {
   entry: {
     client: './client/index.js'
   },
-  externals: {
-    echarts: 'echarts'
-  },
+  externals: {},
   output: {
     path: _.outputPath,
     filename: '[name].js',
