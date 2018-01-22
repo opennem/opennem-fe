@@ -3,13 +3,15 @@ import { FUEL_TECH } from './FuelTechConfig'
 
 // TODO: refactor to data parasing code
 // * map data using timestamp
-// * check for highest res 
+// * check for highest res
 // * note series with lower res
 // * check lower res series and fill in values for each timestamp
 // * note specific keys (all loads and imports) for changing values for stacking
 // * should forecast data as seperate series for different chart styling?
 export function generateChartData (data) {
-  const container = new Object()
+  const container = {}
+  const ftPriceIntervals = {}
+  let shortestInterval = null
 
   const keys = []
   Object.keys(FUEL_TECH).forEach(ftKey => {
@@ -30,6 +32,14 @@ export function generateChartData (data) {
       duration = parseInterval(history.interval)
     } catch (e) {
       console.error(e)
+    }
+
+    // store the shortest interval
+    ftPriceIntervals[ftKey] = duration
+    if (shortestInterval) {
+      shortestInterval = compareAndGetShortestInterval(shortestInterval, duration, true)
+    } else {
+      shortestInterval = duration
     }
 
     const start = moment(startDate, moment.ISO_8601)
@@ -69,25 +79,29 @@ export function generateChartData (data) {
   })
 
   const newChartData = []
+  const longerIntervalSeries = []
 
-  // TODO: fill in values when intervals are different - check with highest res interval first
-  let currentRoof = null
-  let currentPrice = null
+  // Find out the series that has an interval longer than the shortest interval
+  Object.keys(ftPriceIntervals).forEach(ftPrice => {
+    if (!compareAndGetShortestInterval(ftPriceIntervals[ftPrice], shortestInterval, false)) {
+      longerIntervalSeries.push({
+        key: ftPrice,
+        currentValue: null
+      })
+    }
+  })
+
   Object.keys(container).forEach(dateKey => {
     const obj = Object.assign({}, container[dateKey])
     obj.date = moment(dateKey).toDate()
 
-    if (obj['rooftop_solar'] !== null) {
-      currentRoof = obj['rooftop_solar']
-    } else if (obj['rooftop_solar'] === null) {
-      obj['rooftop_solar'] = currentRoof
-    }
-
-    if (obj['price'] !== null) {
-      currentRoof = obj['price']
-    } else if (obj['price'] === null) {
-      obj['price'] = currentRoof
-    }
+    longerIntervalSeries.forEach(series => {
+      if (obj[series.key] !== null) {
+        series.currentValue = obj[series.key]
+      } else if (obj[series.key] === null) {
+        obj[series.key] = series.currentValue
+      }
+    })
 
     newChartData.push(obj)
   })
@@ -169,13 +183,20 @@ export function generateSummaryData (data, start, end) {
           return d[ft] * rrp
         })
 
+        // calculate energy (GWh) += power * interval/60/100
+        const dataEnergy = filteredData.map((d, i) => {
+          return d[ft] * 5 / 60 / 1000
+        })
+        // sum the energy
+        const energySum = dataEnergy.reduce((a, b) => a + b, 0)
+
         // calculate the ft average price
         const averageFTPrice = dataFTPrice.reduce((a, b) => a + b, 0) / totalFTPower
         const row = {
           id: ft,
           range: {
             totalPower: totalFTPower,
-            energy: totalFTPower / 12000,
+            energy: energySum, // same as totalFTPower / 12000
             averagePrice: averageFTPrice
           }
         }
@@ -284,7 +305,7 @@ export function sumRegionsFuelTech (regions) {
     - minutes = m
     - seconds = s
 **/
-const durationKeys = ['y', 'M', 'w', 'd', 'h', 'm', 's']
+const durationKeys = ['s', 'm', 'h', 'd', 'w', 'M', 'y']
 
 /**
   returns {key, value}
@@ -305,90 +326,28 @@ function parseInterval (string) {
   }
 }
 
-
 /**
- * TODO: deperated functions
- */
-export function sumFuelTechByRegion(regions) {
-  const data = []
-  REGIONS.forEach(region => {
-    const ftRegionObj = {
-      regionId: region.id
-    }
-    let total = 0
+  compares 2 duration and returns the shorter one
+  - use durationKey index - the smaller the index, the shorter the duration
+**/
+function compareAndGetShortestInterval (duration1, duration2, returnDuration) {
+  const duration1Index = durationKeys.indexOf(duration1.key)
+  const duration2Index = durationKeys.indexOf(duration2.key)
+  const duration1Value = duration1.value
+  const duration2Value = duration2.value
 
-    Object.keys(FUEL_TECH).forEach(((key, index) => {
-      if (key !== 'NETINTERCHANGE') {
-        // ignore NETINTERCHANGE
-        const ft = regions[region.id][key]
-        const ftTotal = ft ? ft.data.reduce((a, b) => a + b, 0) : 0
-        total += ftTotal
-        ftRegionObj[key] = ftTotal
-      }
-    }))
-
-    total = total.toFixed(0)
-
-    Object.keys(ftRegionObj).forEach((key) => {
-      if (key !== 'regionId') {
-        ftRegionObj[key] = ftRegionObj[key] / total * 100
-      }
-    })
-
-    data.push(ftRegionObj)
-  })
-  return data
-}
-
-export function sumDemandByRegion(regions) {
-  const key = 'DEMAND_AND_NONSCHEDGEN'
-  const demand = []
-  const nswDemand = regions['nsw'][key]
-  const nswDemandData = nswDemand.data
-  const qldDemandData = regions['qld'][key].data
-  const saDemandData = regions['sa'][key].data
-  const tasDemandData = regions['tas'][key].data
-  const vicDemandData = regions['vic'][key].data
-  const interval = '5'
-  const start = moment(nswDemand.start, moment.ISO_8601)
-
-  for (let i = 0; i < nswDemandData.length; i++) {
-    const now = moment(start).add(interval * i, 'm')
-
-    const nsw = calculateHorizonValues(nswDemandData[i])
-    const qld = calculateHorizonValues(qldDemandData[i])
-    const sa = calculateHorizonValues(saDemandData[i])
-    const tas = calculateHorizonValues(tasDemandData[i])
-    const vic = calculateHorizonValues(vicDemandData[i])
-
-    demand[i] = {
-      date: now.toDate(),
-      nsw: nswDemandData[i],
-      nswMid: 0.5,
-      nsw1: nsw[0],
-      nsw2: nsw[1],
-      nsw3: nsw[2],
-      qld: qldDemandData[i],
-      qldMid: 0.5,
-      qld1: qld[0],
-      qld2: qld[1],
-      qld3: qld[2],
-      sa: saDemandData[i],
-      saMid: 0.5,
-      sa1: sa[0],
-      sa2: sa[1],
-      sa3: sa[2],
-      tas: tasDemandData[i],
-      tasMid: 0.5,
-      tas1: tas[0],
-      tas2: tas[1],
-      tas3: tas[2],
-      vic: vicDemandData[i],
-      vicMid: 0.5,
-      vic1: vic[0],
-      vic2: vic[1],
-      vic3: vic[2]
-    }
+  if (duration1Index < duration2Index) {
+    return returnDuration ? duration1 : true
+  } else if (duration2Index < duration1Index) {
+    return returnDuration ? duration2 : false
   }
-  return demand
+
+  if (duration1Value < duration2Value) {
+    return returnDuration ? duration1 : true
+  } else if (duration2Value < duration1Value) {
+    return returnDuration ? duration2 : false
+  } else {
+    // both durations are the same, return the first one
+    return returnDuration ? duration1 : true
+  }
 }
