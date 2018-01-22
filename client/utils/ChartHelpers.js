@@ -87,7 +87,8 @@ export function stockGraphs(keys, chartType) {
       const colour = FUEL_TECH[ftKey].colour
       const negativeFillAlphas = (ftKey === 'exports' 
         || ftKey === 'imports' 
-        || ftKey === 'pumps') 
+        || ftKey === 'pumps'
+        || ftKey === 'battery_discharging') 
           ? 0 : 0.8
       const fillAlphas = 0.8
       const lineAlpha = 0

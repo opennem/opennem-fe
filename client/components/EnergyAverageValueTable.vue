@@ -12,14 +12,14 @@
         <th colspan="2"></th>
 
         <!-- range info -->
-        <th v-if="hidePoint" class="border-left" style="width: 120px">Energy <span class="unit">GWh</span></th>
-        <th v-if="hidePoint" style="width: 130px">Contribution <span class="unit">%</span></th>
-        <th v-if="showPrice && hidePoint" style="width: 150px">Av. Value <span class="unit">$/MWh</span></th>
+        <th v-if="hidePoint" class="border-left" style="width: 6rem;">Energy <span class="unit">GWh</span></th>
+        <th v-if="hidePoint" style="width: 6rem;">Contribution <span class="unit">%</span></th>
+        <th v-if="showPrice && hidePoint" style="width: 6rem;">Av. Value <span class="unit">$/MWh</span></th>
 
         <!-- point info -->
-        <th v-if="!hidePoint" class="border-left" style="width: 120px">Power <span class="unit">MW</span></th>
-        <th v-if="!hidePoint" style="width: 130px">Contribution <span class="unit">%</span></th>
-        <th v-if="showPrice && !hidePoint" style="width: 150px">Price <span class="unit">$</span></th>
+        <th v-if="!hidePoint" class="border-left" style="width: 6rem;">Power <span class="unit">MW</span></th>
+        <th v-if="!hidePoint" style="width: 6rem;">Contribution <span class="unit">%</span></th>
+        <th v-if="showPrice && !hidePoint" style="width: 6rem;">Price <span class="unit">$</span></th>
       </tr>
     </thead>
     <tbody>
@@ -235,7 +235,7 @@ export default {
   },
   methods: {
     formatDate(date) {
-      return moment(date).format("D MMM YYYY, h:mma");
+      return moment(date).format("D MMM YYYY, ha");
     },
     formatNumber: function(number, precision, unit) {
       let formatter = precision ? precision : "0,0";
@@ -291,7 +291,7 @@ export default {
 
 <style scoped>
 table {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   width: 100%;
   border-collapse: collapse;
   border-top: 1px solid #999;
