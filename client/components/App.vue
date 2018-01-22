@@ -289,7 +289,7 @@ a[title="Interactive JavaScript maps"] {
   cursor: pointer;
   color: #C74523;
   position: relative;
-  top: 15px;
+  top: 18px;
 
   &.week-selection {
     width: 130px;
@@ -300,7 +300,7 @@ a[title="Interactive JavaScript maps"] {
   &.region-selection {
     margin: 0;
     font-weight: 500;
-    font-size: 24px;
+    font-size: 0.9rem;
   }
 
   .selected {
@@ -315,24 +315,31 @@ a[title="Interactive JavaScript maps"] {
     }
   }
   .selection-options {
+    width: 160px;
     list-style-type: none;
     position: absolute;
+    left: -10px;
     background: rgba(255,255,255,0.9);
+    border-radius: 6px;
     margin: 0;
     padding: 0;
-    width: 250px;
     z-index: 99;
     box-shadow: rgba(0,0,0,0.2) 0px 10px 20px;
 
     li {
-      padding: 5px 10px;
+      padding: 0.3rem 0.7rem;
 
-      &:hover {
-        background: rgba(255,255,255,1);
+      &:first-child {
+        border-radius: 6px 6px 0 0;
       }
 
       &:last-child {
-        /* padding-bottom: 15px; */
+        border-radius: 0 0 6px 6px;
+      }
+
+      &:hover {
+        color: #fff;
+        background: rgba(199,69,35,0.9);
       }
     }
   }
@@ -356,6 +363,22 @@ a[title="Interactive JavaScript maps"] {
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0
+}
+
+@media only screen and (min-width: 960px) {
+  .selection {
+    top: 15px;
+  }
+  .selection.region-selection {
+    font-size: 1.3rem;
+  }
+  .selection .selection-options { 
+    left: -20px;
+    width: 250px;
+  }
+  .selection .selection-options li {
+    padding: 0.5rem 1.2rem;
+  }
 }
 
 /* loading icon */
