@@ -1,7 +1,7 @@
 <template>
   <div id="app" v-on:click="hideSelectors()">
     <header>
-      <h1 style=""><img src="/logo.png" alt=""></h1>
+      <h1 style=""><img src="/images/logo.png" alt=""></h1>
 
       <!-- <div class="selection week-selection">
         <div class="selected" v-on:click.stop="toggleWeekSelector(true)">
@@ -255,7 +255,9 @@ footer {
 
 a {
   color: #C74523;
-  text-decoration: none;
+  /* border-bottom: 1px solid rgba(199,69,35,0.9); */
+  /* text-decoration: none; */
+  text-decoration: underline solid rgba(199,69,35,0.9);
 }
 a[title="JavaScript charts"],
 a[title="Interactive JavaScript maps"] {
@@ -302,9 +304,15 @@ a[title="Interactive JavaScript maps"] {
   }
 
   .selected {
-    padding: 3px 0;
+    padding: 3px 0 0;
     font-size: 1.1em;
     margin-right: 5px;
+    /* text-decoration: underline solid rgba(199,69,35,0.9); */
+    border-bottom: 1px dashed rgba(199,69,35,0.7);
+
+    &:hover {
+      border-bottom-style: solid;
+    }
   }
   .selection-options {
     list-style-type: none;
