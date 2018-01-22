@@ -56,9 +56,9 @@ export function generateChartData (data) {
       createContainerObj(history, ftKey)
 
       // TODO: also check for forecast data
-      // if (ft && ft.forecast) {
-      //   createContainerObj(ft.forecast, ftKey)
-      // }
+      if (ft && ft.forecast) {
+        createContainerObj(ft.forecast, ftKey)
+      }
     }
   })
 
