@@ -383,6 +383,7 @@ function setOpacity(graph, opacity) {
 
     #export-container {
       padding: 1em;
+      box-shadow: 0 0 50px #ddd;
     }
   }
 }

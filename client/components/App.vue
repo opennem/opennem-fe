@@ -46,7 +46,8 @@
     <router-view class="router-view"></router-view>
 
     <footer>
-      sources: <a href="https://www.aemo.com.au/">Australian Energy Market Operator</a>
+      <p>sources <a href="https://www.aemo.com.au/">Australian Energy Market Operator</a></p>
+      
     </footer>
   </div>
 </template>

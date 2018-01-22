@@ -2,6 +2,12 @@ import * as moment from 'moment'
 import { FUEL_TECH } from './FuelTechConfig'
 
 // TODO: refactor to data parasing code
+// * map data using timestamp
+// * check for highest res 
+// * note series with lower res
+// * check lower res series and fill in values for each timestamp
+// * note specific keys (all loads and imports) for changing values for stacking
+// * should forecast data as seperate series for different chart styling?
 export function generateChartData (data) {
   const container = new Object()
 
@@ -63,16 +69,24 @@ export function generateChartData (data) {
   })
 
   const newChartData = []
-  let current = null
+
+  // TODO: fill in values when intervals are different - check with highest res interval first
+  let currentRoof = null
+  let currentPrice = null
   Object.keys(container).forEach(dateKey => {
     const obj = Object.assign({}, container[dateKey])
     obj.date = moment(dateKey).toDate()
 
-    // TODO: fill in values when intervals are different - check with highest res interval first
     if (obj['rooftop_solar'] !== null) {
-      current = obj['rooftop_solar']
+      currentRoof = obj['rooftop_solar']
     } else if (obj['rooftop_solar'] === null) {
-      obj['rooftop_solar'] = current
+      obj['rooftop_solar'] = currentRoof
+    }
+
+    if (obj['price'] !== null) {
+      currentRoof = obj['price']
+    } else if (obj['price'] === null) {
+      obj['price'] = currentRoof
     }
 
     newChartData.push(obj)
