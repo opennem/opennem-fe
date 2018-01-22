@@ -2,10 +2,9 @@ import * as _ from 'lodash'
 import * as moment from 'moment'
 import { FUEL_TECH } from './FuelTechConfig'
 
-/*** Default amCharts config **/
-export function chartConfig(config, forceGridCount) {
-
-  const autoGridCount = forceGridCount ? false : true
+/** Default amCharts config **/
+export function chartConfig (config, forceGridCount) {
+  const autoGridCount = !forceGridCount
   const gridCount = 16
 
   const defaultConfig = {
@@ -34,14 +33,14 @@ export function chartConfig(config, forceGridCount) {
       centerLabelOnFullPeriod: false,
       groupToPeriods: ['5mm', '15mm', '30mm', 'hh'],
       dateFormats: [
-        {period:'fff',format:'  JJ:NN'},
-        {period:'ss',format:'  JJ:NN'},
-        {period:'mm',format:'  JJ:NN'},
-        {period:'hh',format:'  JJ:NN'},
-        {period:'DD',format:'  EEE\n  D MMM'},
-        {period:'WW',format:'  EEE\n  D MMM'},
-        {period:'MM',format:'  EEE\n  D MMM'},
-        {period:'YYYY',format:'  YYYY'}
+        { period: 'fff', format: '  JJ:NN' },
+        { period: 'ss', format: '  JJ:NN' },
+        { period: 'mm', format: '  JJ:NN' },
+        { period: 'hh', format: '  JJ:NN' },
+        { period: 'DD', format: '  EEE\n  D MMM' },
+        { period: 'WW', format: '  EEE\n  D MMM' },
+        { period: 'MM', format: '  EEE\n  D MMM' },
+        { period: 'YYYY', format: '  YYYY' }
       ]
     },
     chartCursorSettings: {
@@ -52,18 +51,18 @@ export function chartConfig(config, forceGridCount) {
       showNextAvailable: true
     },
     panelsSettings: {
-      fontFamily: 'Merriweather',
+      fontFamily: 'Merriweather'
     },
     chartScrollbarSettings: {
-      enabled: false
+      enabled: true
     }
   }
 
   return _.assign(defaultConfig, config)
 }
 
-/*** amCharts Field Mappings **/
-export function fieldMappings(keys) {
+/** amCharts Field Mappings **/
+export function fieldMappings (keys) {
   const mappings = []
 
   keys.forEach(ftKey => {
@@ -76,24 +75,27 @@ export function fieldMappings(keys) {
   return mappings
 }
 
-/*** amCharts Stock graphs
+/** amCharts Stock graphs
     - for 'load' series (i.e. NETINTERCHANGE), hide Fill colour
  **/
-export function stockGraphs(keys, chartType) {
+export function stockGraphs (keys, chartType) {
   const graphs = []
+
+  function hideNegativeAlphas (ftKey) {
+    return ftKey === 'exports' ||
+      ftKey === 'imports' ||
+      ftKey === 'pumps' ||
+      ftKey === 'battery_charging'
+  }
 
   keys.forEach((ftKey, index) => {
     if (ftKey !== 'price') {
       const colour = FUEL_TECH[ftKey].colour
-      const negativeFillAlphas = (ftKey === 'exports' 
-        || ftKey === 'imports' 
-        || ftKey === 'pumps'
-        || ftKey === 'battery_charging') 
-          ? 0 : 0.8
+      const negativeFillAlphas = hideNegativeAlphas(ftKey) ? 0 : 0.8
       const fillAlphas = 0.8
       const lineAlpha = 0
       const type = chartType || 'line'
-  
+
       const graph = {
         id: ftKey,
         valueField: ftKey,
@@ -105,30 +107,30 @@ export function stockGraphs(keys, chartType) {
         lineColor: colour,
         useDataSetColors: false
       }
-  
-      if (ftKey === 'rooftop_forecast') {
-        graph.patternField = 'pattern'
-        graph.pattern = {
-          url: '/pattern.png',
-          width: 10,
-          height: 10
-        }
-      }
-  
+
+      // TODO: use a different style if data is forecast, not history
+      // if (ftKey === 'rooftop_forecast') {
+      //   graph.patternField = 'pattern'
+      //   graph.pattern = {
+      //     url: '/pattern.png',
+      //     width: 10,
+      //     height: 10
+      //   }
+      // }
+
       graphs.push(graph)
     }
-    
   })
 
   return graphs
 }
 
-/*** amCharts Guides
+/** amCharts Guides
     - shade between 10pm to 7am
  **/
-export function guides(start, end) {
-  let startDate = moment(start)
-  let endDate = moment(end)
+export function guides (start, end) {
+  const startDate = moment(start)
+  const endDate = moment(end)
   endDate.add(1, 'days')
   const guides = []
 
@@ -141,8 +143,8 @@ export function guides(start, end) {
       fillAlpha: 0.07,
       lineAlpha: 0,
       tickLength: 0,
-      date: dayBefore.set({'hour': 22, 'minute': 0, 'second': 0}).toDate(),
-      toDate: startDate.set({'hour': 7, 'minute': 0, 'second': 0}).toDate()
+      date: dayBefore.set({ 'hour': 22, 'minute': 0, 'second': 0 }).toDate(),
+      toDate: startDate.set({ 'hour': 7, 'minute': 0, 'second': 0 }).toDate()
     })
 
     startDate.add(1, 'days')
