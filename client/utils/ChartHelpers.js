@@ -54,7 +54,7 @@ export function chartConfig (config, forceGridCount) {
       fontFamily: 'Merriweather'
     },
     chartScrollbarSettings: {
-      enabled: true
+      enabled: false
     }
   }
 

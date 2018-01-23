@@ -8,7 +8,7 @@
 import { mapGetters } from 'vuex'
 import axios from 'axios'
 import { getJSON } from '../utils/Firebase'
-import { generateChartData, sumRegionsFuelTech } from '../utils/DataHelpers'
+import { generateChartData } from '../utils/DataHelpers'
 import AllRegionsChart from '../components/AllRegionsChart'
 
 export default {
@@ -41,34 +41,12 @@ export default {
   },
   methods: {
     fetch(data) {
-      const week = this.weekStarting
-      const interval = '5m'
+      const fetchData =  getJSON(`data/nem.json`)
 
-      // const fetchNsw = getJSON(`${week}/gen_${interval}_nsw1.json`)
-      // const fetchQld = getJSON(`${week}/gen_${interval}_qld1.json`)
-      // const fetchSa = getJSON(`${week}/gen_${interval}_sa1.json`)
-      // const fetchTas = getJSON(`${week}/gen_${interval}_tas1.json`)
-      // const fetchVic = getJSON(`${week}/gen_${interval}_vic1.json`)
-
-      const fetchNsw = getJSON(`data/nsw1.json`)
-      const fetchQld = getJSON(`data/qld1.json`)
-      const fetchSa = getJSON(`data/sa1.json`)
-      const fetchTas = getJSON(`data/tas1.json`)
-      const fetchVic = getJSON(`data/vic1.json`)
-
-
-      axios.all([fetchNsw, fetchQld, fetchSa, fetchTas, fetchVic])
-        .then(axios.spread((nsw, qld, sa, tas, vic) => {
-          const data = sumRegionsFuelTech({
-            'nsw': nsw.data,
-            'qld': qld.data,
-            'sa': sa.data,
-            'tas': tas.data,
-            'vic': vic.data
-          })
-          this.chartData = generateChartData(data)
-        })
-      )
+      // TODO: handle error
+      fetchData.then((response) => {
+        this.chartData = generateChartData(response.data)
+      })
     },
   }
 }

@@ -206,6 +206,8 @@ export function generateSummaryData (data, start, end) {
         // if (ft === 'pumps' || ft === 'NETINTERCHANGE') {
         //   loadsData.push(row)
         // }
+
+        // TODO: use FUEL_TECH_CONFIG to check whether it is a load or type
         if (ft !== 'pumps' && ft !== 'exports' && ft !== 'battery_charging') {
           sourcesData.push(row)
         } else {
@@ -215,7 +217,7 @@ export function generateSummaryData (data, start, end) {
     })
 
     return {
-      sourcesData: sourcesData.reverse(),
+      sourcesData: sourcesData.reverse(), // to display from top to bottom in the table.
       loadsData,
       totalPower,
       totalAveragePrice
@@ -230,6 +232,7 @@ export function generateSummaryData (data, start, end) {
   }
 }
 
+// TODO: deprecate this function
 export function generatePriceData (chartSeries, payload) {
   const priceData = [].concat(chartSeries)
   const rrp = payload['RRP']
@@ -261,12 +264,14 @@ export function generatePriceData (chartSeries, payload) {
   return priceData
 }
 
+// TODO: deprecate this function
 export function sumRegionsFuelTech (regions) {
   let data = []
   Object.keys(regions).forEach((regionKey, regionIndex) => {
     const regionFtData = regions[regionKey]
 
     if (!data.length) {
+      // this is the first obj
       data = regionFtData.slice()
       data.forEach(d => {
         delete d.id
@@ -276,6 +281,7 @@ export function sumRegionsFuelTech (regions) {
       regionFtData.forEach(region => {
         const findFT = data.find(d => d.fuel_tech === region.fuel_tech)
         if (findFT) {
+          // if found, add to the existing fuel tech
           const objData = findFT.history.data
           const srcData = region.history.data
 
@@ -283,6 +289,7 @@ export function sumRegionsFuelTech (regions) {
             objData[index] = value + srcData[index]
           })
         } else {
+          // else add as a new one
           delete region.id
           delete region.region
           data.push(region)
@@ -291,6 +298,7 @@ export function sumRegionsFuelTech (regions) {
     }
   })
 
+  // return everything except pricing
   return data.filter(d => {
     return d.type !== 'price'
   })
@@ -322,7 +330,7 @@ function parseInterval (string) {
       value
     }
   } else {
-    throw `Invalid duration key: ${key}`
+    throw new Error(`Invalid duration key: ${key}`)
   }
 }
 
