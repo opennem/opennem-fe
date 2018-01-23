@@ -460,7 +460,7 @@ button {
 
 @media only screen and (min-width: 960px) {
   #ft-vis {
-    height: 609px;
+    height: 557px;
   }
   .vis {
     display: flex;
