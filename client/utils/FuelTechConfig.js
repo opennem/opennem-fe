@@ -1,5 +1,9 @@
 export const REGIONS = [
   {
+    id: 'all',
+    label: 'All Regions'
+  },
+  {
     id: 'nsw',
     label: 'New South Wales'
   },

@@ -1,11 +1,69 @@
 <template>
-  <div class="chart-wrapper">
-    <div class="vis">
+  <div class="wrapper" v-bind:class="{ 'export-overlay': showExport }">
+    <div class="vis" v-bind:class="{ export: showExport }">
       <div class="chart">
-        <div style="padding: 5px; font-size: 0.9em;"><small>Generation (MW)</small></div>
-        <div id="ft-vis"></div>
+        <div class="chart-export-buttons">
+          <button class="button clear share-button" v-show="!showExport" v-on:click="toggleExportOptions()">
+            <img src="/icons/share-icon.png" alt="" style="height: 15px;">
+            Share
+          </button>
+
+          <button class="button clear" v-show="showExport" v-on:click="downloadPNG()">
+            <img src="/icons/download-icon.png" alt="" style="height: 15px;">
+            PNG
+          </button>
+
+          <button class="button clear close-button" v-show="showExport" v-on:click="toggleExportOptions()">
+            <img src="/icons/close-icon.png" alt="" style="height: 15px;">
+          </button>
+        </div>
+
+        <div id="export-container">
+          <div class="export-annotations export-annotations-top" v-show="showExport">
+            <div class="annotation-buttons annotation-buttons-left">
+              <button class="button" style="top: 0;" v-show="!showExportTitle"  v-on:click="showExportTitle = true">
+                Add Title
+              </button>
+              <button class="button" style="top: 30px;" v-show="!showExportDescription" v-on:click="showExportDescription = true">
+                Add Description
+              </button> 
+            </div>
+            <section class="editable-section" v-if="showExportTitle">
+              <h1 contenteditable="true" v-on:keyup="onExportTitleKeyUp">{{getRegionLabel()}}</h1>
+            </section>              
+            <section class="editable-section" v-if="showExportDescription">
+              <p contenteditable="true" v-on:keyup="onExportDescriptionKeyUp">Description</p>
+            </section>
+          </div>
+
+          <div class="export-legend" v-show="showExport">
+            <div class="legend-graph" v-for="item in sourcesData" :key="item.id">
+              <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id, item.colour)}"></div>
+              {{getLabel(item.id)}}
+            </div>
+          </div>
+
+          <div class="axis-title"><small>Generation (MW)</small></div>
+          <div id="ft-vis"></div>
+
+          <div class="export-annotations export-annotations-bottom" v-show="showExport">
+            <span>
+              sources <strong>AEMO, OpenNEM</strong>
+            </span>
+
+            <div class="annotation-buttons annotation-buttons-right">
+              <button class="button" v-show="!showExportAttribution"  v-on:click="showExportAttribution = true">
+                Add Attribution
+              </button>
+            </div>
+            <section class="editable-section" v-if="showExportAttribution" style="float: right; margin-top: -15px;">
+              shared by <strong contenteditable="true" v-on:keyup="onExportAttributionKeyUp">@name</strong>
+            </section> 
+          </div>
+        </div>
       </div>
-      <div class="datagrid">
+
+      <div class="datagrid" v-show="!showExport">
         <FtSummary
           :tableData="sourcesData"
           :loadsData="loadsData"
@@ -25,12 +83,211 @@
 #ft-vis {
   height: 400px;
 }
-.vis {
-  display: block;
+
+.axis-title {
+  padding: 5px; 
+  font-size: 0.9em;
 }
-.chart {
-  width: 100%;
+
+.wrapper {
+  position: relative;
+
+  .chart {
+    width: 100%;
+  }
+
+  .chart-export-buttons {
+    position: relative;
+
+    .share-button {
+      position: absolute; 
+      right: 3px; 
+      top: -5px; 
+      border: 0;
+    }
+
+    .close-button {
+      position: absolute; 
+      right: 0; 
+      border: 0; 
+      padding: 10px;
+    }
+  }
+
+  &.export-overlay {
+    padding: 0;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    background-color: rgba(255,255,255,0.9);
+    overflow: auto;
+    transition: all 0.2s linear;
+
+    .export .chart {
+      max-width: 550px;
+      margin: 0 auto;
+    }
+
+    #ft-vis {
+      height: 400px;
+    }
+
+    .axis-title {
+      position: absolute;
+      font-size: 0.75em;
+      color: #666;
+    }
+
+    .chart-export-buttons {
+      text-align: center;
+      max-width: 640px;
+      margin: 10px auto;
+    }
+
+    #export-container {
+      padding: 1em;
+      box-shadow: 0 0 50px #ddd;
+      background: #ece9e6;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+  }
 }
+
+.export-annotations {
+  position: relative;
+  font-size: 0.8em;
+
+  h1,
+  strong {
+    color: #CB573A;
+    margin: 0 0 10px;
+  }
+
+  p {
+    font-weight: 600;
+    margin-top: 0;
+    padding: 3px;
+  }
+
+  .annotation-buttons {
+    position: absolute; 
+
+    &.annotation-buttons-left {
+      left: -9.5em; 
+      top: 0; 
+      width: 110px; 
+      height: 100px;
+
+      .button {
+        position: absolute; 
+        right: 0; 
+      }
+    }
+
+    &.annotation-buttons-right {
+      right: -8.5em; 
+      top: -4px;
+    }
+
+    &.hide {
+      display: none;
+    }
+  }
+
+  .editable-section {
+    position: relative;
+
+    [contenteditable] {
+      padding: 0 3px;
+      transition: all 0.2s ease-in;
+
+      &:hover {
+        background-color: #fff;
+      }
+      
+      &:focus {
+        outline: none;
+      }
+    }
+
+    button {
+      position: absolute;
+      top: -2px;
+      left: -3em;
+      border: 0;
+      padding: 0.2em 0.3em;
+
+      &.right {
+        left: auto;
+        right: -3em;
+      }
+    }
+  }
+
+  &.export-annotations-bottom {
+    font-size: 0.8em;
+    margin-top: 20px;
+
+    span {
+      display: block;
+    }
+  }
+}
+
+.export-legend {
+  border-top: 1px solid #bbb;
+  font-size: 0.7em;
+  color: #333;
+  margin-bottom: 10px;
+  padding-top: 10px;
+
+  .legend-graph {
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 5px;
+  }
+
+  .colour-sq {
+    width: 10px;
+    height: 10px;
+    background-color: #999;
+    display: inline-block;
+    margin-right: 5px;
+  }
+
+}
+
+.button {
+  padding: 6px 6px 5px;
+  border-radius: 5px;
+  border: 1px dashed #bbb;
+  transition: all 0.2s ease-in-out;
+  color: #CB573A;
+  font-size: 0.85em;
+
+  img {
+    position: relative;
+    top: 1px;
+  }
+
+  &:hover {
+    border-style: solid;
+    border-color: #999;
+  }
+
+  &.clear {
+    background: none;
+
+    &:hover {
+      background-color: #fff;
+    }
+  }
+}
+
 .datagrid {
   margin: 0;
 }
@@ -47,10 +304,19 @@
     margin-top: 28px;
     min-width: 550px
   }
+  .export-overlay {
+    padding: 50px;
+  }
+  .export #ft-vis {
+    height: 400px;
+  }      
 }
 </style>
 
 <script>
+import domtoimage from 'dom-to-image';
+import FileSaver from 'file-saver';
+
 import {
   chartConfig,
   fieldMappings,
@@ -62,7 +328,7 @@ import {
   generateSummaryData
 } from '../utils/DataHelpers'
 import FtSummary from './EnergyAverageValueTable'
-import { FUEL_TECH } from '../utils/FuelTechConfig'
+import { FUEL_TECH, REGIONS } from '../utils/FuelTechConfig'
 import EventBus from '../utils/EventBus'
 
 export default {
@@ -84,10 +350,15 @@ export default {
       start: null,
       end: null,
       hidePoint: true,
-      region: this.$route.params.region
+      region: this.$route.params.region,
+      showExport: false,
+      showExportTitle: true,
+      showExportDescription: true,
+      showExportAttribution: true,
     }
   },
   mounted() {
+    console.log(this.region)
     EventBus.$on('row-hover', (name) => {
       this.showHoverSeries(name)
     });
@@ -96,6 +367,24 @@ export default {
     });
   },
   methods: {
+    getRegionLabel() {
+      const id = this.$route.params.region
+      const region = id === undefined ? REGIONS[0] : REGIONS.find(r => r.id === id)
+      return region.label
+    },
+    getLabel(id) {
+      const label = FUEL_TECH[id] ? FUEL_TECH[id].label : id;
+      return label;
+    },
+    getColour(id, itemColour) {
+      let colour = "#fff";
+      if (itemColour !== undefined) {
+        colour = itemColour;
+      } else if (FUEL_TECH[id] !== undefined) {
+        colour = FUEL_TECH[id].colour;
+      }
+      return colour;
+    },
     showHoverSeries(name) {
       this.chart.panels[0].graphs.forEach((graph) => {
         if (graph.id === name) {
@@ -141,21 +430,47 @@ export default {
         this.hidePoint = true
       }
     },
-    updateChartProvider () {
-      // if (this.chart) {
-      //   this.chart.dataSets[0].dataProvider = generatePriceData(
-      //     this.chartData,
-      //     newData
-      //   )
-      //   this.chart.validateData()
-      //
-      //   this.summaryData = generateSummaryData(
-      //     this.chartData,
-      //     this.chartData[0].date,
-      //     this.chartData[this.chartData.length - 1].date
-      //   )
-      // }
-    }
+    toggleExportOptions() {
+      const toggle = !this.showExport;
+      this.showExport = toggle;
+      this.chart.chartCursorSettings.enabled = !toggle;
+      this.chart.validateNow();
+    },
+    downloadPNG() {
+      const self = this;
+      const region = this.$route.params.region;
+
+      [].map.call(document.querySelectorAll('.annotation-buttons'), function(el) {
+        el.classList.add('hide');
+      })
+
+      domtoimage.toBlob(document.getElementById('export-container'))
+        .then(function(blob) {
+          FileSaver.saveAs(blob, `${region}.png`);
+          self.showExport = false;
+          [].map.call(document.querySelectorAll('.annotation-buttons'), function(el) {
+            el.classList.remove('hide');
+          })
+        })
+    },
+    onExportTitleKeyUp(e) {
+      console.log(e.target.innerText);
+      if (e.target.innerText.trim() === "") {
+        this.showExportTitle = false
+      }
+    },
+    onExportDescriptionKeyUp(e) {
+      console.log(e.target.innerText);
+      if (e.target.innerText.trim() === "") {
+        this.showExportDescription = false
+      }
+    },
+    onExportAttributionKeyUp(e) {
+      console.log(e.target.innerText);
+      if (e.target.innerText.trim() === "") {
+        this.showExportAttribution = false
+      }
+    },
   },
 
   watch: {

@@ -46,40 +46,15 @@
     <router-view class="router-view"></router-view>
 
     <footer>
-      <p>sources <a href="https://www.aemo.com.au/">Australian Energy Market Operator</a></p>
-      
+      <p style="">Source: <a href="https://www.aemo.com.au/">AEMO</a></p>
+      <p class="smallprint">OpenNEM is a project of the <a href="http://energy-transition-hub.org/">Energy Transition Hub</a></p>
     </footer>
   </div>
 </template>
 
 <script>
-import { FUEL_TECH } from "../utils/FuelTechConfig";
-const regions = [
-  {
-    id: 'all',
-    label: 'All Regions'
-  },
-  {
-    id: 'nsw',
-    label: 'New South Wales'
-  },
-  {
-    id: 'qld',
-    label: 'Queensland'
-  },
-  {
-    id: 'sa',
-    label: 'South Australia'
-  },
-  {
-    id: 'tas',
-    label: 'Tasmania'
-  },
-  {
-    id: 'vic',
-    label: 'Victoria'
-  }
-]
+import { FUEL_TECH, REGIONS } from "../utils/FuelTechConfig";
+
 const weeks = [
   {
     id: '2017-11-04',
@@ -110,9 +85,9 @@ const weeks = [
 export default {
   data() {
     return {
-      regions,
+      regions: REGIONS,
       weeks,
-      selectedRegion: regions[0].id,
+      selectedRegion: REGIONS[0].id,
       selectedWeek: weeks[4].id,
       selectedFT: null,
       showRegionSelector: false,
@@ -122,7 +97,7 @@ export default {
   },
   mounted() {
     this.checkRoute(this.$route)
-    this.selectedRegion = this.$route.name === 'home' ? regions[0].id : this.$route.params.region
+    this.selectedRegion = this.$route.name === 'home' ? this.regions[0].id : this.$route.params.region
     this.selectedFT = this.$route.name === 'generators' ? this.$route.params.ft : null
     this.$store.commit('updateRegionId', this.selectedRegion)
     this.onWeekRangeChange(weeks[4].id)
@@ -152,7 +127,7 @@ export default {
       this.$store.commit('updateWeekStarting', week)
     },
     getRegionLabel(id) {
-      const region = id === undefined ? regions[0] : this.regions.find(r => r.id === id)
+      const region = id === undefined ? this.regions[0] : this.regions.find(r => r.id === id)
       return region.label
     },
     getFTLabel(id) {
@@ -235,23 +210,15 @@ header {
   }
 }
 
-@media only screen and (min-width: 1200px) {
-  header {
-
-    h1 {
-    }
-
-    img {
-      height: 45px;
-    }
-  }
-}
-
 footer {
   font-size: 0.8em;
   color: #999;
   margin: 40px 0 20px;
   padding-top: 13px;
+
+  .smallprint {
+    
+  }
 }
 
 a {
@@ -367,6 +334,11 @@ a[title="Interactive JavaScript maps"] {
 }
 
 @media only screen and (min-width: 960px) {
+  header {
+    img {
+      height: 45px;
+    }
+  }
   .selection {
     top: 15px;
   }
@@ -380,7 +352,12 @@ a[title="Interactive JavaScript maps"] {
   .selection .selection-options li {
     padding: 0.5rem 1.2rem;
   }
+  .smallprint {
+    float: right; 
+    margin-top: -29px;
+  }
 }
+
 
 /* loading icon */
 .loader {
