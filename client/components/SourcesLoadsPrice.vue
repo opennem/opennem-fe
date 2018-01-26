@@ -29,10 +29,10 @@
               </button> 
             </div>
             <section class="editable-section" v-if="showExportTitle">
-              <h1 contenteditable="true" v-on:keyup="onExportTitleKeyUp">{{getRegionLabel()}}</h1>
+              <h1 contenteditable="true" v-on:blur="onExportTitleBlur">{{getRegionLabel()}}</h1>
             </section>              
             <section class="editable-section" v-if="showExportDescription">
-              <p contenteditable="true" v-on:keyup="onExportDescriptionKeyUp">Description</p>
+              <p contenteditable="true" v-on:blur="onExportDescriptionBlur">Description</p>
             </section>
           </div>
 
@@ -56,8 +56,8 @@
                 Add Attribution
               </button>
             </div>
-            <section class="editable-section" v-if="showExportAttribution" style="float: right; margin-top: -15px;">
-              shared by <strong contenteditable="true" v-on:keyup="onExportAttributionKeyUp">@name</strong>
+            <section class="editable-section" v-if="showExportAttribution" style="float: right; text-align: right; margin-top: -15px; width: 200px">
+              shared by <strong contenteditable="true" v-on:blur="onExportAttributionBlur">@name</strong>
             </section> 
           </div>
         </div>
@@ -453,19 +453,19 @@ export default {
           })
         })
     },
-    onExportTitleKeyUp(e) {
+    onExportTitleBlur(e) {
       console.log(e.target.innerText);
       if (e.target.innerText.trim() === "") {
         this.showExportTitle = false
       }
     },
-    onExportDescriptionKeyUp(e) {
+    onExportDescriptionBlur(e) {
       console.log(e.target.innerText);
       if (e.target.innerText.trim() === "") {
         this.showExportDescription = false
       }
     },
-    onExportAttributionKeyUp(e) {
+    onExportAttributionBlur(e) {
       console.log(e.target.innerText);
       if (e.target.innerText.trim() === "") {
         this.showExportAttribution = false
