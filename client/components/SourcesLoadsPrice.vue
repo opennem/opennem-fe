@@ -315,6 +315,7 @@
 </style>
 
 <script>
+import * as moment from 'moment';
 import domtoimage from 'dom-to-image';
 import FileSaver from 'file-saver';
 
@@ -439,7 +440,8 @@ export default {
     },
     downloadPNG() {
       const self = this;
-      const region = this.$route.params.region;
+      const region = this.getRegionLabel(this.$route.params.region);
+      const endDate = moment(this.end).format('YYYYMMDD');
 
       [].map.call(document.querySelectorAll('.annotation-buttons'), function(el) {
         el.classList.add('hide');
@@ -447,7 +449,7 @@ export default {
 
       domtoimage.toBlob(document.getElementById('export-container'))
         .then(function(blob) {
-          FileSaver.saveAs(blob, `${region}.png`);
+          FileSaver.saveAs(blob, `${endDate} OpenNEM ${region}.png`);
           self.showExport = false;
           [].map.call(document.querySelectorAll('.annotation-buttons'), function(el) {
             el.classList.remove('hide');

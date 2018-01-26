@@ -200,6 +200,8 @@ export default {
     },
     downloadPNG() {
       const self = this;
+      const endDate = moment(this.end).format('YYYYMMDD');
+
 
       [].map.call(document.querySelectorAll('.annotation-buttons'), function(el) {
         el.classList.add('hide');
@@ -207,7 +209,7 @@ export default {
 
       domtoimage.toBlob(document.getElementById('export-container'))
         .then(function(blob) {
-          FileSaver.saveAs(blob, 'all-regions.png');
+          FileSaver.saveAs(blob, `${endDate} OpenNEM.png`);
           self.showExport = false;
           [].map.call(document.querySelectorAll('.annotation-buttons'), function(el) {
             el.classList.remove('hide');
