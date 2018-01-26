@@ -36,15 +36,15 @@
             </section>
           </div>
 
+          <div class="axis-title"><small>Generation (MW)</small></div>
+          <div id="ft-vis"></div>
+
           <div class="export-legend" v-show="showExport">
             <div class="legend-graph" v-for="item in sourcesData" :key="item.id">
               <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id, item.colour)}"></div>
               {{getLabel(item.id)}}
             </div>
           </div>
-
-          <div class="axis-title"><small>Generation (MW)</small></div>
-          <div id="ft-vis"></div>
 
           <div class="export-annotations export-annotations-bottom" v-show="showExport">
             <span>
@@ -239,11 +239,12 @@
 }
 
 .export-legend {
-  border-top: 1px solid #bbb;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
   font-size: 0.7em;
   color: #333;
-  margin-bottom: 10px;
-  padding-top: 10px;
+  padding-top: 5px;
+  padding-bottom: 0;
 
   .legend-graph {
     display: inline-block;
