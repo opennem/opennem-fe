@@ -65,11 +65,6 @@ export const FUEL_TECH = {
     label: 'Battery (Charging)',
     categoryId: 'other'
   },
-  'NETINTERCHANGE': {
-    colour: '#44146F',
-    type: 'loads',
-    label: 'Import/Export'
-  },
   'exports': {
     colour: '#44146F',
     type: 'loads',
@@ -166,7 +161,7 @@ export const FUEL_TECH = {
   },
   'price': {
     colour: '#000',
-    type: 'sources',
+    type: 'other',
     label: 'Price',
     categoryId: 'price'
   },

@@ -32,9 +32,9 @@
         <td></td>
 
         <td v-if="showPrice && hidePoint">${{formatNumber(totalAveragePrice, '0,0.00')}}</td>
-        <td v-if="showPrice && !hidePoint">${{formatNumber(pointData.rrp, '0,0.00')}}</td>
+        <td v-if="showPrice && !hidePoint">${{formatNumber(pointData.price, '0,0.00')}}</td>
       </tr>
-      <tr v-for="item in tableData" :key="item.id" class="active">
+      <tr v-for="item in sourcesData" :key="item.id" class="active">
         <td style="width: 20px;">
           <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id, item.colour)}"></div>
         </td>
@@ -178,6 +178,7 @@ import { FUEL_TECH } from "../utils/FuelTechConfig";
 export default {
   props: {
     tableData: Array,
+    sourcesData: Array,
     loadsData: Array,
     totalAveragePrice: Number,
     dateFrom: Date,
@@ -208,34 +209,39 @@ export default {
       let rangeTotal = 0;
       let netEnergyTotal = 0;
       let grossEnergyTotal = 0;
+
       newData.forEach(ft => {
         rangeTotal += ft.range.totalPower;
         netEnergyTotal += ft.range.energy;
-        grossEnergyTotal += (ft.range.energy > 0 ? ft.range.energy : 0)
+        grossEnergyTotal += (FUEL_TECH[ft.id].type === 'sources' ? ft.range.energy : 0)
       });
+
       this.rangeTotal = rangeTotal;
       this.netEnergyTotal = netEnergyTotal;
       this.grossEnergyTotal = grossEnergyTotal;
     },
-    loadsData: function(newData) {
-      // console.log(newData)
-    },
     pointData: function(newData) {
       let pointTotal = 0;
       let grossPointTotal = 0;
+
       Object.keys(FUEL_TECH).forEach(ft => {
-        if (newData[ft]) {
+        // only sum if type is a source or load
+        if (FUEL_TECH[ft].type !== 'other' && newData[ft]) {
+          // net total
           pointTotal += newData[ft];
-          grossPointTotal += (newData[ft] > 0 ? newData[ft] : 0)
+
+          // gross total
+          grossPointTotal += (FUEL_TECH[ft].type === 'sources' ? newData[ft] : 0);
         }
       });
+
       this.pointTotal = pointTotal;
       this.grossPointTotal = grossPointTotal;
     }
   },
   methods: {
     formatDate(date) {
-      return moment(date).format("D MMM YYYY, ha");
+      return moment(date).format("D MMM YYYY, h:mma");
     },
     formatNumber: function(number, precision, unit) {
       let formatter = precision ? precision : "0,0";

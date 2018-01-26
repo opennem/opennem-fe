@@ -13,10 +13,11 @@ export function generateChartData (data) {
   const ftPriceIntervals = {}
   let shortestInterval = null
 
+  // Find out what FT key (and price) is available in this dataset
   const keys = []
   Object.keys(FUEL_TECH).forEach(ftKey => {
-    const find = data.find(ft => ft.fuel_tech === ftKey)
-    const hasPrice = data.find(ft => ft.type === ftKey)
+    const find = data.find(d => d.fuel_tech === ftKey)
+    const hasPrice = data.find(d => d.type === ftKey)
     if (find || hasPrice) {
       keys.push(ftKey)
     }
@@ -44,14 +45,14 @@ export function generateChartData (data) {
 
     const start = moment(startDate, moment.ISO_8601)
 
-    for (let i=0; i<seriesData.length; i++) {
+    for (let i = 0; i < seriesData.length; i++) {
       const now = moment(start).add(duration.value * i, duration.key)
       const d = (ftKey === 'exports' || ftKey === 'imports' || ftKey === 'pumps' || ftKey === 'battery_charging') ? -seriesData[i] : seriesData[i]
-
       const nowISO = moment(now).toISOString()
 
       if (!container[nowISO]) {
         container[nowISO] = {}
+
         keys.forEach(key => {
           container[nowISO][key] = null
         })
@@ -61,19 +62,18 @@ export function generateChartData (data) {
   }
 
   Object.keys(FUEL_TECH).forEach(ftKey => {
-    const ft = data.find(ft => {
-      return ft.fuel_tech === ftKey
+    const currentData = data.find(d => {
+      return d.fuel_tech === ftKey
     })
+    const price = data.find(d => d.type === ftKey)
+    const history = currentData ? currentData['history'] : (price ? price['history'] : null)
 
-    const price = data.find(ft => ft.type === ftKey)
-    const history = ft ? ft['history'] : (price ? price['history'] : null)
-
-    if (ft || price) {
+    if (currentData || price) {
       createContainerObj(history, ftKey)
 
       // TODO: also check for forecast data
-      if (ft && ft.forecast) {
-        createContainerObj(ft.forecast, ftKey)
+      if (currentData && currentData.forecast) {
+        createContainerObj(currentData.forecast, ftKey)
       }
     }
   })
@@ -95,6 +95,7 @@ export function generateChartData (data) {
     const obj = Object.assign({}, container[dateKey])
     obj.date = moment(dateKey).toDate()
 
+    // if there are longer interval series
     longerIntervalSeries.forEach(series => {
       if (obj[series.key] !== null) {
         series.currentValue = obj[series.key]
@@ -105,11 +106,12 @@ export function generateChartData (data) {
 
     newChartData.push(obj)
   })
+
   newChartData.sort((a, b) => {
     return moment(a.date).valueOf() - moment(b.date).valueOf()
   })
 
-  return newChartData.slice()
+  return newChartData.slice(0)
 }
 
 /**
@@ -130,17 +132,20 @@ export function generateSummaryData (data, start, end) {
 
   // Check if it is a valid fuel tech name
   function isValidFT (name) {
-    return name !== 'date' &&
-      name !== 'DEMAND_AND_NONSCHEDGEN' &&
-      name !== 'price'
+    return name !== 'date' && name !== 'price'
   }
 
-  // Get only data between the start and end dates
-  const filteredData = data.filter(item => {
-    return moment(item.date).isBetween(start, end)
-  })
+  /** Get only data between the start and end dates **/
+  // const filteredData = data.filter(item => {
+  //   const d = moment(item.date)
+  //   return d.isSameOrAfter(start) && d.isSameOrBefore(end)
+  // })
+
+  /** No zooming function, so just clone the data  */
+  const filteredData = data.slice(0)
 
   if (filteredData[0]) {
+    const allData = []
     const sourcesData = []
     const loadsData = []
     let totalPower = 0
@@ -150,14 +155,14 @@ export function generateSummaryData (data, start, end) {
       let p = 0
       Object.keys(d).forEach(ft => {
         if (isValidFT(ft)) {
-          p += d[ft]
+          p += d[ft] || 0
         }
       })
       return p
     })
 
     // sum up all the ft totals
-    const dataSumTotal = dataSum.reduce((a, b) => { return a + b}, 0)
+    const dataSumTotal = dataSum.reduce((a, b) => { return a + b }, 0)
 
     // calculate the price * total
     const dataSumTotalPrice = dataSum.map((d, i) => {
@@ -201,22 +206,19 @@ export function generateSummaryData (data, start, end) {
           }
         }
 
-        // Split into loads and sources
-        // - add Netinterchange into source because it contains both load and source data
-        // if (ft === 'pumps' || ft === 'NETINTERCHANGE') {
-        //   loadsData.push(row)
-        // }
-
         // TODO: use FUEL_TECH_CONFIG to check whether it is a load or type
         if (ft !== 'pumps' && ft !== 'exports' && ft !== 'battery_charging') {
           sourcesData.push(row)
         } else {
           loadsData.push(row)
         }
+        allData.push(row)
+        
       }
     })
 
     return {
+      allData,
       sourcesData: sourcesData.reverse(), // to display from top to bottom in the table.
       loadsData,
       totalPower,

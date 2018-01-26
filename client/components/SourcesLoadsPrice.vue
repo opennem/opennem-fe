@@ -65,7 +65,8 @@
 
       <div class="datagrid" v-show="!showExport">
         <FtSummary
-          :tableData="sourcesData"
+          :tableData="tableData"
+          :sourcesData="sourcesData"
           :loadsData="loadsData"
           :totalAveragePrice="totalAveragePrice"
           :pointData="pointData"
@@ -345,6 +346,7 @@ export default {
       chart: null,
       chartData: [],
       summaryData: null,
+      tableData: [],
       sourcesData: [],
       loadsData: [],
       totalAveragePrice: 0,
@@ -404,11 +406,14 @@ export default {
     onZoom (event) {
       this.start = event.startDate
       this.end = event.endDate
+
       this.summaryData = generateSummaryData(
         this.chartData,
         event.startDate,
         event.endDate
       )
+
+      this.tableData= this.summaryData.allData
       this.loadsData = this.summaryData.loadsData
       this.sourcesData = this.summaryData.sourcesData
       this.totalAveragePrice = this.summaryData.totalAveragePrice
@@ -418,8 +423,7 @@ export default {
         const data = event.target.categoryLineAxis.data[event.index]
         const dataContext = data.dataContext
         const pointData = {
-          date: data.category,
-          rrp: dataContext['priceAverage']
+          date: data.category
         }
 
         Object.keys(FUEL_TECH).forEach(ft => {
