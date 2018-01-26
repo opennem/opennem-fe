@@ -68,7 +68,8 @@
       <div class="datagrid" v-show="!showExport">
         <FtSummary
           class="ft-summary"
-          :tableData="sourcesData"
+          :tableData="tableData"
+          :sourcesData="sourcesData"
           :loadsData="loadsData"
           :pointData="pointData"
           :dateFrom="start"
@@ -125,6 +126,7 @@ export default {
       chart: null,
       chartData: [],
       summaryData: {},
+      tableData: [],
       sourcesData: [],
       loadsData: [],
       pointData: {},
@@ -170,6 +172,7 @@ export default {
       this.end = event.endDate;
 
       this.summaryData = generateSummaryData(this.chartData, this.start, this.end)
+      this.tableData= this.summaryData.allData
       this.sourcesData = this.summaryData.sourcesData
       this.loadsData = this.summaryData.loadsData
     },
