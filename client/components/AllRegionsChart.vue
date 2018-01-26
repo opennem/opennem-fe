@@ -215,19 +215,16 @@ export default {
         })
     },
     onExportTitleBlur(e) {
-      console.log(e.target.innerText);
       if (e.target.innerText.trim() === "") {
         this.showExportTitle = false
       }
     },
     onExportDescriptionBlur(e) {
-      console.log(e.target.innerText);
       if (e.target.innerText.trim() === "") {
         this.showExportDescription = false
       }
     },
     onExportAttributionBlur(e) {
-      console.log(e.target.innerText);
       if (e.target.innerText.trim() === "") {
         this.showExportAttribution = false
       }
