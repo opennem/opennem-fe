@@ -311,7 +311,7 @@ function makeConfig(
             dashLength: 6,
             zeroGridAlpha: 0,
             stackType: "regular",
-            minimum: 0,
+            // minimum: 0,
             guides: [
               {
                 includeGuidesInMinMax: false,
