@@ -54,19 +54,19 @@ export const FUEL_TECH_GROUPS = [
 
 export const FUEL_TECH = {
   'pumps': {
-    colour: '#4A90E2',
+    colour: '#fff',
     type: 'loads',
     label: 'Pumps',
     categoryId: 'hydro'
   },
   'battery_charging': {
-    colour: '#000',
+    colour: '#fff',
     type: 'loads',
     label: 'Battery (Charging)',
     categoryId: 'other'
   },
   'exports': {
-    colour: '#44146F',
+    colour: '#fff',
     type: 'loads',
     label: 'Exports'
   },
@@ -93,8 +93,14 @@ export const FUEL_TECH = {
     label: 'Biomass',
     categoryId: 'other'
   },
+  'distillate': {
+    colour: '#F35020',
+    type: 'sources',
+    label: 'Distillate',
+    categoryId: 'other'
+  },
   'battery_discharging': {
-    colour: '#D2BEAB',
+    colour: '#00A2FA',
     type: 'sources',
     label: 'Battery (Discharging)',
     categoryId: 'other'
@@ -104,12 +110,6 @@ export const FUEL_TECH = {
     type: 'sources',
     label: 'Hydro',
     categoryId: 'hydro'
-  },
-  'distillate': {
-    colour: '#F35020',
-    type: 'sources',
-    label: 'Distillate',
-    categoryId: 'other'
   },
   'gas_steam': {
     colour: '#F48E1B',
