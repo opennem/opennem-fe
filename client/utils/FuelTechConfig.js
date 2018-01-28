@@ -106,7 +106,7 @@ export const FUEL_TECH = {
     categoryId: 'other'
   },
   'hydro': {
-    colour: 'steelblue',
+    colour: '#4582B4',
     type: 'sources',
     label: 'Hydro',
     categoryId: 'hydro'
@@ -156,7 +156,7 @@ export const FUEL_TECH = {
   'solar': {
     colour: '#F8E71C',
     type: 'sources',
-    label: 'Solar',
+    label: 'Solar (Utility)',
     categoryId: 'solar'
   },
   'price': {
