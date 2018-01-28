@@ -128,7 +128,7 @@
     transition: all 0.2s linear;
 
     .export .chart {
-      max-width: 550px;
+      max-width: 650px;
       margin: 0 auto;
     }
 
