@@ -427,7 +427,8 @@ export default {
         }
 
         Object.keys(FUEL_TECH).forEach(ft => {
-          pointData[ft] = dataContext[`${ft}Average`]
+          const context = ft === 'price' ? 'Close' : 'Average'
+          pointData[ft] = dataContext[`${ft}${context}`]
         })
 
         this.pointData = pointData
