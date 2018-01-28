@@ -86,7 +86,7 @@
 <script>
 import numeral from "numeral";
 import * as moment from "moment";
-import domtoimage from 'dom-to-image';
+import domtoimage from '../utils/dom-to-image';
 import FileSaver from 'file-saver';
 
 import {

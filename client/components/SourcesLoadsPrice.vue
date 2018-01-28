@@ -317,7 +317,7 @@
 
 <script>
 import * as moment from 'moment';
-import domtoimage from 'dom-to-image';
+import domtoimage from '../utils/dom-to-image';
 import FileSaver from 'file-saver';
 
 import {
@@ -451,6 +451,8 @@ export default {
       [].map.call(document.querySelectorAll('.annotation-buttons'), function(el) {
         el.classList.add('hide');
       })
+
+      // document.getElementById('export-container').style = 
 
       domtoimage.toBlob(document.getElementById('export-container'))
         .then(function(blob) {
