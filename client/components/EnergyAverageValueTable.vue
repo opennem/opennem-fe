@@ -39,38 +39,27 @@
           <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id, item.colour)}"></div>
         </td>
         <td class="align-left" v-on:mouseover="emitDataHoverEvent(item)" v-on:mouseout="emitDataOutEvent()" style="width: 150px">
-          <div v-if="isNetInterchange(item.id)">
-            Import
-          </div>
-          <div v-else>
-            <!-- <a v-if="showPrice" v-on:click="goToFT(item.id)">{{getLabel(item.id)}}</a>
-            <span v-if="!showPrice">{{getLabel(item.id)}}</span> -->
-            <span>{{getLabel(item.id)}}</span>
-          </div>
+          <!-- <a v-if="showPrice" v-on:click="goToFT(item.id)">{{getLabel(item.id)}}</a>
+          <span v-if="!showPrice">{{getLabel(item.id)}}</span> -->
+          <span>{{getLabel(item.id)}}</span>
         </td>
 
         <!-- range info -->
         <td v-if="hidePoint" class="border-left">
-          <span v-if="
-            !isNetInterchange(item.id) || 
-            (isNetInterchange(item.id) && item.range.energy > 0)">
+          <span v-if="item.range.energy > 0">
             {{formatNumber(item.range.energy, '0,0.0')}}
           </span>
           <span v-else>-</span>
         </td>
         <!-- <td v-if="hidePoint">{{formatNumber(item.range.totalPower)}}</td> -->
         <td v-if="hidePoint">
-          <span v-if="
-            !isNetInterchange(item.id) || 
-            (isNetInterchange(item.id) && item.range.energy > 0)">
+          <span v-if="item.range.energy > 0">
             {{formatNumber(item.range.totalPower/rangeTotal*100, '0,0', '%')}}
           </span>
           <span v-else>-</span>
         </td>
         <td v-if="showPrice && hidePoint">
-          <span v-if="
-            !isNetInterchange(item.id) || 
-            (isNetInterchange(item.id) && item.range.energy > 0)">
+          <span v-if="item.range.energy > 0">
             {{formatNumber(item.range.averagePrice, '$0,0.00')}}
           </span>
           <span v-else>-</span>
@@ -78,17 +67,13 @@
 
         <!-- point info -->
         <td v-if="!hidePoint" class="border-left">
-          <span v-if="
-            !isNetInterchange(item.id) || 
-            (isNetInterchange(item.id) && pointData[item.id] > 0)">
+          <span v-if="pointData[item.id] > 0">
             {{formatNumber(pointData[item.id])}}
           </span>
           <span v-else>-</span>
         </td>
         <td v-if="!hidePoint">
-           <span v-if="
-            !isNetInterchange(item.id) || 
-            (isNetInterchange(item.id) && pointData[item.id] > 0)">
+           <span v-if="pointData[item.id] > 0">
             {{displayPointTotalPercent(item)}}
           </span>
           <span v-else>-</span>
@@ -107,14 +92,9 @@
           <div class="colour-sq" style="background: rgba(255,255,255,0.9); border: 1px solid #aaa;"></div>
         </td>
         <td class="align-left" style="width: 150px">
-          <div v-if="isNetInterchange(item.id)">
-            Export
-          </div>
-          <div v-else>
-            <!-- <a v-if="showPrice" v-on:click="goToFT(item.id)">{{getLabel(item.id)}}</a>
-            <span v-if="!showPrice">{{getLabel(item.id)}}</span> -->
-            <span>{{getLabel(item.id)}}</span>
-          </div>
+          <!-- <a v-if="showPrice" v-on:click="goToFT(item.id)">{{getLabel(item.id)}}</a>
+          <span v-if="!showPrice">{{getLabel(item.id)}}</span> -->
+          <span>{{getLabel(item.id)}}</span>
         </td>
 
         <!-- range info -->
@@ -251,9 +231,6 @@ export default {
           ? "-"
           : numeral(number).format(formatter) + unit;
       return formatted;
-    },
-    isNetInterchange(id) {
-      return id === 'NETINTERCHANGE'
     },
     getLabel(id) {
       const label = FUEL_TECH[id] ? FUEL_TECH[id].label : id;
