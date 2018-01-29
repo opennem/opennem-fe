@@ -601,7 +601,7 @@ function makeConfig (
             dashLength: 7,
             zeroGridAlpha: 1,
             maximum: 15000,
-            minimum: 300,
+            minimum: 301,
             labelsEnabled: false,
             guides: [
               makePriceGuide(300, '300', true),
@@ -693,7 +693,7 @@ function makeConfig (
             zeroGridAlpha: 0,
             labelsEnabled: false,
             maximum: 5000,
-            minimum: 100,
+            minimum: 101,
             guides: [
               makePriceGuide(600, '', true),
               makePriceGuide(1000, '-1k', false, '#aaa'),
