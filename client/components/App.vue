@@ -356,7 +356,7 @@ a[title="Interactive JavaScript maps"] {
   margin-top: -16px !important;
 }
 .export .amcharts-stock-panel-div-stockPanel2 {
-  margin-top: -12px !important;
+  margin-top: -16px !important;
 }
 .amcharts-stock-panel-div-stockPanel3 {
   margin-top: -2px !important;
@@ -396,7 +396,7 @@ a[title="Interactive JavaScript maps"] {
     margin-top: -29px;
   }
   .amcharts-stock-panel-div-stockPanel2 {
-    margin-top: -18px !important;
+    margin-top: -17px !important;
   }
   .amcharts-stock-panel-div-stockPanel3 {
     margin-top: -2px !important;

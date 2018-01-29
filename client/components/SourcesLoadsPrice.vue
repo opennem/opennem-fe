@@ -133,7 +133,7 @@
     }
 
     #ft-vis {
-      height: 500px;
+      height: 600px;
     }
 
     .axis-title {
@@ -310,7 +310,7 @@
     padding: 50px;
   }
   .export #ft-vis {
-    height: 400px;
+    height: 600px;
   }      
 }
 </style>
@@ -601,10 +601,10 @@ function makeConfig (
             dashLength: 7,
             zeroGridAlpha: 1,
             maximum: 15000,
-            minimum: 301,
+            minimum: 300,
             labelsEnabled: false,
             guides: [
-              makePriceGuide(300, '300', true),
+              makePriceGuide(300, '300', true, '#aaa'),
               makePriceGuide(2000, '', true),
               makePriceGuide(4000, '', true),
               makePriceGuide(5000, '5k', false, '#aaa'),
@@ -655,6 +655,7 @@ function makeConfig (
             minimum: -100,
             guides: [
               makePriceGuide(0, '', false, '#000'),
+              makePriceGuide(300, '', true),
               {
                 fillAlpha: 0.3,
                 fillColor: '#fff',
@@ -693,8 +694,9 @@ function makeConfig (
             zeroGridAlpha: 0,
             labelsEnabled: false,
             maximum: 5000,
-            minimum: 101,
+            minimum: 100,
             guides: [
+              makePriceGuide(100, '', true),
               makePriceGuide(600, '', true),
               makePriceGuide(1000, '-1k', false, '#aaa'),
               makePriceGuide(2000, '', true),
