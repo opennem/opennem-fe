@@ -326,6 +326,45 @@ a[title="Interactive JavaScript maps"] {
   top: -10px;
 }
 
+.amcharts-stock-panel-div-stockPanel1 {
+  .amcharts-category-axis {
+    .amcharts-axis-line {
+      stroke-opacity: 0;
+    }
+  }
+
+  .amcharts-value-axis {
+    g:first-child .amcharts-axis-grid {
+      stroke-opacity: 0;
+    }
+  }
+}
+.amcharts-stock-panel-div-stockPanel2 {
+  .amcharts-category-axis {
+    .amcharts-axis-line {
+      stroke-opacity: 0;
+    }
+  }
+
+  .amcharts-value-axis {
+    g:first-child .amcharts-axis-grid {
+      stroke-opacity: 0;
+    }
+  }
+}
+.amcharts-stock-panel-div-stockPanel2 {
+  margin-top: -16px !important;
+}
+.export .amcharts-stock-panel-div-stockPanel2 {
+  margin-top: -12px !important;
+}
+.amcharts-stock-panel-div-stockPanel3 {
+  margin-top: -2px !important;
+}
+.export .amcharts-stock-panel-div-stockPanel3 {
+  margin-top: -1px !important;
+}
+
 .fade-enter-active, .fade-leave-active {
   transition: opacity .5s
 }
@@ -355,6 +394,12 @@ a[title="Interactive JavaScript maps"] {
   .smallprint {
     float: right; 
     margin-top: -29px;
+  }
+  .amcharts-stock-panel-div-stockPanel2 {
+    margin-top: -18px !important;
+  }
+  .amcharts-stock-panel-div-stockPanel3 {
+    margin-top: -2px !important;
   }
 }
 

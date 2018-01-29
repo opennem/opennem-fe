@@ -181,8 +181,7 @@ export default {
         const data = event.target.categoryLineAxis.data[event.index];
         const dataContext = data.dataContext;
         const pointData = {
-          date: data.category,
-          rrp: dataContext["priceAverage"]
+          date: data.category
         };
 
         Object.keys(FUEL_TECH).forEach(ft => {

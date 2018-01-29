@@ -14,7 +14,7 @@ export function chartConfig (config, forceGridCount) {
     mouseWheelZoomEnabled: true,
     mouseWheelScrollEnabled: true,
     export: {
-      enabled: true,
+      enabled: false,
       menu: [],
       fileName: 'all-regions-generation'
     },
@@ -89,11 +89,11 @@ export function stockGraphs (keys, chartType) {
   }
 
   keys.forEach((ftKey, index) => {
-    if (ftKey !== 'price') {
+    if (ftKey !== 'price' && ftKey !== 'pricePos' && ftKey !== 'priceNeg') {
       const colour = FUEL_TECH[ftKey].colour
       const negativeFillAlphas = hideNegativeAlphas(ftKey) ? 0 : 0.8
       const fillAlphas = 0.8
-      const lineAlpha = 0
+      const lineAlpha = 0.1
       const type = chartType || 'line'
 
       const graph = {
@@ -105,7 +105,7 @@ export function stockGraphs (keys, chartType) {
         negativeFillColors: colour,
         lineAlpha: lineAlpha,
         lineColor: colour,
-        useDataSetColors: false
+        useDataSetColors: false,
       }
 
       // TODO: use a different style if data is forecast, not history

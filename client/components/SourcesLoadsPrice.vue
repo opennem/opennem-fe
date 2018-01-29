@@ -82,7 +82,7 @@
 
 <style scoped>
 #ft-vis {
-  height: 400px;
+  height: 600px;
 }
 
 .axis-title {
@@ -133,7 +133,7 @@
     }
 
     #ft-vis {
-      height: 400px;
+      height: 500px;
     }
 
     .axis-title {
@@ -296,7 +296,7 @@
 
 @media only screen and (min-width: 960px) {
   #ft-vis {
-    height: 500px;
+    height: 650px;
   }
   .vis {
     display: flex;
@@ -362,7 +362,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.region)
     EventBus.$on('row-hover', (name) => {
       this.showHoverSeries(name)
     });
@@ -485,13 +484,16 @@ export default {
       const keys = []
       this.chartData = generateChartData(newData)
 
-      Object.keys(FUEL_TECH).forEach(ftKey => {
-        const find = newData.find(ft => ft.fuel_tech === ftKey)
-        const hasPrice = newData.find(ft => ft.type === ftKey)
-        if (find || hasPrice) {
-          keys.push(ftKey)
-        }
-      })
+      if (this.chartData[0]) {
+        Object.keys(this.chartData[0]).forEach(ftKey => {
+          const find = Object.keys(FUEL_TECH).find(ft => ft === ftKey)
+          if (find) {
+            keys.push(ftKey)
+          }
+        })
+      }
+
+      console.log(keys)
 
       if (this.chart) {
         this.chart.clear()
@@ -526,7 +528,8 @@ function makeChart (data, keys, context) {
     stockGraphs(keys),
     this
   )
-  config.panels[0].listeners = [
+
+  const listeners = [
     {
       event: 'zoomed',
       method: context.onZoom
@@ -536,19 +539,14 @@ function makeChart (data, keys, context) {
       method: context.onCursorHover
     }
   ]
-  config.panels[1].listeners = [
-    {
-      event: 'zoomed',
-      method: context.onZoom
-    },
-    {
-      event: 'changed',
-      method: context.onCursorHover
-    }
-  ]
+  config.panels[0].listeners = listeners
+  config.panels[1].listeners = listeners
+  config.panels[2].listeners = listeners
+  config.panels[3].listeners = listeners
 
   return AmCharts.makeChart('ft-vis', config)
 }
+
 function makeConfig (
   chartData,
   guides,
@@ -568,12 +566,12 @@ function makeConfig (
     panels: [
       {
         title: 'Generation (MW)',
-        percentHeight: 70,
+        percentHeight: 45,
         showCategoryAxis: false,
         valueAxes: [
           {
             id: 'v1',
-            dashLength: 6,
+            dashLength: 7,
             zeroGridAlpha: 0,
             stackType: 'regular',
             guides: [
@@ -594,7 +592,59 @@ function makeConfig (
       },
       {
         title: 'Price ($)',
-        percentHeight: 30,
+        percentHeight: 16,
+        showCategoryAxis: false,
+        valueAxes: [
+          {
+            id: 'v4',
+            logarithmic: true,
+            dashLength: 7,
+            zeroGridAlpha: 1,
+            maximum: 15000,
+            minimum: 300,
+            labelsEnabled: false,
+            guides: [
+              makePriceGuide(300, '300', true),
+              makePriceGuide(2000, '', true),
+              makePriceGuide(4000, '', true),
+              makePriceGuide(5000, '5k', false, '#aaa'),
+              makePriceGuide(6000, '', true),
+              makePriceGuide(8000, '', true),
+              makePriceGuide(12000, '', true),
+              makePriceGuide(14000, '', true),
+              {
+                fillAlpha: 1,
+                fillColor: '#ece9e6',
+                lineAlpha: 0,
+                value: 1,
+                toValue: 300,
+                above: true
+              }
+            ]
+          }
+        ],
+        stockGraphs: [
+          {
+            id: 'p3',
+            valueAxis: 'v4',
+            valueField: 'pricePos',
+            type: 'step',
+            lineAlpha: 1,
+            lineColor: '#C74523',
+            dashLength: 1,
+            useDataSetColors: false
+          }
+        ],
+        guides,
+        stockLegend: {
+          valueTextRegular: ' ',
+          markerType: 'none'
+        }
+      },
+      {
+        title: '',
+        percentHeight: 25,
+        showCategoryAxis: false,
         valueAxes: [
           {
             id: 'v3',
@@ -602,15 +652,14 @@ function makeConfig (
             dashLength: 6,
             zeroGridAlpha: 0,
             maximum: 300,
-            minimum: 0,
+            minimum: -100,
             guides: [
+              makePriceGuide(0, '', false, '#000'),
               {
-                includeGuidesInMinMax: false,
-                value: 0,
-                dashLength: 0,
-                lineColor: '#000',
-                lineThickness: 1,
-                lineAlpha: 1
+                fillAlpha: 0.3,
+                fillColor: '#fff',
+                value: -100,
+                toValue: 300,
               }
             ]
           }
@@ -621,18 +670,76 @@ function makeConfig (
             valueAxis: 'v3',
             valueField: 'price',
             type: 'step',
-            lineAlpha: 0.5,
-            lineColor: '#000',
+            lineAlpha: 0.9,
+            lineColor: '#C74523',
             useDataSetColors: false
           }
         ],
         guides,
         stockLegend: {
-          valueTextRegular: ' ',
-          markerType: 'none'
+          enabled: false
         }
-      }
+      },
+      {
+        title: 'Price ($)',
+        percentHeight: 14,
+        showCategoryAxis: true,
+        valueAxes: [
+          {
+            id: 'v4',
+            reversed: true,
+            logarithmic: true,
+            dashLength: 7,
+            zeroGridAlpha: 0,
+            labelsEnabled: false,
+            maximum: 5000,
+            minimum: 100,
+            guides: [
+              makePriceGuide(600, '', true),
+              makePriceGuide(1000, '-1k', false, '#aaa'),
+              makePriceGuide(2000, '', true),
+              makePriceGuide(4000, '', true),
+              {
+                fillAlpha: 1,
+                fillColor: '#ece9e6',
+                lineAlpha: 0,
+                value: 1,
+                toValue: 100,
+                above: true
+              }
+            ]
+          }
+        ],
+        stockGraphs: [
+          {
+            id: 'p3',
+            valueAxis: 'v4',
+            valueField: 'priceNeg',
+            type: 'step',
+            lineAlpha: 1,
+            lineColor: '#C74523',
+            dashLength: 1,
+            useDataSetColors: false
+          }
+        ],
+        guides,
+        stockLegend: {
+          enabled: false
+        }
+      },
     ]
   })
+}
+
+function makePriceGuide (value, label, hasDash, lineColor) {
+  return {
+    label,    
+    value,
+    dashLength: hasDash ? 7 : 0,
+    lineColor: lineColor ? lineColor : '#ccc',
+    lineThickness: 1,
+    lineAlpha: 1,
+    includeGuidesInMinMax: false
+  }
 }
 </script>

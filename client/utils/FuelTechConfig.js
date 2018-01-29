@@ -165,4 +165,16 @@ export const FUEL_TECH = {
     label: 'Price',
     categoryId: 'price'
   },
+  'pricePos': {
+    colour: '#000',
+    type: 'other',
+    label: 'Price (Positive only)',
+    categoryId: 'price'
+  },
+  'priceNeg': {
+    colour: '#000',
+    type: 'other',
+    label: 'Price (Negative only)',
+    categoryId: 'price'
+  },
 }
