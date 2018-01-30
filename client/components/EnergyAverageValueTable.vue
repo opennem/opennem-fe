@@ -2,11 +2,10 @@
   <table>
     <thead>
       <tr>
-        <th colspan="2"></th>
         <!-- range info -->
-        <th class="border-left" v-if="hidePoint" v-bind:colspan="showPrice ? 3 : 2">{{formatDate(dateFrom)}} – {{formatDate(dateTo)}}</th>
+        <th v-if="hidePoint" v-bind:colspan="showPrice ? 5 : 4">{{formatDate(dateFrom)}} – {{formatDate(dateTo)}}</th>
         <!-- point info -->
-        <th class="border-left" v-if="!hidePoint" v-bind:colspan="showPrice ? 3 : 2">{{formatDate(pointData.date)}}</th>
+        <th v-if="!hidePoint" v-bind:colspan="showPrice ? 5 : 4">{{formatDate(pointData.date)}}</th>
       </tr>
       <tr>
         <th colspan="2"></th>
