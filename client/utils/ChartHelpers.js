@@ -31,7 +31,7 @@ export function chartConfig (config, forceGridCount) {
       dashLength: 7,
       equalSpacing: true,
       centerLabelOnFullPeriod: false,
-      groupToPeriods: ['5mm', '15mm', '30mm', 'hh'],
+      groupToPeriods: ['5mm', '30mm'],
       dateFormats: [
         { period: 'fff', format: '  JJ:NN' },
         { period: 'ss', format: '  JJ:NN' },

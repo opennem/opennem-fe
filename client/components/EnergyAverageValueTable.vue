@@ -221,7 +221,7 @@ export default {
   },
   methods: {
     formatDate(date) {
-      return moment(date).format("D MMM YYYY, ha");
+      return moment(date).format("D MMM YYYY, h:mma");
     },
     formatNumber: function(number, precision, unit) {
       let formatter = precision ? precision : "0,0";
