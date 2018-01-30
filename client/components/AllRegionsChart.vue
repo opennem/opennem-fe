@@ -38,7 +38,7 @@
             </section>
           </div>
 
-          <div class="axis-title"><small>Generation (MW)</small></div>
+          <!-- <div class="axis-title"><small>Generation (MW)</small></div> -->
           <div id="ft-vis"></div>
 
           <div class="export-legend" v-show="showExport">
@@ -306,6 +306,14 @@ function makeConfig(
         title: "Generation (MW)",
         showCategoryAxis: true,
         addClassNames: true,
+        allLabels: [
+          {
+            text: "Generation (MW)",
+            bold: true,
+            x: 5,
+            y: 5
+          }
+        ],
         valueAxes: [
           {
             id: "v1",
@@ -392,8 +400,8 @@ function setOpacity(graph, opacity) {
 
     .share-button {
       position: absolute; 
-      right: 3px; 
-      top: -5px; 
+      right: 0; 
+      top: -30px; 
       border: 0;
     }
 
@@ -593,7 +601,6 @@ function setOpacity(graph, opacity) {
   }
   .datagrid {
     margin-left: 10px;
-    margin-top: 28px;
     min-width: 500px
   }
   .export-overlay {

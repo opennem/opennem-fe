@@ -36,7 +36,7 @@
             </section>
           </div>
 
-          <div class="axis-title"><small>Generation (MW)</small></div>
+          <!-- <div class="axis-title"><small>Generation (MW)</small></div> -->
           <div id="ft-vis"></div>
 
           <div class="export-legend" v-show="showExport">
@@ -102,8 +102,8 @@
 
     .share-button {
       position: absolute; 
-      right: 3px; 
-      top: -5px; 
+      right: 0; 
+      top: -30px; 
       border: 0;
     }
 
@@ -303,7 +303,6 @@
   }
   .datagrid {
     margin-left: 10px;
-    margin-top: 28px;
     min-width: 550px
   }
   .export-overlay {
@@ -566,8 +565,16 @@ function makeConfig (
     panels: [
       {
         title: 'Generation (MW)',
-        percentHeight: 45,
-        showCategoryAxis: false,
+        percentHeight: 60,
+        showCategoryAxis: true,
+        allLabels: [
+          {
+            text: "Generation (MW)",
+            bold: true,
+            x: 5,
+            y: 5
+          }
+        ],
         valueAxes: [
           {
             id: 'v1',
@@ -592,7 +599,7 @@ function makeConfig (
       },
       {
         title: 'Price ($)',
-        percentHeight: 16,
+        percentHeight: 13,
         showCategoryAxis: false,
         valueAxes: [
           {
@@ -600,7 +607,7 @@ function makeConfig (
             logarithmic: true,
             dashLength: 7,
             zeroGridAlpha: 1,
-            maximum: 15000,
+            maximum: 20000,
             minimum: 300,
             labelsEnabled: false,
             guides: [
@@ -637,13 +644,14 @@ function makeConfig (
         ],
         guides,
         stockLegend: {
-          valueTextRegular: ' ',
-          markerType: 'none'
+          // valueTextRegular: ' ',
+          // markerType: 'none'
+          enabled: false
         }
       },
       {
         title: '',
-        percentHeight: 25,
+        percentHeight: 20,
         showCategoryAxis: false,
         valueAxes: [
           {
@@ -652,14 +660,14 @@ function makeConfig (
             dashLength: 6,
             zeroGridAlpha: 0,
             maximum: 300,
-            minimum: -100,
+            minimum: 0,
             guides: [
               makePriceGuide(0, '', false, '#000'),
               makePriceGuide(300, '', true),
               {
                 fillAlpha: 0.3,
                 fillColor: '#fff',
-                value: -100,
+                value: 0,
                 toValue: 300,
               }
             ]
@@ -683,32 +691,29 @@ function makeConfig (
       },
       {
         title: 'Price ($)',
-        percentHeight: 14,
-        showCategoryAxis: true,
+        percentHeight: 7,
+        showCategoryAxis: false,
+        allLabels: [
+          {
+            text: "Price ($)",
+            bold: true,
+            x: 5,
+            y: 27
+          }
+        ],
         valueAxes: [
           {
             id: 'v4',
             reversed: true,
-            logarithmic: true,
+            logarithmic: false,
             dashLength: 7,
             zeroGridAlpha: 0,
             labelsEnabled: false,
-            maximum: 5000,
-            minimum: 100,
+            maximum: 1000,
+            minimum: 0,
             guides: [
-              makePriceGuide(100, '', true),
-              makePriceGuide(600, '', true),
-              makePriceGuide(1000, '-1k', false, '#aaa'),
-              makePriceGuide(2000, '', true),
-              makePriceGuide(4000, '', true),
-              {
-                fillAlpha: 1,
-                fillColor: '#ece9e6',
-                lineAlpha: 0,
-                value: 1,
-                toValue: 100,
-                above: true
-              }
+              makePriceGuide(0, '', false, '#000'),
+              makePriceGuide(500, '-500', false, '#aaa'),
             ]
           }
         ],

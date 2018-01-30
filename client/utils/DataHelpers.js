@@ -114,7 +114,7 @@ export function generateChartData (data) {
 
       if (isPrice) {
         obj['pricePos'] = obj[series.key] > 0 ? obj[series.key] : 0.1
-        obj['priceNeg'] = obj[series.key] <= 0 ? -obj[series.key] : 0.1
+        obj['priceNeg'] = obj[series.key] <= 0 ? -obj[series.key] : 0
       }  
     })
 
