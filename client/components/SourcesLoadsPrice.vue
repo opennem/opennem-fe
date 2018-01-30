@@ -82,7 +82,7 @@
 
 <style scoped>
 #ft-vis {
-  height: 600px;
+  height: 550px;
 }
 
 .axis-title {
@@ -133,7 +133,7 @@
     }
 
     #ft-vis {
-      height: 600px;
+      height: 550px;
     }
 
     .axis-title {
@@ -296,7 +296,7 @@
 
 @media only screen and (min-width: 960px) {
   #ft-vis {
-    height: 650px;
+    height: 600px;
   }
   .vis {
     display: flex;
@@ -599,8 +599,16 @@ function makeConfig (
       },
       {
         title: 'Price ($)',
-        percentHeight: 13,
+        percentHeight: 7,
         showCategoryAxis: false,
+        allLabels: [
+          {
+            text: "Price ($)",
+            bold: true,
+            x: 5,
+            y: 5
+          }
+        ],
         valueAxes: [
           {
             id: 'v4',
@@ -610,14 +618,16 @@ function makeConfig (
             maximum: 20000,
             minimum: 300,
             labelsEnabled: false,
+            gridAlpha: 0,
             guides: [
               makePriceGuide(300, '300', true, '#aaa'),
               makePriceGuide(2000, '', true),
-              makePriceGuide(4000, '', true),
-              makePriceGuide(5000, '5k', false, '#aaa'),
               makePriceGuide(6000, '', true),
-              makePriceGuide(8000, '', true),
-              makePriceGuide(12000, '', true),
+              // makePriceGuide(5000, '5k', false, '#aaa'),
+              // makePriceGuide(6000, '', true),
+              // makePriceGuide(8000, '', true),
+              makePriceGuide(10000, '', true),
+              // makePriceGuide(12000, '', true),
               makePriceGuide(14000, '', true),
               {
                 fillAlpha: 1,
@@ -651,13 +661,13 @@ function makeConfig (
       },
       {
         title: '',
-        percentHeight: 20,
+        percentHeight: 10,
         showCategoryAxis: false,
         valueAxes: [
           {
             id: 'v3',
             logarithmic: false,
-            dashLength: 6,
+            dashLength: 7,
             zeroGridAlpha: 0,
             maximum: 300,
             minimum: 0,
@@ -691,29 +701,24 @@ function makeConfig (
       },
       {
         title: 'Price ($)',
-        percentHeight: 7,
+        percentHeight: 5,
         showCategoryAxis: false,
-        allLabels: [
-          {
-            text: "Price ($)",
-            bold: true,
-            x: 5,
-            y: 27
-          }
-        ],
         valueAxes: [
           {
             id: 'v4',
             reversed: true,
-            logarithmic: false,
+            logarithmic: true,
             dashLength: 7,
             zeroGridAlpha: 0,
             labelsEnabled: false,
             maximum: 1000,
-            minimum: 0,
+            minimum: 1,
+            gridAlpha: 0,
             guides: [
-              makePriceGuide(0, '', false, '#000'),
-              makePriceGuide(500, '-500', false, '#aaa'),
+              makePriceGuide(1, '', false, '#000'),
+              makePriceGuide(60, '', true),
+              makePriceGuide(400, '', true),
+              makePriceGuide(800, '', true),
             ]
           }
         ],
