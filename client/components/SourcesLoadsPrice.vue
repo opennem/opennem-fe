@@ -538,10 +538,9 @@ function makeChart (data, keys, context) {
       method: context.onCursorHover
     }
   ]
-  config.panels[0].listeners = listeners
-  config.panels[1].listeners = listeners
-  config.panels[2].listeners = listeners
-  config.panels[3].listeners = listeners
+  config.panels.forEach(panel => {
+    panel.listeners = listeners
+  })
 
   return AmCharts.makeChart('ft-vis', config)
 }
@@ -565,7 +564,7 @@ function makeConfig (
     panels: [
       {
         title: 'Generation (MW)',
-        percentHeight: 60,
+        percentHeight: 50,
         showCategoryAxis: true,
         allLabels: [
           {
@@ -731,6 +730,89 @@ function makeConfig (
             lineAlpha: 1,
             lineColor: '#C74523',
             dashLength: 1,
+            useDataSetColors: false
+          }
+        ],
+        guides,
+        stockLegend: {
+          enabled: false
+        }
+      },
+      {
+        title: '',
+        percentHeight: 10,
+        showCategoryAxis: false,
+        allLabels: [
+          {
+            text: "Temperature (°C)",
+            bold: true,
+            x: 5,
+            y: 5
+          }
+        ],
+        valueAxes: [
+          {
+            id: 'v5',
+            dashLength: 7,
+            zeroGridAlpha: 1,
+            maximum: 45,
+            minimum: 0,
+            gridAlpha: 0,
+            labelsEnabled: false,
+            guides: [
+              {
+                includeGuidesInMinMax: false,
+                value: 0,
+                label: '0',
+                dashLength: 0,
+                lineColor: "#000",
+                lineThickness: 1,
+                lineAlpha: 1
+              },
+              {
+                includeGuidesInMinMax: false,
+                value: 10,
+                label: '10',
+                dashLength: 7,
+                lineColor: "#bbb",
+                lineThickness: 1,
+                lineAlpha: 1
+              },
+              {
+                includeGuidesInMinMax: false,
+                value: 20,
+                label: '20',
+                dashLength: 7,
+                lineColor: "#bbb",
+                lineThickness: 1,
+                lineAlpha: 1
+              },
+              {
+                includeGuidesInMinMax: false,
+                value: 30,
+                label: '30',
+                dashLength: 7,
+                lineColor: "#bbb",
+                lineThickness: 1,
+                lineAlpha: 1
+              },
+              {
+                fillAlpha: 0.3,
+                fillColor: '#fff',
+                value: 0,
+                toValue: 45,
+              }
+            ]
+          }
+        ],
+        stockGraphs: [
+          {
+            id: 't1',
+            valueAxis: 'v5',
+            valueField: 'temperature',
+            type: 'smoothedLine',
+            lineAlpha: 1,
+            lineColor: '#C74523',
             useDataSetColors: false
           }
         ],

@@ -90,8 +90,15 @@ export function stockGraphs (keys, chartType) {
       ftKey === 'battery_charging'
   }
 
+  function validFT (ftKey) {
+    return ftKey !== 'price' &&
+      ftKey !== 'pricePos' &&
+      ftKey !== 'priceNeg' &&
+      ftKey !== 'temperature'
+  }
+
   keys.forEach((ftKey, index) => {
-    if (ftKey !== 'price' && ftKey !== 'pricePos' && ftKey !== 'priceNeg') {
+    if (validFT(ftKey)) {
       const colour = FUEL_TECH[ftKey].colour
       const negativeFillAlphas = hideNegativeAlphas(ftKey) ? 0 : 0.8
       const fillAlphas = 0.8

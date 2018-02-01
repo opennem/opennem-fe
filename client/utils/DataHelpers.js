@@ -18,7 +18,9 @@ export function generateChartData (data) {
   Object.keys(FUEL_TECH).forEach(ftKey => {
     const find = data.find(d => d.fuel_tech === ftKey)
     const hasPrice = data.find(d => d.type === ftKey)
-    if (find || hasPrice) {
+    const hasTemperature = data.find(d => d.type === ftKey)
+
+    if (find || hasPrice || hasTemperature) {
       keys.push(ftKey)
 
       /** if there is a price key,
@@ -73,10 +75,10 @@ export function generateChartData (data) {
     const currentData = data.find(d => {
       return d.fuel_tech === ftKey
     })
-    const price = data.find(d => d.type === ftKey)
-    const history = currentData ? currentData['history'] : (price ? price['history'] : null)
+    const priceOrTemperature = data.find(d => d.type === ftKey)
+    const history = currentData ? currentData['history'] : (priceOrTemperature ? priceOrTemperature['history'] : null)
 
-    if (currentData || price) {
+    if (currentData || priceOrTemperature) {
       createContainerObj(history, ftKey)
 
       if (currentData && currentData.forecast) {
@@ -125,6 +127,8 @@ export function generateChartData (data) {
     return moment(a.date).valueOf() - moment(b.date).valueOf()
   })
 
+  console.log(newChartData)
+
   return newChartData.slice(0)
 }
 
@@ -146,7 +150,11 @@ export function generateSummaryData (data, start, end) {
 
   // Check if it is a valid fuel tech name
   function isValidFT (name) {
-    return name !== 'date' && name !== 'price' && name !== 'pricePos' && name !== 'priceNeg'
+    return name !== 'date' &&
+      name !== 'price' &&
+      name !== 'pricePos' &&
+      name !== 'priceNeg' &&
+      name !== 'temperature'
   }
 
   /** Get only data between the start and end dates **/

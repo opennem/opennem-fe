@@ -177,4 +177,10 @@ export const FUEL_TECH = {
     label: 'Price (Negative only)',
     categoryId: 'price'
   },
+  'temperature': {
+    colour: '#000',
+    type: 'other',
+    label: 'Temperature',
+    categoryId: 'temperature'
+  },
 }
