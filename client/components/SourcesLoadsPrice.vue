@@ -2,7 +2,7 @@
   <div class="wrapper" style="padding: 0 1rem;" v-bind:class="{ 'export-overlay': showExport }">
     <div class="vis" v-bind:class="{ export: showExport }">
       <div class="chart">
-        <div class="chart-export-buttons">
+        <div class="chart-export-buttons" v-show="displayExport">
           <button class="button clear share-button" v-show="!showExport" v-on:click="toggleExportOptions()">
             <img src="/icons/share-icon.png" alt="" style="height: 15px;">
             Share
@@ -316,6 +316,7 @@
 
 <script>
 import * as moment from 'moment';
+import { isChrome } from '../utils/browserDetect';
 import domtoimage from '../utils/dom-to-image';
 import FileSaver from 'file-saver';
 
@@ -354,6 +355,7 @@ export default {
       end: null,
       hidePoint: true,
       region: this.$route.params.region,
+      displayExport: isChrome(),
       showExport: false,
       showExportTitle: true,
       showExportDescription: true,
@@ -754,7 +756,7 @@ function makeConfig (
           {
             id: 'v5',
             dashLength: 7,
-            zeroGridAlpha: 1,
+            zeroGridAlpha: 0,
             maximum: 45,
             minimum: 0,
             gridAlpha: 0,

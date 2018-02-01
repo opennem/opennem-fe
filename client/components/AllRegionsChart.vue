@@ -4,7 +4,7 @@
 
     <div class="vis" v-show="!refreshing" v-bind:class="{ export: showExport }">
       <div class="chart">
-        <div class="chart-export-buttons">
+        <div class="chart-export-buttons" v-show="displayExport">
           <button class="button clear share-button" v-show="!showExport" v-on:click="toggleExportOptions()">
             <img src="/icons/share-icon.png" alt="" style="height: 15px;">
             Share
@@ -86,6 +86,7 @@
 <script>
 import numeral from "numeral";
 import * as moment from "moment";
+import { isChrome } from '../utils/browserDetect';
 import domtoimage from '../utils/dom-to-image';
 import FileSaver from 'file-saver';
 
@@ -133,6 +134,7 @@ export default {
       start: null,
       end: null,
       hidePoint: true,
+      displayExport: isChrome(),
       showExport: false,
       showExportTitle: true,
       showExportDescription: true,

@@ -191,7 +191,7 @@ header {
   z-index: 99; */
   display: flex;
   flex: 1;
-  margin: 50px 0 25px;
+  margin: 50px 0 10px;
 
   h1 {
     font-size: 1.1em;
@@ -380,7 +380,7 @@ a[title="Interactive JavaScript maps"] {
     }
   }
 }
-.amcharts-stock-panel-div-stockPanel4 {
+/* .amcharts-stock-panel-div-stockPanel4 {
   .amcharts-category-axis {
     .amcharts-axis-line {
       stroke-opacity: 1;
@@ -392,7 +392,7 @@ a[title="Interactive JavaScript maps"] {
       stroke-opacity: 0;
     }
   }
-}
+} */
 .amcharts-stock-panel-div-stockPanel2 {
   margin-top: -11px !important;
 }
