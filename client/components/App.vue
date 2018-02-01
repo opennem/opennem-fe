@@ -230,7 +230,7 @@ a {
   color: #C74523;
   /* border-bottom: 1px solid rgba(199,69,35,0.9); */
   /* text-decoration: none; */
-  text-decoration: underline solid rgba(199,69,35,0.9);
+  text-decoration: underline dotted rgba(199,69,35,0.6);
 }
 a[title="JavaScript charts"],
 a[title="Interactive JavaScript maps"] {
@@ -251,33 +251,6 @@ a[title="Interactive JavaScript maps"] {
 
 .router-view {
   /* min-height: 400px; */
-}
-
-.button {
-  padding: 6px 6px 5px;
-  border-radius: 5px;
-  border: 1px dashed #bbb;
-  transition: all 0.2s ease-in-out;
-  color: #CB573A;
-  font-size: 0.85em;
-
-  img {
-    position: relative;
-    top: 1px;
-  }
-
-  &:hover {
-    border-style: solid;
-    border-color: #999;
-  }
-
-  &.clear {
-    background: none;
-
-    &:hover {
-      background-color: #fff;
-    }
-  }
 }
 
 .selection {

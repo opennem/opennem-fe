@@ -2,24 +2,47 @@
   <div class="wrapper" style="padding: .5rem; border-top: 1px solid #C74523">
     <div class="loader" v-if="refreshing"></div>
     
-    <div style="padding-bottom: .3rem;">
+    <div style="padding-bottom: 2px;" v-if="!refreshing">
       <a href="http://opennem.org.au" title="OpenNEM" target="_blank">
         <img class="opennem-logo" src="/images/logo.png" alt="OpenNEM">
       </a>
-      <a href="http://opennem.org.au" title="OpenNEM" target="_blank" style="float: right; margin-top: .2rem; margin-right: .2rem; font-size: .8rem;">
-        Info
-      </a>
+      <h4 style="margin: 0; display: inline-block; color: #C74523; position: relative; top: -8px;">National Electricity Market</h4>
     </div>
     
-    <div id="ft-vis"></div>
+    <div>
+      <div id="ft-vis"></div>
+    </div>
     
+    <div style="padding-top: 6px; font-size: 0.55em; color: #666; text-align: left; border-top: 1px solid #aaa; position: relative;" v-if="!refreshing">
+      <!-- <a href="http://opennem.org.au" target="_blank">
+        OpenNEM
+      </a> -->
+      <a href="#" v-on:click.stop.prevent="toggleLegend()" style="font-size: 1.8em;">
+        <i class="far fa-list-alt"></i>
+      </a>
+      <span style="font-size: 0.9em; position: relative; top: -3px; left: 3px">
+        <a href="http://opennem.org.au" title="OpenNEM" target="_blank" style="">
+          OpenNEM
+        </a>
+        is a project of the
+        <a href="http://energy-transition-hub.org" target="_blank">
+          Energy Transition Hub
+        </a>
+      </span>
+    </div>
 
-    <!-- <div class="export-legend">
-      <div class="legend-graph" v-for="item in sourcesData" :key="item.id">
-        <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id, item.colour)}"></div>
-        {{getLabel(item.id)}}
+    <a href="http://opennem.org.au" title="OpenNEM" target="_blank" style="position: absolute; bottom: 9px; right: 10px; font-size: 1em;">
+      <i class="fas fa-info-circle"></i>
+    </a>
+
+    <transition name="slide-fade">
+      <div class="export-legend" v-show="showLegend" style="position: absolute; top: 52px; left: 0; background: rgba(255,255,255,.95);">
+        <div class="legend-graph" style="display: block; padding-left: 5px;" v-for="item in sourcesData" :key="item.id">
+          <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id, item.colour)}"></div>
+          {{getLabel(item.id)}}
+        </div>
       </div>
-    </div> -->
+    </transition>
   </div>
 </template>
 
@@ -71,6 +94,7 @@ export default {
       start: null,
       end: null,
       hidePoint: true,
+      showLegend: false,
     };
   },
   methods: {
@@ -86,6 +110,13 @@ export default {
         colour = FUEL_TECH[id].colour;
       }
       return colour;
+    },
+    toggleLegend() {
+      if (this.showLegend) {
+        this.showLegend = false;
+      } else {
+        this.showLegend = true;
+      }
     },
     // showHoverSeries(name) {
     //   this.chart.panels[0].graphs.forEach((graph) => {
@@ -217,10 +248,17 @@ function makeConfig(
         // },
         allLabels: [
           {
-            text: "Generation (MW)",
+            text: "Generation",
             bold: true,
             x: 5,
             y: 5
+          },
+          {
+            text: "(GW)",
+            x: 70,
+            y: 7,
+            color: '#999',
+            size: 9
           }
         ],
         valueAxes: [
@@ -228,8 +266,10 @@ function makeConfig(
             id: "v1",
             dashLength: 6,
             zeroGridAlpha: 0,
+            gridAlpha: 0,
             stackType: "regular",
-            // minimum: 0,
+            minimum: 0,
+            labelsEnabled: false,
             guides: [
               {
                 includeGuidesInMinMax: false,
@@ -238,7 +278,35 @@ function makeConfig(
                 lineColor: "#000",
                 lineThickness: 1,
                 lineAlpha: 1
-              }
+              },
+              {
+                includeGuidesInMinMax: false,
+                value: 10000,
+                label: '10',
+                dashLength: 7,
+                lineColor: "#bbb",
+                lineThickness: 1,
+                lineAlpha: 1
+              },
+              {
+                includeGuidesInMinMax: false,
+                value: 20000,
+                label: '20',
+                dashLength: 7,
+                lineColor: "#bbb",
+                lineThickness: 1,
+                lineAlpha: 1
+              },
+              {
+                includeGuidesInMinMax: false,
+                value: 30000,
+                label: '30',
+                dashLength: 7,
+                lineColor: "#bbb",
+                lineThickness: 1,
+                lineAlpha: 1
+              },
+              
             ]
           }
         ],
@@ -289,10 +357,10 @@ function makeConfig(
 
 <style scoped>
 .opennem-logo {
-  height: 20px;
+  height: 28px;
 }
 #ft-vis {
-  /* width: 300px; */
+  width: 100%;
   height: 250px;
 }
 
@@ -309,10 +377,8 @@ function makeConfig(
 }
 
 .export-legend {
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
-  font-size: 0.7em;
-  color: #333;
+  font-size: 0.65em;
+  color: #000;
   padding-top: 5px;
   padding-bottom: 0;
 
@@ -330,6 +396,46 @@ function makeConfig(
     margin-right: 5px;
   }
 
+}
+
+.button {
+  padding: 5px 6px 2px;
+  border-radius: 0;
+  border: 1px solid #ccc;
+  transition: all 0.2s ease-in-out;
+  color: black;
+  font-size: 0.6em;
+  font-weight: 600;
+
+  img {
+    position: relative;
+    top: 1px;
+  }
+
+  &:hover {
+    border-style: solid;
+    border-color: #999;
+  }
+
+  &.clear {
+    background: none;
+
+    &:hover {
+      background-color: #fff;
+    }
+  }
+}
+
+/* Enter and leave animations can use different */
+/* durations and timing functions.              */
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all .3s ease;
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateY(10px);
+  opacity: 0;
 }
 
 @media only screen and (min-width: 960px) {

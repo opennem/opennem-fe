@@ -49,7 +49,8 @@ export function chartConfig (config, forceGridCount) {
       zoomable: false,
       categoryBalloonColor: '#C74523',
       cursorColor: '#C74523',
-      showNextAvailable: true
+      showNextAvailable: true,
+      valueBalloonsEnabled: false
     },
     panelsSettings: {
       fontFamily: 'Merriweather'
