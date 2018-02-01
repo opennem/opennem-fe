@@ -1,6 +1,7 @@
 <template>
   <div id="app" v-on:click="hideSelectors()">
-    <header>
+    <div class="alerts-banner" v-if="!isWidgetRoute()">OpenNEM is currently in active development</div>
+    <header v-if="!isWidgetRoute()">
       <h1 style=""><img src="/images/logo.png" alt=""></h1>
 
       <!-- <div class="selection week-selection">
@@ -45,7 +46,7 @@
 
     <router-view class="router-view"></router-view>
 
-    <footer>
+    <footer v-if="!isWidgetRoute()">
       <p style="">Source: <a href="https://www.aemo.com.au/">AEMO</a></p>
       <p class="smallprint">OpenNEM is a project of the <a href="http://energy-transition-hub.org/">Energy Transition Hub</a></p>
     </footer>
@@ -106,6 +107,9 @@ export default {
     $route: 'checkRoute',
   },
   methods: {
+    isWidgetRoute() {
+      return this.$route.name === 'widget'
+    },
     onRegionChange(regionId) {
       this.selectedRegion = regionId
       this.showRegionSelector = false
@@ -249,7 +253,7 @@ a[title="Interactive JavaScript maps"] {
 }
 
 .router-view {
-  min-height: 400px;
+  /* min-height: 400px; */
 }
 
 .selection {
@@ -314,7 +318,20 @@ a[title="Interactive JavaScript maps"] {
   }
 
 }
-
+.alerts-banner {
+  background-color: #C74523;
+  text-align: center;
+  color: #fff;
+  font-weight: light;
+  font-size: 0.8em;
+  padding: 10px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  opacity: 0.9;
+  z-index: 99;
+}
 .region-selector {
   background: none;
   font-size: 1.5rem;
