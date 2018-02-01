@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="padding: 0 1rem">
     <AllRegionsChart :genData="chartData" :refreshing="refreshing"></AllRegionsChart>
   </div>
 </template>

@@ -1,7 +1,7 @@
 <template>
   <div id="app" v-on:click="hideSelectors()">
     <div class="alerts-banner" v-if="!isWidgetRoute()">OpenNEM is currently in active development</div>
-    <header v-if="!isWidgetRoute()">
+    <header v-if="!isWidgetRoute()" style="padding: 0 1rem;">
       <h1 style=""><img src="/images/logotype.png" alt=""></h1>
 
       <!-- <div class="selection week-selection">
@@ -46,7 +46,7 @@
 
     <router-view class="router-view"></router-view>
 
-    <footer v-if="!isWidgetRoute()">
+    <footer v-if="!isWidgetRoute()" style="padding: 0 1rem;">
       <p style="">Source: <a href="https://www.aemo.com.au/">AEMO</a></p>
       <p class="smallprint">OpenNEM is a project of the <a href="http://energy-transition-hub.org/">Energy Transition Hub</a></p>
     </footer>

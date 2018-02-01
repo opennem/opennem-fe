@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper" v-bind:class="{ 'export-overlay': showExport }">
+  <div class="wrapper" style="padding: 0 1rem;" v-bind:class="{ 'export-overlay': showExport }">
     <div class="vis" v-bind:class="{ export: showExport }">
       <div class="chart">
         <div class="chart-export-buttons">
