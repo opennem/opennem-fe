@@ -2,7 +2,7 @@
   <div id="app" v-on:click="hideSelectors()">
     <div class="alerts-banner" v-if="!isWidgetRoute()">OpenNEM is currently in active development</div>
     <header v-if="!isWidgetRoute()">
-      <h1 style=""><img src="/images/logo.png" alt=""></h1>
+      <h1 style=""><img src="/images/logotype.png" alt=""></h1>
 
       <!-- <div class="selection week-selection">
         <div class="selected" v-on:click.stop="toggleWeekSelector(true)">
@@ -244,16 +244,40 @@ a[title="Interactive JavaScript maps"] {
     white-space: pre;
   }
 }
-
-
 #app {
-  padding: 0 20px;
   max-width: 1400px;
   margin: 0 auto;
 }
 
 .router-view {
   /* min-height: 400px; */
+}
+
+.button {
+  padding: 6px 6px 5px;
+  border-radius: 5px;
+  border: 1px dashed #bbb;
+  transition: all 0.2s ease-in-out;
+  color: #CB573A;
+  font-size: 0.85em;
+
+  img {
+    position: relative;
+    top: 1px;
+  }
+
+  &:hover {
+    border-style: solid;
+    border-color: #999;
+  }
+
+  &.clear {
+    background: none;
+
+    &:hover {
+      background-color: #fff;
+    }
+  }
 }
 
 .selection {
