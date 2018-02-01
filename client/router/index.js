@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+
+// Views
 import Home from '../views/Home'
+import Widget from '../views/Widget'
 import Max from '../views/Max'
 import MarketByRegion from '../views/MarketByRegion'
 import RegionByFT from '../views/RegionByFT'
@@ -29,6 +32,11 @@ export default new Router({
       name: 'generators',
       path: '/regions/:region/:ft',
       component: RegionByFT
+    },
+    {
+      name: 'widget',
+      path: '/widget',
+      component: Widget
     }
   ]
 })
