@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AllRegionsWidget :genData="chartData" :refreshing="refreshing"></AllRegionsWidget>
+    <AllRegionsGenerationWidget :genData="chartData" :refreshing="refreshing"></AllRegionsGenerationWidget>
   </div>
 </template>
 
@@ -10,11 +10,13 @@ import { mapGetters } from 'vuex'
 import axios from 'axios'
 import { getJSON } from '../utils/Firebase'
 import { generateChartData } from '../utils/DataHelpers'
-import AllRegionsWidget from '../components/AllRegionsWidget'
+import AllRegionsGenerationWidget from '../components/AllRegionsGenerationWidget'
+import AllRegionsGenerationPriceWidget from '../components/AllRegionsGenerationPriceWidget'
 
 export default {
   components: {
-    AllRegionsWidget
+    AllRegionsGenerationWidget,
+    AllRegionsGenerationPriceWidget
   },
   data() {
     return {
