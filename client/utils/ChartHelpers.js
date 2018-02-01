@@ -5,7 +5,7 @@ import { FUEL_TECH } from './FuelTechConfig'
 /** Default amCharts config **/
 export function chartConfig (config, forceGridCount) {
   const autoGridCount = !forceGridCount
-  const gridCount = 16
+  const gridCount = 3
 
   const defaultConfig = {
     path: 'dist/amcharts/',
@@ -32,11 +32,12 @@ export function chartConfig (config, forceGridCount) {
       equalSpacing: true,
       centerLabelOnFullPeriod: false,
       groupToPeriods: ['5mm', '30mm'],
+      boldPeriodBeginning: false,
       dateFormats: [
         { period: 'fff', format: '  JJ:NN' },
-        { period: 'ss', format: '  JJ:NN' },
-        { period: 'mm', format: '  JJ:NN' },
-        { period: 'hh', format: '  JJ:NN' },
+        { period: 'ss', format: '  D MMM\n JJ:NN' },
+        { period: 'mm', format: '  D MMM\n JJ:NN' },
+        { period: 'hh', format: '  D MMM\n JJ:NN' },
         { period: 'DD', format: '  EEE\n  D MMM' },
         { period: 'WW', format: '  EEE\n  D MMM' },
         { period: 'MM', format: '  EEE\n  D MMM' },

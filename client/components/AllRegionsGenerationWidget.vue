@@ -1,14 +1,25 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper" style="padding: .5rem; border-top: 1px solid #C74523">
     <div class="loader" v-if="refreshing"></div>
-      <div id="ft-vis"></div>
-      <div class="export-legend">
-        <div class="legend-graph" v-for="item in sourcesData" :key="item.id">
-          <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id, item.colour)}"></div>
-          {{getLabel(item.id)}}
-        </div>
-      </div>
+    
+    <div style="padding-bottom: .3rem;">
+      <a href="http://opennem.org.au" title="OpenNEM" target="_blank">
+        <img class="opennem-logo" src="/images/logo.png" alt="OpenNEM">
+      </a>
+      <a href="http://opennem.org.au" title="OpenNEM" target="_blank" style="float: right; margin-top: .2rem; margin-right: .2rem; font-size: .8rem;">
+        Info
+      </a>
     </div>
+    
+    <div id="ft-vis"></div>
+    
+
+    <!-- <div class="export-legend">
+      <div class="legend-graph" v-for="item in sourcesData" :key="item.id">
+        <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id, item.colour)}"></div>
+        {{getLabel(item.id)}}
+      </div>
+    </div> -->
   </div>
 </template>
 
@@ -29,6 +40,7 @@ import FtSummary from "./EnergyAverageValueTable";
 import { FUEL_TECH } from "../utils/FuelTechConfig";
 import EventBus from '../utils/EventBus';
 
+let _storedDisplayDate = null
 
 export default {
   components: {
@@ -126,6 +138,8 @@ export default {
       }
       this.chart = makeChart(this.chartData, this)
       this.chartRendered = true;
+
+      console.log(this.chart.panels[0].categoryAxis)
     }
   },
   beforeDestroy() {
@@ -189,6 +203,18 @@ function makeConfig(
         title: "Generation (MW)",
         showCategoryAxis: true,
         addClassNames: true,
+        // categoryAxis: {
+        //   labelFunction: function(valueText, date, categoryAxis) {
+        //     const mDate = moment(date)
+        //     let displayDate = ''
+
+        //     if (!_storedDisplayDate || (mDate.dayOfYear() !== _storedDisplayDate.dayOfYear())) {
+        //       _storedDisplayDate = moment(date)
+        //       displayDate = _storedDisplayDate.format('DD MMM ')
+        //     } 
+        //     return ' ' + mDate.format('ha') + '\n ' + displayDate
+        //   }
+        // },
         allLabels: [
           {
             text: "Generation (MW)",
@@ -221,7 +247,7 @@ function makeConfig(
         stockLegend: { enabled: false }
       }
     ]
-  });
+  }, true);
 }
 
 // function setOpacity(graph, opacity) {
@@ -262,9 +288,12 @@ function makeConfig(
 </script>
 
 <style scoped>
+.opennem-logo {
+  height: 20px;
+}
 #ft-vis {
   /* width: 300px; */
-  height: 200px;
+  height: 250px;
 }
 
 .wrapper {
@@ -273,6 +302,10 @@ function makeConfig(
   .chart {
     width: 100%;
   }
+}
+
+.button {
+  font-size: 0.75rem;
 }
 
 .export-legend {
