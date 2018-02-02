@@ -67,6 +67,7 @@
 
       <div class="datagrid" v-show="!showExport">
         <FtSummary
+          v-show="chartRendered"
           class="ft-summary"
           :tableData="tableData"
           :sourcesData="sourcesData"
@@ -235,6 +236,9 @@ export default {
         this.showExportAttribution = false
       }
     },
+    onChartRendered() {
+      this.chartRendered = true
+    }
   },
   watch: {
     genData(newData) {
@@ -244,7 +248,6 @@ export default {
         this.chart = null
       }
       this.chart = makeChart(this.chartData, this.noGuides, this)
-      this.chartRendered = true;
     }
   },
   beforeDestroy() {
@@ -296,6 +299,12 @@ function makeConfig(
   context
 ) {
   return chartConfig({
+    listeners: [
+      {
+        event: 'rendered',
+        method: context.onChartRendered
+      }
+    ],
     dataSets: [
       {
         dataProvider: chartData,

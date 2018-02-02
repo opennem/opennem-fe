@@ -65,6 +65,7 @@
 
       <div class="datagrid" v-show="!showExport">
         <FtSummary
+          v-show="chartRendered"
           :tableData="tableData"
           :sourcesData="sourcesData"
           :loadsData="loadsData"
@@ -343,6 +344,7 @@ export default {
   },
   data () {
     return {
+      chartRendered: false,
       chart: null,
       chartData: [],
       summaryData: null,
@@ -478,6 +480,9 @@ export default {
         this.showExportAttribution = false
       }
     },
+    onChartRendered() {
+      this.chartRendered = true
+    }
   },
 
   watch: {
@@ -493,8 +498,6 @@ export default {
           }
         })
       }
-
-      console.log(keys)
 
       if (this.chart) {
         this.chart.clear()
@@ -527,7 +530,7 @@ function makeChart (data, keys, context) {
     guides(startDate, endDate),
     mappings,
     stockGraphs(keys),
-    this
+    context
   )
 
   const listeners = [
@@ -552,10 +555,15 @@ function makeConfig (
   guides,
   fieldMappings,
   stockGraphs,
-  chartScrollbarSettings,
   context
 ) {
   return chartConfig({
+    listeners: [
+      {
+        event: 'rendered',
+        method: context.onChartRendered
+      }
+    ],
     dataSets: [
       {
         dataProvider: chartData,
