@@ -319,10 +319,17 @@ function makeConfig(
         addClassNames: true,
         allLabels: [
           {
-            text: "Generation (MW)",
+            text: "Generation",
             bold: true,
             x: 5,
             y: 5
+          },
+          {
+            text: "MW",
+            x: 70,
+            y: 7,
+            color: '#999',
+            size: 9
           }
         ],
         valueAxes: [

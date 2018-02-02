@@ -578,10 +578,17 @@ function makeConfig (
         showCategoryAxis: true,
         allLabels: [
           {
-            text: "Generation (MW)",
+            text: "Generation",
             bold: true,
             x: 5,
             y: 5
+          },
+          {
+            text: "MW",
+            x: 70,
+            y: 7,
+            color: '#999',
+            size: 9
           }
         ],
         valueAxes: [
@@ -612,10 +619,16 @@ function makeConfig (
         showCategoryAxis: false,
         allLabels: [
           {
-            text: "Price ($)",
+            text: "Price",
             bold: true,
             x: 5,
             y: 5
+          },
+          {
+            text: "$",
+            x: 35,
+            y: 5,
+            color: '#999',
           }
         ],
         valueAxes: [
@@ -754,10 +767,16 @@ function makeConfig (
         showCategoryAxis: false,
         allLabels: [
           {
-            text: "Temperature (°C)",
+            text: "Temperature",
             bold: true,
             x: 5,
             y: 5
+          },
+          {
+            text: "°C",
+            x: 80,
+            y: 5,
+            color: '#999',
           }
         ],
         valueAxes: [
