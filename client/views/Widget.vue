@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AllRegionsGenerationWidget :genData="chartData" :refreshing="refreshing"></AllRegionsGenerationWidget>
+    <AllRegionsGenerationWidget :genData="chartData" :size="size" :refreshing="refreshing"></AllRegionsGenerationWidget>
   </div>
 </template>
 
@@ -21,7 +21,8 @@ export default {
   data() {
     return {
       chartData: [],
-      refreshing: false
+      refreshing: false,
+      size: this.$route.params.size
     }
   },
   created() {
@@ -49,12 +50,17 @@ export default {
       // TODO: handle error
       fetchData.then((response) => {
         const resData = generateChartData(response.data)
-        const threeDaysAgo = moment().subtract(72, 'hours')
-        const trim = resData.filter(d => {
-          return moment(d.date).isSameOrAfter(threeDaysAgo)
-        })
 
-        this.chartData = trim
+        if (this.size === 'small') {
+          const threeDaysAgo = moment().subtract(72, 'hours')
+          const trim = resData.filter(d => {
+            return moment(d.date).isSameOrAfter(threeDaysAgo)
+          })
+          this.chartData = trim
+        } else {
+          this.chartData = resData
+        }
+        
       })
     },
   }

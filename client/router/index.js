@@ -35,7 +35,7 @@ export default new Router({
     },
     {
       name: 'widget',
-      path: '/widget',
+      path: '/widget/:size',
       component: Widget
     }
   ]

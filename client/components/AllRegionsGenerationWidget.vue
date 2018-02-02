@@ -1,23 +1,78 @@
 <template>
   <div class="wrapper" style="padding: .5rem; border-top: 1px solid #C74523">
-    <div class="loader" v-if="refreshing"></div>
-    
-    <div style="padding-bottom: 2px;" v-if="!refreshing">
-      <a href="http://opennem.org.au" title="OpenNEM" target="_blank">
-        <img class="opennem-logo" src="/images/logo.png" alt="OpenNEM">
-      </a>
-      <h4 style="margin: 0; display: inline-block; color: #C74523; position: relative; top: -8px;">National Electricity Market</h4>
+    <div v-if="isSmall()">
+      <div style="padding-bottom: 2px;">
+        <a href="http://opennem.org.au" title="OpenNEM" target="_blank">
+          <img class="opennem-logo" src="/images/logo.png" alt="OpenNEM">
+        </a>
+        <h4 style="margin: 0; display: inline-block; color: #C74523; position: relative; top: -8px;">National Electricity Market</h4>
+      </div>
+      
+      <div>
+        <div class="loader" v-if="refreshing"></div>
+        <div id="ft-vis"></div>
+      </div>
+      
+      <div style="padding-top: 6px; font-size: 0.55em; color: #666; text-align: left; border-top: 1px solid #aaa; position: relative;" v-if="!refreshing">
+        <!-- <a href="http://opennem.org.au" target="_blank">
+          OpenNEM
+        </a> -->
+        <span style="font-size: 0.9em; position: relative; top: -3px; left: 3px">
+          <a href="http://opennem.org.au" title="OpenNEM" target="_blank" style="">
+            OpenNEM
+          </a>
+          is a project of the
+          <a href="http://energy-transition-hub.org" target="_blank">
+            Energy Transition Hub
+          </a>
+        </span>
+      </div>
+
+      <div style="position: absolute; bottom: 5px; right: 10px;">
+        <a href="#" v-on:click.stop.prevent="toggleLegend()" style="font-size: 1em;">
+          <i class="far fa-list-alt"></i>
+        </a>
+        <a href="http://opennem.org.au" title="OpenNEM" target="_blank" style="font-size: 1em;">
+          <i class="fas fa-info-circle"></i>
+        </a>
+      </div>
+
+      <transition name="slide-fade">
+        <div class="export-legend" v-show="showLegend" style="position: absolute; top: 52px; right: 0; background: rgba(255,255,255,.95);">
+          <div class="legend-graph" style="display: block; padding-left: 5px;" v-for="item in sourcesData" :key="item.id">
+            <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id, item.colour)}"></div>
+            {{getLabel(item.id)}}
+          </div>
+        </div>
+      </transition>
     </div>
     
-    <div>
-      <div id="ft-vis"></div>
-    </div>
-    
-    <div style="padding-top: 6px; font-size: 0.55em; color: #666; text-align: left; border-top: 1px solid #aaa; position: relative;" v-if="!refreshing">
-      <!-- <a href="http://opennem.org.au" target="_blank">
-        OpenNEM
-      </a> -->
-      <span style="font-size: 0.9em; position: relative; top: -3px; left: 3px">
+    <div v-else>
+      <div style="padding-bottom: 2px;">
+        <a href="http://opennem.org.au" title="OpenNEM" target="_blank">
+          <img class="opennem-logo" src="/images/logo.png" alt="OpenNEM" style="height: 42px">
+        </a>
+        <h3 style="margin: 0; display: inline-block; color: #C74523; position: relative; top: -13px;">National Electricity Market</h3>
+      </div>
+
+      <div>
+        <div class="loader" v-if="refreshing"></div>
+        <div id="ft-vis"></div>
+      </div>
+      <div class="datagrid" v-show="chartRendered">
+        <FtSummary
+          class="ft-summary"
+          :tableData="tableData"
+          :sourcesData="sourcesData"
+          :loadsData="loadsData"
+          :pointData="pointData"
+          :dateFrom="start"
+          :dateTo="end"
+          :showPrice="false"
+          :hidePoint="hidePoint">
+        </FtSummary>
+      </div>
+      <div style="margin: 10px 0; font-size: 0.6em;" v-if="chartRendered">
         <a href="http://opennem.org.au" title="OpenNEM" target="_blank" style="">
           OpenNEM
         </a>
@@ -25,26 +80,8 @@
         <a href="http://energy-transition-hub.org" target="_blank">
           Energy Transition Hub
         </a>
-      </span>
-    </div>
-
-    <div style="position: absolute; bottom: 5px; right: 10px;">
-      <a href="#" v-on:click.stop.prevent="toggleLegend()" style="font-size: 1em;">
-        <i class="far fa-list-alt"></i>
-      </a>
-      <a href="http://opennem.org.au" title="OpenNEM" target="_blank" style="font-size: 1em;">
-        <i class="fas fa-info-circle"></i>
-      </a>
-    </div>
-
-    <transition name="slide-fade">
-      <div class="export-legend" v-show="showLegend" style="position: absolute; top: 52px; right: 0; background: rgba(255,255,255,.95);">
-        <div class="legend-graph" style="display: block; padding-left: 5px;" v-for="item in sourcesData" :key="item.id">
-          <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id, item.colour)}"></div>
-          {{getLabel(item.id)}}
-        </div>
       </div>
-    </transition>
+    </div>
   </div>
 </template>
 
@@ -82,6 +119,7 @@ export default {
   props: {
     genData: Array,
     refreshing: Boolean,
+    size: String,
   },
   data() {
     return {
@@ -100,6 +138,12 @@ export default {
     };
   },
   methods: {
+    isSmall() {
+      return this.size === 'small'
+    },
+    isLarge() {
+      return this.size === 'large'
+    },
     getLabel(id) {
       const label = FUEL_TECH[id] ? FUEL_TECH[id].label : id;
       return label;
@@ -144,23 +188,26 @@ export default {
       this.loadsData = this.summaryData.loadsData
     },
     onCursorHover(event) {
-      // if (event.index !== undefined) {
-      //   const data = event.target.categoryLineAxis.data[event.index];
-      //   const dataContext = data.dataContext;
-      //   const pointData = {
-      //     date: data.category
-      //   };
+      if (event.index !== undefined) {
+        const data = event.target.categoryLineAxis.data[event.index];
+        const dataContext = data.dataContext;
+        const pointData = {
+          date: data.category
+        };
 
-      //   Object.keys(FUEL_TECH).forEach(ft => {
-      //     pointData[ft] = dataContext[`${ft}Average`];
-      //   });
+        Object.keys(FUEL_TECH).forEach(ft => {
+          pointData[ft] = dataContext[`${ft}Average`];
+        });
 
-      //   this.pointData = pointData;
-      //   this.hidePoint = false;
-      // } else {
-      //   this.hidePoint = true;
-      // }
+        this.pointData = pointData;
+        this.hidePoint = false;
+      } else {
+        this.hidePoint = true;
+      }
     },
+    onChartRendered() {
+      this.chartRendered = true
+    }
   },
   watch: {
     genData(newData) {
@@ -170,9 +217,6 @@ export default {
         this.chart = null
       }
       this.chart = makeChart(this.chartData, this)
-      this.chartRendered = true;
-
-      console.log(this.chart.panels[0].categoryAxis)
     }
   },
   beforeDestroy() {
@@ -223,7 +267,15 @@ function makeConfig(
   stockGraphs,
   context
 ) {
+  const forceGridCount = context.size === 'small' ? true : false
+
   return chartConfig({
+    listeners: [
+      {
+        event: 'rendered',
+        method: context.onChartRendered
+      }
+    ],
     dataSets: [
       {
         dataProvider: chartData,
@@ -256,7 +308,7 @@ function makeConfig(
             y: 5
           },
           {
-            text: "(GW)",
+            text: "GW",
             x: 70,
             y: 7,
             color: '#999',
@@ -317,7 +369,7 @@ function makeConfig(
         stockLegend: { enabled: false }
       }
     ]
-  }, true);
+  }, forceGridCount);
 }
 
 // function setOpacity(graph, opacity) {
