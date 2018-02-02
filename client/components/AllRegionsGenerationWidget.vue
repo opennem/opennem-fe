@@ -17,9 +17,6 @@
       <!-- <a href="http://opennem.org.au" target="_blank">
         OpenNEM
       </a> -->
-      <a href="#" v-on:click.stop.prevent="toggleLegend()" style="font-size: 1.8em;">
-        <i class="far fa-list-alt"></i>
-      </a>
       <span style="font-size: 0.9em; position: relative; top: -3px; left: 3px">
         <a href="http://opennem.org.au" title="OpenNEM" target="_blank" style="">
           OpenNEM
@@ -31,12 +28,17 @@
       </span>
     </div>
 
-    <a href="http://opennem.org.au" title="OpenNEM" target="_blank" style="position: absolute; bottom: 9px; right: 10px; font-size: 1em;">
-      <i class="fas fa-info-circle"></i>
-    </a>
+    <div style="position: absolute; bottom: 5px; right: 10px;">
+      <a href="#" v-on:click.stop.prevent="toggleLegend()" style="font-size: 1em;">
+        <i class="far fa-list-alt"></i>
+      </a>
+      <a href="http://opennem.org.au" title="OpenNEM" target="_blank" style="font-size: 1em;">
+        <i class="fas fa-info-circle"></i>
+      </a>
+    </div>
 
     <transition name="slide-fade">
-      <div class="export-legend" v-show="showLegend" style="position: absolute; top: 52px; left: 0; background: rgba(255,255,255,.95);">
+      <div class="export-legend" v-show="showLegend" style="position: absolute; top: 52px; right: 0; background: rgba(255,255,255,.95);">
         <div class="legend-graph" style="display: block; padding-left: 5px;" v-for="item in sourcesData" :key="item.id">
           <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id, item.colour)}"></div>
           {{getLabel(item.id)}}
