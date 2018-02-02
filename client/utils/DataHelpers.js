@@ -122,14 +122,16 @@ export function generateChartData (data) {
 
     newChartData.push(obj)
   })
-
+  
   newChartData.sort((a, b) => {
     return moment(a.date).valueOf() - moment(b.date).valueOf()
   })
 
-  console.log(newChartData)
+  const updatedChartData = newChartData.filter(d => {
+    return moment(d.date).isSameOrBefore(moment())
+  })
 
-  return newChartData.slice(0)
+  return updatedChartData.slice(0)
 }
 
 /**
