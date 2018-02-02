@@ -12,6 +12,7 @@ export function generateChartData (data) {
   const container = {}
   const ftPriceIntervals = {}
   let shortestInterval = null
+  let lastGenerationTime = null
 
   // Find out what FT key (and price) is available in this dataset
   const keys = []
@@ -22,6 +23,10 @@ export function generateChartData (data) {
 
     if (find || hasPrice || hasTemperature) {
       keys.push(ftKey)
+
+      if (!lastGenerationTime && find) {
+        lastGenerationTime = find.history.last
+      }
 
       /** if there is a price key,
            create two more keys to split the positive and negative values of price
@@ -128,7 +133,7 @@ export function generateChartData (data) {
   })
 
   const updatedChartData = newChartData.filter(d => {
-    return moment(d.date).isSameOrBefore(moment())
+    return moment(d.date).isSameOrBefore(moment(lastGenerationTime))
   })
 
   return updatedChartData.slice(0)
