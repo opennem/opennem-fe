@@ -341,6 +341,10 @@ a[title="Interactive JavaScript maps"] {
   top: -10px;
 }
 
+.amcharts-value-axis .amcharts-axis-label {
+  fill: #000;
+  text-shadow: 2px 2px 2px rgba(200,200,200,.5);
+}
 .amcharts-stock-panel-div-stockPanel1 {
   .amcharts-category-axis {
     .amcharts-axis-line {

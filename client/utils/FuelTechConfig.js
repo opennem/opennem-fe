@@ -76,7 +76,7 @@ export const FUEL_TECH = {
     label: 'Imports'
   },
   'black_coal': {
-    colour: '#000',
+    colour: '#121212',
     type: 'sources',
     label: 'Black Coal',
     categoryId: 'coal'
