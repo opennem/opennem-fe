@@ -79,6 +79,7 @@ module.exports = {
       }
     ]),
     new CopyWebpackPlugin([{ from: 'node_modules/amstock3/amcharts/images', to: 'amcharts/images' },]),
+    new CopyWebpackPlugin([{ from: 'build/widgets.html', to: '' },]),
   ],
   target: _.target
 }
