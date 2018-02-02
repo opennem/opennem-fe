@@ -784,7 +784,7 @@ function makeConfig (
             id: 'v5',
             dashLength: 7,
             zeroGridAlpha: 0,
-            maximum: 45,
+            maximum: 50,
             minimum: 0,
             gridAlpha: 0,
             labelsEnabled: false,
