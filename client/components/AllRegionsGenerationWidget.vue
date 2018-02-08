@@ -32,7 +32,7 @@
         <a href="#" v-on:click.stop.prevent="toggleLegend()" style="font-size: 1em;">
           <i class="far fa-list-alt"></i>
         </a>
-        <a href="http://opennem.org.au" title="OpenNEM" target="_blank" style="font-size: 1em;">
+        <a href="http://reneweconomy.com.au/opennem-widget/" title="OpenNEM" target="_blank" style="font-size: 1em;">
           <i class="fas fa-info-circle"></i>
         </a>
       </div>
