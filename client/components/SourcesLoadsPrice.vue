@@ -83,7 +83,7 @@
 
 <style scoped>
 #ft-vis {
-  height: 550px;
+  height: 600px;
 }
 
 .axis-title {
@@ -134,7 +134,7 @@
     }
 
     #ft-vis {
-      height: 550px;
+      height: 600px;
     }
 
     .axis-title {
@@ -297,7 +297,7 @@
 
 @media only screen and (min-width: 960px) {
   #ft-vis {
-    height: 600px;
+    height: 650px;
   }
   .vis {
     display: flex;
@@ -763,7 +763,7 @@ function makeConfig (
       },
       {
         title: '',
-        percentHeight: 10,
+        percentHeight: 15,
         showCategoryAxis: false,
         allLabels: [
           {
@@ -826,10 +826,19 @@ function makeConfig (
                 lineAlpha: 1
               },
               {
+                includeGuidesInMinMax: false,
+                value: 40,
+                label: '40',
+                dashLength: 7,
+                lineColor: "#bbb",
+                lineThickness: 1,
+                lineAlpha: 1
+              },
+              {
                 fillAlpha: 0.3,
                 fillColor: '#fff',
                 value: 0,
-                toValue: 45,
+                toValue: 60,
               }
             ]
           }
