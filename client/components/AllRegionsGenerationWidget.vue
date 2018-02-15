@@ -2,7 +2,7 @@
   <div class="wrapper" style="padding: .5rem; border-top: 1px solid #C74523">
     <div v-if="isSmall()">
       <div style="padding-bottom: 2px;">
-        <a href="http://opennem.org.au" title="OpenNEM" target="_blank">
+        <a v-bind:href="getURLString()" title="OpenNEM Widget" target="_blank">
           <img class="opennem-logo" src="/images/logo.png" alt="OpenNEM">
         </a>
         <h4 style="margin: 0; display: inline-block; color: #C74523; position: relative; top: -8px;">National Electricity Market</h4>
@@ -14,11 +14,8 @@
       </div>
       
       <div style="padding-top: 6px; font-size: 0.55em; color: #666; text-align: left; border-top: 1px solid #aaa; position: relative;" v-if="!refreshing">
-        <!-- <a href="http://opennem.org.au" target="_blank">
-          OpenNEM
-        </a> -->
         <span style="font-size: 0.9em; position: relative; top: -3px; left: 3px">
-          <a href="http://opennem.org.au" title="OpenNEM" target="_blank" style="">
+          <a v-bind:href="getURLString()" title="OpenNEM Widget" target="_blank" style="">
             OpenNEM
           </a>
           is a project of the
@@ -32,7 +29,7 @@
         <a href="#" v-on:click.stop.prevent="toggleLegend()" style="font-size: 1em;">
           <i class="far fa-list-alt"></i>
         </a>
-        <a href="http://reneweconomy.com.au/opennem-widget/" title="OpenNEM" target="_blank" style="font-size: 1em;">
+        <a v-bind:href="getURLString()" title="OpenNEM Widget" target="_blank" style="font-size: 1em;">
           <i class="fas fa-info-circle"></i>
         </a>
       </div>
@@ -49,7 +46,7 @@
     
     <div v-else>
       <div style="padding-bottom: 2px;">
-        <a href="http://opennem.org.au" title="OpenNEM" target="_blank">
+        <a v-bind:href="getURLString()" title="OpenNEM Widget" target="_blank">
           <img class="opennem-logo" src="/images/logo.png" alt="OpenNEM" style="height: 42px">
         </a>
         <h3 style="margin: 0; display: inline-block; color: #C74523; position: relative; top: -13px;">National Electricity Market</h3>
@@ -143,6 +140,9 @@ export default {
     },
     isLarge() {
       return this.size === 'large'
+    },
+    getURLString() {
+      return this.isSmall() ? 'http://reneweconomy.com.au/opennem-widget/' : 'http://opennem.org.au/'
     },
     getLabel(id) {
       const label = FUEL_TECH[id] ? FUEL_TECH[id].label : id;
