@@ -48,7 +48,7 @@
 
           <div class="export-annotations export-annotations-bottom" v-show="showExport">
             <span>
-              sources <strong>AEMO, OpenNEM</strong>
+              sources <strong>AEMO, BOM, OpenNEM</strong>
             </span>
 
             <div class="annotation-buttons annotation-buttons-right">
