@@ -1,37 +1,59 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title><%= htmlWebpackPlugin.options.title %></title>
-    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
-    <style>
+
+<head>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="apple-touch-icon-precomposed" sizes="57x57" href="icons/apple-touch-icon-57x57.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="icons/apple-touch-icon-114x114.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="icons/apple-touch-icon-72x72.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="icons/apple-touch-icon-144x144.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="60x60" href="icons/apple-touch-icon-60x60.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="120x120" href="icons/apple-touch-icon-120x120.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="76x76" href="icons/apple-touch-icon-76x76.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="152x152" href="icons/apple-touch-icon-152x152.png" />
+  <link rel="icon" type="image/png" href="icons/favicon-196x196.png" sizes="196x196" />
+  <link rel="icon" type="image/png" href="icons/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/png" href="icons/favicon-32x32.png" sizes="32x32" />
+  <link rel="icon" type="image/png" href="icons/favicon-16x16.png" sizes="16x16" />
+  <link rel="icon" type="image/png" href="icons/favicon-128.png" sizes="128x128" />
+
+  <title>
+    <%= htmlWebpackPlugin.options.title %>
+  </title>
+  <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+  <style>
     html {
       box-sizing: border-box;
     }
-    *, *:before, *:after {
+
+    *,
+    *:before,
+    *:after {
       box-sizing: inherit;
     }
-    body {  
+
+    body {
       background: #ece9e6;
       margin: 0;
       font-family: "Merriweather", serif;
     }
-    
-    </style>
-  </head>
-  <body>
-    <div id="app"></div>
+  </style>
+</head>
 
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-113446419-1"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<body>
+  <div id="app"></div>
 
-      gtag('config', 'UA-113446419-1');
-    </script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-113446419-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
 
-  </body>
+    gtag('config', 'UA-113446419-1');
+  </script>
+
+</body>
+
 </html>
