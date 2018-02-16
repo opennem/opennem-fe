@@ -1,7 +1,7 @@
 <template>
   <div id="app" v-on:click="hideSelectors()">
     <div class="alerts-banner" v-if="!isWidgetRoute()">OpenNEM is currently in active development</div>
-    <header v-if="!isWidgetRoute()" style="padding: 0 1rem;">
+    <header v-if="!isWidgetRoute()">
       <h1 style=""><img src="/images/logotype.png" alt=""></h1>
 
       <!-- <div class="selection week-selection">
@@ -185,47 +185,6 @@ button {
   font-family: "Merriweather", serif;
 }
 
-header {
-  /* position: sticky;
-  top: 40px;
-  z-index: 99; */
-  display: flex;
-  flex: 1;
-  margin: 50px 0 10px;
-
-  h1 {
-    font-size: 1.1em;
-    font-weight: 200;
-    /* padding: 3px 0 13px; */
-    flex-grow: 1;
-    text-align: right;
-    padding-right: 20px;
-    border-right: 1px dashed #ccc;
-  }
-
-  .menu-options {
-    flex-grow: 1;
-    width: 100%;
-    padding-left: 20px;
-  }
-
-  img {
-    height: 40px;
-    transition: all 0.25s linear;
-  }
-}
-
-footer {
-  font-size: 0.8em;
-  color: #999;
-  margin: 40px 0 20px;
-  padding-top: 13px;
-
-  .smallprint {
-    
-  }
-}
-
 a {
   color: #C74523;
   /* border-bottom: 1px solid rgba(199,69,35,0.9); */
@@ -247,6 +206,45 @@ a[title="Interactive JavaScript maps"] {
 #app {
   max-width: 1400px;
   margin: 0 auto;
+
+  > header {
+    padding: 0 1rem;
+    display: flex;
+    flex: 1;
+    margin: 50px 0 10px;
+
+    h1 {
+      font-size: 1.1em;
+      font-weight: 200;
+      /* padding: 3px 0 13px; */
+      flex-grow: 1;
+      text-align: right;
+      padding-right: 20px;
+      border-right: 1px dashed #ccc;
+    }
+
+    .menu-options {
+      flex-grow: 1;
+      width: 100%;
+      padding-left: 20px;
+    }
+
+    img {
+      height: 40px;
+      transition: all 0.25s linear;
+    }
+  }
+
+  > footer {
+    font-size: 0.8em;
+    color: #999;
+    margin: 40px 0 20px;
+    padding-top: 13px;
+
+    .smallprint {
+      
+    }
+  }
 }
 
 .router-view {

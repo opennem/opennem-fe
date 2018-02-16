@@ -1,42 +1,42 @@
 <template>
-  <div class="wrapper" style="padding: .5rem; border-top: 1px solid #C74523">
+  <div class="wrapper">
     <div v-if="isSmall()">
-      <div style="padding-bottom: 2px;">
+      <header>
         <a v-bind:href="getURLString()" title="OpenNEM Widget" target="_blank">
           <img class="opennem-logo" src="/images/logo.png" alt="OpenNEM">
         </a>
-        <h4 style="margin: 0; display: inline-block; color: #C74523; position: relative; top: -8px;">National Electricity Market</h4>
-      </div>
+        <h4>National Electricity Market</h4>
+      </header>
       
       <div>
         <div class="loader" v-if="refreshing"></div>
         <div id="ft-vis"></div>
       </div>
-      
-      <div style="padding-top: 6px; font-size: 0.55em; color: #666; text-align: left; border-top: 1px solid #aaa; position: relative;" v-if="!refreshing">
-        <span style="font-size: 0.9em; position: relative; top: -3px; left: 3px">
-          <a v-bind:href="getURLString()" title="OpenNEM Widget" target="_blank" style="">
+
+      <footer>
+        <div class="acknowledgements" v-if="!refreshing">
+          <a v-bind:href="getURLString()" title="OpenNEM Widget" target="_blank">
             OpenNEM
           </a>
           is a project of the
           <a href="http://energy-transition-hub.org" target="_blank">
             Energy Transition Hub
           </a>
-        </span>
-      </div>
+        </div>
 
-      <div style="position: absolute; bottom: 5px; right: 10px;">
-        <a href="#" v-on:click.stop.prevent="toggleLegend()" style="font-size: 1em;">
-          <i class="far fa-list-alt"></i>
-        </a>
-        <a v-bind:href="getURLString()" title="OpenNEM Widget" target="_blank" style="font-size: 1em;">
-          <i class="fas fa-info-circle"></i>
-        </a>
-      </div>
+        <div class="options">
+          <a href="#" v-on:click.stop.prevent="toggleLegend()">
+            <i class="far fa-list-alt"></i>
+          </a>
+          <a v-bind:href="getURLString()" title="OpenNEM Widget" target="_blank">
+            <i class="fas fa-info-circle"></i>
+          </a>
+        </div>
+      </footer>
 
       <transition name="slide-fade">
-        <div class="export-legend" v-show="showLegend" style="position: absolute; top: 52px; right: 0; background: rgba(255,255,255,.95);">
-          <div class="legend-graph" style="display: block; padding-left: 5px;" v-for="item in sourcesData" :key="item.id">
+        <div class="export-legend" v-show="showLegend">
+          <div class="legend-graph" v-for="item in sourcesData" :key="item.id">
             <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id, item.colour)}"></div>
             {{getLabel(item.id)}}
           </div>
@@ -44,13 +44,13 @@
       </transition>
     </div>
     
-    <div v-else>
-      <div style="padding-bottom: 2px;">
+    <div class="large-widget" v-else>
+      <header>
         <a v-bind:href="getURLString()" title="OpenNEM Widget" target="_blank">
           <img class="opennem-logo" src="/images/logo.png" alt="OpenNEM" style="height: 42px">
         </a>
-        <h3 style="margin: 0; display: inline-block; color: #C74523; position: relative; top: -13px;">National Electricity Market</h3>
-      </div>
+        <h3>National Electricity Market</h3>
+      </header>
 
       <div>
         <div class="loader" v-if="refreshing"></div>
@@ -69,15 +69,15 @@
           :hidePoint="hidePoint">
         </FtSummary>
       </div>
-      <div style="margin: 10px 0; font-size: 0.6em;" v-if="chartRendered">
-        <a href="http://opennem.org.au" title="OpenNEM" target="_blank" style="">
+      <footer v-if="chartRendered">
+        <a href="http://opennem.org.au" title="OpenNEM" target="_blank">
           OpenNEM
         </a>
         is a project of the
         <a href="http://energy-transition-hub.org" target="_blank">
           Energy Transition Hub
         </a>
-      </div>
+      </footer>
     </div>
   </div>
 </template>
@@ -420,9 +420,58 @@ function makeConfig(
 
 .wrapper {
   position: relative;
+  padding: .5rem; 
+  border-top: 1px solid #C74523;
 
   .chart {
     width: 100%;
+  }
+
+  header {
+    padding-bottom: 2px;
+
+    h3 {
+      margin: 0; 
+      display: inline-block; 
+      color: #C74523; 
+      position: relative; 
+      top: -13px;
+    }
+
+    h4 {
+      margin: 0; 
+      display: inline-block; 
+      color: #C74523; 
+      position: relative; 
+      top: -8px;
+    }
+  }
+
+  footer {
+    .acknowledgements {
+      padding-top: 6px; 
+      font-size: 0.55em; 
+      color: #666; 
+      text-align: left; 
+      border-top: 1px solid #aaa; 
+      position: relative;
+      left: 3px;
+    }
+
+    .options {
+      position: absolute; 
+      bottom: 5px; 
+      right: 10px;
+
+      a {
+        font-size: 1em;
+      }
+    }
+  }
+
+  .large-widget footer {
+    margin: 10px 0; 
+    font-size: 0.6em;
   }
 }
 
@@ -435,11 +484,16 @@ function makeConfig(
   color: #000;
   padding-top: 5px;
   padding-bottom: 0;
+  position: absolute; 
+  top: 52px; 
+  right: 0; 
+  background: rgba(255,255,255,.95);
 
   .legend-graph {
-    display: inline-block;
     margin-right: 10px;
     margin-bottom: 5px;
+    display: block; 
+    padding-left: 5px;
   }
 
   .colour-sq {
