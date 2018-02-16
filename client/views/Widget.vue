@@ -50,9 +50,15 @@ export default {
       // TODO: handle error
       fetchData.then((response) => {
         const resData = generateChartData(response.data)
+        let lastDate = null
+        try {
+          lastDate = response.data[0].history.last
+        } catch (e) {
+          console.error('Cannot get the last date in history.')
+        }
 
         if (this.size === 'small') {
-          const threeDaysAgo = moment().subtract(72, 'hours')
+          const threeDaysAgo = moment(lastDate).subtract(72, 'hours')
           const trim = resData.filter(d => {
             return moment(d.date).isSameOrAfter(threeDaysAgo)
           })
