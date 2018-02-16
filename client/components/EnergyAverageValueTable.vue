@@ -5,8 +5,12 @@
         <!-- range info -->
         <th v-if="hidePoint" v-bind:colspan="showPrice ? 5 : 4">{{formatDate(dateFrom)}} – {{formatDate(dateTo)}}</th>
         <!-- point info -->
-        <th v-if="!hidePoint" colspan="2" style="text-align: left">{{formatNumber(pointData.temperature)}}<small>°C</small></th>        
-        <th v-if="!hidePoint" v-bind:colspan="showPrice ? 3 : 2">{{formatDate(pointData.date)}}</th>
+        <th v-if="!hidePoint" colspan="2" style="text-align: left">
+          <span v-if="showPrice">
+            {{formatNumber(pointData.temperature)}}<small>°C</small>
+          </span>
+        </th>        
+        <th v-if="!hidePoint" v-bind:colspan="showPrice ? 4 : 3">{{formatDate(pointData.date)}}</th>
       </tr>
       <tr>
         <th colspan="2"></th>
