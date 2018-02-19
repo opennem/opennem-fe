@@ -1,3 +1,4 @@
+import * as _ from 'lodash'
 import * as moment from 'moment'
 import { FUEL_TECH } from './FuelTechConfig'
 
@@ -355,7 +356,7 @@ function parseInterval (string) {
   const key = string.charAt(length - 1)
   const value = (length === 1) ? 1 : parseInt(string.substring(0, length - 1))
 
-  if (durationKeys.includes(key)) {
+  if (_.includes(durationKeys, key)) {
     return {
       key,
       value
