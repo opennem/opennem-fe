@@ -179,6 +179,11 @@ export default {
 @import url('../../node_modules/formbase/dist/formbase.min.css');
 @import url("https://fonts.googleapis.com/css?family=Merriweather:300,400,700");
 
+@import url('../styles/loader.css');
+@import url('../styles/transitions.css');
+@import url('../styles/chart.css');
+
+
 select,
 option,
 button {
@@ -191,18 +196,7 @@ a {
   /* text-decoration: none; */
   text-decoration: underline dotted rgba(199,69,35,0.6);
 }
-a[title="JavaScript charts"],
-a[title="Interactive JavaScript maps"] {
-  display: none !important;
-}
 
-.amcharts-axis-label {
-  text-anchor: start;
-
-  tspan {
-    white-space: pre;
-  }
-}
 #app {
   max-width: 1400px;
   margin: 0 auto;
@@ -245,10 +239,6 @@ a[title="Interactive JavaScript maps"] {
       
     }
   }
-}
-
-.router-view {
-  /* min-height: 400px; */
 }
 
 .selection {
@@ -339,88 +329,6 @@ a[title="Interactive JavaScript maps"] {
   top: -10px;
 }
 
-.amcharts-value-axis .amcharts-axis-label {
-  fill: #000;
-  text-shadow: 2px 2px 2px rgba(200,200,200,.5);
-}
-.amcharts-stock-panel-div-stockPanel1 {
-  .amcharts-category-axis {
-    .amcharts-axis-line {
-      stroke-opacity: 0;
-    }
-  }
-
-  .amcharts-value-axis {
-    g:first-child .amcharts-axis-grid {
-      stroke-opacity: 0;
-    }
-  }
-}
-.amcharts-stock-panel-div-stockPanel2 {
-  .amcharts-category-axis {
-    .amcharts-axis-line {
-      stroke-opacity: 0;
-    }
-  }
-
-  .amcharts-value-axis {
-    g:first-child .amcharts-axis-grid {
-      stroke-opacity: 0;
-    }
-  }
-}
-.amcharts-stock-panel-div-stockPanel3 {
-  .amcharts-category-axis {
-    .amcharts-axis-line {
-      stroke-opacity: 0;
-    }
-  }
-
-  .amcharts-value-axis {
-    g:first-child .amcharts-axis-grid {
-      stroke-opacity: 0;
-    }
-  }
-}
-/* .amcharts-stock-panel-div-stockPanel4 {
-  .amcharts-category-axis {
-    .amcharts-axis-line {
-      stroke-opacity: 1;
-    }
-  }
-
-  .amcharts-value-axis {
-    g:first-child .amcharts-axis-grid {
-      stroke-opacity: 0;
-    }
-  }
-} */
-.amcharts-stock-panel-div-stockPanel2 {
-  margin-top: -11px !important;
-}
-.export .amcharts-stock-panel-div-stockPanel2 {
-  margin-top: -11px !important;
-}
-.amcharts-stock-panel-div-stockPanel3 {
-  margin-top: -2px !important;
-}
-.export .amcharts-stock-panel-div-stockPanel3 {
-  margin-top: -1px !important;
-}
-.amcharts-stock-panel-div-stockPanel4 {
-  margin-top: -2px !important;
-}
-.export .amcharts-stock-panel-div-stockPanel4 {
-  margin-top: -1px !important;
-}
-
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0
-}
-
 @media only screen and (min-width: 960px) {
   header {
     img {
@@ -444,80 +352,6 @@ a[title="Interactive JavaScript maps"] {
     float: right; 
     margin-top: -29px;
   }
-  .amcharts-stock-panel-div-stockPanel2 {
-    margin-top: -12px !important;
-  }
-  .amcharts-stock-panel-div-stockPanel3 {
-    margin-top: -2px !important;
-  }
-  .amcharts-stock-panel-div-stockPanel4 {
-    margin-top: -2px !important;
-  }
 }
 
-
-/* loading icon */
-.loader {
-  font-size: 10px;
-  margin: 50px auto;
-  text-indent: -9999em;
-  width: 2em;
-  height: 2em;
-  border-radius: 50%;
-  background: #000000;
-  background: -moz-linear-gradient(left, #000000 10%, rgba(0, 0, 0, 0) 42%);
-  background: -webkit-linear-gradient(left, #000000 10%, rgba(0, 0, 0, 0) 42%);
-  background: -o-linear-gradient(left, #000000 10%, rgba(0, 0, 0, 0) 42%);
-  background: -ms-linear-gradient(left, #000000 10%, rgba(0, 0, 0, 0) 42%);
-  background: linear-gradient(to right, #000000 10%, rgba(0, 0, 0, 0) 42%);
-  position: relative;
-  -webkit-animation: load3 0.5s infinite linear;
-  animation: load3 0.5s infinite linear;
-  -webkit-transform: translateZ(0);
-  -ms-transform: translateZ(0);
-  transform: translateZ(0);
-}
-.loader:before {
-  width: 50%;
-  height: 50%;
-  background: #000000;
-  border-radius: 100% 0 0 0;
-  position: absolute;
-  top: 0;
-  left: 0;
-  content: "";
-}
-.loader:after {
-  background: #ece9e6;
-  width: 75%;
-  height: 75%;
-  border-radius: 50%;
-  content: "";
-  margin: auto;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-}
-@-webkit-keyframes load3 {
-  0% {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
-}
-@keyframes load3 {
-  0% {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
-}
 </style>

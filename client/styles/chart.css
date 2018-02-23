@@ -1,0 +1,56 @@
+a[title="JavaScript charts"],
+a[title="Interactive JavaScript maps"] {
+  display: none !important;
+}
+
+.amcharts-axis-label {
+  text-anchor: start;
+}
+
+.amcharts-axis-label tspan {
+  white-space: pre;
+}
+
+.amcharts-value-axis .amcharts-axis-label {
+  fill: #000;
+  text-shadow: 2px 2px 2px rgba(200,200,200,.5);
+}
+.amcharts-stock-panel-div-stockPanel1 .amcharts-category-axis .amcharts-axis-line,
+.amcharts-stock-panel-div-stockPanel1 .amcharts-value-axis g:first-child .amcharts-axis-grid,
+.amcharts-stock-panel-div-stockPanel2 .amcharts-category-axis .amcharts-axis-line,
+.amcharts-stock-panel-div-stockPanel2 .amcharts-value-axis g:first-child .amcharts-axis-grid,
+.amcharts-stock-panel-div-stockPanel3 .amcharts-category-axis .amcharts-axis-line,
+.amcharts-stock-panel-div-stockPanel3 .amcharts-value-axis g:first-child .amcharts-axis-grid {
+  stroke-opacity: 0;
+}
+
+.amcharts-stock-panel-div-stockPanel2 {
+  margin-top: -11px !important;
+}
+.export .amcharts-stock-panel-div-stockPanel2 {
+  margin-top: -11px !important;
+}
+.amcharts-stock-panel-div-stockPanel3 {
+  margin-top: -2px !important;
+}
+.export .amcharts-stock-panel-div-stockPanel3 {
+  margin-top: -1px !important;
+}
+.amcharts-stock-panel-div-stockPanel4 {
+  margin-top: -2px !important;
+}
+.export .amcharts-stock-panel-div-stockPanel4 {
+  margin-top: -1px !important;
+}
+
+@media only screen and (min-width: 960px) {
+  .amcharts-stock-panel-div-stockPanel2 {
+    margin-top: -12px !important;
+  }
+  .amcharts-stock-panel-div-stockPanel3 {
+    margin-top: -2px !important;
+  }
+  .amcharts-stock-panel-div-stockPanel4 {
+    margin-top: -2px !important;
+  }
+}
