@@ -16,7 +16,18 @@ export default new Router({
     {
       name: 'home',
       path: '/',
-      component: Home
+      component: Home,
+      meta: {
+        analytics: {
+          pageviewTemplate (route) {
+            return {
+              title: 'All Regions',
+              path: route.path,
+              location: window.location.href
+            }
+          }
+        }
+      }
     },
     {
       name: 'max',
@@ -26,7 +37,19 @@ export default new Router({
     {
       name: 'regions',
       path: '/regions/:region',
-      component: MarketByRegion
+      component: MarketByRegion,
+      meta: {
+        analytics: {
+          pageviewTemplate (route) {
+            const region = route.params.region || '';
+            return {
+              title: 'Region — ' + region,
+              path: route.path,
+              location: window.location.href
+            }
+          }
+        }
+      }
     },
     {
       name: 'generators',
@@ -36,7 +59,19 @@ export default new Router({
     {
       name: 'widget',
       path: '/widget/:size',
-      component: Widget
+      component: Widget,
+      meta: {
+        analytics: {
+          pageviewTemplate (route) {
+            const size = route.params.size || '';
+            return {
+              title: 'Widget — ' + size,
+              path: route.path,
+              location: window.location.href
+            }
+          }
+        }
+      }
     }
   ]
 })

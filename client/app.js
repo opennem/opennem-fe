@@ -14,7 +14,10 @@ sync(store, router)
 
 Vue.use(VueAnalytics, {
   id: 'UA-113446419-1',
-  router
+  router,
+  autoTracking: {
+    pageviewOnLoad: false
+  }
 })
 
 const app = new Vue({
