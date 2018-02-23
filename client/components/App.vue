@@ -46,8 +46,8 @@
 
     <router-view class="router-view"></router-view>
 
-    <footer v-if="!isWidgetRoute()" style="padding: 0 1rem;">
-      <p style="">Source: <a href="https://www.aemo.com.au/">AEMO</a>, <a href="http://www.bom.gov.au/">BOM</a></p>
+    <footer v-if="!isWidgetRoute()">
+      <p>Source: <a href="https://www.aemo.com.au/">AEMO</a>, <a href="http://www.bom.gov.au/">BOM</a></p>
       <p class="smallprint">OpenNEM is a project of the <a href="http://energy-transition-hub.org/">Energy Transition Hub</a></p>
     </footer>
   </div>
@@ -232,8 +232,8 @@ a {
   > footer {
     font-size: 0.8em;
     color: #999;
-    margin: 40px 0 20px;
-    padding-top: 13px;
+    margin: 20px 0 20px;
+    padding: 13px 1rem;
 
     .smallprint {
       
