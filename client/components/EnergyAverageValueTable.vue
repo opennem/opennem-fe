@@ -58,7 +58,7 @@
         <!-- <td v-if="hidePoint">{{formatNumber(item.range.totalPower)}}</td> -->
         <td v-if="hidePoint">
           <span v-if="item.range.energy > 0">
-            {{formatNumber(item.range.totalPower/rangeTotal*100, '0,0', '%')}}
+            {{displayRangeTotalPercent(item)}}
           </span>
           <span v-else>-</span>
         </td>
@@ -107,12 +107,7 @@
           <span v-else>-</span>
         </td>
         <!-- <td v-if="hidePoint">{{formatNumber(item.range.totalPower)}}</td> -->
-        <td v-if="hidePoint">
-          <span v-if="item.range.energy <= 0">
-            {{formatNumber(item.range.totalPower/rangeTotal*100, '0,0', '%')}}
-          </span>
-          <span v-else>-</span>
-        </td>
+        <td v-if="hidePoint"></td>
         <td v-if="showPrice && hidePoint">
           <span v-if="item.range.energy <= 0">
             {{formatNumber(item.range.averagePrice, '$0,0.00')}}
@@ -125,10 +120,7 @@
           <span v-if="pointData[item.id] <= 0">{{formatNumber(pointData[item.id])}}</span>
           <span v-else>-</span>
         </td>
-        <td v-if="!hidePoint">
-          <span v-if="pointData[item.id] <= 0">{{displayPointTotalPercent(item)}}</span>
-          <span v-else>-</span>
-        </td>
+        <td v-if="!hidePoint"></td>
         <td v-if="showPrice && !hidePoint"></td>
       </tr>
     </tbody>
@@ -178,6 +170,7 @@ export default {
       pointTotal: 0,
       grossPointTotal: 0,
       rangeTotal: 0,
+      grossRangeTotal: 0,
       netEnergyTotal: 0,
       grossEnergyTotal: 0,
       region: this.$route.params.region
@@ -191,16 +184,19 @@ export default {
   watch: {
     tableData: function(newData) {
       let rangeTotal = 0;
+      let grossRangeTotal = 0;
       let netEnergyTotal = 0;
       let grossEnergyTotal = 0;
 
       newData.forEach(ft => {
         rangeTotal += ft.range.totalPower;
+        grossRangeTotal += (FUEL_TECH[ft.id].type === 'sources' ? ft.range.totalPower : 0);
         netEnergyTotal += ft.range.energy;
         grossEnergyTotal += (FUEL_TECH[ft.id].type === 'sources' ? ft.range.energy : 0)
       });
 
       this.rangeTotal = rangeTotal;
+      this.grossRangeTotal = grossRangeTotal;
       this.netEnergyTotal = netEnergyTotal;
       this.grossEnergyTotal = grossEnergyTotal;
     },
@@ -258,12 +254,20 @@ export default {
         }
       });
     },
-    displayPointTotalPercent(item) {
-      const pointTotal = this.pointData.pointTotal || this.pointTotal;
+    displayRangeTotalPercent(item) {
+      const value = item.range.totalPower / this.grossRangeTotal * 100;
       return this.formatNumber(
-        this.pointData[item.id] / pointTotal * 100,
-        "0,0",
-        "%"
+        value,
+        '0,0',
+        '%'
+      );
+    },
+    displayPointTotalPercent(item) {
+      const value = this.pointData[item.id] / this.grossPointTotal * 100;
+      return this.formatNumber(
+        value,
+        '0,0',
+        '%'
       );
     },
     emitDataHoverEvent(row) {
