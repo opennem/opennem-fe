@@ -22,7 +22,7 @@ export default new Router({
           pageviewTemplate (route) {
             return {
               title: 'All Regions',
-              path: route.path,
+              path: '/all',
               location: window.location.href
             }
           }
@@ -44,7 +44,7 @@ export default new Router({
             const region = route.params.region || '';
             return {
               title: 'Region — ' + region,
-              path: route.path,
+              path: `/regions/${region}`,
               location: window.location.href
             }
           }
@@ -66,7 +66,7 @@ export default new Router({
             const size = route.params.size || '';
             return {
               title: 'Widget — ' + size,
-              path: route.path,
+              path: `/widget/${size}`,
               location: window.location.href
             }
           }

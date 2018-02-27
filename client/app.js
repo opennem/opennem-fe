@@ -13,7 +13,7 @@ import 'amstock3/amcharts/amstock'
 sync(store, router)
 
 Vue.use(VueAnalytics, {
-  id: 'UA-113446419-1',
+  id: 'UA-113446419-2', // UA-113446419-1
   router,
   autoTracking: {
     pageviewOnLoad: false
