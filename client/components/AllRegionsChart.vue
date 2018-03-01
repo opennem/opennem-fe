@@ -3,12 +3,15 @@
     <div class="loader" v-if="refreshing"></div>
 
     <div class="vis" v-show="!refreshing" v-bind:class="{ export: showExport }">
+      <a href="#" v-show="!showExport" v-on:click.stop.prevent="toggleExportOptions()"
+        class="no-border"
+        style="position: absolute; right: 0; top: -33px; font-size: 1.3rem"
+      >
+        <i class="fa fa-arrow-alt-circle-down"></i>
+      </a>
+
       <div class="chart">
         <div class="chart-export-buttons" v-show="displayExport">
-          <button class="button clear share-button" v-show="!showExport" v-on:click="toggleExportOptions()">
-            <img src="/icons/share-icon.png" alt="" style="height: 15px;">
-            Share
-          </button>
 
           <button class="button clear" v-show="showExport" v-on:click="downloadPNG()">
             <img src="/icons/download-icon.png" alt="" style="height: 15px;">

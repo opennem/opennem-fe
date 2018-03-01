@@ -2,7 +2,7 @@
   <div class="wrapper">
     <div v-if="isSmall()">
       <header>
-        <a v-bind:href="getURLString()" title="OpenNEM Widget" target="_blank">
+        <a v-bind:href="getURLString()" title="OpenNEM Widget" target="_blank" class="no-border">
           <img class="opennem-logo" src="/images/logo.png" alt="OpenNEM">
         </a>
         <h4>National Electricity Market</h4>
@@ -25,10 +25,10 @@
         </div>
 
         <div class="options">
-          <a href="#" v-on:click.stop.prevent="toggleLegend()">
+          <a href="#" v-on:click.stop.prevent="toggleLegend()" class="no-border">
             <i class="far fa-list-alt"></i>
           </a>
-          <a v-bind:href="getURLString()" title="OpenNEM Widget" target="_blank">
+          <a v-bind:href="getURLString()" title="OpenNEM Widget" target="_blank" class="no-border">
             <i class="fas fa-info-circle"></i>
           </a>
         </div>
@@ -46,7 +46,7 @@
     
     <div class="large-widget" v-else>
       <header>
-        <a v-bind:href="getURLString()" title="OpenNEM Widget" target="_blank">
+        <a v-bind:href="getURLString()" title="OpenNEM Widget" target="_blank" class="no-border">
           <img class="opennem-logo" src="/images/logo.png" alt="OpenNEM" style="height: 42px">
         </a>
         <h3>National Electricity Market</h3>

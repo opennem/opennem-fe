@@ -1,6 +1,6 @@
 <template>
   <div id="app" v-on:click="emitHideMenuEvent()">
-    <div class="alerts-banner" v-if="!isWidgetRoute()">OpenNEM is currently in active development</div>
+    <!-- <div class="alerts-banner" v-if="!isWidgetRoute()">OpenNEM is currently in active development</div> -->
     
     <AppHeader v-if="!isWidgetRoute()"></AppHeader>
     <router-view class="router-view"></router-view>
@@ -54,9 +54,13 @@ button {
 
 a {
   color: #C74523;
-  /* border-bottom: 1px solid rgba(199,69,35,0.9); */
-  /* text-decoration: none; */
-  text-decoration: underline dotted rgba(199,69,35,0.6);
+  border-bottom: 1px solid rgba(199,69,35,0.9);
+  text-decoration: none;
+  /* text-decoration: underline dotted rgba(199,69,35,0.6); */
+
+  &.no-border {
+    border-bottom: none;
+  }
 }
 
 #app {
@@ -67,7 +71,7 @@ a {
     padding: 0 1rem;
     display: flex;
     flex: 1;
-    margin: 50px 0 10px;
+    margin: 2.3rem 0;
 
     h1 {
       font-size: 1.1em;
@@ -86,21 +90,14 @@ a {
     }
 
     img {
-      height: 40px;
+      height: 55px;
       transition: all 0.25s linear;
     }
   }
+}
 
-  > footer {
-    font-size: 0.8em;
-    color: #999;
-    margin: 20px 0 20px;
-    padding: 13px 1rem;
-
-    .smallprint {
-      
-    }
-  }
+.router-view {
+  min-height: 300px;
 }
 
 .selection {
@@ -109,7 +106,7 @@ a {
   cursor: pointer;
   color: #C74523;
   position: relative;
-  top: 18px;
+  top: 28px;
 
   &.week-selection {
     width: 130px;
@@ -198,7 +195,7 @@ a {
     }
   }
   .selection {
-    top: 15px;
+    top: 22px;
   }
   .selection.region-selection {
     font-size: 1.3rem;
@@ -209,10 +206,6 @@ a {
   }
   .selection .selection-options li {
     padding: 0.5rem 1.2rem;
-  }
-  .smallprint {
-    float: right; 
-    margin-top: -29px;
   }
 }
 

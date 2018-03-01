@@ -1,6 +1,8 @@
 <template>
   <header>
-    <h1 style=""><img src="/images/logotype.png" alt=""></h1>
+    <a href="/" class="no-border">
+      <h1 style=""><img src="/images/logotype-alpha.png" alt=""></h1>
+    </a>
 
     <!-- <div class="selection week-selection">
       <div class="selected" v-on:click.stop="toggleWeekSelector(true)">
@@ -36,8 +38,18 @@
         </transition>
       </div>
 
+      <div class="selection">
+        <span style="color: #333; font-size: 18px;">/ Last 7 days</span>  
+      </div>
+
       <div class="selection" v-if="showFTSelector">
         <span style="color: #333; font-size: 24px;">/ {{getFTLabel(selectedFT)}}</span>  
+      </div>
+
+      <div style="float: right; margin-top: 30px;">
+        /
+        <a href="#">about</a>
+        /
       </div>
     </div>
   </header>
