@@ -4,7 +4,7 @@
     
     <AppHeader v-if="!isWidgetRoute()"></AppHeader>
     <router-view class="router-view"></router-view>
-    <AppFooter v-if="!isWidgetRoute()"></AppFooter>
+    <AppFooter v-if="!isWidgetRoute()" v-bind:class="{ 'not-homepage': !isHomePage() }"></AppFooter>
   </div>
 </template>
 
@@ -28,6 +28,9 @@ export default {
   methods: {
     isWidgetRoute() {
       return this.$route.name === 'widget'
+    },
+    isHomePage() {
+      return this.$route.name === 'home'
     },
     emitHideMenuEvent() {
       EventBus.$emit('menu-hide');
@@ -94,6 +97,10 @@ a {
       transition: all 0.25s linear;
     }
   }
+}
+
+footer.not-homepage {
+  margin-top: 20px !important;
 }
 
 .router-view {
