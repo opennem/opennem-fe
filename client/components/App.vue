@@ -4,7 +4,7 @@
     
     <AppHeader v-if="!isWidgetRoute()"></AppHeader>
     <router-view class="router-view"></router-view>
-    <AppFooter v-if="!isWidgetRoute()" v-bind:class="{ 'not-homepage': !isHomePage() }"></AppFooter>
+    <AppFooter v-if="!isWidgetRoute()" v-bind:class="{ 'region-page': isRegionPage() }"></AppFooter>
   </div>
 </template>
 
@@ -29,8 +29,8 @@ export default {
     isWidgetRoute() {
       return this.$route.name === 'widget'
     },
-    isHomePage() {
-      return this.$route.name === 'home'
+    isRegionPage() {
+      return this.$route.name === 'regions'
     },
     emitHideMenuEvent() {
       EventBus.$emit('menu-hide');
@@ -99,7 +99,7 @@ a {
   }
 }
 
-footer.not-homepage {
+footer.region-page {
   margin-top: 20px !important;
 }
 
