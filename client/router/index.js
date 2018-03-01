@@ -7,6 +7,7 @@ import Widget from '../views/Widget'
 import Max from '../views/Max'
 import MarketByRegion from '../views/MarketByRegion'
 import RegionByFT from '../views/RegionByFT'
+import About from '../views/About'
 
 Vue.use(Router)
 
@@ -23,6 +24,22 @@ export default new Router({
             return {
               title: 'All Regions',
               path: '/all',
+              location: window.location.href
+            }
+          }
+        }
+      }
+    },
+    {
+      name: 'about',
+      path: '/about',
+      component: About,
+      meta: {
+        analytics: {
+          pageviewTemplate (route) {
+            return {
+              title: 'About OpenNEM',
+              path: '/about',
               location: window.location.href
             }
           }

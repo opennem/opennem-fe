@@ -20,14 +20,12 @@ export default {}
 <style scoped>
 footer {
   border-top: 1px solid rgba(199,69,35,0.4);
-  text-align: center;
   background: rgba(199,69,35,0.05);
   font-size: 0.8em;
   margin: 4rem 0 0;
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 2rem;
 }
 p {
-  margin-top: 2rem;
   line-height: 1.2rem;
 
   small {
@@ -39,6 +37,12 @@ p {
     font-style: normal;
     font-weight: 600;
   }
+}
+
+@media only screen and (min-width: 960px) {
+footer {
+  padding: 1.5rem 5rem;
+}
 }
 </style>
 

@@ -1,6 +1,6 @@
 <template>
   <header>
-    <a href="/" class="no-border">
+    <a href="#/" class="no-border">
       <h1 style=""><img src="/images/logotype-alpha.png" alt=""></h1>
     </a>
 
@@ -21,7 +21,13 @@
     </div> -->
     <!-- <br> -->
 
-    <div class="menu-options">
+    <div class="menu-options" v-if="isAboutPage()">
+      <div class="selected" style="margin-top: 30px;">
+        About
+      </div>
+    </div>
+
+    <div class="menu-options" v-if="!isAboutPage()">
       <div class="selection region-selection">
         <div class="selected" v-on:click.stop="toggleRegionSelector(true)">
           {{getRegionLabel(selectedRegion)}}
@@ -48,10 +54,11 @@
 
       <div style="float: right; margin-top: 30px;">
         /
-        <a href="#">about</a>
-        /
+        <a href="#/about">about</a>
       </div>
     </div>
+
+
   </header>
 </template>
 <script>
@@ -115,6 +122,9 @@ export default {
   methods: {
     isWidgetRoute() {
       return this.$route.name === 'widget'
+    },
+    isAboutPage() {
+      return this.$route.name === 'about'
     },
     onRegionChange(regionId) {
       this.selectedRegion = regionId
