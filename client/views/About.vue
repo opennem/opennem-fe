@@ -4,15 +4,15 @@
 
     <section style="max-width: 700px;">
       <p>
-        The OpenNEM project aims to make the wealth of public National Electricity Market (NEM) 
+        The <strong>OpenNEM project</strong> aims to make the wealth of public <strong>National Electricity Market</strong> (NEM) 
         data more accessible to a wider audience.</p> 
       <p>
-        We hope that improved access will facilitate better public understanding of the market, 
-        improve energy literacy and help facilitate a more informed national discussion on Australia’s 
+        We hope that improved access will facilitate <strong>better public understanding of the market</strong>, 
+        <strong>improve energy literacy</strong> and help facilitate a more <strong>informed national discussion</strong> on Australia’s 
         energy transition in the long term interests of consumers.
       </p>
       <p>
-        By providing a clear window on the data, we hope to address the information asymmetry between 
+        By providing a <strong>clear</strong> window on the data, we hope to address the information asymmetry between 
         stakeholders and improve the productivity of those engaged in energy market discussions.
       </p>
     </section>
@@ -26,15 +26,23 @@ export default {}
 <style scoped>
 h1 {
   font-size: 1.7rem;
-  line-height: 2rem;
+  line-height: 2.2rem;
   margin-bottom: 2rem;
+  font-weight: 200;
+  color: #3a3a3a;
 }
 .article {
   padding: 0 2rem;
 }
 
 section {
+  font-size: 0.9rem;
   line-height: 1.6rem;
+  color: #3a3a3a;
+
+  strong {
+    color: #000;
+  }
 }
 
 @media only screen and (min-width: 960px) {
