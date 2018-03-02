@@ -1,27 +1,54 @@
 <template>
   <div class="wrapper" style="padding: 0 1rem;" v-bind:class="{ 'export-overlay': showExport }">
-    <div class="vis" v-bind:class="{ export: showExport }">
-      <a href="#" v-show="!showExport" v-on:click.stop.prevent="toggleExportOptions()"
-        class="no-border"
-        style="position: absolute; right: 1rem; top: -33px; font-size: 1.3rem"
-      >
-        <i class="fa fa-arrow-alt-circle-down"></i>
-      </a>
+    
+    <a href="#" v-show="!showExport" v-on:click.stop.prevent="toggleExportOptions()"
+      class="no-border"
+      style="position: absolute; right: 15px; top: -33px; font-size: 1.3rem"
+    >
+      <i class="fa fa-arrow-alt-circle-down"></i>
+    </a>
+
+    <div v-if="showExport && !showPNGExport" class="export-options export-modal">
+      <h4>Download</h4>
+
+      <button class="button clear close-button" v-on:click="toggleExportOptions()">
+        <img src="/icons/close-icon.png" alt="" style="height: 15px;">
+      </button>
+
+      <ul>
+        <li>
+          <a href="#" class="download-link" v-show="displayExport" v-on:click.stop.prevent="showChartExportOptions()">
+            <div>PNG</div>
+            <div class="export-icon"><i class="fa fa-fw fa-file-image"></i></div>
+          </a>
+        </li>
+        <li>
+          <JsonToCsv
+            :data="chartData"
+            :fields="csvHeaders"
+            :name="this.getFilename() + '.csv'"
+            >
+              <a href="javascript:" class="download-link" v-on:click="toggleExportOptions()">
+                <div>CSV</div>
+                <div class="export-icon"><i class="fa fa-fw fa-file-alt"></i></div>
+              </a>
+          </JsonToCsv>
+        </li>
+      </ul>
+    </div>
+
+    <div class="vis" v-bind:class="{ export: showPNGExport }">
 
       <div class="chart">
-        <div class="chart-export-buttons" v-show="displayExport">
-          <button class="button clear" v-show="showExport" v-on:click="downloadPNG()">
-            <img src="/icons/download-icon.png" alt="" style="height: 15px;">
-            PNG
-          </button>
-
-          <button class="button clear close-button" v-show="showExport" v-on:click="toggleExportOptions()">
+        
+        <div class="chart-export-buttons" v-show="showPNGExport" style="z-index: 99; top: 10px;">
+          <button class="button clear close-button" v-on:click="toggleExportOptions()">
             <img src="/icons/close-icon.png" alt="" style="height: 15px;">
           </button>
-        </div>
+        </div>   
 
-        <div id="export-container">
-          <div class="export-annotations export-annotations-top" v-show="showExport">
+        <div id="export-container" v-bind:class="{ 'export-modal': showExport }" v-show="(showExport && showPNGExport) || !showExport">
+          <div class="export-annotations export-annotations-top" v-show="showPNGExport">
             <div class="annotation-buttons annotation-buttons-left">
               <button class="button" style="top: 0;" v-show="!showExportTitle"  v-on:click="showExportTitle = true">
                 Add Title
@@ -31,24 +58,23 @@
               </button> 
             </div>
             <section class="editable-section" v-if="showExportTitle">
-              <h1 contenteditable="true" v-on:blur="onExportTitleBlur">{{getRegionLabel()}}</h1>
+              <h1 contenteditable="true" v-on:blur="onExportTitleBlur" style="margin-right: 20px;">{{getRegionLabel()}}</h1>
             </section>              
             <section class="editable-section" v-if="showExportDescription">
               <p contenteditable="true" v-on:blur="onExportDescriptionBlur">Description</p>
             </section>
           </div>
 
-          <!-- <div class="axis-title"><small>Generation (MW)</small></div> -->
           <div id="ft-vis"></div>
 
-          <div class="export-legend" v-show="showExport">
+          <div class="export-legend" v-show="showPNGExport">
             <div class="legend-graph" v-for="item in sourcesData" :key="item.id">
               <div class="colour-sq" v-bind:style="{backgroundColor: getColour(item.id, item.colour)}"></div>
               {{getLabel(item.id)}}
             </div>
           </div>
 
-          <div class="export-annotations export-annotations-bottom" v-show="showExport">
+          <div class="export-annotations export-annotations-bottom" v-show="showPNGExport">
             <span>
               sources <strong>AEMO, BOM, OpenNEM</strong>
             </span>
@@ -63,6 +89,13 @@
             </section> 
           </div>
         </div>
+
+        <div class="chart-export-buttons" v-show="showPNGExport">
+          <button class="button clear" v-on:click="downloadPNG()">
+            <i class="fa fa-arrow-alt-circle-down"></i>
+            Download
+          </button>
+        </div> 
       </div>
 
       <div class="datagrid" v-show="!showExport">
@@ -151,14 +184,17 @@
       margin: 10px auto;
     }
 
-    #export-container {
-      padding: 1em;
-      box-shadow: 0 0 50px #ddd;
-      background: #ece9e6;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-    }
   }
+}
+
+.export-modal {
+  position: relative;
+  padding: 1em;
+  box-shadow: 0 0 50px #ddd;
+  background: #ece9e6;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-top: 20px;
 }
 
 .export-annotations {
@@ -297,6 +333,50 @@
   margin: 0;
 }
 
+h4 {
+  margin: 0;
+  color: #4a4a4a;
+  position: relative;
+  padding: 0.3rem 0.5rem ;
+}
+.export-options {
+  width: 200px; 
+  height: 130px; 
+  margin: 100px auto 0; 
+  padding: 0.5rem;
+}
+.export-options ul {
+  list-style-type: none;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+.export-options li {
+  border-bottom: 1px solid #ddd;
+}
+.export-options li:last-child {
+  border-bottom: none;
+}
+.export-options .close-button {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.8rem;
+  border: none;
+}
+.download-link {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border: none;
+}
+.download-link:hover {
+  background-color: rgba(255,255,255,0.4);
+}
+.export-icon {
+  color: #666;
+}
+
+
 @media only screen and (min-width: 960px) {
   #ft-vis {
     height: 650px;
@@ -322,6 +402,7 @@ import * as moment from 'moment';
 import { isChrome } from '../utils/browserDetect';
 import domtoimage from '../utils/dom-to-image';
 import FileSaver from 'file-saver';
+import JsonToCsv from './JsonToCsv';
 
 import {
   chartConfig,
@@ -334,12 +415,13 @@ import {
   generateSummaryData
 } from '../utils/DataHelpers'
 import FtSummary from './EnergyAverageValueTable'
-import { FUEL_TECH, REGIONS } from '../utils/FuelTechConfig'
+import { FUEL_TECH, REGIONS, CSV_HEADERS } from '../utils/FuelTechConfig'
 import EventBus from '../utils/EventBus'
 
 export default {
   components: {
-    FtSummary
+    FtSummary,
+    JsonToCsv
   },
   props: {
     genData: Array
@@ -364,6 +446,8 @@ export default {
       showExportTitle: true,
       showExportDescription: true,
       showExportAttribution: true,
+      showPNGExport: false,
+      csvHeaders: CSV_HEADERS
     }
   },
   mounted() {
@@ -441,16 +525,27 @@ export default {
         this.hidePoint = true
       }
     },
+    showChartExportOptions() {
+      this.showPNGExport = true;
+    },
+    getFilename() {
+      const region = this.getRegionLabel(this.$route.params.region);
+      const endDate = moment(this.end).format('YYYYMMDD');
+      return `${endDate} OpenNEM ${region}`;
+    },
     toggleExportOptions() {
       const toggle = !this.showExport;
       this.showExport = toggle;
       this.chart.chartCursorSettings.enabled = !toggle;
+
+      if (!toggle) {
+        this.showPNGExport = false;
+      }
+
       this.chart.validateNow();
     },
     downloadPNG() {
       const self = this;
-      const region = this.getRegionLabel(this.$route.params.region);
-      const endDate = moment(this.end).format('YYYYMMDD');
 
       [].map.call(document.querySelectorAll('.annotation-buttons'), function(el) {
         el.classList.add('hide');
@@ -460,8 +555,9 @@ export default {
 
       domtoimage.toBlob(document.getElementById('export-container'))
         .then(function(blob) {
-          FileSaver.saveAs(blob, `${endDate} OpenNEM ${region}.png`);
+          FileSaver.saveAs(blob, `${self.getFilename()}.png`);
           self.showExport = false;
+          self.showPNGExport = false;
           [].map.call(document.querySelectorAll('.annotation-buttons'), function(el) {
             el.classList.remove('hide');
           })
