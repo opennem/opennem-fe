@@ -118,7 +118,7 @@ export default {
           }
 
           if (property === 'date') {
-            value = moment(value).toISOString();
+            value = moment(value).format('YYYY-MM-DD HH:mm');
           }
 
           newItem[label] = value;
