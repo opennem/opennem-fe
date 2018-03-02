@@ -110,27 +110,30 @@ export function generateChartData (data) {
     const obj = Object.assign({}, container[dateKey])
     obj.date = moment(dateKey).toDate()
 
-    // if there are longer interval series
-    longerIntervalSeries.forEach(series => {
-      const isPrice = series.key === 'price'
-
-      if (obj[series.key] !== null) {
-        series.currentValue = obj[series.key]
-      } else if (obj[series.key] === null) {
-        obj[series.key] = series.currentValue
-      }
-
-      if (isPrice) {
-        obj['pricePos'] = obj[series.key] > 0 ? obj[series.key] : 0.001
-        obj['priceNeg'] = obj[series.key] < 0 ? -obj[series.key] : 0.001
-      }
-    })
-
     newChartData.push(obj)
   })
   
   newChartData.sort((a, b) => {
     return moment(a.date).valueOf() - moment(b.date).valueOf()
+  })
+
+  newChartData.forEach(d => {
+    longerIntervalSeries.forEach(series => {
+      const isPrice = series.key === 'price'
+
+      if (d[series.key] !== null) {
+        series.currentValue = d[series.key]
+      } else if (d[series.key] === null) {
+        if (series.key !== 'temperature') {
+          d[series.key] = series.currentValue
+        }
+      }
+
+      if (isPrice) {
+        d['pricePos'] = d[series.key] > 0 ? d[series.key] : 0.001
+        d['priceNeg'] = d[series.key] < 0 ? -d[series.key] : 0.001
+      }
+    })
   })
 
   const updatedChartData = newChartData.filter(d => {
