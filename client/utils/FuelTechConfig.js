@@ -147,22 +147,22 @@ export const FUEL_TECH = {
     label: 'Solar (Rooftop)',
     categoryId: 'solar'
   },
-  'rooftop_forecast': {
-    colour: '#DFCF00',
-    type: 'sources',
-    label: 'Solar (Rooftop) — Forecast',
-    categoryId: 'solar'
-  },
   'solar': {
     colour: '#F8E71C',
     type: 'sources',
     label: 'Solar (Utility)',
     categoryId: 'solar'
   },
+  'temperature': {
+    colour: '#000',
+    type: 'other',
+    label: 'Temperature',
+    categoryId: 'temperature'
+  },
   'price': {
     colour: '#000',
     type: 'other',
-    label: 'Price',
+    label: 'Trading Price',
     categoryId: 'price'
   },
   'pricePos': {
@@ -176,11 +176,22 @@ export const FUEL_TECH = {
     type: 'other',
     label: 'Price (Negative only)',
     categoryId: 'price'
-  },
-  'temperature': {
-    colour: '#000',
-    type: 'other',
-    label: 'Temperature',
-    categoryId: 'temperature'
-  },
+  }
 }
+
+const headers = {
+  'Time': 'date'
+}
+Object.keys(FUEL_TECH).reverse().forEach(ft => {
+  function isValidCsvHeader (name) {
+    return name !== 'pricePos' &&
+      name !== 'priceNeg'
+  }
+
+  if (isValidCsvHeader(ft)) {
+    headers[FUEL_TECH[ft].label] = ft
+  }
+})
+
+export const CSV_HEADERS = headers
+
