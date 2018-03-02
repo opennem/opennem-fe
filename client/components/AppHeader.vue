@@ -22,7 +22,7 @@
     <!-- <br> -->
 
     <div class="menu-options" v-if="isAboutPage()">
-      <div class="selected" style="margin-top: 30px;">
+      <div class="about-header">
         About
       </div>
     </div>
@@ -52,15 +52,16 @@
         <span style="color: #333; font-size: 24px;">/ {{getFTLabel(selectedFT)}}</span>  
       </div>
 
-      <div style="float: right; margin-top: 30px;">
+      <div class="additional-links" style="">
         /
-        <a href="#/about">about</a>
+        <a href="#/about">About</a>
       </div>
     </div>
 
 
   </header>
 </template>
+
 <script>
 import { FUEL_TECH, REGIONS } from "../utils/FuelTechConfig";
 import EventBus from '../utils/EventBus';
@@ -189,3 +190,68 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+header {
+  padding: 0 1rem;
+  margin: 1rem 0;
+}
+
+h1 {
+  font-size: 1.1em;
+  font-weight: 200;
+  /* padding: 3px 0 13px; */
+  
+}
+
+.menu-options {
+  width: 100%;
+}
+
+.additional-links {
+  display: inline-block;
+  position: absolute;
+  right: 1rem;
+  top: 2rem;
+}
+
+.about-header {
+  padding-left: 1rem;
+  font-weight: 600;
+  margin-top: 1rem;
+}
+
+img {
+  height: 55px;
+  transition: all 0.25s linear;
+}
+
+@media only screen and (min-width: 960px) {
+  header {
+    margin: 2.3rem 0;
+    display: flex;
+    flex: 1;
+  }
+  header img {
+    height: 45px;
+  }
+  h1 {
+    flex-grow: 1;
+    text-align: right;
+    padding-right: 20px;
+    border-right: 1px dashed #ccc;
+  }
+  .menu-options {
+    flex-grow: 1;
+    padding-left: 20px;
+    position: relative;
+    top: -5px;
+  }
+  .additional-links {
+    float: right; 
+  }
+  .about-header {
+    margin-top: 1.8rem;
+  }
+}
+</style>

@@ -69,34 +69,6 @@ a {
 #app {
   max-width: 1400px;
   margin: 0 auto;
-
-  > header {
-    padding: 0 1rem;
-    display: flex;
-    flex: 1;
-    margin: 2.3rem 0;
-
-    h1 {
-      font-size: 1.1em;
-      font-weight: 200;
-      /* padding: 3px 0 13px; */
-      flex-grow: 1;
-      text-align: right;
-      padding-right: 20px;
-      border-right: 1px dashed #ccc;
-    }
-
-    .menu-options {
-      flex-grow: 1;
-      width: 100%;
-      padding-left: 20px;
-    }
-
-    img {
-      height: 55px;
-      transition: all 0.25s linear;
-    }
-  }
 }
 
 footer.region-page {
@@ -113,7 +85,6 @@ footer.region-page {
   cursor: pointer;
   color: #C74523;
   position: relative;
-  top: 28px;
 
   &.week-selection {
     width: 130px;
@@ -196,11 +167,6 @@ footer.region-page {
 }
 
 @media only screen and (min-width: 960px) {
-  header {
-    img {
-      height: 45px;
-    }
-  }
   .selection {
     top: 22px;
   }
