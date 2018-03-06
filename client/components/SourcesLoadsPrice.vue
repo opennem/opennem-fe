@@ -525,6 +525,18 @@ export default {
         this.hidePoint = true
       }
     },
+    onRollOverGraph(event) {
+      const graphId = event.graph.id;
+      const graphs = this.chart.panels[0].graphs
+
+      graphs.forEach(g => {
+        if (graphId !== g.valueField) {
+          g.showBalloon = false
+        } else {
+          g.showBalloon = true
+        }
+      })
+    },
     showChartExportOptions() {
       this.showPNGExport = true;
     },
@@ -639,6 +651,10 @@ function makeChart (data, keys, context) {
     {
       event: 'changed',
       method: context.onCursorHover
+    },
+    {
+      event: 'rollOverGraph',
+      method: context.onRollOverGraph
     }
   ]
   config.panels.forEach(panel => {

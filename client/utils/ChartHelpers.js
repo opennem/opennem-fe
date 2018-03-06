@@ -18,6 +18,11 @@ export function chartConfig (config, forceGridCount) {
       menu: [],
       fileName: 'all-regions-generation'
     },
+    balloon: {
+      borderThickness: 1,
+      animationDuration: 0,
+      pointerWidth: 4
+    },
     categoryAxesSettings: {
       autoGridCount,
       gridCount,
@@ -50,7 +55,7 @@ export function chartConfig (config, forceGridCount) {
       categoryBalloonColor: '#C74523',
       cursorColor: '#C74523',
       showNextAvailable: true,
-      valueBalloonsEnabled: false
+      valueBalloonsEnabled: true
     },
     panelsSettings: {
       fontFamily: 'Merriweather'
@@ -97,6 +102,12 @@ export function stockGraphs (keys, chartType) {
       ftKey !== 'temperature'
   }
 
+  function isLoad (ftKey) {
+    return ftKey === 'exports' ||
+      ftKey === 'pumps' ||
+      ftKey === 'battery_charging'
+  }
+
   keys.forEach((ftKey, index) => {
     if (validFT(ftKey)) {
       const colour = FUEL_TECH[ftKey].colour
@@ -115,6 +126,15 @@ export function stockGraphs (keys, chartType) {
         lineAlpha: lineAlpha,
         lineColor: colour,
         useDataSetColors: false,
+        balloonFunction: function (item, graph) {
+          let balloonTxt = '';
+
+          if (!isLoad(graph.id) && item.values.value > 0) {
+            const value = item.dataContext[`${graph.id}Average`]
+            balloonTxt = `${graph.id}: ${value}`
+          }
+          return balloonTxt
+        }
       }
 
       // TODO: use a different style if data is forecast, not history

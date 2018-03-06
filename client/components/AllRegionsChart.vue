@@ -232,6 +232,18 @@ export default {
         this.hidePoint = true;
       }
     },
+    onRollOverGraph(event) {
+      const graphId = event.graph.id;
+      const graphs = this.chart.panels[0].graphs
+
+      graphs.forEach(g => {
+        if (graphId !== g.valueField) {
+          g.showBalloon = false
+        } else {
+          g.showBalloon = true
+        }
+      })
+    },
     toggleExportOptions() {
       const toggle = !this.showExport;
       this.showExport = toggle;
@@ -331,6 +343,10 @@ function makeChart(data, noGuides, context) {
     {
       event: "changed",
       method: context.onCursorHover
+    },
+    {
+      event: 'rollOverGraph',
+      method: context.onRollOverGraph
     }
   ];
 
