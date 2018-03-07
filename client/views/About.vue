@@ -15,6 +15,12 @@
         By providing a <strong>clear</strong> window on the data, we hope to address the information asymmetry between 
         stakeholders and improve the productivity of those engaged in energy market discussions.
       </p>
+
+      <p class="credits">
+        By 
+        <a href="https://twitter.com/dylanjmcconnell" title="Dylan's twitter page" rel="external">Dylan McConnell</a>, 
+        <a href="https://twitter.com/simonahac" title="Simon's twitter page" rel="external">Simon Holmes á Court</a> and
+        <a href="https://twitter .com/chienleng" title="Steven's twitter page" rel="external">Steven Tan</a></p>
     </section>
   </div>
 </template>
@@ -43,6 +49,13 @@ section {
   strong {
     color: #000;
   }
+}
+
+p.credits {
+  font-size: 0.85em; 
+  border-top: 1px dashed #bbb; 
+  margin-top: 1.7rem; 
+  padding-top: 1.7rem;
 }
 
 @media only screen and (min-width: 960px) {
