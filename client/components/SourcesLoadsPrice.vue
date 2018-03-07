@@ -526,16 +526,29 @@ export default {
       }
     },
     onRollOverGraph(event) {
-      const graphId = event.graph.id;
-      const graphs = this.chart.panels[0].graphs
+      const graphId = event.graph.id
 
-      graphs.forEach(g => {
-        if (graphId !== g.valueField) {
-          g.showBalloon = false
-        } else {
-          g.showBalloon = true
-        }
+      function alwaysShow (key) {
+        return key === 'price' || key === 'temperature'
+      }
+
+      this.chart.panels.forEach(p => {
+        const graphs = p.graphs
+
+        graphs.forEach(g => {
+          console.log(g.valueField)
+          if (graphId !== g.valueField) {
+            if (alwaysShow(g.valueField)) {
+              g.showBalloon = true
+            } else {
+              g.showBalloon = false
+            }
+          } else {
+            g.showBalloon = true
+          }
+        })
       })
+      
     },
     showChartExportOptions() {
       this.showPNGExport = true;
@@ -827,7 +840,11 @@ function makeConfig (
             type: 'step',
             lineAlpha: 0.9,
             lineColor: '#C74523',
-            useDataSetColors: false
+            useDataSetColors: false,
+            showBalloon: false,
+            balloonFunction: function (item, graph) {
+              return `$${item.values.value}`
+            }
           }
         ],
         guides,
@@ -965,7 +982,11 @@ function makeConfig (
             type: 'smoothedLine',
             lineAlpha: 1,
             lineColor: '#C74523',
-            useDataSetColors: false
+            useDataSetColors: false,
+            showBalloon: false,
+            balloonFunction: function (item, graph) {
+              return `${item.values.value}°C`
+            }
           }
         ],
         guides,
