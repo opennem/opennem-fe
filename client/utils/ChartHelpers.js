@@ -1,6 +1,7 @@
 import * as _ from 'lodash'
 import * as moment from 'moment'
 import { FUEL_TECH } from './FuelTechConfig'
+import { formatNumber } from './DataHelpers'
 
 /** Default amCharts config **/
 export function chartConfig (config, forceGridCount) {
@@ -21,7 +22,8 @@ export function chartConfig (config, forceGridCount) {
     balloon: {
       borderThickness: 1,
       animationDuration: 0,
-      pointerWidth: 4
+      pointerWidth: 4,
+      fillAlpha: 1
     },
     categoryAxesSettings: {
       autoGridCount,
@@ -126,12 +128,15 @@ export function stockGraphs (keys, chartType) {
         lineAlpha: lineAlpha,
         lineColor: colour,
         useDataSetColors: false,
+        showBalloon: false,
         balloonFunction: function (item, graph) {
-          let balloonTxt = '';
+          let balloonTxt = ''
 
           if (!isLoad(graph.id) && item.values.value > 0) {
-            const value = item.dataContext[`${graph.id}Average`]
-            balloonTxt = `${graph.id}: ${value}`
+            const value = formatNumber(item.dataContext[`${graph.id}Average`])
+            const ftLabel = FUEL_TECH[graph.id].label
+
+            balloonTxt = `${ftLabel}: ${value}`
           }
           return balloonTxt
         }

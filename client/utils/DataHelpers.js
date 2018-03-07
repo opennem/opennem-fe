@@ -1,5 +1,6 @@
 import * as _ from 'lodash'
 import * as moment from 'moment'
+import numeral from "numeral"
 import { FUEL_TECH } from './FuelTechConfig'
 
 // TODO: refactor to data parasing code
@@ -265,6 +266,19 @@ export function generateSummaryData (data, start, end) {
       totalAveragePrice: 0
     }
   }
+}
+
+export function formatNumber (number, precision, unit) {
+  const formatter = precision || '0,0'
+
+  unit = unit === undefined ? '' : unit
+
+  const formatted =
+    number === 0 || isNaN(number)
+      ? '-'
+      : numeral(number).format(formatter) + unit
+
+  return formatted
 }
 
 // TODO: deprecate this function
