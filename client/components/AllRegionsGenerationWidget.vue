@@ -255,7 +255,7 @@ function makeChart(data, context) {
     data,
     chartGuides,
     fieldMappings(keys),
-    stockGraphs(keys, context.chartType),
+    stockGraphs(keys, context.chartType, true),
     context
   );
   config.panels[0].listeners = [

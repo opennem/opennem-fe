@@ -91,7 +91,7 @@ export function fieldMappings (keys) {
 /** amCharts Stock graphs
     - for 'load' series (i.e. NETINTERCHANGE), hide Fill colour
  **/
-export function stockGraphs (keys, chartType) {
+export function stockGraphs (keys, chartType, showUnit) {
   const graphs = []
 
   function hideNegativeAlphas (ftKey) {
@@ -140,13 +140,18 @@ export function stockGraphs (keys, chartType) {
             const value = formatNumber(item.dataContext[`${graph.id}Average`])
             const ftLabel = FUEL_TECH[graph.id].label
 
+            let displayValue = value
+
+            if (showUnit) {
+              displayValue += ' MW'
+            }
             balloonTxt = `
               <div style="font-size: 1.1em;">
                 <span 
                   style="display: inline-block; width: 13px; 
                     height: 13px; position: relative; top: 2px; 
                     margin-right: 5px; background: ${colour};"></span>
-                ${ftLabel}: <strong> ${value}</strong>
+                ${ftLabel}: <strong> ${displayValue}</strong>
               </div>
             `
           }
