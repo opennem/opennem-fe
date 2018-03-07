@@ -7,7 +7,7 @@
         <!-- point info -->
         <th v-if="!hidePoint" colspan="2" style="text-align: left">
           <span v-if="showPrice">
-            {{formatNumber(pointData.temperature)}}<small>°C</small>
+            {{formatNumber(pointData.temperature, '0,0.0')}}<small>°C</small>
           </span>
         </th>        
         <th v-if="!hidePoint" v-bind:colspan="showPrice ? 4 : 3">{{formatDate(pointData.date)}}</th>
