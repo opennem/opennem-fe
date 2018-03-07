@@ -448,7 +448,9 @@ export default {
       showExportDescription: true,
       showExportAttribution: true,
       showPNGExport: false,
-      csvHeaders: CSV_HEADERS
+      csvHeaders: CSV_HEADERS,
+      currentPrice: null,
+      currentGraph: null,
     }
   },
   mounted() {
@@ -518,37 +520,49 @@ export default {
         Object.keys(FUEL_TECH).forEach(ft => {
           const context = ft === 'price' ? 'Close' : 'Average'
           pointData[ft] = dataContext[`${ft}${context}`]
+
+          if (ft === 'price') {
+            this.currentPrice = dataContext[`${ft}${context}`]
+          }
         })
 
         this.pointData = pointData
         this.hidePoint = false
+
+        this.chart.panels.forEach(p => {
+          const graphs = p.graphs
+
+          graphs.forEach(g => {
+            if (this.currentGraph !== g.valueField) {
+              g.showBalloon = false
+
+              // if (g.valueField === 'temperature') {
+              //   g.showBalloon = true
+              // }
+
+              // if (g.valueField === 'price') {
+              //   g.showBalloon = true
+              // }
+
+              // if (g.valueField === 'priceNeg') {
+              //   g.showBalloon = true
+              // }
+
+              // if (this.currentPrice > 300 && g.valueField === 'pricePos') {
+              //   g.showBalloon = true
+              // }
+            } else {
+              g.showBalloon = true
+            }
+          })
+        })
       } else {
         this.hidePoint = true
       }
     },
     onRollOverGraph(event) {
       const graphId = event.graph.id
-
-      function alwaysShow (key) {
-        return key === 'price' || key === 'temperature'
-      }
-
-      this.chart.panels.forEach(p => {
-        const graphs = p.graphs
-
-        graphs.forEach(g => {
-          if (graphId !== g.valueField) {
-            if (alwaysShow(g.valueField)) {
-              g.showBalloon = true
-            } else {
-              g.showBalloon = false
-            }
-          } else {
-            g.showBalloon = true
-          }
-        })
-      })
-      
+      this.currentGraph = graphId      
     },
     showChartExportOptions() {
       this.showPNGExport = true;
@@ -670,6 +684,7 @@ function makeChart (data, keys, context) {
       method: context.onRollOverGraph
     }
   ]
+
   config.panels.forEach(panel => {
     panel.listeners = listeners
   })
@@ -791,14 +806,18 @@ function makeConfig (
         ],
         stockGraphs: [
           {
-            id: 'p3',
+            id: 'p4',
             valueAxis: 'v4',
             valueField: 'pricePos',
             type: 'step',
             lineAlpha: 1,
             lineColor: '#C74523',
             dashLength: 1,
-            useDataSetColors: false
+            useDataSetColors: false,
+            showBalloon: false,
+            balloonFunction: function (item, graph) {
+              return `<strong>$${formatNumber(item.values.value, '0,0.00')}</strong>`
+            }
           }
         ],
         guides,
@@ -884,7 +903,11 @@ function makeConfig (
             lineAlpha: 1,
             lineColor: '#C74523',
             dashLength: 1,
-            useDataSetColors: false
+            useDataSetColors: false,
+            showBalloon: false,
+            balloonFunction: function (item, graph) {
+              return `<strong>-$${formatNumber(item.values.value, '0,0.00')}</strong>`
+            }
           }
         ],
         guides,
@@ -976,7 +999,7 @@ function makeConfig (
         ],
         stockGraphs: [
           {
-            id: 't1',
+            id: 'p6',
             valueAxis: 'v5',
             valueField: 'temperature',
             type: 'smoothedLine',
