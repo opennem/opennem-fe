@@ -412,7 +412,8 @@ import {
 } from '../utils/ChartHelpers'
 import {
   generateChartData,
-  generateSummaryData
+  generateSummaryData,
+  formatNumber
 } from '../utils/DataHelpers'
 import FtSummary from './EnergyAverageValueTable'
 import { FUEL_TECH, REGIONS, CSV_HEADERS } from '../utils/FuelTechConfig'
@@ -536,7 +537,6 @@ export default {
         const graphs = p.graphs
 
         graphs.forEach(g => {
-          console.log(g.valueField)
           if (graphId !== g.valueField) {
             if (alwaysShow(g.valueField)) {
               g.showBalloon = true
@@ -843,7 +843,7 @@ function makeConfig (
             useDataSetColors: false,
             showBalloon: false,
             balloonFunction: function (item, graph) {
-              return `$${item.values.value}`
+              return `<strong>$${formatNumber(item.values.value, '0,0.00')}</strong>`
             }
           }
         ],
@@ -985,7 +985,7 @@ function makeConfig (
             useDataSetColors: false,
             showBalloon: false,
             balloonFunction: function (item, graph) {
-              return `${item.values.value}°C`
+              return `<strong>${item.values.value}°C</strong>`
             }
           }
         ],

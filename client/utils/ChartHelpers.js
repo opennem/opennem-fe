@@ -20,10 +20,14 @@ export function chartConfig (config, forceGridCount) {
       fileName: 'all-regions-generation'
     },
     balloon: {
+      adjustBorderColor: true,
+      borderAlpha: 0,
       borderThickness: 1,
       animationDuration: 0,
-      pointerWidth: 4,
-      fillAlpha: 1
+      pointerWidth: 6,
+      fillAlpha: 1,
+      fillColor: '#ece9e6',
+      shadowAlpha: 0.4
     },
     categoryAxesSettings: {
       autoGridCount,
@@ -136,7 +140,15 @@ export function stockGraphs (keys, chartType) {
             const value = formatNumber(item.dataContext[`${graph.id}Average`])
             const ftLabel = FUEL_TECH[graph.id].label
 
-            balloonTxt = `${ftLabel}: ${value}`
+            balloonTxt = `
+              <div style="font-size: 1.1em;">
+                <span 
+                  style="display: inline-block; width: 13px; 
+                    height: 13px; position: relative; top: 2px; 
+                    margin-right: 5px; background: ${colour};"></span>
+                ${ftLabel}: <strong> ${value}</strong>
+              </div>
+            `
           }
           return balloonTxt
         }
