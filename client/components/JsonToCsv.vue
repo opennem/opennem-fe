@@ -113,9 +113,12 @@ export default {
           let property = keys[label];
           let value = _self.getNestedData(property, item);
           
-          if (value === undefined || value === null) {
-            value = '';
+          if (value === undefined) {
+            value = 0;
           }
+          if (value === null) {
+            value = '';
+          } 
 
           if (property === 'date') {
             value = moment(value).format('YYYY-MM-DD HH:mm');
