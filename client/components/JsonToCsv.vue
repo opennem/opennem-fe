@@ -114,7 +114,11 @@ export default {
           let value = _self.getNestedData(property, item);
           
           if (value === undefined) {
-            value = 0;
+            if (label.includes('Temperature') || label.includes('Trading Price')) {
+              value = '';
+            } else {
+              value = 0;
+            }
           }
           if (value === null) {
             value = '';
