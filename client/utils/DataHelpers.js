@@ -3,17 +3,11 @@ import * as moment from 'moment'
 import numeral from "numeral"
 import { FUEL_TECH } from './FuelTechConfig'
 
-// TODO: refactor to data parasing code
-// * map data using timestamp
-// * check for highest res
-// * note series with lower res
-// * check lower res series and fill in values for each timestamp
-// * note specific keys (all loads and imports) for changing values for stacking
-// * should forecast data as seperate series for different chart styling?
 export function generateChartData (data) {
   const container = {}
   const ftPriceIntervals = {}
   let shortestInterval = null
+  let startGenerationTime = null
   let lastGenerationTime = null
 
   // Find out what FT key (and price) is available in this dataset
@@ -28,6 +22,9 @@ export function generateChartData (data) {
 
       if (!lastGenerationTime && find) {
         lastGenerationTime = find.history.last
+      }
+      if (!startGenerationTime && find) {
+        startGenerationTime = find.history.start
       }
 
       /** if there is a price key,
@@ -107,17 +104,21 @@ export function generateChartData (data) {
     }
   })
 
+  // Create array based on date maps
   Object.keys(container).forEach(dateKey => {
     const obj = Object.assign({}, container[dateKey])
     obj.date = moment(dateKey).toDate()
 
     newChartData.push(obj)
   })
-  
+
+  // sort the array based on the date
   newChartData.sort((a, b) => {
     return moment(a.date).valueOf() - moment(b.date).valueOf()
   })
 
+  // fill in gaps for series that has longer intervals
+  // also populate pricePos and priceNeg for log charts
   newChartData.forEach(d => {
     longerIntervalSeries.forEach(series => {
       const isPrice = series.key === 'price'
@@ -137,8 +138,10 @@ export function generateChartData (data) {
     })
   })
 
+  // only show data within the start and end range of the 5 min FT
   const updatedChartData = newChartData.filter(d => {
-    return moment(d.date).isSameOrBefore(moment(lastGenerationTime))
+    return moment(d.date).isSameOrAfter(moment(startGenerationTime)) &&
+      moment(d.date).isSameOrBefore(moment(lastGenerationTime))
   })
 
   return updatedChartData.slice(0)
