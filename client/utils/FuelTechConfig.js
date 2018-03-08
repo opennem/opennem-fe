@@ -57,125 +57,146 @@ export const FUEL_TECH = {
     colour: '#fff',
     type: 'loads',
     label: 'Pumps',
-    categoryId: 'hydro'
+    categoryId: 'hydro',
+    unit: 'MW'
   },
   'battery_charging': {
     colour: '#fff',
     type: 'loads',
     label: 'Battery (Charging)',
-    categoryId: 'other'
+    categoryId: 'other',
+    unit: 'MW'
   },
   'exports': {
     colour: '#fff',
     type: 'loads',
-    label: 'Exports'
+    label: 'Exports',
+    unit: 'MW'
   },
   'imports': {
     colour: '#44146F',
     type: 'sources',
-    label: 'Imports'
+    label: 'Imports',
+    unit: 'MW'
   },
   'black_coal': {
     colour: '#121212',
     type: 'sources',
     label: 'Black Coal',
-    categoryId: 'coal'
+    categoryId: 'coal',
+    unit: 'MW'
   },
   'brown_coal': {
     colour: '#8B572A',
     type: 'sources',
     label: 'Brown Coal',
-    categoryId: 'coal'
+    categoryId: 'coal',
+    unit: 'MW'
   },
   'biomass': {
     colour: '#A3886F',
     type: 'sources',
     label: 'Biomass',
-    categoryId: 'other'
+    categoryId: 'other',
+    unit: 'MW'
   },
   'distillate': {
     colour: '#F35020',
     type: 'sources',
     label: 'Distillate',
-    categoryId: 'other'
+    categoryId: 'other',
+    unit: 'MW'
   },
   'battery_discharging': {
     colour: '#00A2FA',
     type: 'sources',
     label: 'Battery (Discharging)',
-    categoryId: 'other'
+    categoryId: 'other',
+    unit: 'MW'
   },
   'hydro': {
     colour: '#4582B4',
     type: 'sources',
     label: 'Hydro',
-    categoryId: 'hydro'
+    categoryId: 'hydro',
+    unit: 'MW'
   },
   'gas_steam': {
     colour: '#F48E1B',
     type: 'sources',
     label: 'Gas (Steam)',
-    categoryId: 'gas'
+    categoryId: 'gas',
+    unit: 'MW'
   },
   'gas_ccgt': {
     colour: '#FDB462',
     type: 'sources',
     label: 'Gas (CCGT)',
-    categoryId: 'gas'
+    categoryId: 'gas',
+    unit: 'MW'
   },
   'gas_ocgt': {
     colour: '#FFCD96',
     type: 'sources',
     label: 'Gas (OCGT)',
-    categoryId: 'gas'
+    categoryId: 'gas',
+    unit: 'MW'
   },
   'gas_recip': {
     colour: '#F9DCBC',
     type: 'sources',
     label: 'Gas (Reciprocating)',
-    categoryId: 'gas'
+    categoryId: 'gas',
+    unit: 'MW'
   },
   'wind': {
     colour: '#417505',
     type: 'sources',
     label: 'Wind',
-    categoryId: 'wind'
+    categoryId: 'wind',
+    unit: 'MW'
   },
   'rooftop_solar': {
     colour: '#DFCF00',
     type: 'sources',
     label: 'Solar (Rooftop)',
-    categoryId: 'solar'
+    categoryId: 'solar',
+    unit: 'MW'
   },
   'solar': {
     colour: '#F8E71C',
     type: 'sources',
     label: 'Solar (Utility)',
-    categoryId: 'solar'
+    categoryId: 'solar',
+    unit: 'MW'
   },
   'temperature': {
     colour: '#000',
     type: 'other',
     label: 'Temperature',
-    categoryId: 'temperature'
+    categoryId: 'temperature',
+    unit: 'C'
   },
   'price': {
     colour: '#000',
     type: 'other',
     label: 'Trading Price',
-    categoryId: 'price'
+    categoryId: 'price',
+    unit: '$'
   },
   'pricePos': {
     colour: '#000',
     type: 'other',
     label: 'Price (Positive only)',
-    categoryId: 'price'
+    categoryId: 'price',
+    unit: '$'
   },
   'priceNeg': {
     colour: '#000',
     type: 'other',
     label: 'Price (Negative only)',
-    categoryId: 'price'
+    categoryId: 'price',
+    unit: '$'
   }
 }
 
@@ -189,7 +210,10 @@ Object.keys(FUEL_TECH).reverse().forEach(ft => {
   }
 
   if (isValidCsvHeader(ft)) {
-    headers[FUEL_TECH[ft].label] = ft
+    const ftLabel = FUEL_TECH[ft].label
+    const ftUnit = FUEL_TECH[ft].unit
+    const label = `${ftLabel} - ${ftUnit}`
+    headers[label] = ft
   }
 })
 
