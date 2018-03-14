@@ -44,7 +44,7 @@
         </transition>
       </div>
 
-      <div class="selection">
+      <div class="selection" v-if="!chartZoomed">
         <span style="color: #333; font-size: 18px;">/ Last 7 days</span>  
       </div>
 
@@ -119,6 +119,11 @@ export default {
   },
   watch: {
     $route: 'checkRoute',
+  },
+  computed: {
+    chartZoomed() {
+      return this.$store.getters.getChartZoomed
+    }
   },
   methods: {
     isWidgetRoute() {

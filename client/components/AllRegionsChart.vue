@@ -182,9 +182,13 @@ export default {
       showExportDescription: true,
       showExportAttribution: true,
       showPNGExport: false,
-      csvHeaders: CSV_HEADERS,
-      isZoomed: false
+      csvHeaders: CSV_HEADERS
     };
+  },
+  computed: {
+    isZoomed() {
+      return this.$store.getters.getChartZoomed
+    }
   },
   methods: {
     getLabel(id) {
@@ -309,7 +313,7 @@ export default {
     onZoomoutClicked() {
       this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm'];
       this.chart.zoomOut();
-      this.isZoomed = false;
+      this.$store.dispatch('setChartZoomed', {chartZoomed: false});
     }
   },
   watch: {
@@ -369,7 +373,7 @@ function makeChart(data, noGuides, context) {
     {
       event: 'zoomed',
       method: function() {
-        context.isZoomed = true;
+        context.$store.dispatch('setChartZoomed', {chartZoomed: true});
       }
     }
   ];
@@ -389,7 +393,7 @@ function makeChart(data, noGuides, context) {
         
         context.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
         context.chart.zoom(startDate.toDate(), endDate.toDate());
-        context.isZoomed = true;
+        context.$store.dispatch('setChartZoomed', {chartZoomed: true});
       }
     }
   ]

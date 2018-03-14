@@ -5,7 +5,8 @@ Vue.use(Vuex)
 
 const state = {
   weekStarting: '2017-10-02',
-  regionId: 'all'
+  regionId: 'all',
+  chartZoomed: false
 }
 
 const mutations = {
@@ -14,6 +15,9 @@ const mutations = {
   },
   updateRegionId (state, data) {
     state.regionId = data
+  },
+  updateChartZoomed (state, data) {
+    state.chartZoomed = data
   }
 }
 
@@ -23,10 +27,17 @@ const getters = {
   },
   getRegionId: state => {
     return state.regionId
+  },
+  getChartZoomed: state => {
+    return state.chartZoomed
   }
 }
 
-const actions = {}
+const actions = {
+  setChartZoomed ({ commit, state }, data) {
+    commit('updateChartZoomed', data.chartZoomed)
+  }
+}
 
 const store = new Vuex.Store({
   state,
