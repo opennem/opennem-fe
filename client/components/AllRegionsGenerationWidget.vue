@@ -299,6 +299,9 @@ function makeConfig(
         fieldMappings
       }
     ],
+    chartCursorSettings: {
+      zoomable: false
+    },
     panels: [
       {
         title: "Generation (MW)",
