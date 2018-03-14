@@ -13,7 +13,7 @@ export function chartConfig (config, forceGridCount) {
     type: 'stock',
     addClassNames: true,
     mouseWheelZoomEnabled: true,
-    mouseWheelScrollEnabled: true,
+    // mouseWheelScrollEnabled: true,
     export: {
       enabled: false,
       menu: [],
@@ -46,9 +46,12 @@ export function chartConfig (config, forceGridCount) {
       boldPeriodBeginning: false,
       dateFormats: [
         { period: 'fff', format: '  JJ:NN' },
-        { period: 'ss', format: '  D MMM\n JJ:NN' },
-        { period: 'mm', format: '  D MMM\n JJ:NN' },
-        { period: 'hh', format: '  D MMM\n JJ:NN' },
+        // { period: 'ss', format: '  D MMM\n JJ:NN' },
+        // { period: 'mm', format: '  D MMM\n JJ:NN' },
+        // { period: 'hh', format: '  D MMM\n JJ:NN' },
+        { period: 'ss', format: '  JJ:NN\n D MMM' },
+        { period: 'mm', format: '  JJ:NN\n D MMM' },
+        { period: 'hh', format: '  JJ:NN\n D MMM' },
         { period: 'DD', format: '  EEE\n  D MMM' },
         { period: 'WW', format: '  EEE\n  D MMM' },
         { period: 'MM', format: '  EEE\n  D MMM' },
@@ -57,7 +60,7 @@ export function chartConfig (config, forceGridCount) {
     },
     chartCursorSettings: {
       pan: false, // If pan is set to true, zoomable is switched to false automatically.
-      zoomable: false,
+      zoomable: true,
       categoryBalloonColor: '#C74523',
       cursorColor: '#C74523',
       showNextAvailable: true,

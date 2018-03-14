@@ -39,8 +39,16 @@
 
     <div class="vis" v-bind:class="{ export: showPNGExport }">
 
-      <div class="chart">
-        
+      <div class="chart" style="position: relative">
+        <a href="#" 
+          v-show="!showExport && isZoomed" 
+          v-on:click.stop.prevent="onZoomoutClicked()"
+          class="zoom-out-btn no-border"
+          title="Zoom out"
+        >
+          <i class="fas fa-search-minus"></i>
+        </a>
+
         <div class="chart-export-buttons" v-show="showPNGExport" style="z-index: 99; top: 10px;">
           <button class="button clear close-button" v-on:click="toggleExportOptions()">
             <img src="/icons/close-icon.png" alt="" style="height: 15px;">
@@ -375,7 +383,17 @@ h4 {
 .export-icon {
   color: #666;
 }
-
+.zoom-out-btn {
+  position: absolute; 
+  right: 5px; 
+  top: 5px; 
+  font-size: 1rem; 
+  z-index: 999; 
+  opacity: 0.5;
+}
+.zoom-out-btn:hover {
+  opacity: 1;
+}
 
 @media only screen and (min-width: 960px) {
   #ft-vis {
@@ -451,6 +469,7 @@ export default {
       csvHeaders: CSV_HEADERS,
       currentPrice: null,
       currentGraph: null,
+      isZoomed: false
     }
   },
   mounted() {
@@ -619,6 +638,10 @@ export default {
     },
     onChartRendered() {
       this.chartRendered = true
+    },
+    onZoomoutClicked() {
+      this.chart.zoomOut();
+      this.isZoomed = false;
     }
   },
 
@@ -685,9 +708,38 @@ function makeChart (data, keys, context) {
     }
   ]
 
+  const chartCursorListeners = [
+    {
+      event: 'zoomed',
+      method: function() {
+        context.isZoomed = true;
+      }
+    }
+  ];
+
   config.panels.forEach(panel => {
-    panel.listeners = listeners
+    panel.listeners = listeners;
+    panel.chartCursor.listeners = chartCursorListeners;
   })
+
+  config.panels[0].categoryAxis.listeners = [
+    {
+      event: 'clickItem',
+      method: function(e) {
+        const newVal = e.value.replace(/\n/g, ' ');
+        const lastIndex = newVal.length;
+        const startIndex = lastIndex-6;
+        const clickedDate = newVal.substring(startIndex, lastIndex);
+        const thisYear = moment().year();
+
+        const startDate = moment(clickedDate + ' ' + thisYear, 'D MMM YYYY')
+        const endDate = moment(startDate).add(1, 'days');
+
+        context.chart.zoom(startDate.toDate(), endDate.toDate());
+        context.isZoomed = true;
+      }
+    }
+  ]
 
   return AmCharts.makeChart('ft-vis', config)
 }
@@ -718,6 +770,8 @@ function makeConfig (
         title: 'Generation (MW)',
         percentHeight: 50,
         showCategoryAxis: true,
+        chartCursor: {},
+        categoryAxis: {},
         allLabels: [
           {
             text: "Generation",
@@ -759,6 +813,7 @@ function makeConfig (
         title: 'Price ($)',
         percentHeight: 7,
         showCategoryAxis: false,
+        chartCursor: {},
         allLabels: [
           {
             text: "Price",
@@ -831,6 +886,7 @@ function makeConfig (
         title: '',
         percentHeight: 10,
         showCategoryAxis: false,
+        chartCursor: {},
         valueAxes: [
           {
             id: 'v3',
@@ -875,6 +931,7 @@ function makeConfig (
         title: 'Price ($)',
         percentHeight: 5,
         showCategoryAxis: false,
+        chartCursor: {},         
         valueAxes: [
           {
             id: 'v4',
@@ -919,6 +976,7 @@ function makeConfig (
         title: '',
         percentHeight: 15,
         showCategoryAxis: false,
+        chartCursor: {},
         allLabels: [
           {
             text: "Temperature",

@@ -173,13 +173,13 @@ export function generateSummaryData (data, start, end) {
   }
 
   /** Get only data between the start and end dates **/
-  // const filteredData = data.filter(item => {
-  //   const d = moment(item.date)
-  //   return d.isSameOrAfter(start) && d.isSameOrBefore(end)
-  // })
+  const filteredData = data.filter(item => {
+    const d = moment(item.date)
+    return d.isSameOrAfter(start) && d.isSameOrBefore(end)
+  })
 
   /** No zooming function, so just clone the data  */
-  const filteredData = data.slice(0)
+  // const filteredData = data.slice(0)
 
   if (filteredData[0]) {
     const allData = []

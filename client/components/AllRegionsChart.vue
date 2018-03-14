@@ -6,7 +6,7 @@
       class="no-border"
       style="position: absolute; right: 0; top: -33px; font-size: 1.3rem"
     >
-      <i class="fa fa-arrow-alt-circle-down"></i>
+      <i class="fas fa-arrow-alt-circle-down"></i>
     </a>
 
     <div v-if="showExport && !showPNGExport" class="export-options export-modal">
@@ -37,8 +37,16 @@
       </ul>
     </div>
 
-    <div class="vis" v-show="!refreshing" v-bind:class="{ export: showPNGExport }">      
-      <div class="chart">
+    <div class="vis" v-show="!refreshing" v-bind:class="{ export: showPNGExport }">           
+      <div class="chart" style="position: relative">
+        <a href="#" 
+          v-show="!showExport && !refreshing && isZoomed" 
+          v-on:click.stop.prevent="onZoomoutClicked()"
+          class="zoom-out-btn no-border"
+          title="Zoom out"
+        >
+          <i class="fas fa-search-minus"></i>
+        </a>
 
         <div class="chart-export-buttons" v-show="showPNGExport" style="z-index: 99; top: 10px;">
           <button class="button clear close-button" v-on:click="toggleExportOptions()">
@@ -174,7 +182,8 @@ export default {
       showExportDescription: true,
       showExportAttribution: true,
       showPNGExport: false,
-      csvHeaders: CSV_HEADERS
+      csvHeaders: CSV_HEADERS,
+      isZoomed: false
     };
   },
   methods: {
@@ -244,6 +253,9 @@ export default {
         }
       })
     },
+    onZoomInGraph() {
+
+    },
     toggleExportOptions() {
       const toggle = !this.showExport;
       this.showExport = toggle;
@@ -296,6 +308,10 @@ export default {
     },
     onChartRendered() {
       this.chartRendered = true
+    },
+    onZoomoutClicked() {
+      this.chart.zoomOut();
+      this.isZoomed = false;
     }
   },
   watch: {
@@ -350,6 +366,35 @@ function makeChart(data, noGuides, context) {
     }
   ];
 
+  // onZoomInGraph
+  config.panels[0].chartCursor.listeners = [
+    {
+      event: 'zoomed',
+      method: function() {
+        context.isZoomed = true;
+      }
+    }
+  ];
+
+  config.panels[0].categoryAxis.listeners = [
+    {
+      event: 'clickItem',
+      method: function(e) {
+        const newVal = e.value.replace(/\n/g, ' ');
+        const lastIndex = newVal.length;
+        const startIndex = lastIndex-6;
+        const clickedDate = newVal.substring(startIndex, lastIndex);
+        const thisYear = moment().year();
+
+        const startDate = moment(clickedDate + ' ' + thisYear, 'D MMM YYYY')
+        const endDate = moment(startDate).add(1, 'days');
+
+        context.chart.zoom(startDate.toDate(), endDate.toDate());
+        context.isZoomed = true;
+      }
+    }
+  ]
+
   return AmCharts.makeChart("ft-vis", config);
 }
 
@@ -379,6 +424,8 @@ function makeConfig(
         title: "Generation (MW)",
         showCategoryAxis: true,
         addClassNames: true,
+        chartCursor: {},
+        categoryAxis: {},
         allLabels: [
           {
             text: "Generation",
@@ -714,6 +761,18 @@ h4 {
 }
 .export-icon {
   color: #666;
+}
+
+.zoom-out-btn {
+  position: absolute; 
+  right: 5px; 
+  top: 5px; 
+  font-size: 1rem; 
+  z-index: 999; 
+  opacity: 0.5;
+}
+.zoom-out-btn:hover {
+  opacity: 1;
 }
 
 @media only screen and (min-width: 960px) {

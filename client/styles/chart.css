@@ -3,6 +3,14 @@ a[title="Interactive JavaScript maps"] {
   display: none !important;
 }
 
+.amcharts-category-axis .amcharts-axis-label {
+  cursor: pointer;
+  opacity: 0.7;
+}
+.amcharts-category-axis .amcharts-axis-label:hover {
+  opacity: 1;
+}
+
 .amcharts-axis-label {
   text-anchor: start;
 }
