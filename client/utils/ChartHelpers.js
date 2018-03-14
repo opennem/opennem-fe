@@ -43,7 +43,9 @@ export function chartConfig (config, forceGridCount) {
       equalSpacing: true,
       centerLabelOnFullPeriod: false,
       groupToPeriods: ['5mm', '30mm'],
-      boldPeriodBeginning: false,
+      boldPeriodBeginning: true,
+      parseDates: true,
+      startOnAxis: true,
       dateFormats: [
         { period: 'fff', format: '  JJ:NN' },
         // { period: 'ss', format: '  D MMM\n JJ:NN' },

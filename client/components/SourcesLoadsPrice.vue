@@ -640,6 +640,7 @@ export default {
       this.chartRendered = true
     },
     onZoomoutClicked() {
+      this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm'];
       this.chart.zoomOut();
       this.isZoomed = false;
     }
@@ -734,7 +735,8 @@ function makeChart (data, keys, context) {
 
         const startDate = moment(clickedDate + ' ' + thisYear, 'D MMM YYYY')
         const endDate = moment(startDate).add(1, 'days');
-
+        
+        context.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
         context.chart.zoom(startDate.toDate(), endDate.toDate());
         context.isZoomed = true;
       }

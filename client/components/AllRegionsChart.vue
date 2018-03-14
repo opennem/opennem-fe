@@ -253,9 +253,6 @@ export default {
         }
       })
     },
-    onZoomInGraph() {
-
-    },
     toggleExportOptions() {
       const toggle = !this.showExport;
       this.showExport = toggle;
@@ -310,6 +307,7 @@ export default {
       this.chartRendered = true
     },
     onZoomoutClicked() {
+      this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm'];
       this.chart.zoomOut();
       this.isZoomed = false;
     }
@@ -386,9 +384,10 @@ function makeChart(data, noGuides, context) {
         const clickedDate = newVal.substring(startIndex, lastIndex);
         const thisYear = moment().year();
 
-        const startDate = moment(clickedDate + ' ' + thisYear, 'D MMM YYYY')
+        const startDate = moment(clickedDate + ' ' + thisYear, 'D MMM YYYY');
         const endDate = moment(startDate).add(1, 'days');
-
+        
+        context.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
         context.chart.zoom(startDate.toDate(), endDate.toDate());
         context.isZoomed = true;
       }
