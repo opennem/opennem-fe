@@ -6,7 +6,11 @@ Vue.use(Vuex)
 const state = {
   weekStarting: '2017-10-02',
   regionId: 'all',
-  chartZoomed: false
+  zoomedDates: {
+    startDate: null,
+    endDate: null
+  },
+  chartZoom: false
 }
 
 const mutations = {
@@ -16,8 +20,11 @@ const mutations = {
   updateRegionId (state, data) {
     state.regionId = data
   },
-  updateChartZoomed (state, data) {
-    state.chartZoomed = data
+  updateChartZoom (state, data) {
+    state.chartZoom = data
+  },
+  updateZoomedDates (state, data) {
+    state.zoomedDates = data
   }
 }
 
@@ -28,14 +35,23 @@ const getters = {
   getRegionId: state => {
     return state.regionId
   },
-  getChartZoomed: state => {
-    return state.chartZoomed
+  isChartZoomed: state => {
+    return state.chartZoom
+  },
+  getChartZoomedStartDate: state => {
+    return state.zoomedDates.startDate
+  },
+  getChartZoomedEndDate: state => {
+    return state.zoomedDates.endDate
   }
 }
 
 const actions = {
-  setChartZoomed ({ commit, state }, data) {
-    commit('updateChartZoomed', data.chartZoomed)
+  setChartZoom ({ commit, state }, data) {
+    commit('updateChartZoom', data)
+  },
+  setZoomedDates ({ commit, state }, data) {
+    commit('updateZoomedDates', data)
   }
 }
 
