@@ -122,7 +122,7 @@ export default {
   },
   computed: {
     chartZoomed() {
-      return this.$store.getters.getChartZoomed
+      return this.$store.getters.isChartZoomed
     }
   },
   methods: {
