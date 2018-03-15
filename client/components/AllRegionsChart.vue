@@ -112,8 +112,8 @@
           :sourcesData="sourcesData"
           :loadsData="loadsData"
           :pointData="pointData"
-          :dateFrom="start"
-          :dateTo="end"
+          :dateFrom="gridDateFrom"
+          :dateTo="gridDateTo"
           :showPrice="false"
           :hidePoint="hidePoint">
         </FtSummary>
@@ -173,8 +173,6 @@ export default {
       sourcesData: [],
       loadsData: [],
       pointData: {},
-      start: null,
-      end: null,
       hidePoint: true,
       displayExport: isChrome(),
       showExport: false,
@@ -182,12 +180,21 @@ export default {
       showExportDescription: true,
       showExportAttribution: true,
       showPNGExport: false,
-      csvHeaders: CSV_HEADERS
+      csvHeaders: CSV_HEADERS,
+      gridDateFrom: null,
+      gridDateTo: null
+
     };
   },
   computed: {
     isZoomed() {
-      return this.$store.getters.getChartZoomed
+      return this.$store.getters.isChartZoomed
+    },
+    start() {
+      return this.$store.getters.getChartZoomedStartDate
+    },
+    end() {
+      return this.$store.getters.getChartZoomedEndDate
     }
   },
   methods: {
@@ -219,10 +226,17 @@ export default {
       })
     },
     onZoom(event) {
-      this.start = event.startDate;
-      this.end = event.endDate;
+      const startDate = event.startDate
+      const endDate = event.endDate
+      this.$store.dispatch('setZoomedDates', {
+        startDate,
+        endDate
+      });
 
-      this.summaryData = generateSummaryData(this.chartData, this.start, this.end)
+      this.gridDateFrom = startDate
+      this.gridDateTo = endDate
+
+      this.summaryData = generateSummaryData(this.chartData, startDate, endDate)
       this.tableData= this.summaryData.allData
       this.sourcesData = this.summaryData.sourcesData
       this.loadsData = this.summaryData.loadsData
@@ -310,10 +324,22 @@ export default {
     onChartRendered() {
       this.chartRendered = true
     },
+    onChartInit() {
+      setTimeout(() => {
+        if (this.isZoomed) {
+          this.zoomInChart(this.start, this.end);
+        }
+      }, 1)
+    },
+    zoomInChart(startDate, endDate) {
+      this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
+      this.chart.zoom(startDate, endDate);
+      this.$store.dispatch('setChartZoom', true);
+    },
     onZoomoutClicked() {
       this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm'];
       this.chart.zoomOut();
-      this.$store.dispatch('setChartZoomed', {chartZoomed: false});
+      this.$store.dispatch('setChartZoom', false);
     }
   },
   watch: {
@@ -373,7 +399,7 @@ function makeChart(data, noGuides, context) {
     {
       event: 'zoomed',
       method: function() {
-        context.$store.dispatch('setChartZoomed', {chartZoomed: true});
+        context.$store.dispatch('setChartZoom', true);
       }
     }
   ];
@@ -390,10 +416,8 @@ function makeChart(data, noGuides, context) {
 
         const startDate = moment(clickedDate + ' ' + thisYear, 'D MMM YYYY');
         const endDate = moment(startDate).add(1, 'days');
-        
-        context.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
-        context.chart.zoom(startDate.toDate(), endDate.toDate());
-        context.$store.dispatch('setChartZoomed', {chartZoomed: true});
+
+        context.zoomInChart(startDate.toDate(), endDate.toDate());
       }
     }
   ]
@@ -413,6 +437,10 @@ function makeConfig(
       {
         event: 'rendered',
         method: context.onChartRendered
+      },
+      {
+        event: 'init',
+        method: context.onChartInit
       }
     ],
     dataSets: [
