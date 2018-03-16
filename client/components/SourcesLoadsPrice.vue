@@ -861,7 +861,7 @@ function makeConfig (
         stockLegend: { enabled: false }
       },
       {
-        title: 'Price ($)',
+        title: 'Price ($/MWh)',
         percentHeight: 7,
         showCategoryAxis: false,
         chartCursor: {},
@@ -873,7 +873,7 @@ function makeConfig (
             y: 5
           },
           {
-            text: "$",
+            text: "$/MWh",
             x: 35,
             y: 5,
             color: '#999',
@@ -979,7 +979,7 @@ function makeConfig (
         }
       },
       {
-        title: 'Price ($)',
+        title: 'Price ($/MWh)',
         percentHeight: 5,
         showCategoryAxis: false,
         chartCursor: {},         

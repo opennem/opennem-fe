@@ -182,21 +182,21 @@ export const FUEL_TECH = {
     type: 'other',
     label: 'Trading Price',
     categoryId: 'price',
-    unit: '$'
+    unit: '$/MWh'
   },
   'pricePos': {
     colour: '#000',
     type: 'other',
     label: 'Price (Positive only)',
     categoryId: 'price',
-    unit: '$'
+    unit: '$/MWh'
   },
   'priceNeg': {
     colour: '#000',
     type: 'other',
     label: 'Price (Negative only)',
     categoryId: 'price',
-    unit: '$'
+    unit: '$/MWh'
   }
 }
 
