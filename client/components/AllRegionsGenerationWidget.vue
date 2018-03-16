@@ -300,7 +300,8 @@ function makeConfig(
       }
     ],
     chartCursorSettings: {
-      zoomable: false
+      zoomable: false,
+      valueBalloonsEnabled: true
     },
     panels: [
       {
