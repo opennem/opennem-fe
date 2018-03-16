@@ -4,7 +4,7 @@
       
       <small>Sources:</small>
       <a href="https://www.aemo.com.au/">AEMO</a>,
-      <a href="http://www.bom.gov.au/">BOM</a>
+      <a href="http://www.bom.gov.au/">BoM</a>
       
     </div>
 
