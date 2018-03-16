@@ -6,7 +6,7 @@
         <th v-if="hidePoint" v-bind:colspan="showPrice ? 5 : 4">{{formatDate(dateFrom)}} – {{formatDate(dateTo)}}</th>
         <!-- point info -->
         <th v-if="!hidePoint" colspan="2" style="text-align: left">
-          <span v-if="showPrice">
+          <span v-if="showPrice && hasValue(pointData.temperature)">
             {{formatNumber(pointData.temperature, '0,0.0')}}<small>°C</small>
           </span>
         </th>        
@@ -231,6 +231,9 @@ export default {
           ? "-"
           : numeral(number).format(formatter) + unit;
       return formatted;
+    },
+    hasValue(value) {
+      return value !== undefined ? true : false;
     },
     getLabel(id) {
       const label = FUEL_TECH[id] ? FUEL_TECH[id].label : id;
