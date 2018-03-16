@@ -771,16 +771,19 @@ function makeChart (data, keys, context) {
         const clickedDate = newVal.substring(startIndex, lastIndex);
         const thisYear = moment().year();
         const today = moment();
+        const re = new RegExp('(.*[a-z]){3}', 'i')
 
-        // TODO (steven): this assumes it's this year. Check also when the year has changed
-        let startDate = moment(clickedDate + ' ' + thisYear, 'D MMM YYYY');
-        let endDate = moment(startDate).add(1, 'days');
+        if (re.test(clickedDate)) {
+          // TODO (steven): this assumes it's this year. Check also when the year has changed
+          let startDate = moment(clickedDate + ' ' + thisYear, 'D MMM YYYY');
+          const endDate = moment(startDate).add(1, 'days');
 
-        if (moment(startDate).isSame(today, 'day')) {
-          startDate = moment(context.end).subtract(24, 'hours');
+          if (moment(startDate).isSame(today, 'day')) {
+            startDate = moment(context.end).subtract(24, 'hours');
+          }
+
+          context.zoomInChart(startDate.toDate(), endDate.toDate());
         }
-
-        context.zoomInChart(startDate.toDate(), endDate.toDate());
       }
     }
   ]
