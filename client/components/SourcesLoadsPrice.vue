@@ -47,8 +47,8 @@
           v-show="!showExport && isZoomed" 
           v-on:click.stop.prevent="onZoomoutClicked()"
           class="zoom-out-btn no-border"
-          @mouseover="toggleTooltip"
-          @mouseout="toggleTooltip"
+          @mouseover="onTooltipMouseover"
+          @mouseout="onTooltipMouseout"
         >
           <i class="fas fa-search-minus"></i>
         </a>
@@ -485,7 +485,8 @@ export default {
       currentGraph: null,
       gridDateFrom: null,
       gridDateTo: null,
-      showTooltip: false
+      showTooltip: false,
+      currentHovering: false
     }
   },
   mounted() {
@@ -695,9 +696,17 @@ export default {
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoom', false);
     },
-    toggleTooltip() {
-      const toggle = !this.showTooltip;
-      this.showTooltip = toggle;
+    onTooltipMouseover() {
+      this.currentHovering = true
+      setTimeout(() => {
+        if (this.currentHovering) {
+          this.showTooltip = true;
+        }
+      }, 500);
+    },
+    onTooltipMouseout() {      
+      this.showTooltip = false;
+      this.currentHovering = false
     }
   },
 

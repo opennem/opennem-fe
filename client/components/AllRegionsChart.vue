@@ -45,8 +45,8 @@
         <a href="#" 
           v-show="!showExport && !refreshing && isZoomed" 
           v-on:click.stop.prevent="onZoomoutClicked()"
-          @mouseover="toggleTooltip"
-          @mouseout="toggleTooltip"
+          @mouseover="onTooltipMouseover"
+          @mouseout="onTooltipMouseout"
           class="zoom-out-btn no-border"
         >
           <i class="fas fa-search-minus"></i>
@@ -187,7 +187,8 @@ export default {
       csvHeaders: CSV_HEADERS,
       gridDateFrom: null,
       gridDateTo: null,
-      showTooltip: false
+      showTooltip: false,
+      currentHovering: false
     };
   },
   computed: {
@@ -345,9 +346,17 @@ export default {
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoom', false);
     },
-    toggleTooltip() {
-      const toggle = !this.showTooltip;
-      this.showTooltip = toggle;
+    onTooltipMouseover() {
+      this.currentHovering = true
+      setTimeout(() => {
+        if (this.currentHovering) {
+          this.showTooltip = true;
+        }
+      }, 500);
+    },
+    onTooltipMouseout() {      
+      this.showTooltip = false;
+      this.currentHovering = false
     }
   },
   watch: {
