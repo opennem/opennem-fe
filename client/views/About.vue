@@ -19,7 +19,7 @@
       <p class="credits">
         By 
         <a href="https://twitter.com/dylanjmcconnell" title="Dylan's twitter page" rel="external">Dylan McConnell</a>, 
-        <a href="https://twitter.com/simonahac" title="Simon's twitter page" rel="external">Simon Holmes á Court</a> and
+        <a href="https://twitter.com/simonahac" title="Simon's twitter page" rel="external">Simon Holmes à Court</a> and
         <a href="https://twitter .com/chienleng" title="Steven's twitter page" rel="external">Steven Tan</a></p>
     </section>
   </div>
