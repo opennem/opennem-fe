@@ -669,14 +669,12 @@ export default {
     zoomInChart(startDate, endDate) {
       this.chart.categoryAxesSettings.groupToPeriods = ['5mm']; // set to 5 min grouping
       this.chart.panels[4].graphs[0].bullet = 'round'; // show temperature bullets
-      this.chart.panels[4].graphs[0].connect = true; // connect nulls when zoomed in
       this.chart.zoom(startDate, endDate);
       this.$store.dispatch('setChartZoom', true);
     },
     onZoomoutClicked() {
       this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm']; // reset back to 5min and 30 min groupings
       this.chart.panels[4].graphs[0].bullet = 'none'; // hide temperature bullets
-      this.chart.panels[4].graphs[0].connect = false;
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoom', false);
     }
