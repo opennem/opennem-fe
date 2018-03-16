@@ -413,9 +413,15 @@ function makeChart(data, noGuides, context) {
         const startIndex = lastIndex-6;
         const clickedDate = newVal.substring(startIndex, lastIndex);
         const thisYear = moment().year();
+        const today = moment();
 
-        const startDate = moment(clickedDate + ' ' + thisYear, 'D MMM YYYY');
-        const endDate = moment(startDate).add(1, 'days');
+        // TODO (steven): this assumes it's this year. Check also when the year has changed
+        let startDate = moment(clickedDate + ' ' + thisYear, 'D MMM YYYY');
+        let endDate = moment(startDate).add(1, 'days');
+
+        if (moment(startDate).isSame(today, 'day')) {
+          startDate = moment(context.end).subtract(24, 'hours');
+        }
 
         context.zoomInChart(startDate.toDate(), endDate.toDate());
       }
