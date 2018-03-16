@@ -667,12 +667,14 @@ export default {
       this.chartRendered = true
     },
     zoomInChart(startDate, endDate) {
-      this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
+      this.chart.categoryAxesSettings.groupToPeriods = ['5mm']; // set to 5 min grouping
+      this.chart.panels[4].graphs[0].bullet = 'round'; // show temperature bullets
       this.chart.zoom(startDate, endDate);
       this.$store.dispatch('setChartZoom', true);
     },
     onZoomoutClicked() {
-      this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm'];
+      this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm']; // reset back to 5min and 30 min groupings
+      this.chart.panels[4].graphs[0].bullet = 'none'; // hide temperature bullets
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoom', false);
     }
@@ -1033,7 +1035,7 @@ function makeConfig (
           {
             id: 'v5',
             dashLength: 7,
-            zeroGridAlpha: 0,
+            zeroGridAlpha: 1,
             maximum: 50,
             minimum: 0,
             gridAlpha: 0,
@@ -1101,9 +1103,11 @@ function makeConfig (
             type: 'line',
             lineAlpha: 1,
             lineColor: '#C74523',
+            // fillAlphas: 0.1,
             useDataSetColors: false,
             showBalloon: false,
             connect: false,
+            bulletSize: 4,
             balloonFunction: function (item, graph) {
               return `<strong>${item.values.value}°C</strong>`
             }
