@@ -525,7 +525,7 @@ export default {
     },
     onZoom (event) {
       const startDate = event.startDate
-      const endDate = event.endDate 
+      const endDate = event.endDate
       
       if (this.chartRendered) {
         this.$store.dispatch('setZoomedDates', {
@@ -608,7 +608,7 @@ export default {
     },
     getFilename() {
       const region = this.getRegionLabel(this.$route.params.region);
-      const endDate = moment(this.end).format('YYYYMMDD');
+      const endDate = moment(this.gridDateTo).format('YYYYMMDD');
       return `${endDate} OpenNEM ${region}`;
     },
     toggleExportOptions() {
@@ -1098,11 +1098,12 @@ function makeConfig (
             id: 'p6',
             valueAxis: 'v5',
             valueField: 'temperature',
-            type: 'smoothedLine',
+            type: 'line',
             lineAlpha: 1,
             lineColor: '#C74523',
             useDataSetColors: false,
             showBalloon: false,
+            connect: false,
             balloonFunction: function (item, graph) {
               return `<strong>${item.values.value}°C</strong>`
             }
