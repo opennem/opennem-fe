@@ -39,11 +39,15 @@
 
     <div class="vis" v-show="!refreshing" v-bind:class="{ export: showPNGExport }">           
       <div class="chart" style="position: relative">
+        <transition name="fade">
+          <span class="tooltip" v-if="showTooltip">Zoom out</span>
+        </transition>
         <a href="#" 
           v-show="!showExport && !refreshing && isZoomed" 
           v-on:click.stop.prevent="onZoomoutClicked()"
+          @mouseover="toggleTooltip"
+          @mouseout="toggleTooltip"
           class="zoom-out-btn no-border"
-          title="Zoom out"
         >
           <i class="fas fa-search-minus"></i>
         </a>
@@ -182,8 +186,8 @@ export default {
       showPNGExport: false,
       csvHeaders: CSV_HEADERS,
       gridDateFrom: null,
-      gridDateTo: null
-
+      gridDateTo: null,
+      showTooltip: false
     };
   },
   computed: {
@@ -340,6 +344,10 @@ export default {
       this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm'];
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoom', false);
+    },
+    toggleTooltip() {
+      const toggle = !this.showTooltip;
+      this.showTooltip = toggle;
     }
   },
   watch: {
@@ -813,6 +821,18 @@ h4 {
 }
 .zoom-out-btn:hover {
   opacity: 1;
+}
+
+.tooltip {
+  position: absolute;
+  top: -15px;
+  right: -10px;
+  font-size: 0.6em;
+  color: #333;
+  padding: 3px 6px 2px;
+  background: #fff;
+  box-shadow: 2px 2px 2px rgba(0,0,0,.1);
+  z-index: 9999;
 }
 
 @media only screen and (min-width: 960px) {

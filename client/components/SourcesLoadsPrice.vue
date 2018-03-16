@@ -40,11 +40,15 @@
     <div class="vis" v-bind:class="{ export: showPNGExport }">
 
       <div class="chart" style="position: relative">
+        <transition name="fade">
+          <span class="tooltip" v-if="showTooltip">Zoom out</span>
+        </transition>
         <a href="#" 
           v-show="!showExport && isZoomed" 
           v-on:click.stop.prevent="onZoomoutClicked()"
           class="zoom-out-btn no-border"
-          title="Zoom out"
+          @mouseover="toggleTooltip"
+          @mouseout="toggleTooltip"
         >
           <i class="fas fa-search-minus"></i>
         </a>
@@ -395,6 +399,18 @@ h4 {
   opacity: 1;
 }
 
+.tooltip {
+  position: absolute;
+  top: -15px;
+  right: -10px;
+  font-size: 0.6em;
+  color: #333;
+  padding: 3px 6px 2px;
+  background: #fff;
+  box-shadow: 2px 2px 2px rgba(0,0,0,.1);
+  z-index: 9999;
+}
+
 @media only screen and (min-width: 960px) {
   #ft-vis {
     height: 650px;
@@ -468,7 +484,8 @@ export default {
       currentPrice: null,
       currentGraph: null,
       gridDateFrom: null,
-      gridDateTo: null
+      gridDateTo: null,
+      showTooltip: false
     }
   },
   mounted() {
@@ -677,6 +694,10 @@ export default {
       this.chart.panels[4].graphs[0].bullet = 'none'; // hide temperature bullets
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoom', false);
+    },
+    toggleTooltip() {
+      const toggle = !this.showTooltip;
+      this.showTooltip = toggle;
     }
   },
 
