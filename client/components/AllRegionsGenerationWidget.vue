@@ -3,7 +3,7 @@
     <div v-if="isSmall()">
       <header>
         <a v-bind:href="getURLString()" title="OpenNEM Widget" target="_blank" class="no-border">
-          <img class="opennem-logo" src="/images/logo.png" alt="OpenNEM">
+          <img class="opennem-logo" src="/images/opennem-logo.svg" alt="OpenNEM">
         </a>
         <h4>National Electricity Market</h4>
       </header>
@@ -47,7 +47,7 @@
     <div class="large-widget" v-else>
       <header>
         <a v-bind:href="getURLString()" title="OpenNEM Widget" target="_blank" class="no-border">
-          <img class="opennem-logo" src="/images/logo.png" alt="OpenNEM" style="height: 42px">
+          <img class="opennem-logo" src="/images/opennem-logo.svg" alt="OpenNEM" style="height: 42px">
         </a>
         <h3>National Electricity Market</h3>
       </header>
