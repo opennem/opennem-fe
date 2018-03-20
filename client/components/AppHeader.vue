@@ -1,7 +1,7 @@
 <template>
   <header>
     <a href="#/" class="no-border">
-      <h1 style=""><img src="/images/logotype-alpha.png" alt=""></h1>
+      <h1 style=""><img src="/images/opennem-logotype.svg" alt=""></h1>
     </a>
 
     <!-- <div class="selection week-selection">
