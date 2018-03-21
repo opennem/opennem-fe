@@ -864,12 +864,12 @@ function makeConfig (
             text: "Generation",
             bold: true,
             x: 5,
-            y: 5
+            y: 0
           },
           {
             text: "MW",
             x: 70,
-            y: 7,
+            y: 2,
             color: '#999',
             size: 9
           }
@@ -906,13 +906,14 @@ function makeConfig (
             text: "Price",
             bold: true,
             x: 5,
-            y: 5
+            y: 0
           },
           {
             text: "$/MWh",
             x: 35,
-            y: 5,
+            y: 2,
             color: '#999',
+            size: 9
           }
         ],
         valueAxes: [
@@ -920,7 +921,7 @@ function makeConfig (
             id: 'v4',
             logarithmic: true,
             dashLength: 7,
-            zeroGridAlpha: 1,
+            zeroGridAlpha: 0,
             maximum: 20000,
             minimum: 300,
             labelsEnabled: false,
@@ -983,8 +984,7 @@ function makeConfig (
             maximum: 300,
             minimum: 0,
             guides: [
-              makePriceGuide(0, '', false, '#000'),
-              makePriceGuide(300, '', true),
+              makePriceGuide(0, '', false, '#333'),
               {
                 fillAlpha: 0.3,
                 fillColor: '#fff',
@@ -1031,10 +1031,10 @@ function makeConfig (
             minimum: 1,
             gridAlpha: 0,
             guides: [
-              makePriceGuide(1, '', false, '#000'),
+              // makePriceGuide(1, '', false, '#000'),
               makePriceGuide(60, '', true),
               makePriceGuide(400, '', true),
-              makePriceGuide(800, '', true),
+              //makePriceGuide(800, '', true),
             ]
           }
         ],
@@ -1069,20 +1069,21 @@ function makeConfig (
             text: "Temperature",
             bold: true,
             x: 5,
-            y: 5
+            y: 0
           },
           {
             text: "°C",
             x: 80,
-            y: 5,
+            y: 2,
             color: '#999',
+            size: 9
           }
         ],
         valueAxes: [
           {
             id: 'v5',
             dashLength: 7,
-            zeroGridAlpha: 1,
+            zeroGridAlpha: 0,
             maximum: 50,
             minimum: 0,
             gridAlpha: 0,
@@ -1093,7 +1094,7 @@ function makeConfig (
                 value: 0,
                 label: '0',
                 dashLength: 0,
-                lineColor: "#000",
+                lineColor: "#333",
                 lineThickness: 1,
                 lineAlpha: 1
               },

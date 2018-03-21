@@ -32,8 +32,16 @@ a[title="Interactive JavaScript maps"] {
   stroke-opacity: 0;
 }
 
+/* .amcharts-stock-panel-div-stockPanel0 {
+  border-bottom: 1px solid #999;
+} */
+.amcharts-stock-panel-div-stockPanel1 {
+  border-top: 1px solid #bbb;
+  /* margin-top: 5px !important; */
+}
 .amcharts-stock-panel-div-stockPanel2 {
   margin-top: -11px !important;
+  /* margin-top: 10px !important; */
 }
 .export .amcharts-stock-panel-div-stockPanel2 {
   margin-top: -11px !important;
@@ -45,7 +53,12 @@ a[title="Interactive JavaScript maps"] {
   margin-top: -1px !important;
 }
 .amcharts-stock-panel-div-stockPanel4 {
-  margin-top: -2px !important;
+  margin-top: 1px !important;
+  border-top: 1px solid #bbb;
+  /* margin-top: 5px !important; */
+}
+.amcharts-stock-panel-div-stockPanel4 .amcharts-category-axis .amcharts-axis-line {
+  display: none;
 }
 .export .amcharts-stock-panel-div-stockPanel4 {
   margin-top: -1px !important;
@@ -59,6 +72,6 @@ a[title="Interactive JavaScript maps"] {
     margin-top: -2px !important;
   }
   .amcharts-stock-panel-div-stockPanel4 {
-    margin-top: -2px !important;
+    /* margin-top: -2px !important; */
   }
 }
