@@ -543,9 +543,17 @@ export default {
     },
     onZoom (event) {
       const startDate = event.startDate
-      const endDate = event.endDate
+      let endDate = event.endDate
       
       if (this.chartRendered) {
+        // check dates zoom no less than 1 hour
+        let dateCheck = moment(startDate).add(1, 'hours')
+        if (!moment(dateCheck).isSameOrBefore(endDate)) {
+          console.log('changed end date')
+          endDate = dateCheck.toDate()
+          this.zoomInChart(startDate, endDate)
+        }
+
         this.$store.dispatch('setZoomedDates', {
           startDate,
           endDate
@@ -1129,7 +1137,7 @@ function makeConfig (
                 fillAlpha: 0.3,
                 fillColor: '#fff',
                 value: 0,
-                toValue: 60,
+                toValue: 40,
               }
             ]
           }
