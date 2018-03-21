@@ -1,6 +1,7 @@
 import * as _ from 'lodash'
 import * as moment from 'moment'
-import numeral from "numeral"
+import { extent } from 'd3-array'
+import numeral from 'numeral'
 import { FUEL_TECH } from './FuelTechConfig'
 
 export function generateChartData (data) {
@@ -172,6 +173,14 @@ export function generateSummaryData (data, start, end) {
       name !== 'temperature'
   }
 
+  // Check if FT is a load
+  // TODO: use FUEL_TECH_CONFIG to check whether it is a load or type
+  function isLoad (name) {
+    return name === 'pumps' ||
+      name === 'exports' ||
+      name === 'battery_charging'
+  }
+
   /** Get only data between the start and end dates **/
   const filteredData = data.filter(item => {
     const d = moment(item.date)
@@ -243,14 +252,12 @@ export function generateSummaryData (data, start, end) {
           }
         }
 
-        // TODO: use FUEL_TECH_CONFIG to check whether it is a load or type
-        if (ft !== 'pumps' && ft !== 'exports' && ft !== 'battery_charging') {
-          sourcesData.push(row)
-        } else {
+        if (isLoad(ft)) {
           loadsData.push(row)
+        } else {
+          sourcesData.push(row)
         }
         allData.push(row)
-        
       }
     })
 
@@ -259,7 +266,10 @@ export function generateSummaryData (data, start, end) {
       sourcesData: sourcesData.reverse(), // to display from top to bottom in the table.
       loadsData,
       totalPower,
-      totalAveragePrice
+      totalAveragePrice,
+      temperatureExtent: getExtent(filteredData, data.map(d => d.temperature)),
+      priceExtent: getExtent(filteredData, data.map(d => d.price)),
+      demandExtent: getExtent(filteredData, dataSum)
     }
   } else {
     return {
@@ -269,6 +279,42 @@ export function generateSummaryData (data, start, end) {
       totalAveragePrice: 0
     }
   }
+}
+
+function getExtent (data, arr) {
+  if (arr.length === 0) {
+    return -1
+  }
+
+  let min = arr[0]
+  let max = arr[0]
+  let minIndex = 0
+  let maxIndex = 0
+
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i] > max) {
+      maxIndex = i
+      max = arr[i]
+    }
+
+    if (arr[i] < min) {
+      minIndex = i
+      min = arr[i]
+    }
+  }
+
+  const returnedExtent = [{
+    value: min,
+    date: data[minIndex].date
+  }, {
+    value: max,
+    date: data[maxIndex].date
+  }]
+
+  console.log(extent(arr))
+  console.log(returnedExtent)
+
+  return returnedExtent
 }
 
 export function formatNumber (number, precision, unit) {

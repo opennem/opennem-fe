@@ -123,6 +123,10 @@
           :showPrice="true"
           :hidePoint="hidePoint">
         </FtSummary>
+
+        <min-max-table
+          :temperature="temperatureExtent"
+          :price="priceExtent" />
       </div>
     </div>
   </div>
@@ -450,12 +454,14 @@ import {
   formatNumber
 } from '../utils/DataHelpers'
 import FtSummary from './EnergyAverageValueTable'
+import MinMaxTable from './MinMaxTable'
 import { FUEL_TECH, REGIONS, CSV_HEADERS } from '../utils/FuelTechConfig'
 import EventBus from '../utils/EventBus'
 
 export default {
   components: {
     FtSummary,
+    MinMaxTable,
     JsonToCsv
   },
   props: {
@@ -470,6 +476,8 @@ export default {
       tableData: [],
       sourcesData: [],
       loadsData: [],
+      temperatureExtent: [],
+      priceExtent: [],
       totalAveragePrice: 0,
       pointData: {},
       hidePoint: true,
@@ -565,6 +573,7 @@ export default {
         startDate,
         endDate
       )
+      console.log(this.summaryData)
 
       this.gridDateFrom = startDate
       this.gridDateTo = endDate
@@ -573,6 +582,9 @@ export default {
       this.loadsData = this.summaryData.loadsData
       this.sourcesData = this.summaryData.sourcesData
       this.totalAveragePrice = this.summaryData.totalAveragePrice
+
+      this.temperatureExtent = this.summaryData.temperatureExtent
+      this.priceExtent = this.summaryData.priceExtent
     },
     onCursorHover (event) {
       if (event.index !== undefined) {
