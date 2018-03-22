@@ -57,12 +57,12 @@
       <tr>
         <th class="text-left border-right">Temperature <small class="unit">°C</small></th>
         <td class="hoverable" v-on:mouseover="emitHover(temperature[0], '  Lowest ', 'temperature')" v-on:mouseout="emitOut(temperature[0], 'temperature')">
-          {{formatNumber(temperature[0].value, "0,0.0")}}
+          {{formatNumber(temperature[0].value, "0,0.0")}}°C
           <br>
           <small class="date">{{formatDate(temperature[0].date)}}</small>
         </td>
         <td class="hoverable" v-on:mouseover="emitHover(temperature[1], '  Highest ', 'temperature')" v-on:mouseout="emitOut(temperature[1], 'temperature')">
-          {{formatNumber(temperature[1].value, "0,0.0")}}
+          {{formatNumber(temperature[1].value, "0,0.0")}}°C
           <br>
           <small class="date">{{formatDate(temperature[1].date)}}</small>
         </td>

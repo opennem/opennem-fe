@@ -605,7 +605,10 @@ export default {
     onZoom (event) {
       const startDate = event.startDate
       let endDate = event.endDate
-      
+
+      // each stock panel generates a zoom event, this is to stop the data from being re-calculated 
+      let same = (moment(this.gridDateFrom).isSame(startDate)) && (moment(this.gridDateTo).isSame(endDate))
+
       if (this.chartRendered) {
         // check dates zoom no less than 1 hour
         let dateCheck = moment(startDate).add(1, 'hours')
@@ -615,30 +618,35 @@ export default {
           this.zoomInChart(startDate, endDate)
         }
 
+        // same = (moment(this.gridDateFrom).isSame(startDate)) && (moment(this.gridDateTo).isSame(endDate))
+
         this.$store.dispatch('setZoomedDates', {
           startDate,
           endDate
         });
       }
 
-      this.summaryData = generateSummaryData(
-        this.chartData,
-        startDate,
-        endDate
-      )
+      if (!same) {
+        this.summaryData = generateSummaryData(
+          this.chartData,
+          startDate,
+          endDate
+        )
 
-      this.gridDateFrom = startDate
-      this.gridDateTo = endDate
+        this.gridDateFrom = startDate
+        this.gridDateTo = endDate
 
-      this.tableData= this.summaryData.allData
-      this.loadsData = this.summaryData.loadsData
-      this.sourcesData = this.summaryData.sourcesData
-      this.totalAveragePrice = this.summaryData.totalAveragePrice
+        this.tableData= this.summaryData.allData
+        this.loadsData = this.summaryData.loadsData
+        this.sourcesData = this.summaryData.sourcesData
+        this.totalAveragePrice = this.summaryData.totalAveragePrice
 
-      this.demandExtent = this.summaryData.demandExtent
-      this.renewablesExtent = this.summaryData.renewablesExtent
-      this.priceExtent = this.summaryData.priceExtent
-      this.temperatureExtent = this.summaryData.temperatureExtent
+        this.demandExtent = this.summaryData.demandExtent
+        this.renewablesExtent = this.summaryData.renewablesExtent
+        this.priceExtent = this.summaryData.priceExtent
+        this.temperatureExtent = this.summaryData.temperatureExtent
+      }
+      
     },
     onCursorHover (event) {
       if (event.index !== undefined) {
@@ -924,7 +932,7 @@ function makeChart (data, keys, context) {
           const endDate = moment(startDate).add(1, 'days');
 
           if (moment(startDate).isSame(today, 'day')) {
-            startDate = moment(context.end).subtract(24, 'hours');
+            startDate = moment(context.gridDateTo).subtract(24, 'hours');
           }
 
           context.zoomInChart(startDate.toDate(), endDate.toDate());
