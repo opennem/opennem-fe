@@ -125,6 +125,7 @@
         </FtSummary>
 
         <min-max-table
+          :demand="demandExtent"
           :temperature="temperatureExtent"
           :price="priceExtent" />
       </div>
@@ -476,6 +477,7 @@ export default {
       tableData: [],
       sourcesData: [],
       loadsData: [],
+      demandExtent: [],
       temperatureExtent: [],
       priceExtent: [],
       totalAveragePrice: 0,
@@ -573,6 +575,7 @@ export default {
         startDate,
         endDate
       )
+      
       console.log(this.summaryData)
 
       this.gridDateFrom = startDate
@@ -583,8 +586,9 @@ export default {
       this.sourcesData = this.summaryData.sourcesData
       this.totalAveragePrice = this.summaryData.totalAveragePrice
 
-      this.temperatureExtent = this.summaryData.temperatureExtent
+      this.demandExtent = this.summaryData.demandExtent
       this.priceExtent = this.summaryData.priceExtent
+      this.temperatureExtent = this.summaryData.temperatureExtent
     },
     onCursorHover (event) {
       if (event.index !== undefined) {

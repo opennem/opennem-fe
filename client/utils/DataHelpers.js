@@ -267,8 +267,8 @@ export function generateSummaryData (data, start, end) {
       loadsData,
       totalPower,
       totalAveragePrice,
-      temperatureExtent: getExtent(filteredData, data.map(d => d.temperature)),
-      priceExtent: getExtent(filteredData, data.map(d => d.price)),
+      temperatureExtent: getExtent(filteredData, filteredData.map(d => d.temperature)),
+      priceExtent: getExtent(filteredData, filteredData.map(d => d.price)),
       demandExtent: getExtent(filteredData, dataSum)
     }
   } else {
@@ -297,12 +297,15 @@ function getExtent (data, arr) {
       max = arr[i]
     }
 
-    if (arr[i] < min) {
-      minIndex = i
-      min = arr[i]
+    if (min === null || arr[i] < min) {
+      if (arr[i] !== null) {
+        minIndex = i
+        min = arr[i]
+      }
     }
   }
 
+  console.log(data, minIndex, maxIndex)
   const returnedExtent = [{
     value: min,
     date: data[minIndex].date
