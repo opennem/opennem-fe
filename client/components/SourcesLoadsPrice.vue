@@ -508,6 +508,55 @@ export default {
     EventBus.$on('row-out', (name) => {
       this.showAllSeries()
     });
+
+    EventBus.$on('stockEventRow-hover', (panelName, date, label, value) => {
+      if (panelName === 'demand' || panelName === 'renewables') {
+        const stockGraphsLength = this.chart.panels[0].stockGraphs.length
+        const stockGraphId = this.chart.panels[0].stockGraphs[stockGraphsLength-1].id
+        this.chart.dataSets[0].stockEvents.push(this.getMinMaxStockEvent(date, label, stockGraphId))
+        this.chart.panels[0].categoryAxis.addGuide(this.getMinMaxGuide(panelName, date, label, false))
+      } else if (panelName === 'price') {
+        if (value > 302) {
+          this.chart.dataSets[0].stockEvents.push(this.getMinMaxStockEvent(date, label, 'p4'))
+        }
+        this.chart.dataSets[0].stockEvents.push(this.getMinMaxStockEvent(date, label, 'p3'))
+        this.chart.dataSets[0].stockEvents.push(this.getMinMaxStockEvent(date, label, 'p2'))
+        this.chart.panels[1].categoryAxis.addGuide(this.getMinMaxGuide(panelName, date, label, false))
+        this.chart.panels[2].categoryAxis.addGuide(this.getMinMaxGuide(panelName, date, label, false))
+        this.chart.panels[3].categoryAxis.addGuide(this.getMinMaxGuide(panelName, date, label, false))
+
+      } else if (panelName === 'temperature') {
+        this.chart.dataSets[0].stockEvents.push(this.getMinMaxStockEvent(date, label, 'p6'))
+        this.chart.panels[4].categoryAxis.addGuide(this.getMinMaxGuide(panelName, date, label, false))
+      }
+
+      this.chart.validateData()
+    });
+
+    EventBus.$on('stockEventRow-out', (panelName, date, label, value) => {
+      if (panelName === 'demand' || panelName === 'renewables') {
+        this.chart.dataSets[0].stockEvents.pop()
+        this.chart.panels[0].categoryAxis.guides.pop()
+        this.chart.validateData()
+      } else if (panelName === 'price') {
+        if (value > 302) {
+          this.chart.dataSets[0].stockEvents.pop()
+        }
+        this.chart.dataSets[0].stockEvents.pop()
+        this.chart.dataSets[0].stockEvents.pop()
+        this.chart.panels[1].categoryAxis.guides.pop()
+        this.chart.panels[2].categoryAxis.guides.pop()
+        this.chart.panels[3].categoryAxis.guides.pop()
+
+      } else if (panelName === 'temperature') {
+        this.chart.dataSets[0].stockEvents.pop()
+        this.chart.panels[4].categoryAxis.guides.pop()
+      }
+
+      this.chart.validateData()
+    });
+
+    
   },
   computed: {
     isZoomed() {
@@ -577,8 +626,6 @@ export default {
         startDate,
         endDate
       )
-      
-      console.log(this.summaryData)
 
       this.gridDateFrom = startDate
       this.gridDateTo = endDate
@@ -721,6 +768,7 @@ export default {
       this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm']; // reset back to 5min and 30 min groupings
       this.chart.panels[4].graphs[0].bullet = 'none'; // hide temperature bullets
       this.chart.zoomOut();
+      this.chart.validateData()
       this.$store.dispatch('setChartZoom', false);
     },
     onTooltipMouseover() {
@@ -734,6 +782,46 @@ export default {
     onTooltipMouseout() {      
       this.showTooltip = false;
       this.currentHovering = false
+    },
+    getMinMaxGuide(panelName, date, label, showLabel) {
+      function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+      }
+
+      let displayLabel = showLabel ? ' ' + capitalizeFirstLetter(panelName) : ''
+      
+      return {
+        id: 'min-max-guide',
+        date: date,
+        above: false,
+        tickLength: 0,
+        fontSize: 10,
+        label: displayLabel,
+        labelRotation: 0,
+        position: 'top',
+        dashLength: 4,
+        lineColor: '#000', // #44146F
+        color: '#000',
+        lineThickness: 1,
+        lineAlpha: 1,
+        boldLabel: true
+      }
+    },
+    getMinMaxStockEvent(date, label, graph) {
+      const arrow = label === '  Lowest ' ? 'arrowDown' : 'arrowUp';
+      const text = label === '  Lowest ' ? 'L' : 'H';
+      return {
+        date,
+        type: 'sign',
+        borderAlpha: 1,
+        borderColor: '#C74523',
+        backgroundColor: '#C74523',
+        graph,
+        text,
+        fontSize: 11,
+        color: '#fff',
+        showBullet: true
+      }
     }
   },
 
@@ -763,6 +851,8 @@ export default {
   beforeDestroy () {
     EventBus.$off('row-hover')
     EventBus.$off('row-out')
+    EventBus.$off('stockEventRow-hover')
+    EventBus.$off('stockEventRow-out')
 
     if (this.chart) {
       this.chart.clear()
@@ -868,7 +958,8 @@ function makeConfig (
       {
         dataProvider: chartData,
         categoryField: 'date',
-        fieldMappings
+        fieldMappings,
+        stockEvents: []
       }
     ],
     panels: [

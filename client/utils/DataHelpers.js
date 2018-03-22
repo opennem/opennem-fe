@@ -326,7 +326,6 @@ function getExtent (data, arr) {
     }
   }
 
-  console.log(data, minIndex, maxIndex)
   const returnedExtent = [{
     value: min,
     date: data[minIndex].date
@@ -334,9 +333,6 @@ function getExtent (data, arr) {
     value: max,
     date: data[maxIndex].date
   }]
-
-  console.log(extent(arr))
-  console.log(returnedExtent)
 
   return returnedExtent
 }

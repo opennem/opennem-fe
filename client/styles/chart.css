@@ -64,6 +64,12 @@ a[title="Interactive JavaScript maps"] {
   margin-top: -1px !important;
 }
 
+/* min/max guides */
+.amcharts-guide-min-max-guide {
+  text-anchor: start;
+  opacity: 1 !important;
+}
+
 @media only screen and (min-width: 960px) {
   .amcharts-stock-panel-div-stockPanel2 {
     margin-top: -12px !important;
