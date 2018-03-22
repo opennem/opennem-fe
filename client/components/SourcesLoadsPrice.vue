@@ -126,6 +126,7 @@
 
         <min-max-table
           :demand="demandExtent"
+          :renewables="renewablesExtent"
           :temperature="temperatureExtent"
           :price="priceExtent" />
       </div>
@@ -478,6 +479,7 @@ export default {
       sourcesData: [],
       loadsData: [],
       demandExtent: [],
+      renewablesExtent: [],
       temperatureExtent: [],
       priceExtent: [],
       totalAveragePrice: 0,
@@ -587,6 +589,7 @@ export default {
       this.totalAveragePrice = this.summaryData.totalAveragePrice
 
       this.demandExtent = this.summaryData.demandExtent
+      this.renewablesExtent = this.summaryData.renewablesExtent
       this.priceExtent = this.summaryData.priceExtent
       this.temperatureExtent = this.summaryData.temperatureExtent
     },

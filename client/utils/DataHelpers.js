@@ -181,6 +181,15 @@ export function generateSummaryData (data, start, end) {
       name === 'battery_charging'
   }
 
+  // Check if FT is a renewable
+  function isRenewableFT (name) {
+    return name === 'wind' ||
+      name === 'biomass' ||
+      name === 'hydro' ||
+      name === 'rooftop_solar' ||
+      name === 'solar'
+  }
+
   /** Get only data between the start and end dates **/
   const filteredData = data.filter(item => {
     const d = moment(item.date)
@@ -201,6 +210,17 @@ export function generateSummaryData (data, start, end) {
       let p = 0
       Object.keys(d).forEach(ft => {
         if (isValidFT(ft)) {
+          p += d[ft] || 0
+        }
+      })
+      return p
+    })
+
+    // create a new array with the ft (renewables only) totals
+    const renewablesDataSum = filteredData.map((d, i) => {
+      let p = 0
+      Object.keys(d).forEach(ft => {
+        if (isValidFT(ft) && isRenewableFT(ft)) {
           p += d[ft] || 0
         }
       })
@@ -269,7 +289,8 @@ export function generateSummaryData (data, start, end) {
       totalAveragePrice,
       temperatureExtent: getExtent(filteredData, filteredData.map(d => d.temperature)),
       priceExtent: getExtent(filteredData, filteredData.map(d => d.price)),
-      demandExtent: getExtent(filteredData, dataSum)
+      demandExtent: getExtent(filteredData, dataSum),
+      renewablesExtent: getExtent(filteredData, renewablesDataSum)
     }
   } else {
     return {

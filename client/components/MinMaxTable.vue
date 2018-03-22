@@ -29,10 +29,14 @@
       <tr>
         <th class="text-left border-right">Renewables <small class="unit">MW</small></th>
         <td>
-          
+          {{formatNumber(renewables[0].value)}}
+          <br>
+          <small class="date">{{formatDate(renewables[0].date)}}</small>
         </td>
         <td>
-          
+          {{formatNumber(renewables[1].value)}}
+          <br>
+          <small class="date">{{formatDate(renewables[1].date)}}</small>
         </td>
       </tr>
 
@@ -75,6 +79,7 @@ import numeral from 'numeral';
 export default {
   props: {
     demand: Array,
+    renewables: Array,
     temperature: Array,
     price: Array
   },
