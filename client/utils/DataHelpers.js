@@ -284,6 +284,7 @@ export function generateSummaryData (data, start, end) {
         allData.push(row)
       }
     })
+    console.log('generate summary')
 
     return {
       allData,

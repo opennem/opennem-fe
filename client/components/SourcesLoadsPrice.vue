@@ -498,7 +498,8 @@ export default {
       gridDateFrom: null,
       gridDateTo: null,
       showTooltip: false,
-      currentHovering: false
+      currentHovering: false,
+      hasGenerateSummary: false
     }
   },
   mounted() {
@@ -607,7 +608,7 @@ export default {
       let endDate = event.endDate
 
       // each stock panel generates a zoom event, this is to stop the data from being re-calculated 
-      let same = (moment(this.gridDateFrom).isSame(startDate)) && (moment(this.gridDateTo).isSame(endDate))
+      let sameFromTo = (moment(this.gridDateFrom).isSame(startDate)) && (moment(this.gridDateTo).isSame(endDate))
 
       if (this.chartRendered) {
         // check dates zoom no less than 1 hour
@@ -618,15 +619,14 @@ export default {
           this.zoomInChart(startDate, endDate)
         }
 
-        // same = (moment(this.gridDateFrom).isSame(startDate)) && (moment(this.gridDateTo).isSame(endDate))
-
         this.$store.dispatch('setZoomedDates', {
           startDate,
           endDate
         });
       }
 
-      if (!same) {
+      // console.log(sameFromTo, this.hasGenerateSummary)
+      if (!sameFromTo || !this.hasGenerateSummary) {
         this.summaryData = generateSummaryData(
           this.chartData,
           startDate,
@@ -645,6 +645,8 @@ export default {
         this.renewablesExtent = this.summaryData.renewablesExtent
         this.priceExtent = this.summaryData.priceExtent
         this.temperatureExtent = this.summaryData.temperatureExtent
+
+        this.hasGenerateSummary = true
       }
       
     },
@@ -835,6 +837,9 @@ export default {
 
   watch: {
     genData (newData) {
+      console.log('newData')
+      this.hasGenerateSummary = false
+
       const keys = []
       this.chartData = generateChartData(newData)
 
@@ -853,7 +858,6 @@ export default {
         this.chartRendered = false
       }
       this.chart = makeChart(this.chartData, keys, this)
-      
     }
   },
   beforeDestroy () {
