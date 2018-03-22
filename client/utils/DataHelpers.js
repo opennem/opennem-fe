@@ -227,6 +227,10 @@ export function generateSummaryData (data, start, end) {
       return p
     })
 
+    const renewablesPercentages = renewablesDataSum.map((d, i) => {
+      return d / dataSum[i] * 100
+    })
+
     // sum up all the ft totals
     const dataSumTotal = dataSum.reduce((a, b) => { return a + b }, 0)
 
@@ -290,7 +294,7 @@ export function generateSummaryData (data, start, end) {
       temperatureExtent: getExtent(filteredData, filteredData.map(d => d.temperature)),
       priceExtent: getExtent(filteredData, filteredData.map(d => d.price)),
       demandExtent: getExtent(filteredData, dataSum),
-      renewablesExtent: getExtent(filteredData, renewablesDataSum)
+      renewablesExtent: getExtent(filteredData, renewablesPercentages)
     }
   } else {
     return {

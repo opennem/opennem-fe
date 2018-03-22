@@ -27,14 +27,14 @@
       </tr>
 
       <tr>
-        <th class="text-left border-right">Renewables <small class="unit">MW</small></th>
+        <th class="text-left border-right">Renewables <small class="unit">%</small></th>
         <td class="hoverable" v-on:mouseover="emitHover(renewables[0], '  Lowest ', 'renewables')" v-on:mouseout="emitOut(renewables[0], 'renewables')">
-          {{formatNumber(renewables[0].value)}}
+          {{formatNumber(renewables[0].value)}}%
           <br>
           <small class="date">{{formatDate(renewables[0].date)}}</small>
         </td>
         <td class="hoverable" v-on:mouseover="emitHover(renewables[1], '  Highest ', 'renewables')" v-on:mouseout="emitOut(renewables[1], 'renewables')">
-          {{formatNumber(renewables[1].value)}}
+          {{formatNumber(renewables[1].value)}}%
           <br>
           <small class="date">{{formatDate(renewables[1].date)}}</small>
         </td>
@@ -43,12 +43,12 @@
       <tr>
         <th class="text-left border-right">Price <small class="unit">$/MWh</small></th>
         <td class="hoverable" v-on:mouseover="emitHover(price[0], '  Lowest ', 'price')" v-on:mouseout="emitOut(price[0], 'price')">
-          {{formatNumber(price[0].value, "0,0.00")}}
+          ${{formatNumber(price[0].value, "0,0.00")}}
           <br>
           <small class="date">{{formatDate(price[0].date)}}</small>
         </td>
         <td class="hoverable" v-on:mouseover="emitHover(price[1], '  Highest ', 'price')" v-on:mouseout="emitOut(price[1], 'price')">
-          {{formatNumber(price[1].value, "0,0.00")}}
+          ${{formatNumber(price[1].value, "0,0.00")}}
           <br>
           <small class="date">{{formatDate(price[1].date)}}</small>
         </td>
