@@ -535,9 +535,7 @@ export default {
       this.chart.panels.forEach((p) => {
         p.chartCursor.hideCursor()
       })
-    });
-
-    
+    });    
   },
   computed: {
     isZoomed() {
@@ -550,8 +548,7 @@ export default {
       return this.$store.getters.getChartZoomedEndDate
     },
     showRecords() {
-      // return this.$route.query.records === 'true'
-      return true
+      return this.$route.query.records === 'true'
     }
   },
   methods: {
@@ -718,8 +715,6 @@ export default {
       [].map.call(document.querySelectorAll('.annotation-buttons'), function(el) {
         el.classList.add('hide');
       })
-
-      // document.getElementById('export-container').style = 
 
       domtoimage.toBlob(document.getElementById('export-container'))
         .then(function(blob) {

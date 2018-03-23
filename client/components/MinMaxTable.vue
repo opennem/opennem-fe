@@ -85,8 +85,26 @@ export default {
     price: Array
   },
   methods: {
-    formatDate(date) {
-      return moment(date).format("D MMM YYYY, h:mma");
+    formatDate(date) {      
+      let format = 'D MMM, h:mma';
+
+      const d = moment(date);
+      const dYear = d.year();
+      const dDayOfYear = d.dayOfYear();
+
+      const today = moment();
+      const todayYear = today.year();
+      const todayDayOfYear = today.dayOfYear();
+
+      if (dYear !== todayYear) {
+        format = 'D MMM YYYY, h:mma';
+      } else {
+        if (dDayOfYear === todayDayOfYear) {
+          format = '[Today at] h:mma';
+        }
+      }
+
+      return moment(date).format(format);
     },
     formatNumber: function(number, precision, unit) {
       let formatter = precision ? precision : "0,0";
