@@ -513,7 +513,7 @@ export default {
       this.showAllSeries()
     });
 
-    EventBus.$on('stockEventRow-hover', (panelName, date, label, value) => {
+    EventBus.$on('stockEventRow-hover', (date) => {
       const dateValue = `${moment(date).valueOf()}`
       const dataProvider = _.find(this.chart.mainDataSet.agregatedDataProviders['5mm'], (d) => {
         return d.amCategoryIdField === dateValue
@@ -529,7 +529,7 @@ export default {
       this.pointDataSetup(date, dataProvider)
     });
 
-    EventBus.$on('stockEventRow-out', (panelName, date, label, value) => {
+    EventBus.$on('stockEventRow-out', () => {
       this.minMaxHover = false
       this.hidePoint = true
       this.chart.panels.forEach((p) => {

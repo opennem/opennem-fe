@@ -14,57 +14,57 @@
 
       <tr>
         <th class="text-left border-right">Demand <small class="unit">MW</small></th>
-        <td class="hoverable" v-on:mouseover="emitHover(demand[0], '  Lowest ', 'demand')" v-on:mouseout="emitOut(demand[0], 'demand')">
-          {{formatNumber(demand[0].value)}}
+        <td class="hoverable" v-on:mouseover="emitHover(getMinObject('demand'))" v-on:mouseout="emitOut()">
+          {{getMinValue("demand")}}
           <br>
-          <small class="date">{{formatDate(demand[0].date)}}</small>
+          <small class="date">{{getMinDate("demand")}}</small>
         </td>
-        <td class="hoverable" v-on:mouseover="emitHover(demand[1], '  Highest ', 'demand')" v-on:mouseout="emitOut(demand[1], 'demand')">
-          {{formatNumber(demand[1].value)}}
+        <td class="hoverable" v-on:mouseover="emitHover(getMaxObject('demand'))" v-on:mouseout="emitOut()">
+          {{getMaxValue("demand")}}
           <br>
-          <small class="date">{{formatDate(demand[1].date)}}</small>
+          <small class="date">{{getMaxDate("demand")}}</small>
         </td>
       </tr>
 
       <tr>
         <th class="text-left border-right">Renewables <small class="unit">%</small></th>
-        <td class="hoverable" v-on:mouseover="emitHover(renewables[0], '  Lowest ', 'renewables')" v-on:mouseout="emitOut(renewables[0], 'renewables')">
-          {{formatNumber(renewables[0].value)}}%
+        <td class="hoverable" v-on:mouseover="emitHover(getMinObject('renewables'))" v-on:mouseout="emitOut()">
+          {{getMinValue("renewables")}}%
           <br>
-          <small class="date">{{formatDate(renewables[0].date)}}</small>
+          <small class="date">{{getMinDate("renewables")}}</small>
         </td>
-        <td class="hoverable" v-on:mouseover="emitHover(renewables[1], '  Highest ', 'renewables')" v-on:mouseout="emitOut(renewables[1], 'renewables')">
-          {{formatNumber(renewables[1].value)}}%
+        <td class="hoverable" v-on:mouseover="emitHover(getMaxObject('renewables'))" v-on:mouseout="emitOut()">
+          {{getMaxValue("renewables")}}%
           <br>
-          <small class="date">{{formatDate(renewables[1].date)}}</small>
+          <small class="date">{{getMaxDate("renewables")}}</small>
         </td>
       </tr>
 
-      <tr>
+      <tr v-if="hasData('price')">
         <th class="text-left border-right">Price <small class="unit">$/MWh</small></th>
-        <td class="hoverable" v-on:mouseover="emitHover(price[0], '  Lowest ', 'price')" v-on:mouseout="emitOut(price[0], 'price')">
-          ${{formatNumber(price[0].value, "0,0.00")}}
+        <td class="hoverable" v-on:mouseover="emitHover(getMinObject('price'))" v-on:mouseout="emitOut()">
+          ${{getMinValue("price", "0,0.00")}}
           <br>
-          <small class="date">{{formatDate(price[0].date)}}</small>
+          <small class="date">{{getMinDate("price")}}</small>
         </td>
-        <td class="hoverable" v-on:mouseover="emitHover(price[1], '  Highest ', 'price')" v-on:mouseout="emitOut(price[1], 'price')">
-          ${{formatNumber(price[1].value, "0,0.00")}}
+        <td class="hoverable" v-on:mouseover="emitHover(getMaxObject('price'))" v-on:mouseout="emitOut()">
+          ${{getMaxValue("price", "0,0.00")}}
           <br>
-          <small class="date">{{formatDate(price[1].date)}}</small>
+          <small class="date">{{getMaxDate("price")}}</small>
         </td>
       </tr>
 
-      <tr>
+      <tr v-if="hasData('temperature')">
         <th class="text-left border-right">Temperature <small class="unit">°C</small></th>
-        <td class="hoverable" v-on:mouseover="emitHover(temperature[0], '  Lowest ', 'temperature')" v-on:mouseout="emitOut(temperature[0], 'temperature')">
-          {{formatNumber(temperature[0].value, "0,0.0")}}°C
+        <td class="hoverable" v-on:mouseover="emitHover(getMinObject('temperature'))" v-on:mouseout="emitOut()">
+          {{getMinValue("temperature", "0,0.0")}}°C
           <br>
-          <small class="date">{{formatDate(temperature[0].date)}}</small>
+          <small class="date">{{getMinDate("temperature")}}</small>
         </td>
-        <td class="hoverable" v-on:mouseover="emitHover(temperature[1], '  Highest ', 'temperature')" v-on:mouseout="emitOut(temperature[1], 'temperature')">
-          {{formatNumber(temperature[1].value, "0,0.0")}}°C
+        <td class="hoverable" v-on:mouseover="emitHover(getMaxObject('temperature'))" v-on:mouseout="emitOut()">
+          {{getMaxValue("temperature", "0,0.0")}}°C
           <br>
-          <small class="date">{{formatDate(temperature[1].date)}}</small>
+          <small class="date">{{getMaxDate("temperature")}}</small>
         </td>
       </tr>
 
@@ -115,13 +115,40 @@ export default {
           : numeral(number).format(formatter) + unit;
       return formatted;
     },
-    emitHover(data, label, panelName) {
-      EventBus.$emit('stockEventRow-hover', panelName, data.date, label, data.value);
+    emitHover(data) {
+      EventBus.$emit('stockEventRow-hover', data.date);
     },
-    emitOut(data, panelName) {
-      EventBus.$emit('stockEventRow-out', panelName, data.value);
+    emitOut() {
+      EventBus.$emit('stockEventRow-out');
+    },
+    hasData(key) {
+      return this[key] && this[key].length > 0
+    },
+    getMinObject(key) {
+      return this.hasData(key) ? 
+        this[key][0] : {};
+    },
+    getMaxObject(key) {
+      return this.hasData(key) ? 
+        this[key][1] : {};
+    },
+    getMinDate(key) {
+      return this.hasData(key) ? 
+        this.formatDate(this[key][0].date) : '';
+    },
+    getMinValue(key, format) {
+      return this.hasData(key) ? 
+        this.formatNumber(this[key][0].value, format) : '';
+    },
+    getMaxDate(key) {
+      return this.hasData(key) ? 
+        this.formatDate(this[key][1].date) : '';
+    },
+    getMaxValue(key, format) {
+      return this.hasData(key) ? 
+        this.formatNumber(this[key][1].value, format) : '';
     }
-
+    
   }
 }
 </script>
