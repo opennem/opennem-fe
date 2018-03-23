@@ -5,7 +5,7 @@
         <!-- range info -->
         <th v-if="hidePoint" v-bind:colspan="showPrice ? 5 : 4">{{formatDate(dateFrom)}} – {{formatDate(dateTo)}}</th>
         <!-- point info -->
-        <th v-if="!hidePoint" colspan="2" style="text-align: left">
+        <th v-if="!hidePoint" class="fixed-width" colspan="2" style="text-align: left">
           <span v-if="showPrice && hasValue(pointData.temperature)">
             {{formatNumber(pointData.temperature, '0,0.0')}}<small>°C</small>
           </span>
@@ -363,5 +363,15 @@ table {
 
 .border-left {
   border-left: 1px solid #999;
+}
+
+.fixed-width {
+  width: 272px;
+}
+
+@media only screen and (min-width: 960px) {
+  .fixed-width {
+    width: 206px;
+  }
 }
 </style>

@@ -3,7 +3,7 @@
     <thead>
 
       <tr>
-        <th style="width: 206px;"></th>
+        <th class="fixed-width"></th>
         <th colspan="1">Lowest</th>
         <th colspan="1">Highest</th>
       </tr>
@@ -114,16 +114,19 @@ table {
   font-size: 0.75rem;
   width: 100%;
   border-collapse: collapse;
-  border-top: 4px double #aaa;
+  border-top: 4px double #999;
 }
 td,
 th {
   text-align: right;
   padding: 5px;
-  border-bottom: 1px solid #aaa;
+  border-bottom: 1px solid #999;
+}
+.fixed-width {
+  width: 272px;
 }
 .border-right {
-  border-right: 1px solid #aaa;
+  border-right: 1px solid #999;
 }
 .text-left {
   text-align: left;
@@ -139,6 +142,11 @@ th {
 }
 .hoverable:hover {
   background-color: #eee;
+}
+@media only screen and (min-width: 960px) {
+  .fixed-width {
+    width: 206px;
+  }
 }
 </style>
 
