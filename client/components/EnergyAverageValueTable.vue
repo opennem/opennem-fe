@@ -31,7 +31,7 @@
         <td colspan="2" class="group-header">Sources</td>
 
         <td v-if="hidePoint" class="border-left">{{formatNumber(grossEnergyTotal, '0,0.0')}}</td>
-        <td v-if="!hidePoint">{{formatNumber(grossPointTotal)}}</td>
+        <td v-if="!hidePoint" class="border-left">{{formatNumber(grossPointTotal)}}</td>
 
         <td></td>
 
@@ -133,7 +133,7 @@
         <!-- <td v-if="hidePoint">{{formatNumber(rangeTotal)}}</td> -->
         <td v-if="showPrice && hidePoint"></td>
 
-        <td v-if="!hidePoint">{{formatNumber(pointTotal)}}</td>
+        <td v-if="!hidePoint" class="border-left">{{formatNumber(pointTotal)}}</td>
         <td v-if="showPrice && !hidePoint"></td>
 
         <td></td>

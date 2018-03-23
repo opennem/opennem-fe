@@ -125,7 +125,7 @@
         </FtSummary>
 
         <min-max-table
-          v-show="showRecords"
+          v-if="showRecords"
           :demand="demandExtent"
           :renewables="renewablesExtent"
           :temperature="temperatureExtent"

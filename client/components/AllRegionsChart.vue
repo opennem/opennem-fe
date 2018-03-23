@@ -121,6 +121,11 @@
           :showPrice="false"
           :hidePoint="hidePoint">
         </FtSummary>
+
+        <min-max-table
+          v-if="showRecords"
+          :demand="demandExtent"
+          :renewables="renewablesExtent" />
       </div>
 
     </div>
@@ -142,14 +147,16 @@ import {
   guides
 } from "../utils/ChartHelpers"
 import { generateSummaryData } from '../utils/DataHelpers'
-import FtSummary from "./EnergyAverageValueTable";
 import { FUEL_TECH, CSV_HEADERS } from "../utils/FuelTechConfig";
 import EventBus from '../utils/EventBus';
 
+import FtSummary from "./EnergyAverageValueTable";
+import MinMaxTable from './MinMaxTable';
 
 export default {
   components: {
     FtSummary,
+    MinMaxTable,
     JsonToCsv
   },
   mounted() {
@@ -159,6 +166,32 @@ export default {
     EventBus.$on('row-out', (name) => {
       this.showAllSeries()
     });
+
+    EventBus.$on('stockEventRow-hover', (date) => {
+      const dateValue = `${moment(date).valueOf()}`
+      const dataProvider = _.find(this.chart.mainDataSet.agregatedDataProviders['5mm'], (d) => {
+        return d.amCategoryIdField === dateValue
+      })
+
+      this.minMaxHover = true
+      this.hidePoint = false
+
+      this.toggleBalloons(false)
+
+      this.chart.panels.forEach((p) => {
+        p.chartCursor.showCursorAt(date)
+      })
+
+      this.pointDataSetup(date, dataProvider)
+    });
+
+    EventBus.$on('stockEventRow-out', () => {
+      this.minMaxHover = false
+      this.hidePoint = true
+      this.chart.panels.forEach((p) => {
+        p.chartCursor.hideCursor()
+      })
+    }); 
   },
   props: {
     genData: Array,
@@ -177,6 +210,8 @@ export default {
       sourcesData: [],
       loadsData: [],
       pointData: {},
+      demandExtent: [],
+      renewablesExtent: [],
       hidePoint: true,
       displayExport: isChrome(),
       showExport: false,
@@ -188,7 +223,8 @@ export default {
       gridDateFrom: null,
       gridDateTo: null,
       showTooltip: false,
-      currentHovering: false
+      currentHovering: false,
+      minMaxHover: false
     };
   },
   computed: {
@@ -200,9 +236,21 @@ export default {
     },
     end() {
       return this.$store.getters.getChartZoomedEndDate
+    },
+    showRecords() {
+      return this.$route.query.records === 'true'
     }
   },
   methods: {
+    toggleBalloons(toggle) {
+      this.chart.panels.forEach(p => {
+        const graphs = p.graphs
+
+        graphs.forEach(g => {
+          g.showBalloon = toggle
+        })
+      })
+    },
     getLabel(id) {
       const label = FUEL_TECH[id] ? FUEL_TECH[id].label : id;
       return label;
@@ -254,24 +302,27 @@ export default {
       this.tableData= this.summaryData.allData
       this.sourcesData = this.summaryData.sourcesData
       this.loadsData = this.summaryData.loadsData
+
+      this.demandExtent = this.summaryData.demandExtent
+      this.renewablesExtent = this.summaryData.renewablesExtent
     },
     onCursorHover(event) {
       if (event.index !== undefined) {
         const data = event.target.categoryLineAxis.data[event.index];
-        const dataContext = data.dataContext;
-        const pointData = {
-          date: data.category
-        };
-
-        Object.keys(FUEL_TECH).forEach(ft => {
-          pointData[ft] = dataContext[`${ft}Average`];
-        });
-
-        this.pointData = pointData;
+        this.pointDataSetup(data.category, data.dataContext)
         this.hidePoint = false;
       } else {
         this.hidePoint = true;
       }
+    },
+    pointDataSetup (date, dataProvider) {
+      const pointData = { date }
+
+      Object.keys(FUEL_TECH).forEach(ft => {
+        pointData[ft] = dataProvider[`${ft}Average`];
+      });
+
+      this.pointData = pointData;
     },
     onRollOverGraph(event) {
       const graphId = event.graph.id;
@@ -381,6 +432,9 @@ export default {
   beforeDestroy() {
     EventBus.$off('row-hover')
     EventBus.$off('row-out')
+    EventBus.$off('stockEventRow-hover')
+    EventBus.$off('stockEventRow-out')
+
     if (this.chart) {
       this.chart.clear()
       this.chart = null

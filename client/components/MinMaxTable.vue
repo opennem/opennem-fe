@@ -155,11 +155,11 @@ export default {
 
 <style scoped>
 table {
-  margin-top: -1px;
+  margin-top: 1rem;
   font-size: 0.75rem;
   width: 100%;
   border-collapse: collapse;
-  border-top: 4px double #999;
+  border-top: 1px solid #999;
 }
 td,
 th {
