@@ -125,6 +125,7 @@
         </FtSummary>
 
         <min-max-table
+          v-show="showRecords"
           :demand="demandExtent"
           :renewables="renewablesExtent"
           :temperature="temperatureExtent"
@@ -568,6 +569,9 @@ export default {
     },
     end() {
       return this.$store.getters.getChartZoomedEndDate
+    },
+    showRecords() {
+      return this.$route.query.records === 'true'
     }
   },
   methods: {

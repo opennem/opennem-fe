@@ -33,7 +33,7 @@ export default {
     },
     getWeekStarting(newData) {
       this.fetchData()
-    },
+    }
   },
   computed: {
     ...mapGetters({
