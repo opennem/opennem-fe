@@ -439,6 +439,7 @@ h4 {
 </style>
 
 <script>
+import * as _ from 'lodash';
 import * as moment from 'moment';
 import { isChrome } from '../utils/browserDetect';
 import domtoimage from '../utils/dom-to-image';
@@ -500,7 +501,8 @@ export default {
       gridDateTo: null,
       showTooltip: false,
       currentHovering: false,
-      hasGenerateSummary: false
+      hasGenerateSummary: false,
+      minMaxHover: false
     }
   },
   mounted() {
@@ -512,50 +514,27 @@ export default {
     });
 
     EventBus.$on('stockEventRow-hover', (panelName, date, label, value) => {
-      if (panelName === 'demand' || panelName === 'renewables') {
-        const stockGraphsLength = this.chart.panels[0].stockGraphs.length
-        const stockGraphId = this.chart.panels[0].stockGraphs[stockGraphsLength-1].id
-        this.chart.dataSets[0].stockEvents.push(this.getMinMaxStockEvent(date, label, stockGraphId))
-        this.chart.panels[0].categoryAxis.addGuide(this.getMinMaxGuide(panelName, date, label, false))
-      } else if (panelName === 'price') {
-        if (value > 302) {
-          this.chart.dataSets[0].stockEvents.push(this.getMinMaxStockEvent(date, label, 'p4'))
-        }
-        this.chart.dataSets[0].stockEvents.push(this.getMinMaxStockEvent(date, label, 'p3'))
-        this.chart.dataSets[0].stockEvents.push(this.getMinMaxStockEvent(date, label, 'p2'))
-        this.chart.panels[1].categoryAxis.addGuide(this.getMinMaxGuide(panelName, date, label, false))
-        this.chart.panels[2].categoryAxis.addGuide(this.getMinMaxGuide(panelName, date, label, false))
-        this.chart.panels[3].categoryAxis.addGuide(this.getMinMaxGuide(panelName, date, label, false))
+      const dateValue = `${moment(date).valueOf()}`
+      const dataProvider = _.find(this.chart.mainDataSet.agregatedDataProviders['5mm'], (d) => {
+        return d.amCategoryIdField === dateValue
+      })
 
-      } else if (panelName === 'temperature') {
-        this.chart.dataSets[0].stockEvents.push(this.getMinMaxStockEvent(date, label, 'p6'))
-        this.chart.panels[4].categoryAxis.addGuide(this.getMinMaxGuide(panelName, date, label, false))
-      }
+      this.minMaxHover = true
+      this.hidePoint = false
 
-      this.chart.validateData()
+      this.chart.panels.forEach((p) => {
+        p.chartCursor.showCursorAt(date)
+      })
+
+      this.pointDataSetup(date, dataProvider)
     });
 
     EventBus.$on('stockEventRow-out', (panelName, date, label, value) => {
-      if (panelName === 'demand' || panelName === 'renewables') {
-        this.chart.dataSets[0].stockEvents.pop()
-        this.chart.panels[0].categoryAxis.guides.pop()
-        this.chart.validateData()
-      } else if (panelName === 'price') {
-        if (value > 302) {
-          this.chart.dataSets[0].stockEvents.pop()
-        }
-        this.chart.dataSets[0].stockEvents.pop()
-        this.chart.dataSets[0].stockEvents.pop()
-        this.chart.panels[1].categoryAxis.guides.pop()
-        this.chart.panels[2].categoryAxis.guides.pop()
-        this.chart.panels[3].categoryAxis.guides.pop()
-
-      } else if (panelName === 'temperature') {
-        this.chart.dataSets[0].stockEvents.pop()
-        this.chart.panels[4].categoryAxis.guides.pop()
-      }
-
-      this.chart.validateData()
+      this.minMaxHover = false
+      this.hidePoint = true
+      this.chart.panels.forEach((p) => {
+        p.chartCursor.hideCursor()
+      })
     });
 
     
@@ -571,7 +550,8 @@ export default {
       return this.$store.getters.getChartZoomedEndDate
     },
     showRecords() {
-      return this.$route.query.records === 'true'
+      // return this.$route.query.records === 'true'
+      return true
     }
   },
   methods: {
@@ -657,27 +637,33 @@ export default {
     onCursorHover (event) {
       if (event.index !== undefined) {
         const data = event.target.categoryLineAxis.data[event.index]
-        const dataContext = data.dataContext
-        const pointData = {
-          date: data.category
+        this.pointDataSetup(data.category, data.dataContext)
+        this.hidePoint = false  
+      } else {
+        this.hidePoint = true
+      }
+    },
+    pointDataSetup (date, dataProvider) {
+      const pointData = { date }
+
+      Object.keys(FUEL_TECH).forEach(ft => {
+        const context = ft === 'price' ? 'Close' : 'Average'
+        pointData[ft] = dataProvider[`${ft}${context}`]
+
+        if (ft === 'price') {
+          this.currentPrice = dataProvider[`${ft}${context}`]
         }
+      })
 
-        Object.keys(FUEL_TECH).forEach(ft => {
-          const context = ft === 'price' ? 'Close' : 'Average'
-          pointData[ft] = dataContext[`${ft}${context}`]
+      this.pointData = pointData
 
-          if (ft === 'price') {
-            this.currentPrice = dataContext[`${ft}${context}`]
-          }
-        })
+      this.chart.panels.forEach(p => {
+        const graphs = p.graphs
 
-        this.pointData = pointData
-        this.hidePoint = false
-
-        this.chart.panels.forEach(p => {
-          const graphs = p.graphs
-
-          graphs.forEach(g => {
+        graphs.forEach(g => {
+          if (this.minMaxHover) {
+            g.showBalloon = false
+          } else {
             if (this.currentGraph !== g.valueField) {
               g.showBalloon = false
 
@@ -699,11 +685,9 @@ export default {
             } else {
               g.showBalloon = true
             }
-          })
+          }
         })
-      } else {
-        this.hidePoint = true
-      }
+      })
     },
     onRollOverGraph(event) {
       const graphId = event.graph.id
@@ -796,46 +780,6 @@ export default {
     onTooltipMouseout() {      
       this.showTooltip = false;
       this.currentHovering = false
-    },
-    getMinMaxGuide(panelName, date, label, showLabel) {
-      function capitalizeFirstLetter(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-      }
-
-      let displayLabel = showLabel ? ' ' + capitalizeFirstLetter(panelName) : ''
-      
-      return {
-        id: 'min-max-guide',
-        date: date,
-        above: false,
-        tickLength: 0,
-        fontSize: 10,
-        label: displayLabel,
-        labelRotation: 0,
-        position: 'top',
-        dashLength: 4,
-        lineColor: '#000', // #44146F
-        color: '#000',
-        lineThickness: 1,
-        lineAlpha: 1,
-        boldLabel: true
-      }
-    },
-    getMinMaxStockEvent(date, label, graph) {
-      const arrow = label === '  Lowest ' ? 'arrowDown' : 'arrowUp';
-      const text = label === '  Lowest ' ? 'L' : 'H';
-      return {
-        date,
-        type: 'sign',
-        borderAlpha: 1,
-        borderColor: '#C74523',
-        backgroundColor: '#C74523',
-        graph,
-        text,
-        fontSize: 11,
-        color: '#fff',
-        showBullet: true
-      }
     }
   },
 
