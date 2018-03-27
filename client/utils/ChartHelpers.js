@@ -48,9 +48,6 @@ export function chartConfig (config, forceGridCount) {
       startOnAxis: true,
       dateFormats: [
         { period: 'fff', format: '  JJ:NN' },
-        // { period: 'ss', format: '  D MMM\n JJ:NN' },
-        // { period: 'mm', format: '  D MMM\n JJ:NN' },
-        // { period: 'hh', format: '  D MMM\n JJ:NN' },
         { period: 'ss', format: '  JJ:NN\n D MMM' },
         { period: 'mm', format: '  JJ:NN' },
         { period: 'hh', format: '  JJ:NN' },
