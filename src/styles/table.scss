@@ -1,0 +1,43 @@
+@import "../../node_modules/bulma/sass/utilities/mixins.sass";
+
+.summary-table {
+  font-size: 0.8rem;
+
+  .column-header {
+    font-family: $header-font-family;
+    font-size: 0.9em;
+    color: #999;
+
+    small {
+      color: #000;
+      display: block;
+    }
+  }
+  .row-header {
+    font-family: $header-font-family;
+  }
+
+  .row-label {
+    @include desktop {
+      white-space: nowrap;
+    }
+  }
+
+  .cell-value {
+    font-family: $numbers-font-family;
+    text-align: right;
+  }
+  .source-colour {
+    width: 17px;
+    height: 17px;
+    background-color: rgba(255,255,255,.8);
+    display: inline-block;
+    vertical-align: text-bottom;
+    margin-right: 0.1rem;
+  }
+  .date-value {
+    display: block;
+    font-family: $primary-font-family;
+    font-size: 0.6rem;
+  }
+}

@@ -1,0 +1,51 @@
+/* durations and timing functions. */
+
+/* fade */
+.fade-enter-active {
+  transition: opacity .3s;
+}
+.fade-leave-active {
+  transition: opacity .2s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+/* fade qiick */
+.fade-quick-enter-active {
+  transition: opacity .3s;
+}
+.fade-quick-leave-active {
+  transition: opacity 0s;
+}
+.fade-quick-enter, .fade-quick-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+/* slide fade */
+.slide-fade-enter-active {
+  transition: all .3s ease;
+}
+.slide-fade-leave-active {
+  transition: all .3s ease;
+}
+.slide-fade-enter, 
+.slide-fade-leave-to
+{
+  transform: translateX(10px);
+  opacity: 0;
+}
+
+/* slide down fade */
+.slide-down-fade-enter-active {
+  transition: all .1s linear;
+}
+.slide-down-fade-leave-active {
+  transition: all .05s linear;
+}
+.slide-down-fade-enter, 
+.slide-down-fade-leave-to
+{
+  transform: translateY(-10px);
+  opacity: 0;
+}

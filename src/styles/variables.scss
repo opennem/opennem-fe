@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Serif:300,400,600');
+// @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Mono:400,400i');
+@import url('https://fonts.googleapis.com/css?family=Playfair+Display:400,700');
+// font-family: 'IBM Plex Serif', sans-serif;
+// font-family: 'Playfair Display', serif;
+
+$primary-font-family: 'IBM Plex Serif', Georgia, 'Times New Roman', Times, serif;
+// $secondary-font-family: 'IBM Plex Mono', monospace;
+$numbers-font-family: $primary-font-family;
+$header-font-family: 'Playfair Display', Georgia, 'Times New Roman', Times, serif;
+
+$opennem-primary: #C74523; //rgba(199,69,35,1)
+$opennem-primary-alpha: rgba(199,69,35,.85);
+$opennem-primary-invert: #fff;
+$background: #ece9e6;
+$background-alpha: rgba(236,233,230, 0.9);
+
+$border-color: #bbb;
+
+$hoverable-background: rgba(255,255,255,.75);
