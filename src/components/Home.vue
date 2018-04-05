@@ -150,7 +150,10 @@ export default {
         this.chartData = transformedData;
         this.$store.dispatch('setDataEndDate', transformedData[transformedData.length - 1].date);
         this.$store.dispatch('fetchingData', false);
-        this.$store.dispatch('setExportData', transformedData);
+        this.$store.dispatch('setExportData', {
+          name: 'NEM',
+          data: transformedData,
+        });
       });
     },
   },

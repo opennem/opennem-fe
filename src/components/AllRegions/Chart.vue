@@ -143,7 +143,10 @@ export default {
           end,
         });
 
-        this.$store.dispatch('setExportData', dataFilter(this.chartData, start, end));
+        this.$store.dispatch('setExportData', {
+          name: 'NEM',
+          data: dataFilter(this.chartData, start, end),
+        });
 
         if (checkDateZoomLessThan1Day(start, end)) {
           this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];

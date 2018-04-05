@@ -155,7 +155,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { formatNumber } from '@/lib/formatter';
+import { formatNumberForDisplay } from '@/lib/formatter';
 
 export default {
   name: 'all-regions-summary',
@@ -181,7 +181,7 @@ export default {
   },
   methods: {
     formatNumber(value, format) {
-      return formatNumber(value, format);
+      return formatNumberForDisplay(value, format);
     },
   },
 };

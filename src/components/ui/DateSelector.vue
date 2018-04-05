@@ -32,7 +32,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import { mixin as clickaway } from 'vue-clickaway';
-import { formatDate } from '@/lib/formatter';
+import { formatDateForDisplay } from '@/lib/formatter';
 import { getLast24HoursStartEndDates } from '@/lib/data-helpers';
 import EventBus from '@/lib/event-bus';
 import Loader from './Loader';
@@ -55,13 +55,13 @@ export default {
       dataEndDate: 'getDataEndDate',
     }),
     pointDate() {
-      return formatDate(this.$store.getters.getPointSummary.date);
+      return formatDateForDisplay(this.$store.getters.getPointSummary.date);
     },
     startDate() {
-      return formatDate(this.$store.getters.getSelectedStartDate);
+      return formatDateForDisplay(this.$store.getters.getSelectedStartDate);
     },
     endDate() {
-      return formatDate(this.$store.getters.getSelectedEndDate);
+      return formatDateForDisplay(this.$store.getters.getSelectedEndDate);
     },
   },
   watch: {

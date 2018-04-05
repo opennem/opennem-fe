@@ -22,7 +22,7 @@
             <csv
               :data="chartData"
               :fields="csvHeaders"
-              :name="'test.csv'">
+              :name="`${exportName}.csv`">
                 <span class="panel-icon">
                   <i class="fas fa-book"></i>
                 </span>
@@ -56,6 +56,7 @@ export default {
   computed: {
     ...mapGetters({
       chartData: 'getExportData',
+      exportName: 'getExportName',
     }),
   },
   methods: {

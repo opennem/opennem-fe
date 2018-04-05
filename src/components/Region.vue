@@ -93,7 +93,10 @@ export default {
         const transformedData = dataTransform(GraphDomains, response.data);
         this.$store.dispatch('setDataEndDate', transformedData[transformedData.length - 1].date);
         this.chartData = transformedData;
-        this.$store.dispatch('setExportData', transformedData);
+        this.$store.dispatch('setExportData', {
+          name: 'Region',
+          data: transformedData,
+        });
       });
     },
   },

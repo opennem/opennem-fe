@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import numeral from 'numeral';
 
-function formatDate(date) {
+function formatDateForDisplay(date) {
   let format = 'D MMM, h:mma';
 
   const d = moment(date);
@@ -21,7 +21,11 @@ function formatDate(date) {
   return moment(date).format(format);
 }
 
-function formatNumber(number, precision) {
+function formatDateForExport(date) {
+  return moment(date).format('YYYYMMDD');
+}
+
+function formatNumberForDisplay(number, precision) {
   const formatter = precision || '0,0';
   const formatted =
     number === 0 || isNaN(number)
@@ -31,6 +35,7 @@ function formatNumber(number, precision) {
 }
 
 export {
-  formatDate,
-  formatNumber,
+  formatDateForDisplay,
+  formatDateForExport,
+  formatNumberForDisplay,
 };

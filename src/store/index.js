@@ -3,6 +3,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import { getSummary, getPointSummary } from '@/lib/data-summary';
 import { dataFilter } from '@/lib/data-helpers';
+import { formatDateForExport } from '@/lib/formatter';
 
 Vue.use(Vuex);
 
@@ -18,8 +19,10 @@ const state = {
     start: null,
     end: null,
   },
-  exportFilename: 'export',
-  exportData: [],
+  exportData: {
+    name: '',
+    data: [],
+  },
 };
 
 const mutations = {
@@ -85,7 +88,10 @@ const getters = {
     return state.dataEndDate;
   },
   getExportData: state => {
-    return state.exportData;
+    return state.exportData.data;
+  },
+  getExportName: state => {
+    return `${formatDateForExport(state.selectedDates.end)} ${state.exportData.name}`;
   },
 };
 

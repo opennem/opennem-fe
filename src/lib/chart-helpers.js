@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { formatNumber } from './formatter';
+import { formatNumberForDisplay } from './formatter';
 import { getStartEndDates } from './data-helpers';
 import { isTouchDevice } from './device';
 
@@ -148,7 +148,7 @@ function getStockGraphs(domains, keys, showBalloon) {
           let balloonTxt = '';
 
           if (!isLoad(graph.id) && item.values.value > 0) {
-            const value = formatNumber(item.dataContext[`${graph.id}Average`]);
+            const value = formatNumberForDisplay(item.dataContext[`${graph.id}Average`]);
             const ftLabel = domains[graph.id].label;
 
             const displayValue = `${value} MW`;
