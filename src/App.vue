@@ -1,31 +1,30 @@
 <template>
   <div id="app">
+    <app-header />
+
     <transition name="fade-quick">
-      <section v-if="isAbout">
+      <section class="about-page" v-if="isAbout">
         <router-view/>
-        <Footer />
       </section>
     </transition>
 
-    <section v-if="!isAbout">
-      <header-nav></header-nav>
-      <div class="router-view-container">
-        <router-view/>
-      </div>
-      <Footer />
-    </section>   
+    <section class="router-view-container" v-if="!isAbout">
+      <router-view/>
+    </section>  
+
+    <app-footer /> 
   </div>  
 </template>
 
 <script>
-import Header from '@/components/ui/Header';
-import Footer from '@/components/ui/Footer';
+import AppHeader from '@/components/ui/Header';
+import AppFooter from '@/components/ui/Footer';
 
 export default {
   name: 'app',
   components: {
-    HeaderNav: Header,
-    Footer,
+    AppHeader,
+    AppFooter,
   },
   computed: {
     isAbout() {
@@ -57,7 +56,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   padding-bottom: 2rem;
 }
-section {
+.about-page {
   @include widescreen {
     margin-top: 2rem;
   }
