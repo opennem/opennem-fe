@@ -1,10 +1,21 @@
 <template>
   <div class="container">
-    <header>
-      <a target="_blank" :href="headerLink">
-        <img class="logo" src="../assets/opennem-logo.svg" alt="OpenNEM logo">            
-        <strong>National Electricity Market</strong>
-      </a>
+    <header class="level is-mobile">
+      <div class="level-left">
+        <a target="_blank" :href="headerLink">
+          <img class="logo" src="../assets/opennem-logo.svg" alt="OpenNEM logo">            
+          <strong>National Electricity Market</strong>
+        </a>
+      </div>
+
+      <div class="level-right" v-if="isLarge">
+        <div v-if="isPointHovered">
+          {{pointDate}}
+        </div>
+        <div v-else>
+          {{startDate}} – {{endDate}}
+        </div>  
+      </div>
     </header>
 
     <div class="zoom-out-btn">
@@ -53,6 +64,7 @@ import {
   getStartEndDates,
   dataFilter,
   getLast3DaysStartEndDates } from '@/lib/data-helpers';
+import { formatDateForDisplay } from '@/lib/formatter';
 import { GraphDomains } from '@/domains/graphs';
 import WidgetChart from './Widget/Chart';
 import WidgetLegend from './Widget/Legend';
@@ -91,9 +103,19 @@ export default {
     ...mapGetters({
       isFetching: 'isFetching',
       isChartZoomed: 'isChartZoomed',
+      isPointHovered: 'isPointHovered',
       startDate: 'getSelectedStartDate',
       endDate: 'getSelectedEndDate',
     }),
+    pointDate() {
+      return formatDateForDisplay(this.$store.getters.getPointSummary.date);
+    },
+    startDate() {
+      return formatDateForDisplay(this.$store.getters.getSelectedStartDate);
+    },
+    endDate() {
+      return formatDateForDisplay(this.$store.getters.getSelectedEndDate);
+    },
     isSmall() {
       return this.size === 'small';
     },
@@ -170,9 +192,17 @@ export default {
   padding: 0 0.5rem;
 }
 
-header {
-  font-family: $header-font-family;
+.level {
   padding: 0.5rem;
+  margin-bottom: 0;
+
+  .level-left {
+    font-family: $header-font-family;
+  }
+  .level-right {
+    font-size: 0.8rem;
+    color: #000;
+  }
 
   .logo {
     margin-right: 0.1rem;
