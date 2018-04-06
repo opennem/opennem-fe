@@ -23,10 +23,12 @@
               :data="chartData"
               :fields="csvHeaders"
               :name="`${exportName}.csv`">
-                <span class="panel-icon">
-                  <i class="fas fa-book"></i>
-                </span>
-                Spreadsheet (CSV)
+                <a class="panel-block" @click="closeModal">
+                  <span class="panel-icon">
+                    <i class="fas fa-book"></i>
+                  </span>
+                  Spreadsheet (CSV)
+                </a>
             </csv>
           </div>
         </div>
@@ -63,6 +65,9 @@ export default {
     handleClick() {
       const isActive = !this.modalActive;
       this.modalActive = isActive;
+    },
+    closeModal() {
+      this.modalActive = false;
     },
   },
 };
