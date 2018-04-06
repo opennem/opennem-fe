@@ -40,4 +40,13 @@
     font-family: $primary-font-family;
     font-size: 0.6rem;
   }
+
+  &.legend-table {
+    font-size: 0.7rem;
+
+    .source-colour {
+      width: 13px;
+      height: 13px;
+    }
+  }
 }

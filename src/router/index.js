@@ -20,7 +20,8 @@ export default new Router({
       component: Region,
     },
     {
-      path: '/widget',
+      path: '/widget/:size',
+      props: true,
       name: 'widget',
       component: Widget,
     },

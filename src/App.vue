@@ -1,18 +1,27 @@
 <template>
   <div id="app">
-    <app-header />
+
+    <section v-if="showMainNav">
+      <app-header />
+      <div class="router-view-container">
+        <router-view />
+      </div>
+      <app-footer />
+    </section>
 
     <transition name="fade-quick">
       <section class="about-page" v-if="isAbout">
         <router-view/>
+        <app-footer /> 
       </section>
     </transition>
 
-    <section class="router-view-container" v-if="!isAbout">
-      <router-view/>
-    </section>  
+    <transition name="fade">
+      <section class="widget-page" v-if="isWidget">
+        <router-view/>
+      </section>
+    </transition>
 
-    <app-footer /> 
   </div>  
 </template>
 
@@ -27,8 +36,15 @@ export default {
     AppFooter,
   },
   computed: {
+    showMainNav() {
+      const name = this.$route.name;
+      return name === 'home' || name === 'region';
+    },
     isAbout() {
       return this.$route.name === 'about';
+    },
+    isWidget() {
+      return this.$route.name === 'widget';
     },
   },
 };
@@ -56,7 +72,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   padding-bottom: 2rem;
 }
-.about-page {
+section {
   @include widescreen {
     margin-top: 2rem;
   }

@@ -66,6 +66,18 @@ function getLast24HoursStartEndDates(dataEndDate) {
 }
 
 /**
+ * get start and end dates of the last 3 days based on an end date
+ * @param {*} dataEndDate
+ */
+function getLast3DaysStartEndDates(dataEndDate) {
+  const start = moment(dataEndDate).subtract(3, 'days').toDate();
+  return {
+    start,
+    end: dataEndDate,
+  };
+}
+
+/**
  * Parse the date label to get start/end dates
  * @param {*} dateLabel
  * @param {*} dataEndDate
@@ -118,5 +130,6 @@ export {
   checkDateZoomLessThan1Day,
   getZoomDatesOnDateLabel,
   getLast24HoursStartEndDates,
+  getLast3DaysStartEndDates,
   getKeys,
 };
