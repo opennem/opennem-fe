@@ -49,8 +49,8 @@ import {
 import EventBus from '@/lib/event-bus';
 import getJSON from '@/lib/data-apis';
 import dataTransform from '@/lib/data-transform';
-import { 
-  getStartEndDates, 
+import {
+  getStartEndDates,
   dataFilter,
   getLast3DaysStartEndDates } from '@/lib/data-helpers';
 import { GraphDomains } from '@/domains/graphs';
@@ -141,7 +141,7 @@ export default {
     fetchNem() {
       this.$store.dispatch('fetchingData', true);
       const url = 'static/data/nem.json';
- 
+
       getJSON(url).then((response) => {
         const transformedData = dataTransform(GraphDomains, response.data);
         const endDate = transformedData[transformedData.length - 1].date;
