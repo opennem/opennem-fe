@@ -29,11 +29,13 @@
     <div class="chart" v-show="!isFetching">
       <widget-chart :chartData="chartData" />
     </div>
-    <div class="table" v-if="!isFetching" :class="{ small: isSmall, large: isLarge }">
-      <all-regions-summary v-if="isLarge" />
-      
+    <div class="table" v-if="!isFetching && isLarge">
+      <all-regions-summary />
+    </div>
+
+    <div class="legend" v-if="!isFetching && isSmall">
       <transition name="slide-fade">
-        <widget-legend v-if="isSmall && showLegend" />
+        <widget-legend v-if="showLegend" />
       </transition>
     </div>
 
@@ -212,9 +214,9 @@ export default {
 }
 
 footer {
-  font-size: 0.7rem;
+  font-size: 0.6rem;
   border-top: 1px solid #ccc;
-  padding-top: 0.5rem;
+  padding-top: 0;
 
   a {
     border-bottom: 1px dashed;
@@ -228,15 +230,14 @@ footer {
 }
 
 .table {
-  &.large table {
+  table {
     width: 100%;
   }
-
-  &.small table {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-  }
+}
+.legend table {
+  position: absolute;
+  bottom: 1rem;
+  right: 0;
 }
 
 .zoom-out-btn {

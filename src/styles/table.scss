@@ -42,11 +42,12 @@
   }
 
   &.legend-table {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
 
     .source-colour {
-      width: 13px;
-      height: 13px;
+      width: 10px;
+      height: 10px;
+      vertical-align: middle;
     }
   }
 }
