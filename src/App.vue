@@ -38,7 +38,7 @@ export default {
   computed: {
     showMainNav() {
       const name = this.$route.name;
-      return name === 'home' || name === 'region';
+      return name === 'home' || name === 'regions';
     },
     isAbout() {
       return this.$route.name === 'about';
