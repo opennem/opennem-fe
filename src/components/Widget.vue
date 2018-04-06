@@ -204,16 +204,6 @@ export default {
     color: #000;
   }
 
-  .logo {
-    margin-right: 0.1rem;
-    max-height: 1.6rem;
-    vertical-align: middle;
-
-    @include tablet {
-      max-height: 2rem;
-    }
-  }
-
   strong {
     position: relative;
     top: 2px;

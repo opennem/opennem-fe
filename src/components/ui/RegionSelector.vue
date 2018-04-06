@@ -85,20 +85,12 @@ export default {
     font-size: 1.7rem;
   }
 
-  .logo {
-    margin-right: 0.1rem;
-    max-height: 1.6rem;
-    vertical-align: text-bottom;
-
-    @include tablet {
-      max-height: 2rem;
-    }
-  }
-
   a.dropdown-trigger {
     color: #000;
 
     strong {
+      position: relative;
+      top: 2px;
       border-bottom: 1px dashed $opennem-primary-alpha;
     }
   }

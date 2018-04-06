@@ -54,6 +54,7 @@ export default {
 // Vue Transitions
 @import "styles/variables.scss";
 @import "styles/vue-transitions.css";
+@import "styles/logo.scss";
 @import "styles/chart.scss";
 @import "styles/table.scss";
 @import "styles/dropdown.scss";
