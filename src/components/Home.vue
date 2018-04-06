@@ -142,8 +142,7 @@ export default {
     fetchNem() {
       this.$store.dispatch('fetchingData', true);
 
-      const url = 'data/nem.json';
-      // const url = 'power/nem.json';
+      const url = 'data/power/nem.json';
 
       getJSON(url).then((response) => {
         const transformedData = dataTransform(GraphDomains, response.data);

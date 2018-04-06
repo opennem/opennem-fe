@@ -43,6 +43,9 @@ export default {
   beforeDestroy() {
     EventBus.$off('data.fetch.latest');
   },
+  props: {
+    region: String,
+  },
   data() {
     return {
       chartData: [],
@@ -78,7 +81,7 @@ export default {
         end,
       });
     },
-    regionId() {
+    region() {
       this.fetchNem();
     },
   },
@@ -89,7 +92,7 @@ export default {
     fetchNem() {
       this.$store.dispatch('fetchingData', true);
 
-      getJSON(`static/data/${this.regionId}1.json`).then((response) => {
+      getJSON(`data/power/${this.region}1.json`).then((response) => {
         const transformedData = dataTransform(GraphDomains, response.data);
         this.$store.dispatch('setDataEndDate', transformedData[transformedData.length - 1].date);
         this.chartData = transformedData;

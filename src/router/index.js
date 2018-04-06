@@ -16,6 +16,7 @@ export default new Router({
     },
     {
       path: '/regions/:region',
+      props: true,
       name: 'regions',
       component: Region,
     },
