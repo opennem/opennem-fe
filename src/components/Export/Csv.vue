@@ -1,7 +1,7 @@
 <template>
-  <a class="panel-block" :id="idName" @click="generate">
+  <span :id="idName" @click="generate">
     <slot>CSV</slot>
-  </a>
+  </span>
 </template>
 
 <script>
