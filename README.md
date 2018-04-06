@@ -1,36 +1,16 @@
-# OpenNEM
+# An Open Platform for National Electricity Market Data
+The *OpenNEM project* aims to make the wealth of public *National Electricity Market (NEM)* data more accessible to a wider audience.
 
-## JS Framework
+We hope that improved access will facilitate *better public understanding of the market*, *improve energy literacy* and help facilitate a more *informed national discussion* on Australia’s energy transition in the long term interests of consumers.
 
-See [Vue.js](https://vuejs.org/)
+By providing a *clear* window on the data, we hope to address the information asymmetry between stakeholders and improve the productivity of those engaged in energy market discussions.
 
-## CSS Framework
+OpenNEM is a project of the [Energy Transition Hub](http://energy-transition-hub.org/)
 
-See [Bulma](https://bulma.io/)
+Developed by:
+* [Dylan McConnell (@dylanjmcconnell) | Twitter](https://twitter.com/dylanjmcconnell)
+* [simon holmes à court (@simonahac) | Twitter](https://twitter.com/simonahac)
+* [Steven Tan (@chienleng) | Twitter](https://twitter.com/chienleng)
 
-## Build Setup
-
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-
-# run unit tests
-npm run unit
-
-# run e2e tests
-npm run e2e
-
-# run all tests
-npm test
-```
-
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## License
+OpenNEM is MIT licensed.
