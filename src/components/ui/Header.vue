@@ -1,6 +1,21 @@
 <template>
   <nav role="navigation" aria-label="main dropdown navigation">
-    <div class="level">
+    <div class="level export-nav is-mobile" v-if="isExportPng">
+      <div class="level-left">
+        <h1>Export as Image (PNG)</h1>
+      </div>
+      <div class="level-right">
+        <div class="buttons">
+          <button class="button is-small is-rounded is-primary is-inverted" @click="cancelExport">
+            Cancel
+          </button>
+          <button class="button is-small is-rounded is-primary">
+            Download
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="level" v-else>
       <div class="level-left">
         <region-selector />
       </div>
@@ -14,6 +29,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import RegionSelector from './RegionSelector';
 import DateSelector from './DateSelector';
 import ExportModal from '../Export/Modal';
@@ -24,6 +40,16 @@ export default {
     RegionSelector,
     DateSelector,
     ExportModal,
+  },
+  computed: {
+    ...mapGetters({
+      isExportPng: 'isExportPng',
+    }),
+  },
+  methods: {
+    cancelExport() {
+      this.$store.dispatch('setExportPng', false);
+    },
   },
 };
 </script>
@@ -40,10 +66,18 @@ nav {
   padding: 0.5rem 0 0.75rem;
 }
 
+h1 {
+  font-weight: bold;
+}
+
 .level {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 1rem;
+
+  &.export-nav {
+    max-width: 650px;
+  }
 }
 
 .level-right {

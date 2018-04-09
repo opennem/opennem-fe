@@ -20,7 +20,7 @@
 
     <div class="zoom-out-btn">
       <transition name="fade">
-        <button class="button is-small is-rounded is-danger is-inverted" 
+        <button class="button is-small is-rounded is-primary is-inverted" 
           @click="handleZoomOutClicked" 
           v-if="isChartZoomed && !isFetching">Reset Zoom</button>
       </transition>

@@ -23,6 +23,7 @@ const state = {
     name: '',
     data: [],
   },
+  exportPng: false,
 };
 
 const mutations = {
@@ -56,6 +57,9 @@ const mutations = {
   },
   updateExportData(state, data) {
     state.exportData = data;
+  },
+  updateExportPng(state, data) {
+    state.exportPng = data;
   },
 };
 
@@ -93,6 +97,9 @@ const getters = {
   getExportName: state => {
     return `${formatDateForExport(state.selectedDates.end)} ${state.exportData.name}`;
   },
+  isExportPng: state => {
+    return state.exportPng;
+  },
 };
 
 const actions = {
@@ -125,6 +132,9 @@ const actions = {
   },
   setExportData({ commit, state }, data) {
     commit('updateExportData', data);
+  },
+  setExportPng({ commit, state }, data) {
+    commit('updateExportPng', data);
   },
 };
 

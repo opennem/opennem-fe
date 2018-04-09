@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button class="export-btn button is-small is-rounded is-danger is-inverted"
+    <button class="export-btn button is-small is-rounded is-primary is-inverted"
       @click="handleClick">Export</button>
 
     <transition name="fade">
@@ -12,7 +12,7 @@
               Export as...
             </p>
             
-            <a class="panel-block">
+            <a class="panel-block" @click="showExportPng">
               <span class="panel-icon">
                 <i class="fas fa-book"></i>
               </span>
@@ -68,6 +68,10 @@ export default {
     },
     closeModal() {
       this.modalActive = false;
+    },
+    showExportPng() {
+      this.$store.dispatch('setExportPng', true);
+      this.closeModal();
     },
   },
 };
