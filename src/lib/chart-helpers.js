@@ -144,6 +144,7 @@ function getStockGraphs(domains, keys, showBalloon) {
         lineColor: colour,
         useDataSetColors: false,
         showBalloon,
+        periodValue: 'Average',
         balloonFunction: (item) => {
           let balloonTxt = '';
 
