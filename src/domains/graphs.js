@@ -89,16 +89,16 @@ const GraphDomains = {
     label: 'Wind',
     unit: 'MW',
   },
-  rooftop_solar: {
+  solar: {
     colour: '#DFCF00',
     type: 'sources',
-    label: 'Solar (Rooftop)',
+    label: 'Solar (Utility)',
     unit: 'MW',
   },
-  solar: {
+  rooftop_solar: {
     colour: '#F8E71C',
     type: 'sources',
-    label: 'Solar (Utility)',
+    label: 'Solar (Rooftop)',
     unit: 'MW',
   },
   temperature: {
