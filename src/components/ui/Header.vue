@@ -6,10 +6,10 @@
       </div>
       <div class="level-right">
         <div class="buttons">
-          <button class="button is-small is-rounded is-primary is-inverted" @click="cancelExport">
+          <button class="button is-small is-rounded is-primary is-inverted" @click="closeExport">
             Cancel
           </button>
-          <button class="button is-small is-rounded is-primary">
+          <button class="button is-small is-rounded is-primary" @click="handleDownloadClick">
             Download
           </button>
         </div>
@@ -30,6 +30,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import EventBus from '@/lib/event-bus';
 import RegionSelector from './RegionSelector';
 import DateSelector from './DateSelector';
 import ExportModal from '../Export/Modal';
@@ -47,8 +48,11 @@ export default {
     }),
   },
   methods: {
-    cancelExport() {
+    closeExport() {
       this.$store.dispatch('setExportPng', false);
+    },
+    handleDownloadClick() {
+      EventBus.$emit('download.vis.clicked');
     },
   },
 };

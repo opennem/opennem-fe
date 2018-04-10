@@ -8,10 +8,15 @@
     </transition>
   </div>
 
-  <div class="column" v-show="!isFetching">
-    <all-regions-chart :chartData="chartData" />
+  <div class="column" v-show="!isFetching" :class="{ export: isExportPng }">
+    <div id="export-container">
+      <export-png-header v-if="isExportPng" />
+      <all-regions-chart :chartData="chartData" />
+      <export-legend v-if="isExportPng" />
+      <export-png-footer v-if="isExportPng" />
+    </div>
   </div>
-  <div class="column is-narrow" v-if="!isFetching">
+  <div class="column is-narrow" v-if="!isFetching && !isExportPng">
     <all-regions-summary />
 
     <!-- <table class="summary-table table is-fullwidth is-narrow">
@@ -79,6 +84,8 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import domtoimage from '@/lib/dom-to-image';
+import FileSaver from 'file-saver';
 import EventBus from '@/lib/event-bus';
 import getJSON from '@/lib/data-apis';
 import dataTransform from '@/lib/data-transform';
@@ -86,11 +93,17 @@ import { getStartEndDates } from '@/lib/data-helpers';
 import { GraphDomains } from '@/domains/graphs';
 import AllRegionsChart from './AllRegions/Chart';
 import AllRegionsSummary from './AllRegions/Summary';
+import ExportPngHeader from './Export/PngHeader';
+import ExportPngFooter from './Export/PngFooter';
+import ExportLegend from './Export/Legend';
 
 export default {
   components: {
     AllRegionsChart,
     AllRegionsSummary,
+    ExportPngHeader,
+    ExportPngFooter,
+    ExportLegend,
   },
   created() {
     this.$store.dispatch('setDomains', GraphDomains);
@@ -98,9 +111,11 @@ export default {
   },
   mounted() {
     EventBus.$on('data.fetch.latest', this.fetchNem);
+    EventBus.$on('download.vis.clicked', this.downloadPNG);
   },
   beforeDestroy() {
     EventBus.$off('data.fetch.latest');
+    EventBus.$off('download.vis.clicked');
   },
   data() {
     return {
@@ -113,6 +128,8 @@ export default {
       isChartZoomed: 'isChartZoomed',
       startDate: 'getSelectedStartDate',
       endDate: 'getSelectedEndDate',
+      isExportPng: 'isExportPng',
+      exportName: 'getExportName',
     }),
   },
   watch: {
@@ -139,6 +156,13 @@ export default {
     handleZoomOutClicked() {
       EventBus.$emit('chart.zoomedOut.clicked');
     },
+    downloadPNG() {
+      domtoimage.toBlob(document.getElementById('export-container'))
+        .then((blob) => {
+          FileSaver.saveAs(blob, `${this.exportName}.png`);
+          this.$store.dispatch('setExportPng', false);
+        });
+    },
     fetchNem() {
       this.$store.dispatch('fetchingData', true);
 
@@ -149,10 +173,8 @@ export default {
         this.chartData = transformedData;
         this.$store.dispatch('setDataEndDate', transformedData[transformedData.length - 1].date);
         this.$store.dispatch('fetchingData', false);
-        this.$store.dispatch('setExportData', {
-          name: 'NEM',
-          data: transformedData,
-        });
+        this.$store.dispatch('setExportData', transformedData);
+        this.$store.dispatch('setExportRegion', 'OpenNEM');
       });
     },
   },
@@ -160,6 +182,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#export-container {
+  padding: 1rem;
+}
+.export {
+  max-width: 650px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  box-shadow: 0 0 50px #ddd;
+  padding: 1rem 0;
+  margin: 1rem auto;
+
+  .vis {
+    margin: 0.5rem;
+    height: 300px;
+  }
+}
 .zoom-out-btn {
   position: absolute;
   z-index: 9;

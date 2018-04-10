@@ -10,9 +10,12 @@
 
 
   <div class="column" v-show="!isFetching" :class="{ export: isExportPng }">
-    <export-png-header v-if="isExportPng" />
-    <region-chart :chartData="chartData" />
-    <export-png-footer v-if="isExportPng" />
+    <div id="export-container">
+      <export-png-header v-if="isExportPng" />
+      <region-chart :chartData="chartData" />
+      <export-legend v-if="isExportPng" />
+      <export-png-footer v-if="isExportPng" />
+    </div>
   </div>
   <div class="column is-narrow" v-if="!isFetching && !isExportPng">
     <region-summary />
@@ -23,15 +26,19 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import domtoimage from '@/lib/dom-to-image';
+import FileSaver from 'file-saver';
 import EventBus from '@/lib/event-bus';
 import getJSON from '@/lib/data-apis';
 import dataTransform from '@/lib/data-transform';
 import { getStartEndDates } from '@/lib/data-helpers';
 import { GraphDomains } from '@/domains/graphs';
+import { getRegionLabel } from '@/domains/regions';
 import RegionChart from './Region/Chart';
 import RegionSummary from './Region/Summary';
 import ExportPngHeader from './Export/PngHeader';
 import ExportPngFooter from './Export/PngFooter';
+import ExportLegend from './Export/Legend';
 
 export default {
   components: {
@@ -39,6 +46,7 @@ export default {
     RegionSummary,
     ExportPngHeader,
     ExportPngFooter,
+    ExportLegend,
   },
   created() {
     this.$store.dispatch('setDomains', GraphDomains);
@@ -46,9 +54,11 @@ export default {
   },
   mounted() {
     EventBus.$on('data.fetch.latest', this.fetchNem);
+    EventBus.$on('download.vis.clicked', this.downloadPNG);
   },
   beforeDestroy() {
     EventBus.$off('data.fetch.latest');
+    EventBus.$off('download.vis.clicked');
   },
   props: {
     region: String,
@@ -65,6 +75,7 @@ export default {
       startDate: 'getSelectedStartDate',
       endDate: 'getSelectedEndDate',
       isExportPng: 'isExportPng',
+      exportName: 'getExportName',
     }),
     regionId() {
       return this.$route.params.region;
@@ -97,6 +108,13 @@ export default {
     handleZoomOutClicked() {
       EventBus.$emit('chart.zoomedOut.clicked');
     },
+    downloadPNG() {
+      domtoimage.toBlob(document.getElementById('export-container'))
+        .then((blob) => {
+          FileSaver.saveAs(blob, `${this.exportName}.png`);
+          this.$store.dispatch('setExportPng', false);
+        });
+    },
     fetchNem() {
       this.$store.dispatch('fetchingData', true);
 
@@ -104,10 +122,8 @@ export default {
         const transformedData = dataTransform(GraphDomains, response.data);
         this.$store.dispatch('setDataEndDate', transformedData[transformedData.length - 1].date);
         this.chartData = transformedData;
-        this.$store.dispatch('setExportData', {
-          name: 'Region',
-          data: transformedData,
-        });
+        this.$store.dispatch('setExportData', transformedData);
+        this.$store.dispatch('setExportRegion', getRegionLabel(this.regionId));
       });
     },
   },
@@ -115,7 +131,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+#export-container {
+  padding: 1rem;
+}
 .export {
   max-width: 650px;
   border-radius: 5px;

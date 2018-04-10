@@ -1,7 +1,18 @@
 <template>
   <div class="export-header">
-    <h3 contenteditable="true">South Australia</h3>
-    <h5 contenteditable="true">Description</h5>
+    <div class="annotation-btns">
+      <button class="button is-small is-rounded is-primary is-inverted"
+        v-if="!showTitle" @click="showTitle = true">
+        Add Title
+      </button>
+      <button class="button is-small is-rounded is-primary is-inverted"
+        v-if="!showDescription" @click="showDescription = true">
+        Add Description
+      </button>
+    </div>
+
+    <h3 contenteditable="true" v-if="showTitle" @blur="onTitleBlur">{{exportRegion}}</h3>
+    <h5 contenteditable="true" v-if="showDescription" @blur="onDescriptionBlur">Description</h5>
   </div>
 </template>
 
@@ -12,13 +23,26 @@ export default {
   name: 'export-png-header',
   data() {
     return {
+      showTitle: true,
+      showDescription: true,
     };
   },
   computed: {
     ...mapGetters({
+      exportRegion: 'getExportRegion',
     }),
   },
   methods: {
+    onTitleBlur(e) {
+      if (e.target.innerText.trim() === '') {
+        this.showTitle = false;
+      }
+    },
+    onDescriptionBlur(e) {
+      if (e.target.innerText.trim() === '') {
+        this.showDescription = false;
+      }
+    },
   },
 };
 </script>
@@ -27,8 +51,20 @@ export default {
 @import "../../styles/variables.scss";
 
 .export-header {
+  position: relative;
   padding: 0 0.5rem;
   margin: 0 0 1rem;
+
+  .annotation-btns {
+    position: absolute;
+    left: -9.5rem;
+    width: 130px;
+    text-align: right;
+
+    :first-child {
+      margin-bottom: .5rem;
+    }
+  }
 }
 h3 {
   font-weight: bold;

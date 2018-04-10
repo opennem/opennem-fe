@@ -1,15 +1,22 @@
 <template>
-  <div class="export-footer level is-mobile">
-    <div class="level-left">
-      <p>
-        Sources: <strong>AEMO, BoM, OpenNEM</strong>
-      </p>
+  <div class="export-footer">
+    <div class="annotation-btns">
+      <button class="button is-small is-rounded is-primary is-inverted"
+        v-if="!showAttribution" @click="showAttribution = true">
+        Add Attribution
+      </button>
     </div>
-    <div class="level-right">
-      <p>
-        Shared by <strong contenteditable="true">@name</strong>
-      </p>
+
+    <div>
+      <span>Sources:</span>
+      <strong>AEMO, BoM, OpenNEM</strong>
     </div>
+
+    <div v-if="showAttribution">
+      Shared by 
+      <strong contenteditable="true" @blur="onAttributionBlur">@name</strong>
+    </div>
+
   </div>
 </template>
 
@@ -20,13 +27,20 @@ export default {
   name: 'export-png-footer',
   data() {
     return {
+      showAttribution: true,
     };
   },
   computed: {
     ...mapGetters({
+      exportRegion: 'getExportRegion',
     }),
   },
   methods: {
+    onAttributionBlur(e) {
+      if (e.target.innerText.trim() === '') {
+        this.showAttribution = false;
+      }
+    },
   },
 };
 </script>
@@ -35,13 +49,23 @@ export default {
 @import "../../styles/variables.scss";
 
 .export-footer {
-  padding: 0 0.5rem;
-  margin: 1rem 0 0;
+  position: relative;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0 0;
   font-size: 0.8rem;
+  border-top: 1px dashed #ccc;
+
+  .annotation-btns {
+    position: absolute;
+    margin-top: -4px;
+    left: -9.5rem;
+    width: 130px;
+    text-align: right;
+  }
 }
 strong {
   color: $opennem-primary;
-  display: inline-block;
+  display: inline;
 
   &[contenteditable] {
     transition: all .2s ease-in;
