@@ -9,18 +9,14 @@
       <app-footer />
     </section>
 
-    <transition name="fade-quick">
-      <section class="about-page" v-if="isAbout">
-        <router-view/>
-        <app-footer /> 
-      </section>
-    </transition>
+    <section class="about-page" v-if="isAbout">
+      <router-view/>
+      <app-footer /> 
+    </section>
 
-    <transition name="fade">
-      <section class="widget-page" v-if="isWidget">
-        <router-view/>
-      </section>
-    </transition>
+    <section class="widget-page" v-if="isWidget">
+      <router-view/>
+    </section>
 
   </div>  
 </template>
