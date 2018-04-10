@@ -131,9 +131,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#export-container {
-  padding: 1rem;
-}
+@import "../styles/variables.scss";
+
 .export {
   max-width: 650px;
   border-radius: 5px;
@@ -144,6 +143,12 @@ export default {
 
   .vis {
     margin: 0.5rem;
+    height: 590px;
+  }
+
+  #export-container {
+    padding: 1rem;
+    background-color: $background;
   }
 }
 .zoom-out-btn {
