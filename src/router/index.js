@@ -11,7 +11,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: { name: 'all-regions' },
+      redirect: 'all-regions',
     },
     {
       path: '/all-regions',
