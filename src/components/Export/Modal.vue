@@ -12,7 +12,7 @@
               Export as...
             </h3>
             
-            <a class="panel-block" @click="showExportPng">
+            <a class="panel-block" @click="showExportPng" v-if="isChrome">
               Image (PNG)
             </a>
 
@@ -35,6 +35,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import { isChrome } from '@/lib/device';
 import { getCSVHeaders } from '@/domains/graphs';
 import Csv from './Csv';
 
@@ -47,6 +48,7 @@ export default {
     return {
       modalActive: false,
       csvHeaders: getCSVHeaders(),
+      isChrome: isChrome(),
     };
   },
   computed: {
