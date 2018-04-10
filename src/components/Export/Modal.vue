@@ -8,14 +8,11 @@
         <div class="modal-background"></div>
         <div class="modal-content">
           <div class="panel">
-            <p class="panel-heading">
+            <h3 class="panel-heading">
               Export as...
-            </p>
+            </h3>
             
             <a class="panel-block" @click="showExportPng">
-              <span class="panel-icon">
-                <i class="fas fa-book"></i>
-              </span>
               Image (PNG)
             </a>
 
@@ -24,9 +21,6 @@
               :fields="csvHeaders"
               :name="`${exportName}.csv`">
                 <a class="panel-block" @click="closeModal">
-                  <span class="panel-icon">
-                    <i class="fas fa-book"></i>
-                  </span>
                   Spreadsheet (CSV)
                 </a>
             </csv>
@@ -93,7 +87,16 @@ export default {
   }
 }
 
+.panel-heading {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.panel-block {
+  padding: 0.5rem 1rem;
+}
+
 .modal-content {
+  border-radius: 5px;
   max-width: 300px;
   background: #fff;
 }
