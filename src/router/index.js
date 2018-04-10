@@ -11,6 +11,10 @@ export default new Router({
   routes: [
     {
       path: '/',
+      redirect: { name: 'all-regions' },
+    },
+    {
+      path: '/all-regions',
       name: 'home',
       component: Home,
     },

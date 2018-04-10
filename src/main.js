@@ -8,6 +8,7 @@ import Vue from 'vue';
 import App from './App';
 import router from './router';
 import store from './store';
+import analytics from './analytics';
 
 Vue.config.productionTip = false;
 sync(store, router);
@@ -17,7 +18,8 @@ const app = new Vue({
   el: '#app',
   store,
   router,
+  analytics,
   render: h => h(App),
 });
 
-export { app, router, store };
+export { app, router, store, analytics };
