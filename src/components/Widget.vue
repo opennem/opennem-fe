@@ -13,7 +13,7 @@
           {{pointDate}}
         </div>
         <div v-else>
-          {{startDate}} – {{endDate}}
+          {{formattedStartDate}} – {{formattedEndDate}}
         </div>  
       </div>
     </header>
@@ -112,10 +112,10 @@ export default {
     pointDate() {
       return formatDateForDisplay(this.$store.getters.getPointSummary.date);
     },
-    startDate() {
+    formattedStartDate() {
       return formatDateForDisplay(this.$store.getters.getSelectedStartDate);
     },
-    endDate() {
+    formattedEndDate() {
       return formatDateForDisplay(this.$store.getters.getSelectedEndDate);
     },
     isSmall() {
