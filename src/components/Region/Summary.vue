@@ -5,7 +5,7 @@
         <th class="column-header">
           <span>Temperature</span>
           <small v-if="isPointHovered" class="temperature-value">
-            {{formatNumber(pointSummary.allData.temperature)}}°C
+            {{ pointSummary.allData.temperature | formatNumber }}°C
           </small>
         </th>
         <th class="column-header has-text-right">
@@ -41,21 +41,21 @@
         <th class="row-header">Sources</th>
         <th class="cell-value">
           <div v-if="isPointHovered">
-            {{formatNumber(pointSummary.totalGrossPower)}}
+            {{ pointSummary.totalGrossPower | formatNumber }}
           </div>
           
           <div v-else>
-            {{formatNumber(rangeSummary.totalGrossEnergy, '0,0.0')}}
+            {{ rangeSummary.totalGrossEnergy | formatNumber('0,0.0') }}
           </div>
         </th>
         <th></th>
         <th class="cell-value">
           <div v-if="isPointHovered">
-            ${{formatNumber(pointSummary.allData.price, '0,0.00')}}
+            {{ pointSummary.allData.price | formatNumber('$0,0.00') }}
           </div>
           
           <div v-else>
-            ${{formatNumber(rangeSummary.totalAveragePrice, '0,0.00')}}
+            {{ rangeSummary.totalAveragePrice | formatNumber('$0,0.00') }}
           </div>
         </th>
       </tr>
@@ -69,20 +69,20 @@
         </td>
         <td class="cell-value">
           <div v-if="isPointHovered">
-            {{formatNumber(pointSummary.allData[row.id])}}
+            {{ pointSummary.allData[row.id] | formatNumber }}
           </div>
           
           <div v-else>
-            {{formatNumber(row.range.energy, '0,0.0')}}
+            {{ row.range.energy | formatNumber('0,0.0') }}
           </div>
         </td>
         <td class="cell-value">
           <div v-if="isPointHovered">
-            {{formatNumber(pointSummary.allData[row.id]/pointSummary.totalGrossPower*100)}}%
+            {{ pointSummary.allData[row.id] / pointSummary.totalGrossPower * 100 | formatNumber }}%
           </div>
           
           <div v-else>
-            {{formatNumber(row.range.power/rangeSummary.totalGrossPower*100)}}%
+            {{ row.range.power / rangeSummary.totalGrossPower * 100 | formatNumber }}%
           </div>
         </td>
         <td class="cell-value">
@@ -91,7 +91,7 @@
           </div>
           
           <div v-else>
-            {{formatNumber(row.range.averagePrice, '$0,0.00')}}
+            {{ row.range.averagePrice | formatNumber('$0,0.00') }}
           </div>
         </td>
       </tr>
@@ -114,11 +114,11 @@
         </td>
         <td class="cell-value">
           <div v-if="isPointHovered">
-            {{formatNumber(pointSummary.allData[row.id])}}
+            {{ pointSummary.allData[row.id] | formatNumber }}
           </div>
           
           <div v-else>
-            {{formatNumber(row.range.energy, '0,0.0')}}
+            {{ row.range.energy | formatNumber('0,0.0') }}
           </div>
         </td>
         <td class="cell-value"></td>
@@ -128,7 +128,7 @@
           </div>
           
           <div v-else>
-            {{formatNumber(row.range.averagePrice, '$0,0.00')}}
+            {{ row.range.averagePrice | formatNumber('0,0.0') }}
           </div>
         </td>
       </tr>
@@ -139,11 +139,11 @@
         <th class="row-header">Net</th>
         <th class="cell-value">
           <div v-if="isPointHovered">
-            {{formatNumber(pointSummary.totalNetPower)}}
+            {{ pointSummary.totalNetPower | formatNumber }}
           </div>
           
           <div v-else>
-            {{formatNumber(rangeSummary.totalNetEnergy, '0,0.0')}}
+            {{ rangeSummary.totalNetEnergy | formatNumber('0,0.0') }}
           </div>
         </th>
         <th></th>
@@ -179,7 +179,7 @@ export default {
   },
   beforeDestroy() {
   },
-  methods: {
+  filters: {
     formatNumber(value, format) {
       return formatNumberForDisplay(value, format);
     },

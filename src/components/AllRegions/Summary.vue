@@ -25,11 +25,11 @@
         <th class="row-header">Sources</th>
         <th class="cell-value">
           <div v-if="isPointHovered">
-            {{formatNumber(pointSummary.totalGrossPower)}}
+            {{ pointSummary.totalGrossPower | formatNumber }}
           </div>
           
           <div v-else>
-            {{formatNumber(rangeSummary.totalGrossEnergy, '0,0.0')}}
+            {{ rangeSummary.totalGrossEnergy | formatNumber('0,0.0') }}
           </div>
         </th>
         <th></th>
@@ -44,20 +44,20 @@
         </td>
         <td class="cell-value">
           <div v-if="isPointHovered">
-            {{formatNumber(pointSummary.allData[row.id])}}
+            {{ pointSummary.allData[row.id] | formatNumber }}
           </div>
           
           <div v-else>
-            {{formatNumber(row.range.energy, '0,0.0')}}
+            {{ row.range.energy | formatNumber('0,0.0') }}
           </div>
         </td>
         <td class="cell-value">
           <div v-if="isPointHovered">
-            {{formatNumber(pointSummary.allData[row.id]/pointSummary.totalGrossPower*100)}}%
+            {{ pointSummary.allData[row.id] / pointSummary.totalGrossPower * 100 | formatNumber }}%
           </div>
           
           <div v-else>
-            {{formatNumber(row.range.power/rangeSummary.totalGrossPower*100)}}%
+            {{ row.range.power / rangeSummary.totalGrossPower * 100 | formatNumber }}%
           </div>
         </td>
       </tr>
@@ -79,11 +79,11 @@
         </td>
         <td class="cell-value">
           <div v-if="isPointHovered">
-            {{formatNumber(pointSummary.allData[row.id])}}
+            {{ pointSummary.allData[row.id] | formatNumber }}
           </div>
           
           <div v-else>
-            {{formatNumber(row.range.energy, '0,0.0')}}
+            {{ row.range.energy | formatNumber('0,0.0') }}
           </div>
         </td>
         <td class="cell-value"></td>
@@ -95,11 +95,11 @@
         <th class="row-header">Net</th>
         <th class="cell-value">
           <div v-if="isPointHovered">
-            {{formatNumber(pointSummary.totalNetPower)}}
+            {{ pointSummary.totalNetPower | formatNumber }}
           </div>
           
           <div v-else>
-            {{formatNumber(rangeSummary.totalNetEnergy, '0,0.0')}}
+            {{ rangeSummary.totalNetEnergy | formatNumber('0,0.0') }}
           </div>
         </th>
         <th></th>
@@ -134,7 +134,7 @@ export default {
   },
   beforeDestroy() {
   },
-  methods: {
+  filters: {
     formatNumber(value, format) {
       return formatNumberForDisplay(value, format);
     },
