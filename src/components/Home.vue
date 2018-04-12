@@ -18,65 +18,7 @@
   </div>
   <div class="column is-narrow" v-if="!isFetching && !isExportPng">
     <all-regions-summary />
-
-    <!-- <table class="summary-table table is-fullwidth is-narrow">
-      <thead>
-        <tr>
-          <th></th>
-          <th class="has-text-right">Lowest</th>
-          <th class="has-text-right">Highest</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Demand MW</td>
-          <td class="cell-value">
-            <span>17,115</span>
-            <span class="date-value">25 Mar, 4:50am</span>
-          </td>
-          <td class="cell-value">
-            <span>17,115</span>
-            <span class="date-value">25 Mar, 4:50am</span>
-          </td>
-        </tr>
-        
-        <tr>
-          <td>Renewables %</td>
-          <td class="cell-value">
-            <span>11%</span>
-            <span class="date-value">25 Mar, 4:50am</span>
-          </td>
-          <td class="cell-value">
-            <span>31%</span>
-            <span class="date-value">25 Mar, 4:50am</span>
-          </td>
-        </tr>
-
-        <tr>
-          <td>Price $/MWh</td>
-          <td class="cell-value">
-            <span>$10</span>
-            <span class="date-value">25 Mar, 4:50am</span>
-          </td>
-          <td class="cell-value">
-            <span>$300</span>
-            <span class="date-value">25 Mar, 4:50am</span>
-          </td>
-        </tr>
-
-        <tr>
-          <td>Temperature</td>
-          <td class="cell-value">
-            <span>10C</span>
-            <span class="date-value">25 Mar, 4:50am</span>
-          </td>
-          <td class="cell-value">
-            <span>30C</span>
-            <span class="date-value">25 Mar, 4:50am</span>
-          </td>
-        </tr>
-      </tbody>
-    </table> -->
+    <all-regions-extent />
   </div>
 </div>
 
@@ -93,6 +35,7 @@ import { getStartEndDates } from '@/lib/data-helpers';
 import { GraphDomains } from '@/domains/graphs';
 import AllRegionsChart from './AllRegions/Chart';
 import AllRegionsSummary from './AllRegions/Summary';
+import AllRegionsExtent from './ui/Extent';
 import ExportPngHeader from './Export/PngHeader';
 import ExportPngFooter from './Export/PngFooter';
 import ExportLegend from './Export/Legend';
@@ -101,6 +44,7 @@ export default {
   components: {
     AllRegionsChart,
     AllRegionsSummary,
+    AllRegionsExtent,
     ExportPngHeader,
     ExportPngFooter,
     ExportLegend,

@@ -5,7 +5,7 @@
         <th class="column-header">
           <span>Temperature</span>
           <small v-if="isPointHovered" class="temperature-value">
-            {{ pointSummary.allData.temperature | formatNumber }}°C
+            {{ pointSummary.allData.temperature | formatNumber('0,0.0') }}°C
           </small>
         </th>
         <th class="column-header has-text-right">

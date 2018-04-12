@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { getKeys } from './data-helpers';
+import { getKeys, getExtent } from './data-helpers';
 
 // Check if it is a valid fuel tech name
 function isValidFT(name) {
@@ -19,13 +19,13 @@ function isLoad(name) {
 }
 
 // Check if FT is a renewable
-// function isRenewableFT(name) {
-//   return name === 'wind' ||
-//     name === 'biomass' ||
-//     name === 'hydro' ||
-//     name === 'rooftop_solar' ||
-//     name === 'solar';
-// }
+function isRenewableFT(name) {
+  return name === 'wind' ||
+    name === 'biomass' ||
+    name === 'hydro' ||
+    name === 'rooftop_solar' ||
+    name === 'solar';
+}
 
 function getLabel(domains, id) {
   const label = domains[id] ? domains[id].label : id;
@@ -49,18 +49,18 @@ function getSummary(domains, data) {
   });
 
   // create a new array with the ft (renewables only) totals
-  // const renewablesDataSum = data.map((d) => {
-  //   let p = 0;
-  //   Object.keys(d).forEach((ft) => {
-  //     if (isValidFT(ft) && isRenewableFT(ft)) {
-  //       p += d[ft] || 0;
-  //     }
-  //   });
-  //   return p;
-  // });
+  const renewablesDataSum = data.map((d) => {
+    let p = 0;
+    Object.keys(d).forEach((ft) => {
+      if (isValidFT(ft) && isRenewableFT(ft)) {
+        p += d[ft] || 0;
+      }
+    });
+    return p;
+  });
 
   // create a new array with the ft (renewables only) percentages
-  // const renewablesPercentages = renewablesDataSum.map((d, i) => (d / dataSum[i]) * 100);
+  const renewablesPercentages = renewablesDataSum.map((d, i) => (d / dataSum[i]) * 100);
 
   // sum up all the ft totals
   const dataSumTotal = dataSum.reduce((a, b) => a + b, 0);
@@ -141,6 +141,10 @@ function getSummary(domains, data) {
     totalGrossPower,
     totalGrossEnergy,
     totalAveragePrice,
+    demandExtent: getExtent(data, dataSum),
+    renewablesExtent: getExtent(data, renewablesPercentages),
+    priceExtent: getExtent(data, data.map(d => d.price)),
+    temperatureExtent: getExtent(data, data.map(d => d.temperature)),
   };
 }
 

@@ -123,6 +123,44 @@ function getKeys(data) {
   return [];
 }
 
+/**
+ * Return the min/max values and dates of dataset
+ * @param {*} data
+ * @param {*} arr
+ */
+function getExtent(data, arr) {
+  if (arr.length === 0) {
+    return -1;
+  }
+
+  let min = arr[0];
+  let max = arr[0];
+  let minIndex = 0;
+  let maxIndex = 0;
+
+  for (let i = 1; i < arr.length; i += 1) {
+    if (arr[i] > max) {
+      maxIndex = i;
+      max = arr[i];
+    }
+
+    if (min === null || arr[i] < min) {
+      if (arr[i] !== null) {
+        minIndex = i;
+        min = arr[i];
+      }
+    }
+  }
+
+  return [{
+    value: min,
+    date: data[minIndex].date,
+  }, {
+    value: max,
+    date: data[maxIndex].date,
+  }];
+}
+
 export {
   dataFilter,
   getStartEndDates,
@@ -132,4 +170,5 @@ export {
   getLast24HoursStartEndDates,
   getLast3DaysStartEndDates,
   getKeys,
+  getExtent,
 };

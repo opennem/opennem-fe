@@ -19,6 +19,7 @@
   </div>
   <div class="column is-narrow" v-if="!isFetching && !isExportPng">
     <region-summary />
+    <region-extent :showTemperature="true" :showPrice="true" />
   </div>
 </div>
 
@@ -36,6 +37,7 @@ import { GraphDomains } from '@/domains/graphs';
 import { getRegionLabel } from '@/domains/regions';
 import RegionChart from './Region/Chart';
 import RegionSummary from './Region/Summary';
+import RegionExtent from './ui/Extent';
 import ExportPngHeader from './Export/PngHeader';
 import ExportPngFooter from './Export/PngFooter';
 import ExportLegend from './Export/Legend';
@@ -44,6 +46,7 @@ export default {
   components: {
     RegionChart,
     RegionSummary,
+    RegionExtent,
     ExportPngHeader,
     ExportPngFooter,
     ExportLegend,
