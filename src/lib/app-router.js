@@ -1,7 +1,7 @@
-import { formatDateForExport } from '@/lib/formatter';
+// import { formatDateForExport } from '@/lib/formatter';
 
-export default function (router, start, end) {
-  // DO nothing for now
+export default function () {
+  // DO nothing for now (router, start, end)
   // router.push({
   //   name: router.name,
   //   query: {
