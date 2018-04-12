@@ -8,7 +8,7 @@
         </div>
         <div v-else>
           <a class="dropdown-trigger" v-on-clickaway="onClickAway" @click="handleClick">
-            {{startDate}} – {{endDate}}
+            {{formattedStartDate}} – {{formattedEndDate}}
           </a>
         </div>  
 
@@ -57,10 +57,10 @@ export default {
     pointDate() {
       return formatDateForDisplay(this.$store.getters.getPointSummary.date);
     },
-    startDate() {
+    formattedStartDate() {
       return formatDateForDisplay(this.$store.getters.getSelectedStartDate);
     },
-    endDate() {
+    formattedEndDate() {
       return formatDateForDisplay(this.$store.getters.getSelectedEndDate);
     },
   },
