@@ -31,6 +31,7 @@ import domtoimage from '@/lib/dom-to-image';
 import FileSaver from 'file-saver';
 import EventBus from '@/lib/event-bus';
 import getJSON from '@/lib/data-apis';
+import updateRouterStartEnd from '@/lib/app-router';
 import dataTransform from '@/lib/data-transform';
 import { getStartEndDates } from '@/lib/data-helpers';
 import { GraphDomains } from '@/domains/graphs';
@@ -94,6 +95,7 @@ export default {
         start = startEndDates.start;
         end = startEndDates.end;
         this.$store.dispatch('saveSelectedDates', startEndDates);
+        updateRouterStartEnd(this.$router, start, end);
       }
 
       // Generate table data

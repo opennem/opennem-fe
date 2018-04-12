@@ -19,6 +19,7 @@ import {
   getZoomDatesOnDateLabel,
   getKeys,
 } from '@/lib/data-helpers';
+import updateRouterStartEnd from '@/lib/app-router';
 import getPanels from './config';
 
 export default {
@@ -81,7 +82,7 @@ export default {
     setupEventSubscribers() {
       EventBus.$on('chart.zoomedOut.clicked', this.resetChartZoom);
       EventBus.$on('extent.event.hover', this.handleExtentEventHover);
-      EventBus.$on('extent.event.out', this.handleExtentEventOut);    
+      EventBus.$on('extent.event.out', this.handleExtentEventOut);
     },
 
     clearEvents() {
@@ -181,6 +182,9 @@ export default {
           start,
           end,
         });
+
+        updateRouterStartEnd(this.$router, start, end);
+
         this.$store.dispatch('generateRangeSummary', {
           data: this.chartData,
           start,

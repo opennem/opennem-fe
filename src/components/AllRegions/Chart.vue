@@ -17,6 +17,7 @@ import {
   getZoomDatesOnDateLabel,
   getKeys,
 } from '@/lib/data-helpers';
+import updateRouterStartEnd from '@/lib/app-router';
 import getPanels from './config';
 
 export default {
@@ -57,7 +58,7 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize);
-    EventBus.$off('chart.zoomedOut.clicked');
+    this.clearEvents();
     this.clearChart();
   },
   methods: {
@@ -67,6 +68,14 @@ export default {
 
     setupEventSubscribers() {
       EventBus.$on('chart.zoomedOut.clicked', this.resetChartZoom);
+      EventBus.$on('extent.event.hover', this.handleExtentEventHover);
+      EventBus.$on('extent.event.out', this.handleExtentEventOut);
+    },
+    
+    clearEvents() {
+      EventBus.$off('chart.zoomedOut.clicked');
+      EventBus.$off('extent.event.hover');
+      EventBus.$off('extent.event.out');
     },
 
     setupChart() {
@@ -136,6 +145,8 @@ export default {
           start,
           end,
         });
+
+        updateRouterStartEnd(this.$router, start, end);
 
         this.$store.dispatch('generateRangeSummary', {
           data: this.chartData,
@@ -230,6 +241,19 @@ export default {
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoomed', false);
     },
+
+    handleExtentEventHover(date) {
+      this.chart.panels.forEach((p) => {
+        p.chartCursor.showCursorAt(date);
+      });
+    },
+
+    handleExtentEventOut() {
+      this.chart.panels.forEach((p) => {
+        p.chartCursor.hideCursor();
+      });
+    },
+
   },
 };
 </script>
