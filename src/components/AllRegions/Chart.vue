@@ -71,7 +71,7 @@ export default {
       EventBus.$on('extent.event.hover', this.handleExtentEventHover);
       EventBus.$on('extent.event.out', this.handleExtentEventOut);
     },
-    
+
     clearEvents() {
       EventBus.$off('chart.zoomedOut.clicked');
       EventBus.$off('extent.event.hover');

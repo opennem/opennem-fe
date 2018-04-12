@@ -1,13 +1,8 @@
 <template>
 <div class="columns is-desktop is-variable is-1">
-  <div class="zoom-out-btn">
-    <transition name="fade">
-      <button class="button is-small is-rounded is-primary is-inverted" 
-        @click="handleZoomOutClicked" 
-        v-if="isChartZoomed && !isFetching">Reset Zoom</button>
-    </transition>
-  </div>
-
+  <transition name="fade">
+    <zoom-out-button v-if="isChartZoomed && !isFetching" />
+  </transition>
 
   <div class="column" v-show="!isFetching" :class="{ export: isExportPng }">
     <div id="export-container">
@@ -42,6 +37,7 @@ import RegionExtent from './ui/Extent';
 import ExportPngHeader from './Export/PngHeader';
 import ExportPngFooter from './Export/PngFooter';
 import ExportLegend from './Export/Legend';
+import ZoomOutButton from './ui/ZoomOutButton';
 
 export default {
   components: {
@@ -51,6 +47,7 @@ export default {
     ExportPngHeader,
     ExportPngFooter,
     ExportLegend,
+    ZoomOutButton,
   },
   created() {
     this.$store.dispatch('setDomains', GraphDomains);
@@ -110,9 +107,6 @@ export default {
     },
   },
   methods: {
-    handleZoomOutClicked() {
-      EventBus.$emit('chart.zoomedOut.clicked');
-    },
     downloadPNG() {
       domtoimage.toBlob(document.getElementById('export-container'))
         .then((blob) => {
@@ -156,12 +150,5 @@ export default {
     background-color: $background;
   }
 }
-.zoom-out-btn {
-  position: absolute;
-  z-index: 9;
-  right: 0;
-  left: 0;
-  width: 94px;
-  margin: -2px auto 0;
-}
+
 </style>

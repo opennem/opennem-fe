@@ -18,13 +18,9 @@
       </div>
     </header>
 
-    <div class="zoom-out-btn">
-      <transition name="fade">
-        <button class="button is-small is-rounded is-primary is-inverted" 
-          @click="handleZoomOutClicked" 
-          v-if="isChartZoomed && !isFetching">Reset Zoom</button>
-      </transition>
-    </div>
+    <transition name="fade">
+      <zoom-out-button v-if="isChartZoomed && !isFetching" />
+    </transition>
 
     <div class="chart" v-show="!isFetching">
       <widget-chart :chartData="chartData" />
@@ -71,6 +67,7 @@ import { GraphDomains } from '@/domains/graphs';
 import WidgetChart from './Widget/Chart';
 import WidgetLegend from './Widget/Legend';
 import AllRegionsSummary from './AllRegions/Summary';
+import ZoomOutButton from './ui/ZoomOutButton';
 
 export default {
   components: {
@@ -78,6 +75,7 @@ export default {
     WidgetLegend,
     AllRegionsSummary,
     FontAwesomeIcon,
+    ZoomOutButton,
   },
   props: {
     size: String,
@@ -155,9 +153,6 @@ export default {
     },
   },
   methods: {
-    handleZoomOutClicked() {
-      EventBus.$emit('chart.zoomedOut.clicked');
-    },
     toggleLegend() {
       const toggle = !this.showLegend;
       this.showLegend = toggle;
@@ -240,12 +235,4 @@ footer {
   right: 0;
 }
 
-.zoom-out-btn {
-  position: absolute;
-  z-index: 9;
-  right: 0;
-  left: 0;
-  width: 94px;
-  margin: -2px auto 0;
-}
 </style>
