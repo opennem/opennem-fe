@@ -54,11 +54,11 @@ export default {
   },
   mounted() {
     EventBus.$on('data.fetch.latest', this.fetchNem);
-    EventBus.$on('download.vis.clicked', this.downloadPNG);
+    EventBus.$on('download.png', this.downloadPng);
   },
   beforeDestroy() {
     EventBus.$off('data.fetch.latest');
-    EventBus.$off('download.vis.clicked');
+    EventBus.$off('download.png');
   },
   data() {
     return {
@@ -97,12 +97,15 @@ export default {
     },
   },
   methods: {
-    downloadPNG() {
-      domtoimage.toBlob(document.getElementById('export-container'))
-        .then((blob) => {
-          FileSaver.saveAs(blob, `${this.exportName}.png`);
-          this.$store.dispatch('setExportPng', false);
-        });
+    downloadPng() {
+      // a slight delay to allow some conditional statements to flow through by other listeners
+      setTimeout(() => {
+        domtoimage.toBlob(document.getElementById('export-container'))
+          .then((blob) => {
+            FileSaver.saveAs(blob, `${this.exportName}.png`);
+            this.$store.dispatch('setExportPng', false);
+          });
+      }, 5);
     },
     fetchNem() {
       this.$store.dispatch('fetchingData', true);

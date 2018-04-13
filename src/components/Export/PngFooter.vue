@@ -22,13 +22,21 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import EventBus from '@/lib/event-bus';
 
 export default {
   name: 'export-png-footer',
   data() {
     return {
       showAttribution: true,
+      attribution: '@name',
     };
+  },
+  mounted() {
+    EventBus.$on('before.download.png', this.beforeDownloadPng);
+  },
+  beforeDestroy() {
+    EventBus.$off('before.download.png');
   },
   computed: {
     ...mapGetters({
@@ -38,6 +46,13 @@ export default {
   methods: {
     onAttributionBlur(e) {
       if (e.target.innerText.trim() === '') {
+        this.showAttribution = false;
+      } else {
+        this.attribution = e.target.innerText.trim();
+      }
+    },
+    beforeDownloadPng() {
+      if (this.attribution === '@name') {
         this.showAttribution = false;
       }
     },

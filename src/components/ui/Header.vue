@@ -1,20 +1,7 @@
 <template>
   <nav role="navigation" aria-label="main dropdown navigation">
-    <div class="level export-nav is-mobile" v-if="isExportPng">
-      <div class="level-left">
-        <h1>Export as Image (PNG)</h1>
-      </div>
-      <div class="level-right">
-        <div class="buttons">
-          <button class="button is-small is-rounded is-primary is-inverted" @click="closeExport">
-            Cancel
-          </button>
-          <button class="button is-small is-rounded is-primary" @click="handleDownloadClick">
-            Download
-          </button>
-        </div>
-      </div>
-    </div>
+    <export-header v-if="isExportPng" />
+
     <div class="level" v-else>
       <div class="level-left">
         <region-selector />
@@ -30,9 +17,9 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import EventBus from '@/lib/event-bus';
 import RegionSelector from './RegionSelector';
 import DateSelector from './DateSelector';
+import ExportHeader from '../Export/Header';
 import ExportModal from '../Export/Modal';
 
 export default {
@@ -40,20 +27,13 @@ export default {
   components: {
     RegionSelector,
     DateSelector,
+    ExportHeader,
     ExportModal,
   },
   computed: {
     ...mapGetters({
       isExportPng: 'isExportPng',
     }),
-  },
-  methods: {
-    closeExport() {
-      this.$store.dispatch('setExportPng', false);
-    },
-    handleDownloadClick() {
-      EventBus.$emit('download.vis.clicked');
-    },
   },
 };
 </script>
@@ -78,10 +58,6 @@ h1 {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 1rem;
-
-  &.export-nav {
-    max-width: 650px;
-  }
 }
 
 .level-right {

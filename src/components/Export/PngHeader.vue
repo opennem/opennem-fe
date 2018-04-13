@@ -18,6 +18,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import EventBus from '@/lib/event-bus';
 
 export default {
   name: 'export-png-header',
@@ -25,12 +26,19 @@ export default {
     return {
       showTitle: true,
       showDescription: true,
+      description: 'Description',
     };
   },
   computed: {
     ...mapGetters({
       exportRegion: 'getExportRegion',
     }),
+  },
+  mounted() {
+    EventBus.$on('before.download.png', this.beforeDownloadPng);
+  },
+  beforeDestroy() {
+    EventBus.$off('before.download.png');
   },
   methods: {
     onTitleBlur(e) {
@@ -41,7 +49,15 @@ export default {
     onDescriptionBlur(e) {
       if (e.target.innerText.trim() === '') {
         this.showDescription = false;
+      } else {
+        this.description = e.target.innerText.trim();
       }
+    },
+    beforeDownloadPng() {
+      if (this.description === 'Description') {
+        this.showDescription = false;
+      }
+      EventBus.$emit('download.png');
     },
   },
 };
@@ -81,6 +97,5 @@ h3, h5 {
   &:hover {
     background-color: #fff;
   }
-
 }
 </style>
