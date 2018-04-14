@@ -67,7 +67,6 @@ export default {
   font-family: $primary-font-family;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding-bottom: 2rem;
 }
 section {
   @include widescreen {

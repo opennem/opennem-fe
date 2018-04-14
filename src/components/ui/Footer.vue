@@ -47,12 +47,10 @@ a {
   padding-bottom: 0;
 }
 .footer {
-  position: fixed;
-  bottom: 0;
-  z-index: 100;
   width: 100%;
   color: $opennem-primary-invert;
   font-size: 0.8rem;
+  margin-top: 2rem;
   padding: 0.3rem 0 0.7rem;
 
   @include tablet {
