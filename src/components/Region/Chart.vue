@@ -15,6 +15,7 @@ import {
 } from '@/lib/chart-helpers';
 import {
   dataFilter,
+  findDataContextByDate,
   checkDateZoomLessThan1Day,
   getZoomDatesOnDateLabel,
   getKeys,
@@ -302,6 +303,14 @@ export default {
     },
 
     handleExtentEventHover(date) {
+      const dataContext = findDataContextByDate(date, this.chart.mainDataSet.agregatedDataProviders['5mm']);
+
+      this.$store.dispatch('generatePointSummary', {
+        date,
+        dataContext,
+      });
+      this.$store.dispatch('showInstantaneousData', true);
+
       this.chart.panels.forEach((p) => {
         p.chartCursor.showCursorAt(date);
       });
@@ -311,6 +320,7 @@ export default {
       this.chart.panels.forEach((p) => {
         p.chartCursor.hideCursor();
       });
+      this.$store.dispatch('showInstantaneousData', false);
     },
   },
 };

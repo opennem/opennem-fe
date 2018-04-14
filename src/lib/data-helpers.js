@@ -1,4 +1,5 @@
 import * as moment from 'moment';
+import * as _ from 'lodash';
 
 /**
  * filter the data between the start/end dates provided
@@ -11,6 +12,13 @@ function dataFilter(data, start, end) {
     const d = moment(item.date);
     return d.isSameOrAfter(start) && d.isSameOrBefore(end);
   });
+}
+
+function findDataContextByDate(date, agregated5mmDataProviders) {
+  const dateValue = `${moment(date).valueOf()}`;
+  const dataContext = _.find(agregated5mmDataProviders, d => d.amCategoryIdField === dateValue);
+
+  return dataContext;
 }
 
 /**
@@ -163,6 +171,7 @@ function getExtent(data, arr) {
 
 export {
   dataFilter,
+  findDataContextByDate,
   getStartEndDates,
   checkDateZoomLessThan1Hour,
   checkDateZoomLessThan1Day,

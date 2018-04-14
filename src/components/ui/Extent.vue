@@ -26,8 +26,8 @@
             <small class="date-value">{{ getMaxDate("demand") | formatDate }}</small>
           </td>
         </tr>
-        
-        <tr>
+
+        <tr class="dark-border">
           <th>Renewables <small>%</small></th>
           <td class="cell-value hoverable" 
             @mouseover="emitHover(getMinObject('renewables'))" 
@@ -43,6 +43,44 @@
             {{ getMaxValue("renewables") | formatNumber }}%
             <br>
             <small class="date-value">{{ getMaxDate("renewables") | formatDate }}</small>
+          </td>
+        </tr>
+
+        <tr>
+          <th>Generation <small>MW</small></th>
+          <td class="cell-value hoverable" 
+            @mouseover="emitHover(getMinObject('generation'))" 
+            @mouseout="emitOut">
+            {{ getMinValue("generation") | formatNumber }} MW
+            <br>
+            <small class="date-value">{{ getMinDate("generation") | formatDate }}</small>
+          </td>
+          
+          <td class="cell-value hoverable" 
+            @mouseover="emitHover(getMaxObject('generation'))" 
+            @mouseout="emitOut">
+            {{ getMaxValue("generation") | formatNumber }} MW
+            <br>
+            <small class="date-value">{{ getMaxDate("generation") | formatDate }}</small>
+          </td>
+        </tr>
+
+        <tr class="dark-border">
+          <th>Renewables <small>%</small></th>
+          <td class="cell-value hoverable" 
+            @mouseover="emitHover(getMinObject('renewables2'))" 
+            @mouseout="emitOut">
+            {{ getMinValue("renewables2") | formatNumber }}%
+            <br>
+            <small class="date-value">{{ getMinDate("renewables2") | formatDate }}</small>
+          </td>
+          
+          <td class="cell-value hoverable" 
+            @mouseover="emitHover(getMaxObject('renewables2'))" 
+            @mouseout="emitOut">
+            {{ getMaxValue("renewables2") | formatNumber }}%
+            <br>
+            <small class="date-value">{{ getMaxDate("renewables2") | formatDate }}</small>
           </td>
         </tr>
 
@@ -108,6 +146,12 @@ export default {
     },
     renewables() {
       return this.rangeSummary.renewablesExtent;
+    },
+    generation() {
+      return this.rangeSummary.generationExtent;
+    },
+    renewables2() {
+      return this.rangeSummary.renewablesExtent2;
     },
     price() {
       return this.rangeSummary.priceExtent;
@@ -182,6 +226,12 @@ export default {
     &:hover {
       background-color: #fff;
     }
+  }
+}
+
+.dark-border {
+  th, td {
+    border-color: #666;
   }
 }
 </style>
