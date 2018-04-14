@@ -12,10 +12,18 @@ function formatDateForDisplay(date) {
   const todayYear = today.year();
   const todayDayOfYear = today.dayOfYear();
 
+  const hr = d.hour();
+  const min = d.minute();
+  const midnight = hr === 0 && min === 0;
+
   if (dYear !== todayYear) {
-    format = 'D MMM YYYY, h:mma';
-  } if (dDayOfYear === todayDayOfYear) {
-    format = '[Today at] h:mma';
+    const timeFormat = midnight ? '' : ', h:mma';
+    format = `D MMM YYYY${timeFormat}`;
+  } else if (dDayOfYear === todayDayOfYear) {
+    const timeFormat = midnight ? ']' : ' at] h:mma';
+    format = `[Today${timeFormat}`;
+  } else if (midnight) {
+    format = 'D MMM';
   }
 
   return moment(date).format(format);
