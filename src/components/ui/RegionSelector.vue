@@ -79,10 +79,10 @@ export default {
 
 .region-selector {
   font-family: $header-font-family;
-  font-size: 1.3rem;
+  font-size: 1.4rem;
 
   @include tablet {
-    font-size: 1.7rem;
+    font-size: 2rem;
   }
 
   a.dropdown-trigger {
