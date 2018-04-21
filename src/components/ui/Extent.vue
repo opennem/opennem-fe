@@ -15,7 +15,7 @@
             @mouseout="emitOut">
             {{ getMinValue("demand") | formatNumber }} MW
             <br>
-            <small class="date-value">{{ getMinDate("demand") | formatDate }}</small>
+            <small class="date-value">{{ getMinDate("demand") | formatDate(regionOffset) }}</small>
           </td>
           
           <td class="cell-value hoverable" 
@@ -23,7 +23,7 @@
             @mouseout="emitOut">
             {{ getMaxValue("demand") | formatNumber }} MW
             <br>
-            <small class="date-value">{{ getMaxDate("demand") | formatDate }}</small>
+            <small class="date-value">{{ getMaxDate("demand") | formatDate(regionOffset) }}</small>
           </td>
         </tr>
 
@@ -34,7 +34,7 @@
             @mouseout="emitOut">
             {{ getMinValue("renewables") | formatNumber }}%
             <br>
-            <small class="date-value">{{ getMinDate("renewables") | formatDate }}</small>
+            <small class="date-value">{{ getMinDate("renewables") | formatDate(regionOffset) }}</small>
           </td>
           
           <td class="cell-value hoverable" 
@@ -42,7 +42,7 @@
             @mouseout="emitOut">
             {{ getMaxValue("renewables") | formatNumber }}%
             <br>
-            <small class="date-value">{{ getMaxDate("renewables") | formatDate }}</small>
+            <small class="date-value">{{ getMaxDate("renewables") | formatDate(regionOffset) }}</small>
           </td>
         </tr>
 
@@ -53,7 +53,7 @@
             @mouseout="emitOut">
             {{ getMinValue("generation") | formatNumber }} MW
             <br>
-            <small class="date-value">{{ getMinDate("generation") | formatDate }}</small>
+            <small class="date-value">{{ getMinDate("generation") | formatDate(regionOffset) }}</small>
           </td>
           
           <td class="cell-value hoverable" 
@@ -61,7 +61,7 @@
             @mouseout="emitOut">
             {{ getMaxValue("generation") | formatNumber }} MW
             <br>
-            <small class="date-value">{{ getMaxDate("generation") | formatDate }}</small>
+            <small class="date-value">{{ getMaxDate("generation") | formatDate(regionOffset) }}</small>
           </td>
         </tr>
 
@@ -72,7 +72,7 @@
             @mouseout="emitOut">
             {{ getMinValue("renewables2") | formatNumber }}%
             <br>
-            <small class="date-value">{{ getMinDate("renewables2") | formatDate }}</small>
+            <small class="date-value">{{ getMinDate("renewables2") | formatDate(regionOffset) }}</small>
           </td>
           
           <td class="cell-value hoverable" 
@@ -80,7 +80,7 @@
             @mouseout="emitOut">
             {{ getMaxValue("renewables2") | formatNumber }}%
             <br>
-            <small class="date-value">{{ getMaxDate("renewables2") | formatDate }}</small>
+            <small class="date-value">{{ getMaxDate("renewables2") | formatDate(regionOffset) }}</small>
           </td>
         </tr>
 
@@ -91,7 +91,7 @@
             @mouseout="emitOut">
             {{ getMinValue("price") | formatNumber('$0,0.00') }}
             <br>
-            <small class="date-value">{{ getMinDate("price") | formatDate }}</small>
+            <small class="date-value">{{ getMinDate("price") | formatDate(regionOffset) }}</small>
           </td>
           
           <td class="cell-value hoverable" 
@@ -99,7 +99,7 @@
             @mouseout="emitOut">
             {{ getMaxValue("price") | formatNumber('$0,0.00') }}
             <br>
-            <small class="date-value">{{ getMaxDate("price") | formatDate }}</small>
+            <small class="date-value">{{ getMaxDate("price") | formatDate(regionOffset) }}</small>
           </td>
         </tr>
 
@@ -110,7 +110,7 @@
             @mouseout="emitOut">
             {{ getMinValue("temperature") | formatNumber('0,0.0') }}°C
             <br>
-            <small class="date-value">{{ getMinDate("temperature") | formatDate }}</small>
+            <small class="date-value">{{ getMinDate("temperature") | formatDate(regionOffset) }}</small>
           </td>
           
           <td class="cell-value hoverable" 
@@ -118,7 +118,7 @@
             @mouseout="emitOut">
             {{ getMaxValue("temperature") | formatNumber('0,0.0') }}°C
             <br>
-            <small class="date-value">{{ getMaxDate("temperature") | formatDate }}</small>
+            <small class="date-value">{{ getMaxDate("temperature") | formatDate(regionOffset) }}</small>
           </td>
         </tr>
       </tbody>
@@ -128,6 +128,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import EventBus from '@/lib/event-bus';
+import { getRegionOffset } from '@/domains/regions';
 import { formatNumberForDisplay, formatDateForDisplay } from '@/lib/formatter';
 
 export default {
@@ -141,6 +142,9 @@ export default {
       isPointHovered: 'isPointHovered',
       rangeSummary: 'getRangeSummary',
     }),
+    regionOffset() {
+      return getRegionOffset(this.$route.params.region);
+    },
     demand() {
       return this.rangeSummary.demandExtent;
     },
@@ -164,7 +168,9 @@ export default {
     formatNumber(value, format) {
       return formatNumberForDisplay(value, format);
     },
-    formatDate: formatDateForDisplay,
+    formatDate(value, offset) {
+      return formatDateForDisplay(value, offset);
+    },
   },
   methods: {
     emitHover(data) {
