@@ -10,7 +10,8 @@
           <a class="dropdown-trigger" v-on-clickaway="onClickAway" @click="handleClick">
             {{formattedStartDate}} – {{formattedEndDate}}
           </a>
-        </div>  
+        </div> 
+        <div class="date-helper"><small>(local time)</small></div>
 
         <transition name="slide-down-fade">
           <div v-if="dropdownActive" class="dropdown-menu">
@@ -34,6 +35,7 @@ import { mapGetters } from 'vuex';
 import { mixin as clickaway } from 'vue-clickaway';
 import { formatDateForDisplay } from '@/lib/formatter';
 import { getLast24HoursStartEndDates } from '@/lib/data-helpers';
+import { getRegionOffset } from '@/domains/regions';
 import EventBus from '@/lib/event-bus';
 import Loader from './Loader';
 
@@ -54,14 +56,17 @@ export default {
       isPointHovered: 'isPointHovered',
       dataEndDate: 'getDataEndDate',
     }),
+    regionOffset() {
+      return getRegionOffset(this.$route.params.region);
+    },
     pointDate() {
-      return formatDateForDisplay(this.$store.getters.getPointSummary.date);
+      return formatDateForDisplay(this.$store.getters.getPointSummary.date, this.regionOffset);
     },
     formattedStartDate() {
-      return formatDateForDisplay(this.$store.getters.getSelectedStartDate);
+      return formatDateForDisplay(this.$store.getters.getSelectedStartDate, this.regionOffset);
     },
     formattedEndDate() {
-      return formatDateForDisplay(this.$store.getters.getSelectedEndDate);
+      return formatDateForDisplay(this.$store.getters.getSelectedEndDate, this.regionOffset);
     },
   },
   watch: {
@@ -110,6 +115,16 @@ export default {
   a.dropdown-trigger {
     color: #000;
     border-bottom: 1px dashed $opennem-primary-alpha;
+  }
+}
+
+.date-helper {
+  font-size: 0.7rem;
+  margin: .15rem 0 0 0.15rem;
+
+  @include tablet {
+    font-size: 0.8rem;
+    margin: .2rem 0 0 0.3rem;
   }
 }
 </style>

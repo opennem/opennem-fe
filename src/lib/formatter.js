@@ -1,10 +1,10 @@
 import * as moment from 'moment';
 import numeral from 'numeral';
 
-function formatDateForDisplay(date) {
+function formatDateForDisplay(date, offsetHrs) {
   let format = 'D MMM, h:mma';
 
-  const d = moment(date);
+  const d = offsetHrs ? moment(date).utcOffset(offsetHrs) : moment(date);
   const dYear = d.year();
   const dDayOfYear = d.dayOfYear();
 
@@ -24,6 +24,10 @@ function formatDateForDisplay(date) {
     format = `[Today${timeFormat}`;
   } else if (midnight) {
     format = 'D MMM';
+  }
+
+  if (offsetHrs) {
+    return moment(date).utcOffset(offsetHrs).format(format);
   }
 
   return moment(date).format(format);
