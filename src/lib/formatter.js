@@ -26,9 +26,12 @@ function formatDateForDisplay(date, offsetHrs) {
     format = 'D MMM';
   }
 
-  if (offsetHrs) {
-    return moment(date).utcOffset(offsetHrs).format(format);
-  }
+  /**
+   * Uncomment this to enable offset hours
+   */
+  // if (offsetHrs) {
+  //   return moment(date).utcOffset(offsetHrs).format(format);
+  // }
 
   return moment(date).format(format);
 }
@@ -41,7 +44,7 @@ function formatNumberForDisplay(number, precision) {
   const formatter = precision || '0,0';
   const formatted =
     number === 0 || isNaN(number)
-      ? '--'
+      ? '-'
       : numeral(number).format(formatter);
   return formatted;
 }
