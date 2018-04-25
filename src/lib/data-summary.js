@@ -168,14 +168,16 @@ function getPointSummary(domains, date, data) {
   let totalGrossPower = 0;
 
   Object.keys(domains).forEach((domain) => {
-    const average = data[`${domain}Average`];
-    allData[domain] = average;
+    if (isValidFT(domain)) {
+      const average = data[`${domain}Average`];
+      allData[domain] = average;
 
-    if (average !== undefined) {
-      totalNetPower += average;
+      if (average !== undefined) {
+        totalNetPower += average;
 
-      if (!isLoad(domain)) {
-        totalGrossPower += average;
+        if (!isLoad(domain)) {
+          totalGrossPower += average;
+        }
       }
     }
   });
