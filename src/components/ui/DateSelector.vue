@@ -11,7 +11,8 @@
             {{formattedStartDate}} – {{formattedEndDate}}
           </a>
         </div> 
-        <div class="date-helper"><small>(local time)</small></div>
+        <!-- local time -->
+        <!-- <div class="date-helper"><small>(local time)</small></div> -->
 
         <transition name="slide-down-fade">
           <div v-if="dropdownActive" class="dropdown-menu">
