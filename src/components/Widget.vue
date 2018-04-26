@@ -2,7 +2,7 @@
   <div class="container">
     <header class="level is-mobile">
       <div class="level-left">
-        <a target="_blank" :href="headerLink">
+        <a target="opennem-window" :href="extLink">
           <img class="logo" src="../assets/opennem-logo.svg" alt="OpenNEM logo">            
           <strong>National Electricity Market</strong>
         </a>
@@ -124,9 +124,6 @@ export default {
     },
     isLarge() {
       return this.size === 'large';
-    },
-    headerLink() {
-      return this.isSmall ? this.renewEcoWidgetLink : this.openNEMLink;
     },
     iconLegend() {
       return faListAlt;
