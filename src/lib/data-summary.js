@@ -180,6 +180,10 @@ function getPointSummary(domains, date, data) {
         }
       }
     }
+
+    if (domain === 'price') {
+      allData[domain] = data[`${domain}Close`];
+    }
   });
 
   return {
