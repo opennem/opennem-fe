@@ -23,7 +23,7 @@
           <span>Contribution</span>
           <small>%</small>
         </th>
-        <th class="column-header has-text-right has-min-width">
+        <th class="column-header has-text-right has-min-width wider">
           <div v-if="isPointHovered">             
             <span>Price</span>
             <small>$/MWh</small>
@@ -212,6 +212,10 @@ export default {
 
   .has-min-width {
     min-width: 70px;
+
+    &.wider {
+      min-width: 85px;
+    }
   }
 }
 </style>
