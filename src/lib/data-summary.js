@@ -184,6 +184,9 @@ function getPointSummary(domains, date, data) {
     if (domain === 'price') {
       allData[domain] = data[`${domain}Close`];
     }
+    if (domain === 'temperature') {
+      allData[domain] = data[`${domain}Average`];
+    }
   });
 
   return {
