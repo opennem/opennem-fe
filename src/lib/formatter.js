@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import numeral from 'numeral';
 
-function formatDateForDisplay(date, offsetHrs) {
+function formatDateForDisplay(date) {
   let format = 'D MMM, h:mma';
 
   const d = moment(date);

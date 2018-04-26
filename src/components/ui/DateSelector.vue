@@ -76,7 +76,7 @@ export default {
     showEndDate() {
       const midnight = isMidnight(this.startDate);
       const aDayApart = moment(this.startDate).isSame(moment(this.endDate).subtract(1, 'day'));
-      return !(midnight && aDayApart); 
+      return !(midnight && aDayApart);
     },
   },
   watch: {
