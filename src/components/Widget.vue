@@ -42,7 +42,7 @@
       </div>
       <div class="utils level-right" v-if="isSmall">
         <a @click="toggleLegend"><font-awesome-icon class="fas fa-lg fa-fw" :icon="iconLegend" /></a>
-        <a :href="renewEcoWidgetLink" target="opennem-window"><font-awesome-icon class="fas fa-lg fa-fw" :icon="iconInfo" /></a>
+        <a :href="extLink" target="opennem-window"><font-awesome-icon class="fas fa-lg fa-fw" :icon="iconInfo" /></a>
       </div>
     </footer>
   </div>
@@ -107,6 +107,9 @@ export default {
       startDate: 'getSelectedStartDate',
       endDate: 'getSelectedEndDate',
     }),
+    extLink() {
+      return this.$route.query.extLink || this.openNEMLink;
+    },
     pointDate() {
       return formatDateForDisplay(this.$store.getters.getPointSummary.date);
     },
