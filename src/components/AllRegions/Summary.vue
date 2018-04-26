@@ -53,11 +53,11 @@
         </td>
         <td class="cell-value">
           <div v-if="isPointHovered">
-            {{ pointSummary.allData[row.id] / pointSummary.totalGrossPower * 100 | formatNumber }}%
+            {{ getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower) | formatNumber }}<span v-if="hasValue(getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower))">%</span>
           </div>
           
           <div v-else>
-            {{ row.range.power / rangeSummary.totalGrossPower * 100 | formatNumber }}%
+            {{ getContribution(row.range.power, rangeSummary.totalGrossPower) | formatNumber }}<span v-if="hasValue(getContribution(row.range.power, rangeSummary.totalGrossPower))">%</span>
           </div>
         </td>
       </tr>
@@ -114,11 +114,6 @@ import { formatNumberForDisplay } from '@/lib/formatter';
 
 export default {
   name: 'all-regions-summary',
-  props: {
-  },
-  data() {
-    return {};
-  },
   computed: {
     ...mapGetters({
       isPointHovered: 'isPointHovered',
@@ -126,13 +121,13 @@ export default {
       pointSummary: 'getPointSummary',
     }),
   },
-  watch: {
-    rangeSummary() {
+  methods: {
+    hasValue(value) {
+      return value || false;
     },
-  },
-  mounted() {
-  },
-  beforeDestroy() {
+    getContribution(pointValue, total) {
+      return (pointValue / total) * 100;
+    },
   },
   filters: {
     formatNumber(value, format) {

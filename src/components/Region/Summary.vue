@@ -5,7 +5,7 @@
         <th class="column-header">
           <span>Temperature</span>
           <small v-if="isPointHovered" class="temperature-value">
-            {{ pointSummary.allData.temperature | formatNumber('0,0.0') }}°C
+            {{ pointTemperature | formatNumber('0,0.0') }}<span v-if="hasValue(pointTemperature)">°C</span>
           </small>
         </th>
         <th class="column-header has-text-right has-min-width">
@@ -78,11 +78,11 @@
         </td>
         <td class="cell-value">
           <div v-if="isPointHovered">
-            {{ pointSummary.allData[row.id] / pointSummary.totalGrossPower * 100 | formatNumber }}%
+            {{ getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower) | formatNumber }}<span v-if="hasValue(getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower))">%</span>
           </div>
           
           <div v-else>
-            {{ row.range.power / rangeSummary.totalGrossPower * 100 | formatNumber }}%
+            {{ getContribution(row.range.power, rangeSummary.totalGrossPower) | formatNumber }}<span v-if="hasValue(getContribution(row.range.power, rangeSummary.totalGrossPower))">%</span>
           </div>
         </td>
         <td class="cell-value">
@@ -128,7 +128,7 @@
           </div>
           
           <div v-else>
-            {{ row.range.averagePrice | formatNumber('0,0.0') }}
+            {{ row.range.averagePrice | formatNumber('$0,0.00') }}
           </div>
         </td>
       </tr>
@@ -158,26 +158,24 @@ import { mapGetters } from 'vuex';
 import { formatNumberForDisplay } from '@/lib/formatter';
 
 export default {
-  name: 'all-regions-summary',
-  props: {
-  },
-  data() {
-    return {};
-  },
+  name: 'region-summary',
   computed: {
     ...mapGetters({
       isPointHovered: 'isPointHovered',
       rangeSummary: 'getRangeSummary',
       pointSummary: 'getPointSummary',
     }),
-  },
-  watch: {
-    rangeSummary() {
+    pointTemperature() {
+      return this.pointSummary.allData.temperature;
     },
   },
-  mounted() {
-  },
-  beforeDestroy() {
+  methods: {
+    hasValue(value) {
+      return value || false;
+    },
+    getContribution(pointValue, total) {
+      return (pointValue / total) * 100;
+    },
   },
   filters: {
     formatNumber(value, format) {
