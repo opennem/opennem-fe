@@ -8,7 +8,7 @@
             {{ pointSummary.allData.temperature | formatNumber('0,0.0') }}°C
           </small>
         </th>
-        <th class="column-header has-text-right">
+        <th class="column-header has-text-right has-min-width">
           <div v-if="isPointHovered">
             <span>Power</span>
             <small>MW</small>
@@ -19,11 +19,11 @@
             <small>GWh</small>
           </div>
         </th>
-        <th class="column-header has-text-right">
+        <th class="column-header has-text-right has-min-width">
           <span>Contribution</span>
           <small>%</small>
         </th>
-        <th class="column-header has-text-right">
+        <th class="column-header has-text-right has-min-width">
           <div v-if="isPointHovered">             
             <span>Price</span>
             <small>$/MWh</small>
@@ -87,7 +87,7 @@
         </td>
         <td class="cell-value">
           <div v-if="isPointHovered">
-            --
+            -
           </div>
           
           <div v-else>
@@ -124,7 +124,7 @@
         <td class="cell-value"></td>
         <td class="cell-value">
           <div v-if="isPointHovered">
-            --
+            -
           </div>
           
           <div v-else>
@@ -208,6 +208,10 @@ export default {
     font-size: 0.85rem;
     position: absolute;
     margin-top: -3px;
+  }
+
+  .has-min-width {
+    min-width: 70px;
   }
 }
 </style>

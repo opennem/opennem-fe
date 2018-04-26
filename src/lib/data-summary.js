@@ -48,6 +48,16 @@ function getSummary(domains, data) {
     return p;
   });
 
+  const genDataSum = data.map((d) => {
+    let p = 0;
+    Object.keys(d).forEach((ft) => {
+      if (isValidFT(ft) && !isLoad(ft) && ft !== 'imports') {
+        p += d[ft] || 0;
+      }
+    });
+    return p;
+  });
+
   // create a new array with the ft (renewables only) totals
   const renewablesDataSum = data.map((d) => {
     let p = 0;
@@ -59,8 +69,10 @@ function getSummary(domains, data) {
     return p;
   });
 
-  // create a new array with the ft (renewables only) percentages
+  // create a new array with the ft (renewables only) percentages of demand
   const renewablesPercentages = renewablesDataSum.map((d, i) => (d / dataSum[i]) * 100);
+  // create a new array with the ft (renewables only) percentages of generation
+  const renewablesPercentages2 = renewablesDataSum.map((d, i) => (d / genDataSum[i]) * 100);
 
   // sum up all the ft totals
   const dataSumTotal = dataSum.reduce((a, b) => a + b, 0);
@@ -143,6 +155,8 @@ function getSummary(domains, data) {
     totalAveragePrice,
     demandExtent: getExtent(data, dataSum),
     renewablesExtent: getExtent(data, renewablesPercentages),
+    generationExtent: getExtent(data, genDataSum),
+    renewablesExtent2: getExtent(data, renewablesPercentages2),
     priceExtent: getExtent(data, data.map(d => d.price)),
     temperatureExtent: getExtent(data, data.map(d => d.temperature)),
   };
@@ -154,15 +168,21 @@ function getPointSummary(domains, date, data) {
   let totalGrossPower = 0;
 
   Object.keys(domains).forEach((domain) => {
-    const average = data[`${domain}Average`];
-    allData[domain] = average;
+    if (isValidFT(domain)) {
+      const average = data[`${domain}Average`];
+      allData[domain] = average;
 
-    if (average !== undefined) {
-      totalNetPower += average;
+      if (average !== undefined) {
+        totalNetPower += average;
 
-      if (!isLoad(domain)) {
-        totalGrossPower += average;
+        if (!isLoad(domain)) {
+          totalGrossPower += average;
+        }
       }
+    }
+
+    if (domain === 'price') {
+      allData[domain] = data[`${domain}Close`];
     }
   });
 
