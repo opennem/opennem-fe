@@ -203,9 +203,10 @@ export default {
   }
   .temperature-value {
     font-family: $numbers-font-family;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     position: absolute;
-    margin-top: -3px;
+    margin-top: -2px;
+    color: #666;
   }
 
   .has-min-width {
