@@ -8,7 +8,8 @@
         </div>
         <div v-else>
           <a class="dropdown-trigger" v-on-clickaway="onClickAway" @click="handleClick">
-            {{formattedStartDate}} – {{formattedEndDate}}
+            {{formattedStartDate}}
+            <span v-if="showEndDate"> – {{formattedEndDate}}</span>
           </a>
         </div> 
         <!-- local time -->
@@ -32,10 +33,11 @@
 </template>
 
 <script>
+import * as moment from 'moment';
 import { mapGetters } from 'vuex';
 import { mixin as clickaway } from 'vue-clickaway';
 import { formatDateForDisplay } from '@/lib/formatter';
-import { getLast24HoursStartEndDates } from '@/lib/data-helpers';
+import { getLast24HoursStartEndDates, isMidnight } from '@/lib/data-helpers';
 import { getRegionOffset } from '@/domains/regions';
 import EventBus from '@/lib/event-bus';
 import Loader from './Loader';
@@ -56,6 +58,8 @@ export default {
       isFetching: 'isFetching',
       isPointHovered: 'isPointHovered',
       dataEndDate: 'getDataEndDate',
+      startDate: 'getSelectedStartDate',
+      endDate: 'getSelectedEndDate',
     }),
     regionOffset() {
       return getRegionOffset(this.$route.params.region);
@@ -68,6 +72,11 @@ export default {
     },
     formattedEndDate() {
       return formatDateForDisplay(this.$store.getters.getSelectedEndDate, this.regionOffset);
+    },
+    showEndDate() {
+      const midnight = isMidnight(this.startDate);
+      const aDayApart = moment(this.startDate).isSame(moment(this.endDate).subtract(1, 'day'));
+      return !(midnight && aDayApart); 
     },
   },
   watch: {

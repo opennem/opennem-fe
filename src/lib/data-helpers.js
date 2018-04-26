@@ -169,6 +169,15 @@ function getExtent(data, arr) {
   }];
 }
 
+function isMidnight(date) {
+  const d = moment(date);
+  const hr = d.hour();
+  const min = d.minute();
+  const midnight = hr === 0 && min === 0;
+
+  return midnight;
+}
+
 export {
   dataFilter,
   findDataContextByDate,
@@ -180,4 +189,5 @@ export {
   getLast3DaysStartEndDates,
   getKeys,
   getExtent,
+  isMidnight,
 };

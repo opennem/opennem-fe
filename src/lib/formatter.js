@@ -4,7 +4,11 @@ import numeral from 'numeral';
 function formatDateForDisplay(date, offsetHrs) {
   let format = 'D MMM, h:mma';
 
-  const d = offsetHrs ? moment(date).utcOffset(offsetHrs) : moment(date);
+  const d = moment(date);
+  /**
+   * Uncomment this to enable offset hours
+   */
+  // const d = offsetHrs ? moment(date).utcOffset(offsetHrs) : moment(date);
   const dYear = d.year();
   const dDayOfYear = d.dayOfYear();
 
