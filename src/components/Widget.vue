@@ -37,12 +37,12 @@
 
     <footer class="level is-mobile" v-if="!isFetching">
       <div class="level-left">
-        <a :href="openNEMLink">OpenNEM</a> is a project of 
-        the <a :href="ethLink">Energy Transition Hub</a>
+        <a :href="openNEMLink" target="opennem-window">OpenNEM</a> is a project of 
+        the <a :href="ethLink" target="opennem-window">Energy Transition Hub</a>
       </div>
       <div class="utils level-right" v-if="isSmall">
         <a @click="toggleLegend"><font-awesome-icon class="fas fa-lg fa-fw" :icon="iconLegend" /></a>
-        <a :href="renewEcoWidgetLink"><font-awesome-icon class="fas fa-lg fa-fw" :icon="iconInfo" /></a>
+        <a :href="renewEcoWidgetLink" target="opennem-window"><font-awesome-icon class="fas fa-lg fa-fw" :icon="iconInfo" /></a>
       </div>
     </footer>
   </div>
