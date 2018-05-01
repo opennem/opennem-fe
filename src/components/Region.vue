@@ -113,7 +113,6 @@ export default {
         domtoimage.toBlob(document.getElementById('export-container'))
           .then((blob) => {
             FileSaver.saveAs(blob, `${this.exportName}.png`);
-            this.$store.dispatch('setExportPng', false);
           });
       }, 5);
     },
