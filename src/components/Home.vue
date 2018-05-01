@@ -14,7 +14,7 @@
   </div>
   <div class="column is-narrow" v-if="!isFetching && !isExportPng">
     <all-regions-summary />
-    <all-regions-extent />
+    <all-regions-extent v-if="records" />
   </div>
 </div>
 
@@ -74,6 +74,9 @@ export default {
       isExportPng: 'isExportPng',
       exportName: 'getExportName',
     }),
+    records() {
+      return this.$route.query.records;
+    },
   },
   watch: {
     chartData(data) {

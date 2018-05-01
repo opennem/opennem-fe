@@ -14,7 +14,7 @@
   </div>
   <div class="column is-narrow" v-if="!isFetching && !isExportPng">
     <region-summary />
-    <region-extent :showTemperature="true" :showPrice="true" />
+    <region-extent :showTemperature="true" :showPrice="true" v-if="records" />
   </div>
 </div>
 
@@ -80,6 +80,9 @@ export default {
     }),
     regionId() {
       return this.$route.params.region;
+    },
+    records() {
+      return this.$route.query.records;
     },
   },
   watch: {
