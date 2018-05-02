@@ -148,6 +148,18 @@ export default {
   .vis {
     margin: 0.5rem;
     height: 590px;
+
+    &.one-panel {
+      height: 300px;
+    }
+
+    &.two-panels {
+      height: 450px;
+    }
+
+    &.four-panels {
+      height: 450px;
+    }
   }
 
   #export-container {

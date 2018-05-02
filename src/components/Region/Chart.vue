@@ -1,5 +1,5 @@
 <template>
-  <div class="vis"></div>
+  <div class="vis" :class="visClass"></div>
 </template>
 
 <script>
@@ -21,7 +21,13 @@ import {
   getKeys,
 } from '@/lib/data-helpers';
 import updateRouterStartEnd from '@/lib/app-router';
-import getPanels from './config';
+import {
+  getAllPanels,
+  getGenerationAndPricePanels,
+  getGenerationAndTemperaturePanels,
+  getGenerationPanels,
+
+} from './config';
 
 export default {
   props: {
@@ -35,6 +41,8 @@ export default {
       panelStart: null,
       panelEnd: null,
       initialZoom: false,
+      showPricePanel: true,
+      showTemperaturePanel: true,
     };
   },
   computed: {
@@ -45,6 +53,13 @@ export default {
       endDate: 'getSelectedEndDate',
       dataEndDate: 'getDataEndDate',
     }),
+    visClass() {
+      return {
+        'one-panel': !this.showPricePanel && !this.showTemperaturePanel,
+        'two-panels': !this.showPricePanel && this.showTemperaturePanel,
+        'four-panels': this.showPricePanel && !this.showTemperaturePanel,
+      };
+    },
   },
   watch: {
     chartData() {
@@ -92,23 +107,54 @@ export default {
       EventBus.$off('extent.event.out');
     },
 
+    setupPanels() {
+      let panels = [];
+      if (this.showPricePanel && this.showTemperaturePanel) {
+        panels = getAllPanels(this.getPanelListeners());
+      } else if (this.showPricePanel) {
+        panels = getGenerationAndPricePanels(this.getPanelListeners());
+      } else if (this.showTemperaturePanel) {
+        panels = getGenerationAndTemperaturePanels(this.getPanelListeners());
+      } else {
+        panels = getGenerationPanels(this.getPanelListeners());
+      }
+      return panels;
+    },
+
     setupChart() {
+      const panels = this.setupPanels();
+      const panelNum = panels.length;
       const config = getChartConfig({
         dataSets: [],
-        panels: getPanels(this.getPanelListeners()),
+        panels,
       });
 
       // manually adjust individual panel percentage heights
-      config.panels[0].percentHeight = 50;
-      config.panels[1].percentHeight = 7;
-      config.panels[2].percentHeight = 13;
-      config.panels[3].percentHeight = 5;
-      config.panels[4].percentHeight = 15;
+      switch (panelNum) {
+        case 1:
+          config.panels[0].percentHeight = 100;
+          break;
+        case 2:
+          config.panels[0].percentHeight = 70;
+          config.panels[1].percentHeight = 30;
+          break;
+        case 4:
+          config.panels[0].percentHeight = 65;
+          config.panels[1].percentHeight = 10;
+          config.panels[2].percentHeight = 13;
+          config.panels[3].percentHeight = 7;
+          break;
+        case 5:
+        default:
+          config.panels[0].percentHeight = 50;
+          config.panels[1].percentHeight = 7;
+          config.panels[2].percentHeight = 13;
+          config.panels[3].percentHeight = 5;
+          config.panels[4].percentHeight = 15;
+      }
 
       config.panels[0].categoryAxis.listeners = this.getCategoryAxisListeners();
-
       this.chart = window.AmCharts.makeChart(this.$el, config);
-
       this.chart.addListener('init', this.onChartInit);
       /**
        * workaround for chart.invalidateSize bug
@@ -139,11 +185,11 @@ export default {
 
       // add Guides
       const guides = getNemGuides(this.chartData);
-      this.chart.panels[0].guides = guides;
-      this.chart.panels[1].guides = guides;
-      this.chart.panels[2].guides = guides;
-      this.chart.panels[3].guides = guides;
-      this.chart.panels[4].guides = guides;
+      const panelNum = this.chart.panels.length;
+
+      for (let i = 0; i < panelNum; i += 1) {
+        this.chart.panels[i].guides = guides;
+      }
 
       this.chart.validateData();
       this.chartRendered = true;
@@ -165,6 +211,14 @@ export default {
 
     getPanelChartCursorListeners() {
       return [{ event: 'zoomed', method: this.onChartCursorZoomed }];
+    },
+
+    getTemperaturePanelIndex() {
+      let index = 4;
+      if (this.showTemperaturePanel && !this.showPricePanel) {
+        index = 1;
+      }
+      return index;
     },
 
     onPanelZoomed(e) {
@@ -196,7 +250,11 @@ export default {
 
         if (checkDateZoomLessThan1Day(start, end)) {
           this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
-          this.chart.panels[4].graphs[0].bullet = 'round'; // show temperature bullets
+          const temperaturePanelIndex = this.getTemperaturePanelIndex();
+
+          if (this.showTemperaturePanel) {
+            this.chart.panels[temperaturePanelIndex].graphs[0].bullet = 'round'; // show temperature bullets
+          }
         }
       }
     },
@@ -244,7 +302,6 @@ export default {
     onChartInit() {
       if (this.initialZoom) {
         this.zoomChart(this.startDate, this.endDate);
-
         this.initialZoom = false;
       } else {
         const start = this.chart.panels[0].categoryAxis.startTime;
@@ -268,11 +325,10 @@ export default {
       }
 
       // add zoomed listener to chartCursor
-      e.chart.panels[0].chartCursor.addListener('zoomed', this.onChartCursorZoomed);
-      e.chart.panels[1].chartCursor.addListener('zoomed', this.onChartCursorZoomed);
-      e.chart.panels[2].chartCursor.addListener('zoomed', this.onChartCursorZoomed);
-      e.chart.panels[3].chartCursor.addListener('zoomed', this.onChartCursorZoomed);
-      e.chart.panels[4].chartCursor.addListener('zoomed', this.onChartCursorZoomed);
+      const panelNum = e.chart.panels.length;
+      for (let i = 0; i < panelNum; i += 1) {
+        e.chart.panels[i].chartCursor.addListener('zoomed', this.onChartCursorZoomed);
+      }
 
       // refresh chart to include "new" listener
       e.chart.drawnManually = true;
@@ -288,7 +344,11 @@ export default {
     zoomChart(start, end) {
       if (checkDateZoomLessThan1Day(start, end)) {
         this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
-        this.chart.panels[4].graphs[0].bullet = 'round'; // show temperature bullets
+        const temperaturePanelIndex = this.getTemperaturePanelIndex();
+
+        if (this.showTemperaturePanel) {
+          this.chart.panels[temperaturePanelIndex].graphs[0].bullet = 'round'; // show temperature bullets
+        }
       }
 
       this.chart.zoom(start, end);
@@ -297,7 +357,11 @@ export default {
 
     resetChartZoom() {
       this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm'];
-      this.chart.panels[4].graphs[0].bullet = 'none'; // hide temperature bullets
+      const temperaturePanelIndex = this.getTemperaturePanelIndex();
+
+      if (this.showTemperaturePanel) {
+        this.chart.panels[temperaturePanelIndex].graphs[0].bullet = 'none'; // hide temperature bullets
+      }
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoomed', false);
     },
@@ -334,6 +398,30 @@ export default {
 
   @include desktop {
     height: 620px;
+  }
+
+  &.one-panel {
+    height: 350px;
+
+    @include desktop {
+      height: 450px;
+    }
+  }
+
+  &.two-panels {
+    height: 380px;
+
+    @include desktop {
+      height: 480px;
+    }
+  }
+
+  &.four-panels {
+    height: 400px;
+
+    @include desktop {
+      height: 500px;
+    }
   }
 
   // Price Pos Panel
