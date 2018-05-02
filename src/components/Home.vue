@@ -132,10 +132,6 @@ export default {
 
 .export {
   max-width: 650px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  box-shadow: 0 0 50px #ddd;
-  padding: 1rem 0;
   margin: 1rem auto;
 
   .vis {
@@ -146,6 +142,10 @@ export default {
   #export-container {
     padding: 1rem;
     background-color: $background;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 50px #ddd;
+    padding: 1rem 0.5rem;
   }
 }
 

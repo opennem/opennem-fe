@@ -73,7 +73,7 @@ export default {
   .annotation-btns {
     position: absolute;
     margin-top: -4px;
-    left: -9.5rem;
+    left: -8.8rem;
     width: 130px;
     text-align: right;
   }

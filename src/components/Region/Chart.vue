@@ -41,8 +41,6 @@ export default {
       panelStart: null,
       panelEnd: null,
       initialZoom: false,
-      showPricePanel: true,
-      showTemperaturePanel: true,
     };
   },
   computed: {
@@ -52,6 +50,8 @@ export default {
       startDate: 'getSelectedStartDate',
       endDate: 'getSelectedEndDate',
       dataEndDate: 'getDataEndDate',
+      showPricePanel: 'showPricePanel',
+      showTemperaturePanel: 'showTemperaturePanel',
     }),
     visClass() {
       return {
@@ -71,6 +71,12 @@ export default {
       }
       this.setupKeys();
       this.updateChart();
+    },
+    showPricePanel() {
+      this.redrawChartPanels();
+    },
+    showTemperaturePanel() {
+      this.redrawChartPanels();
     },
   },
   created() {
@@ -193,6 +199,14 @@ export default {
 
       this.chart.validateData();
       this.chartRendered = true;
+    },
+
+    redrawChartPanels() {
+      this.chartRendered = false;
+      this.clearChart();
+      this.setupChart();
+      this.setupKeys();
+      this.updateChart();
     },
 
     getPanelListeners() {
