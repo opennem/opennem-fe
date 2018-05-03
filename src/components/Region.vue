@@ -154,6 +154,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../../node_modules/bulma/sass/utilities/mixins.sass";
 @import "../styles/variables.scss";
 
 .export {
@@ -190,6 +191,16 @@ export default {
     }
     &.price-on.temperature-off {
       margin-top: -2rem;
+    }
+  }
+
+  // Workaround for overlaying panels in export view
+  /deep/ .amcharts-stock-panel-div-stockPanel2 {
+    position: relative;
+    top: -2px;
+
+    @include desktop {
+      top: 0;
     }
   }
 

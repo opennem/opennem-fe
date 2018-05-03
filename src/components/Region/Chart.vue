@@ -499,7 +499,7 @@ export default {
 
   // Price Panel
   /deep/ .amcharts-stock-panel-div-stockPanel2 {
-    margin-top: -9px !important;
+    margin-top: -8px !important;
 
     @include desktop {
       margin-top: -10px !important;
