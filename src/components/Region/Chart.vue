@@ -41,6 +41,8 @@ export default {
       panelStart: null,
       panelEnd: null,
       initialZoom: false,
+      panelNum: 0,
+      chartCursorEnabled: true,
     };
   },
   computed: {
@@ -52,6 +54,7 @@ export default {
       dataEndDate: 'getDataEndDate',
       showPricePanel: 'showPricePanel',
       showTemperaturePanel: 'showTemperaturePanel',
+      isExportPng: 'isExportPng',
     }),
     visClass() {
       return {
@@ -72,11 +75,85 @@ export default {
       this.setupKeys();
       this.updateChart();
     },
-    showPricePanel() {
-      this.redrawChartPanels();
+    showPricePanel(show) {
+      // this.redrawChartPanels();
+      if (show) {
+        if (this.showTemperaturePanel) {
+          console.log('1')
+          this.chart.panels[0].percentHeight = 50;
+          this.chart.panels[1].percentHeight = 7;
+          this.chart.panels[2].percentHeight = 13;
+          this.chart.panels[3].percentHeight = 5;
+          this.chart.panels[4].percentHeight = 15;
+        } else {
+          console.log('2')
+          this.chart.panels[0].percentHeight = 65;
+          this.chart.panels[1].percentHeight = 10;
+          this.chart.panels[2].percentHeight = 13;
+          this.chart.panels[3].percentHeight = 7;
+          this.chart.panels[4].percentHeight = 0;
+        }
+      } else {
+        if (this.showTemperaturePanel) {
+          console.log('3')
+          this.chart.panels[0].percentHeight = 70;
+          this.chart.panels[1].percentHeight = 0;
+          this.chart.panels[2].percentHeight = 0;
+          this.chart.panels[3].percentHeight = 0;
+          this.chart.panels[4].percentHeight = 30;
+        } else {
+          console.log('4')
+          this.chart.panels[0].percentHeight = 100;
+          this.chart.panels[1].percentHeight = 0;
+          this.chart.panels[2].percentHeight = 0;
+          this.chart.panels[3].percentHeight = 0;
+          this.chart.panels[4].percentHeight = 0;
+        }
+      }
+      this.chart.validateNow();
     },
-    showTemperaturePanel() {
-      this.redrawChartPanels();
+    showTemperaturePanel(show) {
+      // this.redrawChartPanels();
+      if (show) {
+        if (this.showPricePanel) {
+          console.log('1')
+          this.chart.panels[0].percentHeight = 50;
+          this.chart.panels[1].percentHeight = 7;
+          this.chart.panels[2].percentHeight = 13;
+          this.chart.panels[3].percentHeight = 5;
+          this.chart.panels[4].percentHeight = 15;
+        } else {
+          console.log('2')
+          this.chart.panels[0].percentHeight = 70;
+          this.chart.panels[1].percentHeight = 0;
+          this.chart.panels[2].percentHeight = 0;
+          this.chart.panels[3].percentHeight = 0;
+          this.chart.panels[4].percentHeight = 30;
+        }
+      } else {
+        if (this.showPricePanel) {
+          console.log('3')
+          this.chart.panels[0].percentHeight = 65;
+          this.chart.panels[1].percentHeight = 10;
+          this.chart.panels[2].percentHeight = 13;
+          this.chart.panels[3].percentHeight = 7;
+          this.chart.panels[4].percentHeight = 0;
+        } else {
+          console.log('4')
+          this.chart.panels[0].percentHeight = 100;
+          this.chart.panels[1].percentHeight = 0;
+          this.chart.panels[2].percentHeight = 0;
+          this.chart.panels[3].percentHeight = 0;
+          this.chart.panels[4].percentHeight = 0;
+        }
+      }
+      this.chart.validateNow();
+    },
+    isExportPng(exporting) {
+      // this.chartCursorEnabled = !exporting;
+    },
+    chartCursorEnabled(enabled) {
+      // this.setChartCursorEnabled(enabled);
     },
   },
   created() {
@@ -95,6 +172,10 @@ export default {
     this.clearChart();
   },
   methods: {
+    setChartCursorEnabled(enabled) {
+      this.chart.chartCursorSettings.enabled = enabled;
+      this.chart.validateNow();
+    },
     handleResize() {
       if (this.chart && this.chartRendered) {
         this.chart.invalidateSize();
@@ -130,6 +211,7 @@ export default {
     setupChart() {
       const panels = this.setupPanels();
       const panelNum = panels.length;
+      this.panelNum = panelNum;
       const config = getChartConfig({
         dataSets: [],
         panels,
@@ -161,6 +243,7 @@ export default {
 
       config.panels[0].categoryAxis.listeners = this.getCategoryAxisListeners();
       this.chart = window.AmCharts.makeChart(this.$el, config);
+
       this.chart.addListener('init', this.onChartInit);
       /**
        * workaround for chart.invalidateSize bug
