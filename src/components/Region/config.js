@@ -25,10 +25,27 @@ function getGenerationAndTemperaturePanels(listeners) {
     getTemperaturePanel(listeners),
   ];
 }
+
 function getGenerationPanels(listeners) {
   return [
     getGenerationPanel(listeners),
   ];
+}
+
+function getAllPanelsPercentHeight() {
+  return [50, 7, 13, 5, 15];
+}
+
+function getGenerationOnlyPanelPercentHeight() {
+  return [100, 0, 0, 0, 0];
+}
+
+function getGenerationPricePanelPercentHeight() {
+  return [60, 10, 18, 7, 0];
+}
+
+function getGenerationTemperaturePanelPercentHeight() {
+  return [70, 0, 0, 0, 30];
 }
 
 export {
@@ -36,4 +53,8 @@ export {
   getGenerationAndPricePanels,
   getGenerationAndTemperaturePanels,
   getGenerationPanels,
+  getAllPanelsPercentHeight,
+  getGenerationOnlyPanelPercentHeight,
+  getGenerationPricePanelPercentHeight,
+  getGenerationTemperaturePanelPercentHeight,
 };

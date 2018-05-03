@@ -26,7 +26,10 @@ import {
   getGenerationAndPricePanels,
   getGenerationAndTemperaturePanels,
   getGenerationPanels,
-
+  getAllPanelsPercentHeight,
+  getGenerationOnlyPanelPercentHeight,
+  getGenerationPricePanelPercentHeight,
+  getGenerationTemperaturePanelPercentHeight,
 } from './config';
 
 export default {
@@ -41,6 +44,8 @@ export default {
       panelStart: null,
       panelEnd: null,
       initialZoom: false,
+      panelNum: 0,
+      chartCursorEnabled: true,
     };
   },
   computed: {
@@ -52,6 +57,7 @@ export default {
       dataEndDate: 'getDataEndDate',
       showPricePanel: 'showPricePanel',
       showTemperaturePanel: 'showTemperaturePanel',
+      isExportPng: 'isExportPng',
     }),
     visClass() {
       return {
@@ -72,11 +78,39 @@ export default {
       this.setupKeys();
       this.updateChart();
     },
-    showPricePanel() {
-      this.redrawChartPanels();
+    showPricePanel(show) {
+      if (show) {
+        if (this.showTemperaturePanel) {
+          this.setChartPanelHeights(getAllPanelsPercentHeight());
+        } else {
+          this.setChartPanelHeights(getGenerationPricePanelPercentHeight());
+        }
+      } else if (this.showTemperaturePanel) {
+        this.setChartPanelHeights(getGenerationTemperaturePanelPercentHeight());
+      } else {
+        this.setChartPanelHeights(getGenerationOnlyPanelPercentHeight());
+      }
+      this.chart.validateNow();
     },
-    showTemperaturePanel() {
-      this.redrawChartPanels();
+    showTemperaturePanel(show) {
+      if (show) {
+        if (this.showPricePanel) {
+          this.setChartPanelHeights(getAllPanelsPercentHeight());
+        } else {
+          this.setChartPanelHeights(getGenerationTemperaturePanelPercentHeight());
+        }
+      } else if (this.showPricePanel) {
+        this.setChartPanelHeights(getGenerationPricePanelPercentHeight());
+      } else {
+        this.setChartPanelHeights(getGenerationOnlyPanelPercentHeight());
+      }
+      this.chart.validateNow();
+    },
+    isExportPng(exporting) {
+      this.chartCursorEnabled = !exporting;
+    },
+    chartCursorEnabled(enabled) {
+      this.setChartCursorEnabled(enabled);
     },
   },
   created() {
@@ -95,6 +129,17 @@ export default {
     this.clearChart();
   },
   methods: {
+    setChartCursorEnabled(enabled) {
+      this.chart.chartCursorSettings.enabled = enabled;
+      this.chart.validateNow();
+    },
+
+    setChartPanelHeights(heightArr) {
+      for (let i = 0; i < this.panelNum; i += 1) {
+        this.chart.panels[i].percentHeight = heightArr[i];
+      }
+    },
+
     handleResize() {
       if (this.chart && this.chartRendered) {
         this.chart.invalidateSize();
@@ -130,6 +175,7 @@ export default {
     setupChart() {
       const panels = this.setupPanels();
       const panelNum = panels.length;
+      this.panelNum = panelNum;
       const config = getChartConfig({
         dataSets: [],
         panels,
@@ -161,6 +207,7 @@ export default {
 
       config.panels[0].categoryAxis.listeners = this.getCategoryAxisListeners();
       this.chart = window.AmCharts.makeChart(this.$el, config);
+
       this.chart.addListener('init', this.onChartInit);
       /**
        * workaround for chart.invalidateSize bug
@@ -340,8 +387,10 @@ export default {
 
       // add zoomed listener to chartCursor
       const panelNum = e.chart.panels.length;
-      for (let i = 0; i < panelNum; i += 1) {
-        e.chart.panels[i].chartCursor.addListener('zoomed', this.onChartCursorZoomed);
+      if (this.chartCursorEnabled) {
+        for (let i = 0; i < panelNum; i += 1) {
+          e.chart.panels[i].chartCursor.addListener('zoomed', this.onChartCursorZoomed);
+        }
       }
 
       // refresh chart to include "new" listener
@@ -440,7 +489,7 @@ export default {
 
   // Price Pos Panel
   /deep/ .amcharts-stock-panel-div-stockPanel1 {
-    margin-top: 20px !important;
+    margin-top: 10px !important;
 
     // remove the 0 axis line
     .amcharts-category-axis .amcharts-axis-line {
@@ -453,7 +502,7 @@ export default {
     margin-top: -9px !important;
 
     @include desktop {
-      margin-top: -11px !important;
+      margin-top: -10px !important;
     }
 
     .amcharts-category-axis .amcharts-axis-line {
@@ -477,7 +526,7 @@ export default {
 
   // Temperature Panel
   /deep/ .amcharts-stock-panel-div-stockPanel4 {
-    margin-top: 20px !important;
+    margin-top: 10px !important;
 
     .amcharts-category-axis .amcharts-axis-line {
       stroke: #666;

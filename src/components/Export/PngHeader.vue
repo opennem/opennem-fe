@@ -73,9 +73,16 @@ export default {
 
   .annotation-btns {
     position: absolute;
-    left: -8.8rem;
+    left: -139px;
+    margin-top: 10px;
     width: 130px;
     text-align: right;
+
+    button {
+      padding-right: 10px;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
 
     :first-child {
       margin-bottom: .5rem;

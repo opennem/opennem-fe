@@ -5,35 +5,12 @@
   </transition>
 
   <div class="column" v-show="!isFetching" :class="{ export: isExportPng }">
-    <div class="panel-toggle-btns" v-if="isExportPng">
-      <button class="price-btn button is-small is-rounded is-primary is-inverted"
-        :class="{ 
-          'on': showPricePanel,
-          'off': !showPricePanel,
-          'temperature-on': showTemperaturePanel,
-          'temperature-off': !showTemperaturePanel,
-        }"
-        @click="togglePricePanel">
-        <span v-if="showPricePanel"><font-awesome-icon class="fas" :icon="iconRemove" /></span>
-        <span v-else>Show Price</span>
-      </button>
-
-      <button class="temperature-btn button is-small is-rounded is-primary is-inverted"
-        :class="{
-          'on': showTemperaturePanel,
-          'off': !showTemperaturePanel,
-          'price-on': showPricePanel,
-          'price-off': !showPricePanel,
-        }"
-        @click="toggleTemperaturePanel">
-        <span v-if="showTemperaturePanel"><font-awesome-icon class="fas" :icon="iconRemove" /></span>
-        <span v-else>Show Temperature</span>
-      </button>
-    </div>
-
     <div id="export-container">
       <export-png-header v-if="isExportPng" />
-      <region-chart :chartData="chartData" />
+      <div style="position: relative;">
+        <panel-buttons />
+        <region-chart :chartData="chartData" />
+      </div>
       <export-legend v-if="isExportPng"
         :class="{
           'price-on': showPricePanel,
@@ -55,11 +32,6 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
-import {
-  faCheck,
-  faTimesCircle,
-} from '@fortawesome/fontawesome-free-solid';
 import domtoimage from '@/lib/dom-to-image';
 import FileSaver from 'file-saver';
 import EventBus from '@/lib/event-bus';
@@ -74,6 +46,7 @@ import RegionSummary from './Region/Summary';
 import RegionExtent from './ui/Extent';
 import ExportPngHeader from './Export/PngHeader';
 import ExportPngFooter from './Export/PngFooter';
+import PanelButtons from './Export/PanelShowHideButtons';
 import ExportLegend from './Export/Legend';
 import ZoomOutButton from './ui/ZoomOutButton';
 
@@ -86,7 +59,7 @@ export default {
     ExportPngFooter,
     ExportLegend,
     ZoomOutButton,
-    FontAwesomeIcon,
+    PanelButtons,
   },
   created() {
     this.$store.dispatch('setDomains', GraphDomains);
@@ -124,12 +97,6 @@ export default {
     },
     records() {
       return this.$route.query.records;
-    },
-    iconOn() {
-      return faCheck;
-    },
-    iconRemove() {
-      return faTimesCircle;
     },
   },
   watch: {
@@ -182,12 +149,6 @@ export default {
         this.$store.dispatch('setExportRegion', getRegionLabel(this.regionId));
       });
     },
-    toggleTemperaturePanel() {
-      this.$store.dispatch('setTemperaturePanel', !this.showTemperaturePanel);
-    },
-    togglePricePanel() {
-      this.$store.dispatch('setPricePanel', !this.showPricePanel);
-    },
   },
 };
 </script>
@@ -217,71 +178,18 @@ export default {
     }
   }
 
-  .panel-toggle-btns {
-    position: absolute;
-    top: 0;
-    z-index: 9;
-
-    button {
-      float: right;
-      clear: both;
-      display: block;
-      margin-bottom: 0.2rem;
-      position: absolute;
-
-      .fas {
-        position: relative;
-        top: 1px;
-        font-size: 18px;
-      }
-
-      &.on {
-        background: none;
-        margin-left: -21px;
-      }
-      &.on:active,
-      &.on:focus {
-        outline: none;
-        box-shadow: none;
-      }
-    }
-
-    .price-btn {
-      top: 422px;
-      margin-left: -90px;
-
-      &.on.temperature-off {
-        top: 403px;
-      }
-      &.off {
-        top: 380px;
-      }
-    }
-    .temperature-btn {
-      top: 583px;
-      margin-left: -133px;
-
-      &.on.price-off {
-        top: 420px;
-      }
-      &.off.price-on {
-        top: 540px;
-      }
-      &.off.price-off {
-        top: 415px;
-      }
-    }
-  }
-
   section {
+    &.price-on.temperature-on {
+      margin-top: -1.5rem;
+    }
     &.price-off.temperature-on {
-      margin-top: 1.5rem;
+      margin-top: -1.5rem;
     }
     &.price-off.temperature-off {
-      margin-top: 1rem;
+      margin-top: -2rem;
     }
     &.price-on.temperature-off {
-      margin-top: -0.7rem;
+      margin-top: -2rem;
     }
   }
 
