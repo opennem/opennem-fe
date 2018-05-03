@@ -79,14 +79,12 @@ export default {
       // this.redrawChartPanels();
       if (show) {
         if (this.showTemperaturePanel) {
-          console.log('1')
           this.chart.panels[0].percentHeight = 50;
           this.chart.panels[1].percentHeight = 7;
           this.chart.panels[2].percentHeight = 13;
           this.chart.panels[3].percentHeight = 5;
           this.chart.panels[4].percentHeight = 15;
         } else {
-          console.log('2')
           this.chart.panels[0].percentHeight = 65;
           this.chart.panels[1].percentHeight = 10;
           this.chart.panels[2].percentHeight = 13;
@@ -95,14 +93,12 @@ export default {
         }
       } else {
         if (this.showTemperaturePanel) {
-          console.log('3')
           this.chart.panels[0].percentHeight = 70;
           this.chart.panels[1].percentHeight = 0;
           this.chart.panels[2].percentHeight = 0;
           this.chart.panels[3].percentHeight = 0;
           this.chart.panels[4].percentHeight = 30;
         } else {
-          console.log('4')
           this.chart.panels[0].percentHeight = 100;
           this.chart.panels[1].percentHeight = 0;
           this.chart.panels[2].percentHeight = 0;
@@ -116,14 +112,12 @@ export default {
       // this.redrawChartPanels();
       if (show) {
         if (this.showPricePanel) {
-          console.log('1')
           this.chart.panels[0].percentHeight = 50;
           this.chart.panels[1].percentHeight = 7;
           this.chart.panels[2].percentHeight = 13;
           this.chart.panels[3].percentHeight = 5;
           this.chart.panels[4].percentHeight = 15;
         } else {
-          console.log('2')
           this.chart.panels[0].percentHeight = 70;
           this.chart.panels[1].percentHeight = 0;
           this.chart.panels[2].percentHeight = 0;
@@ -132,14 +126,12 @@ export default {
         }
       } else {
         if (this.showPricePanel) {
-          console.log('3')
           this.chart.panels[0].percentHeight = 65;
           this.chart.panels[1].percentHeight = 10;
           this.chart.panels[2].percentHeight = 13;
           this.chart.panels[3].percentHeight = 7;
           this.chart.panels[4].percentHeight = 0;
         } else {
-          console.log('4')
           this.chart.panels[0].percentHeight = 100;
           this.chart.panels[1].percentHeight = 0;
           this.chart.panels[2].percentHeight = 0;
