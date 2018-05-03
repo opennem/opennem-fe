@@ -1,7 +1,7 @@
 <template>
 <div class="columns is-desktop is-variable is-1">
   <transition name="fade">
-    <zoom-out-button v-if="isChartZoomed && !isFetching" />
+    <zoom-out-button v-if="isChartZoomed && !isFetching  && !isExportPng" />
   </transition>
 
   <div class="column" v-show="!isFetching" :class="{ export: isExportPng }">

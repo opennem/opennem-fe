@@ -30,6 +30,7 @@ export default {
       chart: null,
       keys: [],
       initialZoom: false,
+      chartCursorEnabled: true,
     };
   },
   computed: {
@@ -39,6 +40,7 @@ export default {
       startDate: 'getSelectedStartDate',
       endDate: 'getSelectedEndDate',
       dataEndDate: 'getDataEndDate',
+      isExportPng: 'isExportPng',
     }),
   },
   watch: {
@@ -48,6 +50,12 @@ export default {
       this.setupChart();
       this.setupKeys();
       this.updateChart();
+    },
+    isExportPng(exporting) {
+      this.chartCursorEnabled = !exporting;
+    },
+    chartCursorEnabled(enabled) {
+      this.setChartCursorEnabled(enabled);
     },
   },
   created() {
@@ -63,6 +71,11 @@ export default {
     this.clearChart();
   },
   methods: {
+    setChartCursorEnabled(enabled) {
+      this.chart.chartCursorSettings.enabled = enabled;
+      this.chart.validateNow();
+    },
+
     handleResize() {
       this.chart.invalidateSize();
     },
@@ -187,9 +200,11 @@ export default {
     },
 
     onCategoryAxisItemClicked(e) {
-      const zoomDates = getZoomDatesOnDateLabel(e.value, this.dataEndDate);
-      if (zoomDates) {
-        this.zoomChart(zoomDates.start, zoomDates.end);
+      if (this.chartCursorEnabled) {
+        const zoomDates = getZoomDatesOnDateLabel(e.value, this.dataEndDate);
+        if (zoomDates) {
+          this.zoomChart(zoomDates.start, zoomDates.end);
+        }
       }
     },
 
@@ -218,7 +233,9 @@ export default {
       }
 
       // add zoomed listener to chartCursor
-      e.chart.panels[0].chartCursor.addListener('zoomed', this.onChartCursorZoomed);
+      if (this.chartCursorEnabled) {
+        e.chart.panels[0].chartCursor.addListener('zoomed', this.onChartCursorZoomed);
+      }
 
       // refresh chart to include "new" listener
       e.chart.drawnManually = true;

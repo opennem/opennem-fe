@@ -343,9 +343,11 @@ export default {
     },
 
     onCategoryAxisItemClicked(e) {
-      const zoomDates = getZoomDatesOnDateLabel(e.value, this.dataEndDate);
-      if (zoomDates) {
-        this.zoomChart(zoomDates.start, zoomDates.end);
+      if (this.chartCursorEnabled) {
+        const zoomDates = getZoomDatesOnDateLabel(e.value, this.dataEndDate);
+        if (zoomDates) {
+          this.zoomChart(zoomDates.start, zoomDates.end);
+        }
       }
     },
 
