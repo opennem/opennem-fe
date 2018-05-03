@@ -26,7 +26,10 @@ import {
   getGenerationAndPricePanels,
   getGenerationAndTemperaturePanels,
   getGenerationPanels,
-
+  getAllPanelsPercentHeight,
+  getGenerationOnlyPanelPercentHeight,
+  getGenerationPricePanelPercentHeight,
+  getGenerationTemperaturePanelPercentHeight,
 } from './config';
 
 export default {
@@ -76,76 +79,38 @@ export default {
       this.updateChart();
     },
     showPricePanel(show) {
-      // this.redrawChartPanels();
       if (show) {
         if (this.showTemperaturePanel) {
-          this.chart.panels[0].percentHeight = 50;
-          this.chart.panels[1].percentHeight = 7;
-          this.chart.panels[2].percentHeight = 13;
-          this.chart.panels[3].percentHeight = 5;
-          this.chart.panels[4].percentHeight = 15;
+          this.setChartPanelHeights(getAllPanelsPercentHeight());
         } else {
-          this.chart.panels[0].percentHeight = 65;
-          this.chart.panels[1].percentHeight = 10;
-          this.chart.panels[2].percentHeight = 13;
-          this.chart.panels[3].percentHeight = 7;
-          this.chart.panels[4].percentHeight = 0;
+          this.setChartPanelHeights(getGenerationPricePanelPercentHeight());
         }
+      } else if (this.showTemperaturePanel) {
+        this.setChartPanelHeights(getGenerationTemperaturePanelPercentHeight());
       } else {
-        if (this.showTemperaturePanel) {
-          this.chart.panels[0].percentHeight = 70;
-          this.chart.panels[1].percentHeight = 0;
-          this.chart.panels[2].percentHeight = 0;
-          this.chart.panels[3].percentHeight = 0;
-          this.chart.panels[4].percentHeight = 30;
-        } else {
-          this.chart.panels[0].percentHeight = 100;
-          this.chart.panels[1].percentHeight = 0;
-          this.chart.panels[2].percentHeight = 0;
-          this.chart.panels[3].percentHeight = 0;
-          this.chart.panels[4].percentHeight = 0;
-        }
+        this.setChartPanelHeights(getGenerationOnlyPanelPercentHeight());
       }
       this.chart.validateNow();
     },
     showTemperaturePanel(show) {
-      // this.redrawChartPanels();
       if (show) {
         if (this.showPricePanel) {
-          this.chart.panels[0].percentHeight = 50;
-          this.chart.panels[1].percentHeight = 7;
-          this.chart.panels[2].percentHeight = 13;
-          this.chart.panels[3].percentHeight = 5;
-          this.chart.panels[4].percentHeight = 15;
+          this.setChartPanelHeights(getAllPanelsPercentHeight());
         } else {
-          this.chart.panels[0].percentHeight = 70;
-          this.chart.panels[1].percentHeight = 0;
-          this.chart.panels[2].percentHeight = 0;
-          this.chart.panels[3].percentHeight = 0;
-          this.chart.panels[4].percentHeight = 30;
+          this.setChartPanelHeights(getGenerationTemperaturePanelPercentHeight());
         }
+      } else if (this.showPricePanel) {
+        this.setChartPanelHeights(getGenerationPricePanelPercentHeight());
       } else {
-        if (this.showPricePanel) {
-          this.chart.panels[0].percentHeight = 65;
-          this.chart.panels[1].percentHeight = 10;
-          this.chart.panels[2].percentHeight = 13;
-          this.chart.panels[3].percentHeight = 7;
-          this.chart.panels[4].percentHeight = 0;
-        } else {
-          this.chart.panels[0].percentHeight = 100;
-          this.chart.panels[1].percentHeight = 0;
-          this.chart.panels[2].percentHeight = 0;
-          this.chart.panels[3].percentHeight = 0;
-          this.chart.panels[4].percentHeight = 0;
-        }
+        this.setChartPanelHeights(getGenerationOnlyPanelPercentHeight());
       }
       this.chart.validateNow();
     },
     isExportPng(exporting) {
-      // this.chartCursorEnabled = !exporting;
+      this.chartCursorEnabled = !exporting;
     },
     chartCursorEnabled(enabled) {
-      // this.setChartCursorEnabled(enabled);
+      this.setChartCursorEnabled(enabled);
     },
   },
   created() {
@@ -168,6 +133,13 @@ export default {
       this.chart.chartCursorSettings.enabled = enabled;
       this.chart.validateNow();
     },
+
+    setChartPanelHeights(heightArr) {
+      for (let i = 0; i < this.panelNum; i += 1) {
+        this.chart.panels[i].percentHeight = heightArr[i];
+      }
+    },
+
     handleResize() {
       if (this.chart && this.chartRendered) {
         this.chart.invalidateSize();
@@ -415,8 +387,10 @@ export default {
 
       // add zoomed listener to chartCursor
       const panelNum = e.chart.panels.length;
-      for (let i = 0; i < panelNum; i += 1) {
-        e.chart.panels[i].chartCursor.addListener('zoomed', this.onChartCursorZoomed);
+      if (this.chartCursorEnabled) {
+        for (let i = 0; i < panelNum; i += 1) {
+          e.chart.panels[i].chartCursor.addListener('zoomed', this.onChartCursorZoomed);
+        }
       }
 
       // refresh chart to include "new" listener
@@ -515,7 +489,7 @@ export default {
 
   // Price Pos Panel
   /deep/ .amcharts-stock-panel-div-stockPanel1 {
-    margin-top: 20px !important;
+    margin-top: 10px !important;
 
     // remove the 0 axis line
     .amcharts-category-axis .amcharts-axis-line {
@@ -528,7 +502,7 @@ export default {
     margin-top: -9px !important;
 
     @include desktop {
-      margin-top: -11px !important;
+      margin-top: -10px !important;
     }
 
     .amcharts-category-axis .amcharts-axis-line {
@@ -552,7 +526,7 @@ export default {
 
   // Temperature Panel
   /deep/ .amcharts-stock-panel-div-stockPanel4 {
-    margin-top: 20px !important;
+    margin-top: 10px !important;
 
     .amcharts-category-axis .amcharts-axis-line {
       stroke: #666;
