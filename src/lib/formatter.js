@@ -37,7 +37,9 @@ function formatDateForDisplay(date) {
   //   return moment(date).utcOffset(offsetHrs).format(format);
   // }
 
-  return moment(date).format(format);
+  const returnedDate = moment(date).isValid() ? moment(date).format(format) : '';
+
+  return returnedDate;
 }
 
 function formatDateForExport(date) {
