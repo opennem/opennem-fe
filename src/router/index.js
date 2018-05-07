@@ -4,6 +4,7 @@ import Home from '@/components/Home';
 import Region from '@/components/Region';
 import Widget from '@/components/Widget';
 import About from '@/components/About';
+import NotFound from '@/components/NotFound';
 
 Vue.use(Router);
 
@@ -34,6 +35,15 @@ export default new Router({
       path: '/about',
       name: 'about',
       component: About,
+    },
+    {
+      path: '/404',
+      name: '404',
+      component: NotFound,
+    },
+    {
+      path: '*',
+      redirect: '404',
     },
   ],
 });

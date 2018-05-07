@@ -18,6 +18,10 @@
       <router-view/>
     </section>
 
+    <section class="notfound-page" v-if="isNotFound">
+      <router-view/>
+    </section>
+
   </div>  
 </template>
 
@@ -42,6 +46,9 @@ export default {
     isWidget() {
       return this.$route.name === 'widget';
     },
+    isNotFound() {
+      return this.$route.name === '404';
+    }
   },
 };
 </script>
@@ -71,6 +78,10 @@ export default {
 section {
   @include widescreen {
     margin-top: 2rem;
+  }
+
+  &.notfound-page {
+    margin-top: 0;
   }
 }
 .router-view-container {
