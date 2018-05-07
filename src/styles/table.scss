@@ -4,6 +4,14 @@
   font-size: 0.8rem;
   border-top: 2px solid #ddd;
 
+  td, th {
+    font-size: 0.8em;
+
+    @include desktop {
+      font-size: 1em;
+    }
+  }
+
   .column-header {
     font-family: $header-font-family;
     font-size: 0.9em;
@@ -29,12 +37,17 @@
     text-align: right;
   }
   .source-colour {
-    width: 17px;
-    height: 17px;
+    width: 13px;
+    height: 13px;
     background-color: rgba(255,255,255,.8);
     display: inline-block;
     vertical-align: text-bottom;
     margin-right: 0.1rem;
+
+    @include desktop {
+      width: 17px;
+      height: 17px;
+    }
   }
   .date-value {
     display: block;

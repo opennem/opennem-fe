@@ -199,7 +199,12 @@ export default {
   }
 
   .cell-value {
-    padding-left: 1em;
+    padding-left: 0em;
+
+    @include desktop {
+      padding: .25em .5em;
+      padding-left: 1em;
+    }
   }
   .temperature-value {
     font-family: $numbers-font-family;
@@ -212,8 +217,16 @@ export default {
   .has-min-width {
     min-width: 70px;
 
+    @include desktop {
+      min-width: 60px;
+    }
+
     &.wider {
-      min-width: 85px;
+      min-width: 60px;
+
+      @include desktop {
+        min-width: 85px;
+      }
     }
   }
 }
