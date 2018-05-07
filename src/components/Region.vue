@@ -16,13 +16,15 @@
             'price-off': !showPricePanel,
             'temperature-on': showTemperaturePanel,
             'temperature-off': !showTemperaturePanel,
+            'summary-on': showSummaryPanel,
+            'summary-off': !showSummaryPanel,
           }">
           <region-summary v-if="showSummaryPanel" :showTemperature="false" />
           <export-legend v-else />
         </div>
       </div>
       
-      <export-png-footer v-if="isExportPng" />
+      <export-png-footer v-if="isExportPng" :hideTopBorder="showSummaryPanel" />
     </div>
   </div>
 
@@ -189,16 +191,22 @@ export default {
   }
 
   div {
-    &.price-on.temperature-on {
+    &.summary-on {
       margin-top: -1.5rem;
     }
-    &.price-off.temperature-on {
+    &.summary-on.temperature-on {
+      margin-top: -1rem;
+    }
+    &.summary-off.price-on.temperature-on {
       margin-top: -1.5rem;
     }
-    &.price-off.temperature-off {
+    &.summary-off.price-off.temperature-on {
+      margin-top: -1.5rem;
+    }
+    &.summary-off.price-off.temperature-off {
       margin-top: -2rem;
     }
-    &.price-on.temperature-off {
+    &.summary-off.price-on.temperature-off {
       margin-top: -2rem;
     }
   }

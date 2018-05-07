@@ -1,5 +1,5 @@
 <template>
-  <div class="export-footer">
+  <div class="export-footer" :class="{ 'no-border': hideTopBorder }">
     <div class="annotation-btns">
       <button class="button is-small is-rounded is-primary is-inverted"
         v-if="!showAttribution" @click="showAttribution = true">
@@ -26,6 +26,9 @@ import EventBus from '@/lib/event-bus';
 
 export default {
   name: 'export-png-footer',
+  props: {
+    hideTopBorder: Boolean,
+  },
   data() {
     return {
       showAttribution: true,
@@ -69,6 +72,12 @@ export default {
   margin: 0.5rem 0 0;
   font-size: 0.8rem;
   border-top: 1px dashed #ccc;
+
+  &.no-border {
+    border-top: none;
+    margin-top: 0;
+    padding-top: 0;
+  }
 
   .annotation-btns {
     position: absolute;

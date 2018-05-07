@@ -156,17 +156,17 @@ export default {
     }
   }
   .legend-btn {
-    top: 575px;
+    top: 582px;
     margin-left: -121px;
 
     &.on.price-off {
-      top: 435px;
+      top: 442px;
     }
     &.on.temperature-off {
-      top: 430px;
+      top: 435px;
     }
     &.on.price-off.temperature-off {
-      top: 280px;
+      top: 285px;
     }
 
     &.off.price-on.temperature-on {

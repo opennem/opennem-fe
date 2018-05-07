@@ -18,7 +18,7 @@
         </div>
       </div>
       
-      <export-png-footer v-if="isExportPng" />
+      <export-png-footer v-if="isExportPng" :hideTopBorder="showSummaryPanel" />
     </div>
   </div>
   <div class="column is-narrow" v-if="!isFetching && !isExportPng">
