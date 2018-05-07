@@ -23,6 +23,20 @@
       <span v-if="showTemperaturePanel"><font-awesome-icon class="fas" :icon="iconRemove" /></span>
       <span v-else>Show Temperature</span>
     </button>
+
+    <button class="legend-btn button is-small is-rounded is-primary is-inverted"
+      :class="{
+        'on': showSummaryPanel,
+        'off': !showSummaryPanel,
+        'temperature-on': showTemperaturePanel,
+        'temperature-off': !showTemperaturePanel,
+        'price-on': showPricePanel,
+        'price-off': !showPricePanel,
+      }"
+      @click="toggleSummaryPanel">
+      <span v-if="showSummaryPanel"><font-awesome-icon class="fas" :icon="iconRemove" /></span>
+      <span v-else>Show Summary</span>
+    </button>
   </div>
 </template>
 
@@ -47,6 +61,7 @@ export default {
       isExportPng: 'isExportPng',
       showPricePanel: 'showPricePanel',
       showTemperaturePanel: 'showTemperaturePanel',
+      showSummaryPanel: 'showSummaryPanel',
     }),
     iconOn() {
       return faCheck;
@@ -65,6 +80,9 @@ export default {
     },
     togglePricePanel() {
       this.$store.dispatch('setPricePanel', !this.showPricePanel);
+    },
+    toggleSummaryPanel() {
+      this.$store.dispatch('setSummaryPanel', !this.showSummaryPanel);
     },
   },
 };
@@ -119,9 +137,10 @@ export default {
       top: 277px;
     }
     &.off {
-      top: 260px;
+      top: 200px;
     }
   }
+  
   .temperature-btn {
     top: 475px;
     margin-left: -139px;
@@ -130,10 +149,40 @@ export default {
       top: 303px;
     }
     &.off.price-on {
-      top: 420px;
+      top: 390px;
+    }
+    &.off.price-off {
+      top: 235px;
+    }
+  }
+  .legend-btn {
+    top: 575px;
+    margin-left: -121px;
+
+    &.on.price-off {
+      top: 435px;
+    }
+    &.on.temperature-off {
+      top: 430px;
+    }
+    &.on.price-off.temperature-off {
+      top: 280px;
+    }
+
+    &.off.price-on.temperature-on {
+      top: 580px;
+    }
+    &.off.price-on.temperature-off {
+      top: 435px;
+    }
+    &.off.price-off.temperature-on {
+      top: 445px;
     }
     &.off.price-off {
       top: 295px;
+    }
+    &.off.price-off.temperature-off {
+      top: 280px;
     }
   }
 }

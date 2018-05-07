@@ -24,6 +24,7 @@ const state = {
   exportPng: false,
   showTemperaturePanel: true,
   showPricePanel: true,
+  showSummaryPanel: false,
 };
 
 const mutations = {
@@ -69,6 +70,9 @@ const mutations = {
   },
   showPricePanel(state, data) {
     state.showPricePanel = data;
+  },
+  showSummaryPanel(state, data) {
+    state.showSummaryPanel = data;
   },
 };
 
@@ -118,6 +122,9 @@ const getters = {
   showPricePanel: state => {
     return state.showPricePanel;
   },
+  showSummaryPanel: state => {
+    return state.showSummaryPanel;
+  },
 };
 
 const actions = {
@@ -163,9 +170,13 @@ const actions = {
   setPricePanel({ commit, state }, data) {
     commit('showPricePanel', data);
   },
+  setSummaryPanel({ commit, state }, data) {
+    commit('showSummaryPanel', data);
+  },
   resetPanels({ commit, state }) {
     commit('showTemperaturePanel', true);
     commit('showPricePanel', true);
+    commit('showSummaryPanel', true);
   },
 };
 

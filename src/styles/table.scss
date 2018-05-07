@@ -5,10 +5,10 @@
   border-top: 2px solid #ddd;
 
   td, th {
-    font-size: 0.8em;
+    font-size: 1em;
 
     @include desktop {
-      font-size: 1em;
+      // font-size: 1em;
     }
   }
 
@@ -37,16 +37,16 @@
     text-align: right;
   }
   .source-colour {
-    width: 13px;
-    height: 13px;
+    width: 17px;
+    height: 17px;
     background-color: rgba(255,255,255,.8);
     display: inline-block;
     vertical-align: text-bottom;
     margin-right: 0.1rem;
 
     @include desktop {
-      width: 17px;
-      height: 17px;
+      // width: 17px;
+      // height: 17px;
     }
   }
   .date-value {

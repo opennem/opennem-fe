@@ -10,20 +10,24 @@
       <div style="position: relative;">
         <panel-buttons />
         <region-chart :chartData="chartData" />
+        <div v-if="isExportPng"
+          :class="{
+            'price-on': showPricePanel,
+            'price-off': !showPricePanel,
+            'temperature-on': showTemperaturePanel,
+            'temperature-off': !showTemperaturePanel,
+          }">
+          <region-summary v-if="showSummaryPanel" :showTemperature="false" />
+          <export-legend v-else />
+        </div>
       </div>
-      <export-legend v-if="isExportPng"
-        :class="{
-          'price-on': showPricePanel,
-          'price-off': !showPricePanel,
-          'temperature-on': showTemperaturePanel,
-          'temperature-off': !showTemperaturePanel,
-        }" />
+      
       <export-png-footer v-if="isExportPng" />
     </div>
   </div>
 
   <div class="column is-narrow" v-if="!isFetching && !isExportPng">
-    <region-summary />
+    <region-summary :showTemperature="true" />
     <region-extent :showTemperature="true" :showPrice="true" v-if="records" />
   </div>
 </div>
@@ -91,6 +95,7 @@ export default {
       exportName: 'getExportName',
       showPricePanel: 'showPricePanel',
       showTemperaturePanel: 'showTemperaturePanel',
+      showSummaryPanel: 'showSummaryPanel',
     }),
     regionId() {
       return this.$route.params.region;
@@ -179,7 +184,11 @@ export default {
     }
   }
 
-  section {
+  table {
+    width: 100%;
+  }
+
+  div {
     &.price-on.temperature-on {
       margin-top: -1.5rem;
     }

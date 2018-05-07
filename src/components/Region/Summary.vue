@@ -3,10 +3,12 @@
     <thead>
       <tr>
         <th class="column-header">
-          <span>Temperature</span>
-          <small v-if="isPointHovered" class="temperature-value">
-            {{ pointTemperature | formatNumber('0,0.0') }}<span v-if="hasValue(pointTemperature)">°C</span>
-          </small>
+          <div v-if="showTemperature">
+            <span>Temperature</span>
+            <small v-if="isPointHovered" class="temperature-value">
+              {{ pointTemperature | formatNumber('0,0.0') }}<span v-if="hasValue(pointTemperature)">°C</span>
+            </small>
+          </div>
         </th>
         <th class="column-header has-text-right has-min-width">
           <div v-if="isPointHovered">
@@ -159,6 +161,9 @@ import { formatNumberForDisplay } from '@/lib/formatter';
 
 export default {
   name: 'region-summary',
+  props: {
+    showTemperature: Boolean,
+  },
   computed: {
     ...mapGetters({
       isPointHovered: 'isPointHovered',

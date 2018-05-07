@@ -7,8 +7,17 @@
   <div class="column" v-show="!isFetching" :class="{ export: isExportPng }">
     <div id="export-container">
       <export-png-header v-if="isExportPng" />
-      <all-regions-chart :chartData="chartData" />
-      <export-legend v-if="isExportPng" />
+
+      <div style="position:relative">
+        <panel-button />
+        <all-regions-chart :chartData="chartData" />
+        <!-- <export-legend v-if="isExportPng" /> -->
+        <div v-if="isExportPng">
+          <all-regions-summary v-if="showSummaryPanel" />
+          <export-legend v-else />
+        </div>
+      </div>
+      
       <export-png-footer v-if="isExportPng" />
     </div>
   </div>
@@ -35,6 +44,7 @@ import AllRegionsSummary from './AllRegions/Summary';
 import AllRegionsExtent from './ui/Extent';
 import ExportPngHeader from './Export/PngHeader';
 import ExportPngFooter from './Export/PngFooter';
+import PanelButton from './AllRegions/ShowHideButton';
 import ExportLegend from './Export/Legend';
 import ZoomOutButton from './ui/ZoomOutButton';
 
@@ -47,6 +57,7 @@ export default {
     ExportPngFooter,
     ExportLegend,
     ZoomOutButton,
+    PanelButton,
   },
   created() {
     this.$store.dispatch('setDomains', GraphDomains);
@@ -73,6 +84,7 @@ export default {
       endDate: 'getSelectedEndDate',
       isExportPng: 'isExportPng',
       exportName: 'getExportName',
+      showSummaryPanel: 'showSummaryPanel',
     }),
     records() {
       return this.$route.query.records;
@@ -137,6 +149,10 @@ export default {
   .vis {
     margin: 0.5rem;
     height: 300px;
+  }
+
+  table {
+    width: 100%;
   }
 
   #export-container {
