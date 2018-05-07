@@ -48,7 +48,7 @@ export default {
     },
     isNotFound() {
       return this.$route.name === '404';
-    }
+    },
   },
 };
 </script>
