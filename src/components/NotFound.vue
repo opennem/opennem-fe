@@ -1,7 +1,7 @@
 <template>
   <div class="not-found-wrapper">
     <div class="not-found-image">
-      <img class="not-found-logo" src="../assets/opennem-logo-notfound.svg" alt="Not Found">
+      <img class="not-found-logo" src="images/opennem-logo-notfound.svg" alt="Not Found">
     </div>
     <p class="not-found-text">
       Oops... looks like there is nothing here.<br>
