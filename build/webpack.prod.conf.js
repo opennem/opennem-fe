@@ -119,6 +119,15 @@ const webpackConfig = merge(baseWebpackConfig, {
         to: config.build.assetsSubDirectory,
         ignore: ['.*']
       }
+    ]),
+
+    // copy error file
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, '../error.html'),
+        to: config.build.assetsSubDirectory,
+        ignore: ['.*']
+      }
     ])
   ]
 })
