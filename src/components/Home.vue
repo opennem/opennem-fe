@@ -65,10 +65,12 @@ export default {
   },
   mounted() {
     EventBus.$on('data.fetch.latest', this.fetchNem);
+    EventBus.$on('data.fetch.latest.30.days', this.fetchNem);
     EventBus.$on('download.png', this.downloadPng);
   },
   beforeDestroy() {
     EventBus.$off('data.fetch.latest');
+    EventBus.$off('data.fetch.latest.30.days');
     EventBus.$off('download.png');
   },
   data() {
@@ -85,6 +87,7 @@ export default {
       isExportPng: 'isExportPng',
       exportName: 'getExportName',
       showSummaryPanel: 'showSummaryPanel',
+      visType: 'visType',
     }),
     records() {
       return this.$route.query.records;
@@ -124,7 +127,7 @@ export default {
     fetchNem() {
       this.$store.dispatch('fetchingData', true);
 
-      const url = 'data/power/nem.json';
+      const url = `data/${this.visType}/nem.json`;
 
       getJSON(url).then((response) => {
         const transformedData = dataTransform(GraphDomains, response.data);

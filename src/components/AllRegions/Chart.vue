@@ -19,7 +19,10 @@ import {
   getKeys,
 } from '@/lib/data-helpers';
 import updateRouterStartEnd from '@/lib/app-router';
-import getPanels from './config';
+import {
+  powerPanel,
+  energyPanel,
+} from './config';
 
 export default {
   props: {
@@ -41,6 +44,7 @@ export default {
       endDate: 'getSelectedEndDate',
       dataEndDate: 'getDataEndDate',
       isExportPng: 'isExportPng',
+      isPower: 'isPower',
     }),
   },
   watch: {
@@ -93,10 +97,13 @@ export default {
     },
 
     setupChart() {
+      const panels = this.isPower ?
+        powerPanel(this.getPanelListeners()) :
+        energyPanel(this.getPanelListeners());
       const config = getChartConfig({
         dataSets: [],
-        panels: getPanels(this.getPanelListeners()),
-      });
+        panels,
+      }, this.isPower);
 
       config.panels[0].categoryAxis.listeners = this.getCategoryAxisListeners();
 
@@ -128,7 +135,10 @@ export default {
         fieldMappings: getFieldMappings(this.keys),
       }];
 
-      this.chart.panels[0].stockGraphs = getStockGraphs(this.domains, this.keys);
+      const unit = this.isPower ? 'MW' : 'GWh';
+      const graphType = this.isPower ? 'line' : 'column';
+
+      this.chart.panels[0].stockGraphs = getStockGraphs(this.domains, this.keys, graphType, unit);
       this.chart.panels[0].guides = getNemGuides(this.chartData);
       this.chart.validateData();
     },

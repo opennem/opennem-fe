@@ -4,12 +4,12 @@
       <tr>
         <th></th>
         <th class="column-header has-text-right" style="width: 95px;">
-          <div v-if="isPointHovered">
+          <div v-if="isPointHovered && isPower">
             <span>Power</span>
             <small>MW</small>
           </div>
 
-          <div v-else>
+          <div v-if="!isPower || !isPointHovered">
             <span>Energy</span>
             <small>GWh</small>
           </div>
@@ -119,6 +119,7 @@ export default {
       isPointHovered: 'isPointHovered',
       rangeSummary: 'getRangeSummary',
       pointSummary: 'getPointSummary',
+      isPower: 'isPower',
     }),
   },
   methods: {
