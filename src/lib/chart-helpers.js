@@ -4,12 +4,28 @@ import { formatNumberForDisplay } from './formatter';
 import { getStartEndDates } from './data-helpers';
 import { isTouchDevice } from './device';
 
+
+function getMinPeriod(isPower) {
+  return isPower ? '5mm' : 'DD';
+}
+
+function getGroupToPeriods(isPower) {
+  return isPower ? ['5mm', '30mm'] : ['DD'];
+}
+
+function shouldStartOnAxis(isPower) {
+  return isPower;
+}
+
 /**
  * Default amCharts config
  */
-function getChartConfig(config) {
+function getChartConfig(config, isPower) {
   let pan = false;
   let zoomable = true;
+  const minPeriod = getMinPeriod(isPower);
+  const groupToPeriods = getGroupToPeriods(isPower);
+  const startOnAxis = shouldStartOnAxis(isPower);
 
   if (isTouchDevice()) {
     pan = true;
@@ -36,7 +52,8 @@ function getChartConfig(config) {
     },
     categoryAxesSettings: {
       autoGridCount: true,
-      minPeriod: '5mm',
+      minPeriod,
+      groupToPeriods,
       labelOffset: -35,
       axisAlpha: 1,
       tickLength: 30,
@@ -47,10 +64,9 @@ function getChartConfig(config) {
       dashLength: 7,
       equalSpacing: true,
       centerLabelOnFullPeriod: false,
-      groupToPeriods: ['5mm', '30mm'],
       boldPeriodBeginning: true,
       parseDates: true,
-      startOnAxis: true,
+      startOnAxis,
       dateFormats: [
         { period: 'fff', format: ' JJ:NN' },
         { period: 'ss', format: ' JJ:NN\n D MMM' },
@@ -102,7 +118,7 @@ function getFieldMappings(keys) {
 /**
  * amCharts Stock graphs
  */
-function getStockGraphs(domains, keys, showBalloon) {
+function getStockGraphs(domains, keys, graphType, unit) {
   const graphs = [];
 
   function hideNegativeAlphas(key) {
@@ -131,7 +147,7 @@ function getStockGraphs(domains, keys, showBalloon) {
       const negativeFillAlphas = hideNegativeAlphas(ftKey) ? 0 : 0.8;
       const fillAlphas = 0.8;
       const lineAlpha = 0.1;
-      const type = 'line';
+      const type = graphType || 'line';
 
       const graph = {
         id: ftKey,
@@ -143,7 +159,8 @@ function getStockGraphs(domains, keys, showBalloon) {
         lineAlpha,
         lineColor: colour,
         useDataSetColors: false,
-        showBalloon,
+        columnWidth: 0.8,
+        // showBalloon,
         periodValue: 'Average',
         balloonFunction: (item) => {
           let balloonTxt = '';
@@ -152,7 +169,7 @@ function getStockGraphs(domains, keys, showBalloon) {
             const value = formatNumberForDisplay(item.dataContext[`${graph.id}Average`]);
             const ftLabel = domains[graph.id].label;
 
-            const displayValue = `${value} MW`;
+            const displayValue = `${value} ${unit}`;
 
             balloonTxt = `
               <div style="font-size: 1.1em;">
@@ -208,4 +225,7 @@ export {
   getFieldMappings,
   getStockGraphs,
   getNemGuides,
+  getMinPeriod,
+  getGroupToPeriods,
+  shouldStartOnAxis,
 };

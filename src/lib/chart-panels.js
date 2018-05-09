@@ -39,6 +39,46 @@ function getGenerationPanel(listeners) {
 }
 
 /**
+ * Energy Panel
+ */
+function getEnergyPanel(listeners) {
+  return {
+    allLabels: [
+      { text: 'Energy', bold: true, x: 5, y: 5 },
+      { text: 'GWh', x: 50, y: 7, color: '#999', size: 9 },
+    ],
+    showCategoryAxis: true,
+    addClassNames: true,
+    chartCursor: {
+      enabled: true,
+    },
+    categoryAxis: {},
+    valueAxes: [
+      {
+        id: 'v1',
+        dashLength: 6,
+        zeroGridAlpha: 0,
+        stackType: 'regular',
+        guides: [
+          {
+            includeGuidesInMinMax: false,
+            value: 0,
+            dashLength: 0,
+            lineColor: '#000',
+            lineThickness: 1,
+            lineAlpha: 1,
+          },
+        ],
+      },
+    ],
+    stockGraphs: [],
+    guides: [],
+    listeners,
+    stockLegend: { enabled: false },
+  };
+}
+
+/**
  * Temperature Panel
  */
 function getTemperaturePanel(listeners) {
@@ -252,6 +292,7 @@ function getPricePanels(listeners) {
 
 export {
   getGenerationPanel,
+  getEnergyPanel,
   getTemperaturePanel,
   getPricePanels,
 };
