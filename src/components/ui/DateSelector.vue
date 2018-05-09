@@ -24,6 +24,9 @@
               <a class="dropdown-item" @click="handleLast7DaysSelection">
                 Last 7 days
               </a>
+              <a class="dropdown-item" @click="handleLast30DaysSelection">
+                Last 30 days
+              </a>
             </div>
           </div>
         </transition> 
@@ -95,11 +98,18 @@ export default {
       const last24Hrs = getLast24HoursStartEndDates(this.dataEndDate);
       this.$store.dispatch('saveSelectedDates', last24Hrs);
       this.$store.dispatch('setChartZoomed', true);
+      this.$store.dispatch('setVisType', 'power');
       EventBus.$emit('data.fetch.latest');
     },
     handleLast7DaysSelection() {
       this.$store.dispatch('setChartZoomed', false);
+      this.$store.dispatch('setVisType', 'power');
       EventBus.$emit('data.fetch.latest');
+    },
+    handleLast30DaysSelection() {
+      this.$store.dispatch('setChartZoomed', false);
+      this.$store.dispatch('setVisType', 'energy');
+      EventBus.$emit('data.fetch.latest.30.days');
     },
     onClickAway() {
       this.dropdownActive = false;
