@@ -72,7 +72,7 @@ export default {
       const config = getChartConfig({
         dataSets: [],
         panels: getPanels(this.getPanelListeners()),
-      });
+      }, true);
 
       config.panels[0].categoryAxis.listeners = this.getCategoryAxisListeners();
 
@@ -104,7 +104,7 @@ export default {
         fieldMappings: getFieldMappings(this.keys),
       }];
 
-      this.chart.panels[0].stockGraphs = getStockGraphs(this.domains, this.keys);
+      this.chart.panels[0].stockGraphs = getStockGraphs(this.domains, this.keys, 'line', 'MW');
       this.chart.panels[0].guides = getNemGuides(this.chartData);
       this.chart.validateData();
     },

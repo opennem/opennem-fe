@@ -179,7 +179,7 @@ export default {
       const config = getChartConfig({
         dataSets: [],
         panels,
-      });
+      }, true);
 
       // manually adjust individual panel percentage heights
       switch (panelNum) {
@@ -234,7 +234,7 @@ export default {
         fieldMappings: getFieldMappings(this.keys),
       }];
 
-      this.chart.panels[0].stockGraphs = getStockGraphs(this.domains, this.keys);
+      this.chart.panels[0].stockGraphs = getStockGraphs(this.domains, this.keys, 'line', 'MW');
 
       // add Guides
       const guides = getNemGuides(this.chartData);
