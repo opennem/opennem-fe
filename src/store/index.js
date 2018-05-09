@@ -25,6 +25,7 @@ const state = {
   showTemperaturePanel: true,
   showPricePanel: true,
   showSummaryPanel: false,
+  visType: 'power', // power or energy
 };
 
 const mutations = {
@@ -73,6 +74,9 @@ const mutations = {
   },
   showSummaryPanel(state, data) {
     state.showSummaryPanel = data;
+  },
+  updateVisType(state, data) {
+    state.visType = data;
   },
 };
 
@@ -125,6 +129,12 @@ const getters = {
   showSummaryPanel: state => {
     return state.showSummaryPanel;
   },
+  visType: state => {
+    return state.visType;
+  },
+  isPower: state => {
+    return state.visType === 'power';
+  },
 };
 
 const actions = {
@@ -135,8 +145,9 @@ const actions = {
     commit('updatingIsFetching', data);
   },
   generateRangeSummary({ commit, state }, data) {
+    const isPower = state.visType === 'power';
     const filtered = dataFilter(data.data, data.start, data.end);
-    const summary = getSummary(state.domains, filtered);
+    const summary = getSummary(state.domains, filtered, isPower);
     commit('updateRangeSummary', summary);
   },
   generatePointSummary({ commit, state }, data) {
@@ -177,6 +188,9 @@ const actions = {
     commit('showTemperaturePanel', true);
     commit('showPricePanel', true);
     commit('showSummaryPanel', true);
+  },
+  setVisType({ commit, state }, data) {
+    commit('updateVisType', data);
   },
 };
 

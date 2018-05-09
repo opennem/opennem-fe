@@ -36,7 +36,7 @@ function getColour(domains, id) {
   return colour;
 }
 
-function getSummary(domains, data) {
+function getSummary(domains, data, isPower) {
   // create a new array with the ft totals
   const dataSum = data.map((d) => {
     let p = 0;
@@ -100,9 +100,15 @@ function getSummary(domains, data) {
     if (_.includes(dataKeys, domain) && isValidFT(domain)) {
       // sum ft power
       const totalFTPower = data.reduce((a, b) => a + b[domain], 0);
+      let dataEnergy;
 
-      // calculate energy (GWh) += power * interval/60/100
-      const dataEnergy = data.map(d => (d[domain] * 5) / 60 / 1000);
+      if (isPower) {
+        // calculate energy (GWh) += power * interval/60/100
+        dataEnergy = data.map(d => (d[domain] * 5) / 60 / 1000);
+      } else {
+        // no need to calculate if returned data is already Energy
+        dataEnergy = data.map(d => d[domain]);
+      }
 
       // sum the energy
       const energySum = dataEnergy.reduce((a, b) => a + b, 0);
