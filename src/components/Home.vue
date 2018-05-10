@@ -11,7 +11,6 @@
       <div style="position:relative">
         <panel-button />
         <all-regions-chart :chartData="chartData" />
-        <!-- <export-legend v-if="isExportPng" /> -->
         <div v-if="isExportPng">
           <all-regions-summary v-if="showSummaryPanel" />
           <export-legend v-else />
