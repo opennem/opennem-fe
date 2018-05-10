@@ -73,10 +73,12 @@ export default {
   },
   mounted() {
     EventBus.$on('data.fetch.latest', this.fetchNem);
+    EventBus.$on('data.fetch.latest.30.days', this.fetchNem);
     EventBus.$on('download.png', this.downloadPng);
   },
   beforeDestroy() {
     EventBus.$off('data.fetch.latest');
+    EventBus.$off('data.fetch.latest.30.days');
     EventBus.$off('download.png');
   },
   props: {
@@ -98,6 +100,7 @@ export default {
       showPricePanel: 'showPricePanel',
       showTemperaturePanel: 'showTemperaturePanel',
       showSummaryPanel: 'showSummaryPanel',
+      visType: 'visType',
     }),
     regionId() {
       return this.$route.params.region;
@@ -148,7 +151,9 @@ export default {
     fetchNem() {
       this.$store.dispatch('fetchingData', true);
 
-      getJSON(`data/power/${this.region}1.json`).then((response) => {
+      const url = `data/${this.visType}/${this.region}1.json`;
+
+      getJSON(url).then((response) => {
         const transformedData = dataTransform(GraphDomains, response.data);
         this.$store.dispatch('setDataEndDate', transformedData[transformedData.length - 1].date);
         this.chartData = transformedData;
