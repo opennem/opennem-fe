@@ -7,6 +7,7 @@
         'temperature-on': showTemperaturePanel,
         'temperature-off': !showTemperaturePanel,
       }"
+      v-if="isPower"
       @click="togglePricePanel">
       <span v-if="showPricePanel"><font-awesome-icon class="fas" :icon="iconRemove" /></span>
       <span v-else>Show Price</span>
@@ -19,6 +20,7 @@
         'price-on': showPricePanel,
         'price-off': !showPricePanel,
       }"
+      v-if="isPower"
       @click="toggleTemperaturePanel">
       <span v-if="showTemperaturePanel"><font-awesome-icon class="fas" :icon="iconRemove" /></span>
       <span v-else>Show Temperature</span>
@@ -62,6 +64,7 @@ export default {
       showPricePanel: 'showPricePanel',
       showTemperaturePanel: 'showTemperaturePanel',
       showSummaryPanel: 'showSummaryPanel',
+      isPower: 'isPower',
     }),
     iconOn() {
       return faCheck;
