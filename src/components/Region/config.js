@@ -1,5 +1,6 @@
 import {
   getGenerationPanel,
+  getEnergyPanel,
   getPricePanels,
   getTemperaturePanel,
 } from '@/lib/chart-panels';
@@ -26,9 +27,15 @@ function getGenerationAndTemperaturePanels(listeners) {
   ];
 }
 
-function getGenerationPanels(listeners) {
+function generationPanel(listeners) {
   return [
     getGenerationPanel(listeners),
+  ];
+}
+
+function energyPanel(listeners) {
+  return [
+    getEnergyPanel(listeners),
   ];
 }
 
@@ -52,7 +59,8 @@ export {
   getAllPanels,
   getGenerationAndPricePanels,
   getGenerationAndTemperaturePanels,
-  getGenerationPanels,
+  generationPanel,
+  energyPanel,
   getAllPanelsPercentHeight,
   getGenerationOnlyPanelPercentHeight,
   getGenerationPricePanelPercentHeight,

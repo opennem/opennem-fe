@@ -25,7 +25,8 @@ import {
   getAllPanels,
   getGenerationAndPricePanels,
   getGenerationAndTemperaturePanels,
-  getGenerationPanels,
+  generationPanel,
+  energyPanel,
   getAllPanelsPercentHeight,
   getGenerationOnlyPanelPercentHeight,
   getGenerationPricePanelPercentHeight,
@@ -58,6 +59,7 @@ export default {
       showPricePanel: 'showPricePanel',
       showTemperaturePanel: 'showTemperaturePanel',
       isExportPng: 'isExportPng',
+      isPower: 'isPower',
     }),
     visClass() {
       return {
@@ -160,6 +162,7 @@ export default {
 
     setupPanels() {
       let panels = [];
+
       if (this.showPricePanel && this.showTemperaturePanel) {
         panels = getAllPanels(this.getPanelListeners());
       } else if (this.showPricePanel) {
@@ -167,8 +170,12 @@ export default {
       } else if (this.showTemperaturePanel) {
         panels = getGenerationAndTemperaturePanels(this.getPanelListeners());
       } else {
-        panels = getGenerationPanels(this.getPanelListeners());
+        panels = this.isPower ?
+          generationPanel(this.getPanelListeners()):
+          energyPanel(this.getPanelListeners());
+          
       }
+      
       return panels;
     },
 
@@ -179,7 +186,7 @@ export default {
       const config = getChartConfig({
         dataSets: [],
         panels,
-      }, true);
+      }, this.isPower);
 
       // manually adjust individual panel percentage heights
       switch (panelNum) {
@@ -234,7 +241,10 @@ export default {
         fieldMappings: getFieldMappings(this.keys),
       }];
 
-      this.chart.panels[0].stockGraphs = getStockGraphs(this.domains, this.keys, 'line', 'MW');
+      const unit = this.isPower ? 'MW' : 'GWh';
+      const graphType = this.isPower ? 'line' : 'column';
+
+      this.chart.panels[0].stockGraphs = getStockGraphs(this.domains, this.keys, graphType, unit);
 
       // add Guides
       const guides = getNemGuides(this.chartData);
@@ -421,12 +431,15 @@ export default {
     },
 
     resetChartZoom() {
-      this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm'];
-      const temperaturePanelIndex = this.getTemperaturePanelIndex();
+      if (this.isPower) {
+        this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm'];
+        const temperaturePanelIndex = this.getTemperaturePanelIndex();
 
-      if (this.showTemperaturePanel) {
-        this.chart.panels[temperaturePanelIndex].graphs[0].bullet = 'none'; // hide temperature bullets
+        if (this.showTemperaturePanel) {
+          this.chart.panels[temperaturePanelIndex].graphs[0].bullet = 'none'; // hide temperature bullets
+        }
       }
+      
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoomed', false);
     },
