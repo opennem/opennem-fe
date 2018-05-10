@@ -146,7 +146,8 @@ function getStockGraphs(domains, keys, graphType, unit) {
       const colour = domains[ftKey].colour;
       const negativeFillAlphas = hideNegativeAlphas(ftKey) ? 0 : 0.8;
       const fillAlphas = 0.8;
-      const lineAlpha = 0.1;
+      const lineAlpha = graphType === 'column' ? 0.9 : 0;
+      const lineThickness = graphType === 'column' ? 0.9 : 1;
       const type = graphType || 'line';
 
       const graph = {
@@ -157,10 +158,11 @@ function getStockGraphs(domains, keys, graphType, unit) {
         negativeFillAlphas,
         negativeFillColors: colour,
         lineAlpha,
+        lineThickness,
         lineColor: colour,
         useDataSetColors: false,
         columnWidth: 0.8,
-        // showBalloon,
+        showBalloon: false,
         periodValue: 'Average',
         balloonFunction: (item) => {
           let balloonTxt = '';
