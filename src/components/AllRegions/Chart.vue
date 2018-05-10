@@ -265,7 +265,9 @@ export default {
     },
 
     resetChartZoom() {
-      this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm'];
+      if (this.isPower) {
+        this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm'];
+      }
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoomed', false);
     },
