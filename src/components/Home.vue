@@ -1,7 +1,7 @@
 <template>
 <div class="columns is-desktop is-variable is-1">
   <transition name="fade">
-    <zoom-out-button v-if="isChartZoomed && !isFetching  && !isExportPng" />
+    <zoom-out-button v-if="isChartZoomed && !isFetching && !isExportPng" />
   </transition>
 
   <div class="column" v-show="!isFetching" :class="{ export: isExportPng }">
@@ -36,8 +36,9 @@ import EventBus from '@/lib/event-bus';
 import getJSON from '@/lib/data-apis';
 import updateRouterStartEnd from '@/lib/app-router';
 import dataTransform from '@/lib/data-transform';
-import { getStartEndDates } from '@/lib/data-helpers';
+import { getStartEndDates, dataFilter } from '@/lib/data-helpers';
 import { GraphDomains } from '@/domains/graphs';
+import { dateRanges } from '@/domains/date-ranges';
 import AllRegionsChart from './AllRegions/Chart';
 import AllRegionsSummary from './AllRegions/Summary';
 import AllRegionsExtent from './ui/Extent';
@@ -60,21 +61,21 @@ export default {
   },
   created() {
     this.$store.dispatch('setDomains', GraphDomains);
-    this.fetchNem();
+    this.fetchNem(this.dateRanges[1].id); // Last 7 days
   },
   mounted() {
     EventBus.$on('data.fetch.latest', this.fetchNem);
-    EventBus.$on('data.fetch.latest.30.days', this.fetchNem);
     EventBus.$on('download.png', this.downloadPng);
   },
   beforeDestroy() {
     EventBus.$off('data.fetch.latest');
-    EventBus.$off('data.fetch.latest.30.days');
     EventBus.$off('download.png');
   },
   data() {
     return {
       chartData: [],
+      dateRanges: dateRanges(),
+      selectedRange: null,
     };
   },
   computed: {
@@ -123,19 +124,31 @@ export default {
           });
       }, 5);
     },
-    fetchNem() {
+    dispatchEvents() {
+      this.$store.dispatch('fetchingData', false);
+      this.$store.dispatch('setExportData', this.chartData);
+      this.$store.dispatch('setExportRegion', 'OpenNEM');
+    },
+    handleResponse(response) {
+      let data = dataTransform(GraphDomains, response.data);
+      const endIndex = data.length - 1;
+      const endDate = data[endIndex].date;
+
+      if (this.selectedRange === '24hrs') {
+        const startIndex = data.length - 289;
+        const startDate = data[startIndex].date;
+        data = dataFilter(data, startDate, endDate);
+      }
+
+      this.chartData = data;
+      this.$store.dispatch('setDataEndDate', endDate);
+      this.dispatchEvents();
+    },
+    fetchNem(when) {
+      this.selectedRange = when;
       this.$store.dispatch('fetchingData', true);
-
       const url = `data/${this.visType}/nem.json`;
-
-      getJSON(url).then((response) => {
-        const transformedData = dataTransform(GraphDomains, response.data);
-        this.chartData = transformedData;
-        this.$store.dispatch('setDataEndDate', transformedData[transformedData.length - 1].date);
-        this.$store.dispatch('fetchingData', false);
-        this.$store.dispatch('setExportData', transformedData);
-        this.$store.dispatch('setExportRegion', 'OpenNEM');
-      });
+      getJSON(url).then(this.handleResponse);
     },
   },
 };
