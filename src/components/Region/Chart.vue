@@ -174,10 +174,10 @@ export default {
         panels = getGenerationAndTemperaturePanels(this.getPanelListeners());
       } else {
         panels = this.isPower ?
-          generationPanel(this.getPanelListeners()):
-          energyPanel(this.getPanelListeners());  
+          generationPanel(this.getPanelListeners()) :
+          energyPanel(this.getPanelListeners());
       }
-      
+
       return panels;
     },
 
@@ -321,7 +321,7 @@ export default {
 
         this.$store.dispatch('setExportData', dataFilter(this.chartData, start, end));
 
-        if (checkDateZoomLessThan1Day(start, end)) {
+        if (checkDateZoomLessThan1Day(start, end) && this.isPower) {
           this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
           const temperaturePanelIndex = this.getTemperaturePanelIndex();
 
@@ -419,7 +419,7 @@ export default {
     },
 
     zoomChart(start, end) {
-      if (checkDateZoomLessThan1Day(start, end)) {
+      if (checkDateZoomLessThan1Day(start, end) && this.isPower) {
         this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
         const temperaturePanelIndex = this.getTemperaturePanelIndex();
 
@@ -441,7 +441,6 @@ export default {
           this.chart.panels[temperaturePanelIndex].graphs[0].bullet = 'none'; // hide temperature bullets
         }
       }
-      
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoomed', false);
     },

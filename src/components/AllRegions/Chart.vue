@@ -181,7 +181,9 @@ export default {
         this.$store.dispatch('setExportData', dataFilter(this.chartData, start, end));
 
         if (checkDateZoomLessThan1Day(start, end)) {
-          this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
+          if (this.isPower) {
+            this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
+          }
           this.zoomChart(start, end);
         }
       }
@@ -257,7 +259,7 @@ export default {
     },
 
     zoomChart(start, end) {
-      if (checkDateZoomLessThan1Day(start, end)) {
+      if (checkDateZoomLessThan1Day(start, end) && this.isPower) {
         this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
       }
       this.chart.zoom(start, end);
