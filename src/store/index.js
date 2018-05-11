@@ -190,10 +190,6 @@ const actions = {
     commit('showSummaryPanel', true);
   },
   setVisType({ commit, state }, data) {
-    if (data === 'energy') {
-      commit('showTemperaturePanel', false);
-      commit('showPricePanel', false);
-    }
     commit('updateVisType', data);
   },
 };

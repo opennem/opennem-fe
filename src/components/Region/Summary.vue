@@ -11,12 +11,12 @@
           </div>
         </th>
         <th class="column-header has-text-right has-min-width">
-          <div v-if="isPointHovered">
+          <div v-if="isPointHovered && isPower">
             <span>Power</span>
             <small>MW</small>
           </div>
 
-          <div v-else>
+          <div v-if="!isPower || !isPointHovered">
             <span>Energy</span>
             <small>GWh</small>
           </div>
@@ -169,6 +169,7 @@ export default {
       isPointHovered: 'isPointHovered',
       rangeSummary: 'getRangeSummary',
       pointSummary: 'getPointSummary',
+      isPower: 'isPower',
     }),
     pointTemperature() {
       return this.pointSummary.allData.temperature;

@@ -22,7 +22,8 @@ import {
 } from '@/lib/data-helpers';
 import updateRouterStartEnd from '@/lib/app-router';
 import {
-  getAllPanels,
+  getAllPanelsGeneration,
+  getAllPanelsEnergy,
   getGenerationAndPricePanels,
   getGenerationAndTemperaturePanels,
   generationPanel,
@@ -164,7 +165,9 @@ export default {
       let panels = [];
 
       if (this.showPricePanel && this.showTemperaturePanel) {
-        panels = getAllPanels(this.getPanelListeners());
+        panels = this.isPower ?
+          getAllPanelsGeneration(this.getPanelListeners()) :
+          getAllPanelsEnergy(this.getPanelListeners());
       } else if (this.showPricePanel) {
         panels = getGenerationAndPricePanels(this.getPanelListeners());
       } else if (this.showTemperaturePanel) {
@@ -172,8 +175,7 @@ export default {
       } else {
         panels = this.isPower ?
           generationPanel(this.getPanelListeners()):
-          energyPanel(this.getPanelListeners());
-          
+          energyPanel(this.getPanelListeners());  
       }
       
       return panels;
