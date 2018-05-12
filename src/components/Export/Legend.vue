@@ -1,6 +1,6 @@
 <template>
   <section>
-    <div class="graph" v-for="row in rangeSummary.sourcesData" :key="row.id">
+    <div class="legend-item" v-for="row in rangeSummary.sourcesData" :key="row.id">
       <span class="source-colour" :style="{ backgroundColor: row.colour }"></span>
       <div class="source-label">
         {{row.label}}
@@ -47,10 +47,11 @@ section {
   display: flex;
   flex-wrap: wrap;
 }
-.graph {
+.legend-item {
   font-size: 0.75rem;
   margin-right: 0.5rem;
   width: 47%;
+  white-space: nowrap;
 
   @include desktop {
     width: 31%;
