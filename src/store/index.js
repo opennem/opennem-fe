@@ -21,20 +21,20 @@ const state = {
 };
 
 const mutations = {
-  updateDomains(state, data) {
+  [MutationTypes.DOMAINS](state, data) {
     state.domains = data;
   },
-  updatingIsFetching(state, data) {
+  [MutationTypes.FETCHING](state, data) {
     if (data) {
       // when fetching, always turn off point hover
       state.summary.isPointHovered = false;
     }
     state.isFetching = data;
   },
-  updateIsChartZoomed(state, data) {
+  [MutationTypes.CHART_ZOOMED](state, data) {
     state.isChartZoomed = data;
   },
-  updateVisType(state, data) {
+  [MutationTypes.VIS_TYPE](state, data) {
     state.visType = data;
   },
 };
@@ -49,23 +49,23 @@ const getters = {
   isChartZoomed: state => {
     return state.isChartZoomed;
   },
-  getExportName: state => {
-    return `${formatDateForExport(state.dates.selectedDates.end)} ${state.exportStore.exportRegion}`;
-  },
   visType: state => {
     return state.visType;
   },
   isPower: state => {
     return state.visType === 'power';
   },
+  getExportName: state => {
+    return `${formatDateForExport(state.dates.selectedDates.end)} ${state.exportStore.exportRegion}`;
+  },
 };
 
 const actions = {
   setDomains({ commit, state }, data) {
-    commit('updateDomains', data);
+    commit(MutationTypes.DOMAINS, data);
   },
   fetchingData({ commit, state }, data) {
-    commit('updatingIsFetching', data);
+    commit(MutationTypes.FETCHING, data);
   },
   generateRangeSummary({ commit, state }, data) {
     const isPower = state.visType === 'power';
@@ -78,10 +78,10 @@ const actions = {
     commit(MutationTypes.POINT_SUMMARY, summary);
   },
   setChartZoomed({ commit, state }, data) {
-    commit('updateIsChartZoomed', data);
+    commit(MutationTypes.CHART_ZOOMED, data);
   },
   setVisType({ commit, state }, data) {
-    commit('updateVisType', data);
+    commit(MutationTypes.VIS_TYPE, data);
   },
 };
 
