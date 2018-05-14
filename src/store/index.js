@@ -5,6 +5,8 @@ import { getSummary, getPointSummary } from '@/lib/data-summary';
 import { dataFilter } from '@/lib/data-helpers';
 import { formatDateForExport } from '@/lib/formatter';
 
+import exportStore from './export';
+
 Vue.use(Vuex);
 
 const state = {
@@ -19,9 +21,6 @@ const state = {
     start: null,
     end: null,
   },
-  exportData: [],
-  exportRegion: null,
-  exportPng: false,
   showTemperaturePanel: true,
   showPricePanel: true,
   showSummaryPanel: false,
@@ -56,15 +55,6 @@ const mutations = {
   },
   updateDataEndDate(state, data) {
     state.dataEndDate = data;
-  },
-  updateExportData(state, data) {
-    state.exportData = data;
-  },
-  updateExportRegion(state, data) {
-    state.exportRegion = data;
-  },
-  updateExportPng(state, data) {
-    state.exportPng = data;
   },
   showTemperaturePanel(state, data) {
     state.showTemperaturePanel = data;
@@ -108,17 +98,8 @@ const getters = {
   getDataEndDate: state => {
     return state.dataEndDate;
   },
-  getExportData: state => {
-    return state.exportData;
-  },
-  getExportRegion: state => {
-    return state.exportRegion;
-  },
   getExportName: state => {
-    return `${formatDateForExport(state.selectedDates.end)} ${state.exportRegion}`;
-  },
-  isExportPng: state => {
-    return state.exportPng;
+    return `${formatDateForExport(state.selectedDates.end)} ${state.exportStore.exportRegion}`;
   },
   showTemperaturePanel: state => {
     return state.showTemperaturePanel;
@@ -166,15 +147,6 @@ const actions = {
   setDataEndDate({ commit, state }, data) {
     commit('updateDataEndDate', data);
   },
-  setExportData({ commit, state }, data) {
-    commit('updateExportData', data);
-  },
-  setExportRegion({ commit, state }, data) {
-    commit('updateExportRegion', data);
-  },
-  setExportPng({ commit, state }, data) {
-    commit('updateExportPng', data);
-  },
   setTemperaturePanel({ commit, state }, data) {
     commit('showTemperaturePanel', data);
   },
@@ -199,6 +171,9 @@ const store = new Vuex.Store({
   mutations,
   actions,
   getters,
+  modules: {
+    exportStore,
+  }
 });
 
 export default store;
