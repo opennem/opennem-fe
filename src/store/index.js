@@ -9,6 +9,7 @@ import * as MutationTypes from './mutation-types';
 import exportStore from './export';
 import summary from './summary';
 import dates from './dates';
+import panels from './panels';
 
 Vue.use(Vuex);
 
@@ -16,9 +17,6 @@ const state = {
   domains: {},
   isFetching: false,
   isChartZoomed: false,
-  showTemperaturePanel: true,
-  showPricePanel: true,
-  showSummaryPanel: false,
   visType: 'power', // power or energy
 };
 
@@ -36,15 +34,6 @@ const mutations = {
   updateIsChartZoomed(state, data) {
     state.isChartZoomed = data;
   },
-  showTemperaturePanel(state, data) {
-    state.showTemperaturePanel = data;
-  },
-  showPricePanel(state, data) {
-    state.showPricePanel = data;
-  },
-  showSummaryPanel(state, data) {
-    state.showSummaryPanel = data;
-  },
   updateVisType(state, data) {
     state.visType = data;
   },
@@ -61,16 +50,7 @@ const getters = {
     return state.isChartZoomed;
   },
   getExportName: state => {
-    return `${formatDateForExport(state.selectedDates.end)} ${state.exportStore.exportRegion}`;
-  },
-  showTemperaturePanel: state => {
-    return state.showTemperaturePanel;
-  },
-  showPricePanel: state => {
-    return state.showPricePanel;
-  },
-  showSummaryPanel: state => {
-    return state.showSummaryPanel;
+    return `${formatDateForExport(state.dates.selectedDates.end)} ${state.exportStore.exportRegion}`;
   },
   visType: state => {
     return state.visType;
@@ -100,20 +80,6 @@ const actions = {
   setChartZoomed({ commit, state }, data) {
     commit('updateIsChartZoomed', data);
   },
-  setTemperaturePanel({ commit, state }, data) {
-    commit('showTemperaturePanel', data);
-  },
-  setPricePanel({ commit, state }, data) {
-    commit('showPricePanel', data);
-  },
-  setSummaryPanel({ commit, state }, data) {
-    commit('showSummaryPanel', data);
-  },
-  resetPanels({ commit, state }) {
-    commit('showTemperaturePanel', true);
-    commit('showPricePanel', true);
-    commit('showSummaryPanel', true);
-  },
   setVisType({ commit, state }, data) {
     commit('updateVisType', data);
   },
@@ -128,6 +94,7 @@ const store = new Vuex.Store({
     exportStore,
     summary,
     dates,
+    panels,
   }
 });
 
