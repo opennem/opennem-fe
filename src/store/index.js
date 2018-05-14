@@ -8,6 +8,7 @@ import { formatDateForExport } from '@/lib/formatter';
 import * as MutationTypes from './mutation-types';
 import exportStore from './export';
 import summary from './summary';
+import dates from './dates';
 
 Vue.use(Vuex);
 
@@ -15,11 +16,6 @@ const state = {
   domains: {},
   isFetching: false,
   isChartZoomed: false,
-  dataEndDate: null,
-  selectedDates: {
-    start: null,
-    end: null,
-  },
   showTemperaturePanel: true,
   showPricePanel: true,
   showSummaryPanel: false,
@@ -39,12 +35,6 @@ const mutations = {
   },
   updateIsChartZoomed(state, data) {
     state.isChartZoomed = data;
-  },
-  updateSelectedDates(state, data) {
-    state.selectedDates = data;
-  },
-  updateDataEndDate(state, data) {
-    state.dataEndDate = data;
   },
   showTemperaturePanel(state, data) {
     state.showTemperaturePanel = data;
@@ -69,15 +59,6 @@ const getters = {
   },
   isChartZoomed: state => {
     return state.isChartZoomed;
-  },
-  getSelectedStartDate: state => {
-    return state.selectedDates.start;
-  },
-  getSelectedEndDate: state => {
-    return state.selectedDates.end;
-  },
-  getDataEndDate: state => {
-    return state.dataEndDate;
   },
   getExportName: state => {
     return `${formatDateForExport(state.selectedDates.end)} ${state.exportStore.exportRegion}`;
@@ -116,14 +97,8 @@ const actions = {
     const summary = getPointSummary(state.domains, data.date, data.dataContext);
     commit(MutationTypes.POINT_SUMMARY, summary);
   },
-  saveSelectedDates({ commit, state }, data) {
-    commit('updateSelectedDates', data);
-  },
   setChartZoomed({ commit, state }, data) {
     commit('updateIsChartZoomed', data);
-  },
-  setDataEndDate({ commit, state }, data) {
-    commit('updateDataEndDate', data);
   },
   setTemperaturePanel({ commit, state }, data) {
     commit('showTemperaturePanel', data);
@@ -152,6 +127,7 @@ const store = new Vuex.Store({
   modules: {
     exportStore,
     summary,
+    dates,
   }
 });
 

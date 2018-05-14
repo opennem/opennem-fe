@@ -5,3 +5,6 @@ export const EXPORT_PNG = 'EXPORT_PNG';
 export const RANGE_SUMMARY = 'RANGE_SUMMARY';
 export const POINT_SUMMARY = 'POINT_SUMMARY';
 export const POINT_HOVERED = 'POINT_HOVERED';
+
+export const SELECTED_DATES = 'SELECTED_DATES';
+export const DATA_END_DATE = 'DATA_END_DATE';
