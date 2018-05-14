@@ -5,17 +5,16 @@ import { getSummary, getPointSummary } from '@/lib/data-summary';
 import { dataFilter } from '@/lib/data-helpers';
 import { formatDateForExport } from '@/lib/formatter';
 
+import * as MutationTypes from './mutation-types';
 import exportStore from './export';
+import summary from './summary';
 
 Vue.use(Vuex);
 
 const state = {
   domains: {},
   isFetching: false,
-  rangeSummary: {},
-  pointSummary: {},
   isChartZoomed: false,
-  isPointHovered: false,
   dataEndDate: null,
   selectedDates: {
     start: null,
@@ -38,20 +37,11 @@ const mutations = {
     }
     state.isFetching = data;
   },
-  updateRangeSummary(state, data) {
-    state.rangeSummary = data;
-  },
-  updatePointSummary(state, data) {
-    state.pointSummary = data;
-  },
   updateIsChartZoomed(state, data) {
     state.isChartZoomed = data;
   },
   updateSelectedDates(state, data) {
     state.selectedDates = data;
-  },
-  updateIsPointHovered(state, data) {
-    state.isPointHovered = data;
   },
   updateDataEndDate(state, data) {
     state.dataEndDate = data;
@@ -77,17 +67,8 @@ const getters = {
   isFetching: state => {
     return state.isFetching;
   },
-  getRangeSummary: state => {
-    return state.rangeSummary;
-  },
-  getPointSummary: state => {
-    return state.pointSummary;
-  },
   isChartZoomed: state => {
     return state.isChartZoomed;
-  },
-  isPointHovered: state => {
-    return state.isPointHovered;
   },
   getSelectedStartDate: state => {
     return state.selectedDates.start;
@@ -129,20 +110,17 @@ const actions = {
     const isPower = state.visType === 'power';
     const filtered = dataFilter(data.data, data.start, data.end);
     const summary = getSummary(state.domains, filtered, isPower);
-    commit('updateRangeSummary', summary);
+    commit(MutationTypes.RANGE_SUMMARY, summary);
   },
   generatePointSummary({ commit, state }, data) {
     const summary = getPointSummary(state.domains, data.date, data.dataContext);
-    commit('updatePointSummary', summary);
+    commit(MutationTypes.POINT_SUMMARY, summary);
   },
   saveSelectedDates({ commit, state }, data) {
     commit('updateSelectedDates', data);
   },
   setChartZoomed({ commit, state }, data) {
     commit('updateIsChartZoomed', data);
-  },
-  showInstantaneousData({ commit, state }, data) {
-    commit('updateIsPointHovered', data);
   },
   setDataEndDate({ commit, state }, data) {
     commit('updateDataEndDate', data);
@@ -173,6 +151,7 @@ const store = new Vuex.Store({
   getters,
   modules: {
     exportStore,
+    summary,
   }
 });
 
