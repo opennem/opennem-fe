@@ -7,15 +7,14 @@ const state = {
   exportPng: false,
 };
 
-
 const mutations = {
-  [MutationTypes.UPDATE_EXPORT_DATA](state, data) {
+  [MutationTypes.EXPORT_DATA](state, data) {
     state.exportData = data;
   },
-  [MutationTypes.UPDATE_EXPORT_REGION](state, data) {
+  [MutationTypes.EXPORT_REGION](state, data) {
     state.exportRegion = data;
   },
-  [MutationTypes.UPDATE_EXPORT_PNG](state, data) {
+  [MutationTypes.EXPORT_PNG](state, data) {
     state.exportPng = data;
   },
 };
@@ -34,13 +33,13 @@ const getters = {
 
 const actions = {
   setExportData({ commit, state }, data) {
-    commit(MutationTypes.UPDATE_EXPORT_DATA, data);
+    commit(MutationTypes.EXPORT_DATA, data);
   },
   setExportRegion({ commit, state }, data) {
-    commit(MutationTypes.UPDATE_EXPORT_REGION, data);
+    commit(MutationTypes.EXPORT_REGION, data);
   },
   setExportPng({ commit, state }, data) {
-    commit(MutationTypes.UPDATE_EXPORT_PNG, data);
+    commit(MutationTypes.EXPORT_PNG, data);
   },
 };
 
