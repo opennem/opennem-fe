@@ -1,6 +1,5 @@
 /* eslint-disable */
 import * as MutationTypes from './mutation-types';
-import { formatDateForExport } from '@/lib/formatter';
 
 const state = {
   exportData: [],
