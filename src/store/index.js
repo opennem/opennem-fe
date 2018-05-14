@@ -33,7 +33,7 @@ const mutations = {
   updatingIsFetching(state, data) {
     if (data) {
       // when fetching, always turn off point hover
-      state.isPointHovered = false;
+      state.summary.isPointHovered = false;
     }
     state.isFetching = data;
   },
