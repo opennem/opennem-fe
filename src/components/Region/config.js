@@ -5,19 +5,19 @@ import {
   getTemperaturePanel,
 } from '@/lib/chart-panels';
 
-function getAllPanelsGeneration(listeners) {
+function getAllPanelsGeneration(listeners, priceField, temperatureField) {
   return [
     getGenerationPanel(listeners),
-    ...getPricePanels(listeners), // 3 panels in price
-    getTemperaturePanel(listeners),
+    ...getPricePanels(listeners, priceField), // 3 panels in price
+    getTemperaturePanel(listeners, temperatureField),
   ];
 }
 
-function getAllPanelsEnergy(listeners) {
+function getAllPanelsEnergy(listeners, priceField, temperatureField) {
   return [
     getEnergyPanel(listeners),
-    ...getPricePanels(listeners), // 3 panels in price
-    getTemperaturePanel(listeners),
+    ...getPricePanels(listeners, priceField), // 3 panels in price
+    getTemperaturePanel(listeners, temperatureField),
   ];
 }
 

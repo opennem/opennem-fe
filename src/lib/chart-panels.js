@@ -81,7 +81,7 @@ function getEnergyPanel(listeners) {
 /**
  * Temperature Panel
  */
-function getTemperaturePanel(listeners) {
+function getTemperaturePanel(listeners, temperatureField) {
   function makeGuide(value, colour) {
     return {
       includeGuidesInMinMax: false,
@@ -127,7 +127,7 @@ function getTemperaturePanel(listeners) {
     stockGraphs: [{
       id: 'temperatureStockGraph',
       valueAxis: 'temperatureValueAxis',
-      valueField: 'temperature',
+      valueField: temperatureField,
       type: 'line',
       lineAlpha: 1,
       lineColor: '#C74523',
@@ -149,7 +149,7 @@ function getTemperaturePanel(listeners) {
  *  2 - Normal (0-100),
  *  3 - Log of neg Prices (0-1000)
  */
-function getPricePanels(listeners) {
+function getPricePanels(listeners, priceField) {
   function makePriceGuide(value, label, hasDash, lineColor) {
     return {
       label,
@@ -239,7 +239,7 @@ function getPricePanels(listeners) {
       {
         id: 'priceStockGraph',
         valueAxis: 'priceValueAxis',
-        valueField: 'price',
+        valueField: priceField,
         type: 'step',
         lineAlpha: 0.9,
         lineColor: '#C74523',

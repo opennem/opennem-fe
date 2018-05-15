@@ -26,12 +26,12 @@
           <small>%</small>
         </th>
         <th class="column-header has-text-right has-min-width wider">
-          <div v-if="isPointHovered">             
+          <div v-if="isPointHovered && isPower">
             <span>Price</span>
             <small>$/MWh</small>
           </div>
 
-          <div v-else>
+          <div v-if="!isPower || !isPointHovered">
             <span>Av.Value</span>
             <small>$/MWh</small>
           </div>
@@ -53,7 +53,7 @@
         <th></th>
         <th class="cell-value">
           <div v-if="isPointHovered">
-            {{ pointSummary.allData.price | formatNumber('$0,0.00') }}
+            {{ pointPrice | formatNumber('$0,0.00') }}
           </div>
           
           <div v-else>
@@ -172,7 +172,16 @@ export default {
       isPower: 'isPower',
     }),
     pointTemperature() {
-      return this.pointSummary.allData.temperature;
+      const temperature =
+        this.pointSummary.allData.temperature ||
+        this.pointSummary.allData.temperature_mean;
+      return temperature;
+    },
+    pointPrice() {
+      const price =
+        this.pointSummary.allData.price ||
+        this.pointSummary.allData.volume_weighted_price;
+      return price;
     },
   },
   methods: {

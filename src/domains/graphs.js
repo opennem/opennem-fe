@@ -125,10 +125,24 @@ const GraphDomains = {
     categoryId: 'temperature',
     unit: 'C',
   },
+  temperature_mean: {
+    colour: '#000',
+    type: 'other',
+    label: 'Temperature',
+    categoryId: 'temperature',
+    unit: 'C',
+  },
   price: {
     colour: '#000',
     type: 'other',
     label: 'Trading Price',
+    categoryId: 'price',
+    unit: '$/MWh',
+  },
+  volume_weighted_price: {
+    colour: '#000',
+    type: 'other',
+    label: 'Volume Weighted Price',
     categoryId: 'price',
     unit: '$/MWh',
   },
@@ -157,6 +171,36 @@ function getUnit(domain, visType) {
   return unit;
 }
 
+function isValidFuelTech(id) {
+  const domain = GraphDomains[id];
+  return domain.type === 'sources' || domain.type === 'loads';
+}
+
+function isRenewableFuelTech(id) {
+  return id === 'wind' ||
+    id === 'biomass' ||
+    id === 'hydro' ||
+    id === 'rooftop_solar' ||
+    id === 'solar';
+}
+
+function isPrice(id) {
+  return id === 'price' || id === 'volume_weighted_price';
+}
+
+function isTemperature(id) {
+  return id === 'temperature' || id === 'temperature_mean';
+}
+
+function isLoads(id) {
+  const domain = GraphDomains[id];
+  return domain.type === 'loads';
+}
+
+function isImports(id) {
+  return id === 'imports';
+}
+
 function getCSVHeaders(visType) {
   const headers = {
     Time: 'date',
@@ -182,4 +226,10 @@ function getCSVHeaders(visType) {
 export {
   GraphDomains,
   getCSVHeaders,
+  isLoads,
+  isImports,
+  isValidFuelTech,
+  isRenewableFuelTech,
+  isPrice,
+  isTemperature,
 };

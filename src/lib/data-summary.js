@@ -1,30 +1,16 @@
 import _ from 'lodash';
+import {
+  isValidFuelTech,
+  isPrice,
+  isTemperature,
+  isRenewableFuelTech,
+  isImports,
+  isLoads } from '@/domains/graphs';
 import { getKeys, getExtent } from './data-helpers';
 
 // Check if it is a valid fuel tech name
-function isValidFT(name) {
-  return name !== 'date' &&
-    name !== 'price' &&
-    name !== 'pricePos' &&
-    name !== 'priceNeg' &&
-    name !== 'temperature';
-}
-
-// Check if FT is a load
-// TODO: use FUEL_TECH_CONFIG to check whether it is a load or type
-function isLoad(name) {
-  return name === 'pumps' ||
-    name === 'exports' ||
-    name === 'battery_charging';
-}
-
-// Check if FT is a renewable
-function isRenewableFT(name) {
-  return name === 'wind' ||
-    name === 'biomass' ||
-    name === 'hydro' ||
-    name === 'rooftop_solar' ||
-    name === 'solar';
+function validFuelTech(name) {
+  return name !== 'date' && isValidFuelTech(name);
 }
 
 function getLabel(domains, id) {
@@ -41,7 +27,7 @@ function getSummary(domains, data, isPower) {
   const dataSum = data.map((d) => {
     let p = 0;
     Object.keys(d).forEach((ft) => {
-      if (isValidFT(ft)) {
+      if (validFuelTech(ft)) {
         p += d[ft] || 0;
       }
     });
@@ -51,7 +37,7 @@ function getSummary(domains, data, isPower) {
   const genDataSum = data.map((d) => {
     let p = 0;
     Object.keys(d).forEach((ft) => {
-      if (isValidFT(ft) && !isLoad(ft) && ft !== 'imports') {
+      if (validFuelTech(ft) && !isLoads(ft) && !isImports(ft)) {
         p += d[ft] || 0;
       }
     });
@@ -62,7 +48,7 @@ function getSummary(domains, data, isPower) {
   const renewablesDataSum = data.map((d) => {
     let p = 0;
     Object.keys(d).forEach((ft) => {
-      if (isValidFT(ft) && isRenewableFT(ft)) {
+      if (validFuelTech(ft) && isRenewableFuelTech(ft)) {
         p += d[ft] || 0;
       }
     });
@@ -79,7 +65,15 @@ function getSummary(domains, data, isPower) {
 
   // calculate the price * total
   const dataSumTotalPrice = dataSum.map((d, i) => {
-    const rrp = data[i].price ? data[i].price : 0;
+    const price = data[i].price;
+    const volWeightedPrice = data[i].volume_weighted_price;
+    let rrp = 0;
+
+    if (price) {
+      rrp = price;
+    } else if (volWeightedPrice) {
+      rrp = volWeightedPrice;
+    }
     return d * rrp;
   });
 
@@ -97,7 +91,7 @@ function getSummary(domains, data, isPower) {
   const dataKeys = getKeys(data);
 
   Object.keys(domains).forEach((domain) => {
-    if (_.includes(dataKeys, domain) && isValidFT(domain)) {
+    if (_.includes(dataKeys, domain) && validFuelTech(domain)) {
       // sum ft power
       const totalFTPower = data.reduce((a, b) => a + b[domain], 0);
       let dataEnergy;
@@ -132,7 +126,7 @@ function getSummary(domains, data, isPower) {
         },
       };
 
-      if (isLoad(domain)) {
+      if (isLoads(domain)) {
         loadsData.push(row);
       } else {
         sourcesData.push(row);
@@ -174,23 +168,23 @@ function getPointSummary(domains, date, data) {
   let totalGrossPower = 0;
 
   Object.keys(domains).forEach((domain) => {
-    if (isValidFT(domain)) {
+    if (validFuelTech(domain)) {
       const average = data[`${domain}Average`];
       allData[domain] = average;
 
       if (average !== undefined) {
         totalNetPower += average;
 
-        if (!isLoad(domain)) {
+        if (!isLoads(domain)) {
           totalGrossPower += average;
         }
       }
     }
 
-    if (domain === 'price') {
+    if (isPrice(domain)) {
       allData[domain] = data[`${domain}Close`];
     }
-    if (domain === 'temperature') {
+    if (isTemperature(domain)) {
       allData[domain] = data[`${domain}Average`];
     }
   });

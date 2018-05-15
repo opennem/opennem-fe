@@ -1,9 +1,12 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import {
+  isValidFuelTech,
+  isImports,
+  isLoads } from '@/domains/graphs';
 import { formatNumberForDisplay } from './formatter';
 import { getStartEndDates } from './data-helpers';
 import { isTouchDevice } from './device';
-
 
 function getMinPeriod(isPower) {
   return isPower ? '5mm' : 'DD';
@@ -122,27 +125,11 @@ function getStockGraphs(domains, keys, graphType, unit) {
   const graphs = [];
 
   function hideNegativeAlphas(key) {
-    return key === 'exports' ||
-      key === 'imports' ||
-      key === 'pumps' ||
-      key === 'battery_charging';
-  }
-
-  function validFT(key) {
-    return key !== 'price' &&
-      key !== 'pricePos' &&
-      key !== 'priceNeg' &&
-      key !== 'temperature';
-  }
-
-  function isLoad(key) {
-    return key === 'exports' ||
-      key === 'pumps' ||
-      key === 'battery_charging';
+    return isLoads(key) || isImports(key);
   }
 
   keys.forEach((ftKey) => {
-    if (validFT(ftKey)) {
+    if (isValidFuelTech(ftKey)) {
       const colour = domains[ftKey].colour;
       const negativeFillAlphas = hideNegativeAlphas(ftKey) ? 0 : 0.8;
       const fillAlphas = 0.8;
@@ -167,7 +154,7 @@ function getStockGraphs(domains, keys, graphType, unit) {
         balloonFunction: (item) => {
           let balloonTxt = '';
 
-          if (!isLoad(graph.id) && item.values.value > 0) {
+          if (!isLoads(graph.id) && item.values.value > 0) {
             const value = formatNumberForDisplay(item.dataContext[`${graph.id}Average`]);
             const ftLabel = domains[graph.id].label;
 

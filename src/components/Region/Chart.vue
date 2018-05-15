@@ -163,11 +163,12 @@ export default {
 
     setupPanels() {
       let panels = [];
-
+      const temperatureField = this.isPower ? 'temperature' : 'temperature_mean';
+      const priceField = this.isPower ? 'price' : 'volume_weighted_price';
       if (this.showPricePanel && this.showTemperaturePanel) {
         panels = this.isPower ?
-          getAllPanelsGeneration(this.getPanelListeners()) :
-          getAllPanelsEnergy(this.getPanelListeners());
+          getAllPanelsGeneration(this.getPanelListeners(), priceField, temperatureField) :
+          getAllPanelsEnergy(this.getPanelListeners(), priceField, temperatureField);
       } else if (this.showPricePanel) {
         panels = getGenerationAndPricePanels(this.getPanelListeners());
       } else if (this.showTemperaturePanel) {
