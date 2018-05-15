@@ -130,7 +130,7 @@ function getStockGraphs(domains, keys, graphType, unit) {
       const fillAlphas = 0.8;
       const fillColors = colour;
       const lineAlpha = 0;
-      const lineThickness = 0;
+      const lineThickness = 1;
       const lineColor = colour;
       const type = graphType || 'line';
 

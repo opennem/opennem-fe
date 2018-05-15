@@ -245,7 +245,7 @@ export default {
       }];
 
       const unit = this.isPower ? 'MW' : 'GWh';
-      const graphType = this.isPower ? 'line' : 'column';
+      const graphType = this.isPower ? 'line' : 'step';
 
       this.chart.panels[0].stockGraphs = getStockGraphs(this.domains, this.keys, graphType, unit);
 
