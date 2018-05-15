@@ -1,7 +1,9 @@
 /* eslint-disable */
+import { dateRanges } from '@/domains/date-ranges';
 import * as MutationTypes from './mutation-types';
 
 const state = {
+  currentRange: dateRanges()[1].id,
   selectedDates: {
     start: null,
     end: null,
@@ -10,6 +12,9 @@ const state = {
 };
 
 const mutations = {
+  [MutationTypes.RANGE](state, data) {
+    state.currentRange = data;
+  },
   [MutationTypes.SELECTED_DATES](state, data) {
     state.selectedDates = data;
   },
@@ -19,6 +24,9 @@ const mutations = {
 };
 
 const getters = {
+  currentRange: state => {
+    return state.currentRange;
+  },
   getSelectedStartDate: state => {
     return state.selectedDates.start;
   },
@@ -31,6 +39,9 @@ const getters = {
 };
 
 const actions = {
+  currentRange({ commit, state }, data) {
+    commit(MutationTypes.RANGE, data);
+  },
   saveSelectedDates({ commit, state }, data) {
     commit(MutationTypes.SELECTED_DATES, data);
   },
