@@ -3,15 +3,15 @@
  */
 const DateRanges = [
   {
-    id: '24hrs',
+    id: 'last24hrs',
     label: 'Last 24 hours',
   },
   {
-    id: '7days',
+    id: 'last7days',
     label: 'Last 7 days',
   },
   {
-    id: '30days',
+    id: 'last30days',
     label: 'Last 30 days',
   },
 ];
@@ -30,8 +30,13 @@ function getDateRangeId(label) {
   return dateRange ? dateRange.id : '';
 }
 
+function isLast24Hrs(id) {
+  return id === DateRanges[0].id;
+}
+
 export {
   dateRanges,
   getDateRangeLabel,
   getDateRangeId,
+  isLast24Hrs,
 };

@@ -378,17 +378,6 @@ export default {
       if (this.initialZoom) {
         this.zoomChart(this.startDate, this.endDate);
         this.initialZoom = false;
-      } else {
-        const start = this.chart.panels[0].categoryAxis.startTime;
-        const end = this.chart.panels[0].categoryAxis.endTime;
-
-        this.panelStart = start;
-        this.panelEnd = end;
-
-        this.$store.dispatch('saveSelectedDates', {
-          start: moment(start).toDate(),
-          end: moment(end).toDate(),
-        });
       }
     },
 

@@ -184,7 +184,6 @@ export default {
           if (this.isPower) {
             this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
           }
-          this.zoomChart(start, end);
         }
       }
     },

@@ -36,9 +36,9 @@ import EventBus from '@/lib/event-bus';
 import getJSON from '@/lib/data-apis';
 import updateRouterStartEnd from '@/lib/app-router';
 import dataTransform from '@/lib/data-transform';
-import { getStartEndDates, dataFilter } from '@/lib/data-helpers';
+import { dataFilter } from '@/lib/data-helpers';
 import { GraphDomains } from '@/domains/graphs';
-import { dateRanges } from '@/domains/date-ranges';
+import { isLast24Hrs } from '@/domains/date-ranges';
 import AllRegionsChart from './AllRegions/Chart';
 import AllRegionsSummary from './AllRegions/Summary';
 import AllRegionsExtent from './ui/Extent';
@@ -61,20 +61,17 @@ export default {
   },
   created() {
     this.$store.dispatch('setDomains', GraphDomains);
-    this.fetchNem(this.dateRanges[1].id); // Last 7 days
+    this.fetchNem();
   },
   mounted() {
-    EventBus.$on('data.fetch.latest', this.fetchNem);
     EventBus.$on('download.png', this.downloadPng);
   },
   beforeDestroy() {
-    EventBus.$off('data.fetch.latest');
     EventBus.$off('download.png');
   },
   data() {
     return {
       chartData: [],
-      dateRanges: dateRanges(),
       selectedRange: null,
     };
   },
@@ -88,6 +85,7 @@ export default {
       exportName: 'getExportName',
       showSummaryPanel: 'showSummaryPanel',
       visType: 'visType',
+      currentRange: 'currentRange',
     }),
     records() {
       return this.$route.query.records;
@@ -95,14 +93,10 @@ export default {
   },
   watch: {
     chartData(data) {
-      let start = this.startDate;
-      let end = this.endDate;
+      const start = this.startDate;
+      const end = this.endDate;
 
       if (!this.isChartZoomed) {
-        const startEndDates = getStartEndDates(data);
-        start = startEndDates.start;
-        end = startEndDates.end;
-        this.$store.dispatch('saveSelectedDates', startEndDates);
         updateRouterStartEnd(this.$router, start, end);
       }
 
@@ -112,6 +106,9 @@ export default {
         start,
         end,
       });
+    },
+    currentRange() {
+      this.fetchNem();
     },
   },
   methods: {
@@ -134,8 +131,8 @@ export default {
       const endIndex = data.length - 1;
       const endDate = data[endIndex].date;
 
-      if (this.selectedRange === '24hrs') {
-        const startIndex = data.length - 289;
+      if (isLast24Hrs(this.currentRange)) {
+        const startIndex = data.length - 290;
         const startDate = data[startIndex].date;
         data = dataFilter(data, startDate, endDate);
       }
@@ -144,8 +141,7 @@ export default {
       this.$store.dispatch('setDataEndDate', endDate);
       this.dispatchEvents();
     },
-    fetchNem(when) {
-      this.selectedRange = when;
+    fetchNem() {
       this.$store.dispatch('fetchingData', true);
       const url = `data/${this.visType}/nem.json`;
       getJSON(url).then(this.handleResponse);

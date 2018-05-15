@@ -44,9 +44,10 @@ import EventBus from '@/lib/event-bus';
 import getJSON from '@/lib/data-apis';
 import updateRouterStartEnd from '@/lib/app-router';
 import dataTransform from '@/lib/data-transform';
-import { getStartEndDates } from '@/lib/data-helpers';
+import { dataFilter } from '@/lib/data-helpers';
 import { GraphDomains } from '@/domains/graphs';
 import { getRegionLabel } from '@/domains/regions';
+import { isLast24Hrs } from '@/domains/date-ranges';
 import RegionChart from './Region/Chart';
 import RegionSummary from './Region/Summary';
 import RegionExtent from './ui/Extent';
@@ -72,13 +73,9 @@ export default {
     this.fetchNem();
   },
   mounted() {
-    EventBus.$on('data.fetch.latest', this.fetchNem);
-    EventBus.$on('data.fetch.latest.30.days', this.fetchNem);
     EventBus.$on('download.png', this.downloadPng);
   },
   beforeDestroy() {
-    EventBus.$off('data.fetch.latest');
-    EventBus.$off('data.fetch.latest.30.days');
     EventBus.$off('download.png');
   },
   props: {
@@ -101,6 +98,7 @@ export default {
       showTemperaturePanel: 'showTemperaturePanel',
       showSummaryPanel: 'showSummaryPanel',
       visType: 'visType',
+      currentRange: 'currentRange',
     }),
     regionId() {
       return this.$route.params.region;
@@ -111,14 +109,10 @@ export default {
   },
   watch: {
     chartData(data) {
-      let start = this.startDate;
-      let end = this.endDate;
+      const start = this.startDate;
+      const end = this.endDate;
 
       if (!this.isChartZoomed) {
-        const startEndDates = getStartEndDates(data);
-        start = startEndDates.start;
-        end = startEndDates.end;
-        this.$store.dispatch('saveSelectedDates', startEndDates);
         updateRouterStartEnd(this.$router, start, end);
       }
 
@@ -130,6 +124,9 @@ export default {
       });
     },
     region() {
+      this.fetchNem();
+    },
+    currentRange() {
       this.fetchNem();
     },
     isExportPng(value) {
@@ -148,18 +145,26 @@ export default {
           });
       }, 5);
     },
+    handleResponse(response) {
+      let data = dataTransform(GraphDomains, response.data);
+      const endIndex = data.length - 1;
+      const endDate = data[endIndex].date;
+
+      if (isLast24Hrs(this.currentRange)) {
+        const startIndex = data.length - 290;
+        const startDate = data[startIndex].date;
+        data = dataFilter(data, startDate, endDate);
+      }
+
+      this.chartData = data;
+      this.$store.dispatch('setDataEndDate', endDate);
+      this.$store.dispatch('setExportData', data);
+      this.$store.dispatch('setExportRegion', getRegionLabel(this.regionId));
+    },
     fetchNem() {
       this.$store.dispatch('fetchingData', true);
-
       const url = `data/${this.visType}/${this.region}1.json`;
-
-      getJSON(url).then((response) => {
-        const transformedData = dataTransform(GraphDomains, response.data);
-        this.$store.dispatch('setDataEndDate', transformedData[transformedData.length - 1].date);
-        this.chartData = transformedData;
-        this.$store.dispatch('setExportData', transformedData);
-        this.$store.dispatch('setExportRegion', getRegionLabel(this.regionId));
-      });
+      getJSON(url).then(this.handleResponse);
     },
   },
 };

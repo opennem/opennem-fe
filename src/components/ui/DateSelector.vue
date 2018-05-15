@@ -18,14 +18,12 @@
         <transition name="slide-down-fade">
           <div v-if="dropdownActive" class="dropdown-menu">
             <div class="dropdown-content">
-              <a class="dropdown-item" @click="handleLast24HrsSelection">
-                {{dateSelectors[0].label}}
-              </a>
-              <a class="dropdown-item" @click="handleLast7DaysSelection">
-                {{dateSelectors[1].label}}
-              </a>
-              <a class="dropdown-item" @click="handleLast30DaysSelection">
-                {{dateSelectors[2].label}}
+              <a class="dropdown-item"
+                  v-for="row in dateSelectors" 
+                  :key="row.id"
+                  @click="handleSelection(row.id)" 
+                  :class="{ 'selected': currentRange === row.id }">
+                {{row.label}}
               </a>
             </div>
           </div>
@@ -43,7 +41,6 @@ import { formatDateForDisplay } from '@/lib/formatter';
 import { isMidnight } from '@/lib/data-helpers';
 import { getRegionOffset } from '@/domains/regions';
 import { dateRanges } from '@/domains/date-ranges';
-import EventBus from '@/lib/event-bus';
 import Loader from './Loader';
 
 export default {
@@ -65,6 +62,7 @@ export default {
       dataEndDate: 'getDataEndDate',
       startDate: 'getSelectedStartDate',
       endDate: 'getSelectedEndDate',
+      currentRange: 'currentRange',
     }),
     regionOffset() {
       return getRegionOffset(this.$route.params.region);
@@ -96,22 +94,10 @@ export default {
       const isActive = !this.dropdownActive;
       this.dropdownActive = isActive;
     },
-    handleLast24HrsSelection() {
-      // const last24Hrs = getLast24HoursStartEndDates(this.dataEndDate);
-      // this.$store.dispatch('saveSelectedDates', last24Hrs);
+    handleSelection(range) {
       this.$store.dispatch('setChartZoomed', false);
-      this.$store.dispatch('setVisType', 'power');
-      EventBus.$emit('data.fetch.latest', this.dateSelectors[0].id);
-    },
-    handleLast7DaysSelection() {
-      this.$store.dispatch('setChartZoomed', false);
-      this.$store.dispatch('setVisType', 'power');
-      EventBus.$emit('data.fetch.latest', this.dateSelectors[1].id);
-    },
-    handleLast30DaysSelection() {
-      this.$store.dispatch('setChartZoomed', false);
-      this.$store.dispatch('setVisType', 'energy');
-      EventBus.$emit('data.fetch.latest', this.dateSelectors[2].id);
+      this.$store.dispatch('setVisType', range === this.dateSelectors[2].id ? 'energy' : 'power');
+      this.$store.dispatch('currentRange', range);
     },
     onClickAway() {
       this.dropdownActive = false;
