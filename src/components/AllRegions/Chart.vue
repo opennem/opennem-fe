@@ -137,9 +137,10 @@ export default {
 
       const unit = this.isPower ? 'MW' : 'GWh';
       const graphType = this.isPower ? 'line' : 'column';
+      const showWeekends = this.isPower ? false : true;
 
       this.chart.panels[0].stockGraphs = getStockGraphs(this.domains, this.keys, graphType, unit);
-      this.chart.panels[0].guides = getNemGuides(this.chartData);
+      this.chart.panels[0].guides = getNemGuides(this.chartData, showWeekends);
       this.chart.validateData();
     },
 

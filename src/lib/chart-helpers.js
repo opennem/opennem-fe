@@ -16,10 +16,6 @@ function getGroupToPeriods(isPower) {
   return isPower ? ['5mm', '30mm'] : ['DD'];
 }
 
-function shouldStartOnAxis(isPower) {
-  return isPower;
-}
-
 /**
  * Default amCharts config
  */
@@ -28,7 +24,6 @@ function getChartConfig(config, isPower) {
   let zoomable = true;
   const minPeriod = getMinPeriod(isPower);
   const groupToPeriods = getGroupToPeriods(isPower);
-  const startOnAxis = shouldStartOnAxis(isPower);
 
   if (isTouchDevice()) {
     pan = true;
@@ -69,7 +64,7 @@ function getChartConfig(config, isPower) {
       centerLabelOnFullPeriod: false,
       boldPeriodBeginning: true,
       parseDates: true,
-      startOnAxis,
+      startOnAxis: true,
       dateFormats: [
         { period: 'fff', format: ' JJ:NN' },
         { period: 'ss', format: ' JJ:NN\n D MMM' },
@@ -131,22 +126,29 @@ function getStockGraphs(domains, keys, graphType, unit) {
   keys.forEach((ftKey) => {
     if (isValidFuelTech(ftKey)) {
       const colour = domains[ftKey].colour;
-      const negativeFillAlphas = hideNegativeAlphas(ftKey) ? 0 : 0.8;
+      let negativeFillAlphas = 0.8;
       const fillAlphas = 0.8;
-      const lineAlpha = graphType === 'column' ? 0.9 : 0;
-      const lineThickness = graphType === 'column' ? 0.9 : 1;
+      const fillColors = colour;
+      const lineAlpha = 0;
+      const lineThickness = 0;
+      const lineColor = colour;
       const type = graphType || 'line';
+
+      if (graphType !== 'step' && hideNegativeAlphas(ftKey)) {
+        negativeFillAlphas = 0;
+      }
 
       const graph = {
         id: ftKey,
         valueField: ftKey,
         type,
         fillAlphas,
+        fillColors,
         negativeFillAlphas,
         negativeFillColors: colour,
         lineAlpha,
         lineThickness,
-        lineColor: colour,
+        lineColor,
         useDataSetColors: false,
         columnWidth: 0.8,
         showBalloon: false,
@@ -183,7 +185,7 @@ function getStockGraphs(domains, keys, graphType, unit) {
  * amCharts NEM Guides
     - shade between 10pm to 7am
  */
-function getNemGuides(data) {
+function getNemGuides(data, showWeekends) {
   const startEndDates = getStartEndDates(data);
   const startDate = moment(startEndDates.start);
   const endDate = moment(startEndDates.end);
@@ -192,7 +194,9 @@ function getNemGuides(data) {
 
   while (moment(startDate).isBefore(endDate)) {
     const dayBefore = startDate.clone();
+    const daysAfter = startDate.clone();
     dayBefore.subtract(1, 'days');
+    daysAfter.add(2, 'days');
 
     guides.push({
       fillColor: '#999',
@@ -202,6 +206,21 @@ function getNemGuides(data) {
       date: dayBefore.set({ hour: 22, minute: 0, second: 0 }).toDate(),
       toDate: startDate.set({ hour: 7, minute: 0, second: 0 }).toDate(),
     });
+
+    if (showWeekends) {
+      if (startDate.day() === 0) {
+        guides.push({
+          fillColor: '#bbb',
+          fillAlpha: 0.1,
+          lineAlpha: 0.5,
+          tickLength: 0,
+          lineColor: '#ccc',
+          dashLength: 0,
+          toDate: daysAfter.set({ hour: 0, minute: 0, second: 0 }).toDate(),
+          date: startDate.set({ hour: 0, minute: 0, second: 0 }).toDate(),
+        });
+      }
+    }
 
     startDate.add(1, 'days');
   }
@@ -216,5 +235,4 @@ export {
   getNemGuides,
   getMinPeriod,
   getGroupToPeriods,
-  shouldStartOnAxis,
 };
