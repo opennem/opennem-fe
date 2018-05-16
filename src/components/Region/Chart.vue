@@ -250,7 +250,7 @@ export default {
       this.chart.panels[0].stockGraphs = getStockGraphs(this.domains, this.keys, graphType, unit);
 
       // add Guides
-      const showWeekends = this.isPower ? false : true;
+      const showWeekends = !this.isPower;
       const guides = getNemGuides(this.chartData, showWeekends);
       const panelNum = this.chart.panels.length;
 
@@ -260,14 +260,6 @@ export default {
 
       this.chart.validateData();
       this.chartRendered = true;
-    },
-
-    redrawChartPanels() {
-      this.chartRendered = false;
-      this.clearChart();
-      this.setupChart();
-      this.setupKeys();
-      this.updateChart();
     },
 
     getPanelListeners() {
