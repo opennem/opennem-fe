@@ -57,7 +57,7 @@ import ExportPngFooter from './Export/PngFooter';
 import PanelButton from './AllRegions/ShowHideButton';
 import ExportLegend from './Export/Legend';
 import ZoomOutButton from './ui/ZoomOutButton';
-import Loader from './ui/Loader.vue';
+import Loader from './ui/Loader';
 
 export default {
   components: {
