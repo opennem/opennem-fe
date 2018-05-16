@@ -81,7 +81,7 @@ function getEnergyPanel(listeners) {
 /**
  * Temperature Panel
  */
-function getTemperaturePanel(listeners, temperatureField) {
+function getTemperaturePanel(listeners, temperatureField, hasMinMax) {
   function makeGuide(value, colour) {
     return {
       includeGuidesInMinMax: false,
@@ -92,6 +92,57 @@ function getTemperaturePanel(listeners, temperatureField) {
       lineThickness: 1,
       lineAlpha: 1,
     };
+  }
+
+  function temperatureMinMaxStockGraphs() {
+    return [
+      {
+        id: 'temperatureMaxStockGraph',
+        valueAxis: 'temperatureValueAxis',
+        valueField: 'temperature_min',
+        lineAlpha: 0,
+        type: 'smoothedLine',
+        lineColor: '#C74523',
+        useDataSetColors: false,
+        showBalloon: false,
+        connect: false,
+        fillAplhas: 0,
+      },
+      {
+        id: 'temperatureMinStockGraph',
+        valueAxis: 'temperatureValueAxis',
+        valueField: 'temperature_max',
+        lineAlpha: 0,
+        type: 'smoothedLine',
+        lineColor: '#C74523',
+        useDataSetColors: false,
+        showBalloon: false,
+        connect: false,
+        fillAlphas: 0.1,
+        fillToGraph: 'temperatureMaxStockGraph',
+      },
+    ];
+  }
+
+  const temperatureGraph = {
+    id: 'temperatureStockGraph',
+    valueAxis: 'temperatureValueAxis',
+    valueField: temperatureField,
+    type: 'smoothedLine',
+    lineAlpha: 1,
+    lineColor: '#C74523',
+    useDataSetColors: false,
+    showBalloon: false,
+    connect: false,
+    bulletSize: 5,
+    balloonFunction: item => `<strong>${item.values.value}°C</strong>`,
+  };
+  let stockGraphs = [];
+
+  if (hasMinMax) {
+    stockGraphs = [...temperatureMinMaxStockGraphs(), temperatureGraph];
+  } else {
+    stockGraphs.push(temperatureGraph);
   }
 
   return {
@@ -124,19 +175,7 @@ function getTemperaturePanel(listeners, temperatureField) {
         ],
       },
     ],
-    stockGraphs: [{
-      id: 'temperatureStockGraph',
-      valueAxis: 'temperatureValueAxis',
-      valueField: temperatureField,
-      type: 'line',
-      lineAlpha: 1,
-      lineColor: '#C74523',
-      useDataSetColors: false,
-      showBalloon: false,
-      connect: false,
-      bulletSize: 5,
-      balloonFunction: item => `<strong>${item.values.value}°C</strong>`,
-    }],
+    stockGraphs,
     guides: [],
     listeners,
     stockLegend: { enabled: false },

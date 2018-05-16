@@ -165,10 +165,22 @@ export default {
       let panels = [];
       const temperatureField = this.isPower ? 'temperature' : 'temperature_mean';
       const priceField = this.isPower ? 'price' : 'volume_weighted_price';
+      const hasMinMax = !this.isPower;
+
       if (this.showPricePanel && this.showTemperaturePanel) {
         panels = this.isPower ?
-          getAllPanelsGeneration(this.getPanelListeners(), priceField, temperatureField) :
-          getAllPanelsEnergy(this.getPanelListeners(), priceField, temperatureField);
+          getAllPanelsGeneration(
+            this.getPanelListeners(),
+            priceField,
+            temperatureField,
+            hasMinMax,
+          ) :
+          getAllPanelsEnergy(
+            this.getPanelListeners(),
+            priceField,
+            temperatureField,
+            hasMinMax,
+          );
       } else if (this.showPricePanel) {
         panels = getGenerationAndPricePanels(this.getPanelListeners());
       } else if (this.showTemperaturePanel) {
