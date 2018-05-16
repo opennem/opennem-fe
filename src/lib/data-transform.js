@@ -77,6 +77,11 @@ export default function(domains, data) {
         });
       }
       container[nowISO][domain] = d;
+
+      if (isPrice(domain)) {
+        container[nowISO]['pricePos'] = d > 300 ? d : 0.001;
+        container[nowISO]['priceNeg'] = d < 0 ? -d : 0.001;
+      }
     }
   }
 
@@ -146,11 +151,6 @@ export default function(domains, data) {
         if (!isTemperature(series.key)) {
           d[series.key] = series.currentValue;
         }
-      }
-
-      if (isPrice(series.key)) {
-        d.pricePos = d[series.key] > 300 ? d[series.key] : 0.001;
-        d.priceNeg = d[series.key] < 0 ? -d[series.key] : 0.001;
       }
     });
   });
