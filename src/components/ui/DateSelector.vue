@@ -1,8 +1,7 @@
 <template>
   <div class="date-range">
     <transition name="slide-fade" mode="out-in">
-      <loader class="fetching" v-if="isFetching" />
-      <div v-else class="dropdown" :class="{'is-active': dropdownActive}">
+      <div v-if="!isFetching" class="dropdown" :class="{'is-active': dropdownActive}">
         <div v-if="isPointHovered">
           {{pointDate}}
         </div>
@@ -41,14 +40,10 @@ import { formatDateForDisplay } from '@/lib/formatter';
 import { isMidnight } from '@/lib/data-helpers';
 import { getRegionOffset } from '@/domains/regions';
 import { dateRanges } from '@/domains/date-ranges';
-import Loader from './Loader';
 
 export default {
   name: 'date-selector',
   mixins: [clickaway],
-  components: {
-    Loader,
-  },
   data() {
     return {
       dropdownActive: false,

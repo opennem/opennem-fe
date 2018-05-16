@@ -385,6 +385,8 @@ export default {
         this.zoomChart(this.startDate, this.endDate);
         this.initialZoom = false;
       }
+
+      this.$store.dispatch('fetchingData', false);
     },
 
     onChartDrawn(e) {
@@ -405,8 +407,6 @@ export default {
       // refresh chart to include "new" listener
       e.chart.drawnManually = true;
       e.chart.validateNow();
-
-      this.$store.dispatch('fetchingData', false);
     },
 
     onChartCursorZoomed() {

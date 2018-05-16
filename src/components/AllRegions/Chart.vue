@@ -235,6 +235,8 @@ export default {
         this.zoomChart(this.startDate, this.endDate);
         this.initialZoom = false;
       }
+
+      this.$store.dispatch('fetchingData', false);
     },
 
     onChartDrawn(e) {

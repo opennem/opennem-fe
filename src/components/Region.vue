@@ -1,38 +1,48 @@
 <template>
-<div class="columns is-desktop is-variable is-1">
+<div>
   <transition name="fade">
     <zoom-out-button v-if="isChartZoomed && !isFetching && !isExportPng" />
   </transition>
 
-  <div class="column" v-show="!isFetching" :class="{ export: isExportPng }">
-    <div id="export-container">
-      <export-png-header v-if="isExportPng" />
-      <div style="position: relative;">
-        <panel-buttons />
-        <region-chart :chartData="chartData" />
-        <div v-if="isExportPng"
-          :class="{
-            'price-on': showPricePanel,
-            'price-off': !showPricePanel,
-            'temperature-on': showTemperaturePanel,
-            'temperature-off': !showTemperaturePanel,
-            'summary-on': showSummaryPanel,
-            'summary-off': !showSummaryPanel,
-          }">
-          <region-summary v-if="showSummaryPanel" :showTemperature="false" />
-          <export-legend v-else />
+  <transition name="slide-fade">
+    <div v-if="isFetching" class="loading">
+      <loader />
+    </div>
+  </transition>
+  
+  <transition name="slide-fade">
+    <div class="columns is-desktop is-variable is-1" v-show="!isFetching">
+      <div class="column" :class="{ export: isExportPng }">
+        <div id="export-container">
+          <export-png-header v-if="isExportPng" />
+          <div style="position: relative;">
+            <panel-buttons />
+            <region-chart :chartData="chartData" />
+            <div v-if="isExportPng"
+              :class="{
+                'price-on': showPricePanel,
+                'price-off': !showPricePanel,
+                'temperature-on': showTemperaturePanel,
+                'temperature-off': !showTemperaturePanel,
+                'summary-on': showSummaryPanel,
+                'summary-off': !showSummaryPanel,
+              }">
+              <region-summary v-if="showSummaryPanel" :showTemperature="false" />
+              <export-legend v-else />
+            </div>
+          </div>
+          
+          <export-png-footer v-if="isExportPng" :hideTopBorder="showSummaryPanel" />
         </div>
       </div>
-      
-      <export-png-footer v-if="isExportPng" :hideTopBorder="showSummaryPanel" />
-    </div>
-  </div>
 
-  <div class="column is-narrow" v-show="!isFetching && !isExportPng">
-    <region-summary />
-    <region-temperature :showTemperatureRange="showTemperatureRange" />
-    <region-extent :showTemperature="true" :showPrice="true" v-if="records" />
-  </div>
+      <div class="column is-narrow" v-show="!isExportPng">
+        <region-summary />
+        <region-temperature :showTemperatureRange="showTemperatureRange" />
+        <region-extent :showTemperature="true" :showPrice="true" v-if="records" />
+      </div>
+    </div>
+  </transition>
 </div>
 
 </template>
@@ -58,6 +68,7 @@ import ExportPngFooter from './Export/PngFooter';
 import PanelButtons from './Export/PanelShowHideButtons';
 import ExportLegend from './Export/Legend';
 import ZoomOutButton from './ui/ZoomOutButton';
+import Loader from './ui/Loader.vue';
 
 export default {
   components: {
@@ -70,6 +81,7 @@ export default {
     ExportLegend,
     ZoomOutButton,
     PanelButtons,
+    Loader,
   },
   created() {
     this.$store.dispatch('setDomains', GraphDomains);
@@ -180,6 +192,15 @@ export default {
 <style lang="scss" scoped>
 @import "../../node_modules/bulma/sass/utilities/mixins.sass";
 @import "../styles/variables.scss";
+
+.loading {
+  background-color: $background;
+  margin-top: 1rem;
+  padding-top: 2rem;
+  position: absolute;
+  left: 3rem;
+  right: 3rem;
+}
 
 .export {
   max-width: 650px;

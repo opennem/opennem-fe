@@ -1,31 +1,41 @@
 <template>
-<div class="columns is-desktop is-variable is-1">
+<div>
   <transition name="fade">
     <zoom-out-button v-if="isChartZoomed && !isFetching && !isExportPng" />
   </transition>
 
-  <div class="column" v-show="!isFetching" :class="{ export: isExportPng }">
-    <div id="export-container">
-      <export-png-header v-if="isExportPng" />
+  <transition name="slide-fade">
+    <div v-if="isFetching" class="loading">
+      <loader />
+    </div>
+  </transition>
 
-      <div style="position:relative">
-        <panel-button />
-        <all-regions-chart :chartData="chartData" />
-        <div v-if="isExportPng">
-          <all-regions-summary v-if="showSummaryPanel" />
-          <export-legend v-else />
+  <transition name="slide-fade">
+    <div class="columns is-desktop is-variable is-1" v-show="!isFetching">
+      <div class="column" :class="{ export: isExportPng }">
+        <div id="export-container">
+          <export-png-header v-if="isExportPng" />
+
+          <div style="position:relative">
+            <panel-button />
+            <all-regions-chart :chartData="chartData" />
+            <div v-if="isExportPng">
+              <all-regions-summary v-if="showSummaryPanel" />
+              <export-legend v-else />
+            </div>
+          </div>
+          
+          <export-png-footer v-if="isExportPng" :hideTopBorder="showSummaryPanel" />
         </div>
       </div>
-      
-      <export-png-footer v-if="isExportPng" :hideTopBorder="showSummaryPanel" />
-    </div>
-  </div>
-  <div class="column is-narrow" v-if="!isFetching && !isExportPng">
-    <all-regions-summary />
-    <all-regions-extent v-if="records" />
-  </div>
-</div>
 
+      <div class="column is-narrow" v-show="!isExportPng">
+        <all-regions-summary />
+        <all-regions-extent v-if="records" />
+      </div>
+    </div>
+  </transition>
+</div>
 </template>
 
 <script>
@@ -47,6 +57,7 @@ import ExportPngFooter from './Export/PngFooter';
 import PanelButton from './AllRegions/ShowHideButton';
 import ExportLegend from './Export/Legend';
 import ZoomOutButton from './ui/ZoomOutButton';
+import Loader from './ui/Loader.vue';
 
 export default {
   components: {
@@ -58,6 +69,7 @@ export default {
     ExportLegend,
     ZoomOutButton,
     PanelButton,
+    Loader,
   },
   created() {
     this.$store.dispatch('setDomains', GraphDomains);
@@ -122,7 +134,7 @@ export default {
       }, 5);
     },
     dispatchEvents() {
-      this.$store.dispatch('fetchingData', false);
+      // this.$store.dispatch('fetchingData', false);
       this.$store.dispatch('setExportData', this.chartData);
       this.$store.dispatch('setExportRegion', 'OpenNEM');
     },
@@ -152,6 +164,15 @@ export default {
 
 <style lang="scss" scoped>
 @import "../styles/variables.scss";
+
+.loading {
+  background-color: $background;
+  margin-top: 1rem;
+  padding-top: 2rem;
+  position: absolute;
+  left: 3rem;
+  right: 3rem;
+}
 
 .export {
   max-width: 650px;
