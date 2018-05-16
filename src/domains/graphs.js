@@ -132,6 +132,20 @@ const GraphDomains = {
     categoryId: 'temperature',
     unit: 'C',
   },
+  temperature_min: {
+    colour: '#000',
+    type: 'other',
+    label: 'Temperature',
+    categoryId: 'temperature',
+    unit: 'C',
+  },
+  temperature_max: {
+    colour: '#000',
+    type: 'other',
+    label: 'Temperature',
+    categoryId: 'temperature',
+    unit: 'C',
+  },
   price: {
     colour: '#000',
     type: 'other',
@@ -189,7 +203,10 @@ function isPrice(id) {
 }
 
 function isTemperature(id) {
-  return id === 'temperature' || id === 'temperature_mean';
+  return id === 'temperature' ||
+  id === 'temperature_mean' ||
+  id === 'temperature_min' ||
+  id === 'temperature_max';
 }
 
 function isLoads(id) {
