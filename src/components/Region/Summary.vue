@@ -1,15 +1,9 @@
 <template>
   <table class="summary-table table is-fullwidth is-narrow is-hoverable">
+    <caption></caption>
     <thead>
       <tr>
-        <th class="column-header">
-          <div v-if="showTemperature">
-            <span>Temperature</span>
-            <small v-if="isPointHovered" class="temperature-value">
-              {{ pointTemperature | formatNumber('0,0.0') }}<span v-if="hasValue(pointTemperature)">°C</span>
-            </small>
-          </div>
-        </th>
+        <th class="column-header"></th>
         <th class="column-header has-text-right has-min-width">
           <div v-if="isPointHovered && isPower">
             <span>Power</span>
@@ -161,9 +155,6 @@ import { formatNumberForDisplay } from '@/lib/formatter';
 
 export default {
   name: 'region-summary',
-  props: {
-    showTemperature: Boolean,
-  },
   computed: {
     ...mapGetters({
       isPointHovered: 'isPointHovered',
@@ -171,12 +162,6 @@ export default {
       pointSummary: 'getPointSummary',
       isPower: 'isPower',
     }),
-    pointTemperature() {
-      const temperature =
-        this.pointSummary.allData.temperature ||
-        this.pointSummary.allData.temperature_mean;
-      return temperature;
-    },
     pointPrice() {
       const price =
         this.pointSummary.allData.price ||
@@ -208,8 +193,6 @@ export default {
   width: 100%;
 
   @include desktop {
-  }
-  @include widescreen {
     width: 390px;
   }
 
@@ -220,13 +203,6 @@ export default {
       padding: .25em .5em;
       padding-left: 1em;
     }
-  }
-  .temperature-value {
-    font-family: $numbers-font-family;
-    font-size: 0.75rem;
-    position: absolute;
-    margin-top: -2px;
-    color: #666;
   }
 
   .has-min-width {

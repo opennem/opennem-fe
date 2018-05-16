@@ -28,8 +28,9 @@
     </div>
   </div>
 
-  <div class="column is-narrow" v-if="!isFetching && !isExportPng">
-    <region-summary :showTemperature="true" />
+  <div class="column is-narrow" v-show="!isFetching && !isExportPng">
+    <region-summary />
+    <region-temperature :showTemperatureRange="showTemperatureRange" />
     <region-extent :showTemperature="true" :showPrice="true" v-if="records" />
   </div>
 </div>
@@ -50,6 +51,7 @@ import { getRegionLabel } from '@/domains/regions';
 import { isLast24Hrs } from '@/domains/date-ranges';
 import RegionChart from './Region/Chart';
 import RegionSummary from './Region/Summary';
+import RegionTemperature from './Region/Temperature';
 import RegionExtent from './ui/Extent';
 import ExportPngHeader from './Export/PngHeader';
 import ExportPngFooter from './Export/PngFooter';
@@ -61,6 +63,7 @@ export default {
   components: {
     RegionChart,
     RegionSummary,
+    RegionTemperature,
     RegionExtent,
     ExportPngHeader,
     ExportPngFooter,
@@ -98,6 +101,7 @@ export default {
       showTemperaturePanel: 'showTemperaturePanel',
       showSummaryPanel: 'showSummaryPanel',
       visType: 'visType',
+      isPower: 'isPower',
       currentRange: 'currentRange',
     }),
     regionId() {
@@ -105,6 +109,9 @@ export default {
     },
     records() {
       return this.$route.query.records;
+    },
+    showTemperatureRange() {
+      return !this.isPower;
     },
   },
   watch: {
