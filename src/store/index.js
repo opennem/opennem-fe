@@ -4,7 +4,7 @@ import Vuex from 'vuex';
 import { getSummary, getPointSummary } from '@/lib/data-summary';
 import { dataFilter } from '@/lib/data-helpers';
 import { formatDateForExport } from '@/lib/formatter';
-
+import { DateRanges } from '@/domains/date-ranges';
 import * as MutationTypes from './mutation-types';
 import exportStore from './export';
 import summary from './summary';
@@ -18,7 +18,7 @@ const state = {
   isFetching: false,
   isChartZoomed: false,
   visType: 'power', // power or energy
-  interval: ['5mm', '30mm'],
+  groupToPeriods: DateRanges[1].groupToPeriods,
 };
 
 const mutations = {
@@ -38,8 +38,8 @@ const mutations = {
   [MutationTypes.VIS_TYPE](state, data) {
     state.visType = data;
   },
-  [MutationTypes.INTERVAL](state, data) {
-    state.interval = data;
+  [MutationTypes.GROUP_TO_PERIODS](state, data) {
+    state.groupToPeriods = data;
   },
 };
 
@@ -56,8 +56,8 @@ const getters = {
   visType: state => {
     return state.visType;
   },
-  interval: state => {
-    return state.interval;
+  groupToPeriods: state => {
+    return state.groupToPeriods;
   },
   isPower: state => {
     return state.visType === 'power';
@@ -90,8 +90,8 @@ const actions = {
   setVisType({ commit, state }, data) {
     commit(MutationTypes.VIS_TYPE, data);
   },
-  interval({ commit, state }, data) {
-    commit(MutationTypes.INTERVAL, data);
+  groupToPeriods({ commit, state }, data) {
+    commit(MutationTypes.GROUP_TO_PERIODS, data);
   },
 };
 

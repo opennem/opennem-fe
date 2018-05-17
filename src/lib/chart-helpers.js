@@ -19,11 +19,11 @@ function getGroupToPeriods(isPower) {
 /**
  * Default amCharts config
  */
-function getChartConfig(config, isPower) {
+function getChartConfig(config, isPower, periods) {
   let pan = false;
   let zoomable = true;
   const minPeriod = getMinPeriod(isPower);
-  const groupToPeriods = getGroupToPeriods(isPower);
+  const groupToPeriods = periods || getGroupToPeriods(isPower);
 
   if (isTouchDevice()) {
     pan = true;

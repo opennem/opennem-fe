@@ -21,6 +21,7 @@ import {
   getKeys,
 } from '@/lib/data-helpers';
 import updateRouterStartEnd from '@/lib/app-router';
+import { isLast24Hrs } from '@/domains/date-ranges';
 import {
   getAllPanelsGeneration,
   getAllPanelsEnergy,
@@ -61,6 +62,8 @@ export default {
       showTemperaturePanel: 'showTemperaturePanel',
       isExportPng: 'isExportPng',
       isPower: 'isPower',
+      groupToPeriods: 'groupToPeriods',
+      currentRange: 'currentRange',
     }),
     visClass() {
       return {
@@ -166,6 +169,7 @@ export default {
       const temperatureField = this.isPower ? 'temperature' : 'temperature_mean';
       const priceField = this.isPower ? 'price' : 'volume_weighted_price';
       const hasMinMax = !this.isPower;
+      const showBullets = isLast24Hrs(this.currentRange);
 
       if (this.showPricePanel && this.showTemperaturePanel) {
         panels = this.isPower ?
@@ -174,12 +178,14 @@ export default {
             priceField,
             temperatureField,
             hasMinMax,
+            showBullets,
           ) :
           getAllPanelsEnergy(
             this.getPanelListeners(),
             priceField,
             temperatureField,
             hasMinMax,
+            showBullets,
           );
       } else if (this.showPricePanel) {
         panels = getGenerationAndPricePanels(this.getPanelListeners());
@@ -201,7 +207,7 @@ export default {
       const config = getChartConfig({
         dataSets: [],
         panels,
-      }, this.isPower);
+      }, this.isPower, this.groupToPeriods);
 
       // manually adjust individual panel percentage heights
       switch (panelNum) {
@@ -429,7 +435,7 @@ export default {
 
     resetChartZoom() {
       if (this.isPower) {
-        this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm'];
+        this.chart.categoryAxesSettings.groupToPeriods = this.groupToPeriods;
         const temperaturePanelIndex = this.getTemperaturePanelIndex();
 
         if (this.showTemperaturePanel) {

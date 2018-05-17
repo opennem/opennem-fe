@@ -81,7 +81,7 @@ function getEnergyPanel(listeners) {
 /**
  * Temperature Panel
  */
-function getTemperaturePanel(listeners, temperatureField, hasMinMax) {
+function getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets) {
   function makeGuide(value, colour) {
     return {
       includeGuidesInMinMax: false,
@@ -124,6 +124,8 @@ function getTemperaturePanel(listeners, temperatureField, hasMinMax) {
     ];
   }
 
+  const bullet = showBullets ? 'round' : 'none';
+
   const temperatureGraph = {
     id: 'temperatureStockGraph',
     valueAxis: 'temperatureValueAxis',
@@ -135,6 +137,7 @@ function getTemperaturePanel(listeners, temperatureField, hasMinMax) {
     showBalloon: false,
     connect: false,
     bulletSize: 5,
+    bullet,
     balloonFunction: item => `<strong>${item.values.value}°C</strong>`,
   };
   let stockGraphs = [];

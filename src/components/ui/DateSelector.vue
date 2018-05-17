@@ -20,7 +20,7 @@
               <a class="dropdown-item"
                   v-for="row in dateSelectors" 
                   :key="row.id"
-                  @click="handleSelection(row.id)" 
+                  @click="handleSelection(row)" 
                   :class="{ 'selected': currentRange === row.id }">
                 {{row.label}}
               </a>
@@ -39,7 +39,7 @@ import { mixin as clickaway } from 'vue-clickaway';
 import { formatDateForDisplay } from '@/lib/formatter';
 import { isMidnight } from '@/lib/data-helpers';
 import { getRegionOffset } from '@/domains/regions';
-import { dateRanges } from '@/domains/date-ranges';
+import { DateRanges } from '@/domains/date-ranges';
 
 export default {
   name: 'date-selector',
@@ -47,7 +47,7 @@ export default {
   data() {
     return {
       dropdownActive: false,
-      dateSelectors: dateRanges(),
+      dateSelectors: DateRanges,
     };
   },
   computed: {
@@ -90,11 +90,12 @@ export default {
       this.dropdownActive = isActive;
     },
     handleSelection(range) {
-      if (range !== this.currentRange) {
+      if (range.id !== this.currentRange) {
         this.$store.dispatch('fetchingData', true);
         this.$store.dispatch('setChartZoomed', false);
-        this.$store.dispatch('setVisType', range === this.dateSelectors[2].id ? 'energy' : 'power');
-        this.$store.dispatch('currentRange', range);
+        this.$store.dispatch('setVisType', range.visType);
+        this.$store.dispatch('currentRange', range.id);
+        this.$store.dispatch('groupToPeriods', range.groupToPeriods);
       }
     },
     onClickAway() {

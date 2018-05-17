@@ -46,6 +46,7 @@ export default {
       dataEndDate: 'getDataEndDate',
       isExportPng: 'isExportPng',
       isPower: 'isPower',
+      groupToPeriods: 'groupToPeriods',
     }),
   },
   watch: {
@@ -104,7 +105,7 @@ export default {
       const config = getChartConfig({
         dataSets: [],
         panels,
-      }, this.isPower);
+      }, this.isPower, this.groupToPeriods);
 
       config.panels[0].categoryAxis.listeners = this.getCategoryAxisListeners();
 
@@ -271,7 +272,7 @@ export default {
 
     resetChartZoom() {
       if (this.isPower) {
-        this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm'];
+        this.chart.categoryAxesSettings.groupToPeriods = this.groupToPeriods;
       }
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoomed', false);

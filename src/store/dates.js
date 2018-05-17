@@ -1,9 +1,9 @@
 /* eslint-disable */
-import { dateRanges } from '@/domains/date-ranges';
+import { DateRanges } from '@/domains/date-ranges';
 import * as MutationTypes from './mutation-types';
 
 const state = {
-  currentRange: dateRanges()[1].id,
+  currentRange: DateRanges[1].id,
   selectedDates: {
     start: null,
     end: null,
