@@ -14,9 +14,9 @@ function dataFilter(data, start, end) {
   });
 }
 
-function findDataContextByDate(date, agregated5mmDataProviders) {
+function findDataContextByDate(date, aggregatedDataProviders) {
   const dateValue = `${moment(date).valueOf()}`;
-  const dataContext = _.find(agregated5mmDataProviders, d => d.amCategoryIdField === dateValue);
+  const dataContext = _.find(aggregatedDataProviders, d => d.amCategoryIdField === dateValue);
 
   return dataContext;
 }

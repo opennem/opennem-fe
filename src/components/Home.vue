@@ -31,7 +31,7 @@
 
       <div class="column is-narrow" v-show="!isExportPng">
         <all-regions-summary />
-        <all-regions-extent v-if="records" />
+        <all-regions-extent />
       </div>
     </div>
   </transition>
@@ -144,7 +144,7 @@ export default {
       const endDate = data[endIndex].date;
 
       if (isLast24Hrs(this.currentRange)) {
-        const startIndex = data.length - 290;
+        const startIndex = data.length - 289;
         const startDate = data[startIndex].date;
         data = dataFilter(data, startDate, endDate);
       }

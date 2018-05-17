@@ -65,6 +65,7 @@ function getSummary(domains, data, isPower) {
 
   // calculate the price * total
   const dataSumTotalPrice = dataSum.map((d, i) => {
+    // price field can be price or volum_weight_price
     const price = data[i].price;
     const volWeightedPrice = data[i].volume_weighted_price;
     let rrp = 0;
@@ -157,8 +158,8 @@ function getSummary(domains, data, isPower) {
     renewablesExtent: getExtent(data, renewablesPercentages),
     generationExtent: getExtent(data, genDataSum),
     renewablesExtent2: getExtent(data, renewablesPercentages2),
-    priceExtent: getExtent(data, data.map(d => d.price)),
-    temperatureExtent: getExtent(data, data.map(d => d.temperature)),
+    priceExtent: getExtent(data, data.map(d => d.price || d.volume_weighted_price)),
+    temperatureExtent: getExtent(data, data.map(d => d.temperature_mean || d.temperature)),
   };
 }
 

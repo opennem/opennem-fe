@@ -4,6 +4,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import * as moment from 'moment';
 import EventBus from '@/lib/event-bus';
 import {
   getFieldMappings,
@@ -277,7 +278,12 @@ export default {
     },
 
     handleExtentEventHover(date) {
-      const dataContext = findDataContextByDate(date, this.chart.mainDataSet.agregatedDataProviders['5mm']);
+      const interval = this.isPower ? '5mm' : 'DD';
+      const searchDate = this.isPower ? date : moment(date).set({ hour: 0, minute: 0, second: 0 });
+      const dataContext = findDataContextByDate(
+        searchDate,
+        this.chart.mainDataSet.agregatedDataProviders[interval],
+      );
 
       this.$store.dispatch('generatePointSummary', {
         date,

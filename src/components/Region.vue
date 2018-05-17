@@ -39,7 +39,7 @@
       <div class="column is-narrow" v-show="!isExportPng">
         <region-summary />
         <region-temperature :showTemperatureRange="showTemperatureRange" />
-        <region-extent :showTemperature="true" :showPrice="true" v-if="records" />
+        <region-extent :showTemperature="true" :showPrice="true" />
       </div>
     </div>
   </transition>
@@ -170,7 +170,7 @@ export default {
       const endDate = data[endIndex].date;
 
       if (isLast24Hrs(this.currentRange)) {
-        const startIndex = data.length - 290;
+        const startIndex = data.length - 289;
         const startDate = data[startIndex].date;
         data = dataFilter(data, startDate, endDate);
       }
