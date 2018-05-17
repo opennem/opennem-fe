@@ -24,6 +24,7 @@ function getChartConfig(config, isPower, periods) {
   let zoomable = true;
   const minPeriod = getMinPeriod(isPower);
   const groupToPeriods = periods || getGroupToPeriods(isPower);
+  const startOnAxis = isPower;
 
   if (isTouchDevice()) {
     pan = true;
@@ -64,7 +65,7 @@ function getChartConfig(config, isPower, periods) {
       centerLabelOnFullPeriod: false,
       boldPeriodBeginning: true,
       parseDates: true,
-      startOnAxis: true,
+      startOnAxis,
       dateFormats: [
         { period: 'fff', format: ' JJ:NN' },
         { period: 'ss', format: ' JJ:NN\n D MMM' },
