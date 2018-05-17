@@ -18,6 +18,7 @@ const state = {
   isFetching: false,
   isChartZoomed: false,
   visType: 'power', // power or energy
+  interval: ['5mm', '30mm'],
 };
 
 const mutations = {
@@ -37,6 +38,9 @@ const mutations = {
   [MutationTypes.VIS_TYPE](state, data) {
     state.visType = data;
   },
+  [MutationTypes.INTERVAL](state, data) {
+    state.interval = data;
+  },
 };
 
 const getters = {
@@ -51,6 +55,9 @@ const getters = {
   },
   visType: state => {
     return state.visType;
+  },
+  interval: state => {
+    return state.interval;
   },
   isPower: state => {
     return state.visType === 'power';
@@ -82,6 +89,9 @@ const actions = {
   },
   setVisType({ commit, state }, data) {
     commit(MutationTypes.VIS_TYPE, data);
+  },
+  interval({ commit, state }, data) {
+    commit(MutationTypes.INTERVAL, data);
   },
 };
 

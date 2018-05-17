@@ -90,9 +90,12 @@ export default {
       this.dropdownActive = isActive;
     },
     handleSelection(range) {
-      this.$store.dispatch('setChartZoomed', false);
-      this.$store.dispatch('setVisType', range === this.dateSelectors[2].id ? 'energy' : 'power');
-      this.$store.dispatch('currentRange', range);
+      if (range !== this.currentRange) {
+        this.$store.dispatch('fetchingData', true);
+        this.$store.dispatch('setChartZoomed', false);
+        this.$store.dispatch('setVisType', range === this.dateSelectors[2].id ? 'energy' : 'power');
+        this.$store.dispatch('currentRange', range);
+      }
     },
     onClickAway() {
       this.dropdownActive = false;

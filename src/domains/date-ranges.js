@@ -5,19 +5,29 @@ const DateRanges = [
   {
     id: 'last24hrs',
     label: 'Last 24 hours',
+    minPeriod: '5mm',
+    groupToPeriods: ['5mm'],
   },
   {
     id: 'last7days',
     label: 'Last 7 days',
+    minPeriod: '5mm',
+    groupToPeriods: ['5mm', '30mm'],
   },
   {
     id: 'last30days',
     label: 'Last 30 days',
+    minPeriod: 'DD',
+    groupToPeriods: ['DD'],
   },
 ];
 
 function dateRanges() {
   return DateRanges;
+}
+
+function findRange(id) {
+  return DateRanges.find(r => r.id === id);
 }
 
 function getDateRangeLabel(id) {
@@ -36,6 +46,7 @@ function isLast24Hrs(id) {
 
 export {
   dateRanges,
+  findRange,
   getDateRangeLabel,
   getDateRangeId,
   isLast24Hrs,

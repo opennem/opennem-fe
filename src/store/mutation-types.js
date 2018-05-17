@@ -2,6 +2,7 @@ export const DOMAINS = 'DOMAINS';
 export const FETCHING = 'FETCHING';
 export const CHART_ZOOMED = 'CHART_ZOOMED';
 export const VIS_TYPE = 'VIS_TYPE';
+export const INTERVAL = 'INTERVAL';
 
 export const EXPORT_DATA = 'EXPORT_DATA';
 export const EXPORT_REGION = 'EXPORT_REGION';
