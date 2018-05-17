@@ -308,7 +308,7 @@ export default {
       const datesChanged = (moment(this.panelStart).isSame(start)) &&
         (moment(this.panelEnd).isSame(end));
 
-      if (!datesChanged) {
+      if (!datesChanged && !this.initialZoom) {
         this.panelStart = start;
         this.panelEnd = end;
 
