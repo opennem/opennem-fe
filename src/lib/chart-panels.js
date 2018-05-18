@@ -161,6 +161,7 @@ function getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets
         id: 'temperatureValueAxis',
         dashLength: 6,
         labelsEnabled: false,
+        minimum: 0,
         guides: [
           makeGuide(0),
           makeGuide(10),
