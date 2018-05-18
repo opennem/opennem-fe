@@ -37,7 +37,12 @@
         <th class="row-header">Sources</th>
         <th class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            {{ pointSummary.totalGrossPower | formatNumber }}
+            <span v-if="isPower">
+              {{ pointSummary.totalGrossPower | formatNumber }}
+            </span>
+            <span v-else>
+              {{ pointSummary.totalGrossPower | formatNumber('0,0.0') }}
+            </span>
           </div>
           
           <div v-else>
@@ -65,7 +70,12 @@
         </td>
         <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            {{ pointSummary.allData[row.id] | formatNumber }}
+            <span v-if="isPower">
+              {{ pointSummary.allData[row.id] | formatNumber }}
+            </span>
+            <span v-else>
+              {{ pointSummary.allData[row.id] | formatNumber('0,0.0') }}
+            </span>
           </div>
           
           <div v-else>
@@ -74,11 +84,11 @@
         </td>
         <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            {{ getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower) | formatNumber }}<span v-if="hasValue(getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower))">%</span>
+            {{ getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower))">%</span>
           </div>
           
           <div v-else>
-            {{ getContribution(row.range.power, rangeSummary.totalGrossPower) | formatNumber }}<span v-if="hasValue(getContribution(row.range.power, rangeSummary.totalGrossPower))">%</span>
+            {{ getContribution(row.range.power, rangeSummary.totalGrossPower) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(row.range.power, rangeSummary.totalGrossPower))">%</span>
           </div>
         </td>
         <td class="cell-value">
@@ -135,7 +145,12 @@
         <th class="row-header">Net</th>
         <th class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            {{ pointSummary.totalNetPower | formatNumber }}
+            <span v-if="isPower">
+              {{ pointSummary.totalNetPower | formatNumber }}
+            </span>
+            <span v-else>
+              {{ pointSummary.totalNetPower | formatNumber('0,0.0') }}
+            </span>
           </div>
           
           <div v-else>

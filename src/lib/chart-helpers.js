@@ -158,9 +158,9 @@ function getStockGraphs(domains, keys, graphType, unit) {
           let balloonTxt = '';
 
           if (!isLoads(graph.id) && item.values.value > 0) {
-            const value = formatNumberForDisplay(item.dataContext[`${graph.id}Average`]);
+            const precision = graphType === 'step' ? '0,0.0' : '0,0';
+            const value = formatNumberForDisplay(item.dataContext[`${graph.id}Average`], precision);
             const ftLabel = domains[graph.id].label;
-
             const displayValue = `${value} ${unit}`;
 
             balloonTxt = `
