@@ -17,6 +17,10 @@ table.summary-table {
     border-bottom-width: 1px;
   }
 
+  td.hovered, th.hovered {
+    background-color: rgba(255, 154, 129, 0.1);
+  }
+
   td, th {
     font-size: 1em;
 

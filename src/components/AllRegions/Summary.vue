@@ -24,7 +24,7 @@
     <thead>
       <tr>
         <th class="row-header">Sources</th>
-        <th class="cell-value">
+        <th class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
             {{ pointSummary.totalGrossPower | formatNumber }}
           </div>
@@ -43,7 +43,7 @@
           <span class="source-colour" :style="{ backgroundColor: row.colour }"></span>
           <span class="source-label">{{row.label}}</span>
         </td>
-        <td class="cell-value">
+        <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
             {{ pointSummary.allData[row.id] | formatNumber }}
           </div>
@@ -52,7 +52,7 @@
             {{ row.range.energy | formatNumber('0,0.0') }}
           </div>
         </td>
-        <td class="cell-value">
+        <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
             {{ getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower) | formatNumber }}<span v-if="hasValue(getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower))">%</span>
           </div>
@@ -78,7 +78,7 @@
           <span class="source-colour"></span>
           <span class="source-label">{{row.label}}</span>
         </td>
-        <td class="cell-value">
+        <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
             {{ pointSummary.allData[row.id] | formatNumber }}
           </div>
@@ -94,7 +94,7 @@
     <thead>
       <tr>
         <th class="row-header">Net</th>
-        <th class="cell-value">
+        <th class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
             {{ pointSummary.totalNetPower | formatNumber }}
           </div>
