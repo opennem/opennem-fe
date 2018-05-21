@@ -188,7 +188,7 @@ export default {
 
       const range = findRange(this.currentRange);
       const url = `${this.visType}${range.folder}/${this.region}1${range.extension}.json`;
-      
+
       getJSON(url)
         .then(this.handleResponse)
         .catch((e) => {
@@ -197,7 +197,7 @@ export default {
           const message = e.message === 'Network Error' ?
             'No \'Access-Control-Allow-Origin\' header is present on the requested resource' :
             e.message;
-          
+
           this.$store.dispatch('fetchErrorMessage', `${e.config.url}, Error: ${message}`);
         });
     },

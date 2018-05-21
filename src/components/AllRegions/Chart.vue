@@ -139,7 +139,7 @@ export default {
 
       const unit = this.isPower ? 'MW' : 'GWh';
       const graphType = this.isPower ? 'line' : 'step';
-      const showWeekends = !this.isPower;
+      // const showWeekends = !this.isPower;
 
       this.chart.panels[0].stockGraphs = getStockGraphs(this.domains, this.keys, graphType, unit);
       this.chart.panels[0].guides = this.isPower ? getNemGuides(this.chartData, false) : [];
