@@ -1,5 +1,7 @@
 export const DOMAINS = 'DOMAINS';
 export const FETCHING = 'FETCHING';
+export const FETCH_ERROR = 'FETCH_ERROR';
+export const FETCH_ERROR_MESSAGE = 'FETCH_ERROR_MESSAGE';
 export const CHART_ZOOMED = 'CHART_ZOOMED';
 export const VIS_TYPE = 'VIS_TYPE';
 export const MIN_PERIOD = 'MIN_PERIOD';
