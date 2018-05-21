@@ -3,9 +3,12 @@
 
     <section v-if="showMainNav">
       <app-header />
+
       <div class="router-view-container">
-        <router-view />
+        <router-view v-show="!fetchError" />
+        <ui-error />
       </div>
+
       <app-footer />
     </section>
 
@@ -26,16 +29,22 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import AppHeader from '@/components/ui/Header';
 import AppFooter from '@/components/ui/Footer';
+import UiError from '@/components/ui/Error';
 
 export default {
   name: 'app',
   components: {
     AppHeader,
     AppFooter,
+    UiError,
   },
   computed: {
+    ...mapGetters({
+      fetchError: 'fetchError',
+    }),
     showMainNav() {
       const name = this.$route.name;
       return name === 'home' || name === 'regions';

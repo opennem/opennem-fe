@@ -1,17 +1,17 @@
 <template>
 <div>
   <transition name="fade">
-    <zoom-out-button v-if="isChartZoomed && !isFetching && !isExportPng" />
+    <ui-zoom-out-button v-if="isChartZoomed && !isFetching && !isExportPng" />
   </transition>
 
   <transition name="slide-fade">
     <div v-if="isFetching" class="loading">
-      <loader />
+      <ui-loader />
     </div>
   </transition>
-
+  
   <transition name="slide-fade">
-    <div class="columns is-desktop is-variable is-1" v-show="!isFetching">
+    <div class="columns is-desktop is-variable is-1" v-show="!isFetching && !fetchError">
       <div class="column" :class="{ export: isExportPng }">
         <div id="export-container">
           <export-png-header v-if="isExportPng" />
@@ -31,7 +31,7 @@
 
       <div class="column is-narrow" v-show="!isExportPng">
         <all-regions-summary />
-        <all-regions-extent />
+        <!-- <all-regions-extent /> -->
       </div>
     </div>
   </transition>
@@ -48,7 +48,7 @@ import updateRouterStartEnd from '@/lib/app-router';
 import dataTransform from '@/lib/data-transform';
 import { dataFilter } from '@/lib/data-helpers';
 import { GraphDomains } from '@/domains/graphs';
-import { isLast24Hrs } from '@/domains/date-ranges';
+import { isLast24Hrs, findRange } from '@/domains/date-ranges';
 import AllRegionsChart from './AllRegions/Chart';
 import AllRegionsSummary from './AllRegions/Summary';
 import AllRegionsExtent from './ui/Extent';
@@ -56,8 +56,8 @@ import ExportPngHeader from './Export/PngHeader';
 import ExportPngFooter from './Export/PngFooter';
 import PanelButton from './AllRegions/ShowHideButton';
 import ExportLegend from './Export/Legend';
-import ZoomOutButton from './ui/ZoomOutButton';
-import Loader from './ui/Loader';
+import UiZoomOutButton from './ui/ZoomOutButton';
+import UiLoader from './ui/Loader';
 
 export default {
   components: {
@@ -67,9 +67,9 @@ export default {
     ExportPngHeader,
     ExportPngFooter,
     ExportLegend,
-    ZoomOutButton,
+    UiZoomOutButton,
     PanelButton,
-    Loader,
+    UiLoader,
   },
   created() {
     this.$store.dispatch('setDomains', GraphDomains);
@@ -98,6 +98,7 @@ export default {
       showSummaryPanel: 'showSummaryPanel',
       visType: 'visType',
       currentRange: 'currentRange',
+      fetchError: 'fetchError',
     }),
     records() {
       return this.$route.query.records;
@@ -155,8 +156,23 @@ export default {
     },
     fetchNem() {
       this.$store.dispatch('fetchingData', true);
-      const url = `data/${this.visType}/nem.json`;
-      getJSON(url).then(this.handleResponse);
+      this.$store.dispatch('fetchError', false);
+      this.$store.dispatch('fetchErrorMessage', '');
+
+      const range = findRange(this.currentRange);
+      const url = `${this.visType}${range.folder}/nem${range.extension}.json`;
+
+      getJSON(url)
+        .then(this.handleResponse)
+        .catch((e) => {
+          this.$store.dispatch('fetchingData', false);
+          this.$store.dispatch('fetchError', true);
+          const message = e.message === 'Network Error' ?
+            'No \'Access-Control-Allow-Origin\' header is present on the requested resource' :
+            e.message;
+          
+          this.$store.dispatch('fetchErrorMessage', `${e.config.url}, Error: ${message}`);
+        });
     },
   },
 };
