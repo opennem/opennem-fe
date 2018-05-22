@@ -12,16 +12,12 @@
       <app-footer />
     </section>
 
-    <section class="about-page" v-if="isAbout">
+    <section class="about-page" v-else-if="isAbout">
       <router-view/>
       <app-footer /> 
     </section>
 
-    <section class="widget-page" v-if="isWidget">
-      <router-view/>
-    </section>
-
-    <section class="notfound-page" v-if="isNotFound">
+    <section v-else>
       <router-view/>
     </section>
 

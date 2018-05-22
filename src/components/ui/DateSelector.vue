@@ -18,9 +18,10 @@
           <div v-if="dropdownActive" class="dropdown-menu">
             <div class="dropdown-content">
               <a class="dropdown-item"
-                  v-for="row in dateSelectors" 
+                  v-for="(row, index) in dateSelectors" 
                   :key="row.id"
-                  @click="handleSelection(row)" 
+                  v-show="moreDateRanges || index < 2"
+                  @click="handleSelection(row)"
                   :class="{ 'selected': currentRange === row.id }">
                 {{row.label}}
               </a>
@@ -58,6 +59,7 @@ export default {
       startDate: 'getSelectedStartDate',
       endDate: 'getSelectedEndDate',
       currentRange: 'currentRange',
+      moreDateRanges: 'moreDateRanges',
     }),
     regionOffset() {
       return getRegionOffset(this.$route.params.region);

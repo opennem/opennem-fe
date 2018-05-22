@@ -1,7 +1,9 @@
-import axios from 'axios';
+import { create } from 'apisauce';
 
-const http = axios.create({
-  baseURL: 'https://data.opennem.org.au/',
+const external = 'https://data.opennem.org.au/';
+const local = 'data/';
+const http = create({
+  baseURL: local,
 });
 
 function fetchJSON(ref) {
@@ -14,7 +16,12 @@ function fetchJSON(ref) {
   });
 }
 
-export default function (ref) {
+export default function (ref, externalData) {
+  if (externalData) {
+    http.setBaseURL(external);
+  } else {
+    http.setBaseURL(local);
+  }
   return new Promise((resolve, reject) => {
     fetchJSON(ref).then((data) => {
       resolve(data);

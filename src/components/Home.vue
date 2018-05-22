@@ -31,7 +31,7 @@
 
       <div class="column is-narrow" v-show="!isExportPng">
         <all-regions-summary />
-        <!-- <all-regions-extent /> -->
+        <all-regions-extent v-if="recordsTable" />
       </div>
     </div>
   </transition>
@@ -99,6 +99,8 @@ export default {
       visType: 'visType',
       currentRange: 'currentRange',
       fetchError: 'fetchError',
+      recordsTable: 'recordsTable',
+      externalData: 'externalData',
     }),
     records() {
       return this.$route.query.records;
@@ -162,7 +164,7 @@ export default {
       const range = findRange(this.currentRange);
       const url = `${this.visType}${range.folder}/nem${range.extension}.json`;
 
-      getJSON(url)
+      getJSON(url, this.externalData)
         .then(this.handleResponse)
         .catch((e) => {
           this.$store.dispatch('fetchingData', false);

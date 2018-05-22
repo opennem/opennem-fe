@@ -10,6 +10,7 @@ import exportStore from './export';
 import summary from './summary';
 import dates from './dates';
 import panels from './panels';
+import features from './features';
 
 Vue.use(Vuex);
 
@@ -125,6 +126,7 @@ const store = new Vuex.Store({
     summary,
     dates,
     panels,
+    features,
   }
 });
 
