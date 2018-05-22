@@ -39,9 +39,49 @@ function getGenerationPanel(listeners) {
 }
 
 /**
+ * Energy Panel
+ */
+function getEnergyPanel(listeners) {
+  return {
+    allLabels: [
+      { text: 'Energy', bold: true, x: 5, y: 5 },
+      { text: 'GWh', x: 50, y: 7, color: '#999', size: 9 },
+    ],
+    showCategoryAxis: true,
+    addClassNames: true,
+    chartCursor: {
+      enabled: true,
+    },
+    categoryAxis: {},
+    valueAxes: [
+      {
+        id: 'v1',
+        dashLength: 6,
+        zeroGridAlpha: 0,
+        stackType: 'regular',
+        guides: [
+          {
+            includeGuidesInMinMax: false,
+            value: 0,
+            dashLength: 0,
+            lineColor: '#000',
+            lineThickness: 1,
+            lineAlpha: 1,
+          },
+        ],
+      },
+    ],
+    stockGraphs: [],
+    guides: [],
+    listeners,
+    stockLegend: { enabled: false },
+  };
+}
+
+/**
  * Temperature Panel
  */
-function getTemperaturePanel(listeners) {
+function getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets) {
   function makeGuide(value, colour) {
     return {
       includeGuidesInMinMax: false,
@@ -52,6 +92,60 @@ function getTemperaturePanel(listeners) {
       lineThickness: 1,
       lineAlpha: 1,
     };
+  }
+
+  function temperatureMinMaxStockGraphs() {
+    return [
+      {
+        id: 'temperatureMaxStockGraph',
+        valueAxis: 'temperatureValueAxis',
+        valueField: 'temperature_min',
+        lineAlpha: 0,
+        type: 'smoothedLine',
+        lineColor: '#C74523',
+        useDataSetColors: false,
+        showBalloon: false,
+        connect: false,
+        fillAplhas: 0,
+      },
+      {
+        id: 'temperatureMinStockGraph',
+        valueAxis: 'temperatureValueAxis',
+        valueField: 'temperature_max',
+        lineAlpha: 0,
+        type: 'smoothedLine',
+        lineColor: '#C74523',
+        useDataSetColors: false,
+        showBalloon: false,
+        connect: false,
+        fillAlphas: 0.1,
+        fillToGraph: 'temperatureMaxStockGraph',
+      },
+    ];
+  }
+
+  const bullet = showBullets ? 'round' : 'none';
+
+  const temperatureGraph = {
+    id: 'temperatureStockGraph',
+    valueAxis: 'temperatureValueAxis',
+    valueField: temperatureField,
+    type: 'smoothedLine',
+    lineAlpha: 1,
+    lineColor: '#C74523',
+    useDataSetColors: false,
+    showBalloon: false,
+    connect: false,
+    bulletSize: 5,
+    bullet,
+    balloonFunction: item => `<strong>${item.values.value}°C</strong>`,
+  };
+  let stockGraphs = [];
+
+  if (hasMinMax) {
+    stockGraphs = [...temperatureMinMaxStockGraphs(), temperatureGraph];
+  } else {
+    stockGraphs.push(temperatureGraph);
   }
 
   return {
@@ -66,8 +160,6 @@ function getTemperaturePanel(listeners) {
       {
         id: 'temperatureValueAxis',
         dashLength: 6,
-        minimum: 0,
-        maximum: 50,
         labelsEnabled: false,
         guides: [
           makeGuide(0),
@@ -84,19 +176,7 @@ function getTemperaturePanel(listeners) {
         ],
       },
     ],
-    stockGraphs: [{
-      id: 'temperatureStockGraph',
-      valueAxis: 'temperatureValueAxis',
-      valueField: 'temperature',
-      type: 'line',
-      lineAlpha: 1,
-      lineColor: '#C74523',
-      useDataSetColors: false,
-      showBalloon: false,
-      connect: false,
-      bulletSize: 5,
-      balloonFunction: item => `<strong>${item.values.value}°C</strong>`,
-    }],
+    stockGraphs,
     guides: [],
     listeners,
     stockLegend: { enabled: false },
@@ -109,7 +189,7 @@ function getTemperaturePanel(listeners) {
  *  2 - Normal (0-100),
  *  3 - Log of neg Prices (0-1000)
  */
-function getPricePanels(listeners) {
+function getPricePanels(listeners, priceField) {
   function makePriceGuide(value, label, hasDash, lineColor) {
     return {
       label,
@@ -199,7 +279,7 @@ function getPricePanels(listeners) {
       {
         id: 'priceStockGraph',
         valueAxis: 'priceValueAxis',
-        valueField: 'price',
+        valueField: priceField,
         type: 'step',
         lineAlpha: 0.9,
         lineColor: '#C74523',
@@ -252,6 +332,7 @@ function getPricePanels(listeners) {
 
 export {
   getGenerationPanel,
+  getEnergyPanel,
   getTemperaturePanel,
   getPricePanels,
 };

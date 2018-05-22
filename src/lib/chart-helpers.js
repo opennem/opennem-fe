@@ -1,15 +1,30 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import {
+  isValidFuelTech,
+  isImports,
+  isLoads } from '@/domains/graphs';
 import { formatNumberForDisplay } from './formatter';
 import { getStartEndDates } from './data-helpers';
 import { isTouchDevice } from './device';
 
+function getMinPeriod(isPower) {
+  return isPower ? '5mm' : 'DD';
+}
+
+function getGroupToPeriods(isPower) {
+  return isPower ? ['5mm', '30mm'] : ['DD'];
+}
+
 /**
  * Default amCharts config
  */
-function getChartConfig(config) {
+function getChartConfig(config, isPower, periods) {
   let pan = false;
   let zoomable = true;
+  const minPeriod = getMinPeriod(isPower);
+  const groupToPeriods = periods || getGroupToPeriods(isPower);
+  const startOnAxis = isPower;
 
   if (isTouchDevice()) {
     pan = true;
@@ -36,7 +51,8 @@ function getChartConfig(config) {
     },
     categoryAxesSettings: {
       autoGridCount: true,
-      minPeriod: '5mm',
+      minPeriod,
+      groupToPeriods,
       labelOffset: -35,
       axisAlpha: 1,
       tickLength: 30,
@@ -47,10 +63,9 @@ function getChartConfig(config) {
       dashLength: 7,
       equalSpacing: true,
       centerLabelOnFullPeriod: false,
-      groupToPeriods: ['5mm', '30mm'],
       boldPeriodBeginning: true,
       parseDates: true,
-      startOnAxis: true,
+      startOnAxis,
       dateFormats: [
         { period: 'fff', format: ' JJ:NN' },
         { period: 'ss', format: ' JJ:NN\n D MMM' },
@@ -102,57 +117,51 @@ function getFieldMappings(keys) {
 /**
  * amCharts Stock graphs
  */
-function getStockGraphs(domains, keys, showBalloon) {
+function getStockGraphs(domains, keys, graphType, unit) {
   const graphs = [];
 
   function hideNegativeAlphas(key) {
-    return key === 'exports' ||
-      key === 'imports' ||
-      key === 'pumps' ||
-      key === 'battery_charging';
-  }
-
-  function validFT(key) {
-    return key !== 'price' &&
-      key !== 'pricePos' &&
-      key !== 'priceNeg' &&
-      key !== 'temperature';
-  }
-
-  function isLoad(key) {
-    return key === 'exports' ||
-      key === 'pumps' ||
-      key === 'battery_charging';
+    return isLoads(key) || isImports(key);
   }
 
   keys.forEach((ftKey) => {
-    if (validFT(ftKey)) {
+    if (isValidFuelTech(ftKey)) {
       const colour = domains[ftKey].colour;
-      const negativeFillAlphas = hideNegativeAlphas(ftKey) ? 0 : 0.8;
+      let negativeFillAlphas = 0.8;
       const fillAlphas = 0.8;
-      const lineAlpha = 0.1;
-      const type = 'line';
+      const fillColors = colour;
+      const lineAlpha = 0;
+      const lineThickness = 1;
+      const lineColor = colour;
+      const type = graphType || 'line';
+
+      if (graphType !== 'step' && hideNegativeAlphas(ftKey)) {
+        negativeFillAlphas = 0;
+      }
 
       const graph = {
         id: ftKey,
         valueField: ftKey,
         type,
         fillAlphas,
+        fillColors,
         negativeFillAlphas,
         negativeFillColors: colour,
         lineAlpha,
-        lineColor: colour,
+        lineThickness,
+        lineColor,
         useDataSetColors: false,
-        showBalloon,
+        columnWidth: 0.8,
+        showBalloon: false,
         periodValue: 'Average',
         balloonFunction: (item) => {
           let balloonTxt = '';
 
-          if (!isLoad(graph.id) && item.values.value > 0) {
-            const value = formatNumberForDisplay(item.dataContext[`${graph.id}Average`]);
+          if (!isLoads(graph.id) && item.values.value > 0) {
+            const precision = graphType === 'step' ? '0,0.0' : '0,0';
+            const value = formatNumberForDisplay(item.dataContext[`${graph.id}Average`], precision);
             const ftLabel = domains[graph.id].label;
-
-            const displayValue = `${value} MW`;
+            const displayValue = `${value} ${unit}`;
 
             balloonTxt = `
               <div style="font-size: 1.1em;">
@@ -177,7 +186,7 @@ function getStockGraphs(domains, keys, showBalloon) {
  * amCharts NEM Guides
     - shade between 10pm to 7am
  */
-function getNemGuides(data) {
+function getNemGuides(data, showWeekends) {
   const startEndDates = getStartEndDates(data);
   const startDate = moment(startEndDates.start);
   const endDate = moment(startEndDates.end);
@@ -186,7 +195,9 @@ function getNemGuides(data) {
 
   while (moment(startDate).isBefore(endDate)) {
     const dayBefore = startDate.clone();
+    const daysAfter = startDate.clone();
     dayBefore.subtract(1, 'days');
+    daysAfter.add(2, 'days');
 
     guides.push({
       fillColor: '#999',
@@ -196,6 +207,21 @@ function getNemGuides(data) {
       date: dayBefore.set({ hour: 22, minute: 0, second: 0 }).toDate(),
       toDate: startDate.set({ hour: 7, minute: 0, second: 0 }).toDate(),
     });
+
+    if (showWeekends) {
+      if (startDate.day() === 0) {
+        guides.push({
+          fillColor: '#bbb',
+          fillAlpha: 0.1,
+          lineAlpha: 0.5,
+          tickLength: 0,
+          lineColor: '#ccc',
+          dashLength: 0,
+          toDate: daysAfter.set({ hour: 0, minute: 0, second: 0 }).toDate(),
+          date: startDate.set({ hour: 0, minute: 0, second: 0 }).toDate(),
+        });
+      }
+    }
 
     startDate.add(1, 'days');
   }
@@ -208,4 +234,6 @@ export {
   getFieldMappings,
   getStockGraphs,
   getNemGuides,
+  getMinPeriod,
+  getGroupToPeriods,
 };

@@ -55,7 +55,6 @@ import {
   faListAlt,
   faInfoCircle,
 } from '@fortawesome/fontawesome-free-solid';
-import EventBus from '@/lib/event-bus';
 import getJSON from '@/lib/data-apis';
 import dataTransform from '@/lib/data-transform';
 import {
@@ -94,10 +93,8 @@ export default {
     this.fetchNem();
   },
   mounted() {
-    EventBus.$on('data.fetch.latest', this.fetchNem);
   },
   beforeDestroy() {
-    EventBus.$off('data.fetch.latest');
   },
   computed: {
     ...mapGetters({
@@ -159,7 +156,7 @@ export default {
     },
     fetchNem() {
       this.$store.dispatch('fetchingData', true);
-      const url = 'data/power/nem.json';
+      const url = 'power/nem.json';
 
       getJSON(url).then((response) => {
         const transformedData = dataTransform(GraphDomains, response.data);

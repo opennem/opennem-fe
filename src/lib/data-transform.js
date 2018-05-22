@@ -1,6 +1,12 @@
 /* eslint-disable */
 import * as moment from 'moment';
+import History from '@/models/History';
+import { isPrice, isTemperature, isImports, isLoads } from '@/domains/graphs'; 
 import { parseInterval, compareAndGetShortestInterval } from './duration-parser';
+
+function shouldInvertValue(id) {
+  return isImports(id) || isLoads(id);
+}
 
 /**
  * Find out what datatypes is available in this dataset,
@@ -14,23 +20,22 @@ function getKeysAndStartEndGenerationTime(domains, data) {
   let endGenTime = null;
 
   Object.keys(domains).forEach((domain) => {
-    const find = data.find(d => d.fuel_tech === domain);
-    const hasPrice = data.find(d => d.type === domain);
-    const hasTemperature = data.find(d => d.type === domain);
+    const fuelTech = data.find(d => d.fuel_tech === domain);
+    const otherTypes = data.find(d => d.type === domain);
 
-    if (find || hasPrice || hasTemperature) {
+    if (fuelTech || otherTypes) {
       keys.push(domain);
 
-      if (!endGenTime && find) {
-        endGenTime = find.history.last;
+      if (!endGenTime && fuelTech) {
+        endGenTime = fuelTech.history.last;
       }
-      if (!startGenTime && find) {
-        startGenTime = find.history.start;
+      if (!startGenTime && fuelTech) {
+        startGenTime = fuelTech.history.start;
       }
 
       // if there is a price key,
       //   create two more keys to split the positive and negative values of price
-      if (hasPrice) {
+      if (isPrice(domain)) {
         keys.push('pricePos');
         keys.push('priceNeg');
       }
@@ -42,13 +47,6 @@ function getKeysAndStartEndGenerationTime(domains, data) {
     startGenTime,
     endGenTime,
   };
-}
-
-function invertValue(d) {
-  return d === 'exports' ||
-    d === 'imports' ||
-    d === 'pumps' ||
-    d === 'battery_charging';
 }
 
 export default function(domains, data) {
@@ -69,7 +67,7 @@ export default function(domains, data) {
 
     for (let i = 0; i < historyData.length; i += 1) {
       const now = moment(start).add(duration.value * i, duration.key);
-      const d = invertValue(domain) ? -historyData[i] : historyData[i];
+      const d = shouldInvertValue(domain) ? -historyData[i] : historyData[i];
       const nowISO = moment(now).toISOString();
 
       if (!container[nowISO]) {
@@ -80,6 +78,11 @@ export default function(domains, data) {
         });
       }
       container[nowISO][domain] = d;
+
+      if (isPrice(domain)) {
+        container[nowISO]['pricePos'] = d > 300 ? d : 0.001;
+        container[nowISO]['priceNeg'] = d < 0 ? -d : 0.001;
+      }
     }
   }
 
@@ -89,9 +92,13 @@ export default function(domains, data) {
     let history = null;
 
     if (fuelTechData) {
-      history = fuelTechData.history;
+      if (fuelTechData.history) {
+        history = new History(fuelTechData.history);
+      } else if (fuelTechData.forecast) {
+        history = new History(fuelTechData.forecast);
+      }
     } else if (priceOrTemperatureData) {
-      history = priceOrTemperatureData.history;
+      history = new History(priceOrTemperatureData.history);
     }
 
     if (fuelTechData || priceOrTemperatureData) {
@@ -107,8 +114,8 @@ export default function(domains, data) {
 
       createContainerObj(keys, domain, duration, history);
 
-      // if fuelTechData contains forecast data, add that to current keys
-      if (fuelTechData && fuelTechData.forecast) {
+      // if fuelTechData contains both history and forecast data, add forecast data to the same key
+      if (fuelTechData && fuelTechData.history && fuelTechData.forecast) {
         createContainerObj(keys, domain, duration, fuelTechData.forecast);
       }
     }
@@ -142,19 +149,13 @@ export default function(domains, data) {
   // also populate pricePos and priceNeg for log charts
   newChartData.forEach((d) => {
     longerIntervalSeries.forEach((series) => {
-      const isPrice = series.key === 'price';
 
       if (d[series.key] !== null) {
         series.currentValue = d[series.key];
       } else if (d[series.key] === null) {
-        if (series.key !== 'temperature') {
+        if (!isTemperature(series.key)) {
           d[series.key] = series.currentValue;
         }
-      }
-
-      if (isPrice) {
-        d.pricePos = d[series.key] > 300 ? d[series.key] : 0.001;
-        d.priceNeg = d[series.key] < 0 ? -d[series.key] : 0.001;
       }
     });
   });

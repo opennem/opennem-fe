@@ -1,8 +1,25 @@
 @import "../../node_modules/bulma/sass/utilities/mixins.sass";
 
-.summary-table {
+table.summary-table {
   font-size: 0.8rem;
-  border-top: 2px solid #ddd;
+
+  caption {
+    font-family: $header-font-family;
+    text-align: left;
+    font-weight: 600;
+    font-size: 1rem;
+    border-bottom: 1px solid #bcbcbc;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1);
+  }
+
+  tbody tr:last-child td,
+  tbody tr:last-child th {
+    border-bottom-width: 1px;
+  }
+
+  td.hovered, th.hovered {
+    background-color: rgba(255,255,255, 0.4);
+  }
 
   td, th {
     font-size: 1em;

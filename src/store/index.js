@@ -4,75 +4,51 @@ import Vuex from 'vuex';
 import { getSummary, getPointSummary } from '@/lib/data-summary';
 import { dataFilter } from '@/lib/data-helpers';
 import { formatDateForExport } from '@/lib/formatter';
+import { DateRanges } from '@/domains/date-ranges';
+import * as MutationTypes from './mutation-types';
+import exportStore from './export';
+import summary from './summary';
+import dates from './dates';
+import panels from './panels';
+import features from './features';
 
 Vue.use(Vuex);
 
 const state = {
   domains: {},
   isFetching: false,
-  rangeSummary: {},
-  pointSummary: {},
+  fetchError: false,
+  fetchErrorMessage: '',
   isChartZoomed: false,
-  isPointHovered: false,
-  dataEndDate: null,
-  selectedDates: {
-    start: null,
-    end: null,
-  },
-  exportData: [],
-  exportRegion: null,
-  exportPng: false,
-  showTemperaturePanel: true,
-  showPricePanel: true,
-  showSummaryPanel: false,
+  visType: 'power', // power or energy
+  groupToPeriods: DateRanges[1].groupToPeriods,
 };
 
 const mutations = {
-  updateDomains(state, data) {
+  [MutationTypes.DOMAINS](state, data) {
     state.domains = data;
   },
-  updatingIsFetching(state, data) {
+  [MutationTypes.FETCHING](state, data) {
     if (data) {
       // when fetching, always turn off point hover
-      state.isPointHovered = false;
+      state.summary.isPointHovered = false;
     }
     state.isFetching = data;
   },
-  updateRangeSummary(state, data) {
-    state.rangeSummary = data;
+  [MutationTypes.FETCH_ERROR](state, data) {
+    state.fetchError = data;
   },
-  updatePointSummary(state, data) {
-    state.pointSummary = data;
+  [MutationTypes.FETCH_ERROR_MESSAGE](state, data) {
+    state.fetchErrorMessage = data;
   },
-  updateIsChartZoomed(state, data) {
+  [MutationTypes.CHART_ZOOMED](state, data) {
     state.isChartZoomed = data;
   },
-  updateSelectedDates(state, data) {
-    state.selectedDates = data;
+  [MutationTypes.VIS_TYPE](state, data) {
+    state.visType = data;
   },
-  updateIsPointHovered(state, data) {
-    state.isPointHovered = data;
-  },
-  updateDataEndDate(state, data) {
-    state.dataEndDate = data;
-  },
-  updateExportData(state, data) {
-    state.exportData = data;
-  },
-  updateExportRegion(state, data) {
-    state.exportRegion = data;
-  },
-  updateExportPng(state, data) {
-    state.exportPng = data;
-  },
-  showTemperaturePanel(state, data) {
-    state.showTemperaturePanel = data;
-  },
-  showPricePanel(state, data) {
-    state.showPricePanel = data;
-  },
-  showSummaryPanel(state, data) {
-    state.showSummaryPanel = data;
+  [MutationTypes.GROUP_TO_PERIODS](state, data) {
+    state.groupToPeriods = data;
   },
 };
 
@@ -83,100 +59,60 @@ const getters = {
   isFetching: state => {
     return state.isFetching;
   },
-  getRangeSummary: state => {
-    return state.rangeSummary;
+  fetchError: state => {
+    return state.fetchError;
   },
-  getPointSummary: state => {
-    return state.pointSummary;
+  fetchErrorMessage: state => {
+    return state.fetchErrorMessage;
   },
   isChartZoomed: state => {
     return state.isChartZoomed;
   },
-  isPointHovered: state => {
-    return state.isPointHovered;
+  visType: state => {
+    return state.visType;
   },
-  getSelectedStartDate: state => {
-    return state.selectedDates.start;
+  groupToPeriods: state => {
+    return state.groupToPeriods;
   },
-  getSelectedEndDate: state => {
-    return state.selectedDates.end;
-  },
-  getDataEndDate: state => {
-    return state.dataEndDate;
-  },
-  getExportData: state => {
-    return state.exportData;
-  },
-  getExportRegion: state => {
-    return state.exportRegion;
+  isPower: state => {
+    return state.visType === 'power';
   },
   getExportName: state => {
-    return `${formatDateForExport(state.selectedDates.end)} ${state.exportRegion}`;
-  },
-  isExportPng: state => {
-    return state.exportPng;
-  },
-  showTemperaturePanel: state => {
-    return state.showTemperaturePanel;
-  },
-  showPricePanel: state => {
-    return state.showPricePanel;
-  },
-  showSummaryPanel: state => {
-    return state.showSummaryPanel;
+    return `${formatDateForExport(state.dates.selectedDates.end)} ${state.exportStore.exportRegion}`;
   },
 };
 
 const actions = {
   setDomains({ commit, state }, data) {
-    commit('updateDomains', data);
+    commit(MutationTypes.DOMAINS, data);
   },
   fetchingData({ commit, state }, data) {
-    commit('updatingIsFetching', data);
+    commit(MutationTypes.FETCHING, data);
+  },
+  fetchError({ commit, state }, data) {
+    commit(MutationTypes.FETCH_ERROR, data);
+  },
+  fetchErrorMessage({ commit, state }, data) {
+    commit(MutationTypes.FETCH_ERROR_MESSAGE, data);
   },
   generateRangeSummary({ commit, state }, data) {
+    const isPower = state.visType === 'power';
     const filtered = dataFilter(data.data, data.start, data.end);
-    const summary = getSummary(state.domains, filtered);
-    commit('updateRangeSummary', summary);
+    const summary = getSummary(state.domains, filtered, isPower);
+    commit(MutationTypes.RANGE_SUMMARY, summary);
   },
   generatePointSummary({ commit, state }, data) {
     const summary = getPointSummary(state.domains, data.date, data.dataContext);
-    commit('updatePointSummary', summary);
-  },
-  saveSelectedDates({ commit, state }, data) {
-    commit('updateSelectedDates', data);
+    commit(MutationTypes.POINT_SUMMARY, summary);
   },
   setChartZoomed({ commit, state }, data) {
-    commit('updateIsChartZoomed', data);
+    commit(MutationTypes.CHART_ZOOMED, data);
   },
-  showInstantaneousData({ commit, state }, data) {
-    commit('updateIsPointHovered', data);
+  setVisType({ commit, state }, data) {
+    commit(MutationTypes.VIS_TYPE, data);
   },
-  setDataEndDate({ commit, state }, data) {
-    commit('updateDataEndDate', data);
-  },
-  setExportData({ commit, state }, data) {
-    commit('updateExportData', data);
-  },
-  setExportRegion({ commit, state }, data) {
-    commit('updateExportRegion', data);
-  },
-  setExportPng({ commit, state }, data) {
-    commit('updateExportPng', data);
-  },
-  setTemperaturePanel({ commit, state }, data) {
-    commit('showTemperaturePanel', data);
-  },
-  setPricePanel({ commit, state }, data) {
-    commit('showPricePanel', data);
-  },
-  setSummaryPanel({ commit, state }, data) {
-    commit('showSummaryPanel', data);
-  },
-  resetPanels({ commit, state }) {
-    commit('showTemperaturePanel', true);
-    commit('showPricePanel', true);
-    commit('showSummaryPanel', true);
+  groupToPeriods({ commit, state }, data) {
+    commit(MutationTypes.GROUP_TO_PERIODS, data);
   },
 };
 
@@ -185,6 +121,13 @@ const store = new Vuex.Store({
   mutations,
   actions,
   getters,
+  modules: {
+    exportStore,
+    summary,
+    dates,
+    panels,
+    features,
+  }
 });
 
 export default store;

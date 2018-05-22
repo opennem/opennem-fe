@@ -3,105 +3,143 @@ const GraphDomains = {
     colour: '#fff',
     type: 'loads',
     label: 'Pumps',
-    unit: 'MW',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
   },
   battery_charging: {
     colour: '#fff',
     type: 'loads',
     label: 'Battery (Charging)',
-    unit: 'MW',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
   },
   exports: {
     colour: '#fff',
     type: 'loads',
     label: 'Exports',
-    unit: 'MW',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
   },
   imports: {
     colour: '#44146F',
     type: 'sources',
     label: 'Imports',
-    unit: 'MW',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
   },
   black_coal: {
     colour: '#121212',
     type: 'sources',
     label: 'Black Coal',
-    unit: 'MW',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
   },
   brown_coal: {
     colour: '#8B572A',
     type: 'sources',
     label: 'Brown Coal',
-    unit: 'MW',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
   },
   biomass: {
     colour: '#A3886F',
     type: 'sources',
     label: 'Biomass',
-    unit: 'MW',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
   },
   distillate: {
     colour: '#F35020',
     type: 'sources',
     label: 'Distillate',
-    unit: 'MW',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
   },
   battery_discharging: {
     colour: '#00A2FA',
     type: 'sources',
     label: 'Battery (Discharging)',
-    unit: 'MW',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
   },
   hydro: {
     colour: '#4582B4',
     type: 'sources',
     label: 'Hydro',
-    unit: 'MW',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
   },
   gas_steam: {
     colour: '#F48E1B',
     type: 'sources',
     label: 'Gas (Steam)',
-    unit: 'MW',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
   },
   gas_ccgt: {
     colour: '#FDB462',
     type: 'sources',
     label: 'Gas (CCGT)',
-    unit: 'MW',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
   },
   gas_ocgt: {
     colour: '#FFCD96',
     type: 'sources',
     label: 'Gas (OCGT)',
-    unit: 'MW',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
   },
   gas_recip: {
     colour: '#F9DCBC',
     type: 'sources',
     label: 'Gas (Reciprocating)',
-    unit: 'MW',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
   },
   wind: {
     colour: '#417505',
     type: 'sources',
     label: 'Wind',
-    unit: 'MW',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
   },
   solar: {
     colour: '#DFCF00',
     type: 'sources',
     label: 'Solar (Utility)',
-    unit: 'MW',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
   },
   rooftop_solar: {
     colour: '#F8E71C',
     type: 'sources',
     label: 'Solar (Rooftop)',
-    unit: 'MW',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
   },
   temperature: {
+    colour: '#000',
+    type: 'other',
+    label: 'Temperature',
+    categoryId: 'temperature',
+    unit: 'C',
+  },
+  temperature_mean: {
+    colour: '#000',
+    type: 'other',
+    label: 'Temperature',
+    categoryId: 'temperature',
+    unit: 'C',
+  },
+  temperature_min: {
+    colour: '#000',
+    type: 'other',
+    label: 'Temperature',
+    categoryId: 'temperature',
+    unit: 'C',
+  },
+  temperature_max: {
     colour: '#000',
     type: 'other',
     label: 'Temperature',
@@ -112,6 +150,13 @@ const GraphDomains = {
     colour: '#000',
     type: 'other',
     label: 'Trading Price',
+    categoryId: 'price',
+    unit: '$/MWh',
+  },
+  volume_weighted_price: {
+    colour: '#000',
+    type: 'other',
+    label: 'Volume Weighted Price',
     categoryId: 'price',
     unit: '$/MWh',
   },
@@ -131,7 +176,49 @@ const GraphDomains = {
   },
 };
 
-function getCSVHeaders() {
+function getUnit(domain, visType) {
+  let unit = GraphDomains[domain].unit;
+  if (!unit) {
+    const type = visType || 'power';
+    unit = GraphDomains[domain][`${type}Unit`];
+  }
+  return unit;
+}
+
+function isValidFuelTech(id) {
+  const domain = GraphDomains[id];
+  return domain.type === 'sources' || domain.type === 'loads';
+}
+
+function isRenewableFuelTech(id) {
+  return id === 'wind' ||
+    id === 'biomass' ||
+    id === 'hydro' ||
+    id === 'rooftop_solar' ||
+    id === 'solar';
+}
+
+function isPrice(id) {
+  return id === 'price' || id === 'volume_weighted_price';
+}
+
+function isTemperature(id) {
+  return id === 'temperature' ||
+  id === 'temperature_mean' ||
+  id === 'temperature_min' ||
+  id === 'temperature_max';
+}
+
+function isLoads(id) {
+  const domain = GraphDomains[id];
+  return domain.type === 'loads';
+}
+
+function isImports(id) {
+  return id === 'imports';
+}
+
+function getCSVHeaders(visType) {
   const headers = {
     Time: 'date',
   };
@@ -144,7 +231,7 @@ function getCSVHeaders() {
 
     if (isValidCsvHeader(domain)) {
       const ftLabel = GraphDomains[domain].label;
-      const ftUnit = GraphDomains[domain].unit;
+      const ftUnit = getUnit(domain, visType);
       const label = `${ftLabel} - ${ftUnit}`;
       headers[label] = domain;
     }
@@ -156,4 +243,10 @@ function getCSVHeaders() {
 export {
   GraphDomains,
   getCSVHeaders,
+  isLoads,
+  isImports,
+  isValidFuelTech,
+  isRenewableFuelTech,
+  isPrice,
+  isTemperature,
 };

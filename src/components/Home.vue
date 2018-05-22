@@ -1,32 +1,41 @@
 <template>
-<div class="columns is-desktop is-variable is-1">
+<div>
   <transition name="fade">
-    <zoom-out-button v-if="isChartZoomed && !isFetching  && !isExportPng" />
+    <ui-zoom-out-button v-if="isChartZoomed && !isFetching && !isExportPng" />
   </transition>
 
-  <div class="column" v-show="!isFetching" :class="{ export: isExportPng }">
-    <div id="export-container">
-      <export-png-header v-if="isExportPng" />
+  <transition name="slide-fade">
+    <div v-if="isFetching" class="loading">
+      <ui-loader />
+    </div>
+  </transition>
+  
+  <transition name="slide-fade">
+    <div class="columns is-desktop is-variable is-1" v-show="!isFetching && !fetchError">
+      <div class="column" :class="{ export: isExportPng }">
+        <div id="export-container">
+          <export-png-header v-if="isExportPng" />
 
-      <div style="position:relative">
-        <panel-button />
-        <all-regions-chart :chartData="chartData" />
-        <!-- <export-legend v-if="isExportPng" /> -->
-        <div v-if="isExportPng">
-          <all-regions-summary v-if="showSummaryPanel" />
-          <export-legend v-else />
+          <div style="position:relative">
+            <panel-button />
+            <all-regions-chart :chartData="chartData" />
+            <div v-if="isExportPng">
+              <all-regions-summary v-if="showSummaryPanel" />
+              <export-legend v-else />
+            </div>
+          </div>
+          
+          <export-png-footer v-if="isExportPng" :hideTopBorder="showSummaryPanel" />
         </div>
       </div>
-      
-      <export-png-footer v-if="isExportPng" :hideTopBorder="showSummaryPanel" />
-    </div>
-  </div>
-  <div class="column is-narrow" v-if="!isFetching && !isExportPng">
-    <all-regions-summary />
-    <all-regions-extent v-if="records" />
-  </div>
-</div>
 
+      <div class="column is-narrow" v-show="!isExportPng">
+        <all-regions-summary />
+        <all-regions-extent v-if="recordsTable" />
+      </div>
+    </div>
+  </transition>
+</div>
 </template>
 
 <script>
@@ -37,8 +46,9 @@ import EventBus from '@/lib/event-bus';
 import getJSON from '@/lib/data-apis';
 import updateRouterStartEnd from '@/lib/app-router';
 import dataTransform from '@/lib/data-transform';
-import { getStartEndDates } from '@/lib/data-helpers';
+import { dataFilter } from '@/lib/data-helpers';
 import { GraphDomains } from '@/domains/graphs';
+import { isLast24Hrs, findRange } from '@/domains/date-ranges';
 import AllRegionsChart from './AllRegions/Chart';
 import AllRegionsSummary from './AllRegions/Summary';
 import AllRegionsExtent from './ui/Extent';
@@ -46,7 +56,8 @@ import ExportPngHeader from './Export/PngHeader';
 import ExportPngFooter from './Export/PngFooter';
 import PanelButton from './AllRegions/ShowHideButton';
 import ExportLegend from './Export/Legend';
-import ZoomOutButton from './ui/ZoomOutButton';
+import UiZoomOutButton from './ui/ZoomOutButton';
+import UiLoader from './ui/Loader';
 
 export default {
   components: {
@@ -56,24 +67,24 @@ export default {
     ExportPngHeader,
     ExportPngFooter,
     ExportLegend,
-    ZoomOutButton,
+    UiZoomOutButton,
     PanelButton,
+    UiLoader,
   },
   created() {
     this.$store.dispatch('setDomains', GraphDomains);
     this.fetchNem();
   },
   mounted() {
-    EventBus.$on('data.fetch.latest', this.fetchNem);
     EventBus.$on('download.png', this.downloadPng);
   },
   beforeDestroy() {
-    EventBus.$off('data.fetch.latest');
     EventBus.$off('download.png');
   },
   data() {
     return {
       chartData: [],
+      selectedRange: null,
     };
   },
   computed: {
@@ -85,6 +96,11 @@ export default {
       isExportPng: 'isExportPng',
       exportName: 'getExportName',
       showSummaryPanel: 'showSummaryPanel',
+      visType: 'visType',
+      currentRange: 'currentRange',
+      fetchError: 'fetchError',
+      recordsTable: 'recordsTable',
+      externalData: 'externalData',
     }),
     records() {
       return this.$route.query.records;
@@ -92,14 +108,10 @@ export default {
   },
   watch: {
     chartData(data) {
-      let start = this.startDate;
-      let end = this.endDate;
+      const start = this.startDate;
+      const end = this.endDate;
 
       if (!this.isChartZoomed) {
-        const startEndDates = getStartEndDates(data);
-        start = startEndDates.start;
-        end = startEndDates.end;
-        this.$store.dispatch('saveSelectedDates', startEndDates);
         updateRouterStartEnd(this.$router, start, end);
       }
 
@@ -109,6 +121,9 @@ export default {
         start,
         end,
       });
+    },
+    currentRange() {
+      this.fetchNem();
     },
   },
   methods: {
@@ -121,19 +136,51 @@ export default {
           });
       }, 5);
     },
+    dispatchEvents() {
+      // this.$store.dispatch('fetchingData', false);
+      this.$store.dispatch('setExportData', this.chartData);
+      this.$store.dispatch('setExportRegion', 'OpenNEM');
+    },
+    handleResponse(response) {
+      if (response.status === 200) {
+        let data = dataTransform(GraphDomains, response.data);
+        const endIndex = data.length - 1;
+        const endDate = data[endIndex].date;
+
+        if (isLast24Hrs(this.currentRange)) {
+          const startIndex = data.length - 289;
+          const startDate = data[startIndex].date;
+          data = dataFilter(data, startDate, endDate);
+        }
+
+        this.chartData = data;
+        this.$store.dispatch('setDataEndDate', endDate);
+        this.dispatchEvents();
+      } else {
+        throw response.originalError;
+      }
+    },
     fetchNem() {
       this.$store.dispatch('fetchingData', true);
+      this.$store.dispatch('fetchError', false);
+      this.$store.dispatch('fetchErrorMessage', '');
 
-      const url = 'data/power/nem.json';
+      const range = findRange(this.currentRange);
+      const url = `${this.visType}${range.folder}/nem${range.extension}.json`;
 
-      getJSON(url).then((response) => {
-        const transformedData = dataTransform(GraphDomains, response.data);
-        this.chartData = transformedData;
-        this.$store.dispatch('setDataEndDate', transformedData[transformedData.length - 1].date);
-        this.$store.dispatch('fetchingData', false);
-        this.$store.dispatch('setExportData', transformedData);
-        this.$store.dispatch('setExportRegion', 'OpenNEM');
-      });
+      getJSON(url, this.externalData)
+        .then(this.handleResponse)
+        .catch((e) => {
+          this.$store.dispatch('fetchingData', false);
+          this.$store.dispatch('fetchError', true);
+
+          const requestUrl = e.config ? `${e.config.url},` : '';
+          const message = e.message === 'Network Error' ?
+            'No \'Access-Control-Allow-Origin\' header is present on the requested resource' :
+            e.message;
+
+          this.$store.dispatch('fetchErrorMessage', `${requestUrl} Error: ${message}`);
+        });
     },
   },
 };
@@ -141,6 +188,15 @@ export default {
 
 <style lang="scss" scoped>
 @import "../styles/variables.scss";
+
+.loading {
+  background-color: $background;
+  margin-top: 1rem;
+  padding-top: 2rem;
+  position: absolute;
+  left: 3rem;
+  right: 3rem;
+}
 
 .export {
   max-width: 650px;

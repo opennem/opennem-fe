@@ -21,11 +21,14 @@ import {
   getKeys,
 } from '@/lib/data-helpers';
 import updateRouterStartEnd from '@/lib/app-router';
+import { isLast24Hrs } from '@/domains/date-ranges';
 import {
-  getAllPanels,
+  getAllPanelsGeneration,
+  getAllPanelsEnergy,
   getGenerationAndPricePanels,
   getGenerationAndTemperaturePanels,
-  getGenerationPanels,
+  generationPanel,
+  energyPanel,
   getAllPanelsPercentHeight,
   getGenerationOnlyPanelPercentHeight,
   getGenerationPricePanelPercentHeight,
@@ -58,6 +61,9 @@ export default {
       showPricePanel: 'showPricePanel',
       showTemperaturePanel: 'showTemperaturePanel',
       isExportPng: 'isExportPng',
+      isPower: 'isPower',
+      groupToPeriods: 'groupToPeriods',
+      currentRange: 'currentRange',
     }),
     visClass() {
       return {
@@ -160,15 +166,37 @@ export default {
 
     setupPanels() {
       let panels = [];
+      const temperatureField = this.isPower ? 'temperature' : 'temperature_mean';
+      const priceField = this.isPower ? 'price' : 'volume_weighted_price';
+      const hasMinMax = !this.isPower;
+      const showBullets = isLast24Hrs(this.currentRange);
+
       if (this.showPricePanel && this.showTemperaturePanel) {
-        panels = getAllPanels(this.getPanelListeners());
+        panels = this.isPower ?
+          getAllPanelsGeneration(
+            this.getPanelListeners(),
+            priceField,
+            temperatureField,
+            hasMinMax,
+            showBullets,
+          ) :
+          getAllPanelsEnergy(
+            this.getPanelListeners(),
+            priceField,
+            temperatureField,
+            hasMinMax,
+            showBullets,
+          );
       } else if (this.showPricePanel) {
         panels = getGenerationAndPricePanels(this.getPanelListeners());
       } else if (this.showTemperaturePanel) {
         panels = getGenerationAndTemperaturePanels(this.getPanelListeners());
       } else {
-        panels = getGenerationPanels(this.getPanelListeners());
+        panels = this.isPower ?
+          generationPanel(this.getPanelListeners()) :
+          energyPanel(this.getPanelListeners());
       }
+
       return panels;
     },
 
@@ -179,7 +207,7 @@ export default {
       const config = getChartConfig({
         dataSets: [],
         panels,
-      });
+      }, this.isPower, this.groupToPeriods);
 
       // manually adjust individual panel percentage heights
       switch (panelNum) {
@@ -234,10 +262,15 @@ export default {
         fieldMappings: getFieldMappings(this.keys),
       }];
 
-      this.chart.panels[0].stockGraphs = getStockGraphs(this.domains, this.keys);
+      const unit = this.isPower ? 'MW' : 'GWh';
+      const graphType = this.isPower ? 'line' : 'step';
+
+      this.chart.panels[0].stockGraphs = getStockGraphs(this.domains, this.keys, graphType, unit);
 
       // add Guides
-      const guides = getNemGuides(this.chartData);
+      // const showWeekends = !this.isPower;
+      // const guides = getNemGuides(this.chartData, showWeekends);
+      const guides = this.isPower ? getNemGuides(this.chartData, false) : [];
       const panelNum = this.chart.panels.length;
 
       for (let i = 0; i < panelNum; i += 1) {
@@ -246,14 +279,6 @@ export default {
 
       this.chart.validateData();
       this.chartRendered = true;
-    },
-
-    redrawChartPanels() {
-      this.chartRendered = false;
-      this.clearChart();
-      this.setupChart();
-      this.setupKeys();
-      this.updateChart();
     },
 
     getPanelListeners() {
@@ -290,7 +315,7 @@ export default {
       const datesChanged = (moment(this.panelStart).isSame(start)) &&
         (moment(this.panelEnd).isSame(end));
 
-      if (!datesChanged) {
+      if (!datesChanged && !this.initialZoom) {
         this.panelStart = start;
         this.panelEnd = end;
 
@@ -309,7 +334,7 @@ export default {
 
         this.$store.dispatch('setExportData', dataFilter(this.chartData, start, end));
 
-        if (checkDateZoomLessThan1Day(start, end)) {
+        if (checkDateZoomLessThan1Day(start, end) && this.isPower) {
           this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
           const temperaturePanelIndex = this.getTemperaturePanelIndex();
 
@@ -366,18 +391,9 @@ export default {
       if (this.initialZoom) {
         this.zoomChart(this.startDate, this.endDate);
         this.initialZoom = false;
-      } else {
-        const start = this.chart.panels[0].categoryAxis.startTime;
-        const end = this.chart.panels[0].categoryAxis.endTime;
-
-        this.panelStart = start;
-        this.panelEnd = end;
-
-        this.$store.dispatch('saveSelectedDates', {
-          start: moment(start).toDate(),
-          end: moment(end).toDate(),
-        });
       }
+
+      this.$store.dispatch('fetchingData', false);
     },
 
     onChartDrawn(e) {
@@ -398,8 +414,6 @@ export default {
       // refresh chart to include "new" listener
       e.chart.drawnManually = true;
       e.chart.validateNow();
-
-      this.$store.dispatch('fetchingData', false);
     },
 
     onChartCursorZoomed() {
@@ -407,7 +421,7 @@ export default {
     },
 
     zoomChart(start, end) {
-      if (checkDateZoomLessThan1Day(start, end)) {
+      if (checkDateZoomLessThan1Day(start, end) && this.isPower) {
         this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
         const temperaturePanelIndex = this.getTemperaturePanelIndex();
 
@@ -421,18 +435,25 @@ export default {
     },
 
     resetChartZoom() {
-      this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm'];
-      const temperaturePanelIndex = this.getTemperaturePanelIndex();
+      if (this.isPower) {
+        this.chart.categoryAxesSettings.groupToPeriods = this.groupToPeriods;
+        const temperaturePanelIndex = this.getTemperaturePanelIndex();
 
-      if (this.showTemperaturePanel) {
-        this.chart.panels[temperaturePanelIndex].graphs[0].bullet = 'none'; // hide temperature bullets
+        if (this.showTemperaturePanel) {
+          this.chart.panels[temperaturePanelIndex].graphs[0].bullet = 'none'; // hide temperature bullets
+        }
       }
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoomed', false);
     },
 
     handleExtentEventHover(date) {
-      const dataContext = findDataContextByDate(date, this.chart.mainDataSet.agregatedDataProviders['5mm']);
+      const interval = this.isPower ? '5mm' : 'DD';
+      const searchDate = this.isPower ? date : moment(date).set({ hour: 0, minute: 0, second: 0 });
+      const dataContext = findDataContextByDate(
+        searchDate,
+        this.chart.mainDataSet.agregatedDataProviders[interval],
+      );
 
       this.$store.dispatch('generatePointSummary', {
         date,

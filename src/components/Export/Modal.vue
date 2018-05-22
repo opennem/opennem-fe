@@ -47,7 +47,6 @@ export default {
   data() {
     return {
       modalActive: false,
-      csvHeaders: getCSVHeaders(),
       isChrome: isChrome(),
     };
   },
@@ -55,7 +54,11 @@ export default {
     ...mapGetters({
       chartData: 'getExportData',
       exportName: 'getExportName',
+      visType: 'visType',
     }),
+    csvHeaders() {
+      return getCSVHeaders(this.$store.getters.visType);
+    },
   },
   methods: {
     handleClick() {

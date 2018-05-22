@@ -26,6 +26,13 @@
       </p>
     </section>
 
+    <section class="eca-section">
+      <img class="eca-logo" src="images/eca_logo.png" alt="Energy Consumers Australia's logo">
+      This project was funded by <a href="http://energyconsumersaustralia.com.au/" rel="external">Energy Consumers Australia</a>
+      as part of its grants process for consumer advocacy projects and research projects for the 
+      benefit of consumers of electricity and natural gas.
+    </section>
+
     <h2>How to keep in touch</h2>
     <section>
       <div>Follow us on <a href="https://twitter.com/opennem" title="OpenNEM's twitter page" rel="external">@OpenNEM</a>. <br>
@@ -73,10 +80,9 @@ h2 {
   font-size: 1.2rem;
   font-weight: 700;
   padding: 0.75rem 0;
-  margin-top: 2rem;
+  margin-top: 1rem;
 
   @include tablet {
-    margin-top: 3rem;
     font-size: 2rem;
   }
 }
@@ -85,6 +91,25 @@ p {
 
   &.credits {
     font-size: 0.9rem;
+  }
+}
+.eca-section {
+  max-width: 700px;
+  border-top: 1px dashed #ccc;
+  border-bottom: 1px dashed #ccc;
+  margin-top: 2rem;
+  padding: 3rem 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.eca-logo {
+  width: 200px;
+  display: block;
+  margin-bottom: 1rem;
+
+  @include tablet {
+    float: left;
+    margin-right: 2rem;
   }
 }
 </style>

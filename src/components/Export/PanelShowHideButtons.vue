@@ -62,6 +62,7 @@ export default {
       showPricePanel: 'showPricePanel',
       showTemperaturePanel: 'showTemperaturePanel',
       showSummaryPanel: 'showSummaryPanel',
+      isPower: 'isPower',
     }),
     iconOn() {
       return faCheck;

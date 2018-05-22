@@ -1,128 +1,129 @@
 <template>
   <table class="summary-table table is-fullwidth is-narrow">
-      <thead>
-        <tr>
-          <th></th>
-          <th class="has-text-right">Lowest</th>
-          <th class="has-text-right">Highest</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>Demand <small>MW</small></th>
-          <td class="cell-value hoverable" 
-            @mouseover="emitHover(getMinObject('demand'))" 
-            @mouseout="emitOut">
-            {{ getMinValue("demand") | formatNumber }} MW
-            <br>
-            <small class="date-value">{{ getMinDate("demand") | formatDate(regionOffset) }}</small>
-          </td>
-          
-          <td class="cell-value hoverable" 
-            @mouseover="emitHover(getMaxObject('demand'))" 
-            @mouseout="emitOut">
-            {{ getMaxValue("demand") | formatNumber }} MW
-            <br>
-            <small class="date-value">{{ getMaxDate("demand") | formatDate(regionOffset) }}</small>
-          </td>
-        </tr>
+    <caption></caption>
+    <thead>
+      <tr>
+        <th></th>
+        <th class="has-text-right">Lowest</th>
+        <th class="has-text-right">Highest</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>Demand <small>MW</small></th>
+        <td class="cell-value hoverable" 
+          @mouseover="emitHover(getMinObject('demand'))" 
+          @mouseout="emitOut">
+          {{ getMinValue("demand") | formatNumber }} MW
+          <br>
+          <small class="date-value">{{ getMinDate("demand") | formatDate(regionOffset) }}</small>
+        </td>
+        
+        <td class="cell-value hoverable" 
+          @mouseover="emitHover(getMaxObject('demand'))" 
+          @mouseout="emitOut">
+          {{ getMaxValue("demand") | formatNumber }} MW
+          <br>
+          <small class="date-value">{{ getMaxDate("demand") | formatDate(regionOffset) }}</small>
+        </td>
+      </tr>
 
-        <tr class="dark-border">
-          <th>Renewables <small>%</small></th>
-          <td class="cell-value hoverable" 
-            @mouseover="emitHover(getMinObject('renewables'))" 
-            @mouseout="emitOut">
-            {{ getMinValue("renewables") | formatNumber }}%
-            <br>
-            <small class="date-value">{{ getMinDate("renewables") | formatDate(regionOffset) }}</small>
-          </td>
-          
-          <td class="cell-value hoverable" 
-            @mouseover="emitHover(getMaxObject('renewables'))" 
-            @mouseout="emitOut">
-            {{ getMaxValue("renewables") | formatNumber }}%
-            <br>
-            <small class="date-value">{{ getMaxDate("renewables") | formatDate(regionOffset) }}</small>
-          </td>
-        </tr>
+      <tr class="dark-border">
+        <th>Renewables <small>%</small></th>
+        <td class="cell-value hoverable" 
+          @mouseover="emitHover(getMinObject('renewables'))" 
+          @mouseout="emitOut">
+          {{ getMinValue("renewables") | formatNumber }}%
+          <br>
+          <small class="date-value">{{ getMinDate("renewables") | formatDate(regionOffset) }}</small>
+        </td>
+        
+        <td class="cell-value hoverable" 
+          @mouseover="emitHover(getMaxObject('renewables'))" 
+          @mouseout="emitOut">
+          {{ getMaxValue("renewables") | formatNumber }}%
+          <br>
+          <small class="date-value">{{ getMaxDate("renewables") | formatDate(regionOffset) }}</small>
+        </td>
+      </tr>
 
-        <tr>
-          <th>Generation <small>MW</small></th>
-          <td class="cell-value hoverable" 
-            @mouseover="emitHover(getMinObject('generation'))" 
-            @mouseout="emitOut">
-            {{ getMinValue("generation") | formatNumber }} MW
-            <br>
-            <small class="date-value">{{ getMinDate("generation") | formatDate(regionOffset) }}</small>
-          </td>
-          
-          <td class="cell-value hoverable" 
-            @mouseover="emitHover(getMaxObject('generation'))" 
-            @mouseout="emitOut">
-            {{ getMaxValue("generation") | formatNumber }} MW
-            <br>
-            <small class="date-value">{{ getMaxDate("generation") | formatDate(regionOffset) }}</small>
-          </td>
-        </tr>
+      <tr>
+        <th>Generation <small>MW</small></th>
+        <td class="cell-value hoverable" 
+          @mouseover="emitHover(getMinObject('generation'))" 
+          @mouseout="emitOut">
+          {{ getMinValue("generation") | formatNumber }} MW
+          <br>
+          <small class="date-value">{{ getMinDate("generation") | formatDate(regionOffset) }}</small>
+        </td>
+        
+        <td class="cell-value hoverable" 
+          @mouseover="emitHover(getMaxObject('generation'))" 
+          @mouseout="emitOut">
+          {{ getMaxValue("generation") | formatNumber }} MW
+          <br>
+          <small class="date-value">{{ getMaxDate("generation") | formatDate(regionOffset) }}</small>
+        </td>
+      </tr>
 
-        <tr class="dark-border">
-          <th>Renewables <small>%</small></th>
-          <td class="cell-value hoverable" 
-            @mouseover="emitHover(getMinObject('renewables2'))" 
-            @mouseout="emitOut">
-            {{ getMinValue("renewables2") | formatNumber }}%
-            <br>
-            <small class="date-value">{{ getMinDate("renewables2") | formatDate(regionOffset) }}</small>
-          </td>
-          
-          <td class="cell-value hoverable" 
-            @mouseover="emitHover(getMaxObject('renewables2'))" 
-            @mouseout="emitOut">
-            {{ getMaxValue("renewables2") | formatNumber }}%
-            <br>
-            <small class="date-value">{{ getMaxDate("renewables2") | formatDate(regionOffset) }}</small>
-          </td>
-        </tr>
+      <tr class="dark-border">
+        <th>Renewables <small>%</small></th>
+        <td class="cell-value hoverable" 
+          @mouseover="emitHover(getMinObject('renewables2'))" 
+          @mouseout="emitOut">
+          {{ getMinValue("renewables2") | formatNumber }}%
+          <br>
+          <small class="date-value">{{ getMinDate("renewables2") | formatDate(regionOffset) }}</small>
+        </td>
+        
+        <td class="cell-value hoverable" 
+          @mouseover="emitHover(getMaxObject('renewables2'))" 
+          @mouseout="emitOut">
+          {{ getMaxValue("renewables2") | formatNumber }}%
+          <br>
+          <small class="date-value">{{ getMaxDate("renewables2") | formatDate(regionOffset) }}</small>
+        </td>
+      </tr>
 
-        <tr v-if="showPrice">
-          <th>Price <small>$/MWh</small></th>
-          <td class="cell-value hoverable" 
-            @mouseover="emitHover(getMinObject('price'))" 
-            @mouseout="emitOut">
-            {{ getMinValue("price") | formatNumber('$0,0.00') }}
-            <br>
-            <small class="date-value">{{ getMinDate("price") | formatDate(regionOffset) }}</small>
-          </td>
-          
-          <td class="cell-value hoverable" 
-            @mouseover="emitHover(getMaxObject('price'))" 
-            @mouseout="emitOut">
-            {{ getMaxValue("price") | formatNumber('$0,0.00') }}
-            <br>
-            <small class="date-value">{{ getMaxDate("price") | formatDate(regionOffset) }}</small>
-          </td>
-        </tr>
+      <tr v-if="showPrice">
+        <th>Price <small>$/MWh</small></th>
+        <td class="cell-value hoverable" 
+          @mouseover="emitHover(getMinObject('price'))" 
+          @mouseout="emitOut">
+          {{ getMinValue("price") | formatNumber('$0,0.00') }}
+          <br>
+          <small class="date-value">{{ getMinDate("price") | formatDate(regionOffset) }}</small>
+        </td>
+        
+        <td class="cell-value hoverable" 
+          @mouseover="emitHover(getMaxObject('price'))" 
+          @mouseout="emitOut">
+          {{ getMaxValue("price") | formatNumber('$0,0.00') }}
+          <br>
+          <small class="date-value">{{ getMaxDate("price") | formatDate(regionOffset) }}</small>
+        </td>
+      </tr>
 
-        <tr v-if="showTemperature">
-          <th>Temperature <small>°C</small></th>
-          <td class="cell-value hoverable" 
-            @mouseover="emitHover(getMinObject('temperature'))" 
-            @mouseout="emitOut">
-            {{ getMinValue("temperature") | formatNumber('0,0.0') }}°C
-            <br>
-            <small class="date-value">{{ getMinDate("temperature") | formatDate(regionOffset) }}</small>
-          </td>
-          
-          <td class="cell-value hoverable" 
-            @mouseover="emitHover(getMaxObject('temperature'))" 
-            @mouseout="emitOut">
-            {{ getMaxValue("temperature") | formatNumber('0,0.0') }}°C
-            <br>
-            <small class="date-value">{{ getMaxDate("temperature") | formatDate(regionOffset) }}</small>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+      <tr v-if="showTemperature">
+        <th>Temperature <small>°C</small></th>
+        <td class="cell-value hoverable" 
+          @mouseover="emitHover(getMinObject('temperature'))" 
+          @mouseout="emitOut">
+          {{ getMinValue("temperature") | formatNumber('0,0.0') }}°C
+          <br>
+          <small class="date-value">{{ getMinDate("temperature") | formatDate(regionOffset) }}</small>
+        </td>
+        
+        <td class="cell-value hoverable" 
+          @mouseover="emitHover(getMaxObject('temperature'))" 
+          @mouseout="emitOut">
+          {{ getMaxValue("temperature") | formatNumber('0,0.0') }}°C
+          <br>
+          <small class="date-value">{{ getMaxDate("temperature") | formatDate(regionOffset) }}</small>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </template>
 
 <script>
@@ -237,7 +238,7 @@ export default {
 
 .dark-border {
   th, td {
-    border-color: #666;
+    border-color: #bbb;
   }
 }
 </style>

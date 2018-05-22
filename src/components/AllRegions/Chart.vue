@@ -4,6 +4,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import * as moment from 'moment';
 import EventBus from '@/lib/event-bus';
 import {
   getFieldMappings,
@@ -19,7 +20,10 @@ import {
   getKeys,
 } from '@/lib/data-helpers';
 import updateRouterStartEnd from '@/lib/app-router';
-import getPanels from './config';
+import {
+  powerPanel,
+  energyPanel,
+} from './config';
 
 export default {
   props: {
@@ -41,6 +45,8 @@ export default {
       endDate: 'getSelectedEndDate',
       dataEndDate: 'getDataEndDate',
       isExportPng: 'isExportPng',
+      isPower: 'isPower',
+      groupToPeriods: 'groupToPeriods',
     }),
   },
   watch: {
@@ -93,10 +99,13 @@ export default {
     },
 
     setupChart() {
+      const panels = this.isPower ?
+        powerPanel(this.getPanelListeners()) :
+        energyPanel(this.getPanelListeners());
       const config = getChartConfig({
         dataSets: [],
-        panels: getPanels(this.getPanelListeners()),
-      });
+        panels,
+      }, this.isPower, this.groupToPeriods);
 
       config.panels[0].categoryAxis.listeners = this.getCategoryAxisListeners();
 
@@ -128,8 +137,13 @@ export default {
         fieldMappings: getFieldMappings(this.keys),
       }];
 
-      this.chart.panels[0].stockGraphs = getStockGraphs(this.domains, this.keys);
-      this.chart.panels[0].guides = getNemGuides(this.chartData);
+      const unit = this.isPower ? 'MW' : 'GWh';
+      const graphType = this.isPower ? 'line' : 'step';
+      // const showWeekends = !this.isPower;
+
+      this.chart.panels[0].stockGraphs = getStockGraphs(this.domains, this.keys, graphType, unit);
+      this.chart.panels[0].guides = this.isPower ? getNemGuides(this.chartData, false) : [];
+      // this.chart.panels[0].guides = getNemGuides(this.chartData, showWeekends);
       this.chart.validateData();
     },
 
@@ -171,8 +185,9 @@ export default {
         this.$store.dispatch('setExportData', dataFilter(this.chartData, start, end));
 
         if (checkDateZoomLessThan1Day(start, end)) {
-          this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
-          this.zoomChart(start, end);
+          if (this.isPower) {
+            this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
+          }
         }
       }
     },
@@ -223,6 +238,8 @@ export default {
         this.zoomChart(this.startDate, this.endDate);
         this.initialZoom = false;
       }
+
+      this.$store.dispatch('fetchingData', false);
     },
 
     onChartDrawn(e) {
@@ -247,7 +264,7 @@ export default {
     },
 
     zoomChart(start, end) {
-      if (checkDateZoomLessThan1Day(start, end)) {
+      if (checkDateZoomLessThan1Day(start, end) && this.isPower) {
         this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
       }
       this.chart.zoom(start, end);
@@ -255,13 +272,20 @@ export default {
     },
 
     resetChartZoom() {
-      this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm'];
+      if (this.isPower) {
+        this.chart.categoryAxesSettings.groupToPeriods = this.groupToPeriods;
+      }
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoomed', false);
     },
 
     handleExtentEventHover(date) {
-      const dataContext = findDataContextByDate(date, this.chart.mainDataSet.agregatedDataProviders['5mm']);
+      const interval = this.isPower ? '5mm' : 'DD';
+      const searchDate = this.isPower ? date : moment(date).set({ hour: 0, minute: 0, second: 0 });
+      const dataContext = findDataContextByDate(
+        searchDate,
+        this.chart.mainDataSet.agregatedDataProviders[interval],
+      );
 
       this.$store.dispatch('generatePointSummary', {
         date,

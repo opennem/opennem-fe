@@ -1,15 +1,16 @@
 <template>
   <table class="summary-table table is-fullwidth is-narrow is-hoverable">
+    <caption></caption>
     <thead>
       <tr>
         <th></th>
         <th class="column-header has-text-right" style="width: 95px;">
-          <div v-if="isPointHovered">
+          <div v-if="isPointHovered && isPower">
             <span>Power</span>
             <small>MW</small>
           </div>
 
-          <div v-else>
+          <div v-if="!isPower || !isPointHovered">
             <span>Energy</span>
             <small>GWh</small>
           </div>
@@ -23,9 +24,14 @@
     <thead>
       <tr>
         <th class="row-header">Sources</th>
-        <th class="cell-value">
+        <th class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            {{ pointSummary.totalGrossPower | formatNumber }}
+            <span v-if="isPower">
+              {{ pointSummary.totalGrossPower | formatNumber }}
+            </span>
+            <span v-else>
+              {{ pointSummary.totalGrossPower | formatNumber('0,0.0') }}
+            </span>
           </div>
           
           <div v-else>
@@ -42,22 +48,27 @@
           <span class="source-colour" :style="{ backgroundColor: row.colour }"></span>
           <span class="source-label">{{row.label}}</span>
         </td>
-        <td class="cell-value">
+        <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            {{ pointSummary.allData[row.id] | formatNumber }}
+            <span v-if="isPower">
+              {{ pointSummary.allData[row.id] | formatNumber }}
+            </span>
+            <span v-else>
+              {{ pointSummary.allData[row.id] | formatNumber('0,0.0') }}
+            </span>
           </div>
           
           <div v-else>
             {{ row.range.energy | formatNumber('0,0.0') }}
           </div>
         </td>
-        <td class="cell-value">
+        <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            {{ getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower) | formatNumber }}<span v-if="hasValue(getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower))">%</span>
+            {{ getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower))">%</span>
           </div>
           
           <div v-else>
-            {{ getContribution(row.range.power, rangeSummary.totalGrossPower) | formatNumber }}<span v-if="hasValue(getContribution(row.range.power, rangeSummary.totalGrossPower))">%</span>
+            {{ getContribution(row.range.power, rangeSummary.totalGrossPower) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(row.range.power, rangeSummary.totalGrossPower))">%</span>
           </div>
         </td>
       </tr>
@@ -77,7 +88,7 @@
           <span class="source-colour"></span>
           <span class="source-label">{{row.label}}</span>
         </td>
-        <td class="cell-value">
+        <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
             {{ pointSummary.allData[row.id] | formatNumber }}
           </div>
@@ -93,9 +104,14 @@
     <thead>
       <tr>
         <th class="row-header">Net</th>
-        <th class="cell-value">
+        <th class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            {{ pointSummary.totalNetPower | formatNumber }}
+            <span v-if="isPower">
+              {{ pointSummary.totalNetPower | formatNumber }}
+            </span>
+            <span v-else>
+              {{ pointSummary.totalNetPower | formatNumber('0,0.0') }}
+            </span>
           </div>
           
           <div v-else>
@@ -119,6 +135,7 @@ export default {
       isPointHovered: 'isPointHovered',
       rangeSummary: 'getRangeSummary',
       pointSummary: 'getPointSummary',
+      isPower: 'isPower',
     }),
   },
   methods: {

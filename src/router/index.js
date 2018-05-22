@@ -4,6 +4,7 @@ import Home from '@/components/Home';
 import Region from '@/components/Region';
 import Widget from '@/components/Widget';
 import About from '@/components/About';
+import FeatureToggle from '@/components/FeatureToggle';
 import NotFound from '@/components/NotFound';
 
 Vue.use(Router);
@@ -35,6 +36,11 @@ export default new Router({
       path: '/about',
       name: 'about',
       component: About,
+    },
+    {
+      path: '/features',
+      name: 'features',
+      component: FeatureToggle,
     },
     {
       path: '/404',

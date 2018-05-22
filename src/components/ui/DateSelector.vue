@@ -1,8 +1,7 @@
 <template>
   <div class="date-range">
     <transition name="slide-fade" mode="out-in">
-      <loader class="fetching" v-if="isFetching" />
-      <div v-else class="dropdown" :class="{'is-active': dropdownActive}">
+      <div v-if="!isFetching" class="dropdown" :class="{'is-active': dropdownActive}">
         <div v-if="isPointHovered">
           {{pointDate}}
         </div>
@@ -18,11 +17,13 @@
         <transition name="slide-down-fade">
           <div v-if="dropdownActive" class="dropdown-menu">
             <div class="dropdown-content">
-              <a class="dropdown-item" @click="handleLast24HrsSelection">
-                Last 24 hours
-              </a>
-              <a class="dropdown-item" @click="handleLast7DaysSelection">
-                Last 7 days
+              <a class="dropdown-item"
+                  v-for="(row, index) in dateSelectors" 
+                  :key="row.id"
+                  v-show="moreDateRanges || index < 2"
+                  @click="handleSelection(row)"
+                  :class="{ 'selected': currentRange === row.id }">
+                {{row.label}}
               </a>
             </div>
           </div>
@@ -37,20 +38,17 @@ import * as moment from 'moment';
 import { mapGetters } from 'vuex';
 import { mixin as clickaway } from 'vue-clickaway';
 import { formatDateForDisplay } from '@/lib/formatter';
-import { getLast24HoursStartEndDates, isMidnight } from '@/lib/data-helpers';
+import { isMidnight } from '@/lib/data-helpers';
 import { getRegionOffset } from '@/domains/regions';
-import EventBus from '@/lib/event-bus';
-import Loader from './Loader';
+import { DateRanges } from '@/domains/date-ranges';
 
 export default {
   name: 'date-selector',
   mixins: [clickaway],
-  components: {
-    Loader,
-  },
   data() {
     return {
       dropdownActive: false,
+      dateSelectors: DateRanges,
     };
   },
   computed: {
@@ -60,6 +58,8 @@ export default {
       dataEndDate: 'getDataEndDate',
       startDate: 'getSelectedStartDate',
       endDate: 'getSelectedEndDate',
+      currentRange: 'currentRange',
+      moreDateRanges: 'moreDateRanges',
     }),
     regionOffset() {
       return getRegionOffset(this.$route.params.region);
@@ -91,15 +91,14 @@ export default {
       const isActive = !this.dropdownActive;
       this.dropdownActive = isActive;
     },
-    handleLast24HrsSelection() {
-      const last24Hrs = getLast24HoursStartEndDates(this.dataEndDate);
-      this.$store.dispatch('saveSelectedDates', last24Hrs);
-      this.$store.dispatch('setChartZoomed', true);
-      EventBus.$emit('data.fetch.latest');
-    },
-    handleLast7DaysSelection() {
-      this.$store.dispatch('setChartZoomed', false);
-      EventBus.$emit('data.fetch.latest');
+    handleSelection(range) {
+      if (range.id !== this.currentRange) {
+        this.$store.dispatch('fetchingData', true);
+        this.$store.dispatch('setChartZoomed', false);
+        this.$store.dispatch('setVisType', range.visType);
+        this.$store.dispatch('currentRange', range.id);
+        this.$store.dispatch('groupToPeriods', range.groupToPeriods);
+      }
     },
     onClickAway() {
       this.dropdownActive = false;
