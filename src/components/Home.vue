@@ -142,19 +142,23 @@ export default {
       this.$store.dispatch('setExportRegion', 'OpenNEM');
     },
     handleResponse(response) {
-      let data = dataTransform(GraphDomains, response.data);
-      const endIndex = data.length - 1;
-      const endDate = data[endIndex].date;
+      if (response.status === 200) {
+        let data = dataTransform(GraphDomains, response.data);
+        const endIndex = data.length - 1;
+        const endDate = data[endIndex].date;
 
-      if (isLast24Hrs(this.currentRange)) {
-        const startIndex = data.length - 289;
-        const startDate = data[startIndex].date;
-        data = dataFilter(data, startDate, endDate);
+        if (isLast24Hrs(this.currentRange)) {
+          const startIndex = data.length - 289;
+          const startDate = data[startIndex].date;
+          data = dataFilter(data, startDate, endDate);
+        }
+
+        this.chartData = data;
+        this.$store.dispatch('setDataEndDate', endDate);
+        this.dispatchEvents();
+      } else {
+        throw response.originalError;
       }
-
-      this.chartData = data;
-      this.$store.dispatch('setDataEndDate', endDate);
-      this.dispatchEvents();
     },
     fetchNem() {
       this.$store.dispatch('fetchingData', true);

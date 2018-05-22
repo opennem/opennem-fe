@@ -117,6 +117,7 @@ export default {
       currentRange: 'currentRange',
       fetchError: 'fetchError',
       recordsTable: 'recordsTable',
+      externalData: 'externalData',
     }),
     regionId() {
       return this.$route.params.region;
@@ -167,20 +168,24 @@ export default {
       }, 5);
     },
     handleResponse(response) {
-      let data = dataTransform(GraphDomains, response.data);
-      const endIndex = data.length - 1;
-      const endDate = data[endIndex].date;
+      if (response.status === 200) {
+        let data = dataTransform(GraphDomains, response.data);
+        const endIndex = data.length - 1;
+        const endDate = data[endIndex].date;
 
-      if (isLast24Hrs(this.currentRange)) {
-        const startIndex = data.length - 289;
-        const startDate = data[startIndex].date;
-        data = dataFilter(data, startDate, endDate);
+        if (isLast24Hrs(this.currentRange)) {
+          const startIndex = data.length - 289;
+          const startDate = data[startIndex].date;
+          data = dataFilter(data, startDate, endDate);
+        }
+
+        this.chartData = data;
+        this.$store.dispatch('setDataEndDate', endDate);
+        this.$store.dispatch('setExportData', data);
+        this.$store.dispatch('setExportRegion', getRegionLabel(this.regionId));
+      } else {
+        throw response.originalError;
       }
-
-      this.chartData = data;
-      this.$store.dispatch('setDataEndDate', endDate);
-      this.$store.dispatch('setExportData', data);
-      this.$store.dispatch('setExportRegion', getRegionLabel(this.regionId));
     },
     fetchNem() {
       this.$store.dispatch('fetchingData', true);
@@ -190,7 +195,7 @@ export default {
       const range = findRange(this.currentRange);
       const url = `${this.visType}${range.folder}/${this.region}1${range.extension}.json`;
 
-      getJSON(url)
+      getJSON(url, this.externalData)
         .then(this.handleResponse)
         .catch((e) => {
           this.$store.dispatch('fetchingData', false);
