@@ -1,5 +1,6 @@
 /* eslint-disable */
 import * as moment from 'moment';
+import History from '@/models/History';
 import { isPrice, isTemperature, isImports, isLoads } from '@/domains/graphs'; 
 import { parseInterval, compareAndGetShortestInterval } from './duration-parser';
 
@@ -91,9 +92,13 @@ export default function(domains, data) {
     let history = null;
 
     if (fuelTechData) {
-      history = fuelTechData.history;
+      if (fuelTechData.history) {
+        history = new History(fuelTechData.history);
+      } else if (fuelTechData.forecast) {
+        history = new History(fuelTechData.forecast);
+      }
     } else if (priceOrTemperatureData) {
-      history = priceOrTemperatureData.history;
+      history = new History(priceOrTemperatureData.history);
     }
 
     if (fuelTechData || priceOrTemperatureData) {
@@ -109,8 +114,8 @@ export default function(domains, data) {
 
       createContainerObj(keys, domain, duration, history);
 
-      // if fuelTechData contains forecast data, add that to current keys
-      if (fuelTechData && fuelTechData.forecast) {
+      // if fuelTechData contains both history and forecast data, add forecast data to the same key
+      if (fuelTechData && fuelTechData.history && fuelTechData.forecast) {
         createContainerObj(keys, domain, duration, fuelTechData.forecast);
       }
     }
