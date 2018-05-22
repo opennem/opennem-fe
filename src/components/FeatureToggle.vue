@@ -3,31 +3,28 @@
     <nav class="panel">
       <p class="panel-heading">
         Features
+        <button class="button is-small is-link is-outlined" @click="handleDoneClicked">
+          Done
+        </button>
       </p>
       
       <div class="panel-block">
         <label>
           <input type="checkbox" v-model="externalData">
-          Fetch data from <strong>data.opennem</strong>
+          <span class="label-text">Fetch data from <strong>data.opennem</strong></span>
         </label>
       </div>
       <div class="panel-block">
         <label>
           <input type="checkbox" v-model="moreDateRanges">
-          Show more date range selections (energy charts)
+          <span class="label-text">Show more date range selections (energy charts)</span>
         </label>
       </div>
       <div class="panel-block">
         <label>
           <input type="checkbox" v-model="recordsTable">
-          Show Records table
+          <span class="label-text">Show Records table</span>
         </label>
-      </div>
-
-      <div class="panel-block">
-        <button class="button is-link is-outlined is-fullwidth" @click="handleDoneClicked">
-          Done
-        </button>
       </div>
     </nav>
   </div>
@@ -74,6 +71,14 @@ export default {
 .container {
   padding: 0 1rem;
   width: 500px;
+}
+.button {
+  float: right;
+}
+.label-text {
+  position: relative;
+  font-size: 0.9rem;
+  top: 1px;
 }
 </style>
 
