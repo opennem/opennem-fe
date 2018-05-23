@@ -26,7 +26,7 @@ export const DateRanges = [
     minPeriod: 'DD',
     groupToPeriods: ['DD'],
     visType: 'energy',
-    folder: '/daily',
+    folder: '/history/daily',
     extension: '',
   },
   {
