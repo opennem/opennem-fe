@@ -6,6 +6,7 @@ import { dataFilter } from '@/lib/data-helpers';
 import { formatDateForExport } from '@/lib/formatter';
 import { DateRanges } from '@/domains/date-ranges';
 import * as MutationTypes from '@/constants/mutation-types';
+import * as VisTypes from '@/constants/vis-types';
 import exportStore from './export';
 import summary from './summary';
 import dates from './dates';
@@ -20,7 +21,7 @@ const state = {
   fetchError: false,
   fetchErrorMessage: '',
   isChartZoomed: false,
-  visType: 'power', // power or energy
+  visType: VisTypes.VIS_TYPE_POWER,
   groupToPeriods: DateRanges[1].groupToPeriods,
 };
 
@@ -75,7 +76,7 @@ const getters = {
     return state.groupToPeriods;
   },
   isPower: state => {
-    return state.visType === 'power';
+    return state.visType === VisTypes.VIS_TYPE_POWER;
   },
   getExportName: state => {
     return `${formatDateForExport(state.dates.selectedDates.end)} ${state.exportStore.exportRegion}`;
@@ -96,7 +97,7 @@ const actions = {
     commit(MutationTypes.FETCH_ERROR_MESSAGE, data);
   },
   generateRangeSummary({ commit, state }, data) {
-    const isPower = state.visType === 'power';
+    const isPower = state.visType === VisTypes.VIS_TYPE_POWER;
     const filtered = dataFilter(data.data, data.start, data.end);
     const summary = getSummary(state.domains, filtered, isPower);
     commit(MutationTypes.RANGE_SUMMARY, summary);
