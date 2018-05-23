@@ -155,6 +155,10 @@ export default {
   }
 }
 
+.dropdown-menu {
+  width: 250px;
+}
+
 .date-helper {
   font-size: 0.7rem;
   margin: .15rem 0 0 0.15rem;
