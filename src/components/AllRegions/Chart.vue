@@ -5,6 +5,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import * as moment from 'moment';
+import * as Periods from '@/constants/periods';
 import EventBus from '@/lib/event-bus';
 import {
   getFieldMappings,
@@ -186,7 +187,7 @@ export default {
 
         if (checkDateZoomLessThan1Day(start, end)) {
           if (this.isPower) {
-            this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
+            this.chart.categoryAxesSettings.groupToPeriods = [Periods.PERIOD_5_MINS];
           }
         }
       }
@@ -265,7 +266,7 @@ export default {
 
     zoomChart(start, end) {
       if (checkDateZoomLessThan1Day(start, end) && this.isPower) {
-        this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
+        this.chart.categoryAxesSettings.groupToPeriods = [Periods.PERIOD_5_MINS];
       }
       this.chart.zoom(start, end);
       this.$store.dispatch('setChartZoomed', true);
@@ -280,11 +281,11 @@ export default {
     },
 
     handleExtentEventHover(date) {
-      const interval = this.isPower ? '5mm' : 'DD';
+      const period = this.isPower ? Periods.PERIOD_5_MINS : Periods.PERIOD_1_DAY;
       const searchDate = this.isPower ? date : moment(date).set({ hour: 0, minute: 0, second: 0 });
       const dataContext = findDataContextByDate(
         searchDate,
-        this.chart.mainDataSet.agregatedDataProviders[interval],
+        this.chart.mainDataSet.agregatedDataProviders[period],
       );
 
       this.$store.dispatch('generatePointSummary', {
