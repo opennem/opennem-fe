@@ -9,6 +9,7 @@
           <a class="dropdown-trigger" v-on-clickaway="onClickAway" @click="handleClick">
             {{formattedStartDate}}
             <span v-if="showEndDate"> – {{formattedEndDate}}</span>
+            <font-awesome-icon class="fal fa-fw" :icon="iconDown" />
           </a>
         </div> 
         <!-- local time -->
@@ -37,14 +38,22 @@
 import * as moment from 'moment';
 import { mapGetters } from 'vuex';
 import { mixin as clickaway } from 'vue-clickaway';
+import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+import {
+  faAngleDown,
+} from '@fortawesome/fontawesome-pro-light';
 import { formatDateForDisplay } from '@/lib/formatter';
 import { isMidnight } from '@/lib/data-helpers';
 import { getRegionOffset } from '@/domains/regions';
 import { DateRanges } from '@/domains/date-ranges';
 
+
 export default {
   name: 'date-selector',
   mixins: [clickaway],
+  components: {
+    FontAwesomeIcon,
+  },
   data() {
     return {
       dropdownActive: false,
@@ -61,6 +70,9 @@ export default {
       currentRange: 'currentRange',
       moreDateRanges: 'moreDateRanges',
     }),
+    iconDown() {
+      return faAngleDown;
+    },
     regionOffset() {
       return getRegionOffset(this.$route.params.region);
     },
