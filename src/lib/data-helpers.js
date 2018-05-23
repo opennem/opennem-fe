@@ -62,6 +62,17 @@ function checkDateZoomLessThan1Day(start, end) {
 }
 
 /**
+ * check the difference between start and end time is less than 14 days
+ * @param {*} start
+ * @param {*} end
+ */
+function checkDateZoomLessThan14Days(start, end) {
+  const dateCheck = moment(start).add(14, 'days');
+
+  return moment(dateCheck).isSameOrAfter(end);
+}
+
+/**
  * get start and end dates of the last 24 hours based on an end date
  * @param {*} dataEndDate
  */
@@ -184,6 +195,7 @@ export {
   getStartEndDates,
   checkDateZoomLessThan1Hour,
   checkDateZoomLessThan1Day,
+  checkDateZoomLessThan14Days,
   getZoomDatesOnDateLabel,
   getLast24HoursStartEndDates,
   getLast3DaysStartEndDates,
