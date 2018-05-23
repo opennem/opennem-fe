@@ -46,7 +46,7 @@ nav {
   z-index: 99;
   top: 0;
   background-color: $background-alpha;
-  padding: 0.5rem 0 0.75rem;
+  padding: 0.5rem 0;
 }
 
 h1 {
