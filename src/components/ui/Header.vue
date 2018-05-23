@@ -46,7 +46,6 @@ nav {
   z-index: 99;
   top: 0;
   background-color: $background-alpha;
-  box-shadow: 0 1px 4px rgba(10, 10, 10, 0.05);
   padding: 0.5rem 0 0.75rem;
 }
 

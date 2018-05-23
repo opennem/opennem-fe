@@ -102,12 +102,18 @@ export default {
     .fal {
       position: relative;
       top: 3px;
+      color: $opennem-primary-alpha;
     }
 
     span {
       position: relative;
       top: 2px;
-      border-bottom: 1px dashed $opennem-primary-alpha;
+      padding: 0.4rem 1rem 0.5rem 0.9rem;
+      border-radius: 3rem;
+    }
+
+    &:hover span {
+      background-color: rgba(255,255,255,0.5);
     }
   }
   
