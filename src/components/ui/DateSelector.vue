@@ -157,6 +157,11 @@ export default {
 
 .dropdown-menu {
   width: 250px;
+
+  @include tablet {
+    right: 0;
+    left: auto;
+  }
 }
 
 .date-helper {
