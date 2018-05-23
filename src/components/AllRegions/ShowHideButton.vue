@@ -6,7 +6,7 @@
         'off': !showSummaryPanel,
       }"
       @click="toggleSummaryPanel">
-      <span v-if="showSummaryPanel"><font-awesome-icon class="fas" :icon="iconRemove" /></span>
+      <span v-if="showSummaryPanel"><font-awesome-icon class="fal" :icon="iconRemove" /></span>
       <span v-else>Show Summary</span>
     </button>
   </div>
@@ -17,7 +17,7 @@ import { mapGetters } from 'vuex';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import {
   faTimesCircle,
-} from '@fortawesome/fontawesome-free-solid';
+} from '@fortawesome/fontawesome-pro-light';
 
 export default {
   name: 'export-panel-buttons',
@@ -64,7 +64,7 @@ export default {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 
-    .fas {
+    .fal {
       position: relative;
       top: 1px;
       font-size: 18px;
@@ -74,7 +74,7 @@ export default {
       margin-left: -41px;
       padding-right: 0;
 
-      .fas {
+      .fal {
         position: relative;
         left: -5px;
         top: -1px;
