@@ -1,5 +1,5 @@
 /* eslint-disable */
-import * as MutationTypes from './mutation-types';
+import * as MutationTypes from '@/constants/mutation-types';
 
 // set up local storage
 if (localStorage.getItem(MutationTypes.FEATURE_TOGGLE_EXTERNAL_DATA) === null) {

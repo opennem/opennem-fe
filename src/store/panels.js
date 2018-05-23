@@ -1,5 +1,5 @@
 /* eslint-disable */
-import * as MutationTypes from './mutation-types';
+import * as MutationTypes from '@/constants/mutation-types';
 
 const state = {
   showTemperaturePanel: true,

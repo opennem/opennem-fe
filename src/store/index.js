@@ -5,7 +5,7 @@ import { getSummary, getPointSummary } from '@/lib/data-summary';
 import { dataFilter } from '@/lib/data-helpers';
 import { formatDateForExport } from '@/lib/formatter';
 import { DateRanges } from '@/domains/date-ranges';
-import * as MutationTypes from './mutation-types';
+import * as MutationTypes from '@/constants/mutation-types';
 import exportStore from './export';
 import summary from './summary';
 import dates from './dates';

@@ -18,6 +18,9 @@ export const POINT_HOVERED = 'POINT_HOVERED';
 export const SELECTED_DATES = 'SELECTED_DATES';
 export const DATA_END_DATE = 'DATA_END_DATE';
 export const RANGE = 'RANGE';
+export const YEAR = 'YEAR';
+export const WEEK = 'WEEK';
+export const INTERVAL = 'INTERVAL';
 
 export const TEMPERATURE_PANEL = 'TEMPERATURE_PANEL';
 export const PRICE_PANEL = 'PRICE_PANEL';
