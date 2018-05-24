@@ -19,7 +19,7 @@
             </a>
 
             <csv
-              :data="chartData"
+              :data="exportData"
               :fields="csvHeaders"
               :name="`${exportName}.csv`">
                 <a class="panel-block" @click="closeModal">
@@ -57,7 +57,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      chartData: 'getExportData',
+      exportData: 'getExportData',
       exportName: 'getExportName',
       visType: 'visType',
     }),

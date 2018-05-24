@@ -131,8 +131,8 @@ function handleFetchResponse(response, state, commit) {
   }
 
   commit(MutationTypes.NEM_DATA, data);
-  commit(MutationTypes.DATA_END_DATE, endDate);
   commit(MutationTypes.EXPORT_DATA, data);
+  commit(MutationTypes.DATA_END_DATE, endDate);
 }
 
 function handleFetchError(e, commit) {
