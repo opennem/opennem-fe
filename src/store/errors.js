@@ -7,10 +7,10 @@ const state = {
 };
 
 const mutations = {
-  [MutationTypes.FETCH_ERROR](state, data) {
+  [MutationTypes.ERROR](state, data) {
     state.error = data;
   },
-  [MutationTypes.FETCH_ERROR_MESSAGE](state, data) {
+  [MutationTypes.ERROR_MESSAGE](state, data) {
     state.errorMessage = data;
   },
 };
@@ -26,10 +26,10 @@ const getters = {
 
 const actions = {
   error({ commit, state }, data) {
-    commit(MutationTypes.FETCH_ERROR, data);
+    commit(MutationTypes.ERROR, data);
   },
   errorMessage({ commit, state }, data) {
-    commit(MutationTypes.FETCH_ERROR_MESSAGE, data);
+    commit(MutationTypes.ERROR_MESSAGE, data);
   },
 };
 

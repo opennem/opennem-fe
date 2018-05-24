@@ -3,12 +3,14 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import { getSummary, getPointSummary } from '@/lib/data-summary';
 import { dataFilter } from '@/lib/data-helpers';
+import dataTransform from '@/lib/data-transform';
 import getJSON from '@/lib/data-apis';
 import { formatDateForExport } from '@/lib/formatter';
-import { DateRanges } from '@/domains/date-ranges';
+import { DateRanges, isLast24Hrs } from '@/domains/date-ranges';
 import * as MutationTypes from '@/constants/mutation-types';
 import * as VisTypes from '@/constants/vis-types';
 
+import nemData from './nem-data';
 import exportStore from './export';
 import summary from './summary';
 import dates from './dates';
@@ -73,6 +75,43 @@ const getters = {
 };
 
 const actions = {
+  fetchNemData({ commit, state }, url) {
+    commit(MutationTypes.FETCHING, true);
+    commit(MutationTypes.ERROR, false);
+    commit(MutationTypes.ERROR_MESSAGE, '');
+
+    getJSON(url, state.features.externalData)
+      .then((response) => {
+        if (response.status === 200) {
+          let data = dataTransform(state.domains, response.data);
+          const endIndex = data.length - 1;
+          const endDate = data[endIndex].date;
+  
+          if (isLast24Hrs(state.dates.currentRange)) {
+            const startIndex = data.length - 289;
+            const startDate = data[startIndex].date;
+            data = dataFilter(data, startDate, endDate);
+          }
+  
+          commit(MutationTypes.NEM_DATA, data);
+          commit(MutationTypes.DATA_END_DATE, endDate);
+          commit(MutationTypes.EXPORT_DATA, data);
+          commit(MutationTypes.EXPORT_REGION, 'OpenNEM');
+        } else {
+          throw response.originalError;
+        }
+      })
+      .catch((e) => {
+        const requestUrl = e.config ? `${e.config.url},` : '';
+        const message = e.message === 'Network Error' ?
+          'No \'Access-Control-Allow-Origin\' header is present on the requested resource' :
+          e.message;
+
+        commit(MutationTypes.FETCHING, false);
+        commit(MutationTypes.ERROR, true);
+        commit(MutationTypes.ERROR_MESSAGE, `${requestUrl} Error: ${message}`);
+      });
+  },
   setDomains({ commit, state }, data) {
     commit(MutationTypes.DOMAINS, data);
   },
@@ -106,6 +145,7 @@ const store = new Vuex.Store({
   actions,
   getters,
   modules: {
+    nemData,
     exportStore,
     summary,
     dates,

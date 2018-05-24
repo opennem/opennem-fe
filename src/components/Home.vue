@@ -18,7 +18,7 @@
 
           <div style="position:relative">
             <panel-button />
-            <all-regions-chart :chartData="chartData" />
+            <all-regions-chart :chartData="nemData" />
             <div v-if="isExportPng">
               <all-regions-summary v-if="showSummaryPanel" />
               <export-legend v-else />
@@ -43,12 +43,10 @@ import { mapGetters } from 'vuex';
 import domtoimage from '@/lib/dom-to-image';
 import FileSaver from 'file-saver';
 import EventBus from '@/lib/event-bus';
-import getJSON from '@/lib/data-apis';
 import updateRouterStartEnd from '@/lib/app-router';
-import dataTransform from '@/lib/data-transform';
-import { dataFilter } from '@/lib/data-helpers';
 import { GraphDomains } from '@/domains/graphs';
-import { isLast24Hrs, findRange } from '@/domains/date-ranges';
+import { findRange } from '@/domains/date-ranges';
+
 import AllRegionsChart from './AllRegions/Chart';
 import AllRegionsSummary from './AllRegions/Summary';
 import AllRegionsExtent from './ui/Extent';
@@ -73,7 +71,7 @@ export default {
   },
   created() {
     this.$store.dispatch('setDomains', GraphDomains);
-    this.fetchNem();
+    this.fetch();
   },
   mounted() {
     EventBus.$on('download.png', this.downloadPng);
@@ -83,12 +81,12 @@ export default {
   },
   data() {
     return {
-      chartData: [],
       selectedRange: null,
     };
   },
   computed: {
     ...mapGetters({
+      nemData: 'nemData',
       isFetching: 'isFetching',
       isChartZoomed: 'isChartZoomed',
       startDate: 'getSelectedStartDate',
@@ -107,7 +105,7 @@ export default {
     },
   },
   watch: {
-    chartData(data) {
+    nemData(data) {
       const start = this.startDate;
       const end = this.endDate;
 
@@ -123,7 +121,8 @@ export default {
       });
     },
     currentRange() {
-      this.fetchNem();
+      // when currentRange changes, refetch the data
+      this.fetch();
     },
   },
   methods: {
@@ -136,52 +135,10 @@ export default {
           });
       }, 5);
     },
-    dispatchEvents() {
-      // this.$store.dispatch('fetchingData', false);
-      this.$store.dispatch('setExportData', this.chartData);
-      this.$store.dispatch('setExportRegion', 'OpenNEM');
-    },
-    handleResponse(response) {
-      if (response.status === 200) {
-        let data = dataTransform(GraphDomains, response.data);
-        const endIndex = data.length - 1;
-        const endDate = data[endIndex].date;
-
-        if (isLast24Hrs(this.currentRange)) {
-          const startIndex = data.length - 289;
-          const startDate = data[startIndex].date;
-          data = dataFilter(data, startDate, endDate);
-        }
-
-        this.chartData = data;
-        this.$store.dispatch('setDataEndDate', endDate);
-        this.dispatchEvents();
-      } else {
-        throw response.originalError;
-      }
-    },
-    fetchNem() {
-      this.$store.dispatch('fetchingData', true);
-      this.$store.dispatch('error', false);
-      this.$store.dispatch('errorMessage', '');
-
+    fetch() {
       const range = findRange(this.currentRange);
       const url = `${this.visType}${range.folder}/nem${range.extension}.json`;
-
-
-      getJSON(url, this.externalData)
-        .then(this.handleResponse)
-        .catch((e) => {
-          this.$store.dispatch('fetchingData', false);
-          this.$store.dispatch('error', true);
-
-          const requestUrl = e.config ? `${e.config.url},` : '';
-          const message = e.message === 'Network Error' ?
-            'No \'Access-Control-Allow-Origin\' header is present on the requested resource' :
-            e.message;
-
-          this.$store.dispatch('errorMessage', `${requestUrl} Error: ${message}`);
-        });
+      this.$store.dispatch('fetchNemData', url);
     },
   },
 };
