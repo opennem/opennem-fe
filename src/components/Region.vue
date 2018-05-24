@@ -82,8 +82,10 @@ export default {
     UiLoader,
   },
   created() {
+    const regionId = this.$route.params.region;
     this.$store.dispatch('setDomains', GraphDomains);
-    this.fetchNem();
+    this.$store.dispatch('setExportRegion', getRegionLabel(regionId));
+    this.fetch();
   },
   mounted() {
     EventBus.$on('download.png', this.downloadPng);
@@ -113,9 +115,7 @@ export default {
       recordsTable: 'recordsTable',
     }),
     regionId() {
-      const id = this.$route.params.region;
-      this.$store.dispatch('setExportRegion', getRegionLabel(id));
-      return id;
+      return this.$route.params.region;
     },
     records() {
       return this.$route.query.records;
@@ -141,10 +141,13 @@ export default {
       });
     },
     region() {
-      this.fetchNem();
+      this.fetch();
+    },
+    regionId(id) {
+      this.$store.dispatch('setExportRegion', getRegionLabel(id));
     },
     currentRange() {
-      this.fetchNem();
+      this.fetch();
     },
     isExportPng(value) {
       if (!value) {
@@ -162,7 +165,7 @@ export default {
           });
       }, 5);
     },
-    fetchNem() {
+    fetch() {
       const range = findRange(this.currentRange);
       const url = `${this.visType}${range.folder}/${this.region}1${range.extension}.json`;
 
