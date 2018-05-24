@@ -5,7 +5,7 @@
       <app-header />
 
       <div class="router-view-container">
-        <router-view v-show="!fetchError" />
+        <router-view v-show="!error" />
         <ui-error />
       </div>
 
@@ -39,7 +39,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      fetchError: 'fetchError',
+      error: 'error',
     }),
     showMainNav() {
       const name = this.$route.name;

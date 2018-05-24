@@ -1,7 +1,7 @@
 <template>
   <transition name="slide-fade">
-    <div class="notification is-primary" v-if="fetchError">
-      {{fetchErrorMessage}}
+    <div class="notification is-primary" v-if="error">
+      {{errorMessage}}
     </div>
   </transition>
 </template>
@@ -15,8 +15,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      fetchError: 'fetchError',
-      fetchErrorMessage: 'fetchErrorMessage',
+      error: 'error',
+      errorMessage: 'errorMessage',
     }),
   },
 };

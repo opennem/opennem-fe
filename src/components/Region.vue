@@ -11,7 +11,7 @@
   </transition>
   
   <transition name="slide-fade">
-    <div class="columns is-desktop is-variable is-1" v-show="!isFetching && !fetchError">
+    <div class="columns is-desktop is-variable is-1" v-show="!isFetching && !error">
       <div class="column" :class="{ export: isExportPng }">
         <div id="export-container">
           <export-png-header v-if="isExportPng" />
@@ -115,7 +115,7 @@ export default {
       visType: 'visType',
       isPower: 'isPower',
       currentRange: 'currentRange',
-      fetchError: 'fetchError',
+      error: 'error',
       recordsTable: 'recordsTable',
       externalData: 'externalData',
     }),
@@ -189,8 +189,8 @@ export default {
     },
     fetchNem() {
       this.$store.dispatch('fetchingData', true);
-      this.$store.dispatch('fetchError', false);
-      this.$store.dispatch('fetchErrorMessage', '');
+      this.$store.dispatch('error', false);
+      this.$store.dispatch('errorMessage', '');
 
       const range = findRange(this.currentRange);
       const url = `${this.visType}${range.folder}/${this.region}1${range.extension}.json`;
@@ -199,14 +199,14 @@ export default {
         .then(this.handleResponse)
         .catch((e) => {
           this.$store.dispatch('fetchingData', false);
-          this.$store.dispatch('fetchError', true);
+          this.$store.dispatch('error', true);
 
           const requestUrl = e.config ? `${e.config.url},` : '';
           const message = e.message === 'Network Error' ?
             'No \'Access-Control-Allow-Origin\' header is present on the requested resource' :
             e.message;
 
-          this.$store.dispatch('fetchErrorMessage', `${requestUrl} Error: ${message}`);
+          this.$store.dispatch('errorMessage', `${requestUrl} Error: ${message}`);
         });
     },
   },

@@ -3,23 +3,24 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import { getSummary, getPointSummary } from '@/lib/data-summary';
 import { dataFilter } from '@/lib/data-helpers';
+import getJSON from '@/lib/data-apis';
 import { formatDateForExport } from '@/lib/formatter';
 import { DateRanges } from '@/domains/date-ranges';
 import * as MutationTypes from '@/constants/mutation-types';
 import * as VisTypes from '@/constants/vis-types';
+
 import exportStore from './export';
 import summary from './summary';
 import dates from './dates';
 import panels from './panels';
 import features from './features';
+import errors from './errors';
 
 Vue.use(Vuex);
 
 const state = {
   domains: {},
   isFetching: false,
-  fetchError: false,
-  fetchErrorMessage: '',
   isChartZoomed: false,
   visType: VisTypes.VIS_TYPE_POWER,
   groupToPeriods: DateRanges[1].groupToPeriods,
@@ -35,12 +36,6 @@ const mutations = {
       state.summary.isPointHovered = false;
     }
     state.isFetching = data;
-  },
-  [MutationTypes.FETCH_ERROR](state, data) {
-    state.fetchError = data;
-  },
-  [MutationTypes.FETCH_ERROR_MESSAGE](state, data) {
-    state.fetchErrorMessage = data;
   },
   [MutationTypes.CHART_ZOOMED](state, data) {
     state.isChartZoomed = data;
@@ -59,12 +54,6 @@ const getters = {
   },
   isFetching: state => {
     return state.isFetching;
-  },
-  fetchError: state => {
-    return state.fetchError;
-  },
-  fetchErrorMessage: state => {
-    return state.fetchErrorMessage;
   },
   isChartZoomed: state => {
     return state.isChartZoomed;
@@ -89,12 +78,6 @@ const actions = {
   },
   fetchingData({ commit, state }, data) {
     commit(MutationTypes.FETCHING, data);
-  },
-  fetchError({ commit, state }, data) {
-    commit(MutationTypes.FETCH_ERROR, data);
-  },
-  fetchErrorMessage({ commit, state }, data) {
-    commit(MutationTypes.FETCH_ERROR_MESSAGE, data);
   },
   generateRangeSummary({ commit, state }, data) {
     const isPower = state.visType === VisTypes.VIS_TYPE_POWER;
@@ -128,6 +111,7 @@ const store = new Vuex.Store({
     dates,
     panels,
     features,
+    errors,
   }
 });
 
