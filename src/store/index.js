@@ -83,33 +83,13 @@ const actions = {
     getJSON(url, state.features.externalData)
       .then((response) => {
         if (response.status === 200) {
-          let data = dataTransform(state.domains, response.data);
-          const endIndex = data.length - 1;
-          const endDate = data[endIndex].date;
-  
-          if (isLast24Hrs(state.dates.currentRange)) {
-            const startIndex = data.length - 289;
-            const startDate = data[startIndex].date;
-            data = dataFilter(data, startDate, endDate);
-          }
-  
-          commit(MutationTypes.NEM_DATA, data);
-          commit(MutationTypes.DATA_END_DATE, endDate);
-          commit(MutationTypes.EXPORT_DATA, data);
-          commit(MutationTypes.EXPORT_REGION, 'OpenNEM');
+          handleFetchResponse(response, state, commit);
         } else {
           throw response.originalError;
         }
       })
       .catch((e) => {
-        const requestUrl = e.config ? `${e.config.url},` : '';
-        const message = e.message === 'Network Error' ?
-          'No \'Access-Control-Allow-Origin\' header is present on the requested resource' :
-          e.message;
-
-        commit(MutationTypes.FETCHING, false);
-        commit(MutationTypes.ERROR, true);
-        commit(MutationTypes.ERROR_MESSAGE, `${requestUrl} Error: ${message}`);
+        handleFetchError(e, commit);
       });
   },
   setDomains({ commit, state }, data) {
@@ -138,6 +118,33 @@ const actions = {
     commit(MutationTypes.GROUP_TO_PERIODS, data);
   },
 };
+
+function handleFetchResponse(response, state, commit) {
+  let data = dataTransform(state.domains, response.data);
+  const endIndex = data.length - 1;
+  const endDate = data[endIndex].date;
+
+  if (isLast24Hrs(state.dates.currentRange)) {
+    const startIndex = data.length - 289;
+    const startDate = data[startIndex].date;
+    data = dataFilter(data, startDate, endDate);
+  }
+
+  commit(MutationTypes.NEM_DATA, data);
+  commit(MutationTypes.DATA_END_DATE, endDate);
+  commit(MutationTypes.EXPORT_DATA, data);
+}
+
+function handleFetchError(e, commit) {
+  const requestUrl = e.config ? `${e.config.url},` : '';
+  const message = e.message === 'Network Error' ?
+    'No \'Access-Control-Allow-Origin\' header is present on the requested resource' :
+    e.message;
+
+  commit(MutationTypes.FETCHING, false);
+  commit(MutationTypes.ERROR, true);
+  commit(MutationTypes.ERROR_MESSAGE, `${requestUrl} Error: ${message}`);
+}
 
 const store = new Vuex.Store({
   state,

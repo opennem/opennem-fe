@@ -70,6 +70,7 @@ export default {
     UiLoader,
   },
   created() {
+    this.$store.dispatch('setExportRegion', 'OpenNEM');
     this.$store.dispatch('setDomains', GraphDomains);
     this.fetch();
   },
