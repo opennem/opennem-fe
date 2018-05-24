@@ -98,7 +98,6 @@ export default {
       currentRange: 'currentRange',
       error: 'error',
       recordsTable: 'recordsTable',
-      externalData: 'externalData',
     }),
     records() {
       return this.$route.query.records;
