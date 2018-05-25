@@ -5,6 +5,7 @@ export const ERROR_MESSAGE = 'ERROR_MESSAGE';
 export const VIS_TYPE = 'VIS_TYPE';
 
 export const CHART_ZOOMED = 'CHART_ZOOMED';
+export const CHART_TYPE_TRANSITION = 'CHART_TYPE_TRANSITION';
 export const CHART_MIN_PERIOD = 'CHART_MIN_PERIOD';
 export const CHART_GROUP_TO_PERIODS = 'CHART_GROUP_TO_PERIODS';
 
@@ -21,8 +22,8 @@ export const POINT_HOVERED = 'POINT_HOVERED';
 export const SELECTED_DATES = 'SELECTED_DATES';
 export const DATA_END_DATE = 'DATA_END_DATE';
 export const RANGE = 'RANGE';
-export const YEAR = 'YEAR';
-export const WEEK = 'WEEK';
+export const YEARS = 'YEARS';
+export const WEEKS = 'WEEKS';
 export const INTERVAL = 'INTERVAL';
 
 export const TEMPERATURE_PANEL = 'TEMPERATURE_PANEL';

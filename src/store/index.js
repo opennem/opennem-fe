@@ -62,18 +62,14 @@ const getters = {
 };
 
 const actions = {
-  fetchNemData({ commit, state }, url) {
+  fetchData({ commit, state }, urls) {
     commit(MutationTypes.FETCHING, true);
     commit(MutationTypes.ERROR, false);
     commit(MutationTypes.ERROR_MESSAGE, '');
 
-    getJSON(url, state.features.externalData)
-      .then((response) => {
-        if (response.status === 200) {
-          handleFetchResponse(response, state, commit);
-        } else {
-          throw response.originalError;
-        }
+    getJSON(urls, state.features.externalData)
+      .then((responses) => {
+        handleFetchResponse(responses, state, commit);
       })
       .catch((e) => {
         handleFetchError(e, commit);
@@ -100,8 +96,12 @@ const actions = {
   },
 };
 
-function handleFetchResponse(response, state, commit) {
-  let data = dataTransform(state.domains, response.data);
+function handleFetchResponse(responses, state, commit) {
+  let data = [];
+  responses.forEach((r) => {
+    data = [...data, ...dataTransform(state.domains, r.data)];
+  })
+
   const endIndex = data.length - 1;
   const endDate = data[endIndex].date;
 

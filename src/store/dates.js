@@ -4,8 +4,8 @@ import * as MutationTypes from '@/constants/mutation-types';
 
 const state = {
   currentRange: DateRanges[1].id,
-  currentYear: '',
-  currentWeek: '',
+  years: [],
+  weeks: [],
   currentInterval: '',
   selectedDates: {
     start: null,
@@ -18,11 +18,11 @@ const mutations = {
   [MutationTypes.RANGE](state, data) {
     state.currentRange = data;
   },
-  [MutationTypes.YEAR](state, data) {
-    state.currentYear = data;
+  [MutationTypes.YEARS](state, data) {
+    state.years = data;
   },
-  [MutationTypes.WEEK](state, data) {
-    state.currentWeek = data;
+  [MutationTypes.WEEKS](state, data) {
+    state.weeks = data;
   },
   [MutationTypes.INTERVAL](state, data) {
     state.currentInterval = data;
@@ -45,11 +45,8 @@ const getters = {
   hasInterval: state => {
     return state.currentInterval;
   },
-  currentYearWeek: state => {
-    return `_${state.currentYear}W${state.currentWeek}`;
-  },
-  hasCurrentYearWeek: state => {
-    return state.currentYear && state.currentWeek;
+  yearsWeeks: state => {
+    return state.weeks.map((week, index) => getYearWeekString(state.years[index], week));
   },
   getSelectedStartDate: state => {
     return state.selectedDates.start;
@@ -66,14 +63,14 @@ const actions = {
   currentRange({ commit, state }, data) {
     commit(MutationTypes.RANGE, data);
   },
+  years({ commit, state }, data) {
+    commit(MutationTypes.YEARS, data);
+  },
+  weeks({ commit, state }, data) {
+    commit(MutationTypes.WEEKS, data);
+  },
   currentInterval({ commit, state }, data) {
     commit(MutationTypes.INTERVAL, data);
-  },
-  currentYear({ commit, state }, data) {
-    commit(MutationTypes.YEAR, data);
-  },
-  currentWeek({ commit, state }, data) {
-    commit(MutationTypes.WEEK, data);
   },
   saveSelectedDates({ commit, state }, data) {
     commit(MutationTypes.SELECTED_DATES, data);
@@ -82,6 +79,10 @@ const actions = {
     commit(MutationTypes.DATA_END_DATE, data);
   },
 };
+
+function getYearWeekString(year, week) {
+  return `_${year}W${week}`;
+}
 
 export default {
   state,
