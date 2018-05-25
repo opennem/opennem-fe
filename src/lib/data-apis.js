@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { create } from 'apisauce';
 
 const external = 'https://data.opennem.org.au/';
@@ -22,11 +23,20 @@ export default function (ref, externalData) {
   } else {
     http.setBaseURL(local);
   }
+
   return new Promise((resolve, reject) => {
-    fetchJSON(ref).then((data) => {
-      resolve(data);
-    }).catch((e) => {
-      reject(e);
-    });
+    const calls = ref.map(r => fetchJSON(r));
+    axios.all(calls)
+      .then(axios.spread((...args) => {
+        args.forEach((a) => {
+          if (a.status !== 200) {
+            reject(a.originalError);
+          }
+        });
+        resolve(args);
+      }))
+      .catch((e) => {
+        reject(e);
+      });
   });
 }
