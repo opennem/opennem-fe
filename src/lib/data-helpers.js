@@ -189,6 +189,39 @@ function isMidnight(date) {
   return midnight;
 }
 
+function getAllNumbersBetween(x, y) {
+  const numbers = [];
+  for (let i = x; i <= y; i += 1) {
+    numbers.push(i);
+  }
+  return numbers;
+}
+
+function getAllWeeksYearsBetween(start, end) {
+  const startWeek = moment(start).week();
+  const endWeek = moment(end).week();
+  const startYear = moment(start).year();
+
+  let weeks = getAllNumbersBetween(startWeek, endWeek);
+  let years = weeks.map(() => startYear);
+
+  // if endWeek is smaller than startWeek, need to get across years
+  if (endWeek < startWeek) {
+    const weeksInStartYear = moment(startYear).weeksInYear();
+    const startYearWeeks = getAllNumbersBetween(startWeek, weeksInStartYear);
+    const endYearWeeks = getAllNumbersBetween(1, endWeek);
+    const endYear = moment(end).year();
+
+    weeks = [...startYearWeeks, ...endYearWeeks];
+    years = [...startYearWeeks.map(() => startYear), ...endYearWeeks.map(() => endYear)];
+  }
+
+  return {
+    weeks: weeks.map(w => (`0${w}`).slice(-2)),
+    years,
+  };
+}
+
 export {
   dataFilter,
   findDataContextByDate,
@@ -202,4 +235,5 @@ export {
   getKeys,
   getExtent,
   isMidnight,
+  getAllWeeksYearsBetween,
 };
