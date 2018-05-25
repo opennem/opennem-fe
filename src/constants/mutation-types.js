@@ -2,10 +2,11 @@ export const DOMAINS = 'DOMAINS';
 export const FETCHING = 'FETCHING';
 export const ERROR = 'ERROR';
 export const ERROR_MESSAGE = 'ERROR_MESSAGE';
-export const CHART_ZOOMED = 'CHART_ZOOMED';
 export const VIS_TYPE = 'VIS_TYPE';
-export const MIN_PERIOD = 'MIN_PERIOD';
-export const GROUP_TO_PERIODS = 'GROUP_TO_PERIODS';
+
+export const CHART_ZOOMED = 'CHART_ZOOMED';
+export const CHART_MIN_PERIOD = 'CHART_MIN_PERIOD';
+export const CHART_GROUP_TO_PERIODS = 'CHART_GROUP_TO_PERIODS';
 
 export const NEM_DATA = 'NEM_DATA';
 
