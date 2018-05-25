@@ -108,6 +108,7 @@ export default {
         this.$store.dispatch('setVisType', range.visType);
         this.$store.dispatch('currentRange', range.id);
         this.$store.dispatch('groupToPeriods', range.groupToPeriods);
+        this.$store.dispatch('chartTypeTransition', false);
       }
     },
     onClickAway() {

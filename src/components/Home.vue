@@ -90,6 +90,7 @@ export default {
       nemData: 'nemData',
       isFetching: 'isFetching',
       isChartZoomed: 'isChartZoomed',
+      chartTypeTransition: 'chartTypeTransition',
       startDate: 'getSelectedStartDate',
       endDate: 'getSelectedEndDate',
       isExportPng: 'isExportPng',
@@ -99,6 +100,9 @@ export default {
       currentRange: 'currentRange',
       error: 'error',
       recordsTable: 'recordsTable',
+      hasInterval: 'hasInterval',
+      currentInterval: 'currentInterval',
+      yearsWeeks: 'yearsWeeks',
     }),
     records() {
       return this.$route.query.records;
@@ -124,6 +128,9 @@ export default {
       // when currentRange changes, refetch the data
       this.fetch();
     },
+    chartTypeTransition() {
+      this.fetch();
+    },
   },
   methods: {
     downloadPng() {
@@ -137,8 +144,17 @@ export default {
     },
     fetch() {
       const range = findRange(this.currentRange);
-      const url = `${this.visType}${range.folder}/nem${range.extension}.json`;
-      this.$store.dispatch('fetchNemData', url);
+      const visType = this.chartTypeTransition ? this.visType : range.visType;
+      const extension = this.chartTypeTransition ? this.yearsWeeks : range.extension;
+      const interval = this.chartTypeTransition ? `/history/${this.currentInterval}` : range.folder;
+      const prependUrl = `${visType}${interval}`;
+
+      const urls = this.chartTypeTransition ?
+        this.yearsWeeks.map(w => `${prependUrl}/nem${w}.json`) :
+        [`${prependUrl}/nem${extension}.json`];
+
+      this.$store.dispatch('setVisType', visType);
+      this.$store.dispatch('fetchData', urls);
     },
   },
 };

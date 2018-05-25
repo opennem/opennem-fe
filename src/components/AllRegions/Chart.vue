@@ -6,6 +6,8 @@
 import { mapGetters } from 'vuex';
 import * as moment from 'moment';
 import * as Periods from '@/constants/periods';
+import * as Intervals from '@/constants/intervals';
+import * as VisTypes from '@/constants/vis-types';
 import EventBus from '@/lib/event-bus';
 import {
   getFieldMappings,
@@ -17,8 +19,10 @@ import {
   dataFilter,
   findDataContextByDate,
   checkDateZoomLessThan1Day,
+  checkDateZoomLessThan14Days,
   getZoomDatesOnDateLabel,
   getKeys,
+  getAllWeeksYearsBetween,
 } from '@/lib/data-helpers';
 import updateRouterStartEnd from '@/lib/app-router';
 import {
@@ -42,6 +46,7 @@ export default {
     ...mapGetters({
       domains: 'getDomains',
       isChartZoomed: 'isChartZoomed',
+      chartTypeTransition: 'chartTypeTransition',
       startDate: 'getSelectedStartDate',
       endDate: 'getSelectedEndDate',
       dataEndDate: 'getDataEndDate',
@@ -166,9 +171,27 @@ export default {
       return [{ event: 'zoomed', method: this.onChartCursorZoomed }];
     },
 
+    transitionChartType(start, end) {
+      const weeksYears = getAllWeeksYearsBetween(start, end);
+      this.$store.dispatch('weeks', weeksYears.weeks);
+      this.$store.dispatch('years', weeksYears.years);
+      this.$store.dispatch('setVisType', VisTypes.VIS_TYPE_POWER);
+      this.$store.dispatch('currentInterval', Intervals.INTERVAL_5_MIN);
+      this.$store.dispatch('minPeriod', Periods.PERIOD_5_MINS);
+      this.$store.dispatch('groupToPeriods', [Periods.PERIOD_5_MINS, Periods.PERIOD_30_MINS]);
+      this.$store.dispatch('chartTypeTransition', true);
+    },
+
     onPanelZoomed(e) {
       const start = e.startDate;
       const end = e.endDate;
+
+      // check less than 14 days
+      const isLessThan14days = checkDateZoomLessThan14Days(start, end);
+      if (!this.isPower && isLessThan14days) {
+        this.transitionChartType(start, end);
+      }
+
       if (!this.initialZoom) {
         this.$store.dispatch('saveSelectedDates', {
           start,
@@ -275,6 +298,9 @@ export default {
     resetChartZoom() {
       if (this.isPower) {
         this.chart.categoryAxesSettings.groupToPeriods = this.groupToPeriods;
+      }
+      if (this.chartTypeTransition) {
+        this.$store.dispatch('chartTypeTransition', false);
       }
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoomed', false);

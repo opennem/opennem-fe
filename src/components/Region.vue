@@ -169,7 +169,7 @@ export default {
       const range = findRange(this.currentRange);
       const url = `${this.visType}${range.folder}/${this.region}1${range.extension}.json`;
 
-      this.$store.dispatch('fetchNemData', url);
+      this.$store.dispatch('fetchData', [url]);
     },
   },
 };
