@@ -55,10 +55,10 @@ import EventBus from '@/lib/event-bus';
 import getJSON from '@/lib/data-apis';
 import updateRouterStartEnd from '@/lib/app-router';
 import dataTransform from '@/lib/data-transform';
-import { dataFilter } from '@/lib/data-helpers';
+import { dataFilterByLastValuePrecision } from '@/lib/data-helpers';
 import { GraphDomains } from '@/domains/graphs';
 import { getRegionLabel } from '@/domains/regions';
-import { isLast24Hrs, findRange } from '@/domains/date-ranges';
+import { isLast24Hrs, isLast3Days, findRange } from '@/domains/date-ranges';
 import RegionChart from './Region/Chart';
 import RegionSummary from './Region/Summary';
 import RegionTemperature from './Region/Temperature';
@@ -174,9 +174,9 @@ export default {
         const endDate = data[endIndex].date;
 
         if (isLast24Hrs(this.currentRange)) {
-          const startIndex = data.length - 289;
-          const startDate = data[startIndex].date;
-          data = dataFilter(data, startDate, endDate);
+          data = dataFilterByLastValuePrecision(data, '24', 'hour');
+        } else if (isLast3Days(this.currentRange)) {
+          data = dataFilterByLastValuePrecision(data, '3', 'day');
         }
 
         this.chartData = data;

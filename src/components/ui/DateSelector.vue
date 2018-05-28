@@ -21,7 +21,7 @@
               <a class="dropdown-item"
                   v-for="(row, index) in dateSelectors" 
                   :key="row.id"
-                  v-show="moreDateRanges || index < 2"
+                  v-show="moreDateRanges || index < 3"
                   @click="handleSelection(row)"
                   :class="{ 'selected': currentRange === row.id }">
                 {{row.label}}

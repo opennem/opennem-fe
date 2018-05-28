@@ -14,6 +14,18 @@ function dataFilter(data, start, end) {
   });
 }
 
+function dataFilterByLastValuePrecision(data, value, precision) {
+  const endIndex = data.length - 1;
+  const endDate = data[endIndex].date;
+
+  const ago = moment(endDate).subtract(value, precision);
+
+  return data.filter((item) => {
+    const d = moment(item.date);
+    return d.isSameOrAfter(ago) && d.isSameOrBefore(endDate);
+  });
+}
+
 function findDataContextByDate(date, aggregatedDataProviders) {
   const dateValue = `${moment(date).valueOf()}`;
   const dataContext = _.find(aggregatedDataProviders, d => d.amCategoryIdField === dateValue);
@@ -180,6 +192,7 @@ function isMidnight(date) {
 
 export {
   dataFilter,
+  dataFilterByLastValuePrecision,
   findDataContextByDate,
   getStartEndDates,
   checkDateZoomLessThan1Hour,

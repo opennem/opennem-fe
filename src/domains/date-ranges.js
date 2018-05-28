@@ -12,6 +12,15 @@ export const DateRanges = [
     extension: '',
   },
   {
+    id: 'last3days',
+    label: 'Last 3 days',
+    minPeriod: '5mm',
+    groupToPeriods: ['5mm', '30mm'],
+    visType: 'power',
+    folder: '',
+    extension: '',
+  },
+  {
     id: 'last7days',
     label: 'Last 7 days',
     minPeriod: '5mm',
@@ -82,7 +91,10 @@ function getDateRangeId(label) {
 }
 
 function isLast24Hrs(id) {
-  return id === DateRanges[0].id;
+  return id === 'last24hrs';
+}
+function isLast3Days(id) {
+  return id === 'last3days';
 }
 
 export {
@@ -90,4 +102,5 @@ export {
   getDateRangeLabel,
   getDateRangeId,
   isLast24Hrs,
+  isLast3Days,
 };
