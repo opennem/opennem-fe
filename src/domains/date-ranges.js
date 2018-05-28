@@ -1,5 +1,6 @@
 import * as VisTypes from '@/constants/vis-types';
 import * as Periods from '@/constants/periods';
+import { isMobileWidth } from '@/lib/browser';
 
 /**
  * Fixed date ranges
@@ -11,6 +12,15 @@ export const DateRanges = [
     minPeriod: Periods.PERIOD_5_MINS,
     groupToPeriods: [Periods.PERIOD_5_MINS],
     visType: VisTypes.VIS_TYPE_POWER,
+    folder: '',
+    extension: '',
+  },
+  {
+    id: 'last3days',
+    label: 'Last 3 days',
+    minPeriod: '5mm',
+    groupToPeriods: ['5mm', '30mm'],
+    visType: 'power',
     folder: '',
     extension: '',
   },
@@ -84,13 +94,22 @@ function getDateRangeId(label) {
   return dateRange ? dateRange.id : '';
 }
 
+function getDefaultRange() {
+  return isMobileWidth() ? DateRanges[1].id : DateRanges[2].id;
+}
+
 function isLast24Hrs(id) {
-  return id === DateRanges[0].id;
+  return id === 'last24hrs';
+}
+function isLast3Days(id) {
+  return id === 'last3days';
 }
 
 export {
   findRange,
   getDateRangeLabel,
   getDateRangeId,
+  getDefaultRange,
   isLast24Hrs,
+  isLast3Days,
 };

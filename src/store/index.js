@@ -2,11 +2,11 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { getSummary, getPointSummary } from '@/lib/data-summary';
-import { dataFilter } from '@/lib/data-helpers';
+import { dataFilter, dataFilterByLastValuePrecision } from '@/lib/data-helpers';
 import dataTransform from '@/lib/data-transform';
 import getJSON from '@/lib/data-apis';
 import { formatDateForExport } from '@/lib/formatter';
-import { DateRanges, isLast24Hrs } from '@/domains/date-ranges';
+import { isLast24Hrs, isLast3Days } from '@/domains/date-ranges';
 import * as MutationTypes from '@/constants/mutation-types';
 import * as VisTypes from '@/constants/vis-types';
 
@@ -106,9 +106,9 @@ function handleFetchResponse(responses, state, commit) {
   const endDate = data[endIndex].date;
 
   if (isLast24Hrs(state.dates.currentRange)) {
-    const startIndex = data.length - 289;
-    const startDate = data[startIndex].date;
-    data = dataFilter(data, startDate, endDate);
+    data = dataFilterByLastValuePrecision(data, '24', 'hour');
+  } else if (isLast3Days(state.dates.currentRange)) {
+    data = dataFilterByLastValuePrecision(data, '3', 'day');
   }
 
   commit(MutationTypes.NEM_DATA, data);
