@@ -101,6 +101,7 @@ export default {
       nemData: 'nemData',
       isFetching: 'isFetching',
       isChartZoomed: 'isChartZoomed',
+      chartTypeTransition: 'chartTypeTransition',
       startDate: 'getSelectedStartDate',
       endDate: 'getSelectedEndDate',
       isExportPng: 'isExportPng',
@@ -113,6 +114,9 @@ export default {
       currentRange: 'currentRange',
       error: 'error',
       recordsTable: 'recordsTable',
+      hasInterval: 'hasInterval',
+      currentInterval: 'currentInterval',
+      yearsWeeks: 'yearsWeeks',
     }),
     regionId() {
       return this.$route.params.region;
@@ -154,6 +158,9 @@ export default {
         this.$store.dispatch('resetPanels');
       }
     },
+    chartTypeTransition() {
+      this.fetch();
+    },
   },
   methods: {
     downloadPng() {
@@ -167,9 +174,17 @@ export default {
     },
     fetch() {
       const range = findRange(this.currentRange);
-      const url = `${this.visType}${range.folder}/${this.region}1${range.extension}.json`;
+      const visType = this.chartTypeTransition ? this.visType : range.visType;
+      const extension = this.chartTypeTransition ? this.yearsWeeks : range.extension;
+      const interval = this.chartTypeTransition ? `/history/${this.currentInterval}` : range.folder;
+      const prependUrl = `${visType}${interval}`;
 
-      this.$store.dispatch('fetchData', [url]);
+      const urls = this.chartTypeTransition ?
+        this.yearsWeeks.map(w => `${prependUrl}/${this.region}1${w}.json`) :
+        [`${prependUrl}/${this.region}1${extension}.json`];
+
+      this.$store.dispatch('setVisType', visType);
+      this.$store.dispatch('fetchData', urls);
     },
   },
 };
