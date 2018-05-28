@@ -1,9 +1,11 @@
 /* eslint-disable */
 import { DateRanges } from '@/domains/date-ranges';
+import { isMobileWidth } from '@/lib/browser';
 import * as MutationTypes from './mutation-types';
 
+const defaultRange = isMobileWidth() ? DateRanges[1].id : DateRanges[2].id;
 const state = {
-  currentRange: DateRanges[1].id,
+  currentRange: defaultRange,
   selectedDates: {
     start: null,
     end: null,
