@@ -1,34 +1,35 @@
 /* eslint-disable */
+import { lsGet, lsSet } from '@/lib/localstorage';
 import * as MutationTypes from '@/constants/mutation-types';
 
 // set up local storage
-if (localStorage.getItem(MutationTypes.FEATURE_TOGGLE_EXTERNAL_DATA) === null) {
-  localStorage.setItem(MutationTypes.FEATURE_TOGGLE_EXTERNAL_DATA, false);
+if (!lsGet(MutationTypes.FEATURE_TOGGLE_EXTERNAL_DATA)) {
+  lsSet(MutationTypes.FEATURE_TOGGLE_EXTERNAL_DATA, false);
 }
-if (localStorage.getItem(MutationTypes.FEATURE_TOGGLE_MORE_DATE_RANGES) === null) {
-  localStorage.setItem(MutationTypes.FEATURE_TOGGLE_MORE_DATE_RANGES, false);
+if (!lsGet(MutationTypes.FEATURE_TOGGLE_MORE_DATE_RANGES)) {
+  lsSet(MutationTypes.FEATURE_TOGGLE_MORE_DATE_RANGES, false);
 }
-if (localStorage.getItem(MutationTypes.FEATURE_TOGGLE_RECORDS_TABLE) === null) {
-  localStorage.setItem(MutationTypes.FEATURE_TOGGLE_RECORDS_TABLE, false);
+if (!lsGet(MutationTypes.FEATURE_TOGGLE_RECORDS_TABLE)) {
+  lsSet(MutationTypes.FEATURE_TOGGLE_RECORDS_TABLE, false);
 }
 
 const state = {
-  externalData: localStorage.getItem(MutationTypes.FEATURE_TOGGLE_EXTERNAL_DATA) === 'true' ? true : false,
-  moreDateRanges: localStorage.getItem(MutationTypes.FEATURE_TOGGLE_MORE_DATE_RANGES) === 'true' ? true : false,
-  recordsTable: localStorage.getItem(MutationTypes.FEATURE_TOGGLE_RECORDS_TABLE) === 'true' ? true : false,
+  externalData: lsGet(MutationTypes.FEATURE_TOGGLE_EXTERNAL_DATA),
+  moreDateRanges: lsGet(MutationTypes.FEATURE_TOGGLE_MORE_DATE_RANGES),
+  recordsTable: lsGet(MutationTypes.FEATURE_TOGGLE_RECORDS_TABLE),
 };
 
 const mutations = {
   [MutationTypes.FEATURE_TOGGLE_EXTERNAL_DATA](state, data) {
-    localStorage.setItem(MutationTypes.FEATURE_TOGGLE_EXTERNAL_DATA, data);
+    lsSet(MutationTypes.FEATURE_TOGGLE_EXTERNAL_DATA, data);
     state.externalData = data;
   },
   [MutationTypes.FEATURE_TOGGLE_MORE_DATE_RANGES](state, data) {
-    localStorage.setItem(MutationTypes.FEATURE_TOGGLE_MORE_DATE_RANGES, data);
+    lsSet(MutationTypes.FEATURE_TOGGLE_MORE_DATE_RANGES, data);
     state.moreDateRanges = data;
   },
   [MutationTypes.FEATURE_TOGGLE_RECORDS_TABLE](state, data) {
-    localStorage.setItem(MutationTypes.FEATURE_TOGGLE_RECORDS_TABLE, data);
+    lsSet(MutationTypes.FEATURE_TOGGLE_RECORDS_TABLE, data);
     state.recordsTable = data;
   },
 };
