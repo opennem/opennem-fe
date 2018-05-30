@@ -1,6 +1,6 @@
 <template>
   <table class="summary-table table is-fullwidth is-narrow is-hoverable">
-    <caption></caption>
+    <caption>Summary</caption>
     <thead>
       <tr>
         <th class="column-header"></th>
@@ -206,6 +206,7 @@ export default {
 
 .summary-table {
   width: 100%;
+  margin-bottom: 0.5rem;
 
   @include desktop {
     width: 390px;

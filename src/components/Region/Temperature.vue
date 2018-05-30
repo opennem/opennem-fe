@@ -1,9 +1,8 @@
 <template>
   <table class="summary-table table is-fullwidth is-narrow">
-    <caption></caption>
     <thead>
       <tr>
-        <th class="column-header">
+        <th class="column-header" style="width: 165px;">
           <div v-if="!showTemperatureRange">Temperature <small>°C</small></div>
         </th>
         <th class="column-header has-text-right has-min-width" v-if="showTemperatureRange">
