@@ -4,8 +4,8 @@
     <thead>
       <tr>
         <th></th>
-        <th class="has-text-right">Lowest</th>
-        <th class="has-text-right">Highest</th>
+        <th class="has-text-right">Min.</th>
+        <th class="has-text-right">Max.</th>
       </tr>
     </thead>
     <tbody>
