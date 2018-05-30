@@ -158,8 +158,8 @@ export default {
       this.$store.dispatch('fetchingData', true);
       const url = 'power/nem.json';
 
-      getJSON(url).then((response) => {
-        const transformedData = dataTransform(GraphDomains, response.data);
+      getJSON([url]).then((response) => {
+        const transformedData = dataTransform(GraphDomains, response[0].data);
         const endDate = transformedData[transformedData.length - 1].date;
 
         if (this.isSmall) {
