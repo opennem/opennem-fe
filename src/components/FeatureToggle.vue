@@ -10,12 +10,6 @@
       
       <div class="panel-block">
         <label>
-          <input type="checkbox" v-model="externalData">
-          <span class="label-text">Fetch data from <strong>data.opennem</strong></span>
-        </label>
-      </div>
-      <div class="panel-block">
-        <label>
           <input type="checkbox" v-model="moreDateRanges">
           <span class="label-text">Show more date range selections (energy charts)</span>
         </label>
@@ -26,6 +20,14 @@
           <span class="label-text">Show Records table</span>
         </label>
       </div>
+
+      <div class="panel-block" style="border-top: 1px solid #000;">
+        <label>
+          <input type="checkbox" v-model="localData">
+          <span class="label-text">Fetch data from <strong>local files</strong></span>
+          <span class="label-text has-text-danger">* Only for local environment</span>
+        </label>
+      </div>
     </nav>
   </div>
 </template>
@@ -33,12 +35,12 @@
 <script>
 export default {
   computed: {
-    externalData: {
+    localData: {
       get() {
-        return this.$store.getters.externalData;
+        return this.$store.getters.localData;
       },
       set(newValue) {
-        this.$store.dispatch('externalData', newValue);
+        this.$store.dispatch('localData', newValue);
       },
     },
     moreDateRanges: {

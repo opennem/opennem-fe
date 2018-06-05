@@ -4,7 +4,7 @@ import { create } from 'apisauce';
 const external = 'https://data.opennem.org.au/';
 const local = 'data/';
 const http = create({
-  baseURL: local,
+  baseURL: external,
 });
 
 function fetchJSON(ref) {
@@ -17,11 +17,11 @@ function fetchJSON(ref) {
   });
 }
 
-export default function (ref, externalData) {
-  if (externalData) {
-    http.setBaseURL(external);
-  } else {
+export default function (ref, localData) {
+  if (localData) {
     http.setBaseURL(local);
+  } else {
+    http.setBaseURL(external);
   }
 
   return new Promise((resolve, reject) => {

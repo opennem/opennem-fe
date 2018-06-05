@@ -3,8 +3,8 @@ import { lsGet, lsSet } from '@/lib/localstorage';
 import * as MutationTypes from '@/constants/mutation-types';
 
 // set up local storage
-if (!lsGet(MutationTypes.FEATURE_TOGGLE_EXTERNAL_DATA)) {
-  lsSet(MutationTypes.FEATURE_TOGGLE_EXTERNAL_DATA, false);
+if (!lsGet(MutationTypes.FEATURE_TOGGLE_LOCAL_DATA)) {
+  lsSet(MutationTypes.FEATURE_TOGGLE_LOCAL_DATA, false);
 }
 if (!lsGet(MutationTypes.FEATURE_TOGGLE_MORE_DATE_RANGES)) {
   lsSet(MutationTypes.FEATURE_TOGGLE_MORE_DATE_RANGES, false);
@@ -14,15 +14,15 @@ if (!lsGet(MutationTypes.FEATURE_TOGGLE_RECORDS_TABLE)) {
 }
 
 const state = {
-  externalData: lsGet(MutationTypes.FEATURE_TOGGLE_EXTERNAL_DATA),
+  localData: lsGet(MutationTypes.FEATURE_TOGGLE_LOCAL_DATA),
   moreDateRanges: lsGet(MutationTypes.FEATURE_TOGGLE_MORE_DATE_RANGES),
   recordsTable: lsGet(MutationTypes.FEATURE_TOGGLE_RECORDS_TABLE),
 };
 
 const mutations = {
-  [MutationTypes.FEATURE_TOGGLE_EXTERNAL_DATA](state, data) {
-    lsSet(MutationTypes.FEATURE_TOGGLE_EXTERNAL_DATA, data);
-    state.externalData = data;
+  [MutationTypes.FEATURE_TOGGLE_LOCAL_DATA](state, data) {
+    lsSet(MutationTypes.FEATURE_TOGGLE_LOCAL_DATA, data);
+    state.localData = data;
   },
   [MutationTypes.FEATURE_TOGGLE_MORE_DATE_RANGES](state, data) {
     lsSet(MutationTypes.FEATURE_TOGGLE_MORE_DATE_RANGES, data);
@@ -35,8 +35,8 @@ const mutations = {
 };
 
 const getters = {
-  externalData: state => {
-    return state.externalData;
+  localData: state => {
+    return state.localData;
   },
   moreDateRanges: state => {
     return state.moreDateRanges;
@@ -47,8 +47,8 @@ const getters = {
 };
 
 const actions = {
-  externalData({ commit, state }, data) {
-    commit(MutationTypes.FEATURE_TOGGLE_EXTERNAL_DATA, data);
+  localData({ commit, state }, data) {
+    commit(MutationTypes.FEATURE_TOGGLE_LOCAL_DATA, data);
   },
   moreDateRanges({ commit, state }, data) {
     commit(MutationTypes.FEATURE_TOGGLE_MORE_DATE_RANGES, data);

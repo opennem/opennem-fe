@@ -67,7 +67,7 @@ const actions = {
     commit(MutationTypes.ERROR, false);
     commit(MutationTypes.ERROR_MESSAGE, '');
 
-    getJSON(urls, state.features.externalData)
+    getJSON(urls, state.features.localData)
       .then((responses) => {
         handleFetchResponse(responses, state, commit);
       })
