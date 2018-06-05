@@ -41,8 +41,8 @@
         the <a :href="ethLink" target="opennem-window">Energy Transition Hub</a>
       </div>
       <div class="utils level-right" v-if="isSmall">
-        <a @click="toggleLegend"><font-awesome-icon class="fas fa-lg fa-fw" :icon="iconLegend" /></a>
-        <a :href="extLink" target="opennem-window"><font-awesome-icon class="fas fa-lg fa-fw" :icon="iconInfo" /></a>
+        <a @click="toggleLegend"><font-awesome-icon class="fal fa-lg fa-fw" :icon="iconLegend" /></a>
+        <a :href="extLink" target="opennem-window"><font-awesome-icon class="fal fa-lg fa-fw" :icon="iconInfo" /></a>
       </div>
     </footer>
   </div>
@@ -54,7 +54,7 @@ import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import {
   faListAlt,
   faInfoCircle,
-} from '@fortawesome/fontawesome-free-solid';
+} from '@fortawesome/fontawesome-pro-light';
 import getJSON from '@/lib/data-apis';
 import dataTransform from '@/lib/data-transform';
 import {
@@ -158,8 +158,8 @@ export default {
       this.$store.dispatch('fetchingData', true);
       const url = 'power/nem.json';
 
-      getJSON(url).then((response) => {
-        const transformedData = dataTransform(GraphDomains, response.data);
+      getJSON([url]).then((response) => {
+        const transformedData = dataTransform(GraphDomains, response[0].data);
         const endDate = transformedData[transformedData.length - 1].date;
 
         if (this.isSmall) {

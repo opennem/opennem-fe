@@ -1,7 +1,9 @@
 <template>
   <div>
     <button class="export-btn button is-small is-rounded is-primary is-inverted"
-      @click="handleClick">Export</button>
+      @click="handleClick">
+      <font-awesome-icon class="fal fa-fw" :icon="iconExport" />
+    </button>
 
     <transition name="fade">
       <div class="modal is-active" v-if="modalActive">
@@ -17,7 +19,7 @@
             </a>
 
             <csv
-              :data="chartData"
+              :data="exportData"
               :fields="csvHeaders"
               :name="`${exportName}.csv`">
                 <a class="panel-block" @click="closeModal">
@@ -35,6 +37,8 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+import { faShareAll } from '@fortawesome/fontawesome-pro-light';
 import { isChrome } from '@/lib/device';
 import { getCSVHeaders } from '@/domains/graphs';
 import Csv from './Csv';
@@ -43,6 +47,7 @@ export default {
   name: 'export-modal',
   components: {
     Csv,
+    FontAwesomeIcon,
   },
   data() {
     return {
@@ -52,12 +57,15 @@ export default {
   },
   computed: {
     ...mapGetters({
-      chartData: 'getExportData',
+      exportData: 'getExportData',
       exportName: 'getExportName',
       visType: 'visType',
     }),
     csvHeaders() {
       return getCSVHeaders(this.$store.getters.visType);
+    },
+    iconExport() {
+      return faShareAll;
     },
   },
   methods: {
@@ -84,8 +92,14 @@ export default {
   right: 1rem;
   top: 1.5rem;
 
+  .fal {
+    position: relative;
+    top: 1px;
+    font-size: 18px;
+  }
+
   @include tablet {
-    margin-left: 1rem;
+    // margin-left: 1rem;
     position: relative;
     top: 5px;
     right: 0;

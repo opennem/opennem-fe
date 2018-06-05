@@ -26,14 +26,24 @@
       </p>
     </section>
 
-    <section class="eca-section">
-      <img class="eca-logo" src="images/eca_logo.png" alt="Energy Consumers Australia's logo">
-      This project was funded by <a href="http://energyconsumersaustralia.com.au/" rel="external">Energy Consumers Australia</a>
-      as part of its grants process for consumer advocacy projects and research projects for the 
-      benefit of consumers of electricity and natural gas.
+    <section class="about-section eca-section">
+      <img class="about-logos eca-logo" src="images/eca_logo.png" alt="Energy Consumers Australia's logo">
+      <p>
+        This project was co-funded by <a href="http://energyconsumersaustralia.com.au/" rel="external">Energy Consumers Australia</a>
+        as part of its grants process for consumer advocacy projects and research projects for the 
+        benefit of consumers of electricity and natural gas.
+      </p>
     </section>
 
-    <h2>How to keep in touch</h2>
+    <section class="about-section eth-section">
+      <img class="about-logos eth-logo" src="images/eth-logo.png" alt="Energy Consumers Australia's logo">
+      <p>
+        This project is part of the University of Melbourne’s <a href="http://climatecollege.unimelb.edu.au/" rel="external">Climate and Energy College</a>
+        “Live-Emission tracker” project under the <a href="http://www.energy-transition-hub.org/" rel="external">Energy Transition Hub</a>.
+      </p>
+    </section>
+
+    <h2 class="clear">How to keep in touch</h2>
     <section>
       <div>Follow us on <a href="https://twitter.com/opennem" title="OpenNEM's twitter page" rel="external">@OpenNEM</a>. <br>
         We also send an occasional email:
@@ -93,19 +103,33 @@ p {
     font-size: 0.9rem;
   }
 }
-.eca-section {
+.clear {
+  clear: both;
+}
+.about-section {
   max-width: 700px;
   border-top: 1px dashed #ccc;
-  border-bottom: 1px dashed #ccc;
   margin-top: 2rem;
-  padding: 3rem 0;
-  font-weight: 600;
+  padding-top: 1rem;
   font-size: 0.9rem;
+
+  &.eca-section p {
+    position: relative;
+    top: -0.5rem;
+  }
+
+  &.eth-section {
+    padding-bottom: 4rem;
+  }
 }
-.eca-logo {
+.about-logos {
   width: 200px;
   display: block;
   margin-bottom: 1rem;
+
+  &.eth-logo {
+    width: 200px;
+  }
 
   @include tablet {
     float: left;

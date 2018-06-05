@@ -2,13 +2,14 @@
   <div class="date-range">
     <transition name="slide-fade" mode="out-in">
       <div v-if="!isFetching" class="dropdown" :class="{'is-active': dropdownActive}">
-        <div v-if="isPointHovered">
+        <div class="point-date" v-if="isPointHovered">
           {{pointDate}}
         </div>
         <div v-else>
           <a class="dropdown-trigger" v-on-clickaway="onClickAway" @click="handleClick">
             {{formattedStartDate}}
             <span v-if="showEndDate"> – {{formattedEndDate}}</span>
+            <font-awesome-icon class="fal fa-lg" :icon="iconDown" />
           </a>
         </div> 
         <!-- local time -->
@@ -20,7 +21,7 @@
               <a class="dropdown-item"
                   v-for="(row, index) in dateSelectors" 
                   :key="row.id"
-                  v-show="moreDateRanges || index < 2"
+                  v-show="moreDateRanges || index < 3"
                   @click="handleSelection(row)"
                   :class="{ 'selected': currentRange === row.id }">
                 {{row.label}}
@@ -37,14 +38,20 @@
 import * as moment from 'moment';
 import { mapGetters } from 'vuex';
 import { mixin as clickaway } from 'vue-clickaway';
+import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+import { faAngleDown } from '@fortawesome/fontawesome-pro-light';
 import { formatDateForDisplay } from '@/lib/formatter';
 import { isMidnight } from '@/lib/data-helpers';
 import { getRegionOffset } from '@/domains/regions';
 import { DateRanges } from '@/domains/date-ranges';
 
+
 export default {
   name: 'date-selector',
   mixins: [clickaway],
+  components: {
+    FontAwesomeIcon,
+  },
   data() {
     return {
       dropdownActive: false,
@@ -61,6 +68,9 @@ export default {
       currentRange: 'currentRange',
       moreDateRanges: 'moreDateRanges',
     }),
+    iconDown() {
+      return faAngleDown;
+    },
     regionOffset() {
       return getRegionOffset(this.$route.params.region);
     },
@@ -98,6 +108,7 @@ export default {
         this.$store.dispatch('setVisType', range.visType);
         this.$store.dispatch('currentRange', range.id);
         this.$store.dispatch('groupToPeriods', range.groupToPeriods);
+        this.$store.dispatch('chartTypeTransition', false);
       }
     },
     onClickAway() {
@@ -115,15 +126,42 @@ export default {
   font-family: $primary-font-family;
   font-size: 0.8rem;
   margin-top: 0.6rem;
-  
 
   @include tablet {
     font-size: 1rem;
   }
 
+  .dropdown {
+    margin-right: 0.5rem;
+  }
+  .point-date {
+    margin-right: 1rem;
+  }
+
   a.dropdown-trigger {
     color: #000;
-    border-bottom: 1px dashed $opennem-primary-alpha;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+
+    &:hover {
+      background-color: rgba(255,255,255,0.5);
+    }
+
+    .fal {
+      color: $opennem-primary-alpha;
+      position: relative;
+      top: 1px;
+      left: 3px;
+    }
+  }
+}
+
+.dropdown-menu {
+  width: 250px;
+
+  @include tablet {
+    right: 0;
+    left: auto;
   }
 }
 

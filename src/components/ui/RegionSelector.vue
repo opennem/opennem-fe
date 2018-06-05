@@ -1,9 +1,12 @@
 <template>
   <div class="region-selector dropdown" :class="{'is-active': dropdownActive}">
     <a class="dropdown-trigger" v-on-clickaway="onClickAway" @click="handleClick">
-      <img class="logo" src="../../assets/opennem-logo.svg" alt="OpenNEM logo">            
-      <strong v-if="isHome">All Regions</strong>
-      <strong v-else>{{regionLabel}}</strong>
+      <img class="logo" src="../../assets/opennem-logo.svg" alt="OpenNEM logo" />
+      <span>
+        <strong v-if="isHome">All Regions</strong>
+        <strong v-else>{{regionLabel}}</strong>
+        <font-awesome-icon class="fal" :icon="iconDown" />
+      </span>          
     </a>
 
     <transition name="slide-down-fade">
@@ -33,11 +36,16 @@
 
 <script>
 import { mixin as clickaway } from 'vue-clickaway';
+import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+import { faAngleDown } from '@fortawesome/fontawesome-pro-light';
 import { getAllRegions, getRegionLabel } from '@/domains/regions';
 
 export default {
   name: 'region-selector',
   mixins: [clickaway],
+  components: {
+    FontAwesomeIcon,
+  },
   data() {
     return {
       dropdownActive: false,
@@ -50,6 +58,9 @@ export default {
     },
     isHome() {
       return this.$route.name === 'home';
+    },
+    iconDown() {
+      return faAngleDown;
     },
   },
   methods: {
@@ -88,10 +99,21 @@ export default {
   a.dropdown-trigger {
     color: #000;
 
-    strong {
+    .fal {
+      position: relative;
+      top: 3px;
+      color: $opennem-primary-alpha;
+    }
+
+    span {
       position: relative;
       top: 2px;
-      border-bottom: 1px dashed $opennem-primary-alpha;
+      padding: 0.4rem 1rem 0.5rem 0.9rem;
+      border-radius: 3rem;
+    }
+
+    &:hover span {
+      background-color: rgba(255,255,255,0.5);
     }
   }
   

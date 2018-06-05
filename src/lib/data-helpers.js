@@ -14,6 +14,18 @@ function dataFilter(data, start, end) {
   });
 }
 
+function dataFilterByLastValuePrecision(data, value, precision) {
+  const endIndex = data.length - 1;
+  const endDate = data[endIndex].date;
+
+  const ago = moment(endDate).subtract(value, precision);
+
+  return data.filter((item) => {
+    const d = moment(item.date);
+    return d.isSameOrAfter(ago) && d.isSameOrBefore(endDate);
+  });
+}
+
 function findDataContextByDate(date, aggregatedDataProviders) {
   const dateValue = `${moment(date).valueOf()}`;
   const dataContext = _.find(aggregatedDataProviders, d => d.amCategoryIdField === dateValue);
@@ -57,6 +69,17 @@ function checkDateZoomLessThan1Hour(start, end) {
  */
 function checkDateZoomLessThan1Day(start, end) {
   const dateCheck = moment(start).add(1, 'days');
+
+  return moment(dateCheck).isSameOrAfter(end);
+}
+
+/**
+ * check the difference between start and end time is less than 14 days
+ * @param {*} start
+ * @param {*} end
+ */
+function checkDateZoomLessThan14Days(start, end) {
+  const dateCheck = moment(start).add(14, 'days');
 
   return moment(dateCheck).isSameOrAfter(end);
 }
@@ -178,16 +201,52 @@ function isMidnight(date) {
   return midnight;
 }
 
+function getAllNumbersBetween(x, y) {
+  const numbers = [];
+  for (let i = x; i <= y; i += 1) {
+    numbers.push(i);
+  }
+  return numbers;
+}
+
+function getAllWeeksYearsBetween(start, end) {
+  const startWeek = moment(start).week();
+  const endWeek = moment(end).week();
+  const startYear = moment(start).year();
+
+  let weeks = getAllNumbersBetween(startWeek, endWeek);
+  let years = weeks.map(() => startYear);
+
+  // if endWeek is smaller than startWeek, need to get across years
+  if (endWeek < startWeek) {
+    const weeksInStartYear = moment(startYear).weeksInYear();
+    const startYearWeeks = getAllNumbersBetween(startWeek, weeksInStartYear);
+    const endYearWeeks = getAllNumbersBetween(1, endWeek);
+    const endYear = moment(end).year();
+
+    weeks = [...startYearWeeks, ...endYearWeeks];
+    years = [...startYearWeeks.map(() => startYear), ...endYearWeeks.map(() => endYear)];
+  }
+
+  return {
+    weeks: weeks.map(w => (`0${w}`).slice(-2)),
+    years,
+  };
+}
+
 export {
   dataFilter,
+  dataFilterByLastValuePrecision,
   findDataContextByDate,
   getStartEndDates,
   checkDateZoomLessThan1Hour,
   checkDateZoomLessThan1Day,
+  checkDateZoomLessThan14Days,
   getZoomDatesOnDateLabel,
   getLast24HoursStartEndDates,
   getLast3DaysStartEndDates,
   getKeys,
   getExtent,
   isMidnight,
+  getAllWeeksYearsBetween,
 };

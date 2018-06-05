@@ -7,9 +7,11 @@ table.summary-table {
     font-family: $header-font-family;
     text-align: left;
     font-weight: 600;
-    font-size: 1rem;
-    border-bottom: 1px solid #bcbcbc;
-    box-shadow: 0 2px 6px rgba(0,0,0,.1);
+    font-size: 0.8rem;
+    color: #000;
+    border-bottom: 1px solid #000;
+    text-transform: uppercase;
+    padding: 0.25em 0.5em;
   }
 
   tbody tr:last-child td,

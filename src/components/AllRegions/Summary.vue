@@ -1,6 +1,6 @@
 <template>
   <table class="summary-table table is-fullwidth is-narrow is-hoverable">
-    <caption></caption>
+    <caption>Summary</caption>
     <thead>
       <tr>
         <th></th>

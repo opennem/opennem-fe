@@ -11,14 +11,14 @@
   </transition>
   
   <transition name="slide-fade">
-    <div class="columns is-desktop is-variable is-1" v-show="!isFetching && !fetchError">
+    <div class="columns is-desktop is-variable is-1" v-show="!isFetching && !error">
       <div class="column" :class="{ export: isExportPng }">
         <div id="export-container">
           <export-png-header v-if="isExportPng" />
 
           <div style="position:relative">
             <panel-button />
-            <all-regions-chart :chartData="chartData" />
+            <all-regions-chart :chartData="nemData" />
             <div v-if="isExportPng">
               <all-regions-summary v-if="showSummaryPanel" />
               <export-legend v-else />
@@ -43,12 +43,10 @@ import { mapGetters } from 'vuex';
 import domtoimage from '@/lib/dom-to-image';
 import FileSaver from 'file-saver';
 import EventBus from '@/lib/event-bus';
-import getJSON from '@/lib/data-apis';
 import updateRouterStartEnd from '@/lib/app-router';
-import dataTransform from '@/lib/data-transform';
-import { dataFilter } from '@/lib/data-helpers';
 import { GraphDomains } from '@/domains/graphs';
-import { isLast24Hrs, findRange } from '@/domains/date-ranges';
+import { findRange } from '@/domains/date-ranges';
+
 import AllRegionsChart from './AllRegions/Chart';
 import AllRegionsSummary from './AllRegions/Summary';
 import AllRegionsExtent from './ui/Extent';
@@ -72,8 +70,9 @@ export default {
     UiLoader,
   },
   created() {
+    this.$store.dispatch('setExportRegion', 'OpenNEM');
     this.$store.dispatch('setDomains', GraphDomains);
-    this.fetchNem();
+    this.fetch();
   },
   mounted() {
     EventBus.$on('download.png', this.downloadPng);
@@ -83,14 +82,15 @@ export default {
   },
   data() {
     return {
-      chartData: [],
       selectedRange: null,
     };
   },
   computed: {
     ...mapGetters({
+      nemData: 'nemData',
       isFetching: 'isFetching',
       isChartZoomed: 'isChartZoomed',
+      chartTypeTransition: 'chartTypeTransition',
       startDate: 'getSelectedStartDate',
       endDate: 'getSelectedEndDate',
       isExportPng: 'isExportPng',
@@ -98,16 +98,18 @@ export default {
       showSummaryPanel: 'showSummaryPanel',
       visType: 'visType',
       currentRange: 'currentRange',
-      fetchError: 'fetchError',
+      error: 'error',
       recordsTable: 'recordsTable',
-      externalData: 'externalData',
+      hasInterval: 'hasInterval',
+      currentInterval: 'currentInterval',
+      yearsWeeks: 'yearsWeeks',
     }),
     records() {
       return this.$route.query.records;
     },
   },
   watch: {
-    chartData(data) {
+    nemData(data) {
       const start = this.startDate;
       const end = this.endDate;
 
@@ -123,7 +125,11 @@ export default {
       });
     },
     currentRange() {
-      this.fetchNem();
+      // when currentRange changes, refetch the data
+      this.fetch();
+    },
+    chartTypeTransition() {
+      this.fetch();
     },
   },
   methods: {
@@ -136,51 +142,19 @@ export default {
           });
       }, 5);
     },
-    dispatchEvents() {
-      // this.$store.dispatch('fetchingData', false);
-      this.$store.dispatch('setExportData', this.chartData);
-      this.$store.dispatch('setExportRegion', 'OpenNEM');
-    },
-    handleResponse(response) {
-      if (response.status === 200) {
-        let data = dataTransform(GraphDomains, response.data);
-        const endIndex = data.length - 1;
-        const endDate = data[endIndex].date;
-
-        if (isLast24Hrs(this.currentRange)) {
-          const startIndex = data.length - 289;
-          const startDate = data[startIndex].date;
-          data = dataFilter(data, startDate, endDate);
-        }
-
-        this.chartData = data;
-        this.$store.dispatch('setDataEndDate', endDate);
-        this.dispatchEvents();
-      } else {
-        throw response.originalError;
-      }
-    },
-    fetchNem() {
-      this.$store.dispatch('fetchingData', true);
-      this.$store.dispatch('fetchError', false);
-      this.$store.dispatch('fetchErrorMessage', '');
-
+    fetch() {
       const range = findRange(this.currentRange);
-      const url = `${this.visType}${range.folder}/nem${range.extension}.json`;
+      const visType = this.chartTypeTransition ? this.visType : range.visType;
+      const extension = this.chartTypeTransition ? this.yearsWeeks : range.extension;
+      const interval = this.chartTypeTransition ? `/history/${this.currentInterval}` : range.folder;
+      const prependUrl = `${visType}${interval}`;
 
-      getJSON(url, this.externalData)
-        .then(this.handleResponse)
-        .catch((e) => {
-          this.$store.dispatch('fetchingData', false);
-          this.$store.dispatch('fetchError', true);
+      const urls = this.chartTypeTransition ?
+        this.yearsWeeks.map(w => `${prependUrl}/nem${w}.json`) :
+        [`${prependUrl}/nem${extension}.json`];
 
-          const requestUrl = e.config ? `${e.config.url},` : '';
-          const message = e.message === 'Network Error' ?
-            'No \'Access-Control-Allow-Origin\' header is present on the requested resource' :
-            e.message;
-
-          this.$store.dispatch('fetchErrorMessage', `${requestUrl} Error: ${message}`);
-        });
+      this.$store.dispatch('setVisType', visType);
+      this.$store.dispatch('fetchData', urls);
     },
   },
 };

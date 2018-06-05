@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import * as Periods from '@/constants/periods';
 import {
   isValidFuelTech,
   isImports,
@@ -9,11 +10,11 @@ import { getStartEndDates } from './data-helpers';
 import { isTouchDevice } from './device';
 
 function getMinPeriod(isPower) {
-  return isPower ? '5mm' : 'DD';
+  return isPower ? Periods.PERIOD_5_MINS : Periods.PERIOD_1_DAY;
 }
 
 function getGroupToPeriods(isPower) {
-  return isPower ? ['5mm', '30mm'] : ['DD'];
+  return isPower ? [Periods.PERIOD_5_MINS, Periods.PERIOD_30_MINS] : [Periods.PERIOD_1_DAY];
 }
 
 /**

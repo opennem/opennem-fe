@@ -6,6 +6,9 @@
 import * as _ from 'lodash';
 import { mapGetters } from 'vuex';
 import * as moment from 'moment';
+import * as Periods from '@/constants/periods';
+import * as Intervals from '@/constants/intervals';
+import * as VisTypes from '@/constants/vis-types';
 import EventBus from '@/lib/event-bus';
 import {
   getFieldMappings,
@@ -17,8 +20,10 @@ import {
   dataFilter,
   findDataContextByDate,
   checkDateZoomLessThan1Day,
+  checkDateZoomLessThan14Days,
   getZoomDatesOnDateLabel,
   getKeys,
+  getAllWeeksYearsBetween,
 } from '@/lib/data-helpers';
 import updateRouterStartEnd from '@/lib/app-router';
 import { isLast24Hrs } from '@/domains/date-ranges';
@@ -55,6 +60,7 @@ export default {
     ...mapGetters({
       domains: 'getDomains',
       isChartZoomed: 'isChartZoomed',
+      chartTypeTransition: 'chartTypeTransition',
       startDate: 'getSelectedStartDate',
       endDate: 'getSelectedEndDate',
       dataEndDate: 'getDataEndDate',
@@ -307,6 +313,17 @@ export default {
       return index;
     },
 
+    transitionChartType(start, end) {
+      const weeksYears = getAllWeeksYearsBetween(start, end);
+      this.$store.dispatch('weeks', weeksYears.weeks);
+      this.$store.dispatch('years', weeksYears.years);
+      this.$store.dispatch('setVisType', VisTypes.VIS_TYPE_POWER);
+      this.$store.dispatch('currentInterval', Intervals.INTERVAL_5_MIN);
+      this.$store.dispatch('minPeriod', Periods.PERIOD_5_MINS);
+      this.$store.dispatch('groupToPeriods', [Periods.PERIOD_5_MINS, Periods.PERIOD_30_MINS]);
+      this.$store.dispatch('chartTypeTransition', true);
+    },
+
     onPanelZoomed(e) {
       const start = e.startDate;
       const end = e.endDate;
@@ -314,6 +331,12 @@ export default {
       // each stock panel generates a zoom event, this is to stop the data from being re-calculated
       const datesChanged = (moment(this.panelStart).isSame(start)) &&
         (moment(this.panelEnd).isSame(end));
+
+      // check less than 14 days
+      const isLessThan14days = checkDateZoomLessThan14Days(start, end);
+      if (!this.isPower && isLessThan14days) {
+        this.transitionChartType(start, end);
+      }
 
       if (!datesChanged && !this.initialZoom) {
         this.panelStart = start;
@@ -335,7 +358,7 @@ export default {
         this.$store.dispatch('setExportData', dataFilter(this.chartData, start, end));
 
         if (checkDateZoomLessThan1Day(start, end) && this.isPower) {
-          this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
+          this.chart.categoryAxesSettings.groupToPeriods = [Periods.PERIOD_5_MINS];
           const temperaturePanelIndex = this.getTemperaturePanelIndex();
 
           if (this.showTemperaturePanel) {
@@ -422,7 +445,7 @@ export default {
 
     zoomChart(start, end) {
       if (checkDateZoomLessThan1Day(start, end) && this.isPower) {
-        this.chart.categoryAxesSettings.groupToPeriods = ['5mm'];
+        this.chart.categoryAxesSettings.groupToPeriods = [Periods.PERIOD_5_MINS];
         const temperaturePanelIndex = this.getTemperaturePanelIndex();
 
         if (this.showTemperaturePanel) {
@@ -443,16 +466,19 @@ export default {
           this.chart.panels[temperaturePanelIndex].graphs[0].bullet = 'none'; // hide temperature bullets
         }
       }
+      if (this.chartTypeTransition) {
+        this.$store.dispatch('chartTypeTransition', false);
+      }
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoomed', false);
     },
 
     handleExtentEventHover(date) {
-      const interval = this.isPower ? '5mm' : 'DD';
+      const period = this.isPower ? Periods.PERIOD_5_MINS : Periods.PERIOD_1_DAY;
       const searchDate = this.isPower ? date : moment(date).set({ hour: 0, minute: 0, second: 0 });
       const dataContext = findDataContextByDate(
         searchDate,
-        this.chart.mainDataSet.agregatedDataProviders[interval],
+        this.chart.mainDataSet.agregatedDataProviders[period],
       );
 
       this.$store.dispatch('generatePointSummary', {
