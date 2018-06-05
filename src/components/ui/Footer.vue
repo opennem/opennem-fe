@@ -7,6 +7,16 @@
           </p>
         </div>
         <div class="level-right">
+          <p>
+            <a class="icon-link" href="https://twitter.com/opennem">
+              <font-awesome-icon class="fal fa-lg" :icon="iconTwitter" />
+            </a>
+          </p>
+          <p>
+            <a class="icon-link" href="https://github.com/opennem">
+              <font-awesome-icon class="fal fa-lg" :icon="iconGitHub" />
+            </a>
+          </p>
           <p>OpenNEM is a project of the <a href="http://energy-transition-hub.org/">Energy Transition Hub</a></p>
         </div>
       </div>
@@ -20,6 +30,16 @@
           </p>
         </div>
         <div class="level-right">
+          <p>
+            <a class="icon-link" href="https://twitter.com/opennem">
+              <font-awesome-icon class="fal fa-lg" :icon="iconTwitter" />
+            </a>
+          </p>
+          <p>
+            <a class="icon-link" href="https://github.com/opennem">
+              <font-awesome-icon class="fal fa-lg" :icon="iconGitHub" />
+            </a>
+          </p>
           <p><router-link to="/about">About OpenNEM</router-link></p>
         </div>
       </div>
@@ -28,10 +48,22 @@
 </template>
 
 <script>
+import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+import { faGithub, faTwitter } from '@fortawesome/fontawesome-free-brands';
+
 export default {
+  components: {
+    FontAwesomeIcon,
+  },
   computed: {
     isAbout() {
       return this.$route.name === 'about';
+    },
+    iconGitHub() {
+      return faGithub;
+    },
+    iconTwitter() {
+      return faTwitter;
     },
   },
 };
@@ -45,6 +77,13 @@ a {
   color: #fff;
   border-bottom: 1px dashed #fff;
   padding-bottom: 0;
+
+  &.icon-link {
+    border-bottom: none;
+    margin-right: 0.75rem;
+    position: relative;
+    top: 1px;
+  }
 }
 .footer {
   width: 100%;
