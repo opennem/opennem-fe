@@ -6,10 +6,10 @@
           <div v-if="!showTemperatureRange">Temperature <small>°C</small></div>
         </th>
         <th class="column-header has-text-right has-min-width" v-if="showTemperatureRange">
-          Av.
+          Min.
         </th>
         <th class="column-header has-text-right has-min-width" v-if="showTemperatureRange">
-          Min.
+          Av.
         </th>
         <th class="column-header has-text-right has-min-width" v-if="showTemperatureRange">
           Max.
@@ -33,15 +33,6 @@
         </th>
         <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            {{ pointTemperature | formatNumber('0,0.0') }}<span v-if="hasValue(pointTemperature)">°C</span>
-          </div>
-          
-          <div v-else>
-            -
-          </div>
-        </td>
-        <td class="cell-value" :class="{ 'hovered': isPointHovered }">
-          <div v-if="isPointHovered">
             {{ pointTemperatureMin | formatNumber('0,0.0') }}°C
           </div>
           
@@ -49,6 +40,17 @@
             -
           </div>
         </td>
+        
+        <td class="cell-value" :class="{ 'hovered': isPointHovered }">
+          <div v-if="isPointHovered">
+            {{ pointTemperature | formatNumber('0,0.0') }}<span v-if="hasValue(pointTemperature)">°C</span>
+          </div>
+          
+          <div v-else>
+            -
+          </div>
+        </td>
+        
         <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
             {{ pointTemperatureMax | formatNumber('0,0.0') }}°C
