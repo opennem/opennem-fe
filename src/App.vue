@@ -12,11 +12,6 @@
       <app-footer />
     </section>
 
-    <section class="about-page" v-else-if="isAbout">
-      <router-view/>
-      <app-footer /> 
-    </section>
-
     <section v-else>
       <router-view/>
     </section>
