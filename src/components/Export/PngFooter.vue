@@ -14,7 +14,7 @@
 
     <div v-if="showAttribution">
       Shared by 
-      <strong contenteditable="true" @blur="onAttributionBlur">@name</strong>
+      <strong contenteditable="true" @blur="onAttributionBlur">{{exportAttribution}}</strong>
     </div>
 
   </div>
@@ -32,7 +32,6 @@ export default {
   data() {
     return {
       showAttribution: true,
-      attribution: '@name',
     };
   },
   mounted() {
@@ -44,6 +43,7 @@ export default {
   computed: {
     ...mapGetters({
       exportRegion: 'getExportRegion',
+      exportAttribution: 'exportAttribution',
     }),
   },
   methods: {
@@ -51,11 +51,11 @@ export default {
       if (e.target.innerText.trim() === '') {
         this.showAttribution = false;
       } else {
-        this.attribution = e.target.innerText.trim();
+        this.$store.dispatch('exportAttribution', e.target.innerText.trim());
       }
     },
     beforeDownloadPng() {
-      if (this.attribution === '@name') {
+      if (this.exportAttribution === '@name') {
         this.showAttribution = false;
       }
     },

@@ -21,7 +21,11 @@ function lsGet(name) {
   }
 
   const v = window.localStorage.getItem(name);
-  return v === 'true';
+  if (v === 'true' || v === 'false') {
+    return v === 'true';
+  }
+
+  return v;
 }
 
 export {
