@@ -39,8 +39,13 @@
       <div class="column is-narrow" v-show="!isExportPng">
         <region-summary />
         <region-temperature :showTemperatureRange="showTemperatureRange" />
-        <region-extent v-if="recordsTable" :showTemperature="true" :showPrice="true" />
       </div>
+    </div>
+  </transition>
+
+  <transition name="slide-fade">
+    <div v-show="!isFetching && !error">
+      <region-extent v-if="recordsTable" :showTemperature="true" :showPrice="true" />
     </div>
   </transition>
 </div>
@@ -60,7 +65,7 @@ import { findRange } from '@/domains/date-ranges';
 import RegionChart from './Region/Chart';
 import RegionSummary from './Region/Summary';
 import RegionTemperature from './Region/Temperature';
-import RegionExtent from './ui/Extent';
+import RegionExtent from './ui/Records';
 import ExportPngHeader from './Export/PngHeader';
 import ExportPngFooter from './Export/PngFooter';
 import PanelButtons from './Export/PanelShowHideButtons';

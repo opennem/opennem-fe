@@ -156,15 +156,22 @@ export default {
     },
     getRenewableContribution() {
       let renewContribution = 0;
-      this.rangeSummary.sourcesData.forEach((d) => {
-        if (isRenewableFuelTech(d.id)) {
-          if (this.isPointHovered) {
-            renewContribution += this.getContribution(this.pointSummary.allData[d.id], this.pointSummary.totalGrossPower);
-          } else {
-            renewContribution += this.getContribution(d.range.power, this.rangeSummary.totalGrossPower);
+      if (this.rangeSummary.sourcesData) {
+        this.rangeSummary.sourcesData.forEach((d) => {
+          if (isRenewableFuelTech(d.id)) {
+            if (this.isPointHovered) {
+              renewContribution +=
+                this.getContribution(
+                  this.pointSummary.allData[d.id],
+                  this.pointSummary.totalGrossPower,
+                );
+            } else {
+              renewContribution +=
+                this.getContribution(d.range.power, this.rangeSummary.totalGrossPower);
+            }
           }
-        }
-      });
+        });
+      }
       return renewContribution;
     },
   },

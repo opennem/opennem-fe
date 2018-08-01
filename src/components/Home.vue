@@ -31,8 +31,13 @@
 
       <div class="column is-narrow" v-show="!isExportPng">
         <all-regions-summary />
-        <all-regions-extent v-if="recordsTable" />
       </div>
+    </div>
+  </transition>
+
+  <transition name="slide-fade">
+    <div v-show="!isFetching && !error">
+      <all-regions-extent v-if="recordsTable" />
     </div>
   </transition>
 </div>
@@ -49,7 +54,7 @@ import { findRange } from '@/domains/date-ranges';
 
 import AllRegionsChart from './AllRegions/Chart';
 import AllRegionsSummary from './AllRegions/Summary';
-import AllRegionsExtent from './ui/Extent';
+import AllRegionsExtent from './ui/Records';
 import ExportPngHeader from './Export/PngHeader';
 import ExportPngFooter from './Export/PngFooter';
 import PanelButton from './AllRegions/ShowHideButton';
