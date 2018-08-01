@@ -83,4 +83,10 @@ table.summary-table {
       vertical-align: middle;
     }
   }
+
+  tr.row-separator {
+    td, th {
+      border-bottom: 1px solid #000;
+    }
+  }
 }

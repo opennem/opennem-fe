@@ -85,6 +85,7 @@ a {
     top: 1px;
   }
 }
+
 .footer {
   width: 100%;
   color: $opennem-primary-invert;
@@ -92,8 +93,10 @@ a {
   margin-top: 2rem;
   padding: 0.3rem 0 0.7rem;
 
-  @include tablet {
+  @include desktop {
     padding: 0;
+    position: fixed;
+    bottom: 0;
   }
 }
 

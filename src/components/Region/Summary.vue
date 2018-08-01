@@ -141,7 +141,7 @@
     </tbody>
 
     <thead>
-      <tr>
+      <tr class="row-separator">
         <th class="row-header">Net</th>
         <th class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
@@ -161,12 +161,22 @@
         <th></th>
       </tr>
     </thead>
+
+    <tbody>
+      <tr class="row-separator">
+        <th class="row-header">Renewables</th>
+        <th></th>
+        <th class="cell-value" :class="{ 'hovered': isPointHovered }">{{ getRenewableContribution() | formatNumber('0,0.0') }}%</th>
+        <th></th>
+      </tr>
+    </tbody>
   </table>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
 import { formatNumberForDisplay } from '@/lib/formatter';
+import { isRenewableFuelTech } from '@/domains/graphs';
 
 export default {
   name: 'region-summary',
@@ -190,6 +200,19 @@ export default {
     },
     getContribution(pointValue, total) {
       return (pointValue / total) * 100;
+    },
+    getRenewableContribution() {
+      let renewContribution = 0;
+      this.rangeSummary.sourcesData.forEach((d) => {
+        if (isRenewableFuelTech(d.id)) {
+          if (this.isPointHovered) {
+            renewContribution += this.getContribution(this.pointSummary.allData[d.id], this.pointSummary.totalGrossPower);
+          } else {
+            renewContribution += this.getContribution(d.range.power, this.rangeSummary.totalGrossPower);
+          }
+        }
+      });
+      return renewContribution;
     },
   },
   filters: {
