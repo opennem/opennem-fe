@@ -1,6 +1,13 @@
 <template>
   <table class="summary-table table is-fullwidth is-narrow is-hoverable">
-    <caption>Summary</caption>
+    <caption>
+      Summary
+
+      <select name="" id="" style="float: right; margin-top: 3px;">
+        <option value="">Contribution to generation</option>
+        <option value="">Contribution to demand</option>
+      </select>
+    </caption>
     <thead>
       <tr>
         <th class="column-header"></th>
@@ -127,7 +134,9 @@
             {{ row.range.energy | formatNumber('0,0.0') }}
           </div>
         </td>
-        <td class="cell-value"></td>
+        <td class="cell-value">
+          
+        </td>
         <td class="cell-value">
           <div v-if="isPointHovered">
             -
@@ -203,6 +212,7 @@ export default {
     },
     getRenewableContribution() {
       let renewContribution = 0;
+
       if (this.rangeSummary.sourcesData) {
         this.rangeSummary.sourcesData.forEach((d) => {
           if (isRenewableFuelTech(d.id)) {
