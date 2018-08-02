@@ -236,10 +236,10 @@ export default {
 
 .summary-table {
   width: 100%;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
 
   @include desktop {
-    width: 390px;
+    width: 410px;
   }
 
   .cell-value {

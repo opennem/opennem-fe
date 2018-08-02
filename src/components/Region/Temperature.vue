@@ -1,8 +1,8 @@
 <template>
   <table class="summary-table table is-fullwidth is-narrow">
     <thead>
-      <tr>
-        <th class="column-header" style="width: 165px;">
+      <tr class="row-separator">
+        <th class="column-header" style="width: 172px; font-size: 1em; color: #363636;">
           <div v-if="!showTemperatureRange">Temperature <small>°C</small></div>
         </th>
         <th class="column-header has-text-right has-min-width" v-if="showTemperatureRange">
@@ -14,7 +14,10 @@
         <th class="column-header has-text-right has-min-width" v-if="showTemperatureRange">
           Max.
         </th>
-        <th class="column-header has-text-right has-min-width" :class="{ 'hovered': isPointHovered }" v-else>
+        <th class="column-header has-text-right has-min-width" v-if="!showTemperatureRange"></th>
+        <th class="column-header has-text-right has-min-width" v-if="!showTemperatureRange"></th>
+        <th class="column-header has-text-right has-min-width"
+          :class="{ 'hovered': isPointHovered }" v-if="!showTemperatureRange">
           <div v-if="isPointHovered" class="temperature-value">
             {{ pointTemperature | formatNumber('0,0.0') }}<span v-if="hasValue(pointTemperature)">°C</span>
           </div>
@@ -123,7 +126,7 @@ export default {
   width: 100%;
 
   @include widescreen {
-    width: 390px;
+    width: 410px;
   }
 
   th {
@@ -138,7 +141,7 @@ export default {
 
   .temperature-value {
     font-family: $numbers-font-family;
-    font-weight: normal;
+    font-size: 1.1em;
   }
 
   .cell-value {
