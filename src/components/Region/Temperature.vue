@@ -2,7 +2,7 @@
   <table class="summary-table table is-fullwidth is-narrow">
     <thead>
       <tr class="row-separator">
-        <th class="column-header" style="width: 172px; font-size: 1em; color: #363636;">
+        <th class="column-header temperature-header">
           <div v-if="!showTemperatureRange">Temperature <small>°C</small></div>
         </th>
         <th class="column-header has-text-right has-min-width" v-if="showTemperatureRange">
@@ -16,7 +16,7 @@
         </th>
         <th class="column-header has-text-right has-min-width" v-if="!showTemperatureRange"></th>
         <th class="column-header has-text-right has-min-width" v-if="!showTemperatureRange"></th>
-        <th class="column-header has-text-right has-min-width"
+        <th class="has-text-right has-min-width"
           :class="{ 'hovered': isPointHovered }" v-if="!showTemperatureRange">
           <div v-if="isPointHovered" class="temperature-value">
             {{ pointTemperature | formatNumber('0,0.0') }}<span v-if="hasValue(pointTemperature)">°C</span>
@@ -139,9 +139,17 @@ export default {
     display: inline !important;
   }
 
+  .temperature-header {
+    font-size: 1em;
+    color: #363636;
+
+    @include widescreen {
+      width: 172px;
+    }
+  }
   .temperature-value {
     font-family: $numbers-font-family;
-    font-size: 1.1em;
+    font-size: 1em;
   }
 
   .cell-value {

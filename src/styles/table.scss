@@ -36,9 +36,12 @@ table.summary-table {
     font-size: 0.9em;
     color: #000;
 
+    span {
+      display: block;
+    }
+
     small {
       color: #999;
-      display: block;
     }
   }
   .row-header {
