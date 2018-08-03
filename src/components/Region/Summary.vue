@@ -2,11 +2,6 @@
   <table class="summary-table table is-fullwidth is-narrow is-hoverable">
     <caption>
       Summary
-
-      <select v-model="contributionSelection" class="contribution-selection">
-        <option :value="{ type: 'generation' }">Contribution to generation</option>
-        <option :value="{ type: 'demand' }">Contribution to demand</option>
-      </select>
     </caption>
     <thead>
       <tr>
@@ -22,9 +17,29 @@
             <small>GWh</small>
           </div>
         </th>
-        <th class="column-header has-text-right has-min-width">
-          <span>Contribution</span>
-          <small>%</small>
+        <th class="column-header has-text-right has-min-width" style="position: relative;">
+          <div v-on-clickaway="onClickAway" @click="handleClick">
+            <span>Contribution</span>
+            <small v-if="isTypeGeneration">to generation</small>
+            <small v-if="isTypeDemand">to demand</small>
+          </div>
+
+          <transition name="slide-down-fade">
+            <div v-if="dropdownActive" class="dropdown-menu">
+              <div class="dropdown-content">
+                <a class="dropdown-item"
+                    @click="handleSelection('generation')"
+                    :class="{ 'selected': isTypeGeneration }">
+                  Contribution to generation
+                </a>
+                <a class="dropdown-item"
+                    @click="handleSelection('demand')"
+                    :class="{ 'selected': isTypeDemand }">
+                  Contribution to demand
+                </a>
+              </div>
+            </div>
+          </transition> 
         </th>
         <th class="column-header has-text-right has-min-width wider">
           <div v-if="isPointHovered && isPower">
@@ -190,13 +205,16 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import { mixin as clickaway } from 'vue-clickaway';
 import { formatNumberForDisplay } from '@/lib/formatter';
 import { isRenewableFuelTech } from '@/domains/graphs';
 
 export default {
   name: 'region-summary',
+  mixins: [clickaway],
   data() {
     return {
+      dropdownActive: false,
       contributionSelection: {
         type: 'generation', // or 'demand'
       },
@@ -242,6 +260,17 @@ export default {
     this.contributionSelection.type = this.contributionType;
   },
   methods: {
+    onClickAway() {
+      this.dropdownActive = false;
+    },
+    handleClick() {
+      const isActive = !this.dropdownActive;
+      this.dropdownActive = isActive;
+    },
+    handleSelection(type) {
+      this.contributionSelection.type = type;
+      this.$store.dispatch('contributionType', type);
+    },
     hasValue(value) {
       return value || false;
     },
@@ -290,14 +319,6 @@ export default {
     width: 410px;
   }
 
-  .contribution-selection {
-    float: right; 
-    margin-top: 2px;
-    border: none;
-    font-family: $numbers-font-family;
-    font-size: 0.75em;
-  }
-
   .cell-value {
     padding-left: 0em;
 
@@ -323,5 +344,32 @@ export default {
     }
   }
 }
+
+.dropdown-menu {
+  min-width: auto;
+  width: 180px;
+  display: block;
+  font-weight: normal;
+  margin-left: -50%;
+
+  .dropdown-content {
+    padding: 0;
+  }
+
+  .dropdown-item {
+    font-size: 1em;
+    text-align: left;
+    padding: .5rem 1rem;
+    font-family: $numbers-font-family;
+
+    &:first-child {
+      border-radius: 3px 3px 0 0;
+    }
+    &:last-child {
+      border-radius: 0 0 3px 3px;
+    }
+  }
+}
+
 </style>
 
