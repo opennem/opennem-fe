@@ -200,7 +200,7 @@ export default {
       contributionSelection: {
         type: 'generation', // or 'demand'
       },
-    }
+    };
   },
   computed: {
     ...mapGetters({
