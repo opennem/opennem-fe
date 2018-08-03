@@ -3,9 +3,9 @@
     <caption>
       Summary
 
-      <select name="" id="" style="float: right; margin-top: 3px;">
-        <option value="">Contribution to generation</option>
-        <option value="">Contribution to demand</option>
+      <select v-model="contributionSelection" class="contribution-selection">
+        <option :value="{ type: 'generation' }">Contribution to generation</option>
+        <option :value="{ type: 'demand' }">Contribution to demand</option>
       </select>
     </caption>
     <thead>
@@ -91,11 +91,11 @@
         </td>
         <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            {{ getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower))">%</span>
+            {{ getContribution(pointSummary.allData[row.id], pointSummaryTotal) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(pointSummary.allData[row.id], pointSummaryTotal))">%</span>
           </div>
           
           <div v-else>
-            {{ getContribution(row.range.power, rangeSummary.totalGrossPower) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(row.range.power, rangeSummary.totalGrossPower))">%</span>
+            {{ getContribution(row.range.power, rangeSummaryTotal) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(row.range.power, rangeSummaryTotal))">%</span>
           </div>
         </td>
         <td class="cell-value">
@@ -134,8 +134,14 @@
             {{ row.range.energy | formatNumber('0,0.0') }}
           </div>
         </td>
-        <td class="cell-value">
+        <td class="cell-value" :class="{ 'hovered': isPointHovered && isTypeDemand }">
+          <div v-if="isPointHovered && isTypeDemand">
+            {{ getContribution(pointSummary.allData[row.id], pointSummaryTotal) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(pointSummary.allData[row.id], pointSummaryTotal))">%</span>
+          </div>
           
+          <div v-if="!isPointHovered && isTypeDemand">
+            {{ getContribution(row.range.power, rangeSummaryTotal) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(row.range.power, rangeSummaryTotal))">%</span>
+          </div>
         </td>
         <td class="cell-value">
           <div v-if="isPointHovered">
@@ -189,19 +195,51 @@ import { isRenewableFuelTech } from '@/domains/graphs';
 
 export default {
   name: 'region-summary',
+  data() {
+    return {
+      contributionSelection: {
+        type: 'generation', // or 'demand'
+      },
+    }
+  },
   computed: {
     ...mapGetters({
       isPointHovered: 'isPointHovered',
       rangeSummary: 'getRangeSummary',
       pointSummary: 'getPointSummary',
       isPower: 'isPower',
+      contributionType: 'contributionType',
     }),
+    isTypeGeneration() {
+      return this.contributionSelection.type === 'generation';
+    },
+    isTypeDemand() {
+      return this.contributionSelection.type === 'demand';
+    },
     pointPrice() {
       const price =
         this.pointSummary.allData.price ||
         this.pointSummary.allData.volume_weighted_price;
       return price;
     },
+    pointSummaryTotal() {
+      return this.isTypeGeneration ?
+        this.pointSummary.totalGrossPower :
+        this.pointSummary.totalNetPower;
+    },
+    rangeSummaryTotal() {
+      return this.isTypeGeneration ?
+        this.rangeSummary.totalGrossPower :
+        this.rangeSummary.totalNetPower;
+    },
+  },
+  watch: {
+    contributionSelection(newValue) {
+      this.$store.dispatch('contributionType', newValue.type);
+    },
+  },
+  mounted() {
+    this.contributionSelection.type = this.contributionType;
   },
   methods: {
     hasValue(value) {
@@ -220,11 +258,11 @@ export default {
               renewContribution +=
                 this.getContribution(
                   this.pointSummary.allData[d.id],
-                  this.pointSummary.totalGrossPower,
+                  this.pointSummaryTotal,
                 );
             } else {
               renewContribution +=
-                this.getContribution(d.range.power, this.rangeSummary.totalGrossPower);
+                this.getContribution(d.range.power, this.rangeSummaryTotal);
             }
           }
         });
@@ -250,6 +288,14 @@ export default {
 
   @include desktop {
     width: 410px;
+  }
+
+  .contribution-selection {
+    float: right; 
+    margin-top: 2px;
+    border: none;
+    font-family: $numbers-font-family;
+    font-size: 0.75em;
   }
 
   .cell-value {

@@ -5,6 +5,7 @@ const state = {
   rangeSummary: {},
   pointSummary: {},
   isPointHovered: false,
+  contributionType: 'generation', // or 'demand'
 };
 
 const mutations = {
@@ -16,6 +17,9 @@ const mutations = {
   },
   [MutationTypes.POINT_HOVERED](state, data) {
     state.isPointHovered = data;
+  },
+  [MutationTypes.CONTRIBUTION_TYPE](state, data) {
+    state.contributionType = data;
   },
 };
 
@@ -29,11 +33,17 @@ const getters = {
   isPointHovered: state => {
     return state.isPointHovered;
   },
+  contributionType: state => {
+    return state.contributionType;
+  },
 };
 
 const actions = {
   showInstantaneousData({ commit, state }, data) {
     commit(MutationTypes.POINT_HOVERED, data);
+  },
+  contributionType({ commit, state }, data) {
+    commit(MutationTypes.CONTRIBUTION_TYPE, data);
   },
 };
 
