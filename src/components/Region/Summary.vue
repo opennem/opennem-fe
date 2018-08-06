@@ -17,29 +17,10 @@
             <small>GWh</small>
           </div>
         </th>
-        <th class="column-header has-text-right has-min-width" style="position: relative;">
-          <div v-on-clickaway="onClickAway" @click="handleClick">
-            <span>Contribution</span>
-            <small v-if="isTypeGeneration">to generation</small>
-            <small v-if="isTypeDemand">to demand</small>
-          </div>
-
-          <transition name="slide-down-fade">
-            <div v-if="dropdownActive" class="dropdown-menu">
-              <div class="dropdown-content">
-                <a class="dropdown-item"
-                    @click="handleSelection('generation')"
-                    :class="{ 'selected': isTypeGeneration }">
-                  Contribution to generation
-                </a>
-                <a class="dropdown-item"
-                    @click="handleSelection('demand')"
-                    :class="{ 'selected': isTypeDemand }">
-                  Contribution to demand
-                </a>
-              </div>
-            </div>
-          </transition> 
+        <th class="column-header has-text-right has-min-width clickable" @click="toggleContributionType">
+          <span>Contribution</span>
+          <small v-if="isTypeGeneration">to generation</small>
+          <small v-if="isTypeDemand">to demand</small>
         </th>
         <th class="column-header has-text-right has-min-width wider">
           <div v-if="isPointHovered && isPower">
@@ -205,16 +186,13 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { mixin as clickaway } from 'vue-clickaway';
 import { formatNumberForDisplay } from '@/lib/formatter';
 import { isRenewableFuelTech } from '@/domains/graphs';
 
 export default {
   name: 'region-summary',
-  mixins: [clickaway],
   data() {
     return {
-      dropdownActive: false,
       contributionSelection: {
         type: 'generation', // or 'demand'
       },
@@ -260,12 +238,14 @@ export default {
     this.contributionSelection.type = this.contributionType;
   },
   methods: {
-    onClickAway() {
-      this.dropdownActive = false;
-    },
-    handleClick() {
-      const isActive = !this.dropdownActive;
-      this.dropdownActive = isActive;
+    toggleContributionType() {
+      let type = 'generation';
+      if (this.isTypeGeneration) {
+        type = 'demand';
+      }
+
+      this.contributionSelection.type = type;
+      this.$store.dispatch('contributionType', type);
     },
     handleSelection(type) {
       this.contributionSelection.type = type;
@@ -371,5 +351,12 @@ export default {
   }
 }
 
+.clickable {
+  cursor: pointer;
+
+  &:hover {
+    background-color: #fff;
+  }
+}
 </style>
 
