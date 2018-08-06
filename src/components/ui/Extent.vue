@@ -5,7 +5,6 @@
       <tr>
         <th></th>
         <th class="has-text-right">Min.</th>
-        <th class="has-text-right">Av.</th>
         <th class="has-text-right">Max.</th>
       </tr>
     </thead>
@@ -19,7 +18,6 @@
           <br>
           <small class="date-value">{{ getMinDate("demand") | formatDate(regionOffset) }}</small>
         </td>
-        <td class="cell-value hoverable"></td>
         <td class="cell-value hoverable" 
           @mouseover="emitHover(getMaxObject('demand'))" 
           @mouseout="emitOut">
@@ -38,7 +36,6 @@
           <br>
           <small class="date-value">{{ getMinDate("renewables") | formatDate(regionOffset) }}</small>
         </td>
-        <td class="cell-value hoverable"></td>
         <td class="cell-value hoverable" 
           @mouseover="emitHover(getMaxObject('renewables'))" 
           @mouseout="emitOut">
@@ -57,7 +54,6 @@
           <br>
           <small class="date-value">{{ getMinDate("generation") | formatDate(regionOffset) }}</small>
         </td>
-        <td class="cell-value hoverable"></td>
         <td class="cell-value hoverable" 
           @mouseover="emitHover(getMaxObject('generation'))" 
           @mouseout="emitOut">
@@ -76,7 +72,6 @@
           <br>
           <small class="date-value">{{ getMinDate("renewables2") | formatDate(regionOffset) }}</small>
         </td>
-        <td class="cell-value hoverable"></td>
         <td class="cell-value hoverable" 
           @mouseover="emitHover(getMaxObject('renewables2'))" 
           @mouseout="emitOut">
@@ -95,7 +90,6 @@
           <br>
           <small class="date-value">{{ getMinDate("price") | formatDate(regionOffset) }}</small>
         </td>
-        <td class="cell-value hoverable"></td>
         <td class="cell-value hoverable" 
           @mouseover="emitHover(getMaxObject('price'))" 
           @mouseout="emitOut">
@@ -114,7 +108,6 @@
           <br>
           <small class="date-value">{{ getMinDate("temperature") | formatDate(regionOffset) }}</small>
         </td>
-        <td class="cell-value hoverable"></td>
         <td class="cell-value hoverable" 
           @mouseover="emitHover(getMaxObject('temperature'))" 
           @mouseout="emitOut">
