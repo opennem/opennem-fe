@@ -15,9 +15,10 @@
             <small>GWh</small>
           </div>
         </th>
-        <th class="column-header has-text-right">
+        <th class="column-header has-text-right clickable" @click="toggleContributionType">
           <span>Contribution</span>
-          <small>%</small>
+          <small v-if="isTypeGeneration">to generation</small>
+          <small v-if="isTypeDemand">to demand</small>
         </th>
       </tr>
     </thead>
@@ -64,11 +65,11 @@
         </td>
         <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            {{ getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower))">%</span>
+            {{ getContribution(pointSummary.allData[row.id], pointSummaryTotal) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower))">%</span>
           </div>
           
           <div v-else>
-            {{ getContribution(row.range.power, rangeSummary.totalGrossPower) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(row.range.power, rangeSummary.totalGrossPower))">%</span>
+            {{ getContribution(row.range.power, rangeSummaryTotal) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(row.range.power, rangeSummary.totalGrossPower))">%</span>
           </div>
         </td>
       </tr>
@@ -97,7 +98,15 @@
             {{ row.range.energy | formatNumber('0,0.0') }}
           </div>
         </td>
-        <td class="cell-value"></td>
+        <td class="cell-value" :class="{ 'hovered': isPointHovered && isTypeDemand }">
+          <div v-if="isPointHovered && isTypeDemand">
+            {{ getContribution(pointSummary.allData[row.id], pointSummaryTotal) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(pointSummary.allData[row.id], pointSummaryTotal))">%</span>
+          </div>
+          
+          <div v-if="!isPointHovered && isTypeDemand">
+            {{ getContribution(row.range.power, rangeSummaryTotal) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(row.range.power, rangeSummaryTotal))">%</span>
+          </div>
+        </td>
       </tr>
     </tbody>
 
@@ -139,15 +148,61 @@ import { isRenewableFuelTech } from '@/domains/graphs';
 
 export default {
   name: 'all-regions-summary',
+  data() {
+    return {
+      contributionSelection: {
+        type: 'generation', // or 'demand'
+      },
+    };
+  },
   computed: {
     ...mapGetters({
       isPointHovered: 'isPointHovered',
       rangeSummary: 'getRangeSummary',
       pointSummary: 'getPointSummary',
       isPower: 'isPower',
+      contributionType: 'contributionType',
     }),
+    isTypeGeneration() {
+      return this.contributionSelection.type === 'generation';
+    },
+    isTypeDemand() {
+      return this.contributionSelection.type === 'demand';
+    },
+    pointSummaryTotal() {
+      return this.isTypeGeneration ?
+        this.pointSummary.totalGrossPower :
+        this.pointSummary.totalNetPower;
+    },
+    rangeSummaryTotal() {
+      return this.isTypeGeneration ?
+        this.rangeSummary.totalGrossPower :
+        this.rangeSummary.totalNetPower;
+    },
   },
+  watch: {
+    contributionSelection(newValue) {
+      this.$store.dispatch('contributionType', newValue.type);
+    },
+  },
+  mounted() {
+    this.contributionSelection.type = this.contributionType;
+  },
+
   methods: {
+    toggleContributionType() {
+      let type = 'generation';
+      if (this.isTypeGeneration) {
+        type = 'demand';
+      }
+
+      this.contributionSelection.type = type;
+      this.$store.dispatch('contributionType', type);
+    },
+    handleSelection(type) {
+      this.contributionSelection.type = type;
+      this.$store.dispatch('contributionType', type);
+    },
     hasValue(value) {
       return value || false;
     },
@@ -197,6 +252,14 @@ export default {
   }
   .cell-value {
     padding-left: 1em;
+  }
+}
+
+.clickable {
+  cursor: pointer;
+
+  &:hover {
+    background-color: #fff;
   }
 }
 </style>
