@@ -31,6 +31,11 @@
         </div>
         <div class="level-right">
           <p>
+            <a class="icon-link" href="/#/features">
+              <font-awesome-icon class="fal fa-lg" :icon="iconFeatures" />
+            </a>
+          </p>
+          <p>
             <a class="icon-link" href="https://twitter.com/opennem">
               <font-awesome-icon class="fal fa-lg" :icon="iconTwitter" />
             </a>
@@ -50,6 +55,7 @@
 <script>
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import { faGithub, faTwitter } from '@fortawesome/fontawesome-free-brands';
+import { faVial } from '@fortawesome/fontawesome-pro-light';
 
 export default {
   components: {
@@ -64,6 +70,9 @@ export default {
     },
     iconTwitter() {
       return faTwitter;
+    },
+    iconFeatures() {
+      return faVial;
     },
   },
 };
