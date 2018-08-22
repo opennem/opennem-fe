@@ -1,6 +1,8 @@
 <template>
   <table class="summary-table table is-fullwidth is-narrow is-hoverable">
-    <caption>Summary</caption>
+    <caption>
+      Summary
+    </caption>
     <thead>
       <tr>
         <th class="column-header"></th>
@@ -15,9 +17,10 @@
             <small>GWh</small>
           </div>
         </th>
-        <th class="column-header has-text-right has-min-width">
+        <th class="column-header has-text-right has-min-width clickable" @click="toggleContributionType">
           <span>Contribution</span>
-          <small>%</small>
+          <small v-if="isTypeGeneration">to generation</small>
+          <small v-if="isTypeDemand">to demand</small>
         </th>
         <th class="column-header has-text-right has-min-width wider">
           <div v-if="isPointHovered && isPower">
@@ -84,11 +87,11 @@
         </td>
         <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            {{ getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(pointSummary.allData[row.id], pointSummary.totalGrossPower))">%</span>
+            {{ getContribution(pointSummary.allData[row.id], pointSummaryTotal) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(pointSummary.allData[row.id], pointSummaryTotal))">%</span>
           </div>
           
           <div v-else>
-            {{ getContribution(row.range.power, rangeSummary.totalGrossPower) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(row.range.power, rangeSummary.totalGrossPower))">%</span>
+            {{ getContribution(row.range.power, rangeSummaryTotal) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(row.range.power, rangeSummaryTotal))">%</span>
           </div>
         </td>
         <td class="cell-value">
@@ -127,7 +130,15 @@
             {{ row.range.energy | formatNumber('0,0.0') }}
           </div>
         </td>
-        <td class="cell-value"></td>
+        <td class="cell-value" :class="{ 'hovered': isPointHovered && isTypeDemand }">
+          <div v-if="isPointHovered && isTypeDemand">
+            {{ getContribution(pointSummary.allData[row.id], pointSummaryTotal) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(pointSummary.allData[row.id], pointSummaryTotal))">%</span>
+          </div>
+          
+          <div v-if="!isPointHovered && isTypeDemand">
+            {{ getContribution(row.range.power, rangeSummaryTotal) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(row.range.power, rangeSummaryTotal))">%</span>
+          </div>
+        </td>
         <td class="cell-value">
           <div v-if="isPointHovered">
             -
@@ -141,7 +152,7 @@
     </tbody>
 
     <thead>
-      <tr>
+      <tr class="row-separator">
         <th class="row-header">Net</th>
         <th class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
@@ -161,35 +172,111 @@
         <th></th>
       </tr>
     </thead>
+
+    <tbody>
+      <tr class="row-separator">
+        <th class="row-header">Renewables</th>
+        <th></th>
+        <th class="cell-value" :class="{ 'hovered': isPointHovered }">{{ getRenewableContribution() | formatNumber('0,0.0') }}%</th>
+        <th></th>
+      </tr>
+    </tbody>
   </table>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
 import { formatNumberForDisplay } from '@/lib/formatter';
+import { isRenewableFuelTech } from '@/domains/graphs';
 
 export default {
   name: 'region-summary',
+  data() {
+    return {
+      contributionSelection: {
+        type: 'generation', // or 'demand'
+      },
+    };
+  },
   computed: {
     ...mapGetters({
       isPointHovered: 'isPointHovered',
       rangeSummary: 'getRangeSummary',
       pointSummary: 'getPointSummary',
       isPower: 'isPower',
+      contributionType: 'contributionType',
     }),
+    isTypeGeneration() {
+      return this.contributionSelection.type === 'generation';
+    },
+    isTypeDemand() {
+      return this.contributionSelection.type === 'demand';
+    },
     pointPrice() {
       const price =
         this.pointSummary.allData.price ||
         this.pointSummary.allData.volume_weighted_price;
       return price;
     },
+    pointSummaryTotal() {
+      return this.isTypeGeneration ?
+        this.pointSummary.totalGrossPower :
+        this.pointSummary.totalNetPower;
+    },
+    rangeSummaryTotal() {
+      return this.isTypeGeneration ?
+        this.rangeSummary.totalGrossPower :
+        this.rangeSummary.totalNetPower;
+    },
+  },
+  watch: {
+    contributionSelection(newValue) {
+      this.$store.dispatch('contributionType', newValue.type);
+    },
+  },
+  mounted() {
+    this.contributionSelection.type = this.contributionType;
   },
   methods: {
+    toggleContributionType() {
+      let type = 'generation';
+      if (this.isTypeGeneration) {
+        type = 'demand';
+      }
+
+      this.contributionSelection.type = type;
+      this.$store.dispatch('contributionType', type);
+    },
+    handleSelection(type) {
+      this.contributionSelection.type = type;
+      this.$store.dispatch('contributionType', type);
+    },
     hasValue(value) {
       return value || false;
     },
     getContribution(pointValue, total) {
       return (pointValue / total) * 100;
+    },
+    getRenewableContribution() {
+      let renewContribution = 0;
+
+      if (this.rangeSummary.sourcesData) {
+        this.rangeSummary.sourcesData.forEach((d) => {
+          if (isRenewableFuelTech(d.id)) {
+            if (this.isPointHovered) {
+              renewContribution +=
+                this.getContribution(
+                  this.pointSummary.allData[d.id],
+                  this.pointSummaryTotal,
+                );
+            } else {
+              renewContribution +=
+                this.getContribution(d.range.power, this.rangeSummaryTotal);
+            }
+          }
+        });
+      }
+      return renewContribution;
     },
   },
   filters: {
@@ -206,10 +293,10 @@ export default {
 
 .summary-table {
   width: 100%;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
 
   @include desktop {
-    width: 390px;
+    width: 410px;
   }
 
   .cell-value {
@@ -235,6 +322,40 @@ export default {
         min-width: 85px;
       }
     }
+  }
+}
+
+.dropdown-menu {
+  min-width: auto;
+  width: 180px;
+  display: block;
+  font-weight: normal;
+  margin-left: -50%;
+
+  .dropdown-content {
+    padding: 0;
+  }
+
+  .dropdown-item {
+    font-size: 1em;
+    text-align: left;
+    padding: .5rem 1rem;
+    font-family: $numbers-font-family;
+
+    &:first-child {
+      border-radius: 3px 3px 0 0;
+    }
+    &:last-child {
+      border-radius: 0 0 3px 3px;
+    }
+  }
+}
+
+.clickable {
+  cursor: pointer;
+
+  &:hover {
+    background-color: #fff;
   }
 }
 </style>

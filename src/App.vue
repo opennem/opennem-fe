@@ -12,11 +12,6 @@
       <app-footer />
     </section>
 
-    <section class="about-page" v-else-if="isAbout">
-      <router-view/>
-      <app-footer /> 
-    </section>
-
     <section v-else>
       <router-view/>
     </section>
@@ -66,6 +61,7 @@ export default {
 @import "styles/chart.scss";
 @import "styles/table.scss";
 @import "styles/dropdown.scss";
+@import "styles/button.scss";
 
 /** Bulma SCSS customisation **/
 // 1. Import the initial variables

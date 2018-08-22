@@ -14,10 +14,12 @@ export const NEM_DATA = 'NEM_DATA';
 export const EXPORT_DATA = 'EXPORT_DATA';
 export const EXPORT_REGION = 'EXPORT_REGION';
 export const EXPORT_PNG = 'EXPORT_PNG';
+export const EXPORT_ATTRIBUTION = 'EXPORT_ATTRIBUTION';
 
 export const RANGE_SUMMARY = 'RANGE_SUMMARY';
 export const POINT_SUMMARY = 'POINT_SUMMARY';
 export const POINT_HOVERED = 'POINT_HOVERED';
+export const CONTRIBUTION_TYPE = 'CONTRIBUTION_TYPE';
 
 export const SELECTED_DATES = 'SELECTED_DATES';
 export const DATA_END_DATE = 'DATA_END_DATE';

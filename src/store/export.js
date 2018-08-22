@@ -1,10 +1,17 @@
 /* eslint-disable */
+import { lsGet, lsSet } from '@/lib/localstorage';
 import * as MutationTypes from '@/constants/mutation-types';
+
+// set up local storage
+if (!lsGet(MutationTypes.EXPORT_ATTRIBUTION)) {
+  lsSet(MutationTypes.EXPORT_ATTRIBUTION, '@name');
+}
 
 const state = {
   exportData: [],
   exportRegion: null,
   exportPng: false,
+  exportAttribution: lsGet(MutationTypes.EXPORT_ATTRIBUTION),
 };
 
 const mutations = {
@@ -16,6 +23,10 @@ const mutations = {
   },
   [MutationTypes.EXPORT_PNG](state, data) {
     state.exportPng = data;
+  },
+  [MutationTypes.EXPORT_ATTRIBUTION](state, data) {
+    lsSet(MutationTypes.EXPORT_ATTRIBUTION, data);
+    state.exportAttribution = data;
   },
 };
 
@@ -29,6 +40,9 @@ const getters = {
   isExportPng: state => {
     return state.exportPng;
   },
+  exportAttribution: state => {
+    return state.exportAttribution;
+  },
 };
 
 const actions = {
@@ -40,6 +54,9 @@ const actions = {
   },
   setExportPng({ commit, state }, data) {
     commit(MutationTypes.EXPORT_PNG, data);
+  },
+  exportAttribution({ commit, state }, data) {
+    commit(MutationTypes.EXPORT_ATTRIBUTION, data);
   },
 };
 
