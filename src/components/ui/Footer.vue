@@ -30,7 +30,7 @@
           </p>
         </div>
         <div class="level-right">
-          <p>
+          <p v-if="isDev">
             <a class="icon-link" href="/#/features">
               <font-awesome-icon class="fal fa-lg" :icon="iconFeatures" />
             </a>
@@ -73,6 +73,13 @@ export default {
     },
     iconFeatures() {
       return faVial;
+    },
+    isDev() {
+      const hostname = window.location.hostname;
+      const localhost = 'localhost';
+      const dev = 'dev.opennem.org.au';
+
+      return hostname.includes(localhost) || hostname.includes(dev);
     },
   },
 };
