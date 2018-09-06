@@ -47,10 +47,14 @@ function formatDateForExport(date) {
 
 function formatNumberForDisplay(number, precision) {
   const formatter = precision || '0,0';
-  const formatted =
+  let formatted =
     number === 0 || isNaN(number)
       ? '-'
       : numeral(number).format(formatter);
+
+  if (Math.abs(number) < 0.1) {
+    formatted = number.toFixed(2);
+  }
   return formatted;
 }
 
