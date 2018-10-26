@@ -161,7 +161,7 @@ export default {
   },
   filters: {
     formatNumber(value, format) {
-      return formatNumberForDisplay(value, format);
+      return value ? formatNumberForDisplay(value, format) : '';
     },
     formatDate(value, offset) {
       return formatDateForDisplay(value, offset);
