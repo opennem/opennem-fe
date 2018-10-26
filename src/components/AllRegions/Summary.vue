@@ -173,6 +173,7 @@ export default {
       pointSummary: 'getPointSummary',
       isPower: 'isPower',
       contributionType: 'contributionType',
+      currentRange: 'currentRange',
     }),
     isTypeGeneration() {
       return this.contributionSelection.type === 'generation';
@@ -195,7 +196,7 @@ export default {
     contributionSelection(newValue) {
       this.$store.dispatch('contributionType', newValue.type);
     },
-    rangeSummary() {
+    currentRange() {
       this.disabledRows = [];
     },
   },

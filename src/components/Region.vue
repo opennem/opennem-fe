@@ -37,7 +37,7 @@
       </div>
 
       <div class="column is-narrow" v-show="!isExportPng">
-        <region-summary />
+        <region-summary :region="region" />
         <region-temperature :showTemperatureRange="showTemperatureRange" />
         <region-extent :showTemperature="true" :showPrice="true" />
       </div>

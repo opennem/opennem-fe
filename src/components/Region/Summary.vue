@@ -201,6 +201,9 @@ import { isRenewableFuelTech } from '@/domains/graphs';
 
 export default {
   name: 'region-summary',
+  props: {
+    region: String,
+  },
   data() {
     return {
       contributionSelection: {
@@ -216,6 +219,8 @@ export default {
       pointSummary: 'getPointSummary',
       isPower: 'isPower',
       contributionType: 'contributionType',
+      currentRange: 'currentRange',
+      exportRegion: 'exportRegion',
     }),
     isTypeGeneration() {
       return this.contributionSelection.type === 'generation';
@@ -244,7 +249,11 @@ export default {
     contributionSelection(newValue) {
       this.$store.dispatch('contributionType', newValue.type);
     },
-    rangeSummary() {
+    currentRange() {
+      this.disabledRows = [];
+    },
+    region(newData) {
+      console.log(newData)
       this.disabledRows = [];
     },
   },
