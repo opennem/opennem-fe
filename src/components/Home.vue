@@ -31,7 +31,7 @@
 
       <div class="column is-narrow" v-show="!isExportPng">
         <all-regions-summary />
-        <all-regions-extent />
+        <all-regions-extent v-if="isPower" />
       </div>
     </div>
   </transition>
@@ -102,6 +102,7 @@ export default {
       hasInterval: 'hasInterval',
       currentInterval: 'currentInterval',
       yearsWeeks: 'yearsWeeks',
+      isPower: 'isPower',
     }),
     records() {
       return this.$route.query.records;
