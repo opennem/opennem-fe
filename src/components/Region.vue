@@ -39,7 +39,7 @@
       <div class="column is-narrow" v-show="!isExportPng">
         <region-summary />
         <region-temperature :showTemperatureRange="showTemperatureRange" />
-        <region-extent v-if="recordsTable" :showTemperature="true" :showPrice="true" />
+        <region-extent :showTemperature="true" :showPrice="true" />
       </div>
     </div>
   </transition>
@@ -113,7 +113,6 @@ export default {
       isPower: 'isPower',
       currentRange: 'currentRange',
       error: 'error',
-      recordsTable: 'recordsTable',
       hasInterval: 'hasInterval',
       currentInterval: 'currentInterval',
       yearsWeeks: 'yearsWeeks',
