@@ -252,8 +252,7 @@ export default {
     currentRange() {
       this.disabledRows = [];
     },
-    region(newData) {
-      console.log(newData)
+    region() {
       this.disabledRows = [];
     },
   },
