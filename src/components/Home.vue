@@ -31,7 +31,7 @@
 
       <div class="column is-narrow" v-show="!isExportPng">
         <all-regions-summary />
-        <all-regions-extent v-if="recordsTable" />
+        <all-regions-extent />
       </div>
     </div>
   </transition>
@@ -99,7 +99,6 @@ export default {
       visType: 'visType',
       currentRange: 'currentRange',
       error: 'error',
-      recordsTable: 'recordsTable',
       hasInterval: 'hasInterval',
       currentInterval: 'currentInterval',
       yearsWeeks: 'yearsWeeks',
