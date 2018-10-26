@@ -66,9 +66,13 @@
     </thead>
     
     <tbody>
-      <tr v-for="row in rangeSummary.sourcesData" :key="row.id">
+      <tr v-for="row in rangeSummary.sourcesData" :key="row.id" @click="handleSourceRowClicked(row.id)">
         <td class="row-label">
-          <span class="source-colour" :style="{ backgroundColor: row.colour }"></span>
+          <span class="source-colour" 
+            :style="{ 
+              backgroundColor: isDisabled(row.id) ? 'transparent' : row.colour,
+              border: `1px solid ${isDisabled(row.id) ? '#ccc' : row.colour}`
+            }"></span>
           <span class="source-label">{{row.label}}</span>
         </td>
         <td class="cell-value" :class="{ 'hovered': isPointHovered }">
@@ -116,9 +120,13 @@
     </thead>
 
     <tbody>
-      <tr v-for="row in rangeSummary.loadsData" :key="row.id">
+      <tr v-for="row in rangeSummary.loadsData" :key="row.id" @click="handleSourceRowClicked(row.id)">
         <td class="row-label">
-          <span class="source-colour"></span>
+          <span class="source-colour"
+            :style="{ 
+              backgroundColor: isDisabled(row.id) ? 'transparent' : '#fff',
+              border: `1px solid ${isDisabled(row.id) ? '#ccc' : '#000'}`
+            }"></span>
           <span class="source-label">{{row.label}}</span>
         </td>
         <td class="cell-value" :class="{ 'hovered': isPointHovered }">
@@ -185,17 +193,23 @@
 </template>
 
 <script>
+import * as _ from 'lodash';
 import { mapGetters } from 'vuex';
+import EventBus from '@/lib/event-bus';
 import { formatNumberForDisplay } from '@/lib/formatter';
 import { isRenewableFuelTech } from '@/domains/graphs';
 
 export default {
   name: 'region-summary',
+  props: {
+    region: String,
+  },
   data() {
     return {
       contributionSelection: {
         type: 'generation', // or 'demand'
       },
+      disabledRows: [],
     };
   },
   computed: {
@@ -205,6 +219,8 @@ export default {
       pointSummary: 'getPointSummary',
       isPower: 'isPower',
       contributionType: 'contributionType',
+      currentRange: 'currentRange',
+      exportRegion: 'exportRegion',
     }),
     isTypeGeneration() {
       return this.contributionSelection.type === 'generation';
@@ -233,6 +249,12 @@ export default {
     contributionSelection(newValue) {
       this.$store.dispatch('contributionType', newValue.type);
     },
+    currentRange() {
+      this.disabledRows = [];
+    },
+    region() {
+      this.disabledRows = [];
+    },
   },
   mounted() {
     this.contributionSelection.type = this.contributionType;
@@ -251,6 +273,24 @@ export default {
       this.contributionSelection.type = type;
       this.$store.dispatch('contributionType', type);
     },
+
+    handleSourceRowClicked(id) {
+      const find = _.findIndex(this.disabledRows, r => r === id);
+      let show = false;
+
+      if (find > -1) {
+        this.disabledRows.splice(find, 1);
+        show = true;
+      } else {
+        this.disabledRows.push(id);
+      }
+      EventBus.$emit('chart.series.toggle', id, show);
+    },
+
+    isDisabled(rowId) {
+      return this.disabledRows.find(r => r === rowId);
+    },
+
     hasValue(value) {
       return value || false;
     },
@@ -295,6 +335,10 @@ export default {
   width: 100%;
   margin-bottom: 0;
 
+  tr td {
+    cursor: pointer;
+  }
+
   @include desktop {
     width: 410px;
   }
@@ -321,32 +365,6 @@ export default {
       @include desktop {
         min-width: 85px;
       }
-    }
-  }
-}
-
-.dropdown-menu {
-  min-width: auto;
-  width: 180px;
-  display: block;
-  font-weight: normal;
-  margin-left: -50%;
-
-  .dropdown-content {
-    padding: 0;
-  }
-
-  .dropdown-item {
-    font-size: 1em;
-    text-align: left;
-    padding: .5rem 1rem;
-    font-family: $numbers-font-family;
-
-    &:first-child {
-      border-radius: 3px 3px 0 0;
-    }
-    &:last-child {
-      border-radius: 0 0 3px 3px;
     }
   }
 }
