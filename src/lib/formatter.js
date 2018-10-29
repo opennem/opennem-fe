@@ -52,7 +52,7 @@ function formatNumberForDisplay(number, precision) {
       ? '-'
       : numeral(number).format(formatter);
 
-  if (Math.abs(number) < 0.1) {
+  if (number && Math.abs(number) < 0.1) {
     formatted = number.toFixed(2);
   }
   return formatted;
