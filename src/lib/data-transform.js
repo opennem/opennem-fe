@@ -1,7 +1,7 @@
 /* eslint-disable */
 import * as moment from 'moment';
 import History from '@/models/History';
-import { isPrice, isTemperature, isImports, isLoads } from '@/domains/graphs'; 
+import { isPrice, isTemperature, isRooftopSolar, isImports, isLoads } from '@/domains/graphs'; 
 import { parseInterval, compareAndGetShortestInterval } from './duration-parser';
 
 function shouldInvertValue(id) {
@@ -127,9 +127,15 @@ export default function(domains, data) {
   // Find out the series that has an interval longer than the shortest interval
   Object.keys(allIntervals).forEach((domain) => {
     if (!compareAndGetShortestInterval(allIntervals[domain], shortestInterval, false)) {
+      let interpolation = 'step'; // none, step, linear
+      if (isRooftopSolar(domain)) interpolation = 'linear';
+      if (isTemperature(domain)) interpolation = 'none';
+
       longerIntervalSeries.push({
         key: domain,
+        interpolation,
         currentValue: null,
+        startIndex: -1,
       });
     }
   });
@@ -146,16 +152,33 @@ export default function(domains, data) {
   newChartData.sort((a, b) => moment(a.date).valueOf() - moment(b.date).valueOf());
 
   // fill in gaps for series that has longer intervals
-  // also populate pricePos and priceNeg for log charts
-  newChartData.forEach((d) => {
+  // also populate pricePos and priceNeg for log charts  
+  newChartData.forEach((d, i) => {
     longerIntervalSeries.forEach((series) => {
-
       if (d[series.key] !== null) {
+        
+        if (series.interpolation === 'linear') {
+          if (series.startIndex === -1) {
+            series.startIndex = i;
+          } else {
+            const count = i - series.startIndex;
+            const addValue = (d[series.key] - series.currentValue) / count;
+            for (let x = series.startIndex + 1; x <= i; x += 1) {
+              newChartData[x][series.key] = series.currentValue + addValue;
+              series.currentValue = newChartData[x][series.key];
+            }
+            series.startIndex = i;
+          }
+        }
+
         series.currentValue = d[series.key];
+
       } else if (d[series.key] === null) {
-        if (!isTemperature(series.key)) {
+
+        if (series.interpolation === 'step') {
           d[series.key] = series.currentValue;
         }
+
       }
     });
   });

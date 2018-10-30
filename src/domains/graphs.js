@@ -209,6 +209,10 @@ function isTemperature(id) {
   id === 'temperature_max';
 }
 
+function isRooftopSolar(id) {
+  return id === 'rooftop_solar';
+}
+
 function isLoads(id) {
   const domain = GraphDomains[id];
   return domain.type === 'loads';
@@ -249,4 +253,5 @@ export {
   isRenewableFuelTech,
   isPrice,
   isTemperature,
+  isRooftopSolar,
 };
