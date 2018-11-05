@@ -53,6 +53,7 @@ export default {
       isExportPng: 'isExportPng',
       isPower: 'isPower',
       groupToPeriods: 'groupToPeriods',
+      disabledSeries: 'disabledSeries',
     }),
   },
   watch: {
@@ -151,7 +152,14 @@ export default {
       const graphType = this.isPower ? 'line' : 'step';
       // const showWeekends = !this.isPower;
 
-      this.chart.panels[0].stockGraphs = getStockGraphs(this.domains, this.keys, graphType, unit);
+      this.chart.panels[0].stockGraphs =
+        getStockGraphs(
+          this.domains,
+          this.keys,
+          graphType,
+          unit,
+          this.disabledSeries,
+        );
       this.chart.panels[0].guides = this.isPower ? getNemGuides(this.chartData, false) : [];
       // this.chart.panels[0].guides = getNemGuides(this.chartData, showWeekends);
       this.chart.validateData();

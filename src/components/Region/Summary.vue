@@ -207,7 +207,7 @@ import * as _ from 'lodash';
 import { mapGetters } from 'vuex';
 import EventBus from '@/lib/event-bus';
 import { formatNumberForDisplay } from '@/lib/formatter';
-import { isRenewableFuelTech } from '@/domains/graphs';
+import { GraphDomains, isRenewableFuelTech } from '@/domains/graphs';
 
 export default {
   name: 'region-summary',
@@ -231,6 +231,7 @@ export default {
       contributionType: 'contributionType',
       currentRange: 'currentRange',
       exportRegion: 'exportRegion',
+      disabledSeries: 'disabledSeries',
     }),
     isTypeGeneration() {
       return this.contributionSelection.type === 'generation';
@@ -259,15 +260,13 @@ export default {
     contributionSelection(newValue) {
       this.$store.dispatch('contributionType', newValue.type);
     },
-    currentRange() {
-      this.disabledRows = [];
-    },
-    region() {
-      this.disabledRows = [];
+    disabledSeries(newData) {
+      this.disabledRows = newData;
     },
   },
   mounted() {
     this.contributionSelection.type = this.contributionType;
+    this.disabledRows = this.disabledSeries;
   },
   methods: {
     toggleContributionType() {
@@ -300,13 +299,7 @@ export default {
     },
 
     handleSourceRowShiftClicked(id) {
-      const sourcesFilter = this.rangeSummary.sourcesData.filter(d => d.id !== id);
-      const loadsFilter = this.rangeSummary.loadsData.filter(d => d.id !== id);
-
-      this.disabledRows = [
-        ...sourcesFilter.map(d => d.id),
-        ...loadsFilter.map(d => d.id),
-      ];
+      this.disabledRows = Object.keys(GraphDomains).filter(d => d !== id);
 
       this.$store.dispatch('disabledSeries', this.disabledRows);
       EventBus.$emit('chart.series.showOnly', id);

@@ -70,6 +70,7 @@ export default {
       isPower: 'isPower',
       groupToPeriods: 'groupToPeriods',
       currentRange: 'currentRange',
+      disabledSeries: 'disabledSeries',
     }),
     visClass() {
       return {
@@ -275,7 +276,14 @@ export default {
       const unit = this.isPower ? 'MW' : 'GWh';
       const graphType = this.isPower ? 'line' : 'step';
 
-      this.chart.panels[0].stockGraphs = getStockGraphs(this.domains, this.keys, graphType, unit);
+      this.chart.panels[0].stockGraphs =
+        getStockGraphs(
+          this.domains,
+          this.keys,
+          graphType,
+          unit,
+          this.disabledSeries,
+        );
 
       // add Guides
       // const showWeekends = !this.isPower;
