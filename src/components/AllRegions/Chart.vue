@@ -95,6 +95,7 @@ export default {
     setupEventSubscribers() {
       EventBus.$on('chart.zoomedOut.clicked', this.resetChartZoom);
       EventBus.$on('chart.series.toggle', this.seriesToggle);
+      EventBus.$on('chart.series.showOnly', this.showOnlySeries);
       EventBus.$on('extent.event.hover', this.handleExtentEventHover);
       EventBus.$on('extent.event.out', this.handleExtentEventOut);
     },
@@ -102,6 +103,7 @@ export default {
     clearEvents() {
       EventBus.$off('chart.zoomedOut.clicked');
       EventBus.$off('chart.series.toggle');
+      EventBus.$off('chart.series.showOnly');
       EventBus.$off('extent.event.hover');
       EventBus.$off('extent.event.out');
     },
@@ -332,6 +334,18 @@ export default {
         p.chartCursor.hideCursor();
       });
       this.$store.dispatch('showInstantaneousData', false);
+    },
+
+    showOnlySeries(seriesId) {
+      const stockGraphs = this.chart.panels[0].stockGraphs;
+
+      stockGraphs.forEach(stockGraph => {
+        if (stockGraph.id === seriesId) {
+          this.chart.panels[0].showGraph(stockGraph);
+        } else {
+          this.chart.panels[0].hideGraph(stockGraph);
+        }
+      })
     },
 
     seriesToggle(seriesId, show) {

@@ -66,7 +66,12 @@
     </thead>
     
     <tbody>
-      <tr v-for="row in rangeSummary.sourcesData" :key="row.id" @click="handleSourceRowClicked(row.id)">
+      <tr 
+        v-for="row in rangeSummary.sourcesData"
+        :key="row.id"
+        @click.exact="handleSourceRowClicked(row.id)"
+        @click.shift.exact="handleSourceRowShiftClicked(row.id)"
+      >
         <td class="row-label">
           <span class="source-colour" 
             :style="{ 
@@ -120,7 +125,12 @@
     </thead>
 
     <tbody>
-      <tr v-for="row in rangeSummary.loadsData" :key="row.id" @click="handleSourceRowClicked(row.id)">
+      <tr 
+        v-for="row in rangeSummary.loadsData"
+        :key="row.id"
+        @click.exact="handleSourceRowClicked(row.id)"
+        @click.shift.exact="handleSourceRowShiftClicked(row.id)"
+      >
         <td class="row-label">
           <span class="source-colour"
             :style="{ 
@@ -287,6 +297,18 @@ export default {
       EventBus.$emit('chart.series.toggle', id, show);
     },
 
+     handleSourceRowShiftClicked(id) {
+      const sourcesFilter = this.rangeSummary.sourcesData.filter(d => d.id !== id);
+      const loadsFilter = this.rangeSummary.loadsData.filter(d => d.id !== id);
+      
+      this.disabledRows = [
+        ...sourcesFilter.map(d => d.id),
+        ...loadsFilter.map(d => d.id)
+      ]
+
+      EventBus.$emit('chart.series.showOnly', id);
+    },
+
     isDisabled(rowId) {
       return this.disabledRows.find(r => r === rowId);
     },
@@ -337,6 +359,10 @@ export default {
 
   tr td {
     cursor: pointer;
+    user-select: none; /* CSS3 (little to no support) */
+    -ms-user-select: none; /* IE 10+ */
+    -moz-user-select: none; /* Gecko (Firefox) */
+    -webkit-user-select: none; /* Webkit (Safari, Chrome) */
   }
 
   @include desktop {
