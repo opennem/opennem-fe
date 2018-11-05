@@ -49,7 +49,7 @@ function getKeysAndStartEndGenerationTime(domains, data) {
   };
 }
 
-export default function(domains, data) {
+export default function(domains, data, interpolate) {
   const keysAndGenTimes = getKeysAndStartEndGenerationTime(domains, data);
   const keys = keysAndGenTimes.keys;
   const genTimes = {
@@ -152,36 +152,38 @@ export default function(domains, data) {
   newChartData.sort((a, b) => moment(a.date).valueOf() - moment(b.date).valueOf());
 
   // fill in gaps for series that has longer intervals
-  // also populate pricePos and priceNeg for log charts  
-  newChartData.forEach((d, i) => {
-    longerIntervalSeries.forEach((series) => {
-      if (d[series.key] !== null) {
-        
-        if (series.interpolation === 'linear') {
-          if (series.startIndex === -1) {
-            series.startIndex = i;
-          } else {
-            const count = i - series.startIndex;
-            const addValue = (d[series.key] - series.currentValue) / count;
-            for (let x = series.startIndex + 1; x <= i; x += 1) {
-              newChartData[x][series.key] = series.currentValue + addValue;
-              series.currentValue = newChartData[x][series.key];
+  // also populate pricePos and priceNeg for log charts
+  if (interpolate) {
+    newChartData.forEach((d, i) => {
+      longerIntervalSeries.forEach((series) => {
+        if (d[series.key] !== null) {
+          
+          if (series.interpolation === 'linear') {
+            if (series.startIndex === -1) {
+              series.startIndex = i;
+            } else {
+              const count = i - series.startIndex;
+              const addValue = (d[series.key] - series.currentValue) / count;
+              for (let x = series.startIndex + 1; x <= i; x += 1) {
+                newChartData[x][series.key] = series.currentValue + addValue;
+                series.currentValue = newChartData[x][series.key];
+              }
+              series.startIndex = i;
             }
-            series.startIndex = i;
           }
+  
+          series.currentValue = d[series.key];
+  
+        } else if (d[series.key] === null) {
+  
+          if (series.interpolation === 'step') {
+            d[series.key] = series.currentValue;
+          }
+  
         }
-
-        series.currentValue = d[series.key];
-
-      } else if (d[series.key] === null) {
-
-        if (series.interpolation === 'step') {
-          d[series.key] = series.currentValue;
-        }
-
-      }
+      });
     });
-  });
-
+  }
+  
   return newChartData.slice(0);
 }

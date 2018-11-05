@@ -159,7 +159,7 @@ export default {
       const url = 'power/nem.json';
 
       getJSON([url]).then((response) => {
-        const transformedData = dataTransform(GraphDomains, response[0].data);
+        const transformedData = dataTransform(GraphDomains, response[0].data, true);
         const endDate = transformedData[transformedData.length - 1].date;
 
         if (this.isSmall) {

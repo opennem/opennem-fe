@@ -239,7 +239,7 @@ export default {
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoomed', false);
     },
-    
+
     showOnlySeries(seriesId) {
       const stockGraphs = this.chart.panels[0].stockGraphs;
 

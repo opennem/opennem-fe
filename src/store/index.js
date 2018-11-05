@@ -91,6 +91,18 @@ const actions = {
     const summary = getPointSummary(state.domains, data.date, data.dataContext);
     commit(MutationTypes.POINT_SUMMARY, summary);
   },
+  generateExportData({ commit, state }, data) {
+    const responses = state.nemData.responseData;
+    let exportData = [];
+
+    responses.forEach((r) => {
+      exportData = [...exportData, ...dataTransform(state.domains, r.data, false)];
+    });
+
+    exportData = dataFilter(exportData, state.dates.selectedDates.start, state.dates.selectedDates.end);
+
+    commit(MutationTypes.EXPORT_DATA, exportData);
+  },
   setVisType({ commit, state }, data) {
     commit(MutationTypes.VIS_TYPE, data);
   },
@@ -98,8 +110,9 @@ const actions = {
 
 function handleFetchResponse(responses, state, commit) {
   let data = [];
+
   responses.forEach((r) => {
-    data = [...data, ...dataTransform(state.domains, r.data)];
+    data = [...data, ...dataTransform(state.domains, r.data, true)];
   })
 
   const endIndex = data.length - 1;
@@ -111,8 +124,8 @@ function handleFetchResponse(responses, state, commit) {
     data = dataFilterByLastValuePrecision(data, '3', 'day');
   }
 
+  commit(MutationTypes.NEM_RESPONSE_DATA, responses);
   commit(MutationTypes.NEM_DATA, data);
-  commit(MutationTypes.EXPORT_DATA, data);
   commit(MutationTypes.DATA_END_DATE, endDate);
 }
 

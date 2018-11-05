@@ -218,8 +218,6 @@ export default {
           end,
         });
 
-        this.$store.dispatch('setExportData', dataFilter(this.chartData, start, end));
-
         if (checkDateZoomLessThan1Day(start, end)) {
           if (this.isPower) {
             this.chart.categoryAxesSettings.groupToPeriods = [Periods.PERIOD_5_MINS];

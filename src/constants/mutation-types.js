@@ -10,6 +10,7 @@ export const CHART_MIN_PERIOD = 'CHART_MIN_PERIOD';
 export const CHART_GROUP_TO_PERIODS = 'CHART_GROUP_TO_PERIODS';
 
 export const NEM_DATA = 'NEM_DATA';
+export const NEM_RESPONSE_DATA = 'NEM_RESPONSE_DATA';
 
 export const EXPORT_DATA = 'EXPORT_DATA';
 export const EXPORT_REGION = 'EXPORT_REGION';

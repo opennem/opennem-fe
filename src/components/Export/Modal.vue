@@ -72,6 +72,9 @@ export default {
     handleClick() {
       const isActive = !this.modalActive;
       this.modalActive = isActive;
+      if (isActive) {
+        this.$store.dispatch('generateExportData');
+      }
     },
     closeModal() {
       this.modalActive = false;
