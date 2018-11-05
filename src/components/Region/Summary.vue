@@ -294,6 +294,8 @@ export default {
       } else {
         this.disabledRows.push(id);
       }
+
+      this.$store.dispatch('disabledSeries', this.disabledRows);
       EventBus.$emit('chart.series.toggle', id, show);
     },
 
@@ -306,6 +308,7 @@ export default {
         ...loadsFilter.map(d => d.id)
       ]
 
+      this.$store.dispatch('disabledSeries', this.disabledRows);
       EventBus.$emit('chart.series.showOnly', id);
     },
 

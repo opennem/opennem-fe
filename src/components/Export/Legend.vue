@@ -1,6 +1,11 @@
 <template>
   <section>
-    <div class="legend-item" v-for="row in rangeSummary.sourcesData" :key="row.id">
+    <div 
+      class="legend-item"
+      v-for="row in rangeSummary.sourcesData"
+      :key="row.id"
+      v-show="!isDisabled(row.id)"
+    >
       <span class="source-colour" :style="{ backgroundColor: row.colour }"></span>
       <div class="source-label">
         {{row.label}}
@@ -9,7 +14,12 @@
         </em>
       </div>
     </div>
-    <div class="legend-item" v-if="!isTypeGeneration" v-for="row in rangeSummary.loadsData" :key="row.id">
+    <div class="legend-item"
+      v-for="row in rangeSummary.loadsData" 
+      :key="row.id"
+      v-if="!isTypeGeneration"
+      v-show="!isDisabled(row.id)"
+    >
       <span class="source-colour" :style="{ backgroundColor: row.colour }"></span>
       <div class="source-label">
         {{row.label}}
@@ -30,6 +40,7 @@ export default {
     ...mapGetters({
       rangeSummary: 'getRangeSummary',
       contributionType: 'contributionType',
+      disabledSeries: 'disabledSeries',
     }),
     isTypeGeneration() {
       return this.contributionType === 'generation';
@@ -46,6 +57,9 @@ export default {
     },
     getContribution(pointValue, total) {
       return (pointValue / total) * 100;
+    },
+    isDisabled(rowId) {
+      return this.disabledSeries.find(r => r === rowId);
     },
   },
   filters: {
