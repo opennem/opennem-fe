@@ -247,11 +247,11 @@ export default {
     handleSourceRowShiftClicked(id) {
       const sourcesFilter = this.rangeSummary.sourcesData.filter(d => d.id !== id);
       const loadsFilter = this.rangeSummary.loadsData.filter(d => d.id !== id);
-      
+
       this.disabledRows = [
         ...sourcesFilter.map(d => d.id),
-        ...loadsFilter.map(d => d.id)
-      ]
+        ...loadsFilter.map(d => d.id),
+      ];
 
       this.$store.dispatch('disabledSeries', this.disabledRows);
       EventBus.$emit('chart.series.showOnly', id);

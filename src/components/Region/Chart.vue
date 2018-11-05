@@ -506,13 +506,13 @@ export default {
     showOnlySeries(seriesId) {
       const stockGraphs = this.chart.panels[0].stockGraphs;
 
-      stockGraphs.forEach(stockGraph => {
+      stockGraphs.forEach((stockGraph) => {
         if (stockGraph.id === seriesId) {
           this.chart.panels[0].showGraph(stockGraph);
         } else {
           this.chart.panels[0].hideGraph(stockGraph);
         }
-      })
+      });
     },
 
     seriesToggle(seriesId, show) {
