@@ -233,6 +233,7 @@ export default {
     },
 
     handleSourceRowClicked(id) {
+      const keysNum = Object.keys(GraphDomains).length;
       const find = _.findIndex(this.disabledRows, r => r === id);
       let show = false;
 
@@ -243,8 +244,15 @@ export default {
         this.disabledRows.push(id);
       }
 
+      if (this.disabledRows.length === keysNum) {
+        // if all rows are unselected, then reset all
+        this.disabledRows = [];
+        EventBus.$emit('chart.series.showAll');
+      } else {
+        EventBus.$emit('chart.series.toggle', id, show);
+      }
+
       this.$store.dispatch('disabledSeries', this.disabledRows);
-      EventBus.$emit('chart.series.toggle', id, show);
     },
 
     handleSourceRowShiftClicked(id) {

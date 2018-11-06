@@ -60,6 +60,7 @@ export default {
     EventBus.$off('chart.zoomedOut.clicked');
     EventBus.$off('chart.series.toggle');
     EventBus.$off('chart.series.showOnly');
+    EventBus.$off('chart.series.showAll');
     this.clearChart();
   },
   methods: {
@@ -71,6 +72,7 @@ export default {
       EventBus.$on('chart.zoomedOut.clicked', this.resetChartZoom);
       EventBus.$on('chart.series.toggle', this.seriesToggle);
       EventBus.$on('chart.series.showOnly', this.showOnlySeries);
+      EventBus.$on('chart.series.showAll', this.showAllSeries);
     },
 
     setupChart() {
@@ -238,6 +240,14 @@ export default {
       this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm'];
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoomed', false);
+    },
+
+    showAllSeries() {
+      const stockGraphs = this.chart.panels[0].stockGraphs;
+
+      stockGraphs.forEach((stockGraph) => {
+        this.chart.panels[0].showGraph(stockGraph);
+      });
     },
 
     showOnlySeries(seriesId) {
