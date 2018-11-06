@@ -128,7 +128,7 @@ function getStockGraphs(domains, keys, graphType, unit, disabledSeries) {
   keys.forEach((ftKey) => {
     if (isValidFuelTech(ftKey)) {
       const colour = domains[ftKey].colour;
-      let negativeFillAlphas = 0.8;
+      const negativeFillAlphas = 0.8;
       const fillAlphas = 0.8;
       const fillColors = colour;
       const lineAlpha = 0;
@@ -136,10 +136,6 @@ function getStockGraphs(domains, keys, graphType, unit, disabledSeries) {
       const lineColor = colour;
       const type = graphType || 'line';
       const hidden = disabledSeries.find(d => d === ftKey);
-
-      if (graphType !== 'step' && hideNegativeAlphas(ftKey)) {
-        negativeFillAlphas = 0;
-      }
 
       const graph = {
         id: ftKey,
