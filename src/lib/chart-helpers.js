@@ -3,7 +3,6 @@ import * as moment from 'moment';
 import * as Periods from '@/constants/periods';
 import {
   isValidFuelTech,
-  isImports,
   isLoads } from '@/domains/graphs';
 import { formatNumberForDisplay } from './formatter';
 import { getStartEndDates } from './data-helpers';
@@ -120,10 +119,6 @@ function getFieldMappings(keys) {
  */
 function getStockGraphs(domains, keys, graphType, unit, disabledSeries) {
   const graphs = [];
-
-  function hideNegativeAlphas(key) {
-    return isLoads(key) || isImports(key);
-  }
 
   keys.forEach((ftKey) => {
     if (isValidFuelTech(ftKey)) {

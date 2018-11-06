@@ -16,7 +16,6 @@ import {
   getChartConfig,
 } from '@/lib/chart-helpers';
 import {
-  dataFilter,
   findDataContextByDate,
   checkDateZoomLessThan1Day,
   checkDateZoomLessThan14Days,
