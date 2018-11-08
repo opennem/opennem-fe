@@ -134,8 +134,8 @@
         <td class="row-label">
           <span class="source-colour"
             :style="{ 
-              backgroundColor: isDisabled(row.id) ? 'transparent' : '#fff',
-              border: `1px solid ${isDisabled(row.id) ? '#ccc' : '#000'}`
+              backgroundColor: isDisabled(row.id) ? 'transparent' : row.colour,
+              border: `1px solid ${isDisabled(row.id) ? '#ccc' : row.colour}`
             }"></span>
           <span class="source-label">{{row.label}}</span>
         </td>
