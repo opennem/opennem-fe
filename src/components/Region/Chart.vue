@@ -219,7 +219,7 @@ export default {
       const config = getChartConfig({
         dataSets: [],
         panels,
-      }, this.isPower, this.groupToPeriods);
+      }, this.isPower, this.groupToPeriods.slice(0));
 
       // manually adjust individual panel percentage heights
       switch (panelNum) {
@@ -470,7 +470,7 @@ export default {
 
     resetChartZoom() {
       if (this.isPower) {
-        this.chart.categoryAxesSettings.groupToPeriods = this.groupToPeriods;
+        this.chart.categoryAxesSettings.groupToPeriods = this.groupToPeriods.slice(0);
         const temperaturePanelIndex = this.getTemperaturePanelIndex();
 
         if (this.showTemperaturePanel) {
