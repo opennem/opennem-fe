@@ -17,7 +17,6 @@
     <div class="legend-item"
       v-for="row in rangeSummary.loadsData" 
       :key="row.id"
-      v-if="!isTypeGeneration"
       v-show="!isDisabled(row.id)"
     >
       <span class="source-colour" :style="{ backgroundColor: row.colour }"></span>
