@@ -77,9 +77,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
 }
 section {
-  @include widescreen {
-    margin-top: 2rem;
-  }
+  @include widescreen {}
 
   &.notfound-page {
     margin-top: 0;
@@ -90,5 +88,6 @@ section {
   min-height: 500px;
   margin: 0.5rem auto;
   padding: 0 1rem;
+  position: relative;
 }
 </style>

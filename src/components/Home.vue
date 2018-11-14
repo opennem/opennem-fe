@@ -1,14 +1,14 @@
 <template>
 <div>
-  <transition name="fade">
-    <ui-zoom-out-button v-if="isChartZoomed && !isFetching && !isExportPng" />
-  </transition>
-
   <transition name="slide-fade">
     <div v-if="isFetching" class="loading">
       <ui-loader />
     </div>
   </transition>
+
+  <div>
+    <range-selector class="range-selector-container" v-if="!isExportPng" />
+  </div>
   
   <transition name="slide-fade">
     <div class="columns is-desktop is-variable is-1" v-show="!isFetching && !error">
@@ -16,7 +16,11 @@
         <div id="export-container">
           <export-png-header v-if="isExportPng" />
 
-          <div style="position:relative">
+          <div style="position: relative;">
+            <transition name="fade">
+              <ui-zoom-out-button v-if="isChartZoomed && !isFetching && !isExportPng" />
+            </transition>
+
             <panel-button />
             <all-regions-chart :chartData="nemData" />
             <div v-if="isExportPng">
@@ -30,7 +34,7 @@
       </div>
 
       <div class="column is-narrow" v-show="!isExportPng">
-        <all-regions-summary />
+        <all-regions-summary class="all-regions-summary" />
         <all-regions-extent v-if="isPower" />
       </div>
     </div>
@@ -56,6 +60,7 @@ import PanelButton from './AllRegions/ShowHideButton';
 import ExportLegend from './Export/Legend';
 import UiZoomOutButton from './ui/ZoomOutButton';
 import UiLoader from './ui/Loader';
+import RangeSelector from './ui/RangeSelector';
 
 export default {
   components: {
@@ -68,6 +73,7 @@ export default {
     UiZoomOutButton,
     PanelButton,
     UiLoader,
+    RangeSelector,
   },
   created() {
     this.$store.dispatch('setExportRegion', 'OpenNEM');
@@ -161,15 +167,28 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../../node_modules/bulma/sass/utilities/mixins.sass";
 @import "../styles/variables.scss";
 
 .loading {
-  background-color: $background;
   margin-top: 1rem;
   padding-top: 2rem;
   position: absolute;
   left: 3rem;
   right: 3rem;
+}
+
+.range-selector-container {
+  padding: 0.3rem 0;
+  margin-bottom: 1rem;
+}
+
+.all-regions-summary {
+  position: relative;
+
+  @include desktop {
+    top: -32px;
+  }
 }
 
 .export {

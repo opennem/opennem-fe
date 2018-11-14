@@ -1,21 +1,26 @@
 <template>
 <div>
-  <transition name="fade">
-    <ui-zoom-out-button v-if="isChartZoomed && !isFetching && !isExportPng" />
-  </transition>
-
   <transition name="slide-fade">
     <div v-if="isFetching" class="loading">
       <ui-loader />
     </div>
   </transition>
+
+  <div>
+    <range-selector class="range-selector-container" v-if="!isExportPng" />
+  </div>
   
   <transition name="slide-fade">
     <div class="columns is-desktop is-variable is-1" v-show="!isFetching && !error">
       <div class="column" :class="{ export: isExportPng }">
         <div id="export-container">
           <export-png-header v-if="isExportPng" />
+
           <div style="position: relative;">
+            <transition name="fade">
+              <ui-zoom-out-button v-if="isChartZoomed && !isFetching && !isExportPng" />
+            </transition>
+
             <panel-buttons />
             <region-chart :chartData="nemData" />
             <div v-if="isExportPng"
@@ -37,7 +42,7 @@
       </div>
 
       <div class="column is-narrow" v-show="!isExportPng">
-        <region-summary :region="region" />
+        <region-summary class="region-summary" :region="region" />
         <region-temperature :showTemperatureRange="showTemperatureRange" />
         <region-extent v-if="isPower" :showTemperature="true" :showPrice="true" />
       </div>
@@ -67,6 +72,7 @@ import PanelButtons from './Export/PanelShowHideButtons';
 import ExportLegend from './Export/Legend';
 import UiZoomOutButton from './ui/ZoomOutButton';
 import UiLoader from './ui/Loader';
+import RangeSelector from './ui/RangeSelector';
 
 export default {
   components: {
@@ -80,6 +86,7 @@ export default {
     UiZoomOutButton,
     PanelButtons,
     UiLoader,
+    RangeSelector,
   },
   created() {
     const regionId = this.$route.params.region;
@@ -201,6 +208,20 @@ export default {
   left: 3rem;
   right: 3rem;
 }
+
+.range-selector-container {
+  padding: 0.3rem 0;
+  margin-bottom: 1rem;
+}
+
+.region-summary {
+  position: relative;
+
+  @include desktop {
+    top: -32px;
+  }
+}
+
 
 .export {
   max-width: 650px;

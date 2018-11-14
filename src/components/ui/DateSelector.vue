@@ -6,11 +6,13 @@
           {{pointDate}}
         </div>
         <div v-else>
-          <a class="dropdown-trigger" v-on-clickaway="onClickAway" @click="handleClick">
+          {{formattedStartDate}}
+          <span v-if="showEndDate"> – {{formattedEndDate}}</span>
+          <!-- <a class="dropdown-trigger" v-on-clickaway="onClickAway" @click="handleClick">
             {{formattedStartDate}}
             <span v-if="showEndDate"> – {{formattedEndDate}}</span>
             <font-awesome-icon class="fal fa-lg" :icon="iconDown" />
-          </a>
+          </a> -->
         </div> 
         <!-- local time -->
         <!-- <div class="date-helper"><small>(local time)</small></div> -->
