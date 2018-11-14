@@ -20,7 +20,7 @@
 
 <script>
 import * as moment from 'moment';
-import Datepicker from 'vuejs-datepicker';
+// import Datepicker from 'vuejs-datepicker';
 import { mapGetters } from 'vuex';
 import { DateRanges } from '@/domains/date-ranges';
 
@@ -28,7 +28,7 @@ export default {
   name: 'range-selector',
 
   components: {
-    Datepicker,
+    // Datepicker,
   },
 
   data() {
