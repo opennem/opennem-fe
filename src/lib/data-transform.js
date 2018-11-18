@@ -184,6 +184,13 @@ export default function(domains, data, interpolate) {
       });
     });
   }
+
+  // only show data within the start and end range of the 5 min FT
+  const updatedChartData = (shortestInterval.key === 'm') ? 
+    newChartData.filter(d =>
+      moment(d.date).isSameOrAfter(moment(genTimes.start)) &&
+      moment(d.date).isSameOrBefore(moment(genTimes.end))) :
+    newChartData;
   
-  return newChartData.slice(0);
+  return updatedChartData.slice(0);
 }
