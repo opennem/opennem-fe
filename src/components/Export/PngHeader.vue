@@ -16,7 +16,7 @@
       autocomplete="off"
       autocorrect="off"
       autocapitalize="off"
-      spellcheck="false"
+      spellcheck="true"
       v-if="showTitle"
       @blur="onTitleBlur">
       {{exportRegion}}
@@ -26,7 +26,7 @@
       autocomplete="off"
       autocorrect="off"
       autocapitalize="off"
-      spellcheck="false"
+      spellcheck="true"
       v-if="showDescription"
       @blur="onDescriptionBlur"
     >Description</h5>
