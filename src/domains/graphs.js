@@ -55,13 +55,6 @@ const GraphDomains = {
     powerUnit: 'MW',
     energyUnit: 'GWh',
   },
-  battery_discharging: {
-    colour: '#00A2FA',
-    type: 'sources',
-    label: 'Battery (Discharging)',
-    powerUnit: 'MW',
-    energyUnit: 'GWh',
-  },
   gas_steam: {
     colour: '#F48E1B',
     type: 'sources',
@@ -87,6 +80,13 @@ const GraphDomains = {
     colour: '#F9DCBC',
     type: 'sources',
     label: 'Gas (Reciprocating)',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
+  },
+  battery_discharging: {
+    colour: '#00A2FA',
+    type: 'sources',
+    label: 'Battery (Discharging)',
     powerUnit: 'MW',
     energyUnit: 'GWh',
   },
