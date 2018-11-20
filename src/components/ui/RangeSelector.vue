@@ -19,7 +19,7 @@
       <span 
         class="button is-rounded is-small is-primary"
         v-for="p in groupToPeriods"
-        :class="{ 'is-inverted': period !== p }"
+        :class="{ 'is-inverted': currentPeriod !== p }"
         :key="p"
         @click="handlePeriodClick(p)"
       >
@@ -48,7 +48,7 @@ export default {
     return {
       dateSelectors: DateRanges.slice(0),
       currentDate: new Date(),
-      period: null,
+      currentPeriod: null,
     };
   },
 
@@ -66,19 +66,25 @@ export default {
     },
 
     groupToPeriods(newPeriods) {
-      this.period = newPeriods[newPeriods.length - 1];
-    }
+      this.currentPeriod = newPeriods[newPeriods.length - 1];
+    },
+
+    period(newPeriod) {
+      this.currentPeriod = newPeriod;
+    },
+
   },
 
   computed: {
     ...mapGetters({
       currentRange: 'currentRange',
       groupToPeriods: 'groupToPeriods',
+      period: 'period',
     }),
   },
 
   mounted() {
-    this.period = this.groupToPeriods[this.groupToPeriods.length - 1];
+    this.currentPeriod = this.groupToPeriods[this.groupToPeriods.length - 1];
   },
 
   methods: {
@@ -95,13 +101,11 @@ export default {
         this.$store.dispatch('groupToPeriods', range.groupToPeriods);
         this.$store.dispatch('chartTypeTransition', false);
 
-        this.period = range.groupToPeriods[range.groupToPeriods.length - 1];
+        this.currentPeriod = range.groupToPeriods[range.groupToPeriods.length - 1];
       }
     },
 
     handlePeriodClick(period) {
-      console.log(period, this.groupToPeriods);
-      this.period = period;
       this.$store.dispatch('period', period);
     },
   },

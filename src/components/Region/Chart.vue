@@ -25,7 +25,7 @@ import {
   getAllWeeksYearsBetween,
 } from '@/lib/data-helpers';
 import updateRouterStartEnd from '@/lib/app-router';
-import { isLast24Hrs } from '@/domains/date-ranges';
+import { isLast24Hrs, findRange } from '@/domains/date-ranges';
 import {
   getAllPanelsGeneration,
   getAllPanelsEnergy,
@@ -68,6 +68,7 @@ export default {
       isExportPng: 'isExportPng',
       isPower: 'isPower',
       groupToPeriods: 'groupToPeriods',
+      period: 'period',
       currentRange: 'currentRange',
       disabledSeries: 'disabledSeries',
     }),
@@ -123,6 +124,10 @@ export default {
     },
     chartCursorEnabled(enabled) {
       this.setChartCursorEnabled(enabled);
+    },
+    period(newPeriod) {
+      this.chart.categoryAxesSettings.groupToPeriods = [newPeriod];
+      this.chart.validateData();
     },
   },
   created() {
@@ -471,6 +476,10 @@ export default {
     resetChartZoom() {
       if (this.isPower) {
         this.chart.categoryAxesSettings.groupToPeriods = this.groupToPeriods.slice(0);
+        this.chart.validateData();
+
+        this.$store.dispatch('period', this.groupToPeriods[this.groupToPeriods.length - 1]);
+
         const temperaturePanelIndex = this.getTemperaturePanelIndex();
 
         if (this.showTemperaturePanel) {
@@ -478,7 +487,10 @@ export default {
         }
       }
       if (this.chartTypeTransition) {
+        const currentRangeObj = findRange(this.currentRange);
         this.$store.dispatch('chartTypeTransition', false);
+        this.$store.dispatch('groupToPeriods', currentRangeObj.groupToPeriods.slice(0));
+        this.$store.dispatch('period', currentRangeObj.groupToPeriods[currentRangeObj.groupToPeriods.length - 1]);
       }
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoomed', false);

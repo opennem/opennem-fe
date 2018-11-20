@@ -8,6 +8,7 @@ import * as moment from 'moment';
 import * as Periods from '@/constants/periods';
 import * as Intervals from '@/constants/intervals';
 import * as VisTypes from '@/constants/vis-types';
+import { findRange } from '@/domains/date-ranges';
 import EventBus from '@/lib/event-bus';
 import {
   getFieldMappings,
@@ -52,7 +53,9 @@ export default {
       isExportPng: 'isExportPng',
       isPower: 'isPower',
       groupToPeriods: 'groupToPeriods',
+      period: 'period',
       disabledSeries: 'disabledSeries',
+      currentRange: 'currentRange',
     }),
   },
   watch: {
@@ -68,6 +71,10 @@ export default {
     },
     chartCursorEnabled(enabled) {
       this.setChartCursorEnabled(enabled);
+    },
+    period(newPeriod) {
+      this.chart.categoryAxesSettings.groupToPeriods = [newPeriod];
+      this.chart.validateData();
     },
   },
   created() {
@@ -221,7 +228,8 @@ export default {
 
         if (checkDateZoomLessThan1Day(start, end)) {
           if (this.isPower) {
-            this.chart.categoryAxesSettings.groupToPeriods = [Periods.PERIOD_5_MINS];
+            // this.chart.categoryAxesSettings.groupToPeriods = [Periods.PERIOD_5_MINS];
+            this.$store.dispatch('period', Periods.PERIOD_5_MINS);
           }
         }
       }
@@ -300,7 +308,8 @@ export default {
 
     zoomChart(start, end) {
       if (checkDateZoomLessThan1Day(start, end) && this.isPower) {
-        this.chart.categoryAxesSettings.groupToPeriods = [Periods.PERIOD_5_MINS];
+        // this.chart.categoryAxesSettings.groupToPeriods = [Periods.PERIOD_5_MINS];
+        this.$store.dispatch('period', Periods.PERIOD_5_MINS);
       }
       this.chart.zoom(start, end);
       this.$store.dispatch('setChartZoomed', true);
@@ -309,10 +318,18 @@ export default {
     resetChartZoom() {
       if (this.isPower) {
         this.chart.categoryAxesSettings.groupToPeriods = this.groupToPeriods.slice(0);
+        this.chart.validateData();
+
+        this.$store.dispatch('period', this.groupToPeriods[this.groupToPeriods.length - 1]);
       }
+
       if (this.chartTypeTransition) {
+        const currentRangeObj = findRange(this.currentRange);
         this.$store.dispatch('chartTypeTransition', false);
+        this.$store.dispatch('groupToPeriods', currentRangeObj.groupToPeriods.slice(0));
+        this.$store.dispatch('period', currentRangeObj.groupToPeriods[currentRangeObj.groupToPeriods.length - 1]);
       }
+
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoomed', false);
     },

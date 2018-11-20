@@ -201,7 +201,6 @@ export default {
 @import "../styles/variables.scss";
 
 .loading {
-  background-color: $background;
   margin-top: 1rem;
   padding-top: 2rem;
   position: absolute;
@@ -221,7 +220,6 @@ export default {
     top: -32px;
   }
 }
-
 
 .export {
   max-width: 650px;
