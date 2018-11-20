@@ -6,6 +6,7 @@ const defaultDateRange = DateRanges[1]
 const state = {
   isChartZoomed: false,
   chartTypeTransition: false,
+  period: null,
   minPeriod: defaultDateRange.minPeriod,
   groupToPeriods: defaultDateRange.groupToPeriods,
 };
@@ -16,6 +17,9 @@ const mutations = {
   },
   [MutationTypes.CHART_TYPE_TRANSITION](state, data) {
     state.chartTypeTransition = data;
+  },
+  [MutationTypes.CHART_PERIOD](state, data) {
+    state.period = data;
   },
   [MutationTypes.CHART_MIN_PERIOD](state, data) {
     state.minPeriod = data;
@@ -32,6 +36,9 @@ const getters = {
   chartTypeTransition: state => {
     return state.chartTypeTransition;
   },
+  period: state => {
+    return state.period;
+  },
   minPeriod: state => {
     return state.minPeriod;
   },
@@ -46,6 +53,9 @@ const actions = {
   },
   chartTypeTransition({ commit, state }, data) {
     commit(MutationTypes.CHART_TYPE_TRANSITION, data);
+  },
+  period({ commit, state }, data) {
+    commit(MutationTypes.CHART_PERIOD, data);
   },
   minPeriod({ commit, state }, data) {
     commit(MutationTypes.CHART_MIN_PERIOD, data);
