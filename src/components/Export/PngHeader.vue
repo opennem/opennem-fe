@@ -11,8 +11,25 @@
       </button>
     </div>
 
-    <h3 contenteditable="true" v-if="showTitle" @blur="onTitleBlur">{{exportRegion}}</h3>
-    <h5 contenteditable="true" v-if="showDescription" @blur="onDescriptionBlur">Description</h5>
+    <h3 
+      contenteditable="true"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
+      v-if="showTitle"
+      @blur="onTitleBlur">
+      {{exportRegion}}
+    </h3>
+    <h5
+      contenteditable="true"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
+      v-if="showDescription"
+      @blur="onDescriptionBlur"
+    >Description</h5>
   </div>
 </template>
 
