@@ -62,13 +62,6 @@ const GraphDomains = {
     powerUnit: 'MW',
     energyUnit: 'GWh',
   },
-  hydro: {
-    colour: '#4582B4',
-    type: 'sources',
-    label: 'Hydro',
-    powerUnit: 'MW',
-    energyUnit: 'GWh',
-  },
   gas_steam: {
     colour: '#F48E1B',
     type: 'sources',
@@ -94,6 +87,13 @@ const GraphDomains = {
     colour: '#F9DCBC',
     type: 'sources',
     label: 'Gas (Reciprocating)',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
+  },
+  hydro: {
+    colour: '#4582B4',
+    type: 'sources',
+    label: 'Hydro',
     powerUnit: 'MW',
     energyUnit: 'GWh',
   },
