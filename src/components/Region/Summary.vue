@@ -103,9 +103,9 @@
             {{ getContribution(row.range.power, rangeSummaryTotal) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(row.range.power, rangeSummaryTotal))">%</span>
           </div>
         </td>
-        <td class="cell-value">
+        <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            -
+            {{ pointSummary.allData[`${row.id}.market_value`] | formatNumber('$0,0.00') }}
           </div>
           
           <div v-else>
@@ -159,7 +159,7 @@
         </td>
         <td class="cell-value">
           <div v-if="isPointHovered">
-            -
+            {{ pointSummary.allData[`${row.id}.market_value`] | formatNumber('$0,0.00') }}
           </div>
           
           <div v-else>
@@ -390,10 +390,10 @@ export default {
     }
 
     &.wider {
-      min-width: 60px;
+      min-width: 120px;
 
       @include desktop {
-        min-width: 85px;
+        min-width: 130px;
       }
     }
   }

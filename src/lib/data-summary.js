@@ -2,6 +2,7 @@ import _ from 'lodash';
 import {
   isValidFuelTech,
   isPrice,
+  isFTMarketValue,
   isTemperature,
   isRenewableFuelTech,
   isImports,
@@ -180,12 +181,9 @@ function getPointSummary(domains, date, data) {
           totalGrossPower += average;
         }
       }
-    }
-
-    if (isPrice(domain)) {
+    } else if (isFTMarketValue(domain) || isPrice(domain)) {
       allData[domain] = data[`${domain}Close`];
-    }
-    if (isTemperature(domain)) {
+    } else if (isTemperature(domain)) {
       allData[domain] = data[`${domain}Average`];
     }
   });
