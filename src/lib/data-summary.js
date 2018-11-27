@@ -112,7 +112,7 @@ function getSummary(domains, data, isPower) {
       // calculate the price * ft total
       const dataFTPrice = data.map((d, i) => {
         const rrp = data[i].price ? data[i].price : 0;
-        return d[domain] * rrp;
+        return Math.abs(d[domain]) * rrp;
       });
 
       // const dataFTMarketValue = data.map((d) => {
@@ -127,8 +127,8 @@ function getSummary(domains, data, isPower) {
 
       // calculate the ft average price
       const averageFTPrice = isPower ?
-        dataFTPrice.reduce((a, b) => a + b, 0) / totalFTValue :
-        (totalFTMarketValue / 1000) / totalFTValue;
+        dataFTPrice.reduce((a, b) => a + b, 0) / Math.abs(totalFTValue) :
+        (totalFTMarketValue / 1000) / Math.abs(totalFTValue);
 
       const row = {
         id: domain,
