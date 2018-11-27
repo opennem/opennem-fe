@@ -51,7 +51,11 @@
           </div>
         </th>
         <th></th>
-        <th></th>
+        <th class="cell-value" :class="{ 'hovered': isPointHovered }">
+          <div>
+            {{ rangeSummary.totalAveragePrice | formatNumber('$0,0.00') }}
+          </div>
+        </th>
       </tr>
     </thead>
     

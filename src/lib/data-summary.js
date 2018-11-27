@@ -79,8 +79,21 @@ function getSummary(domains, data, isPower) {
     return d * rrp;
   });
 
+  const dataSumMarketValue = data.map((d) => {
+    let p = 0;
+    Object.keys(d).forEach((ft) => {
+      if (ft.includes('market_value')) {
+        const value = ft === 'imports.market_value' ? -d[ft] : d[ft];
+        p += value;
+      }
+    });
+    return p;
+  });
+
   // calculate the total average price
-  const totalAveragePrice = dataSumTotalPrice.reduce((a, b) => a + b, 0) / dataSumTotal;
+  const totalAveragePrice = isPower ?
+    dataSumTotalPrice.reduce((a, b) => a + b, 0) / dataSumTotal :
+    dataSumMarketValue.reduce((a, b) => a + b, 0) / dataSumTotal / 1000;
 
   const allData = [];
   const sourcesData = [];
