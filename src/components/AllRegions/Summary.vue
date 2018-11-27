@@ -94,13 +94,12 @@
           </div>
         </td>
 
-        <td class="cell-value" :class="{ 'hovered': isPointHovered }">
+        <td class="cell-value">
           <div v-if="isPointHovered">
-            {{ pointSummary.allData[`${row.id}.market_value`] | formatNumber('$0,0.00') }}
-          </div>
-          
-          <div v-else>
             -
+          </div>
+          <div v-else>
+            {{ row.range.averagePrice | formatNumber('$0,0.00') }}
           </div>
         </td>
       </tr>
@@ -149,13 +148,13 @@
           </div>
         </td>
 
-        <td class="cell-value" :class="{ 'hovered': isPointHovered }">
+        <td class="cell-value">
           <div v-if="isPointHovered">
-            {{ pointSummary.allData[`${row.id}.market_value`] | formatNumber('$0,0.00') }}
+            -
           </div>
           
           <div v-else>
-            -
+            {{ row.range.averagePrice | formatNumber('$0,0.00') }}
           </div>
         </td>
       </tr>
@@ -368,10 +367,10 @@ export default {
     }
 
     &.wider {
-      min-width: 120px;
+      min-width: 60px;
 
       @include desktop {
-        min-width: 130px;
+        min-width: 85px;
       }
     }
   }

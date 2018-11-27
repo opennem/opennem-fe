@@ -95,7 +95,7 @@ function getSummary(domains, data, isPower) {
   Object.keys(domains).forEach((domain) => {
     if (_.includes(dataKeys, domain) && validFuelTech(domain)) {
       // sum ft power
-      const totalFTPower = data.reduce((a, b) => a + b[domain], 0);
+      const totalFTValue = data.reduce((a, b) => a + b[domain], 0);
       let dataEnergy;
 
       if (isPower) {
@@ -115,15 +115,28 @@ function getSummary(domains, data, isPower) {
         return d[domain] * rrp;
       });
 
+      // const dataFTMarketValue = data.map((d) => {
+      //   return d[domain] * d[`${domain}.market_value`];
+      // });
+
+      // energy market value
+      const totalFTMarketValue = data.reduce((a, b) => a + b[`${domain}.market_value`], 0);
+
+      // console.log(dataFTMarketValue.reduce((a, b) => a + b, 0) / 1000 / totalFTValue)
+      // console.log((totalFTMarketValue / 1000) / totalFTValue)
+
       // calculate the ft average price
-      const averageFTPrice = dataFTPrice.reduce((a, b) => a + b, 0) / totalFTPower;
+      const averageFTPrice = isPower ?
+        dataFTPrice.reduce((a, b) => a + b, 0) / totalFTValue :
+        (totalFTMarketValue / 1000) / totalFTValue;
+
       const row = {
         id: domain,
         label: getLabel(domains, domain),
         colour: getColour(domains, domain),
         range: {
-          power: totalFTPower,
-          energy: energySum, // same as totalFTPower / 12000
+          power: totalFTValue,
+          energy: energySum, // same as totalFTValue / 12000
           averagePrice: averageFTPrice,
         },
       };
@@ -133,12 +146,12 @@ function getSummary(domains, data, isPower) {
       } else {
         sourcesData.push(row);
         // sum up sources power (gross)
-        totalGrossPower += totalFTPower;
+        totalGrossPower += totalFTValue;
         // sum up sources energy (gross)
         totalGrossEnergy += energySum;
       }
       // sum up all power (net)
-      totalNetPower += totalFTPower;
+      totalNetPower += totalFTValue;
       // sum up all energy (net)
       totalNetEnergy += energySum;
 
