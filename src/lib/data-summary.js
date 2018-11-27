@@ -120,7 +120,7 @@ function getSummary(domains, data, isPower) {
       // });
 
       // energy market value
-      const totalFTMarketValue = data.reduce((a, b) => a + b[`${domain}.market_value`], 0);
+      const totalFTMarketValue = data.reduce((a, b) => a + Math.abs(b[`${domain}.market_value`]), 0);
 
       // console.log(dataFTMarketValue.reduce((a, b) => a + b, 0) / 1000 / totalFTValue)
       // console.log((totalFTMarketValue / 1000) / totalFTValue)
