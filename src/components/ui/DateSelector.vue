@@ -3,12 +3,11 @@
     <transition name="slide-fade" mode="out-in">
       <div v-if="!isFetching" class="dropdown" :class="{'is-active': dropdownActive}">
         <div class="point-date" v-if="isPointHovered">
-          {{pointDate}}
+          {{ formattedPoint(getPointSummary.date, currentRange) }}
         </div>
         <div v-else>
           <a class="dropdown-trigger" v-on-clickaway="onClickAway" @click="handleClick">
-            {{formattedStartDate}}
-            <span v-if="showEndDate"> – {{formattedEndDate}}</span>
+            {{ formattedRange(startDate, endDate, currentRange) }}
             <font-awesome-icon class="fal fa-lg" :icon="iconDown" />
           </a>
         </div> 
@@ -67,26 +66,13 @@ export default {
       endDate: 'getSelectedEndDate',
       currentRange: 'currentRange',
       moreDateRanges: 'moreDateRanges',
+      getPointSummary: 'getPointSummary',
     }),
     iconDown() {
       return faAngleDown;
     },
     regionOffset() {
       return getRegionOffset(this.$route.params.region);
-    },
-    pointDate() {
-      return this.formatPointDate(this.$store.getters.getPointSummary.date);
-    },
-    formattedStartDate() {
-      return this.formatDate(this.$store.getters.getSelectedStartDate);
-    },
-    formattedEndDate() {
-      return this.formatDate(this.$store.getters.getSelectedEndDate, true);
-    },
-    showEndDate() {
-      const midnight = isMidnight(this.startDate);
-      const aDayApart = moment(this.startDate).isSame(moment(this.endDate).subtract(1, 'day'));
-      return !(midnight && aDayApart);
     },
   },
   watch: {
@@ -97,40 +83,118 @@ export default {
     },
   },
   methods: {
-    formatPointDate(date) {
-      const period = getPeriod(this.currentRange);
-      let formatted = formatDateForDisplay(date);
+    formattedPoint(date, currentRange) {
+      let range = '';
 
-      if (period === 'week') {
-        const endDate = moment(date).add(1, period);
-        formatted = `${formatDateForDisplay(date)} – ${formatDateForDisplay(endDate)}`;
-      } else if (period === 'month') {
-        formatted = this.monthPeriodFormat(date);
+      switch (currentRange) {
+        case 'last30days':
+          range = moment(date).format('D MMM YYYY');
+          break;
+
+        case 'last52weeksWeekly':
+        case '2017Weekly':
+          range = this.weeklyDateDisplay(date, date);
+          break;
+
+        case 'last52weeksMonthly':
+        case '2017Monthly':
+          range = moment(date).format('MMM YYYY');
+          break;
+
+        default:
+          range = `${formatDateForDisplay(date)}`;
       }
 
-      return formatted;
+      return range;
     },
-    formatDate(date, useEndPeriod) {
-      const period = getPeriod(this.currentRange);
-      let formatted = formatDateForDisplay(date);
 
-      if (period === 'week') {
-        if (useEndPeriod) {
-          const endDate = moment(date).add(1, 'week');
-          formatted = formatDateForDisplay(endDate);
-        }
-      } else if (period === 'month') {
-        formatted = this.monthPeriodFormat(date);
+    formattedRange(start, end, currentRange) {
+      let range = '';
+
+      switch (currentRange) {
+        case 'last24hrs':
+        case 'last3days':
+        case 'last7days':
+          range = this.minutelyDateDisplay(start, end);
+          break;
+
+        case 'last30days':
+          range = this.dailyDateDisplay(start, end);
+          break;
+
+        case 'last52weeksWeekly':
+        case '2017Weekly':
+          range = this.weeklyDateDisplay(start, end);
+          break;
+        
+        case 'last52weeksMonthly':
+        case '2017Monthly':
+          range = this.monthlyDateDisplay(start, end);
+          break;
+        
+        default:
+          range = `${formatDateForDisplay(start)} – ${formatDateForDisplay(end)}`;
       }
-      return formatted;
+
+      return range;
     },
 
-    monthPeriodFormat(date) {
-      const thisYear = moment().year();
-      const dateYear = moment(date).year();
-      const formatString = thisYear === dateYear ? 'MMM' : 'MMM YYYY';
+    minutelyDateDisplay(start, end) {
+      const startAdd1Day = moment(start).add(1, 'day');
+      const isSameDay = moment(startAdd1Day).isSame(end, 'day');
+      const startDate = formatDateForDisplay(start);
+      const endDate = formatDateForDisplay(end);
 
-      return moment(date).format(formatString);
+      let display = `${startDate} – ${endDate}`;
+
+      if (isSameDay && isMidnight(start)) {
+        display = `${startDate}`;
+      }
+
+      return display;
+    },
+
+    dailyDateDisplay(start, end) {
+      const isSameYear = moment(start).isSame(end, 'year');
+      const isSameMonth = moment(start).isSame(end, 'month');
+
+      let startFormat = 'D MMM YYYY';
+
+      if (isSameMonth) {
+        startFormat = 'D';
+      } else if (isSameYear) {
+        startFormat = 'D MMM';
+      }
+
+      return `${moment(start).format(startFormat)} – ${moment(end).format('D MMM YYYY')}`;
+    },
+
+    weeklyDateDisplay(start, end) {
+      const endDate = moment(end).add(6, 'days');
+      const isSameYear = moment(start).isSame(endDate, 'year');
+      const isSameMonth = moment(start).isSame(endDate, 'month');
+
+      let startFormat = 'D MMM YYYY';
+
+      if (isSameMonth) {
+        startFormat = 'D';
+      } else if (isSameYear) {
+        startFormat = 'D MMM';
+      }
+
+      return `${moment(start).format(startFormat)} – ${endDate.format('D MMM YYYY')}`;
+    },
+
+    monthlyDateDisplay(start, end) {
+      const isSameYear = moment(start).isSame(end, 'year');
+
+      let startFormat = 'MMM YYYY';
+      
+      if (isSameYear) {
+        startFormat = 'MMM';
+      }
+
+      return `${moment(start).format(startFormat)} – ${moment(end).format('MMM YYYY')}`;
     },
 
     handleClick() {
