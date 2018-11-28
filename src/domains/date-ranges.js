@@ -98,25 +98,30 @@ function getDefaultRange() {
   return isMobileWidth() ? DateRanges[1].id : DateRanges[2].id;
 }
 
-function getInterval(id) {
-  let interval = '';
+function getPeriod(id) {
+  let period = '';
 
   switch (id) {
     case 'last30days':
-      interval = '/day';
+      period = 'day';
       break;
     case 'last52weeksWeekly':
     case '2017Weekly':
-      interval = '/week';
+      period = 'week';
       break;
     case 'last52weeksMonthly':
     case '2017Monthly':
-      interval = '/month';
+      period = 'month';
       break;
     default:
-      interval = '';
+      period = '';
   }
-  return interval;
+  return period;
+}
+
+function getPeriodAxisLabel(id) {
+  const interval = getPeriod(id);
+  return interval !== '' ? `/${interval}` : '';
 }
 
 function isLast24Hrs(id) {
@@ -131,7 +136,8 @@ export {
   getDateRangeLabel,
   getDateRangeId,
   getDefaultRange,
-  getInterval,
+  getPeriod,
+  getPeriodAxisLabel,
   isLast24Hrs,
   isLast3Days,
 };

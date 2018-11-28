@@ -43,7 +43,7 @@ import { faAngleDown } from '@fortawesome/fontawesome-pro-light';
 import { formatDateForDisplay } from '@/lib/formatter';
 import { isMidnight } from '@/lib/data-helpers';
 import { getRegionOffset } from '@/domains/regions';
-import { DateRanges } from '@/domains/date-ranges';
+import { DateRanges, getPeriod } from '@/domains/date-ranges';
 
 
 export default {
@@ -75,13 +75,13 @@ export default {
       return getRegionOffset(this.$route.params.region);
     },
     pointDate() {
-      return formatDateForDisplay(this.$store.getters.getPointSummary.date, this.regionOffset);
+      return this.formatPointDate(this.$store.getters.getPointSummary.date);
     },
     formattedStartDate() {
-      return formatDateForDisplay(this.$store.getters.getSelectedStartDate, this.regionOffset);
+      return this.formatDate(this.$store.getters.getSelectedStartDate);
     },
     formattedEndDate() {
-      return formatDateForDisplay(this.$store.getters.getSelectedEndDate, this.regionOffset);
+      return this.formatDate(this.$store.getters.getSelectedEndDate, true);
     },
     showEndDate() {
       const midnight = isMidnight(this.startDate);
@@ -97,6 +97,42 @@ export default {
     },
   },
   methods: {
+    formatPointDate(date) {
+      const period = getPeriod(this.currentRange);
+      let formatted = formatDateForDisplay(date);
+
+      if (period === 'week') {
+        const endDate = moment(date).add(1, period);
+        formatted = `${formatDateForDisplay(date)} – ${formatDateForDisplay(endDate)}`;
+      } else if (period === 'month') {
+        formatted = this.monthPeriodFormat(date);
+      }
+
+      return formatted;
+    },
+    formatDate(date, useEndPeriod) {
+      const period = getPeriod(this.currentRange);
+      let formatted = formatDateForDisplay(date);
+
+      if (period === 'week') {
+        if (useEndPeriod) {
+          const endDate = moment(date).add(1, 'week');
+          formatted = formatDateForDisplay(endDate);
+        }
+      } else if (period === 'month') {
+        formatted = this.monthPeriodFormat(date);
+      }
+      return formatted;
+    },
+
+    monthPeriodFormat(date) {
+      const thisYear = moment().year();
+      const dateYear = moment(date).year();
+      const formatString = thisYear === dateYear ? 'MMM' : 'MMM YYYY';
+
+      return moment(date).format(formatString);
+    },
+
     handleClick() {
       const isActive = !this.dropdownActive;
       this.dropdownActive = isActive;
