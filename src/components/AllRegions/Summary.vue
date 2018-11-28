@@ -20,6 +20,17 @@
           <small v-if="isTypeGeneration">to generation</small>
           <small v-if="isTypeDemand">to demand</small>
         </th>
+        <th class="column-header has-text-right has-min-width wider">
+          <div v-if="isPointHovered && isPower">
+            <span>Price</span>
+            <small>$/MWh</small>
+          </div>
+
+          <div v-if="!isPower || !isPointHovered">
+            <span>Av.Value</span>
+            <small>$/MWh</small>
+          </div>
+        </th>
       </tr>
     </thead>
     <thead>
@@ -40,6 +51,11 @@
           </div>
         </th>
         <th></th>
+        <th class="cell-value" :class="{ 'hovered': isPointHovered }">
+          <div>
+            {{ rangeSummary.totalAveragePrice | formatNumber('$0,0.00') }}
+          </div>
+        </th>
       </tr>
     </thead>
     
@@ -81,6 +97,15 @@
             {{ getContribution(row.range.power, rangeSummaryTotal) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(row.range.power, rangeSummary.totalGrossPower))">%</span>
           </div>
         </td>
+
+        <td class="cell-value">
+          <div v-if="isPointHovered">
+            -
+          </div>
+          <div v-else>
+            {{ row.range.averagePrice | formatNumber('$0,0.00') }}
+          </div>
+        </td>
       </tr>
     </tbody>
     
@@ -88,6 +113,7 @@
       <tr>
         <th class="row-header">Loads</th>
         <th class="cell-value"></th>
+        <th></th>
         <th></th>
       </tr>
     </thead>
@@ -125,6 +151,16 @@
             {{ getContribution(row.range.power, rangeSummaryTotal) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(row.range.power, rangeSummaryTotal))">%</span>
           </div>
         </td>
+
+        <td class="cell-value">
+          <div v-if="isPointHovered">
+            -
+          </div>
+          
+          <div v-else>
+            {{ row.range.averagePrice | formatNumber('$0,0.00') }}
+          </div>
+        </td>
       </tr>
     </tbody>
 
@@ -146,6 +182,7 @@
           </div>
         </th>
         <th></th>
+        <th></th>
       </tr>
     </thead>
 
@@ -154,6 +191,7 @@
         <th class="row-header">Renewables</th>
         <th></th>
         <th class="cell-value" :class="{ 'hovered': isPointHovered }">{{ getRenewableContribution() | formatNumber('0,0.0') }}%</th>
+        <th></th>
       </tr>
     </tbody>
   </table>
@@ -316,13 +354,29 @@ export default {
   }
 
   @include desktop {
-    width: 330px
+    width: 410px
   }
   @include widescreen {
-    width: 360px;
+    width: 460px;
   }
   .cell-value {
     padding-left: 1em;
+  }
+
+  .has-min-width {
+    min-width: 70px;
+
+    @include desktop {
+      min-width: 60px;
+    }
+
+    &.wider {
+      min-width: 60px;
+
+      @include desktop {
+        min-width: 85px;
+      }
+    }
   }
 }
 
