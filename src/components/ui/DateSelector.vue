@@ -42,7 +42,7 @@ import { faAngleDown } from '@fortawesome/fontawesome-pro-light';
 import { formatDateForDisplay } from '@/lib/formatter';
 import { isMidnight } from '@/lib/data-helpers';
 import { getRegionOffset } from '@/domains/regions';
-import { DateRanges, getPeriod } from '@/domains/date-ranges';
+import { DateRanges } from '@/domains/date-ranges';
 
 
 export default {
@@ -126,12 +126,12 @@ export default {
         case '2017Weekly':
           range = this.weeklyDateDisplay(start, end);
           break;
-        
+
         case 'last52weeksMonthly':
         case '2017Monthly':
           range = this.monthlyDateDisplay(start, end);
           break;
-        
+
         default:
           range = `${formatDateForDisplay(start)} – ${formatDateForDisplay(end)}`;
       }
@@ -189,7 +189,7 @@ export default {
       const isSameYear = moment(start).isSame(end, 'year');
 
       let startFormat = 'MMM YYYY';
-      
+
       if (isSameYear) {
         startFormat = 'MMM';
       }
