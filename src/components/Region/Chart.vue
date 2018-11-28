@@ -25,7 +25,7 @@ import {
   getAllWeeksYearsBetween,
 } from '@/lib/data-helpers';
 import updateRouterStartEnd from '@/lib/app-router';
-import { isLast24Hrs } from '@/domains/date-ranges';
+import { isLast24Hrs, getInterval } from '@/domains/date-ranges';
 import {
   getAllPanelsGeneration,
   getAllPanelsEnergy,
@@ -198,6 +198,7 @@ export default {
             temperatureField,
             hasMinMax,
             showBullets,
+            getInterval(this.currentRange),
           );
       } else if (this.showPricePanel) {
         panels = getGenerationAndPricePanels(this.getPanelListeners());
@@ -206,7 +207,7 @@ export default {
       } else {
         panels = this.isPower ?
           generationPanel(this.getPanelListeners()) :
-          energyPanel(this.getPanelListeners());
+          energyPanel(this.getPanelListeners(), getInterval(this.currentRange));
       }
 
       return panels;

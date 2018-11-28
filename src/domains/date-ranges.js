@@ -98,6 +98,27 @@ function getDefaultRange() {
   return isMobileWidth() ? DateRanges[1].id : DateRanges[2].id;
 }
 
+function getInterval(id) {
+  let interval = '';
+
+  switch (id) {
+    case 'last30days':
+      interval = '/day';
+      break;
+    case 'last52weeksWeekly':
+    case '2017Weekly':
+      interval = '/week';
+      break;
+    case 'last52weeksMonthly':
+    case '2017Monthly':
+      interval = '/month';
+      break;
+    default:
+      interval = '';
+  }
+  return interval;
+}
+
 function isLast24Hrs(id) {
   return id === 'last24hrs';
 }
@@ -110,6 +131,7 @@ export {
   getDateRangeLabel,
   getDateRangeId,
   getDefaultRange,
+  getInterval,
   isLast24Hrs,
   isLast3Days,
 };

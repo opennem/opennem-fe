@@ -6,9 +6,9 @@ function powerPanel(listeners) {
   ];
 }
 
-function energyPanel(listeners) {
+function energyPanel(listeners, intervalLabel) {
   return [
-    getEnergyPanel(listeners),
+    getEnergyPanel(listeners, intervalLabel),
   ];
 }
 
