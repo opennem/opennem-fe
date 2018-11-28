@@ -9,7 +9,7 @@ import * as Periods from '@/constants/periods';
 import * as Intervals from '@/constants/intervals';
 import * as VisTypes from '@/constants/vis-types';
 import EventBus from '@/lib/event-bus';
-import { getInterval } from '@/domains/date-ranges';
+import { getPeriodAxisLabel } from '@/domains/date-ranges';
 import {
   getFieldMappings,
   getStockGraphs,
@@ -115,7 +115,7 @@ export default {
     setupChart() {
       const panels = this.isPower ?
         powerPanel(this.getPanelListeners()) :
-        energyPanel(this.getPanelListeners(), getInterval(this.currentRange));
+        energyPanel(this.getPanelListeners(), getPeriodAxisLabel(this.currentRange));
       const config = getChartConfig({
         dataSets: [],
         panels,
