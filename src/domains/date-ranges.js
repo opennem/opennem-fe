@@ -55,7 +55,7 @@ export const DateRanges = [
     id: 'allMonthly',
     label: 'ALL',
     minPeriod: Periods.PERIOD_1_MONTH,
-    groupToPeriods: [Periods.PERIOD_1_MONTH, Periods.PERIOD_1_YEAR],
+    groupToPeriods: [Periods.PERIOD_1_MONTH],
     visType: VisTypes.VIS_TYPE_ENERGY,
     folder: '/history/monthly',
     extension: '_all',
