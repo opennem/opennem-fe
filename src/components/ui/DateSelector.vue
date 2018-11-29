@@ -6,10 +6,11 @@
           {{ formattedPoint(getPointSummary.date, currentRange) }}
         </div>
         <div v-else>
-          <a class="dropdown-trigger" v-on-clickaway="onClickAway" @click="handleClick">
+          {{ formattedRange(startDate, endDate, currentRange) }}
+          <!-- <a class="dropdown-trigger" v-on-clickaway="onClickAway" @click="handleClick">
             {{ formattedRange(startDate, endDate, currentRange) }}
             <font-awesome-icon class="fal fa-lg" :icon="iconDown" />
-          </a>
+          </a> -->
         </div> 
         <!-- local time -->
         <!-- <div class="date-helper"><small>(local time)</small></div> -->
@@ -98,6 +99,7 @@ export default {
 
         case 'last52weeksMonthly':
         case '2017Monthly':
+        case 'allMonthly':
           range = moment(date).format('MMM YYYY');
           break;
 
@@ -129,6 +131,7 @@ export default {
 
         case 'last52weeksMonthly':
         case '2017Monthly':
+        case 'allMonthly':
           range = this.monthlyDateDisplay(start, end);
           break;
 

@@ -51,6 +51,15 @@ export const DateRanges = [
     folder: '/history/weekly',
     extension: '',
   },
+  {
+    id: 'allMonthly',
+    label: 'ALL',
+    minPeriod: Periods.PERIOD_1_MONTH,
+    groupToPeriods: [Periods.PERIOD_1_MONTH, Periods.PERIOD_1_YEAR],
+    visType: VisTypes.VIS_TYPE_ENERGY,
+    folder: '/history/monthly',
+    extension: '_all',
+  },
   // {
   //   id: 'last52weeksMonthly',
   //   label: 'Last 12 months (monthly)',
@@ -111,6 +120,7 @@ function getPeriod(id) {
       break;
     case 'last52weeksMonthly':
     case '2017Monthly':
+    case 'allMonthly':
       period = 'month';
       break;
     default:

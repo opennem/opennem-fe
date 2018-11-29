@@ -8,9 +8,8 @@ import * as moment from 'moment';
 import * as Periods from '@/constants/periods';
 import * as Intervals from '@/constants/intervals';
 import * as VisTypes from '@/constants/vis-types';
-import { findRange } from '@/domains/date-ranges';
 import EventBus from '@/lib/event-bus';
-import { getPeriodAxisLabel } from '@/domains/date-ranges';
+import { getPeriodAxisLabel, findRange } from '@/domains/date-ranges';
 import {
   getFieldMappings,
   getStockGraphs,
