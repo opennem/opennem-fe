@@ -188,12 +188,14 @@ export default function(domains, data, interpolate) {
     });
   }
 
-  // only show data within the start and end range of the 5 min FT
+  // only show data within the start and end range of the 5 min FT Or before today
+  const today = moment();
+  const genStart = moment(genTimes.start);
+  const genEnd = moment(genTimes.end);
   const updatedChartData = (shortestInterval.key === 'm') ? 
     newChartData.filter(d =>
-      moment(d.date).isSameOrAfter(moment(genTimes.start)) &&
-      moment(d.date).isSameOrBefore(moment(genTimes.end))) :
-    newChartData;
+      moment(d.date).isSameOrAfter(genStart) && moment(d.date).isSameOrBefore(genEnd)) :
+    newChartData.filter(d => moment(d.date).isSameOrBefore(today));
   
   return updatedChartData.slice(0);
 }
