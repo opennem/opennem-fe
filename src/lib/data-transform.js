@@ -191,7 +191,7 @@ export default function(domains, data, interpolate) {
   // only show data within the start and end range of the 5 min FT Or before today
   const today = moment();
   const genStart = moment(genTimes.start);
-  const genEnd = moment(genTimes.end);
+  const genEnd = moment(genTimes.end).subtract(shortestInterval.value, shortestInterval.key);
   const updatedChartData = (shortestInterval.key === 'm') ? 
     newChartData.filter(d =>
       moment(d.date).isSameOrAfter(genStart) && moment(d.date).isSameOrBefore(genEnd)) :
