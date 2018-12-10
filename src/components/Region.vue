@@ -95,9 +95,11 @@ export default {
     this.fetch();
   },
   mounted() {
+    EventBus.$on('data.fetch', this.fetch);
     EventBus.$on('download.png', this.downloadPng);
   },
   beforeDestroy() {
+    EventBus.$off('data.fetch');
     EventBus.$off('download.png');
   },
   props: {

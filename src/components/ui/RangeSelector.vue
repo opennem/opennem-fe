@@ -4,7 +4,7 @@
       <datepicker v-model="currentDate"></datepicker>
     </div> -->
     
-    <div class="buttons">
+    <div class="buttons has-addons">
       <span 
         class="button is-rounded is-small is-primary"
         :class="{ 'is-inverted': currentRange !== dateRange.id }"
@@ -15,10 +15,10 @@
         {{dateRange.label}}
       </span>
     </div>
-    <div class="buttons has-addons">
+    <div class="buttons has-addons has-border-left">
       <span 
         class="button is-rounded is-small is-primary"
-        v-for="p in groupToPeriods"
+        v-for="p in periods"
         :class="{ 'is-inverted': currentPeriod !== p }"
         :key="p"
         @click="handlePeriodClick(p)"
@@ -36,6 +36,7 @@ import * as moment from 'moment';
 import { mapGetters } from 'vuex';
 import { DateRanges } from '@/domains/date-ranges';
 import * as Periods from '@/constants/periods';
+import EventBus from '@/lib/event-bus';
 
 export default {
   name: 'range-selector',
@@ -80,7 +81,35 @@ export default {
       currentRange: 'currentRange',
       groupToPeriods: 'groupToPeriods',
       period: 'period',
+      currentInterval: 'currentInterval',
     }),
+    periods() {
+      let periods = [];
+      switch (this.currentRange) {
+        case 'last30days':
+          periods = ['DD'];
+          break;
+
+        case 'last52weeksWeekly':
+        case '2017Weekly':
+          periods = ['WW', 'MM'];
+          break;
+
+        case 'last52weeksMonthly':
+        case '2017Monthly':
+        case 'allMonthly':
+          periods = ['MM'];
+          break;
+
+        case 'last24hrs':
+        case 'last3days':
+        case 'last7days':
+        default:
+          periods = ['5mm', '30mm'];
+      }
+
+      return periods;
+    }
   },
 
   mounted() {
@@ -106,7 +135,18 @@ export default {
     },
 
     handlePeriodClick(period) {
-      this.$store.dispatch('period', period);
+      if (this.currentRange === 'last52weeksWeekly') {
+        this.$store.dispatch('fetchingData', true);
+        this.$store.dispatch('setChartZoomed', false);
+        this.$store.dispatch('setVisType', 'energy');
+        this.$store.dispatch('currentRange', this.currentRange);
+        this.$store.dispatch('groupToPeriods', [period]);
+        this.$store.dispatch('chartTypeTransition', false);
+
+        EventBus.$emit('data.fetch');
+      } else {
+        this.$store.dispatch('period', period);
+      }
     },
   },
 };
@@ -120,7 +160,7 @@ export default {
     margin-bottom: 0 !important;
     padding-top: .4rem;
 
-    &.has-addons {
+    &.has-addons.has-border-left {
       margin-left: 1rem;
       padding-left: 1rem;
       border-left: 1px solid #ccc;
