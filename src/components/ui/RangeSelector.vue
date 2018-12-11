@@ -88,7 +88,7 @@ export default {
       let periods = [];
       switch (this.currentRange) {
         case 'last30days':
-          periods = ['DD'];
+          periods = this.chartTypeTransition ? ['30mm'] : ['DD'];
           break;
 
         case 'last52weeksWeekly':

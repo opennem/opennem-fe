@@ -91,7 +91,11 @@ export default {
 
       switch (currentRange) {
         case 'last30days':
-          range = moment(date).format('D MMM YYYY');
+          if (this.chartTypeTransition) {
+            range = `${formatDateForDisplay(date)}`;
+          } else {
+            range = moment(date).format('D MMM YYYY');
+          }
           break;
 
         case 'last52weeksWeekly':
@@ -129,7 +133,11 @@ export default {
           break;
 
         case 'last30days':
-          range = this.dailyDateDisplay(start, end);
+          if (this.chartTypeTransition) {
+            range = this.minutelyDateDisplay(start, end);
+          } else {
+            range = this.dailyDateDisplay(start, end);
+          }
           break;
 
         case 'last52weeksWeekly':
