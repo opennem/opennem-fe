@@ -151,7 +151,6 @@ export default {
       }, 5);
     },
     fetch() {
-      console.log(this.currentInterval)
       const range = findRange(this.currentRange);
       const visType = this.chartTypeTransition ? this.visType : range.visType;
       const extension = this.chartTypeTransition ? this.yearsWeeks : range.extension;

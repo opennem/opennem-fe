@@ -19,7 +19,7 @@
       <span 
         class="button is-rounded is-small is-primary"
         v-for="p in periods"
-        :class="{ 'is-inverted': currentPeriod !== p }"
+        :class="{ 'is-inverted': !chartTypeTransition && currentPeriod !== p }"
         :key="p"
         @click="handlePeriodClick(p)"
       >
@@ -55,7 +55,7 @@ export default {
 
   watch: {
     currentDate(date) {
-      // for fetching week data
+      // for fetching week data using DatePicker
       // console.log(moment(date).isoWeek(), moment(date).isoWeekYear());
       const mDate = moment(date);
       const week = mDate.isoWeek();
@@ -82,6 +82,7 @@ export default {
       groupToPeriods: 'groupToPeriods',
       period: 'period',
       currentInterval: 'currentInterval',
+      chartTypeTransition: 'chartTypeTransition',
     }),
     periods() {
       let periods = [];
@@ -92,13 +93,13 @@ export default {
 
         case 'last52weeksWeekly':
         case '2017Weekly':
-          periods = ['WW', 'MM'];
+          periods = this.chartTypeTransition ? ['30mm'] : ['WW', 'MM'];
           break;
 
         case 'last52weeksMonthly':
         case '2017Monthly':
         case 'allMonthly':
-          periods = ['MM'];
+          periods = this.chartTypeTransition ? ['30mm'] : ['MM'];
           break;
 
         case 'last24hrs':
@@ -123,30 +124,33 @@ export default {
 
     handleSelection(range) {
       if (range.id !== this.currentRange) {
+        this.currentPeriod = range.groupToPeriods[range.groupToPeriods.length - 1];
+
         this.$store.dispatch('fetchingData', true);
         this.$store.dispatch('setChartZoomed', false);
         this.$store.dispatch('setVisType', range.visType);
         this.$store.dispatch('currentRange', range.id);
         this.$store.dispatch('groupToPeriods', range.groupToPeriods);
         this.$store.dispatch('chartTypeTransition', false);
-
-        this.currentPeriod = range.groupToPeriods[range.groupToPeriods.length - 1];
+        this.$store.dispatch('currentInterval', this.currentPeriod);
       }
     },
 
     handlePeriodClick(period) {
-      if (this.currentRange === 'last52weeksWeekly') {
-        this.$store.dispatch('fetchingData', true);
-        this.$store.dispatch('setChartZoomed', false);
-        this.$store.dispatch('setVisType', 'energy');
-        this.$store.dispatch('currentRange', this.currentRange);
-        this.$store.dispatch('groupToPeriods', [period]);
-        this.$store.dispatch('chartTypeTransition', false);
-        this.$store.dispatch('currentInterval', period);
+      if (!this.chartTypeTransition) {
+        if (this.currentRange === 'last52weeksWeekly') {
+          this.$store.dispatch('fetchingData', true);
+          this.$store.dispatch('setChartZoomed', false);
+          this.$store.dispatch('setVisType', 'energy');
+          this.$store.dispatch('currentRange', this.currentRange);
+          this.$store.dispatch('groupToPeriods', [period]);
+          this.$store.dispatch('chartTypeTransition', false);
+          this.$store.dispatch('currentInterval', period);
 
-        EventBus.$emit('data.fetch');
-      } else {
-        this.$store.dispatch('period', period);
+          EventBus.$emit('data.fetch');
+        } else {
+          this.$store.dispatch('period', period);
+        }
       }
     },
   },

@@ -69,6 +69,7 @@ export default {
       moreDateRanges: 'moreDateRanges',
       getPointSummary: 'getPointSummary',
       currentInterval: 'currentInterval',
+      chartTypeTransition: 'chartTypeTransition',
     }),
     iconDown() {
       return faAngleDown;
@@ -95,8 +96,13 @@ export default {
 
         case 'last52weeksWeekly':
         case '2017Weekly':
-          range = this.currentInterval === 'MM' ?
-            moment(date).format('MMM YYYY') : this.weeklyDateDisplay(date, date);
+          if (this.chartTypeTransition) {
+            range = formatDateForDisplay(date);
+          } else if (this.currentInterval === 'MM') {
+            range = moment(date).format('MMM YYYY')
+          } else {
+            range = this.weeklyDateDisplay(date, date);
+          }
           break;
 
         case 'last52weeksMonthly':
@@ -128,8 +134,13 @@ export default {
 
         case 'last52weeksWeekly':
         case '2017Weekly':
-          range = this.currentInterval === 'MM' ?
-            this.monthlyDateDisplay(start, end) : this.weeklyDateDisplay(start, end);
+          if (this.chartTypeTransition) {
+            range = this.minutelyDateDisplay(start, end);
+          } else if (this.currentInterval === 'MM') {
+            range = this.monthlyDateDisplay(start, end);
+          } else {
+            range = this.weeklyDateDisplay(start, end);
+          }
           break;
 
         case 'last52weeksMonthly':
