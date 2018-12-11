@@ -29,7 +29,7 @@
       spellcheck="true"
       v-if="showDescription"
       @blur="onDescriptionBlur"
-    >Description</h5>
+    >[Description]</h5>
   </div>
 </template>
 
@@ -43,7 +43,7 @@ export default {
     return {
       showTitle: true,
       showDescription: true,
-      description: 'Description',
+      description: '[Description]',
     };
   },
   computed: {
@@ -71,7 +71,7 @@ export default {
       }
     },
     beforeDownloadPng() {
-      if (this.description === 'Description') {
+      if (this.description === '[Description]') {
         this.showDescription = false;
       }
       EventBus.$emit('download.png');
