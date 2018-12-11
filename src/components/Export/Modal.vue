@@ -11,11 +11,12 @@
         <div class="modal-content">
           <div class="panel">
             <h3 class="panel-heading">
-              Export as...
+              Other formats...
             </h3>
             
-            <a class="panel-block" @click="showExportPng" v-if="isChrome">
-              Image (PNG)
+            <a class="panel-block" @click="showExportPng">
+              <span v-if="isChrome">Image (PNG)</span>
+              <span v-else>Compact view</span>
             </a>
 
             <csv
@@ -23,7 +24,7 @@
               :fields="csvHeaders"
               :name="`${exportName}.csv`">
                 <a class="panel-block" @click="closeModal">
-                  Spreadsheet (CSV)
+                  Download CSV
                 </a>
             </csv>
           </div>
