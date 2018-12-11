@@ -142,6 +142,7 @@ export default {
         this.$store.dispatch('currentRange', this.currentRange);
         this.$store.dispatch('groupToPeriods', [period]);
         this.$store.dispatch('chartTypeTransition', false);
+        this.$store.dispatch('currentInterval', period);
 
         EventBus.$emit('data.fetch');
       } else {
