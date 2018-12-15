@@ -144,6 +144,7 @@ function getStockGraphs(domains, keys, graphType, unit, disabledSeries) {
         lineThickness,
         lineColor,
         useDataSetColors: false,
+        connect: false,
         hidden,
         columnWidth: 0.8,
         showBalloon: false,
