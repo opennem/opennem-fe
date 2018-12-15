@@ -34,7 +34,7 @@ export default {
   data() {
     return {
       isChrome: isChrome(),
-    }
+    };
   },
   methods: {
     closeExport() {
