@@ -131,6 +131,7 @@ function getStockGraphs(domains, keys, graphType, unit, disabledSeries) {
       const lineColor = colour;
       const type = graphType || 'line';
       const hidden = disabledSeries.find(d => d === ftKey);
+      const periodValue = graphType === 'step' ? 'Sum' : 'Average';
 
       const graph = {
         id: ftKey,
@@ -148,7 +149,7 @@ function getStockGraphs(domains, keys, graphType, unit, disabledSeries) {
         hidden,
         columnWidth: 0.8,
         showBalloon: false,
-        periodValue: 'Average',
+        periodValue,
         balloonFunction: (item) => {
           let balloonTxt = '';
 
