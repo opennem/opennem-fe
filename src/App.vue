@@ -1,7 +1,7 @@
 <template>
   <div id="app">
 
-    <section v-if="showMainNav">
+    <section class="main" v-if="showMainNav">
       <app-header />
 
       <div class="router-view-container">
@@ -12,7 +12,7 @@
       <app-footer />
     </section>
 
-    <section v-else>
+    <section class="other" v-else>
       <router-view/>
     </section>
 
@@ -79,7 +79,8 @@ export default {
 section {
   @include widescreen {}
 
-  &.notfound-page {
+  &.notfound-page,
+  &.other {
     margin-top: 0;
   }
 }
