@@ -52,8 +52,13 @@
         </th>
         <th></th>
         <th class="cell-value" :class="{ 'hovered': isPointHovered }">
-          <div>
+          <div v-if="isPointHovered">
+            {{ pointSummary.totalAvValue | formatNumber('$0,0.00') }}
+          </div>
+          <div v-else>
             {{ rangeSummary.totalAveragePrice | formatNumber('$0,0.00') }}
+          </div>
+          <div>
           </div>
         </th>
       </tr>
@@ -98,9 +103,9 @@
           </div>
         </td>
 
-        <td class="cell-value">
+        <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            -
+            {{ pointSummary.allData[`${row.id}.market_value`] / Math.abs(pointSummary.allData[`${row.id}`]) / 1000 | formatNumber('$0,0.00') }}
           </div>
           <div v-else>
             {{ row.range.averagePrice | formatNumber('$0,0.00') }}
@@ -152,9 +157,9 @@
           </div>
         </td>
 
-        <td class="cell-value">
+        <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            -
+            {{ pointSummary.allData[`${row.id}.market_value`] / Math.abs(pointSummary.allData[`${row.id}`]) / 1000 | formatNumber('$0,0.00') }}
           </div>
           
           <div v-else>
@@ -190,7 +195,9 @@
       <tr class="row-separator">
         <th class="row-header">Renewables</th>
         <th></th>
-        <th class="cell-value" :class="{ 'hovered': isPointHovered }">{{ getRenewableContribution() | formatNumber('0,0.0') }}%</th>
+        <th class="cell-value" :class="{ 'hovered': isPointHovered }">
+          {{ getRenewableContribution() | formatNumber('0,0.0') }}%
+        </th>
         <th></th>
       </tr>
     </tbody>

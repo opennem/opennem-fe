@@ -82,7 +82,7 @@ function getSummary(domains, data, isPower) {
   const dataSumMarketValue = data.map((d) => {
     let p = 0;
     Object.keys(d).forEach((ft) => {
-      if (ft.includes('market_value')) {
+      if (isFTMarketValue(ft)) {
         const value = ft === 'imports.market_value' ? -d[ft] : d[ft];
         p += value;
       }
@@ -135,8 +135,10 @@ function getSummary(domains, data, isPower) {
       // energy market value
       const totalFTMarketValue = data.reduce((a, b) => {
         const domainMarketValueKey = `${domain}.market_value`;
-        const value = domainMarketValueKey === 'imports.market_value' ?
+        let value = domainMarketValueKey === 'imports.market_value' ?
           -b[domainMarketValueKey] : b[domainMarketValueKey];
+
+        if (!value) value = 0;
         return a + value;
       }, 0);
 
@@ -199,6 +201,7 @@ function getPointSummary(domains, date, data) {
   const allData = {};
   let totalNetPower = 0;
   let totalGrossPower = 0;
+  let totalMarketValue = 0;
 
   Object.keys(domains).forEach((domain) => {
     if (validFuelTech(domain)) {
@@ -212,18 +215,29 @@ function getPointSummary(domains, date, data) {
           totalGrossPower += average;
         }
       }
-    } else if (isFTMarketValue(domain) || isPrice(domain)) {
-      allData[domain] = data[`${domain}Close`];
+    } else if (isPrice(domain)) {
+      const price = data[`${domain}Close`];
+      allData[domain] = price;
+    } else if (isFTMarketValue(domain)) {
+      const marketValue = Math.abs(data[`${domain}Close`]);
+      allData[domain] = marketValue;
+
+      if (marketValue) {
+        totalMarketValue += marketValue;
+      }
     } else if (isTemperature(domain)) {
       allData[domain] = data[`${domain}Average`];
     }
   });
+
+  const totalAvValue = totalMarketValue / totalNetPower / 1000;
 
   return {
     date,
     allData,
     totalNetPower,
     totalGrossPower,
+    totalAvValue,
   };
 }
 

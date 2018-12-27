@@ -73,7 +73,7 @@ function getChartConfig(config, isPower, periods) {
         { period: 'hh', format: ' JJ:NN' },
         { period: 'DD', format: ' EEE\n D MMM' },
         { period: 'WW', format: ' EEE\n D MMM' },
-        { period: 'MM', format: ' EEE\n D MMM' },
+        { period: 'MM', format: ' MMM' },
         { period: 'YYYY', format: ' YYYY' },
       ],
     },
@@ -132,7 +132,7 @@ function getStockGraphs(domains, keys, graphType, unit, disabledSeries) {
       const type = graphType || 'line';
       const hidden = disabledSeries.find(d => d === ftKey);
       const periodValue = graphType === 'step' ? 'Sum' : 'Average';
-
+      
       const graph = {
         id: ftKey,
         valueField: ftKey,
@@ -145,7 +145,7 @@ function getStockGraphs(domains, keys, graphType, unit, disabledSeries) {
         lineThickness,
         lineColor,
         useDataSetColors: false,
-        connect: false,
+        connect: true,
         hidden,
         columnWidth: 0.8,
         showBalloon: false,

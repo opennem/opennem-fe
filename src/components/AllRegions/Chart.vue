@@ -9,6 +9,8 @@ import * as Periods from '@/constants/periods';
 import * as Intervals from '@/constants/intervals';
 import * as VisTypes from '@/constants/vis-types';
 import EventBus from '@/lib/event-bus';
+import DateStoreDispatch from '@/modules/date-store-dispatch';
+import Months from '@/domains/months';
 import { getPeriodAxisLabel, findRange } from '@/domains/date-ranges';
 import {
   getFieldMappings,
@@ -56,6 +58,7 @@ export default {
       period: 'period',
       disabledSeries: 'disabledSeries',
       currentRange: 'currentRange',
+      currentInterval: 'currentInterval',
     }),
   },
   watch: {
@@ -118,9 +121,12 @@ export default {
     },
 
     setupChart() {
+      // const panels = this.isPower ?
+      //   powerPanel(this.getPanelListeners()) :
+      //   energyPanel(this.getPanelListeners(), getPeriodAxisLabel(this.currentRange));
       const panels = this.isPower ?
         powerPanel(this.getPanelListeners()) :
-        energyPanel(this.getPanelListeners(), getPeriodAxisLabel(this.currentRange));
+        energyPanel(this.getPanelListeners(), this.currentInterval);
       const config = getChartConfig({
         dataSets: [],
         panels,
@@ -259,9 +265,78 @@ export default {
 
     onCategoryAxisItemClicked(e) {
       if (this.chartCursorEnabled) {
-        const zoomDates = getZoomDatesOnDateLabel(e.value, this.dataEndDate);
-        if (zoomDates) {
-          this.zoomChart(zoomDates.start, zoomDates.end);
+        const currentInterval = this.currentInterval;
+        const currentRange = this.currentRange;
+        const dateValue = e.target.node.textContent.trim();
+        const clickedDate = this.chart.panels[0].categoryAxis.coordinateToDate(e.target.x);
+
+        // console.log(this.chart.panels[0].categoryAxis.coordinateToDate(e.target.x))
+        // console.log(currentRange, currentInterval, dateValue)
+        if (currentRange === 'last24hrs' ||
+          currentRange === 'last3days' ||
+          currentRange === 'last7days') {
+          const currentDate = moment(clickedDate);
+          const endDate = moment(clickedDate).add(1, 'day');
+          this.zoomChart(currentDate.toDate(), endDate.toDate());
+        }
+
+        if (currentRange === 'last30days') {}
+
+        if (currentRange === 'lastYear') {
+          const month = moment().month(dateValue);
+
+          if (month.isValid()) {
+            const currentYear = moment(clickedDate).year();
+            const startDate = moment({year: currentYear, month: Months[dateValue]});
+            const endDate = moment({year: currentYear, month: Months[dateValue]}).add(1, 'month').subtract(1, 'day');
+            const urls = [`testing/nem/energy/daily/${currentYear}.json`];
+
+            DateStoreDispatch(
+              this.$store,
+              startDate.toDate(),
+              endDate.toDate(),
+              urls,
+              'last30days',
+              'DD',
+            );
+            EventBus.$emit('data.fetch');
+          }
+        }
+
+        if (currentRange === 'allMonthly') {
+          const year = moment({year: dateValue});
+          const month = moment().month(dateValue);
+
+          if (year.isValid()) {
+            const currentYear = year;
+            const endYear = moment({year: dateValue}).add(1, 'year').subtract(1, 'minute');
+
+            DateStoreDispatch(
+              this.$store,
+              currentYear.toDate(),
+              endYear.toDate(),
+              ['testing/nem/energy/monthly/all.json'],
+              'lastYear',
+              'MM',
+            );
+            EventBus.$emit('data.fetch');
+
+          } else if (month.isValid()) {
+            const currentYear = moment(clickedDate).year();
+            const startDate = moment({year: currentYear, month: Months[dateValue]});
+            const endDate = moment({year: currentYear, month: Months[dateValue]}).add(1, 'month').subtract(1, 'day');
+            const urls = [`testing/nem/energy/daily/${currentYear}.json`];
+
+            DateStoreDispatch(
+              this.$store,
+              startDate.toDate(),
+              endDate.toDate(),
+              urls,
+              'last30days',
+              'DD',
+            );
+            EventBus.$emit('data.fetch');
+          }
         }
       }
     },
@@ -328,6 +403,7 @@ export default {
         this.$store.dispatch('chartTypeTransition', false);
         this.$store.dispatch('groupToPeriods', currentRangeObj.groupToPeriods.slice(0));
         this.$store.dispatch('period', currentRangeObj.groupToPeriods[currentRangeObj.groupToPeriods.length - 1]);
+        this.$store.dispatch('currentInterval', '');
       }
 
       this.chart.zoomOut();

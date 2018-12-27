@@ -14,6 +14,10 @@ export const DateRanges = [
     visType: VisTypes.VIS_TYPE_POWER,
     folder: '',
     extension: '',
+    periodFolders: {
+      '5mm': '',
+      '30mm': '',
+    },
   },
   {
     id: 'last3days',
@@ -23,6 +27,10 @@ export const DateRanges = [
     visType: 'power',
     folder: '',
     extension: '',
+    periodFolders: {
+      '5mm': '',
+      '30mm': '',
+    },
   },
   {
     id: 'last7days',
@@ -32,6 +40,10 @@ export const DateRanges = [
     visType: VisTypes.VIS_TYPE_POWER,
     folder: '',
     extension: '',
+    periodFolders: {
+      '5mm': '',
+      '30mm': '',
+    },
   },
   {
     id: 'last30days',
@@ -41,15 +53,23 @@ export const DateRanges = [
     visType: VisTypes.VIS_TYPE_ENERGY,
     folder: '/history/daily',
     extension: '',
+    periodFolders: {
+      DD: '/history/daily',
+    },
   },
   {
-    id: 'last52weeksWeekly',
+    id: 'lastYear',
     label: '1Y',
     minPeriod: Periods.PERIOD_1_WEEK,
     groupToPeriods: [Periods.PERIOD_1_WEEK],
     visType: VisTypes.VIS_TYPE_ENERGY,
     folder: '/history/weekly',
     extension: '',
+    periodFolders: {
+      WW: '/history/weekly',
+      MM: '/history/weekly',
+      '3MM': '/history/weekly',
+    },
   },
   {
     id: 'allMonthly',
@@ -59,6 +79,14 @@ export const DateRanges = [
     visType: VisTypes.VIS_TYPE_ENERGY,
     folder: '/history/monthly',
     extension: '_all',
+    periodFolders: {
+      WW: '/history/weekly',
+      MM: '/history/monthly',
+      S3MM: '/history/monthly',
+      '3MM': '/history/monthly',
+      YYYY: '/history/monthly',
+      FY: '/history/monthly',
+    },
   },
   // {
   //   id: 'last52weeksMonthly',

@@ -100,10 +100,15 @@ export default {
 
         case 'last52weeksWeekly':
         case '2017Weekly':
+        case 'lastYear':
           if (this.chartTypeTransition) {
             range = formatDateForDisplay(date);
+          } else if (this.currentInterval === 'DD') {
+            range = formatDateForDisplay(date);
           } else if (this.currentInterval === 'MM') {
-            range = moment(date).format('MMM YYYY')
+            range = moment(date).format('MMM YYYY');
+          } else if (this.currentInterval === '3MM') {
+            range = this.quarterlyDateDisplay(date, date);
           } else {
             range = this.weeklyDateDisplay(date, date);
           }
@@ -111,8 +116,35 @@ export default {
 
         case 'last52weeksMonthly':
         case '2017Monthly':
+          if (this.chartTypeTransition) {
+            range = formatDateForDisplay(date);
+          } else if (this.currentInterval === 'DD') {
+            range = formatDateForDisplay(date);
+          } else if (this.currentInterval === '3MM') {
+            range = this.quarterlyDateDisplay(date, date);
+          } else {
+            range = moment(date).format('MMM YYYY');
+          }
+          break;
+        
         case 'allMonthly':
-          range = moment(date).format('MMM YYYY');
+          range = moment(date).format('YYYY');
+
+          if (this.chartTypeTransition) {
+            range = formatDateForDisplay(date);
+          } else if (this.currentInterval === 'DD') {
+            range = formatDateForDisplay(date);
+          } else if (this.currentInterval === 'MM') {
+            range = moment(date).format('MMM YYYY');
+          } else if (this.currentInterval === '3MM') {
+            range = this.quarterlyDateDisplay(date, date);
+          } else if (this.currentInterval === 'S3MM') {
+            range = this.quarterlyDateDisplay(date, date);
+          } else if (this.currentInterval === 'FY') {
+            range = this.financialYearlyDateDisplay(date, date);
+          } else {
+            range = moment(date).format('YYYY');
+          }
           break;
 
         default:
@@ -142,10 +174,15 @@ export default {
 
         case 'last52weeksWeekly':
         case '2017Weekly':
+        case 'lastYear':
           if (this.chartTypeTransition) {
             range = this.minutelyDateDisplay(start, end);
+          } else if (this.currentInterval === 'DD') {
+            range = this.dailyDateDisplay(start, end);
           } else if (this.currentInterval === 'MM') {
             range = this.monthlyDateDisplay(start, end);
+          } else if (this.currentInterval === '3MM') {
+            range = this.quarterlyDateDisplay(start, end);
           } else {
             range = this.weeklyDateDisplay(start, end);
           }
@@ -153,8 +190,29 @@ export default {
 
         case 'last52weeksMonthly':
         case '2017Monthly':
+          if (this.currentInterval === '3MM') {
+            range = this.quarterlyDateDisplay(start, end);
+          } else {
+            range = this.monthlyDateDisplay(start, end);
+          }
+          break;
+        
         case 'allMonthly':
-          range = this.monthlyDateDisplay(start, end);
+          if (this.chartTypeTransition) {
+            range = this.minutelyDateDisplay(start, end);
+          } else if (this.currentInterval === 'DD') {
+            range = this.dailyDateDisplay(start, end);
+          } else if (this.currentInterval === 'MM') {
+            range = this.monthlyDateDisplay(start, end);
+          } else if (this.currentInterval === '3MM') {
+            range = this.quarterlyDateDisplay(start, end);
+          } else if (this.currentInterval === 'S3MM') {
+            range = this.quarterlyDateDisplay(start, end);
+          } else if (this.currentInterval === 'FY') {
+            range = this.financialYearlyDateDisplay(start, end);
+          } else {
+            range = this.yearlyDateDisplay(start, end);
+          }
           break;
 
         default:
@@ -220,6 +278,45 @@ export default {
       }
 
       return `${moment(start).format(startFormat)} – ${moment(end).format('MMM YYYY')}`;
+    },
+
+    quarterlyDateDisplay(start, end) {
+      const endDate = moment(end).add(2, 'months');
+      const isSameYear = moment(start).isSame(endDate, 'year');
+
+      let startFormat = 'MMM YYYY';
+
+      if (isSameYear) {
+        startFormat = 'MMM';
+      }
+
+      return `${moment(start).format(startFormat)} – ${endDate.format('MMM YYYY')}`;
+    },
+
+    financialYearlyDateDisplay(start, end) {
+      const startDate = moment(start)
+      const startMonth = startDate.month();
+      let startYear = startDate.year();
+
+      const endDate = moment(end)
+      const endMonth = endDate.month();
+      let endYear = endDate.year();
+
+      if (startMonth >= 0 && startMonth < 6) {
+        startYear = startDate.subtract(1, 'year').year();
+      }
+
+      if (endMonth > 5 && endMonth < 12) {
+        endYear = endDate.add(1, 'year').year();
+      }
+
+      return `FY ${startYear} – ${endYear}`;
+    },
+
+    yearlyDateDisplay(start, end) {
+      let format = 'YYYY';
+
+      return `${moment(start).format(format)} – ${moment(end).format(format)}`;
     },
 
     handleClick() {

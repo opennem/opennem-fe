@@ -1,12 +1,16 @@
 /* eslint-disable */
 import Vue from 'vue';
 import Vuex from 'vuex';
+import * as moment from 'moment';
+
 import { getSummary, getPointSummary } from '@/lib/data-summary';
 import { dataFilter, dataFilterByLastValuePrecision } from '@/lib/data-helpers';
 import dataTransform from '@/lib/data-transform';
 import getJSON from '@/lib/data-apis';
 import { formatDateForExport } from '@/lib/formatter';
 import { isLast24Hrs, isLast3Days } from '@/domains/date-ranges';
+import fYTimeGroup from '@/modules/fy-time-group';
+import seasonsTimeGroup from '@/modules/seasons-time-group';
 import * as MutationTypes from '@/constants/mutation-types';
 import * as VisTypes from '@/constants/vis-types';
 
@@ -22,12 +26,16 @@ import errors from './errors';
 Vue.use(Vuex);
 
 const state = {
+  region: 'nem',
   domains: {},
   isFetching: false,
   visType: VisTypes.VIS_TYPE_POWER,
 };
 
 const mutations = {
+  [MutationTypes.REGION](state, data) {
+    state.region = data;
+  },
   [MutationTypes.DOMAINS](state, data) {
     state.domains = data;
   },
@@ -44,6 +52,9 @@ const mutations = {
 };
 
 const getters = {
+  region: state => {
+    return state.region;
+  },
   getDomains: state => {
     return state.domains;
   },
@@ -69,12 +80,18 @@ const actions = {
 
     getJSON(urls, state.features.localData)
       .then((responses) => {
+        console.log(responses)
         handleFetchResponse(responses, state, commit);
       })
       .catch((e) => {
         handleFetchError(e, commit);
       });
   },
+
+  region({ commit, state }, data) {
+    commit(MutationTypes.REGION, data);
+  },
+
   setDomains({ commit, state }, data) {
     commit(MutationTypes.DOMAINS, data);
   },
@@ -122,6 +139,20 @@ function handleFetchResponse(responses, state, commit) {
     data = dataFilterByLastValuePrecision(data, '24', 'hour');
   } else if (isLast3Days(state.dates.currentRange)) {
     data = dataFilterByLastValuePrecision(data, '3', 'day');
+  }
+
+  if (state.dates.currentInterval === 'FY') {
+    data = fYTimeGroup(data);
+  } else if (state.dates.currentInterval === 'S3MM') {
+    data = seasonsTimeGroup(data);
+  }
+
+  // if (state.dates.currentRange === 'lastYear' && state.dates.currentInterval === 'DD') {
+  //   data = dataFilter(data, moment().subtract(1, 'year').toDate(), moment().toDate());
+  // }
+
+  if (state.nemData.nemTrim) {
+    data = dataFilter(data, state.nemData.nemDataTrim.start, state.nemData.nemDataTrim.end);
   }
 
   commit(MutationTypes.NEM_RESPONSE_DATA, responses);

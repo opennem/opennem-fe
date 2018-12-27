@@ -76,6 +76,7 @@ export default {
     RangeSelector,
   },
   created() {
+    this.$store.dispatch('region', 'nem');
     this.$store.dispatch('setExportRegion', 'OpenNEM');
     this.$store.dispatch('setDomains', GraphDomains);
     this.fetch();
@@ -111,6 +112,7 @@ export default {
       currentInterval: 'currentInterval',
       yearsWeeks: 'yearsWeeks',
       isPower: 'isPower',
+      nemUrls: 'nemUrls',
     }),
     records() {
       return this.$route.query.records;
@@ -152,15 +154,36 @@ export default {
     },
     fetch() {
       const range = findRange(this.currentRange);
+      const periodFolder = this.currentInterval ? range.periodFolders[this.currentInterval] : range.folder;
       const visType = this.chartTypeTransition ? this.visType : range.visType;
       const extension = this.chartTypeTransition ? this.yearsWeeks : range.extension;
-      const interval = this.chartTypeTransition ? `/history/${this.currentInterval}` : range.folder;
+      const interval = this.chartTypeTransition ? `/history/${this.currentInterval}` : periodFolder;
       const prependUrl = `${visType}${interval}`;
 
-      const urls = this.chartTypeTransition ?
+      let urls = this.chartTypeTransition ?
         this.yearsWeeks.map(w => `${prependUrl}/nem${w}.json`) :
         [`${prependUrl}/nem${extension}.json`];
 
+      // if (this.currentRange === 'lastYear' && this.currentInterval === 'DD') {
+      //   urls = ['testing/energy/history/daily/nem_2017.json', 'testing/energy/history/daily/nem_2018.json'];
+      // }
+
+      if (this.nemUrls.length > 0) {
+        const newUrls = this.nemUrls.map((u) => {
+          const slashIndices = [];
+          for (var i = 0; i < u.length; i++) {
+            if (u.charAt(i) === '/') {
+              slashIndices.push(i);
+            }
+          }
+
+          const replaceState = u.substring(slashIndices[0] + 1, slashIndices[1]);
+          return u.replace(replaceState, 'nem');
+
+        });
+
+        urls = newUrls;
+      }
       this.$store.dispatch('setVisType', visType);
       this.$store.dispatch('fetchData', urls);
     },

@@ -72,12 +72,14 @@ export default {
       this.dropdownActive = false;
     },
     handleRegionChange(regionId) {
+      this.$store.dispatch('region', `${regionId}1`);
       this.$router.push({ name: 'regions', params: { region: regionId } });
     },
     isCurrentSelection(id) {
       return this.$route.params.region === id;
     },
     goHome() {
+      this.$store.dispatch('region', 'nem');
       this.$router.push({ name: 'home' });
     },
   },

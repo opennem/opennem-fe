@@ -354,7 +354,7 @@ function getUnit(domain, visType) {
 
 function isValidFuelTech(id) {
   const domain = GraphDomains[id];
-  return domain.type === 'sources' || domain.type === 'loads';
+  return domain && (domain.type === 'sources' || domain.type === 'loads');
 }
 
 function isRenewableFuelTech(id) {
@@ -371,7 +371,7 @@ function isPrice(id) {
 
 function isFTMarketValue(id) {
   const domain = GraphDomains[id];
-  return domain.type === 'market_value';
+  return domain && domain.type === 'market_value';
 }
 
 function isTemperature(id) {

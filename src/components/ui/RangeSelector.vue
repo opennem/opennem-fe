@@ -19,7 +19,7 @@
       <span 
         class="button is-rounded is-small is-primary"
         v-for="p in periods"
-        :class="{ 'is-inverted': !chartTypeTransition && currentPeriod !== p }"
+        :class="{ 'is-inverted': !chartTypeTransition && currentInterval !== p }"
         :key="p"
         @click="handlePeriodClick(p)"
       >
@@ -83,6 +83,12 @@ export default {
       period: 'period',
       currentInterval: 'currentInterval',
       chartTypeTransition: 'chartTypeTransition',
+      nemUrls: 'nemUrls',
+      nemDataTrim: 'nemDataTrim',
+      startDate: 'getSelectedStartDate',
+      endDate: 'getSelectedEndDate',
+      datePeriodTransition: 'datePeriodTransition',
+      region: 'region',
     }),
     periods() {
       let periods = [];
@@ -90,16 +96,23 @@ export default {
         case 'last30days':
           periods = this.chartTypeTransition ? ['30mm'] : ['DD'];
           break;
+        
+        case 'lastYear':
+          periods = this.chartTypeTransition ? ['30mm'] : ['WW', 'MM'];
+          break;
 
         case 'last52weeksWeekly':
         case '2017Weekly':
-          periods = this.chartTypeTransition ? ['30mm'] : ['WW', 'MM'];
+          periods = this.chartTypeTransition ? ['30mm'] : ['WW', 'MM', '3MM'];
           break;
 
         case 'last52weeksMonthly':
         case '2017Monthly':
+          periods = this.chartTypeTransition ? ['30mm'] : ['DD', 'MM', '3MM'];
+          break;
+        
         case 'allMonthly':
-          periods = this.chartTypeTransition ? ['30mm'] : ['MM'];
+          periods = this.chartTypeTransition ? ['30mm'] : ['MM', 'S3MM', '3MM', 'FY', 'YYYY'];
           break;
 
         case 'last24hrs':
@@ -126,32 +139,106 @@ export default {
       if (range.id !== this.currentRange) {
         this.currentPeriod = range.groupToPeriods[range.groupToPeriods.length - 1];
 
+        switch (range.id) {
+          case 'last52weeksMonthly':
+          case 'allMonthly':
+            this.$store.dispatch('groupToPeriods', ['MM']);
+            this.$store.dispatch('currentInterval', 'MM');
+            this.$store.dispatch('nemUrls', [`testing/${this.region}/energy/monthly/all.json`]);
+            this.$store.dispatch('nemDataTrim', {});
+            this.$store.dispatch('nemTrim', false);
+            break;
+          
+          case 'lastYear':
+            const current = moment();
+            const lastYear = moment().subtract(1, 'year');
+            const isSameYear = moment(current).isSame(lastYear, 'year');
+            const urls = [];
+
+            if (!isSameYear) urls.push(`testing/${this.region}/energy/daily/${lastYear.year()}.json`);
+            urls.push(`testing/${this.region}/energy/daily/${current.year()}.json`);
+
+            this.$store.dispatch('groupToPeriods', ['WW']);
+            this.$store.dispatch('currentInterval', 'WW');
+            this.$store.dispatch('nemUrls', urls);
+            this.$store.dispatch('nemTrim', true);
+            this.$store.dispatch('nemDataTrim', {
+              start: lastYear.subtract(1, 'minute').toDate(),
+              end: current.toDate(),
+            });
+            break;
+
+          default:
+            this.$store.dispatch('nemTrim', false);
+            this.$store.dispatch('nemUrls', []);
+            this.$store.dispatch('groupToPeriods', range.groupToPeriods);
+            this.$store.dispatch('currentInterval', this.currentPeriod);
+        }
+
         this.$store.dispatch('fetchingData', true);
         this.$store.dispatch('setChartZoomed', false);
         this.$store.dispatch('setVisType', range.visType);
         this.$store.dispatch('currentRange', range.id);
-        this.$store.dispatch('groupToPeriods', range.groupToPeriods);
         this.$store.dispatch('chartTypeTransition', false);
-        this.$store.dispatch('currentInterval', this.currentPeriod);
+        this.$store.dispatch('datePeriodTransition', false);
+        
       }
     },
 
     handlePeriodClick(period) {
       if (!this.chartTypeTransition) {
-        if (this.currentRange === 'last52weeksWeekly') {
-          this.$store.dispatch('fetchingData', true);
-          this.$store.dispatch('setChartZoomed', false);
-          this.$store.dispatch('setVisType', 'energy');
-          this.$store.dispatch('currentRange', this.currentRange);
-          this.$store.dispatch('groupToPeriods', [period]);
-          this.$store.dispatch('chartTypeTransition', false);
-          this.$store.dispatch('currentInterval', period);
+        switch (this.currentRange) {
+          case 'last52weeksMonthly':
+          case 'allMonthly':
+            let p = [period];
+            if (period === 'FY') p = [];
+            if (period === 'S3MM') p = [];
+            this.dispatch(this.currentRange, p, period);
+            break;
+          
+          case 'lastYear':
+            console.log(this.startDate, this.endDate)
 
-          EventBus.$emit('data.fetch');
-        } else {
-          this.$store.dispatch('period', period);
+            if (this.datePeriodTransition) {
+              if (period === 'WW') {
+                const year = moment(this.startDate).year();
+
+                this.$store.dispatch('nemUrls', [`testing/${this.region}/energy/daily/${year}.json`]);
+                this.$store.dispatch('nemDataTrim', {});
+                this.$store.dispatch('nemTrim', false);
+
+                this.dispatch(this.currentRange, [period], period);
+              } else if (period === 'MM') {
+                this.$store.dispatch('nemUrls', [`testing/${this.region}/energy/monthly/all.json`]);
+                this.$store.dispatch('nemDataTrim', {
+                  start: this.startDate,
+                  end: this.endDate,
+                });
+                this.$store.dispatch('nemTrim', true);
+
+                this.dispatch(this.currentRange, [period], period);
+              }
+            } else {
+              this.dispatch(this.currentRange, [period], period);
+            }
+
+            break;
+
+          default:
+            this.$store.dispatch('period', period);
         }
       }
+    },
+
+    dispatch(currentRange, groupToPeriods, period) {
+      this.$store.dispatch('fetchingData', true);
+      this.$store.dispatch('setChartZoomed', false);
+      this.$store.dispatch('setVisType', 'energy');
+      this.$store.dispatch('currentRange', currentRange);
+      this.$store.dispatch('groupToPeriods', groupToPeriods);
+      this.$store.dispatch('chartTypeTransition', false);
+      this.$store.dispatch('currentInterval', period);
+      EventBus.$emit('data.fetch');
     },
   },
 };
