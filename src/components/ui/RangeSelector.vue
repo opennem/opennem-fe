@@ -99,7 +99,7 @@ export default {
           break;
         
         case 'lastYear':
-          periods = this.chartTypeTransition ? ['30mm'] : ['WW', 'MM'];
+          periods = this.chartTypeTransition ? ['30mm'] : ['DD', 'WW', 'MM'];
           break;
 
         case 'last52weeksWeekly':
