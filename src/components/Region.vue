@@ -234,6 +234,10 @@ export default {
   position: absolute;
   left: 3rem;
   right: 3rem;
+
+  @include mobile {
+    margin-top: 3rem;
+  }
 }
 
 .range-selector-container {

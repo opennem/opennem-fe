@@ -90,5 +90,9 @@ section {
   margin: 0.5rem auto;
   padding: 0 1rem;
   position: relative;
+
+  @include mobile {
+    margin: 0 auto;
+  }
 }
 </style>

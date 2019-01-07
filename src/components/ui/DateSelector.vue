@@ -1,36 +1,34 @@
 <template>
   <div class="date-range">
-    <transition name="slide-fade" mode="out-in">
-      <div v-if="!isFetching" class="dropdown" :class="{'is-active': dropdownActive}">
-        <div class="point-date" v-if="isPointHovered">
-          {{ formattedPoint(getPointSummary.date, currentRange) }}
-        </div>
-        <div v-else>
-          {{ formattedRange(startDate, endDate, currentRange) }}
-          <!-- <a class="dropdown-trigger" v-on-clickaway="onClickAway" @click="handleClick">
-            {{ formattedRange(startDate, endDate, currentRange) }}
-            <font-awesome-icon class="fal fa-lg" :icon="iconDown" />
-          </a> -->
-        </div> 
-        <!-- local time -->
-        <!-- <div class="date-helper"><small>(local time)</small></div> -->
-
-        <transition name="slide-down-fade">
-          <div v-if="dropdownActive" class="dropdown-menu">
-            <div class="dropdown-content">
-              <a class="dropdown-item"
-                  v-for="(row, index) in dateSelectors" 
-                  :key="row.id"
-                  v-show="moreDateRanges || index < 3"
-                  @click="handleSelection(row)"
-                  :class="{ 'selected': currentRange === row.id }">
-                {{row.label}}
-              </a>
-            </div>
-          </div>
-        </transition> 
+    <div v-show="!isFetching" class="dropdown" :class="{'is-active': dropdownActive}">
+      <div class="point-date" v-if="isPointHovered">
+        {{ formattedPoint(getPointSummary.date, currentRange) }}
       </div>
-    </transition>
+      <div v-else>
+        {{ formattedRange(startDate, endDate, currentRange) }}
+        <!-- <a class="dropdown-trigger" v-on-clickaway="onClickAway" @click="handleClick">
+          {{ formattedRange(startDate, endDate, currentRange) }}
+          <font-awesome-icon class="fal fa-lg" :icon="iconDown" />
+        </a> -->
+      </div> 
+      <!-- local time -->
+      <!-- <div class="date-helper"><small>(local time)</small></div> -->
+
+      <transition name="slide-down-fade">
+        <div v-if="dropdownActive" class="dropdown-menu">
+          <div class="dropdown-content">
+            <a class="dropdown-item"
+                v-for="(row, index) in dateSelectors" 
+                :key="row.id"
+                v-show="moreDateRanges || index < 3"
+                @click="handleSelection(row)"
+                :class="{ 'selected': currentRange === row.id }">
+              {{row.label}}
+            </a>
+          </div>
+        </div>
+      </transition> 
+    </div>
   </div>
 </template>
 
@@ -346,11 +344,20 @@ export default {
 
 .date-range {
   font-family: $primary-font-family;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   margin-top: 0.6rem;
 
   @include tablet {
     font-size: 1rem;
+    min-height: auto;
+  }
+
+  @include mobile {
+    font-size: 1rem;
+    min-height: 24px;
+    position: relative;
+    left: 5px;
+    top: 3px;
   }
 
   .dropdown {
