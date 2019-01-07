@@ -47,7 +47,7 @@ function getEnergyPanel(listeners, intervalLabel) {
   return {
     allLabels: [
       { text: 'Energy', bold: true, x: 5, y: 5 },
-      { text: `GWh/${PERIODS.PERIOD_LABELS[intervalLabel].toLowerCase()}`, x: 50, y: 7, color: '#999', size: 9 },
+      { text: `GWh/${PERIODS.PERIOD_PER_INTERVAL[intervalLabel]}`, x: 50, y: 7, color: '#999', size: 9 },
     ],
     showCategoryAxis: true,
     addClassNames: true,
