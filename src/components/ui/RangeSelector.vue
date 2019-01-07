@@ -15,15 +15,16 @@
         {{dateRange.label}}
       </span>
     </div>
-    <div class="buttons has-addons has-border-left">
+    <div class="buttons has-addons interval-buttons">
       <span 
         class="button is-rounded is-small is-primary"
         v-for="p in periods"
         :class="{ 'is-inverted': !chartTypeTransition && currentInterval !== p }"
         :key="p"
         @click="handlePeriodClick(p)"
+        :title="getPeriodLabel(p)"
       >
-        {{ getPeriodLabel(p) }}
+        {{ getPeriodShorthand(p) }}
       </span>
     </div>
 
@@ -131,6 +132,10 @@ export default {
   },
 
   methods: {
+    getPeriodShorthand(period) {
+      return Periods.PERIOD_SHORTHAND[period];
+    },
+
     getPeriodLabel(period) {
       return Periods.PERIOD_LABELS[period];
     },
@@ -245,14 +250,20 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../../../node_modules/bulma/sass/utilities/mixins.sass";
+
 .date-range {
-  display: flex;
+  @include desktop {
+    display: flex;
+  }
 
   .buttons {
     margin-bottom: 0 !important;
     padding-top: .4rem;
+  }
 
-    &.has-addons.has-border-left {
+  .interval-buttons {
+    @include desktop {
       margin-left: 1rem;
       padding-left: 1rem;
       border-left: 1px solid #ccc;
