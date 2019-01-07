@@ -68,7 +68,12 @@ const getters = {
     return state.visType === VisTypes.VIS_TYPE_POWER;
   },
   getExportName: state => {
-    return `${formatDateForExport(state.dates.selectedDates.end)} ${state.exportStore.exportRegion}`;
+    const currentRange = state.dates.currentRange;
+    let formatString = 'YYYYMMDD';
+    if (currentRange === 'allMonthly' || currentRange === 'lastYear') {
+      formatString = 'YYYY';
+    }
+    return `${formatDateForExport(state.dates.selectedDates.end, formatString)} ${state.exportStore.exportRegion}`;
   },
 };
 

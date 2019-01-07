@@ -169,22 +169,22 @@ export default {
       // }
 
       if (this.nemUrls.length > 0) {
-        // const newUrls = this.nemUrls.map((u) => {
-        //   const slashIndices = [];
-        //   for (var i = 0; i < u.length; i++) {
-        //     if (u.charAt(i) === '/') {
-        //       slashIndices.push(i);
-        //     }
-        //   }
+        const newUrls = this.nemUrls.map((u) => {
+          const slashIndices = [];
+          for (var i = 0; i < u.length; i++) {
+            if (u.charAt(i) === '/') {
+              slashIndices.push(i);
+            }
+          }
 
-        //   const replaceState = u.substring(slashIndices[0] + 1, slashIndices[1]);
-        //   return u.replace(replaceState, 'nem');
+          const replaceState = u.substring(slashIndices[0] + 1, slashIndices[1]);
+          return u.replace(replaceState, 'nem');
 
-        // });
+        });
 
         // console.log(this.nemUrls, newUrls)
 
-        urls = this.nemUrls;
+        urls = newUrls;
       }
       this.$store.dispatch('setVisType', visType);
       this.$store.dispatch('fetchData', urls);

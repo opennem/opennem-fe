@@ -395,21 +395,23 @@ function isImports(id) {
 }
 
 function getCSVHeaders(visType) {
+  // const headers = {
+  //   Time: 'date',
+  // };
   const headers = {
-    Time: 'date',
+    date: 'Time',
   };
 
   Object.keys(GraphDomains).reverse().forEach((domain) => {
     function isValidCsvHeader(name) {
-      return name !== 'pricePos' &&
-        name !== 'priceNeg';
+      return name !== 'pricePos' && name !== 'priceNeg';
     }
 
     if (isValidCsvHeader(domain)) {
       const ftLabel = GraphDomains[domain].label;
       const ftUnit = getUnit(domain, visType);
       const label = `${ftLabel} - ${ftUnit}`;
-      headers[label] = domain;
+      headers[domain] = label;
     }
   });
 

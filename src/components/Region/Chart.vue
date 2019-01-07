@@ -207,7 +207,7 @@ export default {
             temperatureField,
             hasMinMax,
             showBullets,
-            getPeriodAxisLabel(this.currentRange),
+            this.currentInterval,
           );
       } else if (this.showPricePanel) {
         panels = getGenerationAndPricePanels(this.getPanelListeners());
@@ -216,7 +216,7 @@ export default {
       } else {
         panels = this.isPower ?
           generationPanel(this.getPanelListeners()) :
-          energyPanel(this.getPanelListeners(), getPeriodAxisLabel(this.currentRange));
+          energyPanel(this.getPanelListeners(), this.currentInterval);
       }
 
       return panels;
