@@ -297,24 +297,7 @@ export default {
 
     quarterlyDateDisplay2(start, end) {
       const startDate = moment(start);
-      let quarter = ''
-
-      switch (startDate.month()) {
-        case 0:
-          quarter = 'Q1';
-          break;
-        case 3:
-          quarter = 'Q2';
-          break;
-        case 6:
-          quarter = 'Q3';
-          break;
-        case 9:
-          quarter = 'Q4';
-          break;
-        default:
-      }
-
+      let quarter = this.getQuarterLabel(startDate.month());
       const display = `${quarter} ${startDate.format('YYYY')}`;
       return display;
     },
@@ -330,24 +313,7 @@ export default {
       const endDate = moment(end).add(2, 'months');
       const startDate = moment(start);
       const isSameYear = startDate.isSame(endDate, 'year');
-      let season = ''
-
-      switch (startDate.month()) {
-        case 2:
-          season = 'Autumn';
-          break;
-        case 5:
-          season = 'Winter';
-          break;
-        case 8:
-          season = 'Spring';
-          break;
-        case 11:
-          season = 'Summer';
-          break;
-        default:
-      }
-
+      let season = this.getSeasonLabel(startDate.month());
       let dates = endDate.format('YYYY');
 
       if (!isSameYear) {
@@ -409,7 +375,7 @@ export default {
     },
 
     getSeasonLabel(month) {
-      let season = ''
+      let season = '';
 
       switch (month) {
         case 2:
@@ -428,6 +394,28 @@ export default {
       }
 
       return season;
+    },
+
+    getQuarterLabel(month) {
+      let quarter = '';
+      
+      switch (month) {
+        case 0:
+          quarter = 'Q1';
+          break;
+        case 3:
+          quarter = 'Q2';
+          break;
+        case 6:
+          quarter = 'Q3';
+          break;
+        case 9:
+          quarter = 'Q4';
+          break;
+        default:
+      }
+
+      return quarter;
     },
 
     handleClick() {
