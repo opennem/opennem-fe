@@ -73,7 +73,7 @@ function getChartConfig(config, isPower, periods) {
         { period: 'hh', format: ' JJ:NN' },
         { period: 'DD', format: ' EEE\n D MMM' },
         { period: 'WW', format: ' EEE\n D MMM' },
-        { period: 'MM', format: ' MMM' },
+        { period: 'MM', format: ' MMM\n YY' },
         { period: 'YYYY', format: ' YYYY' },
       ],
     },
