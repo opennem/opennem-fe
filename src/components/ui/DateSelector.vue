@@ -339,14 +339,14 @@ export default {
 
       const endDate = moment(end)
       const endMonth = endDate.month();
-      let endYear = endDate.year();
+      let endYear = endDate.format('YY');
 
       if (startMonth >= 0 && startMonth < 6) {
-        startYear = startDate.subtract(1, 'year').year();
+        startYear = startDate.subtract(1, 'year').format('YY');
       }
 
       if (endMonth > 5 && endMonth < 12) {
-        endYear = endDate.add(1, 'year').year();
+        endYear = endDate.add(1, 'year').format('YY');
       }
 
       const display = `FY${endYear}`;
