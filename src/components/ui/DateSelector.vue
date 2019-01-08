@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import { select } from 'd3-selection';
 import * as moment from 'moment';
 import { mapGetters } from 'vuex';
 import { mixin as clickaway } from 'vue-clickaway';
@@ -135,11 +136,14 @@ export default {
           } else if (this.currentInterval === 'MM') {
             range = moment(date).format('MMM YYYY');
           } else if (this.currentInterval === '3MM') {
-            range = this.quarterlyDateDisplay(date, date);
+            range = this.quarterlyDateDisplay2(date, date);
+            this.updateAxisLabel(range, '12px');
           } else if (this.currentInterval === 'S3MM') {
-            range = this.quarterlyDateDisplay(date, date);
+            range = this.seasonallyDateDisplay(date, date);
+            this.updateAxisLabel(range);
           } else if (this.currentInterval === 'FY') {
             range = this.financialYearlyDateDisplay(date, date);
+            this.updateAxisLabel(range);
           } else {
             range = moment(date).format('YYYY');
           }
@@ -203,11 +207,11 @@ export default {
           } else if (this.currentInterval === 'MM') {
             range = this.monthlyDateDisplay(start, end);
           } else if (this.currentInterval === '3MM') {
-            range = this.quarterlyDateDisplay(start, end);
+            range = this.quarterlyDateDisplayRange(start, end);
           } else if (this.currentInterval === 'S3MM') {
-            range = this.quarterlyDateDisplay(start, end);
+            range = this.seasonallyDateDisplayRange(start, end);
           } else if (this.currentInterval === 'FY') {
-            range = this.financialYearlyDateDisplay(start, end);
+            range = this.financialYearlyDateDisplayRange(start, end);
           } else {
             range = this.yearlyDateDisplay(start, end);
           }
@@ -291,6 +295,77 @@ export default {
       return `${moment(start).format(startFormat)} – ${endDate.format('MMM YYYY')}`;
     },
 
+    quarterlyDateDisplay2(start, end) {
+      const startDate = moment(start);
+      let quarter = ''
+
+      switch (startDate.month()) {
+        case 0:
+          quarter = 'Q1';
+          break;
+        case 3:
+          quarter = 'Q2';
+          break;
+        case 6:
+          quarter = 'Q3';
+          break;
+        case 9:
+          quarter = 'Q4';
+          break;
+        default:
+      }
+
+      const display = `${quarter} ${startDate.format('YYYY')}`;
+      return display;
+    },
+
+    quarterlyDateDisplayRange(start, end) {
+      const startQuarter = this.quarterlyDateDisplay2(start, start);
+      const endQuarter = this.quarterlyDateDisplay2(end, end);
+
+      return `${startQuarter} – ${endQuarter}`
+    },
+
+    seasonallyDateDisplay(start, end) {
+      const endDate = moment(end).add(2, 'months');
+      const startDate = moment(start);
+      const isSameYear = startDate.isSame(endDate, 'year');
+      let season = ''
+
+      switch (startDate.month()) {
+        case 2:
+          season = 'Autumn';
+          break;
+        case 5:
+          season = 'Winter';
+          break;
+        case 8:
+          season = 'Spring';
+          break;
+        case 11:
+          season = 'Summer';
+          break;
+        default:
+      }
+
+      let dates = endDate.format('YYYY');
+
+      if (!isSameYear) {
+        dates = `${startDate.format('YY')}/${endDate.format('YY')}`;
+      }
+
+      const display = `${season} ${dates}`;
+
+      return display;
+    },
+
+    seasonallyDateDisplayRange(start, end) {
+      const startSeason = this.seasonallyDateDisplay(start, start);
+      const endSeason = this.seasonallyDateDisplay(end, end);
+
+      return `${startSeason} – ${endSeason}`
+    },
+
     financialYearlyDateDisplay(start, end) {
       const startDate = moment(start)
       const startMonth = startDate.month();
@@ -308,13 +383,51 @@ export default {
         endYear = endDate.add(1, 'year').year();
       }
 
-      return `FY ${startYear} – ${endYear}`;
+      const display = `FY${startYear}/${endYear}`;
+      this.updateAxisLabel(display);
+
+      return display;
     },
+
+    financialYearlyDateDisplayRange(start, end) {
+      const startFY = this.financialYearlyDateDisplay(start, start);
+      const endFY = this.financialYearlyDateDisplay(end, end);
+
+      return `${startFY} – ${endFY}`
+    },    
 
     yearlyDateDisplay(start, end) {
       let format = 'YYYY';
 
       return `${moment(start).format(format)} – ${moment(end).format(format)}`;
+    },
+
+    updateAxisLabel(display, fontSize) {
+      select('.amcharts-balloon-div-categoryAxis div')
+        .style('font-size', fontSize || '10px')
+        .text(display);
+    },
+
+    getSeasonLabel(month) {
+      let season = ''
+
+      switch (month) {
+        case 2:
+          season = 'Autumn';
+          break;
+        case 5:
+          season = 'Winter';
+          break;
+        case 8:
+          season = 'Spring';
+          break;
+        case 11:
+          season = 'Summer';
+          break;
+        default:
+      }
+
+      return season;
     },
 
     handleClick() {
