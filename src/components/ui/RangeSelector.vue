@@ -38,6 +38,7 @@ import { mapGetters } from 'vuex';
 import { DateRanges } from '@/domains/date-ranges';
 import * as Periods from '@/constants/periods';
 import EventBus from '@/lib/event-bus';
+import { isMobileWidth } from '@/lib/browser';
 
 export default {
   name: 'range-selector',
@@ -51,6 +52,7 @@ export default {
       dateSelectors: DateRanges.slice(0),
       currentDate: new Date(),
       currentPeriod: null,
+      periodShortHand: Periods.PERIOD_SHORTHAND_DESKTOP,
     };
   },
 
@@ -129,11 +131,14 @@ export default {
 
   mounted() {
     this.currentPeriod = this.groupToPeriods[this.groupToPeriods.length - 1];
+    if (isMobileWidth()) {
+      this.periodShortHand = Periods.PERIOD_SHORTHAND_MOBILE
+    }
   },
 
   methods: {
     getPeriodShorthand(period) {
-      return Periods.PERIOD_SHORTHAND[period];
+      return this.periodShortHand[period];
     },
 
     getPeriodLabel(period) {
