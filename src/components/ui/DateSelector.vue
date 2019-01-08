@@ -143,7 +143,7 @@ export default {
             this.updateAxisLabel(range);
           } else if (this.currentInterval === 'FY') {
             range = this.financialYearlyDateDisplay(date, date);
-            this.updateAxisLabel(range);
+            this.updateAxisLabel(range, '12px');
           } else {
             range = moment(date).format('YYYY');
           }
@@ -349,7 +349,7 @@ export default {
         endYear = endDate.add(1, 'year').year();
       }
 
-      const display = `FY${startYear}/${endYear}`;
+      const display = `FY${endYear}`;
       this.updateAxisLabel(display);
 
       return display;
