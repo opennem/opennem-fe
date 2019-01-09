@@ -121,7 +121,30 @@ const actions = {
       exportData = [...exportData, ...dataTransform(state.domains, r.data, false)];
     });
 
-    exportData = dataFilter(exportData, state.dates.selectedDates.start, state.dates.selectedDates.end);
+    let endDateFilter = state.dates.selectedDates.end
+    switch (state.dates.currentInterval) {
+      case 'WW':
+        endDateFilter = moment(state.dates.selectedDates.end).add(1, 'week').toDate()
+        break;
+
+      case 'MM':
+        endDateFilter = moment(state.dates.selectedDates.end).add(1, 'month').toDate()
+        break;
+
+      case '3MM':
+      case 'S3MM':
+        endDateFilter = moment(state.dates.selectedDates.end).add(2, 'months').toDate()
+        break;
+
+      case 'YYYY':
+      case 'FY':
+          endDateFilter = moment(state.dates.selectedDates.end).add(1, 'year').toDate()
+          break;
+      
+      default:
+    }
+
+    exportData = dataFilter(exportData, state.dates.selectedDates.start, endDateFilter);
 
     commit(MutationTypes.EXPORT_DATA, exportData);
   },
