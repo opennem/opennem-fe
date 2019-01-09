@@ -16,7 +16,6 @@ export const DateRanges = [
     extension: '',
     periodFolders: {
       '5mm': '',
-      '30mm': '',
     },
   },
   {

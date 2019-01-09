@@ -119,6 +119,9 @@ export default {
           break;
 
         case 'last24hrs':
+          periods = ['5mm'];
+          break;
+
         case 'last3days':
         case 'last7days':
         default:
@@ -235,6 +238,7 @@ export default {
             break;
 
           default:
+            this.$store.dispatch('currentInterval', period);
             this.$store.dispatch('period', period);
         }
       }
@@ -248,6 +252,7 @@ export default {
       this.$store.dispatch('groupToPeriods', groupToPeriods);
       this.$store.dispatch('chartTypeTransition', false);
       this.$store.dispatch('currentInterval', period);
+      // this.$store.dispatch('period', period);
       EventBus.$emit('data.fetch');
     },
   },
