@@ -207,10 +207,10 @@ export default {
             break;
           
           case 'lastYear':
-            console.log(this.startDate, this.endDate)
+            console.log(this.datePeriodTransition, this.startDate, this.endDate)
 
             if (this.datePeriodTransition) {
-              if (period === 'WW') {
+              if (period === 'DD' || period === 'WW') {
                 const year = moment(this.startDate).year();
 
                 this.$store.dispatch('nemUrls', [`testing/${this.region}/energy/daily/${year}.json`]);
