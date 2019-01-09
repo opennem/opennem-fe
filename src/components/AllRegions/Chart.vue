@@ -400,10 +400,11 @@ export default {
 
       if (this.chartTypeTransition) {
         const currentRangeObj = findRange(this.currentRange);
+        const currentInterval = currentRangeObj.groupToPeriods[currentRangeObj.groupToPeriods.length - 1];
         this.$store.dispatch('chartTypeTransition', false);
         this.$store.dispatch('groupToPeriods', currentRangeObj.groupToPeriods.slice(0));
-        this.$store.dispatch('period', currentRangeObj.groupToPeriods[currentRangeObj.groupToPeriods.length - 1]);
-        this.$store.dispatch('currentInterval', '');
+        this.$store.dispatch('period', currentInterval);
+        this.$store.dispatch('currentInterval', currentInterval);
       }
 
       this.chart.zoomOut();
