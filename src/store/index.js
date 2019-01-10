@@ -202,11 +202,12 @@ function handleFetchError(e, commit) {
   const requestUrl = e.config ? `${e.config.url},` : '';
   const message = e.message === 'Network Error' ?
     'No \'Access-Control-Allow-Origin\' header is present on the requested resource' :
-    e.message;
+    'Data not yet available.';
 
   commit(MutationTypes.FETCHING, false);
   commit(MutationTypes.ERROR, true);
-  commit(MutationTypes.ERROR_MESSAGE, `${requestUrl} Error: ${message}`);
+  // commit(MutationTypes.ERROR_MESSAGE, `${requestUrl} Error: ${message}`);
+  commit(MutationTypes.ERROR_MESSAGE, message);
 }
 
 const store = new Vuex.Store({

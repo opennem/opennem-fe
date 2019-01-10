@@ -11,7 +11,7 @@
   </div>
   
   <transition name="slide-fade">
-    <div class="columns is-desktop is-variable is-1" v-show="!isFetching && !error">
+    <div class="columns is-desktop is-variable is-1" v-show="!isFetching">
       <div class="column" :class="{ export: isExportPng }">
         <div id="export-container">
           <export-png-header v-if="isExportPng" />

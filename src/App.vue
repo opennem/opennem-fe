@@ -5,7 +5,7 @@
       <app-header />
 
       <div class="router-view-container">
-        <router-view v-show="!error" />
+        <router-view />
         <ui-error />
       </div>
 
