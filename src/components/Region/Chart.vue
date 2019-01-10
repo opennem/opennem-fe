@@ -426,7 +426,25 @@ export default {
           this.zoomChart(currentDate.toDate(), endDate.toDate());
         }
 
-        if (currentRange === 'last30days') {}
+        if (currentRange === 'last30days') {
+          const currentDate = moment(clickedDate);
+          const endDate = moment(clickedDate).add(1, 'day');
+          const weeksYears = getAllWeeksYearsBetween(currentDate.toDate(), endDate.toDate());
+          const url = [`power/history/5minute/${this.region}_${weeksYears.years[0]}W${weeksYears.weeks[0]}.json`];
+
+          this.$store.dispatch('datePeriodTransition', true);
+          this.$store.dispatch('nemUrls', url);
+          this.$store.dispatch('nemTrim', false);
+          this.$store.dispatch('saveSelectedDates', { start: currentDate.toDate(), end: endDate.toDate() });
+          this.$store.dispatch('fetchingData', true);
+          this.$store.dispatch('setChartZoomed', true);
+          this.$store.dispatch('setVisType', 'power');
+          this.$store.dispatch('currentRange', 'last7days');
+          this.$store.dispatch('groupToPeriods', ['5mm', '30mm']);
+          this.$store.dispatch('chartTypeTransition', false);
+          this.$store.dispatch('currentInterval', '5mm');
+          EventBus.$emit('data.fetch');
+        }
 
         if (currentRange === 'lastYear') {
           const month = moment().month(dateValue);
