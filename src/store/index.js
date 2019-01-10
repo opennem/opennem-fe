@@ -11,6 +11,8 @@ import { formatDateForExport } from '@/lib/formatter';
 import { isLast24Hrs, isLast3Days } from '@/domains/date-ranges';
 import fYTimeGroup from '@/modules/fy-time-group';
 import seasonsTimeGroup from '@/modules/seasons-time-group';
+import y1WeekTimeGroup from '@/modules/y1-week-time-group';
+import y1MonthTimeGroup from '@/modules/y1-month-time-group';
 import * as MutationTypes from '@/constants/mutation-types';
 import * as VisTypes from '@/constants/vis-types';
 
@@ -173,6 +175,14 @@ function handleFetchResponse(responses, state, commit) {
     data = fYTimeGroup(data);
   } else if (state.dates.currentInterval === 'S3MM') {
     data = seasonsTimeGroup(data);
+  }
+
+  if (state.dates.currentRange === 'lastYear') {
+    if (state.dates.currentInterval === 'WW') {
+      data = y1WeekTimeGroup(data);
+    } else if (state.dates.currentInterval === 'MM') {
+      data = y1MonthTimeGroup(data);
+    }
   }
 
   // if (state.dates.currentRange === 'lastYear' && state.dates.currentInterval === 'DD') {
