@@ -358,7 +358,7 @@ export default {
       // check less than 14 days
       const isLessThan14days = checkDateZoomLessThan14Days(start, end);
       if (!this.isPower && isLessThan14days) {
-        this.transitionChartType(start, end);
+        // this.transitionChartType(start, end);
       }
 
       if (!datesChanged && !this.initialZoom) {
