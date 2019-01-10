@@ -263,7 +263,7 @@ export default {
 @import "../../../node_modules/bulma/sass/utilities/mixins.sass";
 
 .date-range {
-  @include desktop {
+  @include tablet {
     display: flex;
   }
 
@@ -273,7 +273,7 @@ export default {
   }
 
   .interval-buttons {
-    @include desktop {
+    @include tablet {
       margin-left: 1rem;
       padding-left: 1rem;
       border-left: 1px solid #ccc;
