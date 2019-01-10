@@ -3,6 +3,9 @@ export const DOMAINS = 'DOMAINS';
 export const FETCHING = 'FETCHING';
 export const ERROR = 'ERROR';
 export const ERROR_MESSAGE = 'ERROR_MESSAGE';
+export const WARNING = 'WARNING';
+export const WARNING_MESSAGE = 'WARNING_MESSAGE';
+
 export const VIS_TYPE = 'VIS_TYPE';
 
 export const CHART_ZOOMED = 'CHART_ZOOMED';

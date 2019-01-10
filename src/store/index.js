@@ -193,6 +193,18 @@ function handleFetchResponse(responses, state, commit) {
     data = dataFilter(data, state.nemData.nemDataTrim.start, state.nemData.nemDataTrim.end);
   }
 
+  const first = data[0];
+  let hasWarning = false;
+
+  if (state.dates.currentRange !== 'allMonthly') {
+    if (state.dates.currentInterval !== 'MM') {
+      if (moment(first.date).isBefore('2017-01-01')) {
+        hasWarning = true;
+      }
+    }
+  }
+
+  commit(MutationTypes.WARNING, hasWarning);
   commit(MutationTypes.NEM_RESPONSE_DATA, responses);
   commit(MutationTypes.NEM_DATA, data);
   commit(MutationTypes.DATA_END_DATE, endDate);

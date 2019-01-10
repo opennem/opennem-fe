@@ -1,6 +1,6 @@
 <template>
   <footer>
-    <div class="footer">
+    <div class="footer has-background-warning">
       <div class="level is-mobile footer-wrapper" v-if="isAbout">
         <div class="level-left">
           <p>
@@ -21,8 +21,9 @@
         </div>
       </div>
 
-      <div class="level is-mobile footer-wrapper" v-else>
+      <div class="level footer-wrapper" v-else>
         <div class="level-left">
+          <p class="version">v1.1 beta</p>
           <p>
             <span>Sources:</span>
             <a href="https://www.aemo.com.au/">AEMO</a>,
@@ -90,8 +91,8 @@ export default {
 @import "../../styles/variables.scss";
 
 a {
-  color: #fff;
-  border-bottom: 1px dashed #fff;
+  // color: #fff;
+  border-bottom: 1px dashed $opennem-primary;
   padding-bottom: 0;
 
   &.icon-link {
@@ -102,9 +103,26 @@ a {
   }
 }
 
+.version {
+  font-weight: 600;
+  display: block;
+
+  @include tablet {
+    margin-right: 20px;
+  }
+}
+
+.level-right {
+  @include mobile {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 0.2rem;
+  }
+}
+
 .footer {
   width: 100%;
-  color: $opennem-primary-invert;
+  // color: $opennem-primary-invert;
   font-size: 0.8rem;
   margin-top: 2rem;
   padding: 0.3rem 0 0.7rem;
