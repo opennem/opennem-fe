@@ -246,7 +246,7 @@ export default {
 
     dispatch(currentRange, groupToPeriods, period) {
       this.$store.dispatch('fetchingData', true);
-      this.$store.dispatch('setChartZoomed', false);
+      // this.$store.dispatch('setChartZoomed', false);
       this.$store.dispatch('setVisType', 'energy');
       this.$store.dispatch('currentRange', currentRange);
       this.$store.dispatch('groupToPeriods', groupToPeriods);
