@@ -370,7 +370,7 @@ export default {
   }
 
   @include desktop {
-    width: 410px;
+    width: 430px;
   }
 
   .cell-value {
