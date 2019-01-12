@@ -1,6 +1,7 @@
 <template>
   <transition name="slide-fade">
     <div class="notification is-warning" v-if="warning">
+      <button class="delete" @click="onCloseWarningButtonClicked"></button>
       {{warningMessage}}
     </div>
   </transition>
@@ -18,9 +19,14 @@ export default {
   },
   data() {
     return {
-      warningMessage: 'Dataset has missing rooftop solar data'
+      warningMessage: 'Rooftop solar generation is not yet available before January 2017 at this resolution.'
     }
   },
+  methods: {
+    onCloseWarningButtonClicked() {
+      this.$store.dispatch('warning', false);
+    }
+  }
 };
 </script>
 
@@ -32,6 +38,10 @@ export default {
   text-align: center;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+  button.delete {
+    top: 0.3rem;
+  }
 }
 
 </style>
