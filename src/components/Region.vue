@@ -22,7 +22,7 @@
             </transition>
 
             <panel-buttons />
-            <region-chart :chartData="nemData" />
+            <region-chart :chartData="nemData" v-show="!error" />
             <div v-if="isExportPng"
               :class="{
                 'price-on': showPricePanel,
@@ -41,7 +41,7 @@
         </div>
       </div>
 
-      <div class="column is-narrow" v-show="!isExportPng">
+      <div class="column is-narrow" v-show="!isExportPng && !error">
         <region-summary class="region-summary" :region="region" />
         <region-temperature :showTemperatureRange="showTemperatureRange" />
         <region-extent v-if="isPower" :showTemperature="true" :showPrice="true" />

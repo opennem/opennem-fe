@@ -22,7 +22,7 @@
             </transition>
 
             <panel-button />
-            <all-regions-chart :chartData="nemData" />
+            <all-regions-chart :chartData="nemData" v-show="!error" />
             <div v-if="isExportPng">
               <all-regions-summary v-if="showSummaryPanel" />
               <export-legend v-else />
@@ -33,7 +33,7 @@
         </div>
       </div>
 
-      <div class="column is-narrow" v-show="!isExportPng">
+      <div class="column is-narrow" v-show="!isExportPng && !error">
         <all-regions-summary class="all-regions-summary" />
         <all-regions-extent v-if="isPower" />
       </div>
