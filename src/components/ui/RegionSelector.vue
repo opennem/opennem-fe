@@ -94,10 +94,6 @@ export default {
   font-family: $header-font-family;
   font-size: 1.4rem;
 
-  @include tablet {
-    font-size: 2rem;
-  }
-
   a.dropdown-trigger {
     color: #000;
 
@@ -118,6 +114,10 @@ export default {
       background-color: rgba(255,255,255,0.5);
     }
   }
-  
+}
+@media only screen and (min-width: 600px) {
+  .region-selector {
+    font-size: 2rem;
+  }
 }
 </style>

@@ -66,4 +66,11 @@ h1 {
   margin-top: 0;
 }
 
+@media only screen and (min-width: 500px) {
+  .level,
+  .level-right {
+    display: flex;
+  }
+}
+
 </style>

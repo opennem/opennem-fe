@@ -23,7 +23,7 @@
 
       <div class="level footer-wrapper" v-else>
         <div class="level-left">
-          <p class="version">v1.1 beta</p>
+          <p class="version">v2 beta</p>
           <p>
             <span>Sources:</span>
             <a href="https://www.aemo.com.au/">AEMO</a>,
@@ -106,10 +106,6 @@ a {
 .version {
   font-weight: 600;
   display: block;
-
-  @include tablet {
-    margin-right: 20px;
-  }
 }
 
 .level-right {
@@ -138,5 +134,15 @@ a {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0.3rem 1rem 0.4rem;
+}
+
+@media only screen and (min-width: 500px) {
+  .level,
+  .level-left {
+    display: flex;
+  }
+  .version {
+    margin-right: 20px;
+  }
 }
 </style>
