@@ -119,7 +119,7 @@ export default {
           break;
 
         case 'last24hrs':
-          periods = ['5mm'];
+          periods = ['5mm', '30mm'];
           break;
 
         case 'last3days':
@@ -238,6 +238,7 @@ export default {
             break;
 
           default:
+            this.$store.dispatch('groupToPeriods', [period]);
             this.$store.dispatch('currentInterval', period);
             this.$store.dispatch('period', period);
         }
@@ -264,7 +265,7 @@ export default {
 
 .date-range {
   @include tablet {
-    display: flex;
+    
   }
 
   .buttons {
@@ -274,9 +275,9 @@ export default {
 
   .interval-buttons {
     @include tablet {
-      margin-left: 1rem;
-      padding-left: 1rem;
-      border-left: 1px solid #ccc;
+      // margin-left: 1rem;
+      // padding-left: 1rem;
+      // border-left: 1px solid #ccc;
     }
   }
 
@@ -290,6 +291,17 @@ export default {
     
     &:hover {
       background-color: rgba(255, 255, 255, 0.9) !important;
+    }
+  }
+}
+@media only screen and (min-width: 700px) {
+  .date-range {
+    display: flex;
+
+    .interval-buttons {
+      margin-left: 1rem;
+      padding-left: 1rem;
+      border-left: 1px solid #ccc;
     }
   }
 }
