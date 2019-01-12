@@ -133,6 +133,10 @@ export default {
       this.chart.categoryAxesSettings.groupToPeriods = [newPeriod];
       this.chart.validateData();
     },
+    groupToPeriods(newGroupTo) {
+      this.chart.categoryAxesSettings.groupToPeriods = newGroupTo;
+      this.chart.validateData();
+    },
   },
   created() {
     // debounce the resize event
