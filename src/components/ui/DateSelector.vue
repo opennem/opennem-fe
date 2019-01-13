@@ -125,7 +125,7 @@ export default {
             range = moment(date).format('MMM YYYY');
           }
           break;
-        
+
         case 'allMonthly':
           range = moment(date).format('YYYY');
 
@@ -198,7 +198,7 @@ export default {
             range = this.monthlyDateDisplay(start, end);
           }
           break;
-        
+
         case 'allMonthly':
           if (this.chartTypeTransition) {
             range = this.minutelyDateDisplay(start, end);
@@ -295,9 +295,9 @@ export default {
       return `${moment(start).format(startFormat)} – ${endDate.format('MMM YYYY')}`;
     },
 
-    quarterlyDateDisplay2(start, end) {
+    quarterlyDateDisplay2(start) {
       const startDate = moment(start);
-      let quarter = this.getQuarterLabel(startDate.month());
+      const quarter = this.getQuarterLabel(startDate.month());
       const display = `${quarter} ${startDate.format('YYYY')}`;
       return display;
     },
@@ -306,14 +306,14 @@ export default {
       const startQuarter = this.quarterlyDateDisplay2(start, start);
       const endQuarter = this.quarterlyDateDisplay2(end, end);
 
-      return `${startQuarter} – ${endQuarter}`
+      return `${startQuarter} – ${endQuarter}`;
     },
 
     seasonallyDateDisplay(start, end) {
       const endDate = moment(end).add(2, 'months');
       const startDate = moment(start);
       const isSameYear = startDate.isSame(endDate, 'year');
-      let season = this.getSeasonLabel(startDate.month());
+      const season = this.getSeasonLabel(startDate.month());
       let dates = endDate.format('YYYY');
 
       if (!isSameYear) {
@@ -329,21 +329,21 @@ export default {
       const startSeason = this.seasonallyDateDisplay(start, start);
       const endSeason = this.seasonallyDateDisplay(end, end);
 
-      return `${startSeason} – ${endSeason}`
+      return `${startSeason} – ${endSeason}`;
     },
 
     financialYearlyDateDisplay(start, end) {
-      const startDate = moment(start)
-      const startMonth = startDate.month();
-      let startYear = startDate.year();
+      // const startDate = moment(start);
+      // const startMonth = startDate.month();
+      // let startYear = startDate.year();
 
-      const endDate = moment(end)
+      const endDate = moment(end);
       const endMonth = endDate.month();
       let endYear = endDate.format('YY');
 
-      if (startMonth >= 0 && startMonth < 6) {
-        startYear = startDate.subtract(1, 'year').format('YY');
-      }
+      // if (startMonth >= 0 && startMonth < 6) {
+      //   startYear = startDate.subtract(1, 'year').format('YY');
+      // }
 
       if (endMonth > 5 && endMonth < 12) {
         endYear = endDate.add(1, 'year').format('YY');
@@ -359,11 +359,11 @@ export default {
       const startFY = this.financialYearlyDateDisplay(start, start);
       const endFY = this.financialYearlyDateDisplay(end, end);
 
-      return `${startFY} – ${endFY}`
-    },    
+      return `${startFY} – ${endFY}`;
+    },
 
     yearlyDateDisplay(start, end) {
-      let format = 'YYYY';
+      const format = 'YYYY';
 
       return `${moment(start).format(format)} – ${moment(end).format(format)}`;
     },
@@ -398,7 +398,6 @@ export default {
 
     getQuarterLabel(month) {
       let quarter = '';
-      
       switch (month) {
         case 0:
           quarter = 'Q1';

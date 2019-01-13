@@ -99,7 +99,7 @@ export default {
         case 'last30days':
           periods = this.chartTypeTransition ? ['30mm'] : ['DD'];
           break;
-        
+
         case 'lastYear':
           periods = this.chartTypeTransition ? ['30mm'] : ['DD', 'WW', 'MM'];
           break;
@@ -113,7 +113,7 @@ export default {
         case '2017Monthly':
           periods = this.chartTypeTransition ? ['30mm'] : ['DD', 'MM', '3MM'];
           break;
-        
+
         case 'allMonthly':
           periods = this.chartTypeTransition ? ['30mm'] : ['MM', 'S3MM', '3MM', 'FY', 'YYYY'];
           break;
@@ -129,13 +129,13 @@ export default {
       }
 
       return periods;
-    }
+    },
   },
 
   mounted() {
     this.currentPeriod = this.groupToPeriods[this.groupToPeriods.length - 1];
     if (isMobileWidth()) {
-      this.periodShortHand = Periods.PERIOD_SHORTHAND_MOBILE
+      this.periodShortHand = Periods.PERIOD_SHORTHAND_MOBILE;
     }
   },
 
@@ -161,8 +161,8 @@ export default {
             this.$store.dispatch('nemDataTrim', {});
             this.$store.dispatch('nemTrim', false);
             break;
-          
-          case 'lastYear':
+
+          case 'lastYear': // eslint-disable-line
             const current = moment();
             const lastYear = moment().subtract(1, 'year');
             const isSameYear = moment(current).isSame(lastYear, 'year');
@@ -194,7 +194,6 @@ export default {
         this.$store.dispatch('currentRange', range.id);
         this.$store.dispatch('chartTypeTransition', false);
         this.$store.dispatch('datePeriodTransition', false);
-        
       }
     },
 
@@ -202,16 +201,13 @@ export default {
       if (!this.chartTypeTransition) {
         switch (this.currentRange) {
           case 'last52weeksMonthly':
-          case 'allMonthly':
+          case 'allMonthly': // eslint-disable-line
             let p = [period];
             if (period === 'FY') p = [];
             if (period === 'S3MM') p = [];
             this.dispatch(this.currentRange, p, period);
             break;
-          
           case 'lastYear':
-            console.log(this.datePeriodTransition, this.startDate, this.endDate)
-
             if (this.datePeriodTransition) {
               if (period === 'DD' || period === 'WW') {
                 const year = moment(this.startDate).year();

@@ -132,7 +132,7 @@ function getStockGraphs(domains, keys, graphType, unit, disabledSeries) {
       const type = graphType || 'line';
       const hidden = disabledSeries.find(d => d === ftKey);
       const periodValue = graphType === 'step' ? 'Sum' : 'Average';
-      
+
       const graph = {
         id: ftKey,
         valueField: ftKey,

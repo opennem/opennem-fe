@@ -22,12 +22,11 @@ import {
   findDataContextByDate,
   checkDateZoomLessThan1Day,
   checkDateZoomLessThan14Days,
-  getZoomDatesOnDateLabel,
   getKeys,
   getAllWeeksYearsBetween,
 } from '@/lib/data-helpers';
 import updateRouterStartEnd from '@/lib/app-router';
-import { isLast24Hrs, findRange, getPeriodAxisLabel } from '@/domains/date-ranges';
+import { isLast24Hrs, findRange } from '@/domains/date-ranges';
 import {
   getAllPanelsGeneration,
   getAllPanelsEnergy,
@@ -417,7 +416,6 @@ export default {
 
     onCategoryAxisItemClicked(e) {
       if (this.chartCursorEnabled) {
-        const currentInterval = this.currentInterval;
         const currentRange = this.currentRange;
         const dateValue = e.target.node.textContent.trim();
         const clickedDate = this.chart.panels[0].categoryAxis.coordinateToDate(e.target.x);
@@ -455,8 +453,8 @@ export default {
 
           if (month.isValid()) {
             const currentYear = moment(clickedDate).year();
-            const startDate = moment({year: currentYear, month: Months[dateValue]});
-            const endDate = moment({year: currentYear, month: Months[dateValue]}).add(1, 'month').subtract(1, 'day');
+            const startDate = moment({ year: currentYear, month: Months[dateValue] });
+            const endDate = moment({ year: currentYear, month: Months[dateValue] }).add(1, 'month').subtract(1, 'day');
             const urls = [`testing/${this.region}/energy/daily/${currentYear}.json`];
 
             DateStoreDispatch(
@@ -472,12 +470,12 @@ export default {
         }
 
         if (currentRange === 'allMonthly') {
-          const year = moment({year: dateValue});
+          const year = moment({ year: dateValue });
           const month = moment().month(dateValue);
 
           if (year.isValid()) {
             const currentYear = year;
-            const endYear = moment({year: dateValue}).add(1, 'year').subtract(1, 'minute');
+            const endYear = moment({ year: dateValue }).add(1, 'year').subtract(1, 'minute');
 
             DateStoreDispatch(
               this.$store,
@@ -488,11 +486,10 @@ export default {
               'MM',
             );
             EventBus.$emit('data.fetch');
-
           } else if (month.isValid()) {
             const currentYear = moment(clickedDate).year();
-            const startDate = moment({year: currentYear, month: Months[dateValue]});
-            const endDate = moment({year: currentYear, month: Months[dateValue]}).add(1, 'month').subtract(1, 'day');
+            const startDate = moment({ year: currentYear, month: Months[dateValue] });
+            const endDate = moment({ year: currentYear, month: Months[dateValue] }).add(1, 'month').subtract(1, 'day');
             const urls = [`testing/${this.region}/energy/daily/${currentYear}.json`];
 
             DateStoreDispatch(
@@ -582,7 +579,8 @@ export default {
       }
       if (this.chartTypeTransition) {
         const currentRangeObj = findRange(this.currentRange);
-        const currentInterval = currentRangeObj.groupToPeriods[currentRangeObj.groupToPeriods.length - 1];
+        const currentInterval =
+          currentRangeObj.groupToPeriods[currentRangeObj.groupToPeriods.length - 1];
         this.$store.dispatch('chartTypeTransition', false);
         this.$store.dispatch('groupToPeriods', currentRangeObj.groupToPeriods.slice(0));
         this.$store.dispatch('period', currentInterval);

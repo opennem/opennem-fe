@@ -184,7 +184,8 @@ export default {
     },
     fetch() {
       const range = findRange(this.currentRange);
-      const periodFolder = this.currentInterval ? range.periodFolders[this.currentInterval] : range.folder;
+      const periodFolder = this.currentInterval ?
+        range.periodFolders[this.currentInterval] : range.folder;
       const visType = this.chartTypeTransition ? this.visType : range.visType;
       const extension = this.chartTypeTransition ? this.yearsWeeks : range.extension;
       const interval = this.chartTypeTransition ? `/history/${this.currentInterval}` : periodFolder;
@@ -193,18 +194,12 @@ export default {
       let urls = this.chartTypeTransition ?
         this.yearsWeeks.map(w => `${prependUrl}/${this.region}1${w}.json`) :
         [`${prependUrl}/${this.region}1${extension}.json`];
-      
-      // if (this.currentRange === 'lastYear' && this.currentInterval === 'DD') {
-      //   urls = ['testing/energy/history/daily/sa1_2017.json', 'testing/energy/history/daily/sa1_2018.json']
-      // }
-
-      
 
       if (this.nemUrls.length > 0) {
         const newUrls = this.nemUrls.map((u) => {
           if (u.indexOf('testing') === 0) {
             const slashIndices = [];
-            for (var i = 0; i < u.length; i++) {
+            for (var i = 0; i < u.length; i++) { // eslint-disable-line
               if (u.charAt(i) === '/') {
                 slashIndices.push(i);
               }
@@ -212,11 +207,10 @@ export default {
 
             const replaceState = u.substring(slashIndices[0] + 1, slashIndices[1]);
             return u.replace(replaceState, `${this.regionId}1`);
-          } else {
-            return u;
           }
+          return u;
         });
-        
+
         urls = newUrls;
       }
 

@@ -8,7 +8,6 @@
 </template>
 
 <script>
-import moment from 'moment';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -19,14 +18,14 @@ export default {
   },
   data() {
     return {
-      warningMessage: 'Rooftop solar generation is not yet available before January 2017 at this resolution.'
-    }
+      warningMessage: 'Rooftop solar generation is not yet available before January 2017 at this resolution.',
+    };
   },
   methods: {
     onCloseWarningButtonClicked() {
       this.$store.dispatch('warning', false);
-    }
-  }
+    },
+  },
 };
 </script>
 
