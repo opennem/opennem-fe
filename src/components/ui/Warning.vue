@@ -37,7 +37,6 @@ export default {
   padding: 3px;
   text-align: center;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 
   button.delete {
     top: 0.3rem;
