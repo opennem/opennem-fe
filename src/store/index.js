@@ -171,10 +171,15 @@ function handleFetchResponse(responses, state, commit) {
     data = dataFilterByLastValuePrecision(data, '3', 'day');
   }
 
-  if (state.dates.currentInterval === 'FY') {
-    data = fYTimeGroup(data);
-  } else if (state.dates.currentInterval === 'S3MM') {
-    data = seasonsTimeGroup(data);
+  if (state.dates.currentRange === 'allMonthly') {
+    if (state.dates.currentInterval === 'MM') {
+      data = y1MonthTimeGroup(data);
+    } else if (state.dates.currentInterval === 'FY') {
+      data = fYTimeGroup(data);
+    } else if (state.dates.currentInterval === 'S3MM') {
+      data = seasonsTimeGroup(data);
+    }
+  
   }
 
   if (state.dates.currentRange === 'lastYear') {
