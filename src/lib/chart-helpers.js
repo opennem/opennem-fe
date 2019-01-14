@@ -155,7 +155,8 @@ function getStockGraphs(domains, keys, graphType, unit, disabledSeries) {
 
           if (!isLoads(graph.id) && item.values.value > 0) {
             const precision = graphType === 'step' ? '0,0.0' : '0,0';
-            const value = formatNumberForDisplay(item.dataContext[`${graph.id}Average`], precision);
+            const valueType = graphType === 'step' ? 'Sum' : 'Average';
+            const value = formatNumberForDisplay(item.dataContext[`${graph.id}${valueType}`], precision);
             const ftLabel = domains[graph.id].label;
             const displayValue = `${value} ${unit}`;
 

@@ -197,15 +197,16 @@ function getSummary(domains, data, isPower) {
   };
 }
 
-function getPointSummary(domains, date, data) {
+function getPointSummary(domains, date, data, visType) {
   const allData = {};
   let totalNetPower = 0;
   let totalGrossPower = 0;
   let totalMarketValue = 0;
+  const valueType = visType === 'power' ? 'Average' : 'Sum';
 
   Object.keys(domains).forEach((domain) => {
     if (validFuelTech(domain)) {
-      const average = data[`${domain}Average`];
+      const average = data[`${domain}${valueType}`];
       allData[domain] = average;
 
       if (average !== undefined) {

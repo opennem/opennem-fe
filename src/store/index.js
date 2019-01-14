@@ -112,7 +112,7 @@ const actions = {
     commit(MutationTypes.RANGE_SUMMARY, summary);
   },
   generatePointSummary({ commit, state }, data) {
-    const summary = getPointSummary(state.domains, data.date, data.dataContext);
+    const summary = getPointSummary(state.domains, data.date, data.dataContext, state.visType);
     commit(MutationTypes.POINT_SUMMARY, summary);
   },
   generateExportData({ commit, state }, data) {
