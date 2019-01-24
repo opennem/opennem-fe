@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+   <url>
+      <loc>https://opennem.org.au/#/all-regions</loc>
+      <changefreq>daily</changefreq>
+   </url>
+   <url>
+      <loc>https://opennem.org.au/#/regions/nsw</loc>
+      <changefreq>daily</changefreq>
+   </url>
+   <url>
+      <loc>https://opennem.org.au/#/regions/qld</loc>
+      <changefreq>daily</changefreq>
+   </url>
+   <url>
+      <loc>https://opennem.org.au/#/regions/tas</loc>
+      <changefreq>daily</changefreq>
+   </url>
+   <url>
+      <loc>https://opennem.org.au/#/regions/vic</loc>
+      <changefreq>daily</changefreq>
+   </url>
+   <url>
+      <loc>https://opennem.org.au/#/regions/sa</loc>
+      <changefreq>daily</changefreq>
+   </url>
+   <url>
+      <loc>https://opennem.org.au/#/about</loc>
+      <changefreq>monthly</changefreq>
+   </url>
+</urlset>
