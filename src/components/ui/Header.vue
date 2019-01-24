@@ -1,8 +1,9 @@
 <template>
   <nav role="navigation" aria-label="main dropdown navigation">
+    <ui-warning />
     <export-header v-if="isExportPng" />
 
-    <div class="level" v-else>
+    <div class="level" style="margin-top: 0.5rem;" v-else>
       <div class="level-left">
         <region-selector />
       </div>
@@ -17,6 +18,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import UiWarning from '@/components/ui/Warning';
 import RegionSelector from './RegionSelector';
 import DateSelector from './DateSelector';
 import ExportHeader from '../Export/Header';
@@ -29,6 +31,7 @@ export default {
     DateSelector,
     ExportHeader,
     ExportModal,
+    UiWarning,
   },
   computed: {
     ...mapGetters({
@@ -46,7 +49,7 @@ nav {
   z-index: 99;
   top: 0;
   background-color: $background-alpha;
-  padding: 0.5rem 0;
+  padding: 0 0 0.5rem;
 }
 
 h1 {
@@ -61,6 +64,13 @@ h1 {
 
 .level-right {
   margin-top: 0;
+}
+
+@media only screen and (min-width: 500px) {
+  .level,
+  .level-right {
+    display: flex;
+  }
 }
 
 </style>

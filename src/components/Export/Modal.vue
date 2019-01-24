@@ -101,13 +101,6 @@ export default {
     top: 1px;
     font-size: 18px;
   }
-
-  @include tablet {
-    // margin-left: 1rem;
-    position: relative;
-    top: 5px;
-    right: 0;
-  }
 }
 
 .panel-heading {
@@ -122,5 +115,12 @@ export default {
   border-radius: 5px;
   max-width: 300px;
   background: #fff;
+}
+@media only screen and (min-width: 500px) {
+  .export-btn {
+    position: relative;
+    top: 5px;
+    right: 0;
+  }
 }
 </style>

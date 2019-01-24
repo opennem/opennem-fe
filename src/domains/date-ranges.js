@@ -8,76 +8,112 @@ import { isMobileWidth } from '@/lib/browser';
 export const DateRanges = [
   {
     id: 'last24hrs',
-    label: 'Last 24 hours',
+    label: '1D',
     minPeriod: Periods.PERIOD_5_MINS,
     groupToPeriods: [Periods.PERIOD_5_MINS],
     visType: VisTypes.VIS_TYPE_POWER,
     folder: '',
     extension: '',
+    periodFolders: {
+      '5mm': '',
+    },
   },
   {
     id: 'last3days',
-    label: 'Last 3 days',
-    minPeriod: '5mm',
-    groupToPeriods: ['5mm', '30mm'],
+    label: '3D',
+    minPeriod: Periods.PERIOD_5_MINS,
+    groupToPeriods: [Periods.PERIOD_5_MINS, Periods.PERIOD_30_MINS],
     visType: 'power',
     folder: '',
     extension: '',
+    periodFolders: {
+      '5mm': '',
+      '30mm': '',
+    },
   },
   {
     id: 'last7days',
-    label: 'Last 7 days',
+    label: '7D',
     minPeriod: Periods.PERIOD_5_MINS,
     groupToPeriods: [Periods.PERIOD_5_MINS, Periods.PERIOD_30_MINS],
     visType: VisTypes.VIS_TYPE_POWER,
     folder: '',
     extension: '',
+    periodFolders: {
+      '5mm': '',
+      '30mm': '',
+    },
   },
   {
     id: 'last30days',
-    label: 'Last 30 days',
+    label: '30D',
     minPeriod: Periods.PERIOD_1_DAY,
     groupToPeriods: [Periods.PERIOD_1_DAY],
     visType: VisTypes.VIS_TYPE_ENERGY,
     folder: '/history/daily',
     extension: '',
+    periodFolders: {
+      DD: '/history/daily',
+    },
   },
   {
-    id: 'last52weeksWeekly',
-    label: 'Last 52 weeks (weekly)',
+    id: 'lastYear',
+    label: '1Y',
     minPeriod: Periods.PERIOD_1_WEEK,
     groupToPeriods: [Periods.PERIOD_1_WEEK],
     visType: VisTypes.VIS_TYPE_ENERGY,
     folder: '/history/weekly',
     extension: '',
+    periodFolders: {
+      WW: '/history/weekly',
+      MM: '/history/weekly',
+      '3MM': '/history/weekly',
+    },
   },
   {
-    id: 'last52weeksMonthly',
-    label: 'Last 12 months (monthly)',
+    id: 'allMonthly',
+    label: 'ALL',
     minPeriod: Periods.PERIOD_1_MONTH,
     groupToPeriods: [Periods.PERIOD_1_MONTH],
     visType: VisTypes.VIS_TYPE_ENERGY,
     folder: '/history/monthly',
-    extension: '',
+    extension: '_all',
+    periodFolders: {
+      WW: '/history/weekly',
+      MM: '/history/monthly',
+      S3MM: '/history/monthly',
+      '3MM': '/history/monthly',
+      YYYY: '/history/monthly',
+      FY: '/history/monthly',
+    },
   },
-  {
-    id: '2017Weekly',
-    label: '2017 (weekly)',
-    minPeriod: Periods.PERIOD_1_WEEK,
-    groupToPeriods: [Periods.PERIOD_1_WEEK],
-    visType: VisTypes.VIS_TYPE_ENERGY,
-    folder: '/history/weekly',
-    extension: '_2017',
-  },
-  {
-    id: '2017Monthly',
-    label: '2017 (monthly)',
-    minPeriod: Periods.PERIOD_1_MONTH,
-    groupToPeriods: [Periods.PERIOD_1_MONTH],
-    visType: VisTypes.VIS_TYPE_ENERGY,
-    folder: '/history/monthly',
-    extension: '_2017',
-  },
+  // {
+  //   id: 'last52weeksMonthly',
+  //   label: 'Last 12 months (monthly)',
+  //   minPeriod: Periods.PERIOD_1_MONTH,
+  //   groupToPeriods: [Periods.PERIOD_1_MONTH],
+  //   visType: VisTypes.VIS_TYPE_ENERGY,
+  //   folder: '/history/monthly',
+  //   extension: '',
+  // },
+  // {
+  //   id: '2017Weekly',
+  //   label: '2017 (weekly)',
+  //   minPeriod: Periods.PERIOD_1_WEEK,
+  //   groupToPeriods: [Periods.PERIOD_1_WEEK],
+  //   visType: VisTypes.VIS_TYPE_ENERGY,
+  //   folder: '/history/weekly',
+  //   extension: '_2017',
+  // },
+  // {
+  //   id: '2017Monthly',
+  //   label: '2017 (monthly)',
+  //   minPeriod: Periods.PERIOD_1_MONTH,
+  //   groupToPeriods: [Periods.PERIOD_1_MONTH],
+  //   visType: VisTypes.VIS_TYPE_ENERGY,
+  //   folder: '/history/monthly',
+  //   extension: '_2017',
+  // },
 ];
 
 function findRange(id) {
@@ -111,6 +147,7 @@ function getPeriod(id) {
       break;
     case 'last52weeksMonthly':
     case '2017Monthly':
+    case 'allMonthly':
       period = 'month';
       break;
     default:

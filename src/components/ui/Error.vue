@@ -27,6 +27,12 @@ export default {
 
 .notification {
   text-align: center;
+  position: absolute;
+  width: 30%;
+  margin: 0 auto;
+  top: 30vh;
+  left: 0;
+  right: 0;
 }
 
 </style>

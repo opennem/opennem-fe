@@ -41,8 +41,12 @@ function formatDateForDisplay(date) {
   return returnedDate;
 }
 
-function formatDateForExport(date) {
-  return moment(date).format('YYYYMMDD');
+function formatDateForExport(date, formatString) {
+  let format = 'YYYYMMDD';
+  if (formatString) {
+    format = formatString;
+  }
+  return moment(date).format(format);
 }
 
 function formatNumberForDisplay(number, precision) {

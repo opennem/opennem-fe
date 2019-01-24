@@ -6,12 +6,13 @@ const state = {
   currentRange: getDefaultRange(),
   years: [],
   weeks: [],
-  currentInterval: '',
+  currentInterval: '30mm',
   selectedDates: {
     start: null,
     end: null,
   },
   dataEndDate: null,
+  datePeriodTransition: false,
 };
 
 const mutations = {
@@ -32,6 +33,9 @@ const mutations = {
   },
   [MutationTypes.DATA_END_DATE](state, data) {
     state.dataEndDate = data;
+  },
+  [MutationTypes.DATE_PERIOD_TRANSITION](state, data) {
+    state.datePeriodTransition = data;
   },
 };
 
@@ -57,6 +61,9 @@ const getters = {
   getDataEndDate: state => {
     return state.dataEndDate;
   },
+  datePeriodTransition: state => {
+    return state.datePeriodTransition;
+  },
 };
 
 const actions = {
@@ -77,6 +84,9 @@ const actions = {
   },
   setDataEndDate({ commit, state }, data) {
     commit(MutationTypes.DATA_END_DATE, data);
+  },
+  datePeriodTransition({ commit, state }, data) {
+    commit(MutationTypes.DATE_PERIOD_TRANSITION, data);
   },
 };
 

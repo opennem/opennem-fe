@@ -10,6 +10,8 @@ import * as Periods from '@/constants/periods';
 import * as Intervals from '@/constants/intervals';
 import * as VisTypes from '@/constants/vis-types';
 import EventBus from '@/lib/event-bus';
+import DateStoreDispatch from '@/modules/date-store-dispatch';
+import Months from '@/domains/months';
 import {
   getFieldMappings,
   getStockGraphs,
@@ -20,12 +22,11 @@ import {
   findDataContextByDate,
   checkDateZoomLessThan1Day,
   checkDateZoomLessThan14Days,
-  getZoomDatesOnDateLabel,
   getKeys,
   getAllWeeksYearsBetween,
 } from '@/lib/data-helpers';
 import updateRouterStartEnd from '@/lib/app-router';
-import { isLast24Hrs, getPeriodAxisLabel } from '@/domains/date-ranges';
+import { isLast24Hrs, findRange } from '@/domains/date-ranges';
 import {
   getAllPanelsGeneration,
   getAllPanelsEnergy,
@@ -68,8 +69,11 @@ export default {
       isExportPng: 'isExportPng',
       isPower: 'isPower',
       groupToPeriods: 'groupToPeriods',
+      period: 'period',
       currentRange: 'currentRange',
+      currentInterval: 'currentInterval',
       disabledSeries: 'disabledSeries',
+      region: 'region',
     }),
     visClass() {
       return {
@@ -123,6 +127,14 @@ export default {
     },
     chartCursorEnabled(enabled) {
       this.setChartCursorEnabled(enabled);
+    },
+    period(newPeriod) {
+      this.chart.categoryAxesSettings.groupToPeriods = [newPeriod];
+      this.chart.validateData();
+    },
+    groupToPeriods(newGroupTo) {
+      this.chart.categoryAxesSettings.groupToPeriods = newGroupTo;
+      this.chart.validateData();
     },
   },
   created() {
@@ -198,7 +210,7 @@ export default {
             temperatureField,
             hasMinMax,
             showBullets,
-            getPeriodAxisLabel(this.currentRange),
+            this.currentInterval,
           );
       } else if (this.showPricePanel) {
         panels = getGenerationAndPricePanels(this.getPanelListeners());
@@ -207,7 +219,7 @@ export default {
       } else {
         panels = this.isPower ?
           generationPanel(this.getPanelListeners()) :
-          energyPanel(this.getPanelListeners(), getPeriodAxisLabel(this.currentRange));
+          energyPanel(this.getPanelListeners(), this.currentInterval);
       }
 
       return panels;
@@ -349,7 +361,7 @@ export default {
       // check less than 14 days
       const isLessThan14days = checkDateZoomLessThan14Days(start, end);
       if (!this.isPower && isLessThan14days) {
-        this.transitionChartType(start, end);
+        // this.transitionChartType(start, end);
       }
 
       if (!datesChanged && !this.initialZoom) {
@@ -404,9 +416,92 @@ export default {
 
     onCategoryAxisItemClicked(e) {
       if (this.chartCursorEnabled) {
-        const zoomDates = getZoomDatesOnDateLabel(e.value, this.dataEndDate);
-        if (zoomDates) {
-          this.zoomChart(zoomDates.start, zoomDates.end);
+        const currentRange = this.currentRange;
+        const dateValue = e.target.node.textContent.trim();
+        const clickedDate = this.chart.panels[0].categoryAxis.coordinateToDate(e.target.x);
+
+        if (currentRange === 'last24hrs' ||
+          currentRange === 'last3days' ||
+          currentRange === 'last7days') {
+          const currentDate = moment(clickedDate);
+          const endDate = moment(clickedDate).add(1, 'day');
+          this.zoomChart(currentDate.toDate(), endDate.toDate());
+        }
+
+        if (currentRange === 'last30days') {
+          const currentDate = moment(clickedDate);
+          const endDate = moment(clickedDate).add(1, 'day');
+          const weeksYears = getAllWeeksYearsBetween(currentDate.toDate(), endDate.toDate());
+          const url = [`power/history/5minute/${this.region}_${weeksYears.years[0]}W${weeksYears.weeks[0]}.json`];
+
+          this.$store.dispatch('datePeriodTransition', true);
+          this.$store.dispatch('nemUrls', url);
+          this.$store.dispatch('nemTrim', false);
+          this.$store.dispatch('saveSelectedDates', { start: currentDate.toDate(), end: endDate.toDate() });
+          this.$store.dispatch('fetchingData', true);
+          this.$store.dispatch('setChartZoomed', true);
+          this.$store.dispatch('setVisType', 'power');
+          this.$store.dispatch('currentRange', 'last7days');
+          this.$store.dispatch('groupToPeriods', ['5mm', '30mm']);
+          this.$store.dispatch('chartTypeTransition', false);
+          this.$store.dispatch('currentInterval', '5mm');
+          EventBus.$emit('data.fetch');
+        }
+
+        if (currentRange === 'lastYear') {
+          const month = moment().month(dateValue);
+
+          if (month.isValid()) {
+            const currentYear = moment(clickedDate).year();
+            const startDate = moment({ year: currentYear, month: Months[dateValue] });
+            const endDate = moment({ year: currentYear, month: Months[dateValue] }).add(1, 'month').subtract(1, 'day');
+            const urls = [`testing/${this.region}/energy/daily/${currentYear}.json`];
+
+            DateStoreDispatch(
+              this.$store,
+              startDate.toDate(),
+              endDate.toDate(),
+              urls,
+              'last30days',
+              'DD',
+            );
+            EventBus.$emit('data.fetch');
+          }
+        }
+
+        if (currentRange === 'allMonthly') {
+          const year = moment({ year: dateValue });
+          const month = moment().month(dateValue);
+
+          if (year.isValid()) {
+            const currentYear = year;
+            const endYear = moment({ year: dateValue }).add(1, 'year').subtract(1, 'minute');
+
+            DateStoreDispatch(
+              this.$store,
+              currentYear.toDate(),
+              endYear.toDate(),
+              [`testing/${this.region}/energy/monthly/all.json`],
+              'lastYear',
+              'MM',
+            );
+            EventBus.$emit('data.fetch');
+          } else if (month.isValid()) {
+            const currentYear = moment(clickedDate).year();
+            const startDate = moment({ year: currentYear, month: Months[dateValue] });
+            const endDate = moment({ year: currentYear, month: Months[dateValue] }).add(1, 'month').subtract(1, 'day');
+            const urls = [`testing/${this.region}/energy/daily/${currentYear}.json`];
+
+            DateStoreDispatch(
+              this.$store,
+              startDate.toDate(),
+              endDate.toDate(),
+              urls,
+              'last30days',
+              'DD',
+            );
+            EventBus.$emit('data.fetch');
+          }
         }
       }
     },
@@ -472,6 +567,10 @@ export default {
     resetChartZoom() {
       if (this.isPower) {
         this.chart.categoryAxesSettings.groupToPeriods = this.groupToPeriods.slice(0);
+        this.chart.validateData();
+
+        this.$store.dispatch('period', this.groupToPeriods[this.groupToPeriods.length - 1]);
+
         const temperaturePanelIndex = this.getTemperaturePanelIndex();
 
         if (this.showTemperaturePanel) {
@@ -479,7 +578,13 @@ export default {
         }
       }
       if (this.chartTypeTransition) {
+        const currentRangeObj = findRange(this.currentRange);
+        const currentInterval =
+          currentRangeObj.groupToPeriods[currentRangeObj.groupToPeriods.length - 1];
         this.$store.dispatch('chartTypeTransition', false);
+        this.$store.dispatch('groupToPeriods', currentRangeObj.groupToPeriods.slice(0));
+        this.$store.dispatch('period', currentInterval);
+        this.$store.dispatch('currentInterval', currentInterval);
       }
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoomed', false);

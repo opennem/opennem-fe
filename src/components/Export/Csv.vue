@@ -104,12 +104,14 @@ export default {
     getProcessedJson(data, header) {
       let keys = this.getKeys(data, header);
       let newData = [];
+
       let _self = this;
       data.map((item, index) => {
         let newItem = {};
-        for (let label in keys) {
-          let property = keys[label];
-          let value = _self.getNestedData(property, item);
+
+        Object.keys(keys).forEach(label => {
+          const key = keys[label]
+          let value = item[key]
           
           if (value === undefined) {
             if (label.includes('Temperature') || label.includes('Trading Price')) {
@@ -118,24 +120,59 @@ export default {
               value = 0;
             }
           }
+          
           if (value === null) {
             value = '';
           } 
 
-          if (property === 'date') {
+          // if (key.includes('.market_value')) {
+          //   console.log('market value')
+          //   value = value / 
+          // }
+
+          if (key === 'date') {
             value = moment(value).format('YYYY-MM-DD HH:mm');
           }
 
           newItem[label] = value;
-        }
+
+        })
+        
+        // for (let label in keys) {
+        //   let property = keys[label];
+        //   let value = _self.getNestedData(property, item);
+        //   if (value === undefined) {
+        //     if (label.includes('Temperature') || label.includes('Trading Price')) {
+        //       value = '';
+        //     } else {
+        //       value = 0;
+        //     }
+        //   }
+        //   if (value === null) {
+        //     value = '';
+        //   } 
+
+        //   if (property === 'date') {
+        //     value = moment(value).format('YYYY-MM-DD HH:mm');
+        //   }
+
+        //   newItem[label] = value;
+        // }
         newData.push(newItem);
+        
       });
 
       return newData;
     },
     getKeys(data, header) {
       if (header) {
-        return header;
+        const newHeader = {}
+        Object.keys(data[0]).reverse().forEach(key => {
+          if (key !== 'pricePos' && key !== 'priceNeg') {
+            newHeader[header[key]] = key
+          }
+        })
+        return newHeader;
       }
       let keys = {};
       for (let key in data[0]) {

@@ -72,12 +72,14 @@ export default {
       this.dropdownActive = false;
     },
     handleRegionChange(regionId) {
+      this.$store.dispatch('region', `${regionId}1`);
       this.$router.push({ name: 'regions', params: { region: regionId } });
     },
     isCurrentSelection(id) {
       return this.$route.params.region === id;
     },
     goHome() {
+      this.$store.dispatch('region', 'nem');
       this.$router.push({ name: 'home' });
     },
   },
@@ -91,10 +93,6 @@ export default {
 .region-selector {
   font-family: $header-font-family;
   font-size: 1.4rem;
-
-  @include tablet {
-    font-size: 2rem;
-  }
 
   a.dropdown-trigger {
     color: #000;
@@ -116,6 +114,10 @@ export default {
       background-color: rgba(255,255,255,0.5);
     }
   }
-  
+}
+@media only screen and (min-width: 600px) {
+  .region-selector {
+    font-size: 2rem;
+  }
 }
 </style>

@@ -5,7 +5,7 @@
       <app-header />
 
       <div class="router-view-container">
-        <router-view v-show="!error" />
+        <router-view />
         <ui-error />
       </div>
 
@@ -77,9 +77,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
 }
 section {
-  @include widescreen {
-    margin-top: 2rem;
-  }
+  @include widescreen {}
 
   &.notfound-page,
   &.other {
@@ -91,5 +89,10 @@ section {
   min-height: 500px;
   margin: 0.5rem auto;
   padding: 0 1rem;
+  position: relative;
+
+  @include mobile {
+    margin: 0 auto;
+  }
 }
 </style>

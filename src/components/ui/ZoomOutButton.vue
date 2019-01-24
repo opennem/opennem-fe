@@ -22,10 +22,8 @@ export default {
 .zoom-out-btn {
   position: absolute;
   z-index: 9;
-  right: 0;
-  left: 0;
-  width: 94px;
-  margin: 12px auto 0;
+  right: 5px;
+  top: 3px;
 }
 </style>
 

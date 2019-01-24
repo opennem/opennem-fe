@@ -68,26 +68,36 @@ export default function(domains, data, interpolate) {
     for (let i = 0; i < historyData.length; i += 1) {
       const now = moment(start).add(duration.value * i, duration.key);
       const d = shouldInvertValue(domain) ? -historyData[i] : historyData[i];
-      const nowISO = moment(now).toISOString();
+      const nowDate = now.date();
+      const nowMonth = now.month() + 1;
+      const nowYear = now.year();
+      const nowHour = ('0' + now.hour()).slice(-2);
+      const nowMin = ('0' + now.minute()).slice(-2);
+      const nowString = duration.key === 'm' ?
+        `${nowYear}-${nowMonth}-${nowDate} ${nowHour}:${nowMin}` :
+        `${nowYear}-${nowMonth}-${nowDate}`;
+      const nowFormat = duration.key === 'm' ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD'
+      const nowUnix = moment(nowString, nowFormat).unix();
 
-      if (!container[nowISO]) {
-        container[nowISO] = {};
+      if (!container[nowUnix]) {
+        container[nowUnix] = {};
 
         availableKeys.forEach((key) => {
-          container[nowISO][key] = null;
+          container[nowUnix][key] = null;
         });
       }
-      container[nowISO][domain] = d;
+      container[nowUnix][domain] = d;
 
       if (isPrice(domain)) {
-        container[nowISO]['pricePos'] = d > 300 ? d : 0.001;
-        container[nowISO]['priceNeg'] = d < 0 ? -d : 0.001;
+        container[nowUnix]['pricePos'] = d > 300 ? d : 0.001;
+        container[nowUnix]['priceNeg'] = d < 0 ? -d : 0.001;
       }
     }
   }
 
   Object.keys(domains).forEach((domain) => {
     const fuelTechData = data.find(d => d.fuel_tech === domain);
+    const fuelTechMarketValue = data.find(d => d.type === 'market_value' && d.id.includes(`fuel_tech.${domain}`));
     const priceOrTemperatureData = data.find(d => d.type === domain);
     let history = null;
 
@@ -99,9 +109,11 @@ export default function(domains, data, interpolate) {
       }
     } else if (priceOrTemperatureData) {
       history = new History(priceOrTemperatureData.history);
+    } else if (fuelTechMarketValue) {
+      history = new History(fuelTechMarketValue.history);
     }
 
-    if (fuelTechData || priceOrTemperatureData) {
+    if (fuelTechData || priceOrTemperatureData || fuelTechMarketValue) {
       const duration = parseInterval(history.interval);
       allIntervals[domain] = duration;
 
@@ -143,8 +155,7 @@ export default function(domains, data, interpolate) {
   // Create array based on date maps
   Object.keys(container).forEach((dateKey) => {
     const obj = Object.assign({}, container[dateKey]);
-    obj.date = moment(dateKey).toDate();
-
+    obj.date = moment.unix(dateKey).toDate();
     newChartData.push(obj);
   });
 
