@@ -31,6 +31,16 @@
         </div>
       </div>
     </transition> 
+
+    <div class="buttons has-addons">
+      <!-- :class="{ 'is-inverted': currentRange !== dateRange.id }" -->
+      <span class="button is-rounded is-small is-primary">
+        Energy
+      </span>
+      <span class="button is-rounded is-small is-primary is-inverted">
+        Generators
+      </span>
+    </div>
   </div>
 </template>
 
@@ -57,7 +67,8 @@ export default {
       return getRegionLabel(this.$route.params.region);
     },
     isHome() {
-      return this.$route.name === 'home';
+      const routeName = this.$route.name;
+      return routeName === 'home-energy' || routeName === 'home-generators';
     },
     iconDown() {
       return faAngleDown;

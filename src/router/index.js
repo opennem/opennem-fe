@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Home from '@/components/Home';
+import HomeView from '@/components/HomeView';
+import EnergyView from '@/components/EnergyView';
+import GeneratorsView from '@/components/GeneratorsView';
 import Region from '@/components/Region';
 import Widget from '@/components/Widget';
 import About from '@/components/About';
@@ -18,7 +20,20 @@ export default new Router({
     {
       path: '/all-regions',
       name: 'home',
-      component: Home,
+      component: HomeView,
+      redirect: 'all-regions/energy',
+      children: [
+        {
+          path: 'energy',
+          name: 'home-energy',
+          component: EnergyView,
+        },
+        {
+          path: 'generators',
+          name: 'home-generators',
+          component: GeneratorsView,
+        },
+      ],
     },
     {
       path: '/regions/:region',
