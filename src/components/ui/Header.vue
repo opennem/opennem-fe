@@ -6,6 +6,7 @@
     <div class="level" style="margin-top: 0.5rem;" v-else>
       <div class="level-left">
         <region-selector />
+        <view-selector />
       </div>
 
       <div class="level-right">
@@ -20,6 +21,7 @@
 import { mapGetters } from 'vuex';
 import UiWarning from '@/components/ui/Warning';
 import RegionSelector from './RegionSelector';
+import ViewSelector from './ViewSelector';
 import DateSelector from './DateSelector';
 import ExportHeader from '../Export/Header';
 import ExportModal from '../Export/Modal';
@@ -28,6 +30,7 @@ export default {
   name: 'header-nav',
   components: {
     RegionSelector,
+    ViewSelector,
     DateSelector,
     ExportHeader,
     ExportModal,

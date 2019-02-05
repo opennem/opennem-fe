@@ -1,10 +1,9 @@
 <template>
-  <div class="region-selector dropdown" :class="{'is-active': dropdownActive}">
+  <div class="view-selector dropdown" :class="{'is-active': dropdownActive}">
     <a class="dropdown-trigger" v-on-clickaway="onClickAway" @click="handleClick">
-      <img class="logo" src="../../assets/opennem-logo.svg" alt="OpenNEM logo" />
       <span>
-        <strong v-if="isHome">All Regions</strong>
-        <strong v-else>{{regionLabel}}</strong>
+        <strong v-if="isEnergy">Energy</strong>
+        <strong v-else>Generators</strong>
         <font-awesome-icon class="fal" :icon="iconDown" />
       </span>          
     </a>
@@ -13,20 +12,16 @@
       <div v-if="dropdownActive" class="dropdown-menu">
         <div class="dropdown-content">
           <a class="dropdown-item"
-            v-if="!isHome"
             @click="goHome()"
+            :class="{ selected: isEnergy }"
           >
-            All Regions
+            Energy
           </a>
-          <hr v-if="!isHome" class="dropdown-divider">
-          <a 
-            v-for="region in regions" 
-            :key="region.id" 
-            @click="handleRegionChange(region.id)" 
-            class="dropdown-item"
-            :class="{ selected: isCurrentSelection(region.id)}"
+          <a class="dropdown-item"
+            @click="goToGeneratorsView()"
+            :class="{ selected: !isEnergy }"
           >
-            {{region.label}}
+            Generators
           </a>
         </div>
       </div>
@@ -38,10 +33,9 @@
 import { mixin as clickaway } from 'vue-clickaway';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import { faAngleDown } from '@fortawesome/fontawesome-pro-light';
-import { getAllRegions, getRegionLabel } from '@/domains/regions';
 
 export default {
-  name: 'region-selector',
+  name: 'view-selector',
   mixins: [clickaway],
   components: {
     FontAwesomeIcon,
@@ -49,16 +43,12 @@ export default {
   data() {
     return {
       dropdownActive: false,
-      regions: getAllRegions(),
     };
   },
   computed: {
-    regionLabel() {
-      return getRegionLabel(this.$route.params.region);
-    },
-    isHome() {
+    isEnergy() {
       const routeName = this.$route.name;
-      return routeName === 'home-energy' || routeName === 'home-generators';
+      return routeName === 'home-energy';
     },
     iconDown() {
       return faAngleDown;
@@ -72,16 +62,19 @@ export default {
     onClickAway() {
       this.dropdownActive = false;
     },
-    handleRegionChange(regionId) {
-      this.$store.dispatch('region', `${regionId}1`);
-      this.$router.push({ name: 'regions', params: { region: regionId } });
+    handleRegionChange() {
+      // this.$store.dispatch('region', `${regionId}1`);
+      // this.$router.push({ name: 'regions', params: { region: regionId } });
     },
     isCurrentSelection(id) {
       return this.$route.params.region === id;
     },
     goHome() {
       this.$store.dispatch('region', 'nem');
-      this.$router.push({ name: 'home' });
+      this.$router.push({ name: 'home-energy' });
+    },
+    goToGeneratorsView() {
+      this.$router.push({ name: 'home-generators' });
     },
   },
 };
@@ -91,9 +84,9 @@ export default {
 @import "../../../node_modules/bulma/sass/utilities/mixins.sass";
 @import "../../styles/variables.scss";
 
-.region-selector {
+.view-selector {
   font-family: $header-font-family;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
 
   a.dropdown-trigger {
     color: #000;
@@ -117,8 +110,8 @@ export default {
   }
 }
 @media only screen and (min-width: 600px) {
-  .region-selector {
-    font-size: 2rem;
+  .view-selector {
+    font-size: 1.4rem;
   }
 }
 </style>
