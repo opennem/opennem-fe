@@ -10,7 +10,9 @@ import getJSON from '@/lib/data-apis';
 import { formatDateForExport } from '@/lib/formatter';
 import { isLast24Hrs, isLast3Days } from '@/domains/date-ranges';
 import fYTimeGroup from '@/modules/fy-time-group';
+import yearlyTimeGroup from '@/modules/yearly-time-group';
 import seasonsTimeGroup from '@/modules/seasons-time-group';
+import quarterlyTimeGroup from '@/modules/quarterly-time-group';
 import y1WeekTimeGroup from '@/modules/y1-week-time-group';
 import y1MonthTimeGroup from '@/modules/y1-month-time-group';
 import * as MutationTypes from '@/constants/mutation-types';
@@ -178,6 +180,10 @@ function handleFetchResponse(responses, state, commit) {
       data = fYTimeGroup(data);
     } else if (state.dates.currentInterval === 'S3MM') {
       data = seasonsTimeGroup(data);
+    } else if (state.dates.currentInterval === '3MM') {
+      data = quarterlyTimeGroup(data);
+    } else if (state.dates.currentInterval === 'YYYY') {
+      data = yearlyTimeGroup(data);
     }
   
   }
@@ -201,12 +207,8 @@ function handleFetchResponse(responses, state, commit) {
   const first = data[0];
   let hasWarning = false;
 
-  if (state.dates.currentRange !== 'allMonthly') {
-    if (state.dates.currentInterval !== 'MM') {
-      if (moment(first.date).isBefore('2017-01-01')) {
-        hasWarning = true;
-      }
-    }
+  if (moment(first.date).isBefore('2017-01-01')) {
+    hasWarning = true;
   }
 
   commit(MutationTypes.WARNING, hasWarning);
