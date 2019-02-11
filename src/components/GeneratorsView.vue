@@ -2,48 +2,30 @@
 <div>
   <button class="button" @click="toggleEmissions">Show Emissions</button>
   <div id="map"></div>
-
-  <table class="table is-striped is-hoverable is-narrow">
-    <thead>
-      <tr>
-        <th>Station Name</th>
-        <th>Region</th>
-        <th>Emissions (YTD)</th>
-        <th>Fuel Tech</th>
-        <th>Capacity</th>
-        <th>Number of units</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="(generator, index) in generatorsData" :key="index">
-        <td>{{ generator.stationName }}</td>
-        <td>{{ generator.regionId }}</td>
-        <td>{{ generator.emissionsYtd }}</td>
-        <td>
-          <span v-for="(ft, ftIndex) in generator.fuelTechs" :key="ftIndex">
-            {{ ft }}
-          </span>
-        </td>
-        <td>{{ generator.generatorCap }}</td>
-        <td>{{ generator.unitNum }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <input class="input" type="text" placeholder="Filter" v-model="filterString">
+  <generator-grid :generatorsData="filteredGenerators"/>
 </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
 import L from 'leaflet';
+import GeneratorGrid from '@/components/Generator/Grid';
 
 // AU geojson from https://github.com/rowanhogan/australian-states/blob/master/states.geojson
 // TODO: delete this if unused
 // import AUGeoJson from '@/assets/au-geojson.json';
 
 export default {
+  components: {
+    GeneratorGrid,
+  },
   data() {
     return {
+      // filteredGenerators: [],
+      filterString: '',
       map: null,
+      generatorsFeature: null,
       emissionsFeature: null,
     };
   },
@@ -51,9 +33,17 @@ export default {
     ...mapGetters({
       generatorsData: 'generatorsData',
     }),
+    filteredGenerators() {
+      return this.generatorsData.filter(g =>
+        g.stationName.toLowerCase().includes(this.filterString.toLowerCase()),
+      );
+    },
   },
   watch: {
-    generatorsData(newData) {
+    filteredGenerators(newData) {
+      this.map.removeLayer(this.generatorsFeature);
+      this.generatorsFeature = L.featureGroup();
+
       newData.forEach((d) => {
         const location = d.location;
         if (location) {
@@ -66,7 +56,7 @@ export default {
           L.circle([lat, lng], {
             color: '#C74523',
             radius: 1000,
-          }).addTo(this.map);
+          }).addTo(this.generatorsFeature);
 
           L.circle([lat, lng], {
             fillColor,
@@ -76,6 +66,8 @@ export default {
           }).addTo(this.emissionsFeature);
         }
       });
+
+      this.map.addLayer(this.generatorsFeature);
     },
   },
   mounted() {
@@ -88,9 +80,11 @@ export default {
       maxZoom: 20,
       ext: 'png',
     });
+    this.generatorsFeature = L.featureGroup();
     this.emissionsFeature = L.featureGroup();
 
     tileLayer.addTo(this.map);
+    // this.generatorsFeature.addTo(this.map);
     // this.emissionsFeature.addTo(this.map);
   },
   methods: {
@@ -106,8 +100,5 @@ export default {
   width: 100%;
   height: 400px;
   z-index: 1;
-}
-table {
-  margin-bottom: 3rem;
 }
 </style>
