@@ -68,10 +68,12 @@
       <tr 
         v-for="row in rangeSummary.sourcesData"
         :key="row.id"
-        @click.exact="handleSourceRowClicked(row.id)"
-        @click.shift.exact="handleSourceRowShiftClicked(row.id)"
       >
-        <td class="row-label">
+        <td
+          class="row-label"
+          @click.exact="handleSourceRowClicked(row.id)"
+          @click.shift.exact="handleSourceRowShiftClicked(row.id)"
+        >
           <span class="source-colour" 
             :style="{ 
               backgroundColor: isDisabled(row.id) ? 'transparent' : row.colour,
@@ -352,12 +354,8 @@ export default {
 .summary-table {
   width: 100%;
 
-  tr td {
+  tr td span.source-colour {
     cursor: pointer;
-    user-select: none; /* CSS3 (little to no support) */
-    -ms-user-select: none; /* IE 10+ */
-    -moz-user-select: none; /* Gecko (Firefox) */
-    -webkit-user-select: none; /* Webkit (Safari, Chrome) */
   }
 
   @include desktop {
