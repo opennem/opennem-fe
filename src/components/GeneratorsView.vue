@@ -3,11 +3,15 @@
   <button class="button" @click="toggleEmissions">Show Emissions</button>
   <div id="map"></div>
   <input class="input" type="text" placeholder="Filter" v-model="filterString">
-  <generator-grid :generatorsData="filteredGenerators"/>
+  <generator-grid 
+    :generatorsData="filteredGenerators"
+    @orderBy="handleOrderChange"
+  />
 </div>
 </template>
 
 <script>
+import _ from 'lodash';
 import { mapGetters } from 'vuex';
 import L from 'leaflet';
 import GeneratorGrid from '@/components/Generator/Grid';
@@ -27,12 +31,19 @@ export default {
       map: null,
       generatorsFeature: null,
       emissionsFeature: null,
+      sortBy: '',
+      orderBy: 'asc', // or desc
     };
   },
   computed: {
     ...mapGetters({
       generatorsData: 'generatorsData',
     }),
+    generatorsData() {
+      const data = this.$store.getters.generatorsData;
+      const sortBy = this.sortBy;
+      return _.orderBy(data, [sortBy], [this.orderBy]);
+    },
     filteredGenerators() {
       return this.generatorsData.filter(g =>
         g.stationName.toLowerCase().includes(this.filterString.toLowerCase()),
@@ -90,6 +101,17 @@ export default {
   methods: {
     toggleEmissions() {
       this.map.addLayer(this.emissionsFeature);
+    },
+    toggleOrder(order) {
+      return order === 'asc' ? 'desc' : 'asc';
+    },
+    handleOrderChange(orderName) {
+      if (this.sortBy === orderName) {
+        this.orderBy = this.toggleOrder(this.orderBy);
+      } else {
+        this.orderBy = 'asc';
+      }
+      this.sortBy = orderName;
     },
   },
 };
