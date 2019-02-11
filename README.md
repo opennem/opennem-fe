@@ -7,6 +7,8 @@ By providing a **clear** window on the data, we hope to address the information 
 
 OpenNEM is a project of the [Energy Transition Hub](http://energy-transition-hub.org/).
 
+Find us on [twitter](https://twitter.com/OpenNEM)
+
 Developed by:
 * [Dylan McConnell (@dylanjmcconnell) | Twitter](https://twitter.com/dylanjmcconnell)
 * [simon holmes à court (@simonahac) | Twitter](https://twitter.com/simonahac)

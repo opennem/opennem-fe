@@ -1,18 +1,18 @@
 <template>
   <div id="app">
 
-    <section v-if="showMainNav">
+    <section class="main" v-if="showMainNav">
       <app-header />
 
       <div class="router-view-container">
-        <router-view v-show="!error" />
+        <router-view />
         <ui-error />
       </div>
 
       <app-footer />
     </section>
 
-    <section v-else>
+    <section class="other" v-else>
       <router-view/>
     </section>
 
@@ -77,11 +77,10 @@ export default {
   -moz-osx-font-smoothing: grayscale;
 }
 section {
-  @include widescreen {
-    margin-top: 2rem;
-  }
+  @include widescreen {}
 
-  &.notfound-page {
+  &.notfound-page,
+  &.other {
     margin-top: 0;
   }
 }
@@ -90,5 +89,10 @@ section {
   min-height: 500px;
   margin: 0.5rem auto;
   padding: 0 1rem;
+  position: relative;
+
+  @include mobile {
+    margin: 0 auto;
+  }
 }
 </style>

@@ -18,11 +18,11 @@
       </div>
     </header>
 
-    <transition name="fade">
-      <zoom-out-button v-if="isChartZoomed && !isFetching" />
-    </transition>
-
     <div class="chart" v-show="!isFetching">
+      <transition name="fade">
+        <zoom-out-button v-if="isChartZoomed && !isFetching" />
+       </transition>
+
       <widget-chart :chartData="chartData" />
     </div>
     <div class="table" v-if="!isFetching && isLarge">
@@ -159,7 +159,7 @@ export default {
       const url = 'power/nem.json';
 
       getJSON([url]).then((response) => {
-        const transformedData = dataTransform(GraphDomains, response[0].data);
+        const transformedData = dataTransform(GraphDomains, response[0].data, true);
         const endDate = transformedData[transformedData.length - 1].date;
 
         if (this.isSmall) {
@@ -184,6 +184,10 @@ export default {
 .container {
   border-top: 1px solid $opennem-primary;
   padding: 0 0.5rem;
+}
+
+.chart {
+  position: relative;
 }
 
 .level {

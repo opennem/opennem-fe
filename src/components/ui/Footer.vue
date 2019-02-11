@@ -1,6 +1,6 @@
 <template>
   <footer>
-    <div class="footer">
+    <div class="footer has-background-warning">
       <div class="level is-mobile footer-wrapper" v-if="isAbout">
         <div class="level-left">
           <p>
@@ -21,8 +21,9 @@
         </div>
       </div>
 
-      <div class="level is-mobile footer-wrapper" v-else>
+      <div class="level footer-wrapper" v-else>
         <div class="level-left">
+          <p class="version">v2 beta</p>
           <p>
             <span>Sources:</span>
             <a href="https://www.aemo.com.au/">AEMO</a>,
@@ -30,7 +31,7 @@
           </p>
         </div>
         <div class="level-right">
-          <p>
+          <p v-if="isDev">
             <a class="icon-link" href="/#/features">
               <font-awesome-icon class="fal fa-lg" :icon="iconFeatures" />
             </a>
@@ -74,6 +75,13 @@ export default {
     iconFeatures() {
       return faVial;
     },
+    isDev() {
+      const hostname = window.location.hostname;
+      const localhost = 'localhost';
+      const dev = 'dev.opennem.org.au';
+
+      return hostname.includes(localhost) || hostname.includes(dev);
+    },
   },
 };
 </script>
@@ -83,8 +91,8 @@ export default {
 @import "../../styles/variables.scss";
 
 a {
-  color: #fff;
-  border-bottom: 1px dashed #fff;
+  // color: #fff;
+  border-bottom: 1px dashed $opennem-primary;
   padding-bottom: 0;
 
   &.icon-link {
@@ -95,9 +103,22 @@ a {
   }
 }
 
+.version {
+  font-weight: 600;
+  display: block;
+}
+
+.level-right {
+  @include mobile {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 0.2rem;
+  }
+}
+
 .footer {
   width: 100%;
-  color: $opennem-primary-invert;
+  // color: $opennem-primary-invert;
   font-size: 0.8rem;
   margin-top: 2rem;
   padding: 0.3rem 0 0.7rem;
@@ -113,5 +134,15 @@ a {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0.3rem 1rem 0.4rem;
+}
+
+@media only screen and (min-width: 500px) {
+  .level,
+  .level-left {
+    display: flex;
+  }
+  .version {
+    margin-right: 20px;
+  }
 }
 </style>

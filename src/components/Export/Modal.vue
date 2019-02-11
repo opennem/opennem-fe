@@ -11,11 +11,12 @@
         <div class="modal-content">
           <div class="panel">
             <h3 class="panel-heading">
-              Export as...
+              Other formats...
             </h3>
             
-            <a class="panel-block" @click="showExportPng" v-if="isChrome">
-              Image (PNG)
+            <a class="panel-block" @click="showExportPng">
+              <span v-if="isChrome">Image (PNG)</span>
+              <span v-else>Compact view</span>
             </a>
 
             <csv
@@ -23,7 +24,7 @@
               :fields="csvHeaders"
               :name="`${exportName}.csv`">
                 <a class="panel-block" @click="closeModal">
-                  Spreadsheet (CSV)
+                  Download CSV
                 </a>
             </csv>
           </div>
@@ -72,6 +73,9 @@ export default {
     handleClick() {
       const isActive = !this.modalActive;
       this.modalActive = isActive;
+      if (isActive) {
+        this.$store.dispatch('generateExportData');
+      }
     },
     closeModal() {
       this.modalActive = false;
@@ -97,13 +101,6 @@ export default {
     top: 1px;
     font-size: 18px;
   }
-
-  @include tablet {
-    // margin-left: 1rem;
-    position: relative;
-    top: 5px;
-    right: 0;
-  }
 }
 
 .panel-heading {
@@ -118,5 +115,12 @@ export default {
   border-radius: 5px;
   max-width: 300px;
   background: #fff;
+}
+@media only screen and (min-width: 500px) {
+  .export-btn {
+    position: relative;
+    top: 5px;
+    right: 0;
+  }
 }
 </style>

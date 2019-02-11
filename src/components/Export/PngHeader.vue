@@ -11,8 +11,25 @@
       </button>
     </div>
 
-    <h3 contenteditable="true" v-if="showTitle" @blur="onTitleBlur">{{exportRegion}}</h3>
-    <h5 contenteditable="true" v-if="showDescription" @blur="onDescriptionBlur">Description</h5>
+    <h3 
+      contenteditable="true"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="true"
+      v-if="showTitle"
+      @blur="onTitleBlur">
+      {{exportRegion}}
+    </h3>
+    <h5
+      contenteditable="true"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="true"
+      v-if="showDescription"
+      @blur="onDescriptionBlur"
+    >[Description]</h5>
   </div>
 </template>
 
@@ -26,7 +43,7 @@ export default {
     return {
       showTitle: true,
       showDescription: true,
-      description: 'Description',
+      description: '[Description]',
     };
   },
   computed: {
@@ -54,7 +71,7 @@ export default {
       }
     },
     beforeDownloadPng() {
-      if (this.description === 'Description') {
+      if (this.description === '[Description]') {
         this.showDescription = false;
       }
       EventBus.$emit('download.png');

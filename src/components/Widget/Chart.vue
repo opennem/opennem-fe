@@ -36,6 +36,7 @@ export default {
       startDate: 'getSelectedStartDate',
       endDate: 'getSelectedEndDate',
       dataEndDate: 'getDataEndDate',
+      disabledSeries: 'disabledSeries',
     }),
   },
   watch: {
@@ -57,6 +58,9 @@ export default {
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize);
     EventBus.$off('chart.zoomedOut.clicked');
+    EventBus.$off('chart.series.toggle');
+    EventBus.$off('chart.series.showOnly');
+    EventBus.$off('chart.series.showAll');
     this.clearChart();
   },
   methods: {
@@ -66,6 +70,9 @@ export default {
 
     setupEventSubscribers() {
       EventBus.$on('chart.zoomedOut.clicked', this.resetChartZoom);
+      EventBus.$on('chart.series.toggle', this.seriesToggle);
+      EventBus.$on('chart.series.showOnly', this.showOnlySeries);
+      EventBus.$on('chart.series.showAll', this.showAllSeries);
     },
 
     setupChart() {
@@ -104,7 +111,14 @@ export default {
         fieldMappings: getFieldMappings(this.keys),
       }];
 
-      this.chart.panels[0].stockGraphs = getStockGraphs(this.domains, this.keys, 'line', 'MW');
+      this.chart.panels[0].stockGraphs =
+        getStockGraphs(
+          this.domains,
+          this.keys,
+          'line',
+          'MW',
+          this.disabledSeries,
+        );
       this.chart.panels[0].guides = getNemGuides(this.chartData);
       this.chart.validateData();
     },
@@ -226,6 +240,39 @@ export default {
       this.chart.categoryAxesSettings.groupToPeriods = ['5mm', '30mm'];
       this.chart.zoomOut();
       this.$store.dispatch('setChartZoomed', false);
+    },
+
+    showAllSeries() {
+      const stockGraphs = this.chart.panels[0].stockGraphs;
+
+      stockGraphs.forEach((stockGraph) => {
+        this.chart.panels[0].showGraph(stockGraph);
+      });
+    },
+
+    showOnlySeries(seriesId) {
+      const stockGraphs = this.chart.panels[0].stockGraphs;
+
+      stockGraphs.forEach((stockGraph) => {
+        if (stockGraph.id === seriesId) {
+          this.chart.panels[0].showGraph(stockGraph);
+        } else {
+          this.chart.panels[0].hideGraph(stockGraph);
+        }
+      });
+    },
+
+    seriesToggle(seriesId, show) {
+      const stockGraphs = this.chart.panels[0].stockGraphs;
+      const graph = stockGraphs.find(stockGraph => stockGraph.id === seriesId);
+
+      if (graph) {
+        if (show) {
+          this.chart.panels[0].showGraph(graph);
+        } else {
+          this.chart.panels[0].hideGraph(graph);
+        }
+      }
     },
   },
 };

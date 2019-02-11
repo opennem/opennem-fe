@@ -3,7 +3,6 @@ import * as moment from 'moment';
 import * as Periods from '@/constants/periods';
 import {
   isValidFuelTech,
-  isImports,
   isLoads } from '@/domains/graphs';
 import { formatNumberForDisplay } from './formatter';
 import { getStartEndDates } from './data-helpers';
@@ -74,7 +73,7 @@ function getChartConfig(config, isPower, periods) {
         { period: 'hh', format: ' JJ:NN' },
         { period: 'DD', format: ' EEE\n D MMM' },
         { period: 'WW', format: ' EEE\n D MMM' },
-        { period: 'MM', format: ' EEE\n D MMM' },
+        { period: 'MM', format: ' MMM\n YY' },
         { period: 'YYYY', format: ' YYYY' },
       ],
     },
@@ -118,27 +117,21 @@ function getFieldMappings(keys) {
 /**
  * amCharts Stock graphs
  */
-function getStockGraphs(domains, keys, graphType, unit) {
+function getStockGraphs(domains, keys, graphType, unit, disabledSeries) {
   const graphs = [];
-
-  function hideNegativeAlphas(key) {
-    return isLoads(key) || isImports(key);
-  }
 
   keys.forEach((ftKey) => {
     if (isValidFuelTech(ftKey)) {
       const colour = domains[ftKey].colour;
-      let negativeFillAlphas = 0.8;
+      const negativeFillAlphas = 0.8;
       const fillAlphas = 0.8;
       const fillColors = colour;
       const lineAlpha = 0;
       const lineThickness = 1;
       const lineColor = colour;
       const type = graphType || 'line';
-
-      if (graphType !== 'step' && hideNegativeAlphas(ftKey)) {
-        negativeFillAlphas = 0;
-      }
+      const hidden = disabledSeries.find(d => d === ftKey);
+      const periodValue = graphType === 'step' ? 'Sum' : 'Average';
 
       const graph = {
         id: ftKey,
@@ -152,15 +145,18 @@ function getStockGraphs(domains, keys, graphType, unit) {
         lineThickness,
         lineColor,
         useDataSetColors: false,
+        connect: true,
+        hidden,
         columnWidth: 0.8,
         showBalloon: false,
-        periodValue: 'Average',
+        periodValue,
         balloonFunction: (item) => {
           let balloonTxt = '';
 
           if (!isLoads(graph.id) && item.values.value > 0) {
             const precision = graphType === 'step' ? '0,0.0' : '0,0';
-            const value = formatNumberForDisplay(item.dataContext[`${graph.id}Average`], precision);
+            const valueType = graphType === 'step' ? 'Sum' : 'Average';
+            const value = formatNumberForDisplay(item.dataContext[`${graph.id}${valueType}`], precision);
             const ftLabel = domains[graph.id].label;
             const displayValue = `${value} ${unit}`;
 

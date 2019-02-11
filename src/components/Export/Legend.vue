@@ -1,11 +1,29 @@
 <template>
   <section>
-    <div class="legend-item" v-for="row in rangeSummary.sourcesData" :key="row.id">
+    <div 
+      class="legend-item"
+      v-for="row in rangeSummary.sourcesData"
+      :key="row.id"
+      v-show="!isDisabled(row.id)"
+    >
       <span class="source-colour" :style="{ backgroundColor: row.colour }"></span>
       <div class="source-label">
         {{row.label}}
         <em>
-          {{ getContribution(row.range.power, rangeSummary.totalGrossPower) | formatNumber }}<span v-if="hasValue(getContribution(row.range.power, rangeSummary.totalGrossPower))">%</span>
+          {{ getContribution(row.range.power, rangeSummaryTotal) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(row.range.power, rangeSummaryTotal))">%</span>
+        </em>
+      </div>
+    </div>
+    <div class="legend-item"
+      v-for="row in rangeSummary.loadsData" 
+      :key="row.id"
+      v-show="!isDisabled(row.id)"
+    >
+      <span class="source-colour" :style="{ backgroundColor: row.colour }"></span>
+      <div class="source-label">
+        {{row.label}}
+        <em>
+          {{ getContribution(row.range.power, rangeSummaryTotal) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(row.range.power, rangeSummaryTotal))">%</span>
         </em>
       </div>
     </div>
@@ -20,7 +38,17 @@ export default {
   computed: {
     ...mapGetters({
       rangeSummary: 'getRangeSummary',
+      contributionType: 'contributionType',
+      disabledSeries: 'disabledSeries',
     }),
+    isTypeGeneration() {
+      return this.contributionType === 'generation';
+    },
+    rangeSummaryTotal() {
+      return this.isTypeGeneration ?
+        this.rangeSummary.totalGrossPower :
+        this.rangeSummary.totalNetPower;
+    },
   },
   methods: {
     hasValue(value) {
@@ -28,6 +56,9 @@ export default {
     },
     getContribution(pointValue, total) {
       return (pointValue / total) * 100;
+    },
+    isDisabled(rowId) {
+      return this.disabledSeries.find(r => r === rowId);
     },
   },
   filters: {

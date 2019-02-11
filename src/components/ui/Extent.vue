@@ -32,14 +32,14 @@
         <td class="cell-value hoverable" 
           @mouseover="emitHover(getMinObject('renewables'))" 
           @mouseout="emitOut">
-          {{ getMinValue("renewables") | formatNumber }}%
+          {{ getMinValue("renewables") | formatNumber('0,0.0') }}%
           <br>
           <small class="date-value">{{ getMinDate("renewables") | formatDate(regionOffset) }}</small>
         </td>
         <td class="cell-value hoverable" 
           @mouseover="emitHover(getMaxObject('renewables'))" 
           @mouseout="emitOut">
-          {{ getMaxValue("renewables") | formatNumber }}%
+          {{ getMaxValue("renewables") | formatNumber('0,0.0') }}%
           <br>
           <small class="date-value">{{ getMaxDate("renewables") | formatDate(regionOffset) }}</small>
         </td>
@@ -68,14 +68,14 @@
         <td class="cell-value hoverable" 
           @mouseover="emitHover(getMinObject('renewables2'))" 
           @mouseout="emitOut">
-          {{ getMinValue("renewables2") | formatNumber }}%
+          {{ getMinValue("renewables2") | formatNumber('0,0.0') }}%
           <br>
           <small class="date-value">{{ getMinDate("renewables2") | formatDate(regionOffset) }}</small>
         </td>
         <td class="cell-value hoverable" 
           @mouseover="emitHover(getMaxObject('renewables2'))" 
           @mouseout="emitOut">
-          {{ getMaxValue("renewables2") | formatNumber }}%
+          {{ getMaxValue("renewables2") | formatNumber('0,0.0') }}%
           <br>
           <small class="date-value">{{ getMaxDate("renewables2") | formatDate(regionOffset) }}</small>
         </td>
@@ -161,7 +161,7 @@ export default {
   },
   filters: {
     formatNumber(value, format) {
-      return formatNumberForDisplay(value, format);
+      return value ? formatNumberForDisplay(value, format) : '';
     },
     formatDate(value, offset) {
       return formatDateForDisplay(value, offset);

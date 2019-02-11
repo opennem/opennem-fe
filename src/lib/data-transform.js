@@ -1,7 +1,7 @@
 /* eslint-disable */
 import * as moment from 'moment';
 import History from '@/models/History';
-import { isPrice, isTemperature, isImports, isLoads } from '@/domains/graphs'; 
+import { isPrice, isTemperature, isRooftopSolar, isImports, isLoads } from '@/domains/graphs'; 
 import { parseInterval, compareAndGetShortestInterval } from './duration-parser';
 
 function shouldInvertValue(id) {
@@ -21,9 +21,10 @@ function getKeysAndStartEndGenerationTime(domains, data) {
 
   Object.keys(domains).forEach((domain) => {
     const fuelTech = data.find(d => d.fuel_tech === domain);
-    const otherTypes = data.find(d => d.type === domain);
+    const priceOrTemperatureData = data.find(d => d.type === domain);
+    const fuelTechMarketValue = data.find(d => d.type === 'market_value' && d.id.includes(`fuel_tech.${domain}`));
 
-    if (fuelTech || otherTypes) {
+    if (fuelTech || priceOrTemperatureData || fuelTechMarketValue) {
       keys.push(domain);
 
       if (!endGenTime && fuelTech) {
@@ -49,7 +50,7 @@ function getKeysAndStartEndGenerationTime(domains, data) {
   };
 }
 
-export default function(domains, data) {
+export default function(domains, data, interpolate) {
   const keysAndGenTimes = getKeysAndStartEndGenerationTime(domains, data);
   const keys = keysAndGenTimes.keys;
   const genTimes = {
@@ -68,26 +69,36 @@ export default function(domains, data) {
     for (let i = 0; i < historyData.length; i += 1) {
       const now = moment(start).add(duration.value * i, duration.key);
       const d = shouldInvertValue(domain) ? -historyData[i] : historyData[i];
-      const nowISO = moment(now).toISOString();
+      const nowDate = now.date();
+      const nowMonth = now.month() + 1;
+      const nowYear = now.year();
+      const nowHour = ('0' + now.hour()).slice(-2);
+      const nowMin = ('0' + now.minute()).slice(-2);
+      const nowString = duration.key === 'm' ?
+        `${nowYear}-${nowMonth}-${nowDate} ${nowHour}:${nowMin}` :
+        `${nowYear}-${nowMonth}-${nowDate}`;
+      const nowFormat = duration.key === 'm' ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD'
+      const nowUnix = moment(nowString, nowFormat).unix();
 
-      if (!container[nowISO]) {
-        container[nowISO] = {};
+      if (!container[nowUnix]) {
+        container[nowUnix] = {};
 
         availableKeys.forEach((key) => {
-          container[nowISO][key] = null;
+          container[nowUnix][key] = null;
         });
       }
-      container[nowISO][domain] = d;
+      container[nowUnix][domain] = d;
 
       if (isPrice(domain)) {
-        container[nowISO]['pricePos'] = d > 300 ? d : 0.001;
-        container[nowISO]['priceNeg'] = d < 0 ? -d : 0.001;
+        container[nowUnix]['pricePos'] = d > 300 ? d : 0.001;
+        container[nowUnix]['priceNeg'] = d < 0 ? -d : 0.001;
       }
     }
   }
 
   Object.keys(domains).forEach((domain) => {
     const fuelTechData = data.find(d => d.fuel_tech === domain);
+    const fuelTechMarketValue = data.find(d => d.type === 'market_value' && d.id.includes(`fuel_tech.${domain}`));
     const priceOrTemperatureData = data.find(d => d.type === domain);
     let history = null;
 
@@ -99,9 +110,11 @@ export default function(domains, data) {
       }
     } else if (priceOrTemperatureData) {
       history = new History(priceOrTemperatureData.history);
+    } else if (fuelTechMarketValue) {
+      history = new History(fuelTechMarketValue.history);
     }
 
-    if (fuelTechData || priceOrTemperatureData) {
+    if (fuelTechData || priceOrTemperatureData || fuelTechMarketValue) {
       const duration = parseInterval(history.interval);
       allIntervals[domain] = duration;
 
@@ -127,9 +140,15 @@ export default function(domains, data) {
   // Find out the series that has an interval longer than the shortest interval
   Object.keys(allIntervals).forEach((domain) => {
     if (!compareAndGetShortestInterval(allIntervals[domain], shortestInterval, false)) {
+      let interpolation = 'step'; // none, step, linear
+      if (isRooftopSolar(domain)) interpolation = 'linear';
+      if (isTemperature(domain)) interpolation = 'none';
+
       longerIntervalSeries.push({
         key: domain,
+        interpolation,
         currentValue: null,
+        startIndex: -1,
       });
     }
   });
@@ -137,8 +156,7 @@ export default function(domains, data) {
   // Create array based on date maps
   Object.keys(container).forEach((dateKey) => {
     const obj = Object.assign({}, container[dateKey]);
-    obj.date = moment(dateKey).toDate();
-
+    obj.date = moment.unix(dateKey).toDate();
     newChartData.push(obj);
   });
 
@@ -147,23 +165,46 @@ export default function(domains, data) {
 
   // fill in gaps for series that has longer intervals
   // also populate pricePos and priceNeg for log charts
-  newChartData.forEach((d) => {
-    longerIntervalSeries.forEach((series) => {
-
-      if (d[series.key] !== null) {
-        series.currentValue = d[series.key];
-      } else if (d[series.key] === null) {
-        if (!isTemperature(series.key)) {
-          d[series.key] = series.currentValue;
+  if (interpolate) {
+    newChartData.forEach((d, i) => {
+      longerIntervalSeries.forEach((series) => {
+        if (d[series.key] !== null) {
+          
+          if (series.interpolation === 'linear') {
+            if (series.startIndex === -1) {
+              series.startIndex = i;
+            } else {
+              const count = i - series.startIndex;
+              const addValue = (d[series.key] - series.currentValue) / count;
+              for (let x = series.startIndex + 1; x <= i; x += 1) {
+                newChartData[x][series.key] = series.currentValue + addValue;
+                series.currentValue = newChartData[x][series.key];
+              }
+              series.startIndex = i;
+            }
+          }
+  
+          series.currentValue = d[series.key];
+  
+        } else if (d[series.key] === null) {
+  
+          if (series.interpolation === 'step') {
+            d[series.key] = series.currentValue;
+          }
+  
         }
-      }
+      });
     });
-  });
+  }
 
-  // only show data within the start and end range of the 5 min FT
-  const updatedChartData = newChartData.filter(d =>
-    moment(d.date).isSameOrAfter(moment(genTimes.start)) &&
-    moment(d.date).isSameOrBefore(moment(genTimes.end)));
-
+  // only show data within the start and end range of the 5 min FT Or before today
+  const today = moment();
+  const genStart = moment(genTimes.start);
+  const genEnd = moment(genTimes.end).subtract(shortestInterval.value, shortestInterval.key);
+  const updatedChartData = (shortestInterval.key === 'm') ? 
+    newChartData.filter(d =>
+      moment(d.date).isSameOrAfter(genStart) && moment(d.date).isSameOrBefore(genEnd)) :
+    newChartData.filter(d => moment(d.date).isSameOrBefore(today));
+  
   return updatedChartData.slice(0);
 }

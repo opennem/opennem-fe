@@ -5,6 +5,9 @@ import analytics from '.';
 
 Vue.use(VueAnalytics, {
   id: 'UA-113446419-2',
+  debug: {
+    sendHitTask: false,
+  },
   router,
 });
 

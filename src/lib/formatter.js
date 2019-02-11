@@ -41,16 +41,24 @@ function formatDateForDisplay(date) {
   return returnedDate;
 }
 
-function formatDateForExport(date) {
-  return moment(date).format('YYYYMMDD');
+function formatDateForExport(date, formatString) {
+  let format = 'YYYYMMDD';
+  if (formatString) {
+    format = formatString;
+  }
+  return moment(date).format(format);
 }
 
 function formatNumberForDisplay(number, precision) {
   const formatter = precision || '0,0';
-  const formatted =
+  let formatted =
     number === 0 || isNaN(number)
       ? '-'
       : numeral(number).format(formatter);
+
+  if (number && Math.abs(number) < 0.1) {
+    formatted = number.toFixed(2);
+  }
   return formatted;
 }
 
