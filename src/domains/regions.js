@@ -39,6 +39,12 @@ function getRegionLabel(id) {
   return region ? region.label : '';
 }
 
+function getRegionLabelByCode(code) {
+  const id = code.slice(0, code.length - 1);
+  const region = RegionDomains.find(r => r.id === id.toLowerCase());
+  return region ? region.label : code;
+}
+
 function getRegionId(label) {
   const region = RegionDomains.find(r => r.label.toLowerCase() === label.toLowerCase());
   return region ? region.id : '';
@@ -54,4 +60,5 @@ export {
   getRegionLabel,
   getRegionId,
   getRegionOffset,
+  getRegionLabelByCode,
 };

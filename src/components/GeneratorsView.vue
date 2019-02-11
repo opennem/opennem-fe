@@ -5,6 +5,8 @@
   <input class="input" type="text" placeholder="Filter" v-model="filterString">
   <generator-grid 
     :generatorsData="filteredGenerators"
+    :sortBy="sortBy"
+    :orderBy="orderBy"
     @orderBy="handleOrderChange"
   />
 </div>
@@ -31,7 +33,7 @@ export default {
       map: null,
       generatorsFeature: null,
       emissionsFeature: null,
-      sortBy: '',
+      sortBy: 'stationName',
       orderBy: 'asc', // or desc
     };
   },
