@@ -1,5 +1,5 @@
 <template>
-  <table class="table is-striped is-hoverable is-narrow">
+  <table class="table is-hoverable is-narrow is-fullwidth">
     <thead>
       <tr>
         <th
@@ -18,19 +18,33 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(generator, index) in generatorsData" :key="index" @click="handleRowClick(generator)">
-        <td>{{ generator.stationName }}</td>
-        <td style="width: 200px;">{{ getRegionLabel(generator.regionId) }}</td>
-        <td style="width: 200px;">
+      <tr
+        v-for="(generator, index) in generatorsData"
+        :key="index"
+        :class="{ 'is-selected': isSelected(generator.stationName) }"
+        @click="handleRowClick(generator)"
+      >
+        <td style="width: 40%;">{{ generator.stationName }}</td>
+        <td>{{ getRegionLabel(generator.regionId) }}</td>
+        <td>
           <span v-for="(ft, ftIndex) in generator.fuelTechs" :key="ftIndex">
             {{ getFtLabel(ft) }}
           </span>
         </td>
         <td class="has-text-right">{{ generator.generatorCap | formatNumber }}</td>
-        <td class="has-text-right" style="width: 200px;">{{ generator.emissionsYtd | formatNumber }}</td>
+        <td class="has-text-right">{{ generator.emissionsYtd | formatNumber }}</td>
         <!-- <td>{{ generator.unitNum }}</td> -->
       </tr>
     </tbody>
+    <tfoot>
+      <tr>
+        <td>{{ totalGenerators }}</td>
+        <td></td>
+        <td></td>
+        <td class="has-text-right">{{ totalCap | formatNumber }}</td>
+        <td class="has-text-right">{{ totalEmissions | formatNumber }}</td>
+      </tr>
+    </tfoot>
   </table>
 </template>
 
@@ -71,16 +85,21 @@ export default {
   components: {
     FontAwesomeIcon,
   },
+
   props: {
     generatorsData: Array,
+    selectedGenerator: Object,
     sortBy: String,
     orderBy: String,
   },
+
   data() {
     return {
       colHeaders,
+      selected: null,
     };
   },
+
   computed: {
     iconSortUp() {
       return faSortUp;
@@ -88,12 +107,37 @@ export default {
     iconSortDown() {
       return faSortDown;
     },
+    totalCap() {
+      let total = 0;
+      this.generatorsData.forEach((d) => {
+        total += d.generatorCap;
+      });
+      return total;
+    },
+    totalEmissions() {
+      let total = 0;
+      this.generatorsData.forEach((d) => {
+        total += d.emissionsYtd;
+      });
+      return total;
+    },
+    totalGenerators() {
+      return this.generatorsData.length;
+    },
   },
+
+  watch: {
+    selectedGenerator(selected) {
+      this.selected = selected;
+    },
+  },
+
   methods: {
     sort(stationName) {
       this.$emit('orderChanged', stationName);
     },
     handleRowClick(generator) {
+      this.selected = generator;
       this.$emit('generatorSelected', generator, true);
     },
     shouldRightAligned(colHeaderId) {
@@ -118,17 +162,33 @@ export default {
     getRegionLabel(code) {
       return getRegionLabelByCode(code);
     },
+    isSelected(stationName) {
+      if (this.selected) {
+        return stationName === this.selected.stationName;
+      }
+      return false;
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-table {
-  width: 100%;
-  margin-bottom: 3rem;
+@import "../../styles/variables.scss";
 
+table {
+  margin-bottom: 3rem;
+  font-size: 0.9em;
   th {
+    font-family: $header-font-family;
     white-space: nowrap;
+    background: #eee;
+  }
+  td {
+    font-size: 0.9em;
+  }
+  tfoot td {
+    border-top: 1px solid #000;
+    font-weight: bold;
   }
 }
 </style>
