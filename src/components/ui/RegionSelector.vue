@@ -39,6 +39,7 @@ import _ from 'lodash';
 import { mixin as clickaway } from 'vue-clickaway';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import { faAngleDown } from '@fortawesome/fontawesome-pro-light';
+import EventBus from '@/lib/event-bus';
 import { getAllRegions, getRegionLabel } from '@/domains/regions';
 
 export default {
@@ -80,6 +81,8 @@ export default {
       const view = this.isEnergyRoute ? 'energy' : 'generators';
       this.$store.dispatch('region', `${regionId}1`);
       this.$router.push({ name: `region-${view}`, params: { region: regionId } });
+      EventBus.$emit('generators.filter.clear');
+      window.scrollTo(0, 0);
     },
     isCurrentSelection(id) {
       return this.$route.params.region === id;
@@ -88,6 +91,7 @@ export default {
       const view = this.isEnergyRoute ? 'energy' : 'generators';
       this.$store.dispatch('region', 'nem');
       this.$router.push({ name: `home-${view}` });
+      EventBus.$emit('generators.filter.clear');
     },
   },
 };
