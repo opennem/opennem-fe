@@ -1,8 +1,9 @@
 <template>
-  <div id="map"></div>
+<div id="map"></div>
 </template>
 
 <script>
+import _ from 'lodash';
 import L from 'leaflet';
 
 const MapAttribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.';
@@ -56,7 +57,7 @@ export default {
           this.selectedMarker = L.marker([lat, lng], { icon: this.marker });
           this.selectedMarker.addTo(this.map);
 
-          if (this.shouldZoomWhenSelected) this.map.zoomIn(6);
+          if (this.shouldZoomWhenSelected) this.map.setZoom(10);
           this.map.panTo(loc);
         }
       } else {
@@ -72,7 +73,7 @@ export default {
 
   methods: {
     setup() {
-      this.map = L.map('map', {attributionControl: false}).setView([-29.186936, 143.633537], 4);
+      this.map = L.map('map', { attributionControl: false }).setView([-29.186936, 143.633537], 4);
       this.generatorsFeature = L.featureGroup();
       this.emissionsFeature = L.featureGroup();
       this.tileLayer.addTo(this.map);
@@ -80,7 +81,7 @@ export default {
       const attr = L.control.attribution({
         position: 'bottomleft',
         prefix: false,
-      })
+      });
       attr.addAttribution(MapAttribution);
 
       this.map.addControl(attr);
@@ -113,10 +114,10 @@ export default {
               fillColor: '#C74523',
               fillOpacity: 0.3,
               stroke: 2,
-              radius: 1000,
+              radius: 2000,
             })
             .on({
-              click: function() {
+              click() {
                 self.handleMapCircleClicked(d);
               },
             })
@@ -133,16 +134,33 @@ export default {
       });
 
       this.map.addLayer(this.generatorsFeature);
-      this.map.fitBounds(this.generatorsFeature.getBounds());
+
+      const bounds = this.generatorsFeature.getBounds();
+      if (!_.isEmpty(bounds)) {
+        this.map.fitBounds(this.generatorsFeature.getBounds());
+      }
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
+@import "../../../node_modules/bulma/sass/utilities/mixins.sass";
+
 #map {
   width: 100%;
-  height: 400px;
+  height: 200px;
   z-index: 1;
+  border-radius: 6px;
+  box-shadow: 0 0 20px rgba(0,0,0,.05);
+  opacity: 0.95;
+
+  @include tablet {
+    height: 350px;
+  }
+
+  @include desktop {
+    height: 400px;
+  }
 }
 </style>

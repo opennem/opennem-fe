@@ -27,7 +27,7 @@
       <table class="table is-narrow is-fullwidth">
         <thead>
           <tr>
-            <th>Units</th>
+            <th>Unit</th>
             <th>First Run</th>
             <th class="has-text-right">Capacity</th>
           </tr>
@@ -50,7 +50,7 @@ import { getRegionLabelByCode } from '@/domains/regions';
 
 export default {
   props: {
-    generator: Object
+    generator: Object,
   },
 
   computed: {
@@ -78,18 +78,28 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../../styles/variables.scss";
+
 .generator-detail {
-  margin-left: 10px;
+  // margin-left: 10px;
+  margin-top: 10px;
+  // margin-bottom: 10px;
+  border-radius: 6px;
+  box-shadow: 0 0 20px rgba(0,0,0,.05);
 
   .message-header {
+    border-radius: 6px 6px 0 0;
     h2 {
-      font-size: 1.2em;
+      font-family: $header-font-family;
+      font-size: 1.5em;
     }
   }
 
   .message-body {
+    border-radius: 0 0 6px 6px;
     height: 100%;
     padding: 0;
+    border: none;
   }
 
   .generator-info {

@@ -1,47 +1,52 @@
 <template>
 <div>
-  <!-- <input 
-    class="input is-rounded filter-station-input"
-    type="text"
-    placeholder="Filter By Station Name"
-    v-model="filterString"
-  /> -->
-
-  <div class="columns is-gapless">
-    <div class="column"
-      :class="{
-        'is-three-quarters': hasSelectedGenerator,
-        'is-full': !hasSelectedGenerator,
-      }">
-      <generator-map
+  <div class="columns is-gapless map-detail-container">
+    
+    <div class="column is-two-thirds">
+      <generator-grid 
         :generatorsData="filteredGenerators"
         :selectedGenerator="selectedGenerator"
-        :shouldZoomWhenSelected="shouldZoomWhenSelected"
+        :sortBy="sortBy"
+        :orderBy="orderBy"
+        @orderChanged="handleOrderChange"
         @generatorSelected="handleGeneratorSelect"
       />
     </div>
-    <div class="column" v-if="hasSelectedGenerator">
-      <generator-detail
-        :generator="selectedGenerator"
-        @closeGeneratorDetail="handleCloseDetail"
-      />
+
+    <div class="column">
+      <div class="sticky-detail">
+        <generator-map
+          :generatorsData="filteredGenerators"
+          :selectedGenerator="selectedGenerator"
+          :shouldZoomWhenSelected="shouldZoomWhenSelected"
+          @generatorSelected="handleGeneratorSelect"
+        />
+        <generator-detail
+          :generator="selectedGenerator"
+          @closeGeneratorDetail="handleCloseDetail"
+        />
+      </div>
     </div>
+
   </div>
   
-  <generator-grid 
-    :generatorsData="filteredGenerators"
-    :sortBy="sortBy"
-    :orderBy="orderBy"
-    @orderChanged="handleOrderChange"
-    @generatorSelected="handleGeneratorSelect"
-  />
+  <!-- <div class="grid-container">
+    <generator-grid 
+      :generatorsData="filteredGenerators"
+      :selectedGenerator="selectedGenerator"
+      :sortBy="sortBy"
+      :orderBy="orderBy"
+      @orderChanged="handleOrderChange"
+      @generatorSelected="handleGeneratorSelect"
+    />
+  </div> -->
 </div>
 </template>
 
 <script>
 import _ from 'lodash';
 import { mapGetters } from 'vuex';
-import { getRegionLocationById } from '@/domains/regions';
+import EventBus from '@/lib/event-bus';
 import GeneratorGrid from '@/components/Generator/Grid';
 import GeneratorMap from '@/components/Generator/Map';
 import GeneratorDetail from '@/components/Generator/Detail';
@@ -88,7 +93,11 @@ export default {
     },
   },
   mounted() {
+    EventBus.$on('generators.name.filter', this.setFilterString);
     this.$store.dispatch('fetchGeneratorsData');
+  },
+  beforeDestroy() {
+    EventBus.$off('generators.name.filter');
   },
   methods: {
     toggleOrder(order) {
@@ -109,15 +118,40 @@ export default {
     handleCloseDetail() {
       this.selectedGenerator = null;
     },
+    setFilterString(string) {
+      this.filterString = string;
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.filter-station-input {
-  width: 20vw;
-  position: sticky;
-  right: 10px;
-  z-index: 99;
+@import "../../node_modules/bulma/sass/utilities/mixins.sass";
+
+.map-detail-container {
+  @include desktop {
+    position: sticky;
+    top: 60px;
+  }
+}
+.grid-container {
+  @include desktop {
+    padding: 0 40px;
+  }
+}
+.sticky-detail {
+  margin-left: 10px;
+
+  @include tablet {
+    position: sticky;
+    top: 60px;
+  }
+  @include mobile {
+    position: fixed;
+    bottom: 20px;
+    left: 10px;
+    right: 10px;
+    z-index: 99;
+  }
 }
 </style>
