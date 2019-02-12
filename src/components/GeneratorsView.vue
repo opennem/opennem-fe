@@ -1,15 +1,39 @@
 <template>
 <div>
-  <generator-map
-    :generatorsData="filteredGenerators"
-    :panTo="panTo"
-  />
-  <input class="input" type="text" placeholder="Filter" v-model="filterString">
+  <!-- <input 
+    class="input is-rounded filter-station-input"
+    type="text"
+    placeholder="Filter By Station Name"
+    v-model="filterString"
+  /> -->
+
+  <div class="columns is-gapless">
+    <div class="column"
+      :class="{
+        'is-three-quarters': hasSelectedGenerator,
+        'is-full': !hasSelectedGenerator,
+      }">
+      <generator-map
+        :generatorsData="filteredGenerators"
+        :selectedGenerator="selectedGenerator"
+        :shouldZoomWhenSelected="shouldZoomWhenSelected"
+        @generatorSelected="handleGeneratorSelect"
+      />
+    </div>
+    <div class="column" v-if="hasSelectedGenerator">
+      <generator-detail
+        :generator="selectedGenerator"
+        @closeGeneratorDetail="handleCloseDetail"
+      />
+    </div>
+  </div>
+  
   <generator-grid 
     :generatorsData="filteredGenerators"
     :sortBy="sortBy"
     :orderBy="orderBy"
-    @orderBy="handleOrderChange"
+    @orderChanged="handleOrderChange"
+    @generatorSelected="handleGeneratorSelect"
   />
 </div>
 </template>
@@ -20,6 +44,7 @@ import { mapGetters } from 'vuex';
 import { getRegionLocationById } from '@/domains/regions';
 import GeneratorGrid from '@/components/Generator/Grid';
 import GeneratorMap from '@/components/Generator/Map';
+import GeneratorDetail from '@/components/Generator/Detail';
 
 const ASCENDING = 'asc';
 const DESCENDING = 'desc';
@@ -28,6 +53,7 @@ export default {
   components: {
     GeneratorGrid,
     GeneratorMap,
+    GeneratorDetail,
   },
   data() {
     return {
@@ -35,6 +61,8 @@ export default {
       sortBy: 'stationName',
       orderBy: ASCENDING,
       panTo: null,
+      selectedGenerator: null,
+      shouldZoomWhenSelected: true,
     };
   },
   computed: {
@@ -55,6 +83,9 @@ export default {
         g.regionId.toLowerCase().includes(this.regionId),
       );
     },
+    hasSelectedGenerator() {
+      return this.selectedGenerator;
+    },
   },
   mounted() {
     this.$store.dispatch('fetchGeneratorsData');
@@ -71,6 +102,22 @@ export default {
       }
       this.sortBy = orderName;
     },
+    handleGeneratorSelect(generator, shouldZoom) {
+      this.selectedGenerator = generator;
+      this.shouldZoomWhenSelected = shouldZoom;
+    },
+    handleCloseDetail() {
+      this.selectedGenerator = null;
+    },
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.filter-station-input {
+  width: 20vw;
+  position: sticky;
+  right: 10px;
+  z-index: 99;
+}
+</style>

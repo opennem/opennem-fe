@@ -1,0 +1,107 @@
+<template>
+  <div class="generator-detail message is-primary is-small" v-if="hasGenerator">
+    <div class="message-header">
+      <h2>{{ generator.stationName }}</h2>
+      <button class="delete" aria-label="Close generator detail" @click="handleCloseDetailButton"></button>
+    </div>
+    <div class="message-body">
+      <div class="generator-info">
+        <div>
+          <h5>Fuel Tech:
+            <span v-for="(ft, ftIndex) in generator.fuelTechs" :key="ftIndex">
+              {{ getFtLabel(ft) }}
+            </span>
+          </h5>
+        </div>
+        <div>
+          <h5>Emissions (YTD): <span>{{ generator.emissionsYtd | formatNumber }}</span></h5>
+        </div>
+        <div>
+          <h5>Total Capacity: <span>{{ generator.generatorCap | formatNumber }}</span></h5>
+        </div>
+        <div>
+          <h5>Region: <span>{{ getRegionLabel(generator.regionId) }}</span></h5>
+        </div>
+      </div>
+
+      <table class="table is-narrow is-fullwidth">
+        <thead>
+          <tr>
+            <th>Units</th>
+            <th>First Run</th>
+            <th class="has-text-right">Capacity</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(unit, index) in generator.units" :key="index">
+            <td>{{ unit.name }}</td>
+            <td>{{ unit.firstRun }}</td>
+            <td class="has-text-right">{{ unit.regCap | formatNumber }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</template>
+
+<script>
+import { GraphDomains } from '@/domains/graphs';
+import { getRegionLabelByCode } from '@/domains/regions';
+
+export default {
+  props: {
+    generator: Object
+  },
+
+  computed: {
+    hasGenerator() {
+      return this.generator;
+    },
+  },
+
+  methods: {
+    getFtLabel(ft) {
+      const ftObj = GraphDomains[ft];
+      if (ftObj) {
+        return ftObj.label;
+      }
+      return ft;
+    },
+    getRegionLabel(code) {
+      return getRegionLabelByCode(code);
+    },
+    handleCloseDetailButton() {
+      this.$emit('closeGeneratorDetail');
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.generator-detail {
+  margin-left: 10px;
+
+  .message-header {
+    h2 {
+      font-size: 1.2em;
+    }
+  }
+
+  .message-body {
+    height: 100%;
+    padding: 0;
+  }
+
+  .generator-info {
+    padding: 10px;
+
+    span {
+      font-weight: bold;
+    }
+  }
+  .table {
+    background: transparent;
+    margin-bottom: 0;
+  }
+}
+</style>

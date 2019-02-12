@@ -18,7 +18,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(generator, index) in generatorsData" :key="index">
+      <tr v-for="(generator, index) in generatorsData" :key="index" @click="handleRowClick(generator)">
         <td>{{ generator.stationName }}</td>
         <td style="width: 200px;">{{ getRegionLabel(generator.regionId) }}</td>
         <td style="width: 200px;">
@@ -91,7 +91,10 @@ export default {
   },
   methods: {
     sort(stationName) {
-      this.$emit('orderBy', stationName);
+      this.$emit('orderChanged', stationName);
+    },
+    handleRowClick(generator) {
+      this.$emit('generatorSelected', generator, true);
     },
     shouldRightAligned(colHeaderId) {
       return (colHeaderId === 'generatorCap' || colHeaderId === 'emissionsYtd');
