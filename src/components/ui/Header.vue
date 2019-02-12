@@ -9,7 +9,7 @@
         <view-selector />
       </div>
 
-      <div class="level-right">
+      <div class="level-right" v-show="isEnergyRoute">
         <date-selector />
         <export-modal />
       </div>
@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import _ from 'lodash';
 import { mapGetters } from 'vuex';
 import UiWarning from '@/components/ui/Warning';
 import RegionSelector from './RegionSelector';
@@ -40,6 +41,9 @@ export default {
     ...mapGetters({
       isExportPng: 'isExportPng',
     }),
+    isEnergyRoute() {
+      return _.includes(this.$route.name, 'energy');
+    },
   },
 };
 </script>
