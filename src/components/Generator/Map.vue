@@ -154,12 +154,16 @@ export default {
   border-radius: 6px;
   box-shadow: 0 0 20px rgba(0,0,0,.05);
   opacity: 0.95;
-
+  
   @include tablet {
-    height: 350px;
+    height: 300px;
   }
 
   @include desktop {
+    height: 350px;
+  }
+
+  @include fullhd {
     height: 400px;
   }
 }
