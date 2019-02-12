@@ -159,6 +159,7 @@ export default {
     },
     regionId(id) {
       this.$store.dispatch('setExportRegion', getRegionLabel(id));
+      this.fetch();
     },
     currentRange() {
       this.fetch();
@@ -192,9 +193,8 @@ export default {
       const prependUrl = `${visType}${interval}`;
 
       let urls = this.chartTypeTransition ?
-        this.yearsWeeks.map(w => `${prependUrl}/${this.region}1${w}.json`) :
-        [`${prependUrl}/${this.region}1${extension}.json`];
-
+        this.yearsWeeks.map(w => `${prependUrl}/${this.regionId}1${w}.json`) :
+        [`${prependUrl}/${this.regionId}1${extension}.json`];
       if (this.nemUrls.length > 0) {
         const newUrls = this.nemUrls.map((u) => {
           if (u.indexOf('testing') === 0) {

@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import _ from 'lodash';
 import { mixin as clickaway } from 'vue-clickaway';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import { faAngleDown } from '@fortawesome/fontawesome-pro-light';
@@ -63,6 +64,9 @@ export default {
     iconDown() {
       return faAngleDown;
     },
+    isEnergyRoute() {
+      return _.includes(this.$route.name, 'energy');
+    },
   },
   methods: {
     handleClick() {
@@ -73,15 +77,17 @@ export default {
       this.dropdownActive = false;
     },
     handleRegionChange(regionId) {
+      const view = this.isEnergyRoute ? 'energy' : 'generators';
       this.$store.dispatch('region', `${regionId}1`);
-      this.$router.push({ name: 'regions', params: { region: regionId } });
+      this.$router.push({ name: `region-${view}`, params: { region: regionId } });
     },
     isCurrentSelection(id) {
       return this.$route.params.region === id;
     },
     goHome() {
+      const view = this.isEnergyRoute ? 'energy' : 'generators';
       this.$store.dispatch('region', 'nem');
-      this.$router.push({ name: 'home' });
+      this.$router.push({ name: `home-${view}` });
     },
   },
 };

@@ -46,9 +46,13 @@ export default {
       const sortBy = this.sortBy;
       return _.orderBy(data, [sortBy], [this.orderBy]);
     },
+    regionId() {
+      return this.$route.params.region || '';
+    },
     filteredGenerators() {
       return this.generatorsData.filter(g =>
-        g.stationName.toLowerCase().includes(this.filterString.toLowerCase()),
+        g.stationName.toLowerCase().includes(this.filterString.toLowerCase()) &&
+        g.regionId.toLowerCase().includes(this.regionId),
       );
     },
   },

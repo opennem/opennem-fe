@@ -12,7 +12,7 @@
       <div v-if="dropdownActive" class="dropdown-menu">
         <div class="dropdown-content">
           <a class="dropdown-item"
-            @click="goHome()"
+            @click="goToEnergyView()"
             :class="{ selected: isEnergy }"
           >
             Energy
@@ -48,10 +48,13 @@ export default {
   computed: {
     isEnergy() {
       const routeName = this.$route.name;
-      return routeName === 'home-energy';
+      return routeName === 'home-energy' || routeName === 'region-energy';
     },
     iconDown() {
       return faAngleDown;
+    },
+    routeParentName() {
+      return this.$route.matched[0].name;
     },
   },
   methods: {
@@ -62,19 +65,14 @@ export default {
     onClickAway() {
       this.dropdownActive = false;
     },
-    handleRegionChange() {
-      // this.$store.dispatch('region', `${regionId}1`);
-      // this.$router.push({ name: 'regions', params: { region: regionId } });
-    },
     isCurrentSelection(id) {
       return this.$route.params.region === id;
     },
-    goHome() {
-      this.$store.dispatch('region', 'nem');
-      this.$router.push({ name: 'home-energy' });
+    goToEnergyView() {
+      this.$router.push({ name: `${this.routeParentName}-energy` });
     },
     goToGeneratorsView() {
-      this.$router.push({ name: 'home-generators' });
+      this.$router.push({ name: `${this.routeParentName}-generators` });
     },
   },
 };

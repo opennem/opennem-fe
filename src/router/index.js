@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import HomeView from '@/components/HomeView';
+import RegionView from '@/components/RegionView';
 import EnergyView from '@/components/EnergyView';
 import GeneratorsView from '@/components/GeneratorsView';
 import Region from '@/components/Region';
@@ -38,8 +39,21 @@ export default new Router({
     {
       path: '/regions/:region',
       props: true,
-      name: 'regions',
-      component: Region,
+      name: 'region',
+      component: RegionView,
+      redirect: 'regions/:region/energy',
+      children: [
+        {
+          path: 'energy',
+          name: 'region-energy',
+          component: Region,
+        },
+        {
+          path: 'generators',
+          name: 'region-generators',
+          component: GeneratorsView,
+        },
+      ],
     },
     {
       path: '/widget/:size',
