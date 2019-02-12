@@ -5,6 +5,8 @@
 <script>
 import L from 'leaflet';
 
+const MapAttribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.';
+
 export default {
   props: {
     generatorsData: Array,
@@ -13,9 +15,7 @@ export default {
 
   data() {
     return {
-      tileLayer: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.{ext}', {
-        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        subdomains: 'abcd',
+      tileLayer: L.tileLayer('//stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}', {
         minZoom: 3,
         maxZoom: 10,
         ext: 'png',
@@ -43,11 +43,19 @@ export default {
 
   methods: {
     setup() {
-      this.map = L.map('map').setView([-29.186936, 143.633537], 4);
+      this.map = L.map('map', {attributionControl: false}).setView([-29.186936, 143.633537], 4);
       this.generatorsFeature = L.featureGroup();
       this.emissionsFeature = L.featureGroup();
-
       this.tileLayer.addTo(this.map);
+
+      const attr = L.control.attribution({
+        position: 'bottomleft',
+        prefix: false,
+      })
+      attr.addAttribution(MapAttribution);
+
+      this.map.addControl(attr);
+
       // this.generatorsFeature.addTo(this.map);
       // this.emissionsFeature.addTo(this.map);
     },
