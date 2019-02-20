@@ -24,7 +24,16 @@
         :class="{ 'is-selected': isSelected(generator.stationName) }"
         @click="handleRowClick(generator)"
       >
-        <td style="width: 40%;">{{ generator.stationName }}</td>
+        <td style="width: 40%;">
+          <div style="display: flex">
+            <span class="source-colour"
+              :style="{ 
+                backgroundColor: getColour(generator.fuelTechs)
+              }" />
+            <span class="station-name">{{ generator.stationName }}</span>
+          </div>
+          
+        </td>
         <td>{{ getRegionLabel(generator.regionId) }}</td>
         <td>
           <span v-for="(ft, ftIndex) in generator.fuelTechs" :key="ftIndex">
@@ -162,6 +171,13 @@ export default {
     getRegionLabel(code) {
       return getRegionLabelByCode(code);
     },
+    getColour(fuelTechs) {
+      const ftObj = fuelTechs[0] ? GraphDomains[fuelTechs[0]] : null;
+      if (ftObj) {
+        return ftObj.colour;
+      }
+      return 'transparent';
+    },
     isSelected(stationName) {
       if (this.selected) {
         return stationName === this.selected.stationName;
@@ -189,6 +205,20 @@ table {
   tfoot td {
     border-top: 1px solid #000;
     font-weight: bold;
+  }
+
+  .source-colour {
+    width: 17px;
+    height: 17px;
+    background-color: rgba(255,255,255,.8);
+    display: inline-block;
+    vertical-align: text-bottom;
+    margin-right: 0.1rem;
+  }
+  .station-name {
+    margin-left: 2px;
+    display: block; 
+    width: 95%;
   }
 }
 </style>
