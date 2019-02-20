@@ -203,6 +203,8 @@ table {
     display: inline-block;
     vertical-align: text-bottom;
     margin-right: 0.1rem;
+    position: relative;
+    top: 1px;
   }
   .station-name {
     margin-left: 2px;
