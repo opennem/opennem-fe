@@ -5,6 +5,7 @@
 <script>
 import _ from 'lodash';
 import L from 'leaflet';
+import { scaleLinear } from 'd3-scale';
 import { GraphDomains } from '@/domains/graphs';
 
 const MapAttribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.';
@@ -114,16 +115,16 @@ export default {
         if (location) {
           const lat = location.latitude;
           const lng = location.longitude;
-
-          const fillColor = d.emissionsYtd > 0 ? '#C74523' : 'green';
-          const radius = d.emissionsYtd > 0 ? d.emissionsYtd / 10 : 0;
+          const radiusScale = scaleLinear([0, 3000], [2000, 50000]);
+          const radius = radiusScale(d.generatorCap);
+          const colour = this.getColour(d.fuelTechs);
           L
             .circle([lat, lng], {
-              color: this.getColour(d.fuelTechs),
-              fillColor: this.getColour(d.fuelTechs),
-              fillOpacity: 0.3,
-              stroke: 2,
-              radius: 2000,
+              color: colour,
+              fillColor: colour,
+              fillOpacity: 0.25,
+              stroke: 3,
+              radius,
             })
             .on({
               click() {
@@ -134,7 +135,7 @@ export default {
             .addTo(this.generatorsFeature);
 
           L.circle([lat, lng], {
-            fillColor,
+            fillColor: colour,
             fillOpacity: 0.3,
             stroke: 0,
             radius,
