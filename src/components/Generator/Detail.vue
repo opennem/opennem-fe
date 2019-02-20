@@ -14,9 +14,6 @@
           </h5>
         </div>
         <div>
-          <h5>Emissions (YTD): <span>{{ generator.emissionsYtd | formatNumber }}</span></h5>
-        </div>
-        <div>
           <h5>Total Capacity: <span>{{ generator.generatorCap | formatNumber }}</span></h5>
         </div>
         <div>

@@ -41,8 +41,6 @@
           </span>
         </td>
         <td class="has-text-right">{{ generator.generatorCap | formatNumber }}</td>
-        <td class="has-text-right">{{ generator.emissionsYtd | formatNumber }}</td>
-        <!-- <td>{{ generator.unitNum }}</td> -->
       </tr>
     </tbody>
     <tfoot>
@@ -51,7 +49,6 @@
         <td></td>
         <td></td>
         <td class="has-text-right">{{ totalCap | formatNumber }}</td>
-        <td class="has-text-right">{{ totalEmissions | formatNumber }}</td>
       </tr>
     </tfoot>
   </table>
@@ -66,7 +63,7 @@ import { getRegionLabelByCode } from '@/domains/regions';
 const colHeaders = [
   {
     id: 'stationName',
-    label: 'Station Name',
+    label: 'Name',
   },
   {
     id: 'regionId',
@@ -80,14 +77,6 @@ const colHeaders = [
     id: 'generatorCap',
     label: 'Capacity',
   },
-  {
-    id: 'emissionsYtd',
-    label: 'Emissions (YTD)',
-  },
-  // {
-  //   id: 'unitNum',
-  //   label: 'Number of units',
-  // },
 ];
 
 export default {
