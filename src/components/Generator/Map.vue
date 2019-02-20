@@ -5,6 +5,7 @@
 <script>
 import _ from 'lodash';
 import L from 'leaflet';
+import { GraphDomains } from '@/domains/graphs';
 
 const MapAttribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.';
 
@@ -95,6 +96,14 @@ export default {
       this.$emit('generatorSelected', generator, false);
     },
 
+    getColour(fuelTechs) {
+      const ftObj = fuelTechs[0] ? GraphDomains[fuelTechs[0]] : null;
+      if (ftObj) {
+        return ftObj.colour;
+      }
+      return 'black';
+    },
+
     updateMap(data) {
       this.map.removeLayer(this.generatorsFeature);
       this.generatorsFeature = L.featureGroup();
@@ -110,8 +119,8 @@ export default {
           const radius = d.emissionsYtd > 0 ? d.emissionsYtd / 10 : 0;
           L
             .circle([lat, lng], {
-              color: '#C74523',
-              fillColor: '#C74523',
+              color: this.getColour(d.fuelTechs),
+              fillColor: this.getColour(d.fuelTechs),
               fillOpacity: 0.3,
               stroke: 2,
               radius: 2000,
