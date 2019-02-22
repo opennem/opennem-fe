@@ -26,12 +26,14 @@ import dates from './dates';
 import panels from './panels';
 import features from './features';
 import errors from './errors';
+import groups from './groups';
 
 Vue.use(Vuex);
 
 const state = {
   region: 'nem',
   domains: {},
+  domainGroups: {},
   isFetching: false,
   visType: VisTypes.VIS_TYPE_POWER,
 };
@@ -42,6 +44,9 @@ const mutations = {
   },
   [MutationTypes.DOMAINS](state, data) {
     state.domains = data;
+  },
+  [MutationTypes.DOMAIN_GROUPS](state, data) {
+    state.domainGroups = data;
   },
   [MutationTypes.FETCHING](state, data) {
     if (data) {
@@ -61,6 +66,9 @@ const getters = {
   },
   getDomains: state => {
     return state.domains;
+  },
+  domainGroups: state => {
+    return state.domainGroups;
   },
   isFetching: state => {
     return state.isFetching;
@@ -103,6 +111,9 @@ const actions = {
 
   setDomains({ commit, state }, data) {
     commit(MutationTypes.DOMAINS, data);
+  },
+  domainGroups({ commit, state }, data) {
+    commit(MutationTypes.DOMAIN_GROUPS, data);
   },
   fetchingData({ commit, state }, data) {
     commit(MutationTypes.FETCHING, data);
@@ -243,6 +254,7 @@ const store = new Vuex.Store({
     panels,
     features,
     errors,
+    groups,
   }
 });
 
