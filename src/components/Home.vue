@@ -22,7 +22,7 @@
             </transition>
 
             <panel-button />
-            <all-regions-chart :chartData="nemData" v-show="!error" />
+            <all-regions-chart :chartData="updatedNemData" :customDomains="customDomains" />
             <div v-if="isExportPng">
               <all-regions-summary v-if="showSummaryPanel" />
               <export-legend v-else />
@@ -92,6 +92,7 @@ export default {
   data() {
     return {
       selectedRange: null,
+      updatedNemData: [],
     };
   },
   computed: {
@@ -113,10 +114,25 @@ export default {
       yearsWeeks: 'yearsWeeks',
       isPower: 'isPower',
       nemUrls: 'nemUrls',
+      groupSelected: 'groupSelected',
     }),
     records() {
       return this.$route.query.records;
     },
+    customDomains() {
+      const domains = {}
+      this.groupSelected.groups.forEach(g => {
+        domains[g.id] = {
+          colour: g.colour,
+          type: g.type,
+          label: g.label,
+        }
+      });
+
+      this.$store.dispatch('domainGroups', domains);
+
+      return domains;
+    }
   },
   watch: {
     nemData(data) {
@@ -127,12 +143,34 @@ export default {
         updateRouterStartEnd(this.$router, start, end);
       }
 
-      // Generate table data
-      this.$store.dispatch('generateRangeSummary', {
-        data,
-        start,
-        end,
+      console.log(this.groupSelected, data)
+
+      const newData = []
+
+      data.forEach(d => {
+        const newD = {
+          date: d.date,
+        };
+
+        this.groupSelected.groups.forEach((g) => {
+          let newValue = 0;
+          g.fields.forEach(f => {
+            newValue += d[f] || 0;
+          });
+          newD[g.id] = newValue;
+        });
+
+        newData.push(newD);
       });
+
+      this.updatedNemData = newData;
+
+      // // Generate table data
+      // this.$store.dispatch('generateRangeSummary', {
+      //   newData,
+      //   start,
+      //   end,
+      // });
     },
     currentRange() {
       // when currentRange changes, refetch the data

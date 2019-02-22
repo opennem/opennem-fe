@@ -34,6 +34,7 @@ import {
 export default {
   props: {
     chartData: Array,
+    customDomains: Object,
   },
   data() {
     return {
@@ -176,6 +177,7 @@ export default {
           graphType,
           unit,
           this.disabledSeries,
+          this.customDomains,
         );
       this.chart.panels[0].guides = this.isPower ? getNemGuides(this.chartData, false) : [];
       // this.chart.panels[0].guides = getNemGuides(this.chartData, showWeekends);

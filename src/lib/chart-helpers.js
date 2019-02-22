@@ -117,11 +117,12 @@ function getFieldMappings(keys) {
 /**
  * amCharts Stock graphs
  */
-function getStockGraphs(domains, keys, graphType, unit, disabledSeries) {
+function getStockGraphs(allDomains, keys, graphType, unit, disabledSeries, domainGroups) {
   const graphs = [];
+  const domains = domainGroups || allDomains;
 
   keys.forEach((ftKey) => {
-    if (isValidFuelTech(ftKey)) {
+    if (isValidFuelTech(ftKey) || domainGroups) {
       const colour = domains[ftKey].colour;
       const negativeFillAlphas = 0.8;
       const fillAlphas = 0.8;
