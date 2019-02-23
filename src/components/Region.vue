@@ -176,15 +176,12 @@ export default {
 
         this.groupSelected.groups.forEach((g) => {
           let newValue = 0;
-          
+
           g.fields.forEach((f) => {
-            const v = d[f];
             if (d[f]) {
               newValue += d[f];
-            } else {
-              if (g.type === 'temperature' && g.id === 'temperature') {
-                newValue = null;
-              }
+            } else if (g.type === 'temperature' && g.id === 'temperature') {
+              newValue = null;
             }
           });
           newD[g.id] = newValue;
@@ -195,8 +192,6 @@ export default {
 
       this.updatedNemData = newData;
       this.$store.dispatch('useGroups', true);
-
-      console.log(data, newData);
 
       // Generate table data
       this.$store.dispatch('generateRangeSummary', {
