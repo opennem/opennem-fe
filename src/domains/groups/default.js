@@ -64,13 +64,5 @@ export default {
       colour: '#000',
       fields: ['black_coal', 'brown_coal'],
     },
-
-    {
-      id: 'group_imports',
-      label: 'Imports',
-      type: 'sources',
-      colour: '#44146F',
-      fields: ['imports'],
-    },
   ],
 };

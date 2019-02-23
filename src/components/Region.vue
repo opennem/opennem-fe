@@ -193,6 +193,8 @@ export default {
       this.updatedNemData = newData;
       this.$store.dispatch('useGroups', true);
 
+      console.log(data, newData);
+
       // Generate table data
       this.$store.dispatch('generateRangeSummary', {
         data,

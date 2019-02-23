@@ -25,36 +25,5 @@ export default {
       fields: ['black_coal', 'brown_coal', 'biomass', 'gas_steam'],
     },
 
-    {
-      id: 'group_imports',
-      label: 'Imports',
-      type: 'sources',
-      colour: '#44146F',
-      fields: ['imports'],
-    },
-
-    {
-      id: 'group_exports',
-      label: 'Exports',
-      type: 'loads',
-      colour: '#977AB1',
-      fields: ['exports'],
-    },
-
-    {
-      id: 'group_battery_charging',
-      label: 'Battery (Charging)',
-      type: 'loads',
-      colour: '#B2DAEF',
-      fields: ['battery_charging'],
-    },
-
-    {
-      id: 'group_pumps',
-      label: 'Pumps',
-      type: 'loads',
-      colour: '#88AFD0',
-      fields: ['pumps'],
-    },
   ],
 };

@@ -18,13 +18,5 @@ export default {
         'gas_ocgt', 'gas_ccgt', 'gas_steam', 'distillate', 'biomass',
         'black_coal', 'brown_coal'],
     },
-
-    {
-      id: 'group_imports',
-      label: 'Imports',
-      type: 'sources',
-      colour: '#44146F',
-      fields: ['imports'],
-    },
   ],
 };

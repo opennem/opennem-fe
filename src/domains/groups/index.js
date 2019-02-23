@@ -4,6 +4,39 @@ import flexibilityGroup from './flexibility';
 import renewablesVFossilsGroup from './renewables-v-fossils';
 import solarVDemandGroup from './solar-v-demand';
 
+const additionalDomains = [
+  {
+    id: 'imports',
+    label: 'Imports',
+    type: 'sources',
+    colour: '#44146F',
+    fields: ['imports'],
+  },
+
+  {
+    id: 'exports',
+    label: 'Exports',
+    type: 'loads',
+    colour: '#977AB1',
+    fields: ['exports'],
+  },
+
+  {
+    id: 'battery_charging',
+    label: 'Battery (Charging)',
+    type: 'loads',
+    colour: '#B2DAEF',
+    fields: ['battery_charging'],
+  },
+
+  {
+    id: 'pumps',
+    label: 'Pumps',
+    type: 'loads',
+    colour: '#88AFD0',
+    fields: ['pumps'],
+  },
+];
 const temperatureDomains = [
   {
     id: 'temperature',
@@ -34,7 +67,6 @@ const temperatureDomains = [
     fields: ['temperature_max'],
   },
 ];
-
 const priceDomains = [
   {
     id: 'price',
@@ -66,12 +98,16 @@ const priceDomains = [
   },
 ];
 
-defaultGroup.groups = [...defaultGroup.groups, ...temperatureDomains, ...priceDomains];
-expandedGroup.groups = [...expandedGroup.groups, ...temperatureDomains, ...priceDomains];
-flexibilityGroup.groups = [...flexibilityGroup.groups, ...temperatureDomains, ...priceDomains];
-renewablesVFossilsGroup.groups = [...renewablesVFossilsGroup.groups,
+defaultGroup.groups = [...defaultGroup.groups, ...additionalDomains,
   ...temperatureDomains, ...priceDomains];
-solarVDemandGroup.groups = [...solarVDemandGroup.groups, ...temperatureDomains, ...priceDomains];
+expandedGroup.groups = [...expandedGroup.groups, ...additionalDomains,
+  ...temperatureDomains, ...priceDomains];
+flexibilityGroup.groups = [...flexibilityGroup.groups, ...additionalDomains,
+  ...temperatureDomains, ...priceDomains];
+renewablesVFossilsGroup.groups = [...renewablesVFossilsGroup.groups,
+  ...additionalDomains, ...temperatureDomains, ...priceDomains];
+solarVDemandGroup.groups = [...solarVDemandGroup.groups, ...additionalDomains,
+  ...temperatureDomains, ...priceDomains];
 
 defaultGroup.groups.reverse();
 expandedGroup.groups.reverse();

@@ -4,7 +4,7 @@ import SourceGroups from '@/domains/groups';
 
 const state = {
   groupSelections: [],
-  groupSelected: SourceGroups[2],
+  groupSelected: SourceGroups[0],
 };
 
 const mutations = {
