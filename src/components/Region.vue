@@ -22,7 +22,7 @@
             </transition>
 
             <panel-buttons />
-            <region-chart :chartData="nemData" v-show="!error" />
+            <region-chart :chartData="updatedNemData" :nemData="nemData" :customDomains="customDomains" v-show="!error" />
             <div v-if="isExportPng"
               :class="{
                 'price-on': showPricePanel,
@@ -106,6 +106,11 @@ export default {
   props: {
     region: String,
   },
+  data() {
+    return {
+      updatedNemData: [],
+    };
+  },
   computed: {
     ...mapGetters({
       nemData: 'nemData',
@@ -127,6 +132,7 @@ export default {
       currentInterval: 'currentInterval',
       yearsWeeks: 'yearsWeeks',
       nemUrls: 'nemUrls',
+      groupSelected: 'groupSelected',
     }),
     regionId() {
       return this.$route.params.region;
@@ -137,6 +143,20 @@ export default {
     showTemperatureRange() {
       return !this.isPower;
     },
+    customDomains() {
+      const domains = {};
+      this.groupSelected.groups.forEach((g) => {
+        domains[g.id] = {
+          colour: g.colour,
+          type: g.type,
+          label: g.label,
+        };
+      });
+
+      this.$store.dispatch('domainGroups', domains);
+
+      return domains;
+    },
   },
   watch: {
     nemData(data) {
@@ -146,6 +166,37 @@ export default {
       if (!this.isChartZoomed) {
         updateRouterStartEnd(this.$router, start, end);
       }
+
+      const newData = [];
+
+      data.forEach((d) => {
+        const newD = {
+          date: d.date,
+        };
+
+        this.groupSelected.groups.forEach((g) => {
+          let newValue = 0;
+          
+          g.fields.forEach((f) => {
+            const v = d[f];
+            if (d[f]) {
+              newValue += d[f];
+            } else {
+              if (g.type === 'temperature' && g.id === 'temperature') {
+                newValue = null;
+              }
+            }
+          });
+          newD[g.id] = newValue;
+        });
+
+        newData.push(newD);
+      });
+
+      this.updatedNemData = newData;
+      this.$store.dispatch('useGroups', true);
+
+      console.log(data, newData);
 
       // Generate table data
       this.$store.dispatch('generateRangeSummary', {

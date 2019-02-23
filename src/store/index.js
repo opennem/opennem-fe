@@ -3,7 +3,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import * as moment from 'moment';
 
-import { getSummary, getPointSummary } from '@/lib/data-summary';
+import { getSummary, getPointSummary, getGroupPointSummary } from '@/lib/data-summary';
 import { dataFilter, dataFilterByLastValuePrecision } from '@/lib/data-helpers';
 import dataTransform from '@/lib/data-transform';
 import getJSON from '@/lib/data-apis';
@@ -34,6 +34,7 @@ const state = {
   region: 'nem',
   domains: {},
   domainGroups: {},
+  useGroups: false,
   isFetching: false,
   visType: VisTypes.VIS_TYPE_POWER,
 };
@@ -47,6 +48,9 @@ const mutations = {
   },
   [MutationTypes.DOMAIN_GROUPS](state, data) {
     state.domainGroups = data;
+  },
+  [MutationTypes.USE_GROUPS](state, data) {
+    state.useGroups = data;
   },
   [MutationTypes.FETCHING](state, data) {
     if (data) {
@@ -69,6 +73,9 @@ const getters = {
   },
   domainGroups: state => {
     return state.domainGroups;
+  },
+  useGroups: state => {
+    return state.useGroups;
   },
   isFetching: state => {
     return state.isFetching;
@@ -115,6 +122,9 @@ const actions = {
   domainGroups({ commit, state }, data) {
     commit(MutationTypes.DOMAIN_GROUPS, data);
   },
+  useGroups({ commit, state }, data) {
+    commit(MutationTypes.USE_GROUPS, data);
+  },
   fetchingData({ commit, state }, data) {
     commit(MutationTypes.FETCHING, data);
   },
@@ -125,7 +135,9 @@ const actions = {
     commit(MutationTypes.RANGE_SUMMARY, summary);
   },
   generatePointSummary({ commit, state }, data) {
-    const summary = getPointSummary(state.domains, data.date, data.dataContext, state.visType);
+    const summary = state.useGroups ?
+      getGroupPointSummary(state.domainGroups, data.date, data.dataContext, state.visType) :
+      getPointSummary(state.domains, data.date, data.dataContext, state.visType);
     commit(MutationTypes.POINT_SUMMARY, summary);
   },
   generateExportData({ commit, state }, data) {

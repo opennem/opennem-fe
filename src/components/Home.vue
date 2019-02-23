@@ -22,7 +22,7 @@
             </transition>
 
             <panel-button />
-            <all-regions-chart :chartData="updatedNemData" :customDomains="customDomains" />
+            <all-regions-chart :chartData="updatedNemData" :nemData="nemData" :customDomains="customDomains" v-show="!error" />
             <div v-if="isExportPng">
               <all-regions-summary v-if="showSummaryPanel" />
               <export-legend v-else />
@@ -120,19 +120,19 @@ export default {
       return this.$route.query.records;
     },
     customDomains() {
-      const domains = {}
-      this.groupSelected.groups.forEach(g => {
+      const domains = {};
+      this.groupSelected.groups.forEach((g) => {
         domains[g.id] = {
           colour: g.colour,
           type: g.type,
           label: g.label,
-        }
+        };
       });
 
       this.$store.dispatch('domainGroups', domains);
 
       return domains;
-    }
+    },
   },
   watch: {
     nemData(data) {
@@ -143,18 +143,16 @@ export default {
         updateRouterStartEnd(this.$router, start, end);
       }
 
-      console.log(this.groupSelected, data)
+      const newData = [];
 
-      const newData = []
-
-      data.forEach(d => {
+      data.forEach((d) => {
         const newD = {
           date: d.date,
         };
 
         this.groupSelected.groups.forEach((g) => {
           let newValue = 0;
-          g.fields.forEach(f => {
+          g.fields.forEach((f) => {
             newValue += d[f] || 0;
           });
           newD[g.id] = newValue;
@@ -164,13 +162,14 @@ export default {
       });
 
       this.updatedNemData = newData;
+      this.$store.dispatch('useGroups', true);
 
-      // // Generate table data
-      // this.$store.dispatch('generateRangeSummary', {
-      //   newData,
-      //   start,
-      //   end,
-      // });
+      // Generate table data
+      this.$store.dispatch('generateRangeSummary', {
+        data,
+        start,
+        end,
+      });
     },
     currentRange() {
       // when currentRange changes, refetch the data

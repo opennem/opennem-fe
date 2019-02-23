@@ -1,6 +1,8 @@
 export const REGION = 'REGION';
 export const DOMAINS = 'DOMAINS';
 export const DOMAIN_GROUPS = 'DOMAIN_GROUPS';
+export const USE_GROUPS = 'USE_GROUPS';
+
 export const FETCHING = 'FETCHING';
 export const ERROR = 'ERROR';
 export const ERROR_MESSAGE = 'ERROR_MESSAGE';
@@ -28,6 +30,7 @@ export const EXPORT_ATTRIBUTION = 'EXPORT_ATTRIBUTION';
 
 export const RANGE_SUMMARY = 'RANGE_SUMMARY';
 export const POINT_SUMMARY = 'POINT_SUMMARY';
+export const GROUP_POINT_SUMMARY = 'GROUP_POINT_SUMMARY';
 export const POINT_HOVERED = 'POINT_HOVERED';
 export const CONTRIBUTION_TYPE = 'CONTRIBUTION_TYPE';
 export const SUMMARY_DISABLED_SERIES = 'SUMMARY_DISABLED_SERIES';

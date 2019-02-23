@@ -9,6 +9,7 @@ if (!lsGet(MutationTypes.CONTRIBUTION_TYPE)) {
 const state = {
   rangeSummary: {},
   pointSummary: {},
+  groupPointSummary: {},
   isPointHovered: false,
   contributionType: lsGet(MutationTypes.CONTRIBUTION_TYPE),
   disabledSeries: [],
@@ -20,6 +21,9 @@ const mutations = {
   },
   [MutationTypes.POINT_SUMMARY](state, data) {
     state.pointSummary = data;
+  },
+  [MutationTypes.GROUP_POINT_SUMMARY](state, data) {
+    state.groupPointSummary = data;
   },
   [MutationTypes.POINT_HOVERED](state, data) {
     state.isPointHovered = data;
@@ -40,6 +44,9 @@ const getters = {
   getPointSummary: state => {
     return state.pointSummary;
   },
+  groupPointSummary: state => {
+    return state.groupPointSummary;
+  },
   isPointHovered: state => {
     return state.isPointHovered;
   },
@@ -54,6 +61,9 @@ const getters = {
 const actions = {
   showInstantaneousData({ commit, state }, data) {
     commit(MutationTypes.POINT_HOVERED, data);
+  },
+  groupPointSummary({ commit, state }, data) {
+    commit(MutationTypes.GROUP_POINT_SUMMARY, data);
   },
   contributionType({ commit, state }, data) {
     commit(MutationTypes.CONTRIBUTION_TYPE, data);
