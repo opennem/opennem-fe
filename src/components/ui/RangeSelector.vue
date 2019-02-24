@@ -27,7 +27,6 @@
         {{ getPeriodShorthand(p) }}
       </span>
     </div>
-
   </div>
 </template>
 
@@ -42,10 +41,6 @@ import { isMobileWidth } from '@/lib/browser';
 
 export default {
   name: 'range-selector',
-
-  components: {
-    // Datepicker,
-  },
 
   data() {
     return {

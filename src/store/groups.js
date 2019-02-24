@@ -3,7 +3,7 @@ import * as MutationTypes from '@/constants/mutation-types';
 import SourceGroups from '@/domains/groups';
 
 const state = {
-  groupSelections: [],
+  groupSelections: SourceGroups,
   groupSelected: SourceGroups[0],
 };
 

@@ -178,6 +178,27 @@ export default {
     chartTypeTransition() {
       this.fetch();
     },
+    groupSelected(group) {
+      const newData = [];
+
+      this.nemData.forEach((d) => {
+        const newD = {
+          date: d.date,
+        };
+
+        group.groups.forEach((g) => {
+          let newValue = 0;
+          g.fields.forEach((f) => {
+            newValue += d[f] || 0;
+          });
+          newD[g.id] = newValue;
+        });
+
+        newData.push(newD);
+      });
+
+      this.updatedNemData = newData;
+    },
   },
   methods: {
     downloadPng() {

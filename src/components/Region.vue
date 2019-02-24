@@ -193,8 +193,6 @@ export default {
       this.updatedNemData = newData;
       this.$store.dispatch('useGroups', true);
 
-      console.log(data, newData);
-
       // Generate table data
       this.$store.dispatch('generateRangeSummary', {
         data,
@@ -218,6 +216,27 @@ export default {
     },
     chartTypeTransition() {
       this.fetch();
+    },
+    groupSelected(group) {
+      const newData = [];
+
+      this.nemData.forEach((d) => {
+        const newD = {
+          date: d.date,
+        };
+
+        group.groups.forEach((g) => {
+          let newValue = 0;
+          g.fields.forEach((f) => {
+            newValue += d[f] || 0;
+          });
+          newD[g.id] = newValue;
+        });
+
+        newData.push(newD);
+      });
+
+      this.updatedNemData = newData;
     },
   },
   methods: {
