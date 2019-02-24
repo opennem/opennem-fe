@@ -3,7 +3,7 @@
     <caption>Summary</caption>
     <thead>
       <tr>
-        <th style="padding-top: 5px; padding-left: 0;"><group-selection /></th>
+        <th class="group-selector"><group-selection /></th>
         <th class="column-header has-text-right" style="width: 95px;">
           <div v-if="isPointHovered && isPower">
             <span>Power</span>
