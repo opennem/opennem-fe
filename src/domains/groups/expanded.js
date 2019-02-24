@@ -2,14 +2,14 @@ export default {
   groupSelectionName: 'All fuel technologies',
   groups: [
     {
-      id: 'group_rooftop_solar',
+      id: 'rooftop_solar',
       label: 'Solar (Rooftop)',
       type: 'sources',
       colour: '#F8E71C',
       fields: ['rooftop_solar'],
     },
     {
-      id: 'group_solar',
+      id: 'solar',
       label: 'Solar (Utility)',
       type: 'sources',
       colour: '#DFCF00',
@@ -17,7 +17,7 @@ export default {
     },
 
     {
-      id: 'group_wind',
+      id: 'wind',
       label: 'Wind',
       type: 'sources',
       colour: '#417505',
@@ -25,7 +25,7 @@ export default {
     },
 
     {
-      id: 'group_hydro',
+      id: 'hydro',
       label: 'Hydro',
       type: 'sources',
       colour: '#4582B4',
@@ -33,7 +33,7 @@ export default {
     },
 
     {
-      id: 'group_battery_discharging',
+      id: 'battery_discharging',
       label: 'Battery (Discharging)',
       type: 'sources',
       colour: '#00A2FA',
@@ -41,28 +41,28 @@ export default {
     },
 
     {
-      id: 'group_gas_recip',
+      id: 'gas_recip',
       label: 'Gas (Reciprocating)',
       type: 'sources',
       colour: '#F9DCBC',
       fields: ['gas_recip'],
     },
     {
-      id: 'group_gas_ocgt',
+      id: 'gas_ocgt',
       label: 'Gas (OCGT)',
       type: 'sources',
       colour: '#FFCD96',
       fields: ['gas_ocgt'],
     },
     {
-      id: 'group_gas_ccgt',
+      id: 'gas_ccgt',
       label: 'Gas (CCGT)',
       type: 'sources',
       colour: '#FDB462',
       fields: ['gas_ccgt'],
     },
     {
-      id: 'group_gas_steam',
+      id: 'gas_steam',
       label: 'Gas (Steam)',
       type: 'sources',
       colour: '#F48E1B',
@@ -70,7 +70,7 @@ export default {
     },
 
     {
-      id: 'group_distillate',
+      id: 'distillate',
       label: 'Distillate',
       type: 'sources',
       colour: '#F35020',
@@ -78,7 +78,7 @@ export default {
     },
 
     {
-      id: 'group_biomass',
+      id: 'biomass',
       label: 'Biomass',
       type: 'sources',
       colour: '#A3886F',
@@ -86,14 +86,14 @@ export default {
     },
 
     {
-      id: 'group_black_coal',
+      id: 'black_coal',
       label: 'Black Coal',
       type: 'sources',
       colour: '#121212',
       fields: ['black_coal'],
     },
     {
-      id: 'group_brown_coal',
+      id: 'brown_coal',
       label: 'Brown Coal',
       type: 'sources',
       colour: '#8B572A',

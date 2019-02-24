@@ -97,17 +97,159 @@ const priceDomains = [
     fields: ['volume_weighted_price'],
   },
 ];
+const marketValueDomains = [
+  {
+    id: 'rooftop_solar.market_value',
+    label: 'Solar (Rooftop) Market Value',
+    type: 'market_value',
+    colour: '#000',
+    fields: ['rooftop_solar.market_value'],
+  },
 
-defaultGroup.groups = [...defaultGroup.groups, ...additionalDomains,
-  ...temperatureDomains, ...priceDomains];
-expandedGroup.groups = [...expandedGroup.groups, ...additionalDomains,
-  ...temperatureDomains, ...priceDomains];
-flexibilityGroup.groups = [...flexibilityGroup.groups, ...additionalDomains,
-  ...temperatureDomains, ...priceDomains];
-renewablesVFossilsGroup.groups = [...renewablesVFossilsGroup.groups,
-  ...additionalDomains, ...temperatureDomains, ...priceDomains];
-solarVDemandGroup.groups = [...solarVDemandGroup.groups, ...additionalDomains,
-  ...temperatureDomains, ...priceDomains];
+  {
+    id: 'solar.market_value',
+    label: 'Solar (Utility) Market Value',
+    type: 'market_value',
+    colour: '#000',
+    fields: ['solar.market_value'],
+  },
+
+  {
+    id: 'wind.market_value',
+    label: 'Wind Market Value',
+    type: 'market_value',
+    colour: '#000',
+    fields: ['wind.market_value'],
+  },
+
+  {
+    id: 'hydro.market_value',
+    label: 'Hydro Market Value',
+    type: 'market_value',
+    colour: '#000',
+    fields: ['hydro.market_value'],
+  },
+
+  {
+    id: 'battery_discharging.market_value',
+    label: 'Battery (Discharging) Market Value',
+    type: 'market_value',
+    colour: '#000',
+    fields: ['battery_discharging.market_value'],
+  },
+
+  {
+    id: 'gas_recip.market_value',
+    label: 'Gas (Reciprocating) Market Value',
+    type: 'market_value',
+    colour: '#000',
+    fields: ['gas_recip.market_value'],
+  },
+
+  {
+    id: 'gas_ocgt.market_value',
+    label: 'Gas (OCGT) Market Value',
+    type: 'market_value',
+    colour: '#000',
+    fields: ['gas_ocgt.market_value'],
+  },
+
+  {
+    id: 'gas_ccgt.market_value',
+    label: 'Gas (CCGT) Market Value',
+    type: 'market_value',
+    colour: '#000',
+    fields: ['gas_ccgt.market_value'],
+  },
+
+  {
+    id: 'gas_steam.market_value',
+    label: 'Gas (Steam) Market Value',
+    type: 'market_value',
+    colour: '#000',
+    fields: ['gas_steam.market_value'],
+  },
+
+  {
+    id: 'distillate.market_value',
+    label: 'Distillate Market Value',
+    type: 'market_value',
+    colour: '#000',
+    fields: ['distillate.market_value'],
+  },
+
+  {
+    id: 'biomass.market_value',
+    label: 'Biomass Market Value',
+    type: 'market_value',
+    colour: '#000',
+    fields: ['biomass.market_value'],
+  },
+
+  {
+    id: 'black_coal.market_value',
+    label: 'Black Coal Market Value',
+    type: 'market_value',
+    colour: '#000',
+    fields: ['black_coal.market_value'],
+  },
+
+  {
+    id: 'brown_coal.market_value',
+    label: 'Brown Coal Market Value',
+    type: 'market_value',
+    colour: '#000',
+    fields: ['brown_coal.market_value'],
+  },
+
+  {
+    id: 'imports.market_value',
+    label: 'Imports Market Value',
+    type: 'market_value',
+    colour: '#000',
+    fields: ['imports.market_value'],
+  },
+
+  {
+    id: 'exports.market_value',
+    label: 'Exports Market Value',
+    type: 'market_value',
+    colour: '#000',
+    fields: ['exports.market_value'],
+  },
+
+  {
+    id: 'battery_charging.market_value',
+    label: 'Battery (Charging) Market Value',
+    type: 'market_value',
+    colour: '#000',
+    fields: ['battery_charging.market_value'],
+  },
+
+  {
+    id: 'pumps.market_value',
+    label: 'Pumps Market Value',
+    type: 'market_value',
+    colour: '#000',
+    fields: ['pumps.market_value'],
+  },
+];
+
+function appendGroups(groups) {
+  return [
+    ...groups,
+    ...additionalDomains,
+    ...marketValueDomains,
+    ...temperatureDomains,
+    ...priceDomains,
+  ];
+}
+
+defaultGroup.groups = appendGroups(defaultGroup.groups);
+expandedGroup.groups = appendGroups(expandedGroup.groups);
+flexibilityGroup.groups = appendGroups(flexibilityGroup.groups);
+renewablesVFossilsGroup.groups = appendGroups(renewablesVFossilsGroup.groups);
+solarVDemandGroup.groups = appendGroups(solarVDemandGroup.groups);
 
 defaultGroup.groups.reverse();
 expandedGroup.groups.reverse();
