@@ -19,6 +19,7 @@ export const CHART_GROUP_TO_PERIODS = 'CHART_GROUP_TO_PERIODS';
 
 export const NEM_URLS = 'NEM_URLS';
 export const NEM_DATA = 'NEM_DATA';
+export const GROUPED_NEM_DATA = 'GROUPED_NEM_DATA';
 export const NEM_DATA_TRIM = 'NEM_DATA_TRIM';
 export const NEM_TRIM = 'NEM_TRIM';
 export const NEM_RESPONSE_DATA = 'NEM_RESPONSE_DATA';

@@ -22,7 +22,7 @@
             </transition>
 
             <panel-button />
-            <all-regions-chart :chartData="updatedNemData" :nemData="nemData" :customDomains="customDomains" v-show="!error" />
+            <all-regions-chart :chartData="groupedNemData" :nemData="nemData" :customDomains="customDomains" v-show="!error" />
             <div v-if="isExportPng">
               <all-regions-summary v-if="showSummaryPanel" />
               <export-legend v-else />
@@ -92,12 +92,12 @@ export default {
   data() {
     return {
       selectedRange: null,
-      updatedNemData: [],
     };
   },
   computed: {
     ...mapGetters({
       nemData: 'nemData',
+      groupedNemData: 'groupedNemData',
       isFetching: 'isFetching',
       isChartZoomed: 'isChartZoomed',
       chartTypeTransition: 'chartTypeTransition',
@@ -143,25 +143,7 @@ export default {
         updateRouterStartEnd(this.$router, start, end);
       }
 
-      const newData = [];
-
-      data.forEach((d) => {
-        const newD = {
-          date: d.date,
-        };
-
-        this.groupSelected.groups.forEach((g) => {
-          let newValue = 0;
-          g.fields.forEach((f) => {
-            newValue += d[f] || 0;
-          });
-          newD[g.id] = newValue;
-        });
-
-        newData.push(newD);
-      });
-
-      this.updatedNemData = newData;
+      this.$store.dispatch('generateGroupedNemData');
       this.$store.dispatch('useGroups', true);
 
       // Generate table data
@@ -179,25 +161,7 @@ export default {
       this.fetch();
     },
     groupSelected(group) {
-      const newData = [];
-
-      this.nemData.forEach((d) => {
-        const newD = {
-          date: d.date,
-        };
-
-        group.groups.forEach((g) => {
-          let newValue = 0;
-          g.fields.forEach((f) => {
-            newValue += d[f] || 0;
-          });
-          newD[g.id] = newValue;
-        });
-
-        newData.push(newD);
-      });
-
-      this.updatedNemData = newData;
+      this.$store.dispatch('generateGroupedNemData');
     },
   },
   methods: {

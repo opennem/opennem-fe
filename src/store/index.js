@@ -116,6 +116,30 @@ const actions = {
     commit(MutationTypes.REGION, data);
   },
 
+  generateGroupedNemData({ commit, state }) {
+    const nemData = state.nemData.nemData;
+    const group = state.groups.groupSelected;
+    const groupedNemData = [];
+
+    nemData.forEach((d) => {
+      const newD = {
+        date: d.date,
+      };
+
+      group.groups.forEach((g) => {
+        let newValue = 0;
+        g.fields.forEach((f) => {
+          newValue += d[f] || 0;
+        });
+        newD[g.id] = newValue;
+      });
+
+      groupedNemData.push(newD);
+    });
+
+    commit(MutationTypes.GROUPED_NEM_DATA, groupedNemData);
+  },
+
   setDomains({ commit, state }, data) {
     commit(MutationTypes.DOMAINS, data);
   },
