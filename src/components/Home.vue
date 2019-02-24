@@ -160,7 +160,7 @@ export default {
     chartTypeTransition() {
       this.fetch();
     },
-    groupSelected(group) {
+    groupSelected() {
       this.$store.dispatch('generateGroupedNemData');
     },
   },
