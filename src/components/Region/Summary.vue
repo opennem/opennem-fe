@@ -315,7 +315,7 @@ export default {
             hasGroup = true;
             range.power += find.range.power;
             range.energy += find.range.energy;
-            averagePriceSum += find.range.averagePrice;
+            averagePriceSum += find.range.averagePrice || 0;
           }
         });
 
