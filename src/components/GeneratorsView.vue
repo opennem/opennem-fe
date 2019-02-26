@@ -8,6 +8,7 @@
         :selectedGenerator="selectedGenerator"
         :sortBy="sortBy"
         :orderBy="orderBy"
+        :hideRegionColumn="isRegionView"
         @orderChanged="handleOrderChange"
         @generatorSelected="handleGeneratorSelect"
       />
@@ -81,6 +82,9 @@ export default {
     },
     regionId() {
       return this.$route.params.region || '';
+    },
+    isRegionView() {
+      return this.$route.params.region ? true : false;
     },
     filteredGenerators() {
       return this.generatorsData.filter(g =>

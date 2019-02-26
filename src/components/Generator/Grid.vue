@@ -6,6 +6,7 @@
           v-for="(header, index) in colHeaders"
           :key="index"
           :class="{ 'has-text-right': shouldRightAligned(header.id) }"
+          v-show="!(index === 1 && hideRegionColumn)"
           @click="sort(header.id)"
           >
             {{ header.label }}
@@ -24,7 +25,7 @@
         :class="{ 'is-selected': isSelected(generator.stationName) }"
         @click="handleRowClick(generator)"
       >
-        <td style="width: 40%;">
+        <td>
           <div style="display: flex">
             <span class="source-colour"
               :style="{ 
@@ -34,19 +35,19 @@
           </div>
           
         </td>
-        <td>{{ getRegionLabel(generator.regionId) }}</td>
-        <td>
+        <td style="width: 150px;" v-show="!hideRegionColumn">{{ getRegionLabel(generator.regionId) }}</td>
+        <td style="width: 150px;">
           <span v-for="(ft, ftIndex) in generator.fuelTechs" :key="ftIndex">
             {{ getFtLabel(ft) }}
           </span>
         </td>
-        <td class="has-text-right">{{ generator.generatorCap | formatNumber }}</td>
+        <td class="has-text-right" style="width: 100px;">{{ generator.generatorCap | formatNumber }}</td>
       </tr>
     </tbody>
     <tfoot>
       <tr>
         <td>{{ totalGenerators }}</td>
-        <td></td>
+        <td v-show="!hideRegionColumn"></td>
         <td></td>
         <td class="has-text-right">{{ totalCap | formatNumber }}</td>
       </tr>
@@ -71,11 +72,11 @@ const colHeaders = [
   },
   {
     id: 'fuelTechs',
-    label: 'Fuel Tech',
+    label: 'Technology',
   },
   {
     id: 'generatorCap',
-    label: 'Capacity',
+    label: 'Capacity (MW)',
   },
 ];
 
@@ -89,6 +90,7 @@ export default {
     selectedGenerator: Object,
     sortBy: String,
     orderBy: String,
+    hideRegionColumn: Boolean,
   },
 
   data() {
