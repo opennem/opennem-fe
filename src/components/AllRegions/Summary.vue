@@ -3,7 +3,7 @@
     <caption>Summary</caption>
     <thead>
       <tr>
-        <th></th>
+        <th class="group-selector"><group-selection /></th>
         <th class="column-header has-text-right" style="width: 95px;">
           <div v-if="isPointHovered && isPower">
             <span>Power</span>
@@ -66,7 +66,7 @@
     
     <tbody>
       <tr 
-        v-for="row in rangeSummary.sourcesData"
+        v-for="row in updatedRangeSummary.sourcesData"
         :key="row.id"
       >
         <td
@@ -127,7 +127,7 @@
 
     <tbody>
       <tr
-        v-for="row in rangeSummary.loadsData"
+        v-for="row in updatedRangeSummary.loadsData"
         :key="row.id"
         @click.exact="handleSourceRowClicked(row.id)"
         @click.shift.exact="handleSourceRowShiftClicked(row.id)"
@@ -212,9 +212,13 @@ import { mapGetters } from 'vuex';
 import EventBus from '@/lib/event-bus';
 import { formatNumberForDisplay } from '@/lib/formatter';
 import { GraphDomains, isRenewableFuelTech } from '@/domains/graphs';
+import GroupSelection from '@/components/ui/GroupSelection';
 
 export default {
   name: 'all-regions-summary',
+  components: {
+    GroupSelection,
+  },
   data() {
     return {
       contributionSelection: {
@@ -232,6 +236,7 @@ export default {
       contributionType: 'contributionType',
       currentRange: 'currentRange',
       disabledSeries: 'disabledSeries',
+      groupSelected: 'groupSelected',
     }),
     isTypeGeneration() {
       return this.contributionSelection.type === 'generation';
@@ -249,6 +254,26 @@ export default {
         this.rangeSummary.totalGrossPower :
         this.rangeSummary.totalNetPower;
     },
+
+    updatedRangeSummary() {
+      const currentRangeSummary = this.rangeSummary;
+      const rangeSummary = Object.assign({}, this.rangeSummary);
+
+      if (currentRangeSummary.sourcesData) {
+        rangeSummary.sourcesData = this.getUpdatedRangeSummary(
+          this.groupSelected.groups,
+          currentRangeSummary.sourcesData,
+        ).reverse();
+      }
+
+      if (currentRangeSummary.loadsData) {
+        rangeSummary.loadsData = this.getUpdatedRangeSummary(
+          this.groupSelected.groups,
+          currentRangeSummary.loadsData,
+        );
+      }
+      return rangeSummary;
+    },
   },
   watch: {
     contributionSelection(newValue) {
@@ -265,6 +290,44 @@ export default {
   },
 
   methods: {
+    getUpdatedRangeSummary(groups, data) {
+      const newRange = [];
+
+      groups.forEach((g) => {
+        const range = {
+          power: 0,
+          energy: 0,
+          averagePrice: 0,
+        };
+
+        let averagePriceSum = 0;
+        let hasGroup = false;
+
+        g.fields.forEach((f) => {
+          const find = data.find(s => s.id === f);
+          if (find) {
+            hasGroup = true;
+            range.power += find.range.power;
+            range.energy += find.range.energy;
+            averagePriceSum += find.range.averagePrice;
+          }
+        });
+
+        range.averagePrice = averagePriceSum / g.fields.length;
+
+        if (hasGroup) {
+          newRange.push({
+            colour: g.colour,
+            id: g.id,
+            label: g.label,
+            range,
+          });
+        }
+      });
+
+      return newRange;
+    },
+
     toggleContributionType() {
       let type = 'generation';
       if (this.isTypeGeneration) {

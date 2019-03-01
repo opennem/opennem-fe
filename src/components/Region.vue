@@ -22,7 +22,7 @@
             </transition>
 
             <panel-buttons />
-            <region-chart :chartData="nemData" v-show="!error" />
+            <region-chart :chartData="groupedNemData" :nemData="nemData" :customDomains="customDomains" v-show="!error" />
             <div v-if="isExportPng"
               :class="{
                 'price-on': showPricePanel,
@@ -109,6 +109,7 @@ export default {
   computed: {
     ...mapGetters({
       nemData: 'nemData',
+      groupedNemData: 'groupedNemData',
       isFetching: 'isFetching',
       isChartZoomed: 'isChartZoomed',
       chartTypeTransition: 'chartTypeTransition',
@@ -127,6 +128,7 @@ export default {
       currentInterval: 'currentInterval',
       yearsWeeks: 'yearsWeeks',
       nemUrls: 'nemUrls',
+      groupSelected: 'groupSelected',
     }),
     regionId() {
       return this.$route.params.region;
@@ -137,6 +139,20 @@ export default {
     showTemperatureRange() {
       return !this.isPower;
     },
+    customDomains() {
+      const domains = {};
+      this.groupSelected.groups.forEach((g) => {
+        domains[g.id] = {
+          colour: g.colour,
+          type: g.type,
+          label: g.label,
+        };
+      });
+
+      this.$store.dispatch('domainGroups', domains);
+
+      return domains;
+    },
   },
   watch: {
     nemData(data) {
@@ -146,6 +162,9 @@ export default {
       if (!this.isChartZoomed) {
         updateRouterStartEnd(this.$router, start, end);
       }
+
+      this.$store.dispatch('generateGroupedNemData');
+      this.$store.dispatch('useGroups', true);
 
       // Generate table data
       this.$store.dispatch('generateRangeSummary', {
@@ -171,6 +190,9 @@ export default {
     },
     chartTypeTransition() {
       this.fetch();
+    },
+    groupSelected() {
+      this.$store.dispatch('generateGroupedNemData');
     },
   },
   methods: {

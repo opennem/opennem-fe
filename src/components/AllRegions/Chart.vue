@@ -34,6 +34,8 @@ import {
 export default {
   props: {
     chartData: Array,
+    nemData: Array,
+    customDomains: Object,
   },
   data() {
     return {
@@ -176,6 +178,7 @@ export default {
           graphType,
           unit,
           this.disabledSeries,
+          this.customDomains,
         );
       this.chart.panels[0].guides = this.isPower ? getNemGuides(this.chartData, false) : [];
       // this.chart.panels[0].guides = getNemGuides(this.chartData, showWeekends);
@@ -230,7 +233,7 @@ export default {
         updateRouterStartEnd(this.$router, start, end);
 
         this.$store.dispatch('generateRangeSummary', {
-          data: this.chartData,
+          data: this.nemData,
           start,
           end,
         });

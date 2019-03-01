@@ -43,6 +43,8 @@ import {
 export default {
   props: {
     chartData: Array,
+    nemData: Array,
+    customDomains: Object,
   },
   data() {
     return {
@@ -297,6 +299,7 @@ export default {
           graphType,
           unit,
           this.disabledSeries,
+          this.customDomains,
         );
 
       // add Guides
@@ -376,7 +379,7 @@ export default {
         updateRouterStartEnd(this.$router, start, end);
 
         this.$store.dispatch('generateRangeSummary', {
-          data: this.chartData,
+          data: this.nemData,
           start,
           end,
         });

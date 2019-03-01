@@ -4,6 +4,7 @@ import * as MutationTypes from '@/constants/mutation-types';
 const state = {
   nemUrls: [],
   nemData: [],
+  groupedNemData: [],
   nemTrim: false,
   nemDataTrim: {
     start: null,
@@ -18,6 +19,9 @@ const mutations = {
   },
   [MutationTypes.NEM_DATA](state, data) {
     state.nemData = data;
+  },
+  [MutationTypes.GROUPED_NEM_DATA](state, data) {
+    state.groupedNemData = data;
   },
   [MutationTypes.NEM_TRIM](state, data) {
     state.nemTrim = data;
@@ -37,6 +41,9 @@ const getters = {
   nemData: state => {
     return state.nemData;
   },
+  groupedNemData: state => {
+    return state.groupedNemData;
+  },
   nemTrim: state => {
     return state.nemTrim;
   },
@@ -54,6 +61,9 @@ const actions = {
   },
   nemTrim({ commit, state }, data) {
     commit(MutationTypes.NEM_TRIM, data);
+  },
+  groupedNemData({ commit, state }, data) {
+    commit(MutationTypes.GROUPED_NEM_DATA, data);
   },
   nemDataTrim({ commit, state }, data) {
     commit(MutationTypes.NEM_DATA_TRIM, data);

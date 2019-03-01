@@ -58,6 +58,7 @@ table.summary-table {
     font-family: $numbers-font-family;
     text-align: right;
   }
+
   .source-colour {
     width: 17px;
     height: 17px;
@@ -71,6 +72,12 @@ table.summary-table {
       // height: 17px;
     }
   }
+
+  th.group-selector {
+    padding-top: 6px;
+    padding-left: 0;
+  }
+
   .date-value {
     display: block;
     font-family: $primary-font-family;

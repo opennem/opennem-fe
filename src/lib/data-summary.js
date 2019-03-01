@@ -242,7 +242,54 @@ function getPointSummary(domains, date, data, visType) {
   };
 }
 
+function getGroupPointSummary(domains, date, data, visType) {
+  const allData = {};
+  let totalNetPower = 0;
+  let totalGrossPower = 0;
+  let totalMarketValue = 0;
+  const valueType = visType === 'power' ? 'Average' : 'Sum';
+
+  Object.keys(domains).forEach((domain) => {
+    const type = domains[domain].type;
+
+    if (type === 'sources' || type === 'loads') {
+      const average = data[`${domain}${valueType}`];
+      allData[domain] = average;
+
+      if (average !== undefined) {
+        totalNetPower += average;
+        if (type !== 'loads') {
+          totalGrossPower += average;
+        }
+      }
+    } else if (type === 'price') {
+      const price = data[`${domain}Close`];
+      allData[domain] = price;
+    } else if (type === 'market_value') {
+      const marketValue = Math.abs(data[`${domain}Close`]);
+      allData[domain] = marketValue;
+
+      if (marketValue) {
+        totalMarketValue += marketValue;
+      }
+    } else if (type === 'temperature') {
+      allData[domain] = data[`${domain}Average`];
+    }
+  });
+
+  const totalAvValue = totalMarketValue / totalNetPower / 1000;
+
+  return {
+    date,
+    allData,
+    totalNetPower,
+    totalGrossPower,
+    totalAvValue,
+  };
+}
+
 export {
   getSummary,
   getPointSummary,
+  getGroupPointSummary,
 };
