@@ -87,7 +87,7 @@ section {
 .router-view-container {
   max-width: 1400px;
   min-height: 500px;
-  margin: 0.5rem auto;
+  margin: 0.5rem auto 2rem;
   padding: 0 1rem;
   position: relative;
 
