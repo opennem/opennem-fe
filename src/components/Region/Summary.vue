@@ -349,7 +349,9 @@ export default {
     },
 
     handleSourceRowClicked(id) {
-      const keysNum = Object.keys(GraphDomains).length;
+      const sourcesLength = this.updatedRangeSummary.sourcesData.length;
+      const loadsLength = this.updatedRangeSummary.loadsData.length;
+      const keysNum = sourcesLength + loadsLength;
       const find = _.findIndex(this.disabledRows, r => r === id);
       let show = false;
 
@@ -372,7 +374,12 @@ export default {
     },
 
     handleSourceRowShiftClicked(id) {
-      this.disabledRows = Object.keys(GraphDomains).filter(d => d !== id);
+      const disabledSources = this.updatedRangeSummary.sourcesData.filter(
+        d => d.id !== id).map(d => d.id);
+      const disabledLoads = this.updatedRangeSummary.loadsData.filter(
+        d => d.id !== id).map(d => d.id);
+
+      this.disabledRows = [...disabledSources, ...disabledLoads];
 
       this.$store.dispatch('disabledSeries', this.disabledRows);
       EventBus.$emit('chart.series.showOnly', id);
