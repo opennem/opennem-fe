@@ -211,7 +211,7 @@ import * as _ from 'lodash';
 import { mapGetters } from 'vuex';
 import EventBus from '@/lib/event-bus';
 import { formatNumberForDisplay } from '@/lib/formatter';
-import { GraphDomains, isRenewableFuelTech } from '@/domains/graphs';
+import { isRenewableFuelTech } from '@/domains/graphs';
 import GroupSelection from '@/components/ui/GroupSelection';
 
 export default {

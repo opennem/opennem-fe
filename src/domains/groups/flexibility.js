@@ -24,6 +24,5 @@ export default {
       colour: '#E58606',
       fields: ['black_coal', 'brown_coal', 'biomass', 'gas_steam'],
     },
-
   ],
 };
