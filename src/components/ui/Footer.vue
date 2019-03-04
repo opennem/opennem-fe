@@ -29,6 +29,11 @@
             <a href="https://www.aemo.com.au/">AEMO</a>,
             <a href="http://www.bom.gov.au/">BoM</a>
           </p>
+          <p class="map-attribution" v-if="isGeneratorsRoute">
+            <span>Map:</span>
+            <a href="http://stamen.com">Stamen Design Tiles</a> (<a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>),
+            <a href="http://openstreetmap.org">OpenStreetMap Data</a> (<a href="http://www.openstreetmap.org/copyright">ODbL</a>)
+          </p>
         </div>
         <div class="level-right">
           <p v-if="isDev">
@@ -54,6 +59,7 @@
 </template>
 
 <script>
+import _ from 'lodash';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import { faGithub, faTwitter } from '@fortawesome/fontawesome-free-brands';
 import { faVial } from '@fortawesome/fontawesome-pro-light';
@@ -65,6 +71,9 @@ export default {
   computed: {
     isAbout() {
       return this.$route.name === 'about';
+    },
+    isGeneratorsRoute() {
+      return _.includes(this.$route.name, 'generators');
     },
     iconGitHub() {
       return faGithub;
@@ -134,11 +143,28 @@ a {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0.3rem 1rem 0.4rem;
+  align-items: flex-start;
+}
+
+.map-attribution {
+  @include desktop {
+    margin-left: 2rem;
+  }
+  @include mobile {
+    margin-bottom: 1rem;
+  }
+}
+.level-left {
+  @include tablet {
+    display: block;
+  }
+  @include desktop {
+    display: flex;
+  }
 }
 
 @media only screen and (min-width: 500px) {
-  .level,
-  .level-left {
+  .level {
     display: flex;
   }
   .version {

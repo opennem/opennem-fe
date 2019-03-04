@@ -1,5 +1,10 @@
 <template>
-<div id="map"></div>
+<div>
+  <div id="map"></div>
+  <!-- <div class="attribution">
+    Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.
+  </div> -->
+</div>
 </template>
 
 <script>
@@ -7,8 +12,6 @@ import _ from 'lodash';
 import L from 'leaflet';
 import { scaleLinear } from 'd3-scale';
 import { GraphDomains } from '@/domains/graphs';
-
-const MapAttribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.';
 
 export default {
   props: {
@@ -83,7 +86,7 @@ export default {
         position: 'bottomleft',
         prefix: false,
       });
-      attr.addAttribution(MapAttribution);
+      // attr.addAttribution(MapAttribution);
 
       this.map.addControl(attr);
       // this.map.addLayer(this.selectedGeneratorFeature);
@@ -175,5 +178,11 @@ export default {
   @include fullhd {
     height: 400px;
   }
+}
+
+.attribution {
+  font-size: 9px;
+  text-align: center;
+  opacity: 0.75;
 }
 </style>
