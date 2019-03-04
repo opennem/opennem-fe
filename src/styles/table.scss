@@ -4,14 +4,25 @@ table.summary-table {
   font-size: 0.8rem;
 
   caption {
-    font-family: $header-font-family;
+    position: relative;
     text-align: left;
-    font-weight: 600;
-    font-size: 1rem;
     color: #000;
     border-bottom: 1px solid #000;
-    text-transform: uppercase;
     padding: 0.25em 0.5em;
+    font-weight: 600;
+  
+    > span {
+      font-family: $header-font-family;
+      font-size: 1rem;
+      text-transform: uppercase;
+   }
+
+   .date-container {
+     font-size: 0.8rem;
+     position: absolute;
+     right: 0;
+     top: -2px;
+   }
   }
 
   tbody tr:last-child td,

@@ -1,7 +1,8 @@
 <template>
   <table class="summary-table table is-fullwidth is-narrow is-hoverable">
     <caption>
-      Summary
+      <span>Summary</span>
+      <date-selector class="date-container" />
     </caption>
     <thead>
       <tr>
@@ -211,11 +212,13 @@ import EventBus from '@/lib/event-bus';
 import { formatNumberForDisplay } from '@/lib/formatter';
 import { isRenewableFuelTech } from '@/domains/graphs';
 import GroupSelection from '@/components/ui/GroupSelection';
+import DateSelector from '@/components/ui/DateSelector';
 
 export default {
   name: 'region-summary',
   components: {
     GroupSelection,
+    DateSelector,
   },
   props: {
     region: String,

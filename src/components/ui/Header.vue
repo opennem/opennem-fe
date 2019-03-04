@@ -9,7 +9,6 @@
       </div>
 
       <div class="level-right">
-        <date-selector />
         <export-modal />
       </div>
     </div>
@@ -20,7 +19,6 @@
 import { mapGetters } from 'vuex';
 import UiWarning from '@/components/ui/Warning';
 import RegionSelector from './RegionSelector';
-import DateSelector from './DateSelector';
 import ExportHeader from '../Export/Header';
 import ExportModal from '../Export/Modal';
 
@@ -28,7 +26,6 @@ export default {
   name: 'header-nav',
   components: {
     RegionSelector,
-    DateSelector,
     ExportHeader,
     ExportModal,
     UiWarning,

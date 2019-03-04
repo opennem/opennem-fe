@@ -464,7 +464,7 @@ export default {
     margin-right: 0.5rem;
   }
   .point-date {
-    margin-right: 1rem;
+    // margin-right: 1rem;
   }
 
   a.dropdown-trigger {
