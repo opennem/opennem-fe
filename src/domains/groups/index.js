@@ -236,8 +236,23 @@ const marketValueDomains = [
 ];
 
 function appendGroups(groups) {
+  const groupMarketValues = [];
+  groups.forEach((g) => {
+    const fieldsMVArr = [];
+    g.fields.forEach((f) => {
+      fieldsMVArr.push(`${f}.market_value`);
+    });
+    groupMarketValues.push({
+      id: `${g.id}.market_value`,
+      label: `${g.label} Market Value`,
+      type: 'market_value',
+      colour: '#000',
+      fields: fieldsMVArr,
+    });
+  });
   return [
     ...groups,
+    ...groupMarketValues,
     ...additionalDomains,
     ...marketValueDomains,
     ...temperatureDomains,
