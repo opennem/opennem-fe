@@ -26,11 +26,10 @@ export default {
       }),
       marker: L.icon({
         iconUrl: '/images/marker.png',
-        iconSize: [26, 41],
-        iconAnchor: [13, 41],
         shadowUrl: '/images/marker-shadow.png',
-        shadowSize: [38, 34],
-        shadowAnchor: [0, 34],
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        shadowSize: [41, 41]
       }),
       map: null,
       selectedMarker: null,
