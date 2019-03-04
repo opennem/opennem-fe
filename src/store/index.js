@@ -131,9 +131,13 @@ const actions = {
         g.fields.forEach((f) => {
           newValue += d[f] || 0;
         });
-        if (g.type === 'temperature' && newValue === 0) {
+
+        if ((g.type === 'temperature' ||
+          g.id === 'pricePos' ||
+          g.id === 'priceNeg') && newValue === 0) {
           newValue = null;
         }
+
         newD[g.id] = newValue;
       });
 
