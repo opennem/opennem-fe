@@ -343,7 +343,10 @@ export default {
     },
 
     handleSourceRowClicked(id) {
-      const keysNum = Object.keys(GraphDomains).length;
+      const domains = this.groupSelected.groups.filter(
+        d => (d.type === 'sources' || d.type === 'loads') &&
+          (d.id !== 'imports' && d.id !== 'exports'));
+      const keysNum = domains.length;
       const find = _.findIndex(this.disabledRows, r => r === id);
       let show = false;
 
@@ -366,7 +369,12 @@ export default {
     },
 
     handleSourceRowShiftClicked(id) {
-      this.disabledRows = Object.keys(GraphDomains).filter(d => d !== id);
+      const toBeDisabled = this.groupSelected.groups.filter(
+        d => (d.type === 'sources' || d.type === 'loads') &&
+          (d.id !== 'imports' && d.id !== 'exports') &&
+          d.id !== id);
+
+      this.disabledRows = toBeDisabled.map(d => d.id);
 
       this.$store.dispatch('disabledSeries', this.disabledRows);
       EventBus.$emit('chart.series.showOnly', id);
