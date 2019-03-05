@@ -259,11 +259,6 @@ export default {
   }
 }
 
-.range-selector-container {
-  padding: 0.3rem 0;
-  margin-bottom: 1rem;
-}
-
 .region-summary {
   position: relative;
 

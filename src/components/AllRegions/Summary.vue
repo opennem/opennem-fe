@@ -1,7 +1,6 @@
 <template>
   <table class="summary-table table is-fullwidth is-narrow is-hoverable">
-    <caption>
-      <span>Summary</span>
+    <caption class="has-text-right">
       <date-selector class="date-container" />
     </caption>
     <thead>

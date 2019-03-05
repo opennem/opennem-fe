@@ -1,5 +1,5 @@
 export default {
-  groupSelectionName: 'All fuel technologies',
+  groupSelectionName: 'All Technologies',
   groups: [
     {
       id: 'rooftop_solar',

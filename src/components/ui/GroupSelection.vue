@@ -37,3 +37,21 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.select  {
+  &:hover::after {
+    border-color:#C74523;
+  }
+
+  select {
+    background-color: rgba(255, 255, 255, 0.4);
+    border: none;
+    font-weight: 600;
+
+    &:hover {
+      background-color: #fff;
+    }
+  }
+}
+</style>

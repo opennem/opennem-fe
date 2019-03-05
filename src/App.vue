@@ -62,6 +62,7 @@ export default {
 @import "styles/table.scss";
 @import "styles/dropdown.scss";
 @import "styles/button.scss";
+@import "styles/date-range.scss";
 
 /** Bulma SCSS customisation **/
 // 1. Import the initial variables

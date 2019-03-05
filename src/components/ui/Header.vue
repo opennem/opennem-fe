@@ -3,13 +3,13 @@
     <ui-warning />
     <export-header v-if="isExportPng" />
 
-    <div class="level" style="margin-top: 0.5rem;" v-else>
+    <div class="level" v-else>
       <div class="level-left">
         <region-selector />
       </div>
 
       <div class="level-right">
-        <export-modal />
+        <export-buttons style="margin: 1rem 0 0 0" />
       </div>
     </div>
   </nav>
@@ -20,14 +20,14 @@ import { mapGetters } from 'vuex';
 import UiWarning from '@/components/ui/Warning';
 import RegionSelector from './RegionSelector';
 import ExportHeader from '../Export/Header';
-import ExportModal from '../Export/Modal';
+import ExportButtons from '../Export/Buttons';
 
 export default {
   name: 'header-nav',
   components: {
     RegionSelector,
     ExportHeader,
-    ExportModal,
+    ExportButtons,
     UiWarning,
   },
   computed: {
@@ -46,7 +46,7 @@ nav {
   z-index: 99;
   top: 0;
   background-color: $background-alpha;
-  padding: 0 0 0.5rem;
+  padding: 0 0 0.1rem;
 }
 
 h1 {
@@ -56,11 +56,18 @@ h1 {
 .level {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: .1rem 1rem .1rem;
 }
 
 .level-right {
   margin-top: 0;
+}
+
+.fal {
+  font-size: 16px;
+}
+.csv-btn .fal {
+  font-size: 16px;
 }
 
 @media only screen and (min-width: 500px) {
