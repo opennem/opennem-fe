@@ -61,7 +61,12 @@ export default {
           this.selectedMarker = L.marker([lat, lng], { icon: this.marker });
           this.selectedMarker.addTo(this.map);
 
-          if (this.shouldZoomWhenSelected) this.map.setZoom(10);
+          if (this.shouldZoomWhenSelected) {
+            this.map.setZoom(5);
+          }
+          this.map.on('zoomend', () => {
+            this.map.panTo(loc);
+          });
           this.map.panTo(loc);
         }
       } else {
