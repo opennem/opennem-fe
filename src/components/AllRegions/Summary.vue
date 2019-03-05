@@ -1,6 +1,8 @@
 <template>
   <table class="summary-table table is-fullwidth is-narrow is-hoverable">
-    <caption>Summary</caption>
+    <caption class="has-text-right">
+      <date-selector class="date-container" />
+    </caption>
     <thead>
       <tr>
         <th class="group-selector"><group-selection /></th>
@@ -211,13 +213,15 @@ import * as _ from 'lodash';
 import { mapGetters } from 'vuex';
 import EventBus from '@/lib/event-bus';
 import { formatNumberForDisplay } from '@/lib/formatter';
-import { GraphDomains, isRenewableFuelTech } from '@/domains/graphs';
+import { isRenewableFuelTech } from '@/domains/graphs';
 import GroupSelection from '@/components/ui/GroupSelection';
+import DateSelector from '@/components/ui/DateSelector';
 
 export default {
   name: 'all-regions-summary',
   components: {
     GroupSelection,
+    DateSelector,
   },
   data() {
     return {

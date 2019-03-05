@@ -33,9 +33,14 @@ export default {
 @import "../../../node_modules/bulma/sass/utilities/mixins.sass";
 
 .notification {
-  padding: 3px;
+  padding: 3px 2rem;
   text-align: center;
   margin: 0;
+  font-size: 0.7rem;
+
+  @include tablet {
+    font-size: 1rem;
+  }
 
   button.delete {
     top: 0.3rem;

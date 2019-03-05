@@ -255,21 +255,14 @@ export default {
 @import "../../../node_modules/bulma/sass/utilities/mixins.sass";
 
 .date-range {
+  margin-top: .4rem;
+  
   @include tablet {
     
   }
 
   .buttons {
     margin-bottom: 0 !important;
-    padding-top: .4rem;
-  }
-
-  .interval-buttons {
-    @include tablet {
-      // margin-left: 1rem;
-      // padding-left: 1rem;
-      // border-left: 1px solid #ccc;
-    }
   }
 
   .button {
@@ -291,8 +284,6 @@ export default {
 
     .interval-buttons {
       margin-left: 1rem;
-      padding-left: 1rem;
-      border-left: 1px solid #ccc;
     }
   }
 }

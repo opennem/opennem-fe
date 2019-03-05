@@ -117,7 +117,7 @@ export default {
     span {
       position: relative;
       top: 2px;
-      padding: 0.4rem 1rem 0.5rem 0.9rem;
+      padding: 0.3rem 1rem 0.3rem 0.9rem;
       border-radius: 3rem;
     }
 
@@ -128,7 +128,7 @@ export default {
 }
 @media only screen and (min-width: 600px) {
   .region-selector {
-    font-size: 2rem;
+    font-size: 1.7rem;
   }
 }
 </style>

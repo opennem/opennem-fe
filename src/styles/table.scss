@@ -4,14 +4,23 @@ table.summary-table {
   font-size: 0.8rem;
 
   caption {
-    font-family: $header-font-family;
     text-align: left;
-    font-weight: 600;
-    font-size: 1rem;
     color: #000;
-    border-bottom: 1px solid #000;
-    text-transform: uppercase;
-    padding: 0.25em 0.5em;
+    padding: 0.25em 0 0.25em 0.5em;
+    font-size: 1rem;
+    font-weight: 100;  
+    min-height: 2rem;
+  
+    > span {
+      font-family: $header-font-family;
+      font-size: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+   }
+  }
+
+  thead tr th {
+    border-top: 1px solid #000;
   }
 
   tbody tr:last-child td,

@@ -444,27 +444,9 @@ export default {
 
 .date-range {
   font-family: $primary-font-family;
-  font-size: 0.9rem;
-  margin-top: 0.6rem;
-
-  @include tablet {
-    font-size: 1rem;
-    min-height: auto;
-  }
-
-  @include mobile {
-    font-size: 1rem;
-    min-height: 24px;
-    position: relative;
-    left: 5px;
-    top: 3px;
-  }
 
   .dropdown {
     margin-right: 0.5rem;
-  }
-  .point-date {
-    margin-right: 1rem;
   }
 
   a.dropdown-trigger {
