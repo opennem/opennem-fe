@@ -15,6 +15,7 @@ import seasonsTimeGroup from '@/modules/seasons-time-group';
 import quarterlyTimeGroup from '@/modules/quarterly-time-group';
 import y1WeekTimeGroup from '@/modules/y1-week-time-group';
 import y1MonthTimeGroup from '@/modules/y1-month-time-group';
+import thirtyMinTimeGroup from '@/modules/thirty-min-time-group';
 import * as MutationTypes from '@/constants/mutation-types';
 import * as VisTypes from '@/constants/vis-types';
 
@@ -227,6 +228,11 @@ function handleFetchResponse(responses, state, commit) {
     data = dataFilterByLastValuePrecision(data, '24', 'hour');
   } else if (isLast3Days(state.dates.currentRange)) {
     data = dataFilterByLastValuePrecision(data, '3', 'day');
+  }
+
+  if (state.dates.currentInterval === '30mm') {
+    console.log(state.dates.currentRange, state.dates.currentInterval);
+    // data = thirtyMinTimeGroup(data);
   }
 
   if (state.dates.currentRange === 'allMonthly') {
