@@ -48,7 +48,7 @@ export default {
       this.generating = true;
       setTimeout(() => {
         this.generating = false;
-      }, 500);
+      }, 1500);
       EventBus.$emit('before.download.png');
     },
   },

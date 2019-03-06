@@ -65,7 +65,7 @@ export default {
       this.generating = true;
       setTimeout(() => {
         this.generating = false;
-      }, 500);
+      }, 1000);
     },
     showExportPng() {
       this.$store.dispatch('setExportPng', true);
