@@ -10,7 +10,7 @@
     <range-selector class="range-selector-container" v-if="!isExportPng" />
   </div>
   
-  <transition name="slide-fade">
+  <transition name="fade">
     <div class="columns is-desktop is-variable is-1" v-show="!isFetching">
       <div class="column" :class="{ export: isExportPng }">
         <div id="export-container">
