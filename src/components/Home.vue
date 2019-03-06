@@ -144,6 +144,7 @@ export default {
       }
 
       this.$store.dispatch('generateGroupedNemData');
+      this.$store.dispatch('generateExportData');
       this.$store.dispatch('useGroups', true);
 
       // Generate table data

@@ -11,7 +11,11 @@
       :data="exportData"
       :fields="csvHeaders"
       :name="`${exportName}.csv`">
-        <button id="csv-btn" class="csv-btn button is-small is-rounded is-primary is-inverted" @click="generateExportData">
+        <button id="csv-btn" class="csv-btn button is-small is-rounded is-primary"
+          :class="{
+            'is-inverted': !generating,
+            'is-loading': generating
+          }" @click="handleCSVClick">
           <span class="icon">
             <font-awesome-icon class="fal fa-fw" :icon="iconCSV" />
           </span>
@@ -34,11 +38,17 @@ export default {
     Csv,
     FontAwesomeIcon,
   },
+  data() {
+    return {
+      generating: false,
+    };
+  },
   computed: {
     ...mapGetters({
       exportData: 'getExportData',
       exportName: 'getExportName',
       visType: 'visType',
+      nemData: 'nemData',
     }),
     csvHeaders() {
       return getCSVHeaders(this.$store.getters.visType);
@@ -52,8 +62,11 @@ export default {
   },
 
   methods: {
-    generateExportData() {
-      this.$store.dispatch('generateExportData');
+    handleCSVClick() {
+      this.generating = true;
+      setTimeout(() => {
+        this.generating = false;
+      }, 1000);
     },
     showExportPng() {
       this.$store.dispatch('setExportPng', true);
