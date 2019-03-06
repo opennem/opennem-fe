@@ -105,7 +105,6 @@ const actions = {
 
     getJSON(urls, state.features.localData)
       .then((responses) => {
-        console.log(responses)
         handleFetchResponse(responses, state, commit);
       })
       .catch((e) => {
@@ -230,8 +229,7 @@ function handleFetchResponse(responses, state, commit) {
   }
 
   if (state.dates.currentInterval === '30mm') {
-    console.log(state.dates.currentRange, state.dates.currentInterval);
-    // data = thirtyMinTimeGroup(data);
+    data = thirtyMinTimeGroup(data);
   }
 
   if (state.dates.currentRange === 'allMonthly') {
