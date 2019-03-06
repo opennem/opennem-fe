@@ -48,7 +48,6 @@ export default {
       exportData: 'getExportData',
       exportName: 'getExportName',
       visType: 'visType',
-      nemData: 'nemData',
     }),
     csvHeaders() {
       return getCSVHeaders(this.$store.getters.visType);
@@ -66,7 +65,7 @@ export default {
       this.generating = true;
       setTimeout(() => {
         this.generating = false;
-      }, 1000);
+      }, 500);
     },
     showExportPng() {
       this.$store.dispatch('setExportPng', true);
