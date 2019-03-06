@@ -1,4 +1,5 @@
 import * as PERIODS from '@/constants/periods';
+import { formatNumberForDisplay } from '@/lib/formatter';
 
 /**
  * Generation Panel
@@ -109,7 +110,7 @@ function getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets
         showBalloon: true,
         connect: false,
         fillAplhas: 0,
-        balloonFunction: item => `<strong>${item.values.value}°C</strong>`,
+        balloonFunction: item => `<strong>${formatNumberForDisplay(item.values.value, '0,0.0')}°C</strong>`,
       },
       {
         id: 'temperatureMinStockGraph',
@@ -123,7 +124,7 @@ function getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets
         connect: false,
         fillAlphas: 0.1,
         fillToGraph: 'temperatureMaxStockGraph',
-        balloonFunction: item => `<strong>${item.values.value}°C</strong>`,
+        balloonFunction: item => `<strong>${formatNumberForDisplay(item.values.value, '0,0.0')}°C</strong>`,
       },
     ];
   }
@@ -142,7 +143,7 @@ function getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets
     connect: false,
     bulletSize: 5,
     bullet,
-    balloonFunction: item => `<strong>${item.values.value}°C</strong>`,
+    balloonFunction: item => `<strong>${formatNumberForDisplay(item.values.value, '0,0.0')}°C</strong>`,
   };
   let stockGraphs = [];
 
@@ -251,7 +252,7 @@ function getPricePanels(listeners, priceField) {
         dashLength: 1,
         useDataSetColors: false,
         showBalloon: true,
-        balloonFunction: item => `<strong>$${item.values.value}</strong>`,
+        balloonFunction: item => `<strong>${formatNumberForDisplay(item.values.value, '$0,0.00')}</strong>`,
       },
     ],
     guides: [],
@@ -290,7 +291,7 @@ function getPricePanels(listeners, priceField) {
         lineColor: '#C74523',
         useDataSetColors: false,
         showBalloon: true,
-        balloonFunction: item => `<strong>$${item.values.value}</strong>`,
+        balloonFunction: item => `<strong>${formatNumberForDisplay(item.values.value, '$0,0.00')}</strong>`,
       },
     ],
     guides: [],
@@ -328,7 +329,7 @@ function getPricePanels(listeners, priceField) {
         dashLength: 1,
         useDataSetColors: false,
         showBalloon: true,
-        balloonFunction: item => `<strong>-$${item.values.value}</strong>`,
+        balloonFunction: item => `<strong>${formatNumberForDisplay(item.values.value, '$0,0.00')}</strong>`,
       },
     ],
     guides: [],
