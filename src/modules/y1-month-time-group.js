@@ -71,8 +71,6 @@ export default function (data) {
     })
     .entries(cloneData);
   
-  console.log(entries)
-
   return entries.map((e) => {
     delete e.value.nestDate;
     return e.value;

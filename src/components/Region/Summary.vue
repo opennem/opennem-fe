@@ -206,6 +206,7 @@
 
 <script>
 import * as _ from 'lodash';
+import * as moment from 'moment';
 import { mapGetters } from 'vuex';
 import EventBus from '@/lib/event-bus';
 import { formatNumberForDisplay } from '@/lib/formatter';
@@ -400,22 +401,40 @@ export default {
     getRenewableContribution() {
       let renewContribution = 0;
 
-      if (this.rangeSummary.sourcesData) {
+      if (this.isPointHovered) {
+        const find = this.rangeSummary.renewablesPercent.find(
+          d => moment(d.date).isSame(this.pointSummary.date),
+        );
+        if (this.contributionSelection.type === 'demand') {
+          renewContribution = (find.renewableTotal / this.pointSummary.totalNetPower) * 100;
+        } else if (this.contributionSelection.type === 'generation') {
+          renewContribution = (find.renewableTotal / this.pointSummary.totalGrossPower) * 100;
+        }
+        // renewContribution = find[this.contributionSelection.type];
+      } else if (this.rangeSummary.sourcesData) {
         this.rangeSummary.sourcesData.forEach((d) => {
           if (isRenewableFuelTech(d.id)) {
-            if (this.isPointHovered) {
-              renewContribution +=
-                this.getContribution(
-                  this.pointSummary.allData[d.id],
-                  this.pointSummaryTotal,
-                );
-            } else {
-              renewContribution +=
-                this.getContribution(d.range.power, this.rangeSummaryTotal);
-            }
+            renewContribution += this.getContribution(d.range.power, this.rangeSummaryTotal);
           }
         });
       }
+
+      // if (this.rangeSummary.sourcesData) {
+      //   this.rangeSummary.sourcesData.forEach((d) => {
+      //     if (isRenewableFuelTech(d.id)) {
+      //       if (this.isPointHovered) {
+      //         renewContribution +=
+      //           this.getContribution(
+      //             this.pointSummary.allData[d.id],
+      //             this.pointSummaryTotal,
+      //           );
+      //       } else {
+      //         renewContribution +=
+      //           this.getContribution(d.range.power, this.rangeSummaryTotal);
+      //       }
+      //     }
+      //   });
+      // }
       return renewContribution;
     },
   },

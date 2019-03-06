@@ -5,7 +5,7 @@ import {
   isFTMarketValue,
   isTemperature,
   isRenewableFuelTech,
-  isImports,
+  // isImports,
   isLoads } from '@/domains/graphs';
 import { getKeys, getExtent } from './data-helpers';
 
@@ -38,7 +38,8 @@ function getSummary(domains, data, isPower) {
   const genDataSum = data.map((d) => {
     let p = 0;
     Object.keys(d).forEach((ft) => {
-      if (validFuelTech(ft) && !isLoads(ft) && !isImports(ft)) {
+      // if (validFuelTech(ft) && !isLoads(ft) && !isImports(ft)) {
+      if (validFuelTech(ft) && !isLoads(ft)) {
         p += d[ft] || 0;
       }
     });
@@ -60,6 +61,19 @@ function getSummary(domains, data, isPower) {
   const renewablesPercentages = renewablesDataSum.map((d, i) => (d / dataSum[i]) * 100);
   // create a new array with the ft (renewables only) percentages of generation
   const renewablesPercentages2 = renewablesDataSum.map((d, i) => (d / genDataSum[i]) * 100);
+
+  // create an array of objects for renewables
+  const renewablesPercent = data.map((d, i) => {
+    const renewableTotal = renewablesDataSum[i];
+    return {
+      date: d.date,
+      renewableTotal,
+      genSum: genDataSum[i],
+      demandSum: dataSum[i],
+      generation: (renewableTotal / genDataSum[i]) * 100,
+      demand: (renewableTotal / dataSum[i]) * 100,
+    };
+  });
 
   // sum up all the ft totals
   const dataSumTotal = dataSum.reduce((a, b) => a + b, 0);
@@ -189,6 +203,7 @@ function getSummary(domains, data, isPower) {
     totalGrossEnergy,
     totalAveragePrice,
     demandExtent: getExtent(data, dataSum),
+    renewablesPercent,
     renewablesExtent: getExtent(data, renewablesPercentages),
     generationExtent: getExtent(data, genDataSum),
     renewablesExtent2: getExtent(data, renewablesPercentages2),
