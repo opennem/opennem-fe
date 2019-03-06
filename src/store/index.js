@@ -107,7 +107,6 @@ const actions = {
 
     getJSON(urls, state.features.localData)
       .then((responses) => {
-        console.log(responses)
         handleFetchResponse(responses, state, commit);
       })
       .catch((e) => {
@@ -174,10 +173,9 @@ const actions = {
       getPointSummary(state.domains, data.date, data.dataContext, state.visType);
     commit(MutationTypes.POINT_SUMMARY, summary);
   },
-  generateExportData({ commit, state }, data) {
+  generateExportData({ commit, state }) {
     const responses = state.nemData.responseData;
     let exportData = [];
-
     responses.forEach((r) => {
       exportData = [...exportData, ...dataTransform(state.domains, r.data, false)];
     });
@@ -205,8 +203,10 @@ const actions = {
       default:
     }
 
-    exportData = dataFilter(exportData, state.dates.selectedDates.start, endDateFilter);
-
+    if (state.dates.selectedDates.start && endDateFilter) {
+      exportData = dataFilter(exportData, state.dates.selectedDates.start, endDateFilter);
+    }
+  
     commit(MutationTypes.EXPORT_DATA, exportData);
   },
   setVisType({ commit, state }, data) {
@@ -231,8 +231,7 @@ function handleFetchResponse(responses, state, commit) {
   }
 
   if (state.dates.currentInterval === '30mm') {
-    console.log(state.dates.currentRange, state.dates.currentInterval);
-    // data = thirtyMinTimeGroup(data);
+    data = thirtyMinTimeGroup(data);
   }
 
   if (state.dates.currentRange === 'allMonthly') {
