@@ -9,7 +9,7 @@
 
     <div>
       <span>Sources:</span>
-      <strong>AEMO, BoM, OpenNEM</strong>
+      <strong>{{sources}}</strong>
     </div>
 
     <div v-if="showAttribution">
@@ -44,7 +44,14 @@ export default {
     ...mapGetters({
       exportRegion: 'getExportRegion',
       exportAttribution: 'exportAttribution',
+      showTemperaturePanel: 'showTemperaturePanel',
     }),
+    sources() {
+      if (this.exportRegion !== 'OpenNEM' && this.showTemperaturePanel) {
+        return 'AEMO, BoM, OpenNEM';
+      }
+      return 'AEMO, OpenNEM';
+    },
   },
   methods: {
     onAttributionBlur(e) {

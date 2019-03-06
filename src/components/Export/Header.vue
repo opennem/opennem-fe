@@ -9,7 +9,10 @@
         <button class="button is-small is-rounded is-primary is-inverted" @click="closeExport">
           Cancel
         </button>
-        <button class="button is-small is-rounded is-primary" @click="handleDownloadClick">
+        <button class="button is-small is-rounded is-primary"
+          :class="{
+            'is-loading': generating
+          }" @click="handleDownloadClick">
           Download
         </button>
       </div>
@@ -34,6 +37,7 @@ export default {
   data() {
     return {
       isChrome: isChrome(),
+      generating: false,
     };
   },
   methods: {
@@ -41,6 +45,10 @@ export default {
       this.$store.dispatch('setExportPng', false);
     },
     handleDownloadClick() {
+      this.generating = true;
+      setTimeout(() => {
+        this.generating = false;
+      }, 500);
       EventBus.$emit('before.download.png');
     },
   },
