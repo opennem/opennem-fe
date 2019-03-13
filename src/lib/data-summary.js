@@ -108,7 +108,7 @@ function getSummary(domains, data, isPower) {
   Object.keys(domains).forEach((domain) => {
     if (_.includes(dataKeys, domain) && validFuelTech(domain)) {
       // sum ft power
-      const totalFTValue = data.reduce((a, b) => a + b[domain], 0);
+      const totalFTValue = data.reduce((a, b) => a + (b[domain] || 0), 0);
       let dataEnergy;
 
       if (isPower) {
@@ -116,7 +116,7 @@ function getSummary(domains, data, isPower) {
         dataEnergy = data.map(d => (d[domain] * 5) / 60 / 1000);
       } else {
         // no need to calculate if returned data is already Energy
-        dataEnergy = data.map(d => d[domain]);
+        dataEnergy = data.map(d => d[domain] || 0);
       }
 
       // sum the energy
