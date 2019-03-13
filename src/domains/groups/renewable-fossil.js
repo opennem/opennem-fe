@@ -1,5 +1,5 @@
 export default {
-  groupSelectionName: 'Renewables/Fossils Fuels',
+  groupSelectionName: 'Renewable/Fossil',
   groups: [
     {
       id: 'group_renewables',

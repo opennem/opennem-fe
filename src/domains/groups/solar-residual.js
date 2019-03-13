@@ -1,5 +1,5 @@
 export default {
-  groupSelectionName: 'Solar/Residual Demand',
+  groupSelectionName: 'Solar/Residual',
   groups: [
     {
       id: 'group_solar',

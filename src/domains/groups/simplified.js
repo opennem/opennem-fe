@@ -1,5 +1,5 @@
 export default {
-  groupSelectionName: 'Default Grouping',
+  groupSelectionName: 'Simplified',
   groups: [
     {
       id: 'group_solar',
