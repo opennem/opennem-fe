@@ -6,6 +6,7 @@ export default function (d) {
 
   let tempNum = 0;
   let priceNum = 0;
+  let ftNum = {}
 
   d.forEach((e) => {
     Object.keys(e).forEach((f) => {
@@ -17,6 +18,9 @@ export default function (d) {
 
       if (isValidFuelTech(f)) {
         newD[f] += e[f];
+
+        if (!ftNum[f]) ftNum[f] = 0
+        ftNum[f] += 1
       }
 
       if (isFTMarketValue(f)) {
@@ -33,6 +37,10 @@ export default function (d) {
       }
     });
   });
+
+  Object.keys(ftNum).forEach((ft) => {
+    newD[ft] = newD[ft] / ftNum[ft];
+  })
 
   newD.price = newD.price / priceNum;
   
