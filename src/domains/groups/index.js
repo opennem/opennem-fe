@@ -1,8 +1,8 @@
-import defaultGroup from './default';
-import expandedGroup from './expanded';
+import simplified from './simplified';
+import detailed from './detailed';
 import flexibilityGroup from './flexibility';
-import renewablesVFossilsGroup from './renewables-v-fossils';
-import solarVDemandGroup from './solar-v-demand';
+import renewableFossil from './renewable-fossil';
+import solarResidual from './solar-residual';
 
 const additionalDomains = [
   {
@@ -260,28 +260,28 @@ function appendGroups(groups) {
   ];
 }
 
-defaultGroup.groups = appendGroups(defaultGroup.groups);
-expandedGroup.groups = appendGroups(expandedGroup.groups);
+simplified.groups = appendGroups(simplified.groups);
+detailed.groups = appendGroups(detailed.groups);
 flexibilityGroup.groups = appendGroups(flexibilityGroup.groups);
-renewablesVFossilsGroup.groups = appendGroups(renewablesVFossilsGroup.groups);
-solarVDemandGroup.groups = appendGroups(solarVDemandGroup.groups);
+renewableFossil.groups = appendGroups(renewableFossil.groups);
+solarResidual.groups = appendGroups(solarResidual.groups);
 
-defaultGroup.groups.reverse();
-expandedGroup.groups.reverse();
+simplified.groups.reverse();
+detailed.groups.reverse();
 flexibilityGroup.groups.reverse();
-renewablesVFossilsGroup.groups.reverse();
-solarVDemandGroup.groups.reverse();
+renewableFossil.groups.reverse();
+solarResidual.groups.reverse();
 
 // create .market_value for each ft
 // create emissionsIntensity, price/priceNeg/pricePos,
 // temperature /_min/_max/_mean, volume_weighted_price
 
 const SourceGroups = [
-  expandedGroup,
-  defaultGroup,
+  detailed,
+  simplified,
   flexibilityGroup,
-  renewablesVFossilsGroup,
-  solarVDemandGroup,
+  renewableFossil,
+  solarResidual,
 ];
 
 export default SourceGroups;
