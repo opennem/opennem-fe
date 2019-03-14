@@ -9,6 +9,16 @@
       <span v-if="showSummaryPanel"><font-awesome-icon class="fal" :icon="iconRemove" /></span>
       <span v-else>Show Summary</span>
     </button>
+    <button class="legend-btn checkbox-btn button is-small is-rounded is-primary is-inverted"
+      :class="{
+        'on': showSummaryPanel,
+        'off': !showSummaryPanel,
+      }"
+      v-if="!showSummaryPanel">
+        <label class="checkbox">
+          <input type="checkbox" v-model="showPercent" /> Percentage
+        </label>
+    </button>
   </div>
 </template>
 
@@ -25,18 +35,27 @@ export default {
     FontAwesomeIcon,
   },
   data() {
-    return {};
+    return {
+      showPercent: true,
+    };
   },
   computed: {
     ...mapGetters({
       isExportPng: 'isExportPng',
       showSummaryPanel: 'showSummaryPanel',
+      exportShowPercent: 'exportShowPercent',
     }),
     iconRemove() {
       return faTimesCircle;
     },
   },
+  watch: {
+    showPercent(show) {
+      this.$store.dispatch('exportShowPercent', show);
+    },
+  },
   mounted() {
+    this.showPercent = this.exportShowPercent;
   },
   beforeDestroy() {
   },
@@ -70,6 +89,13 @@ export default {
       font-size: 18px;
     }
 
+    &.checkbox-btn {
+      margin-left: -109px;
+      margin-top: 31px;
+      color: #000;
+      padding-right: 8px;
+    }
+
     &.on {
       margin-left: -41px;
       padding-right: 0;
@@ -91,7 +117,7 @@ export default {
 
   .legend-btn {
     top: 320px;
-    margin-left: -121px;
+    margin-left: -119px;
   }
 }
 </style>
