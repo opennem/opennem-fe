@@ -9,7 +9,7 @@
       <span class="source-colour" :style="{ backgroundColor: row.colour }"></span>
       <div class="source-label">
         {{row.label}}
-        <em>
+        <em v-if="exportShowPercent">
           {{ getContribution(row.range.power, rangeSummaryTotal) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(row.range.power, rangeSummaryTotal))">%</span>
         </em>
       </div>
@@ -22,7 +22,7 @@
       <span class="source-colour" :style="{ backgroundColor: row.colour }"></span>
       <div class="source-label">
         {{row.label}}
-        <em>
+        <em v-if="exportShowPercent">
           {{ getContribution(row.range.power, rangeSummaryTotal) | formatNumber('0,0.0') }}<span v-if="hasValue(getContribution(row.range.power, rangeSummaryTotal))">%</span>
         </em>
       </div>
@@ -41,6 +41,7 @@ export default {
       contributionType: 'contributionType',
       disabledSeries: 'disabledSeries',
       groupSelected: 'groupSelected',
+      exportShowPercent: 'exportShowPercent',
     }),
     isTypeGeneration() {
       return this.contributionType === 'generation';

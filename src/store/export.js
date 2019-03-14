@@ -11,6 +11,7 @@ const state = {
   exportData: [],
   exportRegion: null,
   exportPng: false,
+  exportShowPercent: true,
   exportAttribution: lsGet(MutationTypes.EXPORT_ATTRIBUTION),
 };
 
@@ -28,6 +29,9 @@ const mutations = {
     lsSet(MutationTypes.EXPORT_ATTRIBUTION, data);
     state.exportAttribution = data;
   },
+  [MutationTypes.EXPORT_SHOW_PERCENT](state, data) {
+    state.exportShowPercent = data;
+  },
 };
 
 const getters = {
@@ -43,6 +47,9 @@ const getters = {
   exportAttribution: state => {
     return state.exportAttribution;
   },
+  exportShowPercent: state => {
+    return state.exportShowPercent;
+  },
 };
 
 const actions = {
@@ -57,6 +64,9 @@ const actions = {
   },
   exportAttribution({ commit, state }, data) {
     commit(MutationTypes.EXPORT_ATTRIBUTION, data);
+  },
+  exportShowPercent({ commit, state }, data) {
+    commit(MutationTypes.EXPORT_SHOW_PERCENT, data);
   },
 };
 
