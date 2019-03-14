@@ -9,6 +9,7 @@ const state = {
   period: null,
   minPeriod: defaultDateRange.minPeriod,
   groupToPeriods: defaultDateRange.groupToPeriods,
+  currentHoverSeries: null,
 };
 
 const mutations = {
@@ -26,6 +27,9 @@ const mutations = {
   },
   [MutationTypes.CHART_GROUP_TO_PERIODS](state, data) {
     state.groupToPeriods = data;
+  },
+  [MutationTypes.CHART_CURRENT_HOVER_SERIES](state, data) {
+    state.currentHoverSeries = data;
   },
 };
 
@@ -45,6 +49,9 @@ const getters = {
   groupToPeriods: state => {
     return state.groupToPeriods;
   },
+  currentHoverSeries: state => {
+    return state.currentHoverSeries;
+  },
 };
 
 const actions = {
@@ -62,6 +69,9 @@ const actions = {
   },
   groupToPeriods({ commit, state }, data) {
     commit(MutationTypes.CHART_GROUP_TO_PERIODS, data);
+  },
+  currentHoverSeries({ commit, state }, data) {
+    commit(MutationTypes.CHART_CURRENT_HOVER_SERIES, data);
   },
 };
 

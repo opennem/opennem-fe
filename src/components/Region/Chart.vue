@@ -412,9 +412,11 @@ export default {
       const graphId = e.graph.id;
       const graphs = this.chart.panels[0].graphs;
 
-      graphs.forEach((g) => {
-        this.toggleSeriesBalloon(g, graphId);
-      });
+      this.$store.dispatch('currentHoverSeries', graphId);
+
+      // graphs.forEach((g) => {
+      //   this.toggleSeriesBalloon(g, graphId);
+      // });
     },
 
     onCategoryAxisItemClicked(e) {
