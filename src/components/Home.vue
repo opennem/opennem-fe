@@ -22,6 +22,7 @@
             </transition>
 
             <panel-button />
+            <chart-tips v-if="!isExportPng" />
             <all-regions-chart :chartData="groupedNemData" :nemData="nemData" :customDomains="customDomains" v-show="!error" />
             <div v-if="isExportPng">
               <all-regions-summary v-if="showSummaryPanel" />
@@ -61,6 +62,7 @@ import ExportLegend from './Export/Legend';
 import UiZoomOutButton from './ui/ZoomOutButton';
 import UiLoader from './ui/Loader';
 import RangeSelector from './ui/RangeSelector';
+import ChartTips from './ui/ChartTips';
 
 export default {
   components: {
@@ -74,6 +76,7 @@ export default {
     PanelButton,
     UiLoader,
     RangeSelector,
+    ChartTips,
   },
   created() {
     this.$store.dispatch('region', 'nem');

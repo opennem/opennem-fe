@@ -13,7 +13,7 @@ export default {
       id: 'group_fossils',
       label: 'Fossils',
       type: 'sources',
-      colour: '#666666',
+      colour: '#333',
       fields: ['battery_discharging', 'gas_recip',
         'gas_ocgt', 'gas_ccgt', 'gas_steam', 'distillate',
         'black_coal', 'brown_coal'],
