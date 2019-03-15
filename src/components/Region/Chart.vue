@@ -321,7 +321,17 @@ export default {
         { event: 'zoomed', method: this.onPanelZoomed },
         { event: 'changed', method: this.onPanelChanged },
         { event: 'rollOverGraph', method: this.onPanelHover },
+        { event: 'changed', method: this.onChartChanged },
       ];
+    },
+
+    onChartChanged(e) {
+      if (e.chart.id === 'stockPanel0') {
+        this.$store.dispatch('chartWidth', e.chart.divRealWidth);
+        this.$store.dispatch('chartHeight', e.chart.divRealHeight);
+        this.$store.dispatch('clientX', e.finalX);
+        this.$store.dispatch('clientY', e.finalY);
+      }
     },
 
     getCategoryAxisListeners() {

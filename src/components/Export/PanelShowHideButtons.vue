@@ -151,7 +151,6 @@ export default {
         box-shadow: none;
       }
     }
-    
   }
 
   .price-btn {
