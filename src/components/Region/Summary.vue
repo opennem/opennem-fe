@@ -71,6 +71,7 @@
         :key="row.id"
       >
         <td
+          v-tooltip.left="fuelTechList(row)"
           class="row-label"
           @click.exact="handleSourceRowClicked(row.id)"
           @click.shift.exact="handleSourceRowShiftClicked(row.id)"
@@ -210,7 +211,7 @@ import * as moment from 'moment';
 import { mapGetters } from 'vuex';
 import EventBus from '@/lib/event-bus';
 import { formatNumberForDisplay } from '@/lib/formatter';
-import { isRenewableFuelTech } from '@/domains/graphs';
+import { GraphDomains, isRenewableFuelTech } from '@/domains/graphs';
 import GroupSelection from '@/components/ui/GroupSelection';
 import DateSelector from '@/components/ui/DateSelector';
 
@@ -390,6 +391,20 @@ export default {
 
     isDisabled(rowId) {
       return this.disabledRows.find(r => r === rowId);
+    },
+
+    fuelTechList(group) {
+      const findGroup = this.groupSelected.groups.find(g => g.id === group.id);
+      const listArr = [];
+      let list = '';
+      findGroup.fields.forEach(f => {
+        listArr.push(GraphDomains[f].label);
+      });
+      listArr.sort();
+      listArr.forEach(f => {
+        list += `${f}<br>`;
+      });
+      return listArr.length === 1 ? '' : list;
     },
 
     hasValue(value) {
