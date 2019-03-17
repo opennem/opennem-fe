@@ -11,7 +11,7 @@ export default {
 
     {
       id: 'group_demand',
-      label: 'Demand',
+      label: 'Other generation',
       type: 'sources',
       colour: '#386cb0',
       fields: ['wind', 'hydro', 'battery_discharging', 'gas_recip',
