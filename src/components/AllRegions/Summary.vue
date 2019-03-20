@@ -308,6 +308,7 @@ export default {
 
         let averagePriceSum = 0;
         let hasGroup = false;
+        const fieldNames = [];
 
         g.fields.forEach((f) => {
           const find = data.find(s => s.id === f);
@@ -316,6 +317,7 @@ export default {
             range.power += find.range.power;
             range.energy += find.range.energy;
             averagePriceSum += find.range.averagePrice;
+            fieldNames.push(GraphDomains[f].label);
           }
         });
 
@@ -327,6 +329,7 @@ export default {
             id: g.id,
             label: g.label,
             range,
+            fieldNames,
           });
         }
       });
@@ -391,17 +394,11 @@ export default {
     },
 
     fuelTechList(group) {
-      const findGroup = this.groupSelected.groups.find(g => g.id === group.id);
-      const listArr = [];
       let list = '';
-      findGroup.fields.forEach(f => {
-        listArr.push(GraphDomains[f].label);
-      });
-      listArr.sort();
-      listArr.forEach(f => {
+      group.fieldNames.forEach(f => {
         list += `${f}<br>`;
       });
-      return listArr.length === 1 ? '' : list;
+      return group.fieldNames.length === 1 ? '' : list;
     },
 
     hasValue(value) {
