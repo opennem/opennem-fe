@@ -122,7 +122,7 @@ export default {
 .chart-tips-container {
   font-size: 11px;
   position: absolute;
-  background-color: rgba(255, 255, 255, 0.85);
+  background-color: rgba(255, 255, 255, 0.95);
   padding: 4px 6px;
   border-radius: 2px;
   text-align: right;
