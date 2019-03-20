@@ -31,7 +31,7 @@ export default {
       isPointHovered: 'isPointHovered',
       pointSummary: 'getPointSummary',
       isPower: 'isPower',
-      // contributionType: 'contributionType',
+      availableFts: 'availableFts',
       disabledSeries: 'disabledSeries',
       groupSelected: 'groupSelected',
       currentHoverSeries: 'currentHoverSeries',
@@ -92,17 +92,9 @@ export default {
     },
 
     showTotal() {
-      // const domains = this.groupSelected.groups;
-      // domains.forEach((d) => {
-      //   const domainType = d.type;
-      //   const domainId = d.id;
-      //   if (domainType === 'sources' || domainType === 'loads') {
-      //     if (!_.includes(this.disabledSeries, domainId)) {
-      //       console.log(domainId)
-      //     }
-      //   }
-      // });
-      return true;
+      const availLength = this.availableFts.length;
+      const disabledLength = this.disabledSeries.length;
+      return availLength - 1 !== disabledLength;
     },
 
     visibleSeriesTotal() {

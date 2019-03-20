@@ -294,6 +294,12 @@ export default {
     disabledSeries(newData) {
       this.disabledRows = newData;
     },
+    updatedRangeSummary(summary) {
+      const sources = summary.sourcesData;
+      const loads = summary.loadsData;
+      const availableFts = [...sources.map(s => s.id), ...loads.map(l => l.id)];
+      this.$store.dispatch('availableFts', availableFts);
+    },
   },
   mounted() {
     this.contributionSelection.type = this.contributionType;
