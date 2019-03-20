@@ -13,6 +13,7 @@ const state = {
   isPointHovered: false,
   contributionType: lsGet(MutationTypes.CONTRIBUTION_TYPE),
   disabledSeries: [],
+  availableFts: [],
 };
 
 const mutations = {
@@ -35,6 +36,9 @@ const mutations = {
   [MutationTypes.SUMMARY_DISABLED_SERIES](state, data) {
     state.disabledSeries = data;
   },
+  [MutationTypes.SUMMARY_AVAILABLE_FTS](state, data) {
+    state.availableFts = data;
+  },
 };
 
 const getters = {
@@ -56,6 +60,9 @@ const getters = {
   disabledSeries: state => {
     return state.disabledSeries;
   },
+  availableFts: state => {
+    return state.availableFts;
+  },
 };
 
 const actions = {
@@ -70,6 +77,9 @@ const actions = {
   },
   disabledSeries({ commit, state }, data) {
     commit(MutationTypes.SUMMARY_DISABLED_SERIES, data);
+  },
+  availableFts({ commit, state }, data) {
+    commit(MutationTypes.SUMMARY_AVAILABLE_FTS, data);
   },
 };
 

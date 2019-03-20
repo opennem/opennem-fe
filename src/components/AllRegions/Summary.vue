@@ -72,6 +72,7 @@
         :key="row.id"
       >
         <td
+          v-tooltip.left="fuelTechList(row)"
           class="row-label"
           @click.exact="handleSourceRowClicked(row.id)"
           @click.shift.exact="handleSourceRowShiftClicked(row.id)"
@@ -214,7 +215,7 @@ import * as moment from 'moment';
 import { mapGetters } from 'vuex';
 import EventBus from '@/lib/event-bus';
 import { formatNumberForDisplay } from '@/lib/formatter';
-import { isRenewableFuelTech } from '@/domains/graphs';
+import { GraphDomains, isRenewableFuelTech } from '@/domains/graphs';
 import GroupSelection from '@/components/ui/GroupSelection';
 import DateSelector from '@/components/ui/DateSelector';
 
@@ -287,6 +288,12 @@ export default {
     disabledSeries(newData) {
       this.disabledRows = newData;
     },
+    updatedRangeSummary(summary) {
+      const sources = summary.sourcesData;
+      const loads = summary.loadsData;
+      const availableFts = [...sources.map(s => s.id), ...loads.map(l => l.id)];
+      this.$store.dispatch('availableFts', availableFts);
+    },
   },
 
   mounted() {
@@ -307,6 +314,7 @@ export default {
 
         let averagePriceSum = 0;
         let hasGroup = false;
+        const fieldNames = [];
 
         g.fields.forEach((f) => {
           const find = data.find(s => s.id === f);
@@ -315,6 +323,7 @@ export default {
             range.power += find.range.power;
             range.energy += find.range.energy;
             averagePriceSum += find.range.averagePrice;
+            fieldNames.push(GraphDomains[f].label);
           }
         });
 
@@ -326,6 +335,7 @@ export default {
             id: g.id,
             label: g.label,
             range,
+            fieldNames,
           });
         }
       });
@@ -387,6 +397,14 @@ export default {
 
     isDisabled(rowId) {
       return this.disabledRows.find(r => r === rowId);
+    },
+
+    fuelTechList(group) {
+      let list = '';
+      group.fieldNames.forEach(f => {
+        list += `${f}<br>`;
+      });
+      return group.fieldNames.length === 1 ? '' : list;
     },
 
     hasValue(value) {

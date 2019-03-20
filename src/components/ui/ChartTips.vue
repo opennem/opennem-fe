@@ -1,9 +1,9 @@
 <template>
-  <div class="chart-tips-container" :style="{ 
+  <div class="chart-tips-container" v-show="isPointHovered" :style="{ 
       'left': `${leftValue}px`,
       'top': `${topValue}px`
     }">
-    <div class="chart-tips" v-show="isPointHovered">
+    <div class="chart-tips">
       <div class="current">
         <span class="colour-sq" 
           :style="{ 
@@ -13,7 +13,7 @@
         <em>{{currentSeriesLabel}}:</em> <strong>{{currentSeriesValue}} {{currentSeriesUnit}}</strong>
       </div>
       
-      <div class="total">
+      <div class="total" v-if="showTotal">
         <em>Total:</em><strong>{{visibleSeriesTotal}} {{currentSeriesUnit}}</strong>
       </div>
     </div>
@@ -31,7 +31,7 @@ export default {
       isPointHovered: 'isPointHovered',
       pointSummary: 'getPointSummary',
       isPower: 'isPower',
-      // contributionType: 'contributionType',
+      availableFts: 'availableFts',
       disabledSeries: 'disabledSeries',
       groupSelected: 'groupSelected',
       currentHoverSeries: 'currentHoverSeries',
@@ -50,7 +50,9 @@ export default {
     topValue() {
       const elHeight = this.$el ? this.$el.offsetHeight : 0;
       const safeZone = this.chartHeight - this.chartHeight / 3;
-      return this.clientY > safeZone ? 0 : this.chartHeight - elHeight * 2 + 6;
+      const offset = this.showTotal ? 6 : -9;
+      const calTop = this.chartHeight - elHeight * 2 + offset;
+      return this.clientY > safeZone ? 0 : calTop;
     },
 
     currentSeriesLabel() {
@@ -89,6 +91,12 @@ export default {
       return this.isPower ? '0,0' : '0,0.0';
     },
 
+    showTotal() {
+      const availLength = this.availableFts.length;
+      const disabledLength = this.disabledSeries.length;
+      return availLength - 1 !== disabledLength;
+    },
+
     visibleSeriesTotal() {
       const domains = this.groupSelected.groups;
       const summary = this.pointSummary;
@@ -114,20 +122,14 @@ export default {
 .chart-tips-container {
   font-size: 10px;
   position: absolute;
-  // top: 261px;
   background-color: #ece9e6;
   padding: 2px 4px;
   text-align: right;
   z-index: 99;
-  // box-shadow: 1px 1px 1px rgba(10, 10, 10, 0.2);
   border: 1px solid #ccc;
 }
 
 .chart-tips {
-  // background-color: #fff;
-  // display: flex;
-  // justify-content: center;
-  // align-items: center;
   white-space: nowrap;
 
   .current {

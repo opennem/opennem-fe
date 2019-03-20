@@ -269,7 +269,11 @@ function handleFetchResponse(responses, state, commit) {
   let hasWarning = false;
 
   if (moment(first.date).isBefore('2017-01-01')) {
-    hasWarning = true;
+    if (state.dates.currentRange !== 'allMonthly' &&
+      (state.dates.currentRange === 'lastYear' &&
+        state.dates.currentInterval !== 'MM')) {
+      hasWarning = true;
+    }
   }
 
   commit(MutationTypes.WARNING, hasWarning);
