@@ -321,17 +321,8 @@ export default {
         { event: 'zoomed', method: this.onPanelZoomed },
         { event: 'changed', method: this.onPanelChanged },
         { event: 'rollOverGraph', method: this.onPanelHover },
-        { event: 'changed', method: this.onChartChanged },
+        { event: 'rendered', method: this.onChartRendered },
       ];
-    },
-
-    onChartChanged(e) {
-      if (e.chart.id === 'stockPanel0') {
-        this.$store.dispatch('chartWidth', e.chart.divRealWidth);
-        this.$store.dispatch('chartHeight', e.chart.divRealHeight);
-        this.$store.dispatch('clientX', e.finalX);
-        this.$store.dispatch('clientY', e.finalY);
-      }
     },
 
     getCategoryAxisListeners() {
@@ -405,7 +396,18 @@ export default {
       }
     },
 
+    onChartRendered(e) {
+      if (e.chart.id === 'stockPanel0') {
+        this.$store.dispatch('chartWidth', e.chart.divRealWidth);
+        this.$store.dispatch('chartHeight', e.chart.divRealHeight);
+        this.$store.dispatch('clientX', e.finalX);
+        this.$store.dispatch('clientY', e.finalY);
+      }
+    },
+
     onPanelChanged(e) {
+      this.onChartRendered(e);
+
       if (e.index !== undefined) {
         const data = e.target.categoryLineAxis.data[e.index];
         this.$store.dispatch('generatePointSummary', {
