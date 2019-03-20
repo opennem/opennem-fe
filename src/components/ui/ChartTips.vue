@@ -42,15 +42,15 @@ export default {
     }),
 
     leftValue() {
-      const elWidth = this.$el ? this.$el.offsetWidth : 0;
+      const elWidth = this.$el && this.$el.offsetWidth > 0 ? this.$el.offsetWidth : 150;
       const safeZone = this.chartWidth - elWidth;
-      return this.clientX < safeZone ? this.clientX + 1 : safeZone;
+      return this.clientX && this.clientX < safeZone ? this.clientX + 1 : safeZone;
     },
 
     topValue() {
-      const elHeight = this.$el ? this.$el.offsetHeight : 0;
+      const elHeight = this.$el && this.$el.offsetHeight > 0 ? this.$el.offsetHeight : this.showTotal ? 40 : 24;
       const safeZone = this.chartHeight - this.chartHeight / 3;
-      const offset = this.showTotal ? 6 : -9;
+      const offset = this.showTotal ? 9 : -6;
       const calTop = this.chartHeight - elHeight * 2 + offset;
       return this.clientY > safeZone ? 0 : calTop;
     },
@@ -120,13 +120,14 @@ export default {
 </script>
 <style lang="scss" scoped>
 .chart-tips-container {
-  font-size: 10px;
+  font-size: 11px;
   position: absolute;
-  background-color: #ece9e6;
-  padding: 2px 4px;
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 4px 6px;
+  border-radius: 2px;
   text-align: right;
   z-index: 99;
-  border: 1px solid #ccc;
+  box-shadow: 0 0 20px rgba(50, 50, 50, 0.1);
 }
 
 .chart-tips {
