@@ -61,7 +61,7 @@ export default {
       id: 'group_coal',
       label: 'Coal',
       type: 'sources',
-      colour: '#000',
+      colour: '#131313',
       fields: ['black_coal', 'brown_coal'],
     },
   ],
