@@ -400,11 +400,15 @@ export default {
     },
 
     fuelTechList(group) {
+      let fields = group.fieldNames.slice(0);
       let list = '';
-      group.fieldNames.forEach(f => {
+
+      fields.sort();
+      fields.forEach(f => {
         list += `${f}<br>`;
       });
-      return group.fieldNames.length === 1 ? '' : list;
+
+      return fields.length === 1 ? '' : list;
     },
 
     hasValue(value) {
@@ -424,7 +428,6 @@ export default {
         } else if (this.contributionSelection.type === 'generation') {
           renewContribution = (find.renewableTotal / this.pointSummary.totalGrossPower) * 100;
         }
-        // renewContribution = find[this.contributionSelection.type];
       } else if (this.rangeSummary.sourcesData) {
         this.rangeSummary.sourcesData.forEach((d) => {
           if (isRenewableFuelTech(d.id)) {
@@ -432,22 +435,6 @@ export default {
           }
         });
       }
-      // if (this.rangeSummary.sourcesData) {
-      //   this.rangeSummary.sourcesData.forEach((d) => {
-      //     if (isRenewableFuelTech(d.id)) {
-      //       if (this.isPointHovered) {
-      //         renewContribution +=
-      //           this.getContribution(
-      //             this.pointSummary.allData[d.id],
-      //             this.pointSummary.totalGrossPower,
-      //           );
-      //       } else {
-      //         renewContribution +=
-      //           this.getContribution(d.range.power, this.rangeSummary.totalGrossPower);
-      //       }
-      //     }
-      //   });
-      // }
       return renewContribution;
     },
   },

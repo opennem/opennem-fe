@@ -403,11 +403,15 @@ export default {
     },
 
     fuelTechList(group) {
+      let fields = group.fieldNames.slice(0);
       let list = '';
-      group.fieldNames.forEach(f => {
+
+      fields.sort();
+      fields.forEach(f => {
         list += `${f}<br>`;
       });
-      return group.fieldNames.length === 1 ? '' : list;
+
+      return fields.length === 1 ? '' : list;
     },
 
     hasValue(value) {
