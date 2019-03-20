@@ -5,7 +5,7 @@ export default {
       id: 'group_renewables',
       label: 'Renewables',
       type: 'sources',
-      colour: '#0F8554',
+      colour: '#52BCA3', // 52BCA3, 0F8554
       fields: ['solar', 'rooftop_solar', 'wind', 'hydro', 'biomass'],
     },
 
