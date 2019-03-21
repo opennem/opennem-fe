@@ -34,6 +34,8 @@ import {
 export default {
   props: {
     chartData: Array,
+    nemData: Array,
+    customDomains: Object,
   },
   data() {
     return {
@@ -58,7 +60,11 @@ export default {
       disabledSeries: 'disabledSeries',
       currentRange: 'currentRange',
       currentInterval: 'currentInterval',
+      tera: 'tera',
     }),
+    energyUnit() {
+      return this.tera ? 'TWh' : 'GWh';
+    },
   },
   watch: {
     chartData() {
@@ -124,12 +130,10 @@ export default {
     },
 
     setupChart() {
-      // const panels = this.isPower ?
-      //   powerPanel(this.getPanelListeners()) :
-      //   energyPanel(this.getPanelListeners(), getPeriodAxisLabel(this.currentRange));
+      const unit = this.isPower ? 'MW' : this.energyUnit;
       const panels = this.isPower ?
         powerPanel(this.getPanelListeners()) :
-        energyPanel(this.getPanelListeners(), this.currentInterval);
+        energyPanel(this.getPanelListeners(), this.currentInterval, unit);
       const config = getChartConfig({
         dataSets: [],
         panels,
@@ -165,7 +169,7 @@ export default {
         fieldMappings: getFieldMappings(this.keys),
       }];
 
-      const unit = this.isPower ? 'MW' : 'GWh';
+      const unit = this.isPower ? 'MW' : this.energyUnit;
       const graphType = this.isPower ? 'line' : 'step';
       // const showWeekends = !this.isPower;
 
@@ -176,6 +180,7 @@ export default {
           graphType,
           unit,
           this.disabledSeries,
+          this.customDomains,
         );
       this.chart.panels[0].guides = this.isPower ? getNemGuides(this.chartData, false) : [];
       // this.chart.panels[0].guides = getNemGuides(this.chartData, showWeekends);
@@ -187,6 +192,7 @@ export default {
         { event: 'zoomed', method: this.onPanelZoomed },
         { event: 'changed', method: this.onPanelChanged },
         { event: 'rollOverGraph', method: this.onPanelHover },
+        { event: 'rendered', method: this.onChartRendered },
       ];
     },
 
@@ -230,7 +236,7 @@ export default {
         updateRouterStartEnd(this.$router, start, end);
 
         this.$store.dispatch('generateRangeSummary', {
-          data: this.chartData,
+          data: this.nemData,
           start,
           end,
         });
@@ -244,7 +250,18 @@ export default {
       }
     },
 
+    onChartRendered(e) {
+      if (e.chart.id === 'stockPanel0') {
+        this.$store.dispatch('chartWidth', e.chart.divRealWidth);
+        this.$store.dispatch('chartHeight', e.chart.divRealHeight);
+        this.$store.dispatch('clientX', e.finalX);
+        this.$store.dispatch('clientY', e.finalY);
+      }
+    },
+
     onPanelChanged(e) {
+      this.onChartRendered(e);
+
       if (e.index !== undefined) {
         const data = e.target.categoryLineAxis.data[e.index];
         this.$store.dispatch('generatePointSummary', {
@@ -259,11 +276,13 @@ export default {
 
     onPanelHover(e) {
       const graphId = e.graph.id;
-      const graphs = this.chart.panels[0].graphs;
+      // const graphs = this.chart.panels[0].graphs;
 
-      graphs.forEach((g) => {
-        this.toggleSeriesBalloon(g, graphId);
-      });
+      this.$store.dispatch('currentHoverSeries', graphId);
+
+      // graphs.forEach((g) => {
+      //   this.toggleSeriesBalloon(g, graphId);
+      // });
     },
 
     onCategoryAxisItemClicked(e) {

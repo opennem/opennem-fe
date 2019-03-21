@@ -15,9 +15,9 @@ function getAllPanelsGeneration(listeners, priceField, temperatureField, hasMinM
 
 function getAllPanelsEnergy(
   listeners, priceField, temperatureField,
-  hasMinMax, showBullets, intervalLabel) {
+  hasMinMax, showBullets, intervalLabel, unit) {
   return [
-    getEnergyPanel(listeners, intervalLabel),
+    getEnergyPanel(listeners, intervalLabel, unit),
     ...getPricePanels(listeners, priceField), // 3 panels in price
     getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets),
   ];
@@ -43,9 +43,9 @@ function generationPanel(listeners) {
   ];
 }
 
-function energyPanel(listeners, intervalLabel) {
+function energyPanel(listeners, intervalLabel, unit) {
   return [
-    getEnergyPanel(listeners, intervalLabel),
+    getEnergyPanel(listeners, intervalLabel, unit),
   ];
 }
 

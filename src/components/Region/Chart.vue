@@ -43,6 +43,8 @@ import {
 export default {
   props: {
     chartData: Array,
+    nemData: Array,
+    customDomains: Object,
   },
   data() {
     return {
@@ -74,6 +76,7 @@ export default {
       currentInterval: 'currentInterval',
       disabledSeries: 'disabledSeries',
       region: 'region',
+      tera: 'tera',
     }),
     visClass() {
       return {
@@ -81,6 +84,9 @@ export default {
         'two-panels': !this.showPricePanel && this.showTemperaturePanel,
         'four-panels': this.showPricePanel && !this.showTemperaturePanel,
       };
+    },
+    energyUnit() {
+      return this.tera ? 'TWh' : 'GWh';
     },
   },
   watch: {
@@ -194,6 +200,8 @@ export default {
       const priceField = this.isPower ? 'price' : 'volume_weighted_price';
       const hasMinMax = !this.isPower;
       const showBullets = isLast24Hrs(this.currentRange);
+      const unit = this.isPower ? 'MW' : this.energyUnit;
+
 
       if (this.showPricePanel && this.showTemperaturePanel) {
         panels = this.isPower ?
@@ -211,6 +219,7 @@ export default {
             hasMinMax,
             showBullets,
             this.currentInterval,
+            unit,
           );
       } else if (this.showPricePanel) {
         panels = getGenerationAndPricePanels(this.getPanelListeners());
@@ -219,7 +228,7 @@ export default {
       } else {
         panels = this.isPower ?
           generationPanel(this.getPanelListeners()) :
-          energyPanel(this.getPanelListeners(), this.currentInterval);
+          energyPanel(this.getPanelListeners(), this.currentInterval, unit);
       }
 
       return panels;
@@ -287,7 +296,7 @@ export default {
         fieldMappings: getFieldMappings(this.keys),
       }];
 
-      const unit = this.isPower ? 'MW' : 'GWh';
+      const unit = this.isPower ? 'MW' : this.energyUnit;
       const graphType = this.isPower ? 'line' : 'step';
 
       this.chart.panels[0].stockGraphs =
@@ -297,6 +306,7 @@ export default {
           graphType,
           unit,
           this.disabledSeries,
+          this.customDomains,
         );
 
       // add Guides
@@ -318,6 +328,7 @@ export default {
         { event: 'zoomed', method: this.onPanelZoomed },
         { event: 'changed', method: this.onPanelChanged },
         { event: 'rollOverGraph', method: this.onPanelHover },
+        { event: 'rendered', method: this.onChartRendered },
       ];
     },
 
@@ -376,7 +387,7 @@ export default {
         updateRouterStartEnd(this.$router, start, end);
 
         this.$store.dispatch('generateRangeSummary', {
-          data: this.chartData,
+          data: this.nemData,
           start,
           end,
         });
@@ -392,7 +403,18 @@ export default {
       }
     },
 
+    onChartRendered(e) {
+      if (e.chart.id === 'stockPanel0') {
+        this.$store.dispatch('chartWidth', e.chart.divRealWidth);
+        this.$store.dispatch('chartHeight', e.chart.divRealHeight);
+        this.$store.dispatch('clientX', e.finalX);
+        this.$store.dispatch('clientY', e.finalY);
+      }
+    },
+
     onPanelChanged(e) {
+      this.onChartRendered(e);
+
       if (e.index !== undefined) {
         const data = e.target.categoryLineAxis.data[e.index];
         this.$store.dispatch('generatePointSummary', {
@@ -407,11 +429,13 @@ export default {
 
     onPanelHover(e) {
       const graphId = e.graph.id;
-      const graphs = this.chart.panels[0].graphs;
+      // const graphs = this.chart.panels[0].graphs;
 
-      graphs.forEach((g) => {
-        this.toggleSeriesBalloon(g, graphId);
-      });
+      this.$store.dispatch('currentHoverSeries', graphId);
+
+      // graphs.forEach((g) => {
+      //   this.toggleSeriesBalloon(g, graphId);
+      // });
     },
 
     onCategoryAxisItemClicked(e) {

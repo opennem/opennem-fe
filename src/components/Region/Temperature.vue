@@ -125,9 +125,7 @@ export default {
 .summary-table {
   width: 100%;
 
-  @include widescreen {
-    width: 410px;
-  }
+  @include widescreen {}
 
   th {
     font-family: $header-font-family;

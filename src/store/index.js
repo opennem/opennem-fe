@@ -3,18 +3,20 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import * as moment from 'moment';
 
-import { getSummary, getPointSummary } from '@/lib/data-summary';
+import { getSummary, getPointSummary, getGroupPointSummary } from '@/lib/data-summary';
 import { dataFilter, dataFilterByLastValuePrecision } from '@/lib/data-helpers';
 import dataTransform from '@/lib/data-transform';
 import getJSON from '@/lib/data-apis';
 import { formatDateForExport } from '@/lib/formatter';
 import { isLast24Hrs, isLast3Days } from '@/domains/date-ranges';
+import { GraphDomains } from '@/domains/graphs';
 import fYTimeGroup from '@/modules/fy-time-group';
 import yearlyTimeGroup from '@/modules/yearly-time-group';
 import seasonsTimeGroup from '@/modules/seasons-time-group';
 import quarterlyTimeGroup from '@/modules/quarterly-time-group';
 import y1WeekTimeGroup from '@/modules/y1-week-time-group';
 import y1MonthTimeGroup from '@/modules/y1-month-time-group';
+import thirtyMinTimeGroup from '@/modules/thirty-min-time-group';
 import * as MutationTypes from '@/constants/mutation-types';
 import * as VisTypes from '@/constants/vis-types';
 
@@ -26,12 +28,15 @@ import dates from './dates';
 import panels from './panels';
 import features from './features';
 import errors from './errors';
+import groups from './groups';
 
 Vue.use(Vuex);
 
 const state = {
   region: 'nem',
   domains: {},
+  domainGroups: {},
+  useGroups: false,
   isFetching: false,
   visType: VisTypes.VIS_TYPE_POWER,
 };
@@ -42,6 +47,12 @@ const mutations = {
   },
   [MutationTypes.DOMAINS](state, data) {
     state.domains = data;
+  },
+  [MutationTypes.DOMAIN_GROUPS](state, data) {
+    state.domainGroups = data;
+  },
+  [MutationTypes.USE_GROUPS](state, data) {
+    state.useGroups = data;
   },
   [MutationTypes.FETCHING](state, data) {
     if (data) {
@@ -61,6 +72,12 @@ const getters = {
   },
   getDomains: state => {
     return state.domains;
+  },
+  domainGroups: state => {
+    return state.domainGroups;
+  },
+  useGroups: state => {
+    return state.useGroups;
   },
   isFetching: state => {
     return state.isFetching;
@@ -89,7 +106,6 @@ const actions = {
 
     getJSON(urls, state.features.localData)
       .then((responses) => {
-        console.log(responses)
         handleFetchResponse(responses, state, commit);
       })
       .catch((e) => {
@@ -101,26 +117,66 @@ const actions = {
     commit(MutationTypes.REGION, data);
   },
 
+  generateGroupedNemData({ commit, state }) {
+    const nemData = state.nemData.nemData;
+    const group = state.groups.groupSelected;
+    const groupedNemData = [];
+
+    nemData.forEach((d) => {
+      const newD = {
+        date: d.date,
+      };
+
+      group.groups.forEach((g) => {
+        let newValue = 0;
+        g.fields.forEach((f) => {
+          newValue += d[f] || 0;
+        });
+
+        if ((g.type === 'temperature' ||
+          g.id === 'pricePos' ||
+          g.id === 'priceNeg') && newValue === 0) {
+          newValue = null;
+        }
+
+        newD[g.id] = newValue;
+      });
+
+      groupedNemData.push(newD);
+    });
+
+    commit(MutationTypes.GROUPED_NEM_DATA, groupedNemData);
+  },
+
   setDomains({ commit, state }, data) {
     commit(MutationTypes.DOMAINS, data);
+  },
+  domainGroups({ commit, state }, data) {
+    commit(MutationTypes.DOMAIN_GROUPS, data);
+  },
+  useGroups({ commit, state }, data) {
+    commit(MutationTypes.USE_GROUPS, data);
   },
   fetchingData({ commit, state }, data) {
     commit(MutationTypes.FETCHING, data);
   },
   generateRangeSummary({ commit, state }, data) {
     const isPower = state.visType === VisTypes.VIS_TYPE_POWER;
+    const isTera = state.nemData.tera;
     const filtered = dataFilter(data.data, data.start, data.end);
-    const summary = getSummary(state.domains, filtered, isPower);
+    const summary = getSummary(state.domains, filtered, isPower, isTera);
     commit(MutationTypes.RANGE_SUMMARY, summary);
   },
   generatePointSummary({ commit, state }, data) {
-    const summary = getPointSummary(state.domains, data.date, data.dataContext, state.visType);
+    const isTera = state.nemData.tera;
+    const summary = state.useGroups ?
+      getGroupPointSummary(state.domainGroups, data.date, data.dataContext, state.visType, isTera) :
+      getPointSummary(state.domains, data.date, data.dataContext, state.visType);
     commit(MutationTypes.POINT_SUMMARY, summary);
   },
-  generateExportData({ commit, state }, data) {
+  generateExportData({ commit, state }) {
     const responses = state.nemData.responseData;
     let exportData = [];
-
     responses.forEach((r) => {
       exportData = [...exportData, ...dataTransform(state.domains, r.data, false)];
     });
@@ -148,8 +204,10 @@ const actions = {
       default:
     }
 
-    exportData = dataFilter(exportData, state.dates.selectedDates.start, endDateFilter);
-
+    if (state.dates.selectedDates.start && endDateFilter) {
+      exportData = dataFilter(exportData, state.dates.selectedDates.start, endDateFilter);
+    }
+  
     commit(MutationTypes.EXPORT_DATA, exportData);
   },
   setVisType({ commit, state }, data) {
@@ -157,8 +215,24 @@ const actions = {
   },
 };
 
+function convertToTera(data) {
+  data.forEach(d => {
+    Object.keys(d).forEach(k => {
+      const graphKey = GraphDomains[k];
+      if (graphKey &&
+        (graphKey.type === 'sources' || graphKey.type === 'loads')
+      ) {
+        if (d[k]) {
+          d[k] = d[k] / 1000;
+        }
+      }
+    })
+  })
+}
+
 function handleFetchResponse(responses, state, commit) {
   let data = [];
+  let useTera = false;
 
   responses.forEach((r) => {
     data = [...data, ...dataTransform(state.domains, r.data, true)];
@@ -173,17 +247,25 @@ function handleFetchResponse(responses, state, commit) {
     data = dataFilterByLastValuePrecision(data, '3', 'day');
   }
 
+  if (state.dates.currentInterval === '30mm') {
+    data = thirtyMinTimeGroup(data);
+  }
+
   if (state.dates.currentRange === 'allMonthly') {
     if (state.dates.currentInterval === 'MM') {
       data = y1MonthTimeGroup(data);
     } else if (state.dates.currentInterval === 'FY') {
       data = fYTimeGroup(data);
+      convertToTera(data);
+      useTera = true;
     } else if (state.dates.currentInterval === 'S3MM') {
       data = seasonsTimeGroup(data);
     } else if (state.dates.currentInterval === '3MM') {
       data = quarterlyTimeGroup(data);
     } else if (state.dates.currentInterval === 'YYYY') {
       data = yearlyTimeGroup(data);
+      convertToTera(data);
+      useTera = true;
     }
   
   }
@@ -208,9 +290,14 @@ function handleFetchResponse(responses, state, commit) {
   let hasWarning = false;
 
   if (moment(first.date).isBefore('2017-01-01')) {
-    hasWarning = true;
+    if (state.dates.currentRange !== 'allMonthly' &&
+      (state.dates.currentRange === 'lastYear' &&
+        state.dates.currentInterval !== 'MM')) {
+      hasWarning = true;
+    }
   }
 
+  commit(MutationTypes.NEM_TERA, useTera);
   commit(MutationTypes.WARNING, hasWarning);
   commit(MutationTypes.NEM_RESPONSE_DATA, responses);
   commit(MutationTypes.NEM_DATA, data);
@@ -243,6 +330,7 @@ const store = new Vuex.Store({
     panels,
     features,
     errors,
+    groups,
   }
 });
 

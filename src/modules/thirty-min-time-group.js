@@ -1,12 +1,10 @@
 /* eslint-disable */
 import * as d3Collection from 'd3-collection';
 import * as moment from 'moment';
-import dataRollup from './data-rollup';
+import dataRollup from './data-rollup-power';
 
-function setStartYear(date) {
-  const d = moment(date);
-  d.set('month', 0);
-  d.set('date', 1);
+function setStartMonday(whichMonday) {
+  const d = moment(whichMonday);
   d.set('hour', 0);
   d.set('minute', 0);
   d.set('second', 0);
@@ -15,20 +13,19 @@ function setStartYear(date) {
 
 export default function (data) {
   const cloneData = data;
-  let nestDate = setStartYear(data[0].date);
+  const coeff = 1000 * 60 * 30;
 
   data.forEach((d, i) => {
-    nestDate = setStartYear(d.date);
-    cloneData[i].nestDate = nestDate.toDate();
+    const nestDate = Math.round(moment(d.date).valueOf() / coeff) * coeff;
+    cloneData[i].nestDate = moment(nestDate).toDate();
   });
 
   const entries = d3Collection.nest()
     .key(d => d.nestDate)
     .rollup((d) => dataRollup(d))
-    .entries(cloneData);
+    .entries(cloneData)
   
   return entries.map((e) => {
-    delete e.value.nestDate;
     return e.value;
   });
 }

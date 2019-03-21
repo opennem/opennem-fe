@@ -1,10 +1,6 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as Periods from '@/constants/periods';
-import {
-  isValidFuelTech,
-  isLoads } from '@/domains/graphs';
-import { formatNumberForDisplay } from './formatter';
 import { getStartEndDates } from './data-helpers';
 import { isTouchDevice } from './device';
 
@@ -114,14 +110,19 @@ function getFieldMappings(keys) {
   return mappings;
 }
 
+function isTypeSourceOrLoad(domains, key) {
+  const type = domains[key].type;
+  return type === 'sources' || type === 'loads';
+}
+
 /**
  * amCharts Stock graphs
  */
-function getStockGraphs(domains, keys, graphType, unit, disabledSeries) {
+function getStockGraphs(allDomains, keys, graphType, unit, disabledSeries, domainGroups) {
   const graphs = [];
-
+  const domains = domainGroups || allDomains;
   keys.forEach((ftKey) => {
-    if (isValidFuelTech(ftKey)) {
+    if (isTypeSourceOrLoad(domains, ftKey)) {
       const colour = domains[ftKey].colour;
       const negativeFillAlphas = 0.8;
       const fillAlphas = 0.8;
@@ -150,28 +151,29 @@ function getStockGraphs(domains, keys, graphType, unit, disabledSeries) {
         columnWidth: 0.8,
         showBalloon: false,
         periodValue,
-        balloonFunction: (item) => {
-          let balloonTxt = '';
-
-          if (!isLoads(graph.id) && item.values.value > 0) {
-            const precision = graphType === 'step' ? '0,0.0' : '0,0';
-            const valueType = graphType === 'step' ? 'Sum' : 'Average';
-            const value = formatNumberForDisplay(item.dataContext[`${graph.id}${valueType}`], precision);
-            const ftLabel = domains[graph.id].label;
-            const displayValue = `${value} ${unit}`;
-
-            balloonTxt = `
-              <div style="font-size: 1.1em;">
-                <span 
-                  style="display: inline-block; width: 13px; 
-                    height: 13px; position: relative; top: 2px; 
-                    margin-right: 5px; background: ${colour};"></span>
-                ${ftLabel}: <strong> ${displayValue}</strong>
-              </div>
-            `;
-          }
-          return balloonTxt;
-        },
+        // balloonFunction: (item) => {
+        //   let balloonTxt = '';
+        //   if (item.values.value > 0) {
+        //     const precision = graphType === 'step' ? '0,0.0' : '0,0';
+        //     const valueType = graphType === 'step' ? 'Sum' : 'Average';
+        //     const value = formatNumberForDisplay(
+        //       item.dataContext[`${graph.id}${valueType}`],
+        //       precision,
+        //     );
+        //     const ftLabel = domains[graph.id].label;
+        //     const displayValue = `${value} ${unit}`;
+        //     balloonTxt = `
+        //       <div style="font-size: 1.1em;">
+        //         <span
+        //           style="display: inline-block; width: 13px;
+        //             height: 13px; position: relative; top: 2px;
+        //             margin-right: 5px; background: ${colour};"></span>
+        //         ${ftLabel}: <strong> ${displayValue}</strong>
+        //       </div>
+        //     `;
+        //   }
+        //   return balloonTxt;
+        // },
       };
       graphs.push(graph);
     }

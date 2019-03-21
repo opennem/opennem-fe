@@ -1,6 +1,6 @@
 <template>
   <table class="summary-table table is-fullwidth is-narrow">
-    <caption>Records</caption>
+    <caption><span>Records</span></caption>
     <thead>
       <tr>
         <th></th>

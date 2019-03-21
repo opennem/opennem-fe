@@ -1,11 +1,11 @@
 <template>
   <table class="summary-table table is-fullwidth is-narrow is-hoverable">
-    <caption>
-      Summary
+    <caption class="has-text-right">
+      <date-selector class="date-container" />
     </caption>
     <thead>
       <tr>
-        <th class="column-header"></th>
+        <th class="group-selector"><group-selection /></th>
         <th class="column-header has-text-right has-min-width">
           <div v-if="isPointHovered && isPower">
             <span>Power</span>
@@ -14,7 +14,7 @@
 
           <div v-if="!isPower || !isPointHovered">
             <span>Energy</span>
-            <small>GWh</small>
+            <small>{{energyUnit}}</small>
           </div>
         </th>
         <th class="column-header has-text-right has-min-width clickable" @click="toggleContributionType">
@@ -67,10 +67,11 @@
     
     <tbody>
       <tr 
-        v-for="row in rangeSummary.sourcesData"
+        v-for="row in updatedRangeSummary.sourcesData"
         :key="row.id"
       >
         <td
+          v-tooltip.left="fuelTechList(row)"
           class="row-label"
           @click.exact="handleSourceRowClicked(row.id)"
           @click.shift.exact="handleSourceRowShiftClicked(row.id)"
@@ -107,7 +108,7 @@
         </td>
         <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            {{ pointSummary.allData[`${row.id}.market_value`] / Math.abs(pointSummary.allData[`${row.id}`]) / 1000 | formatNumber('$0,0.00') }}
+            {{ getRowAverageValue(row.id) | formatNumber('$0,0.00') }}
           </div>
           
           <div v-else>
@@ -128,7 +129,7 @@
 
     <tbody>
       <tr 
-        v-for="row in rangeSummary.loadsData"
+        v-for="row in updatedRangeSummary.loadsData"
         :key="row.id"
         @click.exact="handleSourceRowClicked(row.id)"
         @click.shift.exact="handleSourceRowShiftClicked(row.id)"
@@ -161,7 +162,7 @@
         </td>
         <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            {{ pointSummary.allData[`${row.id}.market_value`] / Math.abs(pointSummary.allData[`${row.id}`]) / 1000 | formatNumber('$0,0.00') }}
+            {{ getRowAverageValue(row.id) | formatNumber('$0,0.00') }}
           </div>
           
           <div v-else>
@@ -206,13 +207,20 @@
 
 <script>
 import * as _ from 'lodash';
+import * as moment from 'moment';
 import { mapGetters } from 'vuex';
 import EventBus from '@/lib/event-bus';
 import { formatNumberForDisplay } from '@/lib/formatter';
 import { GraphDomains, isRenewableFuelTech } from '@/domains/graphs';
+import GroupSelection from '@/components/ui/GroupSelection';
+import DateSelector from '@/components/ui/DateSelector';
 
 export default {
   name: 'region-summary',
+  components: {
+    GroupSelection,
+    DateSelector,
+  },
   props: {
     region: String,
   },
@@ -234,7 +242,12 @@ export default {
       currentRange: 'currentRange',
       exportRegion: 'exportRegion',
       disabledSeries: 'disabledSeries',
+      groupSelected: 'groupSelected',
+      tera: 'tera',
     }),
+    energyUnit() {
+      return this.tera ? 'TWh' : 'GWh';
+    },
     isTypeGeneration() {
       return this.contributionSelection.type === 'generation';
     },
@@ -257,6 +270,26 @@ export default {
         this.rangeSummary.totalGrossPower :
         this.rangeSummary.totalNetPower;
     },
+
+    updatedRangeSummary() {
+      const currentRangeSummary = this.rangeSummary;
+      const rangeSummary = Object.assign({}, this.rangeSummary);
+
+      if (currentRangeSummary.sourcesData) {
+        rangeSummary.sourcesData = this.getUpdatedRangeSummary(
+          this.groupSelected.groups,
+          currentRangeSummary.sourcesData,
+        ).reverse();
+      }
+
+      if (currentRangeSummary.loadsData) {
+        rangeSummary.loadsData = this.getUpdatedRangeSummary(
+          this.groupSelected.groups,
+          currentRangeSummary.loadsData,
+        );
+      }
+      return rangeSummary;
+    },
   },
   watch: {
     contributionSelection(newValue) {
@@ -265,12 +298,59 @@ export default {
     disabledSeries(newData) {
       this.disabledRows = newData;
     },
+    updatedRangeSummary(summary) {
+      const sources = summary.sourcesData;
+      const loads = summary.loadsData;
+      const availableFts = [...sources.map(s => s.id), ...loads.map(l => l.id)];
+      this.$store.dispatch('availableFts', availableFts);
+    },
   },
   mounted() {
     this.contributionSelection.type = this.contributionType;
     this.disabledRows = this.disabledSeries;
   },
   methods: {
+    getUpdatedRangeSummary(groups, data) {
+      const newRange = [];
+
+      groups.forEach((g) => {
+        const range = {
+          power: 0,
+          energy: 0,
+          averagePrice: 0,
+        };
+
+        let averagePriceSum = 0;
+        let hasGroup = false;
+        const fieldNames = [];
+
+        g.fields.forEach((f) => {
+          const find = data.find(s => s.id === f);
+          if (find) {
+            hasGroup = true;
+            range.power += find.range.power;
+            range.energy += find.range.energy;
+            averagePriceSum += find.range.averagePrice || 0;
+            fieldNames.push(GraphDomains[f].label);
+          }
+        });
+
+        range.averagePrice = averagePriceSum / g.fields.length;
+
+        if (hasGroup) {
+          newRange.push({
+            colour: g.colour,
+            id: g.id,
+            label: g.label,
+            range,
+            fieldNames,
+          });
+        }
+      });
+
+      return newRange;
+    },
+
     toggleContributionType() {
       let type = 'generation';
       if (this.isTypeGeneration) {
@@ -286,7 +366,9 @@ export default {
     },
 
     handleSourceRowClicked(id) {
-      const keysNum = Object.keys(GraphDomains).length;
+      const sourcesLength = this.updatedRangeSummary.sourcesData.length;
+      const loadsLength = this.updatedRangeSummary.loadsData.length;
+      const keysNum = sourcesLength + loadsLength;
       const find = _.findIndex(this.disabledRows, r => r === id);
       let show = false;
 
@@ -309,7 +391,12 @@ export default {
     },
 
     handleSourceRowShiftClicked(id) {
-      this.disabledRows = Object.keys(GraphDomains).filter(d => d !== id);
+      const disabledSources = this.updatedRangeSummary.sourcesData.filter(
+        d => d.id !== id).map(d => d.id);
+      const disabledLoads = this.updatedRangeSummary.loadsData.filter(
+        d => d.id !== id).map(d => d.id);
+
+      this.disabledRows = [...disabledSources, ...disabledLoads];
 
       this.$store.dispatch('disabledSeries', this.disabledRows);
       EventBus.$emit('chart.series.showOnly', id);
@@ -317,6 +404,18 @@ export default {
 
     isDisabled(rowId) {
       return this.disabledRows.find(r => r === rowId);
+    },
+
+    fuelTechList(group) {
+      const fields = group.fieldNames.slice(0);
+      let list = '';
+
+      fields.sort();
+      fields.forEach((f) => {
+        list += `${f}<br>`;
+      });
+
+      return fields.length === 1 ? '' : list;
     },
 
     hasValue(value) {
@@ -328,23 +427,29 @@ export default {
     getRenewableContribution() {
       let renewContribution = 0;
 
-      if (this.rangeSummary.sourcesData) {
+      if (this.isPointHovered) {
+        const find = this.rangeSummary.renewablesPercent.find(
+          d => moment(d.date).isSame(this.pointSummary.date),
+        );
+        if (this.contributionSelection.type === 'demand') {
+          renewContribution = (find.renewableTotal / this.pointSummary.totalNetPower) * 100;
+        } else if (this.contributionSelection.type === 'generation') {
+          renewContribution = (find.renewableTotal / this.pointSummary.totalGrossPower) * 100;
+        }
+      } else if (this.rangeSummary.sourcesData) {
         this.rangeSummary.sourcesData.forEach((d) => {
           if (isRenewableFuelTech(d.id)) {
-            if (this.isPointHovered) {
-              renewContribution +=
-                this.getContribution(
-                  this.pointSummary.allData[d.id],
-                  this.pointSummaryTotal,
-                );
-            } else {
-              renewContribution +=
-                this.getContribution(d.range.power, this.rangeSummaryTotal);
-            }
+            renewContribution += this.getContribution(d.range.power, this.rangeSummaryTotal);
           }
         });
       }
       return renewContribution;
+    },
+    getRowAverageValue(id) {
+      const allData = this.pointSummary.allData;
+      const marketValueKey = `${id}.market_value`;
+      const convert = this.tera ? 1000 * 1000 : 1000;
+      return allData[marketValueKey] / Math.abs(allData[id]) / convert;
     },
   },
   filters: {

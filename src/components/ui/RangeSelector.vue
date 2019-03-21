@@ -27,7 +27,6 @@
         {{ getPeriodShorthand(p) }}
       </span>
     </div>
-
   </div>
 </template>
 
@@ -42,10 +41,6 @@ import { isMobileWidth } from '@/lib/browser';
 
 export default {
   name: 'range-selector',
-
-  components: {
-    // Datepicker,
-  },
 
   data() {
     return {
@@ -119,7 +114,7 @@ export default {
           break;
 
         case 'last24hrs':
-          periods = ['5mm', '30mm'];
+          periods = ['5mm'];
           break;
 
         case 'last3days':
@@ -234,9 +229,11 @@ export default {
             break;
 
           default:
+            this.$store.dispatch('fetchingData', true);
             this.$store.dispatch('groupToPeriods', [period]);
             this.$store.dispatch('currentInterval', period);
             this.$store.dispatch('period', period);
+            EventBus.$emit('data.fetch');
         }
       }
     },
@@ -260,21 +257,14 @@ export default {
 @import "../../../node_modules/bulma/sass/utilities/mixins.sass";
 
 .date-range {
+  margin-top: .4rem;
+  
   @include tablet {
     
   }
 
   .buttons {
     margin-bottom: 0 !important;
-    padding-top: .4rem;
-  }
-
-  .interval-buttons {
-    @include tablet {
-      // margin-left: 1rem;
-      // padding-left: 1rem;
-      // border-left: 1px solid #ccc;
-    }
   }
 
   .button {
@@ -296,8 +286,6 @@ export default {
 
     .interval-buttons {
       margin-left: 1rem;
-      padding-left: 1rem;
-      border-left: 1px solid #ccc;
     }
   }
 }

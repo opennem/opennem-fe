@@ -5,7 +5,7 @@ import {
   isFTMarketValue,
   isTemperature,
   isRenewableFuelTech,
-  isImports,
+  // isImports,
   isLoads } from '@/domains/graphs';
 import { getKeys, getExtent } from './data-helpers';
 
@@ -23,7 +23,7 @@ function getColour(domains, id) {
   return colour;
 }
 
-function getSummary(domains, data, isPower) {
+function getSummary(domains, data, isPower, isTera) {
   // create a new array with the ft totals
   const dataSum = data.map((d) => {
     let p = 0;
@@ -38,7 +38,8 @@ function getSummary(domains, data, isPower) {
   const genDataSum = data.map((d) => {
     let p = 0;
     Object.keys(d).forEach((ft) => {
-      if (validFuelTech(ft) && !isLoads(ft) && !isImports(ft)) {
+      // if (validFuelTech(ft) && !isLoads(ft) && !isImports(ft)) {
+      if (validFuelTech(ft) && !isLoads(ft)) {
         p += d[ft] || 0;
       }
     });
@@ -60,6 +61,19 @@ function getSummary(domains, data, isPower) {
   const renewablesPercentages = renewablesDataSum.map((d, i) => (d / dataSum[i]) * 100);
   // create a new array with the ft (renewables only) percentages of generation
   const renewablesPercentages2 = renewablesDataSum.map((d, i) => (d / genDataSum[i]) * 100);
+
+  // create an array of objects for renewables
+  const renewablesPercent = data.map((d, i) => {
+    const renewableTotal = renewablesDataSum[i];
+    return {
+      date: d.date,
+      renewableTotal,
+      genSum: genDataSum[i],
+      demandSum: dataSum[i],
+      generation: (renewableTotal / genDataSum[i]) * 100,
+      demand: (renewableTotal / dataSum[i]) * 100,
+    };
+  });
 
   // sum up all the ft totals
   const dataSumTotal = dataSum.reduce((a, b) => a + b, 0);
@@ -91,9 +105,10 @@ function getSummary(domains, data, isPower) {
   });
 
   // calculate the total average price
+  const convert = isTera ? 1000 * 1000 : 1000;
   const totalAveragePrice = isPower ?
     dataSumTotalPrice.reduce((a, b) => a + b, 0) / dataSumTotal :
-    dataSumMarketValue.reduce((a, b) => a + b, 0) / dataSumTotal / 1000;
+    dataSumMarketValue.reduce((a, b) => a + b, 0) / dataSumTotal / convert;
 
   const allData = [];
   const sourcesData = [];
@@ -148,7 +163,7 @@ function getSummary(domains, data, isPower) {
       // calculate the ft average price
       const averageFTPrice = isPower ?
         dataFTPrice.reduce((a, b) => a + b, 0) / Math.abs(totalFTValue) :
-        (totalFTMarketValue / 1000) / Math.abs(totalFTValue);
+        (totalFTMarketValue / convert) / Math.abs(totalFTValue);
 
       const row = {
         id: domain,
@@ -189,6 +204,7 @@ function getSummary(domains, data, isPower) {
     totalGrossEnergy,
     totalAveragePrice,
     demandExtent: getExtent(data, dataSum),
+    renewablesPercent,
     renewablesExtent: getExtent(data, renewablesPercentages),
     generationExtent: getExtent(data, genDataSum),
     renewablesExtent2: getExtent(data, renewablesPercentages2),
@@ -242,7 +258,55 @@ function getPointSummary(domains, date, data, visType) {
   };
 }
 
+function getGroupPointSummary(domains, date, data, visType, isTera) {
+  const allData = {};
+  let totalNetPower = 0;
+  let totalGrossPower = 0;
+  let totalMarketValue = 0;
+  const valueType = visType === 'power' ? 'Average' : 'Sum';
+
+  Object.keys(domains).forEach((domain) => {
+    const type = domains[domain].type;
+
+    if (type === 'sources' || type === 'loads') {
+      const average = data[`${domain}${valueType}`];
+      allData[domain] = average;
+
+      if (average !== undefined) {
+        totalNetPower += average;
+        if (type !== 'loads') {
+          totalGrossPower += average;
+        }
+      }
+    } else if (type === 'price') {
+      const price = data[`${domain}Close`];
+      allData[domain] = price;
+    } else if (type === 'market_value') {
+      const marketValue = Math.abs(data[`${domain}Close`]);
+      allData[domain] = marketValue;
+
+      if (marketValue) {
+        totalMarketValue += marketValue;
+      }
+    } else if (type === 'temperature') {
+      allData[domain] = data[`${domain}Average`];
+    }
+  });
+
+  const convert = isTera ? 1000 * 1000 : 1000;
+  const totalAvValue = totalMarketValue / totalNetPower / convert;
+
+  return {
+    date,
+    allData,
+    totalNetPower,
+    totalGrossPower,
+    totalAvValue,
+  };
+}
+
 export {
   getSummary,
   getPointSummary,
+  getGroupPointSummary,
 };
