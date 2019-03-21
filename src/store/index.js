@@ -9,6 +9,7 @@ import dataTransform from '@/lib/data-transform';
 import getJSON from '@/lib/data-apis';
 import { formatDateForExport } from '@/lib/formatter';
 import { isLast24Hrs, isLast3Days } from '@/domains/date-ranges';
+import { GraphDomains } from '@/domains/graphs';
 import fYTimeGroup from '@/modules/fy-time-group';
 import yearlyTimeGroup from '@/modules/yearly-time-group';
 import seasonsTimeGroup from '@/modules/seasons-time-group';
@@ -161,13 +162,15 @@ const actions = {
   },
   generateRangeSummary({ commit, state }, data) {
     const isPower = state.visType === VisTypes.VIS_TYPE_POWER;
+    const isTera = state.nemData.tera;
     const filtered = dataFilter(data.data, data.start, data.end);
-    const summary = getSummary(state.domains, filtered, isPower);
+    const summary = getSummary(state.domains, filtered, isPower, isTera);
     commit(MutationTypes.RANGE_SUMMARY, summary);
   },
   generatePointSummary({ commit, state }, data) {
+    const isTera = state.nemData.tera;
     const summary = state.useGroups ?
-      getGroupPointSummary(state.domainGroups, data.date, data.dataContext, state.visType) :
+      getGroupPointSummary(state.domainGroups, data.date, data.dataContext, state.visType, isTera) :
       getPointSummary(state.domains, data.date, data.dataContext, state.visType);
     commit(MutationTypes.POINT_SUMMARY, summary);
   },
@@ -212,8 +215,24 @@ const actions = {
   },
 };
 
+function convertToTera(data) {
+  data.forEach(d => {
+    Object.keys(d).forEach(k => {
+      const graphKey = GraphDomains[k];
+      if (graphKey &&
+        (graphKey.type === 'sources' || graphKey.type === 'loads')
+      ) {
+        if (d[k]) {
+          d[k] = d[k] / 1000;
+        }
+      }
+    })
+  })
+}
+
 function handleFetchResponse(responses, state, commit) {
   let data = [];
+  let useTera = false;
 
   responses.forEach((r) => {
     data = [...data, ...dataTransform(state.domains, r.data, true)];
@@ -237,12 +256,16 @@ function handleFetchResponse(responses, state, commit) {
       data = y1MonthTimeGroup(data);
     } else if (state.dates.currentInterval === 'FY') {
       data = fYTimeGroup(data);
+      convertToTera(data);
+      useTera = true;
     } else if (state.dates.currentInterval === 'S3MM') {
       data = seasonsTimeGroup(data);
     } else if (state.dates.currentInterval === '3MM') {
       data = quarterlyTimeGroup(data);
     } else if (state.dates.currentInterval === 'YYYY') {
       data = yearlyTimeGroup(data);
+      convertToTera(data);
+      useTera = true;
     }
   
   }
@@ -274,6 +297,7 @@ function handleFetchResponse(responses, state, commit) {
     }
   }
 
+  commit(MutationTypes.NEM_TERA, useTera);
   commit(MutationTypes.WARNING, hasWarning);
   commit(MutationTypes.NEM_RESPONSE_DATA, responses);
   commit(MutationTypes.NEM_DATA, data);

@@ -23,7 +23,7 @@ function getColour(domains, id) {
   return colour;
 }
 
-function getSummary(domains, data, isPower) {
+function getSummary(domains, data, isPower, isTera) {
   // create a new array with the ft totals
   const dataSum = data.map((d) => {
     let p = 0;
@@ -105,9 +105,10 @@ function getSummary(domains, data, isPower) {
   });
 
   // calculate the total average price
+  const convert = isTera ? 1000 * 1000 : 1000;
   const totalAveragePrice = isPower ?
     dataSumTotalPrice.reduce((a, b) => a + b, 0) / dataSumTotal :
-    dataSumMarketValue.reduce((a, b) => a + b, 0) / dataSumTotal / 1000;
+    dataSumMarketValue.reduce((a, b) => a + b, 0) / dataSumTotal / convert;
 
   const allData = [];
   const sourcesData = [];
@@ -162,7 +163,7 @@ function getSummary(domains, data, isPower) {
       // calculate the ft average price
       const averageFTPrice = isPower ?
         dataFTPrice.reduce((a, b) => a + b, 0) / Math.abs(totalFTValue) :
-        (totalFTMarketValue / 1000) / Math.abs(totalFTValue);
+        (totalFTMarketValue / convert) / Math.abs(totalFTValue);
 
       const row = {
         id: domain,
@@ -257,7 +258,7 @@ function getPointSummary(domains, date, data, visType) {
   };
 }
 
-function getGroupPointSummary(domains, date, data, visType) {
+function getGroupPointSummary(domains, date, data, visType, isTera) {
   const allData = {};
   let totalNetPower = 0;
   let totalGrossPower = 0;
@@ -292,7 +293,8 @@ function getGroupPointSummary(domains, date, data, visType) {
     }
   });
 
-  const totalAvValue = totalMarketValue / totalNetPower / 1000;
+  const convert = isTera ? 1000 * 1000 : 1000;
+  const totalAvValue = totalMarketValue / totalNetPower / convert;
 
   return {
     date,

@@ -28,6 +28,7 @@ export const GROUPED_NEM_DATA = 'GROUPED_NEM_DATA';
 export const NEM_DATA_TRIM = 'NEM_DATA_TRIM';
 export const NEM_TRIM = 'NEM_TRIM';
 export const NEM_RESPONSE_DATA = 'NEM_RESPONSE_DATA';
+export const NEM_TERA = 'NEM_TERA';
 
 export const EXPORT_DATA = 'EXPORT_DATA';
 export const EXPORT_REGION = 'EXPORT_REGION';

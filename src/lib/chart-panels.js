@@ -44,11 +44,11 @@ function getGenerationPanel(listeners) {
 /**
  * Energy Panel
  */
-function getEnergyPanel(listeners, intervalLabel) {
+function getEnergyPanel(listeners, intervalLabel, unit) {
   return {
     allLabels: [
       { text: 'Energy', bold: true, x: 5, y: 5 },
-      { text: `GWh/${PERIODS.PERIOD_PER_INTERVAL[intervalLabel]}`, x: 50, y: 7, color: '#999', size: 9 },
+      { text: `${unit}/${PERIODS.PERIOD_PER_INTERVAL[intervalLabel]}`, x: 50, y: 7, color: '#999', size: 9 },
     ],
     showCategoryAxis: true,
     addClassNames: true,

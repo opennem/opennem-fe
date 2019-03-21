@@ -60,6 +60,7 @@ export default {
       disabledSeries: 'disabledSeries',
       currentRange: 'currentRange',
       currentInterval: 'currentInterval',
+      tera: 'tera',
     }),
   },
   watch: {
@@ -129,9 +130,10 @@ export default {
       // const panels = this.isPower ?
       //   powerPanel(this.getPanelListeners()) :
       //   energyPanel(this.getPanelListeners(), getPeriodAxisLabel(this.currentRange));
+      const unit = this.isPower ? 'MW' : this.tera ? 'TWh' : 'GWh';
       const panels = this.isPower ?
         powerPanel(this.getPanelListeners()) :
-        energyPanel(this.getPanelListeners(), this.currentInterval);
+        energyPanel(this.getPanelListeners(), this.currentInterval, unit);
       const config = getChartConfig({
         dataSets: [],
         panels,
@@ -167,7 +169,7 @@ export default {
         fieldMappings: getFieldMappings(this.keys),
       }];
 
-      const unit = this.isPower ? 'MW' : 'GWh';
+      const unit = this.isPower ? 'MW' : this.tera ? 'TWh' : 'GWh';
       const graphType = this.isPower ? 'line' : 'step';
       // const showWeekends = !this.isPower;
 

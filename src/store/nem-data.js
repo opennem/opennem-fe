@@ -11,6 +11,7 @@ const state = {
     end: null,
   },
   responseData: [],
+  tera: false, // whether to convert the values
 };
 
 const mutations = {
@@ -31,6 +32,9 @@ const mutations = {
   },
   [MutationTypes.NEM_RESPONSE_DATA](state, data) {
     state.responseData = data;
+  },
+  [MutationTypes.NEM_TERA](state, data) {
+    state.tera = data;
   },
 };
 
@@ -53,6 +57,9 @@ const getters = {
   responseData: state => {
     return state.responseData;
   },
+  tera: state => {
+    return state.tera;
+  },
 };
 
 const actions = {
@@ -67,6 +74,9 @@ const actions = {
   },
   nemDataTrim({ commit, state }, data) {
     commit(MutationTypes.NEM_DATA_TRIM, data);
+  },
+  tera({ commit, state }, data) {
+    commit(MutationTypes.NEM_TERA, data);
   },
 };
 

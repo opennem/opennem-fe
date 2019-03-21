@@ -39,6 +39,7 @@ export default {
       clientY: 'clientY',
       chartWidth: 'chartWidth',
       chartHeight: 'chartHeight',
+      tera: 'tera',
     }),
 
     leftValue() {
@@ -84,7 +85,7 @@ export default {
     },
 
     currentSeriesUnit() {
-      return this.isPower ? 'MW' : 'GWh';
+      return this.isPower ? 'MW' : this.tera ? 'TWh' : 'GWh';
     },
 
     precision() {
