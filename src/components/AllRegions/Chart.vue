@@ -62,6 +62,9 @@ export default {
       currentInterval: 'currentInterval',
       tera: 'tera',
     }),
+    energyUnit() {
+      return this.tera ? 'TWh' : 'GWh';
+    },
   },
   watch: {
     chartData() {
@@ -127,10 +130,7 @@ export default {
     },
 
     setupChart() {
-      // const panels = this.isPower ?
-      //   powerPanel(this.getPanelListeners()) :
-      //   energyPanel(this.getPanelListeners(), getPeriodAxisLabel(this.currentRange));
-      const unit = this.isPower ? 'MW' : this.tera ? 'TWh' : 'GWh';
+      const unit = this.isPower ? 'MW' : this.energyUnit;
       const panels = this.isPower ?
         powerPanel(this.getPanelListeners()) :
         energyPanel(this.getPanelListeners(), this.currentInterval, unit);
@@ -169,7 +169,7 @@ export default {
         fieldMappings: getFieldMappings(this.keys),
       }];
 
-      const unit = this.isPower ? 'MW' : this.tera ? 'TWh' : 'GWh';
+      const unit = this.isPower ? 'MW' : this.energyUnit;
       const graphType = this.isPower ? 'line' : 'step';
       // const showWeekends = !this.isPower;
 
@@ -195,7 +195,7 @@ export default {
         { event: 'rendered', method: this.onChartRendered },
       ];
     },
-    
+
     getCategoryAxisListeners() {
       return [
         { event: 'clickItem', method: this.onCategoryAxisItemClicked },
@@ -276,7 +276,7 @@ export default {
 
     onPanelHover(e) {
       const graphId = e.graph.id;
-      const graphs = this.chart.panels[0].graphs;
+      // const graphs = this.chart.panels[0].graphs;
 
       this.$store.dispatch('currentHoverSeries', graphId);
 
