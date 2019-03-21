@@ -5,7 +5,7 @@
     </caption>
     <thead>
       <tr>
-        <th class="group-selector"><group-selection /></th>
+        <th class="group-selector"><group-selection v-show="showGrouping" /></th>
         <th class="column-header has-text-right" style="width: 95px;">
           <div v-if="isPointHovered && isPower">
             <span>Power</span>
@@ -224,6 +224,12 @@ export default {
   components: {
     GroupSelection,
     DateSelector,
+  },
+  props: {
+    showGrouping: {
+      type: Boolean,
+      default: () => true,
+    },
   },
   data() {
     return {
