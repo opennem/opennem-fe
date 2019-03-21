@@ -72,7 +72,6 @@ const actions = {
     getJSON(urls, false)
       .then((responses) => {
         const transformedData = transformGeneratorData(responses[0].data);
-        console.log(transformedData)
         commit(MutationTypes.GENERATORS_DATA, transformedData);
       })
       .catch((e) => {
