@@ -85,6 +85,9 @@ export default {
         'four-panels': this.showPricePanel && !this.showTemperaturePanel,
       };
     },
+    energyUnit() {
+      return this.tera ? 'TWh' : 'GWh';
+    },
   },
   watch: {
     chartData() {
@@ -197,7 +200,7 @@ export default {
       const priceField = this.isPower ? 'price' : 'volume_weighted_price';
       const hasMinMax = !this.isPower;
       const showBullets = isLast24Hrs(this.currentRange);
-      const unit = this.isPower ? 'MW' : this.tera ? 'TWh' : 'GWh';
+      const unit = this.isPower ? 'MW' : this.energyUnit;
 
 
       if (this.showPricePanel && this.showTemperaturePanel) {
@@ -293,7 +296,7 @@ export default {
         fieldMappings: getFieldMappings(this.keys),
       }];
 
-      const unit = this.isPower ? 'MW' : this.tera ? 'TWh' : 'GWh';
+      const unit = this.isPower ? 'MW' : this.energyUnit;
       const graphType = this.isPower ? 'line' : 'step';
 
       this.chart.panels[0].stockGraphs =
@@ -426,7 +429,7 @@ export default {
 
     onPanelHover(e) {
       const graphId = e.graph.id;
-      const graphs = this.chart.panels[0].graphs;
+      // const graphs = this.chart.panels[0].graphs;
 
       this.$store.dispatch('currentHoverSeries', graphId);
 

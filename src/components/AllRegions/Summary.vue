@@ -405,11 +405,11 @@ export default {
     },
 
     fuelTechList(group) {
-      let fields = group.fieldNames.slice(0);
+      const fields = group.fieldNames.slice(0);
       let list = '';
 
       fields.sort();
-      fields.forEach(f => {
+      fields.forEach((f) => {
         list += `${f}<br>`;
       });
 

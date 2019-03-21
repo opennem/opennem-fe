@@ -21,8 +21,8 @@
 </template>
 
 <script>
+import * as _ from 'lodash';
 import { mapGetters } from 'vuex';
-import EventBus from '@/lib/event-bus';
 import { formatNumberForDisplay } from '@/lib/formatter';
 
 export default {
@@ -49,16 +49,19 @@ export default {
     },
 
     topValue() {
-      const elHeight = this.$el && this.$el.offsetHeight > 0 ? this.$el.offsetHeight : this.showTotal ? 40 : 24;
-      const safeZone = this.chartHeight - this.chartHeight / 3;
+      const elHeightOffset = this.showTotal ? 40 : 24;
+      const elHeight = this.$el && this.$el.offsetHeight > 0 ?
+        this.$el.offsetHeight : elHeightOffset;
+      const safeZone = this.chartHeight - (this.chartHeight / 3);
       const offset = this.showTotal ? 9 : -6;
-      const calTop = this.chartHeight - elHeight * 2 + offset;
+      const calTop = (this.chartHeight - (elHeight * 2)) + offset;
       return this.clientY > safeZone ? 0 : calTop;
     },
 
     currentSeriesLabel() {
       const series = this.currentHoverSeries;
-      const group = this.groupSelected ? this.groupSelected.groups.find(g => series === g.id) : null;
+      const group = this.groupSelected ?
+        this.groupSelected.groups.find(g => series === g.id) : null;
 
       if (group) {
         return group.label;
@@ -69,7 +72,8 @@ export default {
 
     currentSeriesColour() {
       const series = this.currentHoverSeries;
-      const group = this.groupSelected ? this.groupSelected.groups.find(g => series === g.id) : null;
+      const group = this.groupSelected ?
+        this.groupSelected.groups.find(g => series === g.id) : null;
 
       if (group) {
         return group.colour;
@@ -81,11 +85,13 @@ export default {
     currentSeriesValue() {
       const summary = this.pointSummary;
       const series = this.currentHoverSeries;
-      return summary && summary.allData && series ? formatNumberForDisplay(summary.allData[series], this.precision) : 0;
+      const available = summary && summary.allData && series;
+      return available ? formatNumberForDisplay(summary.allData[series], this.precision) : 0;
     },
 
     currentSeriesUnit() {
-      return this.isPower ? 'MW' : this.tera ? 'TWh' : 'GWh';
+      const energyUnit = this.tera ? 'TWh' : 'GWh';
+      return this.isPower ? 'MW' : energyUnit;
     },
 
     precision() {
@@ -117,7 +123,7 @@ export default {
       return formatNumberForDisplay(total, this.precision);
     },
   },
-}
+};
 </script>
 <style lang="scss" scoped>
 .chart-tips-container {

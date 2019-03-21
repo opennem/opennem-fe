@@ -1,10 +1,6 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as Periods from '@/constants/periods';
-// import {
-//   isValidFuelTech,
-//   isLoads } from '@/domains/graphs';
-import { formatNumberForDisplay } from './formatter';
 import { getStartEndDates } from './data-helpers';
 import { isTouchDevice } from './device';
 
