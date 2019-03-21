@@ -4,7 +4,7 @@
       <span class="icon">
         <font-awesome-icon class="fal fa-fw" :icon="iconChart" />
       </span>
-      <span>PNG</span>
+      <span>Image</span>
     </button>
     
     <csv
@@ -19,7 +19,7 @@
           <span class="icon">
             <font-awesome-icon class="fal fa-fw" :icon="iconCSV" />
           </span>
-          <span>CSV</span>
+          <span>Data</span>
         </button>
     </csv>
   </div>
