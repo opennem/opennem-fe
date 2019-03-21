@@ -14,7 +14,7 @@
 
           <div v-if="!isPower || !isPointHovered">
             <span>Energy</span>
-            <small>GWh</small>
+            <small>{{energyUnit}}</small>
           </div>
         </th>
         <th class="column-header has-text-right has-min-width clickable" @click="toggleContributionType">
@@ -108,7 +108,7 @@
         </td>
         <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            {{ pointSummary.allData[`${row.id}.market_value`] / Math.abs(pointSummary.allData[`${row.id}`]) / 1000 | formatNumber('$0,0.00') }}
+            {{ getRowAverageValue(row.id) | formatNumber('$0,0.00') }}
           </div>
           
           <div v-else>
@@ -162,7 +162,7 @@
         </td>
         <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            {{ pointSummary.allData[`${row.id}.market_value`] / Math.abs(pointSummary.allData[`${row.id}`]) / 1000 | formatNumber('$0,0.00') }}
+            {{ getRowAverageValue(row.id) | formatNumber('$0,0.00') }}
           </div>
           
           <div v-else>
@@ -243,7 +243,11 @@ export default {
       exportRegion: 'exportRegion',
       disabledSeries: 'disabledSeries',
       groupSelected: 'groupSelected',
+      tera: 'tera',
     }),
+    energyUnit() {
+      return this.tera ? 'TWh' : 'GWh';
+    },
     isTypeGeneration() {
       return this.contributionSelection.type === 'generation';
     },
@@ -432,7 +436,6 @@ export default {
         } else if (this.contributionSelection.type === 'generation') {
           renewContribution = (find.renewableTotal / this.pointSummary.totalGrossPower) * 100;
         }
-        // renewContribution = find[this.contributionSelection.type];
       } else if (this.rangeSummary.sourcesData) {
         this.rangeSummary.sourcesData.forEach((d) => {
           if (isRenewableFuelTech(d.id)) {
@@ -440,24 +443,13 @@ export default {
           }
         });
       }
-
-      // if (this.rangeSummary.sourcesData) {
-      //   this.rangeSummary.sourcesData.forEach((d) => {
-      //     if (isRenewableFuelTech(d.id)) {
-      //       if (this.isPointHovered) {
-      //         renewContribution +=
-      //           this.getContribution(
-      //             this.pointSummary.allData[d.id],
-      //             this.pointSummaryTotal,
-      //           );
-      //       } else {
-      //         renewContribution +=
-      //           this.getContribution(d.range.power, this.rangeSummaryTotal);
-      //       }
-      //     }
-      //   });
-      // }
       return renewContribution;
+    },
+    getRowAverageValue(id) {
+      const allData = this.pointSummary.allData;
+      const marketValueKey = `${id}.market_value`;
+      const convert = this.tera ? 1000 * 1000 : 1000;
+      return allData[marketValueKey] / Math.abs(allData[id]) / convert;
     },
   },
   filters: {

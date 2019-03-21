@@ -76,6 +76,7 @@ export default {
       currentInterval: 'currentInterval',
       disabledSeries: 'disabledSeries',
       region: 'region',
+      tera: 'tera',
     }),
     visClass() {
       return {
@@ -196,6 +197,8 @@ export default {
       const priceField = this.isPower ? 'price' : 'volume_weighted_price';
       const hasMinMax = !this.isPower;
       const showBullets = isLast24Hrs(this.currentRange);
+      const unit = this.isPower ? 'MW' : this.tera ? 'TWh' : 'GWh';
+
 
       if (this.showPricePanel && this.showTemperaturePanel) {
         panels = this.isPower ?
@@ -213,6 +216,7 @@ export default {
             hasMinMax,
             showBullets,
             this.currentInterval,
+            unit,
           );
       } else if (this.showPricePanel) {
         panels = getGenerationAndPricePanels(this.getPanelListeners());
@@ -221,7 +225,7 @@ export default {
       } else {
         panels = this.isPower ?
           generationPanel(this.getPanelListeners()) :
-          energyPanel(this.getPanelListeners(), this.currentInterval);
+          energyPanel(this.getPanelListeners(), this.currentInterval, unit);
       }
 
       return panels;
@@ -289,7 +293,7 @@ export default {
         fieldMappings: getFieldMappings(this.keys),
       }];
 
-      const unit = this.isPower ? 'MW' : 'GWh';
+      const unit = this.isPower ? 'MW' : this.tera ? 'TWh' : 'GWh';
       const graphType = this.isPower ? 'line' : 'step';
 
       this.chart.panels[0].stockGraphs =

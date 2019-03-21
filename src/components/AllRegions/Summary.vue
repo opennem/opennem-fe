@@ -14,7 +14,7 @@
 
           <div v-if="!isPower || !isPointHovered">
             <span>Energy</span>
-            <small>GWh</small>
+            <small>{{energyUnit}}</small>
           </div>
         </th>
         <th class="column-header has-text-right clickable" @click="toggleContributionType">
@@ -110,7 +110,7 @@
 
         <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            {{ pointSummary.allData[`${row.id}.market_value`] / Math.abs(pointSummary.allData[`${row.id}`]) / 1000 | formatNumber('$0,0.00') }}
+            {{ getRowAverageValue(row.id) | formatNumber('$0,0.00') }}
           </div>
           <div v-else>
             {{ row.range.averagePrice | formatNumber('$0,0.00') }}
@@ -164,7 +164,7 @@
 
         <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            {{ pointSummary.allData[`${row.id}.market_value`] / Math.abs(pointSummary.allData[`${row.id}`]) / 1000 | formatNumber('$0,0.00') }}
+            {{ getRowAverageValue(row.id) | formatNumber('$0,0.00') }}
           </div>
           
           <div v-else>
@@ -243,7 +243,12 @@ export default {
       currentRange: 'currentRange',
       disabledSeries: 'disabledSeries',
       groupSelected: 'groupSelected',
+      currentInterval: 'currentInterval',
+      tera: 'tera',
     }),
+    energyUnit() {
+      return this.tera ? 'TWh' : 'GWh';
+    },
     isTypeGeneration() {
       return this.contributionSelection.type === 'generation';
     },
@@ -436,6 +441,12 @@ export default {
         });
       }
       return renewContribution;
+    },
+    getRowAverageValue(id) {
+      const allData = this.pointSummary.allData;
+      const marketValueKey = `${id}.market_value`;
+      const convert = this.tera ? 1000 * 1000 : 1000;
+      return allData[marketValueKey] / Math.abs(allData[id]) / convert;
     },
   },
   filters: {
