@@ -84,7 +84,7 @@ export default {
       return this.$route.params.region || '';
     },
     isRegionView() {
-      return this.$route.params.region ? true : false;
+      return this.$route.params.region !== undefined;
     },
     filteredGenerators() {
       return this.generatorsData.filter(g =>
