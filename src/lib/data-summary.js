@@ -173,6 +173,8 @@ function getSummary(domains, data, isPower, isTera) {
           power: totalFTValue,
           energy: energySum, // same as totalFTValue / 12000
           averagePrice: averageFTPrice,
+          marketValueSum: totalFTMarketValue,
+          priceSum: dataFTPrice.reduce((a, b) => a + b, 0),
         },
       };
 
