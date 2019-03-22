@@ -32,7 +32,6 @@ export default {
   watch: {
     group(selectedGroup) {
       this.$store.dispatch('groupSelected', selectedGroup);
-      this.$store.dispatch('disabledSeries', []); // Clear out disabled rows
     },
   },
 };
