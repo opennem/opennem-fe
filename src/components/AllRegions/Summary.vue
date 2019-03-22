@@ -317,37 +317,44 @@ export default {
       const newRange = [];
 
       groups.forEach((g) => {
-        const range = {
-          power: 0,
-          energy: 0,
-          averagePrice: 0,
-        };
+        if (g.type === 'sources' || g.type === 'loads') {
+          const range = {
+            power: 0,
+            energy: 0,
+            averagePrice: 0,
+          };
 
-        let averagePriceSum = 0;
-        let hasGroup = false;
-        const fieldNames = [];
+          let priceSum = 0;
+          let marketValueSum = 0;
+          let hasGroup = false;
+          const fieldNames = [];
 
-        g.fields.forEach((f) => {
-          const find = data.find(s => s.id === f);
-          if (find) {
-            hasGroup = true;
-            range.power += find.range.power;
-            range.energy += find.range.energy;
-            averagePriceSum += find.range.averagePrice;
-            fieldNames.push(GraphDomains[f].label);
-          }
-        });
-
-        range.averagePrice = averagePriceSum / g.fields.length;
-
-        if (hasGroup) {
-          newRange.push({
-            colour: g.colour,
-            id: g.id,
-            label: g.label,
-            range,
-            fieldNames,
+          g.fields.forEach((f) => {
+            const find = data.find(s => s.id === f);
+            if (find) {
+              hasGroup = true;
+              range.power += find.range.power;
+              range.energy += find.range.energy;
+              priceSum += find.range.priceSum || 0;
+              marketValueSum += find.range.marketValueSum || 0;
+              fieldNames.push(GraphDomains[f].label);
+            }
           });
+
+          const convert = this.tera ? 1000 * 1000 : 1000;
+          range.averagePrice = this.isPower ?
+            priceSum / Math.abs(range.power) :
+            marketValueSum / Math.abs(range.energy) / convert;
+
+          if (hasGroup) {
+            newRange.push({
+              colour: g.colour,
+              id: g.id,
+              label: g.label,
+              range,
+              fieldNames,
+            });
+          }
         }
       });
 
