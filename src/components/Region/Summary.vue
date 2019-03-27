@@ -144,7 +144,12 @@
         </td>
         <td class="cell-value" :class="{ 'hovered': isPointHovered }">
           <div v-if="isPointHovered">
-            {{ pointSummary.allData[row.id] | formatNumber }}
+            <span v-if="isPower">
+              {{ pointSummary.allData[row.id] | formatNumber }}
+            </span>
+            <span v-else>
+              {{ pointSummary.allData[row.id] | formatNumber('0,0.0') }}
+            </span>
           </div>
           
           <div v-else>
