@@ -81,7 +81,7 @@ export default {
       const view = this.isEnergyRoute ? 'energy' : 'generators';
       this.$store.dispatch('region', `${regionId}1`);
       this.$router.push({ name: `region-${view}`, params: { region: regionId } });
-      EventBus.$emit('generators.filter.clear');
+      // EventBus.$emit('generators.filter.clear');
       window.scrollTo(0, 0);
     },
     isCurrentSelection(id) {
@@ -91,7 +91,7 @@ export default {
       const view = this.isEnergyRoute ? 'energy' : 'generators';
       this.$store.dispatch('region', 'nem');
       this.$router.push({ name: `home-${view}` });
-      EventBus.$emit('generators.filter.clear');
+      // EventBus.$emit('generators.filter.clear');
     },
   },
 };

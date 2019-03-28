@@ -46,6 +46,7 @@ function transformGeneratorData(data) {
 const state = {
   generatorsData: [],
   generatorsResponseData: [],
+  generatorsSelectedTechs: [],
 };
 
 const mutations = {
@@ -55,6 +56,9 @@ const mutations = {
   [MutationTypes.GENERATORS_RESPONSE_DATA](state, data) {
     state.generatorsResponseData = data;
   },
+  [MutationTypes.GENERATORS_SELECTED_TECHS](state, data) {
+    state.generatorsSelectedTechs = data;
+  },
 };
 
 const getters = {
@@ -63,6 +67,9 @@ const getters = {
   },
   generatorsResponseData: state => {
     return state.generatorsResponseData;
+  },
+  generatorsSelectedTechs: state => {
+    return state.generatorsSelectedTechs;
   },
 };
 
@@ -80,6 +87,9 @@ const actions = {
   },
   generatorsResponseData({ commit, state }, data) {
     commit(MutationTypes.GENERATORS_RESPONSE_DATA, data);
+  },
+  generatorsSelectedTechs({ commit, state }, data) {
+    commit(MutationTypes.GENERATORS_SELECTED_TECHS, data);
   },
 };
 

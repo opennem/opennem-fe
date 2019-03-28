@@ -14,12 +14,12 @@
       </div>
 
       <div class="level-right" v-show="isGeneratorsRoute">
-        <input 
+        <!-- <input 
           class="input is-rounded filter-station-input"
           type="text"
           placeholder="Filter By Station Name"
           v-model="filterGeneratorName"
-        />
+        /> -->
       </div>
     </div>
   </nav>

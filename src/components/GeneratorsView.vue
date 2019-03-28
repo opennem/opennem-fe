@@ -1,6 +1,9 @@
 <template>
 <div>
-  <div class="columns is-gapless map-detail-container">
+  <div class="columns is-multiline map-detail-container">
+    <div class="column is-full" style="padding: 0">
+       <filter-bar @selected="handleFilterSelected"/>
+    </div>
     
     <div class="column is-two-thirds">
       <generator-grid 
@@ -51,6 +54,7 @@ import EventBus from '@/lib/event-bus';
 import GeneratorGrid from '@/components/Generator/Grid';
 import GeneratorMap from '@/components/Generator/Map';
 import GeneratorDetail from '@/components/Generator/Detail';
+import FilterBar from '@/components/Generator/FilterBar';
 
 const ASCENDING = 'asc';
 const DESCENDING = 'desc';
@@ -60,6 +64,7 @@ export default {
     GeneratorGrid,
     GeneratorMap,
     GeneratorDetail,
+    FilterBar,
   },
   data() {
     return {
@@ -67,6 +72,7 @@ export default {
       sortBy: 'stationName',
       orderBy: ASCENDING,
       panTo: null,
+      selectedTechs: [],
       selectedGenerator: null,
       shouldZoomWhenSelected: true,
     };
@@ -87,7 +93,10 @@ export default {
       return this.$route.params.region !== undefined;
     },
     filteredGenerators() {
-      return this.generatorsData.filter(g =>
+      const filtered = this.selectedTechs.length > 0
+        ? this.generatorsData.filter(g => _.includes(this.selectedTechs, g.fuelTechs[0]))
+        : this.generatorsData;
+      return filtered.filter(g =>
         g.stationName.toLowerCase().includes(this.filterString.toLowerCase()) &&
         g.regionId.toLowerCase().includes(this.regionId),
       );
@@ -95,6 +104,9 @@ export default {
     hasSelectedGenerator() {
       return this.selectedGenerator;
     },
+  },
+  created() {
+    this.selectedTechs = this.$store.getters.generatorsSelectedTechs;
   },
   mounted() {
     EventBus.$on('generators.name.filter', this.setFilterString);
@@ -125,6 +137,9 @@ export default {
     setFilterString(string) {
       this.filterString = string;
     },
+    handleFilterSelected(selectedTechs) {
+      this.selectedTechs = selectedTechs;
+    },
   },
 };
 </script>
@@ -133,10 +148,7 @@ export default {
 @import "../../node_modules/bulma/sass/utilities/mixins.sass";
 
 .map-detail-container {
-  @include desktop {
-    position: sticky;
-    top: 60px;
-  }
+  position: relative;
 }
 .grid-container {
   @include desktop {
