@@ -39,7 +39,7 @@ import _ from 'lodash';
 import { mixin as clickaway } from 'vue-clickaway';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import { faAngleDown } from '@fortawesome/fontawesome-pro-light';
-import EventBus from '@/lib/event-bus';
+// import EventBus from '@/lib/event-bus';
 import { getAllRegions, getRegionLabel } from '@/domains/regions';
 
 export default {

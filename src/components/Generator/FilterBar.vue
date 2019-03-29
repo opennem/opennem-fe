@@ -93,7 +93,7 @@ export default {
       selectedTechGroups: [],
       groupExpanded: [],
       simplifiedGroup: _.cloneDeep(Simplified.groups),
-    }
+    };
   },
   computed: {
     iconDown() {
@@ -130,17 +130,17 @@ export default {
     findSolarGroup.fields = ['solar']; // remove 'rooftop_solar'
     findBatterGroup.label = 'Battery'; // rename battery discharging
 
-    groups.forEach(g => {
+    groups.forEach((g) => {
       this.allTechs.push(g);
 
-      g.fields.forEach(f => {
+      g.fields.forEach((f) => {
         if (_.includes(this.selectedTechs, f) &&
           !_.includes(this.selectedTechGroups, g.id)) {
           this.selectedTechGroups.push(g.id);
         }
-      })
-    })
-    
+      });
+    });
+
     this.allTechs.reverse();
   },
   beforeDestroy() {
@@ -162,7 +162,7 @@ export default {
     hasSelection(group) {
       const fieldsLength = group.fields.length;
       let fieldsSelected = 0;
-      group.fields.forEach(f => {
+      group.fields.forEach((f) => {
         if (_.includes(this.selectedTechs, f)) {
           fieldsSelected += 1;
         }
@@ -184,12 +184,12 @@ export default {
       const isGroupIncluded = _.includes(this.selectedTechGroups, groupId);
       if (isGroupIncluded) {
         this.selectedTechGroups = this.selectedTechGroups.filter(d => d !== groupId);
-        group.fields.forEach(f => {
+        group.fields.forEach((f) => {
           this.selectedTechs = this.selectedTechs.filter(d => d !== f);
         });
       } else {
         this.selectedTechGroups.push(groupId);
-        group.fields.forEach(f => {
+        group.fields.forEach((f) => {
           this.selectedTechs.push(f);
         });
       }
@@ -204,9 +204,8 @@ export default {
         this.selectedTechs.push(techId);
       }
 
-      const fieldsLength = group.fields.length;
       let fieldsSelected = 0;
-      group.fields.forEach(f => {
+      group.fields.forEach((f) => {
         if (_.includes(this.selectedTechs, f)) {
           fieldsSelected += 1;
         }
@@ -230,7 +229,6 @@ export default {
       } else {
         this.groupExpanded.push(groupId);
       }
-      console.log(this.groupExpanded)
     },
     clearSelectedTechs() {
       this.selectedTechGroups = [];
