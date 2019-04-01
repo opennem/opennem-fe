@@ -88,7 +88,7 @@ function getEmissionsPanel(listeners) {
   return {
     allLabels: [
       { text: 'Emissions', bold: true, x: 5, y: 5 },
-      { text: 'tCO2e', x: 67, y: 7, color: '#999', size: 9 },
+      { text: 'MtCO₂e', x: 67, y: 7, color: '#999', size: 9 },
     ],
     showCategoryAxis: false,
     addClassNames: true,
@@ -129,6 +129,7 @@ function getEmissionIntensityPanel(listeners) {
   return {
     allLabels: [
       { text: 'Emission Intensity', bold: true, x: 5, y: 5 },
+      { text: 'kgCO₂e/MWh', x: 115, y: 7, color: '#999', size: 9 },
     ],
     showCategoryAxis: false,
     addClassNames: true,
@@ -141,6 +142,7 @@ function getEmissionIntensityPanel(listeners) {
         id: 'emissionIntensityPanel',
         dashLength: 6,
         zeroGridAlpha: 0,
+        minimum: 0,
         guides: [
           {
             includeGuidesInMinMax: false,
