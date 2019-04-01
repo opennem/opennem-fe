@@ -404,11 +404,16 @@ export default {
     },
 
     onChartRendered(e) {
+      this.$store.dispatch('chartWidth', e.chart.divRealWidth);
+      this.$store.dispatch('clientX', e.finalX);
       if (e.chart.id === 'stockPanel0') {
-        this.$store.dispatch('chartWidth', e.chart.divRealWidth);
         this.$store.dispatch('chartHeight', e.chart.divRealHeight);
-        this.$store.dispatch('clientX', e.finalX);
         this.$store.dispatch('clientY', e.finalY);
+        this.$store.dispatch('mainPanelHover', true);
+      } else {
+        this.$store.dispatch('chartHeight', 327);
+        this.$store.dispatch('clientY', 30);
+        this.$store.dispatch('mainPanelHover', false);
       }
     },
 

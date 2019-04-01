@@ -4,7 +4,7 @@
       'top': `${topValue}px`
     }">
     <div class="chart-tips">
-      <div class="current">
+      <div class="current" v-if="mainPanelHover">
         <span class="colour-sq" 
           :style="{ 
             backgroundColor: currentSeriesColour,
@@ -40,6 +40,7 @@ export default {
       chartWidth: 'chartWidth',
       chartHeight: 'chartHeight',
       tera: 'tera',
+      mainPanelHover: 'mainPanelHover',
     }),
 
     leftValue() {
@@ -49,34 +50,41 @@ export default {
     },
 
     topValue() {
-      const elHeightOffset = this.showTotal ? 40 : 24;
-      const elHeight = this.$el && this.$el.offsetHeight > 0 ?
-        this.$el.offsetHeight : elHeightOffset;
-      const safeZone = this.chartHeight - (this.chartHeight / 3);
-      const offset = this.showTotal ? 9 : -6;
-      const calTop = (this.chartHeight - (elHeight * 2)) + offset;
-      return this.clientY > safeZone ? 0 : calTop;
+      if (this.mainPanelHover) {
+        const elHeightOffset = this.showTotal ? 40 : 24;
+        const elHeight = this.$el && this.$el.offsetHeight > 0 ?
+          this.$el.offsetHeight : elHeightOffset;
+        const safeZone = this.chartHeight - (this.chartHeight / 3);
+        const offset = this.showTotal ? 9 : -6;
+        const calTop = (this.chartHeight - (elHeight * 2)) + offset;
+        return this.clientY > safeZone ? 0 : calTop;
+      }
+      return this.chartHeight - 55;
     },
 
-    currentSeriesLabel() {
+    currentHoverGroup() {
       const series = this.currentHoverSeries;
       const group = this.groupSelected ?
         this.groupSelected.groups.find(g => series === g.id) : null;
 
-      if (group) {
-        return group.label;
+      return group;
+    },
+
+    currentSeriesLabel() {
+      const currentHoverGroup = this.currentHoverGroup;
+
+      if (currentHoverGroup) {
+        return currentHoverGroup.label;
       }
 
       return '';
     },
 
     currentSeriesColour() {
-      const series = this.currentHoverSeries;
-      const group = this.groupSelected ?
-        this.groupSelected.groups.find(g => series === g.id) : null;
+      const currentHoverGroup = this.currentHoverGroup;
 
-      if (group) {
-        return group.colour;
+      if (currentHoverGroup) {
+        return currentHoverGroup.colour;
       }
 
       return '#000';
