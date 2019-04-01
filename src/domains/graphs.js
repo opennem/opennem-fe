@@ -69,10 +69,10 @@ const GraphDomains = {
     categoryId: 'price',
     unit: '$',
   },
-  'brown_coal.emissions_volume': {
+  'brown_coal.emissions': {
     colour: '#8B572A',
     type: 'emissions',
-    label: 'Brown Coal',
+    label: 'Brown Coal Emissions',
     unit: '',
   },
   black_coal: {
@@ -89,10 +89,10 @@ const GraphDomains = {
     categoryId: 'price',
     unit: '$',
   },
-  'black_coal.emissions_volume': {
+  'black_coal.emissions': {
     colour: '#121212',
     type: 'emissions',
-    label: 'Black Coal',
+    label: 'Black Coal Emissions',
     unit: '',
   },
   biomass: {
@@ -123,10 +123,10 @@ const GraphDomains = {
     categoryId: 'price',
     unit: '$',
   },
-  'distillate.emissions_volume': {
+  'distillate.emissions': {
     colour: '#F35020',
     type: 'emissions',
-    label: 'Distillate',
+    label: 'Distillate Emissions',
     unit: '',
   },
   gas_steam: {
@@ -143,10 +143,10 @@ const GraphDomains = {
     categoryId: 'price',
     unit: '$',
   },
-  'gas_steam.emissions_volume': {
+  'gas_steam.emissions': {
     colour: '#F48E1B',
     type: 'emissions',
-    label: 'Gas (Steam)',
+    label: 'Gas (Steam) Emissions',
     unit: '',
   },
   gas_ccgt: {
@@ -163,10 +163,10 @@ const GraphDomains = {
     categoryId: 'price',
     unit: '$',
   },
-  'gas_ccgt.emissions_volume': {
+  'gas_ccgt.emissions': {
     colour: '#FDB462',
     type: 'emissions',
-    label: 'Gas (CCGT)',
+    label: 'Gas (CCGT) Emissions',
     unit: '',
   },
   gas_ocgt: {
@@ -183,10 +183,10 @@ const GraphDomains = {
     categoryId: 'price',
     unit: '$',
   },
-  'gas_ocgt.emissions_volume': {
+  'gas_ocgt.emissions': {
     colour: '#FFCD96',
     type: 'emissions',
-    label: 'Gas (OCGT)',
+    label: 'Gas (OCGT) Emissions',
     unit: '',
   },
   gas_recip: {
@@ -203,10 +203,10 @@ const GraphDomains = {
     categoryId: 'price',
     unit: '$',
   },
-  'gas_recip.emissions_volume': {
+  'gas_recip.emissions': {
     colour: '#F9DCBC',
     type: 'emissions',
-    label: 'Gas (Reciprocating)',
+    label: 'Gas (Reciprocating) Emissions',
     unit: '',
   },
   battery_discharging: {
@@ -337,7 +337,7 @@ const GraphDomains = {
   },
   emissionsIntensity: {
     colour: '#000',
-    type: 'other',
+    type: 'emissions_intensity',
     label: 'Emissions Intensity',
     unit: '',
   },

@@ -98,7 +98,9 @@ export default function(domains, data, interpolate) {
 
   Object.keys(domains).forEach((domain) => {
     const fuelTechData = data.find(d => d.fuel_tech === domain);
-    const fuelTechMarketValue = data.find(d => d.type === 'market_value' && d.id.includes(`fuel_tech.${domain}`));
+    const fuelTechMarketValueOrEmissions = data.find(
+      d => (d.type === 'market_value' || d.type === 'emissions') && d.id.includes(`fuel_tech.${domain}`)
+    );
     const priceOrTemperatureData = data.find(d => d.type === domain);
     let history = null;
 
@@ -110,11 +112,11 @@ export default function(domains, data, interpolate) {
       }
     } else if (priceOrTemperatureData) {
       history = new History(priceOrTemperatureData.history);
-    } else if (fuelTechMarketValue) {
-      history = new History(fuelTechMarketValue.history);
+    } else if (fuelTechMarketValueOrEmissions) {
+      history = new History(fuelTechMarketValueOrEmissions.history);
     }
 
-    if (fuelTechData || priceOrTemperatureData || fuelTechMarketValue) {
+    if (fuelTechData || priceOrTemperatureData || fuelTechMarketValueOrEmissions) {
       const duration = parseInterval(history.interval);
       allIntervals[domain] = duration;
 
