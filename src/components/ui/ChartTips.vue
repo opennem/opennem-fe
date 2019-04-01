@@ -133,7 +133,7 @@ export default {
   padding: 4px 6px;
   border-radius: 2px;
   text-align: right;
-  z-index: 99;
+  z-index: 9;
   box-shadow: 0 0 20px rgba(50, 50, 50, 0.1);
 }
 
