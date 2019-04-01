@@ -95,10 +95,11 @@ export default function(domains, data, interpolate) {
       }
     }
   }
-
   Object.keys(domains).forEach((domain) => {
     const fuelTechData = data.find(d => d.fuel_tech === domain);
-    const fuelTechMarketValue = data.find(d => d.type === 'market_value' && d.id.includes(`fuel_tech.${domain}`));
+    const fuelTechMarketValueOrEmissions = data.find(
+      d => (d.type === 'market_value' || d.type === 'emissions') && d.id.includes(`fuel_tech.${domain}`)
+    );
     const priceOrTemperatureData = data.find(d => d.type === domain);
     let history = null;
 
@@ -110,11 +111,11 @@ export default function(domains, data, interpolate) {
       }
     } else if (priceOrTemperatureData) {
       history = new History(priceOrTemperatureData.history);
-    } else if (fuelTechMarketValue) {
-      history = new History(fuelTechMarketValue.history);
+    } else if (fuelTechMarketValueOrEmissions) {
+      history = new History(fuelTechMarketValueOrEmissions.history);
     }
 
-    if (fuelTechData || priceOrTemperatureData || fuelTechMarketValue) {
+    if (fuelTechData || priceOrTemperatureData || fuelTechMarketValueOrEmissions) {
       const duration = parseInterval(history.interval);
       allIntervals[domain] = duration;
 
@@ -187,13 +188,34 @@ export default function(domains, data, interpolate) {
           series.currentValue = d[series.key];
   
         } else if (d[series.key] === null) {
-  
+
           if (series.interpolation === 'step') {
             d[series.key] = series.currentValue;
           }
-  
+
         }
       });
+    });
+  }
+
+  if (newChartData.length > 0) {
+    const ftWithEmissions = []
+    Object.keys(newChartData[0]).forEach(key => {
+      if (key.includes('.emissions')) {
+        const lastIndex = key.indexOf('.');
+        ftWithEmissions.push(key.substring(0, lastIndex));
+      }
+    });
+
+    let demand = 0;
+    let emissions = 0;
+    newChartData.forEach((d, i) => {
+      ftWithEmissions.forEach(ftE => {
+        demand += d[ftE];
+        emissions += d[`${ftE}.emissions`];
+      })
+      // console.log(emissions, demand, emissions / demand)
+      newChartData[i].emission_intensity = emissions / demand;
     });
   }
 

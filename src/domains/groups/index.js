@@ -234,6 +234,71 @@ const marketValueDomains = [
     fields: ['pumps.market_value'],
   },
 ];
+const emissionsVolDomains = [
+  {
+    id: 'brown_coal.emissions',
+    label: 'Brown Coal Emissions',
+    type: 'emissions',
+    colour: '#8B572A',
+    fields: ['brown_coal.emissions'],
+  },
+
+  {
+    id: 'black_coal.emissions',
+    label: 'Black Coal Emissions',
+    type: 'emissions',
+    colour: '#121212',
+    fields: ['black_coal.emissions'],
+  },
+
+  {
+    id: 'distillate.emissions',
+    label: 'Distillate Emissions',
+    type: 'emissions',
+    colour: '#F35020',
+    fields: ['distillate.emissions'],
+  },
+
+  {
+    id: 'gas_steam.emissions',
+    label: 'Gas (Steam) Emissions',
+    type: 'emissions',
+    colour: '#F48E1B',
+    fields: ['gas_steam.emissions'],
+  },
+
+  {
+    id: 'gas_ccgt.emissions',
+    label: 'Gas (CCGT) Emissions',
+    type: 'emissions',
+    colour: '#FDB462',
+    fields: ['gas_ccgt.emissions'],
+  },
+
+  {
+    id: 'gas_ocgt.emissions',
+    label: 'Gas (OCGT) Emissions',
+    type: 'emissions',
+    colour: '#FFCD96',
+    fields: ['gas_ocgt.emissions'],
+  },
+
+  {
+    id: 'gas_recip.emissions',
+    label: 'Gas (Reciprocating) Emissions',
+    type: 'emissions',
+    colour: '#F9DCBC',
+    fields: ['gas_recip.emissions'],
+  },
+
+  {
+    id: 'emission_intensity',
+    label: 'Emission Intensity',
+    type: 'emission_intensity',
+    colour: '#F9DCBC',
+    fields: ['emission_intensity'],
+  },
+];
 
 function appendGroups(groups) {
   const groupMarketValues = [];
@@ -257,6 +322,7 @@ function appendGroups(groups) {
     ...marketValueDomains,
     ...temperatureDomains,
     ...priceDomains,
+    ...emissionsVolDomains,
   ];
 }
 

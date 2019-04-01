@@ -15,6 +15,7 @@ import { findRange } from '@/domains/date-ranges';
 import {
   getFieldMappings,
   getStockGraphs,
+  getEmissionsStockGraphs,
   getNemGuides,
   getChartConfig,
 } from '@/lib/chart-helpers';
@@ -141,6 +142,14 @@ export default {
 
       config.panels[0].categoryAxis.listeners = this.getCategoryAxisListeners();
 
+      if (this.isPower) {
+        config.panels[0].percentHeight = 100;
+      } else {
+        config.panels[0].percentHeight = 60;
+        config.panels[1].percentHeight = 20;
+        config.panels[2].percentHeight = 20;
+      }
+
       this.chart = window.AmCharts.makeChart(this.$el, config);
 
       this.chart.addListener('init', this.onChartInit);
@@ -183,6 +192,9 @@ export default {
           this.customDomains,
         );
       this.chart.panels[0].guides = this.isPower ? getNemGuides(this.chartData, false) : [];
+      if (!this.isPower) {
+        this.chart.panels[1].stockGraphs = getEmissionsStockGraphs(this.keys, this.customDomains);
+      }
       // this.chart.panels[0].guides = getNemGuides(this.chartData, showWeekends);
       this.chart.validateData();
     },
@@ -251,13 +263,15 @@ export default {
     },
 
     onChartRendered(e) {
+      this.$store.dispatch('chartWidth', e.chart.divRealWidth);
+      this.$store.dispatch('clientX', e.finalX);
       if (e.chart.id === 'stockPanel0') {
-        this.$store.dispatch('chartWidth', e.chart.divRealWidth);
         this.$store.dispatch('chartHeight', e.chart.divRealHeight);
-        this.$store.dispatch('clientX', e.finalX);
         this.$store.dispatch('clientY', e.finalY);
         this.$store.dispatch('mainPanelHover', true);
       } else {
+        this.$store.dispatch('chartHeight', 320);
+        this.$store.dispatch('clientY', 30);
         this.$store.dispatch('mainPanelHover', false);
       }
     },
