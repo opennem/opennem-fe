@@ -290,6 +290,14 @@ const emissionsVolDomains = [
     colour: '#F9DCBC',
     fields: ['gas_recip.emissions'],
   },
+
+  {
+    id: 'emission_intensity',
+    label: 'Emission Intensity',
+    type: 'emission_intensity',
+    colour: '#F9DCBC',
+    fields: ['emission_intensity'],
+  },
 ];
 
 function appendGroups(groups) {

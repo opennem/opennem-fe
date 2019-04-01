@@ -95,7 +95,6 @@ export default function(domains, data, interpolate) {
       }
     }
   }
-
   Object.keys(domains).forEach((domain) => {
     const fuelTechData = data.find(d => d.fuel_tech === domain);
     const fuelTechMarketValueOrEmissions = data.find(
@@ -189,13 +188,34 @@ export default function(domains, data, interpolate) {
           series.currentValue = d[series.key];
   
         } else if (d[series.key] === null) {
-  
+
           if (series.interpolation === 'step') {
             d[series.key] = series.currentValue;
           }
-  
+
         }
       });
+    });
+  }
+
+  if (newChartData.length > 0) {
+    const ftWithEmissions = []
+    Object.keys(newChartData[0]).forEach(key => {
+      if (key.includes('.emissions')) {
+        const lastIndex = key.indexOf('.');
+        ftWithEmissions.push(key.substring(0, lastIndex));
+      }
+    });
+
+    let demand = 0;
+    let emissions = 0;
+    newChartData.forEach((d, i) => {
+      ftWithEmissions.forEach(ftE => {
+        demand += d[ftE];
+        emissions += d[`${ftE}.emissions`];
+      })
+      // console.log(emissions, demand, emissions / demand)
+      newChartData[i].emission_intensity = emissions / demand;
     });
   }
 

@@ -335,10 +335,10 @@ const GraphDomains = {
     categoryId: 'price',
     unit: '$/MWh',
   },
-  emissionsIntensity: {
+  emission_intensity: {
     colour: '#000',
-    type: 'emissions_intensity',
-    label: 'Emissions Intensity',
+    type: 'emission_intensity',
+    label: 'Emission Intensity',
     unit: '',
   },
 };
@@ -372,6 +372,11 @@ function isPrice(id) {
 function isFTMarketValue(id) {
   const domain = GraphDomains[id];
   return domain && domain.type === 'market_value';
+}
+
+function isFTEmissions(id) {
+  const domain = GraphDomains[id];
+  return domain && domain.type === 'emissions';
 }
 
 function isTemperature(id) {
@@ -427,6 +432,7 @@ export {
   isRenewableFuelTech,
   isPrice,
   isFTMarketValue,
+  isFTEmissions,
   isTemperature,
   isRooftopSolar,
 };
