@@ -1,7 +1,7 @@
 /* eslint-disable */
 import * as moment from 'moment';
 import History from '@/models/History';
-import { isPrice, isTemperature, isRooftopSolar, isImports, isLoads } from '@/domains/graphs'; 
+import { isPrice, isTemperature, isRooftopSolar, isImports, isLoads, isValidFuelTech } from '@/domains/graphs'; 
 import { parseInterval, compareAndGetShortestInterval } from './duration-parser';
 
 function shouldInvertValue(id) {
@@ -198,12 +198,18 @@ export default function(domains, data, interpolate) {
     });
   }
 
+  // kgCO₂e/MWh - intensity
+  // MtCO₂e - emissions
   if (newChartData.length > 0) {
-    const ftWithEmissions = []
+    const ftWithEmissions = [];
+    const demandFt = [];
     Object.keys(newChartData[0]).forEach(key => {
       if (key.includes('.emissions')) {
         const lastIndex = key.indexOf('.');
         ftWithEmissions.push(key.substring(0, lastIndex));
+      }
+      if (isValidFuelTech(key)) {
+        demandFt.push(key);
       }
     });
 
@@ -211,11 +217,14 @@ export default function(domains, data, interpolate) {
     let emissions = 0;
     newChartData.forEach((d, i) => {
       ftWithEmissions.forEach(ftE => {
-        demand += d[ftE];
-        emissions += d[`${ftE}.emissions`];
-      })
-      // console.log(emissions, demand, emissions / demand)
-      newChartData[i].emission_intensity = emissions / demand;
+        emissions += d[`${ftE}.emissions`] * 1000;
+        d[`${ftE}.emissions`] = d[`${ftE}.emissions`] / 1e6;
+      });
+      demandFt.forEach(ft => {
+        demand += d[ft];
+      });
+      // console.log(emissions, demand, emissions / demand * 1000)
+      newChartData[i].emission_intensity = emissions / (demand * 1000);
     });
   }
 

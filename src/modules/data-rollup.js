@@ -7,7 +7,8 @@ export default function (d) {
   let tempMeanNum = 0;
   let priceNum = 0;
 
-  const ftWithEmissions = []
+  const ftWithEmissions = [];
+  const demandFt = [];
   let demand = 0;
   let emissions = 0;
   
@@ -16,14 +17,18 @@ export default function (d) {
       const lastIndex = key.indexOf('.');
       ftWithEmissions.push(key.substring(0, lastIndex));
     }
+    if (isValidFuelTech(key)) {
+      demandFt.push(key);
+    }
   });
 
   d.forEach((e) => {
     ftWithEmissions.forEach(ftE => {
-      demand += e[ftE];
       emissions += e[`${ftE}.emissions`];
-    })
-    newD.emission_intensity = emissions / demand;
+    });
+    demandFt.forEach(ft => {
+      demand += e[ft];
+    });
     
     Object.keys(e).forEach((f) => {
       let isNew = false;
@@ -73,6 +78,7 @@ export default function (d) {
     });
   });
 
+  newD.emission_intensity = (emissions * 1e6 * 1000) / (demand * 1000);
   newD.volume_weighted_price = newD.volume_weighted_price / priceNum;
   
   const newPrice = newD.volume_weighted_price;
@@ -85,6 +91,8 @@ export default function (d) {
   newD[priceNegKey] = newPrice < 0 ? -newPrice : 0.001;
 
   newD.temperature_mean = newD.temperature_mean / tempMeanNum;
+
+  console.log(newD.emission_intensity)
 
   return newD;
 }
