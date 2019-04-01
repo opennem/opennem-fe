@@ -14,6 +14,7 @@ const state = {
   clientY: 0,
   chartWidth: 0,
   chartHeight: 0,
+  mainPanelHover: false,
 };
 
 const mutations = {
@@ -46,6 +47,9 @@ const mutations = {
   },
   [MutationTypes.CHART_HEIGHT](state, data) {
     state.chartHeight = data;
+  },
+  [MutationTypes.CHART_MAIN_PANEL_HOVER](state, data) {
+    state.mainPanelHover = data;
   },
 };
 
@@ -80,6 +84,9 @@ const getters = {
   chartHeight: state => {
     return state.chartHeight;
   },
+  mainPanelHover: state => {
+    return state.mainPanelHover;
+  },
 };
 
 const actions = {
@@ -112,6 +119,9 @@ const actions = {
   },
   chartHeight({ commit, state }, data) {
     commit(MutationTypes.CHART_HEIGHT, data);
+  },
+  mainPanelHover({ commit, state }, data) {
+    commit(MutationTypes.CHART_MAIN_PANEL_HOVER, data);
   },
 };
 

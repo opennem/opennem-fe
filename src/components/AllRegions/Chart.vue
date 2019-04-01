@@ -256,6 +256,9 @@ export default {
         this.$store.dispatch('chartHeight', e.chart.divRealHeight);
         this.$store.dispatch('clientX', e.finalX);
         this.$store.dispatch('clientY', e.finalY);
+        this.$store.dispatch('mainPanelHover', true);
+      } else {
+        this.$store.dispatch('mainPanelHover', false);
       }
     },
 

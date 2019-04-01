@@ -4,14 +4,16 @@ import { isValidFuelTech, isFTMarketValue } from '@/domains/graphs';
 export default function (d) {
   const newD = {};
 
-  let tempMinNum = 0;
   let tempMeanNum = 0;
-  let tempMaxNum = 0;
   let priceNum = 0;
 
   d.forEach((e) => {
     Object.keys(e).forEach((f) => {
-      if (!newD[f]) newD[f] = 0;
+      let isNew = false;
+      if (!newD[f]) { 
+        newD[f] = 0;
+        isNew = true;
+      }
 
       if (f === 'nestDate') {
         newD.date = e[f];
@@ -30,16 +32,22 @@ export default function (d) {
         priceNum += 1;
       }
       if (f === 'temperature_min' && e[f]) {
-        newD[f] += e[f];
-        tempMinNum += 1;
+        if (isNew) {
+          newD[f] = e[f];
+        }
+
+        if (e[f] < newD[f]) {
+          newD[f] = e[f];
+        }
       }
       if (f === 'temperature_mean' && e[f]) {
         newD[f] += e[f];
         tempMeanNum += 1;
       }
       if (f === 'temperature_max' && e[f]) {
-        newD[f] += e[f];
-        tempMaxNum += 1;
+        if (e[f] > newD[f]) {
+          newD[f] = e[f];
+        }
       }
     });
   });
@@ -55,9 +63,7 @@ export default function (d) {
   newD[pricePosKey] = newPrice > 300 ? newPrice : 0.001;
   newD[priceNegKey] = newPrice < 0 ? -newPrice : 0.001;
 
-  newD.temperature_min = newD.temperature_min / tempMinNum;
   newD.temperature_mean = newD.temperature_mean / tempMeanNum;
-  newD.temperature_max = newD.temperature_max / tempMaxNum;
 
   return newD;
 }

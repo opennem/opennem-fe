@@ -40,7 +40,7 @@
       </section>
 
       <section class="about-section eth-section">
-        <img class="about-logos eth-logo" src="images/eth-logo.png" alt="Energy Consumers Australia's logo">
+        <img class="about-logos eth-logo" src="images/eth-logo.png" alt="Energy Transition Hub's logo">
         <p>
           This project is part of the University of Melbourne’s <a href="http://climatecollege.unimelb.edu.au/" rel="external">Climate and Energy College</a>
           “Live-Emission tracker” project under the <a href="http://www.energy-transition-hub.org/" rel="external">Energy Transition Hub</a>.

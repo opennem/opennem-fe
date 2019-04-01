@@ -21,6 +21,7 @@ export const CHART_CLIENT_X = 'CHART_CLIENT_X';
 export const CHART_CLIENT_Y = 'CHART_CLIENT_Y';
 export const CHART_WIDTH = 'CHART_WIDTH';
 export const CHART_HEIGHT = 'CHART_HEIGHT';
+export const CHART_MAIN_PANEL_HOVER = 'CHART_MAIN_PANEL_HOVER';
 
 export const NEM_URLS = 'NEM_URLS';
 export const NEM_DATA = 'NEM_DATA';
