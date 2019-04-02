@@ -15,6 +15,7 @@ import Months from '@/domains/months';
 import {
   getFieldMappings,
   getStockGraphs,
+  getEmissionsStockGraphs,
   getNemGuides,
   getChartConfig,
 } from '@/lib/chart-helpers';
@@ -202,7 +203,6 @@ export default {
       const showBullets = isLast24Hrs(this.currentRange);
       const unit = this.isPower ? 'MW' : this.energyUnit;
 
-
       if (this.showPricePanel && this.showTemperaturePanel) {
         panels = this.isPower ?
           getAllPanelsGeneration(
@@ -308,6 +308,10 @@ export default {
           this.disabledSeries,
           this.customDomains,
         );
+
+      if (!this.isPower) {
+        this.chart.panels[5].stockGraphs = getEmissionsStockGraphs(this.keys, this.customDomains);
+      }
 
       // add Guides
       // const showWeekends = !this.isPower;
@@ -688,7 +692,7 @@ export default {
   height: 450px;
 
   @include desktop {
-    height: 620px;
+    height: 760px;
   }
 
   &.one-panel {

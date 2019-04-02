@@ -3,6 +3,8 @@ import {
   getEnergyPanel,
   getPricePanels,
   getTemperaturePanel,
+  getEmissionsPanel,
+  getEmissionIntensityPanel,
 } from '@/lib/chart-panels';
 
 function getAllPanelsGeneration(listeners, priceField, temperatureField, hasMinMax, showBullets) {
@@ -20,6 +22,8 @@ function getAllPanelsEnergy(
     getEnergyPanel(listeners, intervalLabel, unit),
     ...getPricePanels(listeners, priceField), // 3 panels in price
     getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets),
+    getEmissionsPanel(listeners),
+    getEmissionIntensityPanel(listeners),
   ];
 }
 
