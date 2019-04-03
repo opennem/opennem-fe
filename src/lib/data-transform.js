@@ -22,7 +22,9 @@ function getKeysAndStartEndGenerationTime(domains, data) {
   Object.keys(domains).forEach((domain) => {
     const fuelTech = data.find(d => d.fuel_tech === domain);
     const priceOrTemperatureData = data.find(d => d.type === domain);
-    const fuelTechMarketValue = data.find(d => d.type === 'market_value' && d.id.includes(`fuel_tech.${domain}`));
+    const fuelTechMarketValue = data.find(
+      d => (d.type === 'market_value' || d.type === 'emissions') && d.id.includes(`fuel_tech.${domain}`)
+    );
 
     if (fuelTech || priceOrTemperatureData || fuelTechMarketValue) {
       keys.push(domain);
