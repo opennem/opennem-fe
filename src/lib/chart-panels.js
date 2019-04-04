@@ -125,7 +125,7 @@ function getEmissionsPanel(listeners) {
 /**
  * Emission Intensity Panel
  */
-function getEmissionIntensityPanel(listeners) {
+function getEmissionIntensityPanel(listeners, connect) {
   return {
     allLabels: [
       { text: 'Emission Intensity', bold: true, x: 5, y: 5 },
@@ -164,7 +164,7 @@ function getEmissionIntensityPanel(listeners) {
       lineColor: '#C74523',
       useDataSetColors: false,
       showBalloon: true,
-      connect: false,
+      connect,
       balloonFunction: item => `<strong>${formatNumberForDisplay(item.values.value, '0,0.0')}</strong>`,
     }],
     guides: [],
@@ -176,7 +176,7 @@ function getEmissionIntensityPanel(listeners) {
 /**
  * Temperature Panel
  */
-function getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets) {
+function getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets, connect) {
   function makeGuide(value, colour) {
     return {
       includeGuidesInMinMax: false,
@@ -200,7 +200,7 @@ function getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets
         lineColor: '#C74523',
         useDataSetColors: false,
         showBalloon: true,
-        connect: false,
+        connect,
         fillAplhas: 0,
         balloonFunction: item => `<strong>${formatNumberForDisplay(item.values.value, '0,0.0')}°C</strong>`,
       },
@@ -213,7 +213,7 @@ function getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets
         lineColor: '#C74523',
         useDataSetColors: false,
         showBalloon: true,
-        connect: false,
+        connect,
         fillAlphas: 0.1,
         fillToGraph: 'temperatureMaxStockGraph',
         balloonFunction: item => `<strong>${formatNumberForDisplay(item.values.value, '0,0.0')}°C</strong>`,
@@ -232,7 +232,7 @@ function getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets
     lineColor: '#C74523',
     useDataSetColors: false,
     showBalloon: true,
-    connect: false,
+    connect,
     bulletSize: 5,
     bullet,
     balloonFunction: item => `<strong>${formatNumberForDisplay(item.values.value, '0,0.0')}°C</strong>`,
