@@ -78,7 +78,8 @@ export default function (d) {
     });
   });
 
-  newD.emission_intensity = (emissions * 1e6 * 1000) / (demand * 1000);
+  const emissionIntensity = (emissions * 1e6 * 1000) / (demand * 1000);
+  newD.emission_intensity = emissionIntensity;
   newD.volume_weighted_price = newD.volume_weighted_price / priceNum;
   
   const newPrice = newD.volume_weighted_price;
@@ -91,8 +92,6 @@ export default function (d) {
   newD[priceNegKey] = newPrice < 0 ? -newPrice : 0.001;
 
   newD.temperature_mean = newD.temperature_mean / tempMeanNum;
-
-  console.log(newD.emission_intensity)
 
   return newD;
 }
