@@ -133,9 +133,11 @@ const actions = {
           newValue += d[f] || 0;
         });
 
-        if ((g.type === 'temperature' ||
-          g.id === 'pricePos' ||
-          g.id === 'priceNeg') && newValue === 0) {
+        if (
+          (g.type === 'temperature' ||
+            g.type === 'emission_intensity' ||
+            g.id === 'pricePos' ||
+            g.id === 'priceNeg') && newValue === 0) {
           newValue = null;
         }
 
