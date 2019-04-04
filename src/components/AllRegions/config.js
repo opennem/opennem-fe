@@ -10,7 +10,7 @@ function energyPanel(listeners, intervalLabel, unit) {
   return [
     getEnergyPanel(listeners, intervalLabel, unit),
     getEmissionsPanel(listeners),
-    getEmissionIntensityPanel(listeners),
+    getEmissionIntensityPanel(listeners, true),
   ];
 }
 
