@@ -16,6 +16,8 @@ const state = {
   showTemperaturePanel: true,
   showPricePanel: true,
   showSummaryPanel: false,
+  showEmissionVolumePanel: false,
+  showEmissionIntensityPanel: false,
   panelsSelection,
   panelsSelected: panelsSelection[0],
 };
@@ -29,6 +31,12 @@ const mutations = {
   },
   [MutationTypes.SUMMARY_PANEL](state, data) {
     state.showSummaryPanel = data;
+  },
+  [MutationTypes.EMISSION_VOLUME_PANEL](state, data) {
+    state.showEmissionVolumePanel = data;
+  },
+  [MutationTypes.EMISSION_INTENSITY_PANEL](state, data) {
+    state.showEmissionIntensityPanel = data;
   },
   [MutationTypes.PANELS_SELECTIONS](state, data) {
     state.panelsSelection = data;
@@ -47,6 +55,12 @@ const getters = {
   },
   showSummaryPanel: state => {
     return state.showSummaryPanel;
+  },
+  showEmissionVolumePanel: state => {
+    return state.showEmissionVolumePanel;
+  },
+  showEmissionIntensityPanel: state => {
+    return state.showEmissionIntensityPanel;
   },
   panelsSelection: state => {
     return state.panelsSelection;
@@ -70,6 +84,12 @@ const actions = {
     commit(MutationTypes.TEMPERATURE_PANEL, true);
     commit(MutationTypes.PRICE_PANEL, true);
     commit(MutationTypes.SUMMARY_PANEL, false);
+  },
+  showEmissionVolumePanel({ commit, state }, data) {
+    commit(MutationTypes.EMISSION_VOLUME_PANEL, data);
+  },
+  showEmissionIntensityPanel({ commit, state }, data) {
+    commit(MutationTypes.EMISSION_INTENSITY_PANEL, data);
   },
   panelsSelection({ commit, state }, data) {
     commit(MutationTypes.PANELS_SELECTIONS, data);
