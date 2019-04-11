@@ -145,9 +145,9 @@ export default {
       if (this.isPower) {
         config.panels[0].percentHeight = 100;
       } else {
-        config.panels[0].percentHeight = 60;
-        config.panels[1].percentHeight = 20;
-        config.panels[2].percentHeight = 20;
+        config.panels[0].percentHeight = 50;
+        config.panels[1].percentHeight = 25;
+        config.panels[2].percentHeight = 15;
       }
 
       this.chart = window.AmCharts.makeChart(this.$el, config);
@@ -537,7 +537,7 @@ export default {
   height: 350px;
 
   @include desktop {
-    height: 550px;
+    height: 580px;
   }
 }
 
