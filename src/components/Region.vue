@@ -8,6 +8,7 @@
 
   <div style="display: flex; align-items: center;">
     <range-selector class="range-selector-container" v-if="!isExportPng" style="margin-right: 1rem;" />
+    <group-selection />
     <panels-selector />
   </div>
   
@@ -77,6 +78,7 @@ import UiLoader from './ui/Loader';
 import RangeSelector from './ui/RangeSelector';
 import PanelsSelector from './ui/PanelsSelector';
 import ChartTips from './ui/ChartTips';
+import GroupSelection from './ui/GroupSelection';
 
 export default {
   components: {
@@ -93,6 +95,7 @@ export default {
     RangeSelector,
     PanelsSelector,
     ChartTips,
+    GroupSelection,
   },
   created() {
     const regionId = this.$route.params.region;

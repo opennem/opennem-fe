@@ -6,8 +6,9 @@
     </div>
   </transition>
 
-  <div>
+  <div style="display: flex; align-items: center;">
     <range-selector class="range-selector-container" v-if="!isExportPng" />
+    <group-selection />
   </div>
   
   <transition name="fade">
@@ -63,6 +64,7 @@ import UiZoomOutButton from './ui/ZoomOutButton';
 import UiLoader from './ui/Loader';
 import RangeSelector from './ui/RangeSelector';
 import ChartTips from './ui/ChartTips';
+import GroupSelection from './ui/GroupSelection';
 
 export default {
   components: {
@@ -77,6 +79,7 @@ export default {
     UiLoader,
     RangeSelector,
     ChartTips,
+    GroupSelection,
   },
   created() {
     this.$store.dispatch('region', 'nem');
