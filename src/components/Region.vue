@@ -6,8 +6,9 @@
     </div>
   </transition>
 
-  <div>
-    <range-selector class="range-selector-container" v-if="!isExportPng" />
+  <div style="display: flex; align-items: center;">
+    <range-selector class="range-selector-container" v-if="!isExportPng" style="margin-right: 1rem;" />
+    <panels-selector />
   </div>
   
   <transition name="fade">
@@ -74,6 +75,7 @@ import ExportLegend from './Export/Legend';
 import UiZoomOutButton from './ui/ZoomOutButton';
 import UiLoader from './ui/Loader';
 import RangeSelector from './ui/RangeSelector';
+import PanelsSelector from './ui/PanelsSelector';
 import ChartTips from './ui/ChartTips';
 
 export default {
@@ -89,6 +91,7 @@ export default {
     PanelButtons,
     UiLoader,
     RangeSelector,
+    PanelsSelector,
     ChartTips,
   },
   created() {
