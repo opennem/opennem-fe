@@ -8,7 +8,7 @@
 
   <div style="display: flex; align-items: center;">
     <range-selector class="range-selector-container" v-if="!isExportPng" />
-    <group-selection />
+    <group-selection style="margin-left: 1rem;" />
   </div>
   
   <transition name="fade">

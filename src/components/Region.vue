@@ -8,8 +8,8 @@
 
   <div style="display: flex; align-items: center;">
     <range-selector class="range-selector-container" v-if="!isExportPng" style="margin-right: 1rem;" />
-    <group-selection />
-    <panels-selector />
+    <group-selection style="margin-left: 1rem;"/>
+    <panels-selector style="margin-left: 1rem;" v-if="!isPower"/>
   </div>
   
   <transition name="fade">

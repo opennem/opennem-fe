@@ -1,5 +1,6 @@
 <template>
   <div class="select is-rounded is-small">
+    <label>Display</label>
     <select v-model="group">
       <option v-for="(g, index) in groupSelections" :key="index" :value="g">
         {{ g.groupSelectionName }}
@@ -39,18 +40,11 @@ export default {
 
 <style lang="scss" scoped>
 .select  {
-  &:hover::after {
-    border-color:#C74523;
-  }
+  display: flex;
+  align-items: center;
 
   select {
-    background-color: rgba(255, 255, 255, 0.4);
-    border: none;
-    font-weight: 600;
-
-    &:hover {
-      background-color: #fff;
-    }
+    padding-top: 4px;
   }
 }
 </style>
