@@ -4,9 +4,12 @@ import getJSON from '@/lib/data-apis';
 import * as MutationTypes from '@/constants/mutation-types';
 
 function transformGeneratorData(data) {
-  return data.map(d => {
+  const stationIds = Object.keys(data);
+  const stations = stationIds.map(d => data[d]);
+  console.log(stations)
+  return stations.map(d => {
+    const stationId = d.stationid || '';
     const regionId = d.regionid || '';
-    const emissionsYtd = d.emmissions_ytd || 0;
     const location = d.location || null;
     const units = [];
     const duidKeys = Object.keys(d.duid_data);
@@ -15,25 +18,28 @@ function transformGeneratorData(data) {
     let generatorCap = 0;
 
     duidKeys.forEach(unitName => {
-      const firstRun = d.duid_data[unitName].first_run;
-      const regCap = d.duid_data[unitName].reg_cap;
+      const regCap = d.duid_data[unitName].registeredcapacity;
       const fuelTech = d.duid_data[unitName].fuel_tech;
+      const firstRun = d.duid_data[unitName].first_run;
       const unitObj = {
         name: unitName,
-        firstRun,
         fuelTech,
         regCap,
+        firstRun,
       };
 
-      generatorCap += d.duid_data[unitName].reg_cap;
+      generatorCap += regCap || 0;
       fuelTechs.push(fuelTech);
       units.push(unitObj);
     });
 
     return {
-      stationName: d.station_name,
+      stationId,
+      stationName: d.stationname,
+      displayName: d.displayname,
+      participant: d.participant,
+      status: d.status,
       regionId,
-      emissionsYtd,
       location,
       units,
       generatorCap,
@@ -75,9 +81,11 @@ const getters = {
 
 const actions = {
   fetchGeneratorsData({ commit, state }) {
-    const urls = ['testing/generator_registry.json']
+    const urls = ['station/generator_registry.json'];
+
     getJSON(urls, false)
       .then((responses) => {
+        console.log(responses[0].data)
         const transformedData = transformGeneratorData(responses[0].data);
         commit(MutationTypes.GENERATORS_DATA, transformedData);
       })

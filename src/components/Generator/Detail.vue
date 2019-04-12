@@ -1,15 +1,21 @@
 <template>
   <div class="generator-detail message is-primary is-small" v-if="hasGenerator">
     <div class="message-header">
-      <h2>{{ generator.stationName }}</h2>
+      <h2>{{ generator.displayName }}</h2>
       <button class="delete" aria-label="Close generator detail" @click="handleCloseDetailButton"></button>
     </div>
     <div class="message-body">
       <div class="generator-info">
         <div>
+          <h5>Station Name: <span>{{ generator.stationName }}</span></h5>
+        </div>
+        <div>
+          <h5>Participant: <span>{{ generator.participant }}</span></h5>
+        </div>
+        <div>
           <h5>Fuel Tech:
             <span v-for="(ft, ftIndex) in generator.fuelTechs" :key="ftIndex">
-              {{ getFtLabel(ft) }}
+              {{ getFtLabel(ft) }}<span v-if="ftIndex !== generator.fuelTechs.length - 1">,</span>
             </span>
           </h5>
         </div>
@@ -19,19 +25,32 @@
         <div>
           <h5>Region: <span>{{ getRegionLabel(generator.regionId) }}</span></h5>
         </div>
+        <div>
+          <h5>State: <span>{{ generator.location.state }}</span></h5>
+        </div>
       </div>
 
       <table class="table is-narrow is-fullwidth">
         <thead>
           <tr>
             <th>Unit</th>
+            <th>Fuel Tech</th>
             <th>First Run</th>
             <th class="has-text-right">Capacity</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(unit, index) in generator.units" :key="index">
-            <td>{{ unit.name }}</td>
+            <td>
+              <div style="display: flex">
+                <span class="source-colour"
+                  :style="{ 
+                    backgroundColor: getColour(unit.fuelTech)
+                  }" />
+                <span class="unit-name">{{ unit.name }}</span>
+              </div>
+            </td>
+            <td>{{ getFtLabel(unit.fuelTech) }}</td>
             <td>{{ unit.firstRun }}</td>
             <td class="has-text-right">{{ unit.regCap | formatNumber }}</td>
           </tr>
@@ -62,7 +81,14 @@ export default {
       if (ftObj) {
         return ftObj.label;
       }
-      return ft;
+      return ft ? ft : '—';
+    },
+    getColour(fuelTech) {
+      const ftObj = fuelTech ? GraphDomains[fuelTech] : null;
+      if (ftObj) {
+        return ftObj.colour;
+      }
+      return '#fff';
     },
     getRegionLabel(code) {
       return getRegionLabelByCode(code);
@@ -110,5 +136,21 @@ export default {
     background: transparent;
     margin-bottom: 0;
   }
+
+  .source-colour {
+    width: 17px;
+    height: 17px;
+    background-color: rgba(255,255,255,.8);
+    display: inline-block;
+    vertical-align: text-bottom;
+    margin-right: 0.1rem;
+    position: relative;
+    top: 1px;
+  }
+  .unit-name {
+    margin-left: 2px;
+    display: block; 
+  }
 }
+
 </style>

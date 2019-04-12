@@ -125,10 +125,10 @@ export default {
 
     const groups = this.simplifiedGroup.filter(g => g.type === 'sources' && g.id !== 'imports');
     const findSolarGroup = groups.find(g => g.id === 'group_solar');
-    const findBatterGroup = groups.find(g => g.id === 'group_battery_discharging');
+    const findBatteryGroup = groups.find(g => g.id === 'group_battery_discharging');
 
     findSolarGroup.fields = ['solar']; // remove 'rooftop_solar'
-    findBatterGroup.label = 'Battery'; // rename battery discharging
+    findBatteryGroup.label = 'Battery'; // rename battery discharging
 
     groups.forEach((g) => {
       this.allTechs.push(g);

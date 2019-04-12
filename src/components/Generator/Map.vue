@@ -53,7 +53,7 @@ export default {
           this.selectedMarker.remove();
         }
 
-        if (hasLocation) {
+        if (hasLocation.latitude && hasLocation.longitude) {
           const lat = hasLocation.latitude;
           const lng = hasLocation.longitude;
           const loc = new L.LatLng(lat, lng);
@@ -116,10 +116,9 @@ export default {
       this.map.removeLayer(this.generatorsFeature);
       this.generatorsFeature = L.featureGroup();
       const self = this;
-
       data.forEach((d) => {
         const location = d.location;
-        if (location) {
+        if (location.latitude && location.longitude) {
           const lat = location.latitude;
           const lng = location.longitude;
           const radiusScale = scaleLinear([0, 3000], [2000, 50000]);

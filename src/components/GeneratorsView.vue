@@ -94,10 +94,10 @@ export default {
     },
     filteredGenerators() {
       const filtered = this.selectedTechs.length > 0
-        ? this.generatorsData.filter(g => _.includes(this.selectedTechs, g.fuelTechs[0]))
+        ? this.generatorsData.filter(g => g.fuelTechs.some(r => this.selectedTechs.includes(r)))
         : this.generatorsData;
       return filtered.filter(g =>
-        g.stationName.toLowerCase().includes(this.filterString.toLowerCase()) &&
+        g.displayName.toLowerCase().includes(this.filterString.toLowerCase()) &&
         g.regionId.toLowerCase().includes(this.regionId),
       );
     },

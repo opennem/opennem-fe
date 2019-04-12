@@ -6,7 +6,7 @@
           v-for="(header, index) in colHeaders"
           :key="index"
           :class="{ 'has-text-right': shouldRightAligned(header.id) }"
-          v-show="!(index === 1 && hideRegionColumn)"
+          v-show="!((index === 2) && hideRegionColumn)"
           @click="sort(header.id)"
           >
             {{ header.label }}
@@ -22,23 +22,31 @@
       <tr
         v-for="(generator, index) in generatorsData"
         :key="index"
-        :class="{ 'is-selected': isSelected(generator.stationName) }"
+        :class="{
+          'is-selected': isSelected(generator.stationId),
+          'is-inactive': !active(generator.status)
+        }"
         @click="handleRowClick(generator)"
       >
-        <td>
+        <td style="width: 50px;">
           <div style="display: flex">
-            <span class="source-colour"
+            <span
+              v-for="(ft, ftIndex) in generator.fuelTechs"
+              :key="ftIndex"
               :style="{ 
-                backgroundColor: getColour(generator.fuelTechs)
-              }" />
-            <span class="station-name">{{ generator.stationName }}</span>
+                backgroundColor: getColour(ft)
+              }"
+              class="source-colour" />
           </div>
-          
+        </td>
+        <td>
+          <span class="station-name">{{ generator.displayName }}</span>
         </td>
         <td style="width: 150px;" v-show="!hideRegionColumn">{{ getRegionLabel(generator.regionId) }}</td>
+        <!-- <td style="width: 150px;" v-show="!hideRegionColumn">{{ generator.location.state }}</td> -->
         <td style="width: 150px;">
           <span v-for="(ft, ftIndex) in generator.fuelTechs" :key="ftIndex">
-            {{ getFtLabel(ft) }}
+            {{ getFtLabel(ft) }}<span v-if="ftIndex !== generator.fuelTechs.length - 1">,</span>
           </span>
         </td>
         <td class="has-text-right" style="width: 100px;">{{ generator.generatorCap | formatNumber }}</td>
@@ -47,7 +55,9 @@
     <tfoot>
       <tr>
         <td>{{ totalGenerators }}</td>
+        <td></td>
         <td v-show="!hideRegionColumn"></td>
+        <!-- <td v-show="!hideRegionColumn"></td> -->
         <td></td>
         <td class="has-text-right">{{ totalCap | formatNumber }}</td>
       </tr>
@@ -63,6 +73,10 @@ import { getRegionLabelByCode } from '@/domains/regions';
 
 const colHeaders = [
   {
+    id: 'fuelTechsColours',
+    label: '',
+  },
+  {
     id: 'stationName',
     label: 'Name',
   },
@@ -70,6 +84,10 @@ const colHeaders = [
     id: 'regionId',
     label: 'Region',
   },
+  // {
+  //   id: 'location.state',
+  //   label: 'State',
+  // },
   {
     id: 'fuelTechs',
     label: 'Technology',
@@ -133,8 +151,13 @@ export default {
   },
 
   methods: {
-    sort(stationName) {
-      this.$emit('orderChanged', stationName);
+    active(status) {
+      return status === 'Commissioned';
+    },
+    sort(colId) {
+      if (colId !== 'fuelTechsColours') {
+        this.$emit('orderChanged', colId);
+      }
     },
     handleRowClick(generator) {
       this.selected = generator;
@@ -157,21 +180,21 @@ export default {
       if (ftObj) {
         return ftObj.label;
       }
-      return ft;
+      return ft ? ft : '—';
     },
     getRegionLabel(code) {
       return getRegionLabelByCode(code);
     },
-    getColour(fuelTechs) {
-      const ftObj = fuelTechs[0] ? GraphDomains[fuelTechs[0]] : null;
+    getColour(fuelTech) {
+      const ftObj = fuelTech ? GraphDomains[fuelTech] : null;
       if (ftObj) {
         return ftObj.colour;
       }
-      return 'transparent';
+      return '#fff';
     },
-    isSelected(stationName) {
+    isSelected(stationId) {
       if (this.selected) {
-        return stationName === this.selected.stationName;
+        return stationId === this.selected.stationId;
       }
       return false;
     },
@@ -207,11 +230,15 @@ table {
     margin-right: 0.1rem;
     position: relative;
     top: 1px;
+    margin-right: 3px;
   }
   .station-name {
-    margin-left: 2px;
     display: block; 
     width: 95%;
+  }
+
+  .is-inactive td {
+    opacity: 0.65;
   }
 }
 </style>
