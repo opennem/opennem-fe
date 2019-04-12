@@ -175,6 +175,11 @@ export default {
               end: current.toDate(),
             });
             break;
+          
+          case 'last24hrs':
+          case 'last3days':
+          case 'last7days':
+            this.$store.dispatch('resetPanelsSelected');
 
           default:
             this.$store.dispatch('nemTrim', false);
