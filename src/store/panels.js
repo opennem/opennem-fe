@@ -97,6 +97,9 @@ const actions = {
   panelsSelected({ commit, state }, data) {
     commit(MutationTypes.PANELS_SELECTED, data);
   },
+  resetPanelsSelected({ commit, state }) {
+    commit(MutationTypes.PANELS_SELECTED, panelsSelection[0]);
+  },
 };
 
 export default {
