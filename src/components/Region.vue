@@ -6,8 +6,10 @@
     </div>
   </transition>
 
-  <div>
-    <range-selector class="range-selector-container" v-if="!isExportPng" />
+  <div style="display: flex; align-items: center;">
+    <range-selector class="range-selector-container" v-if="!isExportPng" style="margin-right: 1rem;" />
+    <group-selection style="margin-left: 1rem;"/>
+    <panels-selector style="margin-left: 1rem;" v-if="!isPower"/>
   </div>
   
   <transition name="fade">
@@ -74,7 +76,9 @@ import ExportLegend from './Export/Legend';
 import UiZoomOutButton from './ui/ZoomOutButton';
 import UiLoader from './ui/Loader';
 import RangeSelector from './ui/RangeSelector';
+import PanelsSelector from './ui/PanelsSelector';
 import ChartTips from './ui/ChartTips';
+import GroupSelection from './ui/GroupSelection';
 
 export default {
   components: {
@@ -89,7 +93,9 @@ export default {
     PanelButtons,
     UiLoader,
     RangeSelector,
+    PanelsSelector,
     ChartTips,
+    GroupSelection,
   },
   created() {
     const regionId = this.$route.params.region;

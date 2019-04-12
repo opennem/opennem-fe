@@ -1,13 +1,14 @@
 <template>
   <div class="select is-rounded is-small">
-    <label>Display</label>
-    <select v-model="group">
-      <option v-for="(g, index) in groupSelections" :key="index" :value="g">
-        {{ g.groupSelectionName }}
+    <label>With</label>
+    <select v-model="panels">
+      <option v-for="(p, index) in panelsSelection" :key="index" :value="p">
+        {{ p.label }}
       </option>
     </select>
   </div>
 </template>
+
 
 <script>
 import { mapGetters } from 'vuex';
@@ -15,24 +16,24 @@ import { mapGetters } from 'vuex';
 export default {
   data() {
     return {
-      group: {},
+      panels: {},
     };
   },
 
   computed: {
     ...mapGetters({
-      groupSelections: 'groupSelections',
-      groupSelected: 'groupSelected',
+      panelsSelection: 'panelsSelection',
+      panelsSelected: 'panelsSelected',
     }),
   },
 
   created() {
-    this.group = this.groupSelected;
+    this.panels = this.panelsSelected;
   },
 
   watch: {
-    group(selectedGroup) {
-      this.$store.dispatch('groupSelected', selectedGroup);
+    panels(selected) {
+      this.$store.dispatch('panelsSelected', selected);
     },
   },
 };

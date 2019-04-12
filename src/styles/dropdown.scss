@@ -26,6 +26,25 @@ hr.dropdown-divider {
   color: #eee;
 }
 
-.select select {
-  font-family: $header-font-family;
+.select  {
+  &:hover::after {
+    border-color:#C74523;
+  }
+
+  label {
+    font-family: $header-font-family;
+    font-weight: 600;
+    margin-right: 0.2rem;
+    font-size: 1em;
+  }
+
+  select {
+    font-family: $primary-font-family;
+    background-color: rgba(255, 255, 255, 0.4);
+    border: none;
+
+    &:hover {
+      background-color: #fff;
+    }
+  }
 }

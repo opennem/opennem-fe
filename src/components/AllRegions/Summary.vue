@@ -5,7 +5,7 @@
     </caption>
     <thead>
       <tr>
-        <th class="group-selector"><group-selection v-show="showGrouping" /></th>
+        <th></th>
         <th class="column-header has-text-right" style="width: 95px;">
           <div v-if="isPointHovered && isPower">
             <span>Power</span>
@@ -221,20 +221,12 @@ import { mapGetters } from 'vuex';
 import EventBus from '@/lib/event-bus';
 import { formatNumberForDisplay } from '@/lib/formatter';
 import { GraphDomains, isRenewableFuelTech } from '@/domains/graphs';
-import GroupSelection from '@/components/ui/GroupSelection';
 import DateSelector from '@/components/ui/DateSelector';
 
 export default {
   name: 'all-regions-summary',
   components: {
-    GroupSelection,
     DateSelector,
-  },
-  props: {
-    showGrouping: {
-      type: Boolean,
-      default: () => true,
-    },
   },
   data() {
     return {
