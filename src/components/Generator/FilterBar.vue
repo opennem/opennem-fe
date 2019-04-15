@@ -4,6 +4,10 @@
       class="input is-small is-rounded filter-station-input"
       type="text"
       placeholder="Filter By Station Name"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
       v-model="filterGeneratorName"
     />
 
