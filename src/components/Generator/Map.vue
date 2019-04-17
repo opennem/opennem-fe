@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div id="map"></div>
+  <div id="map" :style="{ height: mapHeight }"></div>
   <div class="attribution">
     Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.
   </div>
@@ -17,6 +17,7 @@ export default {
   props: {
     generatorsData: Array,
     selectedGenerator: Object,
+    hoveredGenerator: Object,
     shouldZoomWhenSelected: Boolean,
   },
 
@@ -36,14 +37,58 @@ export default {
       }),
       map: null,
       selectedMarker: null,
+      hoveredMarker: null,
       generatorsFeature: null,
       emissionsFeature: null,
+      windowHeight: window.innerHeight,
     };
+  },
+
+  computed: {
+    mapHeight() {
+      return `${this.windowHeight - 170}px`;
+      // return '300px';
+    },
   },
 
   watch: {
     generatorsData(newData) {
       this.updateMap(newData);
+    },
+    hoveredGenerator(generator) {
+      if (generator) {
+        const hasLocation = generator.location;
+
+        if (this.hoveredMarker) {
+          this.hoveredMarker.remove();
+        }
+
+        if (hasLocation.latitude && hasLocation.longitude) {
+          const lat = hasLocation.latitude;
+          const lng = hasLocation.longitude;
+          const loc = new L.LatLng(lat, lng);
+
+          // this.hoveredMarker = L.marker([lat, lng], { icon: this.marker });
+          // this.hoveredMarker.addTo(this.map);
+
+          this.hoveredMarker = L.popup({
+            autoClose: false,
+            className: 'map-popup'
+          }).setLatLng([lat, lng]).setContent(generator.displayName);
+          this.hoveredMarker.openOn(this.map);
+
+          if (this.shouldZoomWhenSelected) {
+            this.map.setZoom(5);
+          }
+          this.map.on('zoomend', () => {
+            this.map.panTo(loc);
+          });
+          this.map.panTo(loc);
+        }
+      } else {
+        this.hoveredMarker.remove();
+        // this.map.fitBounds(this.generatorsFeature.getBounds());
+      }
     },
     selectedGenerator(generator) {
       if (generator) {
@@ -58,8 +103,14 @@ export default {
           const lng = hasLocation.longitude;
           const loc = new L.LatLng(lat, lng);
 
-          this.selectedMarker = L.marker([lat, lng], { icon: this.marker });
-          this.selectedMarker.addTo(this.map);
+          // this.selectedMarker = L.marker([lat, lng], { icon: this.marker });
+          // this.selectedMarker.addTo(this.map);
+          this.selectedMarker = L.popup({
+            autoClose: false,
+            closeOnClick: false,
+            className: 'map-popup selected'
+          }).setLatLng([lat, lng]).setContent(generator.displayName);
+          this.selectedMarker.openOn(this.map);
 
           if (this.shouldZoomWhenSelected) {
             this.map.setZoom(5);
@@ -71,7 +122,7 @@ export default {
         }
       } else {
         this.selectedMarker.remove();
-        this.map.fitBounds(this.generatorsFeature.getBounds());
+        // this.map.fitBounds(this.generatorsFeature.getBounds());
       }
     },
   },
@@ -137,7 +188,7 @@ export default {
                 self.handleMapCircleClicked(d);
               },
             })
-            .bindTooltip(d.stationName)
+            .bindTooltip(d.displayName)
             .addTo(this.generatorsFeature);
 
           L.circle([lat, lng], {
@@ -170,18 +221,6 @@ export default {
   border-radius: 6px;
   box-shadow: 0 0 20px rgba(0,0,0,.05);
   opacity: 0.95;
-  
-  @include tablet {
-    height: 300px;
-  }
-
-  @include desktop {
-    height: 350px;
-  }
-
-  @include fullhd {
-    height: 400px;
-  }
 }
 
 .attribution {

@@ -1,20 +1,34 @@
 <template>
 <div>
-  <div class="columns is-multiline map-detail-container">
-    <div class="column is-full" style="padding: 0">
-       <filter-bar @selected="handleFilterSelected"/>
-    </div>
-    
-    <div class="column is-half">
-      <generator-grid 
+  <div class="column is-full" style="padding: 0; position: sticky; top: 46px; z-index: 90; background-color: #ece9e6;">
+    <filter-bar
+      :sortBy="sortBy"
+      :orderBy="orderBy"
+      @orderChanged="handleOrderChange"
+      @sortChanged="handleSortChange"
+      @selected="handleFilterSelected"
+    />
+  </div>
+  <div class="columns is-multiline is-gapless map-detail-container" style="padding: 0 2rem;">    
+    <div class="column is-two-fifths">
+      <generator-list 
         :generatorsData="filteredGenerators"
         :selectedGenerator="selectedGenerator"
+        :hoveredGenerator="hoveredGenerator"
         :sortBy="sortBy"
         :orderBy="orderBy"
         :hideRegionColumn="isRegionView"
         @orderChanged="handleOrderChange"
         @generatorSelected="handleGeneratorSelect"
+        @generatorHover="handleGeneratorHover"
+        @generatorMouseout="handleGeneratorOut"
+        style="margin-top: 0.5rem;"
       />
+
+      <div class="totals">
+        <span>Stations: <strong>{{totalGenerators}}</strong></span>
+        <span>Capacity: <strong>{{ totalCap | formatNumber }}</strong> </span>
+      </div>
     </div>
 
     <div class="column">
@@ -22,13 +36,15 @@
         <generator-map
           :generatorsData="filteredGenerators"
           :selectedGenerator="selectedGenerator"
+          :hoveredGenerator="hoveredGenerator"
           :shouldZoomWhenSelected="shouldZoomWhenSelected"
           @generatorSelected="handleGeneratorSelect"
+          style="margin-top: 0.5rem;"
         />
-        <generator-detail
+        <!-- <generator-detail
           :generator="selectedGenerator"
           @closeGeneratorDetail="handleCloseDetail"
-        />
+        /> -->
       </div>
     </div>
 
@@ -51,7 +67,7 @@
 import _ from 'lodash';
 import { mapGetters } from 'vuex';
 import EventBus from '@/lib/event-bus';
-import GeneratorGrid from '@/components/Generator/Grid';
+import GeneratorList from '@/components/Generator/List';
 import GeneratorMap from '@/components/Generator/Map';
 import GeneratorDetail from '@/components/Generator/Detail';
 import FilterBar from '@/components/Generator/FilterBar';
@@ -61,7 +77,7 @@ const DESCENDING = 'desc';
 
 export default {
   components: {
-    GeneratorGrid,
+    GeneratorList,
     GeneratorMap,
     GeneratorDetail,
     FilterBar,
@@ -74,6 +90,7 @@ export default {
       panTo: null,
       selectedTechs: [],
       selectedGenerator: null,
+      hoveredGenerator: null,
       shouldZoomWhenSelected: true,
     };
   },
@@ -104,32 +121,57 @@ export default {
     hasSelectedGenerator() {
       return this.selectedGenerator;
     },
+    totalCap() {
+      let total = 0;
+      this.filteredGenerators.forEach((d) => {
+        total += d.generatorCap;
+      });
+      return total;
+    },
+    totalGenerators() {
+      return this.filteredGenerators.length;
+    },
   },
   created() {
     this.selectedTechs = this.$store.getters.generatorsSelectedTechs;
   },
+
   mounted() {
     EventBus.$on('generators.name.filter', this.setFilterString);
     this.$store.dispatch('fetchGeneratorsData');
   },
+
   beforeDestroy() {
     EventBus.$off('generators.name.filter');
   },
+
   methods: {
-    toggleOrder(order) {
-      return order === ASCENDING ? DESCENDING : ASCENDING;
+    // toggleOrder(order) {
+    //         console.log(order, ASCENDING)
+
+    //   return order === ASCENDING ? DESCENDING : ASCENDING;
+    // },
+    handleSortChange(sort) {
+      // if (this.sortBy === sort) {
+      //   this.orderBy = this.toggleOrder(this.orderBy);
+      // } else {
+      //   this.orderBy = ASCENDING;
+      // }
+      this.sortBy = sort;
     },
-    handleOrderChange(orderName) {
-      if (this.sortBy === orderName) {
-        this.orderBy = this.toggleOrder(this.orderBy);
-      } else {
-        this.orderBy = ASCENDING;
-      }
-      this.sortBy = orderName;
+    handleOrderChange(order) {
+      this.orderBy = order;
     },
     handleGeneratorSelect(generator, shouldZoom) {
       this.selectedGenerator = generator;
       this.shouldZoomWhenSelected = shouldZoom;
+    },
+    handleGeneratorHover(generator, shouldZoom) {
+      this.hoveredGenerator = generator;
+      this.shouldZoomWhenSelected = shouldZoom;
+    },
+    handleGeneratorOut() {
+      this.hoveredGenerator = null;
     },
     handleCloseDetail() {
       this.selectedGenerator = null;
@@ -160,14 +202,36 @@ export default {
 
   @include tablet {
     position: sticky;
-    top: 60px;
+    top: 100px;
   }
   @include mobile {
-    position: fixed;
-    bottom: 20px;
-    left: 10px;
-    right: 10px;
-    z-index: 99;
+    display: none;
+    // position: fixed;
+    // bottom: 20px;
+    // left: 10px;
+    // right: 10px;
+    // z-index: 99;
+  }
+}
+.totals {
+  position: sticky;
+  margin-bottom: -3px;
+  bottom: 29px;
+  right: 0;
+  z-index: 90;
+  background-color: #C74523;
+  color: #fff;
+  padding: 3px 6px;
+  border-radius: 3px 3px 0 0;
+  font-size: 10px;
+  box-shadow: 0 -2px 5px rgba(100, 100, 100, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  strong {
+    color: #fff;
+    font-size: 13px;
   }
 }
 </style>

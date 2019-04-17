@@ -40,6 +40,7 @@ export default {
       const name = this.$route.name;
       return name === 'home' || name === 'region' ||
         name === 'home-energy' || name === 'home-generators' ||
+        name === 'home-generators2' ||
         name === 'region-energy' || name === 'region-generators';
     },
     isAbout() {
@@ -97,6 +98,41 @@ section {
 
   @include mobile {
     margin: 0 auto;
+  }
+}
+
+// Map
+.map-popup {
+  font-family: $primary-font-family;
+  font-weight: 600;
+
+  .leaflet-popup-content-wrapper {
+    border-radius: 3px;
+    box-shadow: 0 2px 6px rgba(100, 100, 100, 0.8);
+  }
+  .leaflet-popup-content {
+    padding: 3px 6px;
+    margin: 0;
+  }
+  .leaflet-popup-tip-container {
+    width: 44px;
+  }
+  .leaflet-popup-tip {
+    width: 10px;
+    height: 15px;
+  }
+  .leaflet-popup-close-button {
+    display: none;
+  }
+  .leaflet-popup-content-wrapper,
+  .leaflet-popup-tip {
+    background-color: #000;
+    color: #fff;
+  }
+  &.selected .leaflet-popup-content-wrapper,
+  &.selected .leaflet-popup-tip {
+    background-color: #C74523;
+    color: #fff;
   }
 }
 </style>

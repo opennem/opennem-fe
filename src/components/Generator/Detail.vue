@@ -8,12 +8,16 @@
       <div class="generator-info">
         <div>
           <h5>Station Name: <span>{{ generator.stationName }}</span></h5>
+          <h5>Status:
+            <span>{{ generator.status }}</span>
+            <em v-if="generator.statusDate">on {{ generator.statusDate | formatDate }}</em>
+          </h5>
         </div>
         <div>
           <h5>Participant: <span>{{ generator.participant }}</span></h5>
         </div>
         <div>
-          <h5>Fuel Tech:
+          <h5>Technology:
             <span v-for="(ft, ftIndex) in generator.fuelTechs" :key="ftIndex">
               {{ getFtLabel(ft) }}<span v-if="ftIndex !== generator.fuelTechs.length - 1">,</span>
             </span>
@@ -30,13 +34,22 @@
         </div>
       </div>
 
-      <table class="table is-narrow is-fullwidth">
+      <table class="table is-narrow is-fullwidth is-bordered">
         <thead>
           <tr>
-            <th>Unit</th>
-            <th>Fuel Tech</th>
-            <th>First Run</th>
-            <th class="has-text-right">Capacity</th>
+            <th colspan="3"></th>
+            <th colspan="3">Type</th>
+            <th colspan="2">Capacity</th>
+          </tr>
+          <tr>
+            <th rowspan="2">Unit</th>
+            <th rowspan="2">Technology</th>
+            <th rowspan="2">First Run</th>
+            <th rowspan="2">Schedule</th>
+            <th rowspan="2">Start</th>
+            <th rowspan="2">Dispatch</th>
+            <th>Registered</th>
+            <th>Max</th>
           </tr>
         </thead>
         <tbody>
@@ -52,7 +65,11 @@
             </td>
             <td>{{ getFtLabel(unit.fuelTech) }}</td>
             <td>{{ unit.firstRun }}</td>
+            <td>{{ unit.scheduleType }}</td>
+            <td>{{ unit.startType }}</td>
+            <td>{{ unit.dispatchType }}</td>
             <td class="has-text-right">{{ unit.regCap | formatNumber }}</td>
+            <td class="has-text-right">{{ unit.maxCap | formatNumber }}</td>
           </tr>
         </tbody>
       </table>
@@ -63,6 +80,7 @@
 <script>
 import { GraphDomains } from '@/domains/graphs';
 import { getRegionLabelByCode } from '@/domains/regions';
+import { formatDateForDisplay } from '@/lib/formatter';
 
 export default {
   props: {
@@ -72,6 +90,12 @@ export default {
   computed: {
     hasGenerator() {
       return this.generator;
+    },
+  },
+
+  filters: {
+    formatDate(value) {
+      return formatDateForDisplay(value);
     },
   },
 

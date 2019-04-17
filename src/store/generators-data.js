@@ -6,10 +6,10 @@ import * as MutationTypes from '@/constants/mutation-types';
 function transformGeneratorData(data) {
   const stationIds = Object.keys(data);
   const stations = stationIds.map(d => data[d]);
-  console.log(stations)
+
   return stations.map(d => {
-    const stationId = d.stationid || '';
-    const regionId = d.regionid || '';
+    const stationId = d.station_id || '';
+    const regionId = d.region_id || '';
     const location = d.location || null;
     const units = [];
     const duidKeys = Object.keys(d.duid_data);
@@ -18,27 +18,46 @@ function transformGeneratorData(data) {
     let generatorCap = 0;
 
     duidKeys.forEach(unitName => {
-      const regCap = d.duid_data[unitName].registeredcapacity;
-      const fuelTech = d.duid_data[unitName].fuel_tech;
-      const firstRun = d.duid_data[unitName].first_run;
+      const unit = d.duid_data[unitName];
+      const regCap = unit.registered_capacity;
+      const fuelTech = unit.fuel_tech;
+      const startType = unit.start_type;
+      const scheduleType = unit.schedule_type;
+      const dispatchType = unit.dispatch_type;
+
       const unitObj = {
         name: unitName,
         fuelTech,
         regCap,
-        firstRun,
+        firstRun: unit.first_run,
+        dispatchType,
+        scheduleType,
+        startType,
+        maxCap: unit.max_capacity,
+        npi: unit.npi
+          ? { reportYear: unit.npi.report_year, unit: unit.npi.unit, data: unit.npi.data }
+          : null,
       };
 
-      generatorCap += regCap || 0;
-      fuelTechs.push(fuelTech);
+      if (
+        (startType && startType !== 'not dispatched') ||
+        (scheduleType && scheduleType !== 'non-scheduled')
+      ) {
+        generatorCap += regCap || 0;
+      }
+      if (dispatchType === 'generator') {
+        fuelTechs.push(fuelTech);
+      }
       units.push(unitObj);
     });
 
     return {
       stationId,
-      stationName: d.stationname,
-      displayName: d.displayname,
+      stationName: d.station_name,
+      displayName: d.display_name,
       participant: d.participant,
-      status: d.status,
+      status: d.status.state,
+      statusDate: d.status.date,
       regionId,
       location,
       units,

@@ -4,6 +4,7 @@ import HomeView from '@/components/HomeView';
 import RegionView from '@/components/RegionView';
 import EnergyView from '@/components/EnergyView';
 import GeneratorsView from '@/components/GeneratorsView';
+import GeneratorsView2 from '@/components/GeneratorsView2';
 import Region from '@/components/Region';
 import Widget from '@/components/Widget';
 import About from '@/components/About';
@@ -30,9 +31,14 @@ export default new Router({
           component: EnergyView,
         },
         {
+          path: 'generators2',
+          name: 'home-generators2',
+          component: GeneratorsView,
+        },
+        {
           path: 'generators',
           name: 'home-generators',
-          component: GeneratorsView,
+          component: GeneratorsView2,
         },
       ],
     },
@@ -51,7 +57,7 @@ export default new Router({
         {
           path: 'generators',
           name: 'region-generators',
-          component: GeneratorsView,
+          component: GeneratorsView2,
         },
       ],
     },

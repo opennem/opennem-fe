@@ -1,76 +1,83 @@
 <template>
   <div class="filter-bar">
-    <input 
-      class="input is-small is-rounded filter-station-input"
-      type="text"
-      placeholder="Filter By Station Name"
-      autocomplete="off"
-      autocorrect="off"
-      autocapitalize="off"
-      spellcheck="false"
-      v-model="filterGeneratorName"
-    />
+    <div>
+      <input 
+        class="input is-small is-rounded filter-station-input"
+        type="text"
+        placeholder="Filter By Station Name"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        v-model="filterGeneratorName"
+      />
 
-    <div class="dropdown" :class="{'is-active': techDropdownActive}" v-on-clickaway="onClickAway">
-      <button
-        class="dropdown-trigger button is-rounded is-small is-primary"
-        :class="{ 'is-inverted': selectedTechGroups.length === 0 }"
-        @click="techDropdownActive = true"
-      >
-        <div class="dropdown-label">
-          <span>Technology</span>
-          <strong v-if="selectedTechGroups.length > 0">({{selectedTechGroups.length}})</strong>
-        </div>
-        <font-awesome-icon class="fal" :icon="iconDown" />
-      </button>
+      <div class="dropdown" :class="{'is-active': techDropdownActive}" v-on-clickaway="onClickAway">
+        <button
+          class="dropdown-trigger button is-rounded is-small is-primary"
+          :class="{ 'is-inverted': selectedTechGroups.length === 0 }"
+          @click="techDropdownActive = true"
+        >
+          <div class="dropdown-label">
+            <span>Technology</span>
+            <strong v-if="selectedTechGroups.length > 0">({{selectedTechGroups.length}})</strong>
+          </div>
+          <font-awesome-icon class="fal" :icon="iconDown" />
+        </button>
 
-      <transition name="slide-down-fade">
-        <div v-if="techDropdownActive" class="dropdown-menu">
-          <div class="dropdown-content">
-            <div class="dropdown-item" v-for="(d, i) in allTechs" :key="i">
+        <transition name="slide-down-fade">
+          <div v-if="techDropdownActive" class="dropdown-menu">
+            <div class="dropdown-content">
+              <div class="dropdown-item" v-for="(d, i) in allTechs" :key="i">
 
-              <div class="item-group">
-                <span class="expand-collapse" @click="handleExpandCollapseClick(d.id)">
-                  <font-awesome-icon class="fal fa-fw" v-if="d.fields.length > 1 && isGroupExpanded(d.id)" :icon="iconCaretDown" />
-                  <font-awesome-icon class="fal fa-fw" v-if="d.fields.length > 1 && !isGroupExpanded(d.id)" :icon="iconCaretRight" />
-                </span>
-                <span @click="handleTechGroupClick(d)">
-                  <span class="source-colour"
-                    :style="{ 
-                      backgroundColor: isGroupSelected(d.id) ? d.colour : '#fff',
-                      'border-color': d.colour
-                    }">
-                      <font-awesome-icon v-if="hasSelection(d)" class="checkmark-icon fal" :icon="iconMinus" />
-                      <font-awesome-icon v-else class="checkmark-icon fal" :icon="iconCheckmark" />
-                    </span>
-                  {{d.label}}
-                </span>
-              </div>
-              
-              <div class="subitem-group" v-show="d.fields.length > 1 && isGroupExpanded(d.id)" >
-                <div v-for="(field, fIndex) in d.fields" :key="fIndex">
-                  <span @click="handleTechClick(d, field)">
+                <div class="item-group">
+                  <span class="expand-collapse" @click="handleExpandCollapseClick(d.id)">
+                    <font-awesome-icon class="fal fa-fw" v-if="d.fields.length > 1 && isGroupExpanded(d.id)" :icon="iconCaretDown" />
+                    <font-awesome-icon class="fal fa-fw" v-if="d.fields.length > 1 && !isGroupExpanded(d.id)" :icon="iconCaretRight" />
+                  </span>
+                  <span @click="handleTechGroupClick(d)">
                     <span class="source-colour"
                       :style="{ 
-                        backgroundColor: isTechSelected(field) ? getTechColour(field) : '#fff',
-                        'border-color': getTechColour(field)
-                      }"><font-awesome-icon class="checkmark-icon fal" :icon="iconCheckmark" /></span>
-                    {{getTechLabel(field)}}
+                        backgroundColor: isGroupSelected(d.id) ? d.colour : '#fff',
+                        'border-color': d.colour
+                      }">
+                        <font-awesome-icon v-if="hasSelection(d)" class="checkmark-icon fal" :icon="iconMinus" />
+                        <font-awesome-icon v-else class="checkmark-icon fal" :icon="iconCheckmark" />
+                      </span>
+                    {{d.label}}
                   </span>
-                </div> 
+                </div>
+                
+                <div class="subitem-group" v-show="d.fields.length > 1 && isGroupExpanded(d.id)" >
+                  <div v-for="(field, fIndex) in d.fields" :key="fIndex">
+                    <span @click="handleTechClick(d, field)">
+                      <span class="source-colour"
+                        :style="{ 
+                          backgroundColor: isTechSelected(field) ? getTechColour(field) : '#fff',
+                          'border-color': getTechColour(field)
+                        }"><font-awesome-icon class="checkmark-icon fal" :icon="iconCheckmark" /></span>
+                      {{getTechLabel(field)}}
+                    </span>
+                  </div> 
+                </div>
+              </div>
+
+              <div class="buttons">
+                <a class="button is-rounded is-small is-inverted" @click="clearSelectedTechs">Clear</a>
+                <a class="button is-rounded is-small is-primary is-outlined" @click="techDropdownActive = false">Close</a>
               </div>
             </div>
-
-            <div class="buttons">
-              <a class="button is-rounded is-small is-inverted" @click="clearSelectedTechs">Clear</a>
-              <a class="button is-rounded is-small is-primary is-outlined" @click="techDropdownActive = false">Close</a>
-            </div>
           </div>
-        </div>
-      </transition> 
-    </div>
+        </transition> 
+      </div>
 
-    <button class="button is-rounded is-small is-primary is-inverted">Status</button>
+      <button class="button is-rounded is-small is-primary is-inverted">Status</button>
+    </div>
+    
+    <div>
+      <sort-by style="margin-left: 10px;" :sortBy="sortBy" @sortChanged="handleSortChange" />
+      <order style="margin-left: 10px;" :orderBy="orderBy" @orderChanged="handleOrderChange" />
+    </div>
   </div>  
 </template>
 
@@ -82,11 +89,19 @@ import { mixin as clickaway } from 'vue-clickaway';
 import EventBus from '@/lib/event-bus';
 import { GraphDomains } from '@/domains/graphs';
 import Simplified from '@/domains/groups/simplified';
+import SortBy from './SortBy';
+import Order from './Order';
 
 export default {
   mixins: [clickaway],
   components: {
     FontAwesomeIcon,
+    SortBy,
+    Order,
+  },
+  props: {
+    sortBy: String,
+    orderBy: String,
   },
   data() {
     return {
@@ -242,6 +257,12 @@ export default {
     clearFilter() {
       this.filterGeneratorName = '';
     },
+    handleSortChange(sort) {
+      this.$emit('sortChanged', sort);
+    },
+    handleOrderChange(order) {
+      this.$emit('orderChanged', order);
+    },
   },
 };
 </script>
@@ -282,7 +303,7 @@ export default {
   }
 }
 .filter-bar {
-  padding: 1rem 1rem 0;
+  padding: 0.75rem 1rem;
   display: flex;
 
   .filter-station-input {
