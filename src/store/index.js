@@ -29,6 +29,7 @@ import panels from './panels';
 import features from './features';
 import errors from './errors';
 import generatorsData from './generators-data';
+import stationData from './station-data';
 
 import groups from './groups';
 
@@ -335,6 +336,7 @@ const store = new Vuex.Store({
     features,
     errors,
     generatorsData,
+    stationData,
     groups,
   }
 });

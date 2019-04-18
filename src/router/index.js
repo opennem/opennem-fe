@@ -5,6 +5,7 @@ import RegionView from '@/components/RegionView';
 import EnergyView from '@/components/EnergyView';
 import GeneratorsView from '@/components/GeneratorsView';
 import GeneratorsView2 from '@/components/GeneratorsView2';
+import StationView from '@/components/StationView';
 import Region from '@/components/Region';
 import Widget from '@/components/Widget';
 import About from '@/components/About';
@@ -60,6 +61,12 @@ export default new Router({
           component: GeneratorsView2,
         },
       ],
+    },
+    {
+      path: '/station/:stationId',
+      props: true,
+      name: 'station',
+      component: StationView,
     },
     {
       path: '/widget/:size',

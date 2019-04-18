@@ -99,7 +99,13 @@
               </div>
             </div>
 
-            <a class="button is-small is-rounded is-primary is-outlined" style="font-size: 80%;">more</a>
+            <a
+              class="button is-small is-rounded is-primary is-outlined"
+              style="font-size: 80%;"
+              target="station_window"
+              :href="getStationLink(generator.stationId)">
+              more
+            </a>
           </div>
 
           <div style="width: 50%;">
@@ -297,6 +303,9 @@ export default {
     },
     getCapacityTooltip(unit) {
       return `<span class="unit-tooltip">${unit.scheduleType}</span>`;
+    },
+    getStationLink(stationId) {
+      return `/#/station/${stationId}`;
     },
   },
 };
