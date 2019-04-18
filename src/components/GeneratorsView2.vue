@@ -4,8 +4,10 @@
     <filter-bar
       :sortBy="sortBy"
       :orderBy="orderBy"
+      :status="status"
       @orderChanged="handleOrderChange"
       @sortChanged="handleSortChange"
+      @statusChanged="handleStatusChange"
       @selected="handleFilterSelected"
     />
   </div>
@@ -87,6 +89,7 @@ export default {
       filterString: '',
       sortBy: 'stationName',
       orderBy: ASCENDING,
+      status: 'any',
       panTo: null,
       selectedTechs: [],
       selectedGenerator: null,
@@ -113,9 +116,12 @@ export default {
       const filtered = this.selectedTechs.length > 0
         ? this.generatorsData.filter(g => g.fuelTechs.some(r => this.selectedTechs.includes(r)))
         : this.generatorsData;
+      
+      console.log(this.status)
       return filtered.filter(g =>
         g.displayName.toLowerCase().includes(this.filterString.toLowerCase()) &&
-        g.regionId.toLowerCase().includes(this.regionId),
+        g.regionId.toLowerCase().includes(this.regionId) &&
+        (this.status === 'any' || g.status === this.status),
       );
     },
     hasSelectedGenerator() {
@@ -182,6 +188,10 @@ export default {
     handleFilterSelected(selectedTechs) {
       this.selectedTechs = selectedTechs;
     },
+    handleStatusChange(status) {
+      console.log(status)
+      this.status = status;
+    },
   },
 };
 </script>
@@ -218,7 +228,7 @@ export default {
   margin-bottom: -3px;
   bottom: 29px;
   right: 0;
-  z-index: 90;
+  z-index: 89;
   background-color: #C74523;
   color: #fff;
   padding: 3px 6px;

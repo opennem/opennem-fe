@@ -70,11 +70,10 @@
           </div>
         </transition> 
       </div>
-
-      <button class="button is-rounded is-small is-primary is-inverted">Status</button>
     </div>
     
     <div>
+      <filter-status style="margin-left: 10px;" :status="status" @statusChanged="handleStatusChange" />
       <sort-by style="margin-left: 10px;" :sortBy="sortBy" @sortChanged="handleSortChange" />
       <order style="margin-left: 10px;" :orderBy="orderBy" @orderChanged="handleOrderChange" />
     </div>
@@ -91,6 +90,7 @@ import { GraphDomains } from '@/domains/graphs';
 import Simplified from '@/domains/groups/simplified';
 import SortBy from './SortBy';
 import Order from './Order';
+import FilterStatus from './FilterStatus';
 
 export default {
   mixins: [clickaway],
@@ -98,10 +98,12 @@ export default {
     FontAwesomeIcon,
     SortBy,
     Order,
+    FilterStatus,
   },
   props: {
     sortBy: String,
     orderBy: String,
+    status: String,
   },
   data() {
     return {
@@ -262,6 +264,9 @@ export default {
     },
     handleOrderChange(order) {
       this.$emit('orderChanged', order);
+    },
+    handleStatusChange(status) {
+      this.$emit('statusChanged', status);
     },
   },
 };
