@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div class="column is-full" style="padding: 0; position: sticky; top: 46px; z-index: 90; background-color: #ece9e6;">
+  <div class="filter-bar-column column is-full">
     <filter-bar
       :sortBy="sortBy"
       :orderBy="orderBy"
@@ -207,6 +207,15 @@ export default {
     padding: 0 40px;
   }
 }
+
+.filter-bar-column {
+  padding: 0;
+  position: sticky;
+  top: 46px;
+  z-index: 90;
+  background-color: #ece9e6;
+}
+
 .sticky-detail {
   margin-left: 10px;
 

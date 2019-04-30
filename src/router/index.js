@@ -37,7 +37,7 @@ export default new Router({
           component: GeneratorsView,
         },
         {
-          path: 'generators',
+          path: 'facilities',
           name: 'home-generators',
           component: GeneratorsView2,
         },
@@ -56,7 +56,7 @@ export default new Router({
           component: Region,
         },
         {
-          path: 'generators',
+          path: 'facilities',
           name: 'region-generators',
           component: GeneratorsView2,
         },

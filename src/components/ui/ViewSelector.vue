@@ -3,7 +3,7 @@
     <a class="dropdown-trigger" v-on-clickaway="onClickAway" @click="handleClick">
       <span>
         <strong v-if="isEnergy">Energy</strong>
-        <strong v-else>Generators &amp; Loads</strong>
+        <strong v-else>Facilities</strong>
         <font-awesome-icon class="fal" :icon="iconDown" />
       </span>          
     </a>
@@ -21,7 +21,7 @@
             @click="goToGeneratorsView()"
             :class="{ selected: !isEnergy }"
           >
-            Generators &amp; Loads
+            Facilities
           </a>
         </div>
       </div>
