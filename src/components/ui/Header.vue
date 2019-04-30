@@ -5,8 +5,9 @@
 
     <div class="level" v-else>
       <div class="level-left">
-        <region-selector />
+        <img class="logo" src="../../assets/opennem-logo.svg" alt="OpenNEM logo" style="margin-right: 0.5rem; margin-top: 5px;" />
         <view-selector />
+        <region-selector />
       </div>
 
       <div class="level-right" v-show="isEnergyRoute">

@@ -1,7 +1,6 @@
 <template>
   <div class="region-selector dropdown" :class="{'is-active': dropdownActive}">
     <a class="dropdown-trigger" v-on-clickaway="onClickAway" @click="handleClick">
-      <img class="logo" src="../../assets/opennem-logo.svg" alt="OpenNEM logo" />
       <span>
         <strong v-if="isHome">All Regions</strong>
         <strong v-else>{{regionLabel}}</strong>
@@ -103,7 +102,7 @@ export default {
 
 .region-selector {
   font-family: $header-font-family;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
 
   a.dropdown-trigger {
     color: #000;
@@ -128,7 +127,7 @@ export default {
 }
 @media only screen and (min-width: 600px) {
   .region-selector {
-    font-size: 1.7rem;
+    font-size: 1.4rem;
   }
 }
 </style>
