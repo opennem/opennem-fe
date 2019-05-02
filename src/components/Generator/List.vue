@@ -317,7 +317,7 @@ export default {
       if (ftObj) {
         return ftObj.colour;
       }
-      return 'rgba(100,100,100,.1)';
+      return 'transparent';
     },
     isSelected(stationId) {
       if (this.selected) {
