@@ -203,7 +203,6 @@ export default {
       this.selectedTechs = selectedTechs;
     },
     handleStatusChange(status) {
-      console.log(status)
       this.status = status;
     },
   },

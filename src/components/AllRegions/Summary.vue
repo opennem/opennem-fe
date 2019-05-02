@@ -5,7 +5,7 @@
     </caption>
     <thead>
       <tr>
-        <th></th>
+        <th><group-selection style="margin-top: 3px;" /></th>
         <th class="column-header has-text-right" style="width: 95px;">
           <div v-if="isPointHovered && isPower">
             <span>Power</span>
@@ -222,11 +222,13 @@ import EventBus from '@/lib/event-bus';
 import { formatNumberForDisplay } from '@/lib/formatter';
 import { GraphDomains, isRenewableFuelTech } from '@/domains/graphs';
 import DateSelector from '@/components/ui/DateSelector';
+import GroupSelection from '@/components/ui/GroupSelection';
 
 export default {
   name: 'all-regions-summary',
   components: {
     DateSelector,
+    GroupSelection,
   },
   data() {
     return {

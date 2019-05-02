@@ -8,8 +8,7 @@
 
   <div style="display: flex; align-items: center;">
     <range-selector class="range-selector-container" v-if="!isExportPng" style="margin-right: 1rem;" />
-    <group-selection style="margin-left: 1rem;"/>
-    <panels-selector style="margin-left: 1rem;" v-if="!isPower"/>
+    <panels-selector style="margin-left: 1rem;" v-if="!isPower && featureEmissions"/>
   </div>
   
   <transition name="fade">
@@ -78,7 +77,7 @@ import UiLoader from './ui/Loader';
 import RangeSelector from './ui/RangeSelector';
 import PanelsSelector from './ui/PanelsSelector';
 import ChartTips from './ui/ChartTips';
-import GroupSelection from './ui/GroupSelection';
+// import GroupSelection from './ui/GroupSelection';
 
 export default {
   components: {
@@ -95,7 +94,7 @@ export default {
     RangeSelector,
     PanelsSelector,
     ChartTips,
-    GroupSelection,
+    // GroupSelection,
   },
   created() {
     const regionId = this.$route.params.region;
@@ -138,6 +137,7 @@ export default {
       yearsWeeks: 'yearsWeeks',
       nemUrls: 'nemUrls',
       groupSelected: 'groupSelected',
+      featureEmissions: 'featureEmissions',
     }),
     regionId() {
       return this.$route.params.region;

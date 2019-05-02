@@ -6,11 +6,16 @@ function powerPanel(listeners) {
   ];
 }
 
-function energyPanel(listeners, intervalLabel, unit) {
+function energyPanel(listeners, intervalLabel, unit, featureEmissions) {
+  if (featureEmissions) {
+    return [
+      getEnergyPanel(listeners, intervalLabel, unit),
+      getEmissionsPanel(listeners),
+      getEmissionIntensityPanel(listeners, true),
+    ];
+  }
   return [
     getEnergyPanel(listeners, intervalLabel, unit),
-    getEmissionsPanel(listeners),
-    getEmissionIntensityPanel(listeners, true),
   ];
 }
 

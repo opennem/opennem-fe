@@ -1,6 +1,5 @@
 <template>
   <div class="select is-rounded is-small">
-    <label>With</label>
     <select v-model="panels">
       <option v-for="(p, index) in panelsSelection" :key="index" :value="p">
         {{ p.label }}

@@ -62,6 +62,7 @@ export default {
       currentRange: 'currentRange',
       currentInterval: 'currentInterval',
       tera: 'tera',
+      featureEmissions: 'featureEmissions',
     }),
     energyUnit() {
       return this.tera ? 'TWh' : 'GWh';
@@ -134,7 +135,7 @@ export default {
       const unit = this.isPower ? 'MW' : this.energyUnit;
       const panels = this.isPower ?
         powerPanel(this.getPanelListeners()) :
-        energyPanel(this.getPanelListeners(), this.currentInterval, unit);
+        energyPanel(this.getPanelListeners(), this.currentInterval, unit, this.featureEmissions);
       const config = getChartConfig({
         dataSets: [],
         panels,
@@ -145,9 +146,13 @@ export default {
       if (this.isPower) {
         config.panels[0].percentHeight = 100;
       } else {
-        config.panels[0].percentHeight = 50;
-        config.panels[1].percentHeight = 25;
-        config.panels[2].percentHeight = 15;
+        if ( this.featureEmissions) {
+          config.panels[0].percentHeight = 50;
+          config.panels[1].percentHeight = 25;
+          config.panels[2].percentHeight = 15;
+        } else {
+          config.panels[0].percentHeight = 100;
+        }
       }
 
       this.chart = window.AmCharts.makeChart(this.$el, config);
@@ -193,7 +198,9 @@ export default {
         );
       this.chart.panels[0].guides = this.isPower ? getNemGuides(this.chartData, false) : [];
       if (!this.isPower) {
-        this.chart.panels[1].stockGraphs = getEmissionsStockGraphs(this.keys, this.customDomains);
+        if (this.featureEmissions) {
+          this.chart.panels[1].stockGraphs = getEmissionsStockGraphs(this.keys, this.customDomains);
+        }
       }
       // this.chart.panels[0].guides = getNemGuides(this.chartData, showWeekends);
       this.chart.validateData();
