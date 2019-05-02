@@ -73,6 +73,7 @@ export default {
 
           this.hoveredMarker = L.popup({
             autoClose: false,
+            autoPan: false,
             className: 'map-popup'
           }).setLatLng([lat, lng]).setContent(generator.displayName);
           this.hoveredMarker.openOn(this.map);
