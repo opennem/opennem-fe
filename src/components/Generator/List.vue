@@ -281,9 +281,14 @@ export default {
       this.$emit('orderChanged', colId);
     },
     handleRowClick(generator) {
-      this.selected = generator;
-      this.$emit('generatorSelected', generator, true);
-    },
+      if (this.selected === generator) {
+        this.selected = null;
+        this.$emit('generatorSelected', null, true);
+      } else {
+        this.selected = generator;
+        this.$emit('generatorSelected', generator, true);
+      }
+    }, 
     handleRowHover(generator) {
       this.$emit('generatorHover', generator, true);
     },
