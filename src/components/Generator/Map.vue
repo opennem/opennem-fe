@@ -76,15 +76,6 @@ export default {
             className: 'map-popup'
           }).setLatLng([lat, lng]).setContent(generator.displayName);
           this.hoveredMarker.openOn(this.map);
-          this.map.panTo(loc);
-
-          // if (this.shouldZoomWhenSelected) {
-          //   this.map.setZoom(5);
-          // }
-          // this.map.on('zoomend', () => {
-          //   this.map.panTo(loc);
-          // });
-          // this.map.panTo(loc);
         }
       } else {
         this.hoveredMarker.remove();
