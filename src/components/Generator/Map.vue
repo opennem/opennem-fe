@@ -46,7 +46,7 @@ export default {
 
   computed: {
     mapHeight() {
-      return `${this.windowHeight - 170}px`;
+      return `${this.windowHeight - 100}px`;
       // return '300px';
     },
   },
@@ -76,18 +76,19 @@ export default {
             className: 'map-popup'
           }).setLatLng([lat, lng]).setContent(generator.displayName);
           this.hoveredMarker.openOn(this.map);
-
-          if (this.shouldZoomWhenSelected) {
-            this.map.setZoom(5);
-          }
-          this.map.on('zoomend', () => {
-            this.map.panTo(loc);
-          });
           this.map.panTo(loc);
+
+          // if (this.shouldZoomWhenSelected) {
+          //   this.map.setZoom(5);
+          // }
+          // this.map.on('zoomend', () => {
+          //   this.map.panTo(loc);
+          // });
+          // this.map.panTo(loc);
         }
       } else {
         this.hoveredMarker.remove();
-        // this.map.fitBounds(this.generatorsFeature.getBounds());
+        this.selectedGeneratorBounds();
       }
     },
     selectedGenerator(generator) {
@@ -112,13 +113,11 @@ export default {
           }).setLatLng([lat, lng]).setContent(generator.displayName);
           this.selectedMarker.openOn(this.map);
 
-          if (this.shouldZoomWhenSelected) {
-            this.map.setZoom(5);
-          }
+          this.map.setZoom(7);
           this.map.on('zoomend', () => {
             this.map.panTo(loc);
           });
-          this.map.panTo(loc);
+          // this.map.panTo(loc);
         }
       } else {
         this.selectedMarker.remove();
@@ -161,6 +160,13 @@ export default {
         return ftObj.colour;
       }
       return 'black';
+    },
+
+    selectedGeneratorBounds() {
+      const lat = this.selectedMarker._latlng.lat;
+      const lng = this.selectedMarker._latlng.lng;
+      const loc = new L.LatLng(lat, lng);
+      this.map.panTo(loc);
     },
 
     updateMap(data) {
@@ -219,7 +225,7 @@ export default {
   height: 200px;
   z-index: 1;
   border-radius: 6px;
-  box-shadow: 0 0 20px rgba(0,0,0,.05);
+  // box-shadow: 0 0 20px rgba(0,0,0,.05);
   opacity: 0.95;
 }
 

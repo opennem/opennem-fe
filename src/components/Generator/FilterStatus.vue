@@ -42,7 +42,7 @@ const statuses = [
   },
   {
     id: 'Commissioned',
-    label: 'Commissioned',
+    label: 'Operating',
   },
   {
     id: 'Decommissioned',
@@ -74,7 +74,6 @@ export default {
       return faAngleDown;
     },
     selectedStatusLabel() {
-      console.log(this.status,this.selectedStatus)
       return this.statuses.find(s => s.id === this.status).label;
     },
   },

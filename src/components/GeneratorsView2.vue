@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div class="filter-bar-column column is-full">
+  <!-- <div class="filter-bar-column column is-full">
     <filter-bar
       :sortBy="sortBy"
       :orderBy="orderBy"
@@ -10,9 +10,21 @@
       @statusChanged="handleStatusChange"
       @selected="handleFilterSelected"
     />
-  </div>
-  <div class="columns is-multiline is-gapless map-detail-container" style="padding: 0 2rem;">    
-    <div class="column is-two-fifths">
+  </div> -->
+  <div class="columns is-multiline is-gapless map-detail-container">    
+    <div class="column is-half">
+      <div class="filter-bar-column">
+        <filter-bar
+          :sortBy="sortBy"
+          :orderBy="orderBy"
+          :status="status"
+          @orderChanged="handleOrderChange"
+          @sortChanged="handleSortChange"
+          @statusChanged="handleStatusChange"
+          @selected="handleFilterSelected"
+        />
+      </div>
+      
       <generator-list 
         :generatorsData="filteredGenerators"
         :selectedGenerator="selectedGenerator"
@@ -41,7 +53,6 @@
           :hoveredGenerator="hoveredGenerator"
           :shouldZoomWhenSelected="shouldZoomWhenSelected"
           @generatorSelected="handleGeneratorSelect"
-          style="margin-top: 0.5rem;"
         />
         <!-- <generator-detail
           :generator="selectedGenerator"
@@ -89,7 +100,7 @@ export default {
       filterString: '',
       sortBy: 'stationName',
       orderBy: ASCENDING,
-      status: 'any',
+      status: 'Commissioned',
       panTo: null,
       selectedTechs: [],
       selectedGenerator: null,
@@ -152,11 +163,9 @@ export default {
   },
 
   methods: {
-    // toggleOrder(order) {
-    //         console.log(order, ASCENDING)
-
-    //   return order === ASCENDING ? DESCENDING : ASCENDING;
-    // },
+    toggleOrder(order) {
+      return order === ASCENDING ? DESCENDING : ASCENDING;
+    },
     handleSortChange(sort) {
       // if (this.sortBy === sort) {
       //   this.orderBy = this.toggleOrder(this.orderBy);
@@ -165,8 +174,14 @@ export default {
       // }
       this.sortBy = sort;
     },
-    handleOrderChange(order) {
-      this.orderBy = order;
+    handleOrderChange(orderName) {
+      // this.orderBy = order;
+      if (this.sortBy === orderName) {
+        this.orderBy = this.toggleOrder(this.orderBy);
+      } else {
+        this.orderBy = ASCENDING;
+      }
+      this.sortBy = orderName;
     },
     handleGeneratorSelect(generator, shouldZoom) {
       this.selectedGenerator = generator;
@@ -204,14 +219,15 @@ export default {
 }
 .grid-container {
   @include desktop {
-    padding: 0 40px;
+    padding: 0 0;
   }
 }
 
 .filter-bar-column {
   padding: 0;
   position: sticky;
-  top: 46px;
+  display: flex;
+  top: 44px;
   z-index: 90;
   background-color: #ece9e6;
 }
@@ -221,7 +237,7 @@ export default {
 
   @include tablet {
     position: sticky;
-    top: 100px;
+    top: 50px;
   }
   @include mobile {
     display: none;

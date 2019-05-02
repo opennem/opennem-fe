@@ -7,11 +7,11 @@
       <div class="level-left">
         <img class="logo" src="../../assets/opennem-logo.svg" alt="OpenNEM logo" style="margin-right: 0.5rem; margin-top: 5px;" />
         <view-selector />
-        <region-selector />
+        <region-selector style="position: relative; left: -10px;" />
       </div>
 
       <div class="level-right" v-show="isEnergyRoute">
-        <export-buttons style="margin: 1rem 0 0 0" />
+        <export-buttons style="padding: 10px 0 0 0" />
       </div>
 
       <div class="level-right" v-show="isGeneratorsRoute">

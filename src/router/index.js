@@ -32,7 +32,7 @@ export default new Router({
           component: EnergyView,
         },
         {
-          path: 'generators2',
+          path: 'facilities2',
           name: 'home-generators2',
           component: GeneratorsView,
         },

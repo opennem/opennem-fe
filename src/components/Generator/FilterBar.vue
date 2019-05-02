@@ -70,12 +70,14 @@
           </div>
         </transition> 
       </div>
+
+      <filter-status style="margin-left: 10px;" :status="status" @statusChanged="handleStatusChange" />
     </div>
     
     <div>
-      <filter-status style="margin-left: 10px;" :status="status" @statusChanged="handleStatusChange" />
-      <sort-by style="margin-left: 10px;" :sortBy="sortBy" @sortChanged="handleSortChange" />
-      <order style="margin-left: 10px;" :orderBy="orderBy" @orderChanged="handleOrderChange" />
+      <!-- <filter-status style="margin-left: 10px;" :status="status" @statusChanged="handleStatusChange" /> -->
+      <!-- <sort-by style="margin-left: 10px;" :sortBy="sortBy" @sortChanged="handleSortChange" />
+      <order style="margin-left: 10px;" :orderBy="orderBy" @orderChanged="handleOrderChange" /> -->
     </div>
   </div>  
 </template>
@@ -88,16 +90,16 @@ import { mixin as clickaway } from 'vue-clickaway';
 import EventBus from '@/lib/event-bus';
 import { GraphDomains } from '@/domains/graphs';
 import Simplified from '@/domains/groups/simplified';
-import SortBy from './SortBy';
-import Order from './Order';
+// import SortBy from './SortBy';
+// import Order from './Order';
 import FilterStatus from './FilterStatus';
 
 export default {
   mixins: [clickaway],
   components: {
     FontAwesomeIcon,
-    SortBy,
-    Order,
+    // SortBy,
+    // Order,
     FilterStatus,
   },
   props: {

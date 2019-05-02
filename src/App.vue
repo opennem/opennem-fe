@@ -105,13 +105,14 @@ section {
 .map-popup {
   font-family: $primary-font-family;
   font-weight: 600;
+  font-size: 18px;
 
   .leaflet-popup-content-wrapper {
     border-radius: 3px;
     box-shadow: 0 2px 6px rgba(100, 100, 100, 0.8);
   }
   .leaflet-popup-content {
-    padding: 3px 6px;
+    padding: 3px 9px;
     margin: 0;
   }
   .leaflet-popup-tip-container {

@@ -1,10 +1,62 @@
 <template>
   <div style="margin-bottom: 1rem;">
-    <!-- <div class="" style="display: flex; justify-content: space-between; align-items: center;">
-      <div class="" style="width: 50%; margin-left: 20px;">Name</div>
-      <div style="width: 150px">Technology</div>
-      <div style="width: 140px">Capacity</div>
-    </div> -->
+    <div class="column-headers">
+      <div 
+        class="col-header" 
+        style="width: 50%; margin-left: 2rem;"
+        @click="sort('stationName')"
+      >
+        Name
+        <font-awesome-icon
+          class="fal"
+          v-if="sortBy === 'stationName'"
+          :icon="getColumnIcon('stationName')"
+        />
+      </div>
+
+      <div 
+        class="col-header" 
+        style="width: 130px"
+        v-show="!hideRegionColumn"
+      >
+        <span @click="sort('regionId')">
+          Region
+          <font-awesome-icon
+            class="fal"
+            v-if="sortBy === 'regionId'"
+            :icon="getColumnIcon('regionId')"
+          />
+        </span>
+      </div>
+
+      <div 
+        class="col-header" 
+        :style="{ width: hideRegionColumn ? '205px' : '185px'}"
+      >
+        <span @click="sort('fuelTechs')">
+          Technology
+          <font-awesome-icon
+            class="fal"
+            v-if="sortBy === 'fuelTechs'"
+            :icon="getColumnIcon('fuelTechs')"
+          />
+        </span>
+      </div>
+
+      <div 
+        class="col-header" 
+        style="width: 100px; text-align: right; margin-right: 15px;"
+        @click="sort('generatorCap')"
+      >
+        Capacity
+        <font-awesome-icon
+          class="fal"
+          v-if="sortBy === 'generatorCap'"
+          :icon="getColumnIcon('generatorCap')"
+        />
+      </div>
+    </div>
+    
     <div
       class="card"
       v-for="(generator, index) in generatorsData"
@@ -37,18 +89,11 @@
       </div>
       
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div class="card-content" style="width: 50%; margin-left: 15px;">
-          <!-- <div style="display: flex">
-            <span
-              v-for="(ft, ftIndex) in generator.fuelTechs"
-              :key="ftIndex"
-              :style="{ 
-                backgroundColor: getColour(ft)
-              }"
-              class="source-colour" />
-          </div> -->
-
+        <div class="card-content" style="width: 50%; margin-left: 1rem;">
           <h2 class="station-name">{{ generator.displayName }}</h2>
+        </div>
+
+        <div class="card-content" style="width: 150px;" v-show="!hideRegionColumn">
           <small style="color: #666;">{{ getRegionLabel(generator.regionId) }}</small>
         </div>
 
@@ -62,7 +107,7 @@
         </div>
 
         <div class="stat" style="width: 140px; margin-right: 15px;">
-          <div v-show="generator.generatorCap" class="stat-value has-text-right" style="font-size: 18px;">
+          <div v-show="generator.generatorCap" class="stat-value has-text-right" style="font-size: 14px;">
             {{ generator.generatorCap | formatNumber }}
             <span class="unit">MW</span>
           </div>
@@ -73,7 +118,7 @@
           <span v-if="generator.statusDate">({{ generator.statusDate | formatDate }})</span>
         </h5> -->
       </div>
-      <div class="detail card-content" v-show="isSelected(generator.stationId)" style="padding: 5px 15px 10px 30px; box-shadow: inset 0 1px 6px rgba(100, 100, 100, 0.1); background: #f7f7f7; border-radius: 0 0 3px 3px">
+      <!-- <div class="detail card-content" v-show="isSelected(generator.stationId)" style="padding: 5px 15px 10px 30px; box-shadow: inset 0 1px 6px rgba(100, 100, 100, 0.1); background: #f7f7f7; border-radius: 0 0 3px 3px">
 
         <div style="display: flex;">
           <div style="width: 50%;">
@@ -84,13 +129,6 @@
                 <em v-if="generator.statusDate">on {{ generator.statusDate | formatDate }}</em>
               </div>
             </div>
-
-            <!-- <div class="stat">
-              <div class="stat-label">Station Name</div>
-              <div class="stat-value">
-                {{ generator.stationName }}
-              </div>
-            </div> -->
             
             <div class="stat">
               <div class="stat-label">Participant</div>
@@ -126,28 +164,19 @@
                         }" />
                       <span class="unit-name">{{ unit.name }}</span>
                     </div>
-                    <!-- <strong style="font-size: 8px; text-transform: capitalize;">
-                      {{ unit.scheduleType }} {{ unit.startType }} {{ unit.dispatchType }}
-                    </strong> -->
                   </td>
-                  <!-- <td>{{ getFtLabel(unit.fuelTech) }}</td>
-                  <td>{{ unit.firstRun }}</td>
-                  <td>{{ unit.scheduleType }}</td>
-                  <td>{{ unit.startType }}</td>
-                  <td>{{ unit.dispatchType }}</td> -->
                   <td class="has-text-right" v-tooltip="getCapacityTooltip(unit)">
                     <strong :class="{ 'has-text-grey': unit.startType === 'not dispatched'}">
                       {{ unit.regCap | formatNumber }}
                     </strong>
                   </td>
-                  <!-- <td class="has-text-right">{{ unit.maxCap | formatNumber }}</td> -->
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
 
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -249,9 +278,7 @@ export default {
       return status === 'Commissioned';
     },
     sort(colId) {
-      if (colId !== 'fuelTechsColours') {
-        this.$emit('orderChanged', colId);
-      }
+      this.$emit('orderChanged', colId);
     },
     handleRowClick(generator) {
       this.selected = generator;
@@ -331,7 +358,6 @@ export default {
     opacity: 1;
     box-shadow: 0 0 10px rgba(100,100,100,.3);
     opacity: 1;
-    transform: scale(1.02);
     z-index: 10;
   }
 
@@ -411,8 +437,21 @@ export default {
 }
 .station-name {
   font-family: $header-font-family;
+  font-weight: 200;
+  font-size: 16px;
+  // line-height: 15px;
+}
+.column-headers {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.col-header {
+  cursor: pointer;
+  font-family: $header-font-family;
+  font-size: 13px;
   font-weight: 600;
-  font-size: 14px;
-  line-height: 15px;
+  user-select: none;
 }
 </style>
