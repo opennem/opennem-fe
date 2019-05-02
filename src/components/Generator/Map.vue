@@ -123,7 +123,7 @@ export default {
 
   methods: {
     setup() {
-      this.map = L.map('map', { attributionControl: false }).setView([-29.186936, 143.633537], 4);
+      this.map = L.map('map', { attributionControl: false, maxZoom: 7 }).setView([-29.186936, 143.633537], 4);
       this.generatorsFeature = L.featureGroup();
       this.emissionsFeature = L.featureGroup();
       this.tileLayer.addTo(this.map);
