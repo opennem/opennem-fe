@@ -362,9 +362,9 @@ export default {
   }
 
   &.is-selected {
-    box-shadow: 0 0 20px rgba(100,100,100,0.7);
+    box-shadow: 0 0 10px rgba(100,100,100,0.3);
     opacity: 1;
-    transform: scale(1.04);
+    transform: scale(1.03);
     z-index: 10;
   }
 
@@ -436,8 +436,8 @@ export default {
   margin-right: 3px;
 }
 .station-name {
-  font-family: $header-font-family;
-  font-weight: 200;
+  // font-family: $header-font-family;
+  font-weight: 600;
   font-size: 16px;
   // line-height: 15px;
 }

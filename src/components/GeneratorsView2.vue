@@ -36,7 +36,6 @@
         @generatorSelected="handleGeneratorSelect"
         @generatorHover="handleGeneratorHover"
         @generatorMouseout="handleGeneratorOut"
-        style="margin-top: 0.5rem;"
       />
 
       <div class="totals">

@@ -310,7 +310,7 @@ export default {
   }
 }
 .filter-bar {
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 0;
   display: flex;
 
   .filter-station-input {
