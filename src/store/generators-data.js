@@ -21,41 +21,21 @@ function transformGeneratorData(data) {
       const unit = d.duid_data[unitName];
       const regCap = unit.registered_capacity;
       const fuelTech = unit.fuel_tech;
-      const startType = unit.start_type;
-      const scheduleType = unit.schedule_type;
-      const dispatchType = unit.dispatch_type;
 
       const unitObj = {
         name: unitName,
         fuelTech,
         regCap,
-        firstRun: unit.first_run,
-        dispatchType,
-        scheduleType,
-        startType,
-        maxCap: unit.max_capacity,
-        npi: unit.npi
-          ? { reportYear: unit.npi.report_year, unit: unit.npi.unit, data: unit.npi.data }
-          : null,
       };
 
-      if (
-        (startType && startType !== 'not dispatched') ||
-        (scheduleType && scheduleType !== 'non-scheduled')
-      ) {
-        generatorCap += regCap || 0;
-      }
-      if (dispatchType === 'generator') {
-        fuelTechs.push(fuelTech);
-      }
+      generatorCap += regCap || 0;
+      fuelTechs.push(fuelTech);
       units.push(unitObj);
     });
 
     return {
       stationId,
-      stationName: d.station_name,
       displayName: d.display_name,
-      participant: d.participant,
       status: d.status.state,
       statusDate: d.status.date,
       regionId,

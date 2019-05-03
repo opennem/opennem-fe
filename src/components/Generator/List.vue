@@ -4,13 +4,13 @@
       <div 
         class="col-header" 
         style="width: 50%; margin-left: 2rem;"
-        @click="sort('stationName')"
+        @click="sort('displayName')"
       >
         Name
         <font-awesome-icon
           class="fal"
-          v-if="sortBy === 'stationName'"
-          :icon="getColumnIcon('stationName')"
+          v-if="sortBy === 'displayName'"
+          :icon="getColumnIcon('displayName')"
         />
       </div>
 

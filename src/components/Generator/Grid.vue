@@ -77,7 +77,7 @@ const colHeaders = [
     label: '',
   },
   {
-    id: 'stationName',
+    id: 'displayName',
     label: 'Name',
   },
   {

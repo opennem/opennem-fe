@@ -79,8 +79,9 @@ export default {
           this.hoveredMarker.openOn(this.map);
         }
       } else {
-        this.hoveredMarker.remove();
-        this.selectedGeneratorBounds();
+        if (this.hoveredMarker) {
+          this.hoveredMarker.remove();
+        }
       }
     },
     selectedGenerator(generator) {
@@ -109,7 +110,7 @@ export default {
           this.map.on('zoomend', () => {
             this.map.panTo(loc);
           });
-          // this.map.panTo(loc);
+          this.map.panTo(loc);
         }
       } else {
         this.selectedMarker.remove();

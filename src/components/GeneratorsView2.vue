@@ -97,7 +97,7 @@ export default {
   data() {
     return {
       filterString: '',
-      sortBy: 'stationName',
+      sortBy: 'displayName',
       orderBy: ASCENDING,
       status: 'Commissioned',
       panTo: null,
