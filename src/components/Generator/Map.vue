@@ -76,7 +76,10 @@ export default {
             autoPan: false,
             className: 'map-popup'
           }).setLatLng([lat, lng]).setContent(generator.displayName);
-          this.hoveredMarker.openOn(this.map);
+
+          setTimeout(() => {
+            this.hoveredMarker.openOn(this.map);
+          }, 200);
         }
       } else {
         if (this.hoveredMarker) {
