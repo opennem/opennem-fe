@@ -387,6 +387,7 @@ export default {
   background-color: $background-alpha;
   padding: 5px 0;
   z-index: 11;
+  border-bottom: 1px solid #333;
 
   @include tablet {
     top: 95px;

@@ -83,6 +83,7 @@ const getters = {
 const actions = {
   fetchGeneratorsData({ commit, state }) {
     const urls = ['station/generator_registry.json'];
+    // const urls = ['facility/facility_registry.json'];
 
     getJSON(urls, false)
       .then((responses) => {

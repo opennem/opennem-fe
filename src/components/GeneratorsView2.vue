@@ -18,6 +18,7 @@
           :sortBy="sortBy"
           :orderBy="orderBy"
           :status="status"
+          :selectedStatuses="selectedStatuses"
           @orderChanged="handleOrderChange"
           @sortChanged="handleSortChange"
           @statusChanged="handleStatusChange"
@@ -40,7 +41,7 @@
       />
 
       <div class="totals">
-        <span>Stations: <strong>{{totalGenerators}}</strong></span>
+        <span>Facilities: <strong>{{totalGenerators}}</strong></span>
         <span>Capacity: <strong>{{ totalCap | formatNumber }}</strong> </span>
       </div>
     </div>
@@ -103,7 +104,7 @@ export default {
       status: 'Commissioned',
       panTo: null,
       selectedTechs: [],
-      selectedStatuses: [],
+      selectedStatuses: ['Commissioned'],
       selectedGenerator: null,
       hoveredGenerator: null,
       shouldZoomWhenSelected: true,
@@ -267,7 +268,7 @@ export default {
 .totals {
   position: sticky;
   margin-bottom: -3px;
-  bottom: 29px;
+  bottom: 0;
   right: 0;
   z-index: 89;
   background-color: #C74523;
@@ -283,6 +284,11 @@ export default {
   strong {
     color: #fff;
     font-size: 13px;
+  }
+
+  @include desktop {
+    margin-bottom: -3px;
+    bottom: 29px;
   }
 }
 </style>

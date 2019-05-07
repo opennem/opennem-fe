@@ -2,12 +2,12 @@
   <div class="dropdown" :class="{'is-active': dropdownActive}" v-on-clickaway="onClickAway">
     <button
       class="dropdown-trigger button is-rounded is-small is-primary"
-      :class="{ 'is-inverted': selectedStatuses.length === 0 }"
+      :class="{ 'is-inverted': selected.length === 0 }"
       @click="dropdownActive = !dropdownActive"
     >
       <div class="dropdown-label">
         <span>Status:</span>
-        <strong>({{ selectedStatuses.length }})</strong>
+        <strong>({{ selected.length }})</strong>
       </div>
       <font-awesome-icon class="fal" :icon="iconDown" />
     </button>
@@ -62,13 +62,14 @@ export default {
 
   props: {
     status: String,
+    selectedStatuses: Array,
   },
 
   data() {
     return {
       statuses,
       selectedStatus: '',
-      selectedStatuses: [],
+      selected: [],
       dropdownActive: false,
     }
   },
@@ -89,10 +90,14 @@ export default {
     status(newValue) {
       this.selectedStatus = newValue;
     },
+    selectedStatuses(selected) {
+      this.selectedStatus = selected;
+    },
   },
 
   mounted() {
     this.selectedStatus = this.status;
+    this.selected = this.selectedStatuses;
   },
 
   methods: {
@@ -100,22 +105,22 @@ export default {
       this.dropdownActive = false;
     },
     isSelected(status) {
-      return _.includes(this.selectedStatuses, status);
+      return _.includes(this.selected, status);
     },
     handleClick(status) {
-      const isIncluded = _.includes(this.selectedStatuses, status);
+      const isIncluded = _.includes(this.selected, status);
       if (isIncluded) {
-        this.selectedStatuses = this.selectedStatuses.filter(d => d !== status);
+        this.selected = this.selected.filter(d => d !== status);
       } else {
-        this.selectedStatuses.push(status);
+        this.selected.push(status);
       }
 
       this.$emit('statusChanged', status);
-      this.$emit('selectedStatuses', this.selectedStatuses);
+      this.$emit('selectedStatuses', this.selected);
     },
     clearSelected() {
-      this.selectedStatuses = [];
-      this.$emit('selectedStatuses', this.selectedStatuses);
+      this.selected = [];
+      this.$emit('selectedStatuses', this.selected);
     },
   }
 }

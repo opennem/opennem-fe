@@ -74,6 +74,7 @@
       <filter-status
         style="margin-left: 10px;"
         :status="status"
+        :selectedStatuses="selectedStatuses"
         @statusChanged="handleStatusChange"
         @selectedStatuses="handleStatusesSelected"
       />
@@ -111,6 +112,7 @@ export default {
     sortBy: String,
     orderBy: String,
     status: String,
+    selectedStatuses: Array,
   },
   data() {
     return {
@@ -283,6 +285,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../../../node_modules/bulma/sass/utilities/mixins.sass";
 @import "../../styles/variables.scss";
 
 .dropdown-menu {
@@ -323,6 +326,12 @@ export default {
 
   .filter-station-input {
     width: 200px;
+    @include tablet {
+      width: 130px;
+    }
+    @include desktop {
+      width: 250px;
+    }
   }
   .button {
     margin-left: 0.7rem;
