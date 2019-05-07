@@ -46,7 +46,7 @@ const statuses = [
   },
   {
     id: 'Decommissioned',
-    label: 'Decommissioned',
+    label: 'Retired',
   },
 ];
 
