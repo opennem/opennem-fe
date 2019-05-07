@@ -69,15 +69,6 @@
       @mouseout="handleRowOut"
       @click="handleRowClick(generator)"
     >
-      <!-- <div class="bar-right" style="display: flex; position: absolute; right: 0; height: 100%;">
-        <span
-          v-for="(ft, ftIndex) in generator.fuelTechs"
-          :key="ftIndex"
-          :style="{ 
-            backgroundColor: getColour(ft)
-          }"
-          class="source-colour-side" />
-      </div> -->
       <div class="bar-left" style="display: flex; position: absolute; left: 0; height: 100%;">
         <span
           v-for="(ft, ftIndex) in generator.fuelTechs"
@@ -98,7 +89,6 @@
         </div>
 
         <div class="stat" style="width: 150px;">
-          <!-- <div class="stat-label" style="font-size: 9px;">Technology</div> -->
           <div class="stat-value" style="font-size: 11px; white-space: nowrap;">
             <span v-for="(ft, ftIndex) in generator.fuelTechs" :key="ftIndex">
               {{ getFtLabel(ft) }}<span v-if="ftIndex !== generator.fuelTechs.length - 1">,</span>
@@ -112,71 +102,7 @@
             <span class="unit">MW</span>
           </div>
         </div>
-
-        <!-- <h5>
-          <span>{{ generator.status }}</span>
-          <span v-if="generator.statusDate">({{ generator.statusDate | formatDate }})</span>
-        </h5> -->
       </div>
-      <!-- <div class="detail card-content" v-show="isSelected(generator.stationId)" style="padding: 5px 15px 10px 30px; box-shadow: inset 0 1px 6px rgba(100, 100, 100, 0.1); background: #f7f7f7; border-radius: 0 0 3px 3px">
-
-        <div style="display: flex;">
-          <div style="width: 50%;">
-            <div class="stat">
-              <div class="stat-label">Status</div>
-              <div class="stat-value">
-                <strong>{{ generator.status }}</strong>
-                <em v-if="generator.statusDate">on {{ generator.statusDate | formatDate }}</em>
-              </div>
-            </div>
-            
-            <div class="stat">
-              <div class="stat-label">Participant</div>
-              <div class="stat-value">
-                {{ generator.participant }}
-              </div>
-            </div>
-
-            <a
-              class="button is-small is-rounded is-primary is-outlined"
-              style="font-size: 80%;"
-              target="station_window"
-              :href="getStationLink(generator.stationId)">
-              more
-            </a>
-          </div>
-
-          <div style="width: 50%;">
-            <table class="table is-narrow is-fullwidth is-bordered is-hoverable" style="background: transparent; margin-bottom: 0; margin-top: 2px;">
-              <thead>
-                <tr>
-                  <th>Unit</th>
-                  <th class="has-text-right">Capacity</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(unit, index) in generator.units" :key="index">
-                  <td v-tooltip="getUnitTooltip(unit)">
-                    <div style="display: flex">
-                      <span class="source-colour"
-                        :style="{ 
-                          backgroundColor: getColour(unit.fuelTech)
-                        }" />
-                      <span class="unit-name">{{ unit.name }}</span>
-                    </div>
-                  </td>
-                  <td class="has-text-right" v-tooltip="getCapacityTooltip(unit)">
-                    <strong :class="{ 'has-text-grey': unit.startType === 'not dispatched'}">
-                      {{ unit.regCap | formatNumber }}
-                    </strong>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-      </div> -->
     </div>
   </div>
 </template>
@@ -281,6 +207,7 @@ export default {
       this.$emit('orderChanged', colId);
     },
     handleRowClick(generator) {
+      console.log(generator)
       if (this.selected === generator) {
         this.selected = null;
         this.$emit('generatorSelected', null, true);
@@ -310,6 +237,9 @@ export default {
     getFtLabel(ft) {
       const ftObj = GraphDomains[ft];
       if (ftObj) {
+        if (ft === 'battery_discharging') {
+          return 'Battery'
+        }
         return ftObj.label;
       }
       return ft ? ft : '—';
@@ -344,6 +274,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../../../node_modules/bulma/sass/utilities/mixins.sass";
 @import "../../styles/variables.scss";
 
 .card {
@@ -451,6 +382,15 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 5px;
+  position: sticky;
+  top: 89px;
+  background-color: $background-alpha;
+  padding: 5px 0;
+  z-index: 11;
+
+  @include tablet {
+    top: 95px;
+  }
 }
 .col-header {
   cursor: pointer;

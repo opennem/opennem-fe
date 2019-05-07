@@ -22,6 +22,7 @@
           @sortChanged="handleSortChange"
           @statusChanged="handleStatusChange"
           @selected="handleFilterSelected"
+          @selectedStatuses="handleStatusesSelected"
         />
       </div>
       
@@ -102,6 +103,7 @@ export default {
       status: 'Commissioned',
       panTo: null,
       selectedTechs: [],
+      selectedStatuses: [],
       selectedGenerator: null,
       hoveredGenerator: null,
       shouldZoomWhenSelected: true,
@@ -127,12 +129,20 @@ export default {
         ? this.generatorsData.filter(g => g.fuelTechs.some(r => this.selectedTechs.includes(r)))
         : this.generatorsData;
       
-      console.log(this.status)
+      // console.log(this.status)
+      // return filtered.filter(g =>
+      //   g.displayName.toLowerCase().includes(this.filterString.toLowerCase()) &&
+      //   g.regionId.toLowerCase().includes(this.regionId) &&
+      //   (this.status === 'any' || g.status === this.status),
+      // );
+
+      console.log(this.selectedStatuses)
       return filtered.filter(g =>
         g.displayName.toLowerCase().includes(this.filterString.toLowerCase()) &&
         g.regionId.toLowerCase().includes(this.regionId) &&
-        (this.status === 'any' || g.status === this.status),
+        (this.selectedStatuses.length <= 0 || _.includes(this.selectedStatuses, g.status)),
       );
+
     },
     hasSelectedGenerator() {
       return this.selectedGenerator;
@@ -205,6 +215,10 @@ export default {
     handleStatusChange(status) {
       this.status = status;
     },
+    handleStatusesSelected(statuses) {
+      console.log(statuses)
+      this.selectedStatuses = statuses
+    },
   },
 };
 </script>
@@ -225,9 +239,13 @@ export default {
   padding: 0;
   position: sticky;
   display: flex;
-  top: 44px;
+  top: 38px;
   z-index: 90;
   background-color: #ece9e6;
+
+  @include tablet {
+    top: 44px;
+  }
 }
 
 .sticky-detail {

@@ -29,7 +29,9 @@ function transformGeneratorData(data) {
       };
 
       generatorCap += regCap || 0;
-      fuelTechs.push(fuelTech);
+      if (fuelTech !== 'battery_charging') {
+        fuelTechs.push(fuelTech);
+      }
       units.push(unitObj);
     });
 

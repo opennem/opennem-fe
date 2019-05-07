@@ -71,7 +71,12 @@
         </transition> 
       </div>
 
-      <filter-status style="margin-left: 10px;" :status="status" @statusChanged="handleStatusChange" />
+      <filter-status
+        style="margin-left: 10px;"
+        :status="status"
+        @statusChanged="handleStatusChange"
+        @selectedStatuses="handleStatusesSelected"
+      />
     </div>
     
     <div>
@@ -270,6 +275,9 @@ export default {
     handleStatusChange(status) {
       this.$emit('statusChanged', status);
     },
+    handleStatusesSelected(selectedStatuses) {
+      this.$emit('selectedStatuses', selectedStatuses);
+    }
   },
 };
 </script>
@@ -349,7 +357,7 @@ export default {
   .checkmark-icon {
     position: relative;
     left: 2px;
-    bottom: 0;
+    bottom: 1px;
     color: #fff;
   }
 }
