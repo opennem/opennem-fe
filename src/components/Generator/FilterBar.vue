@@ -16,7 +16,7 @@
         <button
           class="dropdown-trigger button is-rounded is-small is-primary"
           :class="{ 'is-inverted': selectedTechGroups.length === 0 }"
-          @click="techDropdownActive = true"
+          @click="techDropdownActive = !techDropdownActive"
         >
           <div class="dropdown-label">
             <span>Technology</span>
