@@ -1,16 +1,5 @@
 <template>
 <div>
-  <!-- <div class="filter-bar-column column is-full">
-    <filter-bar
-      :sortBy="sortBy"
-      :orderBy="orderBy"
-      :status="status"
-      @orderChanged="handleOrderChange"
-      @sortChanged="handleSortChange"
-      @statusChanged="handleStatusChange"
-      @selected="handleFilterSelected"
-    />
-  </div> -->
   <div class="columns is-multiline is-gapless map-detail-container">    
     <div class="column is-half">
       <div class="filter-bar-column">
@@ -27,33 +16,32 @@
         />
       </div>
       
-      <generator-list 
-        :generatorsData="filteredGenerators"
-        :selectedGenerator="selectedGenerator"
-        :hoveredGenerator="hoveredGenerator"
+      <facility-list 
+        :filteredFacilities="filteredFacilities"
+        :selectedFacility="selectedFacility"
         :sortBy="sortBy"
         :orderBy="orderBy"
         :hideRegionColumn="isRegionView"
         @orderChanged="handleOrderChange"
-        @generatorSelected="handleGeneratorSelect"
-        @generatorHover="handleGeneratorHover"
-        @generatorMouseout="handleGeneratorOut"
+        @facilitySelect="handleFacilitySelect"
+        @facilityHover="handleFacilityHover"
+        @facilityMouseout="handleFacilityOut"
       />
 
       <div class="totals">
-        <span>Facilities: <strong>{{totalGenerators}}</strong></span>
+        <span>Facilities: <strong>{{totalFacilities}}</strong></span>
         <span>Capacity: <strong>{{ totalCap | formatNumber }}</strong> </span>
       </div>
     </div>
 
     <div class="column">
       <div class="sticky-detail">
-        <generator-map
-          :generatorsData="filteredGenerators"
-          :selectedGenerator="selectedGenerator"
-          :hoveredGenerator="hoveredGenerator"
+        <facility-map
+          :facilitiesData="filteredFacilities"
+          :selectedFacility="selectedFacility"
+          :hoveredFacility="hoveredFacility"
           :shouldZoomWhenSelected="shouldZoomWhenSelected"
-          @generatorSelected="handleGeneratorSelect"
+          @facilitySelect="handleFacilitySelect"
         />
         <!-- <generator-detail
           :generator="selectedGenerator"
@@ -61,19 +49,7 @@
         /> -->
       </div>
     </div>
-
   </div>
-  
-  <!-- <div class="grid-container">
-    <generator-grid 
-      :generatorsData="filteredGenerators"
-      :selectedGenerator="selectedGenerator"
-      :sortBy="sortBy"
-      :orderBy="orderBy"
-      @orderChanged="handleOrderChange"
-      @generatorSelected="handleGeneratorSelect"
-    />
-  </div> -->
 </div>
 </template>
 
@@ -81,19 +57,19 @@
 import _ from 'lodash';
 import { mapGetters } from 'vuex';
 import EventBus from '@/lib/event-bus';
-import GeneratorList from '@/components/Generator/List';
-import GeneratorMap from '@/components/Generator/Map';
-import GeneratorDetail from '@/components/Generator/Detail';
-import FilterBar from '@/components/Generator/FilterBar';
+import FacilityList from '@/components/Facility/List';
+import FacilityMap from '@/components/Facility/Map';
+import FacilityDetail from '@/components/Facility/Detail';
+import FilterBar from '@/components/Facility/FilterBar';
 
 const ASCENDING = 'asc';
 const DESCENDING = 'desc';
 
 export default {
   components: {
-    GeneratorList,
-    GeneratorMap,
-    GeneratorDetail,
+    FacilityList,
+    FacilityMap,
+    FacilityDetail,
     FilterBar,
   },
   data() {
@@ -105,17 +81,17 @@ export default {
       panTo: null,
       selectedTechs: [],
       selectedStatuses: ['Commissioned'],
-      selectedGenerator: null,
-      hoveredGenerator: null,
+      selectedFacility: null,
+      hoveredFacility: null,
       shouldZoomWhenSelected: true,
     };
   },
   computed: {
     ...mapGetters({
-      generatorsData: 'generatorsData',
+      facilityData: 'facilityData',
     }),
-    generatorsData() {
-      const data = this.$store.getters.generatorsData;
+    facilityData() {
+      const data = this.$store.getters.facilityData;
       const sortBy = this.sortBy;
       return _.orderBy(data, [sortBy], [this.orderBy]);
     },
@@ -125,19 +101,11 @@ export default {
     isRegionView() {
       return this.$route.params.region !== undefined;
     },
-    filteredGenerators() {
+    filteredFacilities() {
       const filtered = this.selectedTechs.length > 0
-        ? this.generatorsData.filter(g => g.fuelTechs.some(r => this.selectedTechs.includes(r)))
-        : this.generatorsData;
-      
-      // console.log(this.status)
-      // return filtered.filter(g =>
-      //   g.displayName.toLowerCase().includes(this.filterString.toLowerCase()) &&
-      //   g.regionId.toLowerCase().includes(this.regionId) &&
-      //   (this.status === 'any' || g.status === this.status),
-      // );
+        ? this.facilityData.filter(g => g.fuelTechs.some(r => this.selectedTechs.includes(r)))
+        : this.facilityData;
 
-      console.log(this.selectedStatuses)
       return filtered.filter(g =>
         g.displayName.toLowerCase().includes(this.filterString.toLowerCase()) &&
         g.regionId.toLowerCase().includes(this.regionId) &&
@@ -145,31 +113,31 @@ export default {
       );
 
     },
-    hasSelectedGenerator() {
-      return this.selectedGenerator;
+    hasSelectedFacility() {
+      return this.selectedFacility;
     },
     totalCap() {
       let total = 0;
-      this.filteredGenerators.forEach((d) => {
+      this.filteredFacilities.forEach((d) => {
         total += d.generatorCap;
       });
       return total;
     },
-    totalGenerators() {
-      return this.filteredGenerators.length;
+    totalFacilities() {
+      return this.filteredFacilities.length;
     },
   },
   created() {
-    this.selectedTechs = this.$store.getters.generatorsSelectedTechs;
+    this.selectedTechs = this.$store.getters.facilitySelectedTechs;
   },
 
   mounted() {
-    EventBus.$on('generators.name.filter', this.setFilterString);
-    this.$store.dispatch('fetchGeneratorsData');
+    EventBus.$on('facilities.name.filter', this.setFilterString);
+    this.$store.dispatch('fetchFacilityData');
   },
 
   beforeDestroy() {
-    EventBus.$off('generators.name.filter');
+    EventBus.$off('facilities.name.filter');
   },
 
   methods: {
@@ -193,19 +161,19 @@ export default {
       }
       this.sortBy = orderName;
     },
-    handleGeneratorSelect(generator, shouldZoom) {
-      this.selectedGenerator = generator;
+    handleFacilitySelect(facility, shouldZoom) {
+      this.selectedFacility = facility;
       this.shouldZoomWhenSelected = shouldZoom;
     },
-    handleGeneratorHover(generator, shouldZoom) {
-      this.hoveredGenerator = generator;
+    handleFacilityHover(facility, shouldZoom) {
+      this.hoveredFacility = facility;
       this.shouldZoomWhenSelected = shouldZoom;
     },
-    handleGeneratorOut() {
-      this.hoveredGenerator = null;
+    handleFacilityOut() {
+      this.hoveredFacility = null;
     },
     handleCloseDetail() {
-      this.selectedGenerator = null;
+      this.selectedFacility = null;
     },
     setFilterString(string) {
       this.filterString = string;
@@ -217,7 +185,6 @@ export default {
       this.status = status;
     },
     handleStatusesSelected(statuses) {
-      console.log(statuses)
       this.selectedStatuses = statuses
     },
   },
@@ -258,11 +225,6 @@ export default {
   }
   @include mobile {
     display: none;
-    // position: fixed;
-    // bottom: 20px;
-    // left: 10px;
-    // right: 10px;
-    // z-index: 99;
   }
 }
 .totals {

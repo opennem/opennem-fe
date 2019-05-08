@@ -3,7 +3,7 @@ import _ from 'lodash';
 import getJSON from '@/lib/data-apis';
 import * as MutationTypes from '@/constants/mutation-types';
 
-function transformGeneratorData(data) {
+function transformFacilityData(data) {
   const stationIds = Object.keys(data);
   const stations = stationIds.map(d => data[d]);
 
@@ -51,55 +51,55 @@ function transformGeneratorData(data) {
 }
 
 const state = {
-  generatorsData: [],
-  generatorsResponseData: [],
-  generatorsSelectedTechs: [],
+  facilityData: [],
+  facilityResponseData: [],
+  facilitySelectedTechs: [],
 };
 
 const mutations = {
-  [MutationTypes.GENERATORS_DATA](state, data) {
-    state.generatorsData = data;
+  [MutationTypes.FACILITY_DATA](state, data) {
+    state.facilityData = data;
   },
-  [MutationTypes.GENERATORS_RESPONSE_DATA](state, data) {
-    state.generatorsResponseData = data;
+  [MutationTypes.FACILITY_RESPONSE_DATA](state, data) {
+    state.facilityResponseData = data;
   },
-  [MutationTypes.GENERATORS_SELECTED_TECHS](state, data) {
-    state.generatorsSelectedTechs = data;
+  [MutationTypes.FACILITY_SELECTED_TECHS](state, data) {
+    state.facilitySelectedTechs = data;
   },
 };
 
 const getters = {
-  generatorsData: state => {
-    return state.generatorsData;
+  facilityData: state => {
+    return state.facilityData;
   },
-  generatorsResponseData: state => {
-    return state.generatorsResponseData;
+  facilityResponseData: state => {
+    return state.facilityResponseData;
   },
-  generatorsSelectedTechs: state => {
-    return state.generatorsSelectedTechs;
+  facilitySelectedTechs: state => {
+    return state.facilitySelectedTechs;
   },
 };
 
 const actions = {
-  fetchGeneratorsData({ commit, state }) {
+  fetchFacilityData({ commit, state }) {
     const urls = ['station/generator_registry.json'];
     // const urls = ['facility/facility_registry.json'];
 
     getJSON(urls, false)
       .then((responses) => {
         console.log(responses[0].data)
-        const transformedData = transformGeneratorData(responses[0].data);
-        commit(MutationTypes.GENERATORS_DATA, transformedData);
+        const transformedData = transformFacilityData(responses[0].data);
+        commit(MutationTypes.FACILITY_DATA, transformedData);
       })
       .catch((e) => {
         // handleFetchError(e, commit);
       });
   },
-  generatorsResponseData({ commit, state }, data) {
-    commit(MutationTypes.GENERATORS_RESPONSE_DATA, data);
+  facilityResponseData({ commit, state }, data) {
+    commit(MutationTypes.FACILITY_RESPONSE_DATA, data);
   },
-  generatorsSelectedTechs({ commit, state }, data) {
-    commit(MutationTypes.GENERATORS_SELECTED_TECHS, data);
+  facilitySelectedTechs({ commit, state }, data) {
+    commit(MutationTypes.FACILITY_SELECTED_TECHS, data);
   },
 };
 

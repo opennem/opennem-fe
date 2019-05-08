@@ -13,15 +13,6 @@
       <div class="level-right" v-show="isEnergyRoute">
         <export-buttons style="padding: 10px 0 0 0" />
       </div>
-
-      <div class="level-right" v-show="isGeneratorsRoute">
-        <!-- <input 
-          class="input is-rounded filter-station-input"
-          type="text"
-          placeholder="Filter By Station Name"
-          v-model="filterGeneratorName"
-        /> -->
-      </div>
     </div>
   </nav>
 </template>
@@ -45,11 +36,6 @@ export default {
     ExportButtons,
     UiWarning,
   },
-  data() {
-    return {
-      filterGeneratorName: '',
-    };
-  },
 
   computed: {
     ...mapGetters({
@@ -57,29 +43,6 @@ export default {
     }),
     isEnergyRoute() {
       return _.includes(this.$route.name, 'energy');
-    },
-    isGeneratorsRoute() {
-      return _.includes(this.$route.name, 'generators');
-    },
-  },
-
-  watch: {
-    filterGeneratorName(string) {
-      EventBus.$emit('generators.name.filter', string);
-    },
-  },
-
-  mounted() {
-    EventBus.$on('generators.filter.clear', this.clearFilter);
-  },
-
-  beforeDestroy() {
-    EventBus.$off('generators.filter.clear');
-  },
-
-  methods: {
-    clearFilter() {
-      this.filterGeneratorName = '';
     },
   },
 };

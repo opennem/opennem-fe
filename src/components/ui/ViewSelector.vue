@@ -18,7 +18,7 @@
             Energy
           </a>
           <a class="dropdown-item"
-            @click="goToGeneratorsView()"
+            @click="gotToFacilitiesView()"
             :class="{ selected: !isEnergy }"
           >
             Facilities
@@ -71,8 +71,8 @@ export default {
     goToEnergyView() {
       this.$router.push({ name: `${this.routeParentName}-energy` });
     },
-    goToGeneratorsView() {
-      this.$router.push({ name: `${this.routeParentName}-generators` });
+    gotToFacilitiesView() {
+      this.$router.push({ name: `${this.routeParentName}-facilities` });
     },
   },
 };

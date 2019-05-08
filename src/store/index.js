@@ -28,7 +28,7 @@ import dates from './dates';
 import panels from './panels';
 import features from './features';
 import errors from './errors';
-import generatorsData from './generators-data';
+import facilityData from './facility-data';
 import stationData from './station-data';
 
 import groups from './groups';
@@ -335,7 +335,7 @@ const store = new Vuex.Store({
     panels,
     features,
     errors,
-    generatorsData,
+    facilityData,
     stationData,
     groups,
   }

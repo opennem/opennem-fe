@@ -39,9 +39,8 @@ export default {
     showMainNav() {
       const name = this.$route.name;
       return name === 'home' || name === 'region' ||
-        name === 'home-energy' || name === 'home-generators' ||
-        name === 'home-generators2' ||
-        name === 'region-energy' || name === 'region-generators';
+        name === 'home-energy' || name === 'home-facilities' ||
+        name === 'region-energy' || name === 'region-facilities';
     },
     isAbout() {
       return this.$route.name === 'about';

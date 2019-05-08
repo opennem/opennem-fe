@@ -3,8 +3,7 @@ import Router from 'vue-router';
 import HomeView from '@/components/HomeView';
 import RegionView from '@/components/RegionView';
 import EnergyView from '@/components/EnergyView';
-import GeneratorsView from '@/components/GeneratorsView';
-import GeneratorsView2 from '@/components/GeneratorsView2';
+import FacilitiesView from '@/components/FacilitiesView';
 import StationView from '@/components/StationView';
 import Region from '@/components/Region';
 import Widget from '@/components/Widget';
@@ -32,23 +31,25 @@ export default new Router({
           component: EnergyView,
         },
         {
-          path: 'facilities2',
-          name: 'home-generators2',
-          component: GeneratorsView,
-        },
-        {
           path: 'facilities',
-          name: 'home-generators',
-          component: GeneratorsView2,
+          name: 'home-facilities',
+          component: FacilitiesView,
         },
       ],
     },
     {
       path: '/regions/:region',
       props: true,
+      name: 'region-prev',
+      component: RegionView,
+      redirect: 'region/:region/energy',
+    },
+    {
+      path: '/region/:region',
+      props: true,
       name: 'region',
       component: RegionView,
-      redirect: 'regions/:region/energy',
+      redirect: 'region/:region/energy',
       children: [
         {
           path: 'energy',
@@ -57,8 +58,8 @@ export default new Router({
         },
         {
           path: 'facilities',
-          name: 'region-generators',
-          component: GeneratorsView2,
+          name: 'region-facilities',
+          component: FacilitiesView,
         },
       ],
     },

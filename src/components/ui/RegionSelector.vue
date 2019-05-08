@@ -38,7 +38,6 @@ import _ from 'lodash';
 import { mixin as clickaway } from 'vue-clickaway';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import { faAngleDown } from '@fortawesome/fontawesome-pro-light';
-// import EventBus from '@/lib/event-bus';
 import { getAllRegions, getRegionLabel } from '@/domains/regions';
 
 export default {
@@ -59,7 +58,7 @@ export default {
     },
     isHome() {
       const routeName = this.$route.name;
-      return routeName === 'home-energy' || routeName === 'home-generators';
+      return routeName === 'home-energy' || routeName === 'home-facilities';
     },
     iconDown() {
       return faAngleDown;
@@ -77,20 +76,18 @@ export default {
       this.dropdownActive = false;
     },
     handleRegionChange(regionId) {
-      const view = this.isEnergyRoute ? 'energy' : 'generators';
+      const view = this.isEnergyRoute ? 'energy' : 'facilities';
       this.$store.dispatch('region', `${regionId}1`);
       this.$router.push({ name: `region-${view}`, params: { region: regionId } });
-      // EventBus.$emit('generators.filter.clear');
       window.scrollTo(0, 0);
     },
     isCurrentSelection(id) {
       return this.$route.params.region === id;
     },
     goHome() {
-      const view = this.isEnergyRoute ? 'energy' : 'generators';
+      const view = this.isEnergyRoute ? 'energy' : 'facilities';
       this.$store.dispatch('region', 'nem');
       this.$router.push({ name: `home-${view}` });
-      // EventBus.$emit('generators.filter.clear');
     },
   },
 };

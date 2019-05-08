@@ -59,19 +59,19 @@
     
     <div
       class="card"
-      v-for="(generator, index) in generatorsData"
+      v-for="(facility, index) in filteredFacilities"
       :key="index"
       :class="{
-        'is-selected': isSelected(generator.stationId),
-        'is-inactive': !active(generator.status)
+        'is-selected': isSelected(facility.stationId),
+        'is-inactive': !active(facility.status)
       }"
-      @mouseover="handleRowHover(generator)"
+      @mouseover="handleRowHover(facility)"
       @mouseout="handleRowOut"
-      @click="handleRowClick(generator)"
+      @click="handleRowClick(facility)"
     >
       <div class="bar-left" style="display: flex; position: absolute; left: 0; height: 100%;">
         <span
-          v-for="(ft, ftIndex) in generator.fuelTechs"
+          v-for="(ft, ftIndex) in facility.fuelTechs"
           :key="ftIndex"
           :style="{ 
             backgroundColor: getColour(ft)
@@ -81,24 +81,24 @@
       
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <div class="card-content" style="width: 50%; margin-left: 1rem;">
-          <h2 class="station-name">{{ generator.displayName }}</h2>
+          <h2 class="station-name">{{ facility.displayName }}</h2>
         </div>
 
         <div class="card-content" style="width: 150px;" v-show="!hideRegionColumn">
-          <small style="color: #666;">{{ getRegionLabel(generator.regionId) }}</small>
+          <small style="color: #666;">{{ getRegionLabel(facility.regionId) }}</small>
         </div>
 
         <div class="stat" style="width: 150px;">
           <div class="stat-value" style="font-size: 11px; white-space: nowrap;">
-            <span v-for="(ft, ftIndex) in generator.fuelTechs" :key="ftIndex">
-              {{ getFtLabel(ft) }}<span v-if="ftIndex !== generator.fuelTechs.length - 1">,</span>
+            <span v-for="(ft, ftIndex) in facility.fuelTechs" :key="ftIndex">
+              {{ getFtLabel(ft) }}<span v-if="ftIndex !== facility.fuelTechs.length - 1">,</span>
             </span>
           </div>
         </div>
 
         <div class="stat" style="width: 140px; margin-right: 15px;">
-          <div v-show="generator.generatorCap" class="stat-value has-text-right" style="font-size: 14px;">
-            {{ generator.generatorCap | formatNumber }}
+          <div v-show="facility.generatorCap" class="stat-value has-text-right" style="font-size: 14px;">
+            {{ facility.generatorCap | formatNumber }}
             <span class="unit">MW</span>
           </div>
         </div>
@@ -127,10 +127,6 @@ const colHeaders = [
     id: 'regionId',
     label: 'Region',
   },
-  // {
-  //   id: 'location.state',
-  //   label: 'State',
-  // },
   {
     id: 'fuelTechs',
     label: 'Technology',
@@ -147,8 +143,8 @@ export default {
   },
 
   props: {
-    generatorsData: Array,
-    selectedGenerator: Object,
+    filteredFacilities: Array,
+    selectedFacility: Object,
     sortBy: String,
     orderBy: String,
     hideRegionColumn: Boolean,
@@ -170,25 +166,15 @@ export default {
     },
     totalCap() {
       let total = 0;
-      this.generatorsData.forEach((d) => {
+      this.filteredFacilities.forEach((d) => {
         total += d.generatorCap;
       });
       return total;
-    },
-    totalEmissions() {
-      let total = 0;
-      this.generatorsData.forEach((d) => {
-        total += d.emissionsYtd;
-      });
-      return total;
-    },
-    totalGenerators() {
-      return this.generatorsData.length;
-    },
+    }
   },
 
   watch: {
-    selectedGenerator(selected) {
+    selectedFacility(selected) {
       this.selected = selected;
     },
   },
@@ -206,24 +192,23 @@ export default {
     sort(colId) {
       this.$emit('orderChanged', colId);
     },
-    handleRowClick(generator) {
-      console.log(generator)
-      if (this.selected === generator) {
+    handleRowClick(facility) {
+      if (this.selected === facility) {
         this.selected = null;
-        this.$emit('generatorSelected', null, true);
+        this.$emit('facilitySelect', null, true);
       } else {
-        this.selected = generator;
-        this.$emit('generatorSelected', generator, true);
+        this.selected = facility;
+        this.$emit('facilitySelect', facility, true);
       }
     }, 
-    handleRowHover(generator) {
-      this.$emit('generatorHover', generator, true);
+    handleRowHover(facility) {
+      this.$emit('facilityHover', facility, true);
     },
     handleRowOut() {
-      this.$emit('generatorMouseout');
+      this.$emit('facilityMouseout');
     },
     shouldRightAligned(colHeaderId) {
-      return (colHeaderId === 'generatorCap' || colHeaderId === 'emissionsYtd');
+      return colHeaderId === 'generatorCap';
     },
     getColumnIcon(colHeaderId) {
       if (colHeaderId === this.sortBy) {

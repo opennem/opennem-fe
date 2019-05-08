@@ -15,9 +15,9 @@ import { GraphDomains } from '@/domains/graphs';
 
 export default {
   props: {
-    generatorsData: Array,
-    selectedGenerator: Object,
-    hoveredGenerator: Object,
+    facilitiesData: Array,
+    selectedFacility: Object,
+    hoveredFacility: Object,
     shouldZoomWhenSelected: Boolean,
   },
 
@@ -38,7 +38,7 @@ export default {
       map: null,
       selectedMarker: null,
       hoveredMarker: null,
-      generatorsFeature: null,
+      facilitiesFeature: null,
       emissionsFeature: null,
       windowHeight: window.innerHeight,
     };
@@ -52,12 +52,12 @@ export default {
   },
 
   watch: {
-    generatorsData(newData) {
+    facilitiesData(newData) {
       this.updateMap(newData);
     },
-    hoveredGenerator(generator) {
-      if (generator) {
-        const hasLocation = generator.location;
+    hoveredFacility(facility) {
+      if (facility) {
+        const hasLocation = facility.location;
 
         if (this.hoveredMarker) {
           this.hoveredMarker.remove();
@@ -75,7 +75,7 @@ export default {
             autoClose: false,
             autoPan: false,
             className: 'map-popup'
-          }).setLatLng([lat, lng]).setContent(generator.displayName);
+          }).setLatLng([lat, lng]).setContent(facility.displayName);
 
           setTimeout(() => {
             this.hoveredMarker.openOn(this.map);
@@ -87,9 +87,9 @@ export default {
         }
       }
     },
-    selectedGenerator(generator) {
-      if (generator) {
-        const hasLocation = generator.location;
+    selectedFacility(facility) {
+      if (facility) {
+        const hasLocation = facility.location;
 
         if (this.selectedMarker) {
           this.selectedMarker.remove();
@@ -106,7 +106,7 @@ export default {
             autoClose: false,
             closeOnClick: false,
             className: 'map-popup selected'
-          }).setLatLng([lat, lng]).setContent(generator.displayName);
+          }).setLatLng([lat, lng]).setContent(facility.displayName);
           this.selectedMarker.openOn(this.map);
 
           this.map.setZoom(7);
@@ -117,7 +117,7 @@ export default {
         }
       } else {
         this.selectedMarker.remove();
-        // this.map.fitBounds(this.generatorsFeature.getBounds());
+        // this.map.fitBounds(this.facilitiesFeature.getBounds());
       }
     },
   },
@@ -129,7 +129,7 @@ export default {
   methods: {
     setup() {
       this.map = L.map('map', { attributionControl: false, maxZoom: 7 }).setView([-29.186936, 143.633537], 4);
-      this.generatorsFeature = L.featureGroup();
+      this.facilitiesFeature = L.featureGroup();
       this.emissionsFeature = L.featureGroup();
       this.tileLayer.addTo(this.map);
 
@@ -140,14 +140,14 @@ export default {
       // attr.addAttribution(MapAttribution);
 
       this.map.addControl(attr);
-      // this.map.addLayer(this.selectedGeneratorFeature);
+      // this.map.addLayer(this.selectedFacilityFeature);
 
-      // this.generatorsFeature.addTo(this.map);
+      // this.facilitiesFeature.addTo(this.map);
       // this.emissionsFeature.addTo(this.map);
     },
 
-    handleMapCircleClicked(generator) {
-      this.$emit('generatorSelected', generator, false);
+    handleMapCircleClicked(facility) {
+      this.$emit('facilitySelect', facility, false);
     },
 
     getColour(fuelTechs) {
@@ -158,7 +158,7 @@ export default {
       return 'black';
     },
 
-    selectedGeneratorBounds() {
+    selectedFacilityBounds() {
       const lat = this.selectedMarker._latlng.lat;
       const lng = this.selectedMarker._latlng.lng;
       const loc = new L.LatLng(lat, lng);
@@ -166,8 +166,8 @@ export default {
     },
 
     updateMap(data) {
-      this.map.removeLayer(this.generatorsFeature);
-      this.generatorsFeature = L.featureGroup();
+      this.map.removeLayer(this.facilitiesFeature);
+      this.facilitiesFeature = L.featureGroup();
       const self = this;
       data.forEach((d) => {
         const location = d.location;
@@ -191,7 +191,7 @@ export default {
               },
             })
             .bindTooltip(d.displayName)
-            .addTo(this.generatorsFeature);
+            .addTo(this.facilitiesFeature);
 
           L.circle([lat, lng], {
             fillColor: colour,
@@ -202,11 +202,11 @@ export default {
         }
       });
 
-      this.map.addLayer(this.generatorsFeature);
+      this.map.addLayer(this.facilitiesFeature);
 
-      const bounds = this.generatorsFeature.getBounds();
+      const bounds = this.facilitiesFeature.getBounds();
       if (!_.isEmpty(bounds)) {
-        this.map.fitBounds(this.generatorsFeature.getBounds());
+        this.map.fitBounds(this.facilitiesFeature.getBounds());
       }
     },
   },

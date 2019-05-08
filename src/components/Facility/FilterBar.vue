@@ -9,7 +9,7 @@
         autocorrect="off"
         autocapitalize="off"
         spellcheck="false"
-        v-model="filterGeneratorName"
+        v-model="filterFacilityName"
       />
 
       <div class="dropdown" :class="{'is-active': techDropdownActive}" v-on-clickaway="onClickAway">
@@ -116,7 +116,7 @@ export default {
   },
   data() {
     return {
-      filterGeneratorName: '',
+      filterFacilityName: '',
       techDropdownActive: false,
       allTechs: [],
       selectedTechs: [],
@@ -143,15 +143,15 @@ export default {
     },
   },
   watch: {
-    filterGeneratorName(string) {
-      EventBus.$emit('generators.name.filter', string);
+    filterFacilityName(string) {
+      EventBus.$emit('facilities.name.filter', string);
     },
   },
   created() {
-    this.selectedTechs = this.$store.getters.generatorsSelectedTechs;
+    this.selectedTechs = this.$store.getters.facilitySelectedTechs;
   },
   mounted() {
-    EventBus.$on('generators.filter.clear', this.clearFilter);
+    EventBus.$on('facilities.filter.clear', this.clearFilter);
 
     const groups = this.simplifiedGroup.filter(g => g.type === 'sources' && g.id !== 'imports');
     const findSolarGroup = groups.find(g => g.id === 'group_solar');
@@ -174,7 +174,7 @@ export default {
     this.allTechs.reverse();
   },
   beforeDestroy() {
-    EventBus.$off('generators.filter.clear');
+    EventBus.$off('facilities.filter.clear');
   },
   methods: {
     onClickAway() {
@@ -207,7 +207,7 @@ export default {
     },
     emitSelectedTechs() {
       this.$emit('selected', this.selectedTechs);
-      this.$store.dispatch('generatorsSelectedTechs', this.selectedTechs);
+      this.$store.dispatch('facilitySelectedTechs', this.selectedTechs);
     },
     handleTechGroupClick(group) {
       const groupId = group.id;
@@ -266,7 +266,7 @@ export default {
       this.emitSelectedTechs();
     },
     clearFilter() {
-      this.filterGeneratorName = '';
+      this.filterFacilityName = '';
     },
     handleSortChange(sort) {
       this.$emit('sortChanged', sort);
