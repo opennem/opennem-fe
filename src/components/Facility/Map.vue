@@ -109,9 +109,8 @@ export default {
           });
           this.map.panTo(loc);
         }
-      } else {
+      } else if (this.selectedMarker) {
         this.selectedMarker.remove();
-        // this.map.fitBounds(this.facilitiesFeature.getBounds());
       }
     },
   },

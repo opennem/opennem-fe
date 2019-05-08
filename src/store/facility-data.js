@@ -15,6 +15,7 @@ function transformFacilityData(data) {
     const duidKeys = Object.keys(d.duid_data);
     const unitNum = duidKeys.length;
     const fuelTechs = [];
+    const displayName = d.display_name.split('/').join(' / ');
     let generatorCap = 0;
 
     duidKeys.forEach(unitName => {
@@ -29,7 +30,7 @@ function transformFacilityData(data) {
       };
 
       generatorCap += regCap || 0;
-      if (fuelTech !== 'battery_charging') {
+      if (fuelTech !== 'battery_charging' && !_.isEmpty(unit)) {
         fuelTechs.push(fuelTech);
       }
       units.push(unitObj);
@@ -37,7 +38,7 @@ function transformFacilityData(data) {
 
     return {
       stationId,
-      displayName: d.display_name,
+      displayName,
       status: d.status.state,
       statusDate: d.status.date,
       regionId,
