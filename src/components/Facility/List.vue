@@ -74,7 +74,8 @@
           v-for="(ft, ftIndex) in facility.fuelTechs"
           :key="ftIndex"
           :style="{ 
-            backgroundColor: getColour(ft)
+            backgroundColor: getColour(ft),
+            opacity: getOpacity(ft)
           }"
           class="source-colour-side" />
       </div>
@@ -90,7 +91,11 @@
 
         <div class="stat" style="width: 150px;">
           <div class="stat-value" style="font-size: 11px; white-space: nowrap;">
-            <span v-for="(ft, ftIndex) in facility.fuelTechs" :key="ftIndex">
+            <span
+              v-for="(ft, ftIndex) in facility.fuelTechs"
+              :key="ftIndex"
+              :style="{ opacity: getOpacity(ft) }"
+            >
               {{ getFtLabel(ft) }}<span v-if="ftIndex !== facility.fuelTechs.length - 1">,</span>
             </span>
           </div>
@@ -98,7 +103,7 @@
 
         <div class="stat" style="width: 140px; margin-right: 15px;">
           <div v-show="facility.generatorCap" class="stat-value has-text-right" style="font-size: 14px;">
-            {{ facility.generatorCap | formatNumber }}
+            {{ getGeneratorCap(facility) | formatNumber }}
             <span class="unit">MW</span>
           </div>
         </div>
@@ -108,6 +113,7 @@
 </template>
 
 <script>
+import * as _ from 'lodash';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import { faSortUp, faSortDown } from '@fortawesome/fontawesome-pro-light';
 import { GraphDomains } from '@/domains/graphs';
@@ -164,17 +170,14 @@ export default {
     iconSortDown() {
       return faSortDown;
     },
-    totalCap() {
-      let total = 0;
-      this.filteredFacilities.forEach((d) => {
-        total += d.generatorCap;
-      });
-      return total;
+    facilitySelectedTechs() {
+      return this.$store.getters.facilitySelectedTechs;
     },
   },
 
   watch: {
     selectedFacility(selected) {
+      console.log(selected); // eslint-disable-line
       this.selected = selected;
     },
   },
@@ -238,6 +241,26 @@ export default {
         return ftObj.colour;
       }
       return 'transparent';
+    },
+    getOpacity(fuelTech) {
+      if (this.facilitySelectedTechs.length === 0) {
+        return 1;
+      }
+      return _.includes(this.facilitySelectedTechs, fuelTech)
+        ? 1 : 0.1;
+    },
+    getGeneratorCap(facility) {
+      if (this.facilitySelectedTechs.length === 0) {
+        return facility.generatorCap;
+      }
+
+      let cap = 0;
+      this.facilitySelectedTechs.forEach((d) => {
+        if (facility.fuelTechRegisteredCap[d]) {
+          cap += facility.fuelTechRegisteredCap[d];
+        }
+      });
+      return cap;
     },
     isSelected(stationId) {
       if (this.selected) {

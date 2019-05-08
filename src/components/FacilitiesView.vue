@@ -89,6 +89,7 @@ export default {
   computed: {
     ...mapGetters({
       facilityData: 'facilityData',
+      facilitySelectedTechs: 'facilitySelectedTechs',
     }),
     facilityData() {
       const data = this.$store.getters.facilityData;
@@ -117,8 +118,16 @@ export default {
     },
     totalCap() {
       let total = 0;
-      this.filteredFacilities.forEach((d) => {
-        total += d.generatorCap;
+      this.filteredFacilities.forEach((facility) => {
+        if (this.facilitySelectedTechs.length === 0) {
+          total += facility.generatorCap;
+        } else {
+          this.facilitySelectedTechs.forEach((ft) => {
+            if (facility.fuelTechRegisteredCap[ft]) {
+              total += facility.fuelTechRegisteredCap[ft];
+            }
+          });
+        }
       });
       return total;
     },

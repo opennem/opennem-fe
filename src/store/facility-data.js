@@ -15,6 +15,7 @@ function transformFacilityData(data) {
     const duidKeys = Object.keys(d.duid_data);
     const unitNum = duidKeys.length;
     const fuelTechs = [];
+    const fuelTechRegisteredCap = {};
     const displayName = d.display_name.split('/').join(' / ');
     let generatorCap = 0;
 
@@ -30,10 +31,19 @@ function transformFacilityData(data) {
       };
 
       generatorCap += regCap || 0;
+
+      if (fuelTech) {
+        if (!fuelTechRegisteredCap[fuelTech]) {
+          fuelTechRegisteredCap[fuelTech] = 0;
+        }
+        fuelTechRegisteredCap[fuelTech] += regCap;
+      }
       if (fuelTech !== 'battery_charging' && !_.isEmpty(unit)) {
         fuelTechs.push(fuelTech);
       }
-      units.push(unitObj);
+      if (!_.isEmpty(unit)) {
+        units.push(unitObj);
+      }
     });
 
     return {
@@ -47,6 +57,7 @@ function transformFacilityData(data) {
       generatorCap,
       unitNum,
       fuelTechs: _.uniq(fuelTechs),
+      fuelTechRegisteredCap,
     }
   })
 }
