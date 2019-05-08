@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import * as _ from 'lodash';
 import { mixin as clickaway } from 'vue-clickaway';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import { faAngleDown, faCheck } from '@fortawesome/fontawesome-pro-light';
@@ -71,7 +72,7 @@ export default {
       selectedStatus: '',
       selected: [],
       dropdownActive: false,
-    }
+    };
   },
 
   computed: {
@@ -122,8 +123,8 @@ export default {
       this.selected = [];
       this.$emit('selectedStatuses', this.selected);
     },
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss" scoped>

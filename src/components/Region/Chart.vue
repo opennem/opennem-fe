@@ -147,7 +147,7 @@ export default {
       this.chart.categoryAxesSettings.groupToPeriods = newGroupTo;
       this.chart.validateData();
     },
-    panelsSelected(selected) {
+    panelsSelected() {
       this.initialZoom = this.isChartZoomed;
       if (this.chartRendered) {
         this.chartRendered = false;
@@ -181,12 +181,13 @@ export default {
 
     setChartPanelHeights(heightArr) {
       for (let i = 0; i < this.panelNum; i += 1) {
-        // this.chart.panels[i].percentHeight = heightArr[i];
+        this.chart.panels[i].percentHeight = heightArr[i];
       }
     },
 
     setConfigPanelHeights(config, panelNum, heightArr) {
       for (let i = 0; i < panelNum; i += 1) {
+        // eslint-disable-next-line
         config.panels[i].percentHeight = heightArr[i];
       }
     },

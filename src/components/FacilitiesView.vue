@@ -111,7 +111,6 @@ export default {
         g.regionId.toLowerCase().includes(this.regionId) &&
         (this.selectedStatuses.length <= 0 || _.includes(this.selectedStatuses, g.status)),
       );
-
     },
     hasSelectedFacility() {
       return this.selectedFacility;
@@ -185,7 +184,7 @@ export default {
       this.status = status;
     },
     handleStatusesSelected(statuses) {
-      this.selectedStatuses = statuses
+      this.selectedStatuses = statuses;
     },
   },
 };

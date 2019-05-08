@@ -105,7 +105,7 @@ export default {
       if (ftObj) {
         return ftObj.label;
       }
-      return ft ? ft : '—';
+      return ft || '—';
     },
     getColour(fuelTech) {
       const ftObj = fuelTech ? GraphDomains[fuelTech] : null;

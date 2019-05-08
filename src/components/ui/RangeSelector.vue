@@ -175,13 +175,13 @@ export default {
               end: current.toDate(),
             });
             break;
-          
+
           case 'last24hrs':
           case 'last3days':
           case 'last7days':
             this.$store.dispatch('resetPanelsSelected');
 
-          default:
+          default: // eslint-disable-line
             this.$store.dispatch('nemTrim', false);
             this.$store.dispatch('nemUrls', []);
             this.$store.dispatch('groupToPeriods', range.groupToPeriods);

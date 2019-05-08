@@ -1,17 +1,17 @@
 <template>
 <div style="padding: 4rem;">
-  <generator-detail
+  <facility-detail
     :generator="stationData"
   />
 </div>
 </template>
 
 <script>
-import GeneratorDetail from '@/components/Generator/Detail';
+import FacilityDetail from '@/components/Facility/Detail';
 
 export default {
   components: {
-    GeneratorDetail,
+    FacilityDetail,
   },
 
   props: {
@@ -34,9 +34,7 @@ export default {
     this.$store.dispatch('fetchStationData', this.stationId);
   },
 
-  mounted() {
-    console.log(`fetch ${this.stationId}`);
-  },
+  mounted() {},
 
 };
 </script>

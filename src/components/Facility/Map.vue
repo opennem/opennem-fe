@@ -66,25 +66,19 @@ export default {
         if (hasLocation.latitude && hasLocation.longitude) {
           const lat = hasLocation.latitude;
           const lng = hasLocation.longitude;
-          const loc = new L.LatLng(lat, lng);
-
-          // this.hoveredMarker = L.marker([lat, lng], { icon: this.marker });
-          // this.hoveredMarker.addTo(this.map);
 
           this.hoveredMarker = L.popup({
             autoClose: false,
             autoPan: false,
-            className: 'map-popup'
+            className: 'map-popup',
           }).setLatLng([lat, lng]).setContent(facility.displayName);
 
           setTimeout(() => {
             this.hoveredMarker.openOn(this.map);
           }, 200);
         }
-      } else {
-        if (this.hoveredMarker) {
-          this.hoveredMarker.remove();
-        }
+      } else if (this.hoveredMarker) {
+        this.hoveredMarker.remove();
       }
     },
     selectedFacility(facility) {
@@ -105,7 +99,7 @@ export default {
           this.selectedMarker = L.popup({
             autoClose: false,
             closeOnClick: false,
-            className: 'map-popup selected'
+            className: 'map-popup selected',
           }).setLatLng([lat, lng]).setContent(facility.displayName);
           this.selectedMarker.openOn(this.map);
 
@@ -159,8 +153,8 @@ export default {
     },
 
     selectedFacilityBounds() {
-      const lat = this.selectedMarker._latlng.lat;
-      const lng = this.selectedMarker._latlng.lng;
+      const lat = this.selectedMarker._latlng.lat; // eslint-disable-line
+      const lng = this.selectedMarker._latlng.lng; // eslint-disable-line
       const loc = new L.LatLng(lat, lng);
       this.map.panTo(loc);
     },

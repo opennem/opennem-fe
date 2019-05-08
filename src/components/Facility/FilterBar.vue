@@ -279,7 +279,7 @@ export default {
     },
     handleStatusesSelected(selectedStatuses) {
       this.$emit('selectedStatuses', selectedStatuses);
-    }
+    },
   },
 };
 </script>

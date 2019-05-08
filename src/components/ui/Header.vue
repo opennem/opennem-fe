@@ -18,9 +18,8 @@
 </template>
 
 <script>
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { mapGetters } from 'vuex';
-import EventBus from '@/lib/event-bus';
 import UiWarning from '@/components/ui/Warning';
 import RegionSelector from './RegionSelector';
 import ViewSelector from './ViewSelector';

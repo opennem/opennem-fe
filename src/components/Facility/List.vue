@@ -170,7 +170,7 @@ export default {
         total += d.generatorCap;
       });
       return total;
-    }
+    },
   },
 
   watch: {
@@ -200,7 +200,7 @@ export default {
         this.selected = facility;
         this.$emit('facilitySelect', facility, true);
       }
-    }, 
+    },
     handleRowHover(facility) {
       this.$emit('facilityHover', facility, true);
     },
@@ -223,11 +223,11 @@ export default {
       const ftObj = GraphDomains[ft];
       if (ftObj) {
         if (ft === 'battery_discharging') {
-          return 'Battery'
+          return 'Battery';
         }
         return ftObj.label;
       }
-      return ft ? ft : '—';
+      return ft || '—';
     },
     getRegionLabel(code) {
       return getRegionLabelByCode(code);
