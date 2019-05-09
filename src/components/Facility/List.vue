@@ -105,6 +105,14 @@
           <div v-show="facility.generatorCap" class="stat-value has-text-right" style="font-size: 14px;">
             {{ getGeneratorCap(facility) | formatNumber }}
             <span class="unit">MW</span>
+
+            <div
+              v-if="showMaxCap(facility)"
+              class="max-capcity"
+            >
+              (max: {{ facility.generatorCap | formatNumber }}
+              <span class="unit">MW</span>)
+            </div>
           </div>
         </div>
       </div>
@@ -262,6 +270,9 @@ export default {
       });
       return cap;
     },
+    showMaxCap(facility) {
+      return facility.fuelTechs.length > 1 && this.facilitySelectedTechs.length > 0;
+    },
     isSelected(stationId) {
       if (this.selected) {
         return stationId === this.selected.stationId;
@@ -384,6 +395,15 @@ export default {
   font-weight: 600;
   font-size: 16px;
   // line-height: 15px;
+}
+.max-capcity {
+  font-size: 70%;
+  color: #787878;
+
+  .unit {
+    font-size: 80%;
+    left: -2px;
+  }
 }
 .column-headers {
   display: flex;
