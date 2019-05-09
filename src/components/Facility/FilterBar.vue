@@ -1,6 +1,6 @@
 <template>
-  <div class="filter-bar">
-    <div>
+  <div class="facilities-options">
+    <div class="filter-bar">
       <input 
         class="input is-small is-rounded filter-station-input"
         type="text"
@@ -73,18 +73,14 @@
 
       <filter-status
         style="margin-left: 10px;"
-        :status="status"
         :selectedStatuses="selectedStatuses"
-        @statusChanged="handleStatusChange"
         @selectedStatuses="handleStatusesSelected"
       />
     </div>
-    
-    <div>
-      <!-- <filter-status style="margin-left: 10px;" :status="status" @statusChanged="handleStatusChange" /> -->
-      <!-- <sort-by style="margin-left: 10px;" :sortBy="sortBy" @sortChanged="handleSortChange" />
-      <order style="margin-left: 10px;" :orderBy="orderBy" @orderChanged="handleOrderChange" /> -->
-    </div>
+
+    <view-toggle
+      @viewSelect="handleViewSelect"
+    />
   </div>  
 </template>
 
@@ -96,22 +92,17 @@ import { mixin as clickaway } from 'vue-clickaway';
 import EventBus from '@/lib/event-bus';
 import { GraphDomains } from '@/domains/graphs';
 import Simplified from '@/domains/groups/simplified';
-// import SortBy from './SortBy';
-// import Order from './Order';
 import FilterStatus from './FilterStatus';
+import ViewToggle from './ViewToggle';
 
 export default {
   mixins: [clickaway],
   components: {
     FontAwesomeIcon,
-    // SortBy,
-    // Order,
     FilterStatus,
+    ViewToggle,
   },
   props: {
-    sortBy: String,
-    orderBy: String,
-    status: String,
     selectedStatuses: Array,
   },
   data() {
@@ -268,17 +259,11 @@ export default {
     clearFilter() {
       this.filterFacilityName = '';
     },
-    handleSortChange(sort) {
-      this.$emit('sortChanged', sort);
-    },
-    handleOrderChange(order) {
-      this.$emit('orderChanged', order);
-    },
-    handleStatusChange(status) {
-      this.$emit('statusChanged', status);
-    },
     handleStatusesSelected(selectedStatuses) {
       this.$emit('selectedStatuses', selectedStatuses);
+    },
+    handleViewSelect(view) {
+      this.$emit('viewSelect', view);
     },
   },
 };
@@ -323,18 +308,30 @@ export default {
 .filter-bar {
   padding: 0.75rem 0;
   display: flex;
+  // margin: 0 auto;
 
   .filter-station-input {
     width: 200px;
     @include tablet {
-      width: 130px;
+      width: 230px;
     }
-    @include desktop {
-      width: 250px;
-    }
+    // @include desktop {
+    //   width: 230px;
+    // }
   }
-  .button {
-    margin-left: 0.7rem;
+  .buttons {
+    border-top: 1px solid #eee;
+    padding: 0.4rem 0.5rem 0.1rem;
+    margin-top: 0.3rem;
+    display: flex;
+    justify-content: space-between;
+    text-align: right;
+
+    .button {
+      font-size: 10px;
+      margin-left: 0;
+      margin-left: 0.7rem;
+    }
   }
   .dropdown-label {
     margin-right: 0.5rem;
@@ -368,19 +365,6 @@ export default {
     left: 2px;
     bottom: 1px;
     color: #fff;
-  }
-}
-.buttons {
-  border-top: 1px solid #eee;
-  padding: 0.4rem 0.5rem 0.1rem;
-  margin-top: 0.3rem;
-  display: flex;
-  justify-content: space-between;
-  text-align: right;
-
-  .button {
-    font-size: 10px;
-    margin-left: 0;
   }
 }
 </style>

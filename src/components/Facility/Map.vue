@@ -46,7 +46,7 @@ export default {
 
   computed: {
     mapHeight() {
-      return `${this.windowHeight - 100}px`;
+      return `${this.windowHeight - 175}px`;
       // return '300px';
     },
   },
@@ -213,7 +213,7 @@ export default {
   width: 100%;
   height: 200px;
   z-index: 1;
-  border-radius: 6px;
+  border-radius: 2px;
   // box-shadow: 0 0 20px rgba(0,0,0,.05);
   opacity: 0.95;
 }

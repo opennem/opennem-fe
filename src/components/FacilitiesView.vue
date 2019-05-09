@@ -1,21 +1,16 @@
 <template>
 <div>
-  <div class="columns is-multiline is-gapless map-detail-container">    
-    <div class="column is-half">
-      <div class="filter-bar-column">
-        <filter-bar
-          :sortBy="sortBy"
-          :orderBy="orderBy"
-          :status="status"
-          :selectedStatuses="selectedStatuses"
-          @orderChanged="handleOrderChange"
-          @sortChanged="handleSortChange"
-          @statusChanged="handleStatusChange"
-          @selected="handleFilterSelected"
-          @selectedStatuses="handleStatusesSelected"
-        />
-      </div>
-      
+  <div class="filter-bar-column">
+    <filter-bar
+      :selectedStatuses="selectedStatuses"
+      @selected="handleFilterSelected"
+      @selectedStatuses="handleStatusesSelected"
+      @viewSelect="handleViewSelect"
+    />
+  </div>
+
+  <div class="columns is-multiline is-gapless map-detail-container"> 
+    <div class="column" v-if="selectedView === 'list'">
       <facility-list 
         :filteredFacilities="filteredFacilities"
         :selectedFacility="selectedFacility"
@@ -34,7 +29,7 @@
       </div>
     </div>
 
-    <div class="column">
+    <div class="column" v-if="selectedView === 'map'">
       <div class="sticky-detail">
         <facility-map
           :facilitiesData="filteredFacilities"
@@ -83,6 +78,7 @@ export default {
       selectedStatuses: ['Commissioned'],
       selectedFacility: null,
       hoveredFacility: null,
+      selectedView: 'list', // list, map
       shouldZoomWhenSelected: true,
     };
   },
@@ -195,6 +191,9 @@ export default {
     handleStatusesSelected(statuses) {
       this.selectedStatuses = statuses;
     },
+    handleViewSelect(view) {
+      this.selectedView = view;
+    },
   },
 };
 </script>
@@ -229,7 +228,7 @@ export default {
 
   @include tablet {
     position: sticky;
-    top: 50px;
+    top: 123px;
   }
   @include mobile {
     display: none;
