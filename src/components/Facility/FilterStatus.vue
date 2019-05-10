@@ -8,7 +8,9 @@
       <div class="dropdown-label">
         <span v-if="selected.length === 0">Status</span>
         <strong v-if="selected.length === 1">{{ getStatusLabel(selected[0]) }}</strong>
-        <strong v-else>Multiple</strong>
+        <strong v-else-if="selected.length === statuses.length">
+          All
+        </strong>
       </div>
       <font-awesome-icon class="fal" :icon="iconDown" />
     </button>
