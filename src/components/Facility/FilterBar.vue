@@ -78,9 +78,9 @@
       />
     </div>
 
-    <view-toggle
+    <!-- <view-toggle
       @viewSelect="handleViewSelect"
-    />
+    /> -->
   </div>  
 </template>
 
@@ -312,6 +312,7 @@ export default {
 
   .filter-station-input {
     width: 200px;
+    margin-right: 1rem;
     @include tablet {
       width: 230px;
     }

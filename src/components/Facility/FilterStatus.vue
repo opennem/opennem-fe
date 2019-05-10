@@ -6,8 +6,9 @@
       @click="dropdownActive = !dropdownActive"
     >
       <div class="dropdown-label">
-        <span>Status:</span>
-        <strong>({{ selected.length }})</strong>
+        <span v-if="selected.length === 0">Status</span>
+        <strong v-if="selected.length === 1">{{ getStatusLabel(selected[0]) }}</strong>
+        <strong v-else>Multiple</strong>
       </div>
       <font-awesome-icon class="fal" :icon="iconDown" />
     </button>
@@ -122,6 +123,9 @@ export default {
     clearSelected() {
       this.selected = [];
       this.$emit('selectedStatuses', this.selected);
+    },
+    getStatusLabel(id) {
+      return this.statuses.find(d => d.id === id).label;
     },
   },
 };
