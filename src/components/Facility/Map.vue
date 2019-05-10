@@ -108,6 +108,10 @@ export default {
         }
       } else if (this.selectedMarker) {
         this.selectedMarker.remove();
+        const bounds = this.facilitiesFeature.getBounds();
+        if (!_.isEmpty(bounds)) {
+          this.map.fitBounds(this.facilitiesFeature.getBounds());
+        }
       }
     },
   },
