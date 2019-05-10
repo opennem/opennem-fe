@@ -56,7 +56,7 @@ function transformFacilityData(data) {
       units,
       generatorCap,
       unitNum,
-      fuelTechs: _.uniq(fuelTechs),
+      fuelTechs: _.uniq(fuelTechs).sort(),
       fuelTechRegisteredCap,
     }
   })
