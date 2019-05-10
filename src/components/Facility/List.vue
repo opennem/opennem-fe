@@ -125,7 +125,7 @@ import * as _ from 'lodash';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import { faSortUp, faSortDown } from '@fortawesome/fontawesome-pro-light';
 import { GraphDomains } from '@/domains/graphs';
-import { getRegionLabelByCode } from '@/domains/regions';
+import { getRegionAbbrByCode } from '@/domains/regions';
 import { formatDateForDisplay } from '@/lib/formatter';
 
 const colHeaders = [
@@ -241,7 +241,7 @@ export default {
       return ft || '—';
     },
     getRegionLabel(code) {
-      return getRegionLabelByCode(code);
+      return getRegionAbbrByCode(code);
     },
     getColour(fuelTech) {
       const ftObj = fuelTech ? GraphDomains[fuelTech] : null;

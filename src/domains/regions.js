@@ -12,6 +12,7 @@ const RegionDomains = [
   {
     id: 'nsw',
     label: 'New South Wales',
+    abbr: 'NSW',
     offset: 10,
     location: {
       latitude: -32,
@@ -21,6 +22,7 @@ const RegionDomains = [
   {
     id: 'qld',
     label: 'Queensland',
+    abbr: 'Qld',
     offset: 10,
     location: {
       latitude: -23,
@@ -30,6 +32,7 @@ const RegionDomains = [
   {
     id: 'sa',
     label: 'South Australia',
+    abbr: 'SA',
     offset: 9.5,
     location: {
       latitude: -30,
@@ -39,6 +42,7 @@ const RegionDomains = [
   {
     id: 'tas',
     label: 'Tasmania',
+    abbr: 'Tas',
     offset: 10,
     location: {
       latitude: -42.035067,
@@ -48,6 +52,7 @@ const RegionDomains = [
   {
     id: 'vic',
     label: 'Victoria',
+    abbr: 'Vic',
     offset: 10,
     location: {
       latitude: -36.59861,
@@ -71,6 +76,12 @@ function getRegionLabelByCode(code) {
   return region ? region.label : code;
 }
 
+function getRegionAbbrByCode(code) {
+  const id = code.slice(0, code.length - 1);
+  const region = RegionDomains.find(r => r.id === id.toLowerCase());
+  return region ? region.abbr : code;
+}
+
 function getRegionLocationById(id) {
   const region = RegionDomains.find(r => r.id === id.toLowerCase());
   return region ? region.location : Australia;
@@ -92,5 +103,6 @@ export {
   getRegionId,
   getRegionOffset,
   getRegionLabelByCode,
+  getRegionAbbrByCode,
   getRegionLocationById,
 };
