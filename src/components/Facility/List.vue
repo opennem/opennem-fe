@@ -236,6 +236,9 @@ export default {
         if (ft === 'battery_discharging') {
           return 'Battery';
         }
+        if (ft === 'solar') {
+          return 'Solar';
+        }
         return ftObj.label;
       }
       return ft || '—';
