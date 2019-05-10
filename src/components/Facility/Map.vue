@@ -168,8 +168,8 @@ export default {
         if (location.latitude && location.longitude) {
           const lat = location.latitude;
           const lng = location.longitude;
-          const radiusScale = scaleLinear([0, 3000], [2000, 50000]);
-          const radius = radiusScale(d.generatorCap);
+          const radiusScale = scaleLinear([0, Math.sqrt(3000)], [2000, 50000]);
+          const radius = radiusScale(Math.sqrt(d.generatorCap));
           const colour = this.getColour(d.fuelTechs);
           L
             .circle([lat, lng], {
