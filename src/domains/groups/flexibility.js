@@ -14,7 +14,7 @@ export default {
       label: 'Fast flexible',
       type: 'sources',
       colour: '#5D69B1',
-      fields: ['hydro', 'gas_recip', 'gas_ocgt', 'gas_ccgt', 'distillate', 'battery_discharging'],
+      fields: ['hydro', 'gas_recip', 'gas_ocgt', 'gas_ccgt', 'gas_lfg', 'distillate', 'battery_discharging'],
     },
 
     {

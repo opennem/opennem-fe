@@ -209,6 +209,26 @@ const GraphDomains = {
     label: 'Gas (Reciprocating) Emissions',
     unit: '',
   },
+  gas_lfg: {
+    colour: '#DD8018',
+    type: 'sources',
+    label: 'Gas (Landfill)',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
+  },
+  'gas_lfg.market_value': {
+    colour: '#000',
+    type: 'market_value',
+    label: 'Gas (Landfill) Market Value',
+    categoryId: 'price',
+    unit: '$',
+  },
+  'gas_lfg.emissions': {
+    colour: '#DD8018',
+    type: 'emissions',
+    label: 'Gas (Landfill) Emissions',
+    unit: '',
+  },
   battery_discharging: {
     colour: '#00A2FA',
     type: 'sources',

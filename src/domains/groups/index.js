@@ -171,6 +171,14 @@ const marketValueDomains = [
   },
 
   {
+    id: 'gas_lfg.market_value',
+    label: 'Gas (Landfill) Market Value',
+    type: 'market_value',
+    colour: '#000',
+    fields: ['gas_lfg.market_value'],
+  },
+
+  {
     id: 'distillate.market_value',
     label: 'Distillate Market Value',
     type: 'market_value',
@@ -289,6 +297,14 @@ const emissionsVolDomains = [
     type: 'emissions',
     colour: '#F9DCBC',
     fields: ['gas_recip.emissions'],
+  },
+
+  {
+    id: 'gas_lfg.emissions',
+    label: 'Gas (Landfill) Emissions',
+    type: 'emissions',
+    colour: '#DD8018',
+    fields: ['gas_lfg.emissions'],
   },
 
   {
