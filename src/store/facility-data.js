@@ -2,6 +2,7 @@
 import _ from 'lodash';
 import getJSON from '@/lib/data-apis';
 import * as MutationTypes from '@/constants/mutation-types';
+import { GraphDomains } from '@/domains/graphs';
 
 function transformFacilityData(data) {
   const stationIds = Object.keys(data);
@@ -15,6 +16,8 @@ function transformFacilityData(data) {
     const duidKeys = Object.keys(d.duid_data);
     const unitNum = duidKeys.length;
     const fuelTechs = [];
+    const genFuelTechs = [];
+    const loadFuelTechs = [];
     const fuelTechRegisteredCap = {};
     const displayName = d.display_name.split('/').join(' / ');
     let generatorCap = 0;
@@ -23,14 +26,18 @@ function transformFacilityData(data) {
       const unit = d.duid_data[unitName];
       const regCap = unit.registered_capacity;
       const fuelTech = unit.fuel_tech;
+      const type = GraphDomains[fuelTech].type;
 
       const unitObj = {
         name: unitName,
         fuelTech,
         regCap,
+        type,
       };
 
-      generatorCap += regCap || 0;
+      if (type === 'sources') {
+        generatorCap += regCap || 0;
+      }
 
       if (fuelTech) {
         if (!fuelTechRegisteredCap[fuelTech]) {
@@ -38,9 +45,16 @@ function transformFacilityData(data) {
         }
         fuelTechRegisteredCap[fuelTech] += regCap;
       }
+
       if (fuelTech !== 'battery_charging' && !_.isEmpty(unit)) {
         fuelTechs.push(fuelTech);
+        if (type === 'sources') {
+          genFuelTechs.push(fuelTech);
+        } else if (type === 'loads') {
+          loadFuelTechs.push(fuelTech);
+        }
       }
+
       if (!_.isEmpty(unit)) {
         units.push(unitObj);
       }
@@ -57,6 +71,8 @@ function transformFacilityData(data) {
       generatorCap,
       unitNum,
       fuelTechs: _.uniq(fuelTechs).sort(),
+      genFuelTechs: _.uniq(genFuelTechs).sort(),
+      loadFuelTechs: _.uniq(loadFuelTechs).sort(),
       fuelTechRegisteredCap,
     }
   })

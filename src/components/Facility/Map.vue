@@ -47,7 +47,6 @@ export default {
   computed: {
     mapHeight() {
       return `${this.windowHeight - 175}px`;
-      // return '300px';
     },
   },
 
@@ -73,9 +72,7 @@ export default {
             className: 'map-popup',
           }).setLatLng([lat, lng]).setContent(facility.displayName);
 
-          setTimeout(() => {
-            this.hoveredMarker.openOn(this.map);
-          }, 200);
+          this.hoveredMarker.openOn(this.map);
         }
       } else if (this.hoveredMarker) {
         this.hoveredMarker.remove();

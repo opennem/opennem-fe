@@ -3,7 +3,7 @@
     <div class="column-headers">
       <div 
         class="col-header" 
-        style="width: 50%; margin-left: 2rem;"
+        style="width: 50%; margin-left: 2rem; white-space: nowrap;"
         @click="sort('displayName')"
       >
         Name
@@ -16,7 +16,7 @@
 
       <div 
         class="col-header" 
-        style="width: 130px"
+        style="width: 80px; white-space: nowrap;"
         v-show="!hideRegionColumn"
       >
         <span @click="sort('regionId')">
@@ -31,6 +31,7 @@
 
       <div 
         class="col-header" 
+        style="white-space: nowrap;"
         :style="{ width: hideRegionColumn ? '205px' : '185px'}"
       >
         <span @click="sort('fuelTechs')">
@@ -45,10 +46,10 @@
 
       <div 
         class="col-header" 
-        style="width: 100px; text-align: right; margin-right: 15px;"
+        style="width: 120px; text-align: right; margin-right: 15px; white-space: nowrap;"
         @click="sort('generatorCap')"
       >
-        Capacity
+        Gen. Capacity
         <font-awesome-icon
           class="fal"
           v-if="sortBy === 'generatorCap'"
@@ -85,34 +86,39 @@
           <h2 class="station-name">{{ facility.displayName }}</h2>
         </div>
 
-        <div class="card-content" style="width: 150px;" v-show="!hideRegionColumn">
+        <div class="card-content" style="width: 95px;" v-show="!hideRegionColumn">
           <small style="color: #666;">{{ getRegionLabel(facility.regionId) }}</small>
         </div>
 
-        <div class="stat" style="width: 150px;">
-          <div class="stat-value" style="font-size: 11px; white-space: nowrap;">
+        <div class="stat" style="width: 185px;">
+          <div class="stat-value" v-if="facility.genFuelTechs.length" style="font-size: 11px; white-space: nowrap;">
             <span
-              v-for="(ft, ftIndex) in facility.fuelTechs"
-              :key="ftIndex"
+              v-for="(ft, genFtIndex) in facility.genFuelTechs"
+              :key="genFtIndex"
               :style="{ opacity: getOpacity(ft) }"
             >
-              {{ getFtLabel(ft) }}<span v-if="ftIndex !== facility.fuelTechs.length - 1">,</span>
+              {{ getFtLabel(ft) }}
+              <small v-if="facility.genFuelTechs.length > 1">({{ facility.fuelTechRegisteredCap[ft] | formatNumber}}MW)</small>
+              <span v-if="genFtIndex !== facility.genFuelTechs.length - 1"><br /></span>
             </span>
+          </div>
+          <div class="stat-value" v-if="facility.loadFuelTechs.length" style="font-size: 11px; white-space: nowrap;">
+            <em
+              v-for="(ft, loadFtIndex) in facility.loadFuelTechs"
+              :key="loadFtIndex"
+              :style="{ opacity: getOpacity(ft) }"
+            >
+              {{ getFtLabel(ft) }}
+              <small>({{ facility.fuelTechRegisteredCap[ft] | formatNumber}}MW)</small>
+              <span v-if="loadFtIndex !== facility.loadFuelTechs.length - 1"><br /></span>
+            </em>
           </div>
         </div>
 
-        <div class="stat" style="width: 140px; margin-right: 15px;">
+        <div class="stat" style="width: 120px; margin-right: 15px;">
           <div v-show="facility.generatorCap" class="stat-value has-text-right" style="font-size: 14px;">
             {{ getGeneratorCap(facility) | formatNumber }}
             <span class="unit">MW</span>
-
-            <div
-              v-if="showMaxCap(facility)"
-              class="max-capcity"
-            >
-              (max: {{ facility.generatorCap | formatNumber }}
-              <span class="unit">MW</span>)
-            </div>
           </div>
         </div>
       </div>
@@ -212,9 +218,10 @@ export default {
         this.$emit('facilitySelect', facility, true);
       }
     },
-    handleRowHover(facility) {
+    // eslint-disable-next-line
+    handleRowHover: _.debounce(function (facility) {
       this.$emit('facilityHover', facility, true);
-    },
+    }, 200),
     handleRowOut() {
       this.$emit('facilityMouseout');
     },
@@ -258,7 +265,7 @@ export default {
         return 1;
       }
       return _.includes(this.facilitySelectedTechs, fuelTech)
-        ? 1 : 0.1;
+        ? 1 : 0.3;
     },
     getGeneratorCap(facility) {
       if (this.facilitySelectedTechs.length === 0) {

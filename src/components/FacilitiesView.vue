@@ -10,7 +10,7 @@
   </div>
 
   <div class="columns is-multiline is-gapless map-detail-container"> 
-    <div class="column" v-if="selectedView === 'list'">
+    <div class="column">
       <facility-list 
         :filteredFacilities="filteredFacilities"
         :selectedFacility="selectedFacility"
@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <div class="column" v-if="selectedView === 'map'">
+    <div class="column">
       <div class="sticky-detail">
         <facility-map
           :facilitiesData="filteredFacilities"
@@ -90,7 +90,17 @@ export default {
     facilityData() {
       const data = this.$store.getters.facilityData;
       const sortBy = this.sortBy;
-      return _.orderBy(data, [sortBy], [this.orderBy]);
+
+      return _.orderBy(data, [(d) => {
+        if (this.selectedTechs.length === 0) {
+          return d[sortBy];
+        }
+        let totals = 0;
+        this.selectedTechs.forEach((ft) => {
+          totals += d.fuelTechRegisteredCap[ft] || 0;
+        });
+        return totals;
+      }], [this.orderBy]);
     },
     regionId() {
       return this.$route.params.region || '';
