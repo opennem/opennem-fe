@@ -32,7 +32,7 @@
       <div 
         class="col-header" 
         style="white-space: nowrap;"
-        :style="{ width: hideRegionColumn ? '205px' : '185px'}"
+        :style="{ width: hideRegionColumn ? '125px' : '185px'}"
       >
         <span @click="sort('fuelTechs')">
           Technology
@@ -90,7 +90,7 @@
           <small style="color: #666;">{{ getRegionLabel(facility.regionId) }}</small>
         </div>
 
-        <div class="stat" style="width: 185px;">
+        <div class="stat" :style="{ width: hideRegionColumn ? '110px' : '185px'}">
           <div class="stat-value" v-if="facility.genFuelTechs.length" style="font-size: 11px; white-space: nowrap;">
             <span
               v-for="(ft, genFtIndex) in facility.genFuelTechs"
@@ -423,7 +423,7 @@ export default {
   position: sticky;
   top: 89px;
   background-color: $background-alpha;
-  padding: 5px 0;
+  padding-bottom: 5px;
   z-index: 11;
   border-bottom: 1px solid #333;
 
