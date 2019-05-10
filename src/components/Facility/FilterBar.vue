@@ -144,7 +144,7 @@ export default {
   mounted() {
     EventBus.$on('facilities.filter.clear', this.clearFilter);
 
-    const groups = this.simplifiedGroup.filter(g => g.type === 'sources' && g.id !== 'imports');
+    const groups = this.simplifiedGroup.filter(g => (g.type === 'sources' && g.id !== 'imports') || g.id === 'pumps');
     const findSolarGroup = groups.find(g => g.id === 'group_solar');
     const findBatteryGroup = groups.find(g => g.id === 'group_battery_discharging');
 
