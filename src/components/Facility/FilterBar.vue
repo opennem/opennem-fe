@@ -5,11 +5,13 @@
         class="input is-small is-rounded filter-station-input"
         type="text"
         placeholder="Filter By Station Name"
+        autofill="off"
         autocomplete="off"
         autocorrect="off"
         autocapitalize="off"
         spellcheck="false"
         v-model="filterFacilityName"
+        @keyup="handleKeyup"
       />
 
       <div class="dropdown" :class="{'is-active': techDropdownActive}" v-on-clickaway="onClickAway">
@@ -133,11 +135,6 @@ export default {
       return faCaretDown;
     },
   },
-  watch: {
-    filterFacilityName(string) {
-      EventBus.$emit('facilities.name.filter', string);
-    },
-  },
   created() {
     this.selectedTechs = this.$store.getters.facilitySelectedTechs;
   },
@@ -168,6 +165,9 @@ export default {
     EventBus.$off('facilities.filter.clear');
   },
   methods: {
+    handleKeyup(e) {
+      EventBus.$emit('facilities.name.filter', this.filterFacilityName);
+    },
     onClickAway() {
       this.techDropdownActive = false;
     },

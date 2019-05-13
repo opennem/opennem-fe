@@ -11,7 +11,7 @@
 
   <div class="columns is-multiline is-gapless map-detail-container"> 
     <div class="column">
-      <facility-list 
+      <facility-list
         :filteredFacilities="filteredFacilities"
         :selectedFacility="selectedFacility"
         :sortBy="sortBy"
@@ -22,11 +22,6 @@
         @facilityHover="handleFacilityHover"
         @facilityMouseout="handleFacilityOut"
       />
-
-      <div class="totals">
-        <span>Facilities: <strong>{{totalFacilities}}</strong></span>
-        <span>Capacity: <strong>{{ totalCap | formatNumber }}</strong> </span>
-      </div>
     </div>
 
     <div class="column">
@@ -80,6 +75,8 @@ export default {
       hoveredFacility: null,
       selectedView: 'list', // list, map
       shouldZoomWhenSelected: true,
+      filteredFacilities: [],
+      totalFacilities: 0,
     };
   },
   computed: {
@@ -87,37 +84,11 @@ export default {
       facilityData: 'facilityData',
       facilitySelectedTechs: 'facilitySelectedTechs',
     }),
-    facilityData() {
-      const data = this.$store.getters.facilityData;
-      const sortBy = this.sortBy;
-
-      return _.orderBy(data, [(d) => {
-        if (this.selectedTechs.length === 0) {
-          return d[sortBy];
-        }
-        let totals = 0;
-        this.selectedTechs.forEach((ft) => {
-          totals += d.fuelTechRegisteredCap[ft] || 0;
-        });
-        return totals;
-      }], [this.orderBy]);
-    },
     regionId() {
       return this.$route.params.region || '';
     },
     isRegionView() {
       return this.$route.params.region !== undefined;
-    },
-    filteredFacilities() {
-      const filtered = this.selectedTechs.length > 0
-        ? this.facilityData.filter(g => g.fuelTechs.some(r => this.selectedTechs.includes(r)))
-        : this.facilityData;
-
-      return filtered.filter(g =>
-        g.displayName.toLowerCase().includes(this.filterString.toLowerCase()) &&
-        g.regionId.toLowerCase().includes(this.regionId) &&
-        (this.selectedStatuses.length <= 0 || _.includes(this.selectedStatuses, g.status)),
-      );
     },
     hasSelectedFacility() {
       return this.selectedFacility;
@@ -137,10 +108,26 @@ export default {
       });
       return total;
     },
-    totalFacilities() {
-      return this.filteredFacilities.length;
+  },
+
+  watch: {
+    facilityData() {
+      this.updateFacilitiesData();
+    },
+    selectedTechs() {
+      this.updateFacilitiesData();
+    },
+    selectedStatuses() {
+      this.updateFacilitiesData();
+    },
+    sortBy() {
+      this.updateFacilitiesData();
+    },
+    orderBy() {
+      this.updateFacilitiesData();
     },
   },
+
   created() {
     this.selectedTechs = this.$store.getters.facilitySelectedTechs;
   },
@@ -155,6 +142,39 @@ export default {
   },
 
   methods: {
+    updateFacilitiesData() {
+      const sortedData = _.orderBy(this.facilityData, [(d) => {
+        if (this.selectedTechs.length === 0) {
+          return d[this.sortBy];
+        }
+        if (this.sortBy !== 'generatorCap') {
+          return d[this.sortBy];
+        }
+        let totals = 0;
+        this.selectedTechs.forEach((ft) => {
+          totals += d.fuelTechRegisteredCap[ft] || 0;
+        });
+        return totals;
+      }], [this.orderBy]);
+
+      const filtered = this.selectedTechs.length > 0
+        ? sortedData.filter(g => g.fuelTechs.some(r => this.selectedTechs.includes(r)))
+        : sortedData;
+
+      const that = this;
+      async function updateFilter() {
+        return filtered.filter(g =>
+          g.displayName.toLowerCase().includes(that.filterString.toLowerCase()) &&
+          g.regionId.toLowerCase().includes(that.regionId) &&
+          (that.selectedStatuses.length <= 0 || _.includes(that.selectedStatuses, g.status)),
+        );
+      }
+
+      updateFilter().then(d => {
+        that.filteredFacilities = d;
+        that.totalFacilities = d.length;
+      });
+    },
     toggleOrder(order) {
       return order === ASCENDING ? DESCENDING : ASCENDING;
     },
@@ -191,6 +211,7 @@ export default {
     },
     setFilterString(string) {
       this.filterString = string;
+      this.updateFacilitiesData();
     },
     handleFilterSelected(selectedTechs) {
       this.selectedTechs = selectedTechs;
@@ -242,32 +263,6 @@ export default {
   }
   @include mobile {
     display: none;
-  }
-}
-.totals {
-  position: sticky;
-  margin-bottom: -3px;
-  bottom: 0;
-  right: 0;
-  z-index: 89;
-  background-color: #C74523;
-  color: #fff;
-  padding: 3px 6px;
-  border-radius: 3px 3px 0 0;
-  font-size: 10px;
-  box-shadow: 0 -2px 5px rgba(100, 100, 100, 0.1);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  strong {
-    color: #fff;
-    font-size: 13px;
-  }
-
-  @include desktop {
-    margin-bottom: -3px;
-    bottom: 29px;
   }
 }
 </style>

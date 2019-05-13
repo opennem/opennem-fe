@@ -1,9 +1,10 @@
 <template>
-  <div style="margin-bottom: 1rem;">
+  <div style="margin-bottom: 2rem; position: relative;">
     <div class="column-headers">
       <div 
         class="col-header" 
-        style="width: 50%; margin-left: 2rem; white-space: nowrap;"
+        style="margin-left: 2rem; white-space: nowrap;"
+        :style="{ width: hideRegionColumn ? '60%' : '52%'}"
         @click="sort('displayName')"
       >
         Name
@@ -16,7 +17,7 @@
 
       <div 
         class="col-header" 
-        style="width: 80px; white-space: nowrap;"
+        style="width: 12%; white-space: nowrap;"
         v-show="!hideRegionColumn"
       >
         <span @click="sort('regionId')">
@@ -31,8 +32,7 @@
 
       <div 
         class="col-header" 
-        style="white-space: nowrap;"
-        :style="{ width: hideRegionColumn ? '125px' : '185px'}"
+        style="white-space: nowrap; width: 18%;"
       >
         <span @click="sort('fuelTechs')">
           Technology
@@ -46,7 +46,7 @@
 
       <div 
         class="col-header" 
-        style="width: 120px; text-align: right; margin-right: 15px; white-space: nowrap;"
+        style="width: 20%; text-align: right; margin-right: 15px; white-space: nowrap;"
         @click="sort('generatorCap')"
       >
         Gen. Capacity
@@ -82,15 +82,15 @@
       </div>
       
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div class="card-content" style="width: 50%; margin-left: 1rem;">
+        <div class="card-content" style="margin-left: 1rem;" :style="{ width: hideRegionColumn ? '60%' : '50%'}">
           <h2 class="station-name">{{ facility.displayName }}</h2>
         </div>
 
-        <div class="card-content" style="width: 95px;" v-show="!hideRegionColumn">
+        <div class="card-content" style="width: 13%;" v-show="!hideRegionColumn">
           <small style="color: #666;">{{ getRegionLabel(facility.regionId) }}</small>
         </div>
 
-        <div class="stat" :style="{ width: hideRegionColumn ? '110px' : '185px'}">
+        <div class="stat" style="width: 16%">
           <div class="stat-value" v-if="facility.genFuelTechs.length" style="font-size: 11px; white-space: nowrap;">
             <span
               v-for="(ft, genFtIndex) in facility.genFuelTechs"
@@ -115,7 +115,7 @@
           </div>
         </div>
 
-        <div class="stat" style="width: 120px; margin-right: 15px;">
+        <div class="stat" style="width: 20%; margin-right: 15px;">
           <div v-show="facility.generatorCap" class="stat-value has-text-right" style="font-size: 14px;">
             {{ getGeneratorCap(facility) | formatNumber }}
             <span class="unit">MW</span>
@@ -123,6 +123,12 @@
         </div>
       </div>
     </div>
+
+    <div class="totals" :style="{ width: `${divWidth}px`}">
+      <span>Facilities: <strong>{{totalFacilities}}</strong></span>
+      <span>Capacity: <strong>{{ totalCap | formatNumber }}</strong> </span>
+    </div>
+
   </div>
 </template>
 
@@ -174,6 +180,7 @@ export default {
     return {
       colHeaders,
       selected: null,
+      divWidth: 0,
     };
   },
 
@@ -187,6 +194,24 @@ export default {
     facilitySelectedTechs() {
       return this.$store.getters.facilitySelectedTechs;
     },
+    totalFacilities() {
+      return this.filteredFacilities.length;
+    },
+    totalCap() {
+      let total = 0;
+      this.filteredFacilities.forEach((facility) => {
+        if (this.facilitySelectedTechs.length === 0) {
+          total += facility.generatorCap;
+        } else {
+          this.facilitySelectedTechs.forEach((ft) => {
+            if (facility.fuelTechRegisteredCap[ft]) {
+              total += facility.fuelTechRegisteredCap[ft];
+            }
+          });
+        }
+      });
+      return total;
+    },
   },
 
   watch: {
@@ -194,6 +219,10 @@ export default {
       console.log(selected); // eslint-disable-line
       this.selected = selected;
     },
+  },
+
+  mounted() {
+    this.divWidth = this.$el.offsetWidth;
   },
 
   filters: {
@@ -308,7 +337,6 @@ export default {
 
 .card {
   margin-bottom: 1px;
-  border-radius: 3px;
   font-size: 70%;
   transition: all 0.2s ease-in-out;
   cursor: pointer;
@@ -321,15 +349,15 @@ export default {
   }
   &:hover {
     opacity: 1;
-    box-shadow: 0 0 10px rgba(100,100,100,.3);
+    box-shadow: 0 0 5px rgba(100,100,100,.2);
     opacity: 1;
     z-index: 10;
   }
 
   &.is-selected {
-    box-shadow: 0 0 10px rgba(100,100,100,0.3);
+    box-shadow: 0 0 10px rgba(100,100,100,0.2);
     opacity: 1;
-    transform: scale(1.03);
+    transform: scale(1.02);
     z-index: 10;
   }
 
@@ -374,12 +402,7 @@ export default {
   //   border-radius: 0 3px 3px 0;
   // }
 }
-.bar-left .source-colour-side:first-child {
-  border-radius: 3px 0 0 3px;
-}
-.bar-right .source-colour-side:last-child {
-  border-radius: 0 3px 3px 0;
-}
+
 .table {
   tr th {
     color: #666;
@@ -437,5 +460,28 @@ export default {
   font-size: 13px;
   font-weight: 600;
   user-select: none;
+}
+.totals {
+  position: fixed;
+  bottom: 0;
+  z-index: 89;
+  background-color: #C74523;
+  color: #fff;
+  padding: 3px 6px;
+  border-radius: 3px 3px 0 0;
+  font-size: 10px;
+  box-shadow: 0 -2px 5px rgba(100, 100, 100, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  strong {
+    color: #fff;
+    font-size: 13px;
+  }
+
+  @include desktop {
+    bottom: 29px;
+  }
 }
 </style>
