@@ -26,7 +26,7 @@ function transformFacilityData(data) {
       const unit = d.duid_data[unitName];
       const regCap = unit.registered_capacity;
       const fuelTech = unit.fuel_tech;
-      const type = GraphDomains[fuelTech].type;
+      const type = GraphDomains[fuelTech] ? GraphDomains[fuelTech].type : '';
 
       const unitObj = {
         name: unitName,

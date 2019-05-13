@@ -229,6 +229,26 @@ const GraphDomains = {
     label: 'Gas (Landfill) Emissions',
     unit: '',
   },
+  gas_wcmg: {
+    colour: '#B46813',
+    type: 'sources',
+    label: 'Gas (Waste Coal Mine)',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
+  },
+  'gas_wcmg.market_value': {
+    colour: '#000',
+    type: 'market_value',
+    label: 'Gas (Waste Coal Mine) Market Value',
+    categoryId: 'price',
+    unit: '$',
+  },
+  'gas_wcmg.emissions': {
+    colour: '#B46813',
+    type: 'emissions',
+    label: 'Gas (Waste Coal Mine) Emissions',
+    unit: '',
+  },
   battery_discharging: {
     colour: '#00A2FA',
     type: 'sources',

@@ -15,7 +15,7 @@ export default {
       type: 'sources',
       colour: '#5D69B1', // 5D69B1, 386cb0
       fields: ['wind', 'hydro', 'battery_discharging', 'gas_recip',
-        'gas_ocgt', 'gas_ccgt', 'gas_steam', 'gas_lfg', 'distillate', 'biomass',
+        'gas_ocgt', 'gas_ccgt', 'gas_steam', 'gas_lfg', 'gas_wcmg', 'distillate', 'biomass',
         'black_coal', 'brown_coal'],
     },
   ],

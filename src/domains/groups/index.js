@@ -179,6 +179,14 @@ const marketValueDomains = [
   },
 
   {
+    id: 'gas_wcmg.market_value',
+    label: 'Gas (Waste Coal Mine) Market Value',
+    type: 'market_value',
+    colour: '#000',
+    fields: ['gas_wcmg.market_value'],
+  },
+
+  {
     id: 'distillate.market_value',
     label: 'Distillate Market Value',
     type: 'market_value',
@@ -305,6 +313,14 @@ const emissionsVolDomains = [
     type: 'emissions',
     colour: '#DD8018',
     fields: ['gas_lfg.emissions'],
+  },
+
+  {
+    id: 'gas_wcmg.emissions',
+    label: 'Gas (Waste Coal Mine) Emissions',
+    type: 'emissions',
+    colour: '#B46813',
+    fields: ['gas_wcmg.emissions'],
   },
 
   {
