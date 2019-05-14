@@ -1,5 +1,10 @@
 <template>
 <div>
+  <tile-selector
+    class="tile-selector"
+    :tile="selectedTile"
+    @tileSelect="handleTileSelect"
+  />
   <div id="map" :style="{ height: mapHeight }"></div>
   <div class="attribution">
     Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.
@@ -12,8 +17,12 @@ import _ from 'lodash';
 import L from 'leaflet';
 import { scaleLinear } from 'd3-scale';
 import { GraphDomains } from '@/domains/graphs';
+import TileSelector from './MapTileSelector';
 
 export default {
+  components: {
+    TileSelector,
+  },
   props: {
     facilitiesData: Array,
     selectedFacility: Object,
@@ -23,11 +32,19 @@ export default {
 
   data() {
     return {
-      tileLayer: L.tileLayer('//stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}', {
-        minZoom: 3,
-        maxZoom: 12,
-        ext: 'png',
-      }),
+      tileLayers: {
+        'toner-lite': L.tileLayer('//stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}', {
+          minZoom: 0,
+          maxZoom: 18,
+          ext: 'png',
+        }),
+        'terrain': L.tileLayer('//stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}', {
+          minZoom: 0,
+          maxZoom: 18,
+          ext: 'png',
+        })
+      },
+      selectedTile: 'toner-lite',
       marker: L.icon({
         iconUrl: '/images/marker.png',
         shadowUrl: '/images/marker-shadow.png',
@@ -51,6 +68,12 @@ export default {
   },
 
   watch: {
+    selectedTile(tile) {
+      Object.keys(this.tileLayers).forEach((layer) => {
+        this.tileLayers[layer].remove();
+      });
+      this.tileLayers[tile].addTo(this.map);
+    },
     facilitiesData(newData) {
       this.updateMap(newData);
     },
@@ -95,19 +118,23 @@ export default {
           // this.selectedMarker.addTo(this.map);
           this.selectedMarker = L.popup({
             autoClose: false,
+            autoPan: false,
             closeOnClick: false,
             className: 'map-popup selected',
           }).setLatLng([lat, lng]).setContent(facility.displayName);
           this.selectedMarker.openOn(this.map);
 
           this.map.setZoom(7);
-          this.map.on('zoomend', () => {
-            this.map.panTo(loc);
-          });
+          // this.map.on('zoomend', () => {
+          //   console.log('zoom end')
+          //   this.map.panTo(loc);
+          //   this.map.off('zoomend');
+          // });
           this.map.panTo(loc);
         }
       } else if (this.selectedMarker) {
         this.selectedMarker.remove();
+        // this.map.off('zoomend');
         const bounds = this.facilitiesFeature.getBounds();
         if (!_.isEmpty(bounds)) {
           this.map.fitBounds(this.facilitiesFeature.getBounds());
@@ -122,18 +149,28 @@ export default {
 
   methods: {
     setup() {
-      this.map = L.map('map', { attributionControl: false, maxZoom: 7 }).setView([-29.186936, 143.633537], 4);
+      this.map = L.map('map', {
+        attributionControl: false,
+        maxZoom: 10,
+        zoomAnimation: false,
+        zoomControl: false,
+      }).setView([-29.186936, 143.633537], 4);
       this.facilitiesFeature = L.featureGroup();
       this.emissionsFeature = L.featureGroup();
-      this.tileLayer.addTo(this.map);
+      this.tileLayers[this.selectedTile].addTo(this.map);
 
       const attr = L.control.attribution({
         position: 'bottomleft',
         prefix: false,
       });
+      const zoom = L.control.zoom({
+        position: 'topright',
+      });
+      
       // attr.addAttribution(MapAttribution);
 
       this.map.addControl(attr);
+      this.map.addControl(zoom);
       // this.map.addLayer(this.selectedFacilityFeature);
 
       // this.facilitiesFeature.addTo(this.map);
@@ -157,6 +194,10 @@ export default {
       const lng = this.selectedMarker._latlng.lng; // eslint-disable-line
       const loc = new L.LatLng(lat, lng);
       this.map.panTo(loc);
+    },
+
+    handleTileSelect(tile) {
+      this.selectedTile = tile;
     },
 
     updateMap(data) {
@@ -183,9 +224,22 @@ export default {
               click() {
                 self.handleMapCircleClicked(d);
               },
+              mouseover() {
+                if (self.hoveredMarker) {
+                  self.hoveredMarker.remove();
+                }
+
+                self.hoveredMarker = L.popup({
+                  autoClose: false,
+                  autoPan: false,
+                  className: 'map-popup',
+                }).setLatLng([lat, lng]).setContent(d.displayName);
+
+                self.hoveredMarker.openOn(self.map);
+              },
             })
-            .bindTooltip(d.displayName)
             .addTo(this.facilitiesFeature);
+            // .bindTooltip(d.displayName)
 
           L.circle([lat, lng], {
             fillColor: colour,
@@ -217,6 +271,13 @@ export default {
   border-radius: 2px;
   // box-shadow: 0 0 20px rgba(0,0,0,.05);
   opacity: 0.95;
+}
+
+.tile-selector {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  z-index: 9;
 }
 
 .attribution {
