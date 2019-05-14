@@ -167,8 +167,18 @@ export default {
       this.$emit('facilitySelect', facility, false);
     },
 
-    getColour(fuelTechs) {
-      const ftObj = fuelTechs[0] ? GraphDomains[fuelTechs[0]] : null;
+    getColour(fuelTechs, facility) {
+      const ftCaps = facility.fuelTechRegisteredCap;
+      let highest = 0;
+      let highestFt = null;
+      Object.keys(ftCaps).forEach((d) => {
+        if (ftCaps[d] >= highest) {
+          highestFt = d;
+          highest = ftCaps[d];
+        }
+      });
+
+      const ftObj = highestFt ? GraphDomains[highestFt] : null;
       if (ftObj) {
         return ftObj.colour;
       }
@@ -197,13 +207,14 @@ export default {
           const lng = location.longitude;
           const radiusScale = scaleLinear([0, Math.sqrt(3000)], [2000, 50000]);
           const radius = radiusScale(Math.sqrt(d.generatorCap));
-          const colour = this.getColour(d.fuelTechs);
+          const colour = this.getColour(d.fuelTechs, d);
           L
             .circle([lat, lng], {
               color: colour,
               fillColor: colour,
-              fillOpacity: 0.25,
-              stroke: 3,
+              fillOpacity: 0.55,
+              opacity: 0.95,
+              weight: 1,
               radius,
             })
             .on({
@@ -225,14 +236,6 @@ export default {
               },
             })
             .addTo(this.facilitiesFeature);
-            // .bindTooltip(d.displayName)
-
-          L.circle([lat, lng], {
-            fillColor: colour,
-            fillOpacity: 0.3,
-            stroke: 0,
-            radius,
-          }).addTo(this.emissionsFeature);
         }
       });
 
