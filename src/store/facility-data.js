@@ -110,12 +110,10 @@ const getters = {
 
 const actions = {
   fetchFacilityData({ commit, state }) {
-    const urls = ['station/generator_registry.json'];
-    // const urls = ['facility/facility_registry.json'];
+    const urls = ['facility/facility_registry.json'];
 
     getJSON(urls, false)
       .then((responses) => {
-        console.log(responses[0].data)
         const transformedData = transformFacilityData(responses[0].data);
         commit(MutationTypes.FACILITY_DATA, transformedData);
       })
