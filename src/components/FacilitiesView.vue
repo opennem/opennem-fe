@@ -179,16 +179,14 @@ export default {
         that.filteredFacilities = facilities;
         that.totalFacilities = facilities.length;
 
-        const exportData = facilities.map((d) => {
+        const exportData = facilities.map((d) => { // eslint-disable-line
           return {
             'Facility Name': d.displayName,
-            'Status': d.status,
-            'Region': getRegionLabelByCode(d.regionId),
-            'Technology': d.fuelTechs.map((ft) => {
-              return GraphDomains[ft].label;
-            }),
+            Status: d.status,
+            Region: getRegionLabelByCode(d.regionId),
+            Technology: d.fuelTechs.map(ft => GraphDomains[ft].label),
             'Generator Capacity (MW)': d.generatorCap,
-          }
+          };
         });
         that.$store.dispatch('facilityExportData', exportData);
       });
