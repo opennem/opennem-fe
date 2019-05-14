@@ -6,7 +6,7 @@
       @click="dropdownActive = !dropdownActive"
     >
       <div class="dropdown-label">
-        <span v-if="selected.length === 0">Status</span>
+        <span v-if="selected.length === 0">All</span>
         <strong v-if="selected.length === 1">{{ getStatusLabel(selected[0]) }}</strong>
         <strong v-else-if="selected.length === statuses.length">
           All
