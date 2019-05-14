@@ -126,6 +126,9 @@ export default {
     orderBy() {
       this.updateFacilitiesData();
     },
+    regionId() {
+      this.updateFacilitiesData();
+    },
   },
 
   created() {
