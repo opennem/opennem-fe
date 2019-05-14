@@ -38,11 +38,11 @@ export default {
           maxZoom: 18,
           ext: 'png',
         }),
-        'terrain': L.tileLayer('//stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}', {
+        terrain: L.tileLayer('//stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}', {
           minZoom: 0,
           maxZoom: 18,
           ext: 'png',
-        })
+        }),
       },
       selectedTile: 'toner-lite',
       marker: L.icon({
@@ -114,8 +114,6 @@ export default {
           const lng = hasLocation.longitude;
           const loc = new L.LatLng(lat, lng);
 
-          // this.selectedMarker = L.marker([lat, lng], { icon: this.marker });
-          // this.selectedMarker.addTo(this.map);
           this.selectedMarker = L.popup({
             autoClose: false,
             autoPan: false,
@@ -125,16 +123,10 @@ export default {
           this.selectedMarker.openOn(this.map);
 
           this.map.setZoom(7);
-          // this.map.on('zoomend', () => {
-          //   console.log('zoom end')
-          //   this.map.panTo(loc);
-          //   this.map.off('zoomend');
-          // });
           this.map.panTo(loc);
         }
       } else if (this.selectedMarker) {
         this.selectedMarker.remove();
-        // this.map.off('zoomend');
         const bounds = this.facilitiesFeature.getBounds();
         if (!_.isEmpty(bounds)) {
           this.map.fitBounds(this.facilitiesFeature.getBounds());
@@ -166,15 +158,9 @@ export default {
       const zoom = L.control.zoom({
         position: 'topright',
       });
-      
-      // attr.addAttribution(MapAttribution);
 
       this.map.addControl(attr);
       this.map.addControl(zoom);
-      // this.map.addLayer(this.selectedFacilityFeature);
-
-      // this.facilitiesFeature.addTo(this.map);
-      // this.emissionsFeature.addTo(this.map);
     },
 
     handleMapCircleClicked(facility) {

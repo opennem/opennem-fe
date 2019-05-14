@@ -165,7 +165,7 @@ export default {
     EventBus.$off('facilities.filter.clear');
   },
   methods: {
-    handleKeyup(e) {
+    handleKeyup() {
       EventBus.$emit('facilities.name.filter', this.filterFacilityName);
     },
     onClickAway() {

@@ -120,6 +120,9 @@
             {{ getGeneratorCap(facility) | formatNumber }}
             <span class="unit">MW</span>
           </div>
+          <div v-show="!facility.generatorCap" class="stat-value has-text-right" style="font-size: 14px;">
+            –
+          </div>
         </div>
       </div>
     </div>

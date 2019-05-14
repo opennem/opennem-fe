@@ -173,7 +173,7 @@ export default {
         );
       }
 
-      updateFilter().then(d => {
+      updateFilter().then((d) => {
         that.filteredFacilities = d;
         that.totalFacilities = d.length;
       });
