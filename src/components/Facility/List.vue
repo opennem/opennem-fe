@@ -251,9 +251,10 @@ export default {
     handleRowHover: _.debounce(function (facility) {
       this.$emit('facilityHover', facility, true);
     }, 200),
-    handleRowOut() {
+    // eslint-disable-next-line
+    handleRowOut: _.debounce(function () {
       this.$emit('facilityMouseout');
-    },
+    }, 200),
     shouldRightAligned(colHeaderId) {
       return colHeaderId === 'generatorCap';
     },
