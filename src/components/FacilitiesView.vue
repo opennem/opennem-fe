@@ -47,6 +47,8 @@
 import _ from 'lodash';
 import { mapGetters } from 'vuex';
 import EventBus from '@/lib/event-bus';
+import { GraphDomains } from '@/domains/graphs';
+import { getRegionLabelByCode } from '@/domains/regions';
 import FacilityList from '@/components/Facility/List';
 import FacilityMap from '@/components/Facility/Map';
 import FacilityDetail from '@/components/Facility/Detail';
@@ -173,9 +175,22 @@ export default {
         );
       }
 
-      updateFilter().then((d) => {
-        that.filteredFacilities = d;
-        that.totalFacilities = d.length;
+      updateFilter().then((facilities) => {
+        that.filteredFacilities = facilities;
+        that.totalFacilities = facilities.length;
+
+        const exportData = facilities.map((d) => {
+          return {
+            'Facility Name': d.displayName,
+            'Status': d.status,
+            'Region': getRegionLabelByCode(d.regionId),
+            'Technology': d.fuelTechs.map((ft) => {
+              return GraphDomains[ft].label;
+            }),
+            'Generator Capacity (MW)': d.generatorCap,
+          }
+        });
+        that.$store.dispatch('facilityExportData', exportData);
       });
     },
     toggleOrder(order) {

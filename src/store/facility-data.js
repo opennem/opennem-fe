@@ -81,6 +81,7 @@ function transformFacilityData(data) {
 const state = {
   facilityData: [],
   facilityResponseData: [],
+  facilityExportData: [],
   facilitySelectedTechs: [],
 };
 
@@ -90,6 +91,9 @@ const mutations = {
   },
   [MutationTypes.FACILITY_RESPONSE_DATA](state, data) {
     state.facilityResponseData = data;
+  },
+  [MutationTypes.FACILITY_EXPORT_DATA](state, data) {
+    state.facilityExportData = data;
   },
   [MutationTypes.FACILITY_SELECTED_TECHS](state, data) {
     state.facilitySelectedTechs = data;
@@ -102,6 +106,9 @@ const getters = {
   },
   facilityResponseData: state => {
     return state.facilityResponseData;
+  },
+  facilityExportData: state => {
+    return state.facilityExportData;
   },
   facilitySelectedTechs: state => {
     return state.facilitySelectedTechs;
@@ -123,6 +130,9 @@ const actions = {
   },
   facilityResponseData({ commit, state }, data) {
     commit(MutationTypes.FACILITY_RESPONSE_DATA, data);
+  },
+  facilityExportData({ commit, state }, data) {
+    commit(MutationTypes.FACILITY_EXPORT_DATA, data);
   },
   facilitySelectedTechs({ commit, state }, data) {
     commit(MutationTypes.FACILITY_SELECTED_TECHS, data);

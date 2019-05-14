@@ -118,7 +118,7 @@
         <div class="stat" style="width: 20%; margin-right: 15px;">
           <div v-show="facility.generatorCap" class="stat-value has-text-right" style="font-size: 14px;">
             {{ getGeneratorCap(facility) | formatNumber }}
-            <span class="unit">MW</span>
+            <span class="unit" v-if="getGeneratorCap(facility) !== 0">MW</span>
           </div>
           <div v-show="!facility.generatorCap" class="stat-value has-text-right" style="font-size: 14px;">
             –
@@ -307,29 +307,17 @@ export default {
 
       let cap = 0;
       this.facilitySelectedTechs.forEach((d) => {
-        if (facility.fuelTechRegisteredCap[d]) {
+        if (GraphDomains[d].type !== 'loads' && facility.fuelTechRegisteredCap[d]) {
           cap += facility.fuelTechRegisteredCap[d];
         }
       });
       return cap;
-    },
-    showMaxCap(facility) {
-      return facility.fuelTechs.length > 1 && this.facilitySelectedTechs.length > 0;
     },
     isSelected(stationId) {
       if (this.selected) {
         return stationId === this.selected.stationId;
       }
       return false;
-    },
-    getUnitTooltip(unit) {
-      return `<span class="unit-tooltip">${unit.startType} ${unit.dispatchType}</span>`;
-    },
-    getCapacityTooltip(unit) {
-      return `<span class="unit-tooltip">${unit.scheduleType}</span>`;
-    },
-    getStationLink(stationId) {
-      return `/#/station/${stationId}`;
     },
   },
 };
