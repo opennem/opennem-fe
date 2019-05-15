@@ -80,9 +80,11 @@
       />
     </div>
 
-    <!-- <view-toggle
+    <view-toggle
+      style="margin-top: 12px;"
+      v-show="showToggle"
       @viewSelect="handleViewSelect"
-    /> -->
+    />
   </div>  
 </template>
 
@@ -106,6 +108,7 @@ export default {
   },
   props: {
     selectedStatuses: Array,
+    showToggle: Boolean,
   },
   data() {
     return {

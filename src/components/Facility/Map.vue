@@ -137,6 +137,7 @@ export default {
 
   mounted() {
     this.setup();
+    this.updateMap(this.facilitiesData);
   },
 
   methods: {

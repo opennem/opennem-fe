@@ -2,6 +2,7 @@
 <div>
   <div class="filter-bar-column">
     <filter-bar
+      :showToggle="widthBreak"
       :selectedStatuses="selectedStatuses"
       @selected="handleFilterSelected"
       @selectedStatuses="handleStatusesSelected"
@@ -10,7 +11,10 @@
   </div>
 
   <div class="columns is-multiline is-gapless map-detail-container"> 
-    <div class="column">
+    <div 
+      class="column is-two-thirds-tablet is-half-desktop"
+      v-if="!widthBreak || (widthBreak && selectedView === 'list')"
+    >
       <facility-list
         :filteredFacilities="filteredFacilities"
         :selectedFacility="selectedFacility"
@@ -24,8 +28,11 @@
       />
     </div>
 
-    <div class="column">
-      <div class="sticky-detail">
+    <div
+      class="column is-one-third-tablet is-half-desktop"
+      v-if="!widthBreak || (widthBreak && selectedView === 'map')"
+    >
+      <div :class="{ 'sticky-detail': !widthBreak }">
         <facility-map
           :facilitiesData="filteredFacilities"
           :selectedFacility="selectedFacility"
@@ -79,6 +86,7 @@ export default {
       shouldZoomWhenSelected: true,
       filteredFacilities: [],
       totalFacilities: 0,
+      windowWidth: window.innerWidth,
     };
   },
   computed: {
@@ -86,6 +94,9 @@ export default {
       facilityData: 'facilityData',
       facilitySelectedTechs: 'facilitySelectedTechs',
     }),
+    widthBreak() {
+      return this.windowWidth < 769;
+    },
     regionId() {
       return this.$route.params.region || '';
     },
@@ -135,6 +146,11 @@ export default {
 
   created() {
     this.selectedTechs = this.$store.getters.facilitySelectedTechs;
+    // throttle the resize event
+    window.addEventListener('resize', _.debounce(() => {
+      this.windowWidth = window.innerWidth;
+      // 769 tablet and up
+    }, 200));
   },
 
   mounted() {
