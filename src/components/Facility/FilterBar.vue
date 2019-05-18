@@ -1,27 +1,40 @@
 <template>
   <div class="facilities-options">
     <div class="filter-bar">
-      <input 
-        class="input is-small is-rounded filter-station-input"
-        type="text"
-        placeholder="Filter By Station Name"
-        autofill="off"
-        autocomplete="off"
-        autocorrect="off"
-        autocapitalize="off"
-        spellcheck="false"
-        v-model="filterFacilityName"
-        @keyup="handleKeyup"
-      />
+      <div class="filter-station">
+        <button
+          v-if="widthBreak"
+          class="search-button button is-rounded is-small is-primary is-inverted"
+          @click="toggleSearch">
+          <font-awesome-icon v-if="searchOn" class="fal" :icon="iconClose" />
+          <font-awesome-icon v-else class="fal" :icon="iconSearch" />
+        </button>
+        <input 
+          v-if="!widthBreak || (searchOn && widthBreak)"
+          class="input is-small is-rounded filter-station-input"
+          type="text"
+          placeholder="Filter By Station Name"
+          autofill="off"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          v-model="filterFacilityName"
+          @keyup="handleKeyup"
+        />
+      </div>
 
-      <div class="dropdown" :class="{'is-active': techDropdownActive}" v-on-clickaway="onClickAway">
+      <div 
+        v-if="!searchOn"
+        class="filter-tech dropdown"
+        :class="{'is-active': techDropdownActive}" v-on-clickaway="onClickAway">
         <button
           class="dropdown-trigger button is-rounded is-small is-primary"
           :class="{ 'is-inverted': selectedTechGroups.length === 0 }"
           @click="techDropdownActive = !techDropdownActive"
         >
           <div class="dropdown-label">
-            <span>Technology</span>
+            <strong>Technology</strong>
             <strong v-if="selectedTechGroups.length > 0">({{selectedTechGroups.length}})</strong>
           </div>
           <font-awesome-icon class="fal" :icon="iconDown" />
@@ -74,24 +87,25 @@
       </div>
 
       <filter-status
-        style="margin-left: 10px;"
+        v-if="!searchOn"
+        class="filter-status"
         :selectedStatuses="selectedStatuses"
         @selectedStatuses="handleStatusesSelected"
       />
     </div>
 
-    <view-toggle
+    <!-- <view-toggle
       style="margin-top: 12px;"
       v-show="showToggle"
       @viewSelect="handleViewSelect"
-    />
+    /> -->
   </div>  
 </template>
 
 <script>
 import _ from 'lodash';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
-import { faAngleDown, faCheck, faCaretRight, faCaretDown, faMinus } from '@fortawesome/fontawesome-pro-light';
+import { faAngleDown, faCheck, faCaretRight, faCaretDown, faMinus, faSearch, faTimes } from '@fortawesome/fontawesome-pro-light';
 import { mixin as clickaway } from 'vue-clickaway';
 import EventBus from '@/lib/event-bus';
 import { GraphDomains } from '@/domains/graphs';
@@ -119,6 +133,8 @@ export default {
       selectedTechGroups: [],
       groupExpanded: [],
       simplifiedGroup: _.cloneDeep(Simplified.groups),
+      windowWidth: window.innerWidth,
+      searchOn: false,
     };
   },
   computed: {
@@ -137,9 +153,22 @@ export default {
     iconCaretDown() {
       return faCaretDown;
     },
+    iconSearch() {
+      return faSearch;
+    },
+    iconClose() {
+      return faTimes;
+    },
+    widthBreak() {
+      return this.windowWidth < 769;
+    },
   },
   created() {
     this.selectedTechs = this.$store.getters.facilitySelectedTechs;
+    window.addEventListener('resize', _.debounce(() => {
+      this.windowWidth = window.innerWidth;
+      // 769 tablet and up
+    }, 200));
   },
   mounted() {
     EventBus.$on('facilities.filter.clear', this.clearFilter);
@@ -173,6 +202,13 @@ export default {
     },
     onClickAway() {
       this.techDropdownActive = false;
+    },
+    toggleSearch() {
+      this.searchOn = !this.searchOn
+      if (!this.searchOn) {
+        this.filterFacilityName = '';
+        this.handleKeyup();
+      }
     },
     isGroupSelected(groupId) {
       return _.includes(this.selectedTechGroups, groupId);
@@ -276,6 +312,17 @@ export default {
 @import "../../../node_modules/bulma/sass/utilities/mixins.sass";
 @import "../../styles/variables.scss";
 
+.facilities-options {
+  width: 100%;
+}
+.dropdown-label {
+  font-family: $primary-font-family;
+  margin-right: 0.5rem;
+  font-size: 12px;
+  strong {
+    font-weight: 600;
+  }
+}
 .dropdown-menu {
   font-family: $primary-font-family;
   margin-left: 0.75rem;
@@ -309,20 +356,28 @@ export default {
   }
 }
 .filter-bar {
-  padding: 0.75rem 0;
   display: flex;
-  // margin: 0 auto;
+  margin: 5px 0 5px 10px;
+
+  @include tablet {
+    margin: 0;
+  }
 
   .filter-station-input {
-    width: 200px;
-    margin-right: 1rem;
+    width: 170px;
+    
     @include tablet {
       width: 230px;
+      margin-right: 10px;
     }
-    // @include desktop {
-    //   width: 230px;
-    // }
   }
+
+  .filter-tech,
+  .filter-status,
+  .search-button {
+    margin: 0 3px;
+  }
+
   .buttons {
     border-top: 1px solid #eee;
     padding: 0.4rem 0.5rem 0.1rem;
@@ -335,13 +390,6 @@ export default {
       font-size: 10px;
       margin-left: 0;
       margin-left: 0.7rem;
-    }
-  }
-  .dropdown-label {
-    margin-right: 0.5rem;
-    strong {
-      font-size: 11px;
-      font-weight: 400;
     }
   }
 }

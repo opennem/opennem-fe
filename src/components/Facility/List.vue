@@ -1,10 +1,9 @@
 <template>
-  <div style="margin-bottom: 2rem; position: relative;">
+  <div class="card-wrapper">
     <div class="column-headers">
       <div 
-        class="col-header" 
-        style="margin-left: 2rem; white-space: nowrap;"
-        :style="{ width: hideRegionColumn ? '60%' : '52%'}"
+        class="name-col col-header" 
+        :style="{ width: hideRegionColumn ? '60%' : '50%'}"
         @click="sort('displayName')"
       >
         Name
@@ -16,8 +15,7 @@
       </div>
 
       <div 
-        class="col-header" 
-        style="width: 12%; white-space: nowrap;"
+        class="region-col col-header" 
         v-show="!hideRegionColumn"
       >
         <span @click="sort('regionId')">
@@ -31,11 +29,10 @@
       </div>
 
       <div 
-        class="col-header" 
-        style="white-space: nowrap; width: 18%;"
+        class="tech-col col-header" 
       >
         <span @click="sort('fuelTechs')">
-          Technology
+          {{ techHeaderName }}
           <font-awesome-icon
             class="fal"
             v-if="sortBy === 'fuelTechs'"
@@ -45,8 +42,7 @@
       </div>
 
       <div 
-        class="col-header" 
-        style="width: 20%; text-align: right; margin-right: 15px; white-space: nowrap;"
+        class="cap-col col-header" 
         @click="sort('generatorCap')"
       >
         Gen. Capacity
@@ -81,17 +77,17 @@
           class="source-colour-side" />
       </div>
       
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div class="card-content" style="margin-left: 1rem;" :style="{ width: hideRegionColumn ? '60%' : '50%'}">
+      <div class="facility-detail">
+        <div class="name-col" :style="{ width: hideRegionColumn ? '60%' : '50%'}">
           <h2 class="station-name">{{ facility.displayName }}</h2>
         </div>
 
-        <div class="card-content" style="width: 13%;" v-show="!hideRegionColumn">
+        <div class="region-col" v-show="!hideRegionColumn">
           <small style="color: #666;">{{ getRegionLabel(facility.regionId) }}</small>
         </div>
 
-        <div class="stat" style="width: 16%">
-          <div class="stat-value" v-if="facility.genFuelTechs.length" style="font-size: 11px; white-space: nowrap;">
+        <div class="tech-col stat">
+          <div class="stat-value" v-if="facility.genFuelTechs.length">
             <span
               v-for="(ft, genFtIndex) in facility.genFuelTechs"
               :key="genFtIndex"
@@ -102,7 +98,7 @@
               <span v-if="genFtIndex !== facility.genFuelTechs.length - 1"><br /></span>
             </span>
           </div>
-          <div class="stat-value" v-if="facility.loadFuelTechs.length" style="font-size: 11px; white-space: nowrap;">
+          <div class="stat-value" v-if="facility.loadFuelTechs.length">
             <em
               v-for="(ft, loadFtIndex) in facility.loadFuelTechs"
               :key="loadFtIndex"
@@ -115,12 +111,12 @@
           </div>
         </div>
 
-        <div class="stat" style="width: 20%; margin-right: 15px;">
-          <div v-show="facility.generatorCap" class="stat-value has-text-right" style="font-size: 14px;">
+        <div class="cap-col stat">
+          <div v-show="facility.generatorCap" class="stat-value has-text-right">
             {{ getGeneratorCap(facility) | formatNumber }}
             <span class="unit" v-if="getGeneratorCap(facility) !== 0">MW</span>
           </div>
-          <div v-show="!facility.generatorCap" class="stat-value has-text-right" style="font-size: 14px;">
+          <div v-show="!facility.generatorCap" class="stat-value has-text-right">
             –
           </div>
         </div>
@@ -184,10 +180,17 @@ export default {
       colHeaders,
       selected: null,
       divWidth: 0,
+      windowWidth: window.innerWidth,
     };
   },
 
   computed: {
+    widthBreak() {
+      return this.windowWidth < 769;
+    },
+    techHeaderName() {
+      return this.widthBreak ? 'Tech' : 'Technoloogy';
+    },
     iconSortUp() {
       return faSortUp;
     },
@@ -327,6 +330,16 @@ export default {
 @import "../../../node_modules/bulma/sass/utilities/mixins.sass";
 @import "../../styles/variables.scss";
 
+.card-wrapper {
+  margin-bottom: 2rem;
+  position: relative;
+  padding: 0 10px;
+
+  @include tablet {
+    padding: 0;
+  }
+}
+
 .card {
   margin-bottom: 1px;
   font-size: 70%;
@@ -335,6 +348,7 @@ export default {
   opacity: 0.9;
   z-index: 9;
   box-shadow: none;
+  min-height: 25px;
 
   &.is-inactive {
     opacity: 0.55;
@@ -354,8 +368,15 @@ export default {
   }
 
   .card-content {
-    padding: 0.5rem 1rem 0.4rem;
+    padding: 0;
   }
+}
+
+.facility-detail {
+  min-height: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .stat {
@@ -383,43 +404,22 @@ export default {
 }
 
 .source-colour-side {
-  width: 10px;
+  width: 5px;
   height: 100%;
   background-color: rgba(100,100,100,.8);
 
-  // &:first-child {
-  //   border-radius: 3px 0 0 3px;
-  // }
-  // &:last-child {
-  //   border-radius: 0 3px 3px 0;
-  // }
+  @include tablet {
+    width: 10px;
+  }
 }
 
-.table {
-  tr th {
-    color: #666;
-    font-size: 9px;
-  }
-  td, th {
-    border-color: #eee;
-  }
-}
-.source-colour {
-  width: 13px;
-  height: 13px;
-  background-color: rgba(255,255,255,.8);
-  display: inline-block;
-  vertical-align: text-bottom;
-  margin-right: 0.1rem;
-  position: relative;
-  top: 1px;
-  margin-right: 3px;
-}
 .station-name {
-  // font-family: $header-font-family;
   font-weight: 600;
-  font-size: 16px;
-  // line-height: 15px;
+  font-size: 12px;
+
+  @include tablet {
+    font-size: 14px;
+  }
 }
 .max-capcity {
   font-size: 70%;
@@ -436,23 +436,29 @@ export default {
   align-items: center;
   margin-bottom: 5px;
   position: sticky;
-  top: 89px;
+  top: 0;
   background-color: $background-alpha;
   padding-bottom: 5px;
   z-index: 11;
   border-bottom: 1px solid #333;
 
   @include tablet {
-    top: 95px;
+    top: 59px;
   }
 }
 .col-header {
   cursor: pointer;
   font-family: $header-font-family;
-  font-size: 13px;
+  font-size: 9px;
   font-weight: 600;
   user-select: none;
+  padding-top: 5px;
+
+  @include tablet {
+    font-size: 13px;
+  }
 }
+
 .totals {
   position: fixed;
   bottom: 0;
@@ -474,6 +480,63 @@ export default {
 
   @include desktop {
     bottom: 29px;
+  }
+}
+
+.name-col {
+  margin-left: 1rem;
+
+  @include tablet {
+    margin-left: 2rem;
+  }
+}
+.region-col {
+  width: 14%;
+
+  &.col-header {
+    white-space: nowrap;
+  }
+}
+.tech-col {
+  width: 17%;
+
+  .stat-value {
+    font-size: 8px;
+
+    @include tablet {
+      font-size: 9px;
+    }
+  }
+
+  &.col-header {
+    white-space: nowrap;
+  }
+}
+
+.cap-col {
+  width: 20%;
+  text-align: right;
+  margin-right: 15px;
+
+  &.col-header {
+    white-space: nowrap;
+  }
+
+  .stat-value{
+    font-size: 12px;
+
+    @include tablet {
+      font-size: 14px;
+    }
+  }
+
+  &.stat .unit {
+    font-size: 8px;
+    left: 0;
+
+    @include tablet {
+      font-size: 10px;
+    }
   }
 }
 </style>

@@ -63,7 +63,8 @@ export default {
 
   computed: {
     mapHeight() {
-      return `${this.windowHeight - 175}px`;
+      const offset = window.innerWidth < 769 ? 120 : 155;
+      return `${this.windowHeight - offset}px`;
     },
   },
 

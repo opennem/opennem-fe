@@ -118,10 +118,14 @@ a {
 
 .footer {
   width: 100%;
-  // color: $opennem-primary-invert;
   font-size: 0.8rem;
-  margin-top: 2rem;
   padding: 0.3rem 0 0.7rem;
+  display: none;
+
+  @include tablet {
+    margin-top: 2rem;
+    display: block;
+  }
 
   @include desktop {
     padding: 0;

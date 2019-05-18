@@ -10,6 +10,12 @@
     />
   </div>
 
+  <facility-view-toggle
+    class="facility-view-toggle"
+    v-if="widthBreak"
+    @viewSelect="handleViewSelect"
+  />
+
   <div class="columns is-multiline is-gapless map-detail-container"> 
     <div 
       class="column is-two-thirds-tablet is-half-desktop"
@@ -32,7 +38,7 @@
       class="column is-one-third-tablet is-half-desktop"
       v-if="!widthBreak || (widthBreak && selectedView === 'map')"
     >
-      <div :class="{ 'sticky-detail': !widthBreak }">
+      <div class="map-wrapper" :class="{ 'sticky-detail': !widthBreak }">
         <facility-map
           :facilitiesData="filteredFacilities"
           :selectedFacility="selectedFacility"
@@ -60,6 +66,7 @@ import FacilityList from '@/components/Facility/List';
 import FacilityMap from '@/components/Facility/Map';
 import FacilityDetail from '@/components/Facility/Detail';
 import FilterBar from '@/components/Facility/FilterBar';
+import FacilityViewToggle from '@/components/Facility/ViewToggle';
 
 const ASCENDING = 'asc';
 const DESCENDING = 'desc';
@@ -70,6 +77,7 @@ export default {
     FacilityMap,
     FacilityDetail,
     FilterBar,
+    FacilityViewToggle,
   },
   data() {
     return {
@@ -269,20 +277,27 @@ export default {
 }
 .grid-container {
   @include desktop {
-    padding: 0 0;
+    padding: 0;
   }
 }
 
 .filter-bar-column {
   padding: 0;
-  position: sticky;
   display: flex;
-  top: 38px;
-  z-index: 90;
   background-color: #ece9e6;
+}
+
+.facility-view-toggle {
+  position: absolute;
+  right: 15px;
+  top: 5px;
+}
+
+.map-wrapper {
+  margin-top: 10px;
 
   @include tablet {
-    top: 44px;
+    margin-top: 0;
   }
 }
 
@@ -291,10 +306,7 @@ export default {
 
   @include tablet {
     position: sticky;
-    top: 123px;
-  }
-  @include mobile {
-    display: none;
+    top: 87px;
   }
 }
 </style>

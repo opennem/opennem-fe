@@ -7,7 +7,7 @@
 
       <div class="logo-wrapper" @click="close">
         <img class="logo" src="../../assets/opennem-logo.svg" alt="OpenNEM logo" />
-        <span>OpenNEM</span>
+        <!-- <span>OpenNEM</span> -->
       </div>
 
       <div class="menu">
@@ -217,6 +217,7 @@ export default {
     &.selected {
       font-weight: 600;
       border-right: 6px solid $opennem-primary-alpha;
+      color: $opennem-primary-alpha;
     }
 
     .icon {

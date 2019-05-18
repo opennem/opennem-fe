@@ -263,17 +263,19 @@ export default {
 
 .date-range {
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.2);
+  margin-top: 5px;
 
   @include tablet {
     background-color: transparent;
+    margin-top: 0;
   }
 
   .buttons {
     margin-bottom: 0 !important;
     // border-top: 1px solid rgba(150, 150, 150, 0.1);
     border-bottom: 1px solid rgba(150, 150, 150, 0.1);
-    justify-content: center;
+    justify-content: left;
 
     &:last-child {
       border-bottom: none;

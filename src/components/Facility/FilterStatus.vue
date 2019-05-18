@@ -1,7 +1,7 @@
 <template>
   <div class="dropdown" :class="{'is-active': dropdownActive}" v-on-clickaway="onClickAway">
     <button
-      class="dropdown-trigger button is-rounded is-small is-primary"
+      class="dropdown-trigger button is-small is-rounded is-primary"
       :class="{ 'is-inverted': selected.length === 0 }"
       @click="dropdownActive = !dropdownActive"
     >
@@ -137,11 +137,16 @@ export default {
 @import "../../styles/variables.scss";
 
 .dropdown-label {
+  font-family: $primary-font-family;
   margin-right: 0.5rem;
+  font-size: 12px;
+
   strong {
-    font-size: 11px;
-    font-weight: 400;
+    font-weight: 600;
   }
+}
+.dropdown-menu {
+  min-width: 150px;
 }
 .dropdown-content {
   font-family: $primary-font-family;

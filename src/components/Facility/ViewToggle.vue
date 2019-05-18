@@ -54,10 +54,6 @@ export default {
 
 <style lang="scss" scoped>
 .facilities-toggle {
-  position: absolute;
-  right: 0;
-  top: 0;
-
   .button:first-child {
     position: relative;
     left: -1px;
