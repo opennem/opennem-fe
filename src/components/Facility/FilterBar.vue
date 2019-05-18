@@ -204,7 +204,7 @@ export default {
       this.techDropdownActive = false;
     },
     toggleSearch() {
-      this.searchOn = !this.searchOn
+      this.searchOn = !this.searchOn;
       if (!this.searchOn) {
         this.filterFacilityName = '';
         this.handleKeyup();
