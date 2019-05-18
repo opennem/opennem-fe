@@ -66,6 +66,7 @@ export default {
 @import "styles/button.scss";
 @import "styles/date-range.scss";
 @import "styles/tooltip.scss";
+@import "styles/drawer.scss";
 
 /** Bulma SCSS customisation **/
 // 1. Import the initial variables
@@ -97,6 +98,7 @@ section {
 
   @include mobile {
     margin: 0 auto;
+    padding: 0;
   }
 }
 

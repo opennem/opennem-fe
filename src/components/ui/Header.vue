@@ -3,30 +3,29 @@
     <ui-warning />
     <export-header v-if="isExportPng" />
 
-    <div class="level" v-else>
-      <div class="level-left">
-        <img class="logo" src="../../assets/opennem-logo.svg" alt="OpenNEM logo" style="margin-right: 0.5rem; margin-top: 5px;" />
-        <view-selector />
-        <region-selector style="position: relative; left: -10px;" />
+    <div class="app-menu" v-else>
+      <div class="logo-wrapper" @click="openDrawer = !openDrawer">
+        <span class="menu-btn">
+          <font-awesome-icon class="fal" :icon="iconMenu" />
+        </span>
+        <img class="logo" src="../../assets/opennem-logo.svg" alt="OpenNEM logo" />
+        <span>{{regionLabel}}</span>
       </div>
 
-      <div class="level-right" v-show="isEnergyRoute">
-        <export-buttons style="padding: 10px 0 0 0" />
+      <drawer
+        :open="openDrawer"
+        @close="openDrawer = false"
+        v-if="widthBreak"
+      />
+
+      <div class="selectors-wrapper" v-if="!widthBreak">
+        <view-selector class="selectors-view" />
+        <region-selector class="selectors-region" />
       </div>
 
-      <div class="level-right" v-show="isFacilityRoute">
-        <button class="csv-btn button is-small is-rounded is-primary is-inverted" style="margin-top: 10px;">
-          <download-csv
-            :data="facilityExportData"
-            :name="`facilities.csv`"
-          >
-            <span class="icon">
-              <font-awesome-icon class="fal fa-fw" :icon="iconCSV" />
-            </span>
-            <span class="csv-label">Data</span>
-          </download-csv>
-        </button>
-        
+      <div class="export-wrapper" v-if="!widthBreak">
+        <export-buttons class="export-energy" v-show="isEnergyRoute" />
+        <facilities-export class="export-facility" v-show="isFacilityRoute" />
       </div>
     </div>
   </nav>
@@ -34,96 +33,170 @@
 
 <script>
 import * as _ from 'lodash';
-import DownloadCsv from 'vue-json-csv';
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
-import { faTable } from '@fortawesome/fontawesome-pro-light';
 import { mapGetters } from 'vuex';
+import { mixin as clickaway } from 'vue-clickaway';
+import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+import { faEllipsisV } from '@fortawesome/fontawesome-pro-light';
 import UiWarning from '@/components/ui/Warning';
+import { getRegionLabel } from '@/domains/regions';
 import RegionSelector from './RegionSelector';
 import ViewSelector from './ViewSelector';
 import ExportHeader from '../Export/Header';
 import ExportButtons from '../Export/Buttons';
+import FacilitiesExport from '../Facility/Export';
+import Drawer from './Drawer';
 
 export default {
   name: 'header-nav',
+  mixins: [clickaway],
   components: {
-    DownloadCsv,
+    FontAwesomeIcon,
     RegionSelector,
     ViewSelector,
     ExportHeader,
     ExportButtons,
     UiWarning,
-    FontAwesomeIcon,
+    FacilitiesExport,
+    Drawer,
+  },
+
+  data() {
+    return {
+      openDrawer: false,
+      windowWidth: window.innerWidth,
+    };
   },
 
   computed: {
     ...mapGetters({
       isExportPng: 'isExportPng',
-      facilityExportData: 'facilityExportData',
     }),
+    widthBreak() {
+      return this.windowWidth < 769;
+    },
     isEnergyRoute() {
       return _.includes(this.$route.name, 'energy');
     },
     isFacilityRoute() {
       return _.includes(this.$route.name, 'facilities');
     },
-    iconCSV() {
-      return faTable;
+    regionLabel() {
+      const region = getRegionLabel(this.$route.params.region);
+      return region || 'All Regions';
+    },
+    iconMenu() {
+      return faEllipsisV;
+    },
+  },
+
+  created() {
+    window.addEventListener('resize', _.debounce(() => {
+      this.windowWidth = window.innerWidth;
+      // 769 tablet and up
+    }, 200));
+  },
+
+  methods: {
+    onClickAway() {
+      this.openDrawer = false;
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
+@import "../../../node_modules/bulma/sass/utilities/mixins.sass";
 @import "../../styles/variables.scss";
 
 nav {
-  position: sticky;
-  z-index: 99;
-  top: 0;
   background-color: $background-alpha;
-  padding: 0 0 0.1rem;
-}
-
-h1 {
-  font-weight: bold;
-}
-
-.level {
+  position: relative;
+  z-index: 99;
   max-width: 1400px;
   margin: 0 auto;
-  padding: .1rem 1rem .1rem;
+
+  @include tablet {
+    position: sticky;
+    top: -10px;
+    padding-bottom: 10px;
+  }
 }
 
-.level-right {
-  margin-top: 0;
+.app-menu {
+  display: flex;
+  flex-wrap: wrap;
+
+  @include tablet {
+    padding: 1em 1em 0;
+  }
 }
 
-.filter-station-input {
-  width: 20vw;
-  margin-top: 10px;
-}
-.fal {
-  font-size: 16px;
-}
+.logo-wrapper {
+  width: 100%;
+  padding: 8px 8px 8px 22px;
 
-.csv-btn {
-  .fal {
-    font-size: 12px;
+  @include tablet {
+    width: auto;
+    text-align: left;
+    padding-bottom: 0;
+    padding-left: 0;
+    border-left: none;
   }
 
-  .csv-label {
+  span {
+    color: $opennem-primary;
+    font-family: $header-font-family;
+    font-weight: 600;
     position: relative;
-    top: -2px;
-    left: -2px;
+    top: 2px;
+    font-size: 1.1rem;
+
+    @include tablet {
+      font-size: 1.2rem;
+      display: none;
+    }
+  }
+
+  .menu-btn {
+    font-size: 30px;
+    position: absolute;
+    left: 10px;
+    top: 1px;
   }
 }
 
-@media only screen and (min-width: 500px) {
-  .level,
-  .level-right {
-    display: flex;
+.selectors-wrapper {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+
+  .selectors-view {
+    width: 45%;
+  }
+  .selectors-region {
+    width: 45%;
+  }
+
+  @include tablet {
+    width: auto;
+    align-items: center;
+    position: relative;
+    top: 3px;
+
+    .selectors-view, 
+    .selectors-region {
+      width: auto;
+    }
   }
 }
 
+.export-wrapper {
+  position: absolute;
+  right: 10px;
+  top: 12px;
+
+  @include tablet {
+    top: 29px;
+  }
+}
 </style>

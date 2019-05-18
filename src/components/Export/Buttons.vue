@@ -5,8 +5,7 @@
         <font-awesome-icon class="fal fa-fw" :icon="iconChart" />
       </span>
       <span>Image</span>
-    </button>
-    
+    </button>    
     <csv
       :data="exportData"
       :fields="csvHeaders"

@@ -33,10 +33,10 @@ table.summary-table {
   }
 
   td, th {
-    font-size: 1em;
+    font-size: 0.85em;
 
-    @include desktop {
-      // font-size: 1em;
+    @include tablet {
+      font-size: 1em;
     }
   }
 
@@ -66,6 +66,11 @@ table.summary-table {
   .cell-value {
     font-family: $numbers-font-family;
     text-align: right;
+    font-size: 0.8em;
+
+    @include tablet {
+      font-size: 1em;
+    }
   }
 
   .source-colour {

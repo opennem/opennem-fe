@@ -7,12 +7,12 @@
   </transition>
 
   <div style="display: flex; align-items: center;">
-    <range-selector class="range-selector-container" v-if="!isExportPng" style="margin-right: 1rem;" />
+    <range-selector class="range-selector-container" v-if="!isExportPng" />
     <panels-selector style="margin-left: 1rem;" v-if="!isPower && featureEmissions"/>
   </div>
   
   <transition name="fade">
-    <div class="columns is-desktop is-variable is-1" v-show="!isFetching">
+    <div class="columns is-desktop is-gapless is-1" v-show="!isFetching">
       <div class="column" :class="{ export: isExportPng }">
         <div id="export-container">
           <export-png-header v-if="isExportPng" />

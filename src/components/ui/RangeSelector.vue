@@ -6,7 +6,7 @@
     
     <div class="buttons has-addons">
       <span 
-        class="button is-rounded is-small is-primary"
+        class="button is-small is-primary"
         :class="{ 'is-inverted': currentRange !== dateRange.id }"
         v-for="dateRange in dateSelectors"
         :key="dateRange.id"
@@ -17,7 +17,7 @@
     </div>
     <div class="buttons has-addons interval-buttons">
       <span 
-        class="button is-rounded is-small is-primary"
+        class="button is-small is-primary"
         v-for="p in periods"
         :class="{ 'is-inverted': !chartTypeTransition && currentInterval !== p }"
         :key="p"
@@ -262,23 +262,37 @@ export default {
 @import "../../../node_modules/bulma/sass/utilities/mixins.sass";
 
 .date-range {
-  margin-top: .4rem;
-  
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.4);
+
   @include tablet {
-    
+    background-color: transparent;
   }
 
   .buttons {
     margin-bottom: 0 !important;
+    // border-top: 1px solid rgba(150, 150, 150, 0.1);
+    border-bottom: 1px solid rgba(150, 150, 150, 0.1);
+    justify-content: center;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    @include tablet {
+      border: none !important;
+    }
   }
 
   .button {
-    font-weight: bold;
-    font-size: .8rem;
+    margin-bottom: 0;
+    border-radius: 0;
+    min-width: 50px;
   }
 
   .button.is-primary.is-inverted  {
-    background-color: rgba(255, 255, 255, 0.4) !important;
+    // background-color: rgba(255, 255, 255, 0.4) !important;
+    background-color: transparent !important;
     
     &:hover {
       background-color: rgba(255, 255, 255, 0.9) !important;

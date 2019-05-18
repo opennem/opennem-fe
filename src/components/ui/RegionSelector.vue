@@ -98,33 +98,36 @@ export default {
 @import "../../styles/variables.scss";
 
 .region-selector {
-  font-family: $header-font-family;
-  font-size: 1.2rem;
+  justify-content: center;
+  font-size: 1.1rem;
+
+  @include tablet {
+    font-size: 1.2rem;
+  }
 
   a.dropdown-trigger {
     color: #000;
 
     .fal {
-      position: relative;
-      top: 3px;
       color: $opennem-primary-alpha;
     }
 
     span {
-      position: relative;
-      top: 2px;
-      padding: 0.3rem 1rem 0.3rem 0.9rem;
-      border-radius: 3rem;
+      padding: 2px 6px;
+      border-radius: 3px;
     }
 
     &:hover span {
       background-color: rgba(255,255,255,0.5);
     }
   }
-}
-@media only screen and (min-width: 600px) {
-  .region-selector {
-    font-size: 1.4rem;
+
+  .dropdown-menu {
+    min-width: auto;
+
+    @include tablet {
+      min-width: 10rem;
+    }
   }
 }
 </style>
