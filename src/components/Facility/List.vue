@@ -57,6 +57,7 @@
     <div
       class="card"
       v-for="(facility, index) in filteredFacilities"
+      :id="facility.stationId"
       :key="index"
       :class="{
         'is-selected': isSelected(facility.stationId),
@@ -232,6 +233,16 @@ export default {
   watch: {
     selectedFacility(selected) {
       this.selected = selected;
+      const $selected = document.getElementById(selected.stationId);
+      if (
+        $selected.getBoundingClientRect().top < 0 || 
+        $selected.getBoundingClientRect().top >= this.windowHeight
+      ) {
+        $selected.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+      }
     },
 
     filteredFacilities() {

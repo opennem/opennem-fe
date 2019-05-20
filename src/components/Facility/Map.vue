@@ -163,7 +163,7 @@ export default {
           }).setLatLng([lat, lng]).setContent(facility.displayName);
           this.selectedMarker.openOn(this.map);
 
-          if (this.map.getZoom() < 7) {
+          if (this.map.getZoom() <= 7) {
             this.map.setZoom(7);
             this.map.panTo(loc);
           }
