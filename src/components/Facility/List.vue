@@ -232,6 +232,11 @@ export default {
 
   mounted() {
     this.divWidth = this.$el.offsetWidth;
+
+    window.addEventListener('resize', _.debounce(() => {
+      console.log(this.$el.offsetWidth)
+      this.divWidth = this.$el.offsetWidth;
+    }, 200));
   },
 
   filters: {

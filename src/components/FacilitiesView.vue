@@ -47,11 +47,14 @@
           @facilitySelect="handleFacilitySelect"
         />
 
-        <facility-card
-          v-if="hasSelectedFacility"
-          :facility="selectedFacility"
-          @close="handleCloseDetail"
-        />
+        <transition name="slide-up-fade">
+          <facility-card
+            v-if="hasSelectedFacility && widthBreak"
+            :facility="selectedFacility"
+            @close="handleCloseDetail"
+          />
+        </transition>
+        
         <!-- <generator-detail
           :generator="selectedGenerator"
           @closeGeneratorDetail="handleCloseDetail"

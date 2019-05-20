@@ -1,7 +1,7 @@
 <template>
   <div class="totals" :style="{ width: `${divWidth}px`}">
-    <span>Facilities: <strong>{{totalFacilities}}</strong></span>
-    <span>Capacity: <strong>{{ totalCap | formatNumber }}</strong> </span>
+    <span class="total-facilities">Facilities: <strong>{{totalFacilities}}</strong></span>
+    <span class="total-cap">Capacity: <strong>{{ totalCap | formatNumber }}</strong> MW</span>
   </div>
 </template>
 
@@ -21,11 +21,12 @@ export default {
 .totals {
   position: fixed;
   bottom: 0;
+  left: 0;
+  right: 0;
   z-index: 89;
   background-color: #C74523;
   color: #fff;
   padding: 3px 6px;
-  border-radius: 3px 3px 0 0;
   font-size: 10px;
   box-shadow: 0 -2px 5px rgba(100, 100, 100, 0.1);
   display: flex;
@@ -35,6 +36,23 @@ export default {
   strong {
     color: #fff;
     font-size: 13px;
+  }
+
+  .total-cap {
+    margin-right: 9px;
+
+    strong {
+      margin-right: 1px;
+    }
+  }
+
+  .total-facilities {
+    margin-left: 9px;
+  }
+
+  @include tablet {
+    left: auto;
+    right: auto;
   }
 
   @include desktop {
