@@ -11,6 +11,7 @@
   </div>
 
   <totals
+    v-if="widthBreak"
     :div-width="divWidth"
     :total-facilities="totalFacilities"
     :total-cap="totalCap"
@@ -71,8 +72,12 @@ export default {
   },
 
   computed: {
+    widthBreak() {
+      return window.innerWidth < 769;
+    },
+
     mapHeight() {
-      const offset = window.innerWidth < 769 ? 120 : 155;
+      const offset = this.widthBreak ? 140 : 155;
       return `${this.windowHeight - offset}px`;
     },
 
@@ -109,7 +114,8 @@ export default {
       this.tileLayers[tile].addTo(this.map);
     },
     facilitiesData(newData) {
-      this.updateMap(newData);
+      const sorted = _.orderBy(newData, [this.getGeneratorCap], ['desc']);
+      this.updateMap(sorted);
     },
     hoveredFacility(facility) {
       if (facility) {
@@ -163,10 +169,10 @@ export default {
         }
       } else if (this.selectedMarker) {
         this.selectedMarker.remove();
-        const bounds = this.facilitiesFeature.getBounds();
-        if (!_.isEmpty(bounds)) {
-          this.map.fitBounds(this.facilitiesFeature.getBounds());
-        }
+        // const bounds = this.facilitiesFeature.getBounds();
+        // if (!_.isEmpty(bounds)) {
+        //   this.map.fitBounds(this.facilitiesFeature.getBounds());
+        // }
       }
     },
   },
@@ -175,6 +181,10 @@ export default {
     this.setup();
     this.updateMap(this.facilitiesData);
     this.divWidth = this.$el.offsetWidth;
+
+    window.addEventListener('resize', _.debounce(() => {
+      this.divWidth = this.$el.offsetWidth;
+    }, 200));
   },
 
   methods: {
