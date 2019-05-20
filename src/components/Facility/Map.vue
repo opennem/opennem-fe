@@ -12,6 +12,7 @@
 
   <totals
     v-if="widthBreak"
+    :position="'fixed'"
     :div-width="divWidth"
     :total-facilities="totalFacilities"
     :total-cap="totalCap"

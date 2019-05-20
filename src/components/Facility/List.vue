@@ -124,6 +124,7 @@
     </div>
 
     <totals
+      :position="totalsPosition"
       :div-width="divWidth"
       :total-facilities="totalFacilities"
       :total-cap="totalCap"
@@ -183,7 +184,9 @@ export default {
       colHeaders,
       selected: null,
       divWidth: 0,
+      divHeight: 0,
       windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
     };
   },
 
@@ -193,6 +196,9 @@ export default {
     },
     techHeaderName() {
       return this.widthBreak ? 'Tech' : 'Technology';
+    },
+    totalsPosition() {
+      return this.divHeight > this.windowHeight ? 'fixed' : 'static';
     },
     iconSortUp() {
       return faSortUp;
@@ -225,8 +231,13 @@ export default {
 
   watch: {
     selectedFacility(selected) {
-      console.log(selected); // eslint-disable-line
       this.selected = selected;
+    },
+
+    filteredFacilities() {
+      this.$nextTick(() => {
+        this.divHeight = this.$el.offsetHeight;
+      });
     },
   },
 
@@ -235,6 +246,8 @@ export default {
 
     window.addEventListener('resize', _.debounce(() => {
       this.divWidth = this.$el.offsetWidth;
+      this.windowWidth = window.innerWidth;
+      this.windowHeight = window.innerHeight;
     }, 200));
   },
 

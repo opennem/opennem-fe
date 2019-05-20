@@ -1,5 +1,8 @@
 <template>
-  <div class="totals" :style="{ width: `${divWidth}px`}">
+  <div class="totals" :style="{
+    width: `${divWidth}px`,
+    position: position,
+  }">
     <span class="total-facilities">Facilities: <strong>{{totalFacilities}}</strong></span>
     <span class="total-cap">Capacity: <strong>{{ totalCap | formatNumber }}</strong> MW</span>
   </div>
@@ -8,6 +11,7 @@
 <script>
 export default {
   props: {
+    position: String,
     totalFacilities: Number,
     totalCap: Number,
     divWidth: Number,
@@ -19,7 +23,6 @@ export default {
 @import "../../../node_modules/bulma/sass/utilities/mixins.sass";
 
 .totals {
-  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
