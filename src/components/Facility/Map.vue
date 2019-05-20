@@ -340,8 +340,8 @@ export default {
 
 .tile-selector {
   position: absolute;
-  left: 10px;
-  top: 10px;
+  right: 10px;
+  bottom: 25px;
   z-index: 9;
 }
 

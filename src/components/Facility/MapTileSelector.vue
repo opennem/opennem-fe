@@ -7,10 +7,10 @@
       <div class="dropdown-label">
         {{ selectedLabel }}
       </div>
-      <font-awesome-icon class="fal" :icon="iconDown" />
+      <font-awesome-icon class="fal" :icon="iconUp" />
     </button>
 
-    <transition name="slide-down-fade">
+    <transition name="slide-up-fade">
       <div v-if="dropdownActive" class="dropdown-menu">
         <div class="dropdown-content">
           <a
@@ -31,7 +31,7 @@
 <script>
 import { mixin as clickaway } from 'vue-clickaway';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
-import { faAngleDown, faCheck } from '@fortawesome/fontawesome-pro-light';
+import { faAngleUp, faCheck } from '@fortawesome/fontawesome-pro-light';
 
 const tiles = [
   {
@@ -64,8 +64,8 @@ export default {
   },
 
   computed: {
-    iconDown() {
-      return faAngleDown;
+    iconUp() {
+      return faAngleUp;
     },
     iconCheckmark() {
       return faCheck;
@@ -112,6 +112,10 @@ export default {
 }
 .dropdown-menu {
   min-width: 100px;
+  top: auto;
+  padding-top: 0;
+  bottom: 100%;
+  padding-bottom: 6px;
 }
 .dropdown-label {
   margin-right: 0.5rem;
