@@ -228,11 +228,9 @@ export default {
               highest = ftCaps[d];
             }
           }
-        } else {
-          if (ftCaps[d] >= highest) {
-            highestFt = d;
-            highest = ftCaps[d];
-          }
+        } else if (ftCaps[d] >= highest) {
+          highestFt = d;
+          highest = ftCaps[d];
         }
       });
 
