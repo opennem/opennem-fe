@@ -93,6 +93,7 @@ export default {
   a.dropdown-trigger {
     color: #000;
     display: inline-block;
+    font-family: $header-font-family;
 
     .fal {
       color: $opennem-primary-alpha;

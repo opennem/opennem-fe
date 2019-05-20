@@ -9,7 +9,7 @@
           <font-awesome-icon class="fal" :icon="iconMenu" />
         </span>
         <img class="logo" src="../../assets/opennem-logo.svg" alt="OpenNEM logo" />
-        <span>{{regionLabel}}</span>
+        <span class="region-label">{{regionLabel}}</span>
       </div>
 
       <drawer
@@ -155,6 +155,11 @@ nav {
       font-size: 1.2rem;
       display: none;
     }
+  }
+
+  .region-label {
+    color: #000;
+    margin-left: 3px;
   }
 
   .menu-btn {
