@@ -46,6 +46,12 @@
           :shouldZoomWhenSelected="shouldZoomWhenSelected"
           @facilitySelect="handleFacilitySelect"
         />
+
+        <facility-card
+          v-if="hasSelectedFacility"
+          :facility="selectedFacility"
+          @close="handleCloseDetail"
+        />
         <!-- <generator-detail
           :generator="selectedGenerator"
           @closeGeneratorDetail="handleCloseDetail"
@@ -67,6 +73,7 @@ import FacilityMap from '@/components/Facility/Map';
 import FacilityDetail from '@/components/Facility/Detail';
 import FilterBar from '@/components/Facility/FilterBar';
 import FacilityViewToggle from '@/components/Facility/ViewToggle';
+import FacilityCard from '@/components/Facility/Card';
 
 const ASCENDING = 'asc';
 const DESCENDING = 'desc';
@@ -78,6 +85,7 @@ export default {
     FacilityDetail,
     FilterBar,
     FacilityViewToggle,
+    FacilityCard,
   },
   data() {
     return {

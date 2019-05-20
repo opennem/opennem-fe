@@ -123,10 +123,11 @@
       </div>
     </div>
 
-    <div class="totals" :style="{ width: `${divWidth}px`}">
-      <span>Facilities: <strong>{{totalFacilities}}</strong></span>
-      <span>Capacity: <strong>{{ totalCap | formatNumber }}</strong> </span>
-    </div>
+    <totals
+      :div-width="divWidth"
+      :total-facilities="totalFacilities"
+      :total-cap="totalCap"
+    />
 
   </div>
 </template>
@@ -138,6 +139,7 @@ import { faSortUp, faSortDown } from '@fortawesome/fontawesome-pro-light';
 import { GraphDomains } from '@/domains/graphs';
 import { getRegionAbbrByCode } from '@/domains/regions';
 import { formatDateForDisplay } from '@/lib/formatter';
+import Totals from './Totals';
 
 const colHeaders = [
   {
@@ -165,6 +167,7 @@ const colHeaders = [
 export default {
   components: {
     FontAwesomeIcon,
+    Totals,
   },
 
   props: {
@@ -189,7 +192,7 @@ export default {
       return this.windowWidth < 769;
     },
     techHeaderName() {
-      return this.widthBreak ? 'Tech' : 'Technoloogy';
+      return this.widthBreak ? 'Tech' : 'Technology';
     },
     iconSortUp() {
       return faSortUp;
@@ -456,30 +459,6 @@ export default {
 
   @include tablet {
     font-size: 13px;
-  }
-}
-
-.totals {
-  position: fixed;
-  bottom: 0;
-  z-index: 89;
-  background-color: #C74523;
-  color: #fff;
-  padding: 3px 6px;
-  border-radius: 3px 3px 0 0;
-  font-size: 10px;
-  box-shadow: 0 -2px 5px rgba(100, 100, 100, 0.1);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  strong {
-    color: #fff;
-    font-size: 13px;
-  }
-
-  @include desktop {
-    bottom: 29px;
   }
 }
 
