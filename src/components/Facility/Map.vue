@@ -9,6 +9,12 @@
   <div class="attribution">
     Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.
   </div>
+
+  <totals
+    :div-width="divWidth"
+    :total-facilities="totalFacilities"
+    :total-cap="totalCap"
+  />
 </div>
 </template>
 
@@ -18,10 +24,12 @@ import L from 'leaflet';
 import { scaleLinear } from 'd3-scale';
 import { GraphDomains } from '@/domains/graphs';
 import TileSelector from './MapTileSelector';
+import Totals from './Totals';
 
 export default {
   components: {
     TileSelector,
+    Totals,
   },
   props: {
     facilitiesData: Array,
@@ -58,6 +66,7 @@ export default {
       facilitiesFeature: null,
       emissionsFeature: null,
       windowHeight: window.innerHeight,
+      divWidth: 0,
     };
   },
 
@@ -65,6 +74,30 @@ export default {
     mapHeight() {
       const offset = window.innerWidth < 769 ? 120 : 155;
       return `${this.windowHeight - offset}px`;
+    },
+
+    facilitySelectedTechs() {
+      return this.$store.getters.facilitySelectedTechs;
+    },
+
+    totalFacilities() {
+      return this.facilitiesData.length;
+    },
+
+    totalCap() {
+      let total = 0;
+      this.facilitiesData.forEach((facility) => {
+        if (this.facilitySelectedTechs.length === 0) {
+          total += facility.generatorCap;
+        } else {
+          this.facilitySelectedTechs.forEach((ft) => {
+            if (facility.fuelTechRegisteredCap[ft]) {
+              total += facility.fuelTechRegisteredCap[ft];
+            }
+          });
+        }
+      });
+      return total;
     },
   },
 
@@ -139,6 +172,7 @@ export default {
   mounted() {
     this.setup();
     this.updateMap(this.facilitiesData);
+    this.divWidth = this.$el.offsetWidth;
   },
 
   methods: {
@@ -174,9 +208,12 @@ export default {
       let highest = 0;
       let highestFt = null;
       Object.keys(ftCaps).forEach((d) => {
-        if (ftCaps[d] >= highest) {
-          highestFt = d;
-          highest = ftCaps[d];
+        const included = _.includes(this.facilitySelectedTechs, d);
+        if (included) {
+          if (ftCaps[d] >= highest) {
+            highestFt = d;
+            highest = ftCaps[d];
+          }
         }
       });
 
@@ -185,6 +222,20 @@ export default {
         return ftObj.colour;
       }
       return 'black';
+    },
+
+    getGeneratorCap(facility) {
+      if (this.facilitySelectedTechs.length === 0) {
+        return facility.generatorCap;
+      }
+
+      let cap = 0;
+      this.facilitySelectedTechs.forEach((d) => {
+        if (GraphDomains[d].type !== 'loads' && facility.fuelTechRegisteredCap[d]) {
+          cap += facility.fuelTechRegisteredCap[d];
+        }
+      });
+      return cap;
     },
 
     selectedFacilityBounds() {
@@ -208,7 +259,7 @@ export default {
           const lat = location.latitude;
           const lng = location.longitude;
           const radiusScale = scaleLinear([0, Math.sqrt(3000)], [2000, 50000]);
-          const radius = radiusScale(Math.sqrt(d.generatorCap));
+          const radius = radiusScale(Math.sqrt(this.getGeneratorCap(d)));
           const colour = this.getColour(d.fuelTechs, d);
           L
             .circle([lat, lng], {
