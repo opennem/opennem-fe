@@ -486,7 +486,7 @@ export default {
   padding-top: 5px;
 
   @include tablet {
-    font-size: 13px;
+    font-size: 11px;
   }
 }
 
