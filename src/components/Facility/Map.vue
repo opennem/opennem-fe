@@ -208,8 +208,15 @@ export default {
       let highest = 0;
       let highestFt = null;
       Object.keys(ftCaps).forEach((d) => {
-        const included = _.includes(this.facilitySelectedTechs, d);
-        if (included) {
+        if (this.facilitySelectedTechs.length) {
+          const included = _.includes(this.facilitySelectedTechs, d);
+          if (included) {
+            if (ftCaps[d] >= highest) {
+              highestFt = d;
+              highest = ftCaps[d];
+            }
+          }
+        } else {
           if (ftCaps[d] >= highest) {
             highestFt = d;
             highest = ftCaps[d];
