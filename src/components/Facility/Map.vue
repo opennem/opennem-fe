@@ -156,8 +156,10 @@ export default {
           }).setLatLng([lat, lng]).setContent(facility.displayName);
           this.selectedMarker.openOn(this.map);
 
-          this.map.setZoom(7);
-          this.map.panTo(loc);
+          if (this.map.getZoom() < 7) {
+            this.map.setZoom(7);
+            this.map.panTo(loc);
+          }
         }
       } else if (this.selectedMarker) {
         this.selectedMarker.remove();
@@ -293,6 +295,11 @@ export default {
                 }).setLatLng([lat, lng]).setContent(d.displayName);
 
                 self.hoveredMarker.openOn(self.map);
+              },
+              mouseout() {
+                if (self.hoveredMarker) {
+                  self.hoveredMarker.remove();
+                }
               },
             })
             .addTo(this.facilitiesFeature);
