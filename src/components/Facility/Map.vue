@@ -153,7 +153,7 @@ export default {
         if (hasLocation.latitude && hasLocation.longitude) {
           const lat = hasLocation.latitude;
           const lng = hasLocation.longitude;
-          const loc = new L.LatLng(lat, lng);
+          // const loc = new L.LatLng(lat, lng);
 
           this.selectedMarker = L.popup({
             autoClose: false,
@@ -163,10 +163,7 @@ export default {
           }).setLatLng([lat, lng]).setContent(facility.displayName);
           this.selectedMarker.openOn(this.map);
 
-          if (this.map.getZoom() <= 7) {
-            this.map.setZoom(7);
-            this.map.panTo(loc);
-          }
+          this.map.setView([lat, lng], 7);
         }
       } else if (this.selectedMarker) {
         this.selectedMarker.remove();
