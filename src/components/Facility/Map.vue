@@ -170,10 +170,10 @@ export default {
         }
       } else if (this.selectedMarker) {
         this.selectedMarker.remove();
-        // const bounds = this.facilitiesFeature.getBounds();
-        // if (!_.isEmpty(bounds)) {
-        //   this.map.fitBounds(this.facilitiesFeature.getBounds());
-        // }
+        const bounds = this.facilitiesFeature.getBounds();
+        if (!_.isEmpty(bounds)) {
+          this.map.fitBounds(this.facilitiesFeature.getBounds());
+        }
       }
     },
   },
@@ -193,7 +193,7 @@ export default {
       this.map = L.map('map', {
         attributionControl: false,
         maxZoom: 10,
-        zoomAnimation: false,
+        zoomAnimation: true,
         zoomControl: false,
       }).setView([-29.186936, 143.633537], 4);
       this.facilitiesFeature = L.featureGroup();
