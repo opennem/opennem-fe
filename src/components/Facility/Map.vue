@@ -190,6 +190,7 @@ export default {
       this.map = L.map('map', {
         attributionControl: false,
         maxZoom: 10,
+        minZoom: 4,
         zoomAnimation: true,
         zoomControl: false,
       }).setView([-29.186936, 143.633537], 4);
