@@ -237,7 +237,7 @@ export default {
         const $selected = document.getElementById(selected.stationId);
         if (
           $selected.getBoundingClientRect().top < 110 ||
-          $selected.getBoundingClientRect().top >= this.windowHeight
+          $selected.getBoundingClientRect().top >= this.windowHeight - 60
         ) {
           $selected.scrollIntoView({
             behavior: 'smooth',
