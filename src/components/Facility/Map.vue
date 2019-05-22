@@ -277,7 +277,7 @@ export default {
           const radiusScale = scaleLinear([0, Math.sqrt(3000)], [2000, 50000]);
           const radius = radiusScale(Math.sqrt(this.getGeneratorCap(d)));
           const colour = this.getColour(d.fuelTechs, d);
-          L
+          const circle = L
             .circle([lat, lng], {
               color: colour,
               fillColor: colour,
@@ -286,30 +286,39 @@ export default {
               weight: 1,
               radius,
             })
-            .on({
-              click() {
-                self.handleMapCircleClicked(d);
-              },
-              mouseover() {
-                if (self.hoveredMarker) {
-                  self.hoveredMarker.remove();
-                }
 
-                self.hoveredMarker = L.popup({
-                  autoClose: false,
-                  autoPan: false,
-                  className: 'map-popup',
-                }).setLatLng([lat, lng]).setContent(d.displayName);
+          circle.on({
+            click() {
+              self.handleMapCircleClicked(d);
+            },
+            mouseover(e) {
+              const circleBounds = circle.getBounds();
+              const options = {
+                _id: d.stationId,
+                autoClose: false,
+                autoPan: false,
+                className: 'map-popup',
+              }
+              
+              if (self.hoveredMarker) {
+                self.hoveredMarker.remove();
+              }
 
-                self.hoveredMarker.openOn(self.map);
-              },
-              mouseout() {
-                if (self.hoveredMarker) {
-                  self.hoveredMarker.remove();
-                }
-              },
-            })
-            .addTo(this.facilitiesFeature);
+              self.hoveredMarker = L
+                .popup(options)
+                .setLatLng([circleBounds._northEast.lat, lng])
+                .setContent(d.displayName);
+
+              self.hoveredMarker.openOn(self.map);
+            },
+            mouseout() {
+              if (self.hoveredMarker) {
+                self.hoveredMarker.remove();
+              }
+            },
+          })
+          
+          circle.addTo(this.facilitiesFeature);
         }
       });
 
