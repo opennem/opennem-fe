@@ -55,6 +55,29 @@
           </span>
         </a>
       </div>
+
+      <div class="drawer-footer">
+        <div class="">
+          <p class="version">v2.2 beta</p>
+          <p>
+            <span>Sources:</span>
+            <a href="https://www.aemo.com.au/">AEMO</a>,
+            <a href="http://www.bom.gov.au/">BoM</a>
+          </p>
+        </div>
+        <div style="text-align: right;">
+          <a v-if="isDev" class="icon-link" href="/#/features">
+            <font-awesome-icon class="fal fa-lg" :icon="iconFeatures" />
+          </a>
+          <a class="icon-link" href="https://twitter.com/opennem">
+            <font-awesome-icon class="fal fa-lg" :icon="iconTwitter" />
+          </a>
+          <a class="icon-link" href="https://github.com/opennem">
+            <font-awesome-icon class="fal fa-lg" :icon="iconGitHub" />
+          </a>
+          <p><router-link to="/about">About OpenNEM</router-link></p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -62,7 +85,8 @@
 <script>
 import * as _ from 'lodash';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
-import { faChevronRight, faTimes } from '@fortawesome/fontawesome-pro-light';
+import { faGithub, faTwitter } from '@fortawesome/fontawesome-free-brands';
+import { faChevronRight, faTimes, faVial } from '@fortawesome/fontawesome-pro-light';
 import { getAllRegions } from '@/domains/regions';
 
 const DELAY = 250;
@@ -97,8 +121,24 @@ export default {
     iconClose() {
       return faTimes;
     },
+    iconGitHub() {
+      return faGithub;
+    },
+    iconTwitter() {
+      return faTwitter;
+    },
+    iconFeatures() {
+      return faVial;
+    },
     routeParentName() {
       return this.$route.matched[0].name;
+    },
+    isDev() {
+      const hostname = window.location.hostname;
+      const localhost = 'localhost';
+      const dev = 'dev.opennem.org.au';
+
+      return hostname.includes(localhost) || hostname.includes(dev);
     },
   },
 
@@ -225,6 +265,22 @@ export default {
       right: 15px;
       color: rgba(100, 100, 100, 0.5);
     }
+  }
+}
+
+.drawer-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffdd57;
+  display: flex;
+  font-size: 12px;
+  padding: 4px 8px;
+  justify-content: space-between;
+
+  .icon-link {
+    margin: 0 3px;
   }
 }
 

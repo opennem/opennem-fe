@@ -56,9 +56,6 @@ export default {
   @include tablet {
     left: auto;
     right: auto;
-  }
-
-  @include desktop {
     bottom: 29px;
   }
 }

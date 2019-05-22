@@ -123,11 +123,7 @@ a {
   display: none;
 
   @include tablet {
-    margin-top: 2rem;
     display: block;
-  }
-
-  @include desktop {
     padding: 0;
     position: fixed;
     bottom: 0;
