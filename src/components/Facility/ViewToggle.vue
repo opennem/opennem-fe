@@ -27,7 +27,7 @@ export default {
   components: {
     FontAwesomeIcon,
   },
-  
+
   props: {
     view: String,
   },

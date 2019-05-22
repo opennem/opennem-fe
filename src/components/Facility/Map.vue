@@ -79,7 +79,7 @@ export default {
     },
 
     mapHeight() {
-      const offset = this.widthBreak ? 140 : 155;
+      const offset = this.widthBreak ? 149 : 155;
       return `${this.windowHeight - offset}px`;
     },
 
