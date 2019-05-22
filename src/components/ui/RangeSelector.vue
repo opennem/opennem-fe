@@ -6,7 +6,7 @@
     
     <div class="buttons has-addons">
       <span 
-        class="button is-small is-primary"
+        class="button is-small is-rounded is-primary"
         :class="{ 'is-inverted': currentRange !== dateRange.id }"
         v-for="dateRange in dateSelectors"
         :key="dateRange.id"
@@ -17,7 +17,7 @@
     </div>
     <div class="buttons has-addons interval-buttons">
       <span 
-        class="button is-small is-primary"
+        class="button is-small is-rounded is-primary"
         v-for="p in periods"
         :class="{ 'is-inverted': !chartTypeTransition && currentInterval !== p }"
         :key="p"
@@ -288,16 +288,22 @@ export default {
 
   .button {
     margin-bottom: 0;
-    border-radius: 0;
     min-width: 50px;
+
+    @include mobile {
+      border-radius: 0;
+    }
   }
 
   .button.is-primary.is-inverted  {
-    // background-color: rgba(255, 255, 255, 0.4) !important;
-    background-color: transparent !important;
+    background-color: rgba(255, 255, 255, 0.4) !important;
     
     &:hover {
       background-color: rgba(255, 255, 255, 0.9) !important;
+    }
+
+    @include mobile {
+      background-color: transparent !important;
     }
   }
 }
