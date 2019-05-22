@@ -264,6 +264,12 @@ export default {
     }, 200));
   },
 
+  updated() {
+    this.$nextTick(() => {
+      this.divHeight = this.$el.offsetHeight;
+    });
+  },
+
   filters: {
     formatDate(value) {
       return formatDateForDisplay(value);
