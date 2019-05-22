@@ -402,9 +402,9 @@ export default {
   }
 
   &.is-selected {
-    box-shadow: 0 0 10px rgba(100,100,100,0.2);
+    box-shadow: 0 0 5px rgba(100,100,100,0.2);
     opacity: 1;
-    transform: scale(1.02);
+    transform: scale(1.01);
     z-index: 10;
   }
 
@@ -485,6 +485,10 @@ export default {
 
   @include tablet {
     top: 59px;
+    margin-left: -7px;
+    margin-right: -7px;
+    padding-left: 7px;
+    padding-right: 7px;
   }
 }
 .col-header {
