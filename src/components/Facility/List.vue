@@ -240,7 +240,7 @@ export default {
           $selected.getBoundingClientRect().top >= this.windowHeight - 60
         ) {
           $selected.scrollIntoView({
-            behavior: 'smooth',
+            behavior: 'auto',
             block: 'center',
           });
         }
@@ -278,13 +278,15 @@ export default {
       this.$emit('orderChanged', colId);
     },
     handleRowClick(facility) {
-      if (this.selected === facility) {
-        this.selected = null;
-        this.$emit('facilitySelect', null, true);
-      } else {
-        this.selected = facility;
-        this.$emit('facilitySelect', facility, true);
-      }
+      if (!this.widthBreak) {
+        if (this.selected === facility) {
+          this.selected = null;
+          this.$emit('facilitySelect', null, true);
+        } else {
+          this.selected = facility;
+          this.$emit('facilitySelect', facility, true);
+        }
+      }  
     },
     // eslint-disable-next-line
     handleRowHover: _.debounce(function (facility) {
