@@ -285,28 +285,28 @@ export default {
               opacity: 0.95,
               weight: 1,
               radius,
-            })
+            });
 
           circle.on({
             click() {
               self.handleMapCircleClicked(d);
             },
-            mouseover(e) {
+            mouseover() {
               const circleBounds = circle.getBounds();
               const options = {
                 _id: d.stationId,
                 autoClose: false,
                 autoPan: false,
                 className: 'map-popup',
-              }
-              
+              };
+
               if (self.hoveredMarker) {
                 self.hoveredMarker.remove();
               }
 
               self.hoveredMarker = L
                 .popup(options)
-                .setLatLng([circleBounds._northEast.lat, lng])
+                .setLatLng([circleBounds._northEast.lat, lng]) // eslint-disable-line
                 .setContent(d.displayName);
 
               self.hoveredMarker.openOn(self.map);
@@ -316,8 +316,7 @@ export default {
                 self.hoveredMarker.remove();
               }
             },
-          })
-          
+          });
           circle.addTo(this.facilitiesFeature);
         }
       });

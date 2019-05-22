@@ -286,7 +286,7 @@ export default {
           this.selected = facility;
           this.$emit('facilitySelect', facility, true);
         }
-      }  
+      }
     },
     // eslint-disable-next-line
     handleRowHover: _.debounce(function (facility) {
