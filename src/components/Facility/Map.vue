@@ -122,23 +122,27 @@ export default {
     },
     hoveredFacility(facility) {
       if (facility) {
+        const selected = this.selectedFacility;
+        const selectedId = selected ? selected.stationId : '';
         const hasLocation = facility.location;
 
-        if (this.hoveredMarker) {
-          this.hoveredMarker.remove();
-        }
+        if (selectedId !== facility.stationId) {
+          if (this.hoveredMarker) {
+            this.hoveredMarker.remove();
+          }
 
-        if (hasLocation.latitude && hasLocation.longitude) {
-          const lat = hasLocation.latitude;
-          const lng = hasLocation.longitude;
+          if (hasLocation.latitude && hasLocation.longitude) {
+            const lat = hasLocation.latitude;
+            const lng = hasLocation.longitude;
 
-          this.hoveredMarker = L.popup({
-            autoClose: false,
-            autoPan: false,
-            className: 'map-popup',
-          }).setLatLng([lat, lng]).setContent(facility.displayName);
+            this.hoveredMarker = L.popup({
+              autoClose: false,
+              autoPan: false,
+              className: 'map-popup',
+            }).setLatLng([lat, lng]).setContent(facility.displayName);
 
-          this.hoveredMarker.openOn(this.map);
+            this.hoveredMarker.openOn(this.map);
+          }
         }
       } else if (this.hoveredMarker) {
         this.hoveredMarker.remove();
@@ -296,6 +300,8 @@ export default {
               self.handleMapCircleClicked(d);
             },
             mouseover() {
+              const selected = self.selectedFacility;
+              const selectedId = selected ? selected.stationId : '';
               const circleBounds = circle.getBounds();
               const options = {
                 _id: d.stationId,
@@ -304,16 +310,18 @@ export default {
                 className: 'map-popup',
               };
 
-              if (self.hoveredMarker) {
-                self.hoveredMarker.remove();
+              if (selectedId !== d.stationId) {
+                if (self.hoveredMarker) {
+                  self.hoveredMarker.remove();
+                }
+
+                self.hoveredMarker = L
+                  .popup(options)
+                  .setLatLng([circleBounds._northEast.lat, lng]) // eslint-disable-line
+                  .setContent(d.displayName);
+
+                self.hoveredMarker.openOn(self.map);
               }
-
-              self.hoveredMarker = L
-                .popup(options)
-                .setLatLng([circleBounds._northEast.lat, lng]) // eslint-disable-line
-                .setContent(d.displayName);
-
-              self.hoveredMarker.openOn(self.map);
             },
             mouseout() {
               if (self.hoveredMarker) {
