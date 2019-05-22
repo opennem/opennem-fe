@@ -83,6 +83,7 @@ const state = {
   facilityResponseData: [],
   facilityExportData: [],
   facilitySelectedTechs: [],
+  facilityView: 'list', // map, list
 };
 
 const mutations = {
@@ -98,6 +99,9 @@ const mutations = {
   [MutationTypes.FACILITY_SELECTED_TECHS](state, data) {
     state.facilitySelectedTechs = data;
   },
+  [MutationTypes.FACILITY_VIEW](state, data) {
+    state.facilityView = data;
+  },
 };
 
 const getters = {
@@ -112,6 +116,9 @@ const getters = {
   },
   facilitySelectedTechs: state => {
     return state.facilitySelectedTechs;
+  },
+  facilityView: state => {
+    return state.facilityView;
   },
 };
 
@@ -136,6 +143,9 @@ const actions = {
   },
   facilitySelectedTechs({ commit, state }, data) {
     commit(MutationTypes.FACILITY_SELECTED_TECHS, data);
+  },
+  facilityView({ commit, state }, data) {
+    commit(MutationTypes.FACILITY_VIEW, data);
   },
 };
 

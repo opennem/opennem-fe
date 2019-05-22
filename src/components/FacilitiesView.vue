@@ -2,17 +2,16 @@
 <div>
   <div class="filter-bar-column">
     <filter-bar
-      :showToggle="widthBreak"
       :selectedStatuses="selectedStatuses"
       @selected="handleFilterSelected"
       @selectedStatuses="handleStatusesSelected"
-      @viewSelect="handleViewSelect"
     />
   </div>
 
   <facility-view-toggle
     class="facility-view-toggle"
     v-if="widthBreak"
+    :view="facilityView"
     @viewSelect="handleViewSelect"
   />
 
@@ -101,7 +100,7 @@ export default {
       selectedStatuses: ['Commissioned'],
       selectedFacility: null,
       hoveredFacility: null,
-      selectedView: 'list', // list, map
+      selectedView: '',
       shouldZoomWhenSelected: true,
       filteredFacilities: [],
       totalFacilities: 0,
@@ -112,6 +111,7 @@ export default {
     ...mapGetters({
       facilityData: 'facilityData',
       facilitySelectedTechs: 'facilitySelectedTechs',
+      facilityView: 'facilityView',
     }),
     widthBreak() {
       return this.windowWidth < 769;
@@ -161,9 +161,13 @@ export default {
     regionId() {
       this.updateFacilitiesData();
     },
+    facilityView(view) {
+      this.selectedView = view;
+    },
   },
 
   created() {
+    this.selectedView = this.facilityView;
     this.selectedTechs = this.$store.getters.facilitySelectedTechs;
     // throttle the resize event
     window.addEventListener('resize', _.debounce(() => {
@@ -274,7 +278,7 @@ export default {
       this.selectedStatuses = statuses;
     },
     handleViewSelect(view) {
-      this.selectedView = view;
+      this.$store.dispatch('facilityView', view);
     },
   },
 };

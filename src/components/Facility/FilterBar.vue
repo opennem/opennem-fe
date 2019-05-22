@@ -106,12 +106,6 @@
         @selectedStatuses="handleStatusesSelected"
       />
     </div>
-
-    <!-- <view-toggle
-      style="margin-top: 12px;"
-      v-show="showToggle"
-      @viewSelect="handleViewSelect"
-    /> -->
   </div>  
 </template>
 
@@ -124,18 +118,15 @@ import EventBus from '@/lib/event-bus';
 import { GraphDomains } from '@/domains/graphs';
 import Simplified from '@/domains/groups/simplified';
 import FilterStatus from './FilterStatus';
-import ViewToggle from './ViewToggle';
 
 export default {
   mixins: [clickaway],
   components: {
     FontAwesomeIcon,
     FilterStatus,
-    ViewToggle,
   },
   props: {
     selectedStatuses: Array,
-    showToggle: Boolean,
   },
   data() {
     return {
@@ -314,9 +305,6 @@ export default {
     },
     handleStatusesSelected(selectedStatuses) {
       this.$emit('selectedStatuses', selectedStatuses);
-    },
-    handleViewSelect(view) {
-      this.$emit('viewSelect', view);
     },
   },
 };

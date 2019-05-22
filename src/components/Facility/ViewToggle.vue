@@ -2,7 +2,7 @@
   <div class="facilities-toggle buttons has-addons">
     <a
       class="button is-rounded is-primary is-small"
-      :class="{ 'is-inverted': this.selected !== 'list' }"
+      :class="{ 'is-inverted': this.view !== 'list' }"
       @click="onClick('list')">
       <span class="icon">
         <font-awesome-icon class="fal fa-fw" :icon="iconList" />
@@ -10,7 +10,7 @@
     </a>
     <a
       class="button is-rounded is-primary is-small"
-      :class="{ 'is-inverted': this.selected !== 'map' }"
+      :class="{ 'is-inverted': this.view !== 'map' }"
       @click="onClick('map')">
       <span class="icon">
         <font-awesome-icon class="fal fa-fw" :icon="iconMap" />
@@ -27,11 +27,9 @@ export default {
   components: {
     FontAwesomeIcon,
   },
-
-  data() {
-    return {
-      selected: 'list',
-    };
+  
+  props: {
+    view: String,
   },
 
   computed: {
@@ -45,7 +43,6 @@ export default {
 
   methods: {
     onClick(view) {
-      this.selected = view;
       this.$emit('viewSelect', view);
     },
   },
