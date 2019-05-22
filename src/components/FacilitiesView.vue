@@ -40,7 +40,7 @@
     >
       <div class="map-wrapper" :class="{ 'sticky-detail': !widthBreak }">
         <facility-map
-          :facilitiesData="filteredFacilities"
+          :data="filteredFacilities"
           :selectedFacility="selectedFacility"
           :hoveredFacility="hoveredFacility"
           :shouldZoomWhenSelected="shouldZoomWhenSelected"

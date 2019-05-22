@@ -34,7 +34,7 @@ export default {
     Totals,
   },
   props: {
-    facilitiesData: Array,
+    data: Array,
     selectedFacility: Object,
     hoveredFacility: Object,
     shouldZoomWhenSelected: Boolean,
@@ -42,6 +42,7 @@ export default {
 
   data() {
     return {
+      facilitiesData: [],
       tileLayers: {
         'toner-lite': L.tileLayer('//stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}', {
           minZoom: 0,
@@ -114,8 +115,9 @@ export default {
       });
       this.tileLayers[tile].addTo(this.map);
     },
-    facilitiesData(newData) {
+    data(newData) {
       const sorted = _.orderBy(newData, [this.getGeneratorCap], ['desc']);
+      this.facilitiesData = sorted;
       this.updateMap(sorted);
     },
     hoveredFacility(facility) {
@@ -176,8 +178,10 @@ export default {
   },
 
   mounted() {
+    const sorted = _.orderBy(this.data, [this.getGeneratorCap], ['desc']);
+    this.facilitiesData = sorted;
     this.setup();
-    this.updateMap(this.facilitiesData);
+    this.updateMap(sorted);
     this.divWidth = this.$el.offsetWidth;
 
     window.addEventListener('resize', _.debounce(() => {
