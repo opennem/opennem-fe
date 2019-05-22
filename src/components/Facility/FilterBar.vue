@@ -1,27 +1,40 @@
 <template>
   <div class="facilities-options">
     <div class="filter-bar">
-      <div class="filter-station">
+      <div class="field filter-station" style="position: relative;">
         <button
-          v-if="widthBreak"
-          class="search-button button is-rounded is-small is-primary is-inverted"
-          @click="toggleSearch">
-          <font-awesome-icon v-if="searchOn" class="fal" :icon="iconClose" />
-          <font-awesome-icon v-else class="fal" :icon="iconSearch" />
+          v-if="widthBreak && !searchOn"
+          class="search-button button is-rounded is-small is-dark is-inverted"
+          @click="toggleSearch"
+        >
+          <font-awesome-icon class="fal fa" :icon="iconSearch" />
         </button>
-        <input 
-          v-if="!widthBreak || (searchOn && widthBreak)"
-          class="input is-small is-rounded filter-station-input"
-          type="text"
-          placeholder="Filter By Station Name"
-          autofill="off"
-          autocomplete="off"
-          autocorrect="off"
-          autocapitalize="off"
-          spellcheck="false"
-          v-model="filterFacilityName"
-          @keyup="handleKeyup"
-        />
+
+        <p v-if="!widthBreak || (widthBreak && searchOn)" class="control has-icons-left has-icons-right">
+          <input 
+            class="input is-small is-rounded filter-station-input"
+            type="text"
+            placeholder="Filter By Station Name"
+            autofill="off"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            v-model="filterFacilityName"
+            @keyup="handleKeyup"
+          />
+          <span class="icon is-small is-left">
+            <font-awesome-icon class="fal" :icon="iconSearch" />
+          </span>
+
+          <button
+            v-if="(filterFacilityName && !widthBreak) || (widthBreak && searchOn)"
+            class="close-button button is-rounded is-small is-dark is-inverted"
+            @click="widthBreak ? toggleSearch() : clearFilter()"
+          >
+            <font-awesome-icon class="fal fa" :icon="iconClose" />
+          </button>
+        </p>
       </div>
 
       <div 
@@ -297,6 +310,7 @@ export default {
     },
     clearFilter() {
       this.filterFacilityName = '';
+      this.handleKeyup();
     },
     handleStatusesSelected(selectedStatuses) {
       this.$emit('selectedStatuses', selectedStatuses);
@@ -364,7 +378,7 @@ export default {
   }
 
   .filter-station-input {
-    width: 170px;
+    width: 185px;
     
     @include tablet {
       width: 230px;
@@ -376,6 +390,25 @@ export default {
   .filter-status,
   .search-button {
     margin: 0 3px;
+  }
+
+  .close-button {
+    position: absolute;
+    top: 3.5px;
+    right: 4px;
+    font-size: 9.5px;
+    padding: 3px 6px 2px;
+    width: 20px;
+    height: 20px;
+    color: $opennem-primary;
+  }
+
+  .search-button {
+    font-size: 12px;
+    padding: 2px 6px;
+    width: 28px;
+    height: 28px;
+    color: $opennem-primary;
   }
 
   .buttons {
@@ -417,6 +450,14 @@ export default {
     left: 2px;
     bottom: 1px;
     color: #fff;
+  }
+}
+.control.has-icons-right {
+  margin-bottom: 0.8rem;
+
+  .input {
+    margin-right: 0;
+    padding-right: 2.25em;
   }
 }
 </style>
