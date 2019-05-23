@@ -1,7 +1,7 @@
 /* eslint-disable */
 importScripts(
-  'lodash.js',
-  'moment.js',
+  'lib/lodash.js',
+  'lib/moment.js',
   'graphs.js',
   'duration-parser.js'
 );
