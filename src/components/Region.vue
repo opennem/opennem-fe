@@ -6,7 +6,7 @@
     </div>
   </transition>
 
-  <div style="display: flex; align-items: center;">
+  <div style="display: flex; align-items: center; position: relative; z-index: 9; margin-bottom: 10px;">
     <range-selector class="range-selector-container" v-if="!isExportPng" />
     <panels-selector style="margin-left: 1rem;" v-if="!isPower && featureEmissions"/>
   </div>
