@@ -239,74 +239,99 @@ function handleFetchResponse(responses, state, commit) {
   let data = [];
   let useTera = false;
 
-  responses.forEach((r) => {
-    data = [...data, ...dataTransform(state.domains, r.data, true)];
+  const promises = [];
+
+  responses.forEach((r, i) => {
+    promises.push(new Promise((resolve) => {
+      const worker = new Worker('workers/data-transform-worker.js');
+
+      worker.addEventListener('message', function(e) {
+        resolve(JSON.parse(e.data));
+      }, false);
+
+      worker.postMessage(JSON.stringify({
+        domains: state.domains,
+        data: r.data,
+        interpolate: true,
+      }));
+    }));
+
+    // data = [...data, ...dataTransform(state.domains, r.data, true)];
+  });
+
+  Promise.all(promises).then(function(values) {
+    values.forEach((v) => {
+      data = [...data, ...v];
+    })
+    finishUp(data);
   })
 
-  const endIndex = data.length - 1;
-  const endDate = data[endIndex].date;
+  function finishUp(transformedData) {
+    const endIndex = transformedData.length - 1;
+    const endDate = transformedData[endIndex].date;
 
-  if (isLast24Hrs(state.dates.currentRange)) {
-    data = dataFilterByLastValuePrecision(data, '24', 'hour');
-  } else if (isLast3Days(state.dates.currentRange)) {
-    data = dataFilterByLastValuePrecision(data, '3', 'day');
-  }
-
-  if (state.dates.currentInterval === '30mm') {
-    data = thirtyMinTimeGroup(data);
-  }
-
-  if (state.dates.currentRange === 'allMonthly') {
-    if (state.dates.currentInterval === 'MM') {
-      data = y1MonthTimeGroup(data);
-    } else if (state.dates.currentInterval === 'FY') {
-      data = fYTimeGroup(data);
-      convertToTera(data);
-      useTera = true;
-    } else if (state.dates.currentInterval === 'S3MM') {
-      data = seasonsTimeGroup(data);
-    } else if (state.dates.currentInterval === '3MM') {
-      data = quarterlyTimeGroup(data);
-    } else if (state.dates.currentInterval === 'YYYY') {
-      data = yearlyTimeGroup(data);
-      convertToTera(data);
-      useTera = true;
+    if (isLast24Hrs(state.dates.currentRange)) {
+      transformedData = dataFilterByLastValuePrecision(transformedData, '24', 'hour');
+    } else if (isLast3Days(state.dates.currentRange)) {
+      transformedData = dataFilterByLastValuePrecision(transformedData, '3', 'day');
     }
-  
-  }
 
-  if (state.dates.currentRange === 'lastYear') {
-    if (state.dates.currentInterval === 'WW') {
-      data = y1WeekTimeGroup(data);
-    } else if (state.dates.currentInterval === 'MM') {
-      data = y1MonthTimeGroup(data);
+    if (state.dates.currentInterval === '30mm') {
+      transformedData = thirtyMinTimeGroup(transformedData);
     }
-  }
 
-  // if (state.dates.currentRange === 'lastYear' && state.dates.currentInterval === 'DD') {
-  //   data = dataFilter(data, moment().subtract(1, 'year').toDate(), moment().toDate());
-  // }
-
-  if (state.nemData.nemTrim) {
-    data = dataFilter(data, state.nemData.nemDataTrim.start, state.nemData.nemDataTrim.end);
-  }
-
-  const first = data[0];
-  let hasWarning = false;
-
-  if (moment(first.date).isBefore('2017-01-01')) {
-    if (state.dates.currentRange !== 'allMonthly' &&
-      (state.dates.currentRange === 'lastYear' &&
-        state.dates.currentInterval !== 'MM')) {
-      hasWarning = true;
+    if (state.dates.currentRange === 'allMonthly') {
+      if (state.dates.currentInterval === 'MM') {
+        transformedData = y1MonthTimeGroup(transformedData);
+      } else if (state.dates.currentInterval === 'FY') {
+        transformedData = fYTimeGroup(transformedData);
+        convertToTera(transformedData);
+        useTera = true;
+      } else if (state.dates.currentInterval === 'S3MM') {
+        transformedData = seasonsTimeGroup(transformedData);
+      } else if (state.dates.currentInterval === '3MM') {
+        transformedData = quarterlyTimeGroup(transformedData);
+      } else if (state.dates.currentInterval === 'YYYY') {
+        transformedData = yearlyTimeGroup(transformedData);
+        convertToTera(transformedData);
+        useTera = true;
+      }
+    
     }
-  }
 
-  commit(MutationTypes.NEM_TERA, useTera);
-  commit(MutationTypes.WARNING, hasWarning);
-  commit(MutationTypes.NEM_RESPONSE_DATA, responses);
-  commit(MutationTypes.NEM_DATA, data);
-  commit(MutationTypes.DATA_END_DATE, endDate);
+    if (state.dates.currentRange === 'lastYear') {
+      if (state.dates.currentInterval === 'WW') {
+        transformedData = y1WeekTimeGroup(transformedData);
+      } else if (state.dates.currentInterval === 'MM') {
+        transformedData = y1MonthTimeGroup(transformedData);
+      }
+    }
+
+    // if (state.dates.currentRange === 'lastYear' && state.dates.currentInterval === 'DD') {
+    //   data = dataFilter(data, moment().subtract(1, 'year').toDate(), moment().toDate());
+    // }
+
+    if (state.nemData.nemTrim) {
+      transformedData = dataFilter(transformedData, state.nemData.nemDataTrim.start, state.nemData.nemDataTrim.end);
+    }
+
+    const first = transformedData[0];
+    let hasWarning = false;
+
+    if (moment(first.date).isBefore('2017-01-01')) {
+      if (state.dates.currentRange !== 'allMonthly' &&
+        (state.dates.currentRange === 'lastYear' &&
+          state.dates.currentInterval !== 'MM')) {
+        hasWarning = true;
+      }
+    }
+
+    commit(MutationTypes.NEM_TERA, useTera);
+    commit(MutationTypes.WARNING, hasWarning);
+    commit(MutationTypes.NEM_RESPONSE_DATA, responses);
+    commit(MutationTypes.NEM_DATA, transformedData);
+    commit(MutationTypes.DATA_END_DATE, endDate);
+  }
 }
 
 function handleFetchError(e, commit) {
