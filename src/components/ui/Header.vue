@@ -1,5 +1,5 @@
 <template>
-  <nav role="navigation" aria-label="main dropdown navigation">
+  <nav role="navigation" aria-label="main dropdown navigation" :class="{ 'is-export-header': isExportPng }">
     <ui-warning />
     <export-header v-if="isExportPng" />
 
@@ -119,6 +119,12 @@ nav {
     position: sticky;
     top: -10px;
     padding-bottom: 10px;
+
+    &.is-export-header {
+      top: 0;
+      padding-top: 10px;
+      border-bottom: 1px solid #ccc;
+    }
   }
 }
 

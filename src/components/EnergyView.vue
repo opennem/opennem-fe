@@ -12,7 +12,7 @@
   </div>
   
   <transition name="fade">
-    <div class="columns is-desktop is-gapless is-1" v-show="!isFetching">
+    <div class="columns is-desktop is-gapless is-1" style="justify-content: center;" v-show="!isFetching">
       <div class="column" :class="{ export: isExportPng }">
         <div id="export-container">
           <export-png-header v-if="isExportPng" />
