@@ -6,12 +6,13 @@
     </div>
   </transition>
 
-  <div>
+  <div style="display: flex; align-items: center; position: relative; z-index: 9; margin-bottom: 10px;">
     <range-selector class="range-selector-container" v-if="!isExportPng" />
+    <!-- <group-selection style="margin-left: 1rem;" /> -->
   </div>
   
   <transition name="fade">
-    <div class="columns is-desktop is-variable is-1" v-show="!isFetching">
+    <div class="columns is-desktop is-gapless is-1" style="justify-content: center;" v-show="!isFetching">
       <div class="column" :class="{ export: isExportPng }">
         <div id="export-container">
           <export-png-header v-if="isExportPng" />
@@ -147,7 +148,6 @@ export default {
       }
 
       this.$store.dispatch('generateGroupedNemData');
-      this.$store.dispatch('generateExportData');
       this.$store.dispatch('useGroups', true);
 
       // Generate table data

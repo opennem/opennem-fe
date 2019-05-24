@@ -1,7 +1,7 @@
 /* eslint-disable */
 import * as moment from 'moment';
 import History from '@/models/History';
-import { isPrice, isTemperature, isRooftopSolar, isImports, isLoads } from '@/domains/graphs'; 
+import { isPrice, isTemperature, isRooftopSolar, isImports, isLoads, isValidFuelTech } from '@/domains/graphs'; 
 import { parseInterval, compareAndGetShortestInterval } from './duration-parser';
 
 function shouldInvertValue(id) {
@@ -22,9 +22,11 @@ function getKeysAndStartEndGenerationTime(domains, data) {
   Object.keys(domains).forEach((domain) => {
     const fuelTech = data.find(d => d.fuel_tech === domain);
     const priceOrTemperatureData = data.find(d => d.type === domain);
-    const fuelTechMarketValue = data.find(d => d.type === 'market_value' && d.id.includes(`fuel_tech.${domain}`));
+    const fuelTechMarketValueAndEmissions = data.find(
+      d => (d.type === 'market_value' || d.type === 'emissions') && d.id.includes(`fuel_tech.${domain}`)
+    );
 
-    if (fuelTech || priceOrTemperatureData || fuelTechMarketValue) {
+    if (fuelTech || priceOrTemperatureData || fuelTechMarketValueAndEmissions) {
       keys.push(domain);
 
       if (!endGenTime && fuelTech) {
@@ -95,10 +97,11 @@ export default function(domains, data, interpolate) {
       }
     }
   }
-
   Object.keys(domains).forEach((domain) => {
     const fuelTechData = data.find(d => d.fuel_tech === domain);
-    const fuelTechMarketValue = data.find(d => d.type === 'market_value' && d.id.includes(`fuel_tech.${domain}`));
+    const fuelTechMarketValueOrEmissions = data.find(
+      d => (d.type === 'market_value' || d.type === 'emissions') && d.id.includes(`fuel_tech.${domain}`)
+    );
     const priceOrTemperatureData = data.find(d => d.type === domain);
     let history = null;
 
@@ -110,11 +113,11 @@ export default function(domains, data, interpolate) {
       }
     } else if (priceOrTemperatureData) {
       history = new History(priceOrTemperatureData.history);
-    } else if (fuelTechMarketValue) {
-      history = new History(fuelTechMarketValue.history);
+    } else if (fuelTechMarketValueOrEmissions) {
+      history = new History(fuelTechMarketValueOrEmissions.history);
     }
 
-    if (fuelTechData || priceOrTemperatureData || fuelTechMarketValue) {
+    if (fuelTechData || priceOrTemperatureData || fuelTechMarketValueOrEmissions) {
       const duration = parseInterval(history.interval);
       allIntervals[domain] = duration;
 
@@ -187,13 +190,43 @@ export default function(domains, data, interpolate) {
           series.currentValue = d[series.key];
   
         } else if (d[series.key] === null) {
-  
+
           if (series.interpolation === 'step') {
             d[series.key] = series.currentValue;
           }
-  
+
         }
       });
+    });
+  }
+
+  // kgCO₂e/MWh - intensity
+  // MtCO₂e - emissions
+  if (newChartData.length > 0) {
+    const ftWithEmissions = [];
+    const demandFt = [];
+    Object.keys(newChartData[0]).forEach(key => {
+      if (key.includes('.emissions')) {
+        const lastIndex = key.indexOf('.');
+        ftWithEmissions.push(key.substring(0, lastIndex));
+      }
+      if (isValidFuelTech(key)) {
+        demandFt.push(key);
+      }
+    });
+
+    let demand = 0;
+    let emissions = 0;
+    newChartData.forEach((d, i) => {
+      ftWithEmissions.forEach(ftE => {
+        emissions += d[`${ftE}.emissions`] * 1000;
+        d[`${ftE}.emissions`] = d[`${ftE}.emissions`] / 1e6;
+      });
+      demandFt.forEach(ft => {
+        demand += d[ft];
+      });
+      // console.log(emissions, demand, emissions / demand * 1000)
+      newChartData[i].emission_intensity = emissions / (demand * 1000);
     });
   }
 

@@ -6,12 +6,13 @@
     </div>
   </transition>
 
-  <div>
+  <div style="display: flex; align-items: center; position: relative; z-index: 9; margin-bottom: 10px;">
     <range-selector class="range-selector-container" v-if="!isExportPng" />
+    <panels-selector style="margin-left: 1rem;" v-if="!isPower && featureEmissions"/>
   </div>
   
   <transition name="fade">
-    <div class="columns is-desktop is-variable is-1" v-show="!isFetching">
+    <div class="columns is-desktop is-gapless is-1" style="justify-content: center;" v-show="!isFetching">
       <div class="column" :class="{ export: isExportPng }">
         <div id="export-container">
           <export-png-header v-if="isExportPng" />
@@ -74,7 +75,9 @@ import ExportLegend from './Export/Legend';
 import UiZoomOutButton from './ui/ZoomOutButton';
 import UiLoader from './ui/Loader';
 import RangeSelector from './ui/RangeSelector';
+import PanelsSelector from './ui/PanelsSelector';
 import ChartTips from './ui/ChartTips';
+// import GroupSelection from './ui/GroupSelection';
 
 export default {
   components: {
@@ -89,7 +92,9 @@ export default {
     PanelButtons,
     UiLoader,
     RangeSelector,
+    PanelsSelector,
     ChartTips,
+    // GroupSelection,
   },
   created() {
     const regionId = this.$route.params.region;
@@ -132,6 +137,7 @@ export default {
       yearsWeeks: 'yearsWeeks',
       nemUrls: 'nemUrls',
       groupSelected: 'groupSelected',
+      featureEmissions: 'featureEmissions',
     }),
     regionId() {
       return this.$route.params.region;
@@ -167,7 +173,6 @@ export default {
       }
 
       this.$store.dispatch('generateGroupedNemData');
-      this.$store.dispatch('generateExportData');
       this.$store.dispatch('useGroups', true);
 
       // Generate table data
@@ -182,6 +187,7 @@ export default {
     },
     regionId(id) {
       this.$store.dispatch('setExportRegion', getRegionLabel(id));
+      this.fetch();
     },
     currentRange() {
       this.fetch();
@@ -218,9 +224,8 @@ export default {
       const prependUrl = `${visType}${interval}`;
 
       let urls = this.chartTypeTransition ?
-        this.yearsWeeks.map(w => `${prependUrl}/${this.region}1${w}.json`) :
-        [`${prependUrl}/${this.region}1${extension}.json`];
-
+        this.yearsWeeks.map(w => `${prependUrl}/${this.regionId}1${w}.json`) :
+        [`${prependUrl}/${this.regionId}1${extension}.json`];
       if (this.nemUrls.length > 0) {
         const newUrls = this.nemUrls.map((u) => {
           if (u.indexOf('testing') === 0) {

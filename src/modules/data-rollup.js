@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { isValidFuelTech, isFTMarketValue } from '@/domains/graphs';
+import { isValidFuelTech, isFTMarketValue, isFTEmissions } from '@/domains/graphs';
 
 export default function (d) {
   const newD = {};
@@ -7,7 +7,29 @@ export default function (d) {
   let tempMeanNum = 0;
   let priceNum = 0;
 
+  const ftWithEmissions = [];
+  const demandFt = [];
+  let demand = 0;
+  let emissions = 0;
+  
+  Object.keys(d[0]).forEach(key => {
+    if (key.includes('.emissions')) {
+      const lastIndex = key.indexOf('.');
+      ftWithEmissions.push(key.substring(0, lastIndex));
+    }
+    if (isValidFuelTech(key)) {
+      demandFt.push(key);
+    }
+  });
+
   d.forEach((e) => {
+    ftWithEmissions.forEach(ftE => {
+      emissions += e[`${ftE}.emissions`];
+    });
+    demandFt.forEach(ft => {
+      demand += e[ft];
+    });
+    
     Object.keys(e).forEach((f) => {
       let isNew = false;
       if (!newD[f]) { 
@@ -24,6 +46,10 @@ export default function (d) {
       }
 
       if (isFTMarketValue(f)) {
+        newD[f] += e[f] || 0;
+      }
+
+      if (isFTEmissions(f)) {
         newD[f] += e[f] || 0;
       }
 
@@ -52,6 +78,8 @@ export default function (d) {
     });
   });
 
+  const emissionIntensity = (emissions * 1e6 * 1000) / (demand * 1000);
+  newD.emission_intensity = emissionIntensity;
   newD.volume_weighted_price = newD.volume_weighted_price / priceNum;
   
   const newPrice = newD.volume_weighted_price;

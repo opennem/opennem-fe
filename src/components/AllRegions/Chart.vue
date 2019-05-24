@@ -15,6 +15,7 @@ import { findRange } from '@/domains/date-ranges';
 import {
   getFieldMappings,
   getStockGraphs,
+  getEmissionsStockGraphs,
   getNemGuides,
   getChartConfig,
 } from '@/lib/chart-helpers';
@@ -61,6 +62,7 @@ export default {
       currentRange: 'currentRange',
       currentInterval: 'currentInterval',
       tera: 'tera',
+      featureEmissions: 'featureEmissions',
     }),
     energyUnit() {
       return this.tera ? 'TWh' : 'GWh';
@@ -133,13 +135,23 @@ export default {
       const unit = this.isPower ? 'MW' : this.energyUnit;
       const panels = this.isPower ?
         powerPanel(this.getPanelListeners()) :
-        energyPanel(this.getPanelListeners(), this.currentInterval, unit);
+        energyPanel(this.getPanelListeners(), this.currentInterval, unit, this.featureEmissions);
       const config = getChartConfig({
         dataSets: [],
         panels,
       }, this.isPower, this.groupToPeriods.slice(0));
 
       config.panels[0].categoryAxis.listeners = this.getCategoryAxisListeners();
+
+      if (this.isPower) {
+        config.panels[0].percentHeight = 100;
+      } if (this.featureEmissions) {
+        config.panels[0].percentHeight = 50;
+        config.panels[1].percentHeight = 25;
+        config.panels[2].percentHeight = 15;
+      } else {
+        config.panels[0].percentHeight = 100;
+      }
 
       this.chart = window.AmCharts.makeChart(this.$el, config);
 
@@ -183,6 +195,11 @@ export default {
           this.customDomains,
         );
       this.chart.panels[0].guides = this.isPower ? getNemGuides(this.chartData, false) : [];
+      if (!this.isPower) {
+        if (this.featureEmissions) {
+          this.chart.panels[1].stockGraphs = getEmissionsStockGraphs(this.keys, this.customDomains);
+        }
+      }
       // this.chart.panels[0].guides = getNemGuides(this.chartData, showWeekends);
       this.chart.validateData();
     },
@@ -251,13 +268,15 @@ export default {
     },
 
     onChartRendered(e) {
+      this.$store.dispatch('chartWidth', e.chart.divRealWidth);
+      this.$store.dispatch('clientX', e.finalX);
       if (e.chart.id === 'stockPanel0') {
-        this.$store.dispatch('chartWidth', e.chart.divRealWidth);
         this.$store.dispatch('chartHeight', e.chart.divRealHeight);
-        this.$store.dispatch('clientX', e.finalX);
         this.$store.dispatch('clientY', e.finalY);
         this.$store.dispatch('mainPanelHover', true);
       } else {
+        this.$store.dispatch('chartHeight', 320);
+        this.$store.dispatch('clientY', 30);
         this.$store.dispatch('mainPanelHover', false);
       }
     },
@@ -523,7 +542,7 @@ export default {
   height: 350px;
 
   @include desktop {
-    height: 550px;
+    height: 580px;
   }
 }
 

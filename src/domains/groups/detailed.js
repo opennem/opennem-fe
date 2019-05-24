@@ -68,6 +68,20 @@ export default {
       colour: '#F48E1B',
       fields: ['gas_steam'],
     },
+    {
+      id: 'gas_lfg',
+      label: 'Gas (Landfill)',
+      type: 'sources',
+      colour: '#DD8018',
+      fields: ['gas_lfg'],
+    },
+    {
+      id: 'gas_wcmg',
+      label: 'Gas (Waste Coal Mine)',
+      type: 'sources',
+      colour: '#B46813',
+      fields: ['gas_wcmg'],
+    },
 
     {
       id: 'distillate',

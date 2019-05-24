@@ -23,7 +23,7 @@
 
       <div class="level footer-wrapper" v-else>
         <div class="level-left">
-          <p class="version">v2.1 beta</p>
+          <p class="version">v2.2 beta</p>
           <p>
             <span>Sources:</span>
             <a href="https://www.aemo.com.au/">AEMO</a>,
@@ -118,15 +118,16 @@ a {
 
 .footer {
   width: 100%;
-  // color: $opennem-primary-invert;
   font-size: 0.8rem;
-  margin-top: 2rem;
   padding: 0.3rem 0 0.7rem;
+  display: none;
 
-  @include desktop {
+  @include tablet {
+    display: block;
     padding: 0;
     position: fixed;
     bottom: 0;
+    z-index: 999;
   }
 }
 
@@ -134,11 +135,28 @@ a {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0.3rem 1rem 0.4rem;
+  align-items: flex-start;
+}
+
+.map-attribution {
+  @include desktop {
+    margin-left: 2rem;
+  }
+  @include mobile {
+    margin-bottom: 1rem;
+  }
+}
+.level-left {
+  @include tablet {
+    display: flex;
+  }
+  @include desktop {
+    display: flex;
+  }
 }
 
 @media only screen and (min-width: 500px) {
-  .level,
-  .level-left {
+  .level {
     display: flex;
   }
   .version {

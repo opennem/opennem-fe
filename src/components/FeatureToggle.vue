@@ -8,10 +8,16 @@
         </button>
       </p>
       
-      <div class="panel-block">
+      <!-- <div class="panel-block">
         <label>
           <input type="checkbox" v-model="moreDateRanges">
           <span class="label-text">Show more date range selections (energy charts)</span>
+        </label>
+      </div> -->
+      <div class="panel-block">
+        <label>
+          <input type="checkbox" v-model="featureEmissions">
+          <span class="label-text">Show Emissions Charts</span>
         </label>
       </div>
 
@@ -43,6 +49,14 @@ export default {
       },
       set(newValue) {
         this.$store.dispatch('moreDateRanges', newValue);
+      },
+    },
+    featureEmissions: {
+      get() {
+        return this.$store.getters.featureEmissions;
+      },
+      set(newValue) {
+        this.$store.dispatch('featureEmissions', newValue);
       },
     },
   },

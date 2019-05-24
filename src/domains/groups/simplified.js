@@ -38,7 +38,7 @@ export default {
       label: 'Gas',
       type: 'sources',
       colour: '#F48E1B',
-      fields: ['gas_recip', 'gas_ocgt', 'gas_ccgt', 'gas_steam'],
+      fields: ['gas_recip', 'gas_ocgt', 'gas_ccgt', 'gas_steam', 'gas_lfg', 'gas_wcmg'],
     },
 
     {

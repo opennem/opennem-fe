@@ -6,4 +6,8 @@
       background-color: #fff;
     }
   }
+
+  .buttons.has-addons .button:not(:last-child) {
+    margin-right: 0;
+  }
 }

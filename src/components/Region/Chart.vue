@@ -15,6 +15,7 @@ import Months from '@/domains/months';
 import {
   getFieldMappings,
   getStockGraphs,
+  getEmissionsStockGraphs,
   getNemGuides,
   getChartConfig,
 } from '@/lib/chart-helpers';
@@ -38,6 +39,7 @@ import {
   getGenerationOnlyPanelPercentHeight,
   getGenerationPricePanelPercentHeight,
   getGenerationTemperaturePanelPercentHeight,
+  panelHeights,
 } from './config';
 
 export default {
@@ -68,6 +70,9 @@ export default {
       dataEndDate: 'getDataEndDate',
       showPricePanel: 'showPricePanel',
       showTemperaturePanel: 'showTemperaturePanel',
+      showEmissionVolumePanel: 'showEmissionVolumePanel',
+      showEmissionIntensityPanel: 'showEmissionIntensityPanel',
+      panelsSelected: 'panelsSelected',
       isExportPng: 'isExportPng',
       isPower: 'isPower',
       groupToPeriods: 'groupToPeriods',
@@ -142,6 +147,16 @@ export default {
       this.chart.categoryAxesSettings.groupToPeriods = newGroupTo;
       this.chart.validateData();
     },
+    panelsSelected() {
+      this.initialZoom = this.isChartZoomed;
+      if (this.chartRendered) {
+        this.chartRendered = false;
+        this.clearChart();
+        this.setupChart();
+      }
+      this.setupKeys();
+      this.updateChart();
+    },
   },
   created() {
     // debounce the resize event
@@ -167,6 +182,13 @@ export default {
     setChartPanelHeights(heightArr) {
       for (let i = 0; i < this.panelNum; i += 1) {
         this.chart.panels[i].percentHeight = heightArr[i];
+      }
+    },
+
+    setConfigPanelHeights(config, panelNum, heightArr) {
+      for (let i = 0; i < panelNum; i += 1) {
+        // eslint-disable-next-line
+        config.panels[i].percentHeight = heightArr[i];
       }
     },
 
@@ -202,7 +224,6 @@ export default {
       const showBullets = isLast24Hrs(this.currentRange);
       const unit = this.isPower ? 'MW' : this.energyUnit;
 
-
       if (this.showPricePanel && this.showTemperaturePanel) {
         panels = this.isPower ?
           getAllPanelsGeneration(
@@ -220,6 +241,7 @@ export default {
             showBullets,
             this.currentInterval,
             unit,
+            this.panelsSelected.id,
           );
       } else if (this.showPricePanel) {
         panels = getGenerationAndPricePanels(this.getPanelListeners());
@@ -243,30 +265,12 @@ export default {
         panels,
       }, this.isPower, this.groupToPeriods.slice(0));
 
-      // manually adjust individual panel percentage heights
-      switch (panelNum) {
-        case 1:
-          config.panels[0].percentHeight = 100;
-          break;
-        case 2:
-          config.panels[0].percentHeight = 70;
-          config.panels[1].percentHeight = 30;
-          break;
-        case 4:
-          config.panels[0].percentHeight = 65;
-          config.panels[1].percentHeight = 10;
-          config.panels[2].percentHeight = 13;
-          config.panels[3].percentHeight = 7;
-          break;
-        case 5:
-        default:
-          config.panels[0].percentHeight = 50;
-          config.panels[1].percentHeight = 7;
-          config.panels[2].percentHeight = 13;
-          config.panels[3].percentHeight = 5;
-          config.panels[4].percentHeight = 15;
+      let pHeights = panelHeights.priceTemperature;
+      if (!this.power && this.panelsSelected.id === 'emissionVolumeIntensity') {
+        pHeights = panelHeights.emissionVolIntensity;
       }
 
+      this.setConfigPanelHeights(config, panelNum, pHeights);
       config.panels[0].categoryAxis.listeners = this.getCategoryAxisListeners();
       this.chart = window.AmCharts.makeChart(this.$el, config);
 
@@ -308,6 +312,10 @@ export default {
           this.disabledSeries,
           this.customDomains,
         );
+
+      if (!this.isPower && this.panelsSelected.id === 'emissionVolumeIntensity') {
+        this.chart.panels[1].stockGraphs = getEmissionsStockGraphs(this.keys, this.customDomains);
+      }
 
       // add Guides
       // const showWeekends = !this.isPower;

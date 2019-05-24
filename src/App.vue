@@ -38,7 +38,9 @@ export default {
     }),
     showMainNav() {
       const name = this.$route.name;
-      return name === 'home' || name === 'regions';
+      return name === 'home' || name === 'region' ||
+        name === 'home-energy' || name === 'home-facilities' ||
+        name === 'region-energy' || name === 'region-facilities';
     },
     isAbout() {
       return this.$route.name === 'about';
@@ -64,6 +66,7 @@ export default {
 @import "styles/button.scss";
 @import "styles/date-range.scss";
 @import "styles/tooltip.scss";
+@import "styles/drawer.scss";
 
 /** Bulma SCSS customisation **/
 // 1. Import the initial variables
@@ -95,6 +98,43 @@ section {
 
   @include mobile {
     margin: 0 auto;
+    padding: 0;
+  }
+}
+
+// Map
+.map-popup {
+  font-family: $primary-font-family;
+  font-weight: 600;
+  font-size: 18px;
+
+  .leaflet-popup-content-wrapper {
+    border-radius: 3px;
+    box-shadow: 0 2px 6px rgba(100, 100, 100, 0.8);
+  }
+  .leaflet-popup-content {
+    padding: 3px 9px;
+    margin: 0;
+  }
+  .leaflet-popup-tip-container {
+    width: 44px;
+  }
+  .leaflet-popup-tip {
+    width: 10px;
+    height: 15px;
+  }
+  .leaflet-popup-close-button {
+    display: none;
+  }
+  .leaflet-popup-content-wrapper,
+  .leaflet-popup-tip {
+    background-color: #000;
+    color: #fff;
+  }
+  &.selected .leaflet-popup-content-wrapper,
+  &.selected .leaflet-popup-tip {
+    background-color: #C74523;
+    color: #fff;
   }
 }
 </style>

@@ -49,3 +49,17 @@
   transform: translateY(-10px);
   opacity: 0;
 }
+
+/* slide up fade */
+.slide-up-fade-enter-active {
+  transition: all .1s linear;
+}
+.slide-up-fade-leave-active {
+  transition: all .05s linear;
+}
+.slide-up-fade-enter, 
+.slide-up-fade-leave-to
+{
+  transform: translateY(50px);
+  opacity: 0;
+}

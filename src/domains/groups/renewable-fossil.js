@@ -15,7 +15,7 @@ export default {
       type: 'sources',
       colour: '#333',
       fields: ['battery_discharging', 'gas_recip',
-        'gas_ocgt', 'gas_ccgt', 'gas_steam', 'distillate',
+        'gas_ocgt', 'gas_ccgt', 'gas_steam', 'gas_lfg', 'gas_wcmg', 'distillate',
         'black_coal', 'brown_coal'],
     },
   ],

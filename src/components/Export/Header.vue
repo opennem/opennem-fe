@@ -58,6 +58,6 @@ export default {
 <style lang="scss" scoped>
 .export-nav {
   max-width: 650px;
-  margin-top: 20px;
+  margin: 20px auto 0;
 }
 </style>
