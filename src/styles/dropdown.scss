@@ -4,13 +4,12 @@
   left: 0;
   right: 0;
   margin: 0 auto;
-  font-family: $header-font-family;
 }
 
 .dropdown-content {
   border-radius: 4px;
   border-top: 0;
-  box-shadow: 0 0 2px rgba(10, 10, 10, 0.05);
+  box-shadow: 0 0 15px rgba(100, 100, 100, 0.3) !important;
 
   .dropdown-item {
     font-size: 1rem;
@@ -24,4 +23,27 @@
 
 hr.dropdown-divider {
   color: #eee;
+}
+
+.select  {
+  &:hover::after {
+    border-color:#C74523;
+  }
+
+  label {
+    font-family: $header-font-family;
+    font-weight: 600;
+    // margin-right: 0.2rem;
+    font-size: 1em;
+  }
+
+  select {
+    font-family: $primary-font-family;
+    background-color: rgba(255, 255, 255, 0.4);
+    border: none;
+
+    &:hover {
+      background-color: #fff;
+    }
+  }
 }

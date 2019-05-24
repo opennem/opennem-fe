@@ -1,7 +1,6 @@
 <template>
   <div class="region-selector dropdown" :class="{'is-active': dropdownActive}">
     <a class="dropdown-trigger" v-on-clickaway="onClickAway" @click="handleClick">
-      <img class="logo" src="../../assets/opennem-logo.svg" alt="OpenNEM logo" />
       <span>
         <strong v-if="isHome">All Regions</strong>
         <strong v-else>{{regionLabel}}</strong>
@@ -35,6 +34,7 @@
 </template>
 
 <script>
+import _ from 'lodash';
 import { mixin as clickaway } from 'vue-clickaway';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import { faAngleDown } from '@fortawesome/fontawesome-pro-light';
@@ -57,10 +57,14 @@ export default {
       return getRegionLabel(this.$route.params.region);
     },
     isHome() {
-      return this.$route.name === 'home';
+      const routeName = this.$route.name;
+      return routeName === 'home-energy' || routeName === 'home-facilities';
     },
     iconDown() {
       return faAngleDown;
+    },
+    isEnergyRoute() {
+      return _.includes(this.$route.name, 'energy');
     },
   },
   methods: {
@@ -72,15 +76,18 @@ export default {
       this.dropdownActive = false;
     },
     handleRegionChange(regionId) {
+      const view = this.isEnergyRoute ? 'energy' : 'facilities';
       this.$store.dispatch('region', `${regionId}1`);
-      this.$router.push({ name: 'regions', params: { region: regionId } });
+      this.$router.push({ name: `region-${view}`, params: { region: regionId } });
+      window.scrollTo(0, 0);
     },
     isCurrentSelection(id) {
       return this.$route.params.region === id;
     },
     goHome() {
+      const view = this.isEnergyRoute ? 'energy' : 'facilities';
       this.$store.dispatch('region', 'nem');
-      this.$router.push({ name: 'home' });
+      this.$router.push({ name: `home-${view}` });
     },
   },
 };
@@ -91,33 +98,37 @@ export default {
 @import "../../styles/variables.scss";
 
 .region-selector {
-  font-family: $header-font-family;
-  font-size: 1.4rem;
+  justify-content: center;
+  font-size: 1.1rem;
+
+  @include tablet {
+    font-size: 1.2rem;
+  }
 
   a.dropdown-trigger {
     color: #000;
+    font-family: $header-font-family;
 
     .fal {
-      position: relative;
-      top: 3px;
       color: $opennem-primary-alpha;
     }
 
     span {
-      position: relative;
-      top: 2px;
-      padding: 0.4rem 1rem 0.5rem 0.9rem;
-      border-radius: 3rem;
+      padding: 2px 6px;
+      border-radius: 3px;
     }
 
     &:hover span {
       background-color: rgba(255,255,255,0.5);
     }
   }
-}
-@media only screen and (min-width: 600px) {
-  .region-selector {
-    font-size: 2rem;
+
+  .dropdown-menu {
+    min-width: auto;
+
+    @include tablet {
+      min-width: 10rem;
+    }
   }
 }
 </style>

@@ -6,12 +6,13 @@
     </div>
   </transition>
 
-  <div>
+  <div style="display: flex; align-items: center; position: relative; z-index: 9; margin-bottom: 10px;">
     <range-selector class="range-selector-container" v-if="!isExportPng" />
+    <panels-selector style="margin-left: 1rem;" v-if="!isPower && featureEmissions"/>
   </div>
   
-  <transition name="slide-fade">
-    <div class="columns is-desktop is-variable is-1" v-show="!isFetching">
+  <transition name="fade">
+    <div class="columns is-desktop is-gapless is-1" style="justify-content: center;" v-show="!isFetching">
       <div class="column" :class="{ export: isExportPng }">
         <div id="export-container">
           <export-png-header v-if="isExportPng" />
@@ -22,7 +23,8 @@
             </transition>
 
             <panel-buttons />
-            <region-chart :chartData="nemData" v-show="!error" />
+            <chart-tips v-if="!isExportPng" />
+            <region-chart :chartData="groupedNemData" :nemData="nemData" :customDomains="customDomains" v-show="!error" />
             <div v-if="isExportPng"
               :class="{
                 'price-on': showPricePanel,
@@ -73,6 +75,9 @@ import ExportLegend from './Export/Legend';
 import UiZoomOutButton from './ui/ZoomOutButton';
 import UiLoader from './ui/Loader';
 import RangeSelector from './ui/RangeSelector';
+import PanelsSelector from './ui/PanelsSelector';
+import ChartTips from './ui/ChartTips';
+// import GroupSelection from './ui/GroupSelection';
 
 export default {
   components: {
@@ -87,6 +92,9 @@ export default {
     PanelButtons,
     UiLoader,
     RangeSelector,
+    PanelsSelector,
+    ChartTips,
+    // GroupSelection,
   },
   created() {
     const regionId = this.$route.params.region;
@@ -109,6 +117,7 @@ export default {
   computed: {
     ...mapGetters({
       nemData: 'nemData',
+      groupedNemData: 'groupedNemData',
       isFetching: 'isFetching',
       isChartZoomed: 'isChartZoomed',
       chartTypeTransition: 'chartTypeTransition',
@@ -127,6 +136,8 @@ export default {
       currentInterval: 'currentInterval',
       yearsWeeks: 'yearsWeeks',
       nemUrls: 'nemUrls',
+      groupSelected: 'groupSelected',
+      featureEmissions: 'featureEmissions',
     }),
     regionId() {
       return this.$route.params.region;
@@ -137,6 +148,20 @@ export default {
     showTemperatureRange() {
       return !this.isPower;
     },
+    customDomains() {
+      const domains = {};
+      this.groupSelected.groups.forEach((g) => {
+        domains[g.id] = {
+          colour: g.colour,
+          type: g.type,
+          label: g.label,
+        };
+      });
+
+      this.$store.dispatch('domainGroups', domains);
+
+      return domains;
+    },
   },
   watch: {
     nemData(data) {
@@ -146,6 +171,9 @@ export default {
       if (!this.isChartZoomed) {
         updateRouterStartEnd(this.$router, start, end);
       }
+
+      this.$store.dispatch('generateGroupedNemData');
+      this.$store.dispatch('useGroups', true);
 
       // Generate table data
       this.$store.dispatch('generateRangeSummary', {
@@ -159,6 +187,7 @@ export default {
     },
     regionId(id) {
       this.$store.dispatch('setExportRegion', getRegionLabel(id));
+      this.fetch();
     },
     currentRange() {
       this.fetch();
@@ -170,6 +199,9 @@ export default {
     },
     chartTypeTransition() {
       this.fetch();
+    },
+    groupSelected() {
+      this.$store.dispatch('generateGroupedNemData');
     },
   },
   methods: {
@@ -192,9 +224,8 @@ export default {
       const prependUrl = `${visType}${interval}`;
 
       let urls = this.chartTypeTransition ?
-        this.yearsWeeks.map(w => `${prependUrl}/${this.region}1${w}.json`) :
-        [`${prependUrl}/${this.region}1${extension}.json`];
-
+        this.yearsWeeks.map(w => `${prependUrl}/${this.regionId}1${w}.json`) :
+        [`${prependUrl}/${this.regionId}1${extension}.json`];
       if (this.nemUrls.length > 0) {
         const newUrls = this.nemUrls.map((u) => {
           if (u.indexOf('testing') === 0) {
@@ -235,11 +266,6 @@ export default {
   @include mobile {
     margin-top: 3rem;
   }
-}
-
-.range-selector-container {
-  padding: 0.3rem 0;
-  margin-bottom: 1rem;
 }
 
 .region-summary {

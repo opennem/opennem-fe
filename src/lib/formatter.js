@@ -52,8 +52,8 @@ function formatDateForExport(date, formatString) {
 function formatNumberForDisplay(number, precision) {
   const formatter = precision || '0,0';
   let formatted =
-    number === 0 || isNaN(number)
-      ? '-'
+    number === 0 || isNaN(number) || !isFinite(number)
+      ? '–'
       : numeral(number).format(formatter);
 
   if (number && Math.abs(number) < 0.1) {

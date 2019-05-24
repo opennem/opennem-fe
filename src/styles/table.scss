@@ -4,14 +4,23 @@ table.summary-table {
   font-size: 0.8rem;
 
   caption {
-    font-family: $header-font-family;
     text-align: left;
-    font-weight: 600;
-    font-size: 1rem;
     color: #000;
-    border-bottom: 1px solid #000;
-    text-transform: uppercase;
-    padding: 0.25em 0.5em;
+    padding: 0.25em 0 0.25em 0.5em;
+    font-size: 1rem;
+    font-weight: 100;  
+    min-height: 2rem;
+  
+    > span {
+      font-family: $header-font-family;
+      font-size: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+   }
+  }
+
+  thead tr th {
+    border-top: 1px solid #000;
   }
 
   tbody tr:last-child td,
@@ -24,10 +33,10 @@ table.summary-table {
   }
 
   td, th {
-    font-size: 1em;
+    font-size: 0.85em;
 
-    @include desktop {
-      // font-size: 1em;
+    @include tablet {
+      font-size: 1em;
     }
   }
 
@@ -57,7 +66,13 @@ table.summary-table {
   .cell-value {
     font-family: $numbers-font-family;
     text-align: right;
+    font-size: 0.8em;
+
+    @include tablet {
+      font-size: 1em;
+    }
   }
+
   .source-colour {
     width: 17px;
     height: 17px;
@@ -71,6 +86,12 @@ table.summary-table {
       // height: 17px;
     }
   }
+
+  th.group-selector {
+    padding-top: 6px;
+    padding-left: 0;
+  }
+
   .date-value {
     display: block;
     font-family: $primary-font-family;

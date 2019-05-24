@@ -15,6 +15,7 @@ import { findRange } from '@/domains/date-ranges';
 import {
   getFieldMappings,
   getStockGraphs,
+  getEmissionsStockGraphs,
   getNemGuides,
   getChartConfig,
 } from '@/lib/chart-helpers';
@@ -34,6 +35,8 @@ import {
 export default {
   props: {
     chartData: Array,
+    nemData: Array,
+    customDomains: Object,
   },
   data() {
     return {
@@ -58,7 +61,12 @@ export default {
       disabledSeries: 'disabledSeries',
       currentRange: 'currentRange',
       currentInterval: 'currentInterval',
+      tera: 'tera',
+      featureEmissions: 'featureEmissions',
     }),
+    energyUnit() {
+      return this.tera ? 'TWh' : 'GWh';
+    },
   },
   watch: {
     chartData() {
@@ -124,18 +132,26 @@ export default {
     },
 
     setupChart() {
-      // const panels = this.isPower ?
-      //   powerPanel(this.getPanelListeners()) :
-      //   energyPanel(this.getPanelListeners(), getPeriodAxisLabel(this.currentRange));
+      const unit = this.isPower ? 'MW' : this.energyUnit;
       const panels = this.isPower ?
         powerPanel(this.getPanelListeners()) :
-        energyPanel(this.getPanelListeners(), this.currentInterval);
+        energyPanel(this.getPanelListeners(), this.currentInterval, unit, this.featureEmissions);
       const config = getChartConfig({
         dataSets: [],
         panels,
       }, this.isPower, this.groupToPeriods.slice(0));
 
       config.panels[0].categoryAxis.listeners = this.getCategoryAxisListeners();
+
+      if (this.isPower) {
+        config.panels[0].percentHeight = 100;
+      } if (this.featureEmissions) {
+        config.panels[0].percentHeight = 50;
+        config.panels[1].percentHeight = 25;
+        config.panels[2].percentHeight = 15;
+      } else {
+        config.panels[0].percentHeight = 100;
+      }
 
       this.chart = window.AmCharts.makeChart(this.$el, config);
 
@@ -165,7 +181,7 @@ export default {
         fieldMappings: getFieldMappings(this.keys),
       }];
 
-      const unit = this.isPower ? 'MW' : 'GWh';
+      const unit = this.isPower ? 'MW' : this.energyUnit;
       const graphType = this.isPower ? 'line' : 'step';
       // const showWeekends = !this.isPower;
 
@@ -176,8 +192,14 @@ export default {
           graphType,
           unit,
           this.disabledSeries,
+          this.customDomains,
         );
       this.chart.panels[0].guides = this.isPower ? getNemGuides(this.chartData, false) : [];
+      if (!this.isPower) {
+        if (this.featureEmissions) {
+          this.chart.panels[1].stockGraphs = getEmissionsStockGraphs(this.keys, this.customDomains);
+        }
+      }
       // this.chart.panels[0].guides = getNemGuides(this.chartData, showWeekends);
       this.chart.validateData();
     },
@@ -187,6 +209,7 @@ export default {
         { event: 'zoomed', method: this.onPanelZoomed },
         { event: 'changed', method: this.onPanelChanged },
         { event: 'rollOverGraph', method: this.onPanelHover },
+        { event: 'rendered', method: this.onChartRendered },
       ];
     },
 
@@ -230,7 +253,7 @@ export default {
         updateRouterStartEnd(this.$router, start, end);
 
         this.$store.dispatch('generateRangeSummary', {
-          data: this.chartData,
+          data: this.nemData,
           start,
           end,
         });
@@ -244,7 +267,23 @@ export default {
       }
     },
 
+    onChartRendered(e) {
+      this.$store.dispatch('chartWidth', e.chart.divRealWidth);
+      this.$store.dispatch('clientX', e.finalX);
+      if (e.chart.id === 'stockPanel0') {
+        this.$store.dispatch('chartHeight', e.chart.divRealHeight);
+        this.$store.dispatch('clientY', e.finalY);
+        this.$store.dispatch('mainPanelHover', true);
+      } else {
+        this.$store.dispatch('chartHeight', 320);
+        this.$store.dispatch('clientY', 30);
+        this.$store.dispatch('mainPanelHover', false);
+      }
+    },
+
     onPanelChanged(e) {
+      this.onChartRendered(e);
+
       if (e.index !== undefined) {
         const data = e.target.categoryLineAxis.data[e.index];
         this.$store.dispatch('generatePointSummary', {
@@ -259,11 +298,13 @@ export default {
 
     onPanelHover(e) {
       const graphId = e.graph.id;
-      const graphs = this.chart.panels[0].graphs;
+      // const graphs = this.chart.panels[0].graphs;
 
-      graphs.forEach((g) => {
-        this.toggleSeriesBalloon(g, graphId);
-      });
+      this.$store.dispatch('currentHoverSeries', graphId);
+
+      // graphs.forEach((g) => {
+      //   this.toggleSeriesBalloon(g, graphId);
+      // });
     },
 
     onCategoryAxisItemClicked(e) {
@@ -501,7 +542,7 @@ export default {
   height: 350px;
 
   @include desktop {
-    height: 550px;
+    height: 580px;
   }
 }
 

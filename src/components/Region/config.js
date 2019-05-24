@@ -3,23 +3,33 @@ import {
   getEnergyPanel,
   getPricePanels,
   getTemperaturePanel,
+  getEmissionsPanel,
+  getEmissionIntensityPanel,
 } from '@/lib/chart-panels';
 
 function getAllPanelsGeneration(listeners, priceField, temperatureField, hasMinMax, showBullets) {
   return [
     getGenerationPanel(listeners),
     ...getPricePanels(listeners, priceField), // 3 panels in price
-    getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets),
+    getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets, false),
   ];
 }
 
 function getAllPanelsEnergy(
   listeners, priceField, temperatureField,
-  hasMinMax, showBullets, intervalLabel) {
+  hasMinMax, showBullets, intervalLabel, unit, panelsSelectedId) {
+  const panels = panelsSelectedId === 'priceTemperature'
+    ? [
+      ...getPricePanels(listeners, priceField), // 3 panels in price
+      getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets, true),
+    ]
+    : [
+      getEmissionsPanel(listeners),
+      getEmissionIntensityPanel(listeners, true),
+    ];
   return [
-    getEnergyPanel(listeners, intervalLabel),
-    ...getPricePanels(listeners, priceField), // 3 panels in price
-    getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets),
+    getEnergyPanel(listeners, intervalLabel, unit),
+    ...panels,
   ];
 }
 
@@ -33,7 +43,7 @@ function getGenerationAndPricePanels(listeners) {
 function getGenerationAndTemperaturePanels(listeners) {
   return [
     getGenerationPanel(listeners),
-    getTemperaturePanel(listeners),
+    getTemperaturePanel(listeners, false),
   ];
 }
 
@@ -43,9 +53,9 @@ function generationPanel(listeners) {
   ];
 }
 
-function energyPanel(listeners, intervalLabel) {
+function energyPanel(listeners, intervalLabel, unit) {
   return [
-    getEnergyPanel(listeners, intervalLabel),
+    getEnergyPanel(listeners, intervalLabel, unit),
   ];
 }
 
@@ -65,6 +75,16 @@ function getGenerationTemperaturePanelPercentHeight() {
   return [70, 0, 0, 0, 30];
 }
 
+const panelHeights = {
+  energy: [100, 0, 0, 0, 0, 0, 0],
+  priceTemperature: [50, 7, 13, 5, 15],
+  emissionVolIntensity: [50, 25, 15],
+  price: [65, 10, 18, 7, 0, 0, 0],
+  temperature: [70, 0, 0, 0, 30, 0, 0],
+  emissionVolume: [65, 0, 0, 0, 0, 35, 0],
+  emissionIntensity: [70, 0, 0, 0, 0, 0, 30],
+};
+
 export {
   getAllPanelsGeneration,
   getAllPanelsEnergy,
@@ -76,4 +96,5 @@ export {
   getGenerationOnlyPanelPercentHeight,
   getGenerationPricePanelPercentHeight,
   getGenerationTemperaturePanelPercentHeight,
+  panelHeights,
 };

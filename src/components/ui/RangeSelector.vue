@@ -6,7 +6,7 @@
     
     <div class="buttons has-addons">
       <span 
-        class="button is-rounded is-small is-primary"
+        class="button is-small is-rounded is-primary"
         :class="{ 'is-inverted': currentRange !== dateRange.id }"
         v-for="dateRange in dateSelectors"
         :key="dateRange.id"
@@ -17,7 +17,7 @@
     </div>
     <div class="buttons has-addons interval-buttons">
       <span 
-        class="button is-rounded is-small is-primary"
+        class="button is-small is-rounded is-primary"
         v-for="p in periods"
         :class="{ 'is-inverted': !chartTypeTransition && currentInterval !== p }"
         :key="p"
@@ -27,7 +27,6 @@
         {{ getPeriodShorthand(p) }}
       </span>
     </div>
-
   </div>
 </template>
 
@@ -42,10 +41,6 @@ import { isMobileWidth } from '@/lib/browser';
 
 export default {
   name: 'range-selector',
-
-  components: {
-    // Datepicker,
-  },
 
   data() {
     return {
@@ -119,7 +114,7 @@ export default {
           break;
 
         case 'last24hrs':
-          periods = ['5mm', '30mm'];
+          periods = ['5mm'];
           break;
 
         case 'last3days':
@@ -181,7 +176,12 @@ export default {
             });
             break;
 
-          default:
+          case 'last24hrs':
+          case 'last3days':
+          case 'last7days':
+            this.$store.dispatch('resetPanelsSelected');
+
+          default: // eslint-disable-line
             this.$store.dispatch('nemTrim', false);
             this.$store.dispatch('nemUrls', []);
             this.$store.dispatch('groupToPeriods', range.groupToPeriods);
@@ -234,9 +234,11 @@ export default {
             break;
 
           default:
+            this.$store.dispatch('fetchingData', true);
             this.$store.dispatch('groupToPeriods', [period]);
             this.$store.dispatch('currentInterval', period);
             this.$store.dispatch('period', period);
+            EventBus.$emit('data.fetch');
         }
       }
     },
@@ -260,26 +262,37 @@ export default {
 @import "../../../node_modules/bulma/sass/utilities/mixins.sass";
 
 .date-range {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin-top: 5px;
+
   @include tablet {
-    
+    background-color: transparent;
+    margin-top: 0;
   }
 
   .buttons {
     margin-bottom: 0 !important;
-    padding-top: .4rem;
-  }
+    // border-top: 1px solid rgba(150, 150, 150, 0.1);
+    border-bottom: 1px solid rgba(150, 150, 150, 0.1);
+    justify-content: left;
 
-  .interval-buttons {
+    &:last-child {
+      border-bottom: none;
+    }
+
     @include tablet {
-      // margin-left: 1rem;
-      // padding-left: 1rem;
-      // border-left: 1px solid #ccc;
+      border: none !important;
     }
   }
 
   .button {
-    font-weight: bold;
-    font-size: .8rem;
+    margin-bottom: 0;
+    min-width: 50px;
+
+    @include mobile {
+      border-radius: 0;
+    }
   }
 
   .button.is-primary.is-inverted  {
@@ -287,6 +300,10 @@ export default {
     
     &:hover {
       background-color: rgba(255, 255, 255, 0.9) !important;
+    }
+
+    @include mobile {
+      background-color: transparent !important;
     }
   }
 }
@@ -296,8 +313,6 @@ export default {
 
     .interval-buttons {
       margin-left: 1rem;
-      padding-left: 1rem;
-      border-left: 1px solid #ccc;
     }
   }
 }

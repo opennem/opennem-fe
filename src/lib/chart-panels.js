@@ -1,4 +1,5 @@
 import * as PERIODS from '@/constants/periods';
+import { formatNumberForDisplay } from '@/lib/formatter';
 
 /**
  * Generation Panel
@@ -43,11 +44,11 @@ function getGenerationPanel(listeners) {
 /**
  * Energy Panel
  */
-function getEnergyPanel(listeners, intervalLabel) {
+function getEnergyPanel(listeners, intervalLabel, unit) {
   return {
     allLabels: [
       { text: 'Energy', bold: true, x: 5, y: 5 },
-      { text: `GWh/${PERIODS.PERIOD_PER_INTERVAL[intervalLabel]}`, x: 50, y: 7, color: '#999', size: 9 },
+      { text: `${unit}/${PERIODS.PERIOD_PER_INTERVAL[intervalLabel]}`, x: 50, y: 7, color: '#999', size: 9 },
     ],
     showCategoryAxis: true,
     addClassNames: true,
@@ -81,9 +82,101 @@ function getEnergyPanel(listeners, intervalLabel) {
 }
 
 /**
+ * Emissions Panel
+ */
+function getEmissionsPanel(listeners) {
+  return {
+    allLabels: [
+      { text: 'Emissions', bold: true, x: 5, y: 5 },
+      { text: 'MtCO₂e', x: 67, y: 7, color: '#999', size: 9 },
+    ],
+    showCategoryAxis: false,
+    addClassNames: true,
+    chartCursor: {
+      enabled: true,
+    },
+    categoryAxis: {},
+    valueAxes: [
+      {
+        id: 'emissionsPanel',
+        dashLength: 6,
+        zeroGridAlpha: 0,
+        stackType: 'regular',
+        minimum: 0,
+        guides: [
+          {
+            includeGuidesInMinMax: false,
+            value: 0,
+            dashLength: 0,
+            lineColor: '#000',
+            lineThickness: 1,
+            lineAlpha: 1,
+          },
+        ],
+      },
+    ],
+    stockGraphs: [],
+    guides: [],
+    listeners,
+    stockLegend: { enabled: false },
+  };
+}
+
+/**
+ * Emission Intensity Panel
+ */
+function getEmissionIntensityPanel(listeners, connect) {
+  return {
+    allLabels: [
+      { text: 'Emission Intensity', bold: true, x: 5, y: 5 },
+      { text: 'kgCO₂e/MWh', x: 115, y: 7, color: '#999', size: 9 },
+    ],
+    showCategoryAxis: false,
+    addClassNames: true,
+    chartCursor: {
+      enabled: true,
+    },
+    categoryAxis: {},
+    valueAxes: [
+      {
+        id: 'emissionIntensityPanel',
+        dashLength: 6,
+        zeroGridAlpha: 0,
+        minimum: 0,
+        guides: [
+          {
+            includeGuidesInMinMax: false,
+            value: 0,
+            dashLength: 0,
+            lineColor: '#000',
+            lineThickness: 1,
+            lineAlpha: 1,
+          },
+        ],
+      },
+    ],
+    stockGraphs: [{
+      id: 'emissionIntensityStockGraph',
+      valueAxis: 'emissionIntensityValueAxis',
+      valueField: 'emission_intensity',
+      type: 'smoothedLine',
+      lineAlpha: 1,
+      lineColor: '#C74523',
+      useDataSetColors: false,
+      showBalloon: true,
+      connect,
+      balloonFunction: item => `<strong>${formatNumberForDisplay(item.values.value, '0,0.0')}</strong>`,
+    }],
+    guides: [],
+    listeners,
+    stockLegend: { enabled: false },
+  };
+}
+
+/**
  * Temperature Panel
  */
-function getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets) {
+function getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets, connect) {
   function makeGuide(value, colour) {
     return {
       includeGuidesInMinMax: false,
@@ -107,9 +200,9 @@ function getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets
         lineColor: '#C74523',
         useDataSetColors: false,
         showBalloon: true,
-        connect: false,
+        connect,
         fillAplhas: 0,
-        balloonFunction: item => `<strong>${item.values.value}°C</strong>`,
+        balloonFunction: item => `<strong>${formatNumberForDisplay(item.values.value, '0,0.0')}°C</strong>`,
       },
       {
         id: 'temperatureMinStockGraph',
@@ -120,10 +213,10 @@ function getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets
         lineColor: '#C74523',
         useDataSetColors: false,
         showBalloon: true,
-        connect: false,
+        connect,
         fillAlphas: 0.1,
         fillToGraph: 'temperatureMaxStockGraph',
-        balloonFunction: item => `<strong>${item.values.value}°C</strong>`,
+        balloonFunction: item => `<strong>${formatNumberForDisplay(item.values.value, '0,0.0')}°C</strong>`,
       },
     ];
   }
@@ -139,10 +232,10 @@ function getTemperaturePanel(listeners, temperatureField, hasMinMax, showBullets
     lineColor: '#C74523',
     useDataSetColors: false,
     showBalloon: true,
-    connect: false,
+    connect,
     bulletSize: 5,
     bullet,
-    balloonFunction: item => `<strong>${item.values.value}°C</strong>`,
+    balloonFunction: item => `<strong>${formatNumberForDisplay(item.values.value, '0,0.0')}°C</strong>`,
   };
   let stockGraphs = [];
 
@@ -251,7 +344,7 @@ function getPricePanels(listeners, priceField) {
         dashLength: 1,
         useDataSetColors: false,
         showBalloon: true,
-        balloonFunction: item => `<strong>$${item.values.value}</strong>`,
+        balloonFunction: item => `<strong>${formatNumberForDisplay(item.values.value, '$0,0.00')}</strong>`,
       },
     ],
     guides: [],
@@ -290,7 +383,7 @@ function getPricePanels(listeners, priceField) {
         lineColor: '#C74523',
         useDataSetColors: false,
         showBalloon: true,
-        balloonFunction: item => `<strong>$${item.values.value}</strong>`,
+        balloonFunction: item => `<strong>${formatNumberForDisplay(item.values.value, '$0,0.00')}</strong>`,
       },
     ],
     guides: [],
@@ -328,7 +421,7 @@ function getPricePanels(listeners, priceField) {
         dashLength: 1,
         useDataSetColors: false,
         showBalloon: true,
-        balloonFunction: item => `<strong>-$${item.values.value}</strong>`,
+        balloonFunction: item => `<strong>${formatNumberForDisplay(item.values.value, '$0,0.00')}</strong>`,
       },
     ],
     guides: [],
@@ -340,6 +433,8 @@ function getPricePanels(listeners, priceField) {
 export {
   getGenerationPanel,
   getEnergyPanel,
+  getEmissionsPanel,
+  getEmissionIntensityPanel,
   getTemperaturePanel,
   getPricePanels,
 };

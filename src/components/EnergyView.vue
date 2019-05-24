@@ -6,12 +6,13 @@
     </div>
   </transition>
 
-  <div>
+  <div style="display: flex; align-items: center; position: relative; z-index: 9; margin-bottom: 10px;">
     <range-selector class="range-selector-container" v-if="!isExportPng" />
+    <!-- <group-selection style="margin-left: 1rem;" /> -->
   </div>
   
-  <transition name="slide-fade">
-    <div class="columns is-desktop is-variable is-1" v-show="!isFetching">
+  <transition name="fade">
+    <div class="columns is-desktop is-gapless is-1" style="justify-content: center;" v-show="!isFetching">
       <div class="column" :class="{ export: isExportPng }">
         <div id="export-container">
           <export-png-header v-if="isExportPng" />
@@ -22,7 +23,8 @@
             </transition>
 
             <panel-button />
-            <all-regions-chart :chartData="nemData" v-show="!error" />
+            <chart-tips v-if="!isExportPng" />
+            <all-regions-chart :chartData="groupedNemData" :nemData="nemData" :customDomains="customDomains" v-show="!error" />
             <div v-if="isExportPng">
               <all-regions-summary v-if="showSummaryPanel" />
               <export-legend v-else />
@@ -61,6 +63,7 @@ import ExportLegend from './Export/Legend';
 import UiZoomOutButton from './ui/ZoomOutButton';
 import UiLoader from './ui/Loader';
 import RangeSelector from './ui/RangeSelector';
+import ChartTips from './ui/ChartTips';
 
 export default {
   components: {
@@ -74,6 +77,7 @@ export default {
     PanelButton,
     UiLoader,
     RangeSelector,
+    ChartTips,
   },
   created() {
     this.$store.dispatch('region', 'nem');
@@ -97,6 +101,7 @@ export default {
   computed: {
     ...mapGetters({
       nemData: 'nemData',
+      groupedNemData: 'groupedNemData',
       isFetching: 'isFetching',
       isChartZoomed: 'isChartZoomed',
       chartTypeTransition: 'chartTypeTransition',
@@ -113,9 +118,24 @@ export default {
       yearsWeeks: 'yearsWeeks',
       isPower: 'isPower',
       nemUrls: 'nemUrls',
+      groupSelected: 'groupSelected',
     }),
     records() {
       return this.$route.query.records;
+    },
+    customDomains() {
+      const domains = {};
+      this.groupSelected.groups.forEach((g) => {
+        domains[g.id] = {
+          colour: g.colour,
+          type: g.type,
+          label: g.label,
+        };
+      });
+
+      this.$store.dispatch('domainGroups', domains);
+
+      return domains;
     },
   },
   watch: {
@@ -126,6 +146,9 @@ export default {
       if (!this.isChartZoomed) {
         updateRouterStartEnd(this.$router, start, end);
       }
+
+      this.$store.dispatch('generateGroupedNemData');
+      this.$store.dispatch('useGroups', true);
 
       // Generate table data
       this.$store.dispatch('generateRangeSummary', {
@@ -140,6 +163,9 @@ export default {
     },
     chartTypeTransition() {
       this.fetch();
+    },
+    groupSelected() {
+      this.$store.dispatch('generateGroupedNemData');
     },
   },
   methods: {
@@ -206,11 +232,6 @@ export default {
   @include mobile {
     margin-top: 3rem;
   }
-}
-
-.range-selector-container {
-  padding: 0.3rem 0;
-  margin-bottom: 1rem;
 }
 
 .all-regions-summary {

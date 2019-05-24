@@ -26,7 +26,7 @@
       <widget-chart :chartData="chartData" />
     </div>
     <div class="table" v-if="!isFetching && isLarge">
-      <all-regions-summary />
+      <all-regions-summary :showGrouping="false"/>
     </div>
 
     <div class="legend" v-if="!isFetching && isSmall">

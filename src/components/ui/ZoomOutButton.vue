@@ -23,7 +23,7 @@ export default {
   position: absolute;
   z-index: 9;
   right: 5px;
-  top: 3px;
+  top: 7px;
 }
 </style>
 

@@ -1,6 +1,10 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Home from '@/components/Home';
+import HomeView from '@/components/HomeView';
+import RegionView from '@/components/RegionView';
+import EnergyView from '@/components/EnergyView';
+import FacilitiesView from '@/components/FacilitiesView';
+import StationView from '@/components/StationView';
 import Region from '@/components/Region';
 import Widget from '@/components/Widget';
 import About from '@/components/About';
@@ -18,13 +22,52 @@ export default new Router({
     {
       path: '/all-regions',
       name: 'home',
-      component: Home,
+      component: HomeView,
+      redirect: 'all-regions/energy',
+      children: [
+        {
+          path: 'energy',
+          name: 'home-energy',
+          component: EnergyView,
+        },
+        {
+          path: 'facilities',
+          name: 'home-facilities',
+          component: FacilitiesView,
+        },
+      ],
     },
     {
       path: '/regions/:region',
       props: true,
-      name: 'regions',
-      component: Region,
+      name: 'region-prev',
+      component: RegionView,
+      redirect: 'region/:region/energy',
+    },
+    {
+      path: '/region/:region',
+      props: true,
+      name: 'region',
+      component: RegionView,
+      redirect: 'region/:region/energy',
+      children: [
+        {
+          path: 'energy',
+          name: 'region-energy',
+          component: Region,
+        },
+        {
+          path: 'facilities',
+          name: 'region-facilities',
+          component: FacilitiesView,
+        },
+      ],
+    },
+    {
+      path: '/station/:stationId',
+      props: true,
+      name: 'station',
+      component: StationView,
     },
     {
       path: '/widget/:size',
