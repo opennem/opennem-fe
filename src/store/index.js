@@ -3,6 +3,8 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import * as moment from 'moment';
 
+import { isIE11andBelow } from '@/lib/browser.js';
+
 import { getSummary, getPointSummary, getGroupPointSummary } from '@/lib/data-summary';
 import { dataFilter, dataFilterByLastValuePrecision } from '@/lib/data-helpers';
 import dataTransform from '@/lib/data-transform';
@@ -239,31 +241,38 @@ function handleFetchResponse(responses, state, commit) {
   let useTera = false;
 
   const promises = [];
+  const useWorker = !isIE11andBelow() && window.Worker;
 
   responses.forEach((r, i) => {
-    promises.push(new Promise((resolve) => {
-      const worker = new Worker('workers/data-transform-worker.js');
-
-      worker.addEventListener('message', function(e) {
-        resolve(JSON.parse(e.data));
-      }, false);
-
-      worker.postMessage(JSON.stringify({
-        domains: state.domains,
-        data: r.data,
-        interpolate: true,
+    if (useWorker) {
+      promises.push(new Promise((resolve) => {
+        const worker = new Worker('workers/data-transform-worker.js');
+  
+        worker.addEventListener('message', function(e) {
+          resolve(JSON.parse(e.data));
+        }, false);
+  
+        worker.postMessage(JSON.stringify({
+          domains: state.domains,
+          data: r.data,
+          interpolate: true,
+        }));
       }));
-    }));
-
-    // data = [...data, ...dataTransform(state.domains, r.data, true)];
+    } else {
+      data = [...data, ...dataTransform(state.domains, r.data, true)];
+    }
   });
 
-  Promise.all(promises).then(function(values) {
-    values.forEach((v) => {
-      data = [...data, ...v];
+  if (useWorker) {
+    Promise.all(promises).then(function(values) {
+      values.forEach((v) => {
+        data = [...data, ...v];
+      })
+      finishUp(data);
     })
+  } else {
     finishUp(data);
-  })
+  }
 
   function finishUp(transformedData) {
     const endIndex = transformedData.length - 1;
