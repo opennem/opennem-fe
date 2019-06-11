@@ -225,6 +225,8 @@ export default {
             Region: getRegionLabelByCode(d.regionId),
             Technology: d.fuelTechs.map(ft => GraphDomains[ft].label),
             'Generator Capacity (MW)': d.generatorCap,
+            Latitude: d.location.latitude,
+            Longitude: d.location.longitude,
           };
         });
         that.$store.dispatch('facilityExportData', exportData);
