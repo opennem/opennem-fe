@@ -421,7 +421,7 @@ function getPricePanels(listeners, priceField) {
         dashLength: 1,
         useDataSetColors: false,
         showBalloon: true,
-        balloonFunction: item => `<strong>${formatNumberForDisplay(item.values.value, '$0,0.00')}</strong>`,
+        balloonFunction: item => `<strong>-${formatNumberForDisplay(item.values.value, '$0,0.00')}</strong>`,
       },
     ],
     guides: [],
