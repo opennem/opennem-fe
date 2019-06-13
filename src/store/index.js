@@ -170,7 +170,7 @@ const actions = {
     const isPower = state.visType === VisTypes.VIS_TYPE_POWER;
     const isTera = state.nemData.tera;
     const filtered = dataFilter(data.data, data.start, data.end);
-    const summary = getSummary(state.domains, filtered, isPower, isTera);
+    const summary = getSummary(state.domains, filtered, state.dates.currentInterval, isPower, isTera);
     commit(MutationTypes.RANGE_SUMMARY, summary);
   },
   generatePointSummary({ commit, state }, data) {
