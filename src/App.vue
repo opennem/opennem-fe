@@ -98,7 +98,7 @@ section {
 
   @include mobile {
     margin: 0 auto;
-    padding: 0;
+    padding: 0 1rem;
   }
 }
 
