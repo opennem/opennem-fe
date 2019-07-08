@@ -127,7 +127,7 @@ export default {
     min-width: auto;
 
     @include tablet {
-      min-width: 10rem;
+      min-width: 10.5rem;
     }
   }
 }

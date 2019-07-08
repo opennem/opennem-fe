@@ -38,7 +38,7 @@ export default {
       label: 'Gas',
       type: 'sources',
       colour: '#F48E1B',
-      fields: ['gas_recip', 'gas_ocgt', 'gas_ccgt', 'gas_steam', 'gas_lfg', 'gas_wcmg'],
+      fields: ['gas_recip', 'gas_ocgt', 'gas_ccgt', 'gas_steam', 'gas_biogas', 'gas_lfg', 'gas_wcmg'],
     },
 
     {
@@ -46,7 +46,7 @@ export default {
       label: 'Distillate',
       type: 'sources',
       colour: '#F35020',
-      fields: ['distillate'],
+      fields: ['distillate', 'oil'],
     },
 
     {

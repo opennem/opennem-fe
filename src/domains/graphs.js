@@ -129,6 +129,26 @@ const GraphDomains = {
     label: 'Distillate Emissions',
     unit: '',
   },
+  oil: {
+    colour: '#F59F85',
+    type: 'sources',
+    label: 'Oil',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
+  },
+  'oil.market_value': {
+    colour: '#000',
+    type: 'market_value',
+    label: 'Oil Market Value',
+    categoryId: 'price',
+    unit: '$',
+  },
+  'oil.emissions': {
+    colour: '#F59F85',
+    type: 'emissions',
+    label: 'Oil Emissions',
+    unit: '',
+  },
   gas_steam: {
     colour: '#F48E1B',
     type: 'sources',
@@ -147,6 +167,26 @@ const GraphDomains = {
     colour: '#F48E1B',
     type: 'emissions',
     label: 'Gas (Steam) Emissions',
+    unit: '',
+  },
+  gas_biogas: {
+    colour: '#F3AB5A',
+    type: 'sources',
+    label: 'Gas (Biogass)',
+    powerUnit: 'MW',
+    energyUnit: 'GWh',
+  },
+  'gas_biogas.market_value': {
+    colour: '#000',
+    type: 'market_value',
+    label: 'Gas (Biogass) Market Value',
+    categoryId: 'price',
+    unit: '$',
+  },
+  'gas_biogas.emissions': {
+    colour: '#F3AB5A',
+    type: 'emissions',
+    label: 'Gas (Biogass) Emissions',
     unit: '',
   },
   gas_ccgt: {

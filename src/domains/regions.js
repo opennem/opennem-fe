@@ -59,6 +59,16 @@ const RegionDomains = [
       longitude: 144.678005,
     },
   },
+  {
+    id: 'wa',
+    label: 'Western Australia',
+    abbr: 'WA',
+    offset: 8,
+    location: {
+      latitude: -25.760321,
+      longitude: 122.805176,
+    },
+  },
 ];
 
 function getAllRegions() {

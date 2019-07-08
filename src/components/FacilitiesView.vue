@@ -178,6 +178,7 @@ export default {
 
   mounted() {
     EventBus.$on('facilities.name.filter', this.setFilterString);
+    this.$store.dispatch('error', false);
     this.$store.dispatch('fetchFacilityData');
   },
 
@@ -218,12 +219,16 @@ export default {
         that.filteredFacilities = facilities;
         that.totalFacilities = facilities.length;
 
+        function getLabel(ft) {
+          return GraphDomains[ft] ? GraphDomains[ft].label : ft;
+        }
+
         const exportData = facilities.map((d) => { // eslint-disable-line
           return {
             'Facility Name': d.displayName,
             Status: d.status,
             Region: getRegionLabelByCode(d.regionId),
-            Technology: d.fuelTechs.map(ft => GraphDomains[ft].label),
+            Technology: d.fuelTechs.map(ft => getLabel(ft)),
             'Generator Capacity (MW)': d.generatorCap,
             Latitude: d.location.latitude,
             Longitude: d.location.longitude,
