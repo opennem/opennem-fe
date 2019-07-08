@@ -172,21 +172,21 @@ const GraphDomains = {
   gas_biogas: {
     colour: '#F3AB5A',
     type: 'sources',
-    label: 'Gas (Biogass)',
+    label: 'Gas (Biogas)',
     powerUnit: 'MW',
     energyUnit: 'GWh',
   },
   'gas_biogas.market_value': {
     colour: '#000',
     type: 'market_value',
-    label: 'Gas (Biogass) Market Value',
+    label: 'Gas (Biogas) Market Value',
     categoryId: 'price',
     unit: '$',
   },
   'gas_biogas.emissions': {
     colour: '#F3AB5A',
     type: 'emissions',
-    label: 'Gas (Biogass) Emissions',
+    label: 'Gas (Biogas) Emissions',
     unit: '',
   },
   gas_ccgt: {
