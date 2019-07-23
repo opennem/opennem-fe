@@ -58,7 +58,7 @@
 
       <div class="drawer-footer">
         <div class="">
-          <p class="version">v2.2 beta</p>
+          <p class="version">v2.3 beta</p>
           <p>
             <span>Sources:</span>
             <a href="https://www.aemo.com.au/">AEMO</a>,
