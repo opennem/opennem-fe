@@ -116,7 +116,7 @@ import { faAngleDown, faCheck, faCaretRight, faCaretDown, faMinus, faSearch, faT
 import { mixin as clickaway } from 'vue-clickaway';
 import EventBus from '@/lib/event-bus';
 import { GraphDomains } from '@/domains/graphs';
-import Simplified from '@/domains/groups/simplified';
+import FacilitiesGroup from '@/domains/groups/facilities';
 import FilterStatus from './FilterStatus';
 
 export default {
@@ -136,7 +136,7 @@ export default {
       selectedTechs: [],
       selectedTechGroups: [],
       groupExpanded: [],
-      simplifiedGroup: _.cloneDeep(Simplified.groups),
+      facilitiesFuelTech: _.cloneDeep(FacilitiesGroup.groups).reverse(),
       windowWidth: window.innerWidth,
       searchOn: false,
     };
@@ -177,7 +177,7 @@ export default {
   mounted() {
     EventBus.$on('facilities.filter.clear', this.clearFilter);
 
-    const groups = this.simplifiedGroup.filter(g => (g.type === 'sources' && g.id !== 'imports') || g.id === 'pumps');
+    const groups = this.facilitiesFuelTech.filter(g => (g.type === 'sources' && g.id !== 'imports') || g.id === 'pumps');
     const findSolarGroup = groups.find(g => g.id === 'group_solar');
     const findBatteryGroup = groups.find(g => g.id === 'group_battery_discharging');
 
