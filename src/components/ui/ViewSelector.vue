@@ -12,6 +12,7 @@
       <div v-if="dropdownActive" class="dropdown-menu">
         <div class="dropdown-content">
           <a class="dropdown-item"
+            v-if="haveEnergy"
             @click="goToEnergyView()"
             :class="{ selected: isEnergy }"
           >
@@ -50,6 +51,9 @@ export default {
       const routeName = this.$route.name;
       return routeName === 'home-energy' || routeName === 'region-energy';
     },
+    haveEnergy() {
+      return this.$route.name !== 'home-facilities' && this.$route.params.region !== 'wa';
+    },
     iconDown() {
       return faAngleDown;
     },
@@ -69,10 +73,18 @@ export default {
       return this.$route.params.region === id;
     },
     goToEnergyView() {
-      this.$router.push({ name: `${this.routeParentName}-energy` });
+      if (this.$route.params.region === 'nem') {
+        this.$router.push({ name: 'home-energy' });
+      } else {
+        this.$router.push({ name: `${this.routeParentName}-energy` });
+      }
     },
     gotToFacilitiesView() {
-      this.$router.push({ name: `${this.routeParentName}-facilities` });
+      if (this.$route.name === 'home-energy') {
+        this.$router.push({ name: 'region-facilities', params: { region: 'nem' } });
+      } else {
+        this.$router.push({ name: `${this.routeParentName}-facilities` });
+      }
     },
   },
 };

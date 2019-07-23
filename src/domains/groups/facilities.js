@@ -1,5 +1,5 @@
 export default {
-  groupSelectionName: 'Simplified',
+  groupSelectionName: 'Facilities',
   groups: [
     {
       id: 'group_solar',
@@ -38,7 +38,7 @@ export default {
       label: 'Gas',
       type: 'sources',
       colour: '#F48E1B',
-      fields: ['gas_recip', 'gas_ocgt', 'gas_ccgt', 'gas_steam', 'gas_biogas', 'gas_lfg', 'gas_wcmg'],
+      fields: ['gas_recip', 'gas_ocgt', 'gas_ccgt', 'gas_steam', 'gas_wcmg'],
     },
 
     {
@@ -46,15 +46,15 @@ export default {
       label: 'Distillate',
       type: 'sources',
       colour: '#F35020',
-      fields: ['distillate', 'oil'],
+      fields: ['distillate'],
     },
 
     {
-      id: 'group_biomass',
-      label: 'Biomass',
+      id: 'group_bioenergy',
+      label: 'Bioenergy',
       type: 'sources',
-      colour: '#A3886F',
-      fields: ['biomass'],
+      colour: '#1D7A7A',
+      fields: ['bioenergy_biomass', 'bioenergy_biogas'],
     },
 
     {

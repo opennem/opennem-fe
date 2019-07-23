@@ -178,6 +178,7 @@ export default {
 
   mounted() {
     EventBus.$on('facilities.name.filter', this.setFilterString);
+    this.$store.dispatch('error', false);
     this.$store.dispatch('fetchFacilityData');
   },
 
@@ -206,10 +207,14 @@ export default {
         : sortedData;
 
       const that = this;
+      let regionIds = this.regionId === 'nem' ? ['nsw1', 'qld1', 'sa1', 'tas1', 'vic1'] : [`${this.regionId}1`];
+      if (!this.regionId) {
+        regionIds = ['nsw1', 'qld1', 'sa1', 'tas1', 'vic1', 'wa1'];
+      }
       async function updateFilter() {
         return filtered.filter(g =>
           g.displayName.toLowerCase().includes(that.filterString.toLowerCase()) &&
-          g.regionId.toLowerCase().includes(that.regionId) &&
+          _.includes(regionIds, g.regionId.toLowerCase()) &&
           (that.selectedStatuses.length <= 0 || _.includes(that.selectedStatuses, g.status)),
         );
       }
@@ -218,12 +223,16 @@ export default {
         that.filteredFacilities = facilities;
         that.totalFacilities = facilities.length;
 
+        function getLabel(ft) {
+          return GraphDomains[ft] ? GraphDomains[ft].label : ft;
+        }
+
         const exportData = facilities.map((d) => { // eslint-disable-line
           return {
             'Facility Name': d.displayName,
             Status: d.status,
             Region: getRegionLabelByCode(d.regionId),
-            Technology: d.fuelTechs.map(ft => GraphDomains[ft].label),
+            Technology: d.fuelTechs.map(ft => getLabel(ft)),
             'Generator Capacity (MW)': d.generatorCap,
             Latitude: d.location.latitude,
             Longitude: d.location.longitude,

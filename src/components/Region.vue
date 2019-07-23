@@ -186,10 +186,12 @@ export default {
       this.fetch();
     },
     regionId(id) {
+      this.$store.dispatch('error', false);
       this.$store.dispatch('setExportRegion', getRegionLabel(id));
       this.fetch();
     },
     currentRange() {
+      this.$store.dispatch('error', false);
       this.fetch();
     },
     isExportPng(value) {
