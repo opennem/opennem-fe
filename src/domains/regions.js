@@ -77,7 +77,7 @@ function getAllRegions() {
 
 function getRegionLabel(id) {
   const region = RegionDomains.find(r => r.id === id);
-  return region ? region.label : '';
+  return region ? region.label : 'NEM';
 }
 
 function getRegionLabelByCode(code) {
