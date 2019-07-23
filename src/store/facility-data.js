@@ -124,7 +124,9 @@ const getters = {
 
 const actions = {
   fetchFacilityData({ commit, state }) {
-    const urls = ['facility/facility_registry.json'];
+    // test_facility_registry.json
+    // const urls = ['facility/facility_registry.json'];
+    const urls = ['facility/test_facility_registry.json'];
 
     getJSON(urls, false)
       .then((responses) => {

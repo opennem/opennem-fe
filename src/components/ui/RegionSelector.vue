@@ -2,7 +2,8 @@
   <div class="region-selector dropdown" :class="{'is-active': dropdownActive}">
     <a class="dropdown-trigger" v-on-clickaway="onClickAway" @click="handleClick">
       <span>
-        <strong v-if="isHome">All Regions</strong>
+        <strong v-if="isHome && isEnergyRoute">NEM</strong>
+        <strong v-else-if="isHome && !isEnergyRoute">All Regions</strong>
         <strong v-else>{{regionLabel}}</strong>
         <font-awesome-icon class="fal" :icon="iconDown" />
       </span>          
@@ -15,11 +16,20 @@
             v-if="!isHome"
             @click="goHome()"
           >
-            All Regions
+            <span v-if="isEnergyRoute">NEM</span>
+            <span v-else>All Regions</span>
           </a>
-          <hr v-if="!isHome" class="dropdown-divider">
+          <a class="dropdown-item"
+            v-if="!isEnergyRoute"
+            :class="{ selected: isCurrentSelection('nem')}"
+            @click="handleRegionChange('nem')"
+          >
+            NEM
+          </a>
+          <hr v-if="!isEnergyRoute || !isHome" class="dropdown-divider">
           <a 
-            v-for="region in regions" 
+            v-for="region in regions"
+            v-show="!isEnergyRoute || !isWA(region.id)"
             :key="region.id" 
             @click="handleRegionChange(region.id)" 
             class="dropdown-item"
@@ -56,6 +66,9 @@ export default {
     regionLabel() {
       return getRegionLabel(this.$route.params.region);
     },
+    haveEnergy() {
+      return this.$route.params.region !== 'nem' && this.$route.params.region !== 'wa'
+    },
     isHome() {
       const routeName = this.$route.name;
       return routeName === 'home-energy' || routeName === 'home-facilities';
@@ -64,6 +77,7 @@ export default {
       return faAngleDown;
     },
     isEnergyRoute() {
+      console.log(_.includes(this.$route.name, 'energy'))
       return _.includes(this.$route.name, 'energy');
     },
   },
@@ -88,6 +102,9 @@ export default {
       const view = this.isEnergyRoute ? 'energy' : 'facilities';
       this.$store.dispatch('region', 'nem');
       this.$router.push({ name: `home-${view}` });
+    },
+    isWA(regionId) {
+      return regionId === 'wa';
     },
   },
 };
@@ -127,7 +144,7 @@ export default {
     min-width: auto;
 
     @include tablet {
-      min-width: 10rem;
+      min-width: 10.5rem;
     }
   }
 }

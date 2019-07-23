@@ -59,6 +59,16 @@ const RegionDomains = [
       longitude: 144.678005,
     },
   },
+  {
+    id: 'wa',
+    label: 'Western Australia',
+    abbr: 'WA',
+    offset: 8,
+    location: {
+      latitude: -25.760321,
+      longitude: 122.805176,
+    },
+  },
 ];
 
 function getAllRegions() {
@@ -67,7 +77,7 @@ function getAllRegions() {
 
 function getRegionLabel(id) {
   const region = RegionDomains.find(r => r.id === id);
-  return region ? region.label : '';
+  return region ? region.label : 'NEM';
 }
 
 function getRegionLabelByCode(code) {

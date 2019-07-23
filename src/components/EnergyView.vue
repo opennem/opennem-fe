@@ -159,6 +159,7 @@ export default {
     },
     currentRange() {
       // when currentRange changes, refetch the data
+      this.$store.dispatch('error', false);
       this.fetch();
     },
     chartTypeTransition() {
