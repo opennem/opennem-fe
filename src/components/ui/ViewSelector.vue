@@ -52,7 +52,7 @@ export default {
       return routeName === 'home-energy' || routeName === 'region-energy';
     },
     haveEnergy() {
-      return this.$route.name !== 'home-facilities' && this.$route.params.region !== 'wa'
+      return this.$route.name !== 'home-facilities' && this.$route.params.region !== 'wa';
     },
     iconDown() {
       return faAngleDown;

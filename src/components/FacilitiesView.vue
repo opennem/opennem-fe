@@ -207,13 +207,11 @@ export default {
         : sortedData;
 
       const that = this;
-      let regionIds = this.regionId === 'nem' ? ['nsw1', 'qld1', 'sa1', 'tas1', 'vic1'] : [`${this.regionId}1`]
+      let regionIds = this.regionId === 'nem' ? ['nsw1', 'qld1', 'sa1', 'tas1', 'vic1'] : [`${this.regionId}1`];
       if (!this.regionId) {
-        regionIds = ['nsw1', 'qld1', 'sa1', 'tas1', 'vic1', 'wa1']
+        regionIds = ['nsw1', 'qld1', 'sa1', 'tas1', 'vic1', 'wa1'];
       }
-      console.log(this.regionId, regionIds)
       async function updateFilter() {
-        console.log(filtered)
         return filtered.filter(g =>
           g.displayName.toLowerCase().includes(that.filterString.toLowerCase()) &&
           _.includes(regionIds, g.regionId.toLowerCase()) &&

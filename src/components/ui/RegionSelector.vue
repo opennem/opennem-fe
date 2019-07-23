@@ -67,7 +67,7 @@ export default {
       return getRegionLabel(this.$route.params.region);
     },
     haveEnergy() {
-      return this.$route.params.region !== 'nem' && this.$route.params.region !== 'wa'
+      return this.$route.params.region !== 'nem' && this.$route.params.region !== 'wa';
     },
     isHome() {
       const routeName = this.$route.name;
@@ -77,7 +77,6 @@ export default {
       return faAngleDown;
     },
     isEnergyRoute() {
-      console.log(_.includes(this.$route.name, 'energy'))
       return _.includes(this.$route.name, 'energy');
     },
   },
