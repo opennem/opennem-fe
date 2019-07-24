@@ -24,7 +24,7 @@
           </h5>
         </div>
         <div>
-          <h5>Total Capacity: <span>{{ generator.generatorCap | formatNumber }}</span></h5>
+          <h5>Total Capacity: <span>{{ generator.generatorCap | facilityFormatNumber }}</span></h5>
         </div>
         <div>
           <h5>Region: <span>{{ getRegionLabel(generator.regionId) }}</span></h5>
@@ -68,8 +68,8 @@
             <td>{{ unit.scheduleType }}</td>
             <td>{{ unit.startType }}</td>
             <td>{{ unit.dispatchType }}</td>
-            <td class="has-text-right">{{ unit.regCap | formatNumber }}</td>
-            <td class="has-text-right">{{ unit.maxCap | formatNumber }}</td>
+            <td class="has-text-right">{{ unit.regCap | facilityFormatNumber }}</td>
+            <td class="has-text-right">{{ unit.maxCap | facilityFormatNumber }}</td>
           </tr>
         </tbody>
       </table>
