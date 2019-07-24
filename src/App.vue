@@ -44,7 +44,7 @@ export default {
     },
     isFacilitiesView() {
       const name = this.$route.name;
-      return name === 'home-facilities' || name === 'region-facilities'
+      return name === 'home-facilities' || name === 'region-facilities';
     },
     isAbout() {
       return this.$route.name === 'about';

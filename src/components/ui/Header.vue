@@ -83,7 +83,7 @@ export default {
     regionLabel() {
       let region = getRegionLabel(this.$route.params.region);
       if (!this.isEnergyRoute && !this.$route.params.region) {
-        region = 'All Regions'
+        region = 'All Regions';
       }
       return region;
     },

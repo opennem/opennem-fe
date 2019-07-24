@@ -178,7 +178,7 @@ export default {
       return hostname.includes(localhost) || hostname.includes(dev);
     },
     shouldEnergyHide() {
-      return !this.isEnergyRoute && (!this.regionId || this.regionId === 'wa')
+      return !this.isEnergyRoute && (!this.regionId || this.regionId === 'wa');
     },
   },
 
@@ -221,7 +221,7 @@ export default {
         if (this.regionId) {
           this.$router.push({ name: `${this.routeParentName}-facilities` });
         } else {
-          this.$router.push({ name: 'region-facilities', params: { region: 'nem' } })
+          this.$router.push({ name: 'region-facilities', params: { region: 'nem' } });
         }
       }, DELAY);
     },
@@ -242,7 +242,7 @@ export default {
     },
 
     shouldWAHide(regionId) {
-      return this.isEnergyRoute && regionId === 'wa'
+      return this.isEnergyRoute && regionId === 'wa';
     },
   },
 };
