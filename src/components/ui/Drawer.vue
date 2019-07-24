@@ -13,7 +13,10 @@
       <div class="menu">
         <a class="menu-item"
           @click="goToEnergyView()"
-          :class="{ selected: isEnergy }"
+          :class="{
+            selected: isEnergy,
+            off: shouldEnergyHide
+          }"
         >
           Energy
           <span class="icon" v-if="!isEnergy">
@@ -33,12 +36,37 @@
       </div>
 
       <div class="menu">
-        <a class="all-regions menu-item"
-          @click="goHome()"
-          :class="{ selected: isHome }"
+        <a class="menu-item off"
+          v-if="isEnergyRoute"
         >
           All Regions
+          <span class="icon">
+            <font-awesome-icon class="fal" :icon="iconRight" />
+          </span>
+        </a>
+        <a class="menu-item"
+          @click="goHome()"
+          :class="{
+            selected: isHome,
+            'all-regions': isEnergyRoute
+          }"
+        >
+          <span v-if="isEnergyRoute">NEM</span>
+          <span v-else>All Regions</span>
           <span class="icon" v-if="!isHome">
+            <font-awesome-icon class="fal" :icon="iconRight" />
+          </span>
+        </a>
+        <a class="all-regions menu-item"
+          v-if="!isEnergyRoute"
+          :class="{
+            selected: isCurrentSelection('nem'),
+            'all-regions': !isEnergyRoute
+          }"
+          @click="handleRegionChange('nem')"
+        >
+          NEM
+          <span class="icon" v-if="!isCurrentSelection('nem')">
             <font-awesome-icon class="fal" :icon="iconRight" />
           </span>
         </a>
@@ -47,7 +75,10 @@
           :key="region.id" 
           @click="handleRegionChange(region.id)" 
           class="menu-item"
-          :class="{ selected: isCurrentSelection(region.id)}"
+          :class="{
+            selected: isCurrentSelection(region.id),
+            off: shouldWAHide(region.id)
+          }"
         >
           {{region.label}}
           <span class="icon" v-if="!isCurrentSelection(region.id)">
@@ -108,6 +139,9 @@ export default {
   },
 
   computed: {
+    regionId() {
+      return this.$route.params.region;
+    },
     isHome() {
       const routeName = this.$route.name;
       return routeName === 'home-energy' || routeName === 'home-facilities';
@@ -133,12 +167,18 @@ export default {
     routeParentName() {
       return this.$route.matched[0].name;
     },
+    isEnergyRoute() {
+      return _.includes(this.$route.name, 'energy');
+    },
     isDev() {
       const hostname = window.location.hostname;
       const localhost = 'localhost';
       const dev = 'dev.opennem.org.au';
 
       return hostname.includes(localhost) || hostname.includes(dev);
+    },
+    shouldEnergyHide() {
+      return !this.isEnergyRoute && (!this.regionId || this.regionId === 'wa')
     },
   },
 
@@ -164,29 +204,45 @@ export default {
       }, DELAY);
     },
     goToEnergyView() {
-      this.close();
-      setTimeout(() => {
-        this.$router.push({ name: `${this.routeParentName}-energy` });
-      }, DELAY);
+      if (!this.shouldEnergyHide) {
+        this.close();
+        setTimeout(() => {
+          if (this.regionId === 'nem') {
+            this.$router.push({ name: 'home-energy' });
+          } else {
+            this.$router.push({ name: `${this.routeParentName}-energy` });
+          }
+        }, DELAY);
+      }
     },
     gotToFacilitiesView() {
       this.close();
       setTimeout(() => {
-        this.$router.push({ name: `${this.routeParentName}-facilities` });
+        if (this.regionId) {
+          this.$router.push({ name: `${this.routeParentName}-facilities` });
+        } else {
+          this.$router.push({ name: 'region-facilities', params: { region: 'nem' } })
+        }
       }, DELAY);
     },
     handleRegionChange(regionId) {
-      this.close();
-      setTimeout(() => {
-        const view = this.isEnergy ? 'energy' : 'facilities';
-        this.$store.dispatch('region', `${regionId}1`);
-        this.$router.push({ name: `region-${view}`, params: { region: regionId } });
-      }, DELAY);
+      if (!this.shouldWAHide(regionId)) {
+        this.close();
+        setTimeout(() => {
+          const view = this.isEnergy ? 'energy' : 'facilities';
+          this.$store.dispatch('region', `${regionId}1`);
+          this.$router.push({ name: `region-${view}`, params: { region: regionId } });
+        }, DELAY);
+      }
     },
 
     close() {
       window.scrollTo(0, 0);
       this.$emit('close');
+    },
+
+    shouldWAHide(regionId) {
+      return this.isEnergyRoute && regionId === 'wa'
     },
   },
 };
@@ -252,6 +308,15 @@ export default {
 
     &.all-regions {
       border-bottom-color: #999;
+    }
+
+    &.off {
+      opacity: 0.3;
+      cursor: auto;
+
+      &:hover {
+        background: transparent;
+      }
     }
 
     &.selected {
