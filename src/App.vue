@@ -4,7 +4,7 @@
     <section class="main" v-if="showMainNav">
       <app-header />
 
-      <div class="router-view-container">
+      <div class="router-view-container" :class="{ 'facilities-view': isFacilitiesView }">
         <router-view />
         <ui-error />
       </div>
@@ -41,6 +41,10 @@ export default {
       return name === 'home' || name === 'region' ||
         name === 'home-energy' || name === 'home-facilities' ||
         name === 'region-energy' || name === 'region-facilities';
+    },
+    isFacilitiesView() {
+      const name = this.$route.name;
+      return name === 'home-facilities' || name === 'region-facilities'
     },
     isAbout() {
       return this.$route.name === 'about';
@@ -99,6 +103,10 @@ section {
   @include mobile {
     margin: 0 auto;
     padding: 0 1rem;
+
+    &.facilities-view {
+      padding: 0;
+    }
   }
 }
 
