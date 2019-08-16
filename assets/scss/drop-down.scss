@@ -1,0 +1,32 @@
+.header-dropdowns .dropdown {
+  font-size: 1.3rem;
+
+  .fa-chevron-down {
+    font-size: 0.8rem;
+    color: $opennem-link-color;
+    position: relative;
+    top: -3px;
+  }
+
+  .dropdown-trigger {
+    font-family: $header-font-family;
+    font-weight: 700;
+    margin-right: $app-padding / 2;
+    padding: $app-padding / 8 $app-padding / 2;
+    color: #000;
+    border-radius: 4px;
+
+    &:hover {
+      background-color: $row-hover;
+    }  
+  }
+
+  .dropdown-item {
+    font-size: 1.2rem;
+
+    &.nuxt-link-active {
+      background-color: $opennem-link-color;
+      color: #fff;
+    }
+  }
+}

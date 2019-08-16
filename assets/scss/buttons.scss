@@ -1,0 +1,37 @@
+$button-background: hsla(0,0%,100%,.5);
+$button-hover-background: hsla(0,0%,100%,.9);
+
+.buttons {
+  &:not(:last-child),
+  &:last-child,
+  .button {
+    margin-bottom: 0;
+  }
+}
+
+.button {
+  border: none;
+  background-color: $button-background;
+  font-weight: 400;
+  color: $opennem-link-color;
+  min-width: 62px;
+
+  &.is-primary.is-inverted {
+    background-color: $button-background;
+  }
+
+  &.is-small {
+    font-size: 0.76rem;
+  }
+
+  &:hover {
+    background-color: $button-hover-background;
+    color: $opennem-link-color;
+  }
+
+  &.is-selected {
+    border-color: $opennem-link-color;
+    background-color: $opennem-link-color;
+    color: #fff;
+  }
+}

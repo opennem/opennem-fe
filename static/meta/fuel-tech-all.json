@@ -1,0 +1,107 @@
+{
+  "groupName": "Expanded",
+  "groups": [
+    {
+      "name": "rooftop_solar",
+      "label": "Solar (Rooftop)",
+      "category": "source",
+      "fuel_techs": ["rooftop_solar"]
+    },
+    {
+      "name": "solar",
+      "label": "Solar (Utility)",
+      "category": "source",
+      "fuel_techs": ["solar"]
+    },
+    {
+      "name": "wind",
+      "label": "Wind",
+      "category": "source",
+      "fuel_techs": ["wind"]
+    },
+    {
+      "name": "hydro",
+      "label": "Hydro",
+      "category": "source",
+      "fuel_techs": ["hydro"]
+    },
+    {
+      "name": "battery_discharging",
+      "label": "Battery (Discharging)",
+      "category": "source",
+      "fuel_techs": ["battery_discharging"]
+    },
+    {
+      "name": "gas_recip",
+      "label": "Gas (Reciprocating)",
+      "category": "source",
+      "fuel_techs": ["gas_recip"]
+    },
+    {
+      "name": "gas_ocgt",
+      "label": "Gas (OCGT)",
+      "category": "source",
+      "fuel_techs": ["gas_ocgt"]
+    },
+    {
+      "name": "gas_ccgt",
+      "label": "Gas (CCGT)",
+      "category": "source",
+      "fuel_techs": ["gas_ccgt"]
+    },
+    {
+      "name": "gas_steam",
+      "label": "Gas (Steam)",
+      "category": "source",
+      "fuel_techs": ["gas_steam"]
+    },
+    {
+      "name": "distillate",
+      "label": "Distillate",
+      "category": "source",
+      "fuel_techs": ["distillate"]
+    },
+    {
+      "name": "biomass",
+      "label": "Biomass",
+      "category": "source",
+      "fuel_techs": ["biomass"]
+    },
+    {
+      "name": "black_coal",
+      "label": "Black Coal",
+      "category": "source",
+      "fuel_techs": ["black_coal"]
+    },
+    {
+      "name": "brown_coal",
+      "label": "Brown Coal",
+      "category": "source",
+      "fuel_techs": ["brown_coal"]
+    },
+    {
+      "name": "imports",
+      "label": "Imports",
+      "category": "source",
+      "fuel_techs": ["imports"]
+    },
+    {
+      "name": "exports",
+      "label": "Exports",
+      "category": "load",
+      "fuel_techs": ["exports"]
+    },
+    {
+      "name": "pumps",
+      "label": "Pumps",
+      "category": "load",
+      "fuel_techs": ["pumps"]
+    },
+    {
+      "name": "battery_charging",
+      "label": "Battery (Charging)",
+      "category": "load",
+      "fuel_techs": ["battery_charging"]
+    }
+  ]
+}

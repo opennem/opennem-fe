@@ -1,0 +1,31 @@
+{
+  "groupName": "Solar/Residual Demand",
+  "groups": [
+    {
+      "name": "group_solar",
+      "label": "Solar",
+      "category": "source",
+      "fuel_techs": ["solar", "rooftop_solar"]
+    },
+    {
+      "name": "group_demand",
+      "label": "Demand",
+      "category": "source",
+      "fuel_techs": ["wind", "hydro", "battery_discharging", "gas_recip",
+        "gas_ocgt", "gas_ccgt", "gas_steam", "distillate", "biomass",
+        "black_coal", "brown_coal"]
+    },
+    {
+      "name": "group_imports",
+      "label": "Imports",
+      "category": "source",
+      "fuel_techs": ["imports"]
+    },
+    {
+      "name": "group_loads",
+      "label": "Loads",
+      "category": "load",
+      "fuel_techs": ["pumps", "battery_charging", "exports"]
+    }
+  ]
+}
