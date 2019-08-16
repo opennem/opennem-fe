@@ -30,7 +30,7 @@ module.exports = {
       {
         hid: 'twitter:image:src',
         name: 'twitter:image:src',
-        content: 'https://opennem-nuxt.netlify.com/images/energy/nem.png'
+        content: 'https://opennem.org.au/images/energy/nem.png'
       },
       // Facebook
       {
@@ -43,13 +43,13 @@ module.exports = {
       {
         hid: 'og:url',
         property: 'og:url',
-        content: 'https://opennem-nuxt.netlify.com'
+        content: 'https://opennem.org.au'
       },
       { property: 'og:description', content: pkg.description },
       {
         hid: 'og:image',
         property: 'og:image',
-        content: 'https://opennem-nuxt.netlify.com/images/energy/nem.png'
+        content: 'https://opennem.org.au/images/energy/nem.png'
       },
       { property: 'og:image:width', content: '2768' },
       { property: 'og:image:height', content: '1922' }

@@ -696,10 +696,10 @@ export default {
       return `OpenNEM: ${title}`
     },
     pageUrl() {
-      return `https://opennem-nuxt.netlify.com/energy/${this.regionId}`
+      return `https://opennem.org.au/energy/${this.regionId}`
     },
     pageImage() {
-      const url = 'https://opennem-nuxt.netlify.com/images/energy/'
+      const url = 'https://opennem.org.au/images/energy/'
       return `${url}${this.regionId}.png`
     },
     range() {
