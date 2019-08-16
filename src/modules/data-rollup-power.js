@@ -5,10 +5,9 @@ export default function (d) {
   const newD = {};
 
   let tempNum = 0;
-  let priceNum = 0;
   let ftNum = {}
 
-  d.forEach((e) => {
+  d.forEach((e, index) => {
     Object.keys(e).forEach((f) => {
       if (!newD[f]) newD[f] = 0;
 
@@ -28,8 +27,7 @@ export default function (d) {
       }
 
       if (f === 'price') {
-        newD[f] += e[f];
-        priceNum += 1;
+        newD[f] = d[0].price
       }
       if (f === 'temperature' && e[f]) {
         newD[f] += e[f];
@@ -41,8 +39,6 @@ export default function (d) {
   Object.keys(ftNum).forEach((ft) => {
     newD[ft] = newD[ft] / ftNum[ft];
   })
-
-  newD.price = newD.price / priceNum;
   
   const newPrice = newD.price;
   const pricePosKey = 'pricePos';

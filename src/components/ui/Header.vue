@@ -81,8 +81,11 @@ export default {
       return _.includes(this.$route.name, 'facilities');
     },
     regionLabel() {
-      const region = getRegionLabel(this.$route.params.region);
-      return region || 'All Regions';
+      let region = getRegionLabel(this.$route.params.region);
+      if (!this.isEnergyRoute && !this.$route.params.region) {
+        region = 'All Regions';
+      }
+      return region;
     },
     iconMenu() {
       return faEllipsisV;
