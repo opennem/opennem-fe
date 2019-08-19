@@ -648,12 +648,14 @@ export default {
           .attr('height', this.height)
           .attr('opacity', 1)
 
-        if (this.showPointOnHover) {
+        if (this.showPointOnHover && parseInt(value)) {
           $cursorCircle
             .attr('cx', xDate)
             .attr('cy', yValue)
             .attr('r', 2.5)
             .attr('opacity', 1)
+        } else {
+          $cursorCircle.attr('opacity', 0)
         }
       } else {
         $cursorRect.attr('opacity', 0)
