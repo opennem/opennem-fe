@@ -2,7 +2,7 @@ const pkg = require('./package')
 const webpack = require('webpack')
 
 module.exports = {
-  mode: 'universal',
+  mode: 'spa',
 
   server: {
     host: '0.0.0.0'
