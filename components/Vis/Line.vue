@@ -800,6 +800,7 @@ export default {
     handleReset() {
       this.x.domain(this.datasetDateExtent)
       this.zoomRedraw()
+      this.$emit('svgClick')
       EventBus.$emit('dataset.filter', [])
     },
 

@@ -666,6 +666,7 @@ export default {
       // this.$emit('visZoomed', false)
       this.x.domain(this.datasetDateExtent)
       this.zoomRedraw()
+      this.$emit('svgClick')
       EventBus.$emit('dataset.filter', [])
     },
 

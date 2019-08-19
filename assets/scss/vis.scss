@@ -41,7 +41,9 @@ path.line-path {
     fill: rgba(199, 69, 35, 0.2);
     stroke: rgba(199, 69, 35, 0.5);
     stroke-width: 0.5;
-    // stroke-dasharray: 10;
+  }
+  .x-axis-brush-group {
+    opacity: 0;
   }
 }
 
