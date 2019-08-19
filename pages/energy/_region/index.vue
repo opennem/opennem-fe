@@ -1555,6 +1555,12 @@ export default {
 ::v-deep .price-pos-vis .line-group path {
   stroke-dasharray: 1;
 }
+::v-deep .price-vis .cursor-line-focus-top-rect,
+::v-deep .price-vis .cursor-line-focus-bottom-rect,
+::v-deep .price-pos-vis .cursor-line-focus-bottom-rect,
+::v-deep .price-neg-vis .cursor-line-focus-top-rect {
+  opacity: 0 !important;
+}
 .temperature-chart.adjustment {
   margin-top: -14px;
 }

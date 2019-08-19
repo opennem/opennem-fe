@@ -11,6 +11,7 @@
       :width="svgWidth"
       :height="svgHeight"
       :id="id"
+      :class="{ 'date-focus': dateFocus }"
       class="line-chart">
       <defs>
         <!-- where to clip -->
@@ -273,6 +274,8 @@ export default {
       cursorLineRectClass: CONFIG.CURSOR_LINE_RECT_CLASS,
       cursorRectClass: 'cursor-rect',
       cursorCircleClass: 'cursor-circle',
+      cursorLineFocusTopRectClass: 'cursor-line-focus-top-rect',
+      cursorLineFocusBottomRectClass: 'cursor-line-focus-bottom-rect',
       tooltipRectHeight: 20,
       tooltipGroupClass: CONFIG.TOOLTIP_GROUP_CLASS,
       tooltipRectClass: CONFIG.TOOLTIP_RECT_CLASS,
@@ -339,6 +342,18 @@ export default {
       if (!this.dateFocus) {
         this.updateCursorLineTooltip(new Date(date).getTime())
       }
+    },
+    dateFocus(focus) {
+      const $cursorLineFocusTopRect = this.$cursorLineGroup.select(
+        `.${this.cursorLineFocusTopRectClass}`
+      )
+      const $cursorLineFocusBottomRect = this.$cursorLineGroup.select(
+        `.${this.cursorLineFocusBottomRectClass}`
+      )
+      const isEnergy = this.interval !== '5m' && this.interval !== '30m'
+      const opacity = focus && !isEnergy ? 1 : 0
+      $cursorLineFocusTopRect.attr('opacity', opacity)
+      $cursorLineFocusBottomRect.attr('opacity', opacity)
     }
   },
 
@@ -434,6 +449,22 @@ export default {
       this.$cursorLineGroup
         .append('circle')
         .attr('class', this.cursorCircleClass)
+        .attr('opacity', 0)
+      this.$cursorLineGroup
+        .append('rect')
+        .attr('class', this.cursorLineFocusTopRectClass)
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('width', 5)
+        .attr('height', 5)
+        .attr('opacity', 0)
+      this.$cursorLineGroup
+        .append('rect')
+        .attr('class', this.cursorLineFocusBottomRectClass)
+        .attr('x', 0)
+        .attr('y', this.height - 5)
+        .attr('width', 5)
+        .attr('height', 5)
         .attr('opacity', 0)
 
       // Create tooltip group
@@ -633,6 +664,12 @@ export default {
       const $cursorLine = this.$cursorLineGroup.select(
         `.${this.cursorLineClass}`
       )
+      const $cursorLineFocusTopRect = this.$cursorLineGroup.select(
+        `.${this.cursorLineFocusTopRectClass}`
+      )
+      const $cursorLineFocusBottomRect = this.$cursorLineGroup.select(
+        `.${this.cursorLineFocusBottomRectClass}`
+      )
       const $cursorRect = this.$cursorLineGroup.select(
         `.${this.cursorRectClass}`
       )
@@ -642,6 +679,8 @@ export default {
 
       if (bandwidth) {
         $cursorLine.attr('opacity', 0)
+        $cursorLineFocusTopRect.attr('opacity', 0)
+        $cursorLineFocusBottomRect.attr('opacity', 0)
         $cursorRect
           .attr('x', xDate)
           .attr('width', bandwidth)
@@ -660,6 +699,8 @@ export default {
       } else {
         $cursorRect.attr('opacity', 0)
         $cursorCircle.attr('opacity', 0)
+        $cursorLineFocusTopRect.attr('x', xDate - 2.5)
+        $cursorLineFocusBottomRect.attr('x', xDate - 2.5)
         $cursorLine.attr('opacity', 1).attr('d', () => {
           let d = 'M' + xDate + ',' + this.height
           d += ' ' + xDate + ',' + 0

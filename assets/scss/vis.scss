@@ -39,8 +39,9 @@ path.line-path {
 .date-focus {
   .cursor-rect {
     fill: rgba(199, 69, 35, 0.2);
-    stroke: rgba(199, 69, 35, 1);
+    stroke: rgba(199, 69, 35, 0.5);
     stroke-width: 0.5;
+    // stroke-dasharray: 10;
   }
 }
 

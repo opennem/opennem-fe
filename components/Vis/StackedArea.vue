@@ -353,7 +353,8 @@ export default {
       const $cursorLineFocusBottomRect = this.$cursorLineGroup.select(
         `.${this.cursorLineFocusBottomRectClass}`
       )
-      const opacity = focus ? 1 : 0
+      const isEnergy = this.interval !== '5m' && this.interval !== '30m'
+      const opacity = focus && !isEnergy ? 1 : 0
       $cursorLineFocusTopRect.attr('opacity', opacity)
       $cursorLineFocusBottomRect.attr('opacity', opacity)
     }
