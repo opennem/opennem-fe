@@ -7,7 +7,9 @@ path.line-path {
   stroke: $opennem-link-color;
   stroke-width: 1px;
 }
-.cursor-line-rect {
+.cursor-line-rect,
+.cursor-line-focus-top-rect,
+.cursor-line-focus-bottom-rect {
   fill: $opennem-link-color;
 }
 .cursor-rect {
@@ -32,6 +34,14 @@ path.line-path {
 }
 .hover-layer {
   fill: transparent;
+}
+
+.date-focus {
+  .cursor-rect {
+    fill: rgba(199, 69, 35, 0.2);
+    stroke: rgba(199, 69, 35, 1);
+    stroke-width: 0.5;
+  }
 }
 
 // axis
