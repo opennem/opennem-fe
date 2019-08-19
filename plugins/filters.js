@@ -61,9 +61,13 @@ Vue.filter('facilityFormatNumber', value => {
   return f(value)
 })
 
-Vue.filter('customFormatValue', (value, { formatter = ',.1f' }) => {
-  const f = d3Format(formatter)
-  return f(value)
+Vue.filter('customFormatValue', value => {
+  let fString = smartFormatString(value)
+  if (fString === ',.0f') {
+    fString = ',.1f'
+  }
+  const f = d3Format(fString)
+  return isFinite(value) && !isNaN(value) && value ? f(value) : '–'
 })
 
 Vue.filter('percentageFormatNumber', value => {

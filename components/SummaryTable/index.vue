@@ -82,6 +82,7 @@
       :summary-total="summarySourcesTotal"
       :domain-toggleable="domainToggleable"
       :energy-domains="energyDomains"
+      :is-year-interval="isYearInterval"
       @update="handleSourcesOrderUpdate"
       @fuelTechsHidden="handleSourceFuelTechsHidden"
     />
@@ -115,6 +116,7 @@
       :summary="summaryLoads"
       :summary-total="summary._totalEnergy"
       :show-percent-column="percentContributionTo === 'demand'"
+      :is-year-interval="isYearInterval"
       @update="handleLoadsOrderUpdate"
       @fuelTechsHidden="handleLoadFuelTechsHidden"
     />

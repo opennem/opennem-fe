@@ -6,7 +6,7 @@
     }"
     class="totals" >
     <span class="total-facilities">Facilities: <strong>{{ totalFacilities }}</strong></span>
-    <span class="total-cap">Capacity: <strong>{{ totalCap | customFormatValue({ formatter: ',.0f'}) }}</strong> MW</span>
+    <span class="total-cap">Capacity: <strong>{{ totalCap | facilityFormatNumber }}</strong> MW</span>
   </div>
 </template>
 

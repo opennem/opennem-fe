@@ -33,7 +33,14 @@
         <div class="ft-label">{{ ft.label }}</div>
       </div>
 
-      <div class="summary-col-energy">
+      <div
+        v-if="isYearInterval"
+        class="summary-col-energy">
+        {{ getValue(ft.id) | customFormatValue({formatter: ',.1f'}) }}
+      </div>
+      <div
+        v-else
+        class="summary-col-energy">
         {{ getValue(ft.id) | formatValue }}
       </div>
 
@@ -111,6 +118,10 @@ export default {
     domainToggleable: {
       type: Boolean,
       default: () => true
+    },
+    isYearInterval: {
+      type: Boolean,
+      default: () => false
     }
   },
 
