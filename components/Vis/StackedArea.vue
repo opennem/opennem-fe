@@ -699,6 +699,26 @@ export default {
     },
 
     updateGuides() {
+      const time = new Date(this.hoverDate).getTime()
+      let nextDatePeriod = null
+      const find = this.dataset.find((d, i) => {
+        const match = d.date === time
+        if (match) {
+          if (this.dataset[i + 1]) {
+            nextDatePeriod = this.dataset[i + 1].date
+          }
+        }
+        return match
+      })
+      const xDate = this.x(time)
+      const nextPeriod = this.x(nextDatePeriod)
+      const bandwidth =
+        this.interval !== '5m' && this.interval !== '30m'
+          ? nextPeriod - xDate
+          : null
+
+      this.positionCursorLine(xDate, time, bandwidth)
+
       // Remove Area
       this.$xGuideGroup.selectAll('rect').remove()
       this.$xIncompleteGroup.selectAll('rect').remove()

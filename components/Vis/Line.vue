@@ -602,6 +602,35 @@ export default {
     },
 
     updateXGuides() {
+      const time = new Date(this.hoverDate).getTime()
+      let nextDatePeriod = null
+      const find = this.dataset.find((d, i) => {
+        const match = d.date === time
+        if (match) {
+          if (this.dataset[i + 1]) {
+            nextDatePeriod = this.dataset[i + 1].date
+          }
+        }
+        return match
+      })
+      const valueFormat = d3Format(',.1f')
+      let value = 0
+      let yValue = null
+      const xDate = this.x(time)
+      const nextPeriod = this.x(nextDatePeriod)
+      const bandwidth =
+        this.interval !== '5m' && this.interval !== '30m'
+          ? nextPeriod - xDate
+          : null
+
+      if (find) {
+        const dId = this.valueDomainId || this.domainId
+        yValue = this.y(find[dId])
+        value = valueFormat(find[dId])
+      }
+
+      this.positionCursorLine(xDate, value, yValue, bandwidth)
+
       // Remove Area
       this.$xGuideGroup.selectAll('rect').remove()
       this.$xGuideGroup
@@ -661,6 +690,10 @@ export default {
         this.positionTooltip(xDate, fTime)
       }
 
+      this.positionCursorLine(xDate, value, yValue, bandwidth)
+    },
+
+    positionCursorLine(xDate, value, yValue, bandwidth) {
       const $cursorLine = this.$cursorLineGroup.select(
         `.${this.cursorLineClass}`
       )
