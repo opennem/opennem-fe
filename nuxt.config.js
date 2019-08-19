@@ -172,7 +172,10 @@ module.exports = {
       '/facilities/qld1',
       '/facilities/sa1',
       '/facilities/tas1',
-      '/facilities/vic1'
+      '/facilities/vic1',
+      '/widget',
+      '/widget/small',
+      '/widget/large'
     ]
   },
 
