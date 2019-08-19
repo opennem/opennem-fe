@@ -145,11 +145,12 @@ th {
 td {
   cursor: pointer;
   &:hover {
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(199, 69, 35, 0.1);
   }
 
   &.on {
     background-color: rgba(199, 69, 35, 0.1);
+    border-color: rgba(199, 69, 35, 1) !important;
   }
 }
 
@@ -160,6 +161,10 @@ tr.has-date-focus {
       background-color: inherit;
     }
   }
+}
+
+.table tbody tr:last-child td {
+  border-bottom-width: 1px;
 }
 
 time {
