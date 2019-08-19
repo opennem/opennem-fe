@@ -19,6 +19,10 @@
       <g
         v-else
         class="total">
+        <text
+          v-if="isTotalPower"
+          class="total-label"
+          dy="-10">Average</text>
         <text dy="10">{{ total | formatValue }}{{ unit }}</text>
       </g>
     </svg>
@@ -30,6 +34,7 @@ import _debounce from 'lodash.debounce'
 import { scaleOrdinal as d3ScaleOrdinal } from 'd3-scale'
 import { pie as d3Pie, arc as d3Arc } from 'd3-shape'
 import { select as d3Select } from 'd3-selection'
+import { mean as d3Mean } from 'd3-array'
 
 export default {
   props: {
@@ -99,7 +104,14 @@ export default {
       })
     },
 
+    isTotalPower() {
+      return this.unit === ' MW' && !this.hoverOn
+    },
+
     total() {
+      if (this.isTotalPower) {
+        return d3Mean(this.donutDataset, d => d.value)
+      }
       return this.donutDataset.reduce((a, b) => a + b.value, 0)
     },
 
