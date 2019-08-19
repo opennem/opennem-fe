@@ -29,7 +29,9 @@
         href="https://github.com/opennem">
         <i class="fab fa-github" />
       </a>
-      <nuxt-link to="/about">About OpenNEM</nuxt-link> 
+      <nuxt-link
+        to="/about"
+        class="about-link">About OpenNEM</nuxt-link> 
     </div>
   </footer>
 </template>

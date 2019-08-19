@@ -41,6 +41,8 @@
           </span>
         </nuxt-link>
       </div>
+
+      <app-footer />
     </div>
   </div>
 </template>
@@ -49,10 +51,12 @@
 import VIEWS from '~/constants/views.js'
 import REGIONS from '~/constants/regions.js'
 import Logo from '~/components/ui/Logo'
+import AppFooter from '~/components/layout/AppFooter'
 
 export default {
   components: {
-    Logo
+    Logo,
+    AppFooter
   },
 
   props: {
@@ -197,6 +201,27 @@ export default {
       right: 15px;
       color: rgba(100, 100, 100, 0.5);
     }
+  }
+}
+
+::v-deep footer {
+  display: flex;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  .left,
+  .right {
+    display: block;
+  }
+
+  .right {
+    text-align: right;
+  }
+
+  .about-link {
+    display: block;
   }
 }
 </style>
