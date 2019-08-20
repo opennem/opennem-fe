@@ -30,7 +30,7 @@
         <i class="fab fa-github" />
       </a>
       <nuxt-link
-        to="/about"
+        to="/about/"
         class="about-link">About OpenNEM</nuxt-link> 
     </div>
   </footer>

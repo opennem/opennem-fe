@@ -21,7 +21,7 @@
             v-for="view in views" 
             v-show="showLink(view.id)"
             :key="view.id" 
-            :to="`/${view.id}/${regionId}`"
+            :to="`/${view.id}/${regionId}/`"
             class="dropdown-item"
             @click.native="handleClick">
             {{ view.label }}

@@ -18,7 +18,7 @@
           v-for="view in views"
           v-show="showViewLink(view.id)"
           :key="view.id" 
-          :to="`/${view.id}/${regionId}`"
+          :to="`/${view.id}/${regionId}/`"
           class="menu-item">
           {{ view.label }}
           <span class="icon">
@@ -32,7 +32,7 @@
           v-for="region in regions"
           v-show="showRegionLink(region.id)"
           :key="region.id" 
-          :to="`/${currentView}/${region.id}`"
+          :to="`/${currentView}/${region.id}/`"
           :class="{'has-divider': region.id === 'nem'}"
           class="menu-item">
           {{ region.label }}

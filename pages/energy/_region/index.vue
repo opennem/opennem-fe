@@ -696,7 +696,7 @@ export default {
       return `OpenNEM: ${title}`
     },
     pageUrl() {
-      return `https://opennem.org.au/energy/${this.regionId}`
+      return `https://opennem.org.au/energy/${this.regionId}/`
     },
     pageImage() {
       const url = 'https://opennem.org.au/images/energy/'

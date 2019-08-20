@@ -21,7 +21,7 @@
             v-for="region in regions"
             v-show="showRegionLink(region.id)"
             :key="region.id" 
-            :to="`/${currentView}/${region.id}`"
+            :to="`/${currentView}/${region.id}/`"
             :class="{'has-divider': region.id === 'nem'}"
             class="dropdown-item"
             @click.native="handleClick">
