@@ -17,7 +17,7 @@
           class="row-bar" />
 
         <div class="contribution">
-          {{ getContribution(domain.id) | formatValue }}%
+          {{ getContribution(domain.id) | percentageFormatNumber }}
         </div>
       </div>
       

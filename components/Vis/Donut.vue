@@ -13,8 +13,7 @@
         <text
           class="total-label"
           dy="-10">{{ hoverOnSliceLabel }}</text>
-        <!-- <text dy="12">{{ hoverOnSliceValue | formatValue }}</text> -->
-        <text dy="12">{{ hoverOnSlicePercent | formatValue }}%</text>
+        <text dy="12">{{ hoverOnSlicePercent | percentageFormatNumber }}</text>
       </g>
       <g
         v-else
@@ -23,7 +22,12 @@
           v-if="isTotalPower"
           class="total-label"
           dy="-10">Average</text>
-        <text dy="10">{{ total | formatValue }}{{ unit }}</text>
+        <text
+          v-if="unit === ' TWh'"
+          dy="10">{{ total | customFormatValue }}{{ unit }}</text>
+        <text
+          v-else
+          dy="10">{{ total | formatValue }}{{ unit }}</text>
       </g>
     </svg>
   </div>
@@ -136,8 +140,9 @@ export default {
       return this.hoverOnSliceData ? this.hoverOnSliceData.value : ''
     },
     hoverOnSlicePercent() {
+      const total = this.donutDataset.reduce((a, b) => a + b.value, 0)
       return this.hoverOnSliceData
-        ? (this.hoverOnSliceData.value / this.total) * 100
+        ? (this.hoverOnSliceData.value / total) * 100
         : ''
     }
   },
