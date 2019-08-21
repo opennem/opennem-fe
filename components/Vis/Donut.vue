@@ -114,7 +114,7 @@ export default {
 
     total() {
       if (this.isTotalPower) {
-        return d3Mean(this.donutDataset, d => d.value)
+        return d3Mean(this.dataset, d => d._totalGeneration)
       }
       return this.donutDataset.reduce((a, b) => a + b.value, 0)
     },
