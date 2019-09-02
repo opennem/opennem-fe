@@ -275,10 +275,10 @@ export default {
     marketValueDomains,
     temperatureDomains,
     priceDomains,
-    emissionDomains
+    emissionDomains,
+    shouldInterpolate
   ) {
     const promise = new Promise(resolve => {
-      const interpolateSeriesTypes = findInterpolateSeriesTypes(data)
       let flatData = transformEnergyData(
         data,
         energyDomains,
@@ -287,7 +287,11 @@ export default {
         priceDomains,
         emissionDomains
       )
-      mutateDataForInterpolation(flatData, interpolateSeriesTypes)
+
+      if (shouldInterpolate) {
+        const interpolateSeriesTypes = findInterpolateSeriesTypes(data)
+        mutateDataForInterpolation(flatData, interpolateSeriesTypes)
+      }
 
       resolve(flatData)
     })
@@ -308,6 +312,8 @@ export default {
     return new Promise(resolve => {
       let data = []
       const promises = []
+      const shouldInterpolate =
+        range === '1D' || range === '3D' || range === '7D'
 
       // flatten data for vis and summary
       res.forEach(r => {
@@ -318,7 +324,8 @@ export default {
             marketValueDomains,
             temperatureDomains,
             priceDomains,
-            emissionDomains
+            emissionDomains,
+            shouldInterpolate
           )
         )
       })
