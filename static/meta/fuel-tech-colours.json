@@ -1,0 +1,19 @@
+{
+  "pumps": "#88AFD0",
+  "battery_charging": "#B2DAEF",
+  "exports": "#977AB1",
+  "imports": "#44146F",
+  "brown_coal": "#8B572A",
+  "black_coal": "#121212",
+  "biomass": "#A3886F",
+  "distillate": "#F35020",
+  "gas_steam": "#F48E1B",
+  "gas_ccgt": "#FDB462",
+  "gas_ocgt": "#FFCD96",
+  "gas_recip": "#F9DCBC",
+  "battery_discharging": "#00A2FA",
+  "hydro": "#4582B4",
+  "wind": "#417505",
+  "solar": "#DFCF00",
+  "rooftop_solar": "#F8E71C"
+}

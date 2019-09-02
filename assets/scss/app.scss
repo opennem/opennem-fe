@@ -1,0 +1,34 @@
+@charset "utf-8";
+
+// Import Google Fonts
+@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Serif:300,400,600');
+@import url('https://fonts.googleapis.com/css?family=Playfair+Display:400,700');
+
+// Define app variables
+@import "./variables.scss";
+
+// Import only what you need from Bulma
+@import "../../node_modules/bulma/sass/utilities/_all.sass";
+@import "../../node_modules/bulma/sass/base/_all.sass";
+@import "../../node_modules/bulma/sass/elements/_all.sass";
+@import "../../node_modules/bulma/sass/components/navbar.sass";
+@import "../../node_modules/bulma/sass/components/panel.sass";
+@import "../../node_modules/bulma/sass/components/message.sass";
+@import "../../node_modules/bulma/sass/components/dropdown.sass";
+@import "../../node_modules/bulma/sass/components/card.sass";
+@import "../../node_modules/bulma/sass/layout/hero.sass";
+@import "../../node_modules/bulma/sass/layout/section.sass";
+// @import "../../node_modules/bulma/sass/form/shared.sass";
+// @import "../../node_modules/bulma/sass/form/select.sass";
+@import "../../node_modules/bulma/sass/form/all.sass";
+
+// Import application styles
+@import "./vue-transitions.scss";
+@import "./loading.scss";
+@import "./header.scss";
+@import "./draggable.scss";
+@import "./drop-down.scss";
+@import "./vis.scss";
+@import "./map.scss";
+@import "./tooltip.scss";
+@import "./buttons.scss";

@@ -1,0 +1,19 @@
+.header-buttons {  
+  .button {
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    border-right: $border-style;
+    margin: 0;
+
+    &:first-child {
+      border-left: $border-style;
+    }
+    &:last-child {
+      border-right: none;
+    }
+    &:hover {
+      background: #fff;
+    }
+  }
+}

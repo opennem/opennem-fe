@@ -1,0 +1,135 @@
+path.line-path {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1;
+}
+.cursor-line {
+  stroke: $opennem-link-color;
+  stroke-width: 1px;
+}
+.cursor-line-rect,
+.cursor-line-focus-top-rect,
+.cursor-line-focus-bottom-rect {
+  fill: $opennem-link-color;
+}
+.cursor-rect {
+  fill: rgba(199, 69, 35, 0.1);
+  // fill: rgba(0, 0, 0, 0.1);
+  // stroke: rgba(199, 69, 35, 0.3);
+  // stroke-width: 0.5px;
+}
+.cursor-circle {
+  fill: $opennem-link-color;
+}
+.tooltip-rect {
+  fill: $opennem-link-color;
+}
+.tooltip-text {
+  font-size: 10px;
+  fill: #fff;
+}
+.cursor-line-text {
+  font-size: 10px;
+  fill: #fff;
+}
+.hover-layer {
+  fill: transparent;
+}
+
+.date-focus {
+  .cursor-rect {
+    fill: rgba(199, 69, 35, 0.2);
+    stroke: rgba(199, 69, 35, 0.5);
+    stroke-width: 0.5;
+  }
+  .x-axis-brush-group {
+    opacity: 0;
+  }
+}
+
+// axis
+.domain {
+  stroke: none;
+}
+.x-axis .tick:last-child {
+  .interval-5m,
+  .range-3d,
+  .interval-day,
+  .interval-year {
+    opacity: 1;
+  }
+}
+.x-axis .tick text {
+  color: #666;
+  text-anchor: start;
+  font-size: 7px;
+
+  @include tablet {
+    font-size: 9px;
+  }
+}
+.x-axis .tick line {
+  stroke-dasharray: 4.8;
+  stroke: rgba(0, 0, 0, 0.1);
+}
+.x-axis-tick .tick line {
+  stroke: none;
+}
+// .y-axis .tick:not(:first-of-type) line {
+//   stroke-dasharray: 4.8;
+//   stroke: rgba(0, 0, 0, 0.1);
+// }
+.y-axis-tick .tick text {
+  color: #555;
+  text-anchor: start;
+  text-shadow: 0 0 10px hsla(0, 0%, 93%, 0.5);
+}
+.y-axis .tick text {
+  color: transparent;
+}
+.y-axis-tick .tick line,
+.y-axis .tick line {
+  stroke: rgba(0, 0, 0, 0.05);
+  stroke-dasharray: 4.8;
+}
+// .y-axis-tick .tick:not(:first-of-type) line,
+// .y-axis .tick:not(:first-of-type) line {
+//   stroke: none;
+// }
+
+// disable text selection in axis tick marks
+.tick {
+  text {
+    font-family: $family-primary;
+    cursor: default;
+    pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    &::selection {
+      background: none;
+    }
+  }
+}
+
+// brush styles
+.brush {
+  // fill: #999;
+  // fill-opacity: 0.2;
+  // stroke: #000;
+
+  .selection {
+    fill: $opennem-link-color;
+    fill-opacity: 0.3;
+    stroke-width: 0;
+  }
+}
+
+.donut-vis {
+  .total {
+    font-weight: 700;
+    text-anchor: middle;
+    font-size: 20px;
+  }
+}

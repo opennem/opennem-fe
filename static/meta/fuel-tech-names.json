@@ -1,0 +1,19 @@
+[
+  "pumps",
+  "battery_charging",
+  "exports",
+  "imports",
+  "brown_coal",
+  "black_coal",
+  "biomass",
+  "distillate",
+  "gas_steam",
+  "gas_ccgt",
+  "gas_ocgt",
+  "gas_recip",
+  "battery_discharging",
+  "hydro",
+  "wind",
+  "solar",
+  "rooftop_solar"
+]

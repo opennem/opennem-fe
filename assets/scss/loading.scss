@@ -1,0 +1,22 @@
+@-webkit-keyframes pulse {
+  0% {
+    background: #ddd;
+  }
+  50% {
+    background: transparent;
+  }
+  100% {
+    background: #ddd;
+  }
+}
+@keyframes pulse {
+  0% {
+    background: #ddd;
+  }
+  50% {
+    background: transparent;
+  }
+  100% {
+    background: #ddd;
+  }
+}

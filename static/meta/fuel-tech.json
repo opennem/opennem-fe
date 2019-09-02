@@ -1,0 +1,87 @@
+[
+  {
+    "name": "rooftop_solar",
+    "label": "Solar (Rooftop)",
+    "category": "source"
+  },
+  {
+    "name": "solar",
+    "label": "Solar (Utility)",
+    "category": "source"
+  },
+  {
+    "name": "wind",
+    "label": "Wind",
+    "category": "source"
+  },
+  {
+    "name": "hydro",
+    "label": "Hydro",
+    "category": "source"
+  },
+  {
+    "name": "battery_discharging",
+    "label": "Battery (Discharging)",
+    "category": "source"
+  },
+  {
+    "name": "gas_recip",
+    "label": "Gas (Reciprocating)",
+    "category": "source"
+  },
+  {
+    "name": "gas_ocgt",
+    "label": "Gas (OCGT)",
+    "category": "source"
+  },
+  {
+    "name": "gas_ccgt",
+    "label": "Gas (CCGT)",
+    "category": "source"
+  },
+  {
+    "name": "gas_steam",
+    "label": "Gas (Steam)",
+    "category": "source"
+  },
+  {
+    "name": "distillate",
+    "label": "Distillate",
+    "category": "source"
+  },
+  {
+    "name": "biomass",
+    "label": "Biomass",
+    "category": "source"
+  },
+  {
+    "name": "black_coal",
+    "label": "Black Coal",
+    "category": "source"
+  },
+  {
+    "name": "brown_coal",
+    "label": "Brown Coal",
+    "category": "source"
+  },
+  {
+    "name": "imports",
+    "label": "Imports",
+    "category": "source"
+  },
+  {
+    "name": "exports",
+    "label": "Exports",
+    "category": "load"
+  },
+  {
+    "name": "pumps",
+    "label": "Pumps",
+    "category": "load"
+  },
+  {
+    "name": "battery_charging",
+    "label": "Battery (Charging)",
+    "category": "load"
+  }
+]
