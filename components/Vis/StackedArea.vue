@@ -1023,6 +1023,7 @@ export default {
       g.selectAll('.tick text')
         .attr('x', 4)
         .attr('dy', -4)
+      g.selectAll('.tick line').attr('class', d => (d === 0 ? 'base' : ''))
     },
 
     getXAxisDateByMouse(evt) {

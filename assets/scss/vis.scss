@@ -92,6 +92,10 @@ path.line-path {
   stroke: rgba(0, 0, 0, 0.05);
   stroke-dasharray: 4.8;
 }
+.y-axis-tick .tick line.base {
+  stroke: rgb(110, 110, 110);
+  stroke-dasharray: 5;
+}
 // .y-axis-tick .tick:not(:first-of-type) line,
 // .y-axis .tick:not(:first-of-type) line {
 //   stroke: none;
