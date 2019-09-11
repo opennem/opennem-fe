@@ -1417,7 +1417,6 @@ export default {
 
       .hover-date-value {
         display: flex;
-        font-size: 0.9em;
         // background-color: rgba(255, 255, 255, 0.5);
         // @include desktop {
         //   background-color: transparent;
@@ -1436,8 +1435,8 @@ export default {
         font-weight: 600;
         background-color: rgba(199, 69, 35, 0.1);
         color: #444;
-        font-size: 0.9em;
-        padding-top: 4px;
+        font-size: 10px;
+        padding-top: 3px;
         width: 30%;
 
         @include tablet {
@@ -1449,7 +1448,7 @@ export default {
       .hover-values {
         display: flex;
         align-items: center;
-        font-size: 0.8em;
+        font-size: 9px;
         width: 70%;
 
         span {
@@ -1463,7 +1462,7 @@ export default {
           margin: 0 1rem;
         }
         strong {
-          font-size: 1.3em;
+          font-size: 11px;
         }
 
         @include desktop {
