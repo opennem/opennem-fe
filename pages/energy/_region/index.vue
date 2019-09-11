@@ -57,11 +57,11 @@
                     :style="{ 'background-color': hoverDomainColour }"
                     class="colour-square" />
                   {{ hoverDomainLabel }}
-                  <strong>{{ hoverValue | formatValue }} GWh</strong>
+                  <strong>{{ hoverValue | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}</strong>
                 </span>
                 <span class="total-value">
                   Total
-                  <strong>{{ hoverTotal | formatValue }} GWh</strong>
+                  <strong>{{ hoverTotal | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}</strong>
                 </span>
               </div>
             </div>
