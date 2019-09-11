@@ -530,6 +530,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import { mouse as d3Mouse } from 'd3-selection'
 import { extent as d3Extent, max as d3Max } from 'd3-array'
@@ -811,7 +812,7 @@ export default {
       const actualStartDate = this.dataset[0]._actualStartDate
       const aSD = new Date(actualStartDate).setHours(0)
       const actualLastDate = this.dataset[0]._actualLastDate
-      const aLD = new Date(actualLastDate).setHours(0)
+      let aLD = new Date(actualLastDate).setHours(0)
 
       if (this.interval === 'Week') {
         const incompletes = []
@@ -849,13 +850,14 @@ export default {
 
       if (this.interval === 'Season' || this.interval === 'Quarter') {
         const incompletes = []
+        aLD = moment(aLD).add(1, 'month')
         if (aSD > dStart) {
           incompletes.push({
             start: dStart,
             end: dStart + 7889400000
           })
         }
-        if (aLD < dEnd) {
+        if (aLD.valueOf() < dEnd) {
           incompletes.push({
             start: dEnd - 7889400000,
             end: dEnd
