@@ -382,12 +382,14 @@ export default {
   methods: {
     setupWidthHeight() {
       const chartWidth = this.$el.offsetWidth
+      const width = chartWidth - this.margin.left - this.margin.right
       const height = this.showXAxis
         ? this.svgHeight - this.margin.top - this.margin.bottom
         : this.svgHeight
+
       this.svgWidth = chartWidth
-      this.width = chartWidth - this.margin.left - this.margin.right
-      this.height = height
+      this.width = width < 0 ? 0 : width
+      this.height = height < 0 ? 0 : height
     },
 
     setup() {
@@ -729,7 +731,10 @@ export default {
         .append('rect')
         .attr('opacity', 0.05)
         .attr('x', d => this.x(d.start))
-        .attr('width', d => this.x(d.end) - this.x(d.start))
+        .attr('width', d => {
+          const width = this.x(d.end) - this.x(d.start)
+          return width < 0 ? 0 : width
+        })
         .attr('height', this.height)
 
       this.$xIncompleteGroup
@@ -739,7 +744,10 @@ export default {
         .append('rect')
         .attr('opacity', 1)
         .attr('x', d => this.x(d.start))
-        .attr('width', d => this.x(d.end) - this.x(d.start))
+        .attr('width', d => {
+          const width = this.x(d.end) - this.x(d.start)
+          return width < 0 ? 0 : width
+        })
         .attr('height', this.height)
         .attr('fill', `url(${this.path}#incomplete-period-pattern)`)
         .style('pointer-events', 'none')
@@ -765,7 +773,7 @@ export default {
         $cursorLineFocusBottomRect.attr('opacity', 0)
         $cursorRect
           .attr('x', xDate)
-          .attr('width', bandwidth)
+          .attr('width', bandwidth < 0 ? 0 : bandwidth)
           .attr('height', this.height)
           .attr('opacity', 1)
       } else {
@@ -793,7 +801,7 @@ export default {
       $cursorLineRect
         .attr('x', xDate - rectWidth / 2)
         .attr('y', this.height - this.timeRectHeight)
-        .attr('width', rectWidth)
+        .attr('width', rectWidth < 0 ? 0 : rectWidth)
         .attr('opacity', 1)
       $cursorLineText
         .attr('x', xDate)

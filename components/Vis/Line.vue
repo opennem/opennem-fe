@@ -379,12 +379,13 @@ export default {
   methods: {
     setupWidthHeight() {
       const chartWidth = this.$el.offsetWidth
+      const width = chartWidth - this.margin.left - this.margin.right
       const height = this.showXAxis
         ? this.svgHeight - this.margin.top - this.margin.bottom
         : this.svgHeight - 1
       this.svgWidth = chartWidth
-      this.width = chartWidth - this.margin.left - this.margin.right
-      this.height = height
+      this.width = width < 0 ? 0 : width
+      this.height = height < 0 ? 0 : height
     },
 
     setup() {
@@ -716,7 +717,7 @@ export default {
         $cursorLineFocusBottomRect.attr('opacity', 0)
         $cursorRect
           .attr('x', xDate)
-          .attr('width', bandwidth)
+          .attr('width', bandwidth < 0 ? 0 : bandwidth)
           .attr('height', this.height)
           .attr('opacity', 1)
 
@@ -754,7 +755,7 @@ export default {
       $tooltipRect
         .attr('x', xDate - rectWidth / 2)
         .attr('y', this.height - this.tooltipRectHeight)
-        .attr('width', rectWidth)
+        .attr('width', rectWidth < 0 ? 0 : rectWidth)
         .attr('opacity', 1)
       $tooltipText
         .attr('x', xDate)
