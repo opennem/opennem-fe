@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+   <url>
+      <loc>https://opennem.org.au/energy/nem</loc>
+      <changefreq>daily</changefreq>
+   </url>
+   <url>
+      <loc>https://opennem.org.au/energy/nsw1</loc>
+      <changefreq>daily</changefreq>
+   </url>
+   <url>
+      <loc>https://opennem.org.au/energy/qld1</loc>
+      <changefreq>daily</changefreq>
+   </url>
+   <url>
+      <loc>https://opennem.org.au/energy/tas1</loc>
+      <changefreq>daily</changefreq>
+   </url>
+   <url>
+      <loc>https://opennem.org.au/energy/vic1</loc>
+      <changefreq>daily</changefreq>
+   </url>
+   <url>
+      <loc>https://opennem.org.au/energy/sa1</loc>
+      <changefreq>daily</changefreq>
+   </url>
+   <url>
+      <loc>https://opennem.org.au/about</loc>
+      <changefreq>monthly</changefreq>
+   </url>
+</urlset>
