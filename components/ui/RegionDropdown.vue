@@ -63,6 +63,8 @@ export default {
   methods: {
     handleClick() {
       this.dropdownActive = !this.dropdownActive
+      this.$store.dispatch('export/title', '')
+      this.$store.dispatch('export/description', '')
     },
     handleClickAway() {
       this.dropdownActive = false

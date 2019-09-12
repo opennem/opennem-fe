@@ -23,7 +23,7 @@
       autocapitalize="off"
       spellcheck="true"
       @blur="onTitleBlur">
-      {{ regionLabel }}
+      {{ title }}
     </h3>
     <h5
       v-if="showDescription"
@@ -33,7 +33,9 @@
       autocapitalize="off"
       spellcheck="true"
       @blur="onDescriptionBlur"
-    >[Description]</h5>
+    >
+      {{ description }}
+    </h5>
   </div>
 </template>
 
@@ -50,6 +52,7 @@ export default {
     return {
       showTitle: true,
       showDescription: true,
+      title: '',
       description: '[Description]'
     }
   },
@@ -58,16 +61,11 @@ export default {
     regionId() {
       return this.$route.params.region
     },
-    regionLabel() {
-      const id = this.regionId
-      const find = REGIONS.find(region => region.id === id)
-      if (id === 'nem') {
-        return 'OpenNEM'
-      }
-      if (find) {
-        return find.label
-      }
-      return id
+    exportTitle() {
+      return this.$store.getters['export/title']
+    },
+    exportDescription() {
+      return this.$store.getters['export/description']
     }
   },
 
@@ -79,17 +77,47 @@ export default {
     }
   },
 
+  created() {
+    if (this.exportTitle) {
+      this.title = this.exportTitle
+    } else {
+      const regionLabel = this.getRegionLabel()
+      this.title = regionLabel
+    }
+
+    if (this.exportDescription) {
+      this.description = this.exportDescription
+    } else {
+      this.description = '[Description]'
+    }
+  },
+
   methods: {
+    getRegionLabel() {
+      const id = this.regionId
+      const find = REGIONS.find(region => region.id === id)
+      if (id === 'nem') {
+        return 'OpenNEM'
+      }
+      if (find) {
+        return find.label
+      }
+      return id
+    },
     onTitleBlur(e) {
-      if (e.target.innerText.trim() === '') {
+      const title = e.target.innerText.trim()
+      if (title === '') {
         this.showTitle = false
+      } else {
+        this.$store.dispatch('export/title', title)
       }
     },
     onDescriptionBlur(e) {
-      if (e.target.innerText.trim() === '') {
+      const description = e.target.innerText.trim()
+      if (description === '') {
         this.showDescription = false
       } else {
-        this.description = e.target.innerText.trim()
+        this.$store.dispatch('export/description', description)
       }
     }
   }

@@ -343,6 +343,28 @@ export default {
       return this.$store.getters.featureEmissions
     },
 
+    exportChartEnergy() {
+      return this.$store.getters['export/chartEnergy']
+    },
+    exportChartEmissionsVolume() {
+      return this.$store.getters['export/chartEmissionsVolume']
+    },
+    exportChartEmissionsIntensity() {
+      return this.$store.getters['export/chartEmissionsIntensity']
+    },
+    exportChartPrice() {
+      return this.$store.getters['export/chartPrice']
+    },
+    exportChartTemperature() {
+      return this.$store.getters['export/chartTemperature']
+    },
+    exportSummary() {
+      return this.$store.getters['export/summary']
+    },
+    exportLegend() {
+      return this.$store.getters['export/legend']
+    },
+
     hiddenFuelTechs() {
       return this.$store.getters.hiddenFuelTechs
     },
@@ -467,6 +489,14 @@ export default {
 
   mounted() {
     this.fetchData(this.regionId, this.range)
+
+    this.chartEnergy = this.exportChartEnergy
+    this.chartEmissionsVolume = this.exportChartEmissionsVolume
+    this.chartEmissionsIntensity = this.exportChartEmissionsIntensity
+    this.chartPrice = this.exportChartPrice
+    this.chartTemperature = this.exportChartTemperature
+    this.summary = this.exportSummary
+    this.legend = this.exportLegend
   },
 
   methods: {
@@ -615,6 +645,7 @@ export default {
 
     handleWidgetToggle(widgetName) {
       this[widgetName] = !this[widgetName]
+      this.$store.dispatch(`export/${widgetName}`, this[widgetName])
     },
 
     handleExportClick() {
