@@ -105,6 +105,21 @@ export default {
     },
     widthBreak() {
       return this.windowWidth < 769
+    },
+    facilitySortBy() {
+      return this.$store.getters['facility/sortBy']
+    },
+    facilityOrderBy() {
+      return this.$store.getters['facility/orderBy']
+    },
+    facilitySelectedStatuses() {
+      return this.$store.getters['facility/selectedStatuses']
+    },
+    facilitySelectedTechs() {
+      return this.$store.getters['facility/selectedTechs']
+    },
+    facilitySelectedView() {
+      return this.$store.getters['facility/selectedView']
     }
   },
 
@@ -131,6 +146,11 @@ export default {
 
   created() {
     this.$store.dispatch('currentView', 'facilities')
+    this.sortBy = this.facilitySortBy
+    this.orderBy = this.facilityOrderBy
+    this.selectedStatuses = this.facilitySelectedStatuses
+    this.selectedTechs = this.facilitySelectedTechs
+    this.selectedView = this.facilitySelectedView
   },
 
   mounted() {
@@ -256,6 +276,9 @@ export default {
         this.orderBy = ASCENDING
       }
       this.sortBy = orderName
+
+      this.$store.dispatch('facility/sortBy', this.sortBy)
+      this.$store.dispatch('facility/orderBy', this.orderBy)
     },
     handleFacilitySelect(facility, shouldZoom) {
       this.selectedFacility = facility
@@ -270,12 +293,15 @@ export default {
     },
     handleTechsSelected(techs) {
       this.selectedTechs = techs
+      this.$store.dispatch('facility/selectedTechs', this.selectedTechs)
     },
     handleStatusesSelected(statuses) {
       this.selectedStatuses = statuses
+      this.$store.dispatch('facility/selectedStatuses', this.selectedStatuses)
     },
     handleViewSelect(view) {
       this.selectedView = view
+      this.$store.dispatch('facility/selectedView', this.selectedView)
     },
     handleCloseDetail() {
       this.selectedFacility = null

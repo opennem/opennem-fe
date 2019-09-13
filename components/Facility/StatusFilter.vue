@@ -53,6 +53,7 @@
 
 <script>
 import _includes from 'lodash.includes'
+import _cloneDeep from 'lodash.clonedeep'
 import { mixin as clickaway } from 'vue-clickaway'
 
 const statuses = [
@@ -106,7 +107,7 @@ export default {
 
   mounted() {
     this.selectedStatus = this.status
-    this.selected = this.selectedStatuses
+    this.selected = _cloneDeep(this.selectedStatuses)
   },
 
   methods: {
