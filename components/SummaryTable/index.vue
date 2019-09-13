@@ -490,10 +490,18 @@ export default {
         }
       })
 
-      const totalAverageValue =
-        this.isEnergy && !this.isYearInterval
-          ? totalPriceMarketValue / energySummaryTotal / 1000
-          : volWeightPriceTotal / energySummaryTotal / 1000 / 1000
+      let totalAverageValue = 0
+      if (this.isEnergy) {
+        if (this.isYearInterval) {
+          totalAverageValue =
+            totalPriceMarketValue / energySummaryTotal / 1000 / 1000
+        } else {
+          totalAverageValue = totalPriceMarketValue / energySummaryTotal / 1000
+        }
+      } else {
+        totalAverageValue = volWeightPriceTotal / energySummaryTotal
+      }
+
       this.summary._totalEnergy = total
       this.summary._totalAverageValue = totalAverageValue
       this.summarySources._totalEnergy = totalSources
