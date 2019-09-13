@@ -152,11 +152,12 @@ export default {
           }
           obj[`${label} - C`] = format(d[domain.id])
         })
-        this.priceDomains.forEach(domain => {
+        if (this.priceDomains.length > 0) {
+          const priceDomain = this.priceDomains[0]
           const label =
-            domain.type === 'price' ? 'Price' : 'Volume Weighted Price'
-          obj[`${label} - AUD/MWh`] = format(d[domain.id])
-        })
+            priceDomain.type === 'price' ? 'Price' : 'Volume Weighted Price'
+          obj[`${label} - AUD/MWh`] = format(d[priceDomain.id])
+        }
         if (this.hasMarketValue) {
           this.marketValueDomains.forEach(domain => {
             obj[`${domain.label} Market Value - AUD`] = format(d[domain.id])
