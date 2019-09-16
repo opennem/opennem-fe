@@ -33,6 +33,32 @@ export default {
     return groupDomains.reverse()
   },
 
+  getAllDomainObjs() {
+    const order = FUEL_TECHS.DEFAULT_FUEL_TECH_ORDER
+    return order.map(ft => {
+      return {
+        // id: `${region}.fuel_tech.${ft}.${type}`,
+        fuelTech: ft,
+        label: FUEL_TECHS.FUEL_TECH_LABEL[ft],
+        colour: FUEL_TECHS.DEFAULT_FUEL_TECH_COLOUR[ft],
+        category: FUEL_TECHS.FUEL_TECH_CATEGORY[ft],
+        renewable: FUEL_TECHS.FUEL_TECH_RENEWABLE[ft]
+      }
+    })
+  },
+
+  getAllGroupDomains(dict) {
+    const order = dict.FUEL_TECH_ORDER
+    return order.map(ft => {
+      return {
+        id: `${ft}.energy`,
+        label: dict.FUEL_TECH_LABEL[ft],
+        colour: dict.FUEL_TECH_GROUP_COLOUR[ft],
+        category: dict.FUEL_TECH_CATEGORY[ft]
+      }
+    })
+  },
+
   getDomainObjsOrder(domainObjs, domainOrder) {
     // get the unique domains in the right order
     const order = domainOrder

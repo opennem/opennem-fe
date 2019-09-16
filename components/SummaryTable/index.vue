@@ -163,6 +163,8 @@
 import moment from 'moment'
 import _isEmpty from 'lodash.isempty'
 import _cloneDeep from 'lodash.clonedeep'
+import _includes from 'lodash.includes'
+import Domain from '~/services/Domain.js'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
 import Items from './Items'
 
@@ -248,6 +250,10 @@ export default {
   computed: {
     fuelTechGroupName() {
       return this.$store.getters.fuelTechGroupName
+    },
+
+    fuelTechGroup() {
+      return this.$store.getters.fuelTechGroup
     },
 
     percentContributionTo() {
@@ -377,8 +383,35 @@ export default {
   },
 
   mounted() {
-    this.hiddenFuelTechs.forEach(fuelTech => {
-      const find = this.domains.find(domain => domain.fuelTech === fuelTech)
+    let hiddenFuelTechs = this.hiddenFuelTechs
+    const property = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
+
+    // if all is hidden, then unhide all
+    if (this.fuelTechGroupName === 'Default') {
+      let hiddenLength = 0
+      this.domains.forEach(d => {
+        if (_includes(hiddenFuelTechs, d[property])) {
+          hiddenLength += 1
+        }
+      })
+
+      if (this.domains.length === hiddenLength) {
+        this.hiddenSources = []
+        this.hiddenLoads = []
+        hiddenFuelTechs = []
+      }
+    } else {
+      if (hiddenFuelTechs.length === this.sourcesOrderLength) {
+        this.hiddenSources = []
+        this.hiddenLoads = []
+        hiddenFuelTechs = []
+      }
+    }
+
+    this.$emit('fuelTechsHidden', hiddenFuelTechs)
+
+    hiddenFuelTechs.forEach(fuelTech => {
+      const find = this.domains.find(domain => domain[property] === fuelTech)
       if (find) {
         if (find.category === 'source') {
           this.hiddenSources.push(fuelTech)
@@ -602,28 +635,78 @@ export default {
       let hiddenFuelTechs = [...this.hiddenSources, ...this.hiddenLoads]
 
       // if all is hidden, then unhide all
-      if (hiddenFuelTechs.length === this.sourcesOrderLength) {
-        this.hiddenSources = []
-        this.hiddenLoads = []
-        hiddenFuelTechs = []
+      if (this.fuelTechGroupName === 'Default') {
+        let sourcesHiddenLength = 0
+        this.sourcesOrder.forEach(d => {
+          if (_includes(this.hiddenSources, d.fuelTech)) {
+            sourcesHiddenLength += 1
+          }
+        })
+        let loadsHiddenLength = 0
+        this.loadsOrder.forEach(d => {
+          if (_includes(this.hiddenLoads, d.fuelTech)) {
+            loadsHiddenLength += 1
+          }
+        })
+        if (
+          this.sourcesOrder.length === sourcesHiddenLength &&
+          this.loadsOrder.length === loadsHiddenLength
+        ) {
+          this.hiddenSources = []
+          this.hiddenLoads = []
+          hiddenFuelTechs = []
+        }
+      } else {
+        if (hiddenFuelTechs.length === this.sourcesOrderLength) {
+          this.hiddenSources = []
+          this.hiddenLoads = []
+          hiddenFuelTechs = []
+        }
       }
+
       this.$emit('fuelTechsHidden', hiddenFuelTechs)
     },
 
-    handleSourceFuelTechsHidden(hidden, hideOthers) {
+    handleSourceFuelTechsHidden(hidden, hideOthers, onlyFt) {
       const property = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
       this.hiddenSources = hidden
       if (hideOthers) {
-        this.hiddenLoads = this.loadsOrder.map(d => d[property])
+        if (this.fuelTechGroupName === 'Default') {
+          const hiddenSources = Domain.getAllDomainObjs().filter(
+            d => d.category === 'source' && d.fuelTech !== onlyFt.fuelTech
+          )
+          const hiddenLoads = Domain.getAllDomainObjs().filter(
+            d => d.category === 'load'
+          )
+          this.hiddenSources = hiddenSources.map(d => d.fuelTech)
+          this.hiddenLoads = hiddenLoads.map(d => d.fuelTech)
+        } else {
+          const hiddenLoads = Domain.getAllGroupDomains(
+            this.fuelTechGroup
+          ).filter(d => d.category === 'load')
+          this.hiddenLoads = hiddenLoads.map(d => d[property])
+          // this.hiddenLoads = this.loadsOrder.map(d => d[property])
+        }
       }
       this.emitHiddenFuelTechs()
     },
 
-    handleLoadFuelTechsHidden(hidden, hideOthers) {
+    handleLoadFuelTechsHidden(hidden, hideOthers, onlyFt) {
       const property = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
       this.hiddenLoads = hidden
       if (hideOthers) {
-        this.hiddenSources = this.sourcesOrder.map(d => d[property])
+        if (this.fuelTechGroupName === 'Default') {
+          const hiddenSources = Domain.getAllDomainObjs().filter(
+            d => d.category === 'source'
+          )
+          const hiddenLoads = Domain.getAllDomainObjs().filter(
+            d => d.category === 'load' && d.fuelTech !== onlyFt.fuelTech
+          )
+          this.hiddenSources = hiddenSources.map(d => d.fuelTech)
+          this.hiddenLoads = hiddenLoads.map(d => d.fuelTech)
+        } else {
+          this.hiddenSources = this.sourcesOrder.map(d => d[property])
+        }
       }
       this.emitHiddenFuelTechs()
     },

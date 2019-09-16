@@ -200,7 +200,7 @@ export default {
         const hiddenObjs = this.order.filter(d => d[property] !== ft[property])
         const hidden = hiddenObjs.map(d => d[property])
         this.order = this.updateOrder(this.originalOrder)
-        this.$emit('fuelTechsHidden', hidden, true)
+        this.$emit('fuelTechsHidden', hidden, true, ft)
       }
     },
 
@@ -245,7 +245,6 @@ export default {
       const id = this.hasMarketValueOrder
         ? this.marketValueOrder[index].id
         : null
-      // console.log(this.summary, id)
       return this.showPointSummary
         ? this.pointSummary[id] || ''
         : this.summary[id] || ''
