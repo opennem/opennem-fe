@@ -387,25 +387,17 @@ export default {
     const property = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
 
     // if all is hidden, then unhide all
-    if (this.fuelTechGroupName === 'Default') {
-      let hiddenLength = 0
-      this.domains.forEach(d => {
-        if (_includes(hiddenFuelTechs, d[property])) {
-          hiddenLength += 1
-        }
-      })
+    let hiddenLength = 0
+    this.domains.forEach(d => {
+      if (_includes(hiddenFuelTechs, d[property])) {
+        hiddenLength += 1
+      }
+    })
 
-      if (this.domains.length === hiddenLength) {
-        this.hiddenSources = []
-        this.hiddenLoads = []
-        hiddenFuelTechs = []
-      }
-    } else {
-      if (hiddenFuelTechs.length === this.sourcesOrderLength) {
-        this.hiddenSources = []
-        this.hiddenLoads = []
-        hiddenFuelTechs = []
-      }
+    if (this.domains.length === hiddenLength) {
+      this.hiddenSources = []
+      this.hiddenLoads = []
+      hiddenFuelTechs = []
     }
 
     this.$emit('fuelTechsHidden', hiddenFuelTechs)
@@ -632,36 +624,28 @@ export default {
     },
 
     emitHiddenFuelTechs() {
+      const property = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
       let hiddenFuelTechs = [...this.hiddenSources, ...this.hiddenLoads]
-
       // if all is hidden, then unhide all
-      if (this.fuelTechGroupName === 'Default') {
-        let sourcesHiddenLength = 0
-        this.sourcesOrder.forEach(d => {
-          if (_includes(this.hiddenSources, d.fuelTech)) {
-            sourcesHiddenLength += 1
-          }
-        })
-        let loadsHiddenLength = 0
-        this.loadsOrder.forEach(d => {
-          if (_includes(this.hiddenLoads, d.fuelTech)) {
-            loadsHiddenLength += 1
-          }
-        })
-        if (
-          this.sourcesOrder.length === sourcesHiddenLength &&
-          this.loadsOrder.length === loadsHiddenLength
-        ) {
-          this.hiddenSources = []
-          this.hiddenLoads = []
-          hiddenFuelTechs = []
+      let sourcesHiddenLength = 0
+      this.sourcesOrder.forEach(d => {
+        if (_includes(this.hiddenSources, d[property])) {
+          sourcesHiddenLength += 1
         }
-      } else {
-        if (hiddenFuelTechs.length === this.sourcesOrderLength) {
-          this.hiddenSources = []
-          this.hiddenLoads = []
-          hiddenFuelTechs = []
+      })
+      let loadsHiddenLength = 0
+      this.loadsOrder.forEach(d => {
+        if (_includes(this.hiddenLoads, d[property])) {
+          loadsHiddenLength += 1
         }
+      })
+      if (
+        this.sourcesOrder.length === sourcesHiddenLength &&
+        this.loadsOrder.length === loadsHiddenLength
+      ) {
+        this.hiddenSources = []
+        this.hiddenLoads = []
+        hiddenFuelTechs = []
       }
 
       this.$emit('fuelTechsHidden', hiddenFuelTechs)
