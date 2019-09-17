@@ -516,6 +516,22 @@ export default {
       })
       this.brushX.on('brush', function() {
         if (!self.dateFocus) {
+          if (!event.selection) return
+          if (event.sourceEvent.type === 'brush') return
+          const s = event.selection
+          const startTime = DateDisplay.roundToClosestInterval(
+            self.interval,
+            self.x.invert(s[0]),
+            'floor'
+          )
+          const endTime = DateDisplay.roundToClosestInterval(
+            self.interval,
+            self.x.invert(s[1]),
+            'ceil'
+          )
+          const d1 = [startTime, endTime]
+          select(this).call(self.brushX.move, d1.map(self.x))
+
           self.$emit('eventChange', this)
           self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
           self.$emit('domainOver', null)

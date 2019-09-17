@@ -147,6 +147,48 @@ export default {
     }
   },
 
+  roundToClosestInterval(interval, date, roundType) {
+    const isFloor = roundType === 'floor'
+    switch (interval) {
+      case '5m':
+        return d3TimeMinute.every(5).round(date)
+      case '30m':
+        return d3TimeMinute.every(30).round(date)
+      case 'Day':
+        return isFloor
+          ? d3TimeDay.every(1).floor(date)
+          : d3TimeDay.every(1).ceil(date)
+      case 'Week':
+        return isFloor
+          ? d3TimeMonday.every(1).floor(date)
+          : d3TimeMonday.every(1).ceil(date)
+      case 'Month':
+        return isFloor
+          ? d3TimeMonth.every(1).floor(date)
+          : d3TimeMonth.every(1).ceil(date)
+      case 'Season':
+        const quarter = isFloor
+          ? d3TimeMonth.every(3).floor(date)
+          : d3TimeMonth.every(3).ceil(date)
+        return d3TimeMonth.offset(quarter, -1)
+      case 'Quarter':
+        return isFloor
+          ? d3TimeMonth.every(3).floor(date)
+          : d3TimeMonth.every(3).ceil(date)
+      case 'Fin Year':
+        const year = isFloor
+          ? d3TimeYear.every(1).floor(date)
+          : d3TimeYear.every(1).ceil(date)
+        return d3TimeMonth.offset(year, -6)
+      case 'Year':
+        return isFloor
+          ? d3TimeYear.every(1).floor(date)
+          : d3TimeYear.every(1).ceil(date)
+      default:
+        return date
+    }
+  },
+
   weekendGuides(datasetStart, datasetEnd) {
     const guides = []
     let dStart = datasetStart
