@@ -16,10 +16,13 @@
       @mouseenter="handleMouseEnter(minDate)"
       @mouseleave="handleMouseLeave">
       <div v-if="isCurrency">{{ minValue | formatCurrency }}</div>
-      <div v-else-if="rowUnit === '%'">{{ minValue | percentageFormatNumber }}</div>
+      <div v-else-if="rowUnit === '%'">{{ minValue | percentageFormatNumber2 }}</div>
       <div v-else-if="rowUnit === ' TWh'">{{ minValue | customFormatValue }}{{ rowUnit }}</div>
       <div v-else>{{ minValue | formatValue }}{{ rowUnit }}</div>
-      <time datetime="minDate">
+      <time
+        v-show="minDate"
+        datetime="minDate"
+      >
         {{ minDate | customFormatDate({ range, interval, showIntervalRange: true }) }}
       </time>
     </td>
@@ -31,10 +34,12 @@
       @mouseenter="handleMouseEnter(maxDate)"
       @mouseleave="handleMouseLeave">
       <div v-if="isCurrency">{{ maxValue | formatCurrency }}</div>
-      <div v-else-if="rowUnit === '%'">{{ maxValue | percentageFormatNumber }}</div>
+      <div v-else-if="rowUnit === '%'">{{ maxValue | percentageFormatNumber2 }}</div>
       <div v-else-if="rowUnit === ' TWh'">{{ maxValue | customFormatValue }}{{ rowUnit }}</div>
       <div v-else>{{ maxValue | formatValue }}{{ rowUnit }}</div>
-      <time datetime="maxDate">
+      <time
+        v-show="maxDate"
+        datetime="maxDate">
         {{ maxDate | customFormatDate({ range, interval, showIntervalRange: true }) }}
       </time>
     </td>
@@ -92,11 +97,11 @@ export default {
 
   computed: {
     minOn() {
-      return this.minDate === this.recordSelectDate
+      return this.minDate && this.minDate === this.recordSelectDate
     },
 
     maxOn() {
-      return this.maxDate === this.recordSelectDate
+      return this.maxDate && this.maxDate === this.recordSelectDate
     }
   },
 

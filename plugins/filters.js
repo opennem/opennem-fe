@@ -80,6 +80,16 @@ Vue.filter('percentageFormatNumber', value => {
   return isFinite(value) && !isNaN(value) && value ? fValue : '–'
 })
 
+Vue.filter('percentageFormatNumber2', value => {
+  let fString = smartFormatString(value)
+  if (fString === ',.0f') {
+    fString = ',.1f'
+  }
+  const f = d3Format(fString)
+  const fValue = f(value) + '%'
+  return isFinite(value) && !isNaN(value) && value ? fValue : '0%'
+})
+
 Vue.filter('formatCurrency', value => {
   const f = d3Format('$,.2f')
   const fValue = f(value)

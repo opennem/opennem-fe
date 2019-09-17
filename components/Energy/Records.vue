@@ -233,8 +233,6 @@ export default {
 
       dataset.every(d => {
         if (d._total) {
-          minDemand = d._total
-          minDemandDate = d.date
           maxDemand = d._total
           maxDemandDate = d.date
           minDemandRenewables = d._totalDemandRenewables
@@ -242,8 +240,6 @@ export default {
           maxDemandRenewables = d._totalDemandRenewables
           maxDemandRenewablesDate = d.date
 
-          minGeneration = d._totalGeneration
-          minGenerationDate = d.date
           maxGeneration = d._totalGeneration
           maxGenerationDate = d.date
           minGenerationRenewables = d._totalGenerationRenewables
@@ -258,8 +254,6 @@ export default {
             maxPriceDate = d.date
           }
           if (this.temperatureId) {
-            minTemperature = d[this.temperatureId]
-            minTemperatureDate = d.date
             maxTemperature = d[this.temperatureId]
             maxTemperatureDate = d.date
           }
@@ -269,6 +263,10 @@ export default {
       })
 
       dataset.forEach(d => {
+        if (!minDemandDate && d._total !== null && d._total !== 0) {
+          minDemand = d._total
+          minDemandDate = d.date
+        }
         if (d._total !== null && d._total < minDemand) {
           minDemand = d._total
           minDemandDate = d.date
@@ -292,7 +290,19 @@ export default {
           maxDemandRenewablesDate = d.date
         }
 
-        if (d._totalGeneration !== null && d._totalGeneration < minGeneration) {
+        if (
+          !minGenerationDate &&
+          d._totalGeneration !== null &&
+          d._totalGeneration !== 0
+        ) {
+          minGeneration = d._totalGeneration
+          minGenerationDate = d.date
+        }
+        if (
+          d._totalGeneration !== null &&
+          d._totalGeneration !== 0 &&
+          d._totalGeneration < minGeneration
+        ) {
           minGeneration = d._totalGeneration
           minGenerationDate = d.date
         }
@@ -300,6 +310,7 @@ export default {
           maxGeneration = d._totalGeneration
           maxGenerationDate = d.date
         }
+
         if (
           d._totalGenerationRenewables !== null &&
           d._totalGenerationRenewables < minGenerationRenewables
@@ -330,6 +341,15 @@ export default {
         ) {
           maxPrice = d[this.priceId]
           maxPriceDate = d.date
+        }
+
+        if (
+          this.temperatureId &&
+          !minTemperatureDate &&
+          d[this.temperatureId] !== null
+        ) {
+          minTemperature = d[this.temperatureId]
+          minTemperatureDate = d.date
         }
 
         if (
