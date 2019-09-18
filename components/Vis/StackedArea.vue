@@ -1009,6 +1009,12 @@ export default {
           if (this.interval === 'Year') {
             className = 'interval-year'
           }
+          if (this.interval === 'Fin Year') {
+            tickLength = timeMonth.filter(d => {
+              return d.getMonth() === 6
+            })
+            className = 'interval-fin-year'
+          }
         }
       } else {
         if (this.range === '1Y') {
@@ -1020,6 +1026,15 @@ export default {
         }
       }
       this.xAxis.ticks(tickLength)
+
+      if (!this.zoomed && this.interval === 'Fin Year') {
+        this.xAxis.tickFormat(d => {
+          const year = d.getFullYear() + 1 + ''
+          return `FY${year.substr(2, 2)}`
+        })
+      } else {
+        this.xAxis.tickFormat(d => axisTimeFormat(d))
+      }
 
       // add secondary x axis tick label here
       const insertSecondaryAxisTick = function(d) {
