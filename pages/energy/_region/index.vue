@@ -1290,6 +1290,12 @@ export default {
     },
 
     handleDateOver(evt, date) {
+      if (this.interval === 'Fin Year') {
+        if (date.getMonth() >= 6) {
+          date.setFullYear(date.getFullYear() + 1)
+        }
+      }
+
       const closestDate = DateDisplay.snapToClosestInterval(this.interval, date)
       EventBus.$emit('vis.mousemove', evt, this.dataset, closestDate)
     },

@@ -519,19 +519,30 @@ export default {
           if (!event.selection) return
           if (event.sourceEvent.type === 'brush') return
           const s = event.selection
+          const startX = self.x.invert(s[0])
+          const endX = self.x.invert(s[1])
+
+          if (self.interval === 'Fin Year') {
+            if (startX.getMonth() >= 6) {
+              startX.setFullYear(startX.getFullYear() + 1)
+            }
+            if (endX.getMonth() >= 6) {
+              endX.setFullYear(endX.getFullYear() + 1)
+            }
+          }
+
           const startTime = DateDisplay.roundToClosestInterval(
             self.interval,
-            self.x.invert(s[0]),
+            startX,
             'floor'
           )
           const endTime = DateDisplay.roundToClosestInterval(
             self.interval,
-            self.x.invert(s[1]),
+            endX,
             'ceil'
           )
           const d1 = [startTime, endTime]
           select(this).call(self.brushX.move, d1.map(self.x))
-
           self.$emit('eventChange', this)
           self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
           self.$emit('domainOver', null)
@@ -909,10 +920,19 @@ export default {
 
       // Get the brush selection (start/end) points -> dates
       const s = event.selection
-      const dateRange = this.getZoomDateRanges(
-        this.x.invert(s[0]),
-        this.x.invert(s[1])
-      )
+      const startX = this.x.invert(s[0])
+      const endX = this.x.invert(s[1])
+
+      if (this.interval === 'Fin Year') {
+        if (startX.getMonth() >= 6) {
+          startX.setFullYear(startX.getFullYear() + 1)
+        }
+        if (endX.getMonth() >= 6) {
+          endX.setFullYear(endX.getFullYear() + 1)
+        }
+      }
+
+      const dateRange = this.getZoomDateRanges(startX, endX)
 
       // Set it to the current X domain
       this.x.domain(dateRange)
