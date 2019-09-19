@@ -186,6 +186,9 @@ export default {
   computed: {
     energyUnit() {
       return this.$store.getters.chartUnit
+    },
+    isColumnVis() {
+      return this.interval !== '5m' && this.interval !== '30m'
     }
   },
 
@@ -206,6 +209,9 @@ export default {
 
   methods: {
     updateMinMax(dataset) {
+      const updatedDataset = this.isColumnVis
+        ? dataset.slice(0, dataset.length - 1)
+        : dataset
       let minDemand = 0,
         minDemandDate = null,
         maxDemand = 0,
@@ -231,7 +237,7 @@ export default {
         maxTemperature = 0,
         maxTemperatureDate = null
 
-      dataset.every(d => {
+      updatedDataset.every(d => {
         if (d._total) {
           maxDemand = d._total
           maxDemandDate = d.date
@@ -262,7 +268,7 @@ export default {
         return true
       })
 
-      dataset.forEach(d => {
+      updatedDataset.forEach(d => {
         if (!minDemandDate && d._total !== null && d._total !== 0) {
           minDemand = d._total
           minDemandDate = d.date
