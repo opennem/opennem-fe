@@ -1025,16 +1025,19 @@ export default {
           }
         }
       }
-      this.xAxis.ticks(tickLength)
-
-      if (!this.zoomed && this.interval === 'Fin Year') {
+      if (this.interval === 'Fin Year') {
         this.xAxis.tickFormat(d => {
           const year = d.getFullYear() + 1 + ''
           return `FY${year.substr(2, 2)}`
         })
+        tickLength = timeMonth.filter(d => {
+          return d.getMonth() === 6
+        })
       } else {
         this.xAxis.tickFormat(d => axisTimeFormat(d))
       }
+
+      this.xAxis.ticks(tickLength)
 
       // add secondary x axis tick label here
       const insertSecondaryAxisTick = function(d) {
