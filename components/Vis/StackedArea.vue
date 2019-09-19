@@ -3,7 +3,7 @@
     <button
       v-if="zoomed && showZoomOut"
       class="button is-rounded is-small reset-btn"
-      @click="handleReset"
+      @click.stop="handleReset"
     >
       Zoom Out
     </button>
@@ -684,7 +684,7 @@ export default {
       // this.$emit('visZoomed', false)
       this.x.domain(this.datasetDateExtent)
       this.zoomRedraw()
-      this.$emit('svgClick')
+      this.$emit('svgClick', !this.dateFocus)
       EventBus.$emit('dataset.filter', [])
     },
 

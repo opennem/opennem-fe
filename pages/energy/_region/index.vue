@@ -1349,8 +1349,8 @@ export default {
       this.dateFocus = false
     },
 
-    handleSvgClick() {
-      if (!this.isTouchDevice) {
+    handleSvgClick(resetDateFocus) {
+      if (!this.isTouchDevice && !resetDateFocus) {
         this.dateFocus = !this.dateFocus
       }
     }
