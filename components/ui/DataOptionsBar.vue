@@ -21,6 +21,41 @@
         {{ interval }}
       </span>
     </div>
+
+    <div
+      v-if="showComparePeriod"
+      class="compare-period-buttons buttons has-addons">
+      <span
+        :class="{ 'is-selected': comparePeriod }"
+        class="button is-rounded"
+        @click="handleComparePeriodClick">
+        All
+      </span>
+      <span
+        :class="{ 'is-selected': comparePeriod }"
+        class="button is-rounded"
+        @click="handleComparePeriodClick">
+        Q1
+      </span>
+      <span
+        :class="{ 'is-selected': comparePeriod }"
+        class="button is-rounded"
+        @click="handleComparePeriodClick">
+        Q2
+      </span>
+      <span
+        :class="{ 'is-selected': comparePeriod }"
+        class="button is-rounded"
+        @click="handleComparePeriodClick">
+        Q3
+      </span>
+      <span
+        :class="{ 'is-selected': comparePeriod }"
+        class="button is-rounded"
+        @click="handleComparePeriodClick">
+        Q4
+      </span>
+    </div>
   </div>
 </template>
 
@@ -51,6 +86,12 @@ export default {
     selectedRangeIntervals() {
       const range = this.ranges.find(r => r.range === this.selectedRange)
       return range ? range.intervals : null
+    },
+    comparePeriod() {
+      return this.$store.getters.comparePeriod
+    },
+    showComparePeriod() {
+      return this.interval === 'Quarter'
     }
   },
 
@@ -74,6 +115,9 @@ export default {
     },
     handleIntervalChange(interval) {
       this.$emit('onIntervalChange', interval)
+    },
+    handleComparePeriodClick() {
+      this.$store.dispatch('comparePeriod', !this.comparePeriod)
     }
   }
 }
@@ -113,5 +157,8 @@ export default {
     margin-bottom: 0;
     margin-right: $app-padding;
   }
+}
+.compare-period-buttons {
+  margin-left: 1rem;
 }
 </style>
