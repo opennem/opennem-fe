@@ -610,6 +610,7 @@ export default {
     return {
       mounted: false,
       ready: false,
+      originalDataset: [],
       dataset: [],
       energyDomains: [],
       fuelTechEnergyOrder: [],
@@ -648,6 +649,9 @@ export default {
     },
     dateFilter() {
       return this.$store.getters.dateFilter
+    },
+    comparePeriod() {
+      return this.$store.getters.comparePeriod
     },
     zoomed() {
       return this.$store.getters.dateFilter.length !== 0
@@ -980,6 +984,19 @@ export default {
     },
     hiddenFuelTechs() {
       this.updateEnergyMinMax()
+    },
+    comparePeriod(compare) {
+      if (!compare || compare === 'All') {
+        this.dataset = this.originalDataset
+      } else {
+        const month = this.getPeriodMonth(compare)
+        const returnedData = this.originalDataset.filter(d => {
+          const dMonth = new Date(d.date).getMonth()
+          return dMonth === month
+        })
+        this.dataset = returnedData
+      }
+      this.updatedFilteredDataset(this.dataset)
     }
   },
 
@@ -1037,6 +1054,34 @@ export default {
   },
 
   methods: {
+    getPeriodMonth(period) {
+      if (this.interval === 'Quarter') {
+        switch (period) {
+          case 'Q1':
+            return 0
+          case 'Q2':
+            return 3
+          case 'Q3':
+            return 6
+          case 'Q4':
+            return 9
+        }
+      }
+
+      if (this.interval === 'Season') {
+        switch (period) {
+          case 'Summer':
+            return 11
+          case 'Autumn':
+            return 2
+          case 'Winter':
+            return 5
+          case 'Spring':
+            return 8
+        }
+      }
+    },
+
     fetchData(region, range) {
       const urls = Data.getEnergyUrls(region, range)
 
@@ -1085,6 +1130,7 @@ export default {
 
     readyDataset(dataset) {
       this.dataset = dataset
+      this.originalDataset = dataset
       if (this.groupDomains.length > 0) {
         this.updateDatasetGroups(dataset, this.groupDomains)
       }

@@ -31,7 +31,7 @@ export const state = () => ({
   exportAttribution: '@name',
   percentContributionTo: 'demand', // or generation
   featureEmissions: false,
-  comparePeriod: false
+  comparePeriod: null
 })
 
 export const mutations = {

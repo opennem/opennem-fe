@@ -23,37 +23,15 @@
     </div>
 
     <div
-      v-if="showComparePeriod"
+      v-if="periodArray"
       class="compare-period-buttons buttons has-addons">
       <span
-        :class="{ 'is-selected': comparePeriod }"
+        v-for="(period, i) in periodArray"
+        :key="`period${i}`"
+        :class="{ 'is-selected': comparePeriod === period }"
         class="button is-rounded"
-        @click="handleComparePeriodClick">
-        All
-      </span>
-      <span
-        :class="{ 'is-selected': comparePeriod }"
-        class="button is-rounded"
-        @click="handleComparePeriodClick">
-        Q1
-      </span>
-      <span
-        :class="{ 'is-selected': comparePeriod }"
-        class="button is-rounded"
-        @click="handleComparePeriodClick">
-        Q2
-      </span>
-      <span
-        :class="{ 'is-selected': comparePeriod }"
-        class="button is-rounded"
-        @click="handleComparePeriodClick">
-        Q3
-      </span>
-      <span
-        :class="{ 'is-selected': comparePeriod }"
-        class="button is-rounded"
-        @click="handleComparePeriodClick">
-        Q4
+        @click="handleComparePeriodClick(period)">
+        {{ period }}
       </span>
     </div>
   </div>
@@ -61,6 +39,7 @@
 
 <script>
 import RANGE_INTERVAL from '~/constants/rangeInterval.js'
+import INTERVAL_PERIOD from '~/constants/intervalPeriod.js'
 
 export default {
   props: {
@@ -77,6 +56,7 @@ export default {
   data() {
     return {
       ranges: RANGE_INTERVAL,
+      intervalPeriod: INTERVAL_PERIOD,
       selectedRange: '',
       selectedInterval: ''
     }
@@ -90,8 +70,8 @@ export default {
     comparePeriod() {
       return this.$store.getters.comparePeriod
     },
-    showComparePeriod() {
-      return this.interval === 'Quarter'
+    periodArray() {
+      return this.intervalPeriod[this.selectedInterval]
     }
   },
 
@@ -101,6 +81,11 @@ export default {
     },
     interval(updated) {
       this.selectedInterval = updated
+    },
+    periodArray(arr) {
+      if (arr && !this.comparePeriod) {
+        this.$store.dispatch('comparePeriod', 'All')
+      }
     }
   },
 
@@ -112,12 +97,14 @@ export default {
   methods: {
     handleRangeChange(range) {
       this.$emit('onRangeChange', range)
+      this.$store.dispatch('comparePeriod', null)
     },
     handleIntervalChange(interval) {
       this.$emit('onIntervalChange', interval)
+      this.$store.dispatch('comparePeriod', null)
     },
-    handleComparePeriodClick() {
-      this.$store.dispatch('comparePeriod', !this.comparePeriod)
+    handleComparePeriodClick(period) {
+      this.$store.dispatch('comparePeriod', period)
     }
   }
 }
