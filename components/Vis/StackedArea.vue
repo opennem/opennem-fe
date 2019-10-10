@@ -1033,23 +1033,21 @@ export default {
 
           if (this.interval === 'Season') {
             className = 'interval-season'
-            if (isCompare) {
-              tickLength = timeMonth.filter(d => {
-                return (
-                  d.getMonth() ===
-                  this.getPeriodMonth(this.interval, this.comparePeriod)
-                )
-              })
+            const periodMonth = this.getPeriodMonth(
+              this.interval,
+              this.comparePeriod
+            )
+            if (isCompare && periodMonth) {
+              tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
             }
           } else if (this.interval === 'Quarter') {
             className = 'interval-quarter'
-            if (isCompare) {
-              tickLength = timeMonth.filter(d => {
-                return (
-                  d.getMonth() ===
-                  this.getPeriodMonth(this.interval, this.comparePeriod)
-                )
-              })
+            const periodMonth = this.getPeriodMonth(
+              this.interval,
+              this.comparePeriod
+            )
+            if (isCompare && periodMonth) {
+              tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
             }
           } else if (this.interval === 'Year') {
             className = 'interval-year'
