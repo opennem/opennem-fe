@@ -854,18 +854,21 @@ export default {
 
       if (this.interval === 'Season' || this.interval === 'Quarter') {
         const incompletes = []
+        const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
         aLD = moment(aLD).add(1, 'month')
-        if (aSD > dStart) {
-          incompletes.push({
-            start: dStart,
-            end: dStart + 7889400000
-          })
-        }
-        if (aLD.valueOf() < dEnd) {
-          incompletes.push({
-            start: dEnd - 7889400000,
-            end: dEnd
-          })
+        if (!isCompare) {
+          if (aSD > dStart) {
+            incompletes.push({
+              start: dStart,
+              end: dStart + 7889400000
+            })
+          }
+          if (aLD.valueOf() < dEnd) {
+            incompletes.push({
+              start: dEnd - 7889400000,
+              end: dEnd
+            })
+          }
         }
         return incompletes
       }
