@@ -1339,13 +1339,22 @@ export default {
     },
 
     handleDateOver(evt, date) {
+      const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
+
       if (this.interval === 'Fin Year') {
         if (date.getMonth() >= 6) {
           date.setFullYear(date.getFullYear() + 1)
         }
       }
-
+      if (
+        isCompare &&
+        (this.interval === 'Season' || this.interval === 'Quarter')
+      ) {
+        const month = this.getPeriodMonth(this.comparePeriod)
+        date.setMonth(month + 1)
+      }
       const closestDate = DateDisplay.snapToClosestInterval(this.interval, date)
+      console.log(date, closestDate)
       EventBus.$emit('vis.mousemove', evt, this.dataset, closestDate)
     },
 
