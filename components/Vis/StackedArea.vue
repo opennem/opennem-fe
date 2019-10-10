@@ -280,6 +280,9 @@ export default {
   },
 
   computed: {
+    comparePeriod() {
+      return this.$store.getters.comparePeriod
+    },
     path() {
       return this.$route.path
     },
@@ -997,6 +1000,8 @@ export default {
       let tickLength = null
       let className = ''
       const that = this
+      const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
+
       if (!this.zoomed) {
         if (this.range === '1D') {
           className = 'interval-5m'
@@ -1026,10 +1031,29 @@ export default {
           const every = this.mobileScreen ? 2 : 1
           tickLength = timeYear.every(every)
 
-          if (this.interval === 'Year') {
+          if (this.interval === 'Season') {
+            className = 'interval-season'
+            if (isCompare) {
+              tickLength = timeMonth.filter(d => {
+                return (
+                  d.getMonth() ===
+                  this.getPeriodMonth(this.interval, this.comparePeriod)
+                )
+              })
+            }
+          } else if (this.interval === 'Quarter') {
+            className = 'interval-quarter'
+            if (isCompare) {
+              tickLength = timeMonth.filter(d => {
+                return (
+                  d.getMonth() ===
+                  this.getPeriodMonth(this.interval, this.comparePeriod)
+                )
+              })
+            }
+          } else if (this.interval === 'Year') {
             className = 'interval-year'
-          }
-          if (this.interval === 'Fin Year') {
+          } else if (this.interval === 'Fin Year') {
             tickLength = timeMonth.filter(d => {
               return d.getMonth() === 6
             })
@@ -1045,7 +1069,16 @@ export default {
           }
         }
       }
-      if (this.interval === 'Fin Year') {
+
+      if (
+        isCompare &&
+        (this.interval === 'Season' || this.interval === 'Quarter')
+      ) {
+        this.xAxis.tickFormat(d => {
+          const year = d.getFullYear() + ''
+          return `${this.comparePeriod} ${year.substr(2, 2)}`
+        })
+      } else if (this.interval === 'Fin Year') {
         this.xAxis.tickFormat(d => {
           const year = d.getFullYear() + 1 + ''
           return `FY${year.substr(2, 2)}`
@@ -1092,6 +1125,34 @@ export default {
       const m = mouse(evt)
       const date = this.x.invert(m[0])
       return date
+    },
+
+    getPeriodMonth(interval, period) {
+      if (interval === 'Quarter') {
+        switch (period) {
+          case 'Q1':
+            return 0
+          case 'Q2':
+            return 3
+          case 'Q3':
+            return 6
+          case 'Q4':
+            return 9
+        }
+      }
+
+      if (interval === 'Season') {
+        switch (period) {
+          case 'Summer':
+            return 11
+          case 'Autumn':
+            return 2
+          case 'Winter':
+            return 5
+          case 'Spring':
+            return 8
+        }
+      }
     }
   }
 }
