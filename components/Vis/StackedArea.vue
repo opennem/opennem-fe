@@ -1076,6 +1076,13 @@ export default {
           const year = d.getFullYear() + ''
           return `${this.comparePeriod} ${year.substr(2, 2)}`
         })
+        const periodMonth = this.getPeriodMonth(
+          this.interval,
+          this.comparePeriod
+        )
+        if (isCompare && periodMonth) {
+          tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+        }
       } else if (this.interval === 'Fin Year') {
         this.xAxis.tickFormat(d => {
           const year = d.getFullYear() + 1 + ''
