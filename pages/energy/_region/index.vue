@@ -536,6 +536,7 @@ import { mouse as d3Mouse } from 'd3-selection'
 import { extent as d3Extent, max as d3Max } from 'd3-array'
 import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
+import _cloneDeep from 'lodash.clonedeep'
 import Draggable from 'vuedraggable'
 import { saveAs } from 'file-saver'
 
@@ -997,6 +998,24 @@ export default {
           const dMonth = new Date(d.date).getMonth()
           return dMonth === month
         })
+
+        // need to add an extra data point to show the final step
+        const currentLastPoint = returnedData[returnedData.length - 1]
+        // only add if it's a valid last point
+        if (currentLastPoint._total) {
+          const finalData = _cloneDeep(currentLastPoint)
+          Object.keys(finalData).forEach(key => {
+            if (key === 'date') {
+              finalData.date = moment(currentLastPoint.date)
+                .add(1, 'year')
+                .valueOf()
+            } else {
+              finalData[key] = null
+            }
+          })
+          returnedData.push(finalData)
+        }
+
         this.dataset = returnedData
       }
       this.updatedFilteredDataset(this.dataset)
