@@ -1340,7 +1340,6 @@ export default {
 
     handleDateOver(evt, date) {
       const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
-
       if (this.interval === 'Fin Year') {
         if (date.getMonth() >= 6) {
           date.setFullYear(date.getFullYear() + 1)
@@ -1350,11 +1349,32 @@ export default {
         isCompare &&
         (this.interval === 'Season' || this.interval === 'Quarter')
       ) {
-        const month = this.getPeriodMonth(this.comparePeriod)
-        date.setMonth(month + 1)
+        const periodMonth = this.getPeriodMonth(this.comparePeriod)
+        const month = date.getMonth()
+        if (this.comparePeriod === 'Summer' && month !== 11) {
+          date.setFullYear(date.getFullYear() - 1)
+        } else if (
+          this.comparePeriod === 'Autumn' &&
+          month >= 0 &&
+          month <= 1
+        ) {
+          date.setFullYear(date.getFullYear() - 1)
+        } else if (
+          this.comparePeriod === 'Winter' &&
+          month >= 0 &&
+          month <= 5
+        ) {
+          date.setFullYear(date.getFullYear() - 1)
+        } else if (
+          this.comparePeriod === 'Spring' &&
+          month >= 0 &&
+          month <= 8
+        ) {
+          date.setFullYear(date.getFullYear() - 1)
+        }
+        date.setMonth(periodMonth + 1)
       }
       const closestDate = DateDisplay.snapToClosestInterval(this.interval, date)
-      console.log(date, closestDate)
       EventBus.$emit('vis.mousemove', evt, this.dataset, closestDate)
     },
 
