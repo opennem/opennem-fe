@@ -1390,6 +1390,12 @@ export default {
           month <= 8
         ) {
           date.setFullYear(date.getFullYear() - 1)
+        } else if (this.comparePeriod === 'Q2' && month >= 0 && month <= 2) {
+          date.setFullYear(date.getFullYear() - 1)
+        } else if (this.comparePeriod === 'Q3' && month >= 0 && month <= 6) {
+          date.setFullYear(date.getFullYear() - 1)
+        } else if (this.comparePeriod === 'Q4' && month >= 0 && month <= 9) {
+          date.setFullYear(date.getFullYear() - 1)
         }
         date.setMonth(periodMonth + 1)
       }
