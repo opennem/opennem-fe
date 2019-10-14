@@ -871,6 +871,27 @@ export default {
             })
           }
         }
+        // else {
+        //   const dEnd2 = this.dataset[this.dataset.length - 2].date
+        //   console.log(new Date(aSD), new Date(dStart))
+        //   console.log('***', new Date(aLD), new Date(dEnd))
+        //   if (aSD > dStart) {
+        //     incompletes.push({
+        //       start: dStart,
+        //       end: dStart + 31557600000
+        //     })
+        //   }
+        //   const periodMonth = this.getPeriodMonth(this.comparePeriod)
+        //   const aLDMonth = aLD.getMonth()
+        //   if (aLDMonth >= )
+        //   if (aLD.valueOf() > dEnd) {
+        //     console.log('end')
+        //     incompletes.push({
+        //       start: dEnd - 31557600000,
+        //       end: dEnd
+        //     })
+        //   }
+        // }
         return incompletes
       }
 
@@ -970,17 +991,29 @@ export default {
   watch: {
     groupDomains(domains) {
       if (domains) {
-        this.updateDatasetGroups(this.dataset, domains)
+        this.originalDataset = this.updateDatasetGroups(
+          this.originalDataset,
+          domains
+        )
+        this.updateCompareDataset(this.comparePeriod)
       }
     },
     groupMarketValueDomains(domains) {
       if (domains) {
-        this.updateDatasetGroups(this.dataset, domains)
+        this.originalDataset = this.updateDatasetGroups(
+          this.originalDataset,
+          domains
+        )
+        this.updateCompareDataset(this.comparePeriod)
       }
     },
     groupEmissionDomains(domains) {
       if (domains) {
-        this.updateDatasetGroups(this.dataset, domains)
+        this.originalDataset = this.updateDatasetGroups(
+          this.originalDataset,
+          domains
+        )
+        this.updateCompareDataset(this.comparePeriod)
       }
     },
     filteredDataset(updated) {
@@ -990,35 +1023,7 @@ export default {
       this.updateEnergyMinMax()
     },
     comparePeriod(compare) {
-      if (!compare || compare === 'All') {
-        this.dataset = this.originalDataset
-      } else {
-        const month = this.getPeriodMonth(compare)
-        const returnedData = this.originalDataset.filter(d => {
-          const dMonth = new Date(d.date).getMonth()
-          return dMonth === month
-        })
-
-        // need to add an extra data point to show the final step
-        const currentLastPoint = returnedData[returnedData.length - 1]
-        // only add if it's a valid last point
-        if (currentLastPoint._total) {
-          const finalData = _cloneDeep(currentLastPoint)
-          Object.keys(finalData).forEach(key => {
-            if (key === 'date') {
-              finalData.date = moment(currentLastPoint.date)
-                .add(1, 'year')
-                .valueOf()
-            } else {
-              finalData[key] = null
-            }
-          })
-          returnedData.push(finalData)
-        }
-
-        this.dataset = returnedData
-      }
-      this.updatedFilteredDataset(this.dataset)
+      this.updateCompareDataset(compare)
     }
   },
 
@@ -1076,6 +1081,37 @@ export default {
   },
 
   methods: {
+    updateCompareDataset(compare) {
+      if (!compare || compare === 'All') {
+        this.dataset = this.originalDataset
+      } else {
+        const month = this.getPeriodMonth(compare)
+        const returnedData = this.originalDataset.filter(d => {
+          const dMonth = new Date(d.date).getMonth()
+          return dMonth === month
+        })
+
+        // need to add an extra data point to show the final step
+        const currentLastPoint = returnedData[returnedData.length - 1]
+        // only add if it's a valid last point
+        if (currentLastPoint._total) {
+          const finalData = _cloneDeep(currentLastPoint)
+          Object.keys(finalData).forEach(key => {
+            if (key === 'date') {
+              finalData.date = moment(currentLastPoint.date)
+                .add(1, 'year')
+                .valueOf()
+            } else {
+              finalData[key] = null
+            }
+          })
+          returnedData.push(finalData)
+        }
+
+        this.dataset = returnedData
+      }
+      this.updatedFilteredDataset(this.dataset)
+    },
     getPeriodMonth(period) {
       if (this.interval === 'Quarter') {
         switch (period) {
@@ -1151,24 +1187,30 @@ export default {
     },
 
     readyDataset(dataset) {
-      this.dataset = dataset
-      this.originalDataset = dataset
+      let updated = dataset
       if (this.groupDomains.length > 0) {
-        this.updateDatasetGroups(dataset, this.groupDomains)
+        updated = this.updateDatasetGroups(updated, this.groupDomains)
       }
       if (this.groupMarketValueDomains.length > 0) {
-        this.updateDatasetGroups(dataset, this.groupMarketValueDomains)
+        updated = this.updateDatasetGroups(
+          updated,
+          this.groupMarketValueDomains
+        )
       }
       if (this.groupEmissionDomains.length > 0) {
-        this.updateDatasetGroups(dataset, this.groupEmissionDomains)
+        updated = this.updateDatasetGroups(updated, this.groupEmissionDomains)
       }
-      this.updatedFilteredDataset(dataset)
+
+      this.dataset = updated
+      this.originalDataset = updated
+
+      this.updatedFilteredDataset(updated)
       this.updateEnergyMinMax()
       this.ready = true
     },
 
     updateDatasetGroups(dataset, groupDomains) {
-      this.dataset = dataset.map(d => {
+      return dataset.map(d => {
         // create new group domains (if not already there)
         groupDomains.forEach(g => {
           let groupValue = 0
