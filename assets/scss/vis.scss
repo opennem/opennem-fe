@@ -80,9 +80,9 @@ path.line-path {
 //   stroke: rgba(0, 0, 0, 0.1);
 // }
 .y-axis-tick .tick text {
-  color: #555;
+  color: #000;
   text-anchor: start;
-  text-shadow: 0 0 10px hsla(0, 0%, 93%, 0.5);
+  text-shadow: 1px 1px 2px #fff;
 }
 .y-axis .tick text {
   color: transparent;
