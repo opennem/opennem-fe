@@ -812,6 +812,46 @@ export default {
     },
 
     incompleteIntervals() {
+      function getStartMonth(month) {
+        switch (month) {
+          case 11:
+          case 0:
+          case 1:
+            return 11
+
+          case 2:
+          case 3:
+          case 4:
+            return 2
+
+          case 5:
+          case 6:
+          case 7:
+            return 5
+
+          case 8:
+          case 9:
+          case 10:
+            return 8
+
+          default:
+        }
+        return null
+      }
+
+      function getSeasonLabel(month) {
+        switch (month) {
+          case 2:
+            return 'Autumn'
+          case 5:
+            return 'Winter'
+          case 8:
+            return 'Spring'
+          case 11:
+            return 'Summer'
+        }
+      }
+
       let dStart = this.dataset[0].date
       const dEnd = this.dataset[this.dataset.length - 1].date
       const actualStartDate = this.dataset[0]._actualStartDate
@@ -856,8 +896,8 @@ export default {
       if (this.interval === 'Season' || this.interval === 'Quarter') {
         const incompletes = []
         const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
-        aLD = moment(aLD).add(1, 'month')
         if (!isCompare) {
+          aLD = moment(aLD).add(1, 'month')
           if (aSD > dStart) {
             incompletes.push({
               start: dStart,
@@ -870,7 +910,33 @@ export default {
               end: dEnd
             })
           }
+        } else {
+          aLD = moment(aLD).add(1, 'year')
+          const actualStartMonth = getStartMonth(new Date(aSD).getMonth())
+          const actualStartSeason = getSeasonLabel(actualStartMonth)
+
+          const actualEndMonth = getStartMonth(new Date(aLD).getMonth())
+          const actualEndSeason = getSeasonLabel(actualEndMonth)
+
+          if (actualStartSeason === this.comparePeriod) {
+            if (aSD > dStart) {
+              incompletes.push({
+                start: dStart,
+                end: dStart + 31557600000
+              })
+            }
+          }
+          if (actualEndSeason === this.comparePeriod) {
+            const newDEnd = moment(dEnd).add(3, 'month')
+            if (aLD.valueOf() < newDEnd.valueOf()) {
+              incompletes.push({
+                start: dEnd - 31557600000,
+                end: dEnd
+              })
+            }
+          }
         }
+
         // else {
         //   const dEnd2 = this.dataset[this.dataset.length - 2].date
         //   console.log(new Date(aSD), new Date(dStart))
