@@ -936,28 +936,6 @@ export default {
             }
           }
         }
-
-        // else {
-        //   const dEnd2 = this.dataset[this.dataset.length - 2].date
-        //   console.log(new Date(aSD), new Date(dStart))
-        //   console.log('***', new Date(aLD), new Date(dEnd))
-        //   if (aSD > dStart) {
-        //     incompletes.push({
-        //       start: dStart,
-        //       end: dStart + 31557600000
-        //     })
-        //   }
-        //   const periodMonth = this.getPeriodMonth(this.comparePeriod)
-        //   const aLDMonth = aLD.getMonth()
-        //   if (aLDMonth >= )
-        //   if (aLD.valueOf() > dEnd) {
-        //     console.log('end')
-        //     incompletes.push({
-        //       start: dEnd - 31557600000,
-        //       end: dEnd
-        //     })
-        //   }
-        // }
         return incompletes
       }
 
