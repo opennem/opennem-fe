@@ -90,7 +90,14 @@ export default {
         if (interval === 'Month') {
           display = d3TimeFormat('%b %Y')(time)
         } else if (interval === 'Season') {
-          display = `${getSeasonLabel(d3TimeFormat('%-m')(time))} ${d3TimeFormat('%Y')(time)}` // eslint-disable-line
+          let seasonLabel = getSeasonLabel(d3TimeFormat('%-m')(time))
+          let year = new Date(time).getFullYear()
+          let nextYearStr = ''
+          if (seasonLabel === 'Summer') {
+            const nextyear = year + 1 + ''
+            nextYearStr = `/${nextyear.substr(2, 2)}`
+          }
+          display = `${seasonLabel} ${year}${nextYearStr}` // eslint-disable-line
         } else if (interval === 'Quarter') {
           display = `${getQuarterLabel(d3TimeFormat('%-m')(time))} ${d3TimeFormat('%Y')(time)}` // eslint-disable-line
         } else if (interval === 'Fin Year') {

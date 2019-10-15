@@ -534,6 +534,31 @@ export default {
             }
           }
 
+          // const isCompare = !self.comparePeriod || self.comparePeriod !== 'All'
+          // if (
+          //   isCompare &&
+          //   (self.interval === 'Season' || self.interval === 'Quarter')
+          // ) {
+          //   const periodMonth = self.getPeriodMonth(self.comparePeriod)
+          //   const startXMonth = startX.getMonth()
+          //   const endXMonth = endX.getMonth()
+          //   if (
+          //     self.comparePeriod === 'Winter' &&
+          //     startXMonth >= 0 &&
+          //     startXMonth <= 5
+          //   ) {
+          //     startX.setFullYear(startX.getFullYear() - 1)
+          //   }
+
+          //   if (
+          //     self.comparePeriod === 'Winter' &&
+          //     endXMonth >= 0 &&
+          //     endXMonth <= 5
+          //   ) {
+          //     endX.setFullYear(endX.getFullYear() - 1)
+          //   }
+          // }
+
           const startTime = DateDisplay.roundToClosestInterval(
             self.interval,
             startX,
@@ -1072,9 +1097,14 @@ export default {
         isCompare &&
         (this.interval === 'Season' || this.interval === 'Quarter')
       ) {
-        this.xAxis.tickFormat(d => {
+        this.xAxis.tickFormat((d, i) => {
           const year = d.getFullYear() + ''
-          return `${this.comparePeriod} ${year.substr(2, 2)}`
+          const nextYear = d.getFullYear() + 1 + ''
+          const yearStr =
+            this.comparePeriod === 'Summer'
+              ? `${year}/${nextYear.substr(2, 2)}`
+              : year
+          return `${yearStr}`
         })
         const periodMonth = this.getPeriodMonth(
           this.interval,
@@ -1098,9 +1128,10 @@ export default {
       this.xAxis.ticks(tickLength)
 
       // add secondary x axis tick label here
-      const insertSecondaryAxisTick = function(d) {
+      const insertSecondaryAxisTick = function(d, i) {
         const el = select(this)
-        const secondaryText = axisSecondaryTimeFormat(d)
+        const secondaryText =
+          isCompare && i === 0 ? that.comparePeriod : axisSecondaryTimeFormat(d)
         if (secondaryText !== '') {
           el.append('tspan')
             .text(secondaryText)
