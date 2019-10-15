@@ -1094,7 +1094,7 @@ export default {
         // need to add an extra data point to show the final step
         const currentLastPoint = returnedData[returnedData.length - 1]
         // only add if it's a valid last point
-        if (currentLastPoint._total) {
+        if (currentLastPoint && currentLastPoint._total) {
           const finalData = _cloneDeep(currentLastPoint)
           Object.keys(finalData).forEach(key => {
             if (key === 'date') {
@@ -1206,6 +1206,7 @@ export default {
 
       this.updatedFilteredDataset(updated)
       this.updateEnergyMinMax()
+      this.updateCompareDataset(this.comparePeriod)
       this.ready = true
     },
 
