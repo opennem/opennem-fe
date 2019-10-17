@@ -1129,7 +1129,7 @@ export default {
       if (!compare || compare === 'All') {
         this.dataset = this.originalDataset
       } else {
-        const month = this.getPeriodMonth(compare)
+        const month = DateDisplay.getPeriodMonth(this.interval, compare)
         const returnedData = this.originalDataset.filter(d => {
           const dMonth = new Date(d.date).getMonth()
           return dMonth === month
@@ -1155,33 +1155,6 @@ export default {
         this.dataset = returnedData
       }
       this.updatedFilteredDataset(this.dataset)
-    },
-    getPeriodMonth(period) {
-      if (this.interval === 'Quarter') {
-        switch (period) {
-          case 'Q1':
-            return 0
-          case 'Q2':
-            return 3
-          case 'Q3':
-            return 6
-          case 'Q4':
-            return 9
-        }
-      }
-
-      if (this.interval === 'Season') {
-        switch (period) {
-          case 'Summer':
-            return 11
-          case 'Autumn':
-            return 2
-          case 'Winter':
-            return 5
-          case 'Spring':
-            return 8
-        }
-      }
     },
 
     fetchData(region, range) {
@@ -1455,34 +1428,16 @@ export default {
         isCompare &&
         (this.interval === 'Season' || this.interval === 'Quarter')
       ) {
-        const periodMonth = this.getPeriodMonth(this.comparePeriod)
+        const periodMonth = DateDisplay.getPeriodMonth(
+          this.interval,
+          this.comparePeriod
+        )
         const month = date.getMonth()
-        if (this.comparePeriod === 'Summer' && month !== 11) {
-          date.setFullYear(date.getFullYear() - 1)
-        } else if (
-          this.comparePeriod === 'Autumn' &&
-          month >= 0 &&
-          month <= 1
-        ) {
-          date.setFullYear(date.getFullYear() - 1)
-        } else if (
-          this.comparePeriod === 'Winter' &&
-          month >= 0 &&
-          month <= 5
-        ) {
-          date.setFullYear(date.getFullYear() - 1)
-        } else if (
-          this.comparePeriod === 'Spring' &&
-          month >= 0 &&
-          month <= 8
-        ) {
-          date.setFullYear(date.getFullYear() - 1)
-        } else if (this.comparePeriod === 'Q2' && month >= 0 && month <= 2) {
-          date.setFullYear(date.getFullYear() - 1)
-        } else if (this.comparePeriod === 'Q3' && month >= 0 && month <= 6) {
-          date.setFullYear(date.getFullYear() - 1)
-        } else if (this.comparePeriod === 'Q4' && month >= 0 && month <= 9) {
-          date.setFullYear(date.getFullYear() - 1)
+
+        if (this.interval === 'Season') {
+          date = DateDisplay.mutateSeasonDate(date, month, this.comparePeriod)
+        } else if (this.interval === 'Quarter') {
+          date = DateDisplay.mutateQuarterDate(date, month, this.comparePeriod)
         }
         date.setMonth(periodMonth + 1)
       }
