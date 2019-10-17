@@ -1141,10 +1141,15 @@ export default {
         if (currentLastPoint && currentLastPoint._total) {
           const finalData = _cloneDeep(currentLastPoint)
           Object.keys(finalData).forEach(key => {
+            const hasTemperature = this.temperatureDomains.find(
+              d => d.id === key
+            )
             if (key === 'date') {
               finalData.date = moment(currentLastPoint.date)
                 .add(1, 'year')
                 .valueOf()
+            } else if (hasTemperature) {
+              finalData[key] = currentLastPoint[key]
             } else {
               finalData[key] = null
             }
