@@ -522,8 +522,8 @@ export default {
           if (!event.selection) return
           if (event.sourceEvent.type === 'brush') return
           const s = event.selection
-          const startX = self.x.invert(s[0])
-          const endX = self.x.invert(s[1])
+          let startX = self.x.invert(s[0])
+          let endX = self.x.invert(s[1])
 
           if (self.interval === 'Fin Year') {
             if (startX.getMonth() >= 6) {
@@ -534,38 +534,54 @@ export default {
             }
           }
 
-          // const isCompare = !self.comparePeriod || self.comparePeriod !== 'All'
-          // if (
-          //   isCompare &&
-          //   (self.interval === 'Season' || self.interval === 'Quarter')
-          // ) {
-          //   const periodMonth = self.getPeriodMonth(self.comparePeriod)
-          //   const startXMonth = startX.getMonth()
-          //   const endXMonth = endX.getMonth()
-          //   if (
-          //     self.comparePeriod === 'Winter' &&
-          //     startXMonth >= 0 &&
-          //     startXMonth <= 5
-          //   ) {
-          //     startX.setFullYear(startX.getFullYear() - 1)
-          //   }
+          const isCompare = !self.comparePeriod || self.comparePeriod !== 'All'
+          if (
+            isCompare &&
+            (self.interval === 'Season' || self.interval === 'Quarter')
+          ) {
+            const periodMonth = DateDisplay.getPeriodMonth(
+              self.interval,
+              self.comparePeriod
+            )
+            const startXMonth = startX.getMonth()
+            const endXMonth = endX.getMonth()
 
-          //   if (
-          //     self.comparePeriod === 'Winter' &&
-          //     endXMonth >= 0 &&
-          //     endXMonth <= 5
-          //   ) {
-          //     endX.setFullYear(endX.getFullYear() - 1)
-          //   }
-          // }
+            if (self.interval === 'Season') {
+              startX = DateDisplay.mutateSeasonDate(
+                startX,
+                startXMonth,
+                self.comparePeriod
+              )
+              endX = DateDisplay.mutateSeasonDate(
+                endX,
+                endXMonth,
+                self.comparePeriod
+              )
+            } else if (self.interval === 'Quarter') {
+              startX = DateDisplay.mutateQuarterDate(
+                startX,
+                startXMonth,
+                self.comparePeriod
+              )
+              endX = DateDisplay.mutateQuarterDate(
+                endX,
+                endXMonth,
+                self.comparePeriod
+              )
+            }
+            startX.setMonth(periodMonth + 1)
+            endX.setMonth(periodMonth + 1)
+          }
 
           const startTime = DateDisplay.roundToClosestInterval(
             self.interval,
+            self.comparePeriod,
             startX,
             'floor'
           )
           const endTime = DateDisplay.roundToClosestInterval(
             self.interval,
+            self.comparePeriod,
             endX,
             'ceil'
           )
