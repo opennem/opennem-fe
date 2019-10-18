@@ -1311,10 +1311,27 @@ export default {
       // This is to filter the dataset based on the chart zoom
       // - used by Summary table
       if (this.dateFilter.length > 0) {
+        let startX = this.dateFilter[0]
+        let endX = this.dateFilter[1]
+        const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
+        if (
+          isCompare &&
+          (this.interval === 'Season' || this.interval === 'Quarter')
+        ) {
+          const periodMonth = DateDisplay.getPeriodMonth(
+            this.interval,
+            this.comparePeriod
+          )
+          const startXMonth = startX.getMonth()
+          const endXMonth = endX.getMonth()
+          startX.setMonth(periodMonth)
+          endX.setMonth(periodMonth)
+        }
+
         this.filteredDataset = EnergyDataTransform.filterDataByStartEndDates(
           dataset,
-          this.dateFilter[0],
-          this.dateFilter[1]
+          startX,
+          endX
         )
       } else {
         this.filteredDataset = dataset
@@ -1475,7 +1492,6 @@ export default {
     },
 
     setDateFilter(dates) {
-      // this.dateFilter = dates
       this.$store.dispatch('dateFilter', dates)
     },
 

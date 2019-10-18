@@ -96,15 +96,16 @@ export default {
 
   methods: {
     handleRangeChange(range) {
-      this.$emit('onRangeChange', range)
       this.$store.dispatch('comparePeriod', null)
+      this.$emit('onRangeChange', range)
     },
     handleIntervalChange(interval) {
+      const compareInterval = interval === 'Season' || interval === 'Quarter'
+      const comparePeriod = compareInterval ? 'All' : null
+      this.$store.dispatch('comparePeriod', comparePeriod)
       this.$emit('onIntervalChange', interval)
-      this.$store.dispatch('comparePeriod', null)
     },
     handleComparePeriodClick(period) {
-      // this.$store.dispatch('dateFilter', [])
       this.$store.dispatch('comparePeriod', period)
     }
   }
