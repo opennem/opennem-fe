@@ -1128,7 +1128,7 @@ export default {
 
           if (this.interval === 'Season') {
             className = 'interval-season'
-            const periodMonth = this.getPeriodMonth(
+            const periodMonth = DateDisplay.getPeriodMonth(
               this.interval,
               this.comparePeriod
             )
@@ -1137,7 +1137,7 @@ export default {
             }
           } else if (this.interval === 'Quarter') {
             className = 'interval-quarter'
-            const periodMonth = this.getPeriodMonth(
+            const periodMonth = DateDisplay.getPeriodMonth(
               this.interval,
               this.comparePeriod
             )
@@ -1176,7 +1176,7 @@ export default {
               : year
           return `${yearStr}`
         })
-        const periodMonth = this.getPeriodMonth(
+        const periodMonth = DateDisplay.getPeriodMonth(
           this.interval,
           this.comparePeriod
         )
@@ -1231,34 +1231,6 @@ export default {
       const m = mouse(evt)
       const date = this.x.invert(m[0])
       return date
-    },
-
-    getPeriodMonth(interval, period) {
-      if (interval === 'Quarter') {
-        switch (period) {
-          case 'Q1':
-            return 0
-          case 'Q2':
-            return 3
-          case 'Q3':
-            return 6
-          case 'Q4':
-            return 9
-        }
-      }
-
-      if (interval === 'Season') {
-        switch (period) {
-          case 'Summer':
-            return 11
-          case 'Autumn':
-            return 2
-          case 'Winter':
-            return 5
-          case 'Spring':
-            return 8
-        }
-      }
     }
   }
 }
