@@ -964,8 +964,8 @@ export default {
 
       // Get the brush selection (start/end) points -> dates
       const s = event.selection
-      const startX = this.x.invert(s[0])
-      const endX = this.x.invert(s[1])
+      let startX = this.x.invert(s[0])
+      let endX = this.x.invert(s[1])
 
       if (this.interval === 'Fin Year') {
         if (startX.getMonth() >= 6) {
@@ -976,7 +976,61 @@ export default {
         }
       }
 
-      const dateRange = this.getZoomDateRanges(startX, endX)
+      const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
+      if (
+        isCompare &&
+        (this.interval === 'Season' || this.interval === 'Quarter')
+      ) {
+        const periodMonth = DateDisplay.getPeriodMonth(
+          this.interval,
+          this.comparePeriod
+        )
+        const startXMonth = startX.getMonth()
+        const endXMonth = endX.getMonth()
+
+        if (this.interval === 'Season') {
+          startX = DateDisplay.mutateSeasonDate(
+            startX,
+            startXMonth,
+            this.comparePeriod
+          )
+          endX = DateDisplay.mutateSeasonDate(
+            endX,
+            endXMonth,
+            this.comparePeriod
+          )
+        } else if (this.interval === 'Quarter') {
+          startX = DateDisplay.mutateQuarterDate(
+            startX,
+            startXMonth,
+            this.comparePeriod
+          )
+          endX = DateDisplay.mutateQuarterDate(
+            endX,
+            endXMonth,
+            this.comparePeriod
+          )
+        }
+        startX.setMonth(periodMonth + 1)
+        endX.setMonth(periodMonth + 1)
+      }
+
+      const startTime = DateDisplay.roundToClosestInterval(
+        this.interval,
+        this.comparePeriod,
+        startX,
+        'floor'
+      )
+      const endTime = DateDisplay.roundToClosestInterval(
+        this.interval,
+        this.comparePeriod,
+        endX,
+        'ceil'
+      )
+
+      const dateRange = isCompare
+        ? this.getZoomDateRanges(startX, endX)
+        : [startTime, endTime]
 
       // Set it to the current X domain
       this.x.domain(dateRange)
