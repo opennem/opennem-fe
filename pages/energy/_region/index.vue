@@ -1771,7 +1771,7 @@ export default {
   opacity: 0 !important;
 }
 .temperature-chart.adjustment {
-  margin-top: -14px;
+  margin-top: -7px;
 }
 
 .bar-donut-wrapper {
