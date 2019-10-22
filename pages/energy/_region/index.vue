@@ -799,6 +799,9 @@ export default {
     },
 
     xGuides() {
+      if (this.dataset.length <= 0) {
+        return []
+      }
       let dStart = this.dataset[0].date
       const dEnd = this.dataset[this.dataset.length - 1].date
 
@@ -1068,6 +1071,39 @@ export default {
     },
     comparePeriod(compare) {
       this.updateCompareDataset(compare)
+    },
+    stackedAreaDomains(updated) {
+      this.$store.dispatch('export/stackedAreaDomains', updated)
+    },
+    summaryDomains(updated) {
+      this.$store.dispatch('export/summaryDomains', updated)
+    },
+    dataset(updated) {
+      this.$store.dispatch('export/dataset', updated)
+    },
+    xGuides(updated) {
+      this.$store.dispatch('export/xGuides', updated)
+    },
+    emissionDomains(updated) {
+      this.$store.dispatch('export/emissionDomains', updated)
+    },
+    priceDomains(updated) {
+      this.$store.dispatch('export/priceDomains', updated)
+    },
+    marketValueDomains(updated) {
+      this.$store.dispatch('export/marketValueDomains', updated)
+    },
+    temperatureDomains(updated) {
+      this.$store.dispatch('export/temperatureDomains', updated)
+    },
+    temperatureMeanId(updated) {
+      this.$store.dispatch('export/temperatureMeanId', updated)
+    },
+    temperatureMinId(updated) {
+      this.$store.dispatch('export/temperatureMinId', updated)
+    },
+    temperatureMaxId(updated) {
+      this.$store.dispatch('export/temperatureMaxId', updated)
     }
   },
 
