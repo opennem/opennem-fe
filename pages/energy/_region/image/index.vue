@@ -114,7 +114,7 @@
               <small>$/MWh</small>
             </div>
             <line-vis
-              :domain-id="'price.above300'"
+              :domain-id="priceDomains[1].id"
               :domain-colour="lineColour"
               :value-domain-id="priceDomains[0].id"
               :dataset="dataset"
@@ -155,7 +155,7 @@
               class="price-vis vis-chart"
             />
             <line-vis
-              :domain-id="'price.below0'"
+              :domain-id="priceDomains[2].id"
               :domain-colour="lineColour"
               :dataset="dataset"
               :dynamic-extent="dateFilter"

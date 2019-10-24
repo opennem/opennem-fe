@@ -250,8 +250,9 @@ function addEmptyDataPoint(time, dataset) {
         _includes(key, 'volume_weighted_price')
       ) {
         // console.log(key)
+      } else if (_includes(key, '_volWeightedPrice')) {
+        emptyDataPoint[key] = emptyDataPoint[key]
       } else {
-        // console.log(key)
         emptyDataPoint[key] = null
       }
     }
@@ -397,6 +398,7 @@ export default {
           const dataset = this.calculateMinTotal(
             rolledUpData,
             energyDomains,
+            marketValueDomains,
             emissionDomains,
             data[0].date,
             data[data.length - 1].date
@@ -417,6 +419,7 @@ export default {
   calculateMinTotal(
     dataset,
     energyDomains,
+    marketValueDomains,
     emissionDomains,
     actualStartDate,
     actualLastDate
@@ -427,7 +430,8 @@ export default {
         totalGeneration = 0,
         min = 0,
         totalEmissionsVol = 0,
-        totalRenewables = 0
+        totalRenewables = 0,
+        totalMarketValue = 0
 
       energyDomains.forEach(domain => {
         const id = domain.id
@@ -452,9 +456,16 @@ export default {
         }
       })
 
+      // calculate vol weighted pricing
+      marketValueDomains.forEach(domain => {
+        totalMarketValue += d[domain.id] || 0
+      })
+
       emissionDomains.forEach(domain => {
         totalEmissionsVol += d[domain.id] || 0
       })
+
+      const volWeightedPrice = totalMarketValue / totalDemand / 1000
 
       dataset[i]._total = totalDemand
       dataset[i]._totalRenewables = totalRenewables
@@ -467,6 +478,13 @@ export default {
       dataset[i]._emissionsIntensity = totalEmissionsVol / totalDemand || 0
       dataset[i]._actualLastDate = actualLastDate
       dataset[i]._actualStartDate = actualStartDate
+      dataset[i]._totalMarketValue = totalMarketValue
+      dataset[i]._volWeightedPrice = volWeightedPrice
+
+      dataset[i]._volWeightedPriceAbove300 =
+        volWeightedPrice > 300 ? volWeightedPrice : 0.001
+      dataset[i]._volWeightedPriceBelow0 =
+        volWeightedPrice < 0 ? volWeightedPrice : -0.001
     })
     return dataset
   },

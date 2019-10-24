@@ -287,7 +287,7 @@
           </div>
           <line-vis
             v-if="chartPrice"
-            :domain-id="'price.above300'"
+            :domain-id="priceDomains[1].id"
             :domain-colour="lineColour"
             :value-domain-id="priceDomains[0].id"
             :dataset="dataset"
@@ -344,7 +344,7 @@
           />
           <line-vis
             v-if="chartPrice"
-            :domain-id="'price.below0'"
+            :domain-id="priceDomains[2].id"
             :domain-colour="lineColour"
             :dataset="dataset"
             :dynamic-extent="dateFilter"
@@ -659,6 +659,9 @@ export default {
     },
     type() {
       return this.$store.getters.energyChartType
+    },
+    isEnergyType() {
+      return this.type === 'energy'
     },
     chartEmissionsVolume() {
       return this.$store.getters.chartEmissionsVolume
@@ -1339,7 +1342,9 @@ export default {
     },
 
     updatePriceDomains(res) {
-      this.priceDomains = Domain.getPriceDomains(res)
+      this.priceDomains = this.isEnergyType
+        ? Domain.getVolWeightedDomains()
+        : Domain.getPriceDomains(res)
       this.$store.dispatch('priceDomains', this.priceDomains)
     },
 

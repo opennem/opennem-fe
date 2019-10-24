@@ -168,6 +168,27 @@ export default {
     return domains
   },
 
+  getVolWeightedDomains() {
+    const PRICE_COLOUR = 'blue'
+    return [
+      {
+        id: '_volWeightedPrice',
+        type: 'price',
+        colour: PRICE_COLOUR
+      },
+      {
+        id: '_volWeightedPriceAbove300',
+        type: 'price',
+        colour: PRICE_COLOUR
+      },
+      {
+        id: '_volWeightedPriceBelow0',
+        type: 'price',
+        colour: PRICE_COLOUR
+      }
+    ]
+  },
+
   getDomainObjs(region, domainIds, type) {
     // create ft Objects that has the right id and meta data
     return domainIds.map(ft => {
