@@ -942,6 +942,23 @@ export default {
         return incompletes
       }
 
+      if (this.interval === '6 Month') {
+        const incompletes = []
+        if (aSD > dStart) {
+          incompletes.push({
+            start: dStart,
+            end: dStart + 15552000000
+          })
+        }
+        if (aLD < dEnd) {
+          incompletes.push({
+            start: dEnd - 15552000000,
+            end: dEnd
+          })
+        }
+        return incompletes
+      }
+
       if (this.interval === 'Fin Year' || this.interval === 'Year') {
         const incompletes = []
         if (aSD > dStart) {

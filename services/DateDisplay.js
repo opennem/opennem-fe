@@ -92,6 +92,23 @@ function getQuarterClosestDate(date, isFloor, comparePeriod) {
   }
 }
 
+function get6MonthClosestDate(date, isFloor, comparePeriod) {
+  const isCompare = !comparePeriod || comparePeriod !== 'All'
+  // if (isCompare) {
+  //   const yearDate = isFloor
+  //     ? d3TimeYear.every(1).floor(date)
+  //     : d3TimeYear.every(1).ceil(date)
+  //   return d3TimeMonth.offset(yearDate, getQuarterOffset(comparePeriod))
+  // } else {
+  //   return isFloor
+  //     ? d3TimeMonth.every(3).floor(date)
+  //     : d3TimeMonth.every(3).ceil(date)
+  // }
+  return isFloor
+    ? d3TimeMonth.every(6).floor(date)
+    : d3TimeMonth.every(6).ceil(date)
+}
+
 export default {
   specialDateFormats(
     time,
@@ -199,6 +216,8 @@ export default {
         return d3TimeMonth.offset(quarter, -1)
       case 'Quarter':
         return d3TimeMonth.every(3).floor(date)
+      case '6 Month':
+        return d3TimeMonth.every(6).floor(date)
       case 'Fin Year':
         const year = d3TimeYear.every(1).floor(date)
         return d3TimeMonth.offset(year, -6)
@@ -232,6 +251,8 @@ export default {
         return getSeasonClosestDate(date, isFloor, comparePeriod)
       case 'Quarter':
         return getQuarterClosestDate(date, isFloor, comparePeriod)
+      case '6 Month':
+        return get6MonthClosestDate(date, isFloor, comparePeriod)
       case 'Fin Year':
         const year = isFloor
           ? d3TimeYear.every(1).floor(date)
