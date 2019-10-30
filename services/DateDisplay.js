@@ -179,6 +179,9 @@ export default {
             finYear = d3TimeFormat('%y')(time + 31557600000)
           }
           display = `FY${finYear}`
+        } else if (interval === '6 Month') {
+          const sixMonthsLater = time + 15552000000
+          display = `${d3TimeFormat('%b')(time)} – ${d3TimeFormat('%b %Y')(sixMonthsLater)}` // eslint-disable-line
         } else if (interval === 'Year') {
           display = d3TimeFormat('%Y')(time)
         } else {
