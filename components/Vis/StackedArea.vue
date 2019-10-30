@@ -663,7 +663,7 @@ export default {
         })
         .style('clip-path', this.clipPathUrl)
         .style('-webkit-clip-path', this.clipPathUrl)
-        .style('pointer-events', 'fill')
+        .style('pointer-events', 'auto')
 
       stackArea.exit().remove()
 
@@ -671,7 +671,7 @@ export default {
       // - find date and domain
       this.$stackedAreaGroup
         .selectAll('path')
-        .on('touchmove mousemove', function(d) {
+        .on('mousemove touchmove', function(d) {
           if (!self.dateFocus) {
             self.$emit('eventChange', this)
             self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
@@ -847,6 +847,7 @@ export default {
           .attr('width', bandwidth < 0 ? 0 : bandwidth)
           .attr('height', this.height)
           .attr('opacity', 1)
+          .style('pointer-events', 'none')
       } else {
         $cursorRect.attr('opacity', 0)
         $cursorLineFocusTopRect.attr('x', xDate - 2.5)
