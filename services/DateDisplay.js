@@ -179,7 +179,7 @@ export default {
             finYear = d3TimeFormat('%y')(time + 31557600000)
           }
           display = `FY${finYear}`
-        } else if (interval === '6 Month') {
+        } else if (interval === 'Half Year') {
           const sixMonthsLater = time + 15552000000
           display = `${d3TimeFormat('%b')(time)} – ${d3TimeFormat('%b %Y')(sixMonthsLater)}` // eslint-disable-line
         } else if (interval === 'Year') {
@@ -219,7 +219,7 @@ export default {
         return d3TimeMonth.offset(quarter, -1)
       case 'Quarter':
         return d3TimeMonth.every(3).floor(date)
-      case '6 Month':
+      case 'Half Year':
         return d3TimeMonth.every(6).floor(date)
       case 'Fin Year':
         const year = d3TimeYear.every(1).floor(date)
@@ -254,7 +254,7 @@ export default {
         return getSeasonClosestDate(date, isFloor, comparePeriod)
       case 'Quarter':
         return getQuarterClosestDate(date, isFloor, comparePeriod)
-      case '6 Month':
+      case 'Half Year':
         return get6MonthClosestDate(date, isFloor, comparePeriod)
       case 'Fin Year':
         const year = isFloor

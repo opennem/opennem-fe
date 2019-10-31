@@ -942,7 +942,7 @@ export default {
         return incompletes
       }
 
-      if (this.interval === '6 Month') {
+      if (this.interval === 'Half Year') {
         const incompletes = []
         if (aSD > dStart) {
           incompletes.push({
