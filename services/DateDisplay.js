@@ -94,16 +94,6 @@ function getQuarterClosestDate(date, isFloor, comparePeriod) {
 
 function get6MonthClosestDate(date, isFloor, comparePeriod) {
   const isCompare = !comparePeriod || comparePeriod !== 'All'
-  // if (isCompare) {
-  //   const yearDate = isFloor
-  //     ? d3TimeYear.every(1).floor(date)
-  //     : d3TimeYear.every(1).ceil(date)
-  //   return d3TimeMonth.offset(yearDate, getQuarterOffset(comparePeriod))
-  // } else {
-  //   return isFloor
-  //     ? d3TimeMonth.every(3).floor(date)
-  //     : d3TimeMonth.every(3).ceil(date)
-  // }
   return isFloor
     ? d3TimeMonth.every(6).floor(date)
     : d3TimeMonth.every(6).ceil(date)
@@ -181,7 +171,15 @@ export default {
           display = `FY${finYear}`
         } else if (interval === 'Half Year') {
           const sixMonthsLater = time + 15552000000
-          display = `${d3TimeFormat('%b')(time)} – ${d3TimeFormat('%b %Y')(sixMonthsLater)}` // eslint-disable-line
+          if (showIntervalRange) {
+            display = `${d3TimeFormat('%b')(time)} – ${d3TimeFormat('%b %Y')(sixMonthsLater)}` // eslint-disable-line
+          } else {
+            if (isStart) {
+              display = `${d3TimeFormat('%b %Y')(time)}` // eslint-disable-line
+            } else {
+              display = `${d3TimeFormat('%b %Y')(sixMonthsLater)}` // eslint-disable-line
+            }
+          }
         } else if (interval === 'Year') {
           display = d3TimeFormat('%Y')(time)
         } else {
