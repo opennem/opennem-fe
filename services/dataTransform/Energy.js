@@ -12,6 +12,7 @@ import rollUp1YWeek from '../rollUpModules/ru-1y-week.js'
 import rollUp1YMonth from '../rollUpModules/ru-1y-month.js'
 import rollUpAllSeason from '../rollUpModules/ru-all-season.js'
 import rollUpAllQuarter from '../rollUpModules/ru-all-quarter.js'
+import rollUpAllHalfYear from '../rollUpModules/ru-all-half-year.js'
 import rollUpAllFinYear from '../rollUpModules/ru-all-financial-year.js'
 import rollUpAllYear from '../rollUpModules/ru-all-year.js'
 
@@ -524,6 +525,8 @@ export default {
         resolve(rollUpAllSeason(domains, data))
       } else if (range === 'ALL' && interval === 'Quarter') {
         resolve(rollUpAllQuarter(domains, data))
+      } else if (range === 'ALL' && interval === 'Half Year') {
+        resolve(rollUpAllHalfYear(domains, data))
       } else if (range === 'ALL' && interval === 'Fin Year') {
         resolve(rollUpAllFinYear(domains, energyDomains, data))
       } else if (range === 'ALL' && interval === 'Year') {

@@ -21,6 +21,6 @@ export default [
   },
   {
     range: 'ALL',
-    intervals: ['Month', 'Season', 'Quarter', 'Fin Year', 'Year']
+    intervals: ['Month', 'Season', 'Quarter', 'Half Year', 'Fin Year', 'Year']
   }
 ]
