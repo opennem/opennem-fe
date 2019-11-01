@@ -24,13 +24,13 @@
 
     <div
       v-if="periodArray"
-      class="compare-period-buttons buttons has-addons">
+      class="filter-period-buttons buttons has-addons">
       <span
         v-for="(period, i) in periodArray"
         :key="`period${i}`"
-        :class="{ 'is-selected': comparePeriod === period }"
+        :class="{ 'is-selected': filterPeriod === period }"
         class="button is-rounded"
-        @click="handleComparePeriodClick(period)">
+        @click="handleFilterPeriodClick(period)">
         {{ period }}
       </span>
     </div>
@@ -67,8 +67,8 @@ export default {
       const range = this.ranges.find(r => r.range === this.selectedRange)
       return range ? range.intervals : null
     },
-    comparePeriod() {
-      return this.$store.getters.comparePeriod
+    filterPeriod() {
+      return this.$store.getters.filterPeriod
     },
     periodArray() {
       return this.intervalPeriod[this.selectedInterval]
@@ -83,8 +83,8 @@ export default {
       this.selectedInterval = updated
     },
     periodArray(arr) {
-      if (arr && !this.comparePeriod) {
-        this.$store.dispatch('comparePeriod', 'All')
+      if (arr && !this.filterPeriod) {
+        this.$store.dispatch('filterPeriod', 'All')
       }
     }
   },
@@ -96,17 +96,17 @@ export default {
 
   methods: {
     handleRangeChange(range) {
-      this.$store.dispatch('comparePeriod', null)
+      this.$store.dispatch('filterPeriod', null)
       this.$emit('onRangeChange', range)
     },
     handleIntervalChange(interval) {
       const compareInterval = interval === 'Season' || interval === 'Quarter'
-      const comparePeriod = compareInterval ? 'All' : null
-      this.$store.dispatch('comparePeriod', comparePeriod)
+      const filterPeriod = compareInterval ? 'All' : null
+      this.$store.dispatch('filterPeriod', filterPeriod)
       this.$emit('onIntervalChange', interval)
     },
-    handleComparePeriodClick(period) {
-      this.$store.dispatch('comparePeriod', period)
+    handleFilterPeriodClick(period) {
+      this.$store.dispatch('filterPeriod', period)
     }
   }
 }
@@ -147,7 +147,7 @@ export default {
     margin-right: $app-padding;
   }
 }
-.compare-period-buttons {
+.filter-period-buttons {
   margin-left: 1rem;
 }
 </style>

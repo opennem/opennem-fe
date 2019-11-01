@@ -651,8 +651,8 @@ export default {
     dateFilter() {
       return this.$store.getters.dateFilter
     },
-    comparePeriod() {
-      return this.$store.getters.comparePeriod
+    filterPeriod() {
+      return this.$store.getters.filterPeriod
     },
     zoomed() {
       return this.$store.getters.dateFilter.length !== 0
@@ -898,8 +898,8 @@ export default {
 
       if (this.interval === 'Season' || this.interval === 'Quarter') {
         const incompletes = []
-        const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
-        if (!isCompare) {
+        const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
+        if (!isFilter) {
           aLD = moment(aLD).add(1, 'month')
           if (aSD > dStart) {
             incompletes.push({
@@ -921,7 +921,7 @@ export default {
           const actualEndMonth = getStartMonth(new Date(aLD).getMonth())
           const actualEndSeason = getSeasonLabel(actualEndMonth)
 
-          if (actualStartSeason === this.comparePeriod) {
+          if (actualStartSeason === this.filterPeriod) {
             if (aSD > dStart) {
               incompletes.push({
                 start: dStart,
@@ -929,7 +929,7 @@ export default {
               })
             }
           }
-          if (actualEndSeason === this.comparePeriod) {
+          if (actualEndSeason === this.filterPeriod) {
             const newDEnd = moment(dEnd).add(3, 'month')
             if (aLD.valueOf() < newDEnd.valueOf()) {
               incompletes.push({
@@ -1059,7 +1059,7 @@ export default {
           this.originalDataset,
           domains
         )
-        this.updateCompareDataset(this.comparePeriod)
+        this.updateCompareDataset(this.filterPeriod)
       }
     },
     groupMarketValueDomains(domains) {
@@ -1068,7 +1068,7 @@ export default {
           this.originalDataset,
           domains
         )
-        this.updateCompareDataset(this.comparePeriod)
+        this.updateCompareDataset(this.filterPeriod)
       }
     },
     groupEmissionDomains(domains) {
@@ -1077,7 +1077,7 @@ export default {
           this.originalDataset,
           domains
         )
-        this.updateCompareDataset(this.comparePeriod)
+        this.updateCompareDataset(this.filterPeriod)
       }
     },
     filteredDataset(updated) {
@@ -1086,7 +1086,7 @@ export default {
     hiddenFuelTechs() {
       this.updateEnergyMinMax()
     },
-    comparePeriod(compare) {
+    filterPeriod(compare) {
       this.updateCompareDataset(compare)
     },
     stackedAreaDomains(updated) {
@@ -1281,7 +1281,7 @@ export default {
 
       this.updatedFilteredDataset(updated)
       this.updateEnergyMinMax()
-      this.updateCompareDataset(this.comparePeriod)
+      this.updateCompareDataset(this.filterPeriod)
       this.ready = true
     },
 
@@ -1366,14 +1366,14 @@ export default {
       if (this.dateFilter.length > 0) {
         let startX = this.dateFilter[0]
         let endX = this.dateFilter[1]
-        const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
+        const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
         if (
-          isCompare &&
+          isFilter &&
           (this.interval === 'Season' || this.interval === 'Quarter')
         ) {
           const periodMonth = DateDisplay.getPeriodMonth(
             this.interval,
-            this.comparePeriod
+            this.filterPeriod
           )
           const startXMonth = startX.getMonth()
           const endXMonth = endX.getMonth()
@@ -1493,26 +1493,26 @@ export default {
     },
 
     handleDateOver(evt, date) {
-      const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
+      const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
       if (this.interval === 'Fin Year') {
         if (date.getMonth() >= 6) {
           date.setFullYear(date.getFullYear() + 1)
         }
       }
       if (
-        isCompare &&
+        isFilter &&
         (this.interval === 'Season' || this.interval === 'Quarter')
       ) {
         const periodMonth = DateDisplay.getPeriodMonth(
           this.interval,
-          this.comparePeriod
+          this.filterPeriod
         )
         const month = date.getMonth()
 
         if (this.interval === 'Season') {
-          date = DateDisplay.mutateSeasonDate(date, month, this.comparePeriod)
+          date = DateDisplay.mutateSeasonDate(date, month, this.filterPeriod)
         } else if (this.interval === 'Quarter') {
-          date = DateDisplay.mutateQuarterDate(date, month, this.comparePeriod)
+          date = DateDisplay.mutateQuarterDate(date, month, this.filterPeriod)
         }
         date.setMonth(periodMonth + 1)
       }

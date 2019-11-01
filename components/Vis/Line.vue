@@ -294,6 +294,9 @@ export default {
   },
 
   computed: {
+    filterPeriod() {
+      return this.$store.getters.filterPeriod
+    },
     datasetDateExtent() {
       return extent(this.dataset, d => new Date(d.date))
     },
@@ -909,7 +912,7 @@ export default {
       let tickLength = null
       let className = ''
       const that = this
-      const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
+      const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
 
       if (!this.zoomed) {
         if (this.range === '1D') {
@@ -944,18 +947,18 @@ export default {
             className = 'interval-season'
             const periodMonth = DateDisplay.getPeriodMonth(
               this.interval,
-              this.comparePeriod
+              this.filterPeriod
             )
-            if (isCompare && periodMonth) {
+            if (isFilter && periodMonth) {
               tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
             }
           } else if (this.interval === 'Quarter') {
             className = 'interval-quarter'
             const periodMonth = DateDisplay.getPeriodMonth(
               this.interval,
-              this.comparePeriod
+              this.filterPeriod
             )
-            if (isCompare && periodMonth) {
+            if (isFilter && periodMonth) {
               tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
             }
           } else if (this.interval === 'Year') {
@@ -978,23 +981,23 @@ export default {
       }
 
       if (
-        isCompare &&
+        isFilter &&
         (this.interval === 'Season' || this.interval === 'Quarter')
       ) {
         this.xAxis.tickFormat((d, i) => {
           const year = d.getFullYear() + ''
           const nextYear = d.getFullYear() + 1 + ''
           const yearStr =
-            this.comparePeriod === 'Summer'
+            this.filterPeriod === 'Summer'
               ? `${year}/${nextYear.substr(2, 2)}`
               : year
           return `${yearStr}`
         })
         const periodMonth = DateDisplay.getPeriodMonth(
           this.interval,
-          this.comparePeriod
+          this.filterPeriod
         )
-        if (isCompare && periodMonth) {
+        if (isFilter && periodMonth) {
           tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
         }
       } else if (this.interval === 'Fin Year') {
