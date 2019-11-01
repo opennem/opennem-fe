@@ -31,7 +31,8 @@ export const state = () => ({
   exportAttribution: '@name',
   percentContributionTo: 'demand', // or generation
   featureEmissions: false,
-  filterPeriod: null
+  filterPeriod: null,
+  compareDifference: false
 })
 
 export const mutations = {
@@ -112,6 +113,9 @@ export const mutations = {
   },
   filterPeriod(state, data) {
     state.filterPeriod = data
+  },
+  compareDifference(state, data) {
+    state.compareDifference = data
   }
 }
 
@@ -205,7 +209,8 @@ export const getters = {
   exportAttribution: state => state.exportAttribution,
   percentContributionTo: state => state.percentContributionTo,
   featureEmissions: state => state.featureEmissions,
-  filterPeriod: state => state.filterPeriod
+  filterPeriod: state => state.filterPeriod,
+  compareDifference: state => state.compareDifference
 }
 
 export const actions = {
@@ -283,5 +288,8 @@ export const actions = {
   },
   filterPeriod({ commit }, data) {
     commit('filterPeriod', data)
+  },
+  compareDifference({ commit }, data) {
+    commit('compareDifference', data)
   }
 }

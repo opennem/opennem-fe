@@ -34,6 +34,11 @@
         {{ period }}
       </span>
     </div>
+
+    <button
+      :class="{ 'is-selected': compareDifference }"
+      class="compare-button button is-rounded"
+      @click="handleCompareClick">Compare</button>
   </div>
 </template>
 
@@ -69,6 +74,9 @@ export default {
     },
     filterPeriod() {
       return this.$store.getters.filterPeriod
+    },
+    compareDifference() {
+      return this.$store.getters.compareDifference
     },
     periodArray() {
       return this.intervalPeriod[this.selectedInterval]
@@ -107,6 +115,9 @@ export default {
     },
     handleFilterPeriodClick(period) {
       this.$store.dispatch('filterPeriod', period)
+    },
+    handleCompareClick() {
+      this.$store.dispatch('compareDifference', !this.compareDifference)
     }
   }
 }
@@ -149,5 +160,9 @@ export default {
 }
 .filter-period-buttons {
   margin-left: 1rem;
+}
+.compare-button {
+  position: absolute;
+  right: 0.5rem;
 }
 </style>
