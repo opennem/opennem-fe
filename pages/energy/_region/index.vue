@@ -123,6 +123,11 @@
           />
         </div>
 
+        <energy-compare
+          v-if="compareDifference"
+          :compare-data="compareData"
+        />
+
         <div
           v-if="ready && hasEmissionData && featureEmissions"
           :class="{
@@ -557,6 +562,7 @@ import EnergyBar from '~/components/Energy/EnergyBar.vue'
 import SummaryTable from '~/components/SummaryTable'
 import VisTooltip from '~/components/ui/Tooltip'
 import EnergyRecords from '~/components/Energy/Records.vue'
+import EnergyCompare from '~/components/Energy/Compare.vue'
 
 export default {
   layout: 'main',
@@ -604,7 +610,8 @@ export default {
     EnergyBar,
     SummaryTable,
     VisTooltip,
-    EnergyRecords
+    EnergyRecords,
+    EnergyCompare
   },
 
   data() {
@@ -637,7 +644,9 @@ export default {
       energyMax: 1000,
       emissionsIntensityMin: 0,
       dateFocus: false,
-      isTouchDevice: false
+      isTouchDevice: false,
+      compareDates: [],
+      compareData: []
     }
   },
 
@@ -674,6 +683,9 @@ export default {
     },
     chartSummaryPie() {
       return this.$store.getters.chartSummaryPie
+    },
+    compareDifference() {
+      return this.$store.getters.compareDifference
     },
     responsiveBreakWidth() {
       return this.$store.getters.responsiveBreakWidth
@@ -1575,7 +1587,29 @@ export default {
     },
 
     handleSvgClick(resetDateFocus) {
-      if (!this.isTouchDevice && !resetDateFocus) {
+      if (this.compareDifference) {
+        this.dateFocus = false
+        if (this.compareDates.length === 2) {
+          this.compareDates.pop()
+        }
+        this.compareDates.push(this.hoverDate)
+
+        function getDataByDate(dataset, date) {
+          return dataset.find(d => d.date === date)
+        }
+
+        if (this.compareDates.length === 2) {
+          const firstData = getDataByDate(
+            this.dataset,
+            this.compareDates[0].valueOf()
+          )
+          const secondData = getDataByDate(
+            this.dataset,
+            this.compareDates[1].valueOf()
+          )
+          this.compareData = [firstData, secondData]
+        }
+      } else if (!this.isTouchDevice && !resetDateFocus) {
         this.dateFocus = !this.dateFocus
       }
     }

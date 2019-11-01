@@ -283,6 +283,9 @@ export default {
     filterPeriod() {
       return this.$store.getters.filterPeriod
     },
+    compareDifference() {
+      return this.$store.getters.compareDifference
+    },
     path() {
       return this.$route.path
     },
