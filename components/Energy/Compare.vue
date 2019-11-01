@@ -6,13 +6,18 @@
       <span>{{ secondDate | formatDate }}</span>
     </div>
     <div>
-      {{ dataset }}
+      <column-vis />
     </div>
   </div>
 </template>
 
 <script>
+import ColumnVis from '~/components/Vis/Column.vue'
 export default {
+  components: {
+    ColumnVis
+  },
+
   props: {
     compareData: {
       type: Array,
