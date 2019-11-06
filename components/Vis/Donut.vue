@@ -108,13 +108,27 @@ export default {
       })
     },
 
+    updatedDataset() {
+      const domains = this.domains
+      const dataset = this.dataset
+      return dataset.map(d => {
+        let total = null
+        domains.forEach(domain => {
+          total += d[domain.id]
+        })
+        return {
+          _totalGeneration: total
+        }
+      })
+    },
+
     isTotalPower() {
       return this.unit === ' MW' && !this.hoverOn
     },
 
     total() {
       if (this.isTotalPower) {
-        return d3Mean(this.dataset, d => d._totalGeneration)
+        return d3Mean(this.updatedDataset, d => d._totalGeneration)
       }
       return this.donutDataset.reduce((a, b) => a + b.value, 0)
     },
