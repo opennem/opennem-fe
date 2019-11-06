@@ -115,6 +115,7 @@
             :mobile-screen="tabletBreak"
             :incomplete-intervals="incompleteIntervals"
             :date-focus="dateFocus"
+            :compare-dates="compareDates"
             class="vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
@@ -125,7 +126,9 @@
 
         <energy-compare
           v-if="compareDifference"
+          :domains="stackedAreaDomains"
           :compare-data="compareData"
+          @resetCompareDates="handleResetCompareDates"
         />
 
         <div
@@ -1133,6 +1136,12 @@ export default {
     },
     temperatureMaxId(updated) {
       this.$store.dispatch('export/temperatureMaxId', updated)
+    },
+    compareDifference(updated) {
+      if (!updated) {
+        this.compareData = []
+        this.compareDates = []
+      }
     }
   },
 
@@ -1454,6 +1463,8 @@ export default {
           console.log('nothing yet')
       }
       this.setDateFilter([])
+      this.compareData = []
+      this.compareDates = []
       this.$store.dispatch('interval', interval)
       this.$store.dispatch('range', range)
       this.fetchData(this.regionId, range)
@@ -1461,6 +1472,8 @@ export default {
 
     handleIntervalChange(interval) {
       this.dateFocus = false
+      this.compareData = []
+      this.compareDates = []
       this.$store.dispatch('interval', interval)
       EnergyDataTransform.mergeResponses(
         this.responses,
@@ -1589,10 +1602,9 @@ export default {
     handleSvgClick(resetDateFocus) {
       if (this.compareDifference) {
         this.dateFocus = false
-        if (this.compareDates.length === 2) {
-          this.compareDates.pop()
+        if (this.compareDates.length < 2) {
+          this.compareDates.push(this.hoverDate)
         }
-        this.compareDates.push(this.hoverDate)
 
         function getDataByDate(dataset, date) {
           return dataset.find(d => d.date === date)
@@ -1612,6 +1624,11 @@ export default {
       } else if (!this.isTouchDevice && !resetDateFocus) {
         this.dateFocus = !this.dateFocus
       }
+    },
+
+    handleResetCompareDates() {
+      this.compareData = []
+      this.compareDates = []
     }
   }
 }

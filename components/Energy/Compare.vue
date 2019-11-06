@@ -1,12 +1,20 @@
 <template>
   <div class="compare-container">
-    <h1>Compare</h1>
     <div>
-      <span>{{ firstDate | formatDate }}</span> —
+      <span>{{ firstDate | formatDate }}</span> vs
       <span>{{ secondDate | formatDate }}</span>
+
+      <button
+        class="button is-rounded is-small"
+        @click="handleReset">
+        clear
+      </button>
     </div>
     <div>
-      <column-vis />
+      <column-vis
+        v-if="hasCompareData"
+        :domains="domains"
+        :dataset="dataset" />
     </div>
   </div>
 </template>
@@ -20,6 +28,10 @@ export default {
 
   props: {
     compareData: {
+      type: Array,
+      default: () => []
+    },
+    domains: {
       type: Array,
       default: () => []
     }
@@ -51,6 +63,7 @@ export default {
             change[d] = latter[d] - former[d]
           }
         })
+        return change
       }
       return null
     }
@@ -66,7 +79,15 @@ export default {
           former = update[0]
         }
         this.updatedCompareData = [former, latter]
+      } else {
+        this.updatedCompareData = []
       }
+    }
+  },
+
+  methods: {
+    handleReset() {
+      this.$emit('resetCompareDates')
     }
   }
 }
@@ -74,7 +95,6 @@ export default {
 
 <style lang="scss" scoped>
 .compare-container {
-  background-color: #ddd;
   padding: 1rem;
   margin: 0.5rem;
   height: 300px;

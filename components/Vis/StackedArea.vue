@@ -67,6 +67,7 @@
         <g class="stacked-area-group" />
 
         <g class="x-incomplete-group" />
+        <g class="compare-group" />
       </g>
 
       <!-- yAxis tick text here to show above the area -->
@@ -217,6 +218,10 @@ export default {
       type: Boolean,
       default: () => false
     },
+    compareDates: {
+      type: Array,
+      default: () => []
+    },
     mobileScreen: {
       type: Boolean,
       default: () => false
@@ -253,6 +258,7 @@ export default {
       $stackedAreaGroup: null,
       $xGuideGroup: null,
       $xIncompleteGroup: null,
+      $compareGroup: null,
       // Stacked Area
       stackedAreaPathClass: CONFIG.CHART_STACKED_AREA_PATH_CLASS,
       stackedAreaGroupClass: CONFIG.CHART_STACKED_AREA_GROUP_CLASS,
@@ -272,6 +278,8 @@ export default {
       cursorRectClass: 'cursor-rect',
       cursorLineFocusTopRectClass: 'cursor-line-focus-top-rect',
       cursorLineFocusBottomRectClass: 'cursor-line-focus-bottom-rect',
+      compareGroupClass: 'compare-group',
+      compareRectClass: 'compare-rect',
       tooltipRectHeight: 40,
       tooltipGroupClass: CONFIG.TOOLTIP_GROUP_CLASS,
       tooltipRectClass: CONFIG.TOOLTIP_RECT_CLASS,
@@ -363,9 +371,41 @@ export default {
       const opacity = focus && !isEnergy ? 1 : 0
       $cursorLineFocusTopRect.attr('opacity', opacity)
       $cursorLineFocusBottomRect.attr('opacity', opacity)
+    },
+
+    compareDifference(updated) {
+      if (!updated) {
+        this.$compareGroup.selectAll('rect').remove()
+      }
+    },
+    compareDates(updated) {
+      const updatedLength = updated.length
+      this.$compareGroup.selectAll('rect').remove()
+      if (updatedLength > 0 && updatedLength < 3) {
+        this.$compareGroup
+          .selectAll('rect')
+          .data(updated)
+          .enter()
+          .append('rect')
+          .attr('opacity', 0.3)
+          .attr('x', d => this.x(d))
+          .attr('width', d => {
+            const time = new Date(d).getTime()
+            const nextDatePeriod = this.findNextDatePeriod(time)
+            const nextPeriod = this.x(nextDatePeriod)
+            const xDate = this.x(time)
+            // const bandwidth =
+            //   this.interval !== '5m' && this.interval !== '30m'
+            //     ? nextPeriod - xDate
+            //     : null
+            const bandwidth = nextPeriod - xDate
+            return bandwidth
+          })
+          .attr('height', this.height)
+          .attr('fill', '#e34a33')
+      }
     }
   },
-
   created() {
     this.svgHeight = this.visHeight
   },
@@ -416,6 +456,7 @@ export default {
       // Tooltip and hover listener
       this.$hoverLayer = $svg.select(`.${this.hoverLayerClass}`)
       this.$cursorLineGroup = $svg.select(`.${this.cursorLineGroupClass}`)
+      this.$compareGroup = $svg.select(`.${this.compareGroupClass}`)
 
       // Define x, y, z scale types
       this.x = scaleTime().range([0, this.width]) // Date axis
@@ -683,9 +724,7 @@ export default {
         })
     },
 
-    updateCursorLineTooltip(date) {
-      const valueFormat = d3Format(',.1f')
-      const time = new Date(date).getTime()
+    findNextDatePeriod(time) {
       let nextDatePeriod = null
       const find = this.dataset.find((d, i) => {
         const match = d.date === time
@@ -696,6 +735,13 @@ export default {
         }
         return match
       })
+      return nextDatePeriod
+    },
+
+    updateCursorLineTooltip(date) {
+      const valueFormat = d3Format(',.1f')
+      const time = new Date(date).getTime()
+      const nextDatePeriod = this.findNextDatePeriod(time)
       let total = null
       let label = ''
       let value = 0

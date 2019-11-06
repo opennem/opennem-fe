@@ -137,3 +137,13 @@ path.line-path {
     font-size: 20px;
   }
 }
+
+.column-vis {
+  .y-axis .tick text {
+    color: #000;
+    text-anchor: end;
+  }
+  .x-axis .tick line {
+    stroke: transparent;
+  }
+}

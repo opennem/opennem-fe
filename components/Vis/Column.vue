@@ -14,6 +14,9 @@
 
         <g :class="yAxisClass" />
       </g>
+      <g 
+        :transform="columnTransform"
+        class="column-group" />
     </svg>
   </div>
 </template>
@@ -22,22 +25,27 @@
 import _debounce from 'lodash.debounce'
 import { scaleOrdinal, scaleLinear, scaleBand } from 'd3-scale'
 import { schemeCategory10 } from 'd3-scale-chromatic'
-import { axisBottom, axisRight } from 'd3-axis'
+import { axisBottom, axisLeft } from 'd3-axis'
 import { format as d3Format } from 'd3-format'
 import { select as d3Select } from 'd3-selection'
+import { extent as d3Extent } from 'd3-array'
 
 import * as CONFIG from './shared/config.js'
 
 export default {
   props: {
     dataset: {
+      type: Object,
+      default: () => {}
+    },
+    domains: {
       type: Array,
       default: () => []
     },
     // OPTIONAL: height for the chart
     visHeight: {
       type: Number,
-      default: () => CONFIG.DEFAULT_SVG_HEIGHT
+      default: () => 200
     }
   },
 
@@ -55,8 +63,10 @@ export default {
       column: null,
       colours: schemeCategory10,
       margin: CONFIG.DEFAULT_MARGINS,
+      columnGroupClass: 'column-group',
       xAxisClass: CONFIG.X_AXIS_CLASS,
       yAxisClass: CONFIG.Y_AXIS_CLASS,
+      $columnGroup: null,
       $xAxisGroup: null,
       $yAxisGroup: null
     }
@@ -67,10 +77,24 @@ export default {
       return `column-${this._uid}`
     },
     gTransform() {
-      return `translate(${this.margin.left},0)`
+      return `translate(30,0)`
+    },
+    columnTransform() {
+      return `translate(45,0)`
+    },
+    yAxisTransform() {
+      return `translate(30,0)`
     },
     xAxisTransform() {
       return `translate(0, ${this.height})`
+    }
+  },
+
+  watch: {
+    dataset(updated) {
+      if (updated) {
+        this.update()
+      }
     }
   },
 
@@ -85,6 +109,9 @@ export default {
     )
     this.setupWidthHeight()
     this.setup()
+    if (this.dataset) {
+      this.update()
+    }
   },
 
   beforeDestroy() {
@@ -111,16 +138,63 @@ export default {
       this.$yAxisGroup = $svg.select(`.${this.yAxisClass}`)
 
       // Define x, y, z scale types
-      this.x = scaleBand().range([0, this.width])
+      this.x = scaleBand()
+        .range([0, this.width])
+        .padding(0.1)
       this.y = scaleLinear().range([this.height, 0])
       this.z = scaleOrdinal() // Colour
 
       // Set up where x, y axis appears
       this.xAxis = axisBottom(this.x).tickSize(-this.height)
-      this.yAxis = axisRight(this.y)
-        .tickSize(this.width)
+      this.yAxis = axisLeft(this.y)
+        .tickSize(-this.width)
         .ticks(5)
         .tickFormat(d => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
+    },
+
+    update() {
+      const self = this
+      this.$columnGroup = d3Select(`#${this.id} .${this.columnGroupClass}`)
+
+      const xDomains = this.domains.map(d => d.id)
+      const zColours = this.domains.map(d => d.colour)
+
+      const data = this.domains.map(domain => {
+        const id = domain.id
+        return {
+          name: id,
+          value: this.dataset[id]
+        }
+      })
+      const yValues = data.map(d => d.value)
+
+      this.x.domain(xDomains)
+      this.y.domain(d3Extent(yValues)).nice()
+      this.z.range(zColours).domain(xDomains)
+
+      this.$xAxisGroup.call(this.xAxis)
+      this.$yAxisGroup.call(this.customYAxis)
+
+      // console.log(d3Extent(yValues))
+      // console.log(data, xDomains, zColours)
+
+      this.$columnGroup
+        .selectAll('rect')
+        .data(data)
+        .join('rect')
+        .attr('x', d => this.x(d.name))
+        .attr('y', d => (d.value > 0 ? this.y(d.value) : this.y(0)))
+        .attr('height', d => Math.abs(this.y(0) - this.y(d.value)))
+        .attr('width', this.x.bandwidth())
+        .attr('fill', d => this.z(d.name))
+        .attr('class', d => `${d.name}`)
+    },
+
+    customYAxis(g) {
+      g.call(this.yAxis)
+      g.selectAll('.tick text')
+        .attr('x', 4)
+        .attr('dy', -4)
     },
 
     handleResize() {
@@ -132,7 +206,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.column-vis {
-  background-color: #ddd;
-}
 </style>
