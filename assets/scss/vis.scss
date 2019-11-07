@@ -47,6 +47,10 @@ path.line-path {
   }
 }
 
+.compare-group rect {
+  pointer-events: none;
+}
+
 // axis
 .domain {
   stroke: none;

@@ -646,7 +646,6 @@ export default {
       energyMin: 0,
       energyMax: 1000,
       emissionsIntensityMin: 0,
-      dateFocus: false,
       isTouchDevice: false,
       compareDates: [],
       compareData: []
@@ -689,6 +688,9 @@ export default {
     },
     compareDifference() {
       return this.$store.getters.compareDifference
+    },
+    dateFocus() {
+      return this.$store.getters.dateFocus
     },
     responsiveBreakWidth() {
       return this.$store.getters.responsiveBreakWidth
@@ -1141,6 +1143,8 @@ export default {
       if (!updated) {
         this.compareData = []
         this.compareDates = []
+      } else {
+        this.compareDates.push(this.hoverDate.valueOf())
       }
     }
   },
@@ -1439,7 +1443,7 @@ export default {
     },
 
     handleRangeChange(range) {
-      this.dateFocus = false
+      this.$store.dispatch('dateFocus', false)
       this.ready = false
       let interval = ''
       switch (range) {
@@ -1471,7 +1475,7 @@ export default {
     },
 
     handleIntervalChange(interval) {
-      this.dateFocus = false
+      this.$store.dispatch('dateFocus', false)
       this.compareData = []
       this.compareDates = []
       this.$store.dispatch('interval', interval)
@@ -1592,18 +1596,35 @@ export default {
     },
 
     handleRecordSelect() {
-      this.dateFocus = !this.dateFocus
+      this.$store.dispatch('dateFocus', !this.dateFocus)
     },
 
     handleRecordDeselect() {
-      this.dateFocus = false
+      this.$store.dispatch('dateFocus', false)
     },
 
     handleSvgClick(resetDateFocus) {
       if (this.compareDifference) {
-        this.dateFocus = false
-        if (this.compareDates.length < 2) {
-          this.compareDates.push(this.hoverDate)
+        this.$store.dispatch('dateFocus', false)
+        const hoverTime = this.hoverDate.valueOf()
+        let newCompare = false
+
+        if (this.compareDates.length === 2) {
+          const newCompareDates = this.compareDates.filter(d => d !== hoverTime)
+          if (newCompareDates.length === 1) {
+            this.compareDates = newCompareDates
+            newCompare = true
+          } else {
+            this.compareDates.pop()
+          }
+        }
+        if (this.compareDates.length < 2 && !newCompare) {
+          const newCompareDates = this.compareDates.filter(d => d !== hoverTime)
+          if (newCompareDates.length === 0) {
+            this.compareDates = newCompareDates
+          } else {
+            this.compareDates.push(hoverTime)
+          }
         }
 
         function getDataByDate(dataset, date) {
@@ -1611,18 +1632,16 @@ export default {
         }
 
         if (this.compareDates.length === 2) {
-          const firstData = getDataByDate(
-            this.dataset,
-            this.compareDates[0].valueOf()
-          )
-          const secondData = getDataByDate(
-            this.dataset,
-            this.compareDates[1].valueOf()
-          )
+          const firstData = getDataByDate(this.dataset, this.compareDates[0])
+          const secondData = getDataByDate(this.dataset, this.compareDates[1])
           this.compareData = [firstData, secondData]
         }
+
+        if (this.compareDates.length === 0) {
+          this.$store.dispatch('compareDifference', false)
+        }
       } else if (!this.isTouchDevice && !resetDateFocus) {
-        this.dateFocus = !this.dateFocus
+        this.$store.dispatch('dateFocus', !this.dateFocus)
       }
     },
 

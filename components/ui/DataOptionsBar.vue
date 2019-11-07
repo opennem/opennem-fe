@@ -36,6 +36,7 @@
     </div>
 
     <button
+      v-if="dateFocus || compareDifference"
       :class="{ 'is-selected': compareDifference }"
       class="compare-button button is-rounded"
       @click="handleCompareClick">Compare</button>
@@ -78,6 +79,9 @@ export default {
     compareDifference() {
       return this.$store.getters.compareDifference
     },
+    dateFocus() {
+      return this.$store.getters.dateFocus
+    },
     periodArray() {
       return this.intervalPeriod[this.selectedInterval]
     }
@@ -118,6 +122,9 @@ export default {
     },
     handleCompareClick() {
       this.$store.dispatch('compareDifference', !this.compareDifference)
+      if (this.compareDifference) {
+        this.$store.dispatch('dateFocus', false)
+      }
     }
   }
 }
