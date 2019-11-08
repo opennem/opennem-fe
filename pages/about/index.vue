@@ -1,11 +1,16 @@
 <template>
   <div class="container">
-    <a
-      class="back-link"
-      @click="$router.go(-1)">&larr; back</a>
+    <nuxt-link
+      to="/"
+      class="back-link">
+      &larr; back
+    </nuxt-link>
 
     <h1>
-      <app-logo class="logo" />
+      <nuxt-link
+        to="/">
+        <app-logo class="logo" />
+      </nuxt-link>
       An Open Platform for National Electricity Market Data
     </h1>
 
