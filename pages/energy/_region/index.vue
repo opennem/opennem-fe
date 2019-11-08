@@ -128,7 +128,6 @@
           v-if="compareDifference"
           :domains="stackedAreaDomains"
           :compare-data="compareData"
-          @resetCompareDates="handleResetCompareDates"
         />
 
         <div
@@ -1643,11 +1642,6 @@ export default {
       } else if (!this.isTouchDevice && !resetDateFocus) {
         this.$store.dispatch('dateFocus', !this.dateFocus)
       }
-    },
-
-    handleResetCompareDates() {
-      this.compareData = []
-      this.compareDates = []
     }
   }
 }

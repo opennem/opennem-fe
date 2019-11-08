@@ -80,10 +80,10 @@ export default {
       return `translate(30,0)`
     },
     columnTransform() {
-      return `translate(45,0)`
+      return `translate(0,0)`
     },
     yAxisTransform() {
-      return `translate(30,0)`
+      return `translate(0,0)`
     },
     xAxisTransform() {
       return `translate(0, ${this.height})`

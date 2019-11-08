@@ -3,12 +3,6 @@
     <div>
       <span>{{ firstDate | formatDate }}</span> vs
       <span>{{ secondDate | formatDate }}</span>
-
-      <button
-        class="button is-rounded is-small"
-        @click="handleReset">
-        clear
-      </button>
     </div>
     <div>
       <column-vis
@@ -83,12 +77,6 @@ export default {
         this.updatedCompareData = []
       }
     }
-  },
-
-  methods: {
-    handleReset() {
-      this.$emit('resetCompareDates')
-    }
   }
 }
 </script>
@@ -97,6 +85,8 @@ export default {
 .compare-container {
   padding: 1rem;
   margin: 0.5rem;
-  height: 300px;
+  background-color: rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
 }
 </style>
