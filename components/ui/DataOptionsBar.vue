@@ -36,7 +36,7 @@
     </div>
 
     <button
-      v-if="dateFocus || compareDifference"
+      v-if="(dateFocus || compareDifference) && isEnergy"
       :class="{ 'is-selected': compareDifference }"
       class="compare-button button is-rounded"
       @click="handleCompareClick">Compare</button>
@@ -84,6 +84,9 @@ export default {
     },
     periodArray() {
       return this.intervalPeriod[this.selectedInterval]
+    },
+    isEnergy() {
+      return this.$store.getters.energyChartType === 'energy'
     }
   },
 
