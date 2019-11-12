@@ -115,11 +115,30 @@
             :mobile-screen="tabletBreak"
             :incomplete-intervals="incompleteIntervals"
             :date-focus="dateFocus"
+            :compare-dates="compareDates"
             class="vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
             @domainOver="handleDomainOver"
             @svgClick="handleSvgClick"
+          />
+        </div>
+
+        <div
+          v-if="compareDifference"
+          class="chart">
+          <div
+            class="chart-title no-hover"
+            style="justify-content: center;">
+            <div class="chart-label">
+              <strong>{{ firstDate | customFormatDate({ range, interval, showIntervalRange: true }) }}</strong>
+              vs
+              <strong>{{ secondDate | customFormatDate({ range, interval, showIntervalRange: true }) }}</strong>
+            </div>
+          </div>
+          <energy-compare
+            :domains="stackedAreaDomains"
+            :compare-data="compareData"
           />
         </div>
 
@@ -557,6 +576,7 @@ import EnergyBar from '~/components/Energy/EnergyBar.vue'
 import SummaryTable from '~/components/SummaryTable'
 import VisTooltip from '~/components/ui/Tooltip'
 import EnergyRecords from '~/components/Energy/Records.vue'
+import EnergyCompare from '~/components/Energy/Compare.vue'
 
 export default {
   layout: 'main',
@@ -604,7 +624,8 @@ export default {
     EnergyBar,
     SummaryTable,
     VisTooltip,
-    EnergyRecords
+    EnergyRecords,
+    EnergyCompare
   },
 
   data() {
@@ -636,8 +657,9 @@ export default {
       energyMin: 0,
       energyMax: 1000,
       emissionsIntensityMin: 0,
-      dateFocus: false,
-      isTouchDevice: false
+      isTouchDevice: false,
+      compareDates: [],
+      compareData: []
     }
   },
 
@@ -651,8 +673,8 @@ export default {
     dateFilter() {
       return this.$store.getters.dateFilter
     },
-    comparePeriod() {
-      return this.$store.getters.comparePeriod
+    filterPeriod() {
+      return this.$store.getters.filterPeriod
     },
     zoomed() {
       return this.$store.getters.dateFilter.length !== 0
@@ -677,6 +699,12 @@ export default {
     },
     chartSummaryPie() {
       return this.$store.getters.chartSummaryPie
+    },
+    compareDifference() {
+      return this.$store.getters.compareDifference
+    },
+    dateFocus() {
+      return this.$store.getters.dateFocus
     },
     responsiveBreakWidth() {
       return this.$store.getters.responsiveBreakWidth
@@ -901,8 +929,8 @@ export default {
 
       if (this.interval === 'Season' || this.interval === 'Quarter') {
         const incompletes = []
-        const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
-        if (!isCompare) {
+        const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
+        if (!isFilter) {
           aLD = moment(aLD).add(1, 'month')
           if (aSD > dStart) {
             incompletes.push({
@@ -924,7 +952,7 @@ export default {
           const actualEndMonth = getStartMonth(new Date(aLD).getMonth())
           const actualEndSeason = getSeasonLabel(actualEndMonth)
 
-          if (actualStartSeason === this.comparePeriod) {
+          if (actualStartSeason === this.filterPeriod) {
             if (aSD > dStart) {
               incompletes.push({
                 start: dStart,
@@ -932,7 +960,7 @@ export default {
               })
             }
           }
-          if (actualEndSeason === this.comparePeriod) {
+          if (actualEndSeason === this.filterPeriod) {
             const newDEnd = moment(dEnd).add(3, 'month')
             if (aLD.valueOf() < newDEnd.valueOf()) {
               incompletes.push({
@@ -1052,6 +1080,25 @@ export default {
 
     isYearInterval() {
       return this.interval === 'Fin Year' || this.interval === 'Year'
+    },
+
+    hasCompareDates() {
+      return this.updatedCompareDates.length === 2
+    },
+    firstDate() {
+      return this.hasCompareDates ? this.updatedCompareDates[0] : null
+    },
+    secondDate() {
+      return this.hasCompareDates ? this.updatedCompareDates[1] : null
+    },
+    updatedCompareDates() {
+      let latter = this.compareDates[0]
+      let former = this.compareDates[1]
+      if (this.compareDates[1] > latter) {
+        latter = this.compareDates[1]
+        former = this.compareDates[0]
+      }
+      return [former, latter]
     }
   },
 
@@ -1062,7 +1109,7 @@ export default {
           this.originalDataset,
           domains
         )
-        this.updateCompareDataset(this.comparePeriod)
+        this.updateDataset(this.filterPeriod)
       }
     },
     groupMarketValueDomains(domains) {
@@ -1071,7 +1118,7 @@ export default {
           this.originalDataset,
           domains
         )
-        this.updateCompareDataset(this.comparePeriod)
+        this.updateDataset(this.filterPeriod)
       }
     },
     groupEmissionDomains(domains) {
@@ -1080,7 +1127,7 @@ export default {
           this.originalDataset,
           domains
         )
-        this.updateCompareDataset(this.comparePeriod)
+        this.updateDataset(this.filterPeriod)
       }
     },
     filteredDataset(updated) {
@@ -1089,8 +1136,8 @@ export default {
     hiddenFuelTechs() {
       this.updateEnergyMinMax()
     },
-    comparePeriod(compare) {
-      this.updateCompareDataset(compare)
+    filterPeriod(compare) {
+      this.updateDataset(compare)
     },
     stackedAreaDomains(updated) {
       this.$store.dispatch('export/stackedAreaDomains', updated)
@@ -1124,6 +1171,14 @@ export default {
     },
     temperatureMaxId(updated) {
       this.$store.dispatch('export/temperatureMaxId', updated)
+    },
+    compareDifference(updated) {
+      if (!updated) {
+        this.compareData = []
+        this.compareDates = []
+      } else {
+        this.compareDates.push(this.hoverDate.valueOf())
+      }
     }
   },
 
@@ -1181,7 +1236,7 @@ export default {
   },
 
   methods: {
-    updateCompareDataset(compare) {
+    updateDataset(compare) {
       if (!compare || compare === 'All') {
         this.dataset = this.originalDataset
       } else {
@@ -1284,7 +1339,7 @@ export default {
 
       this.updatedFilteredDataset(updated)
       this.updateEnergyMinMax()
-      this.updateCompareDataset(this.comparePeriod)
+      this.updateDataset(this.filterPeriod)
       this.ready = true
     },
 
@@ -1371,14 +1426,14 @@ export default {
       if (this.dateFilter.length > 0) {
         let startX = this.dateFilter[0]
         let endX = this.dateFilter[1]
-        const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
+        const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
         if (
-          isCompare &&
+          isFilter &&
           (this.interval === 'Season' || this.interval === 'Quarter')
         ) {
           const periodMonth = DateDisplay.getPeriodMonth(
             this.interval,
-            this.comparePeriod
+            this.filterPeriod
           )
           const startXMonth = startX.getMonth()
           const endXMonth = endX.getMonth()
@@ -1423,7 +1478,8 @@ export default {
     },
 
     handleRangeChange(range) {
-      this.dateFocus = false
+      this.$store.dispatch('compareDifference', false)
+      this.$store.dispatch('dateFocus', false)
       this.ready = false
       let interval = ''
       switch (range) {
@@ -1447,13 +1503,18 @@ export default {
           console.log('nothing yet')
       }
       this.setDateFilter([])
+      this.compareData = []
+      this.compareDates = []
       this.$store.dispatch('interval', interval)
       this.$store.dispatch('range', range)
       this.fetchData(this.regionId, range)
     },
 
     handleIntervalChange(interval) {
-      this.dateFocus = false
+      this.$store.dispatch('dateFocus', false)
+      this.$store.dispatch('compareDifference', false)
+      this.compareData = []
+      this.compareDates = []
       this.$store.dispatch('interval', interval)
       EnergyDataTransform.mergeResponses(
         this.responses,
@@ -1498,26 +1559,26 @@ export default {
     },
 
     handleDateOver(evt, date) {
-      const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
+      const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
       if (this.interval === 'Fin Year') {
         if (date.getMonth() >= 6) {
           date.setFullYear(date.getFullYear() + 1)
         }
       }
       if (
-        isCompare &&
+        isFilter &&
         (this.interval === 'Season' || this.interval === 'Quarter')
       ) {
         const periodMonth = DateDisplay.getPeriodMonth(
           this.interval,
-          this.comparePeriod
+          this.filterPeriod
         )
         const month = date.getMonth()
 
         if (this.interval === 'Season') {
-          date = DateDisplay.mutateSeasonDate(date, month, this.comparePeriod)
+          date = DateDisplay.mutateSeasonDate(date, month, this.filterPeriod)
         } else if (this.interval === 'Quarter') {
-          date = DateDisplay.mutateQuarterDate(date, month, this.comparePeriod)
+          date = DateDisplay.mutateQuarterDate(date, month, this.filterPeriod)
         }
         date.setMonth(periodMonth + 1)
       }
@@ -1572,16 +1633,52 @@ export default {
     },
 
     handleRecordSelect() {
-      this.dateFocus = !this.dateFocus
+      this.$store.dispatch('dateFocus', !this.dateFocus)
     },
 
     handleRecordDeselect() {
-      this.dateFocus = false
+      this.$store.dispatch('dateFocus', false)
     },
 
     handleSvgClick(resetDateFocus) {
-      if (!this.isTouchDevice && !resetDateFocus) {
-        this.dateFocus = !this.dateFocus
+      if (this.compareDifference) {
+        this.$store.dispatch('dateFocus', false)
+        const hoverTime = this.hoverDate.valueOf()
+        let newCompare = false
+
+        if (this.compareDates.length === 2) {
+          const newCompareDates = this.compareDates.filter(d => d !== hoverTime)
+          if (newCompareDates.length === 1) {
+            this.compareDates = newCompareDates
+            newCompare = true
+          } else {
+            this.compareDates.pop()
+          }
+        }
+        if (this.compareDates.length < 2 && !newCompare) {
+          const newCompareDates = this.compareDates.filter(d => d !== hoverTime)
+          if (newCompareDates.length === 0) {
+            this.compareDates = newCompareDates
+          } else {
+            this.compareDates.push(hoverTime)
+          }
+        }
+
+        function getDataByDate(dataset, date) {
+          return dataset.find(d => d.date === date)
+        }
+
+        if (this.compareDates.length === 2) {
+          const firstData = getDataByDate(this.dataset, this.compareDates[0])
+          const secondData = getDataByDate(this.dataset, this.compareDates[1])
+          this.compareData = [firstData, secondData]
+        }
+
+        if (this.compareDates.length === 0) {
+          this.$store.dispatch('compareDifference', false)
+        }
+      } else if (!this.isTouchDevice && !resetDateFocus) {
+        this.$store.dispatch('dateFocus', !this.dateFocus)
       }
     }
   }

@@ -63,13 +63,13 @@ function getQuarterOffset(quarter) {
   }
 }
 
-function getSeasonClosestDate(date, isFloor, comparePeriod) {
-  const isCompare = !comparePeriod || comparePeriod !== 'All'
-  if (isCompare) {
+function getSeasonClosestDate(date, isFloor, filterPeriod) {
+  const isFilter = !filterPeriod || filterPeriod !== 'All'
+  if (isFilter) {
     const yearDate = isFloor
       ? d3TimeYear.every(1).floor(date)
       : d3TimeYear.every(1).ceil(date)
-    return d3TimeMonth.offset(yearDate, getSeasonOffset(comparePeriod))
+    return d3TimeMonth.offset(yearDate, getSeasonOffset(filterPeriod))
   } else {
     const quarter = isFloor
       ? d3TimeMonth.every(3).floor(date)
@@ -78,13 +78,13 @@ function getSeasonClosestDate(date, isFloor, comparePeriod) {
   }
 }
 
-function getQuarterClosestDate(date, isFloor, comparePeriod) {
-  const isCompare = !comparePeriod || comparePeriod !== 'All'
-  if (isCompare) {
+function getQuarterClosestDate(date, isFloor, filterPeriod) {
+  const isFilter = !filterPeriod || filterPeriod !== 'All'
+  if (isFilter) {
     const yearDate = isFloor
       ? d3TimeYear.every(1).floor(date)
       : d3TimeYear.every(1).ceil(date)
-    return d3TimeMonth.offset(yearDate, getQuarterOffset(comparePeriod))
+    return d3TimeMonth.offset(yearDate, getQuarterOffset(filterPeriod))
   } else {
     return isFloor
       ? d3TimeMonth.every(3).floor(date)
@@ -92,8 +92,8 @@ function getQuarterClosestDate(date, isFloor, comparePeriod) {
   }
 }
 
-function get6MonthClosestDate(date, isFloor, comparePeriod) {
-  const isCompare = !comparePeriod || comparePeriod !== 'All'
+function get6MonthClosestDate(date, isFloor, filterPeriod) {
+  const isFilter = !filterPeriod || filterPeriod !== 'All'
   return isFloor
     ? d3TimeMonth.every(6).floor(date)
     : d3TimeMonth.every(6).ceil(date)
@@ -229,7 +229,7 @@ export default {
     }
   },
 
-  roundToClosestInterval(interval, comparePeriod, date, roundType) {
+  roundToClosestInterval(interval, filterPeriod, date, roundType) {
     const isFloor = roundType === 'floor'
     switch (interval) {
       case '5m':
@@ -249,11 +249,11 @@ export default {
           ? d3TimeMonth.every(1).floor(date)
           : d3TimeMonth.every(1).ceil(date)
       case 'Season':
-        return getSeasonClosestDate(date, isFloor, comparePeriod)
+        return getSeasonClosestDate(date, isFloor, filterPeriod)
       case 'Quarter':
-        return getQuarterClosestDate(date, isFloor, comparePeriod)
+        return getQuarterClosestDate(date, isFloor, filterPeriod)
       case 'Half Year':
-        return get6MonthClosestDate(date, isFloor, comparePeriod)
+        return get6MonthClosestDate(date, isFloor, filterPeriod)
       case 'Fin Year':
         const year = isFloor
           ? d3TimeYear.every(1).floor(date)
@@ -305,25 +305,25 @@ export default {
     return guides
   },
 
-  mutateSeasonDate(date, month, comparePeriod) {
-    if (comparePeriod === 'Summer' && month !== 11) {
+  mutateSeasonDate(date, month, filterPeriod) {
+    if (filterPeriod === 'Summer' && month !== 11) {
       date.setFullYear(date.getFullYear() - 1)
-    } else if (comparePeriod === 'Autumn' && month >= 0 && month <= 1) {
+    } else if (filterPeriod === 'Autumn' && month >= 0 && month <= 1) {
       date.setFullYear(date.getFullYear() - 1)
-    } else if (comparePeriod === 'Winter' && month >= 0 && month <= 5) {
+    } else if (filterPeriod === 'Winter' && month >= 0 && month <= 5) {
       date.setFullYear(date.getFullYear() - 1)
-    } else if (comparePeriod === 'Spring' && month >= 0 && month <= 8) {
+    } else if (filterPeriod === 'Spring' && month >= 0 && month <= 8) {
       date.setFullYear(date.getFullYear() - 1)
     }
     return date
   },
 
-  mutateQuarterDate(date, month, comparePeriod) {
-    if (comparePeriod === 'Q2' && month >= 0 && month <= 2) {
+  mutateQuarterDate(date, month, filterPeriod) {
+    if (filterPeriod === 'Q2' && month >= 0 && month <= 2) {
       date.setFullYear(date.getFullYear() - 1)
-    } else if (comparePeriod === 'Q3' && month >= 0 && month <= 6) {
+    } else if (filterPeriod === 'Q3' && month >= 0 && month <= 6) {
       date.setFullYear(date.getFullYear() - 1)
-    } else if (comparePeriod === 'Q4' && month >= 0 && month <= 9) {
+    } else if (filterPeriod === 'Q4' && month >= 0 && month <= 9) {
       date.setFullYear(date.getFullYear() - 1)
     }
     return date

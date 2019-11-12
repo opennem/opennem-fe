@@ -67,6 +67,7 @@
         <g class="stacked-area-group" />
 
         <g class="x-incomplete-group" />
+        <g class="compare-group" />
       </g>
 
       <!-- yAxis tick text here to show above the area -->
@@ -217,6 +218,10 @@ export default {
       type: Boolean,
       default: () => false
     },
+    compareDates: {
+      type: Array,
+      default: () => []
+    },
     mobileScreen: {
       type: Boolean,
       default: () => false
@@ -253,6 +258,7 @@ export default {
       $stackedAreaGroup: null,
       $xGuideGroup: null,
       $xIncompleteGroup: null,
+      $compareGroup: null,
       // Stacked Area
       stackedAreaPathClass: CONFIG.CHART_STACKED_AREA_PATH_CLASS,
       stackedAreaGroupClass: CONFIG.CHART_STACKED_AREA_GROUP_CLASS,
@@ -272,6 +278,8 @@ export default {
       cursorRectClass: 'cursor-rect',
       cursorLineFocusTopRectClass: 'cursor-line-focus-top-rect',
       cursorLineFocusBottomRectClass: 'cursor-line-focus-bottom-rect',
+      compareGroupClass: 'compare-group',
+      compareRectClass: 'compare-rect',
       tooltipRectHeight: 40,
       tooltipGroupClass: CONFIG.TOOLTIP_GROUP_CLASS,
       tooltipRectClass: CONFIG.TOOLTIP_RECT_CLASS,
@@ -280,8 +288,11 @@ export default {
   },
 
   computed: {
-    comparePeriod() {
-      return this.$store.getters.comparePeriod
+    filterPeriod() {
+      return this.$store.getters.filterPeriod
+    },
+    compareDifference() {
+      return this.$store.getters.compareDifference
     },
     path() {
       return this.$route.path
@@ -360,9 +371,41 @@ export default {
       const opacity = focus && !isEnergy ? 1 : 0
       $cursorLineFocusTopRect.attr('opacity', opacity)
       $cursorLineFocusBottomRect.attr('opacity', opacity)
+    },
+
+    compareDifference(updated) {
+      if (!updated) {
+        this.$compareGroup.selectAll('rect').remove()
+      }
+    },
+    compareDates(updated) {
+      const updatedLength = updated.length
+      this.$compareGroup.selectAll('rect').remove()
+      if (updatedLength > 0 && updatedLength < 3) {
+        this.$compareGroup
+          .selectAll('rect')
+          .data(updated)
+          .enter()
+          .append('rect')
+          .attr('opacity', 0.3)
+          .attr('x', d => this.x(d))
+          .attr('width', d => {
+            const time = new Date(d).getTime()
+            const nextDatePeriod = this.findNextDatePeriod(time)
+            const nextPeriod = this.x(nextDatePeriod)
+            const xDate = this.x(time)
+            // const bandwidth =
+            //   this.interval !== '5m' && this.interval !== '30m'
+            //     ? nextPeriod - xDate
+            //     : null
+            const bandwidth = nextPeriod - xDate
+            return bandwidth
+          })
+          .attr('height', this.height)
+          .attr('fill', '#e34a33')
+      }
     }
   },
-
   created() {
     this.svgHeight = this.visHeight
   },
@@ -413,6 +456,7 @@ export default {
       // Tooltip and hover listener
       this.$hoverLayer = $svg.select(`.${this.hoverLayerClass}`)
       this.$cursorLineGroup = $svg.select(`.${this.cursorLineGroupClass}`)
+      this.$compareGroup = $svg.select(`.${this.compareGroupClass}`)
 
       // Define x, y, z scale types
       this.x = scaleTime().range([0, this.width]) // Date axis
@@ -534,14 +578,14 @@ export default {
             }
           }
 
-          const isCompare = !self.comparePeriod || self.comparePeriod !== 'All'
+          const isFilter = !self.filterPeriod || self.filterPeriod !== 'All'
           if (
-            isCompare &&
+            isFilter &&
             (self.interval === 'Season' || self.interval === 'Quarter')
           ) {
             const periodMonth = DateDisplay.getPeriodMonth(
               self.interval,
-              self.comparePeriod
+              self.filterPeriod
             )
             const startXMonth = startX.getMonth()
             const endXMonth = endX.getMonth()
@@ -550,23 +594,23 @@ export default {
               startX = DateDisplay.mutateSeasonDate(
                 startX,
                 startXMonth,
-                self.comparePeriod
+                self.filterPeriod
               )
               endX = DateDisplay.mutateSeasonDate(
                 endX,
                 endXMonth,
-                self.comparePeriod
+                self.filterPeriod
               )
             } else if (self.interval === 'Quarter') {
               startX = DateDisplay.mutateQuarterDate(
                 startX,
                 startXMonth,
-                self.comparePeriod
+                self.filterPeriod
               )
               endX = DateDisplay.mutateQuarterDate(
                 endX,
                 endXMonth,
-                self.comparePeriod
+                self.filterPeriod
               )
             }
             startX.setMonth(periodMonth + 1)
@@ -575,13 +619,13 @@ export default {
 
           const startTime = DateDisplay.roundToClosestInterval(
             self.interval,
-            self.comparePeriod,
+            self.filterPeriod,
             startX,
             'floor'
           )
           const endTime = DateDisplay.roundToClosestInterval(
             self.interval,
-            self.comparePeriod,
+            self.filterPeriod,
             endX,
             'ceil'
           )
@@ -680,9 +724,7 @@ export default {
         })
     },
 
-    updateCursorLineTooltip(date) {
-      const valueFormat = d3Format(',.1f')
-      const time = new Date(date).getTime()
+    findNextDatePeriod(time) {
       let nextDatePeriod = null
       const find = this.dataset.find((d, i) => {
         const match = d.date === time
@@ -693,6 +735,13 @@ export default {
         }
         return match
       })
+      return nextDatePeriod
+    },
+
+    updateCursorLineTooltip(date) {
+      const valueFormat = d3Format(',.1f')
+      const time = new Date(date).getTime()
+      const nextDatePeriod = this.findNextDatePeriod(time)
       let total = null
       let label = ''
       let value = 0
@@ -977,14 +1026,14 @@ export default {
         }
       }
 
-      const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
+      const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
       if (
-        isCompare &&
+        isFilter &&
         (this.interval === 'Season' || this.interval === 'Quarter')
       ) {
         const periodMonth = DateDisplay.getPeriodMonth(
           this.interval,
-          this.comparePeriod
+          this.filterPeriod
         )
         const startXMonth = startX.getMonth()
         const endXMonth = endX.getMonth()
@@ -993,23 +1042,23 @@ export default {
           startX = DateDisplay.mutateSeasonDate(
             startX,
             startXMonth,
-            this.comparePeriod
+            this.filterPeriod
           )
           endX = DateDisplay.mutateSeasonDate(
             endX,
             endXMonth,
-            this.comparePeriod
+            this.filterPeriod
           )
         } else if (this.interval === 'Quarter') {
           startX = DateDisplay.mutateQuarterDate(
             startX,
             startXMonth,
-            this.comparePeriod
+            this.filterPeriod
           )
           endX = DateDisplay.mutateQuarterDate(
             endX,
             endXMonth,
-            this.comparePeriod
+            this.filterPeriod
           )
         }
         startX.setMonth(periodMonth + 1)
@@ -1018,18 +1067,18 @@ export default {
 
       const startTime = DateDisplay.roundToClosestInterval(
         this.interval,
-        this.comparePeriod,
+        this.filterPeriod,
         startX,
         'floor'
       )
       const endTime = DateDisplay.roundToClosestInterval(
         this.interval,
-        this.comparePeriod,
+        this.filterPeriod,
         endX,
         'ceil'
       )
 
-      const dateRange = isCompare
+      const dateRange = isFilter
         ? this.getZoomDateRanges(startX, endX)
         : [startTime, endTime]
 
@@ -1096,7 +1145,7 @@ export default {
       let tickLength = null
       let className = ''
       const that = this
-      const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
+      const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
 
       if (!this.zoomed) {
         if (this.range === '1D') {
@@ -1131,18 +1180,18 @@ export default {
             className = 'interval-season'
             const periodMonth = DateDisplay.getPeriodMonth(
               this.interval,
-              this.comparePeriod
+              this.filterPeriod
             )
-            if (isCompare && periodMonth) {
+            if (isFilter && periodMonth) {
               tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
             }
           } else if (this.interval === 'Quarter') {
             className = 'interval-quarter'
             const periodMonth = DateDisplay.getPeriodMonth(
               this.interval,
-              this.comparePeriod
+              this.filterPeriod
             )
-            if (isCompare && periodMonth) {
+            if (isFilter && periodMonth) {
               tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
             }
           } else if (this.interval === 'Year') {
@@ -1165,23 +1214,23 @@ export default {
       }
 
       if (
-        isCompare &&
+        isFilter &&
         (this.interval === 'Season' || this.interval === 'Quarter')
       ) {
         this.xAxis.tickFormat((d, i) => {
           const year = d.getFullYear() + ''
           const nextYear = d.getFullYear() + 1 + ''
           const yearStr =
-            this.comparePeriod === 'Summer'
+            this.filterPeriod === 'Summer'
               ? `${year}/${nextYear.substr(2, 2)}`
               : year
           return `${yearStr}`
         })
         const periodMonth = DateDisplay.getPeriodMonth(
           this.interval,
-          this.comparePeriod
+          this.filterPeriod
         )
-        if (isCompare && periodMonth) {
+        if (isFilter && periodMonth) {
           tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
         }
       } else if (this.interval === 'Fin Year') {
@@ -1202,7 +1251,7 @@ export default {
       const insertSecondaryAxisTick = function(d, i) {
         const el = select(this)
         const secondaryText =
-          isCompare && i === 0 ? that.comparePeriod : axisSecondaryTimeFormat(d)
+          isFilter && i === 0 ? that.filterPeriod : axisSecondaryTimeFormat(d)
         if (secondaryText !== '') {
           el.append('tspan')
             .text(secondaryText)
