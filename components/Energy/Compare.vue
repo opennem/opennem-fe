@@ -108,7 +108,7 @@ export default {
   align-items: center;
 
   .compare-legend {
-    width: 180px;
+    width: 20%;
     font-size: 9px;
 
     .legend-item {
@@ -118,7 +118,7 @@ export default {
     }
   }
   .compare-chart {
-    width: 100%;
+    width: 80%;
   }
 }
 .colour-square {

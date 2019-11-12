@@ -89,6 +89,16 @@ export default {
     },
     xAxisTransform() {
       return `translate(0, ${this.height})`
+    },
+    columnData() {
+      return this.domains.map(domain => {
+        const id = domain.id
+        return {
+          name: id,
+          label: domain.label,
+          value: this.dataset[id]
+        }
+      })
     }
   },
 
@@ -97,6 +107,10 @@ export default {
       if (updated) {
         this.update()
       }
+    },
+    domains() {
+      this.setup()
+      this.update()
     }
   },
 
@@ -164,52 +178,24 @@ export default {
       const xDomains = this.domains.map(d => d.id)
       const zColours = this.domains.map(d => d.colour)
 
-      const data = this.domains.map(domain => {
-        const id = domain.id
-        return {
-          name: id,
-          label: domain.label,
-          value: this.dataset[id]
-        }
-      })
+      const data = this.columnData
       const yValues = data.map(d => d.value)
+      const yExtent = d3Extent(yValues)
+      if (yExtent[0] > 0) {
+        yExtent[0] = 0
+      }
+      if (yExtent[1] < 0) {
+        yExtent[1] = 0
+      }
 
       this.x.domain(xDomains)
-      this.y.domain(d3Extent(yValues)).nice()
+      this.y.domain(yExtent).nice()
       this.z.range(zColours).domain(xDomains)
 
       // this.$xAxisGroup.call(this.xAxis)
       this.$yAxisGroup.call(this.customYAxis)
-
-      // console.log(d3Extent(yValues))
-      // console.log(data, xDomains, zColours)
-
-      const pad = 11
-
-      this.$columnGroup
-        .selectAll('rect')
-        .data(data)
-        .join('rect')
-        .attr('x', d => this.x(d.name))
-        .attr('y', d => (d.value > 0 ? this.y(d.value) : this.y(0)))
-        .attr('height', d => Math.abs(this.y(0) - this.y(d.value)))
-        .attr('width', this.x.bandwidth())
-        .attr('fill', d => this.z(d.name))
-        .attr('class', d => `${d.name}`)
-
-      this.$columnLabelGroup
-        .selectAll('text')
-        .data(data)
-        .join('text')
-        .attr('x', d => this.x(d.name))
-        .attr('y', d => (d.value > 0 ? this.y(d.value) : this.y(0)))
-        .attr(
-          'dy',
-          d => (d.value > 0 ? -2 : Math.abs(this.y(0) - this.y(d.value)) + pad)
-        )
-        // .attr('transform', 'rotate(-1)')
-        // .text(d => d.label)
-        .text(d => this.$options.filters.formatValue(d.value))
+      this.drawColumns()
+      this.drawColumnLabels()
     },
 
     customYAxis(g) {
@@ -220,9 +206,48 @@ export default {
       g.selectAll('.tick line').attr('class', d => (d === 0 ? 'base' : ''))
     },
 
+    drawColumns() {
+      this.$columnGroup
+        .selectAll('rect')
+        .data(this.columnData)
+        .join('rect')
+        .attr('x', d => this.x(d.name))
+        .attr('y', d => (d.value > 0 ? this.y(d.value) : this.y(0)))
+        .attr('height', d => Math.abs(this.y(0) - this.y(d.value)))
+        .attr('width', this.x.bandwidth())
+        .attr('fill', d => this.z(d.name))
+        .attr('class', d => `${d.name}`)
+    },
+
+    drawColumnLabels() {
+      this.$columnLabelGroup
+        .selectAll('text')
+        .data(this.columnData)
+        .join('text')
+        .attr('x', d => this.x(d.name))
+        .attr('y', d => (d.value > 0 ? this.y(d.value) : this.y(0)))
+        .attr(
+          'dy',
+          d => (d.value > 0 ? -2 : Math.abs(this.y(0) - this.y(d.value)) + 11)
+        )
+        // .attr('transform', 'rotate(-1)')
+        // .text(d => d.label)
+        .text(d => this.$options.filters.formatValue(d.value))
+    },
+
+    resizeRedraw() {
+      this.x.range([60, this.width - 30])
+      this.y.range([this.height, 0])
+      this.yAxis.tickSize(-this.width)
+
+      this.$yAxisGroup.call(this.customYAxis)
+      this.drawColumns()
+      this.drawColumnLabels()
+    },
+
     handleResize() {
       this.setupWidthHeight()
-      // this.resizeRedraw()
+      this.resizeRedraw()
     }
   }
 }
