@@ -21,11 +21,25 @@
         {{ interval }}
       </span>
     </div>
+
+    <div
+      v-if="periodArray"
+      class="compare-period-buttons buttons has-addons">
+      <span
+        v-for="(period, i) in periodArray"
+        :key="`period${i}`"
+        :class="{ 'is-selected': comparePeriod === period }"
+        class="button is-rounded"
+        @click="handleComparePeriodClick(period)">
+        {{ period }}
+      </span>
+    </div>
   </div>
 </template>
 
 <script>
 import RANGE_INTERVAL from '~/constants/rangeInterval.js'
+import INTERVAL_PERIOD from '~/constants/intervalPeriod.js'
 
 export default {
   props: {
@@ -42,6 +56,7 @@ export default {
   data() {
     return {
       ranges: RANGE_INTERVAL,
+      intervalPeriod: INTERVAL_PERIOD,
       selectedRange: '',
       selectedInterval: ''
     }
@@ -51,6 +66,12 @@ export default {
     selectedRangeIntervals() {
       const range = this.ranges.find(r => r.range === this.selectedRange)
       return range ? range.intervals : null
+    },
+    comparePeriod() {
+      return this.$store.getters.comparePeriod
+    },
+    periodArray() {
+      return this.intervalPeriod[this.selectedInterval]
     }
   },
 
@@ -60,6 +81,11 @@ export default {
     },
     interval(updated) {
       this.selectedInterval = updated
+    },
+    periodArray(arr) {
+      if (arr && !this.comparePeriod) {
+        this.$store.dispatch('comparePeriod', 'All')
+      }
     }
   },
 
@@ -70,10 +96,17 @@ export default {
 
   methods: {
     handleRangeChange(range) {
+      this.$store.dispatch('comparePeriod', null)
       this.$emit('onRangeChange', range)
     },
     handleIntervalChange(interval) {
+      const compareInterval = interval === 'Season' || interval === 'Quarter'
+      const comparePeriod = compareInterval ? 'All' : null
+      this.$store.dispatch('comparePeriod', comparePeriod)
       this.$emit('onIntervalChange', interval)
+    },
+    handleComparePeriodClick(period) {
+      this.$store.dispatch('comparePeriod', period)
     }
   }
 }
@@ -113,5 +146,8 @@ export default {
     margin-bottom: 0;
     margin-right: $app-padding;
   }
+}
+.compare-period-buttons {
+  margin-left: 1rem;
 }
 </style>

@@ -280,6 +280,9 @@ export default {
   },
 
   computed: {
+    comparePeriod() {
+      return this.$store.getters.comparePeriod
+    },
     path() {
       return this.$route.path
     },
@@ -519,8 +522,8 @@ export default {
           if (!event.selection) return
           if (event.sourceEvent.type === 'brush') return
           const s = event.selection
-          const startX = self.x.invert(s[0])
-          const endX = self.x.invert(s[1])
+          let startX = self.x.invert(s[0])
+          let endX = self.x.invert(s[1])
 
           if (self.interval === 'Fin Year') {
             if (startX.getMonth() >= 6) {
@@ -531,13 +534,54 @@ export default {
             }
           }
 
+          const isCompare = !self.comparePeriod || self.comparePeriod !== 'All'
+          if (
+            isCompare &&
+            (self.interval === 'Season' || self.interval === 'Quarter')
+          ) {
+            const periodMonth = DateDisplay.getPeriodMonth(
+              self.interval,
+              self.comparePeriod
+            )
+            const startXMonth = startX.getMonth()
+            const endXMonth = endX.getMonth()
+
+            if (self.interval === 'Season') {
+              startX = DateDisplay.mutateSeasonDate(
+                startX,
+                startXMonth,
+                self.comparePeriod
+              )
+              endX = DateDisplay.mutateSeasonDate(
+                endX,
+                endXMonth,
+                self.comparePeriod
+              )
+            } else if (self.interval === 'Quarter') {
+              startX = DateDisplay.mutateQuarterDate(
+                startX,
+                startXMonth,
+                self.comparePeriod
+              )
+              endX = DateDisplay.mutateQuarterDate(
+                endX,
+                endXMonth,
+                self.comparePeriod
+              )
+            }
+            startX.setMonth(periodMonth + 1)
+            endX.setMonth(periodMonth + 1)
+          }
+
           const startTime = DateDisplay.roundToClosestInterval(
             self.interval,
+            self.comparePeriod,
             startX,
             'floor'
           )
           const endTime = DateDisplay.roundToClosestInterval(
             self.interval,
+            self.comparePeriod,
             endX,
             'ceil'
           )
@@ -921,8 +965,8 @@ export default {
 
       // Get the brush selection (start/end) points -> dates
       const s = event.selection
-      const startX = this.x.invert(s[0])
-      const endX = this.x.invert(s[1])
+      let startX = this.x.invert(s[0])
+      let endX = this.x.invert(s[1])
 
       if (this.interval === 'Fin Year') {
         if (startX.getMonth() >= 6) {
@@ -933,7 +977,61 @@ export default {
         }
       }
 
-      const dateRange = this.getZoomDateRanges(startX, endX)
+      const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
+      if (
+        isCompare &&
+        (this.interval === 'Season' || this.interval === 'Quarter')
+      ) {
+        const periodMonth = DateDisplay.getPeriodMonth(
+          this.interval,
+          this.comparePeriod
+        )
+        const startXMonth = startX.getMonth()
+        const endXMonth = endX.getMonth()
+
+        if (this.interval === 'Season') {
+          startX = DateDisplay.mutateSeasonDate(
+            startX,
+            startXMonth,
+            this.comparePeriod
+          )
+          endX = DateDisplay.mutateSeasonDate(
+            endX,
+            endXMonth,
+            this.comparePeriod
+          )
+        } else if (this.interval === 'Quarter') {
+          startX = DateDisplay.mutateQuarterDate(
+            startX,
+            startXMonth,
+            this.comparePeriod
+          )
+          endX = DateDisplay.mutateQuarterDate(
+            endX,
+            endXMonth,
+            this.comparePeriod
+          )
+        }
+        startX.setMonth(periodMonth + 1)
+        endX.setMonth(periodMonth + 1)
+      }
+
+      const startTime = DateDisplay.roundToClosestInterval(
+        this.interval,
+        this.comparePeriod,
+        startX,
+        'floor'
+      )
+      const endTime = DateDisplay.roundToClosestInterval(
+        this.interval,
+        this.comparePeriod,
+        endX,
+        'ceil'
+      )
+
+      const dateRange = isCompare
+        ? this.getZoomDateRanges(startX, endX)
+        : [startTime, endTime]
 
       // Set it to the current X domain
       this.x.domain(dateRange)
@@ -998,6 +1096,8 @@ export default {
       let tickLength = null
       let className = ''
       const that = this
+      const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
+
       if (!this.zoomed) {
         if (this.range === '1D') {
           className = 'interval-5m'
@@ -1027,10 +1127,27 @@ export default {
           const every = this.mobileScreen ? 2 : 1
           tickLength = timeYear.every(every)
 
-          if (this.interval === 'Year') {
+          if (this.interval === 'Season') {
+            className = 'interval-season'
+            const periodMonth = DateDisplay.getPeriodMonth(
+              this.interval,
+              this.comparePeriod
+            )
+            if (isCompare && periodMonth) {
+              tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+            }
+          } else if (this.interval === 'Quarter') {
+            className = 'interval-quarter'
+            const periodMonth = DateDisplay.getPeriodMonth(
+              this.interval,
+              this.comparePeriod
+            )
+            if (isCompare && periodMonth) {
+              tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+            }
+          } else if (this.interval === 'Year') {
             className = 'interval-year'
-          }
-          if (this.interval === 'Fin Year') {
+          } else if (this.interval === 'Fin Year') {
             tickLength = timeMonth.filter(d => {
               return d.getMonth() === 6
             })
@@ -1046,7 +1163,28 @@ export default {
           }
         }
       }
-      if (this.interval === 'Fin Year') {
+
+      if (
+        isCompare &&
+        (this.interval === 'Season' || this.interval === 'Quarter')
+      ) {
+        this.xAxis.tickFormat((d, i) => {
+          const year = d.getFullYear() + ''
+          const nextYear = d.getFullYear() + 1 + ''
+          const yearStr =
+            this.comparePeriod === 'Summer'
+              ? `${year}/${nextYear.substr(2, 2)}`
+              : year
+          return `${yearStr}`
+        })
+        const periodMonth = DateDisplay.getPeriodMonth(
+          this.interval,
+          this.comparePeriod
+        )
+        if (isCompare && periodMonth) {
+          tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+        }
+      } else if (this.interval === 'Fin Year') {
         this.xAxis.tickFormat(d => {
           const year = d.getFullYear() + 1 + ''
           return `FY${year.substr(2, 2)}`
@@ -1061,9 +1199,10 @@ export default {
       this.xAxis.ticks(tickLength)
 
       // add secondary x axis tick label here
-      const insertSecondaryAxisTick = function(d) {
+      const insertSecondaryAxisTick = function(d, i) {
         const el = select(this)
-        const secondaryText = axisSecondaryTimeFormat(d)
+        const secondaryText =
+          isCompare && i === 0 ? that.comparePeriod : axisSecondaryTimeFormat(d)
         if (secondaryText !== '') {
           el.append('tspan')
             .text(secondaryText)

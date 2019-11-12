@@ -24,6 +24,19 @@ function getSeasonLabel(month) {
   }
 }
 
+function getSeasonOffset(season) {
+  switch (season) {
+    case 'Autumn':
+      return 2
+    case 'Winter':
+      return 5
+    case 'Spring':
+      return 8
+    case 'Summer':
+      return -1
+  }
+}
+
 function getQuarterLabel(month) {
   switch (month) {
     case '1':
@@ -35,6 +48,55 @@ function getQuarterLabel(month) {
     case '10':
       return 'Q4'
   }
+}
+
+function getQuarterOffset(quarter) {
+  switch (quarter) {
+    case 'Q1':
+      return 0
+    case 'Q2':
+      return 3
+    case 'Q3':
+      return 6
+    case 'Q4':
+      return 9
+  }
+}
+
+function getSeasonClosestDate(date, isFloor, comparePeriod) {
+  const isCompare = !comparePeriod || comparePeriod !== 'All'
+  if (isCompare) {
+    const yearDate = isFloor
+      ? d3TimeYear.every(1).floor(date)
+      : d3TimeYear.every(1).ceil(date)
+    return d3TimeMonth.offset(yearDate, getSeasonOffset(comparePeriod))
+  } else {
+    const quarter = isFloor
+      ? d3TimeMonth.every(3).floor(date)
+      : d3TimeMonth.every(3).ceil(date)
+    return d3TimeMonth.offset(quarter, -1)
+  }
+}
+
+function getQuarterClosestDate(date, isFloor, comparePeriod) {
+  const isCompare = !comparePeriod || comparePeriod !== 'All'
+  if (isCompare) {
+    const yearDate = isFloor
+      ? d3TimeYear.every(1).floor(date)
+      : d3TimeYear.every(1).ceil(date)
+    return d3TimeMonth.offset(yearDate, getQuarterOffset(comparePeriod))
+  } else {
+    return isFloor
+      ? d3TimeMonth.every(3).floor(date)
+      : d3TimeMonth.every(3).ceil(date)
+  }
+}
+
+function get6MonthClosestDate(date, isFloor, comparePeriod) {
+  const isCompare = !comparePeriod || comparePeriod !== 'All'
+  return isFloor
+    ? d3TimeMonth.every(6).floor(date)
+    : d3TimeMonth.every(6).ceil(date)
 }
 
 export default {
@@ -90,7 +152,14 @@ export default {
         if (interval === 'Month') {
           display = d3TimeFormat('%b %Y')(time)
         } else if (interval === 'Season') {
-          display = `${getSeasonLabel(d3TimeFormat('%-m')(time))} ${d3TimeFormat('%Y')(time)}` // eslint-disable-line
+          let seasonLabel = getSeasonLabel(d3TimeFormat('%-m')(time))
+          let year = new Date(time).getFullYear()
+          let nextYearStr = ''
+          if (seasonLabel === 'Summer') {
+            const nextyear = year + 1 + ''
+            nextYearStr = `/${nextyear.substr(2, 2)}`
+          }
+          display = `${seasonLabel} ${year}${nextYearStr}` // eslint-disable-line
         } else if (interval === 'Quarter') {
           display = `${getQuarterLabel(d3TimeFormat('%-m')(time))} ${d3TimeFormat('%Y')(time)}` // eslint-disable-line
         } else if (interval === 'Fin Year') {
@@ -100,6 +169,17 @@ export default {
             finYear = d3TimeFormat('%y')(time + 31557600000)
           }
           display = `FY${finYear}`
+        } else if (interval === 'Half Year') {
+          const sixMonthsLater = time + 15552000000
+          if (showIntervalRange) {
+            display = `${d3TimeFormat('%b')(time)} – ${d3TimeFormat('%b %Y')(sixMonthsLater)}` // eslint-disable-line
+          } else {
+            if (isStart) {
+              display = `${d3TimeFormat('%b %Y')(time)}` // eslint-disable-line
+            } else {
+              display = `${d3TimeFormat('%b %Y')(sixMonthsLater)}` // eslint-disable-line
+            }
+          }
         } else if (interval === 'Year') {
           display = d3TimeFormat('%Y')(time)
         } else {
@@ -137,6 +217,8 @@ export default {
         return d3TimeMonth.offset(quarter, -1)
       case 'Quarter':
         return d3TimeMonth.every(3).floor(date)
+      case 'Half Year':
+        return d3TimeMonth.every(6).floor(date)
       case 'Fin Year':
         const year = d3TimeYear.every(1).floor(date)
         return d3TimeMonth.offset(year, -6)
@@ -147,7 +229,7 @@ export default {
     }
   },
 
-  roundToClosestInterval(interval, date, roundType) {
+  roundToClosestInterval(interval, comparePeriod, date, roundType) {
     const isFloor = roundType === 'floor'
     switch (interval) {
       case '5m':
@@ -167,14 +249,11 @@ export default {
           ? d3TimeMonth.every(1).floor(date)
           : d3TimeMonth.every(1).ceil(date)
       case 'Season':
-        const quarter = isFloor
-          ? d3TimeMonth.every(3).floor(date)
-          : d3TimeMonth.every(3).ceil(date)
-        return d3TimeMonth.offset(quarter, -1)
+        return getSeasonClosestDate(date, isFloor, comparePeriod)
       case 'Quarter':
-        return isFloor
-          ? d3TimeMonth.every(3).floor(date)
-          : d3TimeMonth.every(3).ceil(date)
+        return getQuarterClosestDate(date, isFloor, comparePeriod)
+      case 'Half Year':
+        return get6MonthClosestDate(date, isFloor, comparePeriod)
       case 'Fin Year':
         const year = isFloor
           ? d3TimeYear.every(1).floor(date)
@@ -224,5 +303,57 @@ export default {
       dStart = dStart + 86400000
     }
     return guides
+  },
+
+  mutateSeasonDate(date, month, comparePeriod) {
+    if (comparePeriod === 'Summer' && month !== 11) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (comparePeriod === 'Autumn' && month >= 0 && month <= 1) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (comparePeriod === 'Winter' && month >= 0 && month <= 5) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (comparePeriod === 'Spring' && month >= 0 && month <= 8) {
+      date.setFullYear(date.getFullYear() - 1)
+    }
+    return date
+  },
+
+  mutateQuarterDate(date, month, comparePeriod) {
+    if (comparePeriod === 'Q2' && month >= 0 && month <= 2) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (comparePeriod === 'Q3' && month >= 0 && month <= 6) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (comparePeriod === 'Q4' && month >= 0 && month <= 9) {
+      date.setFullYear(date.getFullYear() - 1)
+    }
+    return date
+  },
+
+  getPeriodMonth(interval, period) {
+    if (interval === 'Quarter') {
+      switch (period) {
+        case 'Q1':
+          return 0
+        case 'Q2':
+          return 3
+        case 'Q3':
+          return 6
+        case 'Q4':
+          return 9
+      }
+    }
+
+    if (interval === 'Season') {
+      switch (period) {
+        case 'Summer':
+          return 11
+        case 'Autumn':
+          return 2
+        case 'Winter':
+          return 5
+        case 'Spring':
+          return 8
+      }
+    }
   }
 }

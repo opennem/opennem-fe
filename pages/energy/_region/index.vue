@@ -287,7 +287,7 @@
           </div>
           <line-vis
             v-if="chartPrice"
-            :domain-id="'price.above300'"
+            :domain-id="priceDomains[1].id"
             :domain-colour="lineColour"
             :value-domain-id="priceDomains[0].id"
             :dataset="dataset"
@@ -344,7 +344,7 @@
           />
           <line-vis
             v-if="chartPrice"
-            :domain-id="'price.below0'"
+            :domain-id="priceDomains[2].id"
             :domain-colour="lineColour"
             :dataset="dataset"
             :dynamic-extent="dateFilter"
@@ -536,6 +536,7 @@ import { mouse as d3Mouse } from 'd3-selection'
 import { extent as d3Extent, max as d3Max } from 'd3-array'
 import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
+import _cloneDeep from 'lodash.clonedeep'
 import Draggable from 'vuedraggable'
 import { saveAs } from 'file-saver'
 
@@ -610,6 +611,7 @@ export default {
     return {
       mounted: false,
       ready: false,
+      originalDataset: [],
       dataset: [],
       energyDomains: [],
       fuelTechEnergyOrder: [],
@@ -649,11 +651,17 @@ export default {
     dateFilter() {
       return this.$store.getters.dateFilter
     },
+    comparePeriod() {
+      return this.$store.getters.comparePeriod
+    },
     zoomed() {
       return this.$store.getters.dateFilter.length !== 0
     },
     type() {
       return this.$store.getters.energyChartType
+    },
+    isEnergyType() {
+      return this.type === 'energy'
     },
     chartEmissionsVolume() {
       return this.$store.getters.chartEmissionsVolume
@@ -794,6 +802,9 @@ export default {
     },
 
     xGuides() {
+      if (this.dataset.length <= 0) {
+        return []
+      }
       let dStart = this.dataset[0].date
       const dEnd = this.dataset[this.dataset.length - 1].date
 
@@ -807,6 +818,46 @@ export default {
     },
 
     incompleteIntervals() {
+      function getStartMonth(month) {
+        switch (month) {
+          case 11:
+          case 0:
+          case 1:
+            return 11
+
+          case 2:
+          case 3:
+          case 4:
+            return 2
+
+          case 5:
+          case 6:
+          case 7:
+            return 5
+
+          case 8:
+          case 9:
+          case 10:
+            return 8
+
+          default:
+        }
+        return null
+      }
+
+      function getSeasonLabel(month) {
+        switch (month) {
+          case 2:
+            return 'Autumn'
+          case 5:
+            return 'Winter'
+          case 8:
+            return 'Spring'
+          case 11:
+            return 'Summer'
+        }
+      }
+
       let dStart = this.dataset[0].date
       const dEnd = this.dataset[this.dataset.length - 1].date
       const actualStartDate = this.dataset[0]._actualStartDate
@@ -850,16 +901,61 @@ export default {
 
       if (this.interval === 'Season' || this.interval === 'Quarter') {
         const incompletes = []
-        aLD = moment(aLD).add(1, 'month')
+        const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
+        if (!isCompare) {
+          aLD = moment(aLD).add(1, 'month')
+          if (aSD > dStart) {
+            incompletes.push({
+              start: dStart,
+              end: dStart + 7889400000
+            })
+          }
+          if (aLD.valueOf() < dEnd) {
+            incompletes.push({
+              start: dEnd - 7889400000,
+              end: dEnd
+            })
+          }
+        } else {
+          aLD = moment(aLD).add(1, 'year')
+          const actualStartMonth = getStartMonth(new Date(aSD).getMonth())
+          const actualStartSeason = getSeasonLabel(actualStartMonth)
+
+          const actualEndMonth = getStartMonth(new Date(aLD).getMonth())
+          const actualEndSeason = getSeasonLabel(actualEndMonth)
+
+          if (actualStartSeason === this.comparePeriod) {
+            if (aSD > dStart) {
+              incompletes.push({
+                start: dStart,
+                end: dStart + 31557600000
+              })
+            }
+          }
+          if (actualEndSeason === this.comparePeriod) {
+            const newDEnd = moment(dEnd).add(3, 'month')
+            if (aLD.valueOf() < newDEnd.valueOf()) {
+              incompletes.push({
+                start: dEnd - 31557600000,
+                end: dEnd
+              })
+            }
+          }
+        }
+        return incompletes
+      }
+
+      if (this.interval === 'Half Year') {
+        const incompletes = []
         if (aSD > dStart) {
           incompletes.push({
             start: dStart,
-            end: dStart + 7889400000
+            end: dStart + 15552000000
           })
         }
-        if (aLD.valueOf() < dEnd) {
+        if (aLD < dEnd) {
           incompletes.push({
-            start: dEnd - 7889400000,
+            start: dEnd - 15552000000,
             end: dEnd
           })
         }
@@ -962,17 +1058,29 @@ export default {
   watch: {
     groupDomains(domains) {
       if (domains) {
-        this.updateDatasetGroups(this.dataset, domains)
+        this.originalDataset = this.updateDatasetGroups(
+          this.originalDataset,
+          domains
+        )
+        this.updateCompareDataset(this.comparePeriod)
       }
     },
     groupMarketValueDomains(domains) {
       if (domains) {
-        this.updateDatasetGroups(this.dataset, domains)
+        this.originalDataset = this.updateDatasetGroups(
+          this.originalDataset,
+          domains
+        )
+        this.updateCompareDataset(this.comparePeriod)
       }
     },
     groupEmissionDomains(domains) {
       if (domains) {
-        this.updateDatasetGroups(this.dataset, domains)
+        this.originalDataset = this.updateDatasetGroups(
+          this.originalDataset,
+          domains
+        )
+        this.updateCompareDataset(this.comparePeriod)
       }
     },
     filteredDataset(updated) {
@@ -980,6 +1088,42 @@ export default {
     },
     hiddenFuelTechs() {
       this.updateEnergyMinMax()
+    },
+    comparePeriod(compare) {
+      this.updateCompareDataset(compare)
+    },
+    stackedAreaDomains(updated) {
+      this.$store.dispatch('export/stackedAreaDomains', updated)
+    },
+    summaryDomains(updated) {
+      this.$store.dispatch('export/summaryDomains', updated)
+    },
+    dataset(updated) {
+      this.$store.dispatch('export/dataset', updated)
+    },
+    xGuides(updated) {
+      this.$store.dispatch('export/xGuides', updated)
+    },
+    emissionDomains(updated) {
+      this.$store.dispatch('export/emissionDomains', updated)
+    },
+    priceDomains(updated) {
+      this.$store.dispatch('export/priceDomains', updated)
+    },
+    marketValueDomains(updated) {
+      this.$store.dispatch('export/marketValueDomains', updated)
+    },
+    temperatureDomains(updated) {
+      this.$store.dispatch('export/temperatureDomains', updated)
+    },
+    temperatureMeanId(updated) {
+      this.$store.dispatch('export/temperatureMeanId', updated)
+    },
+    temperatureMinId(updated) {
+      this.$store.dispatch('export/temperatureMinId', updated)
+    },
+    temperatureMaxId(updated) {
+      this.$store.dispatch('export/temperatureMaxId', updated)
     }
   },
 
@@ -1037,6 +1181,43 @@ export default {
   },
 
   methods: {
+    updateCompareDataset(compare) {
+      if (!compare || compare === 'All') {
+        this.dataset = this.originalDataset
+      } else {
+        const month = DateDisplay.getPeriodMonth(this.interval, compare)
+        const returnedData = this.originalDataset.filter(d => {
+          const dMonth = new Date(d.date).getMonth()
+          return dMonth === month
+        })
+
+        // need to add an extra data point to show the final step
+        const currentLastPoint = returnedData[returnedData.length - 1]
+        // only add if it's a valid last point
+        if (currentLastPoint && currentLastPoint._total) {
+          const finalData = _cloneDeep(currentLastPoint)
+          Object.keys(finalData).forEach(key => {
+            const hasTemperature = this.temperatureDomains.find(
+              d => d.id === key
+            )
+            if (key === 'date') {
+              finalData.date = moment(currentLastPoint.date)
+                .add(1, 'year')
+                .valueOf()
+            } else if (hasTemperature) {
+              finalData[key] = currentLastPoint[key]
+            } else {
+              finalData[key] = null
+            }
+          })
+          returnedData.push(finalData)
+        }
+
+        this.dataset = returnedData
+      }
+      this.updatedFilteredDataset(this.dataset)
+    },
+
     fetchData(region, range) {
       const urls = Data.getEnergyUrls(region, range)
 
@@ -1084,23 +1265,31 @@ export default {
     },
 
     readyDataset(dataset) {
-      this.dataset = dataset
+      let updated = dataset
       if (this.groupDomains.length > 0) {
-        this.updateDatasetGroups(dataset, this.groupDomains)
+        updated = this.updateDatasetGroups(updated, this.groupDomains)
       }
       if (this.groupMarketValueDomains.length > 0) {
-        this.updateDatasetGroups(dataset, this.groupMarketValueDomains)
+        updated = this.updateDatasetGroups(
+          updated,
+          this.groupMarketValueDomains
+        )
       }
       if (this.groupEmissionDomains.length > 0) {
-        this.updateDatasetGroups(dataset, this.groupEmissionDomains)
+        updated = this.updateDatasetGroups(updated, this.groupEmissionDomains)
       }
-      this.updatedFilteredDataset(dataset)
+
+      this.dataset = updated
+      this.originalDataset = updated
+
+      this.updatedFilteredDataset(updated)
       this.updateEnergyMinMax()
+      this.updateCompareDataset(this.comparePeriod)
       this.ready = true
     },
 
     updateDatasetGroups(dataset, groupDomains) {
-      this.dataset = dataset.map(d => {
+      return dataset.map(d => {
         // create new group domains (if not already there)
         groupDomains.forEach(g => {
           let groupValue = 0
@@ -1170,7 +1359,9 @@ export default {
     },
 
     updatePriceDomains(res) {
-      this.priceDomains = Domain.getPriceDomains(res)
+      this.priceDomains = this.isEnergyType
+        ? Domain.getVolWeightedDomains()
+        : Domain.getPriceDomains(res)
       this.$store.dispatch('priceDomains', this.priceDomains)
     },
 
@@ -1178,10 +1369,27 @@ export default {
       // This is to filter the dataset based on the chart zoom
       // - used by Summary table
       if (this.dateFilter.length > 0) {
+        let startX = this.dateFilter[0]
+        let endX = this.dateFilter[1]
+        const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
+        if (
+          isCompare &&
+          (this.interval === 'Season' || this.interval === 'Quarter')
+        ) {
+          const periodMonth = DateDisplay.getPeriodMonth(
+            this.interval,
+            this.comparePeriod
+          )
+          const startXMonth = startX.getMonth()
+          const endXMonth = endX.getMonth()
+          startX.setMonth(periodMonth)
+          endX.setMonth(periodMonth)
+        }
+
         this.filteredDataset = EnergyDataTransform.filterDataByStartEndDates(
           dataset,
-          this.dateFilter[0],
-          this.dateFilter[1]
+          startX,
+          endX
         )
       } else {
         this.filteredDataset = dataset
@@ -1290,12 +1498,29 @@ export default {
     },
 
     handleDateOver(evt, date) {
+      const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
       if (this.interval === 'Fin Year') {
         if (date.getMonth() >= 6) {
           date.setFullYear(date.getFullYear() + 1)
         }
       }
+      if (
+        isCompare &&
+        (this.interval === 'Season' || this.interval === 'Quarter')
+      ) {
+        const periodMonth = DateDisplay.getPeriodMonth(
+          this.interval,
+          this.comparePeriod
+        )
+        const month = date.getMonth()
 
+        if (this.interval === 'Season') {
+          date = DateDisplay.mutateSeasonDate(date, month, this.comparePeriod)
+        } else if (this.interval === 'Quarter') {
+          date = DateDisplay.mutateQuarterDate(date, month, this.comparePeriod)
+        }
+        date.setMonth(periodMonth + 1)
+      }
       const closestDate = DateDisplay.snapToClosestInterval(this.interval, date)
       EventBus.$emit('vis.mousemove', evt, this.dataset, closestDate)
     },
@@ -1325,7 +1550,6 @@ export default {
     },
 
     setDateFilter(dates) {
-      // this.dateFilter = dates
       this.$store.dispatch('dateFilter', dates)
     },
 
@@ -1569,7 +1793,7 @@ export default {
   opacity: 0 !important;
 }
 .temperature-chart.adjustment {
-  margin-top: -14px;
+  margin-top: -7px;
 }
 
 .bar-donut-wrapper {

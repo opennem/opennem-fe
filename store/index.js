@@ -30,7 +30,8 @@ export const state = () => ({
   chartSummaryPie: true,
   exportAttribution: '@name',
   percentContributionTo: 'demand', // or generation
-  featureEmissions: false
+  featureEmissions: false,
+  comparePeriod: null
 })
 
 export const mutations = {
@@ -108,6 +109,9 @@ export const mutations = {
   },
   featureEmissions(state, data) {
     state.featureEmissions = data
+  },
+  comparePeriod(state, data) {
+    state.comparePeriod = data
   }
 }
 
@@ -200,7 +204,8 @@ export const getters = {
   chartSummaryPie: state => state.chartSummaryPie,
   exportAttribution: state => state.exportAttribution,
   percentContributionTo: state => state.percentContributionTo,
-  featureEmissions: state => state.featureEmissions
+  featureEmissions: state => state.featureEmissions,
+  comparePeriod: state => state.comparePeriod
 }
 
 export const actions = {
@@ -275,5 +280,8 @@ export const actions = {
   },
   featureEmissions({ commit }, data) {
     commit('featureEmissions', data)
+  },
+  comparePeriod({ commit }, data) {
+    commit('comparePeriod', data)
   }
 }

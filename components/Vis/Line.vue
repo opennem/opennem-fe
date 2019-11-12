@@ -91,6 +91,16 @@ import {
   curveLinear,
   curveMonotoneX
 } from 'd3-shape'
+import {
+  timeSecond,
+  timeMinute,
+  timeHour,
+  timeDay,
+  timeWeek,
+  timeMonth,
+  timeMonday,
+  timeYear
+} from 'd3-time'
 import { extent, min, max } from 'd3-array'
 import { format as d3Format } from 'd3-format'
 import { select, selectAll, mouse as d3Mouse, event } from 'd3-selection'
@@ -896,8 +906,112 @@ export default {
     },
 
     customXAxis(g) {
-      const ticks = axisTimeTicks(this.dynamicExtent[1] - this.dynamicExtent[0])
-      this.xAxis.ticks(ticks)
+      let tickLength = null
+      let className = ''
+      const that = this
+      const isCompare = !this.comparePeriod || this.comparePeriod !== 'All'
+
+      if (!this.zoomed) {
+        if (this.range === '1D') {
+          className = 'interval-5m'
+        } else if (this.range === '3D') {
+          tickLength = timeDay.every(0.5)
+          className = 'range-3d'
+        } else if (this.range === '7D') {
+          tickLength = timeDay.every(1)
+        } else if (this.range === '30D') {
+          const every = this.mobileScreen ? 1 : 0.5
+          tickLength = timeMonday.every(every)
+          if (!this.mobileScreen) {
+            className = 'interval-day'
+          }
+        } else if (this.range === '1Y') {
+          if (this.interval === 'Day') {
+            const every = this.mobileScreen ? 8 : 4
+            tickLength = timeMonday.every(every)
+          } else if (this.interval === 'Week') {
+            const every = this.mobileScreen ? 8 : 4
+            tickLength = timeMonday.every(every)
+          } else if (this.interval === 'Month') {
+            const every = this.mobileScreen ? 2 : 1
+            tickLength = timeMonth.every(every)
+          }
+        } else if (this.range === 'ALL') {
+          const every = this.mobileScreen ? 2 : 1
+          tickLength = timeYear.every(every)
+
+          if (this.interval === 'Season') {
+            className = 'interval-season'
+            const periodMonth = DateDisplay.getPeriodMonth(
+              this.interval,
+              this.comparePeriod
+            )
+            if (isCompare && periodMonth) {
+              tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+            }
+          } else if (this.interval === 'Quarter') {
+            className = 'interval-quarter'
+            const periodMonth = DateDisplay.getPeriodMonth(
+              this.interval,
+              this.comparePeriod
+            )
+            if (isCompare && periodMonth) {
+              tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+            }
+          } else if (this.interval === 'Year') {
+            className = 'interval-year'
+          } else if (this.interval === 'Fin Year') {
+            tickLength = timeMonth.filter(d => {
+              return d.getMonth() === 6
+            })
+            className = 'interval-fin-year'
+          }
+        }
+      } else {
+        if (this.range === '1Y') {
+          if (this.interval === 'Week') {
+            tickLength = 7
+          } else if (this.interval === 'Month') {
+            tickLength = timeMonth.every(1)
+          }
+        }
+      }
+
+      if (
+        isCompare &&
+        (this.interval === 'Season' || this.interval === 'Quarter')
+      ) {
+        this.xAxis.tickFormat((d, i) => {
+          const year = d.getFullYear() + ''
+          const nextYear = d.getFullYear() + 1 + ''
+          const yearStr =
+            this.comparePeriod === 'Summer'
+              ? `${year}/${nextYear.substr(2, 2)}`
+              : year
+          return `${yearStr}`
+        })
+        const periodMonth = DateDisplay.getPeriodMonth(
+          this.interval,
+          this.comparePeriod
+        )
+        if (isCompare && periodMonth) {
+          tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+        }
+      } else if (this.interval === 'Fin Year') {
+        this.xAxis.tickFormat(d => {
+          const year = d.getFullYear() + 1 + ''
+          return `FY${year.substr(2, 2)}`
+        })
+        tickLength = timeMonth.filter(d => {
+          return d.getMonth() === 6
+        })
+      } else {
+        this.xAxis.tickFormat(d => axisTimeFormat(d))
+      }
+
+      this.xAxis.ticks(tickLength)
+      // const ticks = axisTimeTicks(this.dynamicExtent[1] - this.dynamicExtent[0])
+      // this.xAxis.ticks(ticks)
 
       // add secondary x axis tick label here
       const insertSecondaryAxisTick = function(d) {
