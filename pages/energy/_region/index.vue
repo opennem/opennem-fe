@@ -124,11 +124,23 @@
           />
         </div>
 
-        <energy-compare
+        <div
           v-if="compareDifference"
-          :domains="stackedAreaDomains"
-          :compare-data="compareData"
-        />
+          class="chart">
+          <div
+            class="chart-title no-hover"
+            style="justify-content: center;">
+            <div class="chart-label">
+              <strong>{{ firstDate | customFormatDate({ range, interval, showIntervalRange: true }) }}</strong>
+              vs
+              <strong>{{ secondDate | customFormatDate({ range, interval, showIntervalRange: true }) }}</strong>
+            </div>
+          </div>
+          <energy-compare
+            :domains="stackedAreaDomains"
+            :compare-data="compareData"
+          />
+        </div>
 
         <div
           v-if="ready && hasEmissionData && featureEmissions"
@@ -1065,6 +1077,25 @@ export default {
 
     isYearInterval() {
       return this.interval === 'Fin Year' || this.interval === 'Year'
+    },
+
+    hasCompareDates() {
+      return this.updatedCompareDates.length === 2
+    },
+    firstDate() {
+      return this.hasCompareDates ? this.updatedCompareDates[0] : null
+    },
+    secondDate() {
+      return this.hasCompareDates ? this.updatedCompareDates[1] : null
+    },
+    updatedCompareDates() {
+      let latter = this.compareDates[0]
+      let former = this.compareDates[1]
+      if (this.compareDates[1] > latter) {
+        latter = this.compareDates[1]
+        former = this.compareDates[0]
+      }
+      return [former, latter]
     }
   },
 
@@ -1075,7 +1106,7 @@ export default {
           this.originalDataset,
           domains
         )
-        this.updateCompareDataset(this.filterPeriod)
+        this.updateDataset(this.filterPeriod)
       }
     },
     groupMarketValueDomains(domains) {
@@ -1084,7 +1115,7 @@ export default {
           this.originalDataset,
           domains
         )
-        this.updateCompareDataset(this.filterPeriod)
+        this.updateDataset(this.filterPeriod)
       }
     },
     groupEmissionDomains(domains) {
@@ -1093,7 +1124,7 @@ export default {
           this.originalDataset,
           domains
         )
-        this.updateCompareDataset(this.filterPeriod)
+        this.updateDataset(this.filterPeriod)
       }
     },
     filteredDataset(updated) {
@@ -1103,7 +1134,7 @@ export default {
       this.updateEnergyMinMax()
     },
     filterPeriod(compare) {
-      this.updateCompareDataset(compare)
+      this.updateDataset(compare)
     },
     stackedAreaDomains(updated) {
       this.$store.dispatch('export/stackedAreaDomains', updated)
@@ -1202,7 +1233,7 @@ export default {
   },
 
   methods: {
-    updateCompareDataset(compare) {
+    updateDataset(compare) {
       if (!compare || compare === 'All') {
         this.dataset = this.originalDataset
       } else {
@@ -1305,7 +1336,7 @@ export default {
 
       this.updatedFilteredDataset(updated)
       this.updateEnergyMinMax()
-      this.updateCompareDataset(this.filterPeriod)
+      this.updateDataset(this.filterPeriod)
       this.ready = true
     },
 
@@ -1442,6 +1473,7 @@ export default {
     },
 
     handleRangeChange(range) {
+      this.$store.dispatch('compareDifference', false)
       this.$store.dispatch('dateFocus', false)
       this.ready = false
       let interval = ''
@@ -1475,6 +1507,7 @@ export default {
 
     handleIntervalChange(interval) {
       this.$store.dispatch('dateFocus', false)
+      this.$store.dispatch('compareDifference', false)
       this.compareData = []
       this.compareDates = []
       this.$store.dispatch('interval', interval)
