@@ -99,12 +99,13 @@ export default {
 
 <style lang="scss" scoped>
 .compare-container {
-  padding: 1rem;
+  padding: 0.5rem 1rem;
   margin: 0 0.5rem 0.5rem;
   background-color: rgba(0, 0, 0, 0.05);
   box-shadow: inset 0 1px 10px rgba(0, 0, 0, 0.05);
   border-radius: 3px;
   display: flex;
+  align-items: center;
 
   .compare-legend {
     width: 180px;
