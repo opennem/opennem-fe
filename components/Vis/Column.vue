@@ -173,9 +173,16 @@ export default {
         }
       })
       const yValues = data.map(d => d.value)
+      const yExtent = d3Extent(yValues)
+      if (yExtent[0] > 0) {
+        yExtent[0] = 0
+      }
+      if (yExtent[1] < 0) {
+        yExtent[1] = 0
+      }
 
       this.x.domain(xDomains)
-      this.y.domain(d3Extent(yValues)).nice()
+      this.y.domain(yExtent).nice()
       this.z.range(zColours).domain(xDomains)
 
       // this.$xAxisGroup.call(this.xAxis)
