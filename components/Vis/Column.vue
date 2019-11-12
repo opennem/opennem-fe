@@ -107,6 +107,10 @@ export default {
       if (updated) {
         this.update()
       }
+    },
+    domains() {
+      this.setup()
+      this.update()
     }
   },
 

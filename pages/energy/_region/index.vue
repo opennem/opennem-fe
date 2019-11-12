@@ -1107,6 +1107,17 @@ export default {
           domains
         )
         this.updateDataset(this.filterPeriod)
+        if (this.compareDates.length === 2) {
+          const firstData = this.getDataByDate(
+            this.dataset,
+            this.compareDates[0]
+          )
+          const secondData = this.getDataByDate(
+            this.dataset,
+            this.compareDates[1]
+          )
+          this.compareData = [firstData, secondData]
+        }
       }
     },
     groupMarketValueDomains(domains) {
@@ -1635,6 +1646,10 @@ export default {
       this.$store.dispatch('dateFocus', false)
     },
 
+    getDataByDate(dataset, date) {
+      return dataset.find(d => d.date === date)
+    },
+
     handleSvgClick(resetDateFocus) {
       if (this.compareDifference) {
         this.$store.dispatch('dateFocus', false)
@@ -1659,13 +1674,15 @@ export default {
           }
         }
 
-        function getDataByDate(dataset, date) {
-          return dataset.find(d => d.date === date)
-        }
-
         if (this.compareDates.length === 2) {
-          const firstData = getDataByDate(this.dataset, this.compareDates[0])
-          const secondData = getDataByDate(this.dataset, this.compareDates[1])
+          const firstData = this.getDataByDate(
+            this.dataset,
+            this.compareDates[0]
+          )
+          const secondData = this.getDataByDate(
+            this.dataset,
+            this.compareDates[1]
+          )
           this.compareData = [firstData, secondData]
         }
 
