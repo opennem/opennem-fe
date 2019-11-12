@@ -1,14 +1,24 @@
 <template>
   <div class="compare-container">
-    <div>
-      <span>{{ firstDate | formatDate }}</span> vs
-      <span>{{ secondDate | formatDate }}</span>
+    <div class="compare-legend">
+      <div
+        v-for="(domain, index) in domains"
+        :key="`domain-${index}`"
+        class="legend-item">
+        <span
+          :style="{
+            'background-color': domain.colour
+          }"
+          class="colour-square" />
+        {{ domain.label }}
+      </div>
     </div>
-    <div>
+    <div class="compare-chart">
       <column-vis
         v-if="hasCompareData"
         :domains="domains"
-        :dataset="dataset" />
+        :dataset="dataset"
+        :vis-height="visHeight" />
     </div>
   </div>
 </template>
@@ -33,7 +43,8 @@ export default {
 
   data() {
     return {
-      updatedCompareData: []
+      updatedCompareData: [],
+      visHeight: 200
     }
   },
 
@@ -77,6 +88,11 @@ export default {
         this.updatedCompareData = []
       }
     }
+  },
+
+  mounted() {
+    const $height = this.$el.offsetHeight < 200 ? 200 : this.$el.offsetHeight
+    this.visHeight = $height
   }
 }
 </script>
@@ -84,9 +100,31 @@ export default {
 <style lang="scss" scoped>
 .compare-container {
   padding: 1rem;
-  margin: 0.5rem;
+  margin: 0 0.5rem 0.5rem;
   background-color: rgba(0, 0, 0, 0.05);
   box-shadow: inset 0 1px 10px rgba(0, 0, 0, 0.05);
   border-radius: 3px;
+  display: flex;
+
+  .compare-legend {
+    width: 180px;
+    font-size: 9px;
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      padding: 0.1rem;
+    }
+  }
+  .compare-chart {
+    width: 100%;
+  }
+}
+.colour-square {
+  display: inline-block;
+  border: 1px solid transparent;
+  width: 15px;
+  height: 15px;
+  margin-right: 0.2rem;
 }
 </style>

@@ -17,6 +17,9 @@
       <g 
         :transform="columnTransform"
         class="column-group" />
+      <g 
+        :transform="columnTransform"
+        class="column-label-group" />
     </svg>
   </div>
 </template>
@@ -64,9 +67,11 @@ export default {
       colours: schemeCategory10,
       margin: CONFIG.DEFAULT_MARGINS,
       columnGroupClass: 'column-group',
+      columnLabelGroupClass: 'column-label-group',
       xAxisClass: CONFIG.X_AXIS_CLASS,
       yAxisClass: CONFIG.Y_AXIS_CLASS,
       $columnGroup: null,
+      $columnLabelGroup: null,
       $xAxisGroup: null,
       $yAxisGroup: null
     }
@@ -77,13 +82,10 @@ export default {
       return `column-${this._uid}`
     },
     gTransform() {
-      return `translate(30,0)`
+      return `translate(0,20)`
     },
     columnTransform() {
-      return `translate(0,0)`
-    },
-    yAxisTransform() {
-      return `translate(0,0)`
+      return `translate(0,20)`
     },
     xAxisTransform() {
       return `translate(0, ${this.height})`
@@ -122,10 +124,10 @@ export default {
     setupWidthHeight() {
       const chartWidth = this.$el.offsetWidth
       const width = chartWidth - this.margin.left - this.margin.right
-      const height = this.svgHeight - 1
+      const height = this.svgHeight
       this.svgWidth = chartWidth
       this.width = width < 0 ? 0 : width
-      this.height = height < 0 ? 0 : height
+      this.height = height < 0 ? 0 : height - 33
     },
 
     setup() {
@@ -139,7 +141,7 @@ export default {
 
       // Define x, y, z scale types
       this.x = scaleBand()
-        .range([0, this.width])
+        .range([60, this.width - 30])
         .padding(0.1)
       this.y = scaleLinear().range([this.height, 0])
       this.z = scaleOrdinal() // Colour
@@ -155,6 +157,9 @@ export default {
     update() {
       const self = this
       this.$columnGroup = d3Select(`#${this.id} .${this.columnGroupClass}`)
+      this.$columnLabelGroup = d3Select(
+        `#${this.id} .${this.columnLabelGroupClass}`
+      )
 
       const xDomains = this.domains.map(d => d.id)
       const zColours = this.domains.map(d => d.colour)
@@ -163,6 +168,7 @@ export default {
         const id = domain.id
         return {
           name: id,
+          label: domain.label,
           value: this.dataset[id]
         }
       })
@@ -172,11 +178,13 @@ export default {
       this.y.domain(d3Extent(yValues)).nice()
       this.z.range(zColours).domain(xDomains)
 
-      this.$xAxisGroup.call(this.xAxis)
+      // this.$xAxisGroup.call(this.xAxis)
       this.$yAxisGroup.call(this.customYAxis)
 
       // console.log(d3Extent(yValues))
       // console.log(data, xDomains, zColours)
+
+      const pad = 11
 
       this.$columnGroup
         .selectAll('rect')
@@ -188,6 +196,20 @@ export default {
         .attr('width', this.x.bandwidth())
         .attr('fill', d => this.z(d.name))
         .attr('class', d => `${d.name}`)
+
+      this.$columnLabelGroup
+        .selectAll('text')
+        .data(data)
+        .join('text')
+        .attr('x', d => this.x(d.name))
+        .attr('y', d => (d.value > 0 ? this.y(d.value) : this.y(0)))
+        .attr(
+          'dy',
+          d => (d.value > 0 ? -2 : Math.abs(this.y(0) - this.y(d.value)) + pad)
+        )
+        // .attr('transform', 'rotate(-1)')
+        // .text(d => d.label)
+        .text(d => this.$options.filters.formatValue(d.value))
     },
 
     customYAxis(g) {
@@ -195,6 +217,7 @@ export default {
       g.selectAll('.tick text')
         .attr('x', 4)
         .attr('dy', -4)
+      g.selectAll('.tick line').attr('class', d => (d === 0 ? 'base' : ''))
     },
 
     handleResize() {
