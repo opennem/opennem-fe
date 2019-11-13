@@ -774,11 +774,12 @@ export default {
       const transition = 100
       this.$xAxisGroup.call(this.customXAxis)
       this.updateGuides()
+      this.drawFocus(this.focusDate)
+      this.drawCompare(this.compareDates)
       this.$stackedAreaGroup
         .selectAll('path')
         .transition(transition)
         .attr('d', this.area)
-      this.drawFocus(this.focusDate)
     },
 
     updateGuides() {
