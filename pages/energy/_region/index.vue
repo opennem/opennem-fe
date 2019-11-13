@@ -34,7 +34,7 @@
       <div class="vis-container">
         <div
           v-if="ready"
-          :class="{ 'is-hovered': hoverOn }"
+          :class="{ 'is-hovered': hoverOn || focusOn }"
           class="chart">
           <div
             v-if="step"
@@ -146,7 +146,7 @@
         <div
           v-if="ready && hasEmissionData && featureEmissions"
           :class="{
-            'is-hovered': hoverOn,
+            'is-hovered': hoverOn || focusOn,
             'has-border-bottom': !chartEmissionsVolume
           }"
           class="chart">
@@ -211,7 +211,7 @@
         <div
           v-if="ready && hasEmissionData && featureEmissions"
           :class="{
-            'is-hovered': hoverOn,
+            'is-hovered': hoverOn || focusOn,
             'has-border-bottom': !chartEmissionsIntensity
           }"
           class="chart">
@@ -275,7 +275,7 @@
         <div
           v-if="ready && hasPriceData"
           :class="{
-            'is-hovered': hoverOn,
+            'is-hovered': hoverOn || focusOn,
             'has-border-bottom': !chartPrice
           }"
           class="chart">
@@ -401,7 +401,7 @@
         <div
           v-if="ready && hasTemperatureData"
           :class="{
-            'is-hovered': hoverOn,
+            'is-hovered': hoverOn || focusOn,
             'has-border-bottom': !chartTemperature,
             'adjustment': chartPrice
           }"
@@ -1023,8 +1023,12 @@ export default {
     },
 
     hoverDisplayDate() {
+      let date = this.focusDate
+      if (this.hoverOn) {
+        date = this.hoverDate
+      }
       return DateDisplay.specialDateFormats(
-        new Date(this.hoverDate).getTime(),
+        new Date(date).getTime(),
         this.range,
         this.interval,
         false,
@@ -1041,12 +1045,22 @@ export default {
       const time = new Date(this.focusDate).getTime()
       return this.dataset.find(d => d.date === time)
     },
+    hoverOrFocusData() {
+      if (this.hoverOn) {
+        return this.hoverData
+      } else if (this.focusOn) {
+        return this.focusData
+      }
+      return null
+    },
     hoverDomainLabel() {
       const find = this.summaryDomains.find(d => d.id === this.hoverDomain)
       return find ? find.label : '—'
     },
     hoverValue() {
-      return this.hoverData ? this.hoverData[this.hoverDomain] : null
+      return this.hoverOrFocusData
+        ? this.hoverOrFocusData[this.hoverDomain]
+        : null
     },
     hoverDomainColour() {
       const find = this.stackedAreaDomains.find(d => d.id === this.hoverDomain)
@@ -1055,42 +1069,46 @@ export default {
     },
     hoverTotal() {
       let total = 0
-      if (this.hoverData) {
+      if (this.hoverOrFocusData) {
         this.stackedAreaDomains.forEach(d => {
-          total += this.hoverData[d.id]
+          total += this.hoverOrFocusData[d.id]
         })
       }
       return total
     },
     hoverEmissionVolumeTotal() {
-      if (this.hoverData) return this.hoverData._totalEmissionsVol
+      if (this.hoverOrFocusData) {
+        return this.hoverOrFocusData._totalEmissionsVol
+      }
       return 0
     },
     hoverEmissionsIntensity() {
-      if (this.hoverData) return this.hoverData._emissionsIntensity
+      if (this.hoverOrFocusData) {
+        return this.hoverOrFocusData._emissionsIntensity
+      }
       return 0
     },
     hoverPrice() {
-      if (this.hoverData && this.priceDomains.length > 0) {
-        return this.hoverData[this.priceDomains[0].id]
+      if (this.hoverOrFocusData && this.priceDomains.length > 0) {
+        return this.hoverOrFocusData[this.priceDomains[0].id]
       }
       return 0
     },
     hoverMeanTemperature() {
-      if (this.hoverData && this.temperatureDomains.length > 0) {
-        return this.hoverData[this.temperatureMeanId]
+      if (this.hoverOrFocusData && this.temperatureDomains.length > 0) {
+        return this.hoverOrFocusData[this.temperatureMeanId]
       }
       return 0
     },
     hoverMinTemperature() {
-      if (this.hoverData && this.temperatureDomains.length > 0) {
-        return this.hoverData[this.temperatureMinId]
+      if (this.hoverOrFocusData && this.temperatureDomains.length > 0) {
+        return this.hoverOrFocusData[this.temperatureMinId]
       }
       return 0
     },
     hoverMaxTemperature() {
-      if (this.hoverData && this.temperatureDomains.length > 0) {
-        return this.hoverData[this.temperatureMaxId]
+      if (this.hoverOrFocusData && this.temperatureDomains.length > 0) {
+        return this.hoverOrFocusData[this.temperatureMaxId]
       }
       return 0
     },

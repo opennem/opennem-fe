@@ -382,27 +382,7 @@ export default {
       }
     },
     compareDates(updated) {
-      const updatedLength = updated.length
-      this.$compareGroup.selectAll('rect').remove()
-      if (updatedLength > 0 && updatedLength < 3) {
-        this.$compareGroup
-          .selectAll('rect')
-          .data(updated)
-          .enter()
-          .append('rect')
-          .attr('opacity', 0.3)
-          .attr('x', d => this.x(d))
-          .attr('width', d => {
-            const time = new Date(d).getTime()
-            const nextDatePeriod = this.findNextDatePeriod(time)
-            const nextPeriod = this.x(nextDatePeriod)
-            const xDate = this.x(time)
-            const bandwidth = nextPeriod - xDate
-            return bandwidth
-          })
-          .attr('height', this.height)
-          .attr('fill', '#e34a33')
-      }
+      this.drawCompare(updated)
     }
   },
   created() {
@@ -782,6 +762,7 @@ export default {
       this.$yAxisTickGroup.call(this.customYAxis)
       this.updateGuides()
       this.drawFocus(this.focusDate)
+      this.drawCompare(this.compareDates)
 
       this.brushX.extent([[0, 0], [this.width, 40]])
       this.$xAxisBrushGroup.selectAll('.brush').call(this.brushX)
@@ -793,11 +774,12 @@ export default {
       const transition = 100
       this.$xAxisGroup.call(this.customXAxis)
       this.updateGuides()
+      this.drawFocus(this.focusDate)
+      this.drawCompare(this.compareDates)
       this.$stackedAreaGroup
         .selectAll('path')
         .transition(transition)
         .attr('d', this.area)
-      this.drawFocus(this.focusDate)
     },
 
     updateGuides() {
@@ -940,6 +922,30 @@ export default {
       $focusLine.attr('opacity', 0)
       $focusTopRect.attr('opacity', 0)
       $focusBottomRect.attr('opacity', 0)
+    },
+
+    drawCompare(compareDates) {
+      const compareLength = compareDates.length
+      this.$compareGroup.selectAll('rect').remove()
+      if (compareLength > 0 && compareLength < 3) {
+        this.$compareGroup
+          .selectAll('rect')
+          .data(compareDates)
+          .enter()
+          .append('rect')
+          .attr('opacity', 0.3)
+          .attr('x', d => this.x(d))
+          .attr('width', d => {
+            const time = new Date(d).getTime()
+            const nextDatePeriod = this.findNextDatePeriod(time)
+            const nextPeriod = this.x(nextDatePeriod)
+            const xDate = this.x(time)
+            const bandwidth = nextPeriod - xDate
+            return bandwidth
+          })
+          .attr('height', this.height)
+          .attr('fill', '#e34a33')
+      }
     },
 
     // handle when selecting the date ranges on the brush area
