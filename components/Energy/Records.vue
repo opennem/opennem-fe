@@ -143,7 +143,7 @@ export default {
       type: String,
       default: () => ''
     },
-    dateFocus: {
+    focusOn: {
       type: Boolean,
       default: () => false
     }
@@ -196,7 +196,7 @@ export default {
     dataset(d) {
       this.updateMinMax(d)
     },
-    dateFocus(d) {
+    focusOn(d) {
       if (!d) {
         this.recordSelectDate = null
       }
@@ -406,13 +406,13 @@ export default {
     },
 
     handleRecordEnter(date) {
-      if (!this.dateFocus) {
+      if (!this.focusOn) {
         this.$emit('recordMouseEnter', date)
       }
     },
 
     handleRecordLeave() {
-      if (!this.dateFocus) {
+      if (!this.focusOn) {
         this.$emit('recordMouseLeave')
       }
     },

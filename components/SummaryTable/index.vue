@@ -1,7 +1,7 @@
 <template>
   <div class="summary-table">
     <header>
-      <span v-if="!hoverOn">
+      <span v-if="!hoverOn && !focusOn">
         <time :datetime="startDateTime">
           <!-- {{ startDate | formatDate }} -->
           {{ startDate | customFormatDate({ range, interval, isStart: true }) }}
@@ -14,7 +14,7 @@
       </span>
       
       <time
-        v-if="hoverOn" 
+        v-if="hoverOn || focusOn" 
         :datetime="hoveredDateTime">
         {{ hoveredDate | customFormatDate({ range, interval, showIntervalRange: true }) }}
       </time>
@@ -28,12 +28,12 @@
           <group-selector v-if="groupSelection" />
         </div>
         <div
-          v-if="!hoverOn || isEnergy"
+          v-if="(!hoverOn && !focusOn) || isEnergy"
           class="summary-col-energy">
           Energy <small>{{ isYearInterval ? 'TWh' : 'GWh' }}</small>
         </div>
         <div
-          v-if="hoverOn && !isEnergy"
+          v-if="(hoverOn || focusOn) && !isEnergy"
           class="summary-col-energy">
           Power <small>MW</small>
         </div>
@@ -47,23 +47,23 @@
       <div class="summary-row">
         <div class="summary-col-label">Sources</div>
         <div
-          v-if="!hoverOn"
+          v-if="!hoverOn && !focusOn"
           class="summary-col-energy cell-value">
           {{ summarySources._totalEnergy | formatValue }}
         </div>
         <div
-          v-if="hoverOn"
+          v-if="hoverOn || focusOn"
           class="summary-col-energy cell-value">
           {{ pointSummarySources._total | formatValue }}
         </div>
         <div class="summary-col-contribution cell-value" />
         <div
-          v-if="!hoverOn"
+          v-if="!hoverOn && !focusOn"
           class="summary-col-av-value cell-value">
           {{ summary._totalAverageValue | formatCurrency }}
         </div>
         <div
-          v-if="hoverOn"
+          v-if="hoverOn || focusOn"
           class="summary-col-av-value cell-value">
           {{ pointSummary._totalAverageValue | formatCurrency }}
         </div>
@@ -75,7 +75,7 @@
       :hidden-fuel-techs="hiddenSources"
       :original-order="sourcesOrder"
       :market-value-order="sourcesMarketValueOrder"
-      :show-point-summary="hoverOn"
+      :show-point-summary="hoverOn || focusOn"
       :point-summary="pointSummarySources"
       :point-summary-total="pointSummary._total"
       :summary="summarySources"
@@ -91,12 +91,12 @@
       <div class="summary-row">
         <div class="summary-col-label">Loads</div>
         <div
-          v-if="!hoverOn"
+          v-if="!hoverOn && !focusOn"
           class="summary-col-energy cell-value">
           {{ summaryLoads._totalEnergy | formatValue }}
         </div>
         <div
-          v-if="hoverOn"
+          v-if="hoverOn || focusOn"
           class="summary-col-energy cell-value">
           {{ pointSummaryLoads._total | formatValue }}
         </div>
@@ -110,7 +110,7 @@
       :hidden-fuel-techs="hiddenLoads"
       :original-order="loadsOrder"
       :market-value-order="loadsMarketValueOrder"
-      :show-point-summary="hoverOn"
+      :show-point-summary="hoverOn || focusOn"
       :point-summary="pointSummaryLoads"
       :point-summary-total="pointSummary._total"
       :summary="summaryLoads"
@@ -125,12 +125,12 @@
       <div class="summary-row last-row">
         <div class="summary-col-label">Net</div>
         <div
-          v-if="!hoverOn"
+          v-if="!hoverOn && !focusOn"
           class="summary-col-energy cell-value">
           {{ summary._totalEnergy | formatValue }}
         </div>
         <div
-          v-if="hoverOn"
+          v-if="hoverOn || focusOn"
           class="summary-col-energy cell-value">
           {{ pointSummary._total | formatValue }}
         </div>
@@ -144,12 +144,12 @@
         <div class="summary-col-label">Renewables</div>
         <div class="summary-col-energy cell-value" />
         <div
-          v-if="!hoverOn"
+          v-if="!hoverOn && !focusOn"
           class="summary-col-contribution cell-value">
           {{ renewables | percentageFormatNumber }}
         </div>
         <div
-          v-if="hoverOn"
+          v-if="hoverOn || focusOn"
           class="summary-col-contribution cell-value">
           {{ pointRenewables | percentageFormatNumber }}
         </div>
@@ -200,6 +200,14 @@ export default {
       default: () => null
     },
     hoverOn: {
+      type: Boolean,
+      default: () => false
+    },
+    focusDate: {
+      type: Date,
+      default: () => null
+    },
+    focusOn: {
       type: Boolean,
       default: () => false
     },
@@ -385,6 +393,18 @@ export default {
     },
     hoverDate(date) {
       this.updatePointSummary(date)
+    },
+    hoverOn(on) {
+      if (on) {
+        this.updatePointSummary(this.hoverDate)
+      } else if (this.focusOn) {
+        this.updatePointSummary(this.focusDate)
+      }
+    },
+    focusOn(on) {
+      if (on) {
+        this.updatePointSummary(this.focusDate)
+      }
     }
   },
 

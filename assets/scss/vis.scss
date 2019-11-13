@@ -36,15 +36,20 @@ path.line-path {
   fill: transparent;
 }
 
-.date-focus {
-  .cursor-rect {
+.focus-group {
+  .focus-rect {
     fill: rgba(199, 69, 35, 0.2);
     stroke: rgba(199, 69, 35, 0.5);
     stroke-width: 0.5;
   }
-  .x-axis-brush-group {
-    opacity: 0;
+  .focus-line {
+    stroke: $opennem-link-color;
+    stroke-width: 1px;
   }
+  .focus-top-rect,
+  .focus-bottom-rect {
+    fill: $opennem-link-color;
+  }  
 }
 
 .compare-group rect {

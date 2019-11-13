@@ -11,7 +11,6 @@
       :width="svgWidth"
       :height="svgHeight"
       :id="id"
-      :class="{ 'date-focus': dateFocus }"
       class="stacked-area-chart">
       <defs>
         <!-- where to clip -->
@@ -67,6 +66,7 @@
         <g class="stacked-area-group" />
 
         <g class="x-incomplete-group" />
+        <g class="focus-group" />
         <g class="compare-group" />
       </g>
 
@@ -150,6 +150,14 @@ export default {
       type: Boolean,
       default: () => false
     },
+    focusDate: {
+      type: Date,
+      default: () => null
+    },
+    focusOn: {
+      type: Boolean,
+      default: () => false
+    },
     range: {
       type: String,
       default: () => ''
@@ -214,10 +222,6 @@ export default {
       type: Array,
       default: () => []
     },
-    dateFocus: {
-      type: Boolean,
-      default: () => false
-    },
     compareDates: {
       type: Array,
       default: () => []
@@ -254,6 +258,7 @@ export default {
       $yAxisTickGroup: null,
       $hoverLayer: null,
       $cursorLineGroup: null,
+      $focusGroup: null,
       $tooltipGroup: null,
       $stackedAreaGroup: null,
       $xGuideGroup: null,
@@ -276,14 +281,18 @@ export default {
       cursorLineTextClass: CONFIG.CURSOR_LINE_TEXT_CLASS,
       cursorLineRectClass: CONFIG.CURSOR_LINE_RECT_CLASS,
       cursorRectClass: 'cursor-rect',
-      cursorLineFocusTopRectClass: 'cursor-line-focus-top-rect',
-      cursorLineFocusBottomRectClass: 'cursor-line-focus-bottom-rect',
       compareGroupClass: 'compare-group',
       compareRectClass: 'compare-rect',
       tooltipRectHeight: 40,
       tooltipGroupClass: CONFIG.TOOLTIP_GROUP_CLASS,
       tooltipRectClass: CONFIG.TOOLTIP_RECT_CLASS,
-      tooltipTextClass: CONFIG.TOOLTIP_TEXT_CLASS
+      tooltipTextClass: CONFIG.TOOLTIP_TEXT_CLASS,
+      // Focus line and rect
+      focusGroupClass: 'focus-group',
+      focusLineClass: 'focus-line',
+      focusTopRectClass: 'focus-top-rect',
+      focusBottomRectClass: 'focus-bottom-rect',
+      focusRectClass: 'focus-rect'
     }
   },
 
@@ -356,21 +365,15 @@ export default {
       this.zoomRedraw()
     },
     hoverDate(date) {
-      if (!this.dateFocus) {
-        this.updateCursorLineTooltip(new Date(date).getTime())
-      }
+      this.updateCursorLineTooltip(new Date(date).getTime())
     },
-    dateFocus(focus) {
-      const $cursorLineFocusTopRect = this.$cursorLineGroup.select(
-        `.${this.cursorLineFocusTopRectClass}`
-      )
-      const $cursorLineFocusBottomRect = this.$cursorLineGroup.select(
-        `.${this.cursorLineFocusBottomRectClass}`
-      )
-      const isEnergy = this.interval !== '5m' && this.interval !== '30m'
-      const opacity = focus && !isEnergy ? 1 : 0
-      $cursorLineFocusTopRect.attr('opacity', opacity)
-      $cursorLineFocusBottomRect.attr('opacity', opacity)
+
+    focusDate(updated) {
+      if (updated) {
+        this.drawFocus(updated)
+      } else {
+        this.hideFocus()
+      }
     },
 
     compareDifference(updated) {
@@ -394,10 +397,6 @@ export default {
             const nextDatePeriod = this.findNextDatePeriod(time)
             const nextPeriod = this.x(nextDatePeriod)
             const xDate = this.x(time)
-            // const bandwidth =
-            //   this.interval !== '5m' && this.interval !== '30m'
-            //     ? nextPeriod - xDate
-            //     : null
             const bandwidth = nextPeriod - xDate
             return bandwidth
           })
@@ -457,6 +456,7 @@ export default {
       this.$hoverLayer = $svg.select(`.${this.hoverLayerClass}`)
       this.$cursorLineGroup = $svg.select(`.${this.cursorLineGroupClass}`)
       this.$compareGroup = $svg.select(`.${this.compareGroupClass}`)
+      this.$focusGroup = $svg.select(`.${this.focusGroupClass}`)
 
       // Define x, y, z scale types
       this.x = scaleTime().range([0, this.width]) // Date axis
@@ -469,7 +469,6 @@ export default {
         .tickFormat(d => axisTimeFormat(d))
       this.yAxis = axisRight(this.y)
         .tickSize(this.width)
-        // .ticks(5)
         .tickFormat(d => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
 
       // Setup the 'brush' area and event handler
@@ -499,17 +498,23 @@ export default {
         .append('rect')
         .attr('class', this.cursorRectClass)
         .attr('opacity', 0)
-      this.$cursorLineGroup
+
+      this.$focusGroup.append('path').attr('class', this.focusLineClass)
+      this.$focusGroup
         .append('rect')
-        .attr('class', this.cursorLineFocusTopRectClass)
+        .attr('class', this.focusRectClass)
+        .attr('opacity', 0)
+      this.$focusGroup
+        .append('rect')
+        .attr('class', this.focusTopRectClass)
         .attr('x', 0)
         .attr('y', 0)
         .attr('width', 5)
         .attr('height', 5)
         .attr('opacity', 0)
-      this.$cursorLineGroup
+      this.$focusGroup
         .append('rect')
-        .attr('class', this.cursorLineFocusBottomRectClass)
+        .attr('class', this.focusBottomRectClass)
         .attr('x', 0)
         .attr('y', this.height - 5)
         .attr('width', 5)
@@ -539,15 +544,11 @@ export default {
       // Event handling
       // - Control tooltip visibility for mouse entering/leaving svg
       $svg.on('mouseenter', () => {
-        // this.$cursorLineGroup.attr('opacity', 1)
         EventBus.$emit('vis.mouseenter')
       })
       $svg.on('mouseleave', () => {
-        // this.$cursorLineGroup.attr('opacity', 0)
-        if (!this.dateFocus) {
-          this.mouseEvt = null
-          EventBus.$emit('vis.mouseleave')
-        }
+        this.mouseEvt = null
+        EventBus.$emit('vis.mouseleave')
       })
       $svg.on('click', () => {
         this.$emit('svgClick')
@@ -555,14 +556,12 @@ export default {
 
       // - find date when on the hoverLayer or brushLayer or when brushing
       this.$hoverLayer.on('touchmove mousemove', function() {
-        if (!self.dateFocus) {
-          self.$emit('eventChange', this)
-          self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
-          self.$emit('domainOver', null)
-        }
+        self.$emit('eventChange', this)
+        self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
+        self.$emit('domainOver', null)
       })
       this.brushX.on('brush', function() {
-        if (!self.dateFocus) {
+        if (!self.focusOn) {
           if (!event.selection) return
           if (event.sourceEvent.type === 'brush') return
           const s = event.selection
@@ -639,11 +638,9 @@ export default {
       this.$xAxisBrushGroup
         .selectAll('.brush')
         .on('touchmove mousemove', function() {
-          if (!self.dateFocus) {
-            self.$emit('eventChange', this)
-            self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
-            self.$emit('domainOver', null)
-          }
+          self.$emit('eventChange', this)
+          self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
+          self.$emit('domainOver', null)
         })
     },
 
@@ -668,12 +665,6 @@ export default {
         ? this.dynamicExtent
         : this.datasetDateExtent
       this.x.domain(xDomainExtent)
-      // this.y
-      //   .domain([
-      //     min(this.dataset, d => d._min),
-      //     max(this.dataset, d => d._total)
-      //   ])
-      //   .nice()
       this.y.domain([yMin, yMax]).nice()
       this.z.range(this.domainColours).domain(this.domainIds)
 
@@ -716,11 +707,9 @@ export default {
       this.$stackedAreaGroup
         .selectAll('path')
         .on('mousemove touchmove', function(d) {
-          if (!self.dateFocus) {
-            self.$emit('eventChange', this)
-            self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
-            self.$emit('domainOver', d.key)
-          }
+          self.$emit('eventChange', this)
+          self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
+          self.$emit('domainOver', d.key)
         })
     },
 
@@ -762,19 +751,11 @@ export default {
         true
       )
 
-      // if (find && this.currentDomainOver && find[this.currentDomainOver]) {
-      //   label = this.currentDomainOver
-      //   value = valueFormat(find[this.currentDomainOver])
-      // }
       if (find) {
         total = valueFormat(find._total)
       }
 
       this.positionCursorLine(xDate, fTime, bandwidth)
-      if (this.showTooltip) {
-        // this.positionRectText(xDate, fTime)
-      }
-      // this.positionTooltip(xDate, label, value, total)
     },
 
     // Update vis when container is resized
@@ -784,11 +765,8 @@ export default {
     },
 
     handleReset() {
-      // this.zoomed = false
-      // this.$emit('visZoomed', false)
       this.x.domain(this.datasetDateExtent)
       this.zoomRedraw()
-      this.$emit('svgClick', !this.dateFocus)
       EventBus.$emit('dataset.filter', [])
     },
 
@@ -803,6 +781,7 @@ export default {
       this.$yAxisGroup.call(this.customYAxis)
       this.$yAxisTickGroup.call(this.customYAxis)
       this.updateGuides()
+      this.drawFocus(this.focusDate)
 
       this.brushX.extent([[0, 0], [this.width, 40]])
       this.$xAxisBrushGroup.selectAll('.brush').call(this.brushX)
@@ -818,6 +797,7 @@ export default {
         .selectAll('path')
         .transition(transition)
         .attr('d', this.area)
+      this.drawFocus(this.focusDate)
     },
 
     updateGuides() {
@@ -877,20 +857,11 @@ export default {
       const $cursorLine = this.$cursorLineGroup.select(
         `.${this.cursorLineClass}`
       )
-      const $cursorLineFocusTopRect = this.$cursorLineGroup.select(
-        `.${this.cursorLineFocusTopRectClass}`
-      )
-      const $cursorLineFocusBottomRect = this.$cursorLineGroup.select(
-        `.${this.cursorLineFocusBottomRectClass}`
-      )
       const $cursorRect = this.$cursorLineGroup.select(
         `.${this.cursorRectClass}`
       )
-
       if (bandwidth) {
         $cursorLine.attr('opacity', 0)
-        $cursorLineFocusTopRect.attr('opacity', 0)
-        $cursorLineFocusBottomRect.attr('opacity', 0)
         $cursorRect
           .attr('x', xDate)
           .attr('width', bandwidth < 0 ? 0 : bandwidth)
@@ -899,8 +870,6 @@ export default {
           .style('pointer-events', 'none')
       } else {
         $cursorRect.attr('opacity', 0)
-        $cursorLineFocusTopRect.attr('x', xDate - 2.5)
-        $cursorLineFocusBottomRect.attr('x', xDate - 2.5)
         $cursorLine.attr('opacity', 1).attr('d', () => {
           let d = 'M' + xDate + ',' + this.height
           d += ' ' + xDate + ',' + 0
@@ -909,99 +878,69 @@ export default {
       }
     },
 
-    positionRectText(xDate, time) {
-      const rectWidth = time.length * 5 + 15
-      const $cursorLineRect = this.$cursorLineGroup.select(
-        `.${this.cursorLineRectClass}`
-      )
-      const $cursorLineText = this.$cursorLineGroup.select(
-        `.${this.cursorLineTextClass}`
-      )
-
-      // Cursor line/rect/text to follow mouse
-      $cursorLineRect
-        .attr('x', xDate - rectWidth / 2)
-        .attr('y', this.height - this.timeRectHeight)
-        .attr('width', rectWidth < 0 ? 0 : rectWidth)
-        .attr('opacity', 1)
-      $cursorLineText
-        .attr('x', xDate)
-        .attr('y', this.height - this.timeRectHeight + 14)
-        .text(time)
-
-      if (this.mouseLoc) {
-        const xMouse = this.mouseLoc[0]
-        const yMouse = this.mouseLoc[1]
-        const topCutoff = (20 / 100) * this.height
-        const leftCutoff = rectWidth / 2
-        const rightCutoff = this.width - rectWidth / 2
-
-        // Adjust the position of the tooltips if cursor is near the top
-        // if (yMouse <= topCutoff) {
-        //   $cursorLineRect.attr('y', this.height)
-        //   $cursorLineText.attr('y', this.height + 15)
-        // }
-
-        // - check for time tooltip
-        if (xMouse >= rightCutoff) {
-          $cursorLineRect.attr('x', rightCutoff - rectWidth / 2)
-          $cursorLineText.attr('x', rightCutoff)
-        } else if (xMouse <= leftCutoff) {
-          $cursorLineRect.attr('x', 0)
-          $cursorLineText.attr('x', rectWidth / 2)
+    drawFocus(focusDate) {
+      const time = new Date(focusDate).getTime()
+      let nextDatePeriod = null
+      const find = this.dataset.find((d, i) => {
+        const match = d.date === time
+        if (match) {
+          if (this.dataset[i + 1]) {
+            nextDatePeriod = this.dataset[i + 1].date
+          }
         }
+        return match
+      })
+      const xDate = this.x(time)
+      const nextPeriod = this.x(nextDatePeriod)
+      const bandwidth =
+        this.interval !== '5m' && this.interval !== '30m'
+          ? nextPeriod - xDate
+          : null
+
+      const $focusLine = this.$focusGroup.select(`.${this.focusLineClass}`)
+      const $focusTopRect = this.$focusGroup.select(
+        `.${this.focusTopRectClass}`
+      )
+      const $focusBottomRect = this.$focusGroup.select(
+        `.${this.focusBottomRectClass}`
+      )
+      const $focusRect = this.$focusGroup.select(`.${this.focusRectClass}`)
+      if (bandwidth) {
+        $focusLine.attr('opacity', 0)
+        $focusTopRect.attr('opacity', 0)
+        $focusBottomRect.attr('opacity', 0)
+        $focusRect
+          .attr('x', xDate)
+          .attr('width', bandwidth < 0 ? 0 : bandwidth)
+          .attr('height', this.height)
+          .attr('opacity', 1)
+          .style('pointer-events', 'none')
+      } else {
+        $focusRect.attr('opacity', 0)
+        $focusTopRect.attr('opacity', 1).attr('x', xDate - 2.5)
+        $focusBottomRect.attr('opacity', 1).attr('x', xDate - 2.5)
+        $focusLine.attr('opacity', 1).attr('d', () => {
+          let d = 'M' + xDate + ',' + this.height
+          d += ' ' + xDate + ',' + 0
+          return d
+        })
       }
     },
 
-    // positionTooltip(xDate, label, value, total) {
-    //   const text = `${label}: ${value}`
-    //   const totalText = `Total: ${total}`
-    //   const longest = text > totalText ? text : totalText
-    //   const rectWidth = longest.length * 6 + 15
-    //   const $tooltipRect = this.$tooltipGroup.select(
-    //     `.${this.tooltipRectClass}`
-    //   )
-    //   const $tooltipText = this.$tooltipGroup.select(
-    //     `.${this.tooltipTextClass}`
-    //   )
-    //   const $tooltipDomainColour = this.$tooltipGroup.select(
-    //     '.tooltip-domain-colour'
-    //   )
-
-    //   // create fuel tech colour square
-    //   $tooltipRect
-    //     .attr('x', xDate - rectWidth / 2)
-    //     .attr('y', 0)
-    //     .attr('width', rectWidth)
-    //     .attr('opacity', 1)
-    //   $tooltipText
-    //     .attr('x', xDate)
-    //     .attr('y', 15)
-    //     .text(text)
-    //     .append('tspan')
-    //     .attr('x', xDate)
-    //     .attr('dy', 12)
-    //     .text(totalText)
-
-    //   // Tooltips to stick to left or right corners when close to the edge
-    //   // - check for value tooltip
-    //   if (this.mouseLoc) {
-    //     const xMouse = this.mouseLoc[0]
-    //     const yMouse = this.mouseLoc[1]
-    //     const leftCutoff = rectWidth / 2
-    //     const rightCutoff = this.width - rectWidth / 2
-
-    //     if (xMouse >= rightCutoff) {
-    //       $tooltipRect.attr('x', rightCutoff - rectWidth / 2)
-    //       $tooltipText.attr('x', rightCutoff)
-    //       $tooltipText.select('tspan').attr('x', rightCutoff)
-    //     } else if (xMouse <= leftCutoff) {
-    //       $tooltipRect.attr('x', 0)
-    //       $tooltipText.attr('x', rectWidth / 2)
-    //       $tooltipText.select('tspan').attr('x', rectWidth / 2)
-    //     }
-    //   }
-    // },
+    hideFocus() {
+      const $focusLine = this.$focusGroup.select(`.${this.focusLineClass}`)
+      const $focusTopRect = this.$focusGroup.select(
+        `.${this.focusTopRectClass}`
+      )
+      const $focusBottomRect = this.$focusGroup.select(
+        `.${this.focusBottomRectClass}`
+      )
+      const $focusRect = this.$focusGroup.select(`.${this.focusRectClass}`)
+      $focusRect.attr('opacity', 0)
+      $focusLine.attr('opacity', 0)
+      $focusTopRect.attr('opacity', 0)
+      $focusBottomRect.attr('opacity', 0)
+    },
 
     // handle when selecting the date ranges on the brush area
     brushEnded(d) {
@@ -1010,7 +949,7 @@ export default {
       // Turn off the brush selection
       selectAll('.brush').call(this.brushX.move, null)
 
-      if (this.dateFocus) return
+      if (this.focusOn) return
 
       // Get the brush selection (start/end) points -> dates
       const s = event.selection
@@ -1085,8 +1024,6 @@ export default {
       // Set it to the current X domain
       this.x.domain(dateRange)
 
-      // this.zoomed = true
-      // this.$emit('visZoomed', true)
       this.zoomRedraw()
       EventBus.$emit('dataset.filter', dateRange)
     },
