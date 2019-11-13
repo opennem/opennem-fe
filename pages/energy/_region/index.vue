@@ -102,6 +102,8 @@
             :dynamic-extent="dateFilter"
             :hover-date="hoverDate"
             :hover-on="hoverOn"
+            :focus-date="focusDate"
+            :focus-on="focusOn"
             :range="range"
             :interval="interval"
             :mouse-loc="mouseLoc"
@@ -114,7 +116,6 @@
             :x-axis-dy="xAxisDy"
             :mobile-screen="tabletBreak"
             :incomplete-intervals="incompleteIntervals"
-            :date-focus="dateFocus"
             :compare-dates="compareDates"
             class="vis-chart"
             @eventChange="handleEventChange"
@@ -185,6 +186,8 @@
             :dynamic-extent="dateFilter"
             :hover-date="hoverDate"
             :hover-on="hoverOn"
+            :focus-date="focusDate"
+            :focus-on="focusOn"
             :range="range"
             :interval="interval"
             :mouse-loc="mouseLoc"
@@ -198,7 +201,6 @@
             :zoomed="zoomed"
             :x-guides="xGuides"
             :incomplete-intervals="incompleteIntervals"
-            :date-focus="dateFocus"
             class="emissions-volume-vis vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
@@ -249,6 +251,8 @@
             :dynamic-extent="dateFilter"
             :hover-date="hoverDate"
             :hover-on="hoverOn"
+            :focus-date="focusDate"
+            :focus-on="focusOn"
             :range="range"
             :interval="interval"
             :mouse-loc="mouseLoc"
@@ -261,7 +265,6 @@
             :show-zoom-out="false"
             :zoomed="zoomed"
             :x-guides="xGuides"
-            :date-focus="dateFocus"
             class="emissions-intensity-vis vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
@@ -313,6 +316,8 @@
             :dynamic-extent="dateFilter"
             :hover-date="hoverDate"
             :hover-on="hoverOn"
+            :focus-date="focusDate"
+            :focus-on="focusOn"
             :range="range"
             :interval="interval"
             :mouse-loc="mouseLoc"
@@ -327,7 +332,6 @@
             :show-zoom-out="false"
             :x-guides="xGuides"
             :y-guides="[300, 2000, 6000, 10000, 14000]"
-            :date-focus="dateFocus"
             class="price-pos-vis vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
@@ -341,6 +345,8 @@
             :dynamic-extent="dateFilter"
             :hover-date="hoverDate"
             :hover-on="hoverOn"
+            :focus-date="focusDate"
+            :focus-on="focusOn"
             :range="range"
             :interval="interval"
             :mouse-loc="mouseLoc"
@@ -355,7 +361,6 @@
             :show-zoom-out="false"
             :x-guides="xGuides"
             :y-guides="[0, 100, 200, 300]"
-            :date-focus="dateFocus"
             class="price-vis vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
@@ -369,6 +374,8 @@
             :dynamic-extent="dateFilter"
             :hover-date="hoverDate"
             :hover-on="hoverOn"
+            :focus-date="focusDate"
+            :focus-on="focusOn"
             :range="range"
             :interval="interval"
             :mouse-loc="mouseLoc"
@@ -384,7 +391,6 @@
             :show-zoom-out="false"
             :x-guides="xGuides"
             :y-guides="[-60, -400]"
-            :date-focus="dateFocus"
             class="price-neg-vis vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
@@ -452,6 +458,8 @@
             :dynamic-extent="dateFilter"
             :hover-date="hoverDate"
             :hover-on="hoverOn"
+            :focus-date="focusDate"
+            :focus-on="focusOn"
             :range="range"
             :interval="interval"
             :mouse-loc="mouseLoc"
@@ -465,7 +473,6 @@
             :show-zoom-out="false"
             :zoomed="zoomed"
             :x-guides="xGuides"
-            :date-focus="dateFocus"
             class="temperature-vis vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
@@ -485,6 +492,8 @@
           :dataset="filteredDataset"
           :hover-date="hoverDate"
           :hover-on="hoverOn"
+          :focus-date="focusDate"
+          :focus-on="focusOn"
           :range="range"
           :interval="interval"
           :is-energy="step"
@@ -518,7 +527,9 @@
             :domains="donutDomains"
             :dataset="filteredDataset"
             :hover-data="hoverData"
-            :hover-on="hoverOn" />
+            :hover-on="hoverOn"
+            :focus-data="focusData"
+            :focus-on="focusOn" />
 
           <donut-vis
             v-show="chartSummaryPie"
@@ -527,7 +538,9 @@
             :dataset="filteredDataset"
             :dynamic-extent="dateFilter"
             :hover-data="hoverData"
-            :hover-on="hoverOn" />
+            :hover-on="hoverOn"
+            :focus-data="focusData"
+            :focus-on="focusOn" />
         </section>
 
         <energy-records
@@ -538,7 +551,6 @@
           :interval="interval"
           :price-id="priceDomains.length > 0 ? priceDomains[0].id : null"
           :temperature-id="temperatureMeanId"
-          :date-focus="dateFocus"
           @recordSelect="handleRecordSelect"
           @recordDeselect="handleRecordDeselect"
           @recordMouseEnter="handleRecordMouseEnter"
@@ -647,6 +659,7 @@ export default {
       responses: [],
       hoverDate: null,
       hoverDomain: null,
+      focusDate: null,
       mouseLoc: null,
       tooltipLeft: 0,
       filteredDataset: [],
@@ -700,8 +713,8 @@ export default {
     compareDifference() {
       return this.$store.getters.compareDifference
     },
-    dateFocus() {
-      return this.$store.getters.dateFocus
+    focusOn() {
+      return this.$store.getters.focusOn
     },
     responsiveBreakWidth() {
       return this.$store.getters.responsiveBreakWidth
@@ -1021,6 +1034,10 @@ export default {
       const time = new Date(this.hoverDate).getTime()
       return this.dataset.find(d => d.date === time)
     },
+    focusData() {
+      const time = new Date(this.focusDate).getTime()
+      return this.dataset.find(d => d.date === time)
+    },
     hoverDomainLabel() {
       const find = this.summaryDomains.find(d => d.id === this.hoverDomain)
       return find ? find.label : '—'
@@ -1181,11 +1198,13 @@ export default {
       this.$store.dispatch('export/temperatureMaxId', updated)
     },
     compareDifference(updated) {
-      if (!updated) {
+      if (updated) {
+        this.compareDates.push(this.focusDate.valueOf())
+        this.$store.dispatch('focusOn', false)
+        this.focusDate = null
+      } else {
         this.compareData = []
         this.compareDates = []
-      } else {
-        this.compareDates.push(this.hoverDate.valueOf())
       }
     }
   },
@@ -1485,7 +1504,7 @@ export default {
 
     handleRangeChange(range) {
       this.$store.dispatch('compareDifference', false)
-      this.$store.dispatch('dateFocus', false)
+      this.$store.dispatch('focusOn', false)
       this.ready = false
       let interval = ''
       switch (range) {
@@ -1517,7 +1536,7 @@ export default {
     },
 
     handleIntervalChange(interval) {
-      this.$store.dispatch('dateFocus', false)
+      this.$store.dispatch('focusOn', false)
       this.$store.dispatch('compareDifference', false)
       this.compareData = []
       this.compareDates = []
@@ -1638,21 +1657,22 @@ export default {
       this.hoverDate = null
     },
 
-    handleRecordSelect() {
-      this.$store.dispatch('dateFocus', !this.dateFocus)
+    handleRecordSelect(date) {
+      this.$store.dispatch('focusOn', true)
+      this.focusDate = new Date(date)
     },
 
     handleRecordDeselect() {
-      this.$store.dispatch('dateFocus', false)
+      this.$store.dispatch('focusOn', false)
     },
 
     getDataByDate(dataset, date) {
       return dataset.find(d => d.date === date)
     },
 
-    handleSvgClick(resetDateFocus) {
+    handleSvgClick(resetfocusOn) {
+      this.$store.dispatch('focusOn', false)
       if (this.compareDifference) {
-        this.$store.dispatch('dateFocus', false)
         const hoverTime = this.hoverDate.valueOf()
         let newCompare = false
 
@@ -1689,8 +1709,17 @@ export default {
         if (this.compareDates.length === 0) {
           this.$store.dispatch('compareDifference', false)
         }
-      } else if (!this.isTouchDevice && !resetDateFocus) {
-        this.$store.dispatch('dateFocus', !this.dateFocus)
+      } else if (!this.isTouchDevice && !resetfocusOn) {
+        if (
+          this.focusDate &&
+          this.focusDate.valueOf() === this.hoverDate.valueOf()
+        ) {
+          this.focusDate = null
+          this.$store.dispatch('focusOn', false)
+        } else {
+          this.focusDate = this.hoverDate
+          this.$store.dispatch('focusOn', true)
+        }
       }
     }
   }
@@ -1895,10 +1924,10 @@ export default {
 ::v-deep .price-pos-vis .line-group path {
   stroke-dasharray: 1;
 }
-::v-deep .price-vis .cursor-line-focus-top-rect,
-::v-deep .price-vis .cursor-line-focus-bottom-rect,
-::v-deep .price-pos-vis .cursor-line-focus-bottom-rect,
-::v-deep .price-neg-vis .cursor-line-focus-top-rect {
+::v-deep .price-vis .focus-top-rect,
+::v-deep .price-vis .focus-bottom-rect,
+::v-deep .price-pos-vis .focus-bottom-rect,
+::v-deep .price-neg-vis .focus-top-rect {
   opacity: 0 !important;
 }
 .temperature-chart.adjustment {

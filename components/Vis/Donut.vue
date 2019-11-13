@@ -65,6 +65,14 @@ export default {
     hoverOn: {
       type: Boolean,
       default: () => false
+    },
+    focusData: {
+      type: Object,
+      default: () => null
+    },
+    focusOn: {
+      type: Boolean,
+      default: () => false
     }
   },
 
@@ -97,6 +105,14 @@ export default {
             value: this.hoverData[id]
           }
         })
+      } else if (this.focusOn && this.focusData) {
+        return domains.map(domain => {
+          const id = domain.id
+          return {
+            name: id,
+            value: this.focusData[id]
+          }
+        })
       }
 
       return domains.map(domain => {
@@ -123,7 +139,7 @@ export default {
     },
 
     isTotalPower() {
-      return this.unit === ' MW' && !this.hoverOn
+      return this.unit === ' MW' && (!this.hoverOn && !this.focusOn)
     },
 
     total() {
