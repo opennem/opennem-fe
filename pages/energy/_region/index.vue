@@ -126,7 +126,7 @@
         </div>
 
         <div
-          v-if="compareDifference"
+          v-if="compareDifference && ready"
           class="chart">
           <div
             class="chart-title no-hover"
@@ -671,7 +671,6 @@ export default {
       energyMax: 1000,
       emissionsIntensityMin: 0,
       isTouchDevice: false,
-      compareDates: [],
       compareData: []
     }
   },
@@ -715,6 +714,9 @@ export default {
     },
     focusOn() {
       return this.$store.getters.focusOn
+    },
+    compareDates() {
+      return this.$store.getters.compareDates
     },
     responsiveBreakWidth() {
       return this.$store.getters.responsiveBreakWidth
@@ -1151,7 +1153,9 @@ export default {
             this.dataset,
             this.compareDates[1]
           )
-          this.compareData = [firstData, secondData]
+          if (firstData && secondData) {
+            this.compareData = [firstData, secondData]
+          }
         }
       }
     },
@@ -1190,6 +1194,7 @@ export default {
     },
     dataset(updated) {
       this.$store.dispatch('export/dataset', updated)
+      this.updateCompare(updated)
     },
     xGuides(updated) {
       this.$store.dispatch('export/xGuides', updated)
@@ -1217,12 +1222,14 @@ export default {
     },
     compareDifference(updated) {
       if (updated) {
-        this.compareDates.push(this.focusDate.valueOf())
+        const compareDates = this.compareDates.slice()
+        compareDates.push(this.focusDate.valueOf())
+        this.$store.dispatch('compareDates', compareDates)
         this.$store.dispatch('focusOn', false)
         this.focusDate = null
       } else {
         this.compareData = []
-        this.compareDates = []
+        this.$store.dispatch('compareDates', [])
       }
     }
   },
@@ -1520,6 +1527,19 @@ export default {
       this.energyMax = energyMaxAll
     },
 
+    updateCompare(dataset) {
+      if (this.compareDates.length === 2) {
+        this.compareData = []
+        const firstData = this.getDataByDate(dataset, this.compareDates[0])
+        const secondData = this.getDataByDate(dataset, this.compareDates[1])
+        if (firstData && secondData) {
+          setTimeout(() => {
+            this.compareData = [firstData, secondData]
+          }, 100)
+        }
+      }
+    },
+
     handleRangeChange(range) {
       this.$store.dispatch('compareDifference', false)
       this.$store.dispatch('focusOn', false)
@@ -1547,7 +1567,7 @@ export default {
       }
       this.setDateFilter([])
       this.compareData = []
-      this.compareDates = []
+      this.$store.dispatch('compareDates', [])
       this.$store.dispatch('interval', interval)
       this.$store.dispatch('range', range)
       this.fetchData(this.regionId, range)
@@ -1557,7 +1577,7 @@ export default {
       this.$store.dispatch('focusOn', false)
       this.$store.dispatch('compareDifference', false)
       this.compareData = []
-      this.compareDates = []
+      this.$store.dispatch('compareDates', [])
       this.$store.dispatch('interval', interval)
       EnergyDataTransform.mergeResponses(
         this.responses,
@@ -1583,7 +1603,6 @@ export default {
           this.interval,
           dateRange[1]
         )
-        // const endTime = dateRange[1]
         this.filteredDataset = EnergyDataTransform.filterDataByStartEndDates(
           this.dataset,
           startTime,
@@ -1693,40 +1712,36 @@ export default {
       if (this.compareDifference) {
         const hoverTime = this.hoverDate.valueOf()
         let newCompare = false
+        let compareDates = this.compareDates.slice()
 
-        if (this.compareDates.length === 2) {
-          const newCompareDates = this.compareDates.filter(d => d !== hoverTime)
+        if (compareDates.length === 2) {
+          const newCompareDates = compareDates.filter(d => d !== hoverTime)
           if (newCompareDates.length === 1) {
-            this.compareDates = newCompareDates
+            compareDates = newCompareDates
             newCompare = true
           } else {
-            this.compareDates.pop()
+            compareDates.pop()
           }
         }
-        if (this.compareDates.length < 2 && !newCompare) {
-          const newCompareDates = this.compareDates.filter(d => d !== hoverTime)
+        if (compareDates.length < 2 && !newCompare) {
+          const newCompareDates = compareDates.filter(d => d !== hoverTime)
           if (newCompareDates.length === 0) {
-            this.compareDates = newCompareDates
+            compareDates = newCompareDates
           } else {
-            this.compareDates.push(hoverTime)
+            compareDates.push(hoverTime)
           }
         }
 
-        if (this.compareDates.length === 2) {
-          const firstData = this.getDataByDate(
-            this.dataset,
-            this.compareDates[0]
-          )
-          const secondData = this.getDataByDate(
-            this.dataset,
-            this.compareDates[1]
-          )
+        if (compareDates.length === 2) {
+          const firstData = this.getDataByDate(this.dataset, compareDates[0])
+          const secondData = this.getDataByDate(this.dataset, compareDates[1])
           this.compareData = [firstData, secondData]
         }
 
-        if (this.compareDates.length === 0) {
+        if (compareDates.length === 0) {
           this.$store.dispatch('compareDifference', false)
         }
+        this.$store.dispatch('compareDates', compareDates)
       } else if (!this.isTouchDevice && !resetfocusOn) {
         if (
           this.focusDate &&
@@ -1803,10 +1818,6 @@ export default {
 
       .hover-date-value {
         display: flex;
-        // background-color: rgba(255, 255, 255, 0.5);
-        // @include desktop {
-        //   background-color: transparent;
-        // }
       }
 
       .hover-date,

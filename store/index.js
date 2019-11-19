@@ -33,7 +33,8 @@ export const state = () => ({
   featureEmissions: false,
   filterPeriod: null,
   compareDifference: false,
-  focusOn: false
+  focusOn: false,
+  compareDates: []
 })
 
 export const mutations = {
@@ -120,6 +121,9 @@ export const mutations = {
   },
   focusOn(state, data) {
     state.focusOn = data
+  },
+  compareDates(state, data) {
+    state.compareDates = data
   }
 }
 
@@ -215,7 +219,8 @@ export const getters = {
   featureEmissions: state => state.featureEmissions,
   filterPeriod: state => state.filterPeriod,
   compareDifference: state => state.compareDifference,
-  focusOn: state => state.focusOn
+  focusOn: state => state.focusOn,
+  compareDates: state => state.compareDates
 }
 
 export const actions = {
@@ -299,5 +304,8 @@ export const actions = {
   },
   focusOn({ commit }, data) {
     commit('focusOn', data)
+  },
+  compareDates({ commit }, data) {
+    commit('compareDates', data)
   }
 }
