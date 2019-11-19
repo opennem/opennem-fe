@@ -398,6 +398,7 @@ export default {
     this.setupWidthHeight()
     this.setup()
     this.update()
+    this.drawCompare(this.compareDates)
   },
 
   beforeDestroy() {

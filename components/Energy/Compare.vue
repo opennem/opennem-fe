@@ -76,7 +76,7 @@ export default {
 
   watch: {
     compareData(update) {
-      if (update.length === 2) {
+      if (update.length === 2 && update[0]) {
         let latter = update[0]
         let former = update[1]
         if (update[1].date > latter.date) {
