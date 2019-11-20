@@ -2,12 +2,13 @@
   <div class="compare-container">
     <div class="compare-legend">
       <div
-        v-for="(domain, index) in domains"
+        v-for="(domain, index) in updatedDomains"
         :key="`domain-${index}`"
         class="legend-item">
         <span
           :style="{
-            'background-color': domain.colour
+            'background-color': domain.colour,
+            border: domain.id === '_total' ? `1px dashed #c74523` : 'none'
           }"
           class="colour-square" />
         {{ domain.label }}
@@ -16,7 +17,7 @@
     <div class="compare-chart">
       <column-vis
         v-if="hasCompareData"
-        :domains="domains"
+        :domains="updatedDomains"
         :dataset="dataset"
         :vis-height="visHeight" />
     </div>
@@ -71,6 +72,20 @@ export default {
         return change
       }
       return null
+    },
+    isReducedDemand() {
+      return this.dataset && this.dataset._total < 0
+    },
+    updatedDomains() {
+      const domains = this.domains.slice()
+      if (this.isReducedDemand) {
+        domains.push({
+          colour: 'rgba(203, 87, 58, 0.5)',
+          id: '_total',
+          label: 'Reduced Demand'
+        })
+      }
+      return domains
     }
   },
 

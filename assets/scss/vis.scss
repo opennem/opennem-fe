@@ -164,4 +164,10 @@ path.line-path {
     stroke: rgb(130, 130, 130);
     stroke-dasharray: 2;
   }
+  rect._total {
+    stroke-width: 1px;
+    stroke: $opennem-link-color;
+    stroke-dasharray: 4;
+    fill-opacity: 0.5;
+  }
 }

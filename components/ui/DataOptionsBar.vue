@@ -122,6 +122,8 @@ export default {
     },
     handleFilterPeriodClick(period) {
       this.$store.dispatch('filterPeriod', period)
+      this.$store.dispatch('compareDifference', false)
+      this.$store.dispatch('compareDates', [])
     },
     handleCompareClick() {
       this.$store.dispatch('compareDifference', !this.compareDifference)

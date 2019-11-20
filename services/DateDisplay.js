@@ -119,6 +119,10 @@ export default {
     let display = ''
     let formatString = ''
 
+    if (!time) {
+      return '—'
+    }
+
     switch (range) {
       case '30D':
         formatString = getFormatStringDay(sYear)
