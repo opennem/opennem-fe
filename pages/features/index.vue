@@ -31,13 +31,6 @@
 </template>
 
 <script>
-import { lsGet, lsSet } from '~/services/LocalStorage'
-
-const MutationTypes = {
-  FEATURE_TOGGLE_EMISSIONS: 'FEATURE_TOGGLE_EMISSIONS',
-  FEATURE_TOGGLE_COMPARE: 'FEATURE_TOGGLE_COMPARE'
-}
-
 export default {
   data() {
     return {
@@ -45,33 +38,25 @@ export default {
       fCompare: false
     }
   },
+  computed: {
+    featureEmissions() {
+      return this.$store.getters.featureEmissions
+    },
+    featureCompare() {
+      return this.$store.getters.featureCompare
+    }
+  },
   mounted() {
-    const featureEmissions = lsGet(MutationTypes.FEATURE_TOGGLE_EMISSIONS)
-    const featureCompare = lsGet(MutationTypes.FEATURE_TOGGLE_COMPARE)
-    // set up local storage
-    if (featureEmissions) {
-      this.$store.dispatch('featureEmissions', featureEmissions)
-      this.fEmissions = featureEmissions
-    } else {
-      lsSet(MutationTypes.FEATURE_TOGGLE_EMISSIONS, false)
-    }
-
-    if (featureCompare) {
-      this.$store.dispatch('featureCompare', featureCompare)
-      this.fCompare = featureCompare
-    } else {
-      lsSet(MutationTypes.FEATURE_TOGGLE_COMPARE, false)
-    }
+    this.fEmissions = this.featureEmissions
+    this.fCompare = this.featureCompare
   },
   methods: {
     handleClick() {
       const check = !this.fEmissions
-      lsSet(MutationTypes.FEATURE_TOGGLE_EMISSIONS, check)
       this.$store.dispatch('featureEmissions', check)
     },
     handleFeatureCompareClick() {
       const check = !this.fCompare
-      lsSet(MutationTypes.FEATURE_TOGGLE_COMPARE, check)
       this.$store.dispatch('featureCompare', check)
     },
     handleDoneClick() {

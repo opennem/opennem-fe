@@ -1,9 +1,23 @@
 import cloneDeep from 'lodash.clonedeep'
+import { lsGet, lsSet } from '~/services/LocalStorage'
 import * as FUEL_TECHS from '~/constants/fuelTech.js'
 import * as SimplifiedGroup from '~/constants/group-simplified.js'
 import * as FlexibilityGroup from '~/constants/group-flexibility.js'
 import * as RenewableFossilGroup from '~/constants/group-renewable-fossil.js'
 import * as SolarResidualGroup from '~/constants/group-solar-residual.js'
+
+const MutationTypes = {
+  FEATURE_TOGGLE_EMISSIONS: 'FEATURE_TOGGLE_EMISSIONS',
+  FEATURE_TOGGLE_COMPARE: 'FEATURE_TOGGLE_COMPARE'
+}
+const featureEmissions = lsGet(MutationTypes.FEATURE_TOGGLE_EMISSIONS)
+const featureCompare = lsGet(MutationTypes.FEATURE_TOGGLE_COMPARE)
+if (!featureEmissions) {
+  lsSet(MutationTypes.FEATURE_TOGGLE_EMISSIONS, false)
+}
+if (!featureCompare) {
+  lsSet(MutationTypes.FEATURE_TOGGLE_COMPARE, false)
+}
 
 export const state = () => ({
   currentView: 'energy', // energy, facilities
@@ -30,8 +44,8 @@ export const state = () => ({
   chartSummaryPie: true,
   exportAttribution: '@name',
   percentContributionTo: 'demand', // or generation
-  featureEmissions: false,
-  featureCompare: false,
+  featureEmissions,
+  featureCompare,
   filterPeriod: null,
   compareDifference: false,
   focusOn: false,
@@ -112,9 +126,11 @@ export const mutations = {
     state.percentContributionTo = data
   },
   featureEmissions(state, data) {
+    lsSet(MutationTypes.FEATURE_TOGGLE_EMISSIONS, data)
     state.featureEmissions = data
   },
   featureCompare(state, data) {
+    lsSet(MutationTypes.FEATURE_TOGGLE_COMPARE, data)
     state.featureCompare = data
   },
   filterPeriod(state, data) {
