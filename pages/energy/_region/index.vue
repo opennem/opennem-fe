@@ -682,6 +682,9 @@ export default {
     featureEmissions() {
       return this.$store.getters.featureEmissions
     },
+    featureCompare() {
+      return this.$store.getters.featureCompare
+    },
     dateFilter() {
       return this.$store.getters.dateFilter
     },
@@ -1281,6 +1284,12 @@ export default {
     })
     this.fetchData(this.regionId, this.range)
     this.mounted = true
+
+    if (!this.featureCompare) {
+      this.$store.dispatch('compareDifference', false)
+      this.compareData = []
+      this.$store.dispatch('compareDates', [])
+    }
   },
 
   beforeDestroy() {
@@ -1712,51 +1721,69 @@ export default {
       return dataset.find(d => d.date === date)
     },
 
-    handleSvgClick(resetfocusOn) {
-      this.$store.dispatch('focusOn', false)
-      if (this.compareDifference) {
+    handleSvgClick(metaKey) {
+      if (
+        this.featureCompare &&
+        metaKey &&
+        this.focusOn &&
+        !this.compareDifference
+      ) {
+        this.$store.dispatch('compareDifference', true)
+        this.$store.dispatch('focusOn', false)
         const hoverTime = this.hoverDate.valueOf()
-        let newCompare = false
-        let compareDates = this.compareDates.slice()
+        const focusTime = this.focusDate.valueOf()
+        const firstData = this.getDataByDate(this.dataset, focusTime)
+        const secondData = this.getDataByDate(this.dataset, hoverTime)
+        setTimeout(() => {
+          this.$store.dispatch('compareDates', [focusTime, hoverTime])
+          this.compareData = [firstData, secondData].slice()
+        }, 10)
+      } else {
+        this.$store.dispatch('focusOn', false)
+        if (this.compareDifference) {
+          const hoverTime = this.hoverDate.valueOf()
+          let newCompare = false
+          let compareDates = this.compareDates.slice()
 
-        if (compareDates.length === 2) {
-          const newCompareDates = compareDates.filter(d => d !== hoverTime)
-          if (newCompareDates.length === 1) {
-            compareDates = newCompareDates
-            newCompare = true
-          } else {
-            compareDates.pop()
+          if (compareDates.length === 2) {
+            const newCompareDates = compareDates.filter(d => d !== hoverTime)
+            if (newCompareDates.length === 1) {
+              compareDates = newCompareDates
+              newCompare = true
+            } else {
+              compareDates.pop()
+            }
           }
-        }
-        if (compareDates.length < 2 && !newCompare) {
-          const newCompareDates = compareDates.filter(d => d !== hoverTime)
-          if (newCompareDates.length === 0) {
-            compareDates = newCompareDates
-          } else {
-            compareDates.push(hoverTime)
+          if (compareDates.length < 2 && !newCompare) {
+            const newCompareDates = compareDates.filter(d => d !== hoverTime)
+            if (newCompareDates.length === 0) {
+              compareDates = newCompareDates
+            } else {
+              compareDates.push(hoverTime)
+            }
           }
-        }
 
-        if (compareDates.length === 2) {
-          const firstData = this.getDataByDate(this.dataset, compareDates[0])
-          const secondData = this.getDataByDate(this.dataset, compareDates[1])
-          this.compareData = [firstData, secondData]
-        }
+          if (compareDates.length === 2) {
+            const firstData = this.getDataByDate(this.dataset, compareDates[0])
+            const secondData = this.getDataByDate(this.dataset, compareDates[1])
+            this.compareData = [firstData, secondData]
+          }
 
-        if (compareDates.length === 0) {
-          this.$store.dispatch('compareDifference', false)
-        }
-        this.$store.dispatch('compareDates', compareDates)
-      } else if (!this.isTouchDevice && !resetfocusOn) {
-        if (
-          this.focusDate &&
-          this.focusDate.valueOf() === this.hoverDate.valueOf()
-        ) {
-          this.focusDate = null
-          this.$store.dispatch('focusOn', false)
-        } else {
-          this.focusDate = this.hoverDate
-          this.$store.dispatch('focusOn', true)
+          if (compareDates.length === 0) {
+            this.$store.dispatch('compareDifference', false)
+          }
+          this.$store.dispatch('compareDates', compareDates)
+        } else if (!this.isTouchDevice) {
+          if (
+            this.focusDate &&
+            this.focusDate.valueOf() === this.hoverDate.valueOf()
+          ) {
+            this.focusDate = null
+            this.$store.dispatch('focusOn', false)
+          } else {
+            this.focusDate = this.hoverDate
+            this.$store.dispatch('focusOn', true)
+          }
         }
       }
     }
