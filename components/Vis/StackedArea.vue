@@ -532,7 +532,7 @@ export default {
         EventBus.$emit('vis.mouseleave')
       })
       $svg.on('click', () => {
-        this.$emit('svgClick')
+        this.$emit('svgClick', event.metaKey)
       })
 
       // - find date when on the hoverLayer or brushLayer or when brushing
