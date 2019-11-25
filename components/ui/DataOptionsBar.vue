@@ -36,7 +36,7 @@
     </div>
 
     <button
-      v-if="(focusOn || compareDifference) && isEnergy"
+      v-if="(focusOn || compareDifference) && isEnergy && featureCompare"
       :class="{ 'is-selected': compareDifference }"
       class="compare-button button is-rounded"
       @click="handleCompareClick">Compare</button>
@@ -87,6 +87,9 @@ export default {
     },
     isEnergy() {
       return this.$store.getters.energyChartType === 'energy'
+    },
+    featureCompare() {
+      return this.$store.getters.featureCompare
     }
   },
 
