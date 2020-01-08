@@ -75,7 +75,7 @@ export default function(domains, data) {
         const isMarketValueType = type === 'market_value'
         const isTemperatureType = checkTemperatureType(type)
         const isPriceType = type === 'price' || type === 'volume_weighted_price'
-        const isEmissionsType = type === 'emissions'
+        const isEmissionsType = type === 'generation_emissions'
         const isOriginalPrice =
           isPriceType && id !== PRICE_ABOVE_300 && id !== PRICE_BELOW_0
 

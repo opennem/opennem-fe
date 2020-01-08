@@ -426,7 +426,7 @@ export default {
     groupEmissionDomains() {
       const dict = this.fuelTechGroup
       const domains = this.emissionDomains
-      return Domain.parseDomains(domains, dict, 'emissions')
+      return Domain.parseDomains(domains, dict, 'generation_emissions')
     },
 
     hasTemperatureData() {

@@ -55,7 +55,7 @@ function transformEnergyData(
     const isMarketValueData = type === 'market_value'
     const isTemperatureType = checkTemperatureType(type)
     const isPriceData = type === 'price' || type === 'volume_weighted_price'
-    const isEmissionData = type === 'emissions'
+    const isEmissionData = type === 'generation_emissions'
 
     newHistory.forEach(r => {
       const findDate = dataset.find(f => f.date === r.date)
@@ -247,7 +247,7 @@ function addEmptyDataPoint(time, dataset) {
     } else {
       if (
         _includes(key, 'temperature') ||
-        _includes(key, 'emissions') ||
+        _includes(key, 'generation_emissions') ||
         _includes(key, 'volume_weighted_price')
       ) {
         // console.log(key)
@@ -476,7 +476,8 @@ export default {
         (totalRenewables / totalGeneration) * 100
       dataset[i]._min = min
       dataset[i]._totalEmissionsVol = totalEmissionsVol
-      dataset[i]._emissionsIntensity = totalEmissionsVol / totalDemand || 0
+      dataset[i]._emissionsIntensity =
+        (totalEmissionsVol / totalDemand) * 1000 || 0
       dataset[i]._actualLastDate = actualLastDate
       dataset[i]._actualStartDate = actualStartDate
       dataset[i]._totalMarketValue = totalMarketValue

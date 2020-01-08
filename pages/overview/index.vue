@@ -201,7 +201,7 @@ export default {
     groupEmissionDomains() {
       const dict = this.fuelTechGroup
       const domains = this.emissionDomains
-      return Domain.parseDomains(domains, dict, 'emissions')
+      return Domain.parseDomains(domains, dict, 'generation_emissions')
     },
 
     hasTemperatureData() {
@@ -525,7 +525,7 @@ export default {
       this.emissionDomains = Domain.getDomainObjs(
         this.regionId,
         this.emissionsOrder,
-        'emissions'
+        'generation_emissions'
       )
     },
 

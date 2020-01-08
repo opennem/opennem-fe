@@ -88,9 +88,11 @@ export default {
   getEmissionsDomains(data) {
     let domains = []
     data.forEach(r => {
-      const objs = r.data.filter(d => d.type === 'emissions').map(d => {
-        return { id: d.id, fuelTech: d.fuel_tech, type: d.type }
-      })
+      const objs = r.data
+        .filter(d => d.type === 'generation_emissions')
+        .map(d => {
+          return { id: d.id, fuelTech: d.fuel_tech, type: d.type }
+        })
       domains = [...domains, ...objs]
     })
     return domains
