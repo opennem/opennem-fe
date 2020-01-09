@@ -261,7 +261,7 @@
             :show-point-on-hover="true"
             :vis-height="120"
             :y-min="emissionsIntensityMin"
-            :curve="'smooth'"
+            :curve="'step'"
             :show-zoom-out="false"
             :zoomed="zoomed"
             :x-guides="xGuides"
