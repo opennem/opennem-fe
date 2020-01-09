@@ -429,6 +429,7 @@ export default {
     dataset.forEach((d, i) => {
       let totalDemand = 0,
         totalSources = 0,
+        totalGeneration = 0,
         min = 0,
         totalEmissionsVol = 0,
         totalRenewables = 0,
@@ -444,6 +445,10 @@ export default {
 
         if (domain.category == 'source') {
           totalSources += d[id] || 0
+        }
+
+        if (domain.category == 'source' && domain.fuelTech !== 'imports') {
+          totalGeneration += d[id] || 0
         }
 
         totalDemand += d[id] || 0
@@ -472,6 +477,7 @@ export default {
       dataset[i]._totalRenewables = totalRenewables
       dataset[i]._totalDemandRenewables = (totalRenewables / totalDemand) * 100
       dataset[i]._totalSources = totalSources
+      dataset[i]._totalGeneration = totalGeneration
       dataset[i]._totalSourcesRenewables =
         (totalRenewables / totalSources) * 100
       dataset[i]._min = min
@@ -479,7 +485,7 @@ export default {
       // dataset[i]._emissionsIntensity =
       //   (totalEmissionsVol / totalDemand) * 1000 || 0
       dataset[i]._emissionsIntensity =
-        (totalEmissionsVol / totalSources) * 1000 || 0
+        (totalEmissionsVol / totalGeneration) * 1000 || 0
       dataset[i]._actualLastDate = actualLastDate
       dataset[i]._actualStartDate = actualStartDate
       dataset[i]._totalMarketValue = totalMarketValue
