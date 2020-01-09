@@ -292,7 +292,7 @@ export default {
 
     renewables() {
       const key =
-        this.percentContributionTo === 'demand' ? '_total' : '_totalGeneration'
+        this.percentContributionTo === 'demand' ? '_total' : '_totalSources'
       const totalRenewables = this.dataset.reduce(
         (a, b) => a + b._totalRenewables,
         0
@@ -303,7 +303,7 @@ export default {
 
     pointRenewables() {
       const key =
-        this.percentContributionTo === 'demand' ? '_total' : '_totalGeneration'
+        this.percentContributionTo === 'demand' ? '_total' : '_totalSources'
       const totalRenewables = this.pointSummary._totalRenewables
       const totalDemand = this.pointSummary[key]
       return (totalRenewables / totalDemand) * 100

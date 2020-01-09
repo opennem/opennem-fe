@@ -428,7 +428,7 @@ export default {
     // Calculate total, min, reverse value for imports and load types
     dataset.forEach((d, i) => {
       let totalDemand = 0,
-        totalGeneration = 0,
+        totalSources = 0,
         min = 0,
         totalEmissionsVol = 0,
         totalRenewables = 0,
@@ -443,7 +443,7 @@ export default {
         }
 
         if (domain.category == 'source') {
-          totalGeneration += d[id] || 0
+          totalSources += d[id] || 0
         }
 
         totalDemand += d[id] || 0
@@ -471,15 +471,15 @@ export default {
       dataset[i]._total = totalDemand
       dataset[i]._totalRenewables = totalRenewables
       dataset[i]._totalDemandRenewables = (totalRenewables / totalDemand) * 100
-      dataset[i]._totalGeneration = totalGeneration
-      dataset[i]._totalGenerationRenewables =
-        (totalRenewables / totalGeneration) * 100
+      dataset[i]._totalSources = totalSources
+      dataset[i]._totalSourcesRenewables =
+        (totalRenewables / totalSources) * 100
       dataset[i]._min = min
       dataset[i]._totalEmissionsVol = totalEmissionsVol
       // dataset[i]._emissionsIntensity =
       //   (totalEmissionsVol / totalDemand) * 1000 || 0
       dataset[i]._emissionsIntensity =
-        (totalEmissionsVol / totalGeneration) * 1000 || 0
+        (totalEmissionsVol / totalSources) * 1000 || 0
       dataset[i]._actualLastDate = actualLastDate
       dataset[i]._actualStartDate = actualStartDate
       dataset[i]._totalMarketValue = totalMarketValue

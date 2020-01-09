@@ -133,7 +133,7 @@ export default {
           total += d[domain.id]
         })
         return {
-          _totalGeneration: total
+          _totalSources: total
         }
       })
     },
@@ -144,7 +144,7 @@ export default {
 
     total() {
       if (this.isTotalPower) {
-        return d3Mean(this.updatedDataset, d => d._totalGeneration)
+        return d3Mean(this.updatedDataset, d => d._totalSources)
       }
       return this.donutDataset.reduce((a, b) => a + b.value, 0)
     },
