@@ -251,7 +251,10 @@ function addEmptyDataPoint(time, dataset) {
         _includes(key, 'volume_weighted_price')
       ) {
         // console.log(key)
-      } else if (_includes(key, '_volWeightedPrice')) {
+      } else if (
+        _includes(key, '_volWeightedPrice') ||
+        _includes(key, '_emissionsIntensity')
+      ) {
         emptyDataPoint[key] = emptyDataPoint[key]
       } else {
         emptyDataPoint[key] = null
