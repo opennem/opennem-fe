@@ -258,7 +258,6 @@
             :mouse-loc="mouseLoc"
             :show-x-axis="false"
             :show-tooltip="false"
-            :show-point-on-hover="true"
             :vis-height="120"
             :y-min="emissionsIntensityMin"
             :curve="'step'"
