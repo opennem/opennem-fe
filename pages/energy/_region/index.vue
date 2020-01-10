@@ -161,7 +161,7 @@
                 }"
                 class="fal fa-fw" />
               <strong>Emissions Volume</strong>
-              <small>tCO2e</small>
+              <small>tCO₂e</small>
             </div>
             <div
               v-show="chartEmissionsVolume"
@@ -179,11 +179,11 @@
                     :style="{ 'background-color': hoverDomainColour }"
                     class="colour-square" />
                   {{ hoverDomainLabel }}
-                  <strong>{{ hoverEmissionVolumeValue| formatValue }}</strong>
+                  <strong>{{ hoverEmissionVolumeValue| formatValue }} tCO₂e</strong>
                 </span>
                 <span>
                   Total
-                  <strong>{{ hoverEmissionVolumeTotal | formatValue }} tCO2e</strong>
+                  <strong>{{ hoverEmissionVolumeTotal | formatValue }} tCO₂e</strong>
                 </span>
               </div>
             </div>
@@ -668,6 +668,7 @@ export default {
       responses: [],
       hoverDate: null,
       hoverDomain: null,
+      hoverEmissionVolumeDomain: null,
       focusDate: null,
       mouseLoc: null,
       tooltipLeft: 0,
@@ -1077,7 +1078,9 @@ export default {
       return null
     },
     hoverDomainLabel() {
-      const find = this.summaryDomains.find(d => d.id === this.hoverDomain)
+      const find = this.emissionStackedAreaDomains.find(
+        d => d.id === this.hoverEmissionVolumeDomain
+      )
       return find ? find.label : '—'
     },
     hoverValue() {
@@ -1086,7 +1089,9 @@ export default {
         : null
     },
     hoverDomainColour() {
-      const find = this.stackedAreaDomains.find(d => d.id === this.hoverDomain)
+      const find = this.emissionStackedAreaDomains.find(
+        d => d.id === this.hoverEmissionVolumeDomain
+      )
       if (find) return find.colour
       return null
     },
@@ -1101,7 +1106,7 @@ export default {
     },
     hoverEmissionVolumeValue() {
       return this.hoverOrFocusData
-        ? this.hoverOrFocusData[this.hoverDomain]
+        ? this.hoverOrFocusData[this.hoverEmissionVolumeDomain]
         : null
     },
     hoverEmissionVolumeTotal() {
@@ -1693,7 +1698,7 @@ export default {
     },
 
     handleEmissionsDomainOver(domain) {
-      console.log(domain)
+      this.hoverEmissionVolumeDomain = domain
     },
 
     handleVisMouseMove(evt, dataset, date) {
