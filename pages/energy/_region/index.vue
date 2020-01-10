@@ -172,6 +172,15 @@
                 </time>
               </div>
               <div class="hover-values">
+                <span
+                  v-if="hoverEmissionVolumeValue"
+                  class="ft-value">
+                  <em
+                    :style="{ 'background-color': hoverDomainColour }"
+                    class="colour-square" />
+                  {{ hoverDomainLabel }}
+                  <strong>{{ hoverEmissionVolumeValue| formatValue }}</strong>
+                </span>
                 <span>
                   Total
                   <strong>{{ hoverEmissionVolumeTotal | formatValue }} tCO2e</strong>
@@ -204,6 +213,7 @@
             class="emissions-volume-vis vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
+            @domainOver="handleEmissionsDomainOver"
             @svgClick="handleSvgClick"
           />
         </div>
@@ -831,9 +841,18 @@ export default {
         : this.energyDomains
     },
     emissionStackedAreaDomains() {
-      return this.groupEmissionDomains.length > 0
-        ? this.groupEmissionDomains
-        : this.emissionDomains
+      const hidden = this.fuelTechGroup
+        ? this.hiddenFuelTechs.map(d => {
+            return d.substring(0, d.lastIndexOf('.'))
+          })
+        : this.hiddenFuelTechs
+      let domains =
+        this.groupEmissionDomains.length > 0
+          ? this.groupEmissionDomains
+          : this.emissionDomains
+      return this.fuelTechGroup
+        ? domains.filter(d => !_includes(hidden, d.group))
+        : domains.filter(d => !_includes(hidden, d.fuelTech))
     },
     stackedAreaHeight() {
       let height = 330
@@ -1080,11 +1099,19 @@ export default {
       }
       return total
     },
+    hoverEmissionVolumeValue() {
+      return this.hoverOrFocusData
+        ? this.hoverOrFocusData[this.hoverDomain]
+        : null
+    },
     hoverEmissionVolumeTotal() {
+      let total = 0
       if (this.hoverOrFocusData) {
-        return this.hoverOrFocusData._totalEmissionsVol
+        this.emissionStackedAreaDomains.forEach(d => {
+          total += this.hoverOrFocusData[d.id]
+        })
       }
-      return 0
+      return total
     },
     hoverEmissionsIntensity() {
       if (this.hoverOrFocusData) {
@@ -1663,6 +1690,10 @@ export default {
 
     handleDomainOver(domain) {
       this.hoverDomain = domain
+    },
+
+    handleEmissionsDomainOver(domain) {
+      console.log(domain)
     },
 
     handleVisMouseMove(evt, dataset, date) {

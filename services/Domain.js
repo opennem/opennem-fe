@@ -24,6 +24,7 @@ export default {
             colour: dict.FUEL_TECH_GROUP_COLOUR[id],
             category: dict.FUEL_TECH_CATEGORY[id],
             type: find.type,
+            group: id,
             domainIds
           })
         }
@@ -42,7 +43,8 @@ export default {
         label: FUEL_TECHS.FUEL_TECH_LABEL[ft],
         colour: FUEL_TECHS.DEFAULT_FUEL_TECH_COLOUR[ft],
         category: FUEL_TECHS.FUEL_TECH_CATEGORY[ft],
-        renewable: FUEL_TECHS.FUEL_TECH_RENEWABLE[ft]
+        renewable: FUEL_TECHS.FUEL_TECH_RENEWABLE[ft],
+        group: null
       }
     })
   },
@@ -54,7 +56,8 @@ export default {
         id: `${ft}.energy`,
         label: dict.FUEL_TECH_LABEL[ft],
         colour: dict.FUEL_TECH_GROUP_COLOUR[ft],
-        category: dict.FUEL_TECH_CATEGORY[ft]
+        category: dict.FUEL_TECH_CATEGORY[ft],
+        group: ft
       }
     })
   },
@@ -78,7 +81,12 @@ export default {
       const objs = r.data
         .filter(d => d.type === 'power' || d.type === 'energy')
         .map(d => {
-          return { id: d.id, fuelTech: d.fuel_tech, type: d.type }
+          return {
+            id: d.id,
+            fuelTech: d.fuel_tech,
+            type: d.type,
+            group: d.group
+          }
         })
       domains = [...domains, ...objs]
     })
@@ -91,7 +99,12 @@ export default {
       const objs = r.data
         .filter(d => d.type === 'generation_emissions')
         .map(d => {
-          return { id: d.id, fuelTech: d.fuel_tech, type: d.type }
+          return {
+            id: d.id,
+            fuelTech: d.fuel_tech,
+            type: d.type,
+            group: d.group
+          }
         })
       domains = [...domains, ...objs]
     })
