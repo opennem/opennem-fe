@@ -176,9 +176,9 @@
                   v-if="hoverEmissionVolumeValue"
                   class="ft-value">
                   <em
-                    :style="{ 'background-color': hoverDomainColour }"
+                    :style="{ 'background-color': hoverEmissionVolumeDomainColour }"
                     class="colour-square" />
-                  {{ hoverDomainLabel }}
+                  {{ hoverEmissionVolumeDomainLabel }}
                   <strong>{{ hoverEmissionVolumeValue| formatValue }} tCO₂e</strong>
                 </span>
                 <span>
@@ -1078,6 +1078,10 @@ export default {
       return null
     },
     hoverDomainLabel() {
+      const find = this.stackedAreaDomains.find(d => d.id === this.hoverDomain)
+      return find ? find.label : '—'
+    },
+    hoverEmissionVolumeDomainLabel() {
       const find = this.emissionStackedAreaDomains.find(
         d => d.id === this.hoverEmissionVolumeDomain
       )
@@ -1089,6 +1093,11 @@ export default {
         : null
     },
     hoverDomainColour() {
+      const find = this.stackedAreaDomains.find(d => d.id === this.hoverDomain)
+      if (find) return find.colour
+      return null
+    },
+    hoverEmissionVolumeDomainColour() {
       const find = this.emissionStackedAreaDomains.find(
         d => d.id === this.hoverEmissionVolumeDomain
       )
