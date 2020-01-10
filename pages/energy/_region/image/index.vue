@@ -63,7 +63,7 @@
             class="chart">
             <div class="chart-title">
               <strong>Emissions Volume</strong>
-              <small>tCO2e</small>
+              <small>tCO₂e</small>
             </div>
             <stacked-area-vis
               :domains="emissionStackedAreaDomains"
