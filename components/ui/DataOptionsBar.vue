@@ -35,11 +35,23 @@
       </span>
     </div>
 
-    <button
-      v-if="(focusOn || compareDifference) && isEnergy && featureCompare"
-      :class="{ 'is-selected': compareDifference }"
-      class="compare-button button is-rounded"
-      @click="handleCompareClick">Compare</button>
+    <div class="more-buttons">
+      <div class="buttons has-addons">
+        <span
+          :class="{ 'is-selected': isConsumption }"
+          class="button is-rounded"
+          @click="handlePercentContributionToClick">Consumption</span><span
+            :class="{ 'is-selected': isGeneration }"
+            class="button is-rounded"
+            @click="handlePercentContributionToClick">Generation</span>
+      </div>
+      
+      <button
+        v-if="(focusOn || compareDifference) && isEnergy && featureCompare"
+        :class="{ 'is-selected': compareDifference }"
+        class="compare-button button is-rounded"
+        @click="handleCompareClick">Compare</button>
+    </div>
   </div>
 </template>
 
@@ -90,6 +102,15 @@ export default {
     },
     featureCompare() {
       return this.$store.getters.featureCompare
+    },
+    percentContributionTo() {
+      return this.$store.getters.percentContributionTo
+    },
+    isConsumption() {
+      return this.percentContributionTo === 'demand'
+    },
+    isGeneration() {
+      return this.percentContributionTo === 'generation'
     }
   },
 
@@ -132,6 +153,13 @@ export default {
       this.$store.dispatch('compareDifference', !this.compareDifference)
       if (this.compareDifference) {
         this.$store.dispatch('focusOn', false)
+      }
+    },
+    handlePercentContributionToClick() {
+      if (this.isConsumption) {
+        this.$store.dispatch('percentContributionTo', 'generation')
+      } else {
+        this.$store.dispatch('percentContributionTo', 'demand')
       }
     }
   }
@@ -176,8 +204,12 @@ export default {
 .filter-period-buttons {
   margin-left: 1rem;
 }
-.compare-button {
+.more-buttons {
   position: absolute;
   right: 0.5rem;
+
+  .buttons {
+    display: inline;
+  }
 }
 </style>
