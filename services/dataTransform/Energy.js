@@ -485,10 +485,7 @@ export default {
         (totalRenewables / totalSources) * 100
       dataset[i]._min = min
       dataset[i]._totalEmissionsVol = totalEmissionsVol
-      // dataset[i]._emissionsIntensity =
-      //   (totalEmissionsVol / totalDemand) * 1000 || 0
-      dataset[i]._emissionsIntensity =
-        (totalEmissionsVol / totalGeneration) * 1000 || 0
+      dataset[i]._emissionsIntensity = totalEmissionsVol / totalDemand || 0
       dataset[i]._actualLastDate = actualLastDate
       dataset[i]._actualStartDate = actualStartDate
       dataset[i]._totalMarketValue = totalMarketValue
