@@ -205,7 +205,7 @@
             :show-x-axis="false"
             :show-tooltip="false"
             :show-zoom-out="false"
-            :y-min="0"
+            :y-min="emissionsMin"
             :y-max="emissionsMax"
             :zoomed="zoomed"
             :x-guides="xGuides"
@@ -679,6 +679,8 @@ export default {
       windowWidth: 0,
       energyMin: 0,
       energyMax: 1000,
+      emissionsMin: 0,
+      emissionsMax: 1000,
       emissionsIntensityMin: 0,
       isTouchDevice: false,
       compareData: []
@@ -862,10 +864,6 @@ export default {
       }
       return height
     },
-    emissionsMax() {
-      return d3Max(this.dataset, d => d._totalEmissionsVol)
-    },
-
     xGuides() {
       if (this.dataset.length <= 0) {
         return []
@@ -1557,10 +1555,14 @@ export default {
 
     updateEnergyMinMax() {
       let energyMinAll = 0,
-        energyMaxAll = 0
+        energyMaxAll = 0,
+        emissionsMinAll = 0,
+        emissionsMaxAll = 0
       this.dataset.forEach((d, i) => {
         let energyMin = 0,
-          energyMax = 0
+          energyMax = 0,
+          emissionsMin = 0,
+          emissionsMax = 0
 
         this.stackedAreaDomains.forEach(domain => {
           const id = domain.id
@@ -1576,9 +1578,26 @@ export default {
         if (energyMin < energyMinAll) {
           energyMinAll = energyMin
         }
+
+        this.emissionStackedAreaDomains.forEach(domain => {
+          const id = domain.id
+          emissionsMax += d[id] || 0
+          if (d[id] < 0) {
+            emissionsMin += d[id] || 0
+          }
+        })
+
+        if (emissionsMax > emissionsMaxAll) {
+          emissionsMaxAll = emissionsMax
+        }
+        if (emissionsMin < emissionsMinAll) {
+          emissionsMinAll = emissionsMin
+        }
       })
       this.energyMin = energyMinAll
       this.energyMax = energyMaxAll
+      this.emissionsMin = emissionsMinAll
+      this.emissionsMax = emissionsMaxAll
     },
 
     updateCompare(dataset) {
