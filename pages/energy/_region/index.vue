@@ -257,7 +257,7 @@
             v-if="chartEmissionsIntensity"
             :domain-id="'_emissionsIntensity'"
             :domain-colour="lineColour"
-            :dataset="dataset"
+            :dataset="emissionsDataset"
             :dynamic-extent="dateFilter"
             :hover-date="hoverDate"
             :hover-on="hoverOn"
@@ -679,6 +679,7 @@ export default {
       windowWidth: 0,
       energyMin: 0,
       energyMax: 1000,
+      emissionsDataset: [],
       emissionsMin: 0,
       emissionsMax: 1000,
       emissionsIntensityMin: 0,
@@ -1127,7 +1128,13 @@ export default {
     },
     hoverEmissionsIntensity() {
       if (this.hoverOrFocusData) {
-        return this.hoverOrFocusData._emissionsIntensity
+        const hoverDate = this.hoverOrFocusData.date
+        const hoverEmissionsIntensity = this.emissionsDataset.find(d => {
+          return d.date === hoverDate
+        })
+        return hoverEmissionsIntensity
+          ? hoverEmissionsIntensity._emissionsIntensity
+          : '—'
       }
       return 0
     },
@@ -1554,18 +1561,22 @@ export default {
     },
 
     updateEnergyMinMax() {
+      const emissionsDataset = []
       let energyMinAll = 0,
         energyMaxAll = 0,
         emissionsMinAll = 0,
         emissionsMaxAll = 0
       this.dataset.forEach((d, i) => {
-        let energyMin = 0,
+        let totalDemand = 0,
+          totalEmissionsVol = 0,
+          energyMin = 0,
           energyMax = 0,
           emissionsMin = 0,
           emissionsMax = 0
 
         this.stackedAreaDomains.forEach(domain => {
           const id = domain.id
+          totalDemand += d[id] || 0
           energyMax += d[id] || 0
           if (d[id] < 0) {
             energyMin += d[id] || 0
@@ -1581,6 +1592,7 @@ export default {
 
         this.emissionStackedAreaDomains.forEach(domain => {
           const id = domain.id
+          totalEmissionsVol += d[id] || 0
           emissionsMax += d[id] || 0
           if (d[id] < 0) {
             emissionsMin += d[id] || 0
@@ -1593,11 +1605,17 @@ export default {
         if (emissionsMin < emissionsMinAll) {
           emissionsMinAll = emissionsMin
         }
+
+        emissionsDataset.push({
+          date: d.date,
+          _emissionsIntensity: totalEmissionsVol / totalDemand || 0
+        })
       })
       this.energyMin = energyMinAll
       this.energyMax = energyMaxAll
       this.emissionsMin = emissionsMinAll
       this.emissionsMax = emissionsMaxAll
+      this.emissionsDataset = emissionsDataset
     },
 
     updateCompare(dataset) {
