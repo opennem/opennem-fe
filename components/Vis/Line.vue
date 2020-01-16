@@ -239,6 +239,10 @@ export default {
     xGuides: {
       type: Array,
       default: () => []
+    },
+    connectZero: {
+      type: Boolean,
+      default: () => false
     }
   },
 
@@ -509,10 +513,13 @@ export default {
 
       // How to draw the line
       this.line = line()
-        .defined(d => d[this.domainId])
         .x(d => this.x(d.date))
         .y(d => this.y(d[this.domainId]))
         .curve(this.curveType)
+
+      if (!this.connectZero) {
+        this.line.defined(d => d[this.domainId])
+      }
 
       // How to draw the area path
       this.area = d3Area()

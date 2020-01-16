@@ -271,6 +271,7 @@
             :vis-height="120"
             :y-min="emissionsIntensityMin"
             :curve="'step'"
+            :connect-zero="true"
             :show-zoom-out="false"
             :zoomed="zoomed"
             :x-guides="xGuides"
