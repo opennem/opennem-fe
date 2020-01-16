@@ -340,6 +340,7 @@
             :show-x-axis="false"
             :vis-height="50"
             :show-zoom-out="false"
+            :connect-zero="true"
             :x-guides="xGuides"
             :y-guides="[300, 2000, 6000, 10000, 14000]"
             class="price-pos-vis vis-chart"
@@ -369,6 +370,7 @@
             :show-x-axis="false"
             :vis-height="80"
             :show-zoom-out="false"
+            :connect-zero="true"
             :x-guides="xGuides"
             :y-guides="[0, 100, 200, 300]"
             class="price-vis vis-chart"
@@ -399,6 +401,7 @@
             :show-tooltip="false"
             :vis-height="35"
             :show-zoom-out="false"
+            :connect-zero="true"
             :x-guides="xGuides"
             :y-guides="[-60, -400]"
             class="price-neg-vis vis-chart"
@@ -1567,6 +1570,7 @@ export default {
         energyMaxAll = 0,
         emissionsMinAll = 0,
         emissionsMaxAll = 0
+
       this.dataset.forEach((d, i) => {
         let totalDemand = 0,
           totalEmissionsVol = 0,
@@ -1607,9 +1611,10 @@ export default {
           emissionsMinAll = emissionsMin
         }
 
+        const ei = totalEmissionsVol / totalDemand
         emissionsDataset.push({
           date: d.date,
-          _emissionsIntensity: totalEmissionsVol / totalDemand || 0
+          _emissionsIntensity: Number.isFinite(ei) ? ei : null
         })
       })
       this.energyMin = energyMinAll
