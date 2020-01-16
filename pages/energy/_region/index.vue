@@ -191,7 +191,7 @@
           <stacked-area-vis
             v-if="chartEmissionsVolume"
             :domains="emissionStackedAreaDomains"
-            :dataset="dataset"
+            :dataset="emissionsVolumeDataset"
             :dynamic-extent="dateFilter"
             :hover-date="hoverDate"
             :hover-on="hoverOn"
@@ -684,9 +684,10 @@ export default {
       windowWidth: 0,
       energyMin: 0,
       energyMax: 1000,
-      emissionsIntensityDataset: [],
+      emissionsVolumeDataset: [],
       emissionsMin: 0,
       emissionsMax: 1000,
+      emissionsIntensityDataset: [],
       emissionsIntensityMin: 0,
       emissionsIntensityMax: 1000,
       isTouchDevice: false,
@@ -790,6 +791,9 @@ export default {
     },
     hiddenFuelTechs() {
       return this.$store.getters.hiddenFuelTechs
+    },
+    percentContributionTo() {
+      return this.$store.getters.percentContributionTo
     },
     groupDomains() {
       const dict = this.fuelTechGroup
@@ -1242,6 +1246,9 @@ export default {
     hiddenFuelTechs() {
       this.updateYMinMax()
     },
+    percentContributionTo() {
+      this.updateYMinMax()
+    },
     filterPeriod(compare) {
       this.updateDataset(compare)
     },
@@ -1569,7 +1576,9 @@ export default {
     },
 
     updateYMinMax() {
-      const emissionsIntensityDataset = []
+      const isGeneration = this.percentContributionTo === 'generation'
+      const emissionsIntensityDataset = [],
+        emissionsVolumeDataset = []
       let energyMinAll = 0,
         energyMaxAll = 0,
         emissionsMinAll = 0,
@@ -1579,14 +1588,19 @@ export default {
 
       this.dataset.forEach((d, i) => {
         let totalDemand = 0,
+          totalGeneration = 0,
           totalEmissionsVol = 0,
           energyMin = 0,
           energyMax = 0,
           emissionsMin = 0,
           emissionsMax = 0
+
         this.stackedAreaDomains.forEach(domain => {
           const id = domain.id
           totalDemand += d[id] || 0
+          if (domain.category == 'source' && domain.fuelTech !== 'imports') {
+            totalGeneration += d[id] || 0
+          }
           energyMax += d[id] || 0
           if (d[id] < 0) {
             energyMin += d[id] || 0
@@ -1600,12 +1614,28 @@ export default {
           energyMinAll = energyMin
         }
 
+        emissionsVolumeDataset.push({
+          date: d.date
+        })
+        const lastEVIndex = emissionsVolumeDataset.length - 1
+
         this.emissionStackedAreaDomains.forEach(domain => {
           const id = domain.id
-          totalEmissionsVol += d[id] || 0
-          emissionsMax += d[id] || 0
-          if (d[id] < 0) {
-            emissionsMin += d[id] || 0
+
+          if (
+            !isGeneration ||
+            (isGeneration &&
+              domain.fuelTech !== 'imports' &&
+              domain.fuelTech !== 'exports')
+          ) {
+            totalEmissionsVol += d[id] || 0
+            emissionsMax += d[id] || 0
+
+            if (d[id] < 0) {
+              emissionsMin += d[id] || 0
+            }
+
+            emissionsVolumeDataset[lastEVIndex][id] = d[id]
           }
         })
 
@@ -1615,7 +1645,10 @@ export default {
         if (emissionsMin < emissionsMinAll) {
           emissionsMinAll = emissionsMin
         }
-        const ei = totalEmissionsVol / totalDemand
+
+        const ei = isGeneration
+          ? totalEmissionsVol / totalGeneration
+          : totalEmissionsVol / totalDemand
         const isValidEI = Number.isFinite(ei)
         if (isValidEI && ei > emissionsIntensityMaxAll) {
           emissionsIntensityMaxAll = ei
@@ -1635,6 +1668,7 @@ export default {
       this.emissionsIntensityDataset = emissionsIntensityDataset
       this.emissionsIntensityMin = emissionsIntensityMinAll
       this.emissionsIntensityMax = emissionsIntensityMaxAll
+      this.emissionsVolumeDataset = emissionsVolumeDataset
     },
 
     updateCompare(dataset) {
