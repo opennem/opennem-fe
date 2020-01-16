@@ -257,7 +257,7 @@
             v-if="chartEmissionsIntensity"
             :domain-id="'_emissionsIntensity'"
             :domain-colour="lineColour"
-            :dataset="emissionsDataset"
+            :dataset="emissionsIntensityDataset"
             :dynamic-extent="dateFilter"
             :hover-date="hoverDate"
             :hover-on="hoverOn"
@@ -269,6 +269,7 @@
             :show-x-axis="false"
             :show-tooltip="false"
             :vis-height="120"
+            :y-max="emissionsIntensityMax"
             :y-min="emissionsIntensityMin"
             :curve="'step'"
             :connect-zero="true"
@@ -683,10 +684,11 @@ export default {
       windowWidth: 0,
       energyMin: 0,
       energyMax: 1000,
-      emissionsDataset: [],
+      emissionsIntensityDataset: [],
       emissionsMin: 0,
       emissionsMax: 1000,
       emissionsIntensityMin: 0,
+      emissionsIntensityMax: 1000,
       isTouchDevice: false,
       compareData: []
     }
@@ -1133,9 +1135,11 @@ export default {
     hoverEmissionsIntensity() {
       if (this.hoverOrFocusData) {
         const hoverDate = this.hoverOrFocusData.date
-        const hoverEmissionsIntensity = this.emissionsDataset.find(d => {
-          return d.date === hoverDate
-        })
+        const hoverEmissionsIntensity = this.emissionsIntensityDataset.find(
+          d => {
+            return d.date === hoverDate
+          }
+        )
         return hoverEmissionsIntensity
           ? hoverEmissionsIntensity._emissionsIntensity
           : '—'
@@ -1236,7 +1240,7 @@ export default {
       this.$store.dispatch('exportData', updated)
     },
     hiddenFuelTechs() {
-      this.updateEnergyMinMax()
+      this.updateYMinMax()
     },
     filterPeriod(compare) {
       this.updateDataset(compare)
@@ -1451,7 +1455,7 @@ export default {
       this.originalDataset = updated
 
       this.updatedFilteredDataset(updated)
-      this.updateEnergyMinMax()
+      this.updateYMinMax()
       this.updateDataset(this.filterPeriod)
       this.ready = true
     },
@@ -1564,12 +1568,14 @@ export default {
       }
     },
 
-    updateEnergyMinMax() {
-      const emissionsDataset = []
+    updateYMinMax() {
+      const emissionsIntensityDataset = []
       let energyMinAll = 0,
         energyMaxAll = 0,
         emissionsMinAll = 0,
-        emissionsMaxAll = 0
+        emissionsMaxAll = 0,
+        emissionsIntensityMinAll = 0,
+        emissionsIntensityMaxAll = 1200
 
       this.dataset.forEach((d, i) => {
         let totalDemand = 0,
@@ -1578,7 +1584,6 @@ export default {
           energyMax = 0,
           emissionsMin = 0,
           emissionsMax = 0
-
         this.stackedAreaDomains.forEach(domain => {
           const id = domain.id
           totalDemand += d[id] || 0
@@ -1610,18 +1615,26 @@ export default {
         if (emissionsMin < emissionsMinAll) {
           emissionsMinAll = emissionsMin
         }
-
         const ei = totalEmissionsVol / totalDemand
-        emissionsDataset.push({
+        const isValidEI = Number.isFinite(ei)
+        if (isValidEI && ei > emissionsIntensityMaxAll) {
+          emissionsIntensityMaxAll = ei
+        }
+        if (isValidEI && ei < emissionsIntensityMinAll) {
+          emissionsIntensityMinAll = ei
+        }
+        emissionsIntensityDataset.push({
           date: d.date,
-          _emissionsIntensity: Number.isFinite(ei) ? ei : null
+          _emissionsIntensity: isValidEI ? ei : null
         })
       })
       this.energyMin = energyMinAll
       this.energyMax = energyMaxAll
       this.emissionsMin = emissionsMinAll
       this.emissionsMax = emissionsMaxAll
-      this.emissionsDataset = emissionsDataset
+      this.emissionsIntensityDataset = emissionsIntensityDataset
+      this.emissionsIntensityMin = emissionsIntensityMinAll
+      this.emissionsIntensityMax = emissionsIntensityMaxAll
     },
 
     updateCompare(dataset) {
