@@ -54,6 +54,12 @@ Vue.filter('formatValue', value => {
   const fValue = f(value)
   return isFinite(value) && !isNaN(value) && value ? fValue : '–'
 })
+Vue.filter('formatValue2', value => {
+  const fString = smartFormatString(value)
+  const f = d3Format(fString)
+  const fValue = f(value)
+  return isFinite(value) && !isNaN(value) && value ? fValue : '0'
+})
 
 Vue.filter('facilityFormatNumber', value => {
   const fString = value < 10 ? ',.1f' : ',.0f'

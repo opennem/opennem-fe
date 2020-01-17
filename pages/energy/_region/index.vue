@@ -179,11 +179,11 @@
                     :style="{ 'background-color': hoverEmissionVolumeDomainColour }"
                     class="colour-square" />
                   {{ hoverEmissionVolumeDomainLabel }}
-                  <strong>{{ hoverEmissionVolumeValue| formatValue }} tCO₂e</strong>
+                  <strong>{{ hoverEmissionVolumeValue | formatValue2 }} tCO₂e</strong>
                 </span>
                 <span>
                   Total
-                  <strong>{{ hoverEmissionVolumeTotal | formatValue }} tCO₂e</strong>
+                  <strong>{{ hoverEmissionVolumeTotal | formatValue2 }} tCO₂e</strong>
                 </span>
               </div>
             </div>
@@ -248,7 +248,7 @@
               </div>
               <div class="hover-values">
                 <span>
-                  <strong>{{ hoverEmissionsIntensity | formatValue }} kgCO₂e/MWh</strong>
+                  <strong>{{ hoverEmissionsIntensity | formatValue2 }} kgCO₂e/MWh</strong>
                 </span>
               </div>
             </div>
@@ -1658,7 +1658,7 @@ export default {
         }
         emissionsIntensityDataset.push({
           date: d.date,
-          _emissionsIntensity: isValidEI ? ei : null
+          _emissionsIntensity: isValidEI ? ei : 0
         })
       })
       this.energyMin = energyMinAll
