@@ -1129,9 +1129,18 @@ export default {
     },
     hoverEmissionVolumeTotal() {
       let total = 0
+      const isGeneration = this.percentContributionTo === 'generation'
       if (this.hoverOrFocusData) {
-        this.emissionStackedAreaDomains.forEach(d => {
-          total += this.hoverOrFocusData[d.id]
+        this.emissionStackedAreaDomains.forEach(domain => {
+          const id = domain.id
+          if (
+            !isGeneration ||
+            (isGeneration &&
+              domain.fuelTech !== 'imports' &&
+              domain.fuelTech !== 'exports')
+          ) {
+            total += this.hoverOrFocusData[id]
+          }
         })
       }
       return total
