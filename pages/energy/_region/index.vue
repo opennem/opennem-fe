@@ -1667,9 +1667,18 @@ export default {
         }
         emissionsIntensityDataset.push({
           date: d.date,
-          _emissionsIntensity: isValidEI ? ei : 0
+          _emissionsIntensity: isValidEI ? ei : null
         })
       })
+
+      // duplicate last valid EV value to render the step line correctly
+      const evDatasetLength = emissionsIntensityDataset.length
+      const lastValidEI =
+        emissionsIntensityDataset[evDatasetLength - 2]._emissionsIntensity
+      emissionsIntensityDataset[
+        evDatasetLength - 1
+      ]._emissionsIntensity = lastValidEI
+
       this.energyMin = energyMinAll
       this.energyMax = energyMaxAll
       this.emissionsMin = emissionsMinAll
