@@ -247,14 +247,12 @@ function addEmptyDataPoint(time, dataset) {
     } else {
       if (
         _includes(key, 'temperature') ||
-        _includes(key, 'generation_emissions') ||
         _includes(key, 'volume_weighted_price')
       ) {
         // console.log(key)
-      } else if (
-        _includes(key, '_volWeightedPrice') ||
-        _includes(key, '_emissionsIntensity')
-      ) {
+      } else if (_includes(key, '_volWeightedPrice')) {
+        // _includes(key, '_emissionsIntensity')
+        // _includes(key, 'generation_emissions')
         emptyDataPoint[key] = emptyDataPoint[key]
       } else {
         emptyDataPoint[key] = null
@@ -320,6 +318,18 @@ export default {
       const shouldInterpolate =
         range === '1D' || range === '3D' || range === '7D'
 
+      let lastDate = null
+      if (res.length) {
+        try {
+          const resData = res[0].data
+          const e = energyDomains[0]
+          const ft = resData.find(d => d.id === e.id)
+          if (ft) lastDate = ft.history.last
+        } catch (e) {
+          console.log('There is an issue looking for last valid FT date')
+        }
+      }
+
       // flatten data for vis and summary
       res.forEach(r => {
         promises.push(
@@ -354,6 +364,13 @@ export default {
             roundedEndDate - diff,
             roundedEndDate
           )
+        } else if (range === '30D') {
+          if (lastDate) {
+            // if has valid FT last date, use that to filter the data.
+            // Because there could be non-FT last dates that are into the future
+            const lastDateTime = new Date(lastDate).getTime()
+            data = data.filter(d => d.date <= lastDateTime)
+          }
         } else if (range === '1Y') {
           // filter 1Y because it could be a combination of two 1Y datasets
           const now = new Date().getTime()
