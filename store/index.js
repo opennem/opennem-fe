@@ -49,7 +49,8 @@ export const state = () => ({
   filterPeriod: null,
   compareDifference: false,
   focusOn: false,
-  compareDates: []
+  compareDates: [],
+  drawer: false
 })
 
 export const mutations = {
@@ -144,6 +145,9 @@ export const mutations = {
   },
   compareDates(state, data) {
     state.compareDates = data
+  },
+  drawer(state, data) {
+    state.drawer = data
   }
 }
 
@@ -241,7 +245,8 @@ export const getters = {
   filterPeriod: state => state.filterPeriod,
   compareDifference: state => state.compareDifference,
   focusOn: state => state.focusOn,
-  compareDates: state => state.compareDates
+  compareDates: state => state.compareDates,
+  drawer: state => state.drawer
 }
 
 export const actions = {
@@ -331,5 +336,8 @@ export const actions = {
   },
   compareDates({ commit }, data) {
     commit('compareDates', data)
+  },
+  drawer({ commit }, data) {
+    commit('drawer', data)
   }
 }

@@ -35,7 +35,9 @@
       </span>
     </div>
 
-    <div class="more-buttons">
+    <div
+      :class="{ 'hide': drawer }"
+      class="more-buttons">
       <div class="buttons has-addons">
         <span
           :class="{ 'is-selected': isConsumption }"
@@ -111,6 +113,9 @@ export default {
     },
     isGeneration() {
       return this.percentContributionTo === 'generation'
+    },
+    drawer() {
+      return this.$store.getters.drawer
     }
   },
 
@@ -207,6 +212,15 @@ export default {
 .more-buttons {
   position: absolute;
   right: 0.5rem;
+
+  @include mobile {
+    top: 16px;
+    z-index: 9999;
+
+    &.hide {
+      z-index: 1;
+    }
+  }
 
   .buttons {
     display: inline;
