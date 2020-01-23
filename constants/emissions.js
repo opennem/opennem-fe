@@ -1,1 +1,1 @@
-export const EMISSIONS = 'generation_emissions'
+export const EMISSIONS = 'emissions'
