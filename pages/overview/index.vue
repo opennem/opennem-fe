@@ -94,6 +94,7 @@ import { max as d3Max } from 'd3-array'
 import _includes from 'lodash.includes'
 import { saveAs } from 'file-saver'
 
+import { EMISSIONS } from '~/constants/emissions.js'
 import Http from '~/services/Http.js'
 import Data from '~/services/Data.js'
 import EnergyDataTransform from '~/services/dataTransform/Energy.js'
@@ -201,7 +202,7 @@ export default {
     groupEmissionDomains() {
       const dict = this.fuelTechGroup
       const domains = this.emissionDomains
-      return Domain.parseDomains(domains, dict, 'generation_emissions')
+      return Domain.parseDomains(domains, dict, EMISSIONS)
     },
 
     hasTemperatureData() {
@@ -525,7 +526,7 @@ export default {
       this.emissionDomains = Domain.getDomainObjs(
         this.regionId,
         this.emissionsOrder,
-        'generation_emissions'
+        EMISSIONS
       )
     },
 

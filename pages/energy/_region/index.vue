@@ -586,6 +586,7 @@ import Draggable from 'vuedraggable'
 import { saveAs } from 'file-saver'
 
 import REGIONS from '~/constants/regions.js'
+import { EMISSIONS } from '~/constants/emissions.js'
 import EventBus from '~/plugins/eventBus.js'
 import Http from '~/services/Http.js'
 import DateDisplay from '~/services/DateDisplay.js'
@@ -809,7 +810,7 @@ export default {
     groupEmissionDomains() {
       const dict = this.fuelTechGroup
       const domains = this.emissionDomains
-      return Domain.parseDomains(domains, dict, 'generation_emissions')
+      return Domain.parseDomains(domains, dict, EMISSIONS)
     },
 
     hasTemperatureData() {
@@ -1531,7 +1532,7 @@ export default {
       this.emissionDomains = Domain.getDomainObjs(
         this.regionId,
         this.emissionsOrder,
-        'generation_emissions'
+        EMISSIONS
       )
     },
 

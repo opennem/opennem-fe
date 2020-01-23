@@ -5,6 +5,7 @@ import _includes from 'lodash.includes'
 import { timeMinute as d3TimeMinute } from 'd3-time'
 import parseInterval from '~/plugins/intervalParser.js'
 import millisecondsByInterval from '~/constants/millisecondsByInterval.js'
+import { EMISSIONS } from '~/constants/emissions.js'
 
 import rollUp30m from '../rollUpModules/ru-30m.js'
 import rollUp1YDay from '../rollUpModules/ru-1y-day.js'
@@ -55,7 +56,7 @@ function transformEnergyData(
     const isMarketValueData = type === 'market_value'
     const isTemperatureType = checkTemperatureType(type)
     const isPriceData = type === 'price' || type === 'volume_weighted_price'
-    const isEmissionData = type === 'generation_emissions'
+    const isEmissionData = type === EMISSIONS
 
     newHistory.forEach(r => {
       const findDate = dataset.find(f => f.date === r.date)
@@ -252,7 +253,7 @@ function addEmptyDataPoint(time, dataset) {
         // console.log(key)
       } else if (_includes(key, '_volWeightedPrice')) {
         // _includes(key, '_emissionsIntensity')
-        // _includes(key, 'generation_emissions')
+        // _includes(key, EMISSIONS)
         emptyDataPoint[key] = emptyDataPoint[key]
       } else {
         emptyDataPoint[key] = null

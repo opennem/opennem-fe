@@ -1,6 +1,7 @@
 import _includes from 'lodash.includes'
 import _uniqBy from 'lodash.uniqby'
 import * as FUEL_TECHS from '~/constants/fuelTech.js'
+import { EMISSIONS } from '~/constants/emissions.js'
 
 export default {
   parseDomains(domains, dict, type) {
@@ -96,16 +97,14 @@ export default {
   getEmissionsDomains(data) {
     let domains = []
     data.forEach(r => {
-      const objs = r.data
-        .filter(d => d.type === 'generation_emissions')
-        .map(d => {
-          return {
-            id: d.id,
-            fuelTech: d.fuel_tech,
-            type: d.type,
-            group: d.group
-          }
-        })
+      const objs = r.data.filter(d => d.type === EMISSIONS).map(d => {
+        return {
+          id: d.id,
+          fuelTech: d.fuel_tech,
+          type: d.type,
+          group: d.group
+        }
+      })
       domains = [...domains, ...objs]
     })
     return domains

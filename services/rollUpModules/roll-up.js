@@ -11,6 +11,8 @@ import {
   max as d3Max
 } from 'd3-array'
 
+import { EMISSIONS } from '~/constants/emissions.js'
+
 const PRICE_ABOVE_300 = 'price.above300'
 const PRICE_BELOW_0 = 'price.below0'
 
@@ -75,7 +77,7 @@ export default function(domains, data) {
         const isMarketValueType = type === 'market_value'
         const isTemperatureType = checkTemperatureType(type)
         const isPriceType = type === 'price' || type === 'volume_weighted_price'
-        const isEmissionsType = type === 'generation_emissions'
+        const isEmissionsType = type === EMISSIONS
         const isOriginalPrice =
           isPriceType && id !== PRICE_ABOVE_300 && id !== PRICE_BELOW_0
 

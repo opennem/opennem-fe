@@ -243,6 +243,7 @@ import _includes from 'lodash.includes'
 import { saveAs } from 'file-saver'
 
 import REGIONS from '~/constants/regions.js'
+import { EMISSIONS } from '~/constants/emissions.js'
 import Http from '~/services/Http.js'
 import DateDisplay from '~/services/DateDisplay.js'
 import Data from '~/services/Data.js'
@@ -426,7 +427,7 @@ export default {
     groupEmissionDomains() {
       const dict = this.fuelTechGroup
       const domains = this.emissionDomains
-      return Domain.parseDomains(domains, dict, 'generation_emissions')
+      return Domain.parseDomains(domains, dict, EMISSIONS)
     },
 
     hasTemperatureData() {
