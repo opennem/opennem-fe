@@ -2022,7 +2022,7 @@ export default {
       }
 
       .average-value {
-        position: static;
+        position: absolute;
         left: -9999em;
         background: rgba(255, 255, 255, 0.5);
         padding: 3px 0.5rem;
