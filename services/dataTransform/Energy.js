@@ -368,7 +368,7 @@ export default {
           if (lastDate) {
             // if has valid FT last date, use that to filter the data.
             // Because there could be non-FT last dates that are into the future
-            const lastDateTime = new Date(lastDate).getTime()
+            const lastDateTime = moment(lastDate).valueOf()
             data = data.filter(d => d.date <= lastDateTime)
           }
         } else if (range === '1Y') {
