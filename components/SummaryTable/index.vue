@@ -183,6 +183,10 @@ export default {
       type: Array,
       default: () => []
     },
+    stackedAreaDomains: {
+      type: Array,
+      default: () => []
+    },
     marketValueDomains: {
       type: Array,
       default: () => []
@@ -405,6 +409,9 @@ export default {
       if (on) {
         this.updatePointSummary(this.focusDate)
       }
+    },
+    hiddenFuelTechs(updated) {
+      this.calculateSummary(this.dataset)
     }
   },
 
@@ -443,8 +450,12 @@ export default {
 
   methods: {
     calculateSummary(data) {
+      const hiddenFuelTechProp =
+        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
       let totalEnergy = 0
+      let totalEnergyMinusHidden = 0
       let totalPower = 0
+      let totalPowerMinusHidden = 0
       let totalSources = 0
       let totalLoads = 0
       let totalPriceMarketValue = 0
@@ -466,46 +477,78 @@ export default {
       })
       const volWeightPriceTotal = volWeightPrice.reduce((a, b) => a + b, 0)
 
-      // Calculate Energy
-      this.domains.forEach(ft => {
-        const category = ft.category
-        const dataEnergy = data.map(d => {
+      const dataEnergyMap = (ft, excludeHidden) => {
+        return data.map(d => {
           const energy = {}
+          const setEnergy = () => {
+            if (this.isEnergy) {
+              return d[ft.id]
+            } else {
+              // calculate energy (GWh) += power * 5mins/60/100
+              const mins = this.interval === '30m' ? 30 : 5
+              return (d[ft.id] * mins) / 60 / 1000
+            }
+          }
 
-          if (this.isEnergy) {
-            energy[ft.id] = d[ft.id]
+          if (excludeHidden) {
+            if (!_includes(this.hiddenFuelTechs, ft[hiddenFuelTechProp])) {
+              energy[ft.id] = setEnergy()
+            } else {
+              energy[ft.id] = 0
+            }
           } else {
-            // calculate energy (GWh) += power * 5mins/60/100
-            const mins = this.interval === '30m' ? 30 : 5
-            energy[ft.id] = (d[ft.id] * mins) / 60 / 1000
+            energy[ft.id] = setEnergy()
           }
 
           return energy
         })
-        const dataPower = data.map(d => {
+      }
+      const dataPowerMap = (ft, excludeHidden) => {
+        return data.map(d => {
           const power = {}
-
-          if (!this.isEnergy) {
-            power[ft.id] = d[ft.id]
+          const setPower = () => {
+            if (!this.isEnergy) {
+              return d[ft.id]
+            }
+            return 0
           }
 
+          if (excludeHidden) {
+            if (!_includes(this.hiddenFuelTechs, ft[hiddenFuelTechProp])) {
+              power[ft.id] = setPower()
+            } else {
+              power[ft.id] = 0
+            }
+          } else {
+            power[ft.id] = setPower()
+          }
           return power
         })
+      }
+      const sumMap = (ft, dataMap) => {
+        return dataMap.reduce((prev, cur) => prev + cur[ft.id], 0)
+      }
 
-        const dataEnergySum = dataEnergy.reduce(
-          (prev, cur) => prev + cur[ft.id],
-          0
-        )
-        const dataPowerSum = dataPower.reduce(
-          (prev, cur) => prev + cur[ft.id],
-          0
-        )
+      // Calculate Energy
+      this.stackedAreaDomains.forEach(ft => {
+        const category = ft.category
+        const dataEnergy = dataEnergyMap(ft)
+        const dataEnergyMinusHidden = dataEnergyMap(ft, true)
+        const dataEnergySum = sumMap(ft, dataEnergy)
+        const dataEnergyMinusHiddenSum = sumMap(ft, dataEnergyMinusHidden)
+        const dataPower = dataPowerMap(ft)
+        const dataPowerMinusHidden = dataPowerMap(ft, true)
+        const dataPowerSum = sumMap(ft, dataPower)
+        const dataPowerMinusHiddenSum = sumMap(ft, dataPowerMinusHidden)
 
         let avValue = 0
 
         this.summary[ft.id] = dataEnergySum
         totalEnergy += dataEnergySum
         totalPower += dataPowerSum
+
+        totalEnergyMinusHidden += dataEnergyMinusHiddenSum
+        totalPowerMinusHidden += dataPowerMinusHiddenSum
 
         if (category === 'source') {
           this.summarySources[ft.id] = dataEnergySum
@@ -576,7 +619,9 @@ export default {
       this.summaryLoads._totalEnergy = totalLoads
 
       // calculate averages
-      const avTotal = this.isEnergy ? totalEnergy : totalPower
+      const avTotal = this.isEnergy
+        ? totalEnergyMinusHidden
+        : totalPowerMinusHidden
       const average = avTotal / data.length
       this.summary._averageEnergy = average
 

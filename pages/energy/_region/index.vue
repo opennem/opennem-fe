@@ -46,7 +46,7 @@
             <div class="hover-date-value">
               <div class="average-value">
                 Av.
-                <strong>{{ averageEnergy | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}</strong>
+                <strong>{{ averageEnergy | formatValue }} {{ isYearInterval ? 'TWh/day' : 'GWh/day' }}</strong>
               </div>
               <div class="hover-date">
                 <time>
@@ -61,11 +61,11 @@
                     :style="{ 'background-color': hoverDomainColour }"
                     class="colour-square" />
                   {{ hoverDomainLabel }}
-                  <strong>{{ hoverValue | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}</strong>
+                  <strong>{{ hoverValue | formatValue }} {{ isYearInterval ? 'TWh/day' : 'GWh/day' }}</strong>
                 </span>
                 <span class="total-value">
                   Total
-                  <strong>{{ hoverTotal | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}</strong>
+                  <strong>{{ hoverTotal | formatValue }} {{ isYearInterval ? 'TWh/day' : 'GWh/day' }}</strong>
                 </span>
               </div>
             </div>
@@ -509,6 +509,7 @@
           id="summary-table"
           :energy-domains="energyDomains"
           :domains="summaryDomains"
+          :stacked-area-domains="stackedAreaDomains"
           :price-id="priceDomains.length > 0 ? priceDomains[0].id : null"
           :market-value-domains="mvDomains"
           :dataset="filteredDataset"
@@ -2088,8 +2089,8 @@ export default {
       .colour-square {
         display: inline-block;
         border: 1px solid transparent;
-        width: 9px;
-        height: 9px;
+        width: 11px;
+        height: 11px;
         border-radius: 1px;
         position: relative;
         top: 1px;
