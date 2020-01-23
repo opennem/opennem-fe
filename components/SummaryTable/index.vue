@@ -443,7 +443,8 @@ export default {
 
   methods: {
     calculateSummary(data) {
-      let total = 0
+      let totalEnergy = 0
+      let totalPower = 0
       let totalSources = 0
       let totalLoads = 0
       let totalPriceMarketValue = 0
@@ -481,14 +482,30 @@ export default {
 
           return energy
         })
+        const dataPower = data.map(d => {
+          const power = {}
+
+          if (!this.isEnergy) {
+            power[ft.id] = d[ft.id]
+          }
+
+          return power
+        })
+
         const dataEnergySum = dataEnergy.reduce(
           (prev, cur) => prev + cur[ft.id],
           0
         )
+        const dataPowerSum = dataPower.reduce(
+          (prev, cur) => prev + cur[ft.id],
+          0
+        )
+
         let avValue = 0
 
         this.summary[ft.id] = dataEnergySum
-        total += dataEnergySum
+        totalEnergy += dataEnergySum
+        totalPower += dataPowerSum
 
         if (category === 'source') {
           this.summarySources[ft.id] = dataEnergySum
@@ -553,13 +570,13 @@ export default {
         totalAverageValue = volWeightPriceTotal / energySummaryTotal
       }
 
-      this.summary._totalEnergy = total
+      this.summary._totalEnergy = totalEnergy
       this.summary._totalAverageValue = totalAverageValue
       this.summarySources._totalEnergy = totalSources
       this.summaryLoads._totalEnergy = totalLoads
 
       // calculate averages
-      const avTotal = this.isEnergy ? total : total * 1000
+      const avTotal = this.isEnergy ? totalEnergy : totalPower
       const average = avTotal / data.length
       this.summary._averageEnergy = average
 

@@ -44,6 +44,10 @@
               <small>{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval }}</small>
             </div>
             <div class="hover-date-value">
+              <div class="average-value">
+                Av.
+                <strong>{{ averageEnergy | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}</strong>
+              </div>
               <div class="hover-date">
                 <time>
                   {{ hoverDisplayDate }}
@@ -74,7 +78,10 @@
               <small>MW</small>
             </div>
             <div class="hover-date-value">
-              <div class="average-value">average</div>
+              <div class="average-value">
+                Av.
+                <strong>{{ averageEnergy | formatValue }} MW</strong>
+              </div>
               <div class="hover-date">
                 <time>
                   {{ hoverDisplayDate }}
@@ -694,7 +701,8 @@ export default {
       emissionsIntensityMin: 0,
       emissionsIntensityMax: 1000,
       isTouchDevice: false,
-      compareData: []
+      compareData: [],
+      summary: null
     }
   },
 
@@ -1208,6 +1216,10 @@ export default {
         former = this.compareDates[0]
       }
       return [former, latter]
+    },
+
+    averageEnergy() {
+      return this.summary ? this.summary._averageEnergy : 0
     }
   },
 
@@ -1944,7 +1956,7 @@ export default {
     },
 
     handleSummaryUpdated(summary) {
-      console.log(summary)
+      this.summary = summary
     }
   }
 }
@@ -1988,7 +2000,7 @@ export default {
     position: relative;
 
     .chart-title {
-      font-size: 0.8em;
+      font-size: 11px;
       cursor: pointer;
       user-select: none;
 
@@ -2017,24 +2029,28 @@ export default {
         left: -9999em;
         opacity: 0;
         background: rgba(255, 255, 255, 0.5);
-        padding: 3px 0.5rem;
+        padding: 3px 12px 4px;
         white-space: nowrap;
       }
 
       .average-value {
-        position: absolute;
+        position: static;
         left: -9999em;
-        background: rgba(255, 255, 255, 0.5);
-        padding: 3px 0.5rem;
+        // background: rgba(255, 255, 255, 0.5);
+        padding: 3px 12px 4px;
         white-space: nowrap;
+        @include tablet {
+          width: auto;
+          border-radius: 20px;
+        }
       }
 
       .hover-date {
         font-weight: 600;
         background-color: rgba(199, 69, 35, 0.1);
         color: #444;
-        font-size: 10px;
-        padding-top: 3px;
+        // font-size: 10px;
+        // padding-top: 3px;
         width: 30%;
 
         @include tablet {
@@ -2046,7 +2062,7 @@ export default {
       .hover-values {
         display: flex;
         align-items: center;
-        font-size: 9px;
+        // font-size: 9px;
         width: 70%;
 
         span {
@@ -2060,7 +2076,7 @@ export default {
           margin: 0 1rem;
         }
         strong {
-          font-size: 11px;
+          // font-size: 11px;
         }
 
         @include desktop {
