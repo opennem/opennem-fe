@@ -74,6 +74,7 @@
               <small>MW</small>
             </div>
             <div class="hover-date-value">
+              <div class="average-value">average</div>
               <div class="hover-date">
                 <time>
                   {{ hoverDisplayDate }}
@@ -513,6 +514,7 @@
           :is-energy="step"
           :hidden-fuel-techs="hiddenFuelTechs"
           @fuelTechsHidden="handleFuelTechsHidden"
+          @summary-update="handleSummaryUpdated"
         />
 
         <section
@@ -1939,6 +1941,10 @@ export default {
           }
         }
       }
+    },
+
+    handleSummaryUpdated(summary) {
+      console.log(summary)
     }
   }
 }
@@ -2007,7 +2013,17 @@ export default {
 
       .hover-date,
       .hover-values {
+        position: absolute;
+        left: -9999em;
         opacity: 0;
+        background: rgba(255, 255, 255, 0.5);
+        padding: 3px 0.5rem;
+        white-space: nowrap;
+      }
+
+      .average-value {
+        position: static;
+        left: -9999em;
         background: rgba(255, 255, 255, 0.5);
         padding: 3px 0.5rem;
         white-space: nowrap;
@@ -2074,8 +2090,13 @@ export default {
     &.is-hovered {
       .hover-date,
       .hover-values {
+        display: inline-block;
+        position: static;
         opacity: 1;
         transition: all 0.2s ease-in-out;
+      }
+      .average-value {
+        position: absolute;
       }
     }
     &.has-border-bottom {

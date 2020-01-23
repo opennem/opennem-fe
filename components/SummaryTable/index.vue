@@ -557,6 +557,13 @@ export default {
       this.summary._totalAverageValue = totalAverageValue
       this.summarySources._totalEnergy = totalSources
       this.summaryLoads._totalEnergy = totalLoads
+
+      // calculate averages
+      const avTotal = this.isEnergy ? total : total * 1000
+      const average = avTotal / data.length
+      this.summary._averageEnergy = average
+
+      this.$emit('summary-update', this.summary)
     },
 
     calculatePointSummary(data) {
