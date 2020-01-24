@@ -454,12 +454,14 @@ export default {
 
   methods: {
     calculateSummary(data) {
+      const isGeneration = this.percentContributionTo === 'generation'
       const hiddenFuelTechProp =
         this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
       let totalEnergy = 0
       let totalEnergyMinusHidden = 0
       let totalPower = 0
       let totalPowerMinusHidden = 0
+      let totalGenerationEnergyMinusHidden = 0
       let totalSources = 0
       let totalLoads = 0
       let totalPriceMarketValue = 0
