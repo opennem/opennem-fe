@@ -174,6 +174,10 @@
             <div
               v-show="chartEmissionsVolume"
               class="hover-date-value">
+              <div class="average-value">
+                Av.
+                <strong>{{ averageEmissionsVolume | formatValue }} tCO₂e</strong>
+              </div>
               <div class="hover-date">
                 <time>
                   {{ hoverDisplayDate }}
@@ -510,6 +514,7 @@
           :energy-domains="energyDomains"
           :domains="summaryDomains"
           :stacked-area-domains="stackedAreaDomains"
+          :emissions-domains="emissionStackedAreaDomains"
           :price-id="priceDomains.length > 0 ? priceDomains[0].id : null"
           :market-value-domains="mvDomains"
           :dataset="filteredDataset"
@@ -1221,6 +1226,9 @@ export default {
 
     averageEnergy() {
       return this.summary ? this.summary._averageEnergy : 0
+    },
+    averageEmissionsVolume() {
+      return this.summary ? this.summary._averageEmissionsVolume : 0
     }
   },
 
@@ -2030,7 +2038,7 @@ export default {
         left: -9999em;
         opacity: 0;
         background: rgba(255, 255, 255, 0.5);
-        padding: 3px 12px 4px;
+        padding: 3px 12px;
         white-space: nowrap;
       }
 
@@ -2038,7 +2046,7 @@ export default {
         position: static;
         left: -9999em;
         // background: rgba(255, 255, 255, 0.5);
-        padding: 3px 12px 4px;
+        padding: 3px 12px;
         white-space: nowrap;
         @include tablet {
           width: auto;

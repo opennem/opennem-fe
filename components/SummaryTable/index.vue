@@ -187,6 +187,10 @@ export default {
       type: Array,
       default: () => []
     },
+    emissionsDomains: {
+      type: Array,
+      default: () => []
+    },
     marketValueDomains: {
       type: Array,
       default: () => []
@@ -459,6 +463,7 @@ export default {
       let totalSources = 0
       let totalLoads = 0
       let totalPriceMarketValue = 0
+      let totalEVMinusHidden = 0
       this.summary = {}
       this.summarySources = {}
       this.summaryLoads = {}
@@ -559,6 +564,20 @@ export default {
         }
       })
 
+      // Calculate Emissions
+      this.emissionsDomains.forEach(ft => {
+        const dataEVMinusHidden = data.map(d => {
+          const emissionsVol = {}
+          if (!_includes(this.hiddenFuelTechs, ft[ft.fuelTech])) {
+            emissionsVol[ft.id] = d[ft.id]
+          } else {
+            emissionsVol[ft.id] = 0
+          }
+          return emissionsVol
+        })
+        totalEVMinusHidden += sumMap(ft, dataEVMinusHidden)
+      })
+
       // Calculate Market Value for Energy
       this.marketValueDomains.forEach((ft, index) => {
         const category = ft.category
@@ -624,6 +643,7 @@ export default {
         : totalPowerMinusHidden
       const average = avTotal / data.length
       this.summary._averageEnergy = average
+      this.summary._averageEmissionsVolume = totalEVMinusHidden / data.length
 
       this.$emit('summary-update', this.summary)
     },
