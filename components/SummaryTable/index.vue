@@ -416,6 +416,9 @@ export default {
     },
     hiddenFuelTechs(updated) {
       this.calculateSummary(this.dataset)
+    },
+    percentContributionTo(updated) {
+      this.calculateSummary(this.dataset)
     }
   },
 
@@ -466,6 +469,7 @@ export default {
       let totalLoads = 0
       let totalPriceMarketValue = 0
       let totalEVMinusHidden = 0
+      let totalEIMinusHidden = 0
       this.summary = {}
       this.summarySources = {}
       this.summaryLoads = {}
@@ -571,7 +575,16 @@ export default {
         const dataEVMinusHidden = data.map(d => {
           const emissionsVol = {}
           if (!_includes(this.hiddenFuelTechs, ft[ft.fuelTech])) {
-            emissionsVol[ft.id] = d[ft.id]
+            if (
+              !isGeneration ||
+              (isGeneration &&
+                ft.fuelTech !== 'imports' &&
+                ft.fuelTech !== 'exports')
+            ) {
+              emissionsVol[ft.id] = d[ft.id]
+            } else {
+              emissionsVol[ft.id] = 0
+            }
           } else {
             emissionsVol[ft.id] = 0
           }
@@ -580,6 +593,10 @@ export default {
         totalEVMinusHidden += sumMap(ft, dataEVMinusHidden)
       })
 
+      totalEIMinusHidden = data.reduce(
+        (prev, cur) => prev + cur._emissionsIntensity,
+        0
+      )
       // Calculate Market Value for Energy
       this.marketValueDomains.forEach((ft, index) => {
         const category = ft.category
@@ -646,6 +663,7 @@ export default {
       const average = avTotal / data.length
       this.summary._averageEnergy = average
       this.summary._averageEmissionsVolume = totalEVMinusHidden / data.length
+      this.summary._averageEmissionsIntensity = totalEIMinusHidden / data.length
 
       this.$emit('summary-update', this.summary)
     },

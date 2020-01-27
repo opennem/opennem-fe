@@ -253,6 +253,10 @@
             <div
               v-show="chartEmissionsIntensity"
               class="hover-date-value">
+              <div class="average-value">
+                Av.
+                <strong>{{ averageEmissionsIntensity | formatValue }} kgCO₂e/MWh</strong>
+              </div>
               <div class="hover-date">
                 <time>
                   {{ hoverDisplayDate }}
@@ -1229,6 +1233,9 @@ export default {
     },
     averageEmissionsVolume() {
       return this.summary ? this.summary._averageEmissionsVolume : 0
+    },
+    averageEmissionsIntensity() {
+      return this.summary ? this.summary._averageEmissionsIntensity : 0
     }
   },
 
