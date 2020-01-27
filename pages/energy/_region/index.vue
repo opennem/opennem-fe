@@ -453,6 +453,10 @@
             <div
               v-show="chartTemperature"
               class="hover-date-value">
+              <div class="average-value">
+                Av.
+                <strong>{{ averageTemperature | formatValue }}°C</strong>
+              </div>
               <div class="hover-date">
                 <time>
                   {{ hoverDisplayDate }}
@@ -519,6 +523,7 @@
           :domains="summaryDomains"
           :stacked-area-domains="stackedAreaDomains"
           :emissions-domains="emissionStackedAreaDomains"
+          :temperature-domains="temperatureDomains"
           :price-id="priceDomains.length > 0 ? priceDomains[0].id : null"
           :market-value-domains="mvDomains"
           :dataset="filteredDataset"
@@ -1236,6 +1241,9 @@ export default {
     },
     averageEmissionsIntensity() {
       return this.summary ? this.summary._averageEmissionsIntensity : 0
+    },
+    averageTemperature() {
+      return this.summary ? this.summary._averageTemperature : 0
     }
   },
 

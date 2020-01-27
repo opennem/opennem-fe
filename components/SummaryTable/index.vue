@@ -195,6 +195,10 @@ export default {
       type: Array,
       default: () => []
     },
+    temperatureDomains: {
+      type: Array,
+      default: () => []
+    },
     dataset: {
       type: Array,
       default: () => []
@@ -639,6 +643,17 @@ export default {
         }
       })
 
+      // Calculate Temperature domains
+      const temperatureObj = this.temperatureDomains.find(domain => {
+        return domain.type === 'temperature' ||
+          domain.type === 'temperature_mean'
+          ? domain.id
+          : null
+      })
+      const totalTemperature = temperatureObj
+        ? data.reduce((prev, cur) => prev + cur[temperatureObj.id], 0)
+        : 0
+
       let totalAverageValue = 0
       if (this.isEnergy) {
         if (this.isYearInterval) {
@@ -664,6 +679,7 @@ export default {
       this.summary._averageEnergy = average
       this.summary._averageEmissionsVolume = totalEVMinusHidden / data.length
       this.summary._averageEmissionsIntensity = totalEIMinusHidden / data.length
+      this.summary._averageTemperature = totalTemperature / data.length
 
       this.$emit('summary-update', this.summary)
     },
