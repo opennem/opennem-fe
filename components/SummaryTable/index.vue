@@ -364,15 +364,16 @@ export default {
     },
 
     endDate() {
-      const powerRange =
-        this.range === '1D' || this.range === '3D' || this.range === '7D'
       const dataLength = this.dataset.length
-      const whichIndex = powerRange ? 1 : 2
+      let whichIndex = 1
+      if (this.range === '30D' || this.range === '1Y' || this.range === 'ALL') {
+        whichIndex = 2
+      }
       if (dataLength > 0) {
         const date = this.dataset[dataLength - whichIndex]
           ? this.dataset[dataLength - whichIndex].date
           : this.dataset[dataLength - 1].date
-        const endDate = dataLength > 0 ? date : null
+        const endDate = date
         return endDate
       } else {
         return null

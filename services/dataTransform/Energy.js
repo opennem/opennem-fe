@@ -568,6 +568,6 @@ export default {
     const startDateTime = new Date(startDate).getTime()
     const endDateTime = new Date(endDate).getTime()
 
-    return data.filter(d => d.date >= startDateTime && d.date <= endDateTime)
+    return data.filter(d => d.date >= startDateTime && d.date < endDateTime)
   }
 }
