@@ -322,6 +322,10 @@
             <div
               v-show="chartPrice"
               class="hover-date-value">
+              <div class="average-value">
+                Av.
+                <strong>{{ totalAverageValue | formatCurrency }}</strong>
+              </div>
               <div class="hover-date">
                 <time>
                   {{ hoverDisplayDate }}
@@ -1244,6 +1248,9 @@ export default {
     },
     averageTemperature() {
       return this.summary ? this.summary._averageTemperature : 0
+    },
+    totalAverageValue() {
+      return this.summary ? this.summary._totalAverageValue : 0
     }
   },
 
