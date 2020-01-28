@@ -214,7 +214,8 @@ export default {
   right: 0.5rem;
 
   @include mobile {
-    top: 16px;
+    top: -46px;
+    right: 0;
     z-index: 9999;
 
     &.hide {

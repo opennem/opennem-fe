@@ -1,5 +1,5 @@
 <template>
-  <section style="margin-top: 0.5rem;">
+  <section class="region-section">
     <data-options-bar
       :range="range"
       :interval="interval"
@@ -46,7 +46,7 @@
             <div class="hover-date-value">
               <div class="average-value">
                 Av.
-                <strong>{{ averageEnergy | formatValue }} {{ isYearInterval ? 'TWh/day' : 'GWh/day' }}</strong>
+                <strong>{{ averageEnergy | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval }}</strong>
               </div>
               <div class="hover-date">
                 <time>
@@ -61,11 +61,11 @@
                     :style="{ 'background-color': hoverDomainColour }"
                     class="colour-square" />
                   {{ hoverDomainLabel }}
-                  <strong>{{ hoverValue | formatValue }} {{ isYearInterval ? 'TWh/day' : 'GWh/day' }}</strong>
+                  <strong>{{ hoverValue | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}</strong>
                 </span>
                 <span class="total-value">
                   Total
-                  <strong>{{ hoverTotal | formatValue }} {{ isYearInterval ? 'TWh/day' : 'GWh/day' }}</strong>
+                  <strong>{{ hoverTotal | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}</strong>
                 </span>
               </div>
             </div>
@@ -169,14 +169,14 @@
                 }"
                 class="fal fa-fw" />
               <strong>Emissions Volume</strong>
-              <small>tCO₂e</small>
+              <small>tCO₂e/{{ interval }}</small>
             </div>
             <div
               v-show="chartEmissionsVolume"
               class="hover-date-value">
               <div class="average-value">
                 Av.
-                <strong>{{ averageEmissionsVolume | formatValue }} tCO₂e</strong>
+                <strong>{{ averageEmissionsVolume | formatValue }} tCO₂e/{{ interval }}</strong>
               </div>
               <div class="hover-date">
                 <time>
@@ -2001,6 +2001,11 @@ export default {
   position: absolute;
   z-index: 999;
 }
+.region-section {
+  max-width: 1600px;
+  margin: 1rem auto 0;
+  position: relative;
+}
 .vis-chart {
   margin-right: 10px;
 }
@@ -2014,7 +2019,7 @@ export default {
     width: 100%;
     padding: 1rem 0 0;
     @include desktop {
-      width: 70%;
+      width: 60%;
       padding: 0;
     }
   }
@@ -2023,7 +2028,7 @@ export default {
     padding: 0 1rem 1rem;
 
     @include desktop {
-      width: 30%;
+      width: 40%;
       padding: 0 1rem 0 0;
     }
   }
