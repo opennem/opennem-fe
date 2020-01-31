@@ -21,7 +21,7 @@
         </clipPath>
 
         <pattern
-          id="incomplete-period-pattern"
+          :id="`${id}-incomplete-period-pattern`"
           width="4"
           height="4"
           patternUnits="userSpaceOnUse"
@@ -832,7 +832,7 @@ export default {
           return width < 0 ? 0 : width
         })
         .attr('height', this.height)
-        .attr('fill', `url(${this.path}#incomplete-period-pattern)`)
+        .attr('fill', `url(${this.path}#${this.id}-incomplete-period-pattern)`)
         .style('pointer-events', 'none')
     },
 
