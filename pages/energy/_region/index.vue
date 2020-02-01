@@ -361,7 +361,7 @@
             :show-x-axis="false"
             :vis-height="50"
             :show-zoom-out="false"
-            :connect-zero="true"
+            :connect-zero="false"
             :x-guides="xGuides"
             :y-guides="[300, 2000, 6000, 10000, 14000]"
             class="price-pos-vis vis-chart"
@@ -391,7 +391,7 @@
             :show-x-axis="false"
             :vis-height="80"
             :show-zoom-out="false"
-            :connect-zero="true"
+            :connect-zero="false"
             :x-guides="xGuides"
             :y-guides="[0, 100, 200, 300]"
             class="price-vis vis-chart"
@@ -422,7 +422,7 @@
             :show-tooltip="false"
             :vis-height="35"
             :show-zoom-out="false"
-            :connect-zero="true"
+            :connect-zero="false"
             :x-guides="xGuides"
             :y-guides="[-60, -400]"
             class="price-neg-vis vis-chart"
@@ -1520,6 +1520,7 @@ export default {
       this.updateYMinMax()
       this.updateDataset(this.filterPeriod)
       this.ready = true
+      console.log(this.dataset)
     },
 
     updateDatasetGroups(dataset, groupDomains) {
