@@ -33,7 +33,7 @@
               v-if="step"
               class="chart-title">
               <strong>Energy</strong>
-              <small>GWh/{{ interval }}</small>
+              <small>GWh/{{ interval | toLowerCase }}</small>
             </div>
             <div
               v-else

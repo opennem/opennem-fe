@@ -101,3 +101,7 @@ Vue.filter('formatCurrency', value => {
   const fValue = f(value)
   return isFinite(value) && !isNaN(value) && value ? fValue : '–'
 })
+
+Vue.filter('toLowerCase', string => {
+  return string.toLowerCase()
+})

@@ -41,12 +41,12 @@
             class="chart-title no-hover">
             <div class="chart-label">
               <strong>Energy</strong>
-              <small>{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval }}</small>
+              <small>{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | toLowerCase }}</small>
             </div>
             <div class="hover-date-value">
               <div class="average-value">
                 Av.
-                <strong>{{ averageEnergy | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval }}</strong>
+                <strong>{{ averageEnergy | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | toLowerCase }}</strong>
               </div>
               <div class="hover-date">
                 <time>
@@ -169,14 +169,14 @@
                 }"
                 class="fal fa-fw" />
               <strong>Emissions Volume</strong>
-              <small>tCO₂e/{{ interval }}</small>
+              <small>tCO₂e/{{ interval | toLowerCase }}</small>
             </div>
             <div
               v-show="chartEmissionsVolume"
               class="hover-date-value">
               <div class="average-value">
                 Av.
-                <strong>{{ averageEmissionsVolume | formatValue }} tCO₂e/{{ interval }}</strong>
+                <strong>{{ averageEmissionsVolume | formatValue }} tCO₂e/{{ interval | toLowerCase }}</strong>
               </div>
               <div class="hover-date">
                 <time>
