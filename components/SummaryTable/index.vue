@@ -651,8 +651,16 @@ export default {
           ? domain.id
           : null
       })
-      const totalTemperature = temperatureObj
-        ? data.reduce((prev, cur) => prev + cur[temperatureObj.id], 0)
+      const temperatureWithoutNulls = temperatureObj
+        ? data.filter(d => {
+            return d[temperatureObj.id] !== null
+          })
+        : []
+      const totalTemperatureWithoutNulls = temperatureObj
+        ? temperatureWithoutNulls.reduce(
+            (prev, cur) => prev + cur[temperatureObj.id],
+            0
+          )
         : 0
 
       let totalAverageValue = 0
@@ -680,7 +688,8 @@ export default {
       this.summary._averageEnergy = average
       this.summary._averageEmissionsVolume = totalEVMinusHidden / data.length
       this.summary._averageEmissionsIntensity = totalEIMinusHidden / data.length
-      this.summary._averageTemperature = totalTemperature / data.length
+      this.summary._averageTemperature =
+        totalTemperatureWithoutNulls / temperatureWithoutNulls.length
 
       this.$emit('summary-update', this.summary)
     },
