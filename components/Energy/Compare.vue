@@ -15,6 +15,7 @@
       </div>
     </div>
     <div class="compare-chart">
+      <div class="compare-chart-unit">{{ yUnit }}</div>
       <column-vis
         v-if="hasCompareData"
         :domains="updatedDomains"
@@ -58,6 +59,24 @@ export default {
     },
     secondDate() {
       return this.hasCompareData ? this.updatedCompareData[1].date : null
+    },
+    chartType() {
+      return this.$store.getters.energyChartType
+    },
+    interval() {
+      return this.$store.getters.interval
+    },
+    isYearInterval() {
+      return this.interval === 'Fin Year' || this.interval === 'Year'
+    },
+    yUnit() {
+      let unit = 'MW'
+      if (this.chartType === 'energy') {
+        unit = this.isYearInterval ? 'TWh' : 'GWh'
+      }
+      // const interval = this.interval.toLowerCase()
+      // return `${unit}/${interval}`
+      return unit
     },
     dataset() {
       if (this.hasCompareData) {
@@ -134,6 +153,11 @@ export default {
   }
   .compare-chart {
     width: 80%;
+  }
+  .compare-chart-unit {
+    font-size: 9px;
+    font-weight: bold;
+    padding-left: 4px;
   }
 }
 .colour-square {
