@@ -519,11 +519,11 @@ export default {
       dataset[i]._volWeightedPriceAbove300 =
         !isNaN(volWeightedPrice) && volWeightedPrice > 300
           ? volWeightedPrice
-          : null
+          : 0.01
       dataset[i]._volWeightedPriceBelow0 =
         !isNaN(volWeightedPrice) && volWeightedPrice < 0
           ? volWeightedPrice
-          : null
+          : -0.01
     })
     return dataset
   },
