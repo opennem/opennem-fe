@@ -422,6 +422,7 @@ export default {
             energyDomains,
             marketValueDomains,
             emissionDomains,
+            interval,
             data[0].date,
             data[data.length - 1].date
           )
@@ -443,6 +444,7 @@ export default {
     energyDomains,
     marketValueDomains,
     emissionDomains,
+    interval,
     actualStartDate,
     actualLastDate
   ) {
@@ -492,7 +494,10 @@ export default {
         totalEmissionsVol += d[domain.id] || 0
       })
 
-      const volWeightedPrice = totalMarketValue / totalDemand / 1000
+      const volWeightedPrice =
+        interval === 'Year' || interval === 'Fin Year'
+          ? totalMarketValue / totalDemand / 1000 / 1000
+          : totalMarketValue / totalDemand / 1000
 
       dataset[i]._total = totalDemand
       dataset[i]._totalRenewables = totalRenewables
@@ -507,12 +512,18 @@ export default {
       dataset[i]._actualLastDate = actualLastDate
       dataset[i]._actualStartDate = actualStartDate
       dataset[i]._totalMarketValue = totalMarketValue
-      dataset[i]._volWeightedPrice = volWeightedPrice
+      dataset[i]._volWeightedPrice = isNaN(volWeightedPrice)
+        ? null
+        : volWeightedPrice
 
       dataset[i]._volWeightedPriceAbove300 =
-        volWeightedPrice > 300 ? volWeightedPrice : 0.001
+        !isNaN(volWeightedPrice) && volWeightedPrice > 300
+          ? volWeightedPrice
+          : null
       dataset[i]._volWeightedPriceBelow0 =
-        volWeightedPrice < 0 ? volWeightedPrice : -0.001
+        !isNaN(volWeightedPrice) && volWeightedPrice < 0
+          ? volWeightedPrice
+          : null
     })
     return dataset
   },
