@@ -732,9 +732,6 @@ export default {
     featureEmissions() {
       return this.$store.getters.featureEmissions
     },
-    featureCompare() {
-      return this.$store.getters.featureCompare
-    },
     dateFilter() {
       return this.$store.getters.dateFilter
     },
@@ -1399,12 +1396,6 @@ export default {
     })
     this.fetchData(this.regionId, this.range)
     this.mounted = true
-
-    if (!this.featureCompare) {
-      this.$store.dispatch('compareDifference', false)
-      this.compareData = []
-      this.$store.dispatch('compareDates', [])
-    }
   },
 
   beforeDestroy() {
@@ -1921,12 +1912,7 @@ export default {
     },
 
     handleSvgClick(metaKey) {
-      if (
-        this.featureCompare &&
-        metaKey &&
-        this.focusOn &&
-        !this.compareDifference
-      ) {
+      if (metaKey && this.focusOn && !this.compareDifference) {
         this.$store.dispatch('compareDifference', true)
         this.$store.dispatch('focusOn', false)
         const hoverTime = this.hoverDate.valueOf()

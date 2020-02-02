@@ -11,13 +11,6 @@
           @click="handleClick">
         Show Emissions Charts
       </label>
-      <label class="panel-block">
-        <input
-          v-model="fCompare"
-          type="checkbox"
-          @click="handleFeatureCompareClick">
-        Compare Periods
-      </label>
 
       <div class="panel-block">
         <button
@@ -41,23 +34,15 @@ export default {
   computed: {
     featureEmissions() {
       return this.$store.getters.featureEmissions
-    },
-    featureCompare() {
-      return this.$store.getters.featureCompare
     }
   },
   mounted() {
     this.fEmissions = this.featureEmissions
-    this.fCompare = this.featureCompare
   },
   methods: {
     handleClick() {
       const check = !this.fEmissions
       this.$store.dispatch('featureEmissions', check)
-    },
-    handleFeatureCompareClick() {
-      const check = !this.fCompare
-      this.$store.dispatch('featureCompare', check)
     },
     handleDoneClick() {
       this.$router.push({ path: '/energy/nem' })

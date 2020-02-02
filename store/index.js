@@ -7,16 +7,11 @@ import * as RenewableFossilGroup from '~/constants/group-renewable-fossil.js'
 import * as SolarResidualGroup from '~/constants/group-solar-residual.js'
 
 const MutationTypes = {
-  FEATURE_TOGGLE_EMISSIONS: 'FEATURE_TOGGLE_EMISSIONS',
-  FEATURE_TOGGLE_COMPARE: 'FEATURE_TOGGLE_COMPARE'
+  FEATURE_TOGGLE_EMISSIONS: 'FEATURE_TOGGLE_EMISSIONS'
 }
 const featureEmissions = lsGet(MutationTypes.FEATURE_TOGGLE_EMISSIONS)
-const featureCompare = lsGet(MutationTypes.FEATURE_TOGGLE_COMPARE)
 if (!featureEmissions) {
   lsSet(MutationTypes.FEATURE_TOGGLE_EMISSIONS, false)
-}
-if (!featureCompare) {
-  lsSet(MutationTypes.FEATURE_TOGGLE_COMPARE, false)
 }
 
 export const state = () => ({
@@ -45,7 +40,6 @@ export const state = () => ({
   exportAttribution: '@name',
   percentContributionTo: 'demand', // or generation
   featureEmissions,
-  featureCompare,
   filterPeriod: null,
   compareDifference: false,
   focusOn: false,
@@ -129,10 +123,6 @@ export const mutations = {
   featureEmissions(state, data) {
     lsSet(MutationTypes.FEATURE_TOGGLE_EMISSIONS, data)
     state.featureEmissions = data
-  },
-  featureCompare(state, data) {
-    lsSet(MutationTypes.FEATURE_TOGGLE_COMPARE, data)
-    state.featureCompare = data
   },
   filterPeriod(state, data) {
     state.filterPeriod = data
@@ -241,7 +231,6 @@ export const getters = {
   exportAttribution: state => state.exportAttribution,
   percentContributionTo: state => state.percentContributionTo,
   featureEmissions: state => state.featureEmissions,
-  featureCompare: state => state.featureCompare,
   filterPeriod: state => state.filterPeriod,
   compareDifference: state => state.compareDifference,
   focusOn: state => state.focusOn,
@@ -321,9 +310,6 @@ export const actions = {
   },
   featureEmissions({ commit }, data) {
     commit('featureEmissions', data)
-  },
-  featureCompare({ commit }, data) {
-    commit('featureCompare', data)
   },
   filterPeriod({ commit }, data) {
     commit('filterPeriod', data)
