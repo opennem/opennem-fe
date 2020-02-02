@@ -11,7 +11,6 @@
       :width="svgWidth"
       :height="svgHeight"
       :id="id"
-      :class="{ 'date-focus': dateFocus }"
       class="stacked-area-chart">
       <defs>
         <!-- where to clip -->
@@ -22,7 +21,7 @@
         </clipPath>
 
         <pattern
-          id="incomplete-period-pattern"
+          :id="`${id}-incomplete-period-pattern`"
           width="4"
           height="4"
           patternUnits="userSpaceOnUse"
@@ -67,6 +66,8 @@
         <g class="stacked-area-group" />
 
         <g class="x-incomplete-group" />
+        <g class="focus-group" />
+        <g class="compare-group" />
       </g>
 
       <!-- yAxis tick text here to show above the area -->
@@ -149,6 +150,14 @@ export default {
       type: Boolean,
       default: () => false
     },
+    focusDate: {
+      type: Date,
+      default: () => null
+    },
+    focusOn: {
+      type: Boolean,
+      default: () => false
+    },
     range: {
       type: String,
       default: () => ''
@@ -213,9 +222,9 @@ export default {
       type: Array,
       default: () => []
     },
-    dateFocus: {
-      type: Boolean,
-      default: () => false
+    compareDates: {
+      type: Array,
+      default: () => []
     },
     mobileScreen: {
       type: Boolean,
@@ -249,10 +258,12 @@ export default {
       $yAxisTickGroup: null,
       $hoverLayer: null,
       $cursorLineGroup: null,
+      $focusGroup: null,
       $tooltipGroup: null,
       $stackedAreaGroup: null,
       $xGuideGroup: null,
       $xIncompleteGroup: null,
+      $compareGroup: null,
       // Stacked Area
       stackedAreaPathClass: CONFIG.CHART_STACKED_AREA_PATH_CLASS,
       stackedAreaGroupClass: CONFIG.CHART_STACKED_AREA_GROUP_CLASS,
@@ -270,16 +281,28 @@ export default {
       cursorLineTextClass: CONFIG.CURSOR_LINE_TEXT_CLASS,
       cursorLineRectClass: CONFIG.CURSOR_LINE_RECT_CLASS,
       cursorRectClass: 'cursor-rect',
-      cursorLineFocusTopRectClass: 'cursor-line-focus-top-rect',
-      cursorLineFocusBottomRectClass: 'cursor-line-focus-bottom-rect',
+      compareGroupClass: 'compare-group',
+      compareRectClass: 'compare-rect',
       tooltipRectHeight: 40,
       tooltipGroupClass: CONFIG.TOOLTIP_GROUP_CLASS,
       tooltipRectClass: CONFIG.TOOLTIP_RECT_CLASS,
-      tooltipTextClass: CONFIG.TOOLTIP_TEXT_CLASS
+      tooltipTextClass: CONFIG.TOOLTIP_TEXT_CLASS,
+      // Focus line and rect
+      focusGroupClass: 'focus-group',
+      focusLineClass: 'focus-line',
+      focusTopRectClass: 'focus-top-rect',
+      focusBottomRectClass: 'focus-bottom-rect',
+      focusRectClass: 'focus-rect'
     }
   },
 
   computed: {
+    filterPeriod() {
+      return this.$store.getters.filterPeriod
+    },
+    compareDifference() {
+      return this.$store.getters.compareDifference
+    },
     path() {
       return this.$route.path
     },
@@ -342,24 +365,26 @@ export default {
       this.zoomRedraw()
     },
     hoverDate(date) {
-      if (!this.dateFocus) {
-        this.updateCursorLineTooltip(new Date(date).getTime())
+      this.updateCursorLineTooltip(new Date(date).getTime())
+    },
+
+    focusDate(updated) {
+      if (updated) {
+        this.drawFocus(updated)
+      } else {
+        this.hideFocus()
       }
     },
-    dateFocus(focus) {
-      const $cursorLineFocusTopRect = this.$cursorLineGroup.select(
-        `.${this.cursorLineFocusTopRectClass}`
-      )
-      const $cursorLineFocusBottomRect = this.$cursorLineGroup.select(
-        `.${this.cursorLineFocusBottomRectClass}`
-      )
-      const isEnergy = this.interval !== '5m' && this.interval !== '30m'
-      const opacity = focus && !isEnergy ? 1 : 0
-      $cursorLineFocusTopRect.attr('opacity', opacity)
-      $cursorLineFocusBottomRect.attr('opacity', opacity)
+
+    compareDifference(updated) {
+      if (!updated) {
+        this.$compareGroup.selectAll('rect').remove()
+      }
+    },
+    compareDates(updated) {
+      this.drawCompare(updated)
     }
   },
-
   created() {
     this.svgHeight = this.visHeight
   },
@@ -373,6 +398,7 @@ export default {
     this.setupWidthHeight()
     this.setup()
     this.update()
+    this.drawCompare(this.compareDates)
   },
 
   beforeDestroy() {
@@ -410,6 +436,8 @@ export default {
       // Tooltip and hover listener
       this.$hoverLayer = $svg.select(`.${this.hoverLayerClass}`)
       this.$cursorLineGroup = $svg.select(`.${this.cursorLineGroupClass}`)
+      this.$compareGroup = $svg.select(`.${this.compareGroupClass}`)
+      this.$focusGroup = $svg.select(`.${this.focusGroupClass}`)
 
       // Define x, y, z scale types
       this.x = scaleTime().range([0, this.width]) // Date axis
@@ -422,7 +450,6 @@ export default {
         .tickFormat(d => axisTimeFormat(d))
       this.yAxis = axisRight(this.y)
         .tickSize(this.width)
-        // .ticks(5)
         .tickFormat(d => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
 
       // Setup the 'brush' area and event handler
@@ -452,17 +479,23 @@ export default {
         .append('rect')
         .attr('class', this.cursorRectClass)
         .attr('opacity', 0)
-      this.$cursorLineGroup
+
+      this.$focusGroup.append('path').attr('class', this.focusLineClass)
+      this.$focusGroup
         .append('rect')
-        .attr('class', this.cursorLineFocusTopRectClass)
+        .attr('class', this.focusRectClass)
+        .attr('opacity', 0)
+      this.$focusGroup
+        .append('rect')
+        .attr('class', this.focusTopRectClass)
         .attr('x', 0)
         .attr('y', 0)
         .attr('width', 5)
         .attr('height', 5)
         .attr('opacity', 0)
-      this.$cursorLineGroup
+      this.$focusGroup
         .append('rect')
-        .attr('class', this.cursorLineFocusBottomRectClass)
+        .attr('class', this.focusBottomRectClass)
         .attr('x', 0)
         .attr('y', this.height - 5)
         .attr('width', 5)
@@ -492,35 +525,29 @@ export default {
       // Event handling
       // - Control tooltip visibility for mouse entering/leaving svg
       $svg.on('mouseenter', () => {
-        // this.$cursorLineGroup.attr('opacity', 1)
         EventBus.$emit('vis.mouseenter')
       })
       $svg.on('mouseleave', () => {
-        // this.$cursorLineGroup.attr('opacity', 0)
-        if (!this.dateFocus) {
-          this.mouseEvt = null
-          EventBus.$emit('vis.mouseleave')
-        }
+        this.mouseEvt = null
+        EventBus.$emit('vis.mouseleave')
       })
       $svg.on('click', () => {
-        this.$emit('svgClick')
+        this.$emit('svgClick', event.metaKey)
       })
 
       // - find date when on the hoverLayer or brushLayer or when brushing
       this.$hoverLayer.on('touchmove mousemove', function() {
-        if (!self.dateFocus) {
-          self.$emit('eventChange', this)
-          self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
-          self.$emit('domainOver', null)
-        }
+        self.$emit('eventChange', this)
+        self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
+        self.$emit('domainOver', null)
       })
       this.brushX.on('brush', function() {
-        if (!self.dateFocus) {
+        if (!self.focusOn) {
           if (!event.selection) return
           if (event.sourceEvent.type === 'brush') return
           const s = event.selection
-          const startX = self.x.invert(s[0])
-          const endX = self.x.invert(s[1])
+          let startX = self.x.invert(s[0])
+          let endX = self.x.invert(s[1])
 
           if (self.interval === 'Fin Year') {
             if (startX.getMonth() >= 6) {
@@ -531,13 +558,54 @@ export default {
             }
           }
 
+          const isFilter = !self.filterPeriod || self.filterPeriod !== 'All'
+          if (
+            isFilter &&
+            (self.interval === 'Season' || self.interval === 'Quarter')
+          ) {
+            const periodMonth = DateDisplay.getPeriodMonth(
+              self.interval,
+              self.filterPeriod
+            )
+            const startXMonth = startX.getMonth()
+            const endXMonth = endX.getMonth()
+
+            if (self.interval === 'Season') {
+              startX = DateDisplay.mutateSeasonDate(
+                startX,
+                startXMonth,
+                self.filterPeriod
+              )
+              endX = DateDisplay.mutateSeasonDate(
+                endX,
+                endXMonth,
+                self.filterPeriod
+              )
+            } else if (self.interval === 'Quarter') {
+              startX = DateDisplay.mutateQuarterDate(
+                startX,
+                startXMonth,
+                self.filterPeriod
+              )
+              endX = DateDisplay.mutateQuarterDate(
+                endX,
+                endXMonth,
+                self.filterPeriod
+              )
+            }
+            startX.setMonth(periodMonth + 1)
+            endX.setMonth(periodMonth + 1)
+          }
+
           const startTime = DateDisplay.roundToClosestInterval(
             self.interval,
+            self.filterPeriod,
             startX,
             'floor'
           )
           const endTime = DateDisplay.roundToClosestInterval(
             self.interval,
+            self.filterPeriod,
             endX,
             'ceil'
           )
@@ -551,11 +619,9 @@ export default {
       this.$xAxisBrushGroup
         .selectAll('.brush')
         .on('touchmove mousemove', function() {
-          if (!self.dateFocus) {
-            self.$emit('eventChange', this)
-            self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
-            self.$emit('domainOver', null)
-          }
+          self.$emit('eventChange', this)
+          self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
+          self.$emit('domainOver', null)
         })
     },
 
@@ -580,12 +646,6 @@ export default {
         ? this.dynamicExtent
         : this.datasetDateExtent
       this.x.domain(xDomainExtent)
-      // this.y
-      //   .domain([
-      //     min(this.dataset, d => d._min),
-      //     max(this.dataset, d => d._total)
-      //   ])
-      //   .nice()
       this.y.domain([yMin, yMax]).nice()
       this.z.range(this.domainColours).domain(this.domainIds)
 
@@ -628,17 +688,13 @@ export default {
       this.$stackedAreaGroup
         .selectAll('path')
         .on('mousemove touchmove', function(d) {
-          if (!self.dateFocus) {
-            self.$emit('eventChange', this)
-            self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
-            self.$emit('domainOver', d.key)
-          }
+          self.$emit('eventChange', this)
+          self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
+          self.$emit('domainOver', d.key)
         })
     },
 
-    updateCursorLineTooltip(date) {
-      const valueFormat = d3Format(',.1f')
-      const time = new Date(date).getTime()
+    findNextDatePeriod(time) {
       let nextDatePeriod = null
       const find = this.dataset.find((d, i) => {
         const match = d.date === time
@@ -649,6 +705,13 @@ export default {
         }
         return match
       })
+      return nextDatePeriod
+    },
+
+    updateCursorLineTooltip(date) {
+      const valueFormat = d3Format(',.1f')
+      const time = new Date(date).getTime()
+      const nextDatePeriod = this.findNextDatePeriod(time)
       let total = null
       let label = ''
       let value = 0
@@ -669,19 +732,11 @@ export default {
         true
       )
 
-      // if (find && this.currentDomainOver && find[this.currentDomainOver]) {
-      //   label = this.currentDomainOver
-      //   value = valueFormat(find[this.currentDomainOver])
-      // }
       if (find) {
         total = valueFormat(find._total)
       }
 
       this.positionCursorLine(xDate, fTime, bandwidth)
-      if (this.showTooltip) {
-        // this.positionRectText(xDate, fTime)
-      }
-      // this.positionTooltip(xDate, label, value, total)
     },
 
     // Update vis when container is resized
@@ -691,11 +746,8 @@ export default {
     },
 
     handleReset() {
-      // this.zoomed = false
-      // this.$emit('visZoomed', false)
       this.x.domain(this.datasetDateExtent)
       this.zoomRedraw()
-      this.$emit('svgClick', !this.dateFocus)
       EventBus.$emit('dataset.filter', [])
     },
 
@@ -710,6 +762,8 @@ export default {
       this.$yAxisGroup.call(this.customYAxis)
       this.$yAxisTickGroup.call(this.customYAxis)
       this.updateGuides()
+      this.drawFocus(this.focusDate)
+      this.drawCompare(this.compareDates)
 
       this.brushX.extent([[0, 0], [this.width, 40]])
       this.$xAxisBrushGroup.selectAll('.brush').call(this.brushX)
@@ -721,6 +775,8 @@ export default {
       const transition = 100
       this.$xAxisGroup.call(this.customXAxis)
       this.updateGuides()
+      this.drawFocus(this.focusDate)
+      this.drawCompare(this.compareDates)
       this.$stackedAreaGroup
         .selectAll('path')
         .transition(transition)
@@ -776,7 +832,7 @@ export default {
           return width < 0 ? 0 : width
         })
         .attr('height', this.height)
-        .attr('fill', `url(${this.path}#incomplete-period-pattern)`)
+        .attr('fill', `url(${this.path}#${this.id}-incomplete-period-pattern)`)
         .style('pointer-events', 'none')
     },
 
@@ -784,20 +840,11 @@ export default {
       const $cursorLine = this.$cursorLineGroup.select(
         `.${this.cursorLineClass}`
       )
-      const $cursorLineFocusTopRect = this.$cursorLineGroup.select(
-        `.${this.cursorLineFocusTopRectClass}`
-      )
-      const $cursorLineFocusBottomRect = this.$cursorLineGroup.select(
-        `.${this.cursorLineFocusBottomRectClass}`
-      )
       const $cursorRect = this.$cursorLineGroup.select(
         `.${this.cursorRectClass}`
       )
-
       if (bandwidth) {
         $cursorLine.attr('opacity', 0)
-        $cursorLineFocusTopRect.attr('opacity', 0)
-        $cursorLineFocusBottomRect.attr('opacity', 0)
         $cursorRect
           .attr('x', xDate)
           .attr('width', bandwidth < 0 ? 0 : bandwidth)
@@ -806,8 +853,6 @@ export default {
           .style('pointer-events', 'none')
       } else {
         $cursorRect.attr('opacity', 0)
-        $cursorLineFocusTopRect.attr('x', xDate - 2.5)
-        $cursorLineFocusBottomRect.attr('x', xDate - 2.5)
         $cursorLine.attr('opacity', 1).attr('d', () => {
           let d = 'M' + xDate + ',' + this.height
           d += ' ' + xDate + ',' + 0
@@ -816,99 +861,93 @@ export default {
       }
     },
 
-    positionRectText(xDate, time) {
-      const rectWidth = time.length * 5 + 15
-      const $cursorLineRect = this.$cursorLineGroup.select(
-        `.${this.cursorLineRectClass}`
-      )
-      const $cursorLineText = this.$cursorLineGroup.select(
-        `.${this.cursorLineTextClass}`
-      )
-
-      // Cursor line/rect/text to follow mouse
-      $cursorLineRect
-        .attr('x', xDate - rectWidth / 2)
-        .attr('y', this.height - this.timeRectHeight)
-        .attr('width', rectWidth < 0 ? 0 : rectWidth)
-        .attr('opacity', 1)
-      $cursorLineText
-        .attr('x', xDate)
-        .attr('y', this.height - this.timeRectHeight + 14)
-        .text(time)
-
-      if (this.mouseLoc) {
-        const xMouse = this.mouseLoc[0]
-        const yMouse = this.mouseLoc[1]
-        const topCutoff = (20 / 100) * this.height
-        const leftCutoff = rectWidth / 2
-        const rightCutoff = this.width - rectWidth / 2
-
-        // Adjust the position of the tooltips if cursor is near the top
-        // if (yMouse <= topCutoff) {
-        //   $cursorLineRect.attr('y', this.height)
-        //   $cursorLineText.attr('y', this.height + 15)
-        // }
-
-        // - check for time tooltip
-        if (xMouse >= rightCutoff) {
-          $cursorLineRect.attr('x', rightCutoff - rectWidth / 2)
-          $cursorLineText.attr('x', rightCutoff)
-        } else if (xMouse <= leftCutoff) {
-          $cursorLineRect.attr('x', 0)
-          $cursorLineText.attr('x', rectWidth / 2)
+    drawFocus(focusDate) {
+      const time = new Date(focusDate).getTime()
+      let nextDatePeriod = null
+      const find = this.dataset.find((d, i) => {
+        const match = d.date === time
+        if (match) {
+          if (this.dataset[i + 1]) {
+            nextDatePeriod = this.dataset[i + 1].date
+          }
         }
+        return match
+      })
+      const xDate = this.x(time)
+      const nextPeriod = this.x(nextDatePeriod)
+      const bandwidth =
+        this.interval !== '5m' && this.interval !== '30m'
+          ? nextPeriod - xDate
+          : null
+
+      const $focusLine = this.$focusGroup.select(`.${this.focusLineClass}`)
+      const $focusTopRect = this.$focusGroup.select(
+        `.${this.focusTopRectClass}`
+      )
+      const $focusBottomRect = this.$focusGroup.select(
+        `.${this.focusBottomRectClass}`
+      )
+      const $focusRect = this.$focusGroup.select(`.${this.focusRectClass}`)
+      if (bandwidth) {
+        $focusLine.attr('opacity', 0)
+        $focusTopRect.attr('opacity', 0)
+        $focusBottomRect.attr('opacity', 0)
+        $focusRect
+          .attr('x', xDate)
+          .attr('width', bandwidth < 0 ? 0 : bandwidth)
+          .attr('height', this.height)
+          .attr('opacity', 1)
+          .style('pointer-events', 'none')
+      } else {
+        $focusRect.attr('opacity', 0)
+        $focusTopRect.attr('opacity', 1).attr('x', xDate - 2.5)
+        $focusBottomRect.attr('opacity', 1).attr('x', xDate - 2.5)
+        $focusLine.attr('opacity', 1).attr('d', () => {
+          let d = 'M' + xDate + ',' + this.height
+          d += ' ' + xDate + ',' + 0
+          return d
+        })
       }
     },
 
-    // positionTooltip(xDate, label, value, total) {
-    //   const text = `${label}: ${value}`
-    //   const totalText = `Total: ${total}`
-    //   const longest = text > totalText ? text : totalText
-    //   const rectWidth = longest.length * 6 + 15
-    //   const $tooltipRect = this.$tooltipGroup.select(
-    //     `.${this.tooltipRectClass}`
-    //   )
-    //   const $tooltipText = this.$tooltipGroup.select(
-    //     `.${this.tooltipTextClass}`
-    //   )
-    //   const $tooltipDomainColour = this.$tooltipGroup.select(
-    //     '.tooltip-domain-colour'
-    //   )
+    hideFocus() {
+      const $focusLine = this.$focusGroup.select(`.${this.focusLineClass}`)
+      const $focusTopRect = this.$focusGroup.select(
+        `.${this.focusTopRectClass}`
+      )
+      const $focusBottomRect = this.$focusGroup.select(
+        `.${this.focusBottomRectClass}`
+      )
+      const $focusRect = this.$focusGroup.select(`.${this.focusRectClass}`)
+      $focusRect.attr('opacity', 0)
+      $focusLine.attr('opacity', 0)
+      $focusTopRect.attr('opacity', 0)
+      $focusBottomRect.attr('opacity', 0)
+    },
 
-    //   // create fuel tech colour square
-    //   $tooltipRect
-    //     .attr('x', xDate - rectWidth / 2)
-    //     .attr('y', 0)
-    //     .attr('width', rectWidth)
-    //     .attr('opacity', 1)
-    //   $tooltipText
-    //     .attr('x', xDate)
-    //     .attr('y', 15)
-    //     .text(text)
-    //     .append('tspan')
-    //     .attr('x', xDate)
-    //     .attr('dy', 12)
-    //     .text(totalText)
-
-    //   // Tooltips to stick to left or right corners when close to the edge
-    //   // - check for value tooltip
-    //   if (this.mouseLoc) {
-    //     const xMouse = this.mouseLoc[0]
-    //     const yMouse = this.mouseLoc[1]
-    //     const leftCutoff = rectWidth / 2
-    //     const rightCutoff = this.width - rectWidth / 2
-
-    //     if (xMouse >= rightCutoff) {
-    //       $tooltipRect.attr('x', rightCutoff - rectWidth / 2)
-    //       $tooltipText.attr('x', rightCutoff)
-    //       $tooltipText.select('tspan').attr('x', rightCutoff)
-    //     } else if (xMouse <= leftCutoff) {
-    //       $tooltipRect.attr('x', 0)
-    //       $tooltipText.attr('x', rectWidth / 2)
-    //       $tooltipText.select('tspan').attr('x', rectWidth / 2)
-    //     }
-    //   }
-    // },
+    drawCompare(compareDates) {
+      const compareLength = compareDates.length
+      this.$compareGroup.selectAll('rect').remove()
+      if (compareLength > 0 && compareLength < 3) {
+        this.$compareGroup
+          .selectAll('rect')
+          .data(compareDates)
+          .enter()
+          .append('rect')
+          .attr('opacity', 0.3)
+          .attr('x', d => this.x(d))
+          .attr('width', d => {
+            const time = new Date(d).getTime()
+            const nextDatePeriod = this.findNextDatePeriod(time)
+            const nextPeriod = this.x(nextDatePeriod)
+            const xDate = this.x(time)
+            const bandwidth = nextPeriod - xDate
+            return bandwidth
+          })
+          .attr('height', this.height)
+          .attr('fill', '#e34a33')
+      }
+    },
 
     // handle when selecting the date ranges on the brush area
     brushEnded(d) {
@@ -917,12 +956,12 @@ export default {
       // Turn off the brush selection
       selectAll('.brush').call(this.brushX.move, null)
 
-      if (this.dateFocus) return
+      if (this.focusOn) return
 
       // Get the brush selection (start/end) points -> dates
       const s = event.selection
-      const startX = this.x.invert(s[0])
-      const endX = this.x.invert(s[1])
+      let startX = this.x.invert(s[0])
+      let endX = this.x.invert(s[1])
 
       if (this.interval === 'Fin Year') {
         if (startX.getMonth() >= 6) {
@@ -933,13 +972,65 @@ export default {
         }
       }
 
-      const dateRange = this.getZoomDateRanges(startX, endX)
+      const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
+      if (
+        isFilter &&
+        (this.interval === 'Season' || this.interval === 'Quarter')
+      ) {
+        const periodMonth = DateDisplay.getPeriodMonth(
+          this.interval,
+          this.filterPeriod
+        )
+        const startXMonth = startX.getMonth()
+        const endXMonth = endX.getMonth()
+
+        if (this.interval === 'Season') {
+          startX = DateDisplay.mutateSeasonDate(
+            startX,
+            startXMonth,
+            this.filterPeriod
+          )
+          endX = DateDisplay.mutateSeasonDate(
+            endX,
+            endXMonth,
+            this.filterPeriod
+          )
+        } else if (this.interval === 'Quarter') {
+          startX = DateDisplay.mutateQuarterDate(
+            startX,
+            startXMonth,
+            this.filterPeriod
+          )
+          endX = DateDisplay.mutateQuarterDate(
+            endX,
+            endXMonth,
+            this.filterPeriod
+          )
+        }
+        startX.setMonth(periodMonth + 1)
+        endX.setMonth(periodMonth + 1)
+      }
+
+      const startTime = DateDisplay.roundToClosestInterval(
+        this.interval,
+        this.filterPeriod,
+        startX,
+        'floor'
+      )
+      const endTime = DateDisplay.roundToClosestInterval(
+        this.interval,
+        this.filterPeriod,
+        endX,
+        'ceil'
+      )
+
+      const dateRange = isFilter
+        ? this.getZoomDateRanges(startX, endX)
+        : [startTime, endTime]
 
       // Set it to the current X domain
       this.x.domain(dateRange)
 
-      // this.zoomed = true
-      // this.$emit('visZoomed', true)
       this.zoomRedraw()
       EventBus.$emit('dataset.filter', dateRange)
     },
@@ -998,6 +1089,8 @@ export default {
       let tickLength = null
       let className = ''
       const that = this
+      const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
+
       if (!this.zoomed) {
         if (this.range === '1D') {
           className = 'interval-5m'
@@ -1027,10 +1120,27 @@ export default {
           const every = this.mobileScreen ? 2 : 1
           tickLength = timeYear.every(every)
 
-          if (this.interval === 'Year') {
+          if (this.interval === 'Season') {
+            className = 'interval-season'
+            const periodMonth = DateDisplay.getPeriodMonth(
+              this.interval,
+              this.filterPeriod
+            )
+            if (isFilter && periodMonth) {
+              tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+            }
+          } else if (this.interval === 'Quarter') {
+            className = 'interval-quarter'
+            const periodMonth = DateDisplay.getPeriodMonth(
+              this.interval,
+              this.filterPeriod
+            )
+            if (isFilter && periodMonth) {
+              tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+            }
+          } else if (this.interval === 'Year') {
             className = 'interval-year'
-          }
-          if (this.interval === 'Fin Year') {
+          } else if (this.interval === 'Fin Year') {
             tickLength = timeMonth.filter(d => {
               return d.getMonth() === 6
             })
@@ -1046,7 +1156,28 @@ export default {
           }
         }
       }
-      if (this.interval === 'Fin Year') {
+
+      if (
+        isFilter &&
+        (this.interval === 'Season' || this.interval === 'Quarter')
+      ) {
+        this.xAxis.tickFormat((d, i) => {
+          const year = d.getFullYear() + ''
+          const nextYear = d.getFullYear() + 1 + ''
+          const yearStr =
+            this.filterPeriod === 'Summer'
+              ? `${year}/${nextYear.substr(2, 2)}`
+              : year
+          return `${yearStr}`
+        })
+        const periodMonth = DateDisplay.getPeriodMonth(
+          this.interval,
+          this.filterPeriod
+        )
+        if (isFilter && periodMonth) {
+          tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+        }
+      } else if (this.interval === 'Fin Year') {
         this.xAxis.tickFormat(d => {
           const year = d.getFullYear() + 1 + ''
           return `FY${year.substr(2, 2)}`
@@ -1061,9 +1192,10 @@ export default {
       this.xAxis.ticks(tickLength)
 
       // add secondary x axis tick label here
-      const insertSecondaryAxisTick = function(d) {
+      const insertSecondaryAxisTick = function(d, i) {
         const el = select(this)
-        const secondaryText = axisSecondaryTimeFormat(d)
+        const secondaryText =
+          isFilter && i === 0 ? that.filterPeriod : axisSecondaryTimeFormat(d)
         if (secondaryText !== '') {
           el.append('tspan')
             .text(secondaryText)

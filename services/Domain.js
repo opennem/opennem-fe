@@ -1,6 +1,7 @@
 import _includes from 'lodash.includes'
 import _uniqBy from 'lodash.uniqby'
 import * as FUEL_TECHS from '~/constants/fuelTech.js'
+import { EMISSIONS } from '~/constants/emissions.js'
 
 export default {
   parseDomains(domains, dict, type) {
@@ -24,6 +25,7 @@ export default {
             colour: dict.FUEL_TECH_GROUP_COLOUR[id],
             category: dict.FUEL_TECH_CATEGORY[id],
             type: find.type,
+            group: id,
             domainIds
           })
         }
@@ -42,7 +44,8 @@ export default {
         label: FUEL_TECHS.FUEL_TECH_LABEL[ft],
         colour: FUEL_TECHS.DEFAULT_FUEL_TECH_COLOUR[ft],
         category: FUEL_TECHS.FUEL_TECH_CATEGORY[ft],
-        renewable: FUEL_TECHS.FUEL_TECH_RENEWABLE[ft]
+        renewable: FUEL_TECHS.FUEL_TECH_RENEWABLE[ft],
+        group: null
       }
     })
   },
@@ -54,7 +57,8 @@ export default {
         id: `${ft}.energy`,
         label: dict.FUEL_TECH_LABEL[ft],
         colour: dict.FUEL_TECH_GROUP_COLOUR[ft],
-        category: dict.FUEL_TECH_CATEGORY[ft]
+        category: dict.FUEL_TECH_CATEGORY[ft],
+        group: ft
       }
     })
   },
@@ -78,7 +82,12 @@ export default {
       const objs = r.data
         .filter(d => d.type === 'power' || d.type === 'energy')
         .map(d => {
-          return { id: d.id, fuelTech: d.fuel_tech, type: d.type }
+          return {
+            id: d.id,
+            fuelTech: d.fuel_tech,
+            type: d.type,
+            group: d.group
+          }
         })
       domains = [...domains, ...objs]
     })
@@ -88,8 +97,13 @@ export default {
   getEmissionsDomains(data) {
     let domains = []
     data.forEach(r => {
-      const objs = r.data.filter(d => d.type === 'emissions').map(d => {
-        return { id: d.id, fuelTech: d.fuel_tech, type: d.type }
+      const objs = r.data.filter(d => d.type === EMISSIONS).map(d => {
+        return {
+          id: d.id,
+          fuelTech: d.fuel_tech,
+          type: d.type,
+          group: d.group
+        }
       })
       domains = [...domains, ...objs]
     })
@@ -166,6 +180,27 @@ export default {
       })
     }
     return domains
+  },
+
+  getVolWeightedDomains() {
+    const PRICE_COLOUR = 'blue'
+    return [
+      {
+        id: '_volWeightedPrice',
+        type: 'price',
+        colour: PRICE_COLOUR
+      },
+      {
+        id: '_volWeightedPriceAbove300',
+        type: 'price',
+        colour: PRICE_COLOUR
+      },
+      {
+        id: '_volWeightedPriceBelow0',
+        type: 'price',
+        colour: PRICE_COLOUR
+      }
+    ]
   },
 
   getDomainObjs(region, domainIds, type) {

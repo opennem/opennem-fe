@@ -1,9 +1,18 @@
 import cloneDeep from 'lodash.clonedeep'
+import { lsGet, lsSet } from '~/services/LocalStorage'
 import * as FUEL_TECHS from '~/constants/fuelTech.js'
 import * as SimplifiedGroup from '~/constants/group-simplified.js'
 import * as FlexibilityGroup from '~/constants/group-flexibility.js'
 import * as RenewableFossilGroup from '~/constants/group-renewable-fossil.js'
 import * as SolarResidualGroup from '~/constants/group-solar-residual.js'
+
+const MutationTypes = {
+  FEATURE_TOGGLE_EMISSIONS: 'FEATURE_TOGGLE_EMISSIONS'
+}
+const featureEmissions = lsGet(MutationTypes.FEATURE_TOGGLE_EMISSIONS)
+if (!featureEmissions) {
+  lsSet(MutationTypes.FEATURE_TOGGLE_EMISSIONS, false)
+}
 
 export const state = () => ({
   currentView: 'energy', // energy, facilities
@@ -30,7 +39,12 @@ export const state = () => ({
   chartSummaryPie: true,
   exportAttribution: '@name',
   percentContributionTo: 'demand', // or generation
-  featureEmissions: false
+  featureEmissions,
+  filterPeriod: null,
+  compareDifference: false,
+  focusOn: false,
+  compareDates: [],
+  drawer: false
 })
 
 export const mutations = {
@@ -107,7 +121,23 @@ export const mutations = {
     state.percentContributionTo = data
   },
   featureEmissions(state, data) {
+    lsSet(MutationTypes.FEATURE_TOGGLE_EMISSIONS, data)
     state.featureEmissions = data
+  },
+  filterPeriod(state, data) {
+    state.filterPeriod = data
+  },
+  compareDifference(state, data) {
+    state.compareDifference = data
+  },
+  focusOn(state, data) {
+    state.focusOn = data
+  },
+  compareDates(state, data) {
+    state.compareDates = data
+  },
+  drawer(state, data) {
+    state.drawer = data
   }
 }
 
@@ -200,7 +230,12 @@ export const getters = {
   chartSummaryPie: state => state.chartSummaryPie,
   exportAttribution: state => state.exportAttribution,
   percentContributionTo: state => state.percentContributionTo,
-  featureEmissions: state => state.featureEmissions
+  featureEmissions: state => state.featureEmissions,
+  filterPeriod: state => state.filterPeriod,
+  compareDifference: state => state.compareDifference,
+  focusOn: state => state.focusOn,
+  compareDates: state => state.compareDates,
+  drawer: state => state.drawer
 }
 
 export const actions = {
@@ -275,5 +310,20 @@ export const actions = {
   },
   featureEmissions({ commit }, data) {
     commit('featureEmissions', data)
+  },
+  filterPeriod({ commit }, data) {
+    commit('filterPeriod', data)
+  },
+  compareDifference({ commit }, data) {
+    commit('compareDifference', data)
+  },
+  focusOn({ commit }, data) {
+    commit('focusOn', data)
+  },
+  compareDates({ commit }, data) {
+    commit('compareDates', data)
+  },
+  drawer({ commit }, data) {
+    commit('drawer', data)
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <section style="margin-top: 0.5rem;">
+  <section class="region-section">
     <data-options-bar
       :range="range"
       :interval="interval"
@@ -34,16 +34,20 @@
       <div class="vis-container">
         <div
           v-if="ready"
-          :class="{ 'is-hovered': hoverOn }"
+          :class="{ 'is-hovered': hoverOn || focusOn }"
           class="chart">
           <div
             v-if="step"
             class="chart-title no-hover">
             <div class="chart-label">
               <strong>Energy</strong>
-              <small>{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval }}</small>
+              <small>{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | toLowerCase }}</small>
             </div>
             <div class="hover-date-value">
+              <div class="average-value">
+                Av.
+                <strong>{{ averageEnergy | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | toLowerCase }}</strong>
+              </div>
               <div class="hover-date">
                 <time>
                   {{ hoverDisplayDate }}
@@ -74,6 +78,10 @@
               <small>MW</small>
             </div>
             <div class="hover-date-value">
+              <div class="average-value">
+                Av.
+                <strong>{{ averageEnergy | formatValue }} MW</strong>
+              </div>
               <div class="hover-date">
                 <time>
                   {{ hoverDisplayDate }}
@@ -102,6 +110,8 @@
             :dynamic-extent="dateFilter"
             :hover-date="hoverDate"
             :hover-on="hoverOn"
+            :focus-date="focusDate"
+            :focus-on="focusOn"
             :range="range"
             :interval="interval"
             :mouse-loc="mouseLoc"
@@ -114,7 +124,7 @@
             :x-axis-dy="xAxisDy"
             :mobile-screen="tabletBreak"
             :incomplete-intervals="incompleteIntervals"
-            :date-focus="dateFocus"
+            :compare-dates="compareDates"
             class="vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
@@ -124,9 +134,27 @@
         </div>
 
         <div
+          v-if="compareDifference && ready"
+          class="chart">
+          <div
+            class="chart-title no-hover"
+            style="justify-content: center;">
+            <div class="chart-label">
+              <strong>{{ firstDate | customFormatDate({ range, interval, showIntervalRange: true }) }}</strong>
+              vs
+              <strong>{{ secondDate | customFormatDate({ range, interval, showIntervalRange: true }) }}</strong>
+            </div>
+          </div>
+          <energy-compare
+            :domains="stackedAreaDomains"
+            :compare-data="compareData"
+          />
+        </div>
+
+        <div
           v-if="ready && hasEmissionData && featureEmissions"
           :class="{
-            'is-hovered': hoverOn,
+            'is-hovered': hoverOn || focusOn,
             'has-border-bottom': !chartEmissionsVolume
           }"
           class="chart">
@@ -141,20 +169,33 @@
                 }"
                 class="fal fa-fw" />
               <strong>Emissions Volume</strong>
-              <small>tCO2e</small>
+              <small>tCO₂e/{{ interval | toLowerCase }}</small>
             </div>
             <div
               v-show="chartEmissionsVolume"
               class="hover-date-value">
+              <div class="average-value">
+                Av.
+                <strong>{{ averageEmissionsVolume | formatValue }} tCO₂e/{{ interval | toLowerCase }}</strong>
+              </div>
               <div class="hover-date">
                 <time>
                   {{ hoverDisplayDate }}
                 </time>
               </div>
               <div class="hover-values">
+                <span
+                  v-if="hoverEmissionVolumeValue"
+                  class="ft-value">
+                  <em
+                    :style="{ 'background-color': hoverEmissionVolumeDomainColour }"
+                    class="colour-square" />
+                  {{ hoverEmissionVolumeDomainLabel }}
+                  <strong>{{ hoverEmissionVolumeValue | formatValue2 }} tCO₂e</strong>
+                </span>
                 <span>
                   Total
-                  <strong>{{ hoverEmissionVolumeTotal | formatValue }} tCO2e</strong>
+                  <strong>{{ hoverEmissionVolumeTotal | formatValue2 }} tCO₂e</strong>
                 </span>
               </div>
             </div>
@@ -162,10 +203,12 @@
           <stacked-area-vis
             v-if="chartEmissionsVolume"
             :domains="emissionStackedAreaDomains"
-            :dataset="dataset"
+            :dataset="emissionsVolumeDataset"
             :dynamic-extent="dateFilter"
             :hover-date="hoverDate"
             :hover-on="hoverOn"
+            :focus-date="focusDate"
+            :focus-on="focusOn"
             :range="range"
             :interval="interval"
             :mouse-loc="mouseLoc"
@@ -174,15 +217,15 @@
             :show-x-axis="false"
             :show-tooltip="false"
             :show-zoom-out="false"
-            :y-min="0"
+            :y-min="emissionsMin"
             :y-max="emissionsMax"
             :zoomed="zoomed"
             :x-guides="xGuides"
             :incomplete-intervals="incompleteIntervals"
-            :date-focus="dateFocus"
             class="emissions-volume-vis vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
+            @domainOver="handleEmissionsDomainOver"
             @svgClick="handleSvgClick"
           />
         </div>
@@ -190,7 +233,7 @@
         <div
           v-if="ready && hasEmissionData && featureEmissions"
           :class="{
-            'is-hovered': hoverOn,
+            'is-hovered': hoverOn || focusOn,
             'has-border-bottom': !chartEmissionsIntensity
           }"
           class="chart">
@@ -210,6 +253,10 @@
             <div
               v-show="chartEmissionsIntensity"
               class="hover-date-value">
+              <div class="average-value">
+                Av.
+                <strong>{{ averageEmissionsIntensity | formatValue }} kgCO₂e/MWh</strong>
+              </div>
               <div class="hover-date">
                 <time>
                   {{ hoverDisplayDate }}
@@ -217,7 +264,7 @@
               </div>
               <div class="hover-values">
                 <span>
-                  <strong>{{ hoverEmissionsIntensity | formatValue }} kgCO₂e/MWh</strong>
+                  <strong>{{ hoverEmissionsIntensity | formatValue2 }} kgCO₂e/MWh</strong>
                 </span>
               </div>
             </div>
@@ -226,23 +273,25 @@
             v-if="chartEmissionsIntensity"
             :domain-id="'_emissionsIntensity'"
             :domain-colour="lineColour"
-            :dataset="dataset"
+            :dataset="emissionsIntensityDataset"
             :dynamic-extent="dateFilter"
             :hover-date="hoverDate"
             :hover-on="hoverOn"
+            :focus-date="focusDate"
+            :focus-on="focusOn"
             :range="range"
             :interval="interval"
             :mouse-loc="mouseLoc"
             :show-x-axis="false"
             :show-tooltip="false"
-            :show-point-on-hover="true"
             :vis-height="120"
+            :y-max="emissionsIntensityMax"
             :y-min="emissionsIntensityMin"
-            :curve="'smooth'"
+            :curve="'step'"
+            :connect-zero="true"
             :show-zoom-out="false"
             :zoomed="zoomed"
             :x-guides="xGuides"
-            :date-focus="dateFocus"
             class="emissions-intensity-vis vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
@@ -253,7 +302,7 @@
         <div
           v-if="ready && hasPriceData"
           :class="{
-            'is-hovered': hoverOn,
+            'is-hovered': hoverOn || focusOn,
             'has-border-bottom': !chartPrice
           }"
           class="chart">
@@ -273,6 +322,10 @@
             <div
               v-show="chartPrice"
               class="hover-date-value">
+              <div class="average-value">
+                Av.
+                <strong>{{ totalAverageValue | formatCurrency }}</strong>
+              </div>
               <div class="hover-date">
                 <time>
                   {{ hoverDisplayDate }}
@@ -287,13 +340,15 @@
           </div>
           <line-vis
             v-if="chartPrice"
-            :domain-id="'price.above300'"
+            :domain-id="priceDomains[1].id"
             :domain-colour="lineColour"
             :value-domain-id="priceDomains[0].id"
             :dataset="dataset"
             :dynamic-extent="dateFilter"
             :hover-date="hoverDate"
             :hover-on="hoverOn"
+            :focus-date="focusDate"
+            :focus-on="focusOn"
             :range="range"
             :interval="interval"
             :mouse-loc="mouseLoc"
@@ -306,9 +361,9 @@
             :show-x-axis="false"
             :vis-height="50"
             :show-zoom-out="false"
+            :connect-zero="false"
             :x-guides="xGuides"
             :y-guides="[300, 2000, 6000, 10000, 14000]"
-            :date-focus="dateFocus"
             class="price-pos-vis vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
@@ -322,6 +377,8 @@
             :dynamic-extent="dateFilter"
             :hover-date="hoverDate"
             :hover-on="hoverOn"
+            :focus-date="focusDate"
+            :focus-on="focusOn"
             :range="range"
             :interval="interval"
             :mouse-loc="mouseLoc"
@@ -334,9 +391,9 @@
             :show-x-axis="false"
             :vis-height="80"
             :show-zoom-out="false"
+            :connect-zero="false"
             :x-guides="xGuides"
             :y-guides="[0, 100, 200, 300]"
-            :date-focus="dateFocus"
             class="price-vis vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
@@ -344,12 +401,14 @@
           />
           <line-vis
             v-if="chartPrice"
-            :domain-id="'price.below0'"
+            :domain-id="priceDomains[2].id"
             :domain-colour="lineColour"
             :dataset="dataset"
             :dynamic-extent="dateFilter"
             :hover-date="hoverDate"
             :hover-on="hoverOn"
+            :focus-date="focusDate"
+            :focus-on="focusOn"
             :range="range"
             :interval="interval"
             :mouse-loc="mouseLoc"
@@ -363,9 +422,9 @@
             :show-tooltip="false"
             :vis-height="35"
             :show-zoom-out="false"
+            :connect-zero="false"
             :x-guides="xGuides"
             :y-guides="[-60, -400]"
-            :date-focus="dateFocus"
             class="price-neg-vis vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
@@ -376,7 +435,7 @@
         <div
           v-if="ready && hasTemperatureData"
           :class="{
-            'is-hovered': hoverOn,
+            'is-hovered': hoverOn || focusOn,
             'has-border-bottom': !chartTemperature,
             'adjustment': chartPrice
           }"
@@ -398,6 +457,10 @@
             <div
               v-show="chartTemperature"
               class="hover-date-value">
+              <div class="average-value">
+                Av.
+                <strong>{{ averageTemperature | formatValue }}°C</strong>
+              </div>
               <div class="hover-date">
                 <time>
                   {{ hoverDisplayDate }}
@@ -433,6 +496,8 @@
             :dynamic-extent="dateFilter"
             :hover-date="hoverDate"
             :hover-on="hoverOn"
+            :focus-date="focusDate"
+            :focus-on="focusOn"
             :range="range"
             :interval="interval"
             :mouse-loc="mouseLoc"
@@ -446,7 +511,6 @@
             :show-zoom-out="false"
             :zoomed="zoomed"
             :x-guides="xGuides"
-            :date-focus="dateFocus"
             class="temperature-vis vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
@@ -461,16 +525,22 @@
           id="summary-table"
           :energy-domains="energyDomains"
           :domains="summaryDomains"
+          :stacked-area-domains="stackedAreaDomains"
+          :emissions-domains="emissionStackedAreaDomains"
+          :temperature-domains="temperatureDomains"
           :price-id="priceDomains.length > 0 ? priceDomains[0].id : null"
           :market-value-domains="mvDomains"
           :dataset="filteredDataset"
           :hover-date="hoverDate"
           :hover-on="hoverOn"
+          :focus-date="focusDate"
+          :focus-on="focusOn"
           :range="range"
           :interval="interval"
           :is-energy="step"
           :hidden-fuel-techs="hiddenFuelTechs"
           @fuelTechsHidden="handleFuelTechsHidden"
+          @summary-update="handleSummaryUpdated"
         />
 
         <section
@@ -499,7 +569,9 @@
             :domains="donutDomains"
             :dataset="filteredDataset"
             :hover-data="hoverData"
-            :hover-on="hoverOn" />
+            :hover-on="hoverOn"
+            :focus-data="focusData"
+            :focus-on="focusOn" />
 
           <donut-vis
             v-show="chartSummaryPie"
@@ -508,7 +580,9 @@
             :dataset="filteredDataset"
             :dynamic-extent="dateFilter"
             :hover-data="hoverData"
-            :hover-on="hoverOn" />
+            :hover-on="hoverOn"
+            :focus-data="focusData"
+            :focus-on="focusOn" />
         </section>
 
         <energy-records
@@ -519,7 +593,6 @@
           :interval="interval"
           :price-id="priceDomains.length > 0 ? priceDomains[0].id : null"
           :temperature-id="temperatureMeanId"
-          :date-focus="dateFocus"
           @recordSelect="handleRecordSelect"
           @recordDeselect="handleRecordDeselect"
           @recordMouseEnter="handleRecordMouseEnter"
@@ -536,10 +609,12 @@ import { mouse as d3Mouse } from 'd3-selection'
 import { extent as d3Extent, max as d3Max } from 'd3-array'
 import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
+import _cloneDeep from 'lodash.clonedeep'
 import Draggable from 'vuedraggable'
 import { saveAs } from 'file-saver'
 
 import REGIONS from '~/constants/regions.js'
+import { EMISSIONS } from '~/constants/emissions.js'
 import EventBus from '~/plugins/eventBus.js'
 import Http from '~/services/Http.js'
 import DateDisplay from '~/services/DateDisplay.js'
@@ -556,6 +631,7 @@ import EnergyBar from '~/components/Energy/EnergyBar.vue'
 import SummaryTable from '~/components/SummaryTable'
 import VisTooltip from '~/components/ui/Tooltip'
 import EnergyRecords from '~/components/Energy/Records.vue'
+import EnergyCompare from '~/components/Energy/Compare.vue'
 
 export default {
   layout: 'main',
@@ -603,13 +679,15 @@ export default {
     EnergyBar,
     SummaryTable,
     VisTooltip,
-    EnergyRecords
+    EnergyRecords,
+    EnergyCompare
   },
 
   data() {
     return {
       mounted: false,
       ready: false,
+      originalDataset: [],
       dataset: [],
       energyDomains: [],
       fuelTechEnergyOrder: [],
@@ -624,6 +702,8 @@ export default {
       responses: [],
       hoverDate: null,
       hoverDomain: null,
+      hoverEmissionVolumeDomain: null,
+      focusDate: null,
       mouseLoc: null,
       tooltipLeft: 0,
       filteredDataset: [],
@@ -633,9 +713,15 @@ export default {
       windowWidth: 0,
       energyMin: 0,
       energyMax: 1000,
+      emissionsVolumeDataset: [],
+      emissionsMin: 0,
+      emissionsMax: 1000,
+      emissionsIntensityDataset: [],
       emissionsIntensityMin: 0,
-      dateFocus: false,
-      isTouchDevice: false
+      emissionsIntensityMax: 1000,
+      isTouchDevice: false,
+      compareData: [],
+      summary: null
     }
   },
 
@@ -649,11 +735,17 @@ export default {
     dateFilter() {
       return this.$store.getters.dateFilter
     },
+    filterPeriod() {
+      return this.$store.getters.filterPeriod
+    },
     zoomed() {
       return this.$store.getters.dateFilter.length !== 0
     },
     type() {
       return this.$store.getters.energyChartType
+    },
+    isEnergyType() {
+      return this.type === 'energy'
     },
     chartEmissionsVolume() {
       return this.$store.getters.chartEmissionsVolume
@@ -669,6 +761,15 @@ export default {
     },
     chartSummaryPie() {
       return this.$store.getters.chartSummaryPie
+    },
+    compareDifference() {
+      return this.$store.getters.compareDifference
+    },
+    focusOn() {
+      return this.$store.getters.focusOn
+    },
+    compareDates() {
+      return this.$store.getters.compareDates
     },
     responsiveBreakWidth() {
       return this.$store.getters.responsiveBreakWidth
@@ -718,6 +819,9 @@ export default {
     hiddenFuelTechs() {
       return this.$store.getters.hiddenFuelTechs
     },
+    percentContributionTo() {
+      return this.$store.getters.percentContributionTo
+    },
     groupDomains() {
       const dict = this.fuelTechGroup
       const domains = this.energyDomains
@@ -732,7 +836,7 @@ export default {
     groupEmissionDomains() {
       const dict = this.fuelTechGroup
       const domains = this.emissionDomains
-      return Domain.parseDomains(domains, dict, 'emissions')
+      return Domain.parseDomains(domains, dict, EMISSIONS)
     },
 
     hasTemperatureData() {
@@ -778,9 +882,18 @@ export default {
         : this.energyDomains
     },
     emissionStackedAreaDomains() {
-      return this.groupEmissionDomains.length > 0
-        ? this.groupEmissionDomains
-        : this.emissionDomains
+      const hidden = this.fuelTechGroup
+        ? this.hiddenFuelTechs.map(d => {
+            return d.substring(0, d.lastIndexOf('.'))
+          })
+        : this.hiddenFuelTechs
+      let domains =
+        this.groupEmissionDomains.length > 0
+          ? this.groupEmissionDomains
+          : this.emissionDomains
+      return this.fuelTechGroup
+        ? domains.filter(d => !_includes(hidden, d.group))
+        : domains.filter(d => !_includes(hidden, d.fuelTech))
     },
     stackedAreaHeight() {
       let height = 330
@@ -789,11 +902,10 @@ export default {
       }
       return height
     },
-    emissionsMax() {
-      return d3Max(this.dataset, d => d._totalEmissionsVol)
-    },
-
     xGuides() {
+      if (this.dataset.length <= 0) {
+        return []
+      }
       let dStart = this.dataset[0].date
       const dEnd = this.dataset[this.dataset.length - 1].date
 
@@ -807,6 +919,46 @@ export default {
     },
 
     incompleteIntervals() {
+      function getStartMonth(month) {
+        switch (month) {
+          case 11:
+          case 0:
+          case 1:
+            return 11
+
+          case 2:
+          case 3:
+          case 4:
+            return 2
+
+          case 5:
+          case 6:
+          case 7:
+            return 5
+
+          case 8:
+          case 9:
+          case 10:
+            return 8
+
+          default:
+        }
+        return null
+      }
+
+      function getSeasonLabel(month) {
+        switch (month) {
+          case 2:
+            return 'Autumn'
+          case 5:
+            return 'Winter'
+          case 8:
+            return 'Spring'
+          case 11:
+            return 'Summer'
+        }
+      }
+
       let dStart = this.dataset[0].date
       const dEnd = this.dataset[this.dataset.length - 1].date
       const actualStartDate = this.dataset[0]._actualStartDate
@@ -850,16 +1002,61 @@ export default {
 
       if (this.interval === 'Season' || this.interval === 'Quarter') {
         const incompletes = []
-        aLD = moment(aLD).add(1, 'month')
+        const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
+        if (!isFilter) {
+          aLD = moment(aLD).add(1, 'month')
+          if (aSD > dStart) {
+            incompletes.push({
+              start: dStart,
+              end: dStart + 7889400000
+            })
+          }
+          if (aLD.valueOf() < dEnd) {
+            incompletes.push({
+              start: dEnd - 7889400000,
+              end: dEnd
+            })
+          }
+        } else {
+          aLD = moment(aLD).add(1, 'year')
+          const actualStartMonth = getStartMonth(new Date(aSD).getMonth())
+          const actualStartSeason = getSeasonLabel(actualStartMonth)
+
+          const actualEndMonth = getStartMonth(new Date(aLD).getMonth())
+          const actualEndSeason = getSeasonLabel(actualEndMonth)
+
+          if (actualStartSeason === this.filterPeriod) {
+            if (aSD > dStart) {
+              incompletes.push({
+                start: dStart,
+                end: dStart + 31557600000
+              })
+            }
+          }
+          if (actualEndSeason === this.filterPeriod) {
+            const newDEnd = moment(dEnd).add(3, 'month')
+            if (aLD.valueOf() < newDEnd.valueOf()) {
+              incompletes.push({
+                start: dEnd - 31557600000,
+                end: dEnd
+              })
+            }
+          }
+        }
+        return incompletes
+      }
+
+      if (this.interval === 'Half Year') {
+        const incompletes = []
         if (aSD > dStart) {
           incompletes.push({
             start: dStart,
-            end: dStart + 7889400000
+            end: dStart + 15552000000
           })
         }
-        if (aLD.valueOf() < dEnd) {
+        if (aLD < dEnd) {
           incompletes.push({
-            start: dEnd - 7889400000,
+            start: dEnd - 15552000000,
             end: dEnd
           })
         }
@@ -886,8 +1083,12 @@ export default {
     },
 
     hoverDisplayDate() {
+      let date = this.focusDate
+      if (this.hoverOn) {
+        date = this.hoverDate
+      }
       return DateDisplay.specialDateFormats(
-        new Date(this.hoverDate).getTime(),
+        new Date(date).getTime(),
         this.range,
         this.interval,
         false,
@@ -900,86 +1101,254 @@ export default {
       const time = new Date(this.hoverDate).getTime()
       return this.dataset.find(d => d.date === time)
     },
+    focusData() {
+      const time = new Date(this.focusDate).getTime()
+      return this.dataset.find(d => d.date === time)
+    },
+    hoverOrFocusData() {
+      if (this.hoverOn) {
+        return this.hoverData
+      } else if (this.focusOn) {
+        return this.focusData
+      }
+      return null
+    },
     hoverDomainLabel() {
-      const find = this.summaryDomains.find(d => d.id === this.hoverDomain)
+      const find = this.stackedAreaDomains.find(d => d.id === this.hoverDomain)
+      return find ? find.label : '—'
+    },
+    hoverEmissionVolumeDomainLabel() {
+      const find = this.emissionStackedAreaDomains.find(
+        d => d.id === this.hoverEmissionVolumeDomain
+      )
       return find ? find.label : '—'
     },
     hoverValue() {
-      return this.hoverData ? this.hoverData[this.hoverDomain] : null
+      return this.hoverOrFocusData
+        ? this.hoverOrFocusData[this.hoverDomain]
+        : null
     },
     hoverDomainColour() {
       const find = this.stackedAreaDomains.find(d => d.id === this.hoverDomain)
       if (find) return find.colour
       return null
     },
+    hoverEmissionVolumeDomainColour() {
+      const find = this.emissionStackedAreaDomains.find(
+        d => d.id === this.hoverEmissionVolumeDomain
+      )
+      if (find) return find.colour
+      return null
+    },
     hoverTotal() {
       let total = 0
-      if (this.hoverData) {
+      if (this.hoverOrFocusData) {
         this.stackedAreaDomains.forEach(d => {
-          total += this.hoverData[d.id]
+          total += this.hoverOrFocusData[d.id]
         })
       }
       return total
     },
+    hoverEmissionVolumeValue() {
+      return this.hoverOrFocusData
+        ? this.hoverOrFocusData[this.hoverEmissionVolumeDomain]
+        : null
+    },
     hoverEmissionVolumeTotal() {
-      if (this.hoverData) return this.hoverData._totalEmissionsVol
-      return 0
+      let total = 0
+      const isGeneration = this.percentContributionTo === 'generation'
+      if (this.hoverOrFocusData) {
+        this.emissionStackedAreaDomains.forEach(domain => {
+          const id = domain.id
+          if (
+            !isGeneration ||
+            (isGeneration &&
+              domain.fuelTech !== 'imports' &&
+              domain.fuelTech !== 'exports')
+          ) {
+            total += this.hoverOrFocusData[id]
+          }
+        })
+      }
+      return total
     },
     hoverEmissionsIntensity() {
-      if (this.hoverData) return this.hoverData._emissionsIntensity
+      if (this.hoverOrFocusData) {
+        const hoverDate = this.hoverOrFocusData.date
+        const hoverEmissionsIntensity = this.emissionsIntensityDataset.find(
+          d => {
+            return d.date === hoverDate
+          }
+        )
+        return hoverEmissionsIntensity
+          ? hoverEmissionsIntensity._emissionsIntensity
+          : '—'
+      }
       return 0
     },
     hoverPrice() {
-      if (this.hoverData && this.priceDomains.length > 0) {
-        return this.hoverData[this.priceDomains[0].id]
+      if (this.hoverOrFocusData && this.priceDomains.length > 0) {
+        return this.hoverOrFocusData[this.priceDomains[0].id]
       }
       return 0
     },
     hoverMeanTemperature() {
-      if (this.hoverData && this.temperatureDomains.length > 0) {
-        return this.hoverData[this.temperatureMeanId]
+      if (this.hoverOrFocusData && this.temperatureDomains.length > 0) {
+        return this.hoverOrFocusData[this.temperatureMeanId]
       }
       return 0
     },
     hoverMinTemperature() {
-      if (this.hoverData && this.temperatureDomains.length > 0) {
-        return this.hoverData[this.temperatureMinId]
+      if (this.hoverOrFocusData && this.temperatureDomains.length > 0) {
+        return this.hoverOrFocusData[this.temperatureMinId]
       }
       return 0
     },
     hoverMaxTemperature() {
-      if (this.hoverData && this.temperatureDomains.length > 0) {
-        return this.hoverData[this.temperatureMaxId]
+      if (this.hoverOrFocusData && this.temperatureDomains.length > 0) {
+        return this.hoverOrFocusData[this.temperatureMaxId]
       }
       return 0
     },
 
     isYearInterval() {
       return this.interval === 'Fin Year' || this.interval === 'Year'
+    },
+
+    hasCompareDates() {
+      return this.updatedCompareDates.length === 2
+    },
+    firstDate() {
+      return this.hasCompareDates ? this.updatedCompareDates[0] : null
+    },
+    secondDate() {
+      return this.hasCompareDates ? this.updatedCompareDates[1] : null
+    },
+    updatedCompareDates() {
+      let latter = this.compareDates[0]
+      let former = this.compareDates[1]
+      if (this.compareDates[1] > latter) {
+        latter = this.compareDates[1]
+        former = this.compareDates[0]
+      }
+      return [former, latter]
+    },
+
+    averageEnergy() {
+      return this.summary ? this.summary._averageEnergy : 0
+    },
+    averageEmissionsVolume() {
+      return this.summary ? this.summary._averageEmissionsVolume : 0
+    },
+    averageEmissionsIntensity() {
+      return this.summary ? this.summary._averageEmissionsIntensity : 0
+    },
+    averageTemperature() {
+      return this.summary ? this.summary._averageTemperature : 0
+    },
+    totalAverageValue() {
+      return this.summary ? this.summary._totalAverageValue : 0
     }
   },
 
   watch: {
     groupDomains(domains) {
       if (domains) {
-        this.updateDatasetGroups(this.dataset, domains)
+        this.originalDataset = this.updateDatasetGroups(
+          this.originalDataset,
+          domains
+        )
+        this.updateDataset(this.filterPeriod)
+        if (this.compareDates.length === 2) {
+          const firstData = this.getDataByDate(
+            this.dataset,
+            this.compareDates[0]
+          )
+          const secondData = this.getDataByDate(
+            this.dataset,
+            this.compareDates[1]
+          )
+          if (firstData && secondData) {
+            this.compareData = [firstData, secondData]
+          }
+        }
       }
     },
     groupMarketValueDomains(domains) {
       if (domains) {
-        this.updateDatasetGroups(this.dataset, domains)
+        this.originalDataset = this.updateDatasetGroups(
+          this.originalDataset,
+          domains
+        )
+        this.updateDataset(this.filterPeriod)
       }
     },
     groupEmissionDomains(domains) {
       if (domains) {
-        this.updateDatasetGroups(this.dataset, domains)
+        this.originalDataset = this.updateDatasetGroups(
+          this.originalDataset,
+          domains
+        )
+        this.updateDataset(this.filterPeriod)
       }
     },
     filteredDataset(updated) {
       this.$store.dispatch('exportData', updated)
     },
     hiddenFuelTechs() {
-      this.updateEnergyMinMax()
+      this.updateYMinMax()
+    },
+    percentContributionTo() {
+      this.updateYMinMax()
+    },
+    filterPeriod(compare) {
+      this.updateDataset(compare)
+    },
+    stackedAreaDomains(updated) {
+      this.$store.dispatch('export/stackedAreaDomains', updated)
+    },
+    summaryDomains(updated) {
+      this.$store.dispatch('export/summaryDomains', updated)
+    },
+    dataset(updated) {
+      this.$store.dispatch('export/dataset', updated)
+      this.updateCompare(updated)
+    },
+    xGuides(updated) {
+      this.$store.dispatch('export/xGuides', updated)
+    },
+    emissionDomains(updated) {
+      this.$store.dispatch('export/emissionDomains', updated)
+    },
+    priceDomains(updated) {
+      this.$store.dispatch('export/priceDomains', updated)
+    },
+    marketValueDomains(updated) {
+      this.$store.dispatch('export/marketValueDomains', updated)
+    },
+    temperatureDomains(updated) {
+      this.$store.dispatch('export/temperatureDomains', updated)
+    },
+    temperatureMeanId(updated) {
+      this.$store.dispatch('export/temperatureMeanId', updated)
+    },
+    temperatureMinId(updated) {
+      this.$store.dispatch('export/temperatureMinId', updated)
+    },
+    temperatureMaxId(updated) {
+      this.$store.dispatch('export/temperatureMaxId', updated)
+    },
+    compareDifference(updated) {
+      if (updated) {
+        const compareDates = this.compareDates.slice()
+        compareDates.push(this.focusDate.valueOf())
+        this.$store.dispatch('compareDates', compareDates)
+        this.$store.dispatch('focusOn', false)
+        this.focusDate = null
+      } else {
+        this.compareData = []
+        this.$store.dispatch('compareDates', [])
+      }
     }
   },
 
@@ -1037,6 +1406,43 @@ export default {
   },
 
   methods: {
+    updateDataset(compare) {
+      if (!compare || compare === 'All') {
+        this.dataset = this.originalDataset
+      } else {
+        const month = DateDisplay.getPeriodMonth(this.interval, compare)
+        const returnedData = this.originalDataset.filter(d => {
+          const dMonth = new Date(d.date).getMonth()
+          return dMonth === month
+        })
+
+        // need to add an extra data point to show the final step
+        const currentLastPoint = returnedData[returnedData.length - 1]
+        // only add if it's a valid last point
+        if (currentLastPoint && currentLastPoint._total) {
+          const finalData = _cloneDeep(currentLastPoint)
+          Object.keys(finalData).forEach(key => {
+            const hasTemperature = this.temperatureDomains.find(
+              d => d.id === key
+            )
+            if (key === 'date') {
+              finalData.date = moment(currentLastPoint.date)
+                .add(1, 'year')
+                .valueOf()
+            } else if (hasTemperature) {
+              finalData[key] = currentLastPoint[key]
+            } else {
+              finalData[key] = null
+            }
+          })
+          returnedData.push(finalData)
+        }
+
+        this.dataset = returnedData
+      }
+      this.updatedFilteredDataset(this.dataset)
+    },
+
     fetchData(region, range) {
       const urls = Data.getEnergyUrls(region, range)
 
@@ -1084,23 +1490,32 @@ export default {
     },
 
     readyDataset(dataset) {
-      this.dataset = dataset
+      let updated = dataset
       if (this.groupDomains.length > 0) {
-        this.updateDatasetGroups(dataset, this.groupDomains)
+        updated = this.updateDatasetGroups(updated, this.groupDomains)
       }
       if (this.groupMarketValueDomains.length > 0) {
-        this.updateDatasetGroups(dataset, this.groupMarketValueDomains)
+        updated = this.updateDatasetGroups(
+          updated,
+          this.groupMarketValueDomains
+        )
       }
       if (this.groupEmissionDomains.length > 0) {
-        this.updateDatasetGroups(dataset, this.groupEmissionDomains)
+        updated = this.updateDatasetGroups(updated, this.groupEmissionDomains)
       }
-      this.updatedFilteredDataset(dataset)
-      this.updateEnergyMinMax()
+
+      this.dataset = updated
+      this.originalDataset = updated
+
+      this.updatedFilteredDataset(updated)
+      this.updateYMinMax()
+      this.updateDataset(this.filterPeriod)
       this.ready = true
+      console.log(this.dataset)
     },
 
     updateDatasetGroups(dataset, groupDomains) {
-      this.dataset = dataset.map(d => {
+      return dataset.map(d => {
         // create new group domains (if not already there)
         groupDomains.forEach(g => {
           let groupValue = 0
@@ -1154,7 +1569,7 @@ export default {
       this.emissionDomains = Domain.getDomainObjs(
         this.regionId,
         this.emissionsOrder,
-        'emissions'
+        EMISSIONS
       )
     },
 
@@ -1170,7 +1585,9 @@ export default {
     },
 
     updatePriceDomains(res) {
-      this.priceDomains = Domain.getPriceDomains(res)
+      this.priceDomains = this.isEnergyType
+        ? Domain.getVolWeightedDomains()
+        : Domain.getPriceDomains(res)
       this.$store.dispatch('priceDomains', this.priceDomains)
     },
 
@@ -1178,25 +1595,59 @@ export default {
       // This is to filter the dataset based on the chart zoom
       // - used by Summary table
       if (this.dateFilter.length > 0) {
+        let startX = this.dateFilter[0]
+        let endX = this.dateFilter[1]
+        const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
+        if (
+          isFilter &&
+          (this.interval === 'Season' || this.interval === 'Quarter')
+        ) {
+          const periodMonth = DateDisplay.getPeriodMonth(
+            this.interval,
+            this.filterPeriod
+          )
+          const startXMonth = startX.getMonth()
+          const endXMonth = endX.getMonth()
+          startX.setMonth(periodMonth)
+          endX.setMonth(periodMonth)
+        }
+
         this.filteredDataset = EnergyDataTransform.filterDataByStartEndDates(
           dataset,
-          this.dateFilter[0],
-          this.dateFilter[1]
+          startX,
+          endX
         )
       } else {
         this.filteredDataset = dataset
       }
     },
 
-    updateEnergyMinMax() {
+    updateYMinMax() {
+      const isGeneration = this.percentContributionTo === 'generation'
+      const emissionsIntensityDataset = [],
+        emissionsVolumeDataset = []
       let energyMinAll = 0,
-        energyMaxAll = 0
+        energyMaxAll = 0,
+        emissionsMinAll = 0,
+        emissionsMaxAll = 0,
+        emissionsIntensityMinAll = 0,
+        emissionsIntensityMaxAll = 1200
+
       this.dataset.forEach((d, i) => {
-        let energyMin = 0,
-          energyMax = 0
+        let totalDemand = 0,
+          totalGeneration = 0,
+          totalEmissionsVol = 0,
+          energyMin = 0,
+          energyMax = 0,
+          emissionsMin = 0,
+          emissionsMax = 0
 
         this.stackedAreaDomains.forEach(domain => {
           const id = domain.id
+          totalDemand += d[id] || 0
+          if (domain.category == 'source' && domain.fuelTech !== 'imports') {
+            totalGeneration += d[id] || 0
+          }
           energyMax += d[id] || 0
           if (d[id] < 0) {
             energyMin += d[id] || 0
@@ -1209,13 +1660,89 @@ export default {
         if (energyMin < energyMinAll) {
           energyMinAll = energyMin
         }
+
+        emissionsVolumeDataset.push({
+          date: d.date
+        })
+        const lastEVIndex = emissionsVolumeDataset.length - 1
+
+        this.emissionStackedAreaDomains.forEach(domain => {
+          const id = domain.id
+
+          if (
+            !isGeneration ||
+            (isGeneration &&
+              domain.fuelTech !== 'imports' &&
+              domain.fuelTech !== 'exports')
+          ) {
+            totalEmissionsVol += d[id] || 0
+            emissionsMax += d[id] || 0
+
+            if (d[id] < 0) {
+              emissionsMin += d[id] || 0
+            }
+
+            emissionsVolumeDataset[lastEVIndex][id] = d[id]
+          }
+        })
+
+        if (emissionsMax > emissionsMaxAll) {
+          emissionsMaxAll = emissionsMax
+        }
+        if (emissionsMin < emissionsMinAll) {
+          emissionsMinAll = emissionsMin
+        }
+
+        const ei = isGeneration
+          ? totalEmissionsVol / totalGeneration
+          : totalEmissionsVol / totalDemand
+        const isValidEI = Number.isFinite(ei)
+        if (isValidEI && ei > emissionsIntensityMaxAll) {
+          emissionsIntensityMaxAll = ei
+        }
+        if (isValidEI && ei < emissionsIntensityMinAll) {
+          emissionsIntensityMinAll = ei
+        }
+        emissionsIntensityDataset.push({
+          date: d.date,
+          _emissionsIntensity: isValidEI ? ei : null
+        })
       })
+
+      // duplicate last valid EV value to render the step line correctly
+      const evDatasetLength = emissionsIntensityDataset.length
+      const lastValidEI =
+        emissionsIntensityDataset[evDatasetLength - 2]._emissionsIntensity
+      emissionsIntensityDataset[
+        evDatasetLength - 1
+      ]._emissionsIntensity = lastValidEI
+
       this.energyMin = energyMinAll
       this.energyMax = energyMaxAll
+      this.emissionsMin = emissionsMinAll
+      this.emissionsMax = emissionsMaxAll
+      this.emissionsIntensityDataset = emissionsIntensityDataset
+      this.emissionsIntensityMin = emissionsIntensityMinAll
+      this.emissionsIntensityMax = emissionsIntensityMaxAll
+      this.emissionsVolumeDataset = emissionsVolumeDataset
+    },
+
+    updateCompare(dataset) {
+      if (this.compareDates.length === 2) {
+        this.compareData = []
+        const firstData = this.getDataByDate(dataset, this.compareDates[0])
+        const secondData = this.getDataByDate(dataset, this.compareDates[1])
+        if (firstData && secondData) {
+          setTimeout(() => {
+            this.compareData = [firstData, secondData]
+          }, 100)
+        }
+      }
     },
 
     handleRangeChange(range) {
-      this.dateFocus = false
+      this.$store.dispatch('compareDifference', false)
+      this.$store.dispatch('focusOn', false)
       this.ready = false
       let interval = ''
       switch (range) {
@@ -1239,13 +1766,18 @@ export default {
           console.log('nothing yet')
       }
       this.setDateFilter([])
+      this.compareData = []
+      this.$store.dispatch('compareDates', [])
       this.$store.dispatch('interval', interval)
       this.$store.dispatch('range', range)
       this.fetchData(this.regionId, range)
     },
 
     handleIntervalChange(interval) {
-      this.dateFocus = false
+      this.$store.dispatch('focusOn', false)
+      this.$store.dispatch('compareDifference', false)
+      this.compareData = []
+      this.$store.dispatch('compareDates', [])
       this.$store.dispatch('interval', interval)
       EnergyDataTransform.mergeResponses(
         this.responses,
@@ -1271,7 +1803,6 @@ export default {
           this.interval,
           dateRange[1]
         )
-        // const endTime = dateRange[1]
         this.filteredDataset = EnergyDataTransform.filterDataByStartEndDates(
           this.dataset,
           startTime,
@@ -1290,18 +1821,39 @@ export default {
     },
 
     handleDateOver(evt, date) {
+      const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
       if (this.interval === 'Fin Year') {
         if (date.getMonth() >= 6) {
           date.setFullYear(date.getFullYear() + 1)
         }
       }
+      if (
+        isFilter &&
+        (this.interval === 'Season' || this.interval === 'Quarter')
+      ) {
+        const periodMonth = DateDisplay.getPeriodMonth(
+          this.interval,
+          this.filterPeriod
+        )
+        const month = date.getMonth()
 
+        if (this.interval === 'Season') {
+          date = DateDisplay.mutateSeasonDate(date, month, this.filterPeriod)
+        } else if (this.interval === 'Quarter') {
+          date = DateDisplay.mutateQuarterDate(date, month, this.filterPeriod)
+        }
+        date.setMonth(periodMonth + 1)
+      }
       const closestDate = DateDisplay.snapToClosestInterval(this.interval, date)
       EventBus.$emit('vis.mousemove', evt, this.dataset, closestDate)
     },
 
     handleDomainOver(domain) {
       this.hoverDomain = domain
+    },
+
+    handleEmissionsDomainOver(domain) {
+      this.hoverEmissionVolumeDomain = domain
     },
 
     handleVisMouseMove(evt, dataset, date) {
@@ -1325,7 +1877,6 @@ export default {
     },
 
     setDateFilter(dates) {
-      // this.dateFilter = dates
       this.$store.dispatch('dateFilter', dates)
     },
 
@@ -1347,18 +1898,83 @@ export default {
       this.hoverDate = null
     },
 
-    handleRecordSelect() {
-      this.dateFocus = !this.dateFocus
+    handleRecordSelect(date) {
+      this.$store.dispatch('focusOn', true)
+      this.focusDate = new Date(date)
     },
 
     handleRecordDeselect() {
-      this.dateFocus = false
+      this.$store.dispatch('focusOn', false)
     },
 
-    handleSvgClick(resetDateFocus) {
-      if (!this.isTouchDevice && !resetDateFocus) {
-        this.dateFocus = !this.dateFocus
+    getDataByDate(dataset, date) {
+      return dataset.find(d => d.date === date)
+    },
+
+    handleSvgClick(metaKey) {
+      if (metaKey && this.focusOn && !this.compareDifference) {
+        this.$store.dispatch('compareDifference', true)
+        this.$store.dispatch('focusOn', false)
+        const hoverTime = this.hoverDate.valueOf()
+        const focusTime = this.focusDate.valueOf()
+        const firstData = this.getDataByDate(this.dataset, focusTime)
+        const secondData = this.getDataByDate(this.dataset, hoverTime)
+        setTimeout(() => {
+          this.$store.dispatch('compareDates', [focusTime, hoverTime])
+          this.compareData = [firstData, secondData].slice()
+        }, 10)
+      } else {
+        this.$store.dispatch('focusOn', false)
+        if (this.compareDifference) {
+          const hoverTime = this.hoverDate.valueOf()
+          let newCompare = false
+          let compareDates = this.compareDates.slice()
+
+          if (compareDates.length === 2) {
+            const newCompareDates = compareDates.filter(d => d !== hoverTime)
+            if (newCompareDates.length === 1) {
+              compareDates = newCompareDates
+              newCompare = true
+            } else {
+              compareDates.pop()
+            }
+          }
+          if (compareDates.length < 2 && !newCompare) {
+            const newCompareDates = compareDates.filter(d => d !== hoverTime)
+            if (newCompareDates.length === 0) {
+              compareDates = newCompareDates
+            } else {
+              compareDates.push(hoverTime)
+            }
+          }
+
+          if (compareDates.length === 2) {
+            const firstData = this.getDataByDate(this.dataset, compareDates[0])
+            const secondData = this.getDataByDate(this.dataset, compareDates[1])
+            this.compareData = [firstData, secondData]
+          }
+
+          if (compareDates.length === 0) {
+            this.$store.dispatch('compareDifference', false)
+          }
+          this.$store.dispatch('compareDates', compareDates)
+        } else if (!this.isTouchDevice) {
+          if (
+            this.focusDate &&
+            this.focusDate.valueOf() === this.hoverDate.valueOf()
+          ) {
+            this.focusDate = null
+            this.$store.dispatch('focusOn', false)
+          } else {
+            this.focusDate = this.hoverDate
+            this.$store.dispatch('focusOn', true)
+          }
+        }
       }
+    },
+
+    handleSummaryUpdated(summary) {
+      this.summary = summary
     }
   }
 }
@@ -1371,6 +1987,11 @@ export default {
 .loading {
   position: absolute;
   z-index: 999;
+}
+.region-section {
+  max-width: 1600px;
+  margin: 1rem auto 0;
+  position: relative;
 }
 .vis-chart {
   margin-right: 10px;
@@ -1385,7 +2006,7 @@ export default {
     width: 100%;
     padding: 1rem 0 0;
     @include desktop {
-      width: 70%;
+      width: 60%;
       padding: 0;
     }
   }
@@ -1394,7 +2015,7 @@ export default {
     padding: 0 1rem 1rem;
 
     @include desktop {
-      width: 30%;
+      width: 40%;
       padding: 0 1rem 0 0;
     }
   }
@@ -1402,7 +2023,7 @@ export default {
     position: relative;
 
     .chart-title {
-      font-size: 0.8em;
+      font-size: 11px;
       cursor: pointer;
       user-select: none;
 
@@ -1423,26 +2044,36 @@ export default {
 
       .hover-date-value {
         display: flex;
-        // background-color: rgba(255, 255, 255, 0.5);
-        // @include desktop {
-        //   background-color: transparent;
-        // }
       }
 
       .hover-date,
       .hover-values {
+        position: absolute;
+        left: -9999em;
         opacity: 0;
         background: rgba(255, 255, 255, 0.5);
-        padding: 3px 0.5rem;
+        padding: 3px 12px;
         white-space: nowrap;
+      }
+
+      .average-value {
+        position: static;
+        left: -9999em;
+        // background: rgba(255, 255, 255, 0.5);
+        padding: 3px 12px;
+        white-space: nowrap;
+        @include tablet {
+          width: auto;
+          border-radius: 20px;
+        }
       }
 
       .hover-date {
         font-weight: 600;
         background-color: rgba(199, 69, 35, 0.1);
         color: #444;
-        font-size: 10px;
-        padding-top: 3px;
+        // font-size: 10px;
+        // padding-top: 3px;
         width: 30%;
 
         @include tablet {
@@ -1454,7 +2085,7 @@ export default {
       .hover-values {
         display: flex;
         align-items: center;
-        font-size: 9px;
+        // font-size: 9px;
         width: 70%;
 
         span {
@@ -1468,7 +2099,7 @@ export default {
           margin: 0 1rem;
         }
         strong {
-          font-size: 11px;
+          // font-size: 11px;
         }
 
         @include desktop {
@@ -1480,8 +2111,8 @@ export default {
       .colour-square {
         display: inline-block;
         border: 1px solid transparent;
-        width: 9px;
-        height: 9px;
+        width: 11px;
+        height: 11px;
         border-radius: 1px;
         position: relative;
         top: 1px;
@@ -1498,8 +2129,13 @@ export default {
     &.is-hovered {
       .hover-date,
       .hover-values {
+        display: inline-block;
+        position: static;
         opacity: 1;
         transition: all 0.2s ease-in-out;
+      }
+      .average-value {
+        position: absolute;
       }
     }
     &.has-border-bottom {
@@ -1562,14 +2198,14 @@ export default {
 ::v-deep .price-pos-vis .line-group path {
   stroke-dasharray: 1;
 }
-::v-deep .price-vis .cursor-line-focus-top-rect,
-::v-deep .price-vis .cursor-line-focus-bottom-rect,
-::v-deep .price-pos-vis .cursor-line-focus-bottom-rect,
-::v-deep .price-neg-vis .cursor-line-focus-top-rect {
+::v-deep .price-vis .focus-top-rect,
+::v-deep .price-vis .focus-bottom-rect,
+::v-deep .price-pos-vis .focus-bottom-rect,
+::v-deep .price-neg-vis .focus-top-rect {
   opacity: 0 !important;
 }
 .temperature-chart.adjustment {
-  margin-top: -14px;
+  margin-top: -7px;
 }
 
 .bar-donut-wrapper {

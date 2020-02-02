@@ -1,7 +1,7 @@
 <template>
   <div class="summary-table">
     <header>
-      <span v-if="!hoverOn">
+      <span v-if="!hoverOn && !focusOn">
         <time :datetime="startDateTime">
           <!-- {{ startDate | formatDate }} -->
           {{ startDate | customFormatDate({ range, interval, isStart: true }) }}
@@ -14,7 +14,7 @@
       </span>
       
       <time
-        v-if="hoverOn" 
+        v-if="hoverOn || focusOn" 
         :datetime="hoveredDateTime">
         {{ hoveredDate | customFormatDate({ range, interval, showIntervalRange: true }) }}
       </time>
@@ -28,12 +28,12 @@
           <group-selector v-if="groupSelection" />
         </div>
         <div
-          v-if="!hoverOn || isEnergy"
+          v-if="(!hoverOn && !focusOn) || isEnergy"
           class="summary-col-energy">
           Energy <small>{{ isYearInterval ? 'TWh' : 'GWh' }}</small>
         </div>
         <div
-          v-if="hoverOn && !isEnergy"
+          v-if="(hoverOn || focusOn) && !isEnergy"
           class="summary-col-energy">
           Power <small>MW</small>
         </div>
@@ -47,23 +47,23 @@
       <div class="summary-row">
         <div class="summary-col-label">Sources</div>
         <div
-          v-if="!hoverOn"
+          v-if="!hoverOn && !focusOn"
           class="summary-col-energy cell-value">
           {{ summarySources._totalEnergy | formatValue }}
         </div>
         <div
-          v-if="hoverOn"
+          v-if="hoverOn || focusOn"
           class="summary-col-energy cell-value">
           {{ pointSummarySources._total | formatValue }}
         </div>
         <div class="summary-col-contribution cell-value" />
         <div
-          v-if="!hoverOn"
+          v-if="!hoverOn && !focusOn"
           class="summary-col-av-value cell-value">
           {{ summary._totalAverageValue | formatCurrency }}
         </div>
         <div
-          v-if="hoverOn"
+          v-if="hoverOn || focusOn"
           class="summary-col-av-value cell-value">
           {{ pointSummary._totalAverageValue | formatCurrency }}
         </div>
@@ -75,7 +75,7 @@
       :hidden-fuel-techs="hiddenSources"
       :original-order="sourcesOrder"
       :market-value-order="sourcesMarketValueOrder"
-      :show-point-summary="hoverOn"
+      :show-point-summary="hoverOn || focusOn"
       :point-summary="pointSummarySources"
       :point-summary-total="pointSummary._total"
       :summary="summarySources"
@@ -91,12 +91,12 @@
       <div class="summary-row">
         <div class="summary-col-label">Loads</div>
         <div
-          v-if="!hoverOn"
+          v-if="!hoverOn && !focusOn"
           class="summary-col-energy cell-value">
           {{ summaryLoads._totalEnergy | formatValue }}
         </div>
         <div
-          v-if="hoverOn"
+          v-if="hoverOn || focusOn"
           class="summary-col-energy cell-value">
           {{ pointSummaryLoads._total | formatValue }}
         </div>
@@ -110,7 +110,7 @@
       :hidden-fuel-techs="hiddenLoads"
       :original-order="loadsOrder"
       :market-value-order="loadsMarketValueOrder"
-      :show-point-summary="hoverOn"
+      :show-point-summary="hoverOn || focusOn"
       :point-summary="pointSummaryLoads"
       :point-summary-total="pointSummary._total"
       :summary="summaryLoads"
@@ -125,12 +125,12 @@
       <div class="summary-row last-row">
         <div class="summary-col-label">Net</div>
         <div
-          v-if="!hoverOn"
+          v-if="!hoverOn && !focusOn"
           class="summary-col-energy cell-value">
           {{ summary._totalEnergy | formatValue }}
         </div>
         <div
-          v-if="hoverOn"
+          v-if="hoverOn || focusOn"
           class="summary-col-energy cell-value">
           {{ pointSummary._total | formatValue }}
         </div>
@@ -144,12 +144,12 @@
         <div class="summary-col-label">Renewables</div>
         <div class="summary-col-energy cell-value" />
         <div
-          v-if="!hoverOn"
+          v-if="!hoverOn && !focusOn"
           class="summary-col-contribution cell-value">
           {{ renewables | percentageFormatNumber }}
         </div>
         <div
-          v-if="hoverOn"
+          v-if="hoverOn || focusOn"
           class="summary-col-contribution cell-value">
           {{ pointRenewables | percentageFormatNumber }}
         </div>
@@ -183,7 +183,19 @@ export default {
       type: Array,
       default: () => []
     },
+    stackedAreaDomains: {
+      type: Array,
+      default: () => []
+    },
+    emissionsDomains: {
+      type: Array,
+      default: () => []
+    },
     marketValueDomains: {
+      type: Array,
+      default: () => []
+    },
+    temperatureDomains: {
       type: Array,
       default: () => []
     },
@@ -200,6 +212,14 @@ export default {
       default: () => null
     },
     hoverOn: {
+      type: Boolean,
+      default: () => false
+    },
+    focusDate: {
+      type: Date,
+      default: () => null
+    },
+    focusOn: {
       type: Boolean,
       default: () => false
     },
@@ -284,7 +304,7 @@ export default {
 
     renewables() {
       const key =
-        this.percentContributionTo === 'demand' ? '_total' : '_totalGeneration'
+        this.percentContributionTo === 'demand' ? '_total' : '_totalSources'
       const totalRenewables = this.dataset.reduce(
         (a, b) => a + b._totalRenewables,
         0
@@ -295,7 +315,7 @@ export default {
 
     pointRenewables() {
       const key =
-        this.percentContributionTo === 'demand' ? '_total' : '_totalGeneration'
+        this.percentContributionTo === 'demand' ? '_total' : '_totalSources'
       const totalRenewables = this.pointSummary._totalRenewables
       const totalDemand = this.pointSummary[key]
       return (totalRenewables / totalDemand) * 100
@@ -344,13 +364,20 @@ export default {
     },
 
     endDate() {
-      const powerRange =
-        this.range === '1D' || this.range === '3D' || this.range === '7D'
       const dataLength = this.dataset.length
-      const whichIndex = powerRange ? 1 : 2
-      const endDate =
-        dataLength > 0 ? this.dataset[dataLength - whichIndex].date : null
-      return endDate
+      let whichIndex = 1
+      if (this.range === '30D' || this.range === '1Y' || this.range === 'ALL') {
+        whichIndex = 2
+      }
+      if (dataLength > 0) {
+        const date = this.dataset[dataLength - whichIndex]
+          ? this.dataset[dataLength - whichIndex].date
+          : this.dataset[dataLength - 1].date
+        const endDate = date
+        return endDate
+      } else {
+        return null
+      }
     },
 
     endDateTime() {
@@ -379,6 +406,24 @@ export default {
     },
     hoverDate(date) {
       this.updatePointSummary(date)
+    },
+    hoverOn(on) {
+      if (on) {
+        this.updatePointSummary(this.hoverDate)
+      } else if (this.focusOn) {
+        this.updatePointSummary(this.focusDate)
+      }
+    },
+    focusOn(on) {
+      if (on) {
+        this.updatePointSummary(this.focusDate)
+      }
+    },
+    hiddenFuelTechs(updated) {
+      this.calculateSummary(this.dataset)
+    },
+    percentContributionTo(updated) {
+      this.calculateSummary(this.dataset)
     }
   },
 
@@ -417,10 +462,19 @@ export default {
 
   methods: {
     calculateSummary(data) {
-      let total = 0
+      const isGeneration = this.percentContributionTo === 'generation'
+      const hiddenFuelTechProp =
+        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
+      let totalEnergy = 0
+      let totalEnergyMinusHidden = 0
+      let totalPower = 0
+      let totalPowerMinusHidden = 0
+      let totalGenerationEnergyMinusHidden = 0
       let totalSources = 0
       let totalLoads = 0
       let totalPriceMarketValue = 0
+      let totalEVMinusHidden = 0
+      let totalEIMinusHidden = 0
       this.summary = {}
       this.summarySources = {}
       this.summaryLoads = {}
@@ -439,30 +493,78 @@ export default {
       })
       const volWeightPriceTotal = volWeightPrice.reduce((a, b) => a + b, 0)
 
-      // Calculate Energy
-      this.domains.forEach(ft => {
-        const category = ft.category
-        const dataEnergy = data.map(d => {
+      const dataEnergyMap = (ft, excludeHidden) => {
+        return data.map(d => {
           const energy = {}
+          const setEnergy = () => {
+            if (this.isEnergy) {
+              return d[ft.id]
+            } else {
+              // calculate energy (GWh) += power * 5mins/60/100
+              const mins = this.interval === '30m' ? 30 : 5
+              return (d[ft.id] * mins) / 60 / 1000
+            }
+          }
 
-          if (this.isEnergy) {
-            energy[ft.id] = d[ft.id]
+          if (excludeHidden) {
+            if (!_includes(this.hiddenFuelTechs, ft[hiddenFuelTechProp])) {
+              energy[ft.id] = setEnergy()
+            } else {
+              energy[ft.id] = 0
+            }
           } else {
-            // calculate energy (GWh) += power * 5mins/60/100
-            const mins = this.interval === '30m' ? 30 : 5
-            energy[ft.id] = (d[ft.id] * mins) / 60 / 1000
+            energy[ft.id] = setEnergy()
           }
 
           return energy
         })
-        const dataEnergySum = dataEnergy.reduce(
-          (prev, cur) => prev + cur[ft.id],
-          0
-        )
+      }
+      const dataPowerMap = (ft, excludeHidden) => {
+        return data.map(d => {
+          const power = {}
+          const setPower = () => {
+            if (!this.isEnergy) {
+              return d[ft.id]
+            }
+            return 0
+          }
+
+          if (excludeHidden) {
+            if (!_includes(this.hiddenFuelTechs, ft[hiddenFuelTechProp])) {
+              power[ft.id] = setPower()
+            } else {
+              power[ft.id] = 0
+            }
+          } else {
+            power[ft.id] = setPower()
+          }
+          return power
+        })
+      }
+      const sumMap = (ft, dataMap) => {
+        return dataMap.reduce((prev, cur) => prev + cur[ft.id], 0)
+      }
+
+      // Calculate Energy
+      this.stackedAreaDomains.forEach(ft => {
+        const category = ft.category
+        const dataEnergy = dataEnergyMap(ft)
+        const dataEnergyMinusHidden = dataEnergyMap(ft, true)
+        const dataEnergySum = sumMap(ft, dataEnergy)
+        const dataEnergyMinusHiddenSum = sumMap(ft, dataEnergyMinusHidden)
+        const dataPower = dataPowerMap(ft)
+        const dataPowerMinusHidden = dataPowerMap(ft, true)
+        const dataPowerSum = sumMap(ft, dataPower)
+        const dataPowerMinusHiddenSum = sumMap(ft, dataPowerMinusHidden)
+
         let avValue = 0
 
         this.summary[ft.id] = dataEnergySum
-        total += dataEnergySum
+        totalEnergy += dataEnergySum
+        totalPower += dataPowerSum
+
+        totalEnergyMinusHidden += dataEnergyMinusHiddenSum
+        totalPowerMinusHidden += dataPowerMinusHiddenSum
 
         if (category === 'source') {
           this.summarySources[ft.id] = dataEnergySum
@@ -473,6 +575,33 @@ export default {
         }
       })
 
+      // Calculate Emissions
+      this.emissionsDomains.forEach(ft => {
+        const dataEVMinusHidden = data.map(d => {
+          const emissionsVol = {}
+          if (!_includes(this.hiddenFuelTechs, ft[ft.fuelTech])) {
+            if (
+              !isGeneration ||
+              (isGeneration &&
+                ft.fuelTech !== 'imports' &&
+                ft.fuelTech !== 'exports')
+            ) {
+              emissionsVol[ft.id] = d[ft.id]
+            } else {
+              emissionsVol[ft.id] = 0
+            }
+          } else {
+            emissionsVol[ft.id] = 0
+          }
+          return emissionsVol
+        })
+        totalEVMinusHidden += sumMap(ft, dataEVMinusHidden)
+      })
+
+      totalEIMinusHidden = data.reduce(
+        (prev, cur) => prev + cur._emissionsIntensity,
+        0
+      )
       // Calculate Market Value for Energy
       this.marketValueDomains.forEach((ft, index) => {
         const category = ft.category
@@ -515,6 +644,25 @@ export default {
         }
       })
 
+      // Calculate Temperature domains
+      const temperatureObj = this.temperatureDomains.find(domain => {
+        return domain.type === 'temperature' ||
+          domain.type === 'temperature_mean'
+          ? domain.id
+          : null
+      })
+      const temperatureWithoutNulls = temperatureObj
+        ? data.filter(d => {
+            return d[temperatureObj.id] !== null
+          })
+        : []
+      const totalTemperatureWithoutNulls = temperatureObj
+        ? temperatureWithoutNulls.reduce(
+            (prev, cur) => prev + cur[temperatureObj.id],
+            0
+          )
+        : 0
+
       let totalAverageValue = 0
       if (this.isEnergy) {
         if (this.isYearInterval) {
@@ -527,10 +675,23 @@ export default {
         totalAverageValue = volWeightPriceTotal / energySummaryTotal
       }
 
-      this.summary._totalEnergy = total
+      this.summary._totalEnergy = totalEnergy
       this.summary._totalAverageValue = totalAverageValue
       this.summarySources._totalEnergy = totalSources
       this.summaryLoads._totalEnergy = totalLoads
+
+      // calculate averages
+      const avTotal = this.isEnergy
+        ? totalEnergyMinusHidden
+        : totalPowerMinusHidden
+      const average = avTotal / data.length
+      this.summary._averageEnergy = average
+      this.summary._averageEmissionsVolume = totalEVMinusHidden / data.length
+      this.summary._averageEmissionsIntensity = totalEIMinusHidden / data.length
+      this.summary._averageTemperature =
+        totalTemperatureWithoutNulls / temperatureWithoutNulls.length
+
+      this.$emit('summary-update', this.summary)
     },
 
     calculatePointSummary(data) {

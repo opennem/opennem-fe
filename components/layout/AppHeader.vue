@@ -21,7 +21,7 @@
     <app-drawer
       v-if="widthBreak"
       :open="openDrawer"
-      @close="openDrawer = false"
+      @close="closeDrawer"
     />
 
     <div
@@ -203,6 +203,11 @@ export default {
   methods: {
     toggleDrawer() {
       this.openDrawer = !this.openDrawer
+      this.$store.dispatch('drawer', this.openDrawer)
+    },
+    closeDrawer() {
+      this.openDrawer = false
+      this.$store.dispatch('drawer', false)
     },
     handleExportImage() {
       const query = {

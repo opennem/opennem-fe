@@ -24,32 +24,24 @@
 </template>
 
 <script>
-import { lsGet, lsSet } from '~/services/LocalStorage'
-
-const MutationTypes = {
-  FEATURE_TOGGLE_EMISSIONS: 'FEATURE_TOGGLE_EMISSIONS'
-}
-
 export default {
   data() {
     return {
-      fEmissions: false
+      fEmissions: false,
+      fCompare: false
+    }
+  },
+  computed: {
+    featureEmissions() {
+      return this.$store.getters.featureEmissions
     }
   },
   mounted() {
-    const featureEmissions = lsGet(MutationTypes.FEATURE_TOGGLE_EMISSIONS)
-    // set up local storage
-    if (featureEmissions) {
-      this.$store.dispatch('featureEmissions', featureEmissions)
-      this.fEmissions = featureEmissions
-    } else {
-      lsSet(MutationTypes.FEATURE_TOGGLE_EMISSIONS, false)
-    }
+    this.fEmissions = this.featureEmissions
   },
   methods: {
     handleClick() {
       const check = !this.fEmissions
-      lsSet(MutationTypes.FEATURE_TOGGLE_EMISSIONS, check)
       this.$store.dispatch('featureEmissions', check)
     },
     handleDoneClick() {

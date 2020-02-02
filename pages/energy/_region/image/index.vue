@@ -33,7 +33,7 @@
               v-if="step"
               class="chart-title">
               <strong>Energy</strong>
-              <small>GWh/{{ interval }}</small>
+              <small>GWh/{{ interval | toLowerCase }}</small>
             </div>
             <div
               v-else
@@ -63,7 +63,7 @@
             class="chart">
             <div class="chart-title">
               <strong>Emissions Volume</strong>
-              <small>tCO2e</small>
+              <small>tCO₂e</small>
             </div>
             <stacked-area-vis
               :domains="emissionStackedAreaDomains"
@@ -114,7 +114,7 @@
               <small>$/MWh</small>
             </div>
             <line-vis
-              :domain-id="'price.above300'"
+              :domain-id="priceDomains[1].id"
               :domain-colour="lineColour"
               :value-domain-id="priceDomains[0].id"
               :dataset="dataset"
@@ -155,7 +155,7 @@
               class="price-vis vis-chart"
             />
             <line-vis
-              :domain-id="'price.below0'"
+              :domain-id="priceDomains[2].id"
               :domain-colour="lineColour"
               :dataset="dataset"
               :dynamic-extent="dateFilter"
@@ -243,6 +243,7 @@ import _includes from 'lodash.includes'
 import { saveAs } from 'file-saver'
 
 import REGIONS from '~/constants/regions.js'
+import { EMISSIONS } from '~/constants/emissions.js'
 import Http from '~/services/Http.js'
 import DateDisplay from '~/services/DateDisplay.js'
 import Data from '~/services/Data.js'
@@ -307,19 +308,6 @@ export default {
   data() {
     return {
       ready: false,
-      dataset: [],
-      energyDomains: [],
-      fuelTechEnergyOrder: [],
-      emissionsOrder: [],
-      marketValueDomains: [],
-      temperatureDomains: [],
-      temperatureMeanId: '',
-      temperatureMinId: '',
-      temperatureMaxId: '',
-      priceDomains: [],
-      emissionDomains: [],
-      responses: [],
-      filteredDataset: [],
       lineColour: '#e34a33',
       windowWidth: 0,
       stackedAreaHeight: 280,
@@ -364,6 +352,42 @@ export default {
     exportLegend() {
       return this.$store.getters['export/legend']
     },
+    filteredDataset() {
+      return this.$store.getters['exportData']
+    },
+    dataset() {
+      return this.$store.getters['export/dataset']
+    },
+    stackedAreaDomains() {
+      return this.$store.getters['export/stackedAreaDomains']
+    },
+    summaryDomains() {
+      return this.$store.getters['export/summaryDomains']
+    },
+    xGuides() {
+      return this.$store.getters['export/xGuides']
+    },
+    emissionDomains() {
+      return this.$store.getters['export/emissionDomains']
+    },
+    priceDomains() {
+      return this.$store.getters['export/priceDomains']
+    },
+    marketValueDomains() {
+      return this.$store.getters['export/marketValueDomains']
+    },
+    temperatureDomains() {
+      return this.$store.getters['export/temperatureDomains']
+    },
+    temperatureMeanId() {
+      return this.$store.getters['export/temperatureMeanId']
+    },
+    temperatureMinId() {
+      return this.$store.getters['export/temperatureMinId']
+    },
+    temperatureMaxId() {
+      return this.$store.getters['export/temperatureMaxId']
+    },
 
     hiddenFuelTechs() {
       return this.$store.getters.hiddenFuelTechs
@@ -394,11 +418,6 @@ export default {
     fuelTechGroup() {
       return this.$store.getters.fuelTechGroup
     },
-    groupDomains() {
-      const dict = this.fuelTechGroup
-      const domains = this.energyDomains
-      return Domain.parseDomains(domains, dict, 'energy')
-    },
     groupMarketValueDomains() {
       const dict = this.fuelTechGroup
       const domains = this.marketValueDomains
@@ -408,7 +427,7 @@ export default {
     groupEmissionDomains() {
       const dict = this.fuelTechGroup
       const domains = this.emissionDomains
-      return Domain.parseDomains(domains, dict, 'emissions')
+      return Domain.parseDomains(domains, dict, EMISSIONS)
     },
 
     hasTemperatureData() {
@@ -431,19 +450,6 @@ export default {
         ? this.groupMarketValueDomains
         : this.marketValueDomains
     },
-    stackedAreaDomains() {
-      const hidden = this.hiddenFuelTechs
-      let domains =
-        this.groupDomains.length > 0 ? this.groupDomains : this.energyDomains
-      return this.fuelTechGroup
-        ? domains.filter(d => !_includes(hidden, d.id))
-        : domains.filter(d => !_includes(hidden, d.fuelTech))
-    },
-    summaryDomains() {
-      return this.groupDomains.length > 0
-        ? this.groupDomains
-        : this.energyDomains
-    },
     emissionStackedAreaDomains() {
       return this.groupEmissionDomains.length > 0
         ? this.groupEmissionDomains
@@ -451,45 +457,19 @@ export default {
     },
     emissionsMax() {
       return d3Max(this.dataset, d => d._totalEmissionsVol)
-    },
-    xGuides() {
-      let dStart = this.dataset[0].date
-      const dEnd = this.dataset[this.dataset.length - 1].date
-
-      if (this.interval === 'Day') {
-        return DateDisplay.weekendGuides(dStart, dEnd, this.interval)
-      }
-      if (this.interval === '5m' || this.interval === '30m') {
-        return DateDisplay.nightGuides(dStart, dEnd)
-      }
-      return []
     }
   },
 
   watch: {
-    groupDomains(domains) {
-      if (domains) {
-        this.updateDatasetGroups(this.dataset, domains)
-      }
-    },
-    groupMarketValueDomains(domains) {
-      if (domains) {
-        this.updateDatasetGroups(this.dataset, domains)
-      }
-    },
-    groupEmissionDomains(domains) {
-      if (domains) {
-        this.updateDatasetGroups(this.dataset, domains)
-      }
-    },
     hiddenFuelTechs() {
+      this.updateEnergyMinMax()
+    },
+    filteredDataset() {
       this.updateEnergyMinMax()
     }
   },
 
   mounted() {
-    this.fetchData(this.regionId, this.range)
-
     this.chartEnergy = this.exportChartEnergy
     this.chartEmissionsVolume = this.exportChartEmissionsVolume
     this.chartEmissionsIntensity = this.exportChartEmissionsIntensity
@@ -497,152 +477,11 @@ export default {
     this.chartTemperature = this.exportChartTemperature
     this.summary = this.exportSummary
     this.legend = this.exportLegend
+    this.updateEnergyMinMax()
+    this.ready = true
   },
 
   methods: {
-    fetchData(region, range) {
-      const urls = Data.getEnergyUrls(region, range)
-
-      if (urls.length > 0) {
-        Http(urls)
-          .then(responses => {
-            this.handleResponses(responses)
-          })
-          .catch(e => {
-            console.error(e)
-          })
-      } else {
-        console.warn('fetchData', 'No urls provided')
-      }
-    },
-
-    handleResponses(responses) {
-      // !!! Removing Vol weighted Price after requesting ALL data
-      // - due to incorrect data
-      if (this.range === 'ALL') {
-        responses.forEach(r => {
-          const findIndex = r.data.findIndex(
-            d => d.type === 'volume_weighted_price'
-          )
-          if (findIndex) {
-            r.data.splice(findIndex, 1)
-          }
-        })
-      }
-
-      this.responses = responses
-      this.updateDomains(responses)
-      EnergyDataTransform.mergeResponses(
-        responses,
-        this.energyDomains,
-        this.marketValueDomains,
-        this.temperatureDomains,
-        this.priceDomains,
-        this.emissionDomains,
-        this.range,
-        this.interval
-      ).then(dataset => {
-        this.dataset = dataset
-        // this.dateFilter = d3Extent(this.dataset, d => d.date)
-        if (this.groupDomains.length > 0) {
-          this.updateDatasetGroups(dataset, this.groupDomains)
-        }
-        if (this.groupMarketValueDomains.length > 0) {
-          this.updateDatasetGroups(dataset, this.groupMarketValueDomains)
-        }
-        if (this.groupEmissionDomains.length > 0) {
-          this.updateDatasetGroups(dataset, this.groupEmissionDomains)
-        }
-        this.updatedFilteredDataset(dataset)
-        this.updateEnergyMinMax()
-        this.ready = true
-      })
-    },
-
-    updateDatasetGroups(dataset, groupDomains) {
-      this.dataset = dataset.map(d => {
-        // create new group domains (if not already there)
-        groupDomains.forEach(g => {
-          let groupValue = 0
-          g.domainIds.forEach(dId => {
-            groupValue += d[dId]
-          })
-          d[g.id] = groupValue
-        })
-        return d
-      })
-    },
-
-    updateDomains(res) {
-      // Find out about available domains first before flattening data
-      this.updateEnergyDomains(res)
-      this.updateEmissionDomains(res)
-      this.updateMarketValueDomains(res)
-      this.updateTemperatureDomains(res)
-      this.updatePriceDomains(res)
-    },
-
-    updateEnergyDomains(res) {
-      const energyDomains = Domain.getEnergyDomains(res)
-      this.fuelTechEnergyOrder = Domain.getDomainObjsOrder(
-        energyDomains,
-        this.fuelTechOrder
-      )
-      this.energyDomains = Domain.getDomainObjs(
-        this.regionId,
-        this.fuelTechEnergyOrder,
-        this.type
-      )
-    },
-
-    updateMarketValueDomains(res) {
-      this.marketValueDomains = Domain.getDomainObjs(
-        this.regionId,
-        this.fuelTechEnergyOrder,
-        'market_value'
-      )
-    },
-
-    updateEmissionDomains(res) {
-      const emissionDomains = Domain.getEmissionsDomains(res)
-      this.emissionsOrder = Domain.getDomainObjsOrder(
-        emissionDomains,
-        this.fuelTechOrder
-      )
-      this.emissionDomains = Domain.getDomainObjs(
-        this.regionId,
-        this.emissionsOrder,
-        'emissions'
-      )
-    },
-
-    updateTemperatureDomains(res) {
-      const temperatureDomainsAndIds = Domain.getTemperatureDomainsAndIds(res)
-
-      this.temperatureDomains = temperatureDomainsAndIds.domains
-      this.temperatureMeanId = temperatureDomainsAndIds.meanId
-      this.temperatureMinId = temperatureDomainsAndIds.minId
-      this.temperatureMaxId = temperatureDomainsAndIds.maxId
-    },
-
-    updatePriceDomains(res) {
-      this.priceDomains = Domain.getPriceDomains(res)
-    },
-
-    updatedFilteredDataset(dataset) {
-      // This is to filter the dataset based on the chart zoom
-      // - used by Summary table
-      if (this.dateFilter.length > 0) {
-        this.filteredDataset = EnergyDataTransform.filterDataByStartEndDates(
-          dataset,
-          this.dateFilter[0],
-          this.dateFilter[1]
-        )
-      } else {
-        this.filteredDataset = dataset
-      }
-    },
-
     handleWidgetToggle(widgetName) {
       this[widgetName] = !this[widgetName]
       this.$store.dispatch(`export/${widgetName}`, this[widgetName])

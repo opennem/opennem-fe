@@ -8,7 +8,7 @@ export default {
         urls.push(`/power/${region}.json`)
         break
       case '30D':
-        urls.push(`/energy/history/daily/${region}.json`)
+        urls.push(`/testing/energy/history/daily/${region}.json`)
         break
       case '1Y':
         const now = new Date().getTime()

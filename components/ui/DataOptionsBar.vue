@@ -21,11 +21,45 @@
         {{ interval }}
       </span>
     </div>
+
+    <div
+      v-if="periodArray"
+      class="filter-period-buttons buttons has-addons">
+      <span
+        v-for="(period, i) in periodArray"
+        :key="`period${i}`"
+        :class="{ 'is-selected': filterPeriod === period }"
+        class="button is-rounded"
+        @click="handleFilterPeriodClick(period)">
+        {{ period }}
+      </span>
+    </div>
+
+    <div
+      :class="{ 'hide': drawer }"
+      class="more-buttons">
+      <div class="buttons has-addons">
+        <span
+          :class="{ 'is-selected': isConsumption }"
+          class="button is-rounded"
+          @click="handlePercentContributionToClick">Consumption</span><span
+            :class="{ 'is-selected': isGeneration }"
+            class="button is-rounded"
+            @click="handlePercentContributionToClick">Generation</span>
+      </div>
+      
+      <button
+        v-if="(focusOn || compareDifference) && isEnergy"
+        :class="{ 'is-selected': compareDifference }"
+        class="compare-button button is-rounded"
+        @click="handleCompareClick">Compare</button>
+    </div>
   </div>
 </template>
 
 <script>
 import RANGE_INTERVAL from '~/constants/rangeInterval.js'
+import INTERVAL_PERIOD from '~/constants/intervalPeriod.js'
 
 export default {
   props: {
@@ -42,6 +76,7 @@ export default {
   data() {
     return {
       ranges: RANGE_INTERVAL,
+      intervalPeriod: INTERVAL_PERIOD,
       selectedRange: '',
       selectedInterval: ''
     }
@@ -51,6 +86,33 @@ export default {
     selectedRangeIntervals() {
       const range = this.ranges.find(r => r.range === this.selectedRange)
       return range ? range.intervals : null
+    },
+    filterPeriod() {
+      return this.$store.getters.filterPeriod
+    },
+    compareDifference() {
+      return this.$store.getters.compareDifference
+    },
+    focusOn() {
+      return this.$store.getters.focusOn
+    },
+    periodArray() {
+      return this.intervalPeriod[this.selectedInterval]
+    },
+    isEnergy() {
+      return this.$store.getters.energyChartType === 'energy'
+    },
+    percentContributionTo() {
+      return this.$store.getters.percentContributionTo
+    },
+    isConsumption() {
+      return this.percentContributionTo === 'demand'
+    },
+    isGeneration() {
+      return this.percentContributionTo === 'generation'
+    },
+    drawer() {
+      return this.$store.getters.drawer
     }
   },
 
@@ -60,6 +122,11 @@ export default {
     },
     interval(updated) {
       this.selectedInterval = updated
+    },
+    periodArray(arr) {
+      if (arr && !this.filterPeriod) {
+        this.$store.dispatch('filterPeriod', 'All')
+      }
     }
   },
 
@@ -70,10 +137,32 @@ export default {
 
   methods: {
     handleRangeChange(range) {
+      this.$store.dispatch('filterPeriod', null)
       this.$emit('onRangeChange', range)
     },
     handleIntervalChange(interval) {
+      const compareInterval = interval === 'Season' || interval === 'Quarter'
+      const filterPeriod = compareInterval ? 'All' : null
+      this.$store.dispatch('filterPeriod', filterPeriod)
       this.$emit('onIntervalChange', interval)
+    },
+    handleFilterPeriodClick(period) {
+      this.$store.dispatch('filterPeriod', period)
+      this.$store.dispatch('compareDifference', false)
+      this.$store.dispatch('compareDates', [])
+    },
+    handleCompareClick() {
+      this.$store.dispatch('compareDifference', !this.compareDifference)
+      if (this.compareDifference) {
+        this.$store.dispatch('focusOn', false)
+      }
+    },
+    handlePercentContributionToClick() {
+      if (this.isConsumption) {
+        this.$store.dispatch('percentContributionTo', 'generation')
+      } else {
+        this.$store.dispatch('percentContributionTo', 'demand')
+      }
     }
   }
 }
@@ -112,6 +201,27 @@ export default {
   @include tablet {
     margin-bottom: 0;
     margin-right: $app-padding;
+  }
+}
+.filter-period-buttons {
+  margin-left: 1rem;
+}
+.more-buttons {
+  position: absolute;
+  right: 0.5rem;
+
+  @include mobile {
+    top: -46px;
+    right: 0;
+    z-index: 9999;
+
+    &.hide {
+      z-index: 1;
+    }
+  }
+
+  .buttons {
+    display: inline;
   }
 }
 </style>

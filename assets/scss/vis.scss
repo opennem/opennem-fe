@@ -36,15 +36,24 @@ path.line-path {
   fill: transparent;
 }
 
-.date-focus {
-  .cursor-rect {
+.focus-group {
+  .focus-rect {
     fill: rgba(199, 69, 35, 0.2);
     stroke: rgba(199, 69, 35, 0.5);
     stroke-width: 0.5;
   }
-  .x-axis-brush-group {
-    opacity: 0;
+  .focus-line {
+    stroke: $opennem-link-color;
+    stroke-width: 1px;
   }
+  .focus-top-rect,
+  .focus-bottom-rect {
+    fill: $opennem-link-color;
+  }  
+}
+
+.compare-group rect {
+  pointer-events: none;
 }
 
 // axis
@@ -80,9 +89,9 @@ path.line-path {
 //   stroke: rgba(0, 0, 0, 0.1);
 // }
 .y-axis-tick .tick text {
-  color: #555;
+  color: #000;
   text-anchor: start;
-  text-shadow: 0 0 10px hsla(0, 0%, 93%, 0.5);
+  text-shadow: 1px 1px 2px #fff;
 }
 .y-axis .tick text {
   color: transparent;
@@ -135,5 +144,30 @@ path.line-path {
     font-weight: 700;
     text-anchor: middle;
     font-size: 20px;
+  }
+}
+
+.column-vis {
+  .y-axis .tick text {
+    color: #000;
+    text-anchor: start;
+  }
+  .x-axis .tick line {
+    stroke: transparent;
+  }
+  .column-label-group {
+    font-family: $family-primary;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .tick line.base {
+    stroke: rgb(130, 130, 130);
+    stroke-dasharray: 2;
+  }
+  rect._total {
+    stroke-width: 1px;
+    stroke: $opennem-link-color;
+    stroke-dasharray: 4;
+    fill-opacity: 0.5;
   }
 }

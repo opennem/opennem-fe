@@ -6,6 +6,7 @@ export default {
   Month: 2629800000,
   Season: 7889400000,
   Quarter: 7889400000,
+  'Half Year': 15552000000,
   'Fin Year': 31557600000,
   Year: 31557600000
 }
