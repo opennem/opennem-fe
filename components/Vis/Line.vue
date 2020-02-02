@@ -517,9 +517,7 @@ export default {
         .y(d => this.y(d[this.domainId]))
         .curve(this.curveType)
 
-      if (!this.connectZero) {
-        this.line.defined(d => d[this.domainId])
-      }
+      this.line.defined(d => d[this.domainId] || d[this.domainId] === 0)
 
       // How to draw the area path
       this.area = d3Area()
