@@ -34,26 +34,6 @@
         {{ period }}
       </span>
     </div>
-
-    <div
-      :class="{ 'hide': drawer }"
-      class="more-buttons">
-      <div class="buttons has-addons">
-        <span
-          :class="{ 'is-selected': isConsumption }"
-          class="button is-rounded"
-          @click="handlePercentContributionToClick">Consumption</span><span
-            :class="{ 'is-selected': isGeneration }"
-            class="button is-rounded"
-            @click="handlePercentContributionToClick">Generation</span>
-      </div>
-      
-      <button
-        v-if="(focusOn || compareDifference) && isEnergy"
-        :class="{ 'is-selected': compareDifference }"
-        class="compare-button button is-rounded"
-        @click="handleCompareClick">Compare</button>
-    </div>
   </div>
 </template>
 
@@ -90,29 +70,8 @@ export default {
     filterPeriod() {
       return this.$store.getters.filterPeriod
     },
-    compareDifference() {
-      return this.$store.getters.compareDifference
-    },
-    focusOn() {
-      return this.$store.getters.focusOn
-    },
     periodArray() {
       return this.intervalPeriod[this.selectedInterval]
-    },
-    isEnergy() {
-      return this.$store.getters.energyChartType === 'energy'
-    },
-    percentContributionTo() {
-      return this.$store.getters.percentContributionTo
-    },
-    isConsumption() {
-      return this.percentContributionTo === 'demand'
-    },
-    isGeneration() {
-      return this.percentContributionTo === 'generation'
-    },
-    drawer() {
-      return this.$store.getters.drawer
     }
   },
 
@@ -150,19 +109,6 @@ export default {
       this.$store.dispatch('filterPeriod', period)
       this.$store.dispatch('compareDifference', false)
       this.$store.dispatch('compareDates', [])
-    },
-    handleCompareClick() {
-      this.$store.dispatch('compareDifference', !this.compareDifference)
-      if (this.compareDifference) {
-        this.$store.dispatch('focusOn', false)
-      }
-    },
-    handlePercentContributionToClick() {
-      if (this.isConsumption) {
-        this.$store.dispatch('percentContributionTo', 'generation')
-      } else {
-        this.$store.dispatch('percentContributionTo', 'demand')
-      }
     }
   }
 }
@@ -176,11 +122,11 @@ export default {
   .buttons {
     background-color: rgba(255, 255, 255, 0.5);
 
-    @include tablet {
+    @include desktop {
       background-color: transparent;
     }
   }
-  @include tablet {
+  @include desktop {
     padding: $app-padding / 2 $app-padding;
     display: flex;
     align-items: center;
@@ -188,40 +134,25 @@ export default {
 }
 .button {
   font-size: 11px;
+  border-radius: 0;
 
   &.is-rounded {
     min-width: 55px;
   }
 
-  @include mobile {
-    border-radius: 0 !important;
+  @include desktop {
+    border-radius: 290486px;
   }
 }
 .range-buttons {
-  @include tablet {
+  @include desktop {
     margin-bottom: 0;
     margin-right: $app-padding;
   }
 }
 .filter-period-buttons {
-  margin-left: 1rem;
-}
-.more-buttons {
-  position: absolute;
-  right: 0.5rem;
-
-  @include mobile {
-    top: -46px;
-    right: 0;
-    z-index: 9999;
-
-    &.hide {
-      z-index: 1;
-    }
-  }
-
-  .buttons {
-    display: inline;
+  @include desktop {
+    margin-left: 1rem;
   }
 }
 </style>

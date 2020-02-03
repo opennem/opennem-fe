@@ -25,6 +25,26 @@
     />
 
     <div
+      :class="{ 'hide': openDrawer }"
+      class="more-buttons">
+      <div class="buttons has-addons">
+        <span
+          :class="{ 'is-selected': isConsumption }"
+          class="button is-rounded"
+          @click="handlePercentContributionToClick">Consumption</span><span
+            :class="{ 'is-selected': isGeneration }"
+            class="button is-rounded"
+            @click="handlePercentContributionToClick">Generation</span>
+      </div>
+      
+      <button
+        v-if="(focusOn || compareDifference) && isEnergy"
+        :class="{ 'is-selected': compareDifference }"
+        class="compare-button button is-rounded"
+        @click="handleCompareClick">Compare</button>
+    </div>
+
+    <div
       v-if="!widthBreak"
       class="share-buttons buttons has-addons">
       <button
@@ -186,6 +206,24 @@ export default {
         region = 'OpenNEM'
       }
       return `${date} ${region}`
+    },
+    isEnergy() {
+      return this.$store.getters.energyChartType === 'energy'
+    },
+    percentContributionTo() {
+      return this.$store.getters.percentContributionTo
+    },
+    isConsumption() {
+      return this.percentContributionTo === 'demand'
+    },
+    isGeneration() {
+      return this.percentContributionTo === 'generation'
+    },
+    compareDifference() {
+      return this.$store.getters.compareDifference
+    },
+    focusOn() {
+      return this.$store.getters.focusOn
     }
   },
 
@@ -228,6 +266,19 @@ export default {
       setTimeout(() => {
         this.generating = false
       }, 1000)
+    },
+    handlePercentContributionToClick() {
+      if (this.isConsumption) {
+        this.$store.dispatch('percentContributionTo', 'generation')
+      } else {
+        this.$store.dispatch('percentContributionTo', 'demand')
+      }
+    },
+    handleCompareClick() {
+      this.$store.dispatch('compareDifference', !this.compareDifference)
+      if (this.compareDifference) {
+        this.$store.dispatch('focusOn', false)
+      }
     }
   }
 }
@@ -301,6 +352,35 @@ header {
     .fa-chart-bar {
       position: relative;
       top: 1px;
+    }
+  }
+}
+.more-buttons {
+  position: absolute;
+  right: 170px;
+
+  @include mobile {
+    right: 0;
+    z-index: 9999;
+
+    &.hide {
+      display: none;
+    }
+  }
+  .buttons {
+    display: inline;
+    margin-right: 10px;
+  }
+
+  .button {
+    font-size: 11px;
+
+    &.is-rounded {
+      min-width: 55px;
+    }
+
+    @include mobile {
+      border-radius: 0 !important;
     }
   }
 }
