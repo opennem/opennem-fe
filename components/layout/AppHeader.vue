@@ -50,6 +50,7 @@
       class="share-button-wrapper">
       <button
         v-on-clickaway="handleClickAway"
+        :class="{ 'is-loading is-primary': generating }"
         class="share-button button is-rounded"
         @click="handleShareButtonClicked">
         <img
@@ -69,9 +70,6 @@
             <span class="label-image">Image</span>
           </a>
           <a
-            :class="{
-              'is-loading': generating
-            }"
             class="dropdown-item button"
             @click="handleExportDataClick">
             <download-csv
