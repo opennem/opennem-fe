@@ -47,29 +47,43 @@
 
     <div
       v-if="!widthBreak"
-      class="share-buttons buttons has-addons">
+      class="share-button-wrapper">
       <button
-        v-if="!isFacilitiesView"
-        class="button is-rounded"
-        @click="handleExportImage">
-        <i class="fal fa-fw fa-chart-bar" />
-        <span class="label-image">Image</span>
+        v-on-clickaway="handleClickAway"
+        class="share-button button is-rounded"
+        @click="handleShareButtonClicked">
+        <img
+          src="~/assets/img/share-icon.svg"
+          alt="Share icon">
+        <span class="label-image">Export</span>
       </button>
-      <button
-        :class="{
-          'is-loading': generating,
-          'is-primary': generating
-        }"
-        class="button is-rounded"
-        @click="handleExportDataClick">
-        <download-csv
-          :data="exportData"
-          :name="`${filename}.csv`"
-        >
-          <i class="fal fa-fw fa-table" />
-          <span class="label-csv">Data</span>
-        </download-csv>
-      </button>
+      <div
+        v-if="showShareMenu"
+        class="share-menu dropdown-menu">
+        <div class="dropdown-content">
+          <a
+            v-if="!isFacilitiesView"
+            class="dropdown-item button"
+            @click="handleExportImage">
+            <i class="fal fa-fw fa-chart-bar" />
+            <span class="label-image">Image</span>
+          </a>
+          <a
+            :class="{
+              'is-loading': generating
+            }"
+            class="dropdown-item button"
+            @click="handleExportDataClick">
+            <download-csv
+              :data="exportData"
+              :name="`${filename}.csv`"
+            >
+              <i class="fal fa-fw fa-table" />
+              <span class="label-csv">Data</span>
+            </download-csv>
+          </a>
+        </div>
+      </div>
     </div>
   </header>
 </template>
@@ -79,6 +93,7 @@ import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import { format as d3Format } from 'd3-format'
 import _debounce from 'lodash.debounce'
 import DownloadCsv from 'vue-json-csv'
+import { mixin as clickaway } from 'vue-clickaway'
 import REGIONS from '~/constants/regions.js'
 import AppLogo from '~/components/ui/Logo'
 import ViewDropdown from '~/components/ui/ViewDropdown'
@@ -93,12 +108,14 @@ export default {
     RegionDropdown,
     AppDrawer
   },
+  mixins: [clickaway],
 
   data() {
     return {
       ready: false,
       generating: false,
       openDrawer: false,
+      showShareMenu: false,
       windowWidth: 0,
       regions: REGIONS
     }
@@ -280,6 +297,12 @@ export default {
       if (this.compareDifference) {
         this.$store.dispatch('focusOn', false)
       }
+    },
+    handleShareButtonClicked() {
+      this.showShareMenu = !this.showShareMenu
+    },
+    handleClickAway() {
+      this.showShareMenu = false
     }
   }
 }
@@ -342,6 +365,35 @@ header {
     }
   }
 
+  .share-button-wrapper {
+    position: relative;
+    .button:focus {
+      color: $opennem-link-color;
+    }
+  }
+
+  .share-button {
+    font-size: 11px;
+    img {
+      width: 10px;
+      color: $opennem-link-color;
+      display: inline-block;
+      margin-right: 3px;
+      position: relative;
+      top: -1px;
+    }
+  }
+
+  .share-menu {
+    display: block;
+    min-width: 100px;
+    right: 0;
+    left: auto;
+    .dropdown-item {
+      border-radius: 0;
+    }
+  }
+
   .share-buttons {
     .button {
       font-size: 0.9rem;
@@ -358,7 +410,7 @@ header {
 }
 .more-buttons {
   position: absolute;
-  right: 170px;
+  right: 80px;
 
   @include mobile {
     right: 0;
