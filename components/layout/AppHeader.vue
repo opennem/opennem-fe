@@ -25,6 +25,7 @@
     />
 
     <div
+      v-if="!isFacilitiesView"
       :class="{ 'hide': openDrawer }"
       class="more-buttons">
       <div class="buttons has-addons">
