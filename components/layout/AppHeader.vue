@@ -67,7 +67,7 @@
             class="dropdown-item button"
             @click="handleExportImage">
             <i class="fal fa-fw fa-chart-bar" />
-            <span class="label-image">Image</span>
+            <span class="label-image">PNG</span>
           </a>
           <a
             class="dropdown-item button"
@@ -77,7 +77,7 @@
               :name="`${filename}.csv`"
             >
               <i class="fal fa-fw fa-table" />
-              <span class="label-csv">Data</span>
+              <span class="label-csv">CSV</span>
             </download-csv>
           </a>
         </div>
@@ -384,11 +384,12 @@ header {
 
   .share-menu {
     display: block;
-    min-width: 100px;
     right: 0;
     left: auto;
+    min-width: 40px;
     .dropdown-item {
       border-radius: 0;
+      min-width: 40px;
     }
   }
 
