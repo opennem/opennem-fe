@@ -81,6 +81,9 @@ export default {
     filterPeriod() {
       return this.$store.getters.filterPeriod
     },
+    periodArray() {
+      return this.intervalPeriod[this.selectedInterval]
+    },
     filters() {
       if (this.interval === 'Season') {
         return this.seasonFilters
@@ -95,6 +98,11 @@ export default {
     },
     interval(updated) {
       this.selectedInterval = updated
+    },
+    periodArray(arr) {
+      if (arr && !this.filterPeriod) {
+        this.$store.dispatch('filterPeriod', 'All')
+      }
     }
   },
 
