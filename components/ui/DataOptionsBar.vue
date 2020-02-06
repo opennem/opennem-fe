@@ -13,6 +13,7 @@
 
     <div class="buttons has-addons">
       <button
+        v-on-clickaway="handleClickAway"
         v-for="(interval, i) in selectedRangeIntervals"
         :key="i"
         :class="{ 'is-selected': interval === selectedInterval }"
@@ -29,14 +30,14 @@
           v-show="showFilter(interval)"
           class="filter-menu dropdown-menu">
           <div class="dropdown-content">
-            <span
+            <a
               v-for="(period, i) in filters"
               :key="`period${i}`"
               :class="{ 'is-selected': filterPeriod === period }"
               class="dropdown-item"
               @click.stop="handleFilterPeriodClick(period)">
               {{ period }}
-            </span>
+            </a>
           </div>
         </div>
       </button>
@@ -45,10 +46,12 @@
 </template>
 
 <script>
+import { mixin as clickaway } from 'vue-clickaway'
 import RANGE_INTERVAL from '~/constants/rangeInterval.js'
 import INTERVAL_PERIOD from '~/constants/intervalPeriod.js'
 
 export default {
+  mixins: [clickaway],
   props: {
     range: {
       type: String,
@@ -156,6 +159,10 @@ export default {
       this.$store.dispatch('filterPeriod', period)
       this.$store.dispatch('compareDifference', false)
       this.$store.dispatch('compareDates', [])
+      this.showSeasonFilter = false
+      this.showQuarterFilter = false
+    },
+    handleClickAway() {
       this.showSeasonFilter = false
       this.showQuarterFilter = false
     }
