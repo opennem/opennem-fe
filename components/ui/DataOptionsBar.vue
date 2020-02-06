@@ -23,7 +23,7 @@
         <div v-if="hasFilter(interval)">{{ intervalLabel(interval) }}</div>
         <i
           v-if="hasFilter(interval)"
-          class="filter-caret fal fa-caret-down" />
+          class="filter-caret fal fa-chevron-down" />
         
         <div
           v-show="showFilter(interval)"
@@ -187,7 +187,7 @@ export default {
   position: relative;
 
   &.is-rounded {
-    min-width: 55px;
+    min-width: 45px;
   }
 
   @include desktop {
