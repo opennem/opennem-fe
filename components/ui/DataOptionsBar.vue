@@ -1,39 +1,58 @@
 <template>
   <div class="data-options-bar">
     <div class="range-buttons buttons has-addons">
-      <span
+      <button
         v-for="(r, i) in ranges"
         :key="i"
         :class="{ 'is-selected': r.range === selectedRange }"
         class="button is-rounded"
         @click="handleRangeChange(r.range)">
         {{ r.range }}
-      </span>
+      </button>
     </div>
 
     <div class="buttons has-addons">
-      <span
+      <button
         v-for="(interval, i) in selectedRangeIntervals"
         :key="i"
         :class="{ 'is-selected': interval === selectedInterval }"
         class="button is-rounded"
-        @click="handleIntervalChange(interval)">
-        {{ interval }}
-      </span>
+        @click.stop="handleIntervalChange(interval)">
+
+        <div v-if="!hasFilter(interval)">{{ interval }}</div>
+        <div v-if="hasFilter(interval)">{{ intervalLabel(interval) }}</div>
+        <i
+          v-if="hasFilter(interval)"
+          class="filter-caret fal fa-caret-down" />
+        
+        <div
+          v-show="showFilter(interval)"
+          class="filter-menu dropdown-menu">
+          <div class="dropdown-content">
+            <span
+              v-for="(period, i) in filters"
+              :key="`period${i}`"
+              :class="{ 'is-selected': filterPeriod === period }"
+              class="dropdown-item"
+              @click.stop="handleFilterPeriodClick(period)">
+              {{ period }}
+            </span>
+          </div>
+        </div>
+      </button>
     </div>
 
-    <div
+    <!-- <div
       v-if="periodArray"
       class="filter-period-buttons buttons has-addons">
       <span
         v-for="(period, i) in periodArray"
         :key="`period${i}`"
         :class="{ 'is-selected': filterPeriod === period }"
-        class="button is-rounded"
         @click="handleFilterPeriodClick(period)">
         {{ period }}
       </span>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -58,7 +77,11 @@ export default {
       ranges: RANGE_INTERVAL,
       intervalPeriod: INTERVAL_PERIOD,
       selectedRange: '',
-      selectedInterval: ''
+      selectedInterval: '',
+      showSeasonFilter: false,
+      showQuarterFilter: false,
+      seasonFilters: INTERVAL_PERIOD['Season'],
+      quarterFilters: INTERVAL_PERIOD['Quarter']
     }
   },
 
@@ -72,6 +95,12 @@ export default {
     },
     periodArray() {
       return this.intervalPeriod[this.selectedInterval]
+    },
+    filters() {
+      if (this.interval === 'Season') {
+        return this.seasonFilters
+      }
+      return this.quarterFilters
     }
   },
 
@@ -95,20 +124,52 @@ export default {
   },
 
   methods: {
+    showFilter(interval) {
+      return (
+        (interval === 'Season' && this.showSeasonFilter) ||
+        (interval === 'Quarter' && this.showQuarterFilter)
+      )
+    },
+    hasFilter(interval) {
+      return (
+        this.interval === interval &&
+        (interval === 'Season' || interval === 'Quarter')
+      )
+    },
+    intervalLabel(interval) {
+      if (this.filterPeriod === 'All') {
+        return this.interval
+      } else {
+        return this.filterPeriod
+      }
+    },
     handleRangeChange(range) {
       this.$store.dispatch('filterPeriod', null)
       this.$emit('onRangeChange', range)
     },
     handleIntervalChange(interval) {
-      const compareInterval = interval === 'Season' || interval === 'Quarter'
-      const filterPeriod = compareInterval ? 'All' : null
-      this.$store.dispatch('filterPeriod', filterPeriod)
-      this.$emit('onIntervalChange', interval)
+      const hasFilter = this.hasFilter(interval)
+      if (hasFilter && this.interval === interval) {
+        if (interval === 'Season') {
+          this.showSeasonFilter = true
+        }
+        if (interval === 'Quarter') {
+          this.showQuarterFilter = true
+        }
+      } else {
+        this.showSeasonFilter = false
+        this.showQuarterFilter = false
+        const filterPeriod = hasFilter ? 'All' : null
+        this.$store.dispatch('filterPeriod', filterPeriod)
+        this.$emit('onIntervalChange', interval)
+      }
     },
     handleFilterPeriodClick(period) {
       this.$store.dispatch('filterPeriod', period)
       this.$store.dispatch('compareDifference', false)
       this.$store.dispatch('compareDates', [])
+      this.showSeasonFilter = false
+      this.showQuarterFilter = false
     }
   }
 }
@@ -135,6 +196,7 @@ export default {
 .button {
   font-size: 11px;
   border-radius: 0;
+  position: relative;
 
   &.is-rounded {
     min-width: 55px;
@@ -142,6 +204,10 @@ export default {
 
   @include desktop {
     border-radius: 290486px;
+  }
+
+  .filter-caret {
+    margin-left: 5px;
   }
 }
 .range-buttons {
@@ -154,5 +220,16 @@ export default {
   @include desktop {
     margin-left: 1rem;
   }
+}
+.dropdown-item {
+  &.is-selected {
+    background-color: #c74523;
+    color: #fff;
+  }
+}
+.filter-menu {
+  min-width: 80px;
+  text-align: left;
+  display: block;
 }
 </style>
