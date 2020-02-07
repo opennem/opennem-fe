@@ -409,7 +409,7 @@ header {
 }
 .more-buttons {
   position: absolute;
-  right: 80px;
+  right: 90px;
 
   @include mobile {
     right: 0;
@@ -421,7 +421,6 @@ header {
   }
   .buttons {
     display: inline;
-    margin-right: 10px;
   }
 
   .button {
@@ -435,5 +434,8 @@ header {
       border-radius: 0 !important;
     }
   }
+}
+.compare-button {
+  margin-left: 10px;
 }
 </style>
