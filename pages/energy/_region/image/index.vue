@@ -33,7 +33,7 @@
               v-if="step"
               class="chart-title">
               <strong>Energy</strong>
-              <small>GWh/{{ interval | toLowerCase }}</small>
+              <small>GWh/{{ interval | intervalLabel }}</small>
             </div>
             <div
               v-else
@@ -242,6 +242,7 @@ import { max as d3Max } from 'd3-array'
 import _includes from 'lodash.includes'
 import { saveAs } from 'file-saver'
 
+import PageEnergyMixin from '~/mixins/page-energy.js'
 import REGIONS from '~/constants/regions.js'
 import { EMISSIONS } from '~/constants/emissions.js'
 import Http from '~/services/Http.js'
@@ -304,6 +305,8 @@ export default {
     SummaryTable,
     EnergyLegend
   },
+
+  mixins: [PageEnergyMixin],
 
   data() {
     return {

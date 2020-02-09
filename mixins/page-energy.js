@@ -1,6 +1,11 @@
 const pageEnergyMixin = {
-  created() {
-    console.log('mixin!')
+  filters: {
+    intervalLabel(interval) {
+      if (interval === 'Fin Year') {
+        return 'year'
+      }
+      return interval.toLowerCase()
+    }
   },
   methods: {
     updateYMinMax() {
