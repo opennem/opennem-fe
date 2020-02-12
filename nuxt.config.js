@@ -187,6 +187,7 @@ module.exports = {
   ** Plugins to load before mounting the App
   */
   plugins: [
+    '~plugins/mixins.js',
     '~plugins/filters.js',
     '~plugins/tooltip.js',
     { src: '~/plugins/leaflet', ssr: false }
