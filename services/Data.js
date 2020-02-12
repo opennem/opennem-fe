@@ -1,14 +1,15 @@
 export default {
-  getEnergyUrls(region, range) {
+  getEnergyUrls(region, range, hostEnv) {
+    const prepend = hostEnv === 'prod' ? '' : '/testing'
     const urls = []
     switch (range) {
       case '1D':
       case '3D':
       case '7D':
-        urls.push(`/power/${region}.json`)
+        urls.push(`${prepend}/power/${region}.json`)
         break
       case '30D':
-        urls.push(`/energy/history/daily/${region}.json`)
+        urls.push(`${prepend}/energy/history/daily/${region}.json`)
         break
       case '1Y':
         const now = new Date().getTime()
@@ -21,7 +22,7 @@ export default {
         urls.push(`/testing/${region}/energy/daily/${thisFullYear}.json`)
         break
       case 'ALL':
-        urls.push(`/${region}/energy/monthly/all.json`)
+        urls.push(`${prepend}/${region}/energy/monthly/all.json`)
         break
       default:
     }

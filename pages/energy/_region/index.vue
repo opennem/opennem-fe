@@ -729,6 +729,9 @@ export default {
   },
 
   computed: {
+    hostEnv() {
+      return this.$store.getters.hostEnv
+    },
     chartUnit() {
       return this.$store.getters.chartUnit
     },
@@ -1447,7 +1450,7 @@ export default {
     },
 
     fetchData(region, range) {
-      const urls = Data.getEnergyUrls(region, range)
+      const urls = Data.getEnergyUrls(region, range, this.hostEnv)
 
       if (urls.length > 0) {
         Http(urls)

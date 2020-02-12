@@ -7,6 +7,18 @@ const pageEnergyMixin = {
       return interval.toLowerCase()
     }
   },
+  created() {
+    const host = window.location.host
+    if (host === 'localhost:3000') {
+      this.$store.dispatch('hostEnv', 'local')
+    }
+    if (host === 'opennem.org.au') {
+      this.$store.dispatch('hostEnv', 'prod')
+    }
+    if (host === 'dev.opennem.org.au') {
+      this.$store.dispatch('hostEnv', 'dev')
+    }
+  },
   methods: {
     updateYMinMax() {
       const isGeneration = this.percentContributionTo === 'generation'

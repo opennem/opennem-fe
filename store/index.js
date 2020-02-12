@@ -15,6 +15,7 @@ if (!featureEmissions) {
 }
 
 export const state = () => ({
+  hostEnv: null, // local, prod, dev
   currentView: 'energy', // energy, facilities
   nem: [],
   fuelTechMeta: null,
@@ -48,6 +49,9 @@ export const state = () => ({
 })
 
 export const mutations = {
+  hostEnv(state, data) {
+    state.hostEnv = data
+  },
   currentView(state, data) {
     state.currentView = data
   },
@@ -142,6 +146,7 @@ export const mutations = {
 }
 
 export const getters = {
+  hostEnv: state => state.hostEnv,
   currentView: state => state.currentView,
   nemLength: state => state.nem.length,
   nemData: state => state.nem,
@@ -239,6 +244,10 @@ export const getters = {
 }
 
 export const actions = {
+  hostEnv({ commit }, data) {
+    console.log(data)
+    commit('hostEnv', data)
+  },
   currentView({ commit }, data) {
     commit('currentView', data)
   },
