@@ -8,7 +8,7 @@ export default {
         urls.push(`/power/${region}.json`)
         break
       case '30D':
-        urls.push(`/testing/energy/history/daily/${region}.json`)
+        urls.push(`/energy/history/daily/${region}.json`)
         break
       case '1Y':
         const now = new Date().getTime()
@@ -21,7 +21,7 @@ export default {
         urls.push(`/testing/${region}/energy/daily/${thisFullYear}.json`)
         break
       case 'ALL':
-        urls.push(`/testing/${region}/energy/monthly/all.json`)
+        urls.push(`/${region}/energy/monthly/all.json`)
         break
       default:
     }
