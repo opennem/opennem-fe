@@ -1,6 +1,6 @@
 export default {
   getEnergyUrls(region, range, hostEnv) {
-    const prepend = hostEnv === 'prod' ? '' : '/testing'
+    const prepend = hostEnv === 'dev' ? '/testing' : ''
     const urls = []
     switch (range) {
       case '1D':
