@@ -1517,7 +1517,6 @@ export default {
       this.updateYMinMax()
       this.updateDataset(this.filterPeriod)
       this.ready = true
-      console.log(this.dataset)
     },
 
     updateDatasetGroups(dataset, groupDomains) {
