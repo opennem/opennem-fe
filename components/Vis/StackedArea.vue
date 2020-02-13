@@ -122,6 +122,7 @@ import * as CONFIG from './shared/config.js'
 import axisTimeFormat from './shared/timeFormat.js'
 import axisSecondaryTimeFormat from './shared/secondaryTimeFormat.js'
 import DateDisplay from '~/services/DateDisplay.js'
+import AxisTimeFormats from '~/services/axisTimeFormats.js'
 
 export default {
   props: {
@@ -340,6 +341,30 @@ export default {
         default:
           return curveLinear
       }
+    },
+    timeFormats() {
+      switch (this.interval) {
+        case 'Day':
+          return AxisTimeFormats.intervalDayTimeFormat
+        case 'Week':
+          return AxisTimeFormats.intervalWeekTimeFormat
+        case 'Month':
+          return this.range === 'ALL'
+            ? AxisTimeFormats.rangeAllIntervalMonthTimeFormat
+            : AxisTimeFormats.intervalMonthTimeFormat
+        default:
+          return axisTimeFormat
+      }
+    },
+    secondaryTimeFormats() {
+      switch (this.interval) {
+        case 'Day':
+          return AxisTimeFormats.intervalDaySecondaryTimeFormat
+        case 'Week':
+          return AxisTimeFormats.intervalWeekSecondaryTimeFormat
+        default:
+          return axisSecondaryTimeFormat
+      }
     }
   },
 
@@ -447,7 +472,7 @@ export default {
       // Set up where x, y axis appears
       this.xAxis = axisBottom(this.x)
         .tickSize(-this.height)
-        .tickFormat(d => axisTimeFormat(d))
+        .tickFormat((d, i) => this.timeFormats(d, i === 0))
       this.yAxis = axisRight(this.y)
         .tickSize(this.width)
         .tickFormat(d => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
@@ -1148,6 +1173,9 @@ export default {
           }
         }
       } else {
+        if (this.range === '30D') {
+          tickLength = timeDay.every(1)
+        }
         if (this.range === '1Y') {
           if (this.interval === 'Week') {
             tickLength = 7
@@ -1186,7 +1214,7 @@ export default {
           return d.getMonth() === 6
         })
       } else {
-        this.xAxis.tickFormat(d => axisTimeFormat(d))
+        this.xAxis.tickFormat((d, i) => this.timeFormats(d, i === 0))
       }
 
       this.xAxis.ticks(tickLength)
@@ -1194,8 +1222,9 @@ export default {
       // add secondary x axis tick label here
       const insertSecondaryAxisTick = function(d, i) {
         const el = select(this)
-        const secondaryText =
-          isFilter && i === 0 ? that.filterPeriod : axisSecondaryTimeFormat(d)
+        // const secondaryText =
+        //   isFilter && i === 0 ? that.filterPeriod : axisSecondaryTimeFormat(d)
+        const secondaryText = that.secondaryTimeFormats(d)
         if (secondaryText !== '') {
           el.append('tspan')
             .text(secondaryText)
