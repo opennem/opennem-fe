@@ -124,7 +124,7 @@ const pageEnergyMixin = {
       this.emissionsMax = emissionsMaxAll
       this.emissionsIntensityDataset = emissionsIntensityDataset
       this.emissionsIntensityMin = emissionsIntensityMinAll
-      this.emissionsIntensityMax = emissionsIntensityMaxAll
+      this.emissionsIntensityMax = emissionsIntensityMaxAll + 100
       this.emissionsVolumeDataset = emissionsVolumeDataset
     }
   }

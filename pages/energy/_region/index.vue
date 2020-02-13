@@ -2091,7 +2091,8 @@ export default {
 ::v-deep .temperature-vis .y-axis .tick:last-of-type text,
 ::v-deep .temperature-vis .y-axis-tick .tick:last-of-type text,
 ::v-deep .price-pos-vis .y-axis-guide-group .tick:not(:first-of-type) text,
-::v-deep .price-neg-vis .y-axis-guide-group .tick text {
+::v-deep .price-neg-vis .y-axis-guide-group .tick text,
+::v-deep .emissions-intensity-vis .y-axis-tick .tick:last-of-type text {
   display: none;
 }
 ::v-deep .price-neg-vis .line-group path,
