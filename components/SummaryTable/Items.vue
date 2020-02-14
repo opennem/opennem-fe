@@ -50,8 +50,16 @@
         </span>
       </div>
 
-      <div class="summary-col-contribution">
+      <div class="summary-col-av-value">
         {{ getAverageValue(index) | formatCurrency }}
+      </div>
+
+      <div class="summary-col-ev">
+        {{ getEmissionsVolume(ft) | formatValue }}
+      </div>
+
+      <div class="summary-col-ev">
+        {{ getEmissionsIntensity(ft) | formatValue }}
       </div>
     </div>
   </div>
@@ -72,6 +80,10 @@ export default {
 
   props: {
     energyDomains: {
+      type: Array,
+      default: () => []
+    },
+    emissionsDomains: {
       type: Array,
       default: () => []
     },
@@ -248,6 +260,34 @@ export default {
       return this.showPointSummary
         ? this.pointSummary[id] || ''
         : this.summary[id] || ''
+    },
+
+    getEmissionsVolume(ft) {
+      const emissionObj = this.emissionsDomains.find(
+        d => d.fuelTech === ft.fuelTech
+      )
+      if (emissionObj) {
+        return this.showPointSummary
+          ? this.pointSummary[emissionObj.id] || ''
+          : this.summary[emissionObj.id] || ''
+      }
+      return '-'
+    },
+
+    getEmissionsIntensity(ft) {
+      const energy = this.showPointSummary
+        ? this.pointSummary[ft.id] || null
+        : this.summary[ft.id] || null
+      const emissionObj = this.emissionsDomains.find(
+        d => d.fuelTech === ft.fuelTech
+      )
+      if (energy && emissionObj) {
+        const emissionsVolume = this.showPointSummary
+          ? this.pointSummary[emissionObj.id] || ''
+          : this.summary[emissionObj.id] || ''
+        return emissionsVolume / energy
+      }
+      return '-'
     }
   }
 }

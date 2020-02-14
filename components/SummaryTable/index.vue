@@ -43,6 +43,8 @@
           Contribution <small>to {{ percentContributionTo }}</small>
         </div>
         <div class="summary-col-av-value">Av.Value <small>$/MWh</small></div>
+        <div class="summary-col-ev">Emissions Volume <small>tCO₂e</small></div>
+        <div class="summary-col-ev">Emissions Intensity <small>kgCO₂e/MWh</small></div>
       </div>
       <div class="summary-row">
         <div class="summary-col-label">Sources</div>
@@ -82,6 +84,7 @@
       :summary-total="summarySourcesTotal"
       :domain-toggleable="domainToggleable"
       :energy-domains="energyDomains"
+      :emissions-domains="emissionsDomains"
       :is-year-interval="isYearInterval"
       @update="handleSourcesOrderUpdate"
       @fuelTechsHidden="handleSourceFuelTechsHidden"
@@ -117,6 +120,8 @@
       :summary-total="summary._totalEnergy"
       :show-percent-column="percentContributionTo === 'demand'"
       :is-year-interval="isYearInterval"
+      :energy-domains="energyDomains"
+      :emissions-domains="emissionsDomains"
       @update="handleLoadsOrderUpdate"
       @fuelTechsHidden="handleLoadFuelTechsHidden"
     />
@@ -577,6 +582,7 @@ export default {
 
       // Calculate Emissions
       this.emissionsDomains.forEach(ft => {
+        const category = ft.category
         const dataEVMinusHidden = data.map(d => {
           const emissionsVol = {}
           if (!_includes(this.hiddenFuelTechs, ft[ft.fuelTech])) {
@@ -595,7 +601,15 @@ export default {
           }
           return emissionsVol
         })
-        totalEVMinusHidden += sumMap(ft, dataEVMinusHidden)
+        const evSum = sumMap(ft, dataEVMinusHidden)
+        this.summary[ft.id] = evSum
+        totalEVMinusHidden += evSum
+
+        if (category === 'source') {
+          this.summarySources[ft.id] = evSum
+        } else if (category === 'load') {
+          this.summaryLoads[ft.id] = evSum
+        }
       })
 
       totalEIMinusHidden = data.reduce(
@@ -732,6 +746,18 @@ export default {
             this.pointSummarySources[ft.id] = avValue
           } else if (category === 'load') {
             this.pointSummaryLoads[ft.id] = avValue
+          }
+        })
+
+        // Calculate Emissions
+        this.emissionsDomains.forEach(domain => {
+          const category = domain.category
+          const value = this.pointSummary[domain.id]
+
+          if (category === 'source') {
+            this.pointSummarySources[domain.id] = value
+          } else if (category === 'load') {
+            this.pointSummaryLoads[domain.id] = value
           }
         })
       }
@@ -915,12 +941,14 @@ export default {
   }
 
   .summary-col-label {
-    width: 50%;
+    width: 30%;
   }
   .summary-col-energy,
   .summary-col-contribution,
-  .summary-col-av-value {
-    width: 25%;
+  .summary-col-av-value,
+  .summary-col-ev,
+  .summary-col-ei {
+    width: 14%;
     text-align: right;
     padding: 0 5px;
   }

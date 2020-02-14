@@ -43,6 +43,13 @@ Vue.filter(
   }
 )
 
+Vue.filter('intervalLabel', interval => {
+  if (interval === 'Fin Year') {
+    return 'year'
+  }
+  return interval.toLowerCase()
+})
+
 Vue.filter('formatDate', time => {
   const f = d3TimeFormat('%d/%m/%Y, %-I:%M %p')
   return f(time)

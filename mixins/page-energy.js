@@ -1,12 +1,4 @@
 const pageEnergyMixin = {
-  filters: {
-    intervalLabel(interval) {
-      if (interval === 'Fin Year') {
-        return 'year'
-      }
-      return interval.toLowerCase()
-    }
-  },
   created() {
     const host = window.location.host
     if (host === 'localhost:3000') {

@@ -1906,7 +1906,7 @@ export default {
     width: 100%;
     padding: 1rem 0 0;
     @include desktop {
-      width: 60%;
+      width: 50%;
       padding: 0;
     }
   }
@@ -1915,7 +1915,7 @@ export default {
     padding: 0 1rem 1rem;
 
     @include desktop {
-      width: 40%;
+      width: 50%;
       padding: 0 1rem 0 0;
     }
   }

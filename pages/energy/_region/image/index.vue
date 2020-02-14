@@ -209,7 +209,11 @@
         <div class="legend-container">
           <summary-table
             v-if="ready && summary"
+            :energy-domains="energyDomains"
             :domains="summaryDomains"
+            :stacked-area-domains="stackedAreaDomains"
+            :emissions-domains="emissionStackedAreaDomains"
+            :temperature-domains="temperatureDomains"
             :price-id="priceDomains.length > 0 ? priceDomains[0].id : null"
             :market-value-domains="mvDomains"
             :dataset="filteredDataset"
@@ -326,6 +330,7 @@ export default {
       summary: false,
       legend: true,
       exporting: false,
+      energyDomains: [],
       energyMin: 0,
       energyMax: 1000,
       emissionsVolumeDataset: [],
