@@ -1309,6 +1309,7 @@ export default {
     },
     filterPeriod(compare) {
       this.updateDataset(compare)
+      this.updateYMinMax()
     },
     stackedAreaDomains(updated) {
       this.$store.dispatch('export/stackedAreaDomains', updated)
