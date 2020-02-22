@@ -150,15 +150,6 @@ export default {
   },
 
   computed: {
-    // order: {
-    //   get() {
-    //     return this.originalOrder
-    //   },
-    //   set(newOrder) {
-    //     this.$emit('update', newOrder)
-    //   }
-    // },
-
     showSummaryColumn() {
       return this.$store.getters.showSummaryColumn
     },
