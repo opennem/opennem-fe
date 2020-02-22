@@ -298,7 +298,9 @@ export default {
         const emissionsVolume = this.showPointSummary
           ? this.pointSummary[emissionObj.id] || ''
           : this.summary[emissionObj.id] || ''
-        return emissionsVolume / energy
+        return this.isYearInterval
+          ? emissionsVolume / energy / 1000
+          : emissionsVolume / energy
       }
       return '-'
     }

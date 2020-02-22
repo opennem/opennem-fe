@@ -712,10 +712,13 @@ export default {
       const avTotal = this.isEnergy
         ? totalEnergyMinusHidden
         : totalPowerMinusHidden
+
       const average = avTotal / data.length
       this.summary._averageEnergy = average
       this.summary._averageEmissionsVolume = totalEVMinusHidden / data.length
-      this.summary._averageEmissionsIntensity = totalEVMinusHidden / avTotal
+      this.summary._averageEmissionsIntensity = this.isYearInterval
+        ? totalEVMinusHidden / avTotal / 1000
+        : totalEVMinusHidden / avTotal
       this.summary._averageTemperature =
         totalTemperatureWithoutNulls / temperatureWithoutNulls.length
 
