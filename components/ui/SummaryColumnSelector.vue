@@ -2,6 +2,7 @@
   <div class="column-selector-wrapper">
     <div
       v-on-clickaway="handleClickAway"
+      class="column-selector"
       @click="showMenu = true">
       <span v-if="isAvValueColumn">
         Av.Value <small>$/MWh</small>
@@ -107,6 +108,14 @@ export default {
 
 .column-selector-wrapper {
   position: relative;
+  cursor: pointer;
+
+  .column-selector {
+    padding: 0 4px;
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.7);
+    }
+  }
 }
 .show-column-menu {
   display: block;
