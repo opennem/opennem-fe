@@ -24,6 +24,7 @@ export const state = () => ({
   fuelTechOrder: cloneDeep(FUEL_TECHS.DEFAULT_FUEL_TECH_ORDER),
   hiddenFuelTechs: [],
   energyDomains: [],
+  emissionDomains: [],
   priceDomains: [],
   temperatureDomains: [],
   marketValueDomains: [],
@@ -76,6 +77,9 @@ export const mutations = {
   },
   energyDomains(state, data) {
     state.energyDomains = data
+  },
+  emissionDomains(state, data) {
+    state.emissionDomains = data
   },
   priceDomains(state, data) {
     state.priceDomains = data
@@ -180,6 +184,7 @@ export const getters = {
   fuelTechOrder: state => state.fuelTechOrder,
   hiddenFuelTechs: state => state.hiddenFuelTechs,
   energyDomains: state => state.energyDomains,
+  emissionDomains: state => state.emissionDomains,
   priceDomains: state => state.priceDomains,
   temperatureDomains: state => state.temperatureDomains,
   marketValueDomains: state => state.marketValueDomains,
@@ -273,6 +278,9 @@ export const actions = {
   },
   energyDomains({ commit }, data) {
     commit('energyDomains', data)
+  },
+  emissionDomains({ commit }, data) {
+    commit('emissionDomains', data)
   },
   priceDomains({ commit }, data) {
     commit('priceDomains', data)

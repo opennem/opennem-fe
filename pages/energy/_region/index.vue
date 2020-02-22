@@ -1577,6 +1577,7 @@ export default {
         this.emissionsOrder,
         EMISSIONS
       )
+      this.$store.dispatch('emissionDomains', this.emissionDomains)
     },
 
     updateTemperatureDomains(res) {
