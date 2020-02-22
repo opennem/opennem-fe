@@ -40,6 +40,7 @@ export const state = () => ({
   chartSummaryPie: true,
   exportAttribution: '@name',
   percentContributionTo: 'demand', // or generation
+  showSummaryColumn: 'av-value', // or emissions-volume or emissions-intensity
   featureEmissions,
   filterPeriod: null,
   compareDifference: false,
@@ -123,6 +124,9 @@ export const mutations = {
   },
   percentContributionTo(state, data) {
     state.percentContributionTo = data
+  },
+  showSummaryColumn(state, data) {
+    state.showSummaryColumn = data
   },
   featureEmissions(state, data) {
     lsSet(MutationTypes.FEATURE_TOGGLE_EMISSIONS, data)
@@ -235,6 +239,7 @@ export const getters = {
   chartSummaryPie: state => state.chartSummaryPie,
   exportAttribution: state => state.exportAttribution,
   percentContributionTo: state => state.percentContributionTo,
+  showSummaryColumn: state => state.showSummaryColumn,
   featureEmissions: state => state.featureEmissions,
   filterPeriod: state => state.filterPeriod,
   compareDifference: state => state.compareDifference,
@@ -316,6 +321,9 @@ export const actions = {
   },
   percentContributionTo({ commit }, data) {
     commit('percentContributionTo', data)
+  },
+  showSummaryColumn({ commit }, data) {
+    commit('showSummaryColumn', data)
   },
   featureEmissions({ commit }, data) {
     commit('featureEmissions', data)

@@ -42,9 +42,9 @@
           @click="handlePercentContributionToClick">
           Contribution <small>to {{ percentContributionTo }}</small>
         </div>
-        <div class="summary-col-av-value">Av.Value <small>$/MWh</small></div>
-        <div class="summary-col-ev">Emissions Volume <small>tCO₂e</small></div>
-        <div class="summary-col-ev">Emissions Intensity <small>kgCO₂e/MWh</small></div>
+        <div class="summary-col-av-value">
+          <column-selector />
+        </div>
       </div>
       <div class="summary-row">
         <div class="summary-col-label">Sources</div>
@@ -62,12 +62,16 @@
         <div
           v-if="!hoverOn && !focusOn"
           class="summary-col-av-value cell-value">
-          {{ summary._totalAverageValue | formatCurrency }}
+          <span v-if="isAvValueColumn">
+            {{ summary._totalAverageValue | formatCurrency }}
+          </span>
         </div>
         <div
           v-if="hoverOn || focusOn"
           class="summary-col-av-value cell-value">
-          {{ pointSummary._totalAverageValue | formatCurrency }}
+          <span v-if="isAvValueColumn">
+            {{ pointSummary._totalAverageValue | formatCurrency }}
+          </span>
         </div>
       </div>
     </div>
@@ -171,11 +175,13 @@ import _cloneDeep from 'lodash.clonedeep'
 import _includes from 'lodash.includes'
 import Domain from '~/services/Domain.js'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
+import ColumnSelector from '~/components/ui/SummaryColumnSelector'
 import Items from './Items'
 
 export default {
   components: {
     GroupSelector,
+    ColumnSelector,
     Items
   },
 
@@ -283,6 +289,14 @@ export default {
 
     percentContributionTo() {
       return this.$store.getters.percentContributionTo
+    },
+
+    showSummaryColumn() {
+      return this.$store.getters.showSummaryColumn
+    },
+
+    isAvValueColumn() {
+      return this.showSummaryColumn === 'av-value'
     },
 
     sourcesOrderLength() {
@@ -948,7 +962,7 @@ export default {
   .summary-col-av-value,
   .summary-col-ev,
   .summary-col-ei {
-    width: 14%;
+    width: 25%;
     text-align: right;
     padding: 0 5px;
   }

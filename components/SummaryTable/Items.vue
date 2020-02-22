@@ -50,15 +50,21 @@
         </span>
       </div>
 
-      <div class="summary-col-av-value">
+      <div
+        v-show="isAvValueColumn"
+        class="summary-col-av-value">
         {{ getAverageValue(index) | formatCurrency }}
       </div>
 
-      <div class="summary-col-ev">
+      <div
+        v-show="isEmissionsVolumeColumn"
+        class="summary-col-ev">
         {{ getEmissionsVolume(ft) | formatValue }}
       </div>
 
-      <div class="summary-col-ev">
+      <div
+        v-show="isEmissionsIntensityColumn"
+        class="summary-col-ev">
         {{ getEmissionsIntensity(ft) | formatValue }}
       </div>
     </div>
@@ -152,6 +158,22 @@ export default {
     //     this.$emit('update', newOrder)
     //   }
     // },
+
+    showSummaryColumn() {
+      return this.$store.getters.showSummaryColumn
+    },
+
+    isAvValueColumn() {
+      return this.showSummaryColumn === 'av-value'
+    },
+
+    isEmissionsVolumeColumn() {
+      return this.showSummaryColumn === 'emissions-volume'
+    },
+
+    isEmissionsIntensityColumn() {
+      return this.showSummaryColumn === 'emissions-intensity'
+    },
 
     hasPointSummary() {
       return !_isEmpty(this.pointSummary)
