@@ -65,12 +65,24 @@
           <span v-if="isAvValueColumn">
             {{ summary._totalAverageValue | formatCurrency }}
           </span>
+          <span v-if="isEmissionsVolumeColumn">
+            {{ summary._totalEmissionsVolume | formatValue }}
+          </span>
+          <span v-if="isEmissionsIntensityColumn">
+            {{ summary._averageEmissionsIntensity | formatValue }}
+          </span>
         </div>
         <div
           v-if="hoverOn || focusOn"
           class="summary-col-av-value cell-value">
           <span v-if="isAvValueColumn">
             {{ pointSummary._totalAverageValue | formatCurrency }}
+          </span>
+          <span v-if="isEmissionsVolumeColumn">
+            {{ pointSummary._totalEmissionsVolume | formatValue }}
+          </span>
+          <span v-if="isEmissionsIntensityColumn">
+            {{ pointSummary._emissionsIntensity | formatValue }}
           </span>
         </div>
       </div>
@@ -297,6 +309,14 @@ export default {
 
     isAvValueColumn() {
       return this.showSummaryColumn === 'av-value'
+    },
+
+    isEmissionsVolumeColumn() {
+      return this.showSummaryColumn === 'emissions-volume'
+    },
+
+    isEmissionsIntensityColumn() {
+      return this.showSummaryColumn === 'emissions-intensity'
     },
 
     sourcesOrderLength() {
@@ -715,6 +735,7 @@ export default {
 
       const average = avTotal / data.length
       this.summary._averageEnergy = average
+      this.summary._totalEmissionsVolume = totalEVMinusHidden
       this.summary._averageEmissionsVolume = totalEVMinusHidden / data.length
       this.summary._averageEmissionsIntensity = this.isYearInterval
         ? totalEVMinusHidden / avTotal / 1000
@@ -729,6 +750,7 @@ export default {
       let totalSources = 0
       let totalLoads = 0
       let totalPriceMarketValue = 0
+      let totalEmissionsVol = 0
       this.pointSummary = data || {} // pointSummary._total is already calculated
       this.pointSummarySources = {}
       this.pointSummaryLoads = {}
@@ -771,6 +793,8 @@ export default {
           const category = domain.category
           const value = this.pointSummary[domain.id]
 
+          totalEmissionsVol += value
+
           if (category === 'source') {
             this.pointSummarySources[domain.id] = value
           } else if (category === 'load') {
@@ -788,6 +812,8 @@ export default {
       }
       this.pointSummarySources._total = totalSources
       this.pointSummaryLoads._total = totalLoads
+      this.pointSummary._totalEmissionsVolume = totalEmissionsVol
+      console.log(this.pointSummary)
     },
 
     updatePointSummary(date) {
