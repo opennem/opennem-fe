@@ -276,9 +276,9 @@ export default {
     },
 
     getEmissionsVolume(ft) {
-      const emissionObj = this.emissionsDomains.find(
-        d => d.fuelTech === ft.fuelTech
-      )
+      const ftGroup = ft.id.substring(0, ft.id.lastIndexOf('.'))
+      const emissionId = `${ftGroup}.emissions`
+      const emissionObj = this.emissionsDomains.find(d => d.id === emissionId)
       if (emissionObj) {
         return this.showPointSummary
           ? this.pointSummary[emissionObj.id] || ''
@@ -288,12 +288,12 @@ export default {
     },
 
     getEmissionsIntensity(ft) {
+      const ftGroup = ft.id.substring(0, ft.id.lastIndexOf('.'))
+      const emissionId = `${ftGroup}.emissions`
       const energy = this.showPointSummary
         ? this.pointSummary[ft.id] || null
         : this.summary[ft.id] || null
-      const emissionObj = this.emissionsDomains.find(
-        d => d.fuelTech === ft.fuelTech
-      )
+      const emissionObj = this.emissionsDomains.find(d => d.id === emissionId)
       if (energy && emissionObj) {
         const emissionsVolume = this.showPointSummary
           ? this.pointSummary[emissionObj.id] || ''
