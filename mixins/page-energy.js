@@ -62,8 +62,8 @@ const pageEnergyMixin = {
           if (
             !isGeneration ||
             (isGeneration &&
-              domain.fuelTech !== 'imports' &&
-              domain.fuelTech !== 'exports')
+              id.indexOf('imports') === -1 &&
+              id.indexOf('exports') === -1)
           ) {
             totalEmissionsVol += d[id] || 0
             emissionsMax += d[id] || 0
