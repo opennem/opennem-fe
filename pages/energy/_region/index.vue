@@ -34,16 +34,28 @@
       <div class="vis-container">
         <div
           v-if="ready"
-          :class="{ 'is-hovered': hoverOn || focusOn }"
+          :class="{
+            'is-hovered': hoverOn || focusOn,
+            'has-border-bottom': !chartEnergy
+          }"
           class="chart">
           <div
             v-if="step"
-            class="chart-title no-hover">
+            class="chart-title"
+            @click="toggleChart('chartEnergy')">
             <div class="chart-label">
+              <i
+                :class="{
+                  'fa-caret-down': chartEnergy,
+                  'fa-caret-right': !chartEnergy
+                }"
+                class="fal fa-fw" />
               <strong>Energy</strong>
               <small>{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</small>
             </div>
-            <div class="hover-date-value">
+            <div
+              v-show="chartEnergy"
+              class="hover-date-value">
               <div class="average-value">
                 Av.
                 <strong>{{ averageEnergy | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</strong>
@@ -72,12 +84,21 @@
           </div>
           <div
             v-else
-            class="chart-title no-hover">
+            class="chart-title"
+            @click="toggleChart('chartEnergy')">
             <div class="chart-label">
+              <i
+                :class="{
+                  'fa-caret-down': chartEnergy,
+                  'fa-caret-right': !chartEnergy
+                }"
+                class="fal fa-fw" />
               <strong>Generation</strong>
               <small>MW</small>
             </div>
-            <div class="hover-date-value">
+            <div
+              v-show="chartEnergy"
+              class="hover-date-value">
               <div class="average-value">
                 Av.
                 <strong>{{ averageEnergy | formatValue }} MW</strong>
@@ -105,6 +126,7 @@
             </div>
           </div>
           <stacked-area-vis
+            v-if="chartEnergy"
             :domains="stackedAreaDomains"
             :dataset="dataset"
             :dynamic-extent="dateFilter"
@@ -752,6 +774,9 @@ export default {
     },
     isEnergyType() {
       return this.type === 'energy'
+    },
+    chartEnergy() {
+      return this.$store.getters.chartEnergy
     },
     chartEmissionsVolume() {
       return this.$store.getters.chartEmissionsVolume
