@@ -813,7 +813,6 @@ export default {
       this.pointSummarySources._total = totalSources
       this.pointSummaryLoads._total = totalLoads
       this.pointSummary._totalEmissionsVolume = totalEmissionsVol
-      console.log(this.pointSummary)
     },
 
     updatePointSummary(date) {
