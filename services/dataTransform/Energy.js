@@ -366,12 +366,16 @@ export default {
             roundedEndDate
           )
         } else if (range === '30D') {
+          let lastDateTime = new Date().getTime()
           if (lastDate) {
             // if has valid FT last date, use that to filter the data.
             // Because there could be non-FT last dates that are into the future
-            const lastDateTime = moment(lastDate).valueOf()
-            data = data.filter(d => d.date <= lastDateTime)
+            lastDateTime = moment(lastDate).valueOf()
           }
+          const thirtyDaysAgo = lastDateTime - 2592000000
+          data = data.filter(
+            d => d.date > thirtyDaysAgo && d.date <= lastDateTime
+          )
         } else if (range === '1Y') {
           // filter 1Y because it could be a combination of two 1Y datasets
           const now = new Date().getTime()
