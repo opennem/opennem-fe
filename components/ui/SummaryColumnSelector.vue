@@ -2,6 +2,7 @@
   <div class="column-selector-wrapper">
     <div
       v-on-clickaway="handleClickAway"
+      :class="{ 'has-hover': isEnergyChart }"
       class="column-selector"
       @touchstart="handleTouchstart"
       @touchend="handleTouchend"
@@ -82,6 +83,14 @@ export default {
 
     isEmissionsIntensityColumn() {
       return this.showSummaryColumn === 'emissions-intensity'
+    },
+
+    energyChartType() {
+      return this.$store.getters.energyChartType
+    },
+
+    isEnergyChart() {
+      return this.energyChartType === 'energy'
     }
   },
 
@@ -108,12 +117,14 @@ export default {
       this.clearTimeout()
     },
     handleMousedown() {
-      this.mousedownDelay = setTimeout(() => {
-        this.showMenu = true
-      }, this.longPress)
+      if (this.isEnergyChart) {
+        this.mousedownDelay = setTimeout(() => {
+          this.showMenu = true
+        }, this.longPress)
+      }
     },
     handleMouseup() {
-      if (!this.showMenu) {
+      if (this.isEnergyChart && !this.showMenu) {
         switch (this.selected) {
           case 'av-value':
             this.selected = 'emissions-volume'
@@ -129,9 +140,11 @@ export default {
       this.clearTimeout()
     },
     handleTouchstart() {
-      this.mousedownDelay = setTimeout(() => {
-        this.showMenu = true
-      }, this.longPress)
+      if (this.isEnergyChart) {
+        this.mousedownDelay = setTimeout(() => {
+          this.showMenu = true
+        }, this.longPress)
+      }
     },
     handleTouchend() {
       this.clearTimeout()
@@ -151,13 +164,15 @@ export default {
 
 .column-selector-wrapper {
   position: relative;
-  cursor: pointer;
   user-select: none;
 
   .column-selector {
     padding: 0 4px;
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.7);
+    &.has-hover {
+      cursor: pointer;
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.7);
+      }
     }
   }
 }
