@@ -969,6 +969,7 @@ export default {
   .summary-row {
     font-family: $header-font-family;
     font-weight: 700;
+    user-select: none;
   }
 }
 

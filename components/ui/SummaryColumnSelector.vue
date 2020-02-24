@@ -3,7 +3,11 @@
     <div
       v-on-clickaway="handleClickAway"
       class="column-selector"
-      @click="showMenu = true">
+      @touchstart="handleTouchstart"
+      @touchend="handleTouchend"
+      @mousedown="handleMousedown"
+      @mouseup="handleMouseup"
+      @mouseout="handleMouseout">
       <span v-if="isAvValueColumn">
         Av.Value <small>$/MWh</small>
       </span>
@@ -57,7 +61,9 @@ export default {
     return {
       groups,
       selected: groups[0].id,
-      showMenu: false
+      showMenu: false,
+      mousedownDelay: null,
+      longPress: 500
     }
   },
 
@@ -99,6 +105,43 @@ export default {
     },
     handleClickAway() {
       this.showMenu = false
+      this.clearTimeout()
+    },
+    handleMousedown() {
+      this.mousedownDelay = setTimeout(() => {
+        this.showMenu = true
+      }, this.longPress)
+    },
+    handleMouseup() {
+      if (!this.showMenu) {
+        switch (this.selected) {
+          case 'av-value':
+            this.selected = 'emissions-volume'
+            break
+          case 'emissions-volume':
+            this.selected = 'emissions-intensity'
+            break
+          default:
+            this.selected = 'av-value'
+            break
+        }
+      }
+      this.clearTimeout()
+    },
+    handleTouchstart() {
+      this.mousedownDelay = setTimeout(() => {
+        this.showMenu = true
+      }, this.longPress)
+    },
+    handleTouchend() {
+      this.clearTimeout()
+    },
+    handleMouseout() {
+      this.clearTimeout()
+    },
+    clearTimeout() {
+      clearTimeout(this.mousedownDelay)
+      this.mousedownDelay = null
     }
   }
 }
@@ -109,6 +152,7 @@ export default {
 .column-selector-wrapper {
   position: relative;
   cursor: pointer;
+  user-select: none;
 
   .column-selector {
     padding: 0 4px;
