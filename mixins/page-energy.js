@@ -1,3 +1,5 @@
+import Data from '~/services/Data.js'
+
 const pageEnergyMixin = {
   created() {
     const host = window.location.host
@@ -58,21 +60,24 @@ const pageEnergyMixin = {
 
         this.emissionStackedAreaDomains.forEach(domain => {
           const id = domain.id
-
+          const updatedEVValue = Data.siCalculation(
+            this.emissionsVolumePrefix,
+            d[id]
+          )
           if (
             !isGeneration ||
             (isGeneration &&
               id.indexOf('imports') === -1 &&
               id.indexOf('exports') === -1)
           ) {
-            totalEmissionsVol += d[id] || 0
-            emissionsMax += d[id] || 0
+            totalEmissionsVol += updatedEVValue || 0
+            emissionsMax += updatedEVValue || 0
 
-            if (d[id] < 0) {
-              emissionsMin += d[id] || 0
+            if (updatedEVValue < 0) {
+              emissionsMin += updatedEVValue || 0
             }
 
-            emissionsVolumeDataset[lastEVIndex][id] = d[id]
+            emissionsVolumeDataset[lastEVIndex][id] = updatedEVValue
           }
         })
 
@@ -109,6 +114,36 @@ const pageEnergyMixin = {
       emissionsIntensityDataset[
         evDatasetLength - 1
       ]._emissionsIntensity = lastValidEI
+
+      // update values
+      function updateEmissionsVolume(prefix, that) {
+        // const prefix = Data.getNextPrefix(that.emissionsVolumePrefix)
+        that.$store.dispatch('si/emissionsVolumePrefix', prefix)
+        emissionsVolumeDataset.forEach(d => {
+          that.emissionStackedAreaDomains.forEach(domain => {
+            d[domain.id] = Data.siCalculation(
+              that.emissionsVolumePrefix,
+              d[domain.id]
+            )
+          })
+        })
+        emissionsMaxAll = Data.siCalculation(
+          that.emissionsVolumePrefix,
+          emissionsMaxAll
+        )
+        emissionsMinAll = Data.siCalculation(
+          that.emissionsVolumePrefix,
+          emissionsMinAll
+        )
+      }
+
+      if (emissionsMaxAll >= 100000000) {
+        updateEmissionsVolume('M', this)
+      } else if (emissionsMaxAll >= 100000) {
+        updateEmissionsVolume('k', this)
+      } else {
+        this.$store.dispatch('si/emissionsVolumePrefix', '')
+      }
 
       this.energyMin = energyMinAll
       this.energyMax = energyMaxAll

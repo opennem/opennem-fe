@@ -28,5 +28,25 @@ export default {
       default:
     }
     return urls
+  },
+
+  getNextPrefix(currentPrefix) {
+    switch (currentPrefix) {
+      case '':
+        return 'k'
+      case 'k':
+        return 'M'
+      default:
+        return currentPrefix
+    }
+  },
+
+  siCalculation(prefix, currentValue) {
+    switch (prefix) {
+      case 'k':
+        return currentValue / 1000
+      default:
+        return currentValue
+    }
   }
 }

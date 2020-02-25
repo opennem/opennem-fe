@@ -191,14 +191,17 @@
                 }"
                 class="fal fa-fw" />
               <strong>Emissions Volume</strong>
-              <small>tCO₂e/{{ interval | intervalLabel }}</small>
+              <small>{{ emissionsVolumeUnit }}/{{ interval | intervalLabel }}</small>
             </div>
             <div
               v-show="chartEmissionsVolume"
               class="hover-date-value">
               <div class="average-value">
                 Av.
-                <strong>{{ averageEmissionsVolume | formatValue }} tCO₂e/{{ interval | intervalLabel }}</strong>
+                <strong>
+                  {{ averageEmissionsVolume | formatValue }}
+                  {{ emissionsVolumeUnit }}/{{ interval | intervalLabel }}
+                </strong>
               </div>
               <div class="hover-date">
                 <time>
@@ -213,11 +216,11 @@
                     :style="{ 'background-color': hoverEmissionVolumeDomainColour }"
                     class="colour-square" />
                   {{ hoverEmissionVolumeDomainLabel }}
-                  <strong>{{ hoverEmissionVolumeValue | formatValue2 }} tCO₂e</strong>
+                  <strong>{{ hoverEmissionVolumeValue | formatValue2 }} {{ emissionsVolumeUnit }}</strong>
                 </span>
                 <span>
                   Total
-                  <strong>{{ hoverEmissionVolumeTotal | formatValue2 }} tCO₂e</strong>
+                  <strong>{{ hoverEmissionVolumeTotal | formatValue2 }} {{ emissionsVolumeUnit }}</strong>
                 </span>
               </div>
             </div>
@@ -625,6 +628,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import moment from 'moment'
 import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import { mouse as d3Mouse } from 'd3-selection'
@@ -751,6 +755,10 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      emissionsVolumeUnit: 'si/emissionsVolumeUnit',
+      emissionsVolumePrefix: 'si/emissionsVolumePrefix'
+    }),
     hostEnv() {
       return this.$store.getters.hostEnv
     },
