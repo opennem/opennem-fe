@@ -73,11 +73,13 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import _isEmpty from 'lodash.isempty'
 import _includes from 'lodash.includes'
 import _remove from 'lodash.remove'
 import _cloneDeep from 'lodash.clonedeep'
 // import Draggable from 'vuedraggable'
+import Data from '~/services/Data.js'
 
 export default {
   // components: {
@@ -150,6 +152,9 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      emissionsVolumePrefix: 'si/emissionsVolumePrefix'
+    }),
     showSummaryColumn() {
       return this.$store.getters.showSummaryColumn
     },
@@ -294,10 +299,15 @@ export default {
         ? this.pointSummary[ft.id] || null
         : this.summary[ft.id] || null
       const emissionObj = this.emissionsDomains.find(d => d.id === emissionId)
+
       if (energy && emissionObj) {
-        const emissionsVolume = this.showPointSummary
+        let emissionsVolume = this.showPointSummary
           ? this.pointSummary[emissionObj.id] || ''
           : this.summary[emissionObj.id] || ''
+        emissionsVolume = Data.siCalculationToBase(
+          this.emissionsVolumePrefix,
+          emissionsVolume
+        )
         return this.isYearInterval
           ? emissionsVolume / energy / 1000
           : emissionsVolume / energy

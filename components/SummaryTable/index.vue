@@ -643,19 +643,19 @@ export default {
           return emissionsVol
         })
         const evSum = sumMap(ft, dataEVMinusHidden)
-        this.summary[ft.id] = Data.siCalculation(
+        this.summary[ft.id] = Data.siCalculationFromBase(
           this.emissionsVolumePrefix,
           evSum
         )
         totalEVMinusHidden += evSum
 
         if (category === 'source') {
-          this.summarySources[ft.id] = Data.siCalculation(
+          this.summarySources[ft.id] = Data.siCalculationFromBase(
             this.emissionsVolumePrefix,
             evSum
           )
         } else if (category === 'load') {
-          this.summaryLoads[ft.id] = Data.siCalculation(
+          this.summaryLoads[ft.id] = Data.siCalculationFromBase(
             this.emissionsVolumePrefix,
             evSum
           )
@@ -751,11 +751,11 @@ export default {
 
       const average = avTotal / data.length
       this.summary._averageEnergy = average
-      this.summary._totalEmissionsVolume = Data.siCalculation(
+      this.summary._totalEmissionsVolume = Data.siCalculationFromBase(
         this.emissionsVolumePrefix,
         totalEVMinusHidden
       )
-      this.summary._averageEmissionsVolume = Data.siCalculation(
+      this.summary._averageEmissionsVolume = Data.siCalculationFromBase(
         this.emissionsVolumePrefix,
         totalEVMinusHidden / data.length
       )
@@ -818,12 +818,12 @@ export default {
           totalEmissionsVol += value
 
           if (category === 'source') {
-            this.pointSummarySources[domain.id] = Data.siCalculation(
+            this.pointSummarySources[domain.id] = Data.siCalculationFromBase(
               this.emissionsVolumePrefix,
               value
             )
           } else if (category === 'load') {
-            this.pointSummaryLoads[domain.id] = Data.siCalculation(
+            this.pointSummaryLoads[domain.id] = Data.siCalculationFromBase(
               this.emissionsVolumePrefix,
               value
             )
@@ -840,7 +840,7 @@ export default {
       }
       this.pointSummarySources._total = totalSources
       this.pointSummaryLoads._total = totalLoads
-      this.pointSummary._totalEmissionsVolume = Data.siCalculation(
+      this.pointSummary._totalEmissionsVolume = Data.siCalculationFromBase(
         this.emissionsVolumePrefix,
         totalEmissionsVol
       )

@@ -30,8 +30,7 @@ const pageEnergyMixin = {
         emissionsMinAll = 0,
         emissionsMaxAll = 0,
         emissionsIntensityMinAll = 0,
-        emissionsIntensityMaxAll = 1200,
-        emissionsVolumeTotal = 0
+        emissionsIntensityMaxAll = 1200
 
       this.dataset.forEach((d, i) => {
         let totalDemand = 0,
@@ -76,7 +75,6 @@ const pageEnergyMixin = {
               id.indexOf('exports') === -1)
           ) {
             totalEmissionsVol += updatedEVValue || 0
-            emissionsVolumeTotal += totalEmissionsVol
             emissionsMax += updatedEVValue || 0
 
             if (updatedEVValue < 0) {
@@ -126,29 +124,29 @@ const pageEnergyMixin = {
         that.$store.dispatch('si/emissionsVolumePrefix', prefix)
         emissionsVolumeDataset.forEach(d => {
           that.emissionStackedAreaDomains.forEach(domain => {
-            d[domain.id] = Data.siCalculation(
+            d[domain.id] = Data.siCalculationFromBase(
               that.emissionsVolumePrefix,
               d[domain.id]
             )
           })
         })
-        emissionsMaxAll = Data.siCalculation(
+        emissionsMaxAll = Data.siCalculationFromBase(
           that.emissionsVolumePrefix,
           emissionsMaxAll
         )
-        emissionsMinAll = Data.siCalculation(
+        emissionsMinAll = Data.siCalculationFromBase(
           that.emissionsVolumePrefix,
           emissionsMinAll
         )
       }
 
-      if (emissionsVolumeTotal >= Math.pow(10, 14)) {
+      if (emissionsMaxAll >= Math.pow(10, 14)) {
         updateEmissionsVolume('T', this)
-      } else if (emissionsVolumeTotal >= Math.pow(10, 11)) {
+      } else if (emissionsMaxAll >= Math.pow(10, 11)) {
         updateEmissionsVolume('G', this)
-      } else if (emissionsVolumeTotal >= Math.pow(10, 8)) {
+      } else if (emissionsMaxAll >= Math.pow(10, 8)) {
         updateEmissionsVolume('M', this)
-      } else if (emissionsVolumeTotal >= Math.pow(10, 5)) {
+      } else if (emissionsMaxAll >= Math.pow(10, 5)) {
         updateEmissionsVolume('k', this)
       } else {
         this.$store.dispatch('si/emissionsVolumePrefix', '')

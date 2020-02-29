@@ -30,7 +30,7 @@ export default {
     return urls
   },
 
-  siCalculation(prefix, currentValue) {
+  siCalculationFromBase(prefix, currentValue) {
     switch (prefix) {
       case 'k':
         return currentValue / Math.pow(10, 3)
@@ -40,6 +40,21 @@ export default {
         return currentValue / Math.pow(10, 9)
       case 'T':
         return currentValue / Math.pow(10, 12)
+      default:
+        return currentValue
+    }
+  },
+
+  siCalculationToBase(prefix, currentValue) {
+    switch (prefix) {
+      case 'k':
+        return currentValue * Math.pow(10, 3)
+      case 'M':
+        return currentValue * Math.pow(10, 6)
+      case 'G':
+        return currentValue * Math.pow(10, 9)
+      case 'T':
+        return currentValue * Math.pow(10, 12)
       default:
         return currentValue
     }
