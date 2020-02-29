@@ -30,21 +30,16 @@ export default {
     return urls
   },
 
-  getNextPrefix(currentPrefix) {
-    switch (currentPrefix) {
-      case '':
-        return 'k'
-      case 'k':
-        return 'M'
-      default:
-        return currentPrefix
-    }
-  },
-
   siCalculation(prefix, currentValue) {
     switch (prefix) {
       case 'k':
-        return currentValue / 1000
+        return currentValue / Math.pow(10, 3)
+      case 'M':
+        return currentValue / Math.pow(10, 6)
+      case 'G':
+        return currentValue / Math.pow(10, 9)
+      case 'T':
+        return currentValue / Math.pow(10, 12)
       default:
         return currentValue
     }

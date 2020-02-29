@@ -1190,7 +1190,10 @@ export default {
     },
     hoverEmissionVolumeValue() {
       return this.hoverOrFocusData
-        ? this.hoverOrFocusData[this.hoverEmissionVolumeDomain]
+        ? Data.siCalculation(
+            this.emissionsVolumePrefix,
+            this.hoverOrFocusData[this.hoverEmissionVolumeDomain]
+          )
         : null
     },
     hoverEmissionVolumeTotal() {
@@ -1209,7 +1212,7 @@ export default {
           }
         })
       }
-      return total
+      return Data.siCalculation(this.emissionsVolumePrefix, total)
     },
     hoverEmissionsIntensity() {
       if (this.hoverOrFocusData) {

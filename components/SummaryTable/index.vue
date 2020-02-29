@@ -185,6 +185,8 @@ import moment from 'moment'
 import _isEmpty from 'lodash.isempty'
 import _cloneDeep from 'lodash.clonedeep'
 import _includes from 'lodash.includes'
+import { mapGetters } from 'vuex'
+import Data from '~/services/Data.js'
 import Domain from '~/services/Domain.js'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
 import ColumnSelector from '~/components/ui/SummaryColumnSelector'
@@ -291,6 +293,11 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      emissionsVolumeUnit: 'si/emissionsVolumeUnit',
+      emissionsVolumePrefix: 'si/emissionsVolumePrefix'
+    }),
+
     fuelTechGroupName() {
       return this.$store.getters.fuelTechGroupName
     },
@@ -636,13 +643,22 @@ export default {
           return emissionsVol
         })
         const evSum = sumMap(ft, dataEVMinusHidden)
-        this.summary[ft.id] = evSum
+        this.summary[ft.id] = Data.siCalculation(
+          this.emissionsVolumePrefix,
+          evSum
+        )
         totalEVMinusHidden += evSum
 
         if (category === 'source') {
-          this.summarySources[ft.id] = evSum
+          this.summarySources[ft.id] = Data.siCalculation(
+            this.emissionsVolumePrefix,
+            evSum
+          )
         } else if (category === 'load') {
-          this.summaryLoads[ft.id] = evSum
+          this.summaryLoads[ft.id] = Data.siCalculation(
+            this.emissionsVolumePrefix,
+            evSum
+          )
         }
       })
 
@@ -735,8 +751,14 @@ export default {
 
       const average = avTotal / data.length
       this.summary._averageEnergy = average
-      this.summary._totalEmissionsVolume = totalEVMinusHidden
-      this.summary._averageEmissionsVolume = totalEVMinusHidden / data.length
+      this.summary._totalEmissionsVolume = Data.siCalculation(
+        this.emissionsVolumePrefix,
+        totalEVMinusHidden
+      )
+      this.summary._averageEmissionsVolume = Data.siCalculation(
+        this.emissionsVolumePrefix,
+        totalEVMinusHidden / data.length
+      )
       this.summary._averageEmissionsIntensity = this.isYearInterval
         ? totalEVMinusHidden / avTotal / 1000
         : totalEVMinusHidden / avTotal
@@ -796,9 +818,15 @@ export default {
           totalEmissionsVol += value
 
           if (category === 'source') {
-            this.pointSummarySources[domain.id] = value
+            this.pointSummarySources[domain.id] = Data.siCalculation(
+              this.emissionsVolumePrefix,
+              value
+            )
           } else if (category === 'load') {
-            this.pointSummaryLoads[domain.id] = value
+            this.pointSummaryLoads[domain.id] = Data.siCalculation(
+              this.emissionsVolumePrefix,
+              value
+            )
           }
         })
       }
@@ -812,7 +840,10 @@ export default {
       }
       this.pointSummarySources._total = totalSources
       this.pointSummaryLoads._total = totalLoads
-      this.pointSummary._totalEmissionsVolume = totalEmissionsVol
+      this.pointSummary._totalEmissionsVolume = Data.siCalculation(
+        this.emissionsVolumePrefix,
+        totalEmissionsVol
+      )
     },
 
     updatePointSummary(date) {

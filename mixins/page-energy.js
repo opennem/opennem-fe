@@ -117,7 +117,6 @@ const pageEnergyMixin = {
 
       // update values
       function updateEmissionsVolume(prefix, that) {
-        // const prefix = Data.getNextPrefix(that.emissionsVolumePrefix)
         that.$store.dispatch('si/emissionsVolumePrefix', prefix)
         emissionsVolumeDataset.forEach(d => {
           that.emissionStackedAreaDomains.forEach(domain => {
@@ -137,12 +136,14 @@ const pageEnergyMixin = {
         )
       }
 
-      if (emissionsMaxAll >= 100000000) {
-        updateEmissionsVolume('M', this)
-      } else if (emissionsMaxAll >= 100000) {
-        updateEmissionsVolume('k', this)
-      } else {
-        this.$store.dispatch('si/emissionsVolumePrefix', '')
+      if (this.emissionsVolumePrefix === '') {
+        if (emissionsMaxAll >= Math.pow(10, 8)) {
+          updateEmissionsVolume('M', this)
+        } else if (emissionsMaxAll >= Math.pow(10, 5)) {
+          updateEmissionsVolume('k', this)
+        } else {
+          this.$store.dispatch('si/emissionsVolumePrefix', '')
+        }
       }
 
       this.energyMin = energyMinAll
