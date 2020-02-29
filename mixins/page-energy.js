@@ -30,7 +30,8 @@ const pageEnergyMixin = {
         emissionsMinAll = 0,
         emissionsMaxAll = 0,
         emissionsIntensityMinAll = 0,
-        emissionsIntensityMaxAll = 1200
+        emissionsIntensityMaxAll = 1200,
+        emissionsVolumeTotal = 0
 
       this.dataset.forEach((d, i) => {
         let totalDemand = 0,
@@ -75,6 +76,7 @@ const pageEnergyMixin = {
               id.indexOf('exports') === -1)
           ) {
             totalEmissionsVol += updatedEVValue || 0
+            emissionsVolumeTotal += totalEmissionsVol
             emissionsMax += updatedEVValue || 0
 
             if (updatedEVValue < 0) {
@@ -140,13 +142,13 @@ const pageEnergyMixin = {
         )
       }
 
-      if (emissionsMaxAll >= Math.pow(10, 14)) {
+      if (emissionsVolumeTotal >= Math.pow(10, 14)) {
         updateEmissionsVolume('T', this)
-      } else if (emissionsMaxAll >= Math.pow(10, 11)) {
+      } else if (emissionsVolumeTotal >= Math.pow(10, 11)) {
         updateEmissionsVolume('G', this)
-      } else if (emissionsMaxAll >= Math.pow(10, 8)) {
+      } else if (emissionsVolumeTotal >= Math.pow(10, 8)) {
         updateEmissionsVolume('M', this)
-      } else if (emissionsMaxAll >= Math.pow(10, 5)) {
+      } else if (emissionsVolumeTotal >= Math.pow(10, 5)) {
         updateEmissionsVolume('k', this)
       } else {
         this.$store.dispatch('si/emissionsVolumePrefix', '')
