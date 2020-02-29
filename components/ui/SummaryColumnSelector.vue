@@ -13,10 +13,10 @@
         Av.Value <small>$/MWh</small>
       </span>
       <span v-if="isEmissionsVolumeColumn">
-        Emissions Volume <small>tCO₂e</small>
+        Volume <small>{{ emissionsVolumeUnit }}</small>
       </span>
       <span v-if="isEmissionsIntensityColumn">
-        Emissions Intensity <small>kgCO₂e/MWh</small>
+        Intensity <small>kgCO₂e/MWh</small>
       </span>
     </div>
     <div
@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
 
 const groups = [
@@ -69,6 +70,9 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      emissionsVolumeUnit: 'si/emissionsVolumeUnit'
+    }),
     showSummaryColumn() {
       return this.$store.getters.showSummaryColumn
     },
