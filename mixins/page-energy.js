@@ -60,10 +60,7 @@ const pageEnergyMixin = {
 
         this.emissionStackedAreaDomains.forEach(domain => {
           const id = domain.id
-          const updatedEVValue = Data.siCalculation(
-            this.emissionsVolumePrefix,
-            d[id]
-          )
+          const updatedEVValue = d[id]
           if (
             !isGeneration ||
             (isGeneration &&
@@ -136,14 +133,16 @@ const pageEnergyMixin = {
         )
       }
 
-      if (this.emissionsVolumePrefix === '') {
-        if (emissionsMaxAll >= Math.pow(10, 8)) {
-          updateEmissionsVolume('M', this)
-        } else if (emissionsMaxAll >= Math.pow(10, 5)) {
-          updateEmissionsVolume('k', this)
-        } else {
-          this.$store.dispatch('si/emissionsVolumePrefix', '')
-        }
+      if (emissionsMaxAll >= Math.pow(10, 14)) {
+        updateEmissionsVolume('T', this)
+      } else if (emissionsMaxAll >= Math.pow(10, 11)) {
+        updateEmissionsVolume('G', this)
+      } else if (emissionsMaxAll >= Math.pow(10, 8)) {
+        updateEmissionsVolume('M', this)
+      } else if (emissionsMaxAll >= Math.pow(10, 5)) {
+        updateEmissionsVolume('k', this)
+      } else {
+        this.$store.dispatch('si/emissionsVolumePrefix', '')
       }
 
       this.energyMin = energyMinAll
