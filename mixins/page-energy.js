@@ -1,3 +1,4 @@
+import { mapGetters } from 'vuex'
 import Data from '~/services/Data.js'
 
 const pageEnergyMixin = {
@@ -12,6 +13,12 @@ const pageEnergyMixin = {
     if (host === 'dev.opennem.org.au') {
       this.$store.dispatch('hostEnv', 'dev')
     }
+  },
+  computed: {
+    ...mapGetters({
+      emissionsVolumeUnit: 'si/emissionsVolumeUnit',
+      emissionsVolumePrefix: 'si/emissionsVolumePrefix'
+    })
   },
   methods: {
     updateYMinMax() {

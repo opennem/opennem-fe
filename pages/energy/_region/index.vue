@@ -628,7 +628,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import moment from 'moment'
 import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import { mouse as d3Mouse } from 'd3-selection'
@@ -755,10 +754,6 @@ export default {
   },
 
   computed: {
-    ...mapGetters({
-      emissionsVolumeUnit: 'si/emissionsVolumeUnit',
-      emissionsVolumePrefix: 'si/emissionsVolumePrefix'
-    }),
     hostEnv() {
       return this.$store.getters.hostEnv
     },
