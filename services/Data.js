@@ -30,6 +30,36 @@ export default {
     return urls
   },
 
+  siPreviousPrefix(prefix) {
+    switch (prefix) {
+      case 'k':
+        return ''
+      case 'M':
+        return 'k'
+      case 'G':
+        return 'M'
+      case 'T':
+        return 'G'
+      default:
+        return ''
+    }
+  },
+
+  siNextPrefix(prefix) {
+    switch (prefix) {
+      case 'k':
+        return 'M'
+      case 'M':
+        return 'G'
+      case 'G':
+        return 'T'
+      case 'T':
+        return ''
+      default:
+        return 'k'
+    }
+  },
+
   siCalculationFromBase(prefix, currentValue) {
     switch (prefix) {
       case 'k':

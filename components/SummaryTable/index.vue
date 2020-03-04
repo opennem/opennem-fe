@@ -470,6 +470,9 @@ export default {
     },
     percentContributionTo(updated) {
       this.calculateSummary(this.dataset)
+    },
+    emissionsVolumePrefix() {
+      this.calculateSummary(this.dataset)
     }
   },
 

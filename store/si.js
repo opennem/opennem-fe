@@ -1,12 +1,14 @@
 export const state = () => ({
   emissionsVolumeUnit: 'tCO₂e',
-  emissionsVolumePrefix: ''
+  emissionsVolumePrefix: '',
+  useEVnextPrefix: false
 })
 
 export const getters = {
   emissionsVolumeUnit: state =>
     `${state.emissionsVolumePrefix}${state.emissionsVolumeUnit}`,
-  emissionsVolumePrefix: state => state.emissionsVolumePrefix
+  emissionsVolumePrefix: state => state.emissionsVolumePrefix,
+  useEVnextPrefix: state => state.useEVnextPrefix
 }
 
 export const actions = {
@@ -15,6 +17,9 @@ export const actions = {
   },
   emissionsVolumePrefix({ commit }, data) {
     commit('emissionsVolumePrefix', data)
+  },
+  useEVnextPrefix({ commit }, data) {
+    commit('useEVnextPrefix', data)
   }
 }
 
@@ -24,5 +29,8 @@ export const mutations = {
   },
   emissionsVolumePrefix(state, data) {
     state.emissionsVolumePrefix = data
+  },
+  useEVnextPrefix(state, data) {
+    state.useEVnextPrefix = data
   }
 }

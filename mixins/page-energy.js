@@ -17,11 +17,12 @@ const pageEnergyMixin = {
   computed: {
     ...mapGetters({
       emissionsVolumeUnit: 'si/emissionsVolumeUnit',
-      emissionsVolumePrefix: 'si/emissionsVolumePrefix'
+      emissionsVolumePrefix: 'si/emissionsVolumePrefix',
+      useEVnextPrefix: 'si/useEVnextPrefix'
     })
   },
   methods: {
-    updateYMinMax() {
+    calculateEnergyEmissionsDatasets() {
       const isGeneration = this.percentContributionTo === 'generation'
       const emissionsIntensityDataset = [],
         emissionsVolumeDataset = []
@@ -30,7 +31,7 @@ const pageEnergyMixin = {
         emissionsMinAll = 0,
         emissionsMaxAll = 0,
         emissionsIntensityMinAll = 0,
-        emissionsIntensityMaxAll = 1200
+        emissionsIntensityMaxAll = 0
 
       this.dataset.forEach((d, i) => {
         let totalDemand = 0,
@@ -119,47 +120,79 @@ const pageEnergyMixin = {
         evDatasetLength - 1
       ]._emissionsIntensity = lastValidEI
 
+      return {
+        emissionsIntensityDataset,
+        emissionsVolumeDataset,
+        energyMinAll,
+        energyMaxAll,
+        emissionsMinAll,
+        emissionsMaxAll,
+        emissionsIntensityMinAll,
+        emissionsIntensityMaxAll
+      }
+    },
+
+    setEnergyEmissionsMinMaxDataset(d) {
+      this.energyMin = d.energyMinAll
+      this.energyMax = d.energyMaxAll
+      this.emissionsMin = d.emissionsMinAll
+      this.emissionsMax = d.emissionsMaxAll
+      this.emissionsIntensityDataset = d.emissionsIntensityDataset
+      this.emissionsIntensityMin = d.emissionsIntensityMinAll
+      this.emissionsIntensityMax = d.emissionsIntensityMaxAll + 100 // add some top padding to the max value for EI chart
+      this.emissionsVolumeDataset = d.emissionsVolumeDataset
+    },
+
+    updateEmissionsVolumeDatasetMinMax(cal) {
+      cal.emissionsVolumeDataset.forEach(d => {
+        this.emissionStackedAreaDomains.forEach(domain => {
+          d[domain.id] = Data.siCalculationFromBase(
+            this.emissionsVolumePrefix,
+            d[domain.id]
+          )
+        })
+      })
+      cal.emissionsMaxAll = Data.siCalculationFromBase(
+        this.emissionsVolumePrefix,
+        cal.emissionsMaxAll
+      )
+      cal.emissionsMinAll = Data.siCalculationFromBase(
+        this.emissionsVolumePrefix,
+        cal.emissionsMinAll
+      )
+    },
+
+    updateYMinMax() {
+      const cal = this.calculateEnergyEmissionsDatasets()
+
       // update values
       function updateEmissionsVolume(prefix, that) {
         that.$store.dispatch('si/emissionsVolumePrefix', prefix)
-        emissionsVolumeDataset.forEach(d => {
-          that.emissionStackedAreaDomains.forEach(domain => {
-            d[domain.id] = Data.siCalculationFromBase(
-              that.emissionsVolumePrefix,
-              d[domain.id]
-            )
-          })
-        })
-        emissionsMaxAll = Data.siCalculationFromBase(
-          that.emissionsVolumePrefix,
-          emissionsMaxAll
-        )
-        emissionsMinAll = Data.siCalculationFromBase(
-          that.emissionsVolumePrefix,
-          emissionsMinAll
-        )
+        that.$store.dispatch('si/useEVnextPrefix', false)
+        that.updateEmissionsVolumeDatasetMinMax(cal)
       }
 
-      if (emissionsMaxAll >= Math.pow(10, 14)) {
+      if (cal.emissionsMaxAll >= Math.pow(10, 14)) {
         updateEmissionsVolume('T', this)
-      } else if (emissionsMaxAll >= Math.pow(10, 11)) {
+      } else if (cal.emissionsMaxAll >= Math.pow(10, 11)) {
         updateEmissionsVolume('G', this)
-      } else if (emissionsMaxAll >= Math.pow(10, 8)) {
+      } else if (cal.emissionsMaxAll >= Math.pow(10, 8)) {
         updateEmissionsVolume('M', this)
-      } else if (emissionsMaxAll >= Math.pow(10, 5)) {
+      } else if (cal.emissionsMaxAll >= Math.pow(10, 5)) {
         updateEmissionsVolume('k', this)
       } else {
         this.$store.dispatch('si/emissionsVolumePrefix', '')
       }
 
-      this.energyMin = energyMinAll
-      this.energyMax = energyMaxAll
-      this.emissionsMin = emissionsMinAll
-      this.emissionsMax = emissionsMaxAll
-      this.emissionsIntensityDataset = emissionsIntensityDataset
-      this.emissionsIntensityMin = emissionsIntensityMinAll
-      this.emissionsIntensityMax = emissionsIntensityMaxAll + 100 // add some top padding to the max value for EI chart
-      this.emissionsVolumeDataset = emissionsVolumeDataset
+      this.setEnergyEmissionsMinMaxDataset(cal)
+    },
+
+    recalculateAfterPrefixChanged() {
+      const cal = this.calculateEnergyEmissionsDatasets()
+
+      // update values
+      this.updateEmissionsVolumeDatasetMinMax(cal)
+      this.setEnergyEmissionsMinMaxDataset(cal)
     }
   }
 }

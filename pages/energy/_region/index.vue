@@ -191,7 +191,7 @@
                 }"
                 class="fal fa-fw" />
               <strong>Emissions Volume</strong>
-              <small>{{ emissionsVolumeUnit }}/{{ interval | intervalLabel }}</small>
+              <small @click.stop="handleChartLabelClick">{{ emissionsVolumeUnit }}/{{ interval | intervalLabel }}</small>
             </div>
             <div
               v-show="chartEmissionsVolume"
@@ -1908,6 +1908,26 @@ export default {
 
     handleSummaryUpdated(summary) {
       this.summary = summary
+    },
+
+    handleChartLabelClick() {
+      const prefix = this.emissionsVolumePrefix
+      const shouldUseNextPrefix = !this.useEVnextPrefix
+      this.$store.dispatch('si/useEVnextPrefix', shouldUseNextPrefix)
+
+      if (shouldUseNextPrefix) {
+        this.$store.dispatch(
+          'si/emissionsVolumePrefix',
+          Data.siNextPrefix(prefix)
+        )
+      } else {
+        this.$store.dispatch(
+          'si/emissionsVolumePrefix',
+          Data.siPreviousPrefix(prefix)
+        )
+      }
+
+      this.recalculateAfterPrefixChanged()
     }
   }
 }
@@ -2030,9 +2050,6 @@ export default {
         }
         .mean-temp-value {
           margin: 0 1rem;
-        }
-        strong {
-          // font-size: 11px;
         }
 
         @include desktop {
