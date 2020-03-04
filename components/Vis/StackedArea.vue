@@ -674,6 +674,12 @@ export default {
       this.y.domain([yMin, yMax]).nice()
       this.z.range(this.domainColours).domain(this.domainIds)
 
+      this.yAxis.tickFormat(d => {
+        return yMax <= 10
+          ? d3Format(',.2f')(d)
+          : d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d)
+      })
+
       this.$xAxisGroup.call(this.customXAxis)
       this.$yAxisGroup.call(this.customYAxis)
       this.$yAxisTickGroup.call(this.customYAxis)
