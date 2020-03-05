@@ -106,7 +106,9 @@ Vue.filter('percentageFormatNumber2', value => {
 Vue.filter('formatCurrency', value => {
   const f = d3Format('$,.2f')
   const fValue = f(value)
-  return isFinite(value) && !isNaN(value) && value !== null ? fValue : '–'
+  return isFinite(value) && !isNaN(value) && value !== null && value !== ''
+    ? fValue
+    : '–'
 })
 
 Vue.filter('toLowerCase', string => {
