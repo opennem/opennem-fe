@@ -240,11 +240,23 @@ function mutateDataForInterpolation(data, interpolateSeriesTypes) {
   })
 }
 
-function addEmptyDataPoint(time, dataset) {
+function getNextDatetime(interval, datetime) {
+  switch (interval) {
+    case 'Month':
+      return moment(datetime)
+        .add(1, 'month')
+        .valueOf()
+    default:
+      return datetime + millisecondsByInterval[interval]
+  }
+}
+
+function addEmptyDataPoint(interval, dataset) {
   const emptyDataPoint = _cloneDeep(dataset[dataset.length - 1])
+  const time = getNextDatetime(interval, emptyDataPoint.date)
   Object.keys(emptyDataPoint).forEach(key => {
     if (key === 'date') {
-      emptyDataPoint[key] = emptyDataPoint[key] + time
+      emptyDataPoint[key] = time
     } else {
       if (
         _includes(key, 'temperature') ||
@@ -432,9 +444,7 @@ export default {
           )
           // add an empty datapoint, so the stacked step will have something to render
           if (range !== '1D' && range !== '3D' && range !== '7D') {
-            dataset.push(
-              addEmptyDataPoint(millisecondsByInterval[interval], dataset)
-            )
+            dataset.push(addEmptyDataPoint(interval, dataset))
           }
 
           resolve(dataset)

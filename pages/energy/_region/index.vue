@@ -1061,15 +1061,24 @@ export default {
 
       if (this.range === '1Y' && this.interval === 'Month') {
         const incompletes = []
-        if (aSD > dStart) {
+        aLD = moment(aLD)
+        const mDEnd = moment(dEnd).subtract(1, 'day')
+        if (moment(aSD).valueOf() > moment(dStart).valueOf()) {
           incompletes.push({
             start: dStart,
-            end: dStart + 2629800000
+            end: moment(dStart)
+              .add(1, 'month')
+              .valueOf()
           })
         }
-        if (aLD < dEnd) {
+        if (aLD.valueOf() < mDEnd.valueOf()) {
+          const incompleteStart = moment({
+            year: mDEnd.year(),
+            month: mDEnd.month(),
+            date: 1
+          })
           incompletes.push({
-            start: dEnd - 2629800000,
+            start: incompleteStart.valueOf(),
             end: dEnd
           })
         }
