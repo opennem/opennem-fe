@@ -182,16 +182,18 @@
           class="chart">
           <div
             class="chart-title"
-            @click="toggleChart('chartEmissionsVolume')">
+            @click="handleChartLabelClick">
             <div class="chart-label">
-              <i
-                :class="{
-                  'fa-caret-down': chartEmissionsVolume,
-                  'fa-caret-right': !chartEmissionsVolume
-                }"
-                class="fal fa-fw" />
-              <strong>Emissions Volume</strong>
-              <small @click.stop="handleChartLabelClick">{{ emissionsVolumeUnit }}/{{ interval | intervalLabel }}</small>
+              <span @click.stop="toggleChart('chartEmissionsVolume')">
+                <i
+                  :class="{
+                    'fa-caret-down': chartEmissionsVolume,
+                    'fa-caret-right': !chartEmissionsVolume
+                  }"
+                  class="fal fa-fw" />
+                <strong>Emissions Volume</strong>
+              </span>
+              <small>{{ emissionsVolumeUnit }}/{{ interval | intervalLabel }}</small>
             </div>
             <div
               v-show="chartEmissionsVolume"
