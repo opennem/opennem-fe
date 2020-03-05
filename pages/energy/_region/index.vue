@@ -954,7 +954,7 @@ export default {
     },
 
     incompleteIntervals() {
-      function getStartMonth(month) {
+      function getSeasonStartMonth(month) {
         switch (month) {
           case 11:
           case 0:
@@ -981,6 +981,33 @@ export default {
         return null
       }
 
+      function getQuarterStartMonth(month) {
+        switch (month) {
+          case 0:
+          case 1:
+          case 2:
+            return 0
+
+          case 3:
+          case 4:
+          case 5:
+            return 3
+
+          case 6:
+          case 7:
+          case 8:
+            return 6
+
+          case 9:
+          case 10:
+          case 11:
+            return 9
+
+          default:
+        }
+        return null
+      }
+
       function getSeasonLabel(month) {
         switch (month) {
           case 2:
@@ -994,7 +1021,21 @@ export default {
         }
       }
 
+      function getQuarterLabel(month) {
+        switch (month) {
+          case 0:
+            return 'Q1'
+          case 3:
+            return 'Q2'
+          case 6:
+            return 'Q3'
+          case 9:
+            return 'Q4'
+        }
+      }
+
       let dStart = this.dataset[0].date
+      let dStartMoment = moment(dStart)
       const dEnd = this.dataset[this.dataset.length - 1].date
       const actualStartDate = this.dataset[0]._actualStartDate
       const aSD = new Date(actualStartDate).setHours(0)
@@ -1040,39 +1081,55 @@ export default {
         const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
         if (!isFilter) {
           aLD = moment(aLD).add(1, 'month')
-          if (aSD > dStart) {
+          if (moment(aSD).month() > moment(dStart).month()) {
             incompletes.push({
               start: dStart,
-              end: dStart + 7889400000
+              end: moment(dStart)
+                .add(3, 'month')
+                .valueOf()
             })
           }
-          if (aLD.valueOf() < dEnd) {
+          if (aLD.month() < moment(dEnd).month()) {
             incompletes.push({
-              start: dEnd - 7889400000,
+              start: moment(dEnd)
+                .subtract(3, 'month')
+                .valueOf(),
               end: dEnd
             })
           }
         } else {
           aLD = moment(aLD).add(1, 'year')
-          const actualStartMonth = getStartMonth(new Date(aSD).getMonth())
-          const actualStartSeason = getSeasonLabel(actualStartMonth)
+          const isSeason = this.interval === 'Season'
+          const actualStartMonth = isSeason
+            ? getSeasonStartMonth(new Date(aSD).getMonth())
+            : getQuarterStartMonth(new Date(aSD).getMonth())
+          const actualStartLabel = isSeason
+            ? getSeasonLabel(actualStartMonth)
+            : getQuarterLabel(actualStartMonth)
+          const actualEndMonth = isSeason
+            ? getSeasonStartMonth(new Date(aLD).getMonth())
+            : getQuarterStartMonth(new Date(aLD).getMonth())
+          const actualEndLabel = isSeason
+            ? getSeasonLabel(actualEndMonth)
+            : getQuarterLabel(actualEndMonth)
 
-          const actualEndMonth = getStartMonth(new Date(aLD).getMonth())
-          const actualEndSeason = getSeasonLabel(actualEndMonth)
-
-          if (actualStartSeason === this.filterPeriod) {
-            if (aSD > dStart) {
+          if (actualStartLabel === this.filterPeriod) {
+            if (moment(aSD).month() > moment(dStart).month()) {
               incompletes.push({
                 start: dStart,
-                end: dStart + 31557600000
+                end: moment(dStart)
+                  .add(1, 'year')
+                  .valueOf()
               })
             }
           }
-          if (actualEndSeason === this.filterPeriod) {
-            const newDEnd = moment(dEnd).add(3, 'month')
-            if (aLD.valueOf() < newDEnd.valueOf()) {
+          if (actualEndLabel === this.filterPeriod) {
+            const newDEnd = moment(dEnd).add(2, 'month')
+            if (aLD.month() < newDEnd.month()) {
               incompletes.push({
-                start: dEnd - 31557600000,
+                start: moment(dEnd)
+                  .subtract(1, 'year')
+                  .valueOf(),
                 end: dEnd
               })
             }
