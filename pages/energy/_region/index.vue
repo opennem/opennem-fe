@@ -1613,8 +1613,8 @@ export default {
       this.originalDataset = updated
 
       this.updatedFilteredDataset(updated)
-      this.updateYMinMax()
       this.updateDataset(this.filterPeriod)
+      this.updateYMinMax()
       this.ready = true
     },
 
