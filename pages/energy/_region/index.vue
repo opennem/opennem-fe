@@ -247,6 +247,7 @@
             :zoomed="zoomed"
             :x-guides="xGuides"
             :incomplete-intervals="incompleteIntervals"
+            :y-axis-ticks="5"
             class="emissions-volume-vis vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"

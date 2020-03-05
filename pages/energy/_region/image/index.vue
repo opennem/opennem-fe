@@ -78,6 +78,7 @@
               :x-guides="xGuides"
               :y-min="emissionsMin"
               :y-max="emissionsMax"
+              :y-axis-ticks="5"
               class="emissions-volume-vis vis-chart"
             />
           </div>
