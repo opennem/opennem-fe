@@ -1188,7 +1188,14 @@ export default {
           tickLength = timeDay.every(1)
         }
         if (this.range === '1Y') {
-          if (this.interval === 'Week') {
+          if (this.interval === 'Day') {
+            const zoomDates = this.x.domain()
+            if (zoomDates[1].getTime() - zoomDates[0].getTime() < 2592000000) {
+              tickLength = timeDay.every(1)
+            } else {
+              tickLength = 7
+            }
+          } else if (this.interval === 'Week') {
             tickLength = 7
           } else if (this.interval === 'Month') {
             tickLength = timeMonth.every(1)
