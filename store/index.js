@@ -342,6 +342,7 @@ export const actions = {
     commit('showSummaryColumn', data)
   },
   featureEmissions({ commit }, data) {
+    commit('showSummaryColumn', 'av-value')
     commit('featureEmissions', data)
   },
   filterPeriod({ commit }, data) {
