@@ -520,6 +520,8 @@ export default {
       dataset[i]._totalGeneration = totalGeneration
       dataset[i]._totalSourcesRenewables =
         (totalRenewables / totalSources) * 100
+      dataset[i]._totalGenerationRenewables =
+        (totalRenewables / totalGeneration) * 100
       dataset[i]._min = min
       dataset[i]._totalEmissionsVol = totalEmissionsVol
       const emissionsIntensity =
