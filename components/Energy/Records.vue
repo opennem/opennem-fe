@@ -246,11 +246,11 @@ export default {
           maxDemandRenewables = d._totalDemandRenewables
           maxDemandRenewablesDate = d.date
 
-          maxGeneration = d._totalSources
+          maxGeneration = d._totalGeneration
           maxGenerationDate = d.date
-          minGenerationRenewables = d._totalSourcesRenewables
+          minGenerationRenewables = d._totalGenerationRenewables
           minGenerationRenewablesDate = d.date
-          maxGenerationRenewables = d._totalSourcesRenewables
+          maxGenerationRenewables = d._totalGenerationRenewables
           maxGenerationRenewablesDate = d.date
 
           if (this.priceId) {
@@ -298,37 +298,37 @@ export default {
 
         if (
           !minGenerationDate &&
-          d._totalSources !== null &&
-          d._totalSources !== 0
+          d._totalGeneration !== null &&
+          d._totalGeneration !== 0
         ) {
-          minGeneration = d._totalSources
+          minGeneration = d._totalGeneration
           minGenerationDate = d.date
         }
         if (
-          d._totalSources !== null &&
-          d._totalSources !== 0 &&
-          d._totalSources < minGeneration
+          d._totalGeneration !== null &&
+          d._totalGeneration !== 0 &&
+          d._totalGeneration < minGeneration
         ) {
-          minGeneration = d._totalSources
+          minGeneration = d._totalGeneration
           minGenerationDate = d.date
         }
-        if (d._totalSources !== null && d._totalSources > maxGeneration) {
-          maxGeneration = d._totalSources
+        if (d._totalGeneration !== null && d._totalGeneration > maxGeneration) {
+          maxGeneration = d._totalGeneration
           maxGenerationDate = d.date
         }
 
         if (
-          d._totalSourcesRenewables !== null &&
-          d._totalSourcesRenewables < minGenerationRenewables
+          d._totalGenerationRenewables !== null &&
+          d._totalGenerationRenewables < minGenerationRenewables
         ) {
-          minGenerationRenewables = d._totalSourcesRenewables
+          minGenerationRenewables = d._totalGenerationRenewables
           minGenerationRenewablesDate = d.date
         }
         if (
-          d._totalSourcesRenewables !== null &&
-          d._totalSourcesRenewables > maxGenerationRenewables
+          d._totalGenerationRenewables !== null &&
+          d._totalGenerationRenewables > maxGenerationRenewables
         ) {
-          maxGenerationRenewables = d._totalSourcesRenewables
+          maxGenerationRenewables = d._totalGenerationRenewables
           maxGenerationRenewablesDate = d.date
         }
 

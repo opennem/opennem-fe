@@ -50,8 +50,22 @@
         </span>
       </div>
 
-      <div class="summary-col-contribution">
+      <div
+        v-show="isAvValueColumn"
+        class="summary-col-av-value">
         {{ getAverageValue(index) | formatCurrency }}
+      </div>
+
+      <div
+        v-show="isEmissionsVolumeColumn"
+        class="summary-col-ev">
+        {{ getEmissionsVolume(ft) | formatValue }}
+      </div>
+
+      <div
+        v-show="isEmissionsIntensityColumn"
+        class="summary-col-ev">
+        {{ getEmissionsIntensity(ft) | formatValue }}
       </div>
     </div>
   </div>
@@ -59,11 +73,13 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import _isEmpty from 'lodash.isempty'
 import _includes from 'lodash.includes'
 import _remove from 'lodash.remove'
 import _cloneDeep from 'lodash.clonedeep'
 // import Draggable from 'vuedraggable'
+import Data from '~/services/Data.js'
 
 export default {
   // components: {
@@ -72,6 +88,10 @@ export default {
 
   props: {
     energyDomains: {
+      type: Array,
+      default: () => []
+    },
+    emissionsDomains: {
       type: Array,
       default: () => []
     },
@@ -132,14 +152,24 @@ export default {
   },
 
   computed: {
-    // order: {
-    //   get() {
-    //     return this.originalOrder
-    //   },
-    //   set(newOrder) {
-    //     this.$emit('update', newOrder)
-    //   }
-    // },
+    ...mapGetters({
+      emissionsVolumePrefix: 'si/emissionsVolumePrefix'
+    }),
+    showSummaryColumn() {
+      return this.$store.getters.showSummaryColumn
+    },
+
+    isAvValueColumn() {
+      return this.showSummaryColumn === 'av-value'
+    },
+
+    isEmissionsVolumeColumn() {
+      return this.showSummaryColumn === 'emissions-volume'
+    },
+
+    isEmissionsIntensityColumn() {
+      return this.showSummaryColumn === 'emissions-intensity'
+    },
 
     hasPointSummary() {
       return !_isEmpty(this.pointSummary)
@@ -248,6 +278,41 @@ export default {
       return this.showPointSummary
         ? this.pointSummary[id] || ''
         : this.summary[id] || ''
+    },
+
+    getEmissionsVolume(ft) {
+      const ftGroup = ft.id.substring(0, ft.id.lastIndexOf('.'))
+      const emissionId = `${ftGroup}.emissions`
+      const emissionObj = this.emissionsDomains.find(d => d.id === emissionId)
+      if (emissionObj) {
+        return this.showPointSummary
+          ? this.pointSummary[emissionObj.id] || ''
+          : this.summary[emissionObj.id] || ''
+      }
+      return '-'
+    },
+
+    getEmissionsIntensity(ft) {
+      const ftGroup = ft.id.substring(0, ft.id.lastIndexOf('.'))
+      const emissionId = `${ftGroup}.emissions`
+      const energy = this.showPointSummary
+        ? this.pointSummary[ft.id] || null
+        : this.summary[ft.id] || null
+      const emissionObj = this.emissionsDomains.find(d => d.id === emissionId)
+
+      if (energy && emissionObj) {
+        let emissionsVolume = this.showPointSummary
+          ? this.pointSummary[emissionObj.id] || ''
+          : this.summary[emissionObj.id] || ''
+        emissionsVolume = Data.siCalculationToBase(
+          this.emissionsVolumePrefix,
+          emissionsVolume
+        )
+        return this.isYearInterval
+          ? emissionsVolume / energy / 1000
+          : emissionsVolume / energy
+      }
+      return '-'
     }
   }
 }

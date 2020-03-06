@@ -1,12 +1,7 @@
+import { mapGetters } from 'vuex'
+import Data from '~/services/Data.js'
+
 const pageEnergyMixin = {
-  filters: {
-    intervalLabel(interval) {
-      if (interval === 'Fin Year') {
-        return 'year'
-      }
-      return interval.toLowerCase()
-    }
-  },
   created() {
     const host = window.location.host
     if (host === 'localhost:3000') {
@@ -19,8 +14,15 @@ const pageEnergyMixin = {
       this.$store.dispatch('hostEnv', 'dev')
     }
   },
+  computed: {
+    ...mapGetters({
+      emissionsVolumeUnit: 'si/emissionsVolumeUnit',
+      emissionsVolumePrefix: 'si/emissionsVolumePrefix',
+      useEVnextPrefix: 'si/useEVnextPrefix'
+    })
+  },
   methods: {
-    updateYMinMax() {
+    calculateEnergyEmissionsDatasets() {
       const isGeneration = this.percentContributionTo === 'generation'
       const emissionsIntensityDataset = [],
         emissionsVolumeDataset = []
@@ -29,7 +31,7 @@ const pageEnergyMixin = {
         emissionsMinAll = 0,
         emissionsMaxAll = 0,
         emissionsIntensityMinAll = 0,
-        emissionsIntensityMaxAll = 1200
+        emissionsIntensityMaxAll = 0
 
       this.dataset.forEach((d, i) => {
         let totalDemand = 0,
@@ -66,21 +68,21 @@ const pageEnergyMixin = {
 
         this.emissionStackedAreaDomains.forEach(domain => {
           const id = domain.id
-
+          const updatedEVValue = d[id]
           if (
             !isGeneration ||
             (isGeneration &&
-              domain.fuelTech !== 'imports' &&
-              domain.fuelTech !== 'exports')
+              id.indexOf('imports') === -1 &&
+              id.indexOf('exports') === -1)
           ) {
-            totalEmissionsVol += d[id] || 0
-            emissionsMax += d[id] || 0
+            totalEmissionsVol += updatedEVValue || 0
+            emissionsMax += updatedEVValue || 0
 
-            if (d[id] < 0) {
-              emissionsMin += d[id] || 0
+            if (updatedEVValue < 0) {
+              emissionsMin += updatedEVValue || 0
             }
 
-            emissionsVolumeDataset[lastEVIndex][id] = d[id]
+            emissionsVolumeDataset[lastEVIndex][id] = updatedEVValue
           }
         })
 
@@ -118,14 +120,79 @@ const pageEnergyMixin = {
         evDatasetLength - 1
       ]._emissionsIntensity = lastValidEI
 
-      this.energyMin = energyMinAll
-      this.energyMax = energyMaxAll
-      this.emissionsMin = emissionsMinAll
-      this.emissionsMax = emissionsMaxAll
-      this.emissionsIntensityDataset = emissionsIntensityDataset
-      this.emissionsIntensityMin = emissionsIntensityMinAll
-      this.emissionsIntensityMax = emissionsIntensityMaxAll
-      this.emissionsVolumeDataset = emissionsVolumeDataset
+      return {
+        emissionsIntensityDataset,
+        emissionsVolumeDataset,
+        energyMinAll,
+        energyMaxAll,
+        emissionsMinAll,
+        emissionsMaxAll,
+        emissionsIntensityMinAll,
+        emissionsIntensityMaxAll
+      }
+    },
+
+    setEnergyEmissionsMinMaxDataset(d) {
+      this.energyMin = d.energyMinAll
+      this.energyMax = d.energyMaxAll
+      this.emissionsMin = d.emissionsMinAll
+      this.emissionsMax = d.emissionsMaxAll
+      this.emissionsIntensityDataset = d.emissionsIntensityDataset
+      this.emissionsIntensityMin = d.emissionsIntensityMinAll
+      this.emissionsIntensityMax = d.emissionsIntensityMaxAll + 100 // add some top padding to the max value for EI chart
+      this.emissionsVolumeDataset = d.emissionsVolumeDataset
+    },
+
+    updateEmissionsVolumeDatasetMinMax(cal) {
+      cal.emissionsVolumeDataset.forEach(d => {
+        this.emissionStackedAreaDomains.forEach(domain => {
+          d[domain.id] = Data.siCalculationFromBase(
+            this.emissionsVolumePrefix,
+            d[domain.id]
+          )
+        })
+      })
+      cal.emissionsMaxAll = Data.siCalculationFromBase(
+        this.emissionsVolumePrefix,
+        cal.emissionsMaxAll
+      )
+      cal.emissionsMinAll = Data.siCalculationFromBase(
+        this.emissionsVolumePrefix,
+        cal.emissionsMinAll
+      )
+    },
+
+    updateYMinMax() {
+      const cal = this.calculateEnergyEmissionsDatasets()
+
+      // update values
+      function updateEmissionsVolume(prefix, that) {
+        that.$store.dispatch('si/emissionsVolumePrefix', prefix)
+        that.$store.dispatch('si/useEVnextPrefix', false)
+        that.updateEmissionsVolumeDatasetMinMax(cal)
+      }
+
+      if (cal.emissionsMaxAll >= Math.pow(10, 14)) {
+        updateEmissionsVolume('T', this)
+      } else if (cal.emissionsMaxAll >= Math.pow(10, 11)) {
+        updateEmissionsVolume('G', this)
+      } else if (cal.emissionsMaxAll >= Math.pow(10, 8)) {
+        updateEmissionsVolume('M', this)
+      } else if (cal.emissionsMaxAll >= Math.pow(10, 5)) {
+        updateEmissionsVolume('k', this)
+      } else {
+        this.$store.dispatch('si/emissionsVolumePrefix', '')
+      }
+
+      this.setEnergyEmissionsMinMaxDataset(cal)
+    },
+
+    recalculateAfterPrefixChanged() {
+      const cal = this.calculateEnergyEmissionsDatasets()
+
+      // update values
+      this.updateEmissionsVolumeDatasetMinMax(cal)
+      this.setEnergyEmissionsMinMaxDataset(cal)
     }
   }
 }

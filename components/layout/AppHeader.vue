@@ -144,6 +144,9 @@ export default {
     energyDomains() {
       return this.$store.getters.energyDomains
     },
+    emissionDomains() {
+      return this.$store.getters.emissionDomains
+    },
     priceDomains() {
       return this.$store.getters.priceDomains
     },
@@ -188,6 +191,10 @@ export default {
           }
           obj[`${label} - C`] = format(d[domain.id])
         })
+        this.emissionDomains.forEach(domain => {
+          obj[`${domain.label} Emissions Vol - tCO₂e`] = format(d[domain.id])
+        })
+        obj['Emissions Intensity - kgCO₂e/MWh'] = format(d._emissionsIntensity)
         if (this.priceDomains.length > 0) {
           const priceDomain = this.priceDomains[0]
           const label =

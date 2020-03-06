@@ -24,6 +24,7 @@ export const state = () => ({
   fuelTechOrder: cloneDeep(FUEL_TECHS.DEFAULT_FUEL_TECH_ORDER),
   hiddenFuelTechs: [],
   energyDomains: [],
+  emissionDomains: [],
   priceDomains: [],
   temperatureDomains: [],
   marketValueDomains: [],
@@ -33,6 +34,7 @@ export const state = () => ({
   exportData: [],
   facilityExportData: [],
   responsiveBreakWidth: 769,
+  chartEnergy: true,
   chartEmissionsVolume: true,
   chartEmissionsIntensity: true,
   chartPrice: true,
@@ -40,6 +42,7 @@ export const state = () => ({
   chartSummaryPie: true,
   exportAttribution: '@name',
   percentContributionTo: 'demand', // or generation
+  showSummaryColumn: 'av-value', // or emissions-volume or emissions-intensity
   featureEmissions,
   filterPeriod: null,
   compareDifference: false,
@@ -76,6 +79,9 @@ export const mutations = {
   energyDomains(state, data) {
     state.energyDomains = data
   },
+  emissionDomains(state, data) {
+    state.emissionDomains = data
+  },
   priceDomains(state, data) {
     state.priceDomains = data
   },
@@ -103,6 +109,9 @@ export const mutations = {
   responsiveBreakWidth(state, data) {
     state.responsiveBreakWidth = data
   },
+  chartEnergy(state, data) {
+    state.chartEnergy = data
+  },
   chartEmissionsVolume(state, data) {
     state.chartEmissionsVolume = data
   },
@@ -123,6 +132,9 @@ export const mutations = {
   },
   percentContributionTo(state, data) {
     state.percentContributionTo = data
+  },
+  showSummaryColumn(state, data) {
+    state.showSummaryColumn = data
   },
   featureEmissions(state, data) {
     lsSet(MutationTypes.FEATURE_TOGGLE_EMISSIONS, data)
@@ -176,6 +188,7 @@ export const getters = {
   fuelTechOrder: state => state.fuelTechOrder,
   hiddenFuelTechs: state => state.hiddenFuelTechs,
   energyDomains: state => state.energyDomains,
+  emissionDomains: state => state.emissionDomains,
   priceDomains: state => state.priceDomains,
   temperatureDomains: state => state.temperatureDomains,
   marketValueDomains: state => state.marketValueDomains,
@@ -228,6 +241,7 @@ export const getters = {
   exportData: state => state.exportData,
   facilityExportData: state => state.facilityExportData,
   responsiveBreakWidth: state => state.responsiveBreakWidth,
+  chartEnergy: state => state.chartEnergy,
   chartEmissionsVolume: state => state.chartEmissionsVolume,
   chartEmissionsIntensity: state => state.chartEmissionsIntensity,
   chartPrice: state => state.chartPrice,
@@ -235,6 +249,7 @@ export const getters = {
   chartSummaryPie: state => state.chartSummaryPie,
   exportAttribution: state => state.exportAttribution,
   percentContributionTo: state => state.percentContributionTo,
+  showSummaryColumn: state => state.showSummaryColumn,
   featureEmissions: state => state.featureEmissions,
   filterPeriod: state => state.filterPeriod,
   compareDifference: state => state.compareDifference,
@@ -269,6 +284,9 @@ export const actions = {
   energyDomains({ commit }, data) {
     commit('energyDomains', data)
   },
+  emissionDomains({ commit }, data) {
+    commit('emissionDomains', data)
+  },
   priceDomains({ commit }, data) {
     commit('priceDomains', data)
   },
@@ -296,6 +314,9 @@ export const actions = {
   responsiveBreakWidth({ commit }, data) {
     commit('responsiveBreakWidth', data)
   },
+  chartEnergy({ commit }, data) {
+    commit('chartEnergy', data)
+  },
   chartEmissionsVolume({ commit }, data) {
     commit('chartEmissionsVolume', data)
   },
@@ -317,7 +338,11 @@ export const actions = {
   percentContributionTo({ commit }, data) {
     commit('percentContributionTo', data)
   },
+  showSummaryColumn({ commit }, data) {
+    commit('showSummaryColumn', data)
+  },
   featureEmissions({ commit }, data) {
+    commit('showSummaryColumn', 'av-value')
     commit('featureEmissions', data)
   },
   filterPeriod({ commit }, data) {

@@ -240,11 +240,23 @@ function mutateDataForInterpolation(data, interpolateSeriesTypes) {
   })
 }
 
-function addEmptyDataPoint(time, dataset) {
+function getNextDatetime(interval, datetime) {
+  switch (interval) {
+    case 'Month':
+      return moment(datetime)
+        .add(1, 'month')
+        .valueOf()
+    default:
+      return datetime + millisecondsByInterval[interval]
+  }
+}
+
+function addEmptyDataPoint(interval, dataset) {
   const emptyDataPoint = _cloneDeep(dataset[dataset.length - 1])
+  const time = getNextDatetime(interval, emptyDataPoint.date)
   Object.keys(emptyDataPoint).forEach(key => {
     if (key === 'date') {
-      emptyDataPoint[key] = emptyDataPoint[key] + time
+      emptyDataPoint[key] = time
     } else {
       if (
         _includes(key, 'temperature') ||
@@ -366,12 +378,16 @@ export default {
             roundedEndDate
           )
         } else if (range === '30D') {
+          let lastDateTime = new Date().getTime()
           if (lastDate) {
             // if has valid FT last date, use that to filter the data.
             // Because there could be non-FT last dates that are into the future
-            const lastDateTime = moment(lastDate).valueOf()
-            data = data.filter(d => d.date <= lastDateTime)
+            lastDateTime = moment(lastDate).valueOf()
           }
+          const thirtyDaysAgo = lastDateTime - 2592000000
+          data = data.filter(
+            d => d.date > thirtyDaysAgo && d.date <= lastDateTime
+          )
         } else if (range === '1Y') {
           // filter 1Y because it could be a combination of two 1Y datasets
           const now = new Date().getTime()
@@ -428,9 +444,7 @@ export default {
           )
           // add an empty datapoint, so the stacked step will have something to render
           if (range !== '1D' && range !== '3D' && range !== '7D') {
-            dataset.push(
-              addEmptyDataPoint(millisecondsByInterval[interval], dataset)
-            )
+            dataset.push(addEmptyDataPoint(interval, dataset))
           }
 
           resolve(dataset)
@@ -506,9 +520,15 @@ export default {
       dataset[i]._totalGeneration = totalGeneration
       dataset[i]._totalSourcesRenewables =
         (totalRenewables / totalSources) * 100
+      dataset[i]._totalGenerationRenewables =
+        (totalRenewables / totalGeneration) * 100
       dataset[i]._min = min
       dataset[i]._totalEmissionsVol = totalEmissionsVol
-      dataset[i]._emissionsIntensity = totalEmissionsVol / totalDemand || 0
+      const emissionsIntensity =
+        interval === 'Year' || interval === 'Fin Year'
+          ? totalEmissionsVol / totalDemand / 1000
+          : totalEmissionsVol / totalDemand
+      dataset[i]._emissionsIntensity = emissionsIntensity || 0
       dataset[i]._actualLastDate = actualLastDate
       dataset[i]._actualStartDate = actualStartDate
       dataset[i]._totalMarketValue = totalMarketValue

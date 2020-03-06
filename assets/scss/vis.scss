@@ -39,8 +39,8 @@ path.line-path {
 .focus-group {
   .focus-rect {
     fill: rgba(199, 69, 35, 0.2);
-    stroke: rgba(199, 69, 35, 0.5);
-    stroke-width: 0.5;
+    // stroke: rgba(199, 69, 35, 0.5);
+    // stroke-width: 0.5;
   }
   .focus-line {
     stroke: $opennem-link-color;

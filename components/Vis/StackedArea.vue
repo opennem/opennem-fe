@@ -230,6 +230,10 @@ export default {
     mobileScreen: {
       type: Boolean,
       default: () => false
+    },
+    yAxisTicks: {
+      type: Number,
+      default: () => 10
     }
   },
 
@@ -475,6 +479,7 @@ export default {
         .tickFormat((d, i) => this.timeFormats(d, i === 0))
       this.yAxis = axisRight(this.y)
         .tickSize(this.width)
+        .ticks(this.yAxisTicks)
         .tickFormat(d => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
 
       // Setup the 'brush' area and event handler
@@ -673,6 +678,12 @@ export default {
       this.x.domain(xDomainExtent)
       this.y.domain([yMin, yMax]).nice()
       this.z.range(this.domainColours).domain(this.domainIds)
+
+      if (yMax <= 10) {
+        this.yAxis.tickFormat(d => d3Format(',.1f')(d))
+      } else {
+        this.yAxis.tickFormat(d => d3Format(',.0f')(d))
+      }
 
       this.$xAxisGroup.call(this.customXAxis)
       this.$yAxisGroup.call(this.customYAxis)
@@ -1177,7 +1188,14 @@ export default {
           tickLength = timeDay.every(1)
         }
         if (this.range === '1Y') {
-          if (this.interval === 'Week') {
+          if (this.interval === 'Day') {
+            const zoomDates = this.x.domain()
+            if (zoomDates[1].getTime() - zoomDates[0].getTime() < 2592000000) {
+              tickLength = timeDay.every(1)
+            } else {
+              tickLength = 7
+            }
+          } else if (this.interval === 'Week') {
             tickLength = 7
           } else if (this.interval === 'Month') {
             tickLength = timeMonth.every(1)

@@ -137,6 +137,7 @@ export default {
     handleRangeChange(range) {
       this.$store.dispatch('filterPeriod', null)
       this.$emit('onRangeChange', range)
+      this.$store.dispatch('si/emissionsVolumePrefix', '')
     },
     handleIntervalChange(interval) {
       const hasFilter = this.hasFilter(interval)
@@ -150,8 +151,8 @@ export default {
       } else {
         this.showSeasonFilter = false
         this.showQuarterFilter = false
-        const filterPeriod = hasFilter ? 'All' : null
-        this.$store.dispatch('filterPeriod', filterPeriod)
+        this.$store.dispatch('filterPeriod', 'All')
+        this.$store.dispatch('si/emissionsVolumePrefix', '')
         this.$emit('onIntervalChange', interval)
       }
     },
