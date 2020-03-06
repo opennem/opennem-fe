@@ -33,7 +33,7 @@
               v-if="step"
               class="chart-title">
               <strong>Energy</strong>
-              <small>GWh/{{ interval | toLowerCase }}</small>
+              <small>GWh/{{ interval | intervalLabel }}</small>
             </div>
             <div
               v-else
@@ -63,11 +63,11 @@
             class="chart">
             <div class="chart-title">
               <strong>Emissions Volume</strong>
-              <small>tCO₂e</small>
+              <small>{{ emissionsVolumeUnit }}</small>
             </div>
             <stacked-area-vis
               :domains="emissionStackedAreaDomains"
-              :dataset="dataset"
+              :dataset="emissionsVolumeDataset"
               :dynamic-extent="dateFilter"
               :range="range"
               :interval="interval"
@@ -75,9 +75,10 @@
               :vis-height="200"
               :show-x-axis="false"
               :show-zoom-out="false"
-              :y-min="0"
-              :y-max="emissionsMax"
               :x-guides="xGuides"
+              :y-min="emissionsMin"
+              :y-max="emissionsMax"
+              :y-axis-ticks="5"
               class="emissions-volume-vis vis-chart"
             />
           </div>
@@ -92,14 +93,16 @@
             <line-vis
               :domain-id="'_emissionsIntensity'"
               :domain-colour="lineColour"
-              :dataset="dataset"
+              :dataset="emissionsIntensityDataset"
               :dynamic-extent="dateFilter"
               :range="range"
               :interval="interval"
               :show-x-axis="false"
               :vis-height="80"
-              :y-min="0"
-              :curve="'smooth'"
+              :y-max="emissionsIntensityMax"
+              :y-min="emissionsIntensityMin"
+              :curve="'step'"
+              :connect-zero="true"
               :show-zoom-out="false"
               :x-guides="xGuides"
               class="emissions-intensity-vis vis-chart"
@@ -207,7 +210,11 @@
         <div class="legend-container">
           <summary-table
             v-if="ready && summary"
+            :energy-domains="energyDomains"
             :domains="summaryDomains"
+            :stacked-area-domains="stackedAreaDomains"
+            :emissions-domains="emissionStackedAreaDomains"
+            :temperature-domains="temperatureDomains"
             :price-id="priceDomains.length > 0 ? priceDomains[0].id : null"
             :market-value-domains="mvDomains"
             :dataset="filteredDataset"
@@ -242,6 +249,7 @@ import { max as d3Max } from 'd3-array'
 import _includes from 'lodash.includes'
 import { saveAs } from 'file-saver'
 
+import PageEnergyMixin from '~/mixins/page-energy.js'
 import REGIONS from '~/constants/regions.js'
 import { EMISSIONS } from '~/constants/emissions.js'
 import Http from '~/services/Http.js'
@@ -305,6 +313,8 @@ export default {
     EnergyLegend
   },
 
+  mixins: [PageEnergyMixin],
+
   data() {
     return {
       ready: false,
@@ -321,8 +331,15 @@ export default {
       summary: false,
       legend: true,
       exporting: false,
+      energyDomains: [],
       energyMin: 0,
-      energyMax: 1000
+      energyMax: 1000,
+      emissionsVolumeDataset: [],
+      emissionsMin: 0,
+      emissionsMax: 1000,
+      emissionsIntensityDataset: [],
+      emissionsIntensityMin: 0,
+      emissionsIntensityMax: 1000
     }
   },
 
@@ -454,18 +471,15 @@ export default {
       return this.groupEmissionDomains.length > 0
         ? this.groupEmissionDomains
         : this.emissionDomains
-    },
-    emissionsMax() {
-      return d3Max(this.dataset, d => d._totalEmissionsVol)
     }
   },
 
   watch: {
     hiddenFuelTechs() {
-      this.updateEnergyMinMax()
+      this.updateYMinMax()
     },
     filteredDataset() {
-      this.updateEnergyMinMax()
+      this.updateYMinMax()
     }
   },
 
@@ -477,7 +491,7 @@ export default {
     this.chartTemperature = this.exportChartTemperature
     this.summary = this.exportSummary
     this.legend = this.exportLegend
-    this.updateEnergyMinMax()
+    this.updateYMinMax()
     this.ready = true
   },
 
@@ -508,32 +522,6 @@ export default {
 
     handleCancelClick() {
       this.$router.go(-1)
-    },
-
-    updateEnergyMinMax() {
-      let energyMinAll = 0,
-        energyMaxAll = 0
-      this.dataset.forEach((d, i) => {
-        let energyMin = 0,
-          energyMax = 0
-
-        this.stackedAreaDomains.forEach(domain => {
-          const id = domain.id
-          energyMax += d[id] || 0
-          if (d[id] < 0) {
-            energyMin += d[id] || 0
-          }
-        })
-
-        if (energyMax > energyMaxAll) {
-          energyMaxAll = energyMax
-        }
-        if (energyMin < energyMinAll) {
-          energyMinAll = energyMin
-        }
-      })
-      this.energyMin = energyMinAll
-      this.energyMax = energyMaxAll
     }
   }
 }
@@ -589,7 +577,8 @@ export default {
 ::v-deep .temperature-vis .y-axis .tick:last-of-type text,
 ::v-deep .temperature-vis .y-axis-tick .tick:last-of-type text,
 ::v-deep .price-pos-vis .y-axis-guide-group .tick:not(:first-of-type) text,
-::v-deep .price-neg-vis .y-axis-guide-group .tick text {
+::v-deep .price-neg-vis .y-axis-guide-group .tick text,
+::v-deep .emissions-intensity-vis .y-axis-tick .tick:last-of-type text {
   display: none;
 }
 ::v-deep .price-neg-vis .line-group path,

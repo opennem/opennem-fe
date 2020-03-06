@@ -161,6 +161,9 @@ export default {
   },
 
   computed: {
+    hostEnv() {
+      return this.$store.getters.hostEnv
+    },
     type() {
       return this.$store.getters.energyChartType
     },
@@ -297,7 +300,7 @@ export default {
   methods: {
     fetchData(region, range) {
       const promise = new Promise(resolve => {
-        const urls = Data.getEnergyUrls(region, range)
+        const urls = Data.getEnergyUrls(region, range, this.hostEnv)
 
         if (urls.length > 0) {
           Http(urls)

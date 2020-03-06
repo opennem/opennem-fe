@@ -42,7 +42,9 @@
           @click="handlePercentContributionToClick">
           Contribution <small>to {{ percentContributionTo }}</small>
         </div>
-        <div class="summary-col-av-value">Av.Value <small>$/MWh</small></div>
+        <div class="summary-col-av-value">
+          <column-selector />
+        </div>
       </div>
       <div class="summary-row">
         <div class="summary-col-label">Sources</div>
@@ -60,12 +62,28 @@
         <div
           v-if="!hoverOn && !focusOn"
           class="summary-col-av-value cell-value">
-          {{ summary._totalAverageValue | formatCurrency }}
+          <span v-if="isAvValueColumn">
+            {{ summary._totalAverageValue | formatCurrency }}
+          </span>
+          <span v-if="isEmissionsVolumeColumn">
+            {{ summary._totalEmissionsVolume | formatValue }}
+          </span>
+          <span v-if="isEmissionsIntensityColumn">
+            {{ summary._averageEmissionsIntensity | formatValue }}
+          </span>
         </div>
         <div
           v-if="hoverOn || focusOn"
           class="summary-col-av-value cell-value">
-          {{ pointSummary._totalAverageValue | formatCurrency }}
+          <span v-if="isAvValueColumn">
+            {{ pointSummary._totalAverageValue | formatCurrency }}
+          </span>
+          <span v-if="isEmissionsVolumeColumn">
+            {{ pointSummary._totalEmissionsVolume | formatValue }}
+          </span>
+          <span v-if="isEmissionsIntensityColumn">
+            {{ pointSummary._emissionsIntensity | formatValue }}
+          </span>
         </div>
       </div>
     </div>
@@ -82,6 +100,7 @@
       :summary-total="summarySourcesTotal"
       :domain-toggleable="domainToggleable"
       :energy-domains="energyDomains"
+      :emissions-domains="emissionsDomains"
       :is-year-interval="isYearInterval"
       @update="handleSourcesOrderUpdate"
       @fuelTechsHidden="handleSourceFuelTechsHidden"
@@ -117,6 +136,8 @@
       :summary-total="summary._totalEnergy"
       :show-percent-column="percentContributionTo === 'demand'"
       :is-year-interval="isYearInterval"
+      :energy-domains="energyDomains"
+      :emissions-domains="emissionsDomains"
       @update="handleLoadsOrderUpdate"
       @fuelTechsHidden="handleLoadFuelTechsHidden"
     />
@@ -164,13 +185,17 @@ import moment from 'moment'
 import _isEmpty from 'lodash.isempty'
 import _cloneDeep from 'lodash.clonedeep'
 import _includes from 'lodash.includes'
+import { mapGetters } from 'vuex'
+import Data from '~/services/Data.js'
 import Domain from '~/services/Domain.js'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
+import ColumnSelector from '~/components/ui/SummaryColumnSelector'
 import Items from './Items'
 
 export default {
   components: {
     GroupSelector,
+    ColumnSelector,
     Items
   },
 
@@ -268,6 +293,11 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      emissionsVolumeUnit: 'si/emissionsVolumeUnit',
+      emissionsVolumePrefix: 'si/emissionsVolumePrefix'
+    }),
+
     fuelTechGroupName() {
       return this.$store.getters.fuelTechGroupName
     },
@@ -278,6 +308,22 @@ export default {
 
     percentContributionTo() {
       return this.$store.getters.percentContributionTo
+    },
+
+    showSummaryColumn() {
+      return this.$store.getters.showSummaryColumn
+    },
+
+    isAvValueColumn() {
+      return this.showSummaryColumn === 'av-value'
+    },
+
+    isEmissionsVolumeColumn() {
+      return this.showSummaryColumn === 'emissions-volume'
+    },
+
+    isEmissionsIntensityColumn() {
+      return this.showSummaryColumn === 'emissions-intensity'
     },
 
     sourcesOrderLength() {
@@ -423,6 +469,9 @@ export default {
       this.calculateSummary(this.dataset)
     },
     percentContributionTo(updated) {
+      this.calculateSummary(this.dataset)
+    },
+    emissionsVolumePrefix() {
       this.calculateSummary(this.dataset)
     }
   },
@@ -577,6 +626,7 @@ export default {
 
       // Calculate Emissions
       this.emissionsDomains.forEach(ft => {
+        const category = ft.category
         const dataEVMinusHidden = data.map(d => {
           const emissionsVol = {}
           if (!_includes(this.hiddenFuelTechs, ft[ft.fuelTech])) {
@@ -595,7 +645,24 @@ export default {
           }
           return emissionsVol
         })
-        totalEVMinusHidden += sumMap(ft, dataEVMinusHidden)
+        const evSum = sumMap(ft, dataEVMinusHidden)
+        this.summary[ft.id] = Data.siCalculationFromBase(
+          this.emissionsVolumePrefix,
+          evSum
+        )
+        totalEVMinusHidden += evSum
+
+        if (category === 'source') {
+          this.summarySources[ft.id] = Data.siCalculationFromBase(
+            this.emissionsVolumePrefix,
+            evSum
+          )
+        } else if (category === 'load') {
+          this.summaryLoads[ft.id] = Data.siCalculationFromBase(
+            this.emissionsVolumePrefix,
+            evSum
+          )
+        }
       })
 
       totalEIMinusHidden = data.reduce(
@@ -684,10 +751,20 @@ export default {
       const avTotal = this.isEnergy
         ? totalEnergyMinusHidden
         : totalPowerMinusHidden
+
       const average = avTotal / data.length
       this.summary._averageEnergy = average
-      this.summary._averageEmissionsVolume = totalEVMinusHidden / data.length
-      this.summary._averageEmissionsIntensity = totalEIMinusHidden / data.length
+      this.summary._totalEmissionsVolume = Data.siCalculationFromBase(
+        this.emissionsVolumePrefix,
+        totalEVMinusHidden
+      )
+      this.summary._averageEmissionsVolume = Data.siCalculationFromBase(
+        this.emissionsVolumePrefix,
+        totalEVMinusHidden / data.length
+      )
+      this.summary._averageEmissionsIntensity = this.isYearInterval
+        ? totalEVMinusHidden / avTotal / 1000
+        : totalEVMinusHidden / avTotal
       this.summary._averageTemperature =
         totalTemperatureWithoutNulls / temperatureWithoutNulls.length
 
@@ -698,6 +775,7 @@ export default {
       let totalSources = 0
       let totalLoads = 0
       let totalPriceMarketValue = 0
+      let totalEmissionsVol = 0
       this.pointSummary = data || {} // pointSummary._total is already calculated
       this.pointSummarySources = {}
       this.pointSummaryLoads = {}
@@ -734,6 +812,26 @@ export default {
             this.pointSummaryLoads[ft.id] = avValue
           }
         })
+
+        // Calculate Emissions
+        this.emissionsDomains.forEach(domain => {
+          const category = domain.category
+          const value = this.pointSummary[domain.id]
+
+          totalEmissionsVol += value
+
+          if (category === 'source') {
+            this.pointSummarySources[domain.id] = Data.siCalculationFromBase(
+              this.emissionsVolumePrefix,
+              value
+            )
+          } else if (category === 'load') {
+            this.pointSummaryLoads[domain.id] = Data.siCalculationFromBase(
+              this.emissionsVolumePrefix,
+              value
+            )
+          }
+        })
       }
 
       if (this.priceId) {
@@ -745,6 +843,10 @@ export default {
       }
       this.pointSummarySources._total = totalSources
       this.pointSummaryLoads._total = totalLoads
+      this.pointSummary._totalEmissionsVolume = Data.siCalculationFromBase(
+        this.emissionsVolumePrefix,
+        totalEmissionsVol
+      )
     },
 
     updatePointSummary(date) {
@@ -901,6 +1003,7 @@ export default {
   .summary-row {
     font-family: $header-font-family;
     font-weight: 700;
+    user-select: none;
   }
 }
 
@@ -915,11 +1018,13 @@ export default {
   }
 
   .summary-col-label {
-    width: 50%;
+    width: 30%;
   }
   .summary-col-energy,
   .summary-col-contribution,
-  .summary-col-av-value {
+  .summary-col-av-value,
+  .summary-col-ev,
+  .summary-col-ei {
     width: 25%;
     text-align: right;
     padding: 0 5px;

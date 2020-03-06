@@ -34,19 +34,31 @@
       <div class="vis-container">
         <div
           v-if="ready"
-          :class="{ 'is-hovered': hoverOn || focusOn }"
+          :class="{
+            'is-hovered': hoverOn || focusOn,
+            'has-border-bottom': !chartEnergy
+          }"
           class="chart">
           <div
             v-if="step"
-            class="chart-title no-hover">
+            class="chart-title"
+            @click="toggleChart('chartEnergy')">
             <div class="chart-label">
+              <i
+                :class="{
+                  'fa-caret-down': chartEnergy,
+                  'fa-caret-right': !chartEnergy
+                }"
+                class="fal fa-fw" />
               <strong>Energy</strong>
-              <small>{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | toLowerCase }}</small>
+              <small>{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</small>
             </div>
-            <div class="hover-date-value">
+            <div
+              v-show="chartEnergy"
+              class="hover-date-value">
               <div class="average-value">
                 Av.
-                <strong>{{ averageEnergy | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | toLowerCase }}</strong>
+                <strong>{{ averageEnergy | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</strong>
               </div>
               <div class="hover-date">
                 <time>
@@ -72,12 +84,21 @@
           </div>
           <div
             v-else
-            class="chart-title no-hover">
+            class="chart-title"
+            @click="toggleChart('chartEnergy')">
             <div class="chart-label">
+              <i
+                :class="{
+                  'fa-caret-down': chartEnergy,
+                  'fa-caret-right': !chartEnergy
+                }"
+                class="fal fa-fw" />
               <strong>Generation</strong>
               <small>MW</small>
             </div>
-            <div class="hover-date-value">
+            <div
+              v-show="chartEnergy"
+              class="hover-date-value">
               <div class="average-value">
                 Av.
                 <strong>{{ averageEnergy | formatValue }} MW</strong>
@@ -105,6 +126,7 @@
             </div>
           </div>
           <stacked-area-vis
+            v-if="chartEnergy"
             :domains="stackedAreaDomains"
             :dataset="dataset"
             :dynamic-extent="dateFilter"
@@ -160,23 +182,28 @@
           class="chart">
           <div
             class="chart-title"
-            @click="toggleChart('chartEmissionsVolume')">
+            @click="handleChartLabelClick">
             <div class="chart-label">
-              <i
-                :class="{
-                  'fa-caret-down': chartEmissionsVolume,
-                  'fa-caret-right': !chartEmissionsVolume
-                }"
-                class="fal fa-fw" />
-              <strong>Emissions Volume</strong>
-              <small>tCO₂e/{{ interval | toLowerCase }}</small>
+              <span @click.stop="toggleChart('chartEmissionsVolume')">
+                <i
+                  :class="{
+                    'fa-caret-down': chartEmissionsVolume,
+                    'fa-caret-right': !chartEmissionsVolume
+                  }"
+                  class="fal fa-fw" />
+                <strong>Emissions Volume</strong>
+              </span>
+              <small>{{ emissionsVolumeUnit }}/{{ interval | intervalLabel }}</small>
             </div>
             <div
               v-show="chartEmissionsVolume"
               class="hover-date-value">
               <div class="average-value">
                 Av.
-                <strong>{{ averageEmissionsVolume | formatValue }} tCO₂e/{{ interval | toLowerCase }}</strong>
+                <strong>
+                  {{ averageEmissionsVolume | formatValue }}
+                  {{ emissionsVolumeUnit }}/{{ interval | intervalLabel }}
+                </strong>
               </div>
               <div class="hover-date">
                 <time>
@@ -191,11 +218,11 @@
                     :style="{ 'background-color': hoverEmissionVolumeDomainColour }"
                     class="colour-square" />
                   {{ hoverEmissionVolumeDomainLabel }}
-                  <strong>{{ hoverEmissionVolumeValue | formatValue2 }} tCO₂e</strong>
+                  <strong>{{ hoverEmissionVolumeValue | formatValue2 }} {{ emissionsVolumeUnit }}</strong>
                 </span>
                 <span>
                   Total
-                  <strong>{{ hoverEmissionVolumeTotal | formatValue2 }} tCO₂e</strong>
+                  <strong>{{ hoverEmissionVolumeTotal | formatValue2 }} {{ emissionsVolumeUnit }}</strong>
                 </span>
               </div>
             </div>
@@ -222,6 +249,7 @@
             :zoomed="zoomed"
             :x-guides="xGuides"
             :incomplete-intervals="incompleteIntervals"
+            :y-axis-ticks="5"
             class="emissions-volume-vis vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
@@ -613,6 +641,7 @@ import _cloneDeep from 'lodash.clonedeep'
 import Draggable from 'vuedraggable'
 import { saveAs } from 'file-saver'
 
+import PageEnergyMixin from '~/mixins/page-energy.js'
 import REGIONS from '~/constants/regions.js'
 import { EMISSIONS } from '~/constants/emissions.js'
 import EventBus from '~/plugins/eventBus.js'
@@ -683,6 +712,8 @@ export default {
     EnergyCompare
   },
 
+  mixins: [PageEnergyMixin],
+
   data() {
     return {
       mounted: false,
@@ -726,6 +757,9 @@ export default {
   },
 
   computed: {
+    hostEnv() {
+      return this.$store.getters.hostEnv
+    },
     chartUnit() {
       return this.$store.getters.chartUnit
     },
@@ -746,6 +780,9 @@ export default {
     },
     isEnergyType() {
       return this.type === 'energy'
+    },
+    chartEnergy() {
+      return this.$store.getters.chartEnergy
     },
     chartEmissionsVolume() {
       return this.$store.getters.chartEmissionsVolume
@@ -919,7 +956,7 @@ export default {
     },
 
     incompleteIntervals() {
-      function getStartMonth(month) {
+      function getSeasonStartMonth(month) {
         switch (month) {
           case 11:
           case 0:
@@ -946,6 +983,33 @@ export default {
         return null
       }
 
+      function getQuarterStartMonth(month) {
+        switch (month) {
+          case 0:
+          case 1:
+          case 2:
+            return 0
+
+          case 3:
+          case 4:
+          case 5:
+            return 3
+
+          case 6:
+          case 7:
+          case 8:
+            return 6
+
+          case 9:
+          case 10:
+          case 11:
+            return 9
+
+          default:
+        }
+        return null
+      }
+
       function getSeasonLabel(month) {
         switch (month) {
           case 2:
@@ -959,7 +1023,21 @@ export default {
         }
       }
 
+      function getQuarterLabel(month) {
+        switch (month) {
+          case 0:
+            return 'Q1'
+          case 3:
+            return 'Q2'
+          case 6:
+            return 'Q3'
+          case 9:
+            return 'Q4'
+        }
+      }
+
       let dStart = this.dataset[0].date
+      let dStartMoment = moment(dStart)
       const dEnd = this.dataset[this.dataset.length - 1].date
       const actualStartDate = this.dataset[0]._actualStartDate
       const aSD = new Date(actualStartDate).setHours(0)
@@ -985,15 +1063,24 @@ export default {
 
       if (this.range === '1Y' && this.interval === 'Month') {
         const incompletes = []
-        if (aSD > dStart) {
+        aLD = moment(aLD)
+        const mDEnd = moment(dEnd).subtract(1, 'day')
+        if (moment(aSD).valueOf() > moment(dStart).valueOf()) {
           incompletes.push({
             start: dStart,
-            end: dStart + 2629800000
+            end: moment(dStart)
+              .add(1, 'month')
+              .valueOf()
           })
         }
-        if (aLD < dEnd) {
+        if (aLD.valueOf() < mDEnd.valueOf()) {
+          const incompleteStart = moment({
+            year: mDEnd.year(),
+            month: mDEnd.month(),
+            date: 1
+          })
           incompletes.push({
-            start: dEnd - 2629800000,
+            start: incompleteStart.valueOf(),
             end: dEnd
           })
         }
@@ -1005,39 +1092,55 @@ export default {
         const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
         if (!isFilter) {
           aLD = moment(aLD).add(1, 'month')
-          if (aSD > dStart) {
+          if (moment(aSD).month() > moment(dStart).month()) {
             incompletes.push({
               start: dStart,
-              end: dStart + 7889400000
+              end: moment(dStart)
+                .add(3, 'month')
+                .valueOf()
             })
           }
-          if (aLD.valueOf() < dEnd) {
+          if (aLD.month() < moment(dEnd).month()) {
             incompletes.push({
-              start: dEnd - 7889400000,
+              start: moment(dEnd)
+                .subtract(3, 'month')
+                .valueOf(),
               end: dEnd
             })
           }
         } else {
           aLD = moment(aLD).add(1, 'year')
-          const actualStartMonth = getStartMonth(new Date(aSD).getMonth())
-          const actualStartSeason = getSeasonLabel(actualStartMonth)
+          const isSeason = this.interval === 'Season'
+          const actualStartMonth = isSeason
+            ? getSeasonStartMonth(new Date(aSD).getMonth())
+            : getQuarterStartMonth(new Date(aSD).getMonth())
+          const actualStartLabel = isSeason
+            ? getSeasonLabel(actualStartMonth)
+            : getQuarterLabel(actualStartMonth)
+          const actualEndMonth = isSeason
+            ? getSeasonStartMonth(new Date(aLD).getMonth())
+            : getQuarterStartMonth(new Date(aLD).getMonth())
+          const actualEndLabel = isSeason
+            ? getSeasonLabel(actualEndMonth)
+            : getQuarterLabel(actualEndMonth)
 
-          const actualEndMonth = getStartMonth(new Date(aLD).getMonth())
-          const actualEndSeason = getSeasonLabel(actualEndMonth)
-
-          if (actualStartSeason === this.filterPeriod) {
-            if (aSD > dStart) {
+          if (actualStartLabel === this.filterPeriod) {
+            if (moment(aSD).month() > moment(dStart).month()) {
               incompletes.push({
                 start: dStart,
-                end: dStart + 31557600000
+                end: moment(dStart)
+                  .add(1, 'year')
+                  .valueOf()
               })
             }
           }
-          if (actualEndSeason === this.filterPeriod) {
-            const newDEnd = moment(dEnd).add(3, 'month')
-            if (aLD.valueOf() < newDEnd.valueOf()) {
+          if (actualEndLabel === this.filterPeriod) {
+            const newDEnd = moment(dEnd).add(2, 'month')
+            if (aLD.month() < newDEnd.month()) {
               incompletes.push({
-                start: dEnd - 31557600000,
+                start: moment(dEnd)
+                  .subtract(1, 'year')
+                  .valueOf(),
                 end: dEnd
               })
             }
@@ -1151,7 +1254,10 @@ export default {
     },
     hoverEmissionVolumeValue() {
       return this.hoverOrFocusData
-        ? this.hoverOrFocusData[this.hoverEmissionVolumeDomain]
+        ? Data.siCalculationFromBase(
+            this.emissionsVolumePrefix,
+            this.hoverOrFocusData[this.hoverEmissionVolumeDomain]
+          )
         : null
     },
     hoverEmissionVolumeTotal() {
@@ -1170,7 +1276,7 @@ export default {
           }
         })
       }
-      return total
+      return Data.siCalculationFromBase(this.emissionsVolumePrefix, total)
     },
     hoverEmissionsIntensity() {
       if (this.hoverOrFocusData) {
@@ -1303,6 +1409,7 @@ export default {
     },
     filterPeriod(compare) {
       this.updateDataset(compare)
+      this.updateYMinMax()
     },
     stackedAreaDomains(updated) {
       this.$store.dispatch('export/stackedAreaDomains', updated)
@@ -1444,7 +1551,7 @@ export default {
     },
 
     fetchData(region, range) {
-      const urls = Data.getEnergyUrls(region, range)
+      const urls = Data.getEnergyUrls(region, range, this.hostEnv)
 
       if (urls.length > 0) {
         Http(urls)
@@ -1508,10 +1615,9 @@ export default {
       this.originalDataset = updated
 
       this.updatedFilteredDataset(updated)
-      this.updateYMinMax()
       this.updateDataset(this.filterPeriod)
+      this.updateYMinMax()
       this.ready = true
-      console.log(this.dataset)
     },
 
     updateDatasetGroups(dataset, groupDomains) {
@@ -1571,6 +1677,7 @@ export default {
         this.emissionsOrder,
         EMISSIONS
       )
+      this.$store.dispatch('emissionDomains', this.emissionDomains)
     },
 
     updateTemperatureDomains(res) {
@@ -1620,111 +1727,6 @@ export default {
       } else {
         this.filteredDataset = dataset
       }
-    },
-
-    updateYMinMax() {
-      const isGeneration = this.percentContributionTo === 'generation'
-      const emissionsIntensityDataset = [],
-        emissionsVolumeDataset = []
-      let energyMinAll = 0,
-        energyMaxAll = 0,
-        emissionsMinAll = 0,
-        emissionsMaxAll = 0,
-        emissionsIntensityMinAll = 0,
-        emissionsIntensityMaxAll = 1200
-
-      this.dataset.forEach((d, i) => {
-        let totalDemand = 0,
-          totalGeneration = 0,
-          totalEmissionsVol = 0,
-          energyMin = 0,
-          energyMax = 0,
-          emissionsMin = 0,
-          emissionsMax = 0
-
-        this.stackedAreaDomains.forEach(domain => {
-          const id = domain.id
-          totalDemand += d[id] || 0
-          if (domain.category == 'source' && domain.fuelTech !== 'imports') {
-            totalGeneration += d[id] || 0
-          }
-          energyMax += d[id] || 0
-          if (d[id] < 0) {
-            energyMin += d[id] || 0
-          }
-        })
-
-        if (energyMax > energyMaxAll) {
-          energyMaxAll = energyMax
-        }
-        if (energyMin < energyMinAll) {
-          energyMinAll = energyMin
-        }
-
-        emissionsVolumeDataset.push({
-          date: d.date
-        })
-        const lastEVIndex = emissionsVolumeDataset.length - 1
-
-        this.emissionStackedAreaDomains.forEach(domain => {
-          const id = domain.id
-
-          if (
-            !isGeneration ||
-            (isGeneration &&
-              domain.fuelTech !== 'imports' &&
-              domain.fuelTech !== 'exports')
-          ) {
-            totalEmissionsVol += d[id] || 0
-            emissionsMax += d[id] || 0
-
-            if (d[id] < 0) {
-              emissionsMin += d[id] || 0
-            }
-
-            emissionsVolumeDataset[lastEVIndex][id] = d[id]
-          }
-        })
-
-        if (emissionsMax > emissionsMaxAll) {
-          emissionsMaxAll = emissionsMax
-        }
-        if (emissionsMin < emissionsMinAll) {
-          emissionsMinAll = emissionsMin
-        }
-
-        const ei = isGeneration
-          ? totalEmissionsVol / totalGeneration
-          : totalEmissionsVol / totalDemand
-        const isValidEI = Number.isFinite(ei)
-        if (isValidEI && ei > emissionsIntensityMaxAll) {
-          emissionsIntensityMaxAll = ei
-        }
-        if (isValidEI && ei < emissionsIntensityMinAll) {
-          emissionsIntensityMinAll = ei
-        }
-        emissionsIntensityDataset.push({
-          date: d.date,
-          _emissionsIntensity: isValidEI ? ei : null
-        })
-      })
-
-      // duplicate last valid EV value to render the step line correctly
-      const evDatasetLength = emissionsIntensityDataset.length
-      const lastValidEI =
-        emissionsIntensityDataset[evDatasetLength - 2]._emissionsIntensity
-      emissionsIntensityDataset[
-        evDatasetLength - 1
-      ]._emissionsIntensity = lastValidEI
-
-      this.energyMin = energyMinAll
-      this.energyMax = energyMaxAll
-      this.emissionsMin = emissionsMinAll
-      this.emissionsMax = emissionsMaxAll
-      this.emissionsIntensityDataset = emissionsIntensityDataset
-      this.emissionsIntensityMin = emissionsIntensityMinAll
-      this.emissionsIntensityMax = emissionsIntensityMaxAll
-      this.emissionsVolumeDataset = emissionsVolumeDataset
     },
 
     updateCompare(dataset) {
@@ -1975,6 +1977,26 @@ export default {
 
     handleSummaryUpdated(summary) {
       this.summary = summary
+    },
+
+    handleChartLabelClick() {
+      const prefix = this.emissionsVolumePrefix
+      const shouldUseNextPrefix = !this.useEVnextPrefix
+      this.$store.dispatch('si/useEVnextPrefix', shouldUseNextPrefix)
+
+      if (shouldUseNextPrefix) {
+        this.$store.dispatch(
+          'si/emissionsVolumePrefix',
+          Data.siNextPrefix(prefix)
+        )
+      } else {
+        this.$store.dispatch(
+          'si/emissionsVolumePrefix',
+          Data.siPreviousPrefix(prefix)
+        )
+      }
+
+      this.recalculateAfterPrefixChanged()
     }
   }
 }
@@ -2006,7 +2028,7 @@ export default {
     width: 100%;
     padding: 1rem 0 0;
     @include desktop {
-      width: 60%;
+      width: 65%;
       padding: 0;
     }
   }
@@ -2015,7 +2037,7 @@ export default {
     padding: 0 1rem 1rem;
 
     @include desktop {
-      width: 40%;
+      width: 35%;
       padding: 0 1rem 0 0;
     }
   }
@@ -2097,9 +2119,6 @@ export default {
         }
         .mean-temp-value {
           margin: 0 1rem;
-        }
-        strong {
-          // font-size: 11px;
         }
 
         @include desktop {
@@ -2191,7 +2210,8 @@ export default {
 ::v-deep .temperature-vis .y-axis .tick:last-of-type text,
 ::v-deep .temperature-vis .y-axis-tick .tick:last-of-type text,
 ::v-deep .price-pos-vis .y-axis-guide-group .tick:not(:first-of-type) text,
-::v-deep .price-neg-vis .y-axis-guide-group .tick text {
+::v-deep .price-neg-vis .y-axis-guide-group .tick text,
+::v-deep .emissions-intensity-vis .y-axis-tick .tick:last-of-type text {
   display: none;
 }
 ::v-deep .price-neg-vis .line-group path,

@@ -25,30 +25,63 @@
     />
 
     <div
+      v-if="!isFacilitiesView"
+      :class="{ 'hide': openDrawer }"
+      class="more-buttons">
+      <div class="buttons has-addons">
+        <span
+          :class="{ 'is-selected': isConsumption }"
+          class="button is-rounded"
+          @click="handlePercentContributionToClick">Consumption</span><span
+            :class="{ 'is-selected': isGeneration }"
+            class="button is-rounded"
+            @click="handlePercentContributionToClick">Generation</span>
+      </div>
+      
+      <button
+        v-if="(focusOn || compareDifference) && isEnergy"
+        :class="{ 'is-selected': compareDifference }"
+        class="compare-button button is-rounded"
+        @click="handleCompareClick">Compare</button>
+    </div>
+
+    <div
       v-if="!widthBreak"
-      class="share-buttons buttons has-addons">
+      class="share-button-wrapper">
       <button
-        v-if="!isFacilitiesView"
-        class="button is-rounded"
-        @click="handleExportImage">
-        <i class="fal fa-fw fa-chart-bar" />
-        <span class="label-image">Image</span>
+        v-on-clickaway="handleClickAway"
+        :class="{ 'is-loading is-primary': generating }"
+        class="share-button button is-rounded"
+        @click="handleShareButtonClicked">
+        <img
+          src="~/assets/img/share-icon.svg"
+          alt="Share icon">
+        <span class="label-image">Export</span>
       </button>
-      <button
-        :class="{
-          'is-loading': generating,
-          'is-primary': generating
-        }"
-        class="button is-rounded"
-        @click="handleExportDataClick">
-        <download-csv
-          :data="exportData"
-          :name="`${filename}.csv`"
-        >
-          <i class="fal fa-fw fa-table" />
-          <span class="label-csv">Data</span>
-        </download-csv>
-      </button>
+      <div
+        v-if="showShareMenu"
+        class="share-menu dropdown-menu">
+        <div class="dropdown-content">
+          <a
+            v-if="!isFacilitiesView"
+            class="dropdown-item button"
+            @click="handleExportImage">
+            <i class="fal fa-fw fa-chart-bar" />
+            <span class="label-image">PNG</span>
+          </a>
+          <a
+            class="dropdown-item button"
+            @click="handleExportDataClick">
+            <download-csv
+              :data="exportData"
+              :name="`${filename}.csv`"
+            >
+              <i class="fal fa-fw fa-table" />
+              <span class="label-csv">CSV</span>
+            </download-csv>
+          </a>
+        </div>
+      </div>
     </div>
   </header>
 </template>
@@ -58,6 +91,7 @@ import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import { format as d3Format } from 'd3-format'
 import _debounce from 'lodash.debounce'
 import DownloadCsv from 'vue-json-csv'
+import { mixin as clickaway } from 'vue-clickaway'
 import REGIONS from '~/constants/regions.js'
 import AppLogo from '~/components/ui/Logo'
 import ViewDropdown from '~/components/ui/ViewDropdown'
@@ -72,12 +106,14 @@ export default {
     RegionDropdown,
     AppDrawer
   },
+  mixins: [clickaway],
 
   data() {
     return {
       ready: false,
       generating: false,
       openDrawer: false,
+      showShareMenu: false,
       windowWidth: 0,
       regions: REGIONS
     }
@@ -107,6 +143,9 @@ export default {
     },
     energyDomains() {
       return this.$store.getters.energyDomains
+    },
+    emissionDomains() {
+      return this.$store.getters.emissionDomains
     },
     priceDomains() {
       return this.$store.getters.priceDomains
@@ -152,6 +191,10 @@ export default {
           }
           obj[`${label} - C`] = format(d[domain.id])
         })
+        this.emissionDomains.forEach(domain => {
+          obj[`${domain.label} Emissions Vol - tCO₂e`] = format(d[domain.id])
+        })
+        obj['Emissions Intensity - kgCO₂e/MWh'] = format(d._emissionsIntensity)
         if (this.priceDomains.length > 0) {
           const priceDomain = this.priceDomains[0]
           const label =
@@ -186,6 +229,24 @@ export default {
         region = 'OpenNEM'
       }
       return `${date} ${region}`
+    },
+    isEnergy() {
+      return this.$store.getters.energyChartType === 'energy'
+    },
+    percentContributionTo() {
+      return this.$store.getters.percentContributionTo
+    },
+    isConsumption() {
+      return this.percentContributionTo === 'demand'
+    },
+    isGeneration() {
+      return this.percentContributionTo === 'generation'
+    },
+    compareDifference() {
+      return this.$store.getters.compareDifference
+    },
+    focusOn() {
+      return this.$store.getters.focusOn
     }
   },
 
@@ -228,6 +289,25 @@ export default {
       setTimeout(() => {
         this.generating = false
       }, 1000)
+    },
+    handlePercentContributionToClick() {
+      if (this.isConsumption) {
+        this.$store.dispatch('percentContributionTo', 'generation')
+      } else {
+        this.$store.dispatch('percentContributionTo', 'demand')
+      }
+    },
+    handleCompareClick() {
+      this.$store.dispatch('compareDifference', !this.compareDifference)
+      if (this.compareDifference) {
+        this.$store.dispatch('focusOn', false)
+      }
+    },
+    handleShareButtonClicked() {
+      this.showShareMenu = !this.showShareMenu
+    },
+    handleClickAway() {
+      this.showShareMenu = false
     }
   }
 }
@@ -290,6 +370,36 @@ header {
     }
   }
 
+  .share-button-wrapper {
+    position: relative;
+    .button:focus {
+      color: $opennem-link-color;
+    }
+  }
+
+  .share-button {
+    font-size: 11px;
+    img {
+      width: 10px;
+      color: $opennem-link-color;
+      display: inline-block;
+      margin-right: 3px;
+      position: relative;
+      top: -1px;
+    }
+  }
+
+  .share-menu {
+    display: block;
+    right: 0;
+    left: auto;
+    min-width: 40px;
+    .dropdown-item {
+      border-radius: 0;
+      min-width: 40px;
+    }
+  }
+
   .share-buttons {
     .button {
       font-size: 0.9rem;
@@ -303,5 +413,36 @@ header {
       top: 1px;
     }
   }
+}
+.more-buttons {
+  position: absolute;
+  right: 90px;
+
+  @include mobile {
+    right: 0;
+    z-index: 9999;
+
+    &.hide {
+      display: none;
+    }
+  }
+  .buttons {
+    display: inline;
+  }
+
+  .button {
+    font-size: 11px;
+
+    &.is-rounded {
+      min-width: 55px;
+    }
+
+    @include mobile {
+      border-radius: 0 !important;
+    }
+  }
+}
+.compare-button {
+  margin-left: 10px;
 }
 </style>

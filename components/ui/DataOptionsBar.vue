@@ -1,67 +1,57 @@
 <template>
   <div class="data-options-bar">
     <div class="range-buttons buttons has-addons">
-      <span
+      <button
         v-for="(r, i) in ranges"
         :key="i"
         :class="{ 'is-selected': r.range === selectedRange }"
         class="button is-rounded"
         @click="handleRangeChange(r.range)">
         {{ r.range }}
-      </span>
+      </button>
     </div>
 
     <div class="buttons has-addons">
-      <span
+      <button
+        v-on-clickaway="handleClickAway"
         v-for="(interval, i) in selectedRangeIntervals"
         :key="i"
         :class="{ 'is-selected': interval === selectedInterval }"
         class="button is-rounded"
-        @click="handleIntervalChange(interval)">
-        {{ interval }}
-      </span>
-    </div>
+        @click.stop="handleIntervalChange(interval)">
 
-    <div
-      v-if="periodArray"
-      class="filter-period-buttons buttons has-addons">
-      <span
-        v-for="(period, i) in periodArray"
-        :key="`period${i}`"
-        :class="{ 'is-selected': filterPeriod === period }"
-        class="button is-rounded"
-        @click="handleFilterPeriodClick(period)">
-        {{ period }}
-      </span>
-    </div>
-
-    <div
-      :class="{ 'hide': drawer }"
-      class="more-buttons">
-      <div class="buttons has-addons">
-        <span
-          :class="{ 'is-selected': isConsumption }"
-          class="button is-rounded"
-          @click="handlePercentContributionToClick">Consumption</span><span
-            :class="{ 'is-selected': isGeneration }"
-            class="button is-rounded"
-            @click="handlePercentContributionToClick">Generation</span>
-      </div>
-      
-      <button
-        v-if="(focusOn || compareDifference) && isEnergy"
-        :class="{ 'is-selected': compareDifference }"
-        class="compare-button button is-rounded"
-        @click="handleCompareClick">Compare</button>
+        <div v-if="!hasFilter(interval)">{{ interval }}</div>
+        <div v-if="hasFilter(interval)">{{ intervalLabel(interval) }}</div>
+        <i
+          v-if="hasFilter(interval)"
+          class="filter-caret fal fa-chevron-down" />
+        
+        <div
+          v-show="showFilter(interval)"
+          class="filter-menu dropdown-menu">
+          <div class="dropdown-content">
+            <a
+              v-for="(period, i) in filters"
+              :key="`period${i}`"
+              :class="{ 'is-selected': filterPeriod === period }"
+              class="dropdown-item"
+              @click.stop="handleFilterPeriodClick(period)">
+              {{ period }}
+            </a>
+          </div>
+        </div>
+      </button>
     </div>
   </div>
 </template>
 
 <script>
+import { mixin as clickaway } from 'vue-clickaway'
 import RANGE_INTERVAL from '~/constants/rangeInterval.js'
 import INTERVAL_PERIOD from '~/constants/intervalPeriod.js'
 
 export default {
+  mixins: [clickaway],
   props: {
     range: {
       type: String,
@@ -78,7 +68,11 @@ export default {
       ranges: RANGE_INTERVAL,
       intervalPeriod: INTERVAL_PERIOD,
       selectedRange: '',
-      selectedInterval: ''
+      selectedInterval: '',
+      showSeasonFilter: false,
+      showQuarterFilter: false,
+      seasonFilters: INTERVAL_PERIOD['Season'],
+      quarterFilters: INTERVAL_PERIOD['Quarter']
     }
   },
 
@@ -90,29 +84,14 @@ export default {
     filterPeriod() {
       return this.$store.getters.filterPeriod
     },
-    compareDifference() {
-      return this.$store.getters.compareDifference
-    },
-    focusOn() {
-      return this.$store.getters.focusOn
-    },
     periodArray() {
       return this.intervalPeriod[this.selectedInterval]
     },
-    isEnergy() {
-      return this.$store.getters.energyChartType === 'energy'
-    },
-    percentContributionTo() {
-      return this.$store.getters.percentContributionTo
-    },
-    isConsumption() {
-      return this.percentContributionTo === 'demand'
-    },
-    isGeneration() {
-      return this.percentContributionTo === 'generation'
-    },
-    drawer() {
-      return this.$store.getters.drawer
+    filters() {
+      if (this.interval === 'Season') {
+        return this.seasonFilters
+      }
+      return this.quarterFilters
     }
   },
 
@@ -136,33 +115,57 @@ export default {
   },
 
   methods: {
+    showFilter(interval) {
+      return (
+        (interval === 'Season' && this.showSeasonFilter) ||
+        (interval === 'Quarter' && this.showQuarterFilter)
+      )
+    },
+    hasFilter(interval) {
+      return (
+        this.interval === interval &&
+        (interval === 'Season' || interval === 'Quarter')
+      )
+    },
+    intervalLabel(interval) {
+      if (this.filterPeriod === 'All') {
+        return this.interval
+      } else {
+        return this.filterPeriod
+      }
+    },
     handleRangeChange(range) {
       this.$store.dispatch('filterPeriod', null)
       this.$emit('onRangeChange', range)
+      this.$store.dispatch('si/emissionsVolumePrefix', '')
     },
     handleIntervalChange(interval) {
-      const compareInterval = interval === 'Season' || interval === 'Quarter'
-      const filterPeriod = compareInterval ? 'All' : null
-      this.$store.dispatch('filterPeriod', filterPeriod)
-      this.$emit('onIntervalChange', interval)
+      const hasFilter = this.hasFilter(interval)
+      if (hasFilter && this.interval === interval) {
+        if (interval === 'Season') {
+          this.showSeasonFilter = true
+        }
+        if (interval === 'Quarter') {
+          this.showQuarterFilter = true
+        }
+      } else {
+        this.showSeasonFilter = false
+        this.showQuarterFilter = false
+        this.$store.dispatch('filterPeriod', 'All')
+        this.$store.dispatch('si/emissionsVolumePrefix', '')
+        this.$emit('onIntervalChange', interval)
+      }
     },
     handleFilterPeriodClick(period) {
       this.$store.dispatch('filterPeriod', period)
       this.$store.dispatch('compareDifference', false)
       this.$store.dispatch('compareDates', [])
+      this.showSeasonFilter = false
+      this.showQuarterFilter = false
     },
-    handleCompareClick() {
-      this.$store.dispatch('compareDifference', !this.compareDifference)
-      if (this.compareDifference) {
-        this.$store.dispatch('focusOn', false)
-      }
-    },
-    handlePercentContributionToClick() {
-      if (this.isConsumption) {
-        this.$store.dispatch('percentContributionTo', 'generation')
-      } else {
-        this.$store.dispatch('percentContributionTo', 'demand')
-      }
+    handleClickAway() {
+      this.showSeasonFilter = false
+      this.showQuarterFilter = false
     }
   }
 }
@@ -176,11 +179,11 @@ export default {
   .buttons {
     background-color: rgba(255, 255, 255, 0.5);
 
-    @include tablet {
+    @include desktop {
       background-color: transparent;
     }
   }
-  @include tablet {
+  @include desktop {
     padding: $app-padding / 2 $app-padding;
     display: flex;
     align-items: center;
@@ -188,40 +191,41 @@ export default {
 }
 .button {
   font-size: 11px;
+  border-radius: 0;
+  position: relative;
 
   &.is-rounded {
-    min-width: 55px;
+    min-width: 45px;
   }
 
-  @include mobile {
-    border-radius: 0 !important;
+  @include desktop {
+    border-radius: 290486px;
+  }
+
+  .filter-caret {
+    margin-left: 5px;
   }
 }
 .range-buttons {
-  @include tablet {
+  @include desktop {
     margin-bottom: 0;
     margin-right: $app-padding;
   }
 }
 .filter-period-buttons {
-  margin-left: 1rem;
+  @include desktop {
+    margin-left: 1rem;
+  }
 }
-.more-buttons {
-  position: absolute;
-  right: 0.5rem;
-
-  @include mobile {
-    top: -46px;
-    right: 0;
-    z-index: 9999;
-
-    &.hide {
-      z-index: 1;
-    }
+.dropdown-item {
+  &.is-selected {
+    background-color: #c74523;
+    color: #fff;
   }
-
-  .buttons {
-    display: inline;
-  }
+}
+.filter-menu {
+  min-width: 80px;
+  text-align: left;
+  display: block;
 }
 </style>

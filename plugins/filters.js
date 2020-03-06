@@ -6,7 +6,7 @@ import DateDisplay from '~/services/DateDisplay.js'
 function smartFormatString(v) {
   const value = Math.abs(v)
   let fString = ',.0f'
-  if (value < 1 && value > 0.1) {
+  if (value < 10 && value > 0.1) {
     fString = ',.1f'
   } else if (value < 0.1 && value > 0.01) {
     fString = ',.2f'
@@ -42,6 +42,13 @@ Vue.filter(
     )
   }
 )
+
+Vue.filter('intervalLabel', interval => {
+  if (interval === 'Fin Year') {
+    return 'year'
+  }
+  return interval.toLowerCase()
+})
 
 Vue.filter('formatDate', time => {
   const f = d3TimeFormat('%d/%m/%Y, %-I:%M %p')
@@ -99,7 +106,9 @@ Vue.filter('percentageFormatNumber2', value => {
 Vue.filter('formatCurrency', value => {
   const f = d3Format('$,.2f')
   const fValue = f(value)
-  return isFinite(value) && !isNaN(value) && value !== null ? fValue : '–'
+  return isFinite(value) && !isNaN(value) && value !== null && value !== ''
+    ? fValue
+    : '–'
 })
 
 Vue.filter('toLowerCase', string => {
