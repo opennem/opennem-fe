@@ -350,10 +350,15 @@ export default {
     renewables() {
       const key =
         this.percentContributionTo === 'demand' ? '_total' : '_totalGeneration'
-      const totalRenewables = this.dataset.reduce(
+      let totalRenewables = this.dataset.reduce(
         (a, b) => a + b._totalRenewables,
         0
       )
+      if (!this.isEnergy) {
+        // calculate energy (GWh) += power * 5mins/60/1000
+        const mins = this.interval === '30m' ? 30 : 5
+        totalRenewables = (totalRenewables * mins) / 60 / 1000
+      }
       const total =
         this.percentContributionTo === 'demand'
           ? this.summary._totalEnergy
@@ -560,7 +565,7 @@ export default {
             if (this.isEnergy) {
               return d[ft.id]
             } else {
-              // calculate energy (GWh) += power * 5mins/60/100
+              // calculate energy (GWh) += power * 5mins/60/1000
               const mins = this.interval === '30m' ? 30 : 5
               return (d[ft.id] * mins) / 60 / 1000
             }
