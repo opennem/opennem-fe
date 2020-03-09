@@ -45,7 +45,7 @@
       </div>
 
       <div class="summary-col-contribution">
-        <span v-show="showPercentColumn">
+        <span v-show="showContribution(ft)">
           {{ getContribution(ft.id) | percentageFormatNumber }}
         </span>
       </div>
@@ -131,10 +131,6 @@ export default {
       type: Boolean,
       default: () => false
     },
-    showPercentColumn: {
-      type: Boolean,
-      default: () => true
-    },
     domainToggleable: {
       type: Boolean,
       default: () => true
@@ -153,7 +149,8 @@ export default {
 
   computed: {
     ...mapGetters({
-      emissionsVolumePrefix: 'si/emissionsVolumePrefix'
+      emissionsVolumePrefix: 'si/emissionsVolumePrefix',
+      percentContributionTo: 'percentContributionTo'
     }),
     showSummaryColumn() {
       return this.$store.getters.showSummaryColumn
@@ -313,6 +310,15 @@ export default {
           : emissionsVolume / energy
       }
       return '-'
+    },
+
+    showContribution(ft) {
+      if (this.percentContributionTo === 'demand') {
+        return true
+      } else if (!_includes(ft.id, 'imports') && ft.category !== 'load') {
+        return true
+      }
+      return false
     }
   }
 }
