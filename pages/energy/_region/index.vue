@@ -1582,6 +1582,7 @@ export default {
 
       this.responses = responses
       this.updateDomains(responses)
+      console.time(this.getPerfLabel())
       EnergyDataTransform.mergeResponses(
         responses,
         this.energyDomains,
@@ -1593,6 +1594,7 @@ export default {
         this.interval
       ).then(dataset => {
         this.readyDataset(dataset)
+        console.timeEnd(this.getPerfLabel())
       })
     },
 
@@ -1781,6 +1783,8 @@ export default {
       this.compareData = []
       this.$store.dispatch('compareDates', [])
       this.$store.dispatch('interval', interval)
+
+      console.time(this.getPerfLabel())
       EnergyDataTransform.mergeResponses(
         this.responses,
         this.energyDomains,
@@ -1792,6 +1796,7 @@ export default {
         interval
       ).then(dataset => {
         this.readyDataset(dataset)
+        console.timeEnd(this.getPerfLabel())
       })
     },
 
@@ -1997,6 +2002,10 @@ export default {
       }
 
       this.recalculateAfterPrefixChanged()
+    },
+
+    getPerfLabel() {
+      return `Transform ${this.regionId}: ${this.range}/${this.interval}`
     }
   }
 }
