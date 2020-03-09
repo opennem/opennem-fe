@@ -95,7 +95,7 @@
       :market-value-order="sourcesMarketValueOrder"
       :show-point-summary="hoverOn || focusOn"
       :point-summary="pointSummarySources"
-      :point-summary-total="pointSummary._total"
+      :point-summary-total="pointSummarySourcesTotal"
       :summary="summarySources"
       :summary-total="summarySourcesTotal"
       :domain-toggleable="domainToggleable"
@@ -134,7 +134,6 @@
       :point-summary-total="pointSummary._total"
       :summary="summaryLoads"
       :summary-total="summary._totalEnergy"
-      :show-percent-column="percentContributionTo === 'demand'"
       :is-year-interval="isYearInterval"
       :energy-domains="energyDomains"
       :emissions-domains="emissionsDomains"
@@ -350,28 +349,39 @@ export default {
 
     renewables() {
       const key =
-        this.percentContributionTo === 'demand' ? '_total' : '_totalSources'
+        this.percentContributionTo === 'demand' ? '_total' : '_totalGeneration'
       const totalRenewables = this.dataset.reduce(
         (a, b) => a + b._totalRenewables,
         0
       )
-      const totalDemand = this.dataset.reduce((a, b) => a + b[key], 0)
-      return (totalRenewables / totalDemand) * 100
+      const total =
+        this.percentContributionTo === 'demand'
+          ? this.summary._totalEnergy
+          : this.summarySources._totalGeneration
+      return (totalRenewables / total) * 100
     },
 
     pointRenewables() {
       const key =
-        this.percentContributionTo === 'demand' ? '_total' : '_totalSources'
+        this.percentContributionTo === 'demand' ? '_total' : '_totalGeneration'
       const totalRenewables = this.pointSummary._totalRenewables
-      const totalDemand = this.pointSummary[key]
-      return (totalRenewables / totalDemand) * 100
+      const total = this.pointSummary[key]
+      return (totalRenewables / total) * 100
+    },
+
+    pointSummarySourcesTotal() {
+      if (this.percentContributionTo === 'demand') {
+        return this.pointSummary._total
+      } else {
+        return this.pointSummarySources._totalGeneration
+      }
     },
 
     summarySourcesTotal() {
       if (this.percentContributionTo === 'demand') {
         return this.summary._totalEnergy
       } else {
-        return this.summarySources._totalEnergy
+        return this.summarySources._totalGeneration
       }
     },
 
@@ -520,6 +530,7 @@ export default {
       let totalPowerMinusHidden = 0
       let totalGenerationEnergyMinusHidden = 0
       let totalSources = 0
+      let totalGeneration = 0
       let totalLoads = 0
       let totalPriceMarketValue = 0
       let totalEVMinusHidden = 0
@@ -618,6 +629,9 @@ export default {
         if (category === 'source') {
           this.summarySources[ft.id] = dataEnergySum
           totalSources += dataEnergySum
+          if (!_includes(ft.id, 'imports')) {
+            totalGeneration += dataEnergySum
+          }
         } else if (category === 'load') {
           this.summaryLoads[ft.id] = dataEnergySum
           totalLoads += dataEnergySum
@@ -745,6 +759,7 @@ export default {
       this.summary._totalEnergy = totalEnergy
       this.summary._totalAverageValue = totalAverageValue
       this.summarySources._totalEnergy = totalSources
+      this.summarySources._totalGeneration = totalGeneration
       this.summaryLoads._totalEnergy = totalLoads
 
       // calculate averages
@@ -773,6 +788,7 @@ export default {
 
     calculatePointSummary(data) {
       let totalSources = 0
+      let totalGeneration = 0
       let totalLoads = 0
       let totalPriceMarketValue = 0
       let totalEmissionsVol = 0
@@ -788,6 +804,9 @@ export default {
           if (category === 'source') {
             this.pointSummarySources[ft.id] = value
             totalSources += value
+            if (!_includes(ft.id, 'imports')) {
+              totalGeneration += value
+            }
           } else if (category === 'load') {
             this.pointSummaryLoads[ft.id] = value
             totalLoads += value
@@ -842,6 +861,7 @@ export default {
           : totalPriceMarketValue / this.pointSummary._total / 1000
       }
       this.pointSummarySources._total = totalSources
+      this.pointSummarySources._totalGeneration = totalGeneration
       this.pointSummaryLoads._total = totalLoads
       this.pointSummary._totalEmissionsVolume = Data.siCalculationFromBase(
         this.emissionsVolumePrefix,
