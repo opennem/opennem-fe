@@ -645,6 +645,7 @@ import PageEnergyMixin from '~/mixins/page-energy.js'
 import REGIONS from '~/constants/regions.js'
 import { EMISSIONS } from '~/constants/emissions.js'
 import EventBus from '~/plugins/eventBus.js'
+import PerfTime from '~/plugins/perfTime.js'
 import Http from '~/services/Http.js'
 import DateDisplay from '~/services/DateDisplay.js'
 import Data from '~/services/Data.js'
@@ -849,6 +850,9 @@ export default {
     },
     fuelTechOrder() {
       return this.$store.getters.fuelTechOrder
+    },
+    fuelTechGroupName() {
+      return this.$store.getters.fuelTechGroupName
     },
     fuelTechGroup() {
       return this.$store.getters.fuelTechGroup
@@ -1359,7 +1363,10 @@ export default {
 
   watch: {
     groupDomains(domains) {
-      if (domains) {
+      const perfLabel = `Change to ${this.fuelTechGroupName || 'Default'}`
+      const perfTime = new PerfTime(perfLabel)
+      perfTime.time()
+      if (domains.length > 0) {
         this.originalDataset = this.updateDatasetGroups(
           this.originalDataset,
           domains
@@ -1379,9 +1386,10 @@ export default {
           }
         }
       }
+      perfTime.timeEnd()
     },
     groupMarketValueDomains(domains) {
-      if (domains) {
+      if (domains.length > 0) {
         this.originalDataset = this.updateDatasetGroups(
           this.originalDataset,
           domains
@@ -1390,7 +1398,7 @@ export default {
       }
     },
     groupEmissionDomains(domains) {
-      if (domains) {
+      if (domains.length > 0) {
         this.originalDataset = this.updateDatasetGroups(
           this.originalDataset,
           domains
@@ -1581,8 +1589,9 @@ export default {
       }
 
       this.responses = responses
+      const perfTime = new PerfTime(this.getPerfLabel())
+      perfTime.time()
       this.updateDomains(responses)
-      console.time(this.getPerfLabel())
       EnergyDataTransform.mergeResponses(
         responses,
         this.energyDomains,
@@ -1594,7 +1603,7 @@ export default {
         this.interval
       ).then(dataset => {
         this.readyDataset(dataset)
-        console.timeEnd(this.getPerfLabel())
+        perfTime.timeEnd()
       })
     },
 
@@ -1783,8 +1792,8 @@ export default {
       this.compareData = []
       this.$store.dispatch('compareDates', [])
       this.$store.dispatch('interval', interval)
-
-      console.time(this.getPerfLabel())
+      const perfTime = new PerfTime(this.getPerfLabel())
+      perfTime.time()
       EnergyDataTransform.mergeResponses(
         this.responses,
         this.energyDomains,
@@ -1796,7 +1805,7 @@ export default {
         interval
       ).then(dataset => {
         this.readyDataset(dataset)
-        console.timeEnd(this.getPerfLabel())
+        perfTime.timeEnd()
       })
     },
 
@@ -2005,7 +2014,24 @@ export default {
     },
 
     getPerfLabel() {
-      return `Transform ${this.regionId}: ${this.range}/${this.interval}`
+      let processLength = 0,
+        arrayLength = 0
+      try {
+        if (this.responses.length > 0 && this.responses[0].data) {
+          arrayLength = this.responses[0].data.length
+          this.responses[0].data.forEach(d => {
+            processLength += d.history.data.length
+            if (d.forecast) {
+              processLength += d.forecast.data.length
+            }
+          })
+        }
+      } catch (e) {
+        console.error('A problem getting response data lengths')
+      }
+      return `${this.regionId} — ${this.range}/${
+        this.interval
+      } (processed ${processLength})`
     }
   }
 }
