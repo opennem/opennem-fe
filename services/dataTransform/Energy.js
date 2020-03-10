@@ -366,16 +366,14 @@ export default {
 
         // If 1D or 3D, use 7D data and filter the data here, so the chart doesn't zoom
         if (range === '1D' || range === '3D') {
-          const now = new Date().getTime()
+          const lastPointDate = data[data.length - 1].date
           const roundedEndDate =
             interval === '5m'
-              ? d3TimeMinute.every(5).round(now)
-              : d3TimeMinute.every(30).round(now)
-          const diff = range === '1D' ? 86400000 : 259200000
-          data = this.filterDataByStartEndDates(
-            data,
-            roundedEndDate - diff,
-            roundedEndDate
+              ? d3TimeMinute.every(5).round(lastPointDate)
+              : d3TimeMinute.every(30).round(lastPointDate)
+          const diff = range === '1D' ? 86400000 + 1200000 : 259200000
+          data = data.filter(
+            d => d.date >= roundedEndDate - diff && d.date < roundedEndDate
           )
         } else if (range === '30D') {
           let lastDateTime = new Date().getTime()
