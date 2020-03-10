@@ -104,6 +104,7 @@ path.line-path {
 .y-axis-tick .tick line.base {
   stroke: rgb(110, 110, 110);
   stroke-dasharray: 5;
+  stroke-width: 2;
 }
 // .y-axis-tick .tick:not(:first-of-type) line,
 // .y-axis .tick:not(:first-of-type) line {
