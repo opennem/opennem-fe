@@ -147,6 +147,7 @@
             :mobile-screen="tabletBreak"
             :incomplete-intervals="incompleteIntervals"
             :compare-dates="compareDates"
+            :dataset-two="renewablesPercentageDataset"
             class="vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
@@ -753,7 +754,8 @@ export default {
       emissionsIntensityMax: 1000,
       isTouchDevice: false,
       compareData: [],
-      summary: null
+      summary: null,
+      renewablesPercentageDataset: []
     }
   },
 

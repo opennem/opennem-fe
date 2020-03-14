@@ -25,7 +25,8 @@ const pageEnergyMixin = {
     calculateEnergyEmissionsDatasets() {
       const isGeneration = this.percentContributionTo === 'generation'
       const emissionsIntensityDataset = [],
-        emissionsVolumeDataset = []
+        emissionsVolumeDataset = [],
+        renewablesPercentageDataset = []
       let energyMinAll = 0,
         energyMaxAll = 0,
         emissionsMinAll = 0,
@@ -110,7 +111,20 @@ const pageEnergyMixin = {
           date: d.date,
           _emissionsIntensity: isValidEI ? ei : null
         })
+
+        // get renewables dataset
+        renewablesPercentageDataset.push({
+          date: d.date,
+          renewables: d._totalRenewables,
+          value: isGeneration
+            ? d._totalGenerationRenewablesPercentage
+            : d._totalDemandRenewablesPercentage
+        })
       })
+      if (this.interval !== '5m' && this.interval !== '30m') {
+        renewablesPercentageDataset.pop()
+        console.log(renewablesPercentageDataset)
+      }
 
       // duplicate last valid EV value to render the step line correctly
       const evDatasetLength = emissionsIntensityDataset.length
@@ -123,6 +137,7 @@ const pageEnergyMixin = {
       return {
         emissionsIntensityDataset,
         emissionsVolumeDataset,
+        renewablesPercentageDataset,
         energyMinAll,
         energyMaxAll,
         emissionsMinAll,
@@ -141,6 +156,7 @@ const pageEnergyMixin = {
       this.emissionsIntensityMin = d.emissionsIntensityMinAll
       this.emissionsIntensityMax = d.emissionsIntensityMaxAll + 100 // add some top padding to the max value for EI chart
       this.emissionsVolumeDataset = d.emissionsVolumeDataset
+      this.renewablesPercentageDataset = d.renewablesPercentageDataset
     },
 
     updateEmissionsVolumeDatasetMinMax(cal) {

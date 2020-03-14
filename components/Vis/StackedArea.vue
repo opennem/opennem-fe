@@ -46,6 +46,8 @@
         
         <g :class="yAxisClass" />
 
+        <g class="y-axis-2" />
+
         <!-- x axis layer to allow zoom in (brush) -->
         <g 
           v-if="showXAxis && brush"
@@ -64,6 +66,9 @@
 
         <!-- where the stacked area path will show -->
         <g class="stacked-area-group" />
+
+        <!-- where the line path will show -->
+        <g class="line-group" />
 
         <g class="x-incomplete-group" />
         <g class="focus-group" />
@@ -90,9 +95,10 @@
 
 <script>
 import { scaleOrdinal, scaleLinear, scaleTime } from 'd3-scale'
-import { axisBottom, axisRight } from 'd3-axis'
+import { axisBottom, axisRight, axisLeft } from 'd3-axis'
 import {
   area as d3Area,
+  line as d3Line,
   stack,
   curveStepAfter,
   curveLinear,
@@ -127,6 +133,10 @@ import AxisTimeFormats from '~/services/axisTimeFormats.js'
 export default {
   props: {
     dataset: {
+      type: Array,
+      default: () => []
+    },
+    datasetTwo: {
       type: Array,
       default: () => []
     },
@@ -246,12 +256,15 @@ export default {
       margin: CONFIG.DEFAULT_MARGINS,
       x: null,
       y: null,
+      y2: null,
       z: null,
       guides: null,
       xAxis: null,
       xDomainExtent: null,
       yAxis: null,
+      yAxis2: null,
       area: null,
+      line: null,
       colours: schemeCategory10,
       stack: null,
       brushX: null,
@@ -260,12 +273,14 @@ export default {
       $xAxisGroup: null,
       $xAxisBrushGroup: null,
       $yAxisGroup: null,
+      $yAxisGroup2: null,
       $yAxisTickGroup: null,
       $hoverLayer: null,
       $cursorLineGroup: null,
       $focusGroup: null,
       $tooltipGroup: null,
       $stackedAreaGroup: null,
+      $lineGroup: null,
       $xGuideGroup: null,
       $xIncompleteGroup: null,
       $compareGroup: null,
@@ -455,6 +470,7 @@ export default {
       // Axis
       this.$xAxisGroup = $svg.select(`.${this.xAxisClass}`)
       this.$yAxisGroup = $svg.select(`.${this.yAxisClass}`)
+      this.$yAxisGroup2 = $svg.select('.y-axis-2')
       this.$yAxisTickGroup = $svg.select(`.${this.yAxisTickClass}`)
       this.$xGuideGroup = $svg.select(`.${this.xGuideGroupClass}`)
       this.$xIncompleteGroup = $svg.select(`.${this.xIncompleteGroupClass}`)
@@ -471,16 +487,21 @@ export default {
       // Define x, y, z scale types
       this.x = scaleTime().range([0, this.width]) // Date axis
       this.y = scaleLinear().range([this.height, 0]) // Value axis
+      this.y2 = scaleLinear().range([this.height, 0]) // Value axis
       this.z = scaleOrdinal() // Colour
 
       // Set up where x, y axis appears
       this.xAxis = axisBottom(this.x)
         .tickSize(-this.height)
         .tickFormat((d, i) => this.timeFormats(d, i === 0))
-      this.yAxis = axisRight(this.y)
-        .tickSize(this.width)
+      this.yAxis = axisLeft(this.y)
+        .tickSize(-this.width)
         .ticks(this.yAxisTicks)
         .tickFormat(d => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
+
+      this.yAxis2 = axisRight(this.y2)
+        .tickSize(this.width)
+        .ticks(10)
 
       // Setup the 'brush' area and event handler
       this.brushX = brushX()
@@ -551,6 +572,11 @@ export default {
         .x(d => this.x(d.data.date))
         .y0(d => this.y(d[0]))
         .y1(d => this.y(d[1]))
+
+      // How to draw the line
+      this.line = d3Line()
+        .x(d => this.x(d.date))
+        .y(d => this.y(d.renewables))
 
       // Event handling
       // - Control tooltip visibility for mouse entering/leaving svg
@@ -656,10 +682,29 @@ export default {
     },
 
     update() {
+      // update datasetTwo time
+      if (this.interval !== '5m' && this.interval !== '30m') {
+        let previousBandwidth = 0
+        this.datasetTwo.forEach((d, i) => {
+          const xDate = d.date
+          const nextDate = this.datasetTwo[i + 1]
+            ? this.datasetTwo[i + 1].date
+            : null
+          const nextPeriod = nextDate || xDate
+          let bandwidth = nextPeriod - xDate
+          if (bandwidth !== 0) {
+            previousBandwidth = bandwidth
+          } else {
+            bandwidth = previousBandwidth
+          }
+          d.date = d.date + bandwidth / 2
+        })
+      }
       const self = this
       this.$stackedAreaGroup = select(
         `#${this.id} .${this.stackedAreaGroupClass}`
       )
+      this.$lineGroup = select(`#${this.id} .line-group`)
 
       // Setup the x/y/z Axis domains
       // - Use dataset date range if there is none being passed into
@@ -670,13 +715,14 @@ export default {
       const yMax =
         this.yMax || this.yMax === 0
           ? this.yMax
-          : max(this.dataset, d => d._total) + 5
+          : max(this.dataset, d => d._total)
 
       const xDomainExtent = this.dynamicExtent.length
         ? this.dynamicExtent
         : this.datasetDateExtent
       this.x.domain(xDomainExtent)
       this.y.domain([yMin, yMax]).nice()
+      this.y2.domain([yMin, yMax]).nice()
       this.z.range(this.domainColours).domain(this.domainIds)
 
       if (yMax <= 10) {
@@ -688,6 +734,7 @@ export default {
       this.$xAxisGroup.call(this.customXAxis)
       this.$yAxisGroup.call(this.customYAxis)
       this.$yAxisTickGroup.call(this.customYAxis)
+      this.$yAxisGroup2.call(this.yAxis2).attr('text-anchor', 'end')
       this.updateGuides()
 
       // Setup the keys in the stack so it knows how to draw the area
@@ -696,6 +743,8 @@ export default {
 
       // Remove Area
       this.$stackedAreaGroup.selectAll('path').remove()
+      this.$lineGroup.selectAll('path').remove()
+
       // Generate Stacked Area
       const stackArea = this.$stackedAreaGroup
         .selectAll(`.${this.stackedAreaPathClass}`)
@@ -718,6 +767,17 @@ export default {
         .style('pointer-events', 'auto')
 
       stackArea.exit().remove()
+
+      // Generate Line
+      console.log(this.datasetTwo)
+      this.$lineGroup
+        .append('path')
+        .datum(this.datasetTwo)
+        .attr('class', 'line-path')
+        .attr('d', this.line)
+        .style('stroke', 'red')
+        .style('clip-path', this.clipPathUrl)
+        .style('-webkit-clip-path', this.clipPathUrl)
 
       // Event handling
       // - find date and domain

@@ -513,7 +513,10 @@ export default {
 
       dataset[i]._total = totalDemand
       dataset[i]._totalRenewables = totalRenewables
-      dataset[i]._totalDemandRenewables = (totalRenewables / totalDemand) * 100
+      dataset[i]._totalDemandRenewablesPercentage =
+        (totalRenewables / totalDemand) * 100
+      dataset[i]._totalGenerationRenewablesPercentage =
+        (totalRenewables / totalGeneration) * 100
       dataset[i]._totalSources = totalSources
       dataset[i]._totalGeneration = totalGeneration
       dataset[i]._totalSourcesRenewables =

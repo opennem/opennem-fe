@@ -241,9 +241,9 @@ export default {
         if (d._total) {
           maxDemand = d._total
           maxDemandDate = d.date
-          minDemandRenewables = d._totalDemandRenewables
+          minDemandRenewables = d._totalDemandRenewablesPercentage
           minDemandRenewablesDate = d.date
-          maxDemandRenewables = d._totalDemandRenewables
+          maxDemandRenewables = d._totalDemandRenewablesPercentage
           maxDemandRenewablesDate = d.date
 
           maxGeneration = d._totalGeneration
@@ -282,17 +282,17 @@ export default {
           maxDemandDate = d.date
         }
         if (
-          d._totalDemandRenewables !== null &&
-          d._totalDemandRenewables < minDemandRenewables
+          d._totalDemandRenewablesPercentage !== null &&
+          d._totalDemandRenewablesPercentage < minDemandRenewables
         ) {
-          minDemandRenewables = d._totalDemandRenewables
+          minDemandRenewables = d._totalDemandRenewablesPercentage
           minDemandRenewablesDate = d.date
         }
         if (
-          d._totalDemandRenewables !== null &&
-          d._totalDemandRenewables > maxDemandRenewables
+          d._totalDemandRenewablesPercentage !== null &&
+          d._totalDemandRenewablesPercentage > maxDemandRenewables
         ) {
-          maxDemandRenewables = d._totalDemandRenewables
+          maxDemandRenewables = d._totalDemandRenewablesPercentage
           maxDemandRenewablesDate = d.date
         }
 
