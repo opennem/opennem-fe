@@ -1363,8 +1363,7 @@ export default {
 
   watch: {
     groupDomains(domains) {
-      const perfLabel = `Change to ${this.fuelTechGroupName || 'Default'}`
-      const perfTime = new PerfTime(perfLabel)
+      const perfTime = new PerfTime()
       perfTime.time()
       if (domains.length > 0) {
         this.originalDataset = this.updateDatasetGroups(
@@ -1386,7 +1385,7 @@ export default {
           }
         }
       }
-      perfTime.timeEnd()
+      perfTime.timeEnd(this.getGroupPerfLabel())
     },
     groupMarketValueDomains(domains) {
       if (domains.length > 0) {
@@ -1589,7 +1588,7 @@ export default {
       }
 
       this.responses = responses
-      const perfTime = new PerfTime(this.getPerfLabel())
+      const perfTime = new PerfTime()
       perfTime.time()
       this.updateDomains(responses)
       EnergyDataTransform.mergeResponses(
@@ -1603,7 +1602,7 @@ export default {
         this.interval
       ).then(dataset => {
         this.readyDataset(dataset)
-        perfTime.timeEnd()
+        perfTime.timeEnd(this.getPerfLabel())
       })
     },
 
@@ -1792,7 +1791,7 @@ export default {
       this.compareData = []
       this.$store.dispatch('compareDates', [])
       this.$store.dispatch('interval', interval)
-      const perfTime = new PerfTime(this.getPerfLabel())
+      const perfTime = new PerfTime()
       perfTime.time()
       EnergyDataTransform.mergeResponses(
         this.responses,
@@ -1805,7 +1804,7 @@ export default {
         interval
       ).then(dataset => {
         this.readyDataset(dataset)
-        perfTime.timeEnd()
+        perfTime.timeEnd(this.getPerfLabel())
       })
     },
 
@@ -2015,7 +2014,8 @@ export default {
 
     getPerfLabel() {
       let processLength = 0,
-        arrayLength = 0
+        arrayLength = 0,
+        downToLength = this.dataset.length
       try {
         if (this.responses.length > 0 && this.responses[0].data) {
           arrayLength = this.responses[0].data.length
@@ -2031,7 +2031,14 @@ export default {
       }
       return `${this.regionId} — ${this.range}/${
         this.interval
-      } (processed ${processLength})`
+      } (crunched ${processLength} points down to ${downToLength} points)`
+    },
+
+    getGroupPerfLabel() {
+      const group = this.fuelTechGroupName || 'Default'
+      return `${this.regionId} — ${this.range}/${
+        this.interval
+      } (grouped ${group})`
     }
   }
 }
