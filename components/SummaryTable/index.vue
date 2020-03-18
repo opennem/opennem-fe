@@ -354,15 +354,13 @@ export default {
         (a, b) => a + b._totalRenewables,
         0
       )
+      let total = this.dataset.reduce((a, b) => a + b[key], 0)
       if (!this.isEnergy) {
         // calculate energy (GWh) += power * 5mins/60/1000
         const mins = this.interval === '30m' ? 30 : 5
         totalRenewables = (totalRenewables * mins) / 60 / 1000
+        total = (total * mins) / 60 / 1000
       }
-      const total =
-        this.percentContributionTo === 'demand'
-          ? this.summary._totalEnergy
-          : this.summarySources._totalGeneration
       return (totalRenewables / total) * 100
     },
 
