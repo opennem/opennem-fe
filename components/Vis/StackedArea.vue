@@ -31,6 +31,14 @@
             stroke-width="2px"
             y2="10" />
         </pattern>
+
+        <filter id="shadow">
+          <feDropShadow
+            dx="0.5"
+            dy="0.5"
+            stdDeviation="0.5" 
+            flood-color="rgba(0, 0, 0, 0.5)" />
+        </filter>
       </defs>
 
       <g 
@@ -45,8 +53,6 @@
           :class="xAxisClass" />
         
         <g :class="yAxisClass" />
-
-        <g class="y-axis-2" />
 
         <!-- x axis layer to allow zoom in (brush) -->
         <g 
@@ -80,6 +86,7 @@
         :transform="gTransform"
         class="axis-text-group">
         <g :class="yAxisTickClass" />
+        <g class="y-axis-2" />
       </g>
 
       <!-- cursor line and tooltip -->
@@ -494,14 +501,15 @@ export default {
       this.xAxis = axisBottom(this.x)
         .tickSize(-this.height)
         .tickFormat((d, i) => this.timeFormats(d, i === 0))
-      this.yAxis = axisLeft(this.y)
-        .tickSize(-this.width)
+      this.yAxis = axisRight(this.y)
+        .tickSize(this.width)
         .ticks(this.yAxisTicks)
         .tickFormat(d => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
 
       this.yAxis2 = axisRight(this.y2)
         .tickSize(this.width)
         .ticks(5)
+        .tickFormat(d => `${d}%`)
 
       // Setup the 'brush' area and event handler
       this.brushX = brushX()
@@ -749,7 +757,15 @@ export default {
       this.$xAxisGroup.call(this.customXAxis)
       this.$yAxisGroup.call(this.customYAxis)
       this.$yAxisTickGroup.call(this.customYAxis)
-      this.$yAxisGroup2.call(this.yAxis2).attr('text-anchor', 'end')
+      this.$yAxisGroup2
+        .call(this.yAxis2)
+        .call(g => g.selectAll('.y-axis-2 .tick line').remove())
+        .call(g =>
+          g
+            .selectAll('.y-axis-2 .tick text')
+            .attr('dx', -6)
+            .attr('dy', -4)
+        )
       this.updateGuides()
 
       // Setup the keys in the stack so it knows how to draw the area
@@ -789,7 +805,9 @@ export default {
         .datum(this.datasetTwo)
         .attr('class', 'line-path')
         .attr('d', this.line)
-        .style('stroke', 'red')
+        .style('stroke', '#52BCA3') // e34a33 52BCA3
+        .style('stroke-width', 2)
+        .style('filter', 'url(#shadow)')
         .style('clip-path', this.clipPathUrl)
         .style('-webkit-clip-path', this.clipPathUrl)
 
@@ -878,6 +896,7 @@ export default {
       this.brushX.extent([[0, 0], [this.width, 40]])
       this.$xAxisBrushGroup.selectAll('.brush').call(this.brushX)
       this.$stackedAreaGroup.selectAll('path').attr('d', this.area)
+      this.$lineGroup.selectAll('path').attr('d', this.line)
     },
 
     zoomRedraw() {
@@ -891,6 +910,11 @@ export default {
         .selectAll('path')
         .transition(transition)
         .attr('d', this.area)
+
+      this.$lineGroup
+        .selectAll('path')
+        .transition(transition)
+        .attr('d', this.line)
     },
 
     updateGuides() {
