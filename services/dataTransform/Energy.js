@@ -517,6 +517,12 @@ export default {
         (totalRenewables / totalDemand) * 100
       dataset[i]._totalGenerationRenewablesPercentage =
         (totalRenewables / totalGeneration) * 100
+      if (isNaN(dataset[i]._totalDemandRenewablesPercentage)) {
+        dataset[i]._totalDemandRenewablesPercentage = null
+      }
+      if (isNaN(dataset[i]._totalGenerationRenewablesPercentage)) {
+        dataset[i]._totalGenerationRenewablesPercentage = null
+      }
       dataset[i]._totalSources = totalSources
       dataset[i]._totalGeneration = totalGeneration
       dataset[i]._totalSourcesRenewables =

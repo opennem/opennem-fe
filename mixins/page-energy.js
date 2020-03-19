@@ -123,7 +123,6 @@ const pageEnergyMixin = {
       })
       if (this.interval !== '5m' && this.interval !== '30m') {
         renewablesPercentageDataset.pop()
-        console.log(renewablesPercentageDataset)
       }
 
       // duplicate last valid EV value to render the step line correctly
