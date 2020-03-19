@@ -534,7 +534,7 @@ export default {
         .ticks(this.yAxisTicks)
         .tickFormat(d => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
       this.yAxis2 = axisRight(this.y2)
-        .tickSize(this.width)
+        .tickSize(30)
         .ticks(5)
         .tickFormat(d => `${d}%`)
 
@@ -765,12 +765,18 @@ export default {
       this.$yAxisGroup.call(this.customYAxis)
       this.$yAxisTickGroup.call(this.customYAxis)
       this.$yAxisGroup2
+        .attr('transform', `translate(${this.width - 30}, 0)`)
         .call(this.yAxis2)
-        .call(g => g.selectAll('.y-axis-2 .tick line').remove())
+        .call(g =>
+          g
+            .selectAll('.y-axis-2 .tick line')
+            .attr('stroke', '#000')
+            .style('opacity', '0')
+        )
         .call(g =>
           g
             .selectAll('.y-axis-2 .tick text')
-            .attr('dx', -6)
+            .attr('dx', -4)
             .attr('dy', -4)
         )
       this.updateGuides()
