@@ -501,7 +501,7 @@ export default {
 
       this.yAxis2 = axisRight(this.y2)
         .tickSize(this.width)
-        .ticks(10)
+        .ticks(5)
 
       // Setup the 'brush' area and event handler
       this.brushX = brushX()
@@ -576,7 +576,9 @@ export default {
       // How to draw the line
       this.line = d3Line()
         .x(d => this.x(d.date))
-        .y(d => this.y(d.renewables))
+        .y(d => this.y2(d.value))
+
+      this.line.defined(d => d.value || d.value === 0)
 
       // Event handling
       // - Control tooltip visibility for mouse entering/leaving svg
@@ -682,7 +684,7 @@ export default {
     },
 
     update() {
-      // update datasetTwo time
+      // update datasetTwo time to move the data point in the middle of the period
       if (this.interval !== '5m' && this.interval !== '30m') {
         let previousBandwidth = 0
         this.datasetTwo.forEach((d, i) => {
@@ -716,13 +718,26 @@ export default {
         this.yMax || this.yMax === 0
           ? this.yMax
           : max(this.dataset, d => d._total)
-
       const xDomainExtent = this.dynamicExtent.length
         ? this.dynamicExtent
         : this.datasetDateExtent
       this.x.domain(xDomainExtent)
       this.y.domain([yMin, yMax]).nice()
-      this.y2.domain([yMin, yMax]).nice()
+
+      let y2Max = max(this.datasetTwo, d => d.value)
+      let y2Height = this.y(0)
+      if (y2Max < 100) {
+        y2Max = 100
+      }
+      if (y2Height <= 0) {
+        y2Height = this.height
+      }
+      // console.log(this.datasetTwo, y2Max, y2Height)
+
+      this.y2
+        .range([y2Height, 0])
+        .domain([0, y2Max])
+        .nice()
       this.z.range(this.domainColours).domain(this.domainIds)
 
       if (yMax <= 10) {
@@ -769,7 +784,6 @@ export default {
       stackArea.exit().remove()
 
       // Generate Line
-      console.log(this.datasetTwo)
       this.$lineGroup
         .append('path')
         .datum(this.datasetTwo)
