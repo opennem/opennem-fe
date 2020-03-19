@@ -159,9 +159,16 @@
       </div>
     </div>
 
-    <div class="summary-column-headers">
+    <div
+      class="summary-column-headers renewable-row"
+      @click="handleRenewableRowClicked">
       <div class="summary-row last-row">
-        <div class="summary-col-label">Renewables</div>
+        <div class="summary-col-label">
+          <div
+            :class="{ on: chartEnergyRenewablesLine }"
+            class="renewable-line" />
+          Renewables
+        </div>
         <div class="summary-col-energy cell-value" />
         <div
           v-if="!hoverOn && !focusOn"
@@ -447,6 +454,10 @@ export default {
 
     isYearInterval() {
       return this.interval === 'Fin Year' || this.interval === 'Year'
+    },
+
+    chartEnergyRenewablesLine() {
+      return this.$store.getters.chartEnergyRenewablesLine
     }
   },
 
@@ -987,6 +998,11 @@ export default {
       } else {
         this.$store.dispatch('percentContributionTo', 'demand')
       }
+    },
+
+    handleRenewableRowClicked() {
+      const rowToggle = !this.chartEnergyRenewablesLine
+      this.$store.dispatch('chartEnergyRenewablesLine', rowToggle)
     }
   }
 }
@@ -1019,6 +1035,29 @@ export default {
   cursor: pointer;
   &:hover {
     background-color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+.renewable-row {
+  cursor: pointer;
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+
+  .summary-col-label {
+    display: flex;
+    align-items: center;
+  }
+
+  .renewable-line {
+    width: 15px;
+    height: 2px;
+    background: #ddd;
+    margin-right: 5px;
+
+    &.on {
+      background: #52bca3;
+    }
   }
 }
 

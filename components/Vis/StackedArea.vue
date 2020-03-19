@@ -34,8 +34,8 @@
 
         <filter id="shadow">
           <feDropShadow
-            dx="0.5"
-            dy="0.5"
+            dx="0"
+            dy="0"
             stdDeviation="0.5" 
             flood-color="rgba(0, 0, 0, 0.5)" />
         </filter>
@@ -101,6 +101,7 @@
 </template>
 
 <script>
+import _cloneDeep from 'lodash.clonedeep'
 import { scaleOrdinal, scaleLinear, scaleTime } from 'd3-scale'
 import { axisBottom, axisRight, axisLeft } from 'd3-axis'
 import {
@@ -333,6 +334,29 @@ export default {
     path() {
       return this.$route.path
     },
+    hasSecondDataset() {
+      return this.datasetTwo.length > 0
+    },
+    updatedDatasetTwo() {
+      const updated = _cloneDeep(this.datasetTwo)
+      // update datasetTwo time to move the data point in the middle of the period
+      if (this.interval !== '5m' && this.interval !== '30m') {
+        let previousBandwidth = 0
+        updated.forEach((d, i) => {
+          const xDate = d.date
+          const nextDate = updated[i + 1] ? updated[i + 1].date : null
+          const nextPeriod = nextDate || xDate
+          let bandwidth = nextPeriod - xDate
+          if (bandwidth !== 0) {
+            previousBandwidth = bandwidth
+          } else {
+            bandwidth = previousBandwidth
+          }
+          d.date = d.date + bandwidth / 2
+        })
+      }
+      return updated
+    },
     datasetDateExtent() {
       return extent(this.dataset, d => new Date(d.date))
     },
@@ -400,6 +424,10 @@ export default {
     },
     dataset() {
       // this.zoomed = false
+      this.update()
+      this.resizeRedraw()
+    },
+    updatedDatasetTwo() {
       this.update()
       this.resizeRedraw()
     },
@@ -505,7 +533,6 @@ export default {
         .tickSize(this.width)
         .ticks(this.yAxisTicks)
         .tickFormat(d => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
-
       this.yAxis2 = axisRight(this.y2)
         .tickSize(this.width)
         .ticks(5)
@@ -585,7 +612,6 @@ export default {
       this.line = d3Line()
         .x(d => this.x(d.date))
         .y(d => this.y2(d.value))
-
       this.line.defined(d => d.value || d.value === 0)
 
       // Event handling
@@ -692,24 +718,6 @@ export default {
     },
 
     update() {
-      // update datasetTwo time to move the data point in the middle of the period
-      if (this.interval !== '5m' && this.interval !== '30m') {
-        let previousBandwidth = 0
-        this.datasetTwo.forEach((d, i) => {
-          const xDate = d.date
-          const nextDate = this.datasetTwo[i + 1]
-            ? this.datasetTwo[i + 1].date
-            : null
-          const nextPeriod = nextDate || xDate
-          let bandwidth = nextPeriod - xDate
-          if (bandwidth !== 0) {
-            previousBandwidth = bandwidth
-          } else {
-            bandwidth = previousBandwidth
-          }
-          d.date = d.date + bandwidth / 2
-        })
-      }
       const self = this
       this.$stackedAreaGroup = select(
         `#${this.id} .${this.stackedAreaGroupClass}`
@@ -732,7 +740,7 @@ export default {
       this.x.domain(xDomainExtent)
       this.y.domain([yMin, yMax]).nice()
 
-      let y2Max = max(this.datasetTwo, d => d.value)
+      let y2Max = max(this.updatedDatasetTwo, d => d.value)
       let y2Height = this.y(0)
       if (y2Max < 100) {
         y2Max = 100
@@ -740,7 +748,6 @@ export default {
       if (y2Height <= 0) {
         y2Height = this.height
       }
-      // console.log(this.datasetTwo, y2Max, y2Height)
 
       this.y2
         .range([y2Height, 0])
@@ -802,7 +809,7 @@ export default {
       // Generate Line
       this.$lineGroup
         .append('path')
-        .datum(this.datasetTwo)
+        .datum(this.updatedDatasetTwo)
         .attr('class', 'line-path')
         .attr('d', this.line)
         .style('stroke', '#52BCA3') // e34a33 52BCA3
@@ -896,7 +903,9 @@ export default {
       this.brushX.extent([[0, 0], [this.width, 40]])
       this.$xAxisBrushGroup.selectAll('.brush').call(this.brushX)
       this.$stackedAreaGroup.selectAll('path').attr('d', this.area)
-      this.$lineGroup.selectAll('path').attr('d', this.line)
+      if (this.hasSecondDataset) {
+        this.$lineGroup.selectAll('path').attr('d', this.line)
+      }
     },
 
     zoomRedraw() {
@@ -910,11 +919,12 @@ export default {
         .selectAll('path')
         .transition(transition)
         .attr('d', this.area)
-
-      this.$lineGroup
-        .selectAll('path')
-        .transition(transition)
-        .attr('d', this.line)
+      if (this.hasSecondDataset) {
+        this.$lineGroup
+          .selectAll('path')
+          .transition(transition)
+          .attr('d', this.line)
+      }
     },
 
     updateGuides() {

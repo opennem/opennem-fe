@@ -147,7 +147,7 @@
             :mobile-screen="tabletBreak"
             :incomplete-intervals="incompleteIntervals"
             :compare-dates="compareDates"
-            :dataset-two="renewablesPercentageDataset"
+            :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
             class="vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
@@ -786,6 +786,9 @@ export default {
     },
     chartEnergy() {
       return this.$store.getters.chartEnergy
+    },
+    chartEnergyRenewablesLine() {
+      return this.$store.getters.chartEnergyRenewablesLine
     },
     chartEmissionsVolume() {
       return this.$store.getters.chartEmissionsVolume
