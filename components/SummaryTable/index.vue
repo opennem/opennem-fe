@@ -1051,7 +1051,7 @@ export default {
 
   .renewable-line {
     width: 15px;
-    height: 2px;
+    height: 3px;
     background: #ddd;
     margin-right: 5px;
 
