@@ -148,6 +148,10 @@ export default {
       type: Array,
       default: () => []
     },
+    datasetTwoColour: {
+      type: String,
+      default: () => '#000'
+    },
     // !!REQUIRED: domains.colour, domain.id
     domains: {
       type: Array,
@@ -818,7 +822,7 @@ export default {
         .datum(this.updatedDatasetTwo)
         .attr('class', 'line-path')
         .attr('d', this.line)
-        .style('stroke', '#52BCA3') // e34a33 52BCA3
+        .style('stroke', this.datasetTwoColour)
         .style('stroke-width', 2)
         .style('filter', 'url(#shadow)')
         .style('clip-path', this.clipPathUrl)

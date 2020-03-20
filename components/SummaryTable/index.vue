@@ -166,6 +166,7 @@
         <div class="summary-col-label">
           <div
             :class="{ on: chartEnergyRenewablesLine }"
+            :style="{ background: renewablesLineColour }"
             class="renewable-line" />
           Renewables
         </div>
@@ -458,6 +459,13 @@ export default {
 
     chartEnergyRenewablesLine() {
       return this.$store.getters.chartEnergyRenewablesLine
+    },
+
+    renewablesLineColour() {
+      return this.fuelTechGroupName === 'Renewable/Fossil' ||
+        this.fuelTechGroupName === 'Flexibility'
+        ? '#e34a33'
+        : '#52BCA3'
     }
   },
 

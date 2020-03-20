@@ -148,6 +148,7 @@
             :incomplete-intervals="incompleteIntervals"
             :compare-dates="compareDates"
             :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
+            :dataset-two-colour="renewablesLineColour"
             class="vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
@@ -1363,6 +1364,13 @@ export default {
     },
     totalAverageValue() {
       return this.summary ? this.summary._totalAverageValue : 0
+    },
+
+    renewablesLineColour() {
+      return this.fuelTechGroupName === 'Renewable/Fossil' ||
+        this.fuelTechGroupName === 'Flexibility'
+        ? '#e34a33'
+        : '#52BCA3'
     }
   },
 
