@@ -11,11 +11,22 @@
         class="colour-square" />
       {{ domain.label }}
     </div>
+    <div
+      v-if="chartEnergyRenewablesLine"
+      class="legend-item">
+      <span
+        :style="{ 
+          background: renewablesLineColour
+        }"
+        class="renewables-line" />
+      Renewables
+    </div>
   </section>
 </template>
 
 <script>
 import _includes from 'lodash.includes'
+import { mapGetters } from 'vuex'
 
 export default {
   props: {
@@ -34,10 +45,21 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      fuelTechGroupName: 'fuelTechGroupName',
+      chartEnergyRenewablesLine: 'chartEnergyRenewablesLine'
+    }),
     legendItems() {
       return this.domains.filter(
         domain => !_includes(this.hiddenFuelTechs, domain.fuelTech)
       )
+    },
+
+    renewablesLineColour() {
+      return this.fuelTechGroupName === 'Renewable/Fossil' ||
+        this.fuelTechGroupName === 'Flexibility'
+        ? '#e34a33'
+        : '#52BCA3'
     }
   }
 }
@@ -65,5 +87,12 @@ export default {
   width: 15px;
   height: 15px;
   margin-right: 0.5rem;
+}
+
+.renewables-line {
+  width: 15px;
+  height: 3px;
+  background: #ddd;
+  margin-right: 5px;
 }
 </style>

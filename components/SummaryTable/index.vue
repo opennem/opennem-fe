@@ -165,8 +165,10 @@
       <div class="summary-row last-row">
         <div class="summary-col-label">
           <div
-            :class="{ on: chartEnergyRenewablesLine }"
-            :style="{ background: renewablesLineColour }"
+            :class="{
+              on: chartEnergyRenewablesLine,
+              'alt-colour': useAltRenewablesLineColour
+            }"
             class="renewable-line" />
           Renewables
         </div>
@@ -461,11 +463,11 @@ export default {
       return this.$store.getters.chartEnergyRenewablesLine
     },
 
-    renewablesLineColour() {
-      return this.fuelTechGroupName === 'Renewable/Fossil' ||
+    useAltRenewablesLineColour() {
+      return (
+        this.fuelTechGroupName === 'Renewable/Fossil' ||
         this.fuelTechGroupName === 'Flexibility'
-        ? '#e34a33'
-        : '#52BCA3'
+      )
     }
   },
 
@@ -1065,6 +1067,10 @@ export default {
 
     &.on {
       background: #52bca3;
+
+      &.alt-colour {
+        background: #e34a33;
+      }
     }
   }
 }

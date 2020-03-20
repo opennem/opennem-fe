@@ -788,9 +788,6 @@ export default {
     chartEnergy() {
       return this.$store.getters.chartEnergy
     },
-    chartEnergyRenewablesLine() {
-      return this.$store.getters.chartEnergyRenewablesLine
-    },
     chartEmissionsVolume() {
       return this.$store.getters.chartEmissionsVolume
     },
@@ -856,9 +853,6 @@ export default {
     },
     fuelTechOrder() {
       return this.$store.getters.fuelTechOrder
-    },
-    fuelTechGroupName() {
-      return this.$store.getters.fuelTechGroupName
     },
     fuelTechGroup() {
       return this.$store.getters.fuelTechGroup
@@ -1364,13 +1358,6 @@ export default {
     },
     totalAverageValue() {
       return this.summary ? this.summary._totalAverageValue : 0
-    },
-
-    renewablesLineColour() {
-      return this.fuelTechGroupName === 'Renewable/Fossil' ||
-        this.fuelTechGroupName === 'Flexibility'
-        ? '#e34a33'
-        : '#52BCA3'
     }
   },
 

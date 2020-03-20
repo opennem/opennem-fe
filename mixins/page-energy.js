@@ -18,8 +18,17 @@ const pageEnergyMixin = {
     ...mapGetters({
       emissionsVolumeUnit: 'si/emissionsVolumeUnit',
       emissionsVolumePrefix: 'si/emissionsVolumePrefix',
-      useEVnextPrefix: 'si/useEVnextPrefix'
-    })
+      useEVnextPrefix: 'si/useEVnextPrefix',
+      fuelTechGroupName: 'fuelTechGroupName',
+      chartEnergyRenewablesLine: 'chartEnergyRenewablesLine'
+    }),
+
+    renewablesLineColour() {
+      return this.fuelTechGroupName === 'Renewable/Fossil' ||
+        this.fuelTechGroupName === 'Flexibility'
+        ? '#e34a33'
+        : '#52BCA3'
+    }
   },
   methods: {
     calculateEnergyEmissionsDatasets() {
