@@ -788,6 +788,7 @@ export default {
       // Setup the keys in the stack so it knows how to draw the area
       this.stack.keys(this.domainIds).value((d, key) => (d[key] ? d[key] : 0))
       this.area.curve(this.curveType)
+      this.line.curve(curveMonotoneX)
 
       // Remove Area
       this.$stackedAreaGroup.selectAll('path').remove()
