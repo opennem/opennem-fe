@@ -159,9 +159,20 @@
       </div>
     </div>
 
-    <div class="summary-column-headers">
+    <div
+      class="summary-column-headers renewable-row"
+      @click.exact="handleRenewableRowClicked"
+      @click.shift.exact="handleRenewableRowShiftClicked">
       <div class="summary-row last-row">
-        <div class="summary-col-label">Renewables</div>
+        <div class="summary-col-label">
+          <div
+            :class="{
+              on: chartEnergyRenewablesLine,
+              'alt-colour': useAltRenewablesLineColour
+            }"
+            class="renewable-line" />
+          Renewables
+        </div>
         <div class="summary-col-energy cell-value" />
         <div
           v-if="!hoverOn && !focusOn"
@@ -354,15 +365,13 @@ export default {
         (a, b) => a + b._totalRenewables,
         0
       )
+      let total = this.dataset.reduce((a, b) => a + b[key], 0)
       if (!this.isEnergy) {
         // calculate energy (GWh) += power * 5mins/60/1000
         const mins = this.interval === '30m' ? 30 : 5
         totalRenewables = (totalRenewables * mins) / 60 / 1000
+        total = (total * mins) / 60 / 1000
       }
-      const total =
-        this.percentContributionTo === 'demand'
-          ? this.summary._totalEnergy
-          : this.summarySources._totalGeneration
       return (totalRenewables / total) * 100
     },
 
@@ -449,6 +458,17 @@ export default {
 
     isYearInterval() {
       return this.interval === 'Fin Year' || this.interval === 'Year'
+    },
+
+    chartEnergyRenewablesLine() {
+      return this.$store.getters.chartEnergyRenewablesLine
+    },
+
+    useAltRenewablesLineColour() {
+      return (
+        this.fuelTechGroupName === 'Renewable/Fossil' ||
+        this.fuelTechGroupName === 'Flexibility'
+      )
     }
   },
 
@@ -929,7 +949,8 @@ export default {
       })
       if (
         this.sourcesOrder.length === sourcesHiddenLength &&
-        this.loadsOrder.length === loadsHiddenLength
+        this.loadsOrder.length === loadsHiddenLength &&
+        !this.chartEnergyRenewablesLine
       ) {
         this.hiddenSources = []
         this.hiddenLoads = []
@@ -989,6 +1010,35 @@ export default {
       } else {
         this.$store.dispatch('percentContributionTo', 'demand')
       }
+    },
+
+    handleRenewableRowClicked() {
+      const rowToggle = !this.chartEnergyRenewablesLine
+      this.$store.dispatch('chartEnergyRenewablesLine', rowToggle)
+      this.emitHiddenFuelTechs()
+    },
+
+    handleRenewableRowShiftClicked() {
+      const property = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
+      if (this.fuelTechGroupName === 'Default') {
+        const hiddenSources = Domain.getAllDomainObjs().filter(
+          d => d.category === 'source'
+        )
+        const hiddenLoads = Domain.getAllDomainObjs().filter(
+          d => d.category === 'load'
+        )
+        this.hiddenSources = hiddenSources.map(d => d.fuelTech)
+        this.hiddenLoads = hiddenLoads.map(d => d.fuelTech)
+      } else {
+        const hiddenLoads = Domain.getAllGroupDomains(
+          this.fuelTechGroup
+        ).filter(d => d.category === 'load')
+        this.hiddenLoads = hiddenLoads.map(d => d[property])
+        this.hiddenSources = this.sourcesOrder.map(d => d[property])
+      }
+
+      this.$store.dispatch('chartEnergyRenewablesLine', true)
+      this.emitHiddenFuelTechs()
     }
   }
 }
@@ -1021,6 +1071,33 @@ export default {
   cursor: pointer;
   &:hover {
     background-color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+.renewable-row {
+  cursor: pointer;
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+
+  .summary-col-label {
+    display: flex;
+    align-items: center;
+  }
+
+  .renewable-line {
+    width: 15px;
+    height: 3px;
+    background: #ddd;
+    margin-right: 5px;
+
+    &.on {
+      background: #52bca3;
+
+      &.alt-colour {
+        background: #e34a33;
+      }
+    }
   }
 }
 

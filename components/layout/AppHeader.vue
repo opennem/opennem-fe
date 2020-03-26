@@ -162,6 +162,9 @@ export default {
     chartUnit() {
       return this.$store.getters.chartUnit
     },
+    chartEnergyRenewablesLine() {
+      return this.$store.getters.chartEnergyRenewablesLine
+    },
     exportData() {
       const timeFormat = d3TimeFormat('%Y-%m-%d %H:%M')
       const format = d3Format('.2f')
@@ -205,6 +208,15 @@ export default {
           this.marketValueDomains.forEach(domain => {
             obj[`${domain.label} Market Value - AUD`] = format(d[domain.id])
           })
+        }
+        if (this.chartEnergyRenewablesLine) {
+          if (this.isGeneration) {
+            obj['Renewables — %'] = format(
+              d._totalGenerationRenewablesPercentage
+            )
+          } else {
+            obj['Renewables — %'] = format(d._totalDemandRenewablesPercentage)
+          }
         }
         return obj
       })
