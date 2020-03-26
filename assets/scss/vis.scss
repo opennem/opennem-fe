@@ -88,10 +88,14 @@ path.line-path {
 //   stroke-dasharray: 4.8;
 //   stroke: rgba(0, 0, 0, 0.1);
 // }
-.y-axis-tick .tick text {
+.y-axis-tick .tick text,
+.y-axis-2 .tick text {
   color: #000;
   text-anchor: start;
   text-shadow: 1px 1px 2px #fff;
+}
+.y-axis-2 .tick text {
+  text-anchor: end;
 }
 .y-axis .tick text {
   color: transparent;

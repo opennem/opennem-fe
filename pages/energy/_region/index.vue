@@ -56,10 +56,13 @@
             <div
               v-show="chartEnergy"
               class="hover-date-value">
-              <div class="average-value">
+              <div
+                v-if="!isRenewableLineOnly"
+                class="average-value">
                 Av.
                 <strong>{{ averageEnergy | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</strong>
               </div>
+              
               <div class="hover-date">
                 <time>
                   {{ hoverDisplayDate }}
@@ -75,10 +78,19 @@
                   {{ hoverDomainLabel }}
                   <strong>{{ hoverValue | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}</strong>
                 </span>
-                <span class="total-value">
+
+                <span
+                  v-if="isRenewableLineOnly"
+                  class="renewables-value">
+                  <strong>{{ hoverRenewables | percentageFormatNumber }}</strong>
+                </span>
+                <span
+                  v-else
+                  class="total-value">
                   Total
                   <strong>{{ hoverTotal | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}</strong>
                 </span>
+                
               </div>
             </div>
           </div>
@@ -99,7 +111,9 @@
             <div
               v-show="chartEnergy"
               class="hover-date-value">
-              <div class="average-value">
+              <div
+                v-if="!isRenewableLineOnly"
+                class="average-value">
                 Av.
                 <strong>{{ averageEnergy | formatValue }} MW</strong>
               </div>
@@ -118,7 +132,15 @@
                   {{ hoverDomainLabel }}
                   <strong>{{ hoverValue | formatValue }} MW</strong>
                 </span>
-                <span class="total-value">
+
+                <span
+                  v-if="isRenewableLineOnly"
+                  class="renewables-value">
+                  <strong>{{ hoverRenewables | percentageFormatNumber }}</strong>
+                </span>
+                <span
+                  v-else
+                  class="total-value">
                   Total
                   <strong>{{ hoverTotal | formatValue }} MW</strong>
                 </span>
@@ -147,6 +169,8 @@
             :mobile-screen="tabletBreak"
             :incomplete-intervals="incompleteIntervals"
             :compare-dates="compareDates"
+            :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
+            :dataset-two-colour="renewablesLineColour"
             class="vis-chart"
             @eventChange="handleEventChange"
             @dateOver="handleDateOver"
@@ -753,7 +777,8 @@ export default {
       emissionsIntensityMax: 1000,
       isTouchDevice: false,
       compareData: [],
-      summary: null
+      summary: null,
+      renewablesPercentageDataset: []
     }
   },
 
@@ -850,9 +875,6 @@ export default {
     },
     fuelTechOrder() {
       return this.$store.getters.fuelTechOrder
-    },
-    fuelTechGroupName() {
-      return this.$store.getters.fuelTechGroupName
     },
     fuelTechGroup() {
       return this.$store.getters.fuelTechGroup
@@ -1256,6 +1278,16 @@ export default {
       }
       return total
     },
+    hoverRenewables() {
+      const isGeneration = this.percentContributionTo === 'generation'
+      if (this.hoverOrFocusData) {
+        return isGeneration
+          ? this.hoverOrFocusData._totalGenerationRenewablesPercentage
+          : this.hoverOrFocusData._totalDemandRenewablesPercentage
+      } else {
+        return null
+      }
+    },
     hoverEmissionVolumeValue() {
       return this.hoverOrFocusData
         ? Data.siCalculationFromBase(
@@ -1358,13 +1390,17 @@ export default {
     },
     totalAverageValue() {
       return this.summary ? this.summary._totalAverageValue : 0
+    },
+    isRenewableLineOnly() {
+      return (
+        this.chartEnergyRenewablesLine && this.stackedAreaDomains.length === 0
+      )
     }
   },
 
   watch: {
     groupDomains(domains) {
-      const perfLabel = `Change to ${this.fuelTechGroupName || 'Default'}`
-      const perfTime = new PerfTime(perfLabel)
+      const perfTime = new PerfTime()
       perfTime.time()
       if (domains.length > 0) {
         this.originalDataset = this.updateDatasetGroups(
@@ -1386,7 +1422,7 @@ export default {
           }
         }
       }
-      perfTime.timeEnd()
+      perfTime.timeEnd(this.getGroupPerfLabel())
     },
     groupMarketValueDomains(domains) {
       if (domains.length > 0) {
@@ -1589,7 +1625,7 @@ export default {
       }
 
       this.responses = responses
-      const perfTime = new PerfTime(this.getPerfLabel())
+      const perfTime = new PerfTime()
       perfTime.time()
       this.updateDomains(responses)
       EnergyDataTransform.mergeResponses(
@@ -1603,7 +1639,7 @@ export default {
         this.interval
       ).then(dataset => {
         this.readyDataset(dataset)
-        perfTime.timeEnd()
+        perfTime.timeEnd(this.getPerfLabel())
       })
     },
 
@@ -1792,7 +1828,7 @@ export default {
       this.compareData = []
       this.$store.dispatch('compareDates', [])
       this.$store.dispatch('interval', interval)
-      const perfTime = new PerfTime(this.getPerfLabel())
+      const perfTime = new PerfTime()
       perfTime.time()
       EnergyDataTransform.mergeResponses(
         this.responses,
@@ -1805,7 +1841,7 @@ export default {
         interval
       ).then(dataset => {
         this.readyDataset(dataset)
-        perfTime.timeEnd()
+        perfTime.timeEnd(this.getPerfLabel())
       })
     },
 
@@ -2015,7 +2051,8 @@ export default {
 
     getPerfLabel() {
       let processLength = 0,
-        arrayLength = 0
+        arrayLength = 0,
+        downToLength = this.dataset.length
       try {
         if (this.responses.length > 0 && this.responses[0].data) {
           arrayLength = this.responses[0].data.length
@@ -2031,7 +2068,14 @@ export default {
       }
       return `${this.regionId} — ${this.range}/${
         this.interval
-      } (processed ${processLength})`
+      } (crunched ${processLength} points down to ${downToLength} points)`
+    },
+
+    getGroupPerfLabel() {
+      const group = this.fuelTechGroupName || 'Default'
+      return `${this.regionId} — ${this.range}/${
+        this.interval
+      } (grouped ${group})`
     }
   }
 }

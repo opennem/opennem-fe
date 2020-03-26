@@ -12,9 +12,9 @@ export default class PerfTime {
     this.t0 = performance.now()
   }
 
-  timeEnd() {
+  timeEnd(label) {
     const formatted = this.formatString(performance.now() - this.t0)
-    console().info(`${this.label}: ${formatted}ms`)
+    console().info(`${label}: ${formatted}ms`)
     this.t0 = null
   }
 }

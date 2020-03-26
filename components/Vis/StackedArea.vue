@@ -31,6 +31,14 @@
             stroke-width="2px"
             y2="10" />
         </pattern>
+
+        <filter id="shadow">
+          <feDropShadow
+            dx="0"
+            dy="0"
+            stdDeviation="0.5" 
+            flood-color="rgba(0, 0, 0, 0.5)" />
+        </filter>
       </defs>
 
       <g 
@@ -65,6 +73,9 @@
         <!-- where the stacked area path will show -->
         <g class="stacked-area-group" />
 
+        <!-- where the line path will show -->
+        <g class="line-group" />
+
         <g class="x-incomplete-group" />
         <g class="focus-group" />
         <g class="compare-group" />
@@ -75,6 +86,7 @@
         :transform="gTransform"
         class="axis-text-group">
         <g :class="yAxisTickClass" />
+        <g class="y-axis-2" />
       </g>
 
       <!-- cursor line and tooltip -->
@@ -89,10 +101,12 @@
 </template>
 
 <script>
+import _cloneDeep from 'lodash.clonedeep'
 import { scaleOrdinal, scaleLinear, scaleTime } from 'd3-scale'
-import { axisBottom, axisRight } from 'd3-axis'
+import { axisBottom, axisRight, axisLeft } from 'd3-axis'
 import {
   area as d3Area,
+  line as d3Line,
   stack,
   curveStepAfter,
   curveLinear,
@@ -129,6 +143,14 @@ export default {
     dataset: {
       type: Array,
       default: () => []
+    },
+    datasetTwo: {
+      type: Array,
+      default: () => []
+    },
+    datasetTwoColour: {
+      type: String,
+      default: () => '#000'
     },
     // !!REQUIRED: domains.colour, domain.id
     domains: {
@@ -246,12 +268,15 @@ export default {
       margin: CONFIG.DEFAULT_MARGINS,
       x: null,
       y: null,
+      y2: null,
       z: null,
       guides: null,
       xAxis: null,
       xDomainExtent: null,
       yAxis: null,
+      yAxis2: null,
       area: null,
+      line: null,
       colours: schemeCategory10,
       stack: null,
       brushX: null,
@@ -260,12 +285,14 @@ export default {
       $xAxisGroup: null,
       $xAxisBrushGroup: null,
       $yAxisGroup: null,
+      $yAxisGroup2: null,
       $yAxisTickGroup: null,
       $hoverLayer: null,
       $cursorLineGroup: null,
       $focusGroup: null,
       $tooltipGroup: null,
       $stackedAreaGroup: null,
+      $lineGroup: null,
       $xGuideGroup: null,
       $xIncompleteGroup: null,
       $compareGroup: null,
@@ -310,6 +337,29 @@ export default {
     },
     path() {
       return this.$route.path
+    },
+    hasSecondDataset() {
+      return this.datasetTwo.length > 0
+    },
+    updatedDatasetTwo() {
+      const updated = _cloneDeep(this.datasetTwo)
+      // update datasetTwo time to move the data point in the middle of the period
+      if (this.interval !== '5m' && this.interval !== '30m') {
+        let previousBandwidth = 0
+        updated.forEach((d, i) => {
+          const xDate = d.date
+          const nextDate = updated[i + 1] ? updated[i + 1].date : null
+          const nextPeriod = nextDate || xDate
+          let bandwidth = nextPeriod - xDate
+          if (bandwidth !== 0) {
+            previousBandwidth = bandwidth
+          } else {
+            bandwidth = previousBandwidth
+          }
+          d.date = d.date + bandwidth / 2
+        })
+      }
+      return updated
     },
     datasetDateExtent() {
       return extent(this.dataset, d => new Date(d.date))
@@ -378,6 +428,10 @@ export default {
     },
     dataset() {
       // this.zoomed = false
+      this.update()
+      this.resizeRedraw()
+    },
+    updatedDatasetTwo() {
       this.update()
       this.resizeRedraw()
     },
@@ -455,6 +509,7 @@ export default {
       // Axis
       this.$xAxisGroup = $svg.select(`.${this.xAxisClass}`)
       this.$yAxisGroup = $svg.select(`.${this.yAxisClass}`)
+      this.$yAxisGroup2 = $svg.select('.y-axis-2')
       this.$yAxisTickGroup = $svg.select(`.${this.yAxisTickClass}`)
       this.$xGuideGroup = $svg.select(`.${this.xGuideGroupClass}`)
       this.$xIncompleteGroup = $svg.select(`.${this.xIncompleteGroupClass}`)
@@ -471,6 +526,7 @@ export default {
       // Define x, y, z scale types
       this.x = scaleTime().range([0, this.width]) // Date axis
       this.y = scaleLinear().range([this.height, 0]) // Value axis
+      this.y2 = scaleLinear().range([this.height, 0]) // Value axis
       this.z = scaleOrdinal() // Colour
 
       // Set up where x, y axis appears
@@ -481,6 +537,10 @@ export default {
         .tickSize(this.width)
         .ticks(this.yAxisTicks)
         .tickFormat(d => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
+      this.yAxis2 = axisRight(this.y2)
+        .tickSize(30)
+        .ticks(5)
+        .tickFormat(d => `${d}%`)
 
       // Setup the 'brush' area and event handler
       this.brushX = brushX()
@@ -551,6 +611,12 @@ export default {
         .x(d => this.x(d.data.date))
         .y0(d => this.y(d[0]))
         .y1(d => this.y(d[1]))
+
+      // How to draw the line
+      this.line = d3Line()
+        .x(d => this.x(d.date))
+        .y(d => this.y2(d.value))
+      this.line.defined(d => d.value || d.value === 0)
 
       // Event handling
       // - Control tooltip visibility for mouse entering/leaving svg
@@ -660,6 +726,7 @@ export default {
       this.$stackedAreaGroup = select(
         `#${this.id} .${this.stackedAreaGroupClass}`
       )
+      this.$lineGroup = select(`#${this.id} .line-group`)
 
       // Setup the x/y/z Axis domains
       // - Use dataset date range if there is none being passed into
@@ -670,13 +737,34 @@ export default {
       const yMax =
         this.yMax || this.yMax === 0
           ? this.yMax
-          : max(this.dataset, d => d._total) + 5
-
+          : max(this.dataset, d => d._total)
       const xDomainExtent = this.dynamicExtent.length
         ? this.dynamicExtent
         : this.datasetDateExtent
       this.x.domain(xDomainExtent)
-      this.y.domain([yMin, yMax]).nice()
+
+      if (this.domains.length === 0) {
+        this.y
+          .range([this.height, 0])
+          .domain([0, 100])
+          .nice()
+      } else {
+        this.y.domain([yMin, yMax]).nice()
+      }
+
+      let y2Max = max(this.updatedDatasetTwo, d => d.value)
+      let y2Height = this.y(0)
+      if (y2Max < 100) {
+        y2Max = 100
+      }
+      if (y2Height <= 0 || this.domains.length === 0) {
+        y2Height = this.height
+      }
+
+      this.y2
+        .range([y2Height, 0])
+        .domain([0, y2Max])
+        .nice()
       this.z.range(this.domainColours).domain(this.domainIds)
 
       if (yMax <= 10) {
@@ -686,16 +774,80 @@ export default {
       }
 
       this.$xAxisGroup.call(this.customXAxis)
-      this.$yAxisGroup.call(this.customYAxis)
-      this.$yAxisTickGroup.call(this.customYAxis)
+      if (this.domains.length === 0) {
+        this.$yAxisGroup
+          .call(this.yAxis)
+          .call(g => g.selectAll('.y-axis .tick').style('opacity', '0'))
+        this.$yAxisTickGroup
+          .call(this.yAxis)
+          .call(g => g.selectAll('.y-axis-tick .tick').style('opacity', '0'))
+      } else {
+        this.$yAxisGroup
+          .call(this.customYAxis)
+          .call(g => g.selectAll('.y-axis .tick').style('opacity', '1'))
+        this.$yAxisTickGroup
+          .call(this.customYAxis)
+          .call(g => g.selectAll('.y-axis-tick .tick').style('opacity', '1'))
+      }
+
+      if (this.domains.length === 0) {
+        this.yAxis2 = axisLeft(this.y2)
+          .tickSize(-this.width)
+          .ticks(5)
+          .tickFormat(d => `${d}%`)
+
+        this.$yAxisGroup2.selectAll('.tick').remove()
+        this.$yAxisGroup2
+          .attr('transform', `translate(0, 0)`)
+          .call(this.yAxis2)
+          .call(g =>
+            g
+              .selectAll('.y-axis-2 .tick text')
+              .attr('x', 4)
+              .attr('dy', -4)
+              .style('text-anchor', 'start')
+          )
+          .call(g =>
+            g
+              .selectAll('.y-axis-2 .tick line')
+              .style('stroke', 'rgba(0, 0, 0, 0.1)')
+              .style('stroke-dasharray', '4.8')
+          )
+      } else {
+        this.yAxis2 = axisRight(this.y2)
+          .tickSize(30)
+          .ticks(5)
+          .tickFormat(d => `${d}%`)
+
+        this.$yAxisGroup2.selectAll('.tick').remove()
+        this.$yAxisGroup2
+          .attr('transform', `translate(${this.width - 30}, 0)`)
+          .call(this.yAxis2)
+          .call(g =>
+            g
+              .selectAll('.y-axis-2 .tick line')
+              .attr('stroke', '#ccc')
+              .style('opacity', '0')
+          )
+          .call(g =>
+            g
+              .selectAll('.y-axis-2 .tick text')
+              .attr('dx', -4)
+              .attr('dy', -4)
+          )
+      }
+
       this.updateGuides()
 
       // Setup the keys in the stack so it knows how to draw the area
       this.stack.keys(this.domainIds).value((d, key) => (d[key] ? d[key] : 0))
       this.area.curve(this.curveType)
+      this.line.curve(curveMonotoneX)
 
       // Remove Area
       this.$stackedAreaGroup.selectAll('path').remove()
+      this.$lineGroup.selectAll('path').remove()
+
       // Generate Stacked Area
       const stackArea = this.$stackedAreaGroup
         .selectAll(`.${this.stackedAreaPathClass}`)
@@ -718,6 +870,18 @@ export default {
         .style('pointer-events', 'auto')
 
       stackArea.exit().remove()
+
+      // Generate Line
+      this.$lineGroup
+        .append('path')
+        .datum(this.updatedDatasetTwo)
+        .attr('class', 'line-path')
+        .attr('d', this.line)
+        .style('stroke', this.datasetTwoColour)
+        .style('stroke-width', 2)
+        .style('filter', 'url(#shadow)')
+        .style('clip-path', this.clipPathUrl)
+        .style('-webkit-clip-path', this.clipPathUrl)
 
       // Event handling
       // - find date and domain
@@ -804,6 +968,9 @@ export default {
       this.brushX.extent([[0, 0], [this.width, 40]])
       this.$xAxisBrushGroup.selectAll('.brush').call(this.brushX)
       this.$stackedAreaGroup.selectAll('path').attr('d', this.area)
+      if (this.hasSecondDataset) {
+        this.$lineGroup.selectAll('path').attr('d', this.line)
+      }
     },
 
     zoomRedraw() {
@@ -817,6 +984,12 @@ export default {
         .selectAll('path')
         .transition(transition)
         .attr('d', this.area)
+      if (this.hasSecondDataset) {
+        this.$lineGroup
+          .selectAll('path')
+          .transition(transition)
+          .attr('d', this.line)
+      }
     },
 
     updateGuides() {

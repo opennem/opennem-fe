@@ -54,6 +54,8 @@
               :x-guides="xGuides"
               :y-min="energyMin"
               :y-max="energyMax"
+              :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
+              :dataset-two-colour="renewablesLineColour"
               class="vis-chart"
             />
           </div>

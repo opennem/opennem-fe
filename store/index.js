@@ -35,6 +35,7 @@ export const state = () => ({
   facilityExportData: [],
   responsiveBreakWidth: 769,
   chartEnergy: true,
+  chartEnergyRenewablesLine: false,
   chartEmissionsVolume: true,
   chartEmissionsIntensity: true,
   chartPrice: true,
@@ -111,6 +112,9 @@ export const mutations = {
   },
   chartEnergy(state, data) {
     state.chartEnergy = data
+  },
+  chartEnergyRenewablesLine(state, data) {
+    state.chartEnergyRenewablesLine = data
   },
   chartEmissionsVolume(state, data) {
     state.chartEmissionsVolume = data
@@ -242,6 +246,7 @@ export const getters = {
   facilityExportData: state => state.facilityExportData,
   responsiveBreakWidth: state => state.responsiveBreakWidth,
   chartEnergy: state => state.chartEnergy,
+  chartEnergyRenewablesLine: state => state.chartEnergyRenewablesLine,
   chartEmissionsVolume: state => state.chartEmissionsVolume,
   chartEmissionsIntensity: state => state.chartEmissionsIntensity,
   chartPrice: state => state.chartPrice,
@@ -316,6 +321,9 @@ export const actions = {
   },
   chartEnergy({ commit }, data) {
     commit('chartEnergy', data)
+  },
+  chartEnergyRenewablesLine({ commit }, data) {
+    commit('chartEnergyRenewablesLine', data)
   },
   chartEmissionsVolume({ commit }, data) {
     commit('chartEmissionsVolume', data)
