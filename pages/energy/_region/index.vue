@@ -56,10 +56,13 @@
             <div
               v-show="chartEnergy"
               class="hover-date-value">
-              <div class="average-value">
+              <div
+                v-if="!isRenewableLineOnly"
+                class="average-value">
                 Av.
                 <strong>{{ averageEnergy | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</strong>
               </div>
+              
               <div class="hover-date">
                 <time>
                   {{ hoverDisplayDate }}
@@ -75,10 +78,19 @@
                   {{ hoverDomainLabel }}
                   <strong>{{ hoverValue | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}</strong>
                 </span>
-                <span class="total-value">
+
+                <span
+                  v-if="isRenewableLineOnly"
+                  class="renewables-value">
+                  <strong>{{ hoverRenewables | percentageFormatNumber }}</strong>
+                </span>
+                <span
+                  v-else
+                  class="total-value">
                   Total
                   <strong>{{ hoverTotal | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}</strong>
                 </span>
+                
               </div>
             </div>
           </div>
@@ -99,7 +111,9 @@
             <div
               v-show="chartEnergy"
               class="hover-date-value">
-              <div class="average-value">
+              <div
+                v-if="!isRenewableLineOnly"
+                class="average-value">
                 Av.
                 <strong>{{ averageEnergy | formatValue }} MW</strong>
               </div>
@@ -118,7 +132,15 @@
                   {{ hoverDomainLabel }}
                   <strong>{{ hoverValue | formatValue }} MW</strong>
                 </span>
-                <span class="total-value">
+
+                <span
+                  v-if="isRenewableLineOnly"
+                  class="renewables-value">
+                  <strong>{{ hoverRenewables | percentageFormatNumber }}</strong>
+                </span>
+                <span
+                  v-else
+                  class="total-value">
                   Total
                   <strong>{{ hoverTotal | formatValue }} MW</strong>
                 </span>
@@ -1256,6 +1278,16 @@ export default {
       }
       return total
     },
+    hoverRenewables() {
+      const isGeneration = this.percentContributionTo === 'generation'
+      if (this.hoverOrFocusData) {
+        return isGeneration
+          ? this.hoverOrFocusData._totalGenerationRenewablesPercentage
+          : this.hoverOrFocusData._totalDemandRenewablesPercentage
+      } else {
+        return null
+      }
+    },
     hoverEmissionVolumeValue() {
       return this.hoverOrFocusData
         ? Data.siCalculationFromBase(
@@ -1358,6 +1390,11 @@ export default {
     },
     totalAverageValue() {
       return this.summary ? this.summary._totalAverageValue : 0
+    },
+    isRenewableLineOnly() {
+      return (
+        this.chartEnergyRenewablesLine && this.stackedAreaDomains.length === 0
+      )
     }
   },
 

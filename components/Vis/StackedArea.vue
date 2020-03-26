@@ -742,14 +742,22 @@ export default {
         ? this.dynamicExtent
         : this.datasetDateExtent
       this.x.domain(xDomainExtent)
-      this.y.domain([yMin, yMax]).nice()
+
+      if (this.domains.length === 0) {
+        this.y
+          .range([this.height, 0])
+          .domain([0, 100])
+          .nice()
+      } else {
+        this.y.domain([yMin, yMax]).nice()
+      }
 
       let y2Max = max(this.updatedDatasetTwo, d => d.value)
       let y2Height = this.y(0)
       if (y2Max < 100) {
         y2Max = 100
       }
-      if (y2Height <= 0) {
+      if (y2Height <= 0 || this.domains.length === 0) {
         y2Height = this.height
       }
 
@@ -766,23 +774,69 @@ export default {
       }
 
       this.$xAxisGroup.call(this.customXAxis)
-      this.$yAxisGroup.call(this.customYAxis)
-      this.$yAxisTickGroup.call(this.customYAxis)
-      this.$yAxisGroup2
-        .attr('transform', `translate(${this.width - 30}, 0)`)
-        .call(this.yAxis2)
-        .call(g =>
-          g
-            .selectAll('.y-axis-2 .tick line')
-            .attr('stroke', '#000')
-            .style('opacity', '0')
-        )
-        .call(g =>
-          g
-            .selectAll('.y-axis-2 .tick text')
-            .attr('dx', -4)
-            .attr('dy', -4)
-        )
+      if (this.domains.length === 0) {
+        this.$yAxisGroup
+          .call(this.yAxis)
+          .call(g => g.selectAll('.y-axis .tick').style('opacity', '0'))
+        this.$yAxisTickGroup
+          .call(this.yAxis)
+          .call(g => g.selectAll('.y-axis-tick .tick').style('opacity', '0'))
+      } else {
+        this.$yAxisGroup
+          .call(this.customYAxis)
+          .call(g => g.selectAll('.y-axis .tick').style('opacity', '1'))
+        this.$yAxisTickGroup
+          .call(this.customYAxis)
+          .call(g => g.selectAll('.y-axis-tick .tick').style('opacity', '1'))
+      }
+
+      if (this.domains.length === 0) {
+        this.yAxis2 = axisLeft(this.y2)
+          .tickSize(-this.width)
+          .ticks(5)
+          .tickFormat(d => `${d}%`)
+
+        this.$yAxisGroup2.selectAll('.tick').remove()
+        this.$yAxisGroup2
+          .attr('transform', `translate(0, 0)`)
+          .call(this.yAxis2)
+          .call(g =>
+            g
+              .selectAll('.y-axis-2 .tick text')
+              .attr('x', 4)
+              .attr('dy', -4)
+              .style('text-anchor', 'start')
+          )
+          .call(g =>
+            g
+              .selectAll('.y-axis-2 .tick line')
+              .style('stroke', 'rgba(0, 0, 0, 0.1)')
+              .style('stroke-dasharray', '4.8')
+          )
+      } else {
+        this.yAxis2 = axisRight(this.y2)
+          .tickSize(30)
+          .ticks(5)
+          .tickFormat(d => `${d}%`)
+
+        this.$yAxisGroup2.selectAll('.tick').remove()
+        this.$yAxisGroup2
+          .attr('transform', `translate(${this.width - 30}, 0)`)
+          .call(this.yAxis2)
+          .call(g =>
+            g
+              .selectAll('.y-axis-2 .tick line')
+              .attr('stroke', '#ccc')
+              .style('opacity', '0')
+          )
+          .call(g =>
+            g
+              .selectAll('.y-axis-2 .tick text')
+              .attr('dx', -4)
+              .attr('dy', -4)
+          )
+      }
+
       this.updateGuides()
 
       // Setup the keys in the stack so it knows how to draw the area
