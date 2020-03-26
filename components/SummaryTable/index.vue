@@ -161,7 +161,8 @@
 
     <div
       class="summary-column-headers renewable-row"
-      @click="handleRenewableRowClicked">
+      @click.exact="handleRenewableRowClicked"
+      @click.shift.exact="handleRenewableRowShiftClicked">
       <div class="summary-row last-row">
         <div class="summary-col-label">
           <div
@@ -948,7 +949,8 @@ export default {
       })
       if (
         this.sourcesOrder.length === sourcesHiddenLength &&
-        this.loadsOrder.length === loadsHiddenLength
+        this.loadsOrder.length === loadsHiddenLength &&
+        !this.chartEnergyRenewablesLine
       ) {
         this.hiddenSources = []
         this.hiddenLoads = []
@@ -1013,6 +1015,30 @@ export default {
     handleRenewableRowClicked() {
       const rowToggle = !this.chartEnergyRenewablesLine
       this.$store.dispatch('chartEnergyRenewablesLine', rowToggle)
+      this.emitHiddenFuelTechs()
+    },
+
+    handleRenewableRowShiftClicked() {
+      const property = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
+      if (this.fuelTechGroupName === 'Default') {
+        const hiddenSources = Domain.getAllDomainObjs().filter(
+          d => d.category === 'source'
+        )
+        const hiddenLoads = Domain.getAllDomainObjs().filter(
+          d => d.category === 'load'
+        )
+        this.hiddenSources = hiddenSources.map(d => d.fuelTech)
+        this.hiddenLoads = hiddenLoads.map(d => d.fuelTech)
+      } else {
+        const hiddenLoads = Domain.getAllGroupDomains(
+          this.fuelTechGroup
+        ).filter(d => d.category === 'load')
+        this.hiddenLoads = hiddenLoads.map(d => d[property])
+        this.hiddenSources = this.sourcesOrder.map(d => d[property])
+      }
+
+      this.$store.dispatch('chartEnergyRenewablesLine', true)
+      this.emitHiddenFuelTechs()
     }
   }
 }

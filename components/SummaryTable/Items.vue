@@ -150,7 +150,8 @@ export default {
   computed: {
     ...mapGetters({
       emissionsVolumePrefix: 'si/emissionsVolumePrefix',
-      percentContributionTo: 'percentContributionTo'
+      percentContributionTo: 'percentContributionTo',
+      chartEnergyRenewablesLine: 'chartEnergyRenewablesLine'
     }),
     showSummaryColumn() {
       return this.$store.getters.showSummaryColumn
