@@ -1,7 +1,7 @@
 <template>
   <footer class="has-background-warning">
     <div class="left">
-      <span class="version">v3.1 beta</span>
+      <span class="version">v3.2 beta</span>
       <div class="sources">
         Sources:
         <a
