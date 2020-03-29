@@ -667,6 +667,7 @@ import Draggable from 'vuedraggable'
 import { saveAs } from 'file-saver'
 
 import PageEnergyMixin from '~/mixins/page-energy.js'
+import PageEnergyCreatedMixin from '~/mixins/page-energy-created.js'
 import PerfLogMixin from '~/mixins/perf-log.js'
 
 import REGIONS from '~/constants/regions.js'
@@ -740,7 +741,7 @@ export default {
     EnergyCompare
   },
 
-  mixins: [PageEnergyMixin, PerfLogMixin],
+  mixins: [PageEnergyMixin, PerfLogMixin, PageEnergyCreatedMixin],
 
   data() {
     return {
@@ -790,7 +791,6 @@ export default {
       chartEnergy: 'chartEnergy',
       chartEmissionsVolume: 'chartEmissionsVolume',
       chartEmissionsIntensity: 'chartEmissionsIntensity',
-      chartEnergyRenewablesLine: 'chartEnergyRenewablesLine',
       chartPrice: 'chartPrice',
       chartTemperature: 'chartTemperature'
     }),
@@ -1442,14 +1442,6 @@ export default {
     }
   },
 
-  created() {
-    this.$store.dispatch('currentView', 'energy')
-    EventBus.$on('dataset.filter', this.handleDatasetFilter)
-    EventBus.$on('vis.mousemove', this.handleVisMouseMove)
-    EventBus.$on('vis.mouseenter', this.handleVisEnter)
-    EventBus.$on('vis.mouseleave', this.handleVisLeave)
-  },
-
   mounted() {
     function is_touch_device() {
       var prefixes = ' -webkit- -moz- -o- -ms- '.split(' ')
@@ -1486,13 +1478,6 @@ export default {
     })
     this.fetchData(this.regionId, this.range)
     this.mounted = true
-  },
-
-  beforeDestroy() {
-    EventBus.$off('dataset.filter')
-    EventBus.$off('vis.mousemove')
-    EventBus.$off('vis.mouseenter')
-    EventBus.$off('vis.mouseleave')
   },
 
   methods: {
