@@ -655,7 +655,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import moment from 'moment'
 import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import { mouse as d3Mouse } from 'd3-selection'
@@ -669,7 +668,6 @@ import PageEnergyMixin from '~/mixins/page-energy.js'
 import PageEnergyCreatedMixin from '~/mixins/page-energy-created.js'
 import PerfLogMixin from '~/mixins/perf-log.js'
 
-import REGIONS from '~/constants/regions.js'
 import { EMISSIONS } from '~/constants/emissions.js'
 import EventBus from '~/plugins/eventBus.js'
 import PerfTime from '~/plugins/perfTime.js'
@@ -710,13 +708,6 @@ export default {
   mixins: [PageEnergyMixin, PerfLogMixin, PageEnergyCreatedMixin],
 
   computed: {
-    ...mapGetters({
-      chartEnergy: 'chartEnergy',
-      chartEmissionsVolume: 'chartEmissionsVolume',
-      chartEmissionsIntensity: 'chartEmissionsIntensity',
-      chartPrice: 'chartPrice',
-      chartTemperature: 'chartTemperature'
-    }),
     zoomed() {
       return this.dateFilter.length !== 0
     },
@@ -737,21 +728,6 @@ export default {
     },
     regionId() {
       return this.$route.params.region
-    },
-    pageTitle() {
-      let title = 'An Open Platform for National Electricity Market Data'
-      const region = REGIONS.find(d => d.id === this.regionId)
-      if (region && this.regionId !== 'nem') {
-        title = region.label
-      }
-      return `OpenNEM: ${title}`
-    },
-    pageUrl() {
-      return `https://opennem.org.au/energy/${this.regionId}/`
-    },
-    pageImage() {
-      const url = 'https://opennem.org.au/images/energy/'
-      return `${url}${this.regionId}.png`
     },
     groupDomains() {
       const dict = this.fuelTechGroup

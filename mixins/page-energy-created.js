@@ -1,5 +1,7 @@
-import EventBus from '~/plugins/eventBus.js'
+import { mapGetters } from 'vuex'
 import _debounce from 'lodash.debounce'
+import EventBus from '~/plugins/eventBus.js'
+import REGIONS from '~/constants/regions.js'
 
 const pageEnergyCreated = {
   head() {
@@ -75,6 +77,31 @@ const pageEnergyCreated = {
       compareData: [],
       summary: null,
       renewablesPercentageDataset: []
+    }
+  },
+
+  computed: {
+    ...mapGetters({
+      chartEnergy: 'chartEnergy',
+      chartEmissionsVolume: 'chartEmissionsVolume',
+      chartEmissionsIntensity: 'chartEmissionsIntensity',
+      chartPrice: 'chartPrice',
+      chartTemperature: 'chartTemperature'
+    }),
+    pageTitle() {
+      let title = 'An Open Platform for National Electricity Market Data'
+      const region = REGIONS.find(d => d.id === this.regionId)
+      if (region && this.regionId !== 'nem') {
+        title = region.label
+      }
+      return `OpenNEM: ${title}`
+    },
+    pageUrl() {
+      return `https://opennem.org.au/energy/${this.regionId}/`
+    },
+    pageImage() {
+      const url = 'https://opennem.org.au/images/energy/'
+      return `${url}${this.regionId}.png`
     }
   },
 
