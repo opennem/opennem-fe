@@ -16,11 +16,35 @@ const pageEnergyMixin = {
   },
   computed: {
     ...mapGetters({
+      hostEnv: 'hostEnv',
+      featureEmissions: 'featureEmissions',
       emissionsVolumeUnit: 'si/emissionsVolumeUnit',
       emissionsVolumePrefix: 'si/emissionsVolumePrefix',
       useEVnextPrefix: 'si/useEVnextPrefix',
       fuelTechGroupName: 'fuelTechGroupName',
-      chartEnergyRenewablesLine: 'chartEnergyRenewablesLine'
+      dateFilter: 'dateFilter',
+      filterPeriod: 'filterPeriod',
+      type: 'energyChartType',
+      chartUnit: 'chartUnit',
+      chartEnergy: 'chartEnergy',
+      chartEmissionsVolume: 'chartEmissionsVolume',
+      chartEmissionsIntensity: 'chartEmissionsIntensity',
+      chartEnergyRenewablesLine: 'chartEnergyRenewablesLine',
+      chartPrice: 'chartPrice',
+      chartTemperature: 'chartTemperature',
+      chartSummaryPie: 'chartSummaryPie',
+      compareDifference: 'compareDifference',
+      focusOn: 'focusOn',
+      compareDates: 'compareDates',
+      responsiveBreakWidth: 'responsiveBreakWidth',
+      range: 'range',
+      interval: 'interval',
+      fuelTechOrder: 'fuelTechOrder',
+      fuelTechGroup: 'fuelTechGroup',
+      hiddenFuelTechs: 'hiddenFuelTechs',
+      percentContributionTo: 'percentContributionTo',
+      energyCurveType: 'energyCurveType',
+      step: 'step'
     }),
 
     renewablesLineColour() {

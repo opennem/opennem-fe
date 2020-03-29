@@ -783,59 +783,11 @@ export default {
   },
 
   computed: {
-    hostEnv() {
-      return this.$store.getters.hostEnv
-    },
-    chartUnit() {
-      return this.$store.getters.chartUnit
-    },
-    featureEmissions() {
-      return this.$store.getters.featureEmissions
-    },
-    dateFilter() {
-      return this.$store.getters.dateFilter
-    },
-    filterPeriod() {
-      return this.$store.getters.filterPeriod
-    },
     zoomed() {
-      return this.$store.getters.dateFilter.length !== 0
-    },
-    type() {
-      return this.$store.getters.energyChartType
+      return this.dateFilter.length !== 0
     },
     isEnergyType() {
       return this.type === 'energy'
-    },
-    chartEnergy() {
-      return this.$store.getters.chartEnergy
-    },
-    chartEmissionsVolume() {
-      return this.$store.getters.chartEmissionsVolume
-    },
-    chartEmissionsIntensity() {
-      return this.$store.getters.chartEmissionsIntensity
-    },
-    chartPrice() {
-      return this.$store.getters.chartPrice
-    },
-    chartTemperature() {
-      return this.$store.getters.chartTemperature
-    },
-    chartSummaryPie() {
-      return this.$store.getters.chartSummaryPie
-    },
-    compareDifference() {
-      return this.$store.getters.compareDifference
-    },
-    focusOn() {
-      return this.$store.getters.focusOn
-    },
-    compareDates() {
-      return this.$store.getters.compareDates
-    },
-    responsiveBreakWidth() {
-      return this.$store.getters.responsiveBreakWidth
     },
     tabletBreak() {
       return this.windowWidth < 769
@@ -867,24 +819,6 @@ export default {
       const url = 'https://opennem.org.au/images/energy/'
       return `${url}${this.regionId}.png`
     },
-    range() {
-      return this.$store.getters.range
-    },
-    interval() {
-      return this.$store.getters.interval
-    },
-    fuelTechOrder() {
-      return this.$store.getters.fuelTechOrder
-    },
-    fuelTechGroup() {
-      return this.$store.getters.fuelTechGroup
-    },
-    hiddenFuelTechs() {
-      return this.$store.getters.hiddenFuelTechs
-    },
-    percentContributionTo() {
-      return this.$store.getters.percentContributionTo
-    },
     groupDomains() {
       const dict = this.fuelTechGroup
       const domains = this.energyDomains
@@ -910,12 +844,6 @@ export default {
     },
     hasEmissionData() {
       return this.emissionDomains.length > 0
-    },
-    energyCurveType() {
-      return this.$store.getters.energyCurveType
-    },
-    step() {
-      return this.$store.getters.step
     },
     mvDomains() {
       return this.groupMarketValueDomains.length > 0
