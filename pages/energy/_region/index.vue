@@ -655,6 +655,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import moment from 'moment'
 import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import { mouse as d3Mouse } from 'd3-selection'
@@ -666,6 +667,8 @@ import Draggable from 'vuedraggable'
 import { saveAs } from 'file-saver'
 
 import PageEnergyMixin from '~/mixins/page-energy.js'
+import PerfLogMixin from '~/mixins/perf-log.js'
+
 import REGIONS from '~/constants/regions.js'
 import { EMISSIONS } from '~/constants/emissions.js'
 import EventBus from '~/plugins/eventBus.js'
@@ -737,7 +740,7 @@ export default {
     EnergyCompare
   },
 
-  mixins: [PageEnergyMixin],
+  mixins: [PageEnergyMixin, PerfLogMixin],
 
   data() {
     return {
@@ -783,6 +786,14 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      chartEnergy: 'chartEnergy',
+      chartEmissionsVolume: 'chartEmissionsVolume',
+      chartEmissionsIntensity: 'chartEmissionsIntensity',
+      chartEnergyRenewablesLine: 'chartEnergyRenewablesLine',
+      chartPrice: 'chartPrice',
+      chartTemperature: 'chartTemperature'
+    }),
     zoomed() {
       return this.dateFilter.length !== 0
     },
@@ -1975,35 +1986,6 @@ export default {
       }
 
       this.recalculateAfterPrefixChanged()
-    },
-
-    getPerfLabel() {
-      let processLength = 0,
-        arrayLength = 0,
-        downToLength = this.dataset.length
-      try {
-        if (this.responses.length > 0 && this.responses[0].data) {
-          arrayLength = this.responses[0].data.length
-          this.responses[0].data.forEach(d => {
-            processLength += d.history.data.length
-            if (d.forecast) {
-              processLength += d.forecast.data.length
-            }
-          })
-        }
-      } catch (e) {
-        console.error('A problem getting response data lengths')
-      }
-      return `${this.regionId} — ${this.range}/${
-        this.interval
-      } (crunched ${processLength} points down to ${downToLength} points)`
-    },
-
-    getGroupPerfLabel() {
-      const group = this.fuelTechGroupName || 'Default'
-      return `${this.regionId} — ${this.range}/${
-        this.interval
-      } (grouped ${group})`
     }
   }
 }
