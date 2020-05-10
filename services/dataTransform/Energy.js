@@ -334,7 +334,7 @@ export default {
       let lastDate = null
       if (res.length) {
         try {
-          const resData = res[0].data
+          const resData = res[0].data || res[0]
           const e = energyDomains[0]
           const ft = resData.find(d => d.id === e.id)
           if (ft) lastDate = ft.history.last
@@ -345,9 +345,10 @@ export default {
 
       // flatten data for vis and summary
       res.forEach(r => {
+        const rData = r.data || r
         promises.push(
           this.flattenAndInterpolate(
-            r.data,
+            rData,
             energyDomains,
             marketValueDomains,
             temperatureDomains,
@@ -402,7 +403,8 @@ export default {
               domain.fuelTech !== 'rooftop_solar' &&
               domain.fuelTech !== 'solar'
             ) {
-              const find = res[0].data.find(d => d.id === domain.id)
+              const resData = res[0].data || res[0]
+              const find = resData.find(d => d.id === domain.id)
               if (find) {
                 startDate = moment(find.history.start).valueOf()
                 let lastTime =

@@ -76,10 +76,11 @@ export default {
     return domainObjsOrder
   },
 
-  getEnergyDomains(data) {
+  getEnergyDomains(res) {
     let domains = []
-    data.forEach(r => {
-      const objs = r.data
+    res.forEach(r => {
+      const rData = r.data || r
+      const objs = rData
         .filter(d => d.type === 'power' || d.type === 'energy')
         .map(d => {
           return {
@@ -94,10 +95,11 @@ export default {
     return domains
   },
 
-  getEmissionsDomains(data) {
+  getEmissionsDomains(res) {
     let domains = []
-    data.forEach(r => {
-      const objs = r.data.filter(d => d.type === EMISSIONS).map(d => {
+    res.forEach(r => {
+      const rData = r.data || r
+      const objs = rData.filter(d => d.type === EMISSIONS).map(d => {
         return {
           id: d.id,
           fuelTech: d.fuel_tech,
@@ -110,7 +112,7 @@ export default {
     return domains
   },
 
-  getTemperatureDomainsAndIds(data) {
+  getTemperatureDomainsAndIds(res) {
     function isTemperatureType(type) {
       return (
         type === 'temperature' ||
@@ -134,8 +136,9 @@ export default {
       meanId = '',
       maxId = ''
 
-    data.forEach(r => {
-      const objs = r.data.filter(d => isTemperatureType(d.type)).map(d => {
+    res.forEach(r => {
+      const rData = r.data || r
+      const objs = rData.filter(d => isTemperatureType(d.type)).map(d => {
         if (isTemperatureMeanType(d.type)) meanId = d.id
         if (isTemperatureMinType(d.type)) minId = d.id
         if (isTemperatureMaxType(d.type)) maxId = d.id
@@ -152,14 +155,14 @@ export default {
     }
   },
 
-  getPriceDomains(data) {
+  getPriceDomains(res) {
     const PRICE_ABOVE_300 = 'price.above300'
     const PRICE_BELOW_0 = 'price.below0'
     const PRICE_COLOUR = 'blue'
-
     let domains = []
-    data.forEach(r => {
-      const objs = r.data
+    res.forEach(r => {
+      const rData = r.data || r
+      const objs = rData
         .filter(d => d.type === 'price' || d.type === 'volume_weighted_price')
         .map(d => {
           return { id: d.id, type: d.type, colour: PRICE_COLOUR }

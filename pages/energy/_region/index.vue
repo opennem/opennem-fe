@@ -1400,11 +1400,12 @@ export default {
       // - due to incorrect data
       if (this.range === 'ALL') {
         responses.forEach(r => {
-          const findIndex = r.data.findIndex(
+          const rData = r.data || r
+          const findIndex = rData.findIndex(
             d => d.type === 'volume_weighted_price'
           )
           if (findIndex !== -1) {
-            r.data.splice(findIndex, 1)
+            rData.splice(findIndex, 1)
           }
         })
       }
