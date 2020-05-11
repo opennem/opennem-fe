@@ -378,12 +378,9 @@ export default {
           )
         } else if (range === '30D') {
           let lastDateTime = new Date().getTime()
-          if (lastDate) {
-            // if has valid FT last date, use that to filter the data.
-            // Because there could be non-FT last dates that are into the future
-            lastDateTime = moment(lastDate).valueOf()
-          }
-          const thirtyDaysAgo = lastDateTime - 2592000000
+          const thirtyDaysAgo = moment(lastDateTime)
+            .subtract(30, 'days')
+            .valueOf()
           data = data.filter(
             d => d.date > thirtyDaysAgo && d.date <= lastDateTime
           )
