@@ -387,7 +387,9 @@ export default {
         } else if (range === '1Y') {
           // filter 1Y because it could be a combination of two 1Y datasets
           const now = new Date().getTime()
-          const aYearAgo = now - 31557600000
+          const aYearAgo = moment(now)
+            .subtract(1, 'year')
+            .valueOf()
           data = data.filter(d => d.date >= aYearAgo && d.date <= now)
         }
 
