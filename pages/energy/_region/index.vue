@@ -910,16 +910,17 @@ export default {
 
       if (this.interval === 'Week') {
         const incompletes = []
+        const finalDate = this.dataset[this.dataset.length - 2].date
         if (aSD > dStart) {
           incompletes.push({
             start: dStart,
             end: dStart + 604800000
           })
         }
-        if (aLD < dEnd) {
+        if (aLD < finalDate) {
           incompletes.push({
-            start: dEnd - 604800000,
-            end: dEnd
+            start: finalDate - 604800000,
+            end: finalDate
           })
         }
         return incompletes
@@ -956,6 +957,10 @@ export default {
         const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
         if (!isFilter) {
           aLD = moment(aLD).add(1, 'month')
+          const isSeason = this.interval === 'Season'
+          const actualEndMonth = isSeason
+            ? getSeasonStartMonth(new Date(aLD).getMonth())
+            : getQuarterStartMonth(new Date(aLD).getMonth())
           if (moment(aSD).month() > moment(dStart).month()) {
             incompletes.push({
               start: dStart,
@@ -964,7 +969,7 @@ export default {
                 .valueOf()
             })
           }
-          if (aLD.month() < moment(dEnd).month()) {
+          if (actualEndMonth < moment(dEnd).month()) {
             incompletes.push({
               start: moment(dEnd)
                 .subtract(3, 'month')
