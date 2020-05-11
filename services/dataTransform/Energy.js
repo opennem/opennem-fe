@@ -334,7 +334,7 @@ export default {
       let lastDate = null
       if (res.length) {
         try {
-          const resData = res[0].data || res[0]
+          const resData = res[res.length - 1].data || res[res.length - 1]
           const e = energyDomains[0]
           const ft = resData.find(d => d.id === e.id)
           if (ft) lastDate = ft.history.last
@@ -377,7 +377,9 @@ export default {
             d => d.date >= roundedEndDate - diff && d.date < roundedEndDate
           )
         } else if (range === '30D') {
-          let lastDateTime = new Date().getTime()
+          const lastDateTime = moment(lastDate)
+            .add(1, 'day')
+            .valueOf()
           const thirtyDaysAgo = moment(lastDateTime)
             .subtract(30, 'days')
             .valueOf()
@@ -386,7 +388,9 @@ export default {
           )
         } else if (range === '1Y') {
           // filter 1Y because it could be a combination of two 1Y datasets
-          const now = new Date().getTime()
+          const now = moment(lastDate)
+            .add(1, 'day')
+            .valueOf()
           const aYearAgo = moment(now)
             .subtract(1, 'year')
             .valueOf()
