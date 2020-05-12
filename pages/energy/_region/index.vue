@@ -959,8 +959,8 @@ export default {
           aLD = moment(aLD).add(1, 'month')
           const isSeason = this.interval === 'Season'
           const actualEndMonth = isSeason
-            ? getSeasonStartMonth(new Date(aLD).getMonth())
-            : getQuarterStartMonth(new Date(aLD).getMonth())
+            ? getSeasonStartMonth(aLD.month())
+            : getQuarterStartMonth(aLD.month())
           if (moment(aSD).month() > moment(dStart).month()) {
             incompletes.push({
               start: dStart,
@@ -969,7 +969,7 @@ export default {
                 .valueOf()
             })
           }
-          if (actualEndMonth < moment(dEnd).month()) {
+          if (actualEndMonth - 1 <= moment(dEnd).month()) {
             incompletes.push({
               start: moment(dEnd)
                 .subtract(3, 'month')
