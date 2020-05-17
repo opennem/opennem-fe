@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import format from 'date-fns/format'
+import { timeFormat } from 'd3-time-format'
 
 export default {
   props: {
@@ -40,7 +40,7 @@ export default {
   },
   methods: {
     formatDate(date) {
-      return format(date, 'dd MMM yyyy')
+      return timeFormat('%e %b %Y')(date)
     }
   }
 }

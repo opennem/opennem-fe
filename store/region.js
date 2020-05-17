@@ -1,5 +1,4 @@
-import parse from 'date-fns/parse'
-import eachDayOfInterval from 'date-fns/eachDayOfInterval'
+import { timeMinute, timeDay, timeMonth } from 'd3-time'
 import http from '@/services/Http.js'
 import REGIONS from '@/constants/regions.js'
 import * as FUEL_TECHS from '@/constants/fuelTech.js'
@@ -90,14 +89,12 @@ function combineRegionData(id, dataset) {
   dataset[id].data.forEach((d, i) => {
     const ft = d.fuel_tech
     if (i === 0) {
-      const start = removeTz(d.history.start)
-      const last = removeTz(d.history.last)
-      dataset[id].start = start
-      dataset[id].last = last
-      interval = eachDayOfInterval({
-        start: parse(start, 'yyyy-MM-dd', new Date()),
-        end: parse(last, 'yyyy-MM-dd', new Date())
-      })
+      const startDate = getDateWithoutTz(d.history.start)
+      const lastDate = getDateWithoutTz(d.history.last)
+      dataset[id].start = startDate
+      dataset[id].last = lastDate
+      interval = timeDay.every(1).range(startDate, lastDate)
+      interval.push(lastDate)
       dataset[id].combined = interval.map(date => {
         return { date, value: 0 }
       })
@@ -134,10 +131,10 @@ function transformDataset(regions, dataset) {
   return updated
 }
 
-function removeTz(string) {
+function getDateWithoutTz(string) {
   const a = string.split('-')
   const year = a[0]
   const month = a[1]
   const day = a[2].substring(0, 2)
-  return `${year}-${month}-${day}`
+  return new Date(year, month - 1, day)
 }
