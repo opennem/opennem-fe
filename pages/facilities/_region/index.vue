@@ -184,7 +184,7 @@ export default {
     },
 
     handleResponses(responses) {
-      const data = responses[0].data
+      const data = responses[0]
       FacilityDataTransformService.flatten(data).then(res => {
         this.facilityData = res
       })
@@ -231,7 +231,7 @@ export default {
             g.displayName
               .toLowerCase()
               .includes(that.filterString.toLowerCase()) &&
-            _.includes(regionIds, g.regionId.toLowerCase()) &&
+            _includes(regionIds, g.regionId.toLowerCase()) &&
             (that.selectedStatuses.length <= 0 ||
               _includes(that.selectedStatuses, g.status))
         )
@@ -241,7 +241,8 @@ export default {
         that.filteredFacilities = facilities
         that.totalFacilities = facilities.length
 
-        const exportData = facilities.map((d) => { // eslint-disable-line
+        const exportData = facilities.map(d => {
+          // eslint-disable-line
           const region = REGIONS.find(r => r.id === d.regionId)
           return {
             'Facility Name': d.displayName,
