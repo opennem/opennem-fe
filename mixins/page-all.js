@@ -1,3 +1,8 @@
-const pageAllMixin = {}
+let uuid = 0
 
-export default pageAllMixin
+export default {
+  beforeCreate() {
+    this.uuid = uuid.toString()
+    uuid += 1
+  }
+}

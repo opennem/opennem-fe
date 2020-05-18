@@ -55,7 +55,8 @@ function transformEnergyData(
     const isEnergyData = type === 'power' || type === 'energy'
     const isMarketValueData = type === 'market_value'
     const isTemperatureType = checkTemperatureType(type)
-    const isPriceData = type === 'price' || type === 'volume_weighted_price'
+    // const isPriceData = type === 'price' || type === 'volume_weighted_price'
+    const isPriceData = type === 'price'
     const isEmissionData = type === EMISSIONS
 
     newHistory.forEach(r => {
@@ -169,9 +170,11 @@ function transformEnergyData(
 function findInterpolateSeriesTypes(data) {
   const rooftopSolarItem = data.find(d => d['fuel_tech'] === 'rooftop_solar')
   const temperatureItem = data.find(d => checkTemperatureType(d.type))
-  const priceItem = data.find(
-    d => d.type === 'price' || d.type === 'volume_weighted_price'
-  )
+  // const priceItem = data.find(
+  //   d => d.type === 'price' || d.type === 'volume_weighted_price'
+  // )
+  const priceItem = data.find(d => d.type === 'price')
+
   const interpolateSeriesTypes = []
   if (rooftopSolarItem) {
     interpolateSeriesTypes.push({

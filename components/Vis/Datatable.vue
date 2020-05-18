@@ -1,5 +1,6 @@
 <template>
   <table class="table is-narrow is-bordered is-fullwidth is-striped is-hoverable">
+    <caption>{{ dataset.length }}</caption>
     <thead>
       <tr>
         <th 
@@ -40,7 +41,7 @@ export default {
   },
   methods: {
     formatDate(date) {
-      return timeFormat('%e %b %Y')(date)
+      return timeFormat('%e %b %Y %I:%M%p')(date)
     }
   }
 }

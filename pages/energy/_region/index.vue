@@ -664,6 +664,7 @@ import _cloneDeep from 'lodash.clonedeep'
 import Draggable from 'vuedraggable'
 import { saveAs } from 'file-saver'
 
+import PageAllMixin from '~/mixins/page-all.js'
 import PageEnergyMixin from '~/mixins/page-energy.js'
 import PageEnergyCreatedMixin from '~/mixins/page-energy-created.js'
 import PerfLogMixin from '~/mixins/perf-log.js'
@@ -705,7 +706,7 @@ export default {
     EnergyCompare
   },
 
-  mixins: [PageEnergyMixin, PerfLogMixin, PageEnergyCreatedMixin],
+  mixins: [PageAllMixin, PageEnergyMixin, PerfLogMixin, PageEnergyCreatedMixin],
 
   computed: {
     zoomed() {
