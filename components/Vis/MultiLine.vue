@@ -22,7 +22,12 @@
 import { select } from 'd3-selection'
 import { scaleOrdinal, scaleLinear, scaleTime } from 'd3-scale'
 import { axisBottom, axisLeft } from 'd3-axis'
-import { line as d3Line } from 'd3-shape'
+import {
+  line as d3Line,
+  curveStepAfter,
+  curveLinear,
+  curveMonotoneX
+} from 'd3-shape'
 import { extent } from 'd3-array'
 
 export default {
@@ -35,9 +40,17 @@ export default {
       type: Array,
       default: () => []
     },
+    yMin: {
+      type: Number,
+      default: () => 0
+    },
     yMax: {
       type: Number,
-      default: () => 200
+      default: () => 300
+    },
+    curve: {
+      type: String,
+      default: () => 'smooth'
     }
   },
 
@@ -64,11 +77,23 @@ export default {
     id() {
       return `multi-line-${this.uuid}`
     },
-
     axisTransform() {
       return `translate(${this.margin.left},0)`
     },
-
+    curveType() {
+      switch (this.curve) {
+        case 'step':
+          return curveStepAfter
+        case 'linear':
+          return curveLinear
+        case 'smooth':
+        default:
+          return curveMonotoneX
+      }
+    },
+    keys() {
+      return this.lineDomains.map(d => d.domain)
+    },
     colours() {
       const dict = {}
       this.lineDomains.forEach(d => {
@@ -123,23 +148,26 @@ export default {
       this.line = d3Line()
         .x(d => this.x(d.date))
         .y(d => this.y(d.value))
+        .curve(this.curveType)
       this.line.defined(d => d.value || d.value === 0)
     },
 
     draw() {
       const xExtent = extent(this.dataset, d => new Date(d.date))
       this.x.domain(xExtent)
-      this.y.domain([0, this.yMax])
+      this.y.domain([this.yMin, this.yMax])
 
       this.$xAxisGroup.call(this.xAxis)
-      this.$yAxisGroup.call(this.yAxis)
-
-      const keys = Object.keys(this.dataset[0]).filter(key => key !== 'date')
-
+      this.$yAxisGroup.call(this.yAxis).call(g =>
+        g
+          .selectAll('.y-axis .tick text')
+          .attr('dx', 5)
+          .attr('dy', -2)
+      )
       this.$linePathGroup.selectAll('path').remove()
       this.$linePathGroup
         .selectAll('path')
-        .data(keys)
+        .data(this.keys)
         .enter()
         .append('path')
         .attr('class', key => `${key}-path`)
@@ -158,3 +186,12 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.multi-line-vis ::v-deep svg {
+  .y-axis .tick text {
+    color: #000;
+    text-anchor: start;
+  }
+}
+</style>

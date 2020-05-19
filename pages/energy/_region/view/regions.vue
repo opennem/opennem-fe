@@ -1,5 +1,5 @@
 <template>
-  <section class="">
+  <section class="container">
     <data-options-bar
       :range="range"
       :interval="interval"
@@ -12,22 +12,33 @@
         <h1>Energy</h1>
         <multi-line
           :line-domains="lineDomains"
-          :dataset="datasetEnergy"
+          :dataset="energyDataset"
           :y-max="energyMax"
         />
-        <h1>Energy Table</h1>
-        <datatable :dataset="datasetEnergy"/>
-      </div>
-
-      <div class="column">
         <h1>Emissions</h1>
         <multi-line
           :line-domains="lineDomains"
-          :dataset="datasetEmission"
+          :dataset="emissionVolDataset"
           :y-max="emissionMax"
         />
-        <h1>Emissions Table</h1>
-        <datatable :dataset="datasetEmission"/>
+        <h1>Price</h1>
+        <multi-line
+          :line-domains="lineDomains"
+          :dataset="priceDataset"
+          :y-max="priceMax"
+          :y-min="priceMin"
+          :curve="'step'"
+        />
+        <!-- <datatable :dataset="priceDataset"/> -->
+
+        <h1>Temperature</h1>
+        <multi-line
+          :line-domains="lineDomains"
+          :dataset="temperatureDataset"
+          :y-max="40"
+        />
+        <!-- <h1>Energy Table</h1>
+        <datatable :dataset="energyDataset"/> -->
       </div>
     </div>    
   </section>
@@ -35,7 +46,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { max } from 'd3-array'
+import { min, max } from 'd3-array'
 
 import RegionsTable from '@/components/Energy/RegionsTable'
 import Datatable from '@/components/Vis/Datatable'
@@ -52,8 +63,10 @@ export default {
   computed: {
     ...mapGetters({
       regions: 'region/regions',
-      datasetEnergy: 'region/datasetEnergy',
-      datasetEmission: 'region/datasetEmission',
+      energyDataset: 'region/energyDataset',
+      emissionVolDataset: 'region/emissionVolDataset',
+      temperatureDataset: 'region/temperatureDataset',
+      priceDataset: 'region/priceDataset',
       hostEnv: 'hostEnv',
       range: 'range',
       interval: 'interval'
@@ -68,10 +81,19 @@ export default {
       })
     },
     energyMax() {
-      return max(this.datasetEnergy, d => d._highest)
+      return max(this.energyDataset, d => d._highest)
     },
     emissionMax() {
-      return max(this.datasetEmission, d => d._highest)
+      return max(this.emissionVolDataset, d => d._highest)
+    },
+    temperatureMax() {
+      return max(this.temperatureDataset, d => d._highest)
+    },
+    priceMin() {
+      return min(this.priceDataset, d => d._lowest)
+    },
+    priceMax() {
+      return max(this.priceDataset, d => d._highest)
     }
   },
   created() {
