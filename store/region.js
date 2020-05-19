@@ -25,7 +25,8 @@ export const state = () => ({
   emissionIntDataset: [],
   priceDataset: [],
   temperatureDataset: [],
-  regions: Regions
+  regions: Regions,
+  hasEmissions: false
 })
 
 export const getters = {
@@ -35,7 +36,8 @@ export const getters = {
   emissionIntDataset: state => state.emissionIntDataset,
   priceDataset: state => state.priceDataset,
   temperatureDataset: state => state.temperatureDataset,
-  regions: state => state.regions
+  regions: state => state.regions,
+  hasEmissions: state => state.hasEmissions
 }
 
 export const mutations = {
@@ -56,6 +58,9 @@ export const mutations = {
   },
   temperatureDataset(state, temperatureDataset) {
     state.temperatureDataset = temperatureDataset
+  },
+  hasEmissions(state, hasEmissions) {
+    state.hasEmissions = hasEmissions
   }
 }
 
@@ -68,6 +73,7 @@ export const actions = {
       period.range === '7D' || period.range === '3D' || period.range === '1D'
     const urls = getRegionURLS(Regions, period)
     const fuelTechOrder = [...FUEL_TECHS.DEFAULT_FUEL_TECH_ORDER]
+    let hasEmissions = false
     http(urls)
       .then(responses => {
         const promises = []
@@ -99,6 +105,8 @@ export const actions = {
             emissionsOrder,
             'emissions'
           )
+          hasEmissions = emissionDomains.length > 0
+          commit('hasEmissions', hasEmissions)
 
           const marketValueDomains = Domain.getDomainObjs(
             region,
@@ -149,10 +157,15 @@ export const actions = {
           console.log(obj)
 
           commit('energyDataset', transformDataset(Regions, obj, '_total'))
-          commit(
-            'emissionVolDataset',
-            transformDataset(Regions, obj, '_totalEmissionsVol')
-          )
+
+          if (hasEmissions) {
+            commit(
+              'emissionVolDataset',
+              transformDataset(Regions, obj, '_totalEmissionsVol')
+            )
+          } else {
+            commit('emissionVolDataset', [])
+          }
           commit(
             'temperatureDataset',
             transformDataset(

@@ -14,12 +14,18 @@
       <g 
         :transform="axisTransform" 
         class="line-path-group" />
+      <g 
+        :transform="axisTransform" 
+        class="cursor-line-group" />
+      <g 
+        :transform="axisTransform" 
+        class="hover-group" />
     </svg>
   </div>
 </template>
 
 <script>
-import { select } from 'd3-selection'
+import { select, mouse } from 'd3-selection'
 import { scaleOrdinal, scaleLinear, scaleTime } from 'd3-scale'
 import { axisBottom, axisLeft } from 'd3-axis'
 import {
@@ -51,6 +57,10 @@ export default {
     curve: {
       type: String,
       default: () => 'smooth'
+    },
+    dateHovered: {
+      type: Date,
+      default: () => null
     }
   },
 
@@ -69,7 +79,9 @@ export default {
       line: null,
       $xAxisGroup: null,
       $yAxisGroup: null,
-      $linePathGroup: null
+      $linePathGroup: null,
+      $cursorLineGroup: null,
+      $hoverGroup: null
     }
   },
 
@@ -105,8 +117,11 @@ export default {
 
   watch: {
     dataset() {
-      console.log(this.dataset)
+      this.clearCursorLine()
       this.draw()
+    },
+    dateHovered(newValue) {
+      this.drawCursorLine(newValue)
     }
   },
 
@@ -127,6 +142,7 @@ export default {
     },
 
     setup() {
+      const self = this
       const $svg = select(`#${this.id}`)
       // Axis DOM
       this.$xAxisGroup = $svg.select('.x-axis')
@@ -150,6 +166,21 @@ export default {
         .y(d => this.y(d.value))
         .curve(this.curveType)
       this.line.defined(d => d.value || d.value === 0)
+
+      // Hover
+      this.$hoverGroup = $svg.select('.hover-group')
+      this.$hoverGroup
+        .append('rect')
+        .attr('width', this.width)
+        .attr('height', this.height)
+      this.$cursorLineGroup = $svg.select('.cursor-line-group')
+      this.$cursorLineGroup.append('rect')
+
+      // Events
+      this.$hoverGroup.on('touchmove mousemove', function() {
+        const date = self.getXAxisDateByMouse(this)
+        self.$emit('date-hover', date)
+      })
     },
 
     draw() {
@@ -182,6 +213,40 @@ export default {
           })
           return this.line(data)
         })
+    },
+
+    drawCursorLine(date) {
+      const xDate = this.x(date)
+      let nextDate = null
+      const dataPoint = this.dataset.find((d, i) => {
+        const match = d.date === date.getTime()
+        const nextDataPoint = this.dataset[i + 1]
+        if (match && nextDataPoint) {
+          nextDate = nextDataPoint.date
+        }
+        return match
+      })
+      const nextXDate = this.x(nextDate)
+      const bandwidth = Math.abs(nextXDate - xDate)
+
+      this.$cursorLineGroup
+        .select('rect')
+        .attr('x', xDate)
+        .attr('width', bandwidth)
+        .attr('height', this.height)
+    },
+
+    clearCursorLine() {
+      this.$cursorLineGroup
+        .select('rect')
+        .attr('width', 0)
+        .attr('height', 0)
+    },
+
+    getXAxisDateByMouse(evt) {
+      const m = mouse(evt)
+      const date = this.x.invert(m[0])
+      return date
     }
   }
 }
@@ -192,6 +257,12 @@ export default {
   .y-axis .tick text {
     color: #000;
     text-anchor: start;
+  }
+  .hover-group rect {
+    fill: transparent;
+  }
+  .cursor-line-group rect {
+    fill: rgba(199, 69, 35, 0.1);
   }
 }
 </style>
