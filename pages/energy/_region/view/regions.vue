@@ -85,6 +85,7 @@ import { min, max } from 'd3-array'
 import { timeDay, timeMonday, timeMonth, timeYear } from 'd3-time'
 import DateDisplay from '@/services/DateDisplay.js'
 import AxisTimeFormats from '@/services/axisTimeFormats.js'
+import AxisTicks from '@/services/axisTicks.js'
 import RegionsTable from '@/components/Energy/RegionsTable'
 import Datatable from '@/components/Vis/Datatable'
 import DataOptionsBar from '@/components/ui/DataOptionsBar'
@@ -154,37 +155,19 @@ export default {
       return this.zoomRange.length > 0
     },
     tickFormat() {
+      if (this.interval === 'Fin Year') {
+        return d => {
+          const year = d.getFullYear() + 1 + ''
+          return `FY${year.substr(2, 2)}`
+        }
+      }
       return AxisTimeFormats.defaultFormat
     },
     secondTickFormat() {
       return AxisTimeFormats.secondaryFormat
     },
     ticks() {
-      if (this.range === '3D') {
-        return timeDay.every(0.5)
-      }
-      if (this.range === '7D') {
-        return timeDay.every(1)
-      }
-      if (this.range === '30D') {
-        if (this.isZoomed) {
-          return timeDay.every(1)
-        }
-        return timeDay.every(0.5)
-      }
-      if (this.range === '1Y') {
-        if (this.interval === 'Month') {
-          return timeMonth.every(1)
-        }
-        if (this.isZoomed) {
-          return timeMonday.every(4)
-        }
-        return timeMonth.every(1)
-      }
-      if (this.range === 'ALL') {
-        return timeYear.every(1)
-      }
-      return null
+      return AxisTicks(this.range, this.interval, this.isZoomed)
     }
   },
   created() {
@@ -241,16 +224,28 @@ export default {
         return
       }
 
+      let start = range[0],
+        end = range[1]
+
+      // if (this.interval === 'Fin Year') {
+      //   if (start.getMonth() >= 6) {
+      //     start.setFullYear(start.getFullYear() + 1)
+      //   }
+      //   if (end.getMonth() >= 6) {
+      //     end.setFullYear(end.getFullYear() + 1)
+      //   }
+      // }
+
       const startTime = DateDisplay.roundToClosestInterval(
         this.interval,
         this.filterPeriod,
-        range[0],
+        start,
         'floor'
       )
       const endTime = DateDisplay.roundToClosestInterval(
         this.interval,
         this.filterPeriod,
-        range[1],
+        end,
         'ceil'
       )
       this.zoomRange = [startTime, endTime]
