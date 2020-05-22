@@ -61,6 +61,10 @@ export default {
     dateHovered: {
       type: Date,
       default: () => null
+    },
+    zoomRange: {
+      type: Array,
+      default: () => []
     }
   },
 
@@ -70,7 +74,7 @@ export default {
       svgHeight: 250,
       width: 0,
       height: 0,
-      margin: { left: 10, right: 1, top: 20, bottom: 10 },
+      margin: { left: 10, right: 10, top: 20, bottom: 10 },
       x: null,
       y: null,
       z: null,
@@ -112,6 +116,9 @@ export default {
         dict[d.domain] = d.colour
       })
       return dict
+    },
+    xExtent() {
+      return extent(this.dataset, d => new Date(d.date))
     }
   },
 
@@ -122,6 +129,14 @@ export default {
     },
     dateHovered(newValue) {
       this.drawCursorLine(newValue)
+    },
+    zoomRange(newRange) {
+      if (newRange.length === 0) {
+        this.x.domain(this.xExtent)
+      } else {
+        this.x.domain(newRange)
+      }
+      this.redraw()
     }
   },
 
@@ -184,8 +199,7 @@ export default {
     },
 
     draw() {
-      const xExtent = extent(this.dataset, d => new Date(d.date))
-      this.x.domain(xExtent)
+      this.x.domain(this.xExtent)
       this.y.domain([this.yMin, this.yMax])
 
       this.$xAxisGroup.call(this.xAxis)
@@ -204,15 +218,25 @@ export default {
         .attr('class', key => `${key}-path`)
         .style('stroke', key => this.colours[key])
         .style('fill', 'transparent')
-        .attr('d', key => {
-          const data = this.dataset.map(d => {
-            return {
-              date: d.date,
-              value: d[key]
-            }
-          })
-          return this.line(data)
-        })
+        .attr('d', this.drawLinePath)
+    },
+
+    redraw() {
+      this.$xAxisGroup.call(this.xAxis)
+      this.$linePathGroup
+        .selectAll('path')
+        .transition(100)
+        .attr('d', this.drawLinePath)
+    },
+
+    drawLinePath(key) {
+      const data = this.dataset.map(d => {
+        return {
+          date: d.date,
+          value: d[key]
+        }
+      })
+      return this.line(data)
     },
 
     drawCursorLine(date) {

@@ -9,14 +9,23 @@
 
     <div class="columns">
       <div class="column">
+        <date-brush 
+          :dataset="energyDataset" 
+          :zoom-range="zoomRange"
+          :ticks="ticks"
+          :tick-format="tickFormat"
+          :second-tick-format="secondTickFormat"
+          @date-hover="handleDateHover"
+          @date-filter="handleDateFilter" />
+
         <h1>Energy</h1>
         <multi-line
           :line-domains="domains"
           :dataset="energyDataset"
           :y-max="energyMax"
           :date-hovered="dateHovered"
-          @date-hover="handleDateHover"
-        />
+          :zoom-range="zoomRange"
+          @date-hover="handleDateHover" />
 
         <div 
           v-if="hasEmissions" 
@@ -27,8 +36,8 @@
             :dataset="emissionVolDataset"
             :y-max="emissionMax"
             :date-hovered="dateHovered"
-            @date-hover="handleDateHover"
-          />
+            :zoom-range="zoomRange"
+            @date-hover="handleDateHover" />
         </div>
         
         <h1>Price</h1>
@@ -37,10 +46,9 @@
           :dataset="priceDataset"
           :y-max="priceMax"
           :y-min="priceMin"
-          :curve="'step'"
           :date-hovered="dateHovered"
-          @date-hover="handleDateHover"
-        />
+          :zoom-range="zoomRange"
+          @date-hover="handleDateHover" />
         <!-- <datatable :dataset="priceDataset"/> -->
 
         <h1>Temperature</h1>
@@ -49,9 +57,9 @@
           :dataset="temperatureDataset"
           :y-max="40"
           :date-hovered="dateHovered"
-          @date-hover="handleDateHover"
-        />
-        <!-- <h1>Energy Table</h1>
+          :zoom-range="zoomRange"
+          @date-hover="handleDateHover" />
+          <!-- <h1>Energy Table</h1>
         <datatable :dataset="energyDataset"/> -->
       </div>
 
@@ -70,11 +78,14 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { min, max } from 'd3-array'
+import { timeDay, timeMonday, timeMonth, timeYear } from 'd3-time'
 import DateDisplay from '@/services/DateDisplay.js'
+import AxisTimeFormats from '@/services/axisTimeFormats.js'
 import RegionsTable from '@/components/Energy/RegionsTable'
 import Datatable from '@/components/Vis/Datatable'
 import DataOptionsBar from '@/components/ui/DataOptionsBar'
 import MultiLine from '@/components/Vis/MultiLine'
+import DateBrush from '@/components/Vis/DateBrush'
 
 export default {
   layout: 'main',
@@ -82,11 +93,13 @@ export default {
     DataOptionsBar,
     RegionsTable,
     Datatable,
-    MultiLine
+    MultiLine,
+    DateBrush
   },
   data() {
     return {
-      dateHovered: null
+      dateHovered: null,
+      zoomRange: []
     }
   },
   computed: {
@@ -98,7 +111,8 @@ export default {
       priceDataset: 'region/priceDataset',
       hasEmissions: 'region/hasEmissions',
       range: 'range',
-      interval: 'interval'
+      interval: 'interval',
+      filterPeriod: 'filterPeriod'
     }),
     domains() {
       return this.regions.map(d => {
@@ -131,6 +145,42 @@ export default {
         temperature: this.temperatureDataset,
         price: this.priceDataset
       }
+    },
+    isZoomed() {
+      return this.zoomRange.length > 0
+    },
+    tickFormat() {
+      return AxisTimeFormats.defaultFormat
+    },
+    secondTickFormat() {
+      return AxisTimeFormats.secondaryFormat
+    },
+    ticks() {
+      if (this.range === '3D') {
+        return timeDay.every(0.5)
+      }
+      if (this.range === '7D') {
+        return timeDay.every(1)
+      }
+      if (this.range === '30D') {
+        if (this.isZoomed) {
+          return timeDay.every(1)
+        }
+        return timeDay.every(0.5)
+      }
+      if (this.range === '1Y') {
+        if (this.interval === 'Month') {
+          return timeMonth.every(1)
+        }
+        if (this.isZoomed) {
+          return timeMonday.every(4)
+        }
+        return timeMonth.every(1)
+      }
+      if (this.range === 'ALL') {
+        return timeYear.every(1)
+      }
+      return null
     }
   },
   created() {
@@ -179,6 +229,27 @@ export default {
 
     handleDateHover(date) {
       this.dateHovered = DateDisplay.snapToClosestInterval(this.interval, date)
+    },
+
+    handleDateFilter(range) {
+      if (range.length === 0) {
+        this.zoomRange = range
+        return
+      }
+
+      const startTime = DateDisplay.roundToClosestInterval(
+        this.interval,
+        this.filterPeriod,
+        range[0],
+        'floor'
+      )
+      const endTime = DateDisplay.roundToClosestInterval(
+        this.interval,
+        this.filterPeriod,
+        range[1],
+        'ceil'
+      )
+      this.zoomRange = [startTime, endTime]
     }
   }
 }
