@@ -9,15 +9,6 @@
 
     <div class="columns">
       <div class="column">
-        <date-brush 
-          :dataset="energyDataset" 
-          :zoom-range="zoomRange"
-          :ticks="ticks"
-          :tick-format="tickFormat"
-          :second-tick-format="secondTickFormat"
-          @date-hover="handleDateHover"
-          @date-filter="handleDateFilter" />
-
         <h1>Energy</h1>
         <multi-line
           :line-domains="domains"
@@ -27,6 +18,15 @@
           :zoom-range="zoomRange"
           :ticks="ticks"
           @date-hover="handleDateHover" />
+        <date-brush
+          :dataset="energyDataset"
+          :zoom-range="zoomRange" 
+          :ticks="ticks"
+          :tick-format="tickFormat"
+          :second-tick-format="secondTickFormat"
+          class="date-brush"
+          @date-hover="handleDateHover"
+          @date-filter="handleDateFilter" />
 
         <div 
           v-if="hasEmissions" 
@@ -268,6 +268,11 @@ export default {
   ::v-deep .data-options-bar {
     margin-bottom: 1rem;
     padding-left: 0;
+  }
+
+  .date-brush {
+    position: relative;
+    margin-top: -6px;
   }
 
   .regions-table {

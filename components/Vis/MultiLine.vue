@@ -75,7 +75,7 @@ export default {
   data() {
     return {
       svgWidth: 0,
-      svgHeight: 250,
+      svgHeight: 200,
       width: 0,
       height: 0,
       margin: { left: 10, right: 10, top: 0, bottom: 0 },
