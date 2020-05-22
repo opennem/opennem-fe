@@ -65,6 +65,10 @@ export default {
     zoomRange: {
       type: Array,
       default: () => []
+    },
+    ticks: {
+      type: Function,
+      default: () => null
     }
   },
 
@@ -74,7 +78,7 @@ export default {
       svgHeight: 250,
       width: 0,
       height: 0,
-      margin: { left: 10, right: 10, top: 20, bottom: 10 },
+      margin: { left: 10, right: 10, top: 0, bottom: 0 },
       x: null,
       y: null,
       z: null,
@@ -136,6 +140,10 @@ export default {
       } else {
         this.x.domain(newRange)
       }
+      this.redraw()
+    },
+    ticks(newTicks) {
+      this.xAxis.ticks(newTicks)
       this.redraw()
     }
   },
@@ -202,7 +210,7 @@ export default {
       this.x.domain(this.xExtent)
       this.y.domain([this.yMin, this.yMax])
 
-      this.$xAxisGroup.call(this.xAxis)
+      this.$xAxisGroup.call(this.drawXAxis)
       this.$yAxisGroup.call(this.yAxis).call(g =>
         g
           .selectAll('.y-axis .tick text')
@@ -222,11 +230,17 @@ export default {
     },
 
     redraw() {
-      this.$xAxisGroup.call(this.xAxis)
+      this.$xAxisGroup.call(this.drawXAxis)
       this.$linePathGroup
         .selectAll('path')
         .transition(100)
         .attr('d', this.drawLinePath)
+    },
+
+    drawXAxis(g) {
+      const self = this
+      g.call(this.xAxis)
+      g.selectAll('.x-axis .tick text').remove()
     },
 
     drawLinePath(key) {

@@ -25,6 +25,7 @@
           :y-max="energyMax"
           :date-hovered="dateHovered"
           :zoom-range="zoomRange"
+          :ticks="ticks"
           @date-hover="handleDateHover" />
 
         <div 
@@ -37,6 +38,7 @@
             :y-max="emissionMax"
             :date-hovered="dateHovered"
             :zoom-range="zoomRange"
+            :ticks="ticks"
             @date-hover="handleDateHover" />
         </div>
         
@@ -48,6 +50,7 @@
           :y-min="priceMin"
           :date-hovered="dateHovered"
           :zoom-range="zoomRange"
+          :ticks="ticks"
           @date-hover="handleDateHover" />
         <!-- <datatable :dataset="priceDataset"/> -->
 
@@ -58,6 +61,7 @@
           :y-max="40"
           :date-hovered="dateHovered"
           :zoom-range="zoomRange"
+          :ticks="ticks"
           @date-hover="handleDateHover" />
           <!-- <h1>Energy Table</h1>
         <datatable :dataset="energyDataset"/> -->
