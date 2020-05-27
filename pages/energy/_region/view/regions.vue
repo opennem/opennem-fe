@@ -18,7 +18,9 @@
           :zoom-range="zoomRange"
           :ticks="ticks"
           :x-shades="xShades"
-          @date-hover="handleDateHover" />
+          @date-hover="handleDateHover"
+          @enter="handleEnter"
+          @leave="handleLeave" />
         <date-brush
           :dataset="energyDataset"
           :zoom-range="zoomRange" 
@@ -76,6 +78,8 @@
           :domains="domains"
           :dataset="combinedDataset"
           :date-hovered="dateHovered"
+          :range="range"
+          :interval="interval"
           class="regions-table"
         />
       </div>
@@ -90,7 +94,7 @@ import { timeDay, timeMonday, timeMonth, timeYear } from 'd3-time'
 import DateDisplay from '@/services/DateDisplay.js'
 import AxisTimeFormats from '@/services/axisTimeFormats.js'
 import AxisTicks from '@/services/axisTicks.js'
-import RegionsTable from '@/components/Energy/RegionsTable'
+import RegionsTable from '@/components/SummaryTable/Regions'
 import Datatable from '@/components/Vis/Datatable'
 import DataOptionsBar from '@/components/ui/DataOptionsBar'
 import MultiLine from '@/components/Vis/MultiLine'
@@ -268,6 +272,13 @@ export default {
         'ceil'
       )
       this.zoomRange = [startTime, endTime]
+    },
+
+    handleEnter() {
+      this.$store.commit('visInteract/isHovering', true)
+    },
+    handleLeave() {
+      this.$store.commit('visInteract/isHovering', false)
     }
   }
 }

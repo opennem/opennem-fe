@@ -217,6 +217,12 @@ export default {
         const date = self.getXAxisDateByMouse(this)
         self.$emit('date-hover', date)
       })
+      $svg.on('mouseenter', () => {
+        this.$emit('enter')
+      })
+      $svg.on('mouseleave', () => {
+        this.$emit('leave')
+      })
     },
 
     draw() {

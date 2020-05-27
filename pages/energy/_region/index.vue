@@ -1706,10 +1706,12 @@ export default {
 
     handleVisEnter() {
       this.hoverOn = true
+      this.$store.commit('visInteract/isHovering', true)
     },
 
     handleVisLeave() {
       this.hoverOn = false
+      this.$store.commit('visInteract/isHovering', false)
     },
 
     toggleChart(chartName) {

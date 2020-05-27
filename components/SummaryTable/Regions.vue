@@ -1,5 +1,12 @@
 <template>
   <div>
+    <dates-display
+      :start-date="startDate"
+      :end-date="endDate"
+      :hovered-date="timeHovered"
+      :range="range"
+      :interval="interval"
+    />
     <group-selector />
     <table class="table is-fullwidth is-narrow is-bordered">
       <thead>
@@ -37,11 +44,13 @@
 </template>
 
 <script>
+import DatesDisplay from '~/components/SummaryTable/DatesDisplay'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
 
 export default {
   components: {
-    GroupSelector
+    GroupSelector,
+    DatesDisplay
   },
   props: {
     domains: {
@@ -55,12 +64,45 @@ export default {
     dateHovered: {
       type: Date,
       default: () => null
+    },
+    range: {
+      type: String,
+      default: () => ''
+    },
+    interval: {
+      type: String,
+      default: () => ''
     }
   },
 
   computed: {
     timeHovered() {
       return this.dateHovered ? this.dateHovered.getTime() : 0
+    },
+    startDate() {
+      console.log(this.dataset)
+
+      const dataset = this.dataset.energy
+      const dataLength = dataset.length
+      const startDate = dataLength > 0 ? dataset[0].date : null
+      return startDate
+    },
+    endDate() {
+      const dataset = this.dataset.energy
+      const dataLength = dataset.length
+      let whichIndex = 1
+      if (this.range === '30D' || this.range === '1Y' || this.range === 'ALL') {
+        whichIndex = 2
+      }
+      if (dataLength > 0) {
+        const date = dataset[dataLength - whichIndex]
+          ? dataset[dataLength - whichIndex].date
+          : dataset[dataLength - 1].date
+        const endDate = date
+        return endDate
+      } else {
+        return null
+      }
     }
   },
 
