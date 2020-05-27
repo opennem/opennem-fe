@@ -13,6 +13,9 @@
         class="y-axis" />
       <g 
         :transform="axisTransform" 
+        class="x-shades" />
+      <g 
+        :transform="axisTransform" 
         class="line-path-group" />
       <g 
         :transform="axisTransform" 
@@ -69,6 +72,10 @@ export default {
     ticks: {
       type: Function,
       default: () => null
+    },
+    xShades: {
+      type: Array,
+      default: () => []
     }
   },
 
@@ -78,7 +85,7 @@ export default {
       svgHeight: 200,
       width: 0,
       height: 0,
-      margin: { left: 10, right: 10, top: 0, bottom: 0 },
+      margin: { left: 10, right: 10, top: 0, bottom: 1 },
       x: null,
       y: null,
       z: null,
@@ -89,7 +96,8 @@ export default {
       $yAxisGroup: null,
       $linePathGroup: null,
       $cursorLineGroup: null,
-      $hoverGroup: null
+      $hoverGroup: null,
+      $xShadesGroup: null
     }
   },
 
@@ -173,7 +181,9 @@ export default {
 
       // Define scales
       this.x = scaleTime().range([0, this.width])
-      this.y = scaleLinear().range([this.height, 0])
+      this.y = scaleLinear()
+        .range([this.height, 0])
+        .nice()
       this.z = scaleOrdinal()
 
       // Axis
@@ -181,6 +191,9 @@ export default {
       this.yAxis = axisLeft(this.y)
         .tickSize(-this.width)
         .ticks(5)
+
+      // Shades
+      this.$xShadesGroup = $svg.select('.x-shades')
 
       // Line
       this.$linePathGroup = $svg.select('.line-path-group')
@@ -217,6 +230,18 @@ export default {
           .attr('dx', 5)
           .attr('dy', -2)
       )
+
+      this.$xShadesGroup.selectAll('rect').remove()
+      this.$xShadesGroup
+        .selectAll('rect')
+        .data(this.xShades)
+        .enter()
+        .append('rect')
+        .attr('opacity', 0.05)
+        .attr('x', d => this.x(d.start))
+        .attr('width', d => this.x(d.end) - this.x(d.start))
+        .attr('height', this.height)
+
       this.$linePathGroup.selectAll('path').remove()
       this.$linePathGroup
         .selectAll('path')
@@ -235,6 +260,11 @@ export default {
         .selectAll('path')
         .transition(100)
         .attr('d', this.drawLinePath)
+      this.$xShadesGroup
+        .selectAll('rect')
+        .transition(100)
+        .attr('x', d => this.x(d.start))
+        .attr('width', d => this.x(d.end) - this.x(d.start))
     },
 
     drawXAxis(g) {

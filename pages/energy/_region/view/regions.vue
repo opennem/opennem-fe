@@ -17,6 +17,7 @@
           :date-hovered="dateHovered"
           :zoom-range="zoomRange"
           :ticks="ticks"
+          :x-shades="xShades"
           @date-hover="handleDateHover" />
         <date-brush
           :dataset="energyDataset"
@@ -39,6 +40,7 @@
             :date-hovered="dateHovered"
             :zoom-range="zoomRange"
             :ticks="ticks"
+            :x-shades="xShades"
             @date-hover="handleDateHover" />
         </div>
         
@@ -51,6 +53,7 @@
           :date-hovered="dateHovered"
           :zoom-range="zoomRange"
           :ticks="ticks"
+          :x-shades="xShades"
           @date-hover="handleDateHover" />
         <!-- <datatable :dataset="priceDataset"/> -->
 
@@ -62,6 +65,7 @@
           :date-hovered="dateHovered"
           :zoom-range="zoomRange"
           :ticks="ticks"
+          :x-shades="xShades"
           @date-hover="handleDateHover" />
           <!-- <h1>Energy Table</h1>
         <datatable :dataset="energyDataset"/> -->
@@ -150,6 +154,21 @@ export default {
         temperature: this.temperatureDataset,
         price: this.priceDataset
       }
+    },
+    xShades() {
+      if (this.energyDataset.length <= 0) {
+        return []
+      }
+      let dStart = this.energyDataset[0].date
+      const dEnd = this.energyDataset[this.energyDataset.length - 1].date
+
+      if (this.interval === 'Day') {
+        return DateDisplay.weekendGuides(dStart, dEnd)
+      }
+      if (this.interval === '5m' || this.interval === '30m') {
+        return DateDisplay.nightGuides(dStart, dEnd)
+      }
+      return []
     },
     isZoomed() {
       return this.zoomRange.length > 0
