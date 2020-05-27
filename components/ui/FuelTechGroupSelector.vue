@@ -7,6 +7,9 @@
         :value="g">
         {{ g }}
       </option>
+      <option 
+        v-if="regionId === 'nem'" 
+        value="regions">Region compare</option>
     </select>
   </div>
 </template>
@@ -31,12 +34,20 @@ export default {
   computed: {
     fuelTechGroupName() {
       return this.$store.getters.fuelTechGroupName
+    },
+    regionId() {
+      return this.$route.params.region
     }
   },
 
   watch: {
     selected(newValue) {
-      this.triggerGroupChange()
+      if (this.regionId === 'nem' && newValue === 'regions') {
+        this.$store.dispatch('fuelTechGroupName', newValue)
+        this.$router.push({ path: '/energy/nem/view/regions' })
+      } else {
+        this.triggerGroupChange()
+      }
     },
     fuelTechGroupName(group) {
       this.selected = group
@@ -44,7 +55,12 @@ export default {
   },
 
   mounted() {
-    this.selected = this.fuelTechGroupName
+    if (this.regionId !== 'nem' && this.fuelTechGroupName === 'regions') {
+      this.$store.dispatch('fuelTechGroupName', 'Default')
+      this.selected = 'Default'
+    } else {
+      this.selected = this.fuelTechGroupName
+    }
   },
 
   methods: {

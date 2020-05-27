@@ -1,39 +1,48 @@
 <template>
-  <table class="table is-fullwidth is-narrow is-bordered">
-    <thead>
-      <tr>
-        <th>States</th>
-        <th>Energy</th>
-        <th>EV</th>
-        <th>Price</th>
-        <th>Temperature</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr 
-        v-for="d in domains" 
-        :key="d.domain">
-        <td>
-          <div class="region">
-            <span 
-              :style="{
-                'background-color': d.colour
-              }" 
-              class="colour-square"/>
-            <strong>{{ d.label }}</strong>
-          </div>
-        </td>
-        <td>{{ getEnergyValue(d.domain) }}</td>
-        <td>{{ getEmissionValue(d.domain) }}</td>
-        <td>{{ getPriceValue(d.domain) }}</td>
-        <td>{{ getTemperatureValue(d.domain) }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div>
+    <group-selector />
+    <table class="table is-fullwidth is-narrow is-bordered">
+      <thead>
+        <tr>
+          <th>States</th>
+          <th>Energy</th>
+          <th>EV</th>
+          <th>Price</th>
+          <th>Temperature</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr 
+          v-for="d in domains" 
+          :key="d.domain">
+          <td>
+            <div class="region">
+              <span 
+                :style="{
+                  'background-color': d.colour
+                }" 
+                class="colour-square"/>
+              <strong>{{ d.label }}</strong>
+            </div>
+          </td>
+          <td>{{ getEnergyValue(d.domain) }}</td>
+          <td>{{ getEmissionValue(d.domain) }}</td>
+          <td>{{ getPriceValue(d.domain) }}</td>
+          <td>{{ getTemperatureValue(d.domain) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
 </template>
 
 <script>
+import GroupSelector from '~/components/ui/FuelTechGroupSelector'
+
 export default {
+  components: {
+    GroupSelector
+  },
   props: {
     domains: {
       type: Array,
