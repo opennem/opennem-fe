@@ -61,6 +61,27 @@
             @enter="handleEnter"
             @leave="handleLeave" />
         </chart-wrapper>
+        <chart-wrapper 
+          v-if="hasEmissions"
+          :show-chart="chartEmissionsIntensity" 
+          state-name="chartEmissionsIntensity">
+          <template v-slot:header>
+            <strong>Emissions Intensity</strong>
+          </template>
+
+          <multi-line
+            v-show="chartEmissionsIntensity"
+            :line-domains="domains"
+            :dataset="emissionIntDataset"
+            :y-max="1200"
+            :date-hovered="dateHovered"
+            :zoom-range="zoomRange"
+            :ticks="ticks"
+            :x-shades="xShades"
+            @date-hover="handleDateHover"
+            @enter="handleEnter"
+            @leave="handleLeave" />
+        </chart-wrapper>
 
         <chart-wrapper 
           :show-chart="chartPrice" 
@@ -154,6 +175,7 @@ export default {
       regions: 'region/regions',
       energyDataset: 'region/energyDataset',
       emissionVolDataset: 'region/emissionVolDataset',
+      emissionIntDataset: 'region/emissionIntDataset',
       temperatureDataset: 'region/temperatureDataset',
       priceDataset: 'region/priceDataset',
       hasEmissions: 'region/hasEmissions',
@@ -194,6 +216,7 @@ export default {
       return {
         energy: this.energyDataset,
         emissionVol: this.emissionVolDataset,
+        emissionInt: this.emissionIntDataset,
         temperature: this.temperatureDataset,
         price: this.priceDataset
       }
