@@ -1,5 +1,5 @@
 <template>
-  <section class="container">
+  <section class="regions-compare">
     <data-options-bar
       :range="range"
       :interval="interval"
@@ -7,35 +7,49 @@
       @onIntervalChange="handleIntervalChange"
     />
 
-    <div class="columns">
-      <div class="column">
-        <h1>Energy</h1>
-        <multi-line
-          :line-domains="domains"
-          :dataset="energyDataset"
-          :y-max="energyMax"
-          :date-hovered="dateHovered"
-          :zoom-range="zoomRange"
-          :ticks="ticks"
-          :x-shades="xShades"
-          @date-hover="handleDateHover"
-          @enter="handleEnter"
-          @leave="handleLeave" />
-        <date-brush
-          :dataset="energyDataset"
-          :zoom-range="zoomRange" 
-          :ticks="ticks"
-          :tick-format="tickFormat"
-          :second-tick-format="secondTickFormat"
-          class="date-brush"
-          @date-hover="handleDateHover"
-          @date-filter="handleDateFilter" />
+    <div class="vis-table-container">
+      <div class="vis-container">
+        <chart-wrapper 
+          :show-chart="chartEnergy" 
+          state-name="chartEnergy">
+          <template v-slot:header>
+            <strong>Energy</strong>
+          </template>
 
-        <div 
-          v-if="hasEmissions" 
-          class="emissions-vis">
-          <h1>Emissions</h1>
           <multi-line
+            v-show="chartEnergy"
+            :line-domains="domains"
+            :dataset="energyDataset"
+            :y-max="energyMax"
+            :date-hovered="dateHovered"
+            :zoom-range="zoomRange"
+            :ticks="ticks"
+            :x-shades="xShades"
+            @date-hover="handleDateHover"
+            @enter="handleEnter"
+            @leave="handleLeave" />
+          <date-brush
+            v-show="chartEnergy"
+            :dataset="energyDataset"
+            :zoom-range="zoomRange" 
+            :ticks="ticks"
+            :tick-format="tickFormat"
+            :second-tick-format="secondTickFormat"
+            class="date-brush"
+            @date-hover="handleDateHover"
+            @date-filter="handleDateFilter" />
+        </chart-wrapper>
+
+        <chart-wrapper 
+          v-if="hasEmissions"
+          :show-chart="chartEmissionsVolume" 
+          state-name="chartEmissionsVolume">
+          <template v-slot:header>
+            <strong>Emissions Volume</strong>
+          </template>
+
+          <multi-line
+            v-show="chartEmissionsVolume"
             :line-domains="domains"
             :dataset="emissionVolDataset"
             :y-max="emissionMax"
@@ -43,44 +57,62 @@
             :zoom-range="zoomRange"
             :ticks="ticks"
             :x-shades="xShades"
-            @date-hover="handleDateHover" />
-        </div>
-        
-        <h1>Price</h1>
-        <multi-line
-          :line-domains="domains"
-          :dataset="priceDataset"
-          :y-max="priceMax"
-          :y-min="priceMin"
-          :date-hovered="dateHovered"
-          :zoom-range="zoomRange"
-          :ticks="ticks"
-          :x-shades="xShades"
-          @date-hover="handleDateHover" />
-        <!-- <datatable :dataset="priceDataset"/> -->
+            @date-hover="handleDateHover"
+            @enter="handleEnter"
+            @leave="handleLeave" />
+        </chart-wrapper>
 
-        <h1>Temperature</h1>
-        <multi-line
-          :line-domains="domains"
-          :dataset="temperatureDataset"
-          :y-max="40"
-          :date-hovered="dateHovered"
-          :zoom-range="zoomRange"
-          :ticks="ticks"
-          :x-shades="xShades"
-          @date-hover="handleDateHover" />
-          <!-- <h1>Energy Table</h1>
-        <datatable :dataset="energyDataset"/> -->
+        <chart-wrapper 
+          :show-chart="chartPrice" 
+          state-name="chartPrice">
+          <template v-slot:header>
+            <strong>Price</strong>
+          </template>
+
+          <multi-line
+            v-show="chartPrice"
+            :line-domains="domains"
+            :dataset="priceDataset"
+            :y-max="priceMax"
+            :y-min="priceMin"
+            :date-hovered="dateHovered"
+            :zoom-range="zoomRange"
+            :ticks="ticks"
+            :x-shades="xShades"
+            @date-hover="handleDateHover"
+            @enter="handleEnter"
+            @leave="handleLeave" />
+        </chart-wrapper>
+
+        <chart-wrapper 
+          :show-chart="chartTemperature" 
+          state-name="chartTemperature">
+          <template v-slot:header>
+            <strong>Temperature</strong>
+          </template>
+
+          <multi-line
+            v-show="chartTemperature"
+            :line-domains="domains"
+            :dataset="temperatureDataset"
+            :y-max="40"
+            :date-hovered="dateHovered"
+            :zoom-range="zoomRange"
+            :ticks="ticks"
+            :x-shades="xShades"
+            @date-hover="handleDateHover"
+            @enter="handleEnter"
+            @leave="handleLeave" />
+        </chart-wrapper>
       </div>
 
-      <div class="column is-one-third">
+      <div class="table-container">
         <regions-table
           :domains="domains"
           :dataset="combinedDataset"
           :date-hovered="dateHovered"
           :range="range"
           :interval="interval"
-          class="regions-table"
         />
       </div>
     </div>    
@@ -99,6 +131,7 @@ import Datatable from '@/components/Vis/Datatable'
 import DataOptionsBar from '@/components/ui/DataOptionsBar'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
+import ChartWrapper from '@/components/Vis/ChartWrapper'
 
 export default {
   layout: 'main',
@@ -107,7 +140,8 @@ export default {
     RegionsTable,
     Datatable,
     MultiLine,
-    DateBrush
+    DateBrush,
+    ChartWrapper
   },
   data() {
     return {
@@ -125,7 +159,12 @@ export default {
       hasEmissions: 'region/hasEmissions',
       range: 'range',
       interval: 'interval',
-      filterPeriod: 'filterPeriod'
+      filterPeriod: 'filterPeriod',
+      chartEnergy: 'chartEnergy',
+      chartEmissionsVolume: 'chartEmissionsVolume',
+      chartEmissionsIntensity: 'chartEmissionsIntensity',
+      chartPrice: 'chartPrice',
+      chartTemperature: 'chartTemperature'
     }),
     domains() {
       return this.regions.map(d => {
@@ -285,24 +324,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container {
-  margin-top: 1rem;
-  padding: 1rem;
-  max-width: none;
-
-  ::v-deep .data-options-bar {
-    margin-bottom: 1rem;
-    padding-left: 0;
-  }
+.regions-compare {
+  margin: 1rem auto 0;
+  max-width: 1600px;
+  position: relative;
 
   .date-brush {
     position: relative;
     margin-top: -6px;
-  }
-
-  .regions-table {
-    position: sticky;
-    top: 2rem;
   }
 }
 </style>
