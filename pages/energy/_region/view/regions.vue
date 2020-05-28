@@ -10,8 +10,10 @@
     <div class="vis-table-container">
       <div class="vis-container">
         <chart-wrapper 
+          :zoom-btn="zoomRange.length > 0"
           :show-chart="chartEnergy" 
-          state-name="chartEnergy">
+          state-name="chartEnergy"
+          @date-filter="handleDateFilter">
           <template v-slot:header>
             <strong>Energy</strong>
           </template>
