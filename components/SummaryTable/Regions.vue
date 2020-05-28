@@ -21,10 +21,7 @@
             <span>Contribution</span>
             <small>to demand</small>
           </div>
-          <div class="item-price summary-item">
-            <span>Av.Value</span>
-            <small>$/MWh</small>
-          </div>
+          <column-selector class="item-price summary-item" />
         </div>
       </div>
       <div class="summary-list">
@@ -44,9 +41,17 @@
 
           <div class="item-energy summary-item">{{ getEnergyValue(d.domain) }}</div>
           <div class="item-contribution summary-item"/>
-          <!-- <div class="summary-item">{{ getEmissionValue(d.domain) }}</div> -->
-          <div class="item-price summary-item">{{ getPriceValue(d.domain) }}</div>
-          <!-- <div class="summary-item">{{ getTemperatureValue(d.domain) }}</div> -->
+          
+          <div 
+            v-if="isEmissionsVolumeColumn" 
+            class="item-emissions summary-item">{{ getEmissionValue(d.domain) }}</div>
+          <div 
+            v-if="isEmissionsIntensityColumn" 
+            class="item-emissions summary-item">{{ getEmissionIntValue(d.domain) }}</div>
+          <div 
+            v-if="isAvValueColumn" 
+            class="item-price summary-item">{{ getPriceValue(d.domain) }}</div>
+            <!-- <div class="summary-item">{{ getTemperatureValue(d.domain) }}</div> -->
         </div>
       </div>
     </div>
@@ -54,12 +59,15 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import DatesDisplay from '~/components/SummaryTable/DatesDisplay'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
+import ColumnSelector from '~/components/ui/SummaryColumnSelector'
 
 export default {
   components: {
     GroupSelector,
+    ColumnSelector,
     DatesDisplay
   },
   props: {
@@ -86,12 +94,22 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      showSummaryColumn: 'showSummaryColumn'
+    }),
+    isAvValueColumn() {
+      return this.showSummaryColumn === 'av-value'
+    },
+    isEmissionsVolumeColumn() {
+      return this.showSummaryColumn === 'emissions-volume'
+    },
+    isEmissionsIntensityColumn() {
+      return this.showSummaryColumn === 'emissions-intensity'
+    },
     timeHovered() {
       return this.dateHovered ? this.dateHovered.getTime() : 0
     },
     startDate() {
-      console.log(this.dataset)
-
       const dataset = this.dataset.energy
       const dataLength = dataset.length
       const startDate = dataLength > 0 ? dataset[0].date : null
@@ -125,6 +143,11 @@ export default {
     getEmissionValue(domain) {
       return this.$options.filters.formatValue(
         this.findDataPoint('emissionVol', domain)
+      )
+    },
+    getEmissionIntValue(domain) {
+      return this.$options.filters.formatValue(
+        this.findDataPoint('emissionInt', domain)
       )
     },
     getPriceValue(domain) {
@@ -172,7 +195,8 @@ export default {
 
 .item-energy,
 .item-contribution,
-.item-price {
+.item-price,
+.item-emissions {
   width: 25%;
   text-align: right;
   padding: 0 5px;
