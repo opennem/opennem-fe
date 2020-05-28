@@ -1,0 +1,153 @@
+.vis-table-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  margin-top: 1rem;
+
+  .vis-container {
+    width: 100%;
+    padding: 1rem 0 0;
+
+    @include desktop {
+      width: 65%;
+      padding: 0;
+    }
+  }
+
+  .table-container {
+    width: 100%;
+    padding: 0 1rem 1rem;
+
+    @include desktop {
+      width: 35%;
+      padding: 0 1rem 0 0;
+    }
+  }
+
+  .chart {
+    position: relative;
+
+    .chart-title {
+      font-size: 11px;
+      cursor: pointer;
+      user-select: none;
+
+      @include tablet {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.2rem 1rem 0.2rem 1rem;
+        height: 25px;
+      }
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+
+      .chart-label {
+        padding: 2px 0.5rem;
+      }
+
+      .hover-date-value {
+        display: flex;
+      }
+
+      .hover-date,
+      .hover-values {
+        position: absolute;
+        left: -9999em;
+        opacity: 0;
+        background: rgba(255, 255, 255, 0.5);
+        padding: 3px 12px;
+        white-space: nowrap;
+      }
+
+      .average-value {
+        position: static;
+        left: -9999em;
+        // background: rgba(255, 255, 255, 0.5);
+        padding: 3px 12px;
+        white-space: nowrap;
+
+        @include tablet {
+          width: auto;
+          border-radius: 20px;
+        }
+      }
+
+      .hover-date {
+        font-weight: 600;
+        background-color: rgba(199, 69, 35, 0.1);
+        color: #444;
+        // font-size: 10px;
+        // padding-top: 3px;
+        width: 30%;
+
+        @include tablet {
+          width: auto;
+          border-radius: 20px 0 0 20px;
+        }
+      }
+
+      .hover-values {
+        display: flex;
+        align-items: center;
+        // font-size: 9px;
+        width: 70%;
+
+        span {
+          flex-grow: 1;
+        }
+
+        .ft-value {
+          margin-right: 1rem;
+        }
+
+        .mean-temp-value {
+          margin: 0 1rem;
+        }
+
+        @include desktop {
+          width: auto;
+          border-radius: 0 20px 20px 0;
+        }
+      }
+
+      .colour-square {
+        display: inline-block;
+        border: 1px solid transparent;
+        width: 11px;
+        height: 11px;
+        border-radius: 1px;
+        position: relative;
+        top: 1px;
+      }
+
+      &.no-hover {
+        cursor: auto;
+
+        &:hover {
+          background-color: transparent;
+        }
+      }
+    }
+
+    &.is-hovered {
+
+      .hover-date,
+      .hover-values {
+        display: inline-block;
+        position: static;
+        opacity: 1;
+        transition: all 0.2s ease-in-out;
+      }
+
+      .average-value {
+        position: absolute;
+      }
+    }
+
+    &.has-border-bottom {
+      border-bottom: 1px dashed #ccc;
+    }
+  }
+}

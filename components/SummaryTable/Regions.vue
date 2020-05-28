@@ -7,40 +7,50 @@
       :range="range"
       :interval="interval"
     />
-    <group-selector />
-    <table class="table is-fullwidth is-narrow is-bordered">
-      <thead>
-        <tr>
-          <th>States</th>
-          <th>Energy</th>
-          <th>EV</th>
-          <th>Price</th>
-          <th>Temperature</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr 
+    <div class="summary">
+      <div class="summary-header">
+        <div class="summary-row">
+          <div class="item-region summary-item">
+            <group-selector />
+          </div>
+          <div class="item-energy summary-item">
+            <span>Energy</span>
+            <small>GWh</small>
+          </div>
+          <div class="item-contribution summary-item">
+            <span>Contribution</span>
+            <small>to demand</small>
+          </div>
+          <div class="item-price summary-item">
+            <span>Av.Value</span>
+            <small>$/MWh</small>
+          </div>
+        </div>
+      </div>
+      <div class="summary-list">
+        <div 
           v-for="d in domains" 
-          :key="d.domain">
-          <td>
-            <div class="region">
-              <span 
-                :style="{
-                  'background-color': d.colour
-                }" 
-                class="colour-square"/>
-              <strong>{{ d.label }}</strong>
-            </div>
-          </td>
-          <td>{{ getEnergyValue(d.domain) }}</td>
-          <td>{{ getEmissionValue(d.domain) }}</td>
-          <td>{{ getPriceValue(d.domain) }}</td>
-          <td>{{ getTemperatureValue(d.domain) }}</td>
-        </tr>
-      </tbody>
-    </table>
+          :key="d.domain" 
+          class="summary-row">
+          <div class="item-region summary-item">
+            
+            <span 
+              :style="{
+                'background-color': d.colour
+              }" 
+              class="colour-square"/>
+            <strong>{{ d.label }}</strong>
+          </div>
+
+          <div class="item-energy summary-item">{{ getEnergyValue(d.domain) }}</div>
+          <div class="item-contribution summary-item"/>
+          <!-- <div class="summary-item">{{ getEmissionValue(d.domain) }}</div> -->
+          <div class="item-price summary-item">{{ getPriceValue(d.domain) }}</div>
+          <!-- <div class="summary-item">{{ getTemperatureValue(d.domain) }}</div> -->
+        </div>
+      </div>
+    </div>
   </div>
-  
 </template>
 
 <script>
@@ -137,19 +147,48 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.table {
+@import '~/assets/scss/responsive-mixins.scss';
+@import '~/assets/scss/variables.scss';
+.summary {
   font-size: 0.8em;
+}
+.summary-row {
+  display: flex;
+  align-items: center;
+  padding: 3px 4px;
+  border-bottom: 1px solid #ddd;
+}
+.summary-header {
+  .summary-row {
+    font-family: $header-font-family;
+    font-weight: 700;
+    user-select: none;
 
-  .region {
-    display: flex;
-    align-content: center;
-    .colour-square {
+    small {
       display: block;
-      width: 15px;
-      height: 15px;
-      background-color: #eee;
-      margin-right: 5px;
     }
+  }
+}
+
+.item-energy,
+.item-contribution,
+.item-price {
+  width: 25%;
+  text-align: right;
+  padding: 0 5px;
+}
+
+.item-region {
+  width: 30%;
+  display: flex;
+  align-content: center;
+  text-align: left;
+  .colour-square {
+    display: block;
+    width: 15px;
+    height: 15px;
+    background-color: #eee;
+    margin-right: 5px;
   }
 }
 </style>
