@@ -10,7 +10,7 @@ const Regions = REGIONS.filter(
   r => r.id !== 'all' && r.id !== 'nem' && r.id !== 'wa1'
 )
 const host = window.location.host
-let hostEnv = 'prod'
+let hostEnv = 'dev'
 if (host === 'opennem.org.au') {
   hostEnv = 'prod'
 }
@@ -74,6 +74,7 @@ export const actions = {
     const urls = getRegionURLS(Regions, period)
     const fuelTechOrder = [...FUEL_TECHS.DEFAULT_FUEL_TECH_ORDER]
     let hasEmissions = false
+
     http(urls)
       .then(responses => {
         const promises = []
@@ -156,15 +157,30 @@ export const actions = {
 
           console.log(obj)
 
-          commit('energyDataset', transformDataset(Regions, obj, '_total'))
+          const energyDataset = transformDataset(Regions, obj, '_total')
+          commit('energyDataset', energyDataset)
 
           if (hasEmissions) {
-            commit(
-              'emissionVolDataset',
-              transformDataset(Regions, obj, '_totalEmissionsVol')
+            const emissionVolDataset = transformDataset(
+              Regions,
+              obj,
+              '_totalEmissionsVol'
             )
+
+            const emissionIntDataset = emissionVolDataset.map((ev, i) => {
+              const eObj = { date: ev.date }
+              Regions.forEach((region, index) => {
+                const id = region.id
+                eObj[id] = ev[id] / energyDataset[i][id]
+              })
+              return eObj
+            })
+
+            commit('emissionVolDataset', emissionVolDataset)
+            commit('emissionIntDataset', emissionIntDataset)
           } else {
             commit('emissionVolDataset', [])
+            commit('emissionIntDataset', [])
           }
           commit(
             'temperatureDataset',
