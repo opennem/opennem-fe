@@ -169,9 +169,16 @@ export const actions = {
 
             const emissionIntDataset = emissionVolDataset.map((ev, i) => {
               const eObj = { date: ev.date }
-              Regions.forEach((region, index) => {
+              Regions.forEach(region => {
                 const id = region.id
-                eObj[id] = ev[id] / energyDataset[i][id]
+                let ei = ev[id] / energyDataset[i][id]
+                if (
+                  period.interval === 'Year' ||
+                  period.interval === 'Fin Year'
+                ) {
+                  ei = ei / 1000
+                }
+                eObj[id] = Number.isFinite(ei) ? ei : null
               })
               return eObj
             })
