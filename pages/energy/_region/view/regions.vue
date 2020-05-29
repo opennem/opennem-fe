@@ -11,11 +11,16 @@
       <div class="vis-container">
         <chart-wrapper 
           :zoom-btn="zoomRange.length > 0"
-          :show-chart="chartEnergy" 
+          :show-chart="chartEnergy"
+          :hover-values="hoverEnergyValues"
+          :formatter="$options.filters.formatValue"
           state-name="chartEnergy"
           @date-filter="handleDateFilter">
           <template v-slot:header>
             <strong>Energy</strong>
+          </template>
+          <template v-slot:datetime>
+            {{ hoverDisplayDate }}
           </template>
 
           <multi-line
@@ -44,10 +49,15 @@
 
         <chart-wrapper 
           v-if="hasEmissions"
-          :show-chart="chartEmissionsVolume" 
+          :show-chart="chartEmissionsVolume"
+          :hover-values="hoverEmissionVolValues"
+          :formatter="$options.filters.formatValue"
           state-name="chartEmissionsVolume">
           <template v-slot:header>
             <strong>Emissions Volume</strong>
+          </template>
+          <template v-slot:datetime>
+            {{ hoverDisplayDate }}
           </template>
 
           <multi-line
@@ -65,10 +75,15 @@
         </chart-wrapper>
         <chart-wrapper 
           v-if="hasEmissions"
-          :show-chart="chartEmissionsIntensity" 
+          :show-chart="chartEmissionsIntensity"
+          :hover-values="hoverEmissionIntValues"
+          :formatter="$options.filters.formatValue"
           state-name="chartEmissionsIntensity">
           <template v-slot:header>
             <strong>Emissions Intensity</strong>
+          </template>
+          <template v-slot:datetime>
+            {{ hoverDisplayDate }}
           </template>
 
           <multi-line
@@ -86,10 +101,15 @@
         </chart-wrapper>
 
         <chart-wrapper 
-          :show-chart="chartPrice" 
+          :show-chart="chartPrice"
+          :hover-values="hoverPriceValues"
+          :formatter="$options.filters.formatCurrency"
           state-name="chartPrice">
           <template v-slot:header>
             <strong>Price</strong>
+          </template>
+          <template v-slot:datetime>
+            {{ hoverDisplayDate }}
           </template>
 
           <multi-line
@@ -108,10 +128,15 @@
         </chart-wrapper>
 
         <chart-wrapper 
-          :show-chart="chartTemperature" 
+          :show-chart="chartTemperature"
+          :hover-values="hoverTemperatureValues"
+          :formatter="$options.filters.formatValue"
           state-name="chartTemperature">
           <template v-slot:header>
             <strong>Temperature</strong>
+          </template>
+          <template v-slot:datetime>
+            {{ hoverDisplayDate }}
           </template>
 
           <multi-line
@@ -255,6 +280,33 @@ export default {
     },
     ticks() {
       return AxisTicks(this.range, this.interval, this.isZoomed)
+    },
+    hoverEnergyValues() {
+      return this.getHoverArray(this.energyDataset, this.dateHovered)
+    },
+    hoverEmissionVolValues() {
+      return this.getHoverArray(this.emissionVolDataset, this.dateHovered)
+    },
+    hoverEmissionIntValues() {
+      return this.getHoverArray(this.emissionIntDataset, this.dateHovered)
+    },
+    hoverPriceValues() {
+      return this.getHoverArray(this.priceDataset, this.dateHovered)
+    },
+    hoverTemperatureValues() {
+      return this.getHoverArray(this.temperatureDataset, this.dateHovered)
+    },
+    hoverDisplayDate() {
+      let date = this.dateHovered
+      return DateDisplay.specialDateFormats(
+        new Date(date).getTime(),
+        this.range,
+        this.interval,
+        false,
+        false,
+        false,
+        true
+      )
     }
   },
   created() {
@@ -343,6 +395,19 @@ export default {
     },
     handleLeave() {
       this.$store.commit('visInteract/isHovering', false)
+    },
+    getHoverArray(dataset, date) {
+      const find = date ? dataset.find(d => d.date === date.getTime()) : null
+      return find
+        ? this.regions.map(r => {
+            return {
+              label: r.abbr,
+              colour: r.colour,
+              unit: '',
+              value: find[r.id]
+            }
+          })
+        : []
     }
   }
 }

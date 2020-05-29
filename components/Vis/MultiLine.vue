@@ -218,11 +218,30 @@ export default {
         self.$emit('date-hover', date)
       })
       $svg.on('mouseenter', () => {
-        this.$emit('enter')
+        this.handleSvgEnter()
       })
       $svg.on('mouseleave', () => {
-        this.$emit('leave')
+        this.handleSvgLeave()
       })
+    },
+
+    handleSvgEnter() {
+      this.$emit('enter')
+      this.$yAxisGroup.call(g =>
+        g.selectAll('.y-axis .tick').style('opacity', 0.3)
+      )
+      // this.$xAxisGroup.call(g =>
+      //   g.selectAll('.x-axis .tick').style('opacity', 0.5)
+      // )
+    },
+    handleSvgLeave() {
+      this.$emit('leave')
+      this.$yAxisGroup.call(g =>
+        g.selectAll('.y-axis .tick').style('opacity', 1)
+      )
+      // this.$xAxisGroup.call(g =>
+      //   g.selectAll('.x-axis .tick').style('opacity', 1)
+      // )
     },
 
     draw() {
