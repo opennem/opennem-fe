@@ -203,7 +203,7 @@ export default {
 }
 
 .item-region {
-  width: 30%;
+  width: 180px;
   display: flex;
   align-content: center;
   text-align: left;

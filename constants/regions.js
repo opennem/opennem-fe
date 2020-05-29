@@ -15,31 +15,31 @@ export default [
     id: 'nsw1',
     abbr: 'NSW',
     label: 'New South Wales',
-    colour: '#88CEEB'
+    colour: '#24CBF9'
   },
   {
     id: 'qld1',
     abbr: 'Qld',
     label: 'Queensland',
-    colour: '#800000'
+    colour: '#E71D36'
   },
   {
     id: 'sa1',
     abbr: 'SA',
     label: 'South Australia',
-    colour: '#FFD800'
+    colour: '#FF9F1C'
   },
   {
     id: 'tas1',
     abbr: 'Tas',
     label: 'Tasmania',
-    colour: '#006A4E'
+    colour: '#2EC4B6'
   },
   {
     id: 'vic1',
     abbr: 'Vic',
     label: 'Victoria',
-    colour: '#020080'
+    colour: '#183170'
   },
   {
     id: 'wa1',

@@ -195,7 +195,7 @@ export default {
         return {
           domain: d.id,
           colour: d.colour,
-          label: d.abbr
+          label: d.label
         }
       })
     },

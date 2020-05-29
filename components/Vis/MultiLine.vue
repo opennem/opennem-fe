@@ -256,6 +256,7 @@ export default {
         .append('path')
         .attr('class', key => `${key}-path`)
         .style('stroke', key => this.colours[key])
+        .style('stroke-width', 1.5)
         .style('fill', 'transparent')
         .attr('d', this.drawLinePath)
     },
