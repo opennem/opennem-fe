@@ -235,6 +235,7 @@ export default {
       // )
     },
     handleSvgLeave() {
+      this.$emit('date-hover', null)
       this.$emit('leave')
       this.$yAxisGroup.call(g =>
         g.selectAll('.y-axis .tick').style('opacity', 1)
