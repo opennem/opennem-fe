@@ -29,7 +29,7 @@
 
 <script>
 import { select, mouse } from 'd3-selection'
-import { scaleOrdinal, scaleLinear, scaleTime } from 'd3-scale'
+import { scaleOrdinal, scaleLinear, scaleTime, scaleSymlog } from 'd3-scale'
 import { axisBottom, axisLeft } from 'd3-axis'
 import {
   line as d3Line,
@@ -41,6 +41,26 @@ import { extent } from 'd3-array'
 
 export default {
   props: {
+    svgHeight: {
+      type: Number,
+      default: () => 200
+    },
+    marginTop: {
+      type: Number,
+      default: () => 0
+    },
+    marginRight: {
+      type: Number,
+      default: () => 10
+    },
+    marginBottom: {
+      type: Number,
+      default: () => 1
+    },
+    marginLeft: {
+      type: Number,
+      default: () => 10
+    },
     lineDomains: {
       type: Array,
       default: () => []
@@ -76,21 +96,32 @@ export default {
     xShades: {
       type: Array,
       default: () => []
+    },
+    yLog: {
+      type: Boolean,
+      default: () => false
+    },
+    yInvert: {
+      type: Boolean,
+      default: () => false
+    },
+    yTickText: {
+      type: Boolean,
+      default: () => true
     }
   },
 
   data() {
     return {
       svgWidth: 0,
-      svgHeight: 200,
       width: 0,
       height: 0,
-      margin: { left: 10, right: 10, top: 0, bottom: 1 },
       x: null,
       y: null,
       z: null,
       xAxis: null,
       yAxis: null,
+      yRange: null,
       line: null,
       $xAxisGroup: null,
       $yAxisGroup: null,
@@ -106,7 +137,7 @@ export default {
       return `multi-line-${this.uuid}`
     },
     axisTransform() {
-      return `translate(${this.margin.left},0)`
+      return `translate(${this.marginLeft},0)`
     },
     curveType() {
       switch (this.curve) {
@@ -164,8 +195,8 @@ export default {
   methods: {
     setupWidthHeight() {
       const chartWidth = this.$el.offsetWidth
-      const width = chartWidth - this.margin.left - this.margin.right
-      const height = this.svgHeight - this.margin.top - this.margin.bottom
+      const width = chartWidth - this.marginLeft - this.marginRight
+      const height = this.svgHeight - this.marginTop - this.marginBottom
 
       this.svgWidth = chartWidth
       this.width = width < 0 ? 0 : width
@@ -180,10 +211,11 @@ export default {
       this.$yAxisGroup = $svg.select('.y-axis')
 
       // Define scales
+      this.yRange = this.yInvert ? [0, this.height] : [this.height, 0]
       this.x = scaleTime().range([0, this.width])
-      this.y = scaleLinear()
-        .range([this.height, 0])
-        .nice()
+      this.y = this.yLog
+        ? scaleSymlog().range(this.yRange)
+        : scaleLinear().range(this.yRange)
       this.z = scaleOrdinal()
 
       // Axis
@@ -255,6 +287,7 @@ export default {
           .selectAll('.y-axis .tick text')
           .attr('dx', 5)
           .attr('dy', -2)
+          .attr('opacity', this.yTickText ? 1 : 0)
       )
 
       this.$xShadesGroup.selectAll('rect').remove()

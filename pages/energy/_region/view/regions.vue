@@ -100,32 +100,18 @@
             @leave="handleLeave" />
         </chart-wrapper>
 
-        <chart-wrapper 
-          :show-chart="chartPrice"
+        <price-charts
           :hover-values="hoverPriceValues"
-          :formatter="$options.filters.formatCurrency"
-          state-name="chartPrice">
-          <template v-slot:header>
-            <strong>Price</strong>
-          </template>
-          <template v-slot:datetime>
-            {{ hoverDisplayDate }}
-          </template>
-
-          <multi-line
-            v-show="chartPrice"
-            :line-domains="domains"
-            :dataset="priceDataset"
-            :y-max="priceMax"
-            :y-min="priceMin"
-            :date-hovered="dateHovered"
-            :zoom-range="zoomRange"
-            :ticks="ticks"
-            :x-shades="xShades"
-            @date-hover="handleDateHover"
-            @enter="handleEnter"
-            @leave="handleLeave" />
-        </chart-wrapper>
+          :hover-date="hoverDisplayDate"
+          :chart-options="{
+            domains,
+            dateHovered,
+            zoomRange,
+            ticks,
+            xShades
+          }"
+          @date-hover="handleDateHover"
+        />
 
         <chart-wrapper 
           :show-chart="chartTemperature"
@@ -180,6 +166,7 @@ import DataOptionsBar from '@/components/ui/DataOptionsBar'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
 import ChartWrapper from '@/components/Vis/ChartWrapper'
+import PriceCharts from '@/components/Energy/PriceCharts'
 
 export default {
   layout: 'main',
@@ -189,7 +176,8 @@ export default {
     Datatable,
     MultiLine,
     DateBrush,
-    ChartWrapper
+    ChartWrapper,
+    PriceCharts
   },
   data() {
     return {
@@ -212,7 +200,6 @@ export default {
       chartEnergy: 'chartEnergy',
       chartEmissionsVolume: 'chartEmissionsVolume',
       chartEmissionsIntensity: 'chartEmissionsIntensity',
-      chartPrice: 'chartPrice',
       chartTemperature: 'chartTemperature'
     }),
     domains() {
@@ -232,12 +219,6 @@ export default {
     },
     temperatureMax() {
       return max(this.temperatureDataset, d => d._highest)
-    },
-    priceMin() {
-      return min(this.priceDataset, d => d._lowest)
-    },
-    priceMax() {
-      return max(this.priceDataset, d => d._highest)
     },
     combinedDataset() {
       return {
