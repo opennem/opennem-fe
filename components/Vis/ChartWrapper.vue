@@ -21,7 +21,9 @@
           class="fal fa-fw" />
         <slot name="header"/>
       </div>
-      <div class="hover-date-value">
+      <div 
+        v-if="showChart" 
+        class="hover-date-value">
         <div class="hover-date">
           <time>
             <slot name="datetime"/>
