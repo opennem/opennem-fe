@@ -39,7 +39,7 @@ export default {
       type: Function,
       default: () => ({})
     },
-    ticks: {
+    xTicks: {
       type: Function,
       default: () => null
     }

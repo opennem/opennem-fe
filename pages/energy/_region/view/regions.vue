@@ -30,7 +30,7 @@
             :y-max="energyMax"
             :date-hovered="dateHovered"
             :zoom-range="zoomRange"
-            :ticks="ticks"
+            :x-ticks="xTicks"
             :x-shades="xShades"
             @date-hover="handleDateHover"
             @enter="handleEnter"
@@ -39,7 +39,7 @@
             v-show="chartEnergy"
             :dataset="energyDataset"
             :zoom-range="zoomRange" 
-            :ticks="ticks"
+            :x-ticks="xTicks"
             :tick-format="tickFormat"
             :second-tick-format="secondTickFormat"
             class="date-brush"
@@ -67,7 +67,7 @@
             :y-max="emissionMax"
             :date-hovered="dateHovered"
             :zoom-range="zoomRange"
-            :ticks="ticks"
+            :x-ticks="xTicks"
             :x-shades="xShades"
             @date-hover="handleDateHover"
             @enter="handleEnter"
@@ -93,7 +93,7 @@
             :y-max="1200"
             :date-hovered="dateHovered"
             :zoom-range="zoomRange"
-            :ticks="ticks"
+            :x-ticks="xTicks"
             :x-shades="xShades"
             @date-hover="handleDateHover"
             @enter="handleEnter"
@@ -107,7 +107,7 @@
             domains,
             dateHovered,
             zoomRange,
-            ticks,
+            xTicks,
             xShades
           }"
           @date-hover="handleDateHover"
@@ -132,7 +132,7 @@
             :y-max="40"
             :date-hovered="dateHovered"
             :zoom-range="zoomRange"
-            :ticks="ticks"
+            :x-ticks="xTicks"
             :x-shades="xShades"
             @date-hover="handleDateHover"
             @enter="handleEnter"
@@ -259,7 +259,7 @@ export default {
     secondTickFormat() {
       return AxisTimeFormats.secondaryFormat
     },
-    ticks() {
+    xTicks() {
       return AxisTicks(this.range, this.interval, this.isZoomed)
     },
     hoverEnergyValues() {

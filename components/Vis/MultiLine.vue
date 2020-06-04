@@ -89,7 +89,7 @@ export default {
       type: Array,
       default: () => []
     },
-    ticks: {
+    xTicks: {
       type: Function,
       default: () => null
     },
@@ -181,7 +181,7 @@ export default {
       }
       this.redraw()
     },
-    ticks(newTicks) {
+    xTicks(newTicks) {
       this.xAxis.ticks(newTicks)
       this.redraw()
     }
