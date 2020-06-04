@@ -93,6 +93,10 @@ export default {
       type: Function,
       default: () => null
     },
+    yTicks: {
+      type: Array,
+      default: () => []
+    },
     xShades: {
       type: Array,
       default: () => []
@@ -220,9 +224,14 @@ export default {
 
       // Axis
       this.xAxis = axisBottom(this.x).tickSize(this.height)
-      this.yAxis = axisLeft(this.y)
-        .tickSize(-this.width)
-        .ticks(5)
+      this.yAxis =
+        this.yTicks.length > 0
+          ? axisLeft(this.y)
+              .tickSize(-this.width)
+              .tickValues(this.yTicks)
+          : axisLeft(this.y)
+              .tickSize(-this.width)
+              .ticks(5)
 
       // Shades
       this.$xShadesGroup = $svg.select('.x-shades')

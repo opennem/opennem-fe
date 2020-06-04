@@ -23,8 +23,9 @@
       :zoom-range="chartOptions.zoomRange"
       :x-ticks="chartOptions.xTicks"
       :x-shades="chartOptions.xShades"
-      :y-tick-text="false"
+      :y-tick-text="true"
       :y-log="true"
+      :y-ticks="[300, 2000, 6000, 10000, 14000]"
       :curve="'smooth'"
       class="dash-stroke-lines"
       style="height: 75px;"
@@ -43,6 +44,7 @@
       :zoom-range="chartOptions.zoomRange"
       :x-ticks="chartOptions.xTicks"
       :x-shades="chartOptions.xShades"
+      :y-ticks="[0, 100, 200, 300]"
       :curve="'smooth'"
       style="height: 150px;"
       @date-hover="handleDateHover"
@@ -50,10 +52,10 @@
       @leave="handleLeave" />
     <multi-line
       v-show="chartPrice"
-      :svg-height="50"
+      :svg-height="60"
       :line-domains="chartOptions.domains"
       :dataset="priceDataset"
-      :y-max="-1100"
+      :y-max="-1000"
       :y-min="0"
       :date-hovered="chartOptions.dateHovered"
       :zoom-range="chartOptions.zoomRange"
@@ -61,7 +63,8 @@
       :x-shades="chartOptions.xShades"
       :y-log="true"
       :y-invert="true"
-      :y-tick-text="false"
+      :y-tick-text="true"
+      :y-ticks="[-50, -500, -1000]"
       :curve="'smooth'"
       class="dash-stroke-lines"
       @date-hover="handleDateHover"
@@ -122,7 +125,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.dash-stroke-lines ::v-deep .line-path-group path {
-  stroke-dasharray: 1.5;
+.dash-stroke-lines ::v-deep {
+  .line-path-group path {
+    stroke-dasharray: 1.5;
+  }
+  .y-axis .tick text {
+    font-size: 7px;
+    fill: #666;
+  }
 }
 </style>
