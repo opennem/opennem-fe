@@ -33,7 +33,7 @@ export default [
     id: 'tas1',
     abbr: 'Tas',
     label: 'Tasmania',
-    colour: '#2EC4B6'
+    colour: '#5F9E7D'
   },
   {
     id: 'vic1',
