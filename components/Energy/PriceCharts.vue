@@ -6,6 +6,19 @@
     state-name="chartPrice">
     <template v-slot:header>
       <strong>Price</strong>
+
+      <span 
+        v-show="chartPrice" 
+        class="chart-type-buttons buttons has-addons">
+        <button 
+          :class="{'is-selected': curve === 'step'}"
+          class="button is-small is-rounded" 
+          @click.stop="setCurve('step')">step</button>
+        <button 
+          :class="{'is-selected': curve === 'smooth'}"
+          class="button is-small is-rounded" 
+          @click.stop="setCurve('smooth')">curve</button>
+      </span>
     </template>
     <template v-slot:datetime>
       {{ hoverDate }}
@@ -27,7 +40,7 @@
       :y-tick-text="true"
       :y-log="true"
       :y-ticks="[300, 2000, 6000, 10000, 14000]"
-      :curve="'smooth'"
+      :curve="curve"
       class="dash-stroke-lines"
       style="height: 75px;"
       @date-hover="handleDateHover"
@@ -47,7 +60,7 @@
       :x-ticks="chartOptions.xTicks"
       :x-shades="chartOptions.xShades"
       :y-ticks="[0, 100, 200, 300]"
-      :curve="'smooth'"
+      :curve="curve"
       style="height: 150px;"
       @date-hover="handleDateHover"
       @enter="handleEnter"
@@ -68,7 +81,7 @@
       :y-invert="true"
       :y-tick-text="true"
       :y-ticks="[-50, -500, -1000]"
-      :curve="'smooth'"
+      :curve="curve"
       class="dash-stroke-lines"
       @date-hover="handleDateHover"
       @enter="handleEnter"
@@ -105,6 +118,11 @@ export default {
       default: () => null
     }
   },
+  data() {
+    return {
+      curve: 'step'
+    }
+  },
   computed: {
     ...mapGetters({
       priceDataset: 'region/priceDataset',
@@ -120,6 +138,9 @@ export default {
     },
     handleLeave() {
       this.$store.commit('visInteract/isHovering', false)
+    },
+    setCurve(curve) {
+      this.curve = curve
     }
   }
 }
@@ -133,6 +154,17 @@ export default {
   .y-axis .tick text {
     font-size: 7px;
     fill: #666;
+  }
+}
+.chart-type-buttons {
+  display: inline-block;
+  position: relative;
+  top: -2px;
+  margin-left: 0.5rem;
+  .button {
+    padding: 2px 10px;
+    min-width: 0;
+    height: auto;
   }
 }
 </style>

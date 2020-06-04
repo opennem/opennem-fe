@@ -212,6 +212,10 @@ export default {
       } else {
         this.$linePathGroup.selectAll('path').attr('opacity', 1)
       }
+    },
+    curveType(type) {
+      this.line.curve(type)
+      this.redraw()
     }
   },
 
@@ -349,10 +353,7 @@ export default {
 
     redraw() {
       this.$xAxisGroup.call(this.drawXAxis)
-      this.$linePathGroup
-        .selectAll('path')
-        .transition(100)
-        .attr('d', this.drawLinePath)
+      this.$linePathGroup.selectAll('path').attr('d', this.drawLinePath)
       this.$xShadesGroup
         .selectAll('rect')
         .transition(100)
