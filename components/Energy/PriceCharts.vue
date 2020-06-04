@@ -25,7 +25,7 @@
     </template>
 
     <multi-line
-      v-show="chartPrice"
+      v-show="showPosLogChart"
       :svg-height="75"
       :margin-bottom="0"
       :line-domains="chartOptions.domains"
@@ -53,20 +53,20 @@
       :line-domains="chartOptions.domains"
       :highlight-domain="chartOptions.highlightDomain"
       :dataset="priceDataset"
-      :y-max="300"
+      :y-max="yMax"
       :y-min="0"
       :date-hovered="chartOptions.dateHovered"
       :zoom-range="chartOptions.zoomRange"
       :x-ticks="chartOptions.xTicks"
       :x-shades="chartOptions.xShades"
-      :y-ticks="[0, 100, 200, 300]"
+      :y-ticks="yTicks"
       :curve="curve"
       style="height: 150px;"
       @date-hover="handleDateHover"
       @enter="handleEnter"
       @leave="handleLeave" />
     <multi-line
-      v-show="chartPrice"
+      v-show="showNegLogChart"
       :svg-height="60"
       :line-domains="chartOptions.domains"
       :highlight-domain="chartOptions.highlightDomain"
@@ -92,6 +92,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { min, max } from 'd3-array'
 import MultiLine from '@/components/Vis/MultiLine'
 import ChartWrapper from '@/components/Vis/ChartWrapper'
 
@@ -127,7 +128,31 @@ export default {
     ...mapGetters({
       priceDataset: 'region/priceDataset',
       chartPrice: 'chartPrice'
-    })
+    }),
+    priceMin() {
+      return min(this.priceDataset, d => d._lowest)
+    },
+    priceMax() {
+      return max(this.priceDataset, d => d._highest)
+    },
+    yMax() {
+      if (this.showPosLogChart) {
+        return 300
+      }
+      if (this.priceMax < 100) {
+        return 100
+      }
+      return this.priceMax
+    },
+    yTicks() {
+      return this.showPosLogChart ? [0, 100, 200, 300] : []
+    },
+    showNegLogChart() {
+      return this.chartPrice && this.priceMin < 0
+    },
+    showPosLogChart() {
+      return this.chartPrice && this.priceMax > 300
+    }
   },
   methods: {
     handleDateHover(date) {
