@@ -11,83 +11,62 @@
       {{ hoverDate }}
     </template>
 
-    <!-- <multi-line
-            v-show="chartPrice"
-            :margin-bottom="0"
-            :line-domains="domains"
-            :dataset="priceDataset"
-            :y-max="priceMax"
-            :y-min="priceMin"
-            :date-hovered="dateHovered"
-            :zoom-range="zoomRange"
-            :ticks="ticks"
-            :x-shades="xShades"
-            :curve="'linear'"
-            @date-hover="handleDateHover"
-            @enter="handleEnter"
-            @leave="handleLeave" /> -->
-
-    <div class="region-price-charts">
-      <div 
-        v-for="(d, i) in chartOptions.domains" 
-        :key="i" 
-        class="region-price-chart">
-        <multi-line
-          v-show="chartPrice"
-          :svg-height="50"
-          :line-domains="[d]"
-          :dataset="priceAbove300Dataset"
-          :y-max="20000"
-          :y-min="300"
-          :date-hovered="chartOptions.dateHovered"
-          :zoom-range="chartOptions.zoomRange"
-          :ticks="chartOptions.ticks"
-          :x-shades="chartOptions.xShades"
-          :y-tick-text="false"
-          :y-log="true"
-          :curve="'step'"
-          style="height: 50px; position: relative; top: 1px;"
-          @date-hover="handleDateHover"
-          @enter="handleEnter"
-          @leave="handleLeave" />
-        <multi-line
-          v-show="chartPrice"
-          :svg-height="80"
-          :margin-bottom="0"
-          :line-domains="[d]"
-          :dataset="priceDataset"
-          :y-max="300"
-          :y-min="0"
-          :date-hovered="chartOptions.dateHovered"
-          :zoom-range="chartOptions.zoomRange"
-          :ticks="chartOptions.ticks"
-          :x-shades="chartOptions.xShades"
-          :curve="'step'"
-          style="height: 80px;"
-          @date-hover="handleDateHover"
-          @enter="handleEnter"
-          @leave="handleLeave" />
-        <multi-line
-          v-show="chartPrice"
-          :svg-height="35"
-          :line-domains="[d]"
-          :dataset="priceBelow0Dataset"
-          :y-max="-1100"
-          :y-min="-0.1"
-          :date-hovered="chartOptions.dateHovered"
-          :zoom-range="chartOptions.zoomRange"
-          :ticks="chartOptions.ticks"
-          :x-shades="chartOptions.xShades"
-          :y-log="true"
-          :y-invert="true"
-          :y-tick-text="false"
-          :curve="'step'"
-          @date-hover="handleDateHover"
-          @enter="handleEnter"
-          @leave="handleLeave" />
-      </div>
-    </div>
-
+    <multi-line
+      v-show="chartPrice"
+      :svg-height="75"
+      :margin-bottom="0"
+      :line-domains="chartOptions.domains"
+      :dataset="priceDataset"
+      :y-max="20000"
+      :y-min="300"
+      :date-hovered="chartOptions.dateHovered"
+      :zoom-range="chartOptions.zoomRange"
+      :ticks="chartOptions.ticks"
+      :x-shades="chartOptions.xShades"
+      :y-tick-text="false"
+      :y-log="true"
+      :curve="'smooth'"
+      class="dash-stroke-lines"
+      style="height: 75px;"
+      @date-hover="handleDateHover"
+      @enter="handleEnter"
+      @leave="handleLeave" />
+    <multi-line
+      v-show="chartPrice"
+      :svg-height="150"
+      :margin-bottom="0"
+      :line-domains="chartOptions.domains"
+      :dataset="priceDataset"
+      :y-max="300"
+      :y-min="0"
+      :date-hovered="chartOptions.dateHovered"
+      :zoom-range="chartOptions.zoomRange"
+      :ticks="chartOptions.ticks"
+      :x-shades="chartOptions.xShades"
+      :curve="'smooth'"
+      style="height: 150px;"
+      @date-hover="handleDateHover"
+      @enter="handleEnter"
+      @leave="handleLeave" />
+    <multi-line
+      v-show="chartPrice"
+      :svg-height="50"
+      :line-domains="chartOptions.domains"
+      :dataset="priceDataset"
+      :y-max="-1100"
+      :y-min="0"
+      :date-hovered="chartOptions.dateHovered"
+      :zoom-range="chartOptions.zoomRange"
+      :ticks="chartOptions.ticks"
+      :x-shades="chartOptions.xShades"
+      :y-log="true"
+      :y-invert="true"
+      :y-tick-text="false"
+      :curve="'smooth'"
+      class="dash-stroke-lines"
+      @date-hover="handleDateHover"
+      @enter="handleEnter"
+      @leave="handleLeave" />
     
   </chart-wrapper>
 </template>
@@ -143,12 +122,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.region-price-charts {
-  // display: flex;
-  // flex-wrap: wrap;
-
-  .region-price-chart {
-    // width: 100%;
-  }
+.dash-stroke-lines ::v-deep .line-path-group path {
+  stroke-dasharray: 1.5;
 }
 </style>
