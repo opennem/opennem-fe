@@ -28,6 +28,7 @@ export const state = () => ({
   priceBelow0Dataset: [],
   temperatureDataset: [],
   regions: Regions,
+  hiddenRegions: [],
   hasEmissions: false
 })
 
@@ -41,6 +42,9 @@ export const getters = {
   priceBelow0Dataset: state => state.priceBelow0Dataset,
   temperatureDataset: state => state.temperatureDataset,
   regions: state => state.regions,
+  filteredRegions: state =>
+    state.regions.filter(r => state.hiddenRegions.indexOf(r.id) === -1),
+  hiddenRegions: state => state.hiddenRegions,
   hasEmissions: state => state.hasEmissions
 }
 
@@ -64,7 +68,6 @@ export const mutations = {
     state.priceAbove300Dataset = priceAbove300Dataset
   },
   priceBelow0Dataset(state, priceBelow0Dataset) {
-    console.log(priceBelow0Dataset)
     state.priceBelow0Dataset = priceBelow0Dataset
   },
   temperatureDataset(state, temperatureDataset) {
@@ -72,6 +75,9 @@ export const mutations = {
   },
   hasEmissions(state, hasEmissions) {
     state.hasEmissions = hasEmissions
+  },
+  hiddenRegions(state, hiddenRegions) {
+    state.hiddenRegions = [...hiddenRegions]
   }
 }
 
@@ -244,6 +250,29 @@ export const actions = {
       .catch(e => {
         console.error(e)
       })
+  },
+
+  hideRegion({ commit, state }, region) {
+    let hidden = [...state.hiddenRegions]
+    if (hidden.indexOf(region) === -1) {
+      hidden.push(region)
+      // reset if all are hidden
+      if (hidden.length === state.regions.length) {
+        hidden = []
+      }
+    } else {
+      hidden = hidden.filter(r => r !== region)
+    }
+    commit('hiddenRegions', hidden)
+  },
+
+  showThisRegionOnly({ commit, state }, region) {
+    const filtered = state.regions.filter(r => r.id !== region)
+    commit('hiddenRegions', filtered.map(f => f.id))
+  },
+
+  clearHiddenRegions({ commit }) {
+    commit('hiddenRegions', [])
   }
 }
 

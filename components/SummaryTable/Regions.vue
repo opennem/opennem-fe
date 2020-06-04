@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <section>
     <dates-display
       :start-date="startDate"
       :end-date="endDate"
@@ -27,13 +27,14 @@
       <div class="summary-list">
         <div 
           v-for="d in domains" 
-          :key="d.domain" 
-          class="summary-row">
+          :key="d.domain"
+          class="summary-row"
+          @click.exact="handleRegionClick(d.domain)"
+          @click.shift.exact="handleRegionShiftClick(d.domain)">
           <div class="item-region summary-item">
-            
             <span 
               :style="{
-                'background-color': d.colour
+                'background-color': isHidden(d.domain) ? '#fff' : d.colour
               }" 
               class="colour-square"/>
             <strong>{{ d.label }}</strong>
@@ -55,11 +56,11 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import DatesDisplay from '~/components/SummaryTable/DatesDisplay'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
 import ColumnSelector from '~/components/ui/SummaryColumnSelector'
@@ -95,7 +96,9 @@ export default {
 
   computed: {
     ...mapGetters({
-      showSummaryColumn: 'showSummaryColumn'
+      showSummaryColumn: 'showSummaryColumn',
+      filteredRegions: 'region/filteredRegions',
+      hiddenRegions: 'region/hiddenRegions'
     }),
     isAvValueColumn() {
       return this.showSummaryColumn === 'av-value'
@@ -135,6 +138,10 @@ export default {
   },
 
   methods: {
+    ...mapActions({
+      hideRegion: 'region/hideRegion',
+      showThisRegionOnly: 'region/showThisRegionOnly'
+    }),
     getEnergyValue(domain) {
       return this.$options.filters.formatValue(
         this.findDataPoint('energy', domain)
@@ -164,6 +171,15 @@ export default {
       if (!this.dataset || !this.dataset[prop]) return ''
       const find = this.dataset[prop].find(d => d.date === this.timeHovered)
       return find ? find[domain] : ''
+    },
+    isHidden(domain) {
+      return this.hiddenRegions.find(r => r === domain)
+    },
+    handleRegionClick(region) {
+      this.hideRegion(region)
+    },
+    handleRegionShiftClick(region) {
+      this.showThisRegionOnly(region)
     }
   }
 }
@@ -180,15 +196,24 @@ export default {
   align-items: center;
   padding: 3px 4px;
   border-bottom: 1px solid #ddd;
+  user-select: none;
 }
 .summary-header {
   .summary-row {
     font-family: $header-font-family;
     font-weight: 700;
-    user-select: none;
 
     small {
       display: block;
+    }
+  }
+}
+.summary-list {
+  .summary-row {
+    cursor: pointer;
+
+    &:hover {
+      background-color: $row-hover;
     }
   }
 }
