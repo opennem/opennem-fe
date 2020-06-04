@@ -356,7 +356,6 @@ export default {
       this.$linePathGroup.selectAll('path').attr('d', this.drawLinePath)
       this.$xShadesGroup
         .selectAll('rect')
-        .transition(100)
         .attr('x', d => this.x(d.start))
         .attr('width', d => this.x(d.end) - this.x(d.start))
     },
