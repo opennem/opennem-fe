@@ -29,6 +29,8 @@
           v-for="d in domains" 
           :key="d.domain"
           class="summary-row"
+          @mouseenter="handleRegionEnter(d.domain)"
+          @mouseleave="handleRegionLeave()"
           @click.exact="handleRegionClick(d.domain)"
           @click.shift.exact="handleRegionShiftClick(d.domain)">
           <div class="item-region summary-item">
@@ -180,6 +182,12 @@ export default {
     },
     handleRegionShiftClick(region) {
       this.showThisRegionOnly(region)
+    },
+    handleRegionEnter(region) {
+      this.$store.commit('region/hoveredRegion', region)
+    },
+    handleRegionLeave() {
+      this.$store.commit('region/hoveredRegion', null)
     }
   }
 }

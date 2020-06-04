@@ -26,6 +26,7 @@ export const state = () => ({
   priceDataset: [],
   temperatureDataset: [],
   regions: Regions,
+  hoveredRegion: null,
   hiddenRegions: [],
   hasEmissions: false
 })
@@ -40,6 +41,7 @@ export const getters = {
   regions: state => state.regions,
   filteredRegions: state =>
     state.regions.filter(r => state.hiddenRegions.indexOf(r.id) === -1),
+  hoveredRegion: state => state.hoveredRegion,
   hiddenRegions: state => state.hiddenRegions,
   hasEmissions: state => state.hasEmissions
 }
@@ -68,6 +70,9 @@ export const mutations = {
   },
   hiddenRegions(state, hiddenRegions) {
     state.hiddenRegions = [...hiddenRegions]
+  },
+  hoveredRegion(state, hoveredRegion) {
+    state.hoveredRegion = hoveredRegion
   }
 }
 

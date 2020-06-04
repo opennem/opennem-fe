@@ -15,7 +15,7 @@
         :transform="axisTransform" 
         class="x-shades" />
       <g 
-        :transform="axisTransform" 
+        :transform="axisTransform"
         class="line-path-group" />
       <g 
         :transform="axisTransform" 
@@ -65,6 +65,10 @@ export default {
       type: Array,
       default: () => []
     },
+    highlightDomain: {
+      type: String,
+      default: () => null
+    },
     dataset: {
       type: Array,
       default: () => []
@@ -112,6 +116,10 @@ export default {
     yTickText: {
       type: Boolean,
       default: () => true
+    },
+    pathStrokeWidth: {
+      type: Number,
+      default: () => 1.5
     }
   },
 
@@ -166,6 +174,9 @@ export default {
     },
     xExtent() {
       return extent(this.dataset, d => new Date(d.date))
+    },
+    hasHighlight() {
+      return this.highlightDomain ? true : false
     }
   },
 
@@ -192,6 +203,15 @@ export default {
     xTicks(newTicks) {
       this.xAxis.ticks(newTicks)
       this.redraw()
+    },
+    highlightDomain(domain) {
+      if (domain) {
+        this.$linePathGroup
+          .selectAll('path')
+          .attr('opacity', d => (d === domain ? 1 : 0.2))
+      } else {
+        this.$linePathGroup.selectAll('path').attr('opacity', 1)
+      }
     }
   },
 
@@ -322,7 +342,7 @@ export default {
         .append('path')
         .attr('class', key => `${key}-path`)
         .style('stroke', key => this.colours[key])
-        .style('stroke-width', 1.5)
+        .style('stroke-width', this.pathStrokeWidth)
         .style('fill', 'transparent')
         .attr('d', this.drawLinePath)
     },

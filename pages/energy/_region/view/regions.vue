@@ -26,6 +26,7 @@
           <multi-line
             v-show="chartEnergy"
             :line-domains="filteredDomains"
+            :highlight-domain="hoveredRegion"
             :dataset="energyDataset"
             :y-max="energyMax"
             :date-hovered="dateHovered"
@@ -63,6 +64,7 @@
           <multi-line
             v-show="chartEmissionsVolume"
             :line-domains="filteredDomains"
+            :highlight-domain="hoveredRegion"
             :dataset="emissionVolDataset"
             :y-max="emissionMax"
             :date-hovered="dateHovered"
@@ -89,6 +91,7 @@
           <multi-line
             v-show="chartEmissionsIntensity"
             :line-domains="filteredDomains"
+            :highlight-domain="hoveredRegion"
             :dataset="emissionIntDataset"
             :y-max="1200"
             :date-hovered="dateHovered"
@@ -105,6 +108,7 @@
           :hover-date="hoverDisplayDate"
           :chart-options="{
             domains: filteredDomains,
+            highlightDomain: hoveredRegion,
             dateHovered,
             zoomRange,
             xTicks,
@@ -128,6 +132,7 @@
           <multi-line
             v-show="chartTemperature"
             :line-domains="filteredDomains"
+            :highlight-domain="hoveredRegion"
             :dataset="temperatureDataset"
             :y-max="40"
             :date-hovered="dateHovered"
@@ -188,6 +193,7 @@ export default {
   computed: {
     ...mapGetters({
       regions: 'region/regions',
+      hoveredRegion: 'region/hoveredRegion',
       filteredRegions: 'region/filteredRegions',
       energyDataset: 'region/energyDataset',
       emissionVolDataset: 'region/emissionVolDataset',

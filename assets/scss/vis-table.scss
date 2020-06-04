@@ -4,6 +4,10 @@
   align-items: stretch;
   margin-top: 1rem;
 
+  @include desktop {
+    flex-wrap: nowrap;
+  }
+
   .vis-container {
     width: 100%;
     padding: 1rem 0 0;
