@@ -396,7 +396,7 @@ export default {
     getHoverArray(dataset, date) {
       const find = date ? dataset.find(d => d.date === date.getTime()) : null
       return find
-        ? this.regions.map(r => {
+        ? this.filteredRegions.map(r => {
             return {
               label: r.abbr,
               colour: r.colour,
