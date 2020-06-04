@@ -186,8 +186,7 @@ export default {
       this.draw()
     },
     dataset() {
-      this.clearCursorLine()
-      this.draw()
+      this.handleResize()
     },
     dateHovered(newValue) {
       this.drawCursorLine(newValue)
@@ -222,9 +221,20 @@ export default {
   mounted() {
     this.setupWidthHeight()
     this.setup()
+
+    window.addEventListener('resize', this.handleResize)
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize)
   },
 
   methods: {
+    handleResize() {
+      this.setupWidthHeight()
+      this.setup()
+      this.draw()
+    },
     setupWidthHeight() {
       const chartWidth = this.$el.offsetWidth
       const width = chartWidth - this.marginLeft - this.marginRight
