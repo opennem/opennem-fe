@@ -24,8 +24,6 @@ export const state = () => ({
   emissionVolDataset: [],
   emissionIntDataset: [],
   priceDataset: [],
-  priceAbove300Dataset: [],
-  priceBelow0Dataset: [],
   temperatureDataset: [],
   regions: Regions,
   hiddenRegions: [],
@@ -38,8 +36,6 @@ export const getters = {
   emissionVolDataset: state => state.emissionVolDataset,
   emissionIntDataset: state => state.emissionIntDataset,
   priceDataset: state => state.priceDataset,
-  priceAbove300Dataset: state => state.priceAbove300Dataset,
-  priceBelow0Dataset: state => state.priceBelow0Dataset,
   temperatureDataset: state => state.temperatureDataset,
   regions: state => state.regions,
   filteredRegions: state =>
@@ -63,12 +59,6 @@ export const mutations = {
   },
   priceDataset(state, priceDataset) {
     state.priceDataset = priceDataset
-  },
-  priceAbove300Dataset(state, priceAbove300Dataset) {
-    state.priceAbove300Dataset = priceAbove300Dataset
-  },
-  priceBelow0Dataset(state, priceBelow0Dataset) {
-    state.priceBelow0Dataset = priceBelow0Dataset
   },
   temperatureDataset(state, temperatureDataset) {
     state.temperatureDataset = temperatureDataset
@@ -221,26 +211,10 @@ export const actions = {
               'priceDataset',
               transformDataset(Regions, obj, 'price', true)
             )
-            commit(
-              'priceAbove300Dataset',
-              transformDataset(Regions, obj, 'price.above300')
-            )
-            commit(
-              'priceBelow0Dataset',
-              transformDataset(Regions, obj, 'price.below0')
-            )
           } else {
             commit(
               'priceDataset',
               transformDataset(Regions, obj, '_volWeightedPrice')
-            )
-            commit(
-              'priceAbove300Dataset',
-              transformDataset(Regions, obj, '_volWeightedPriceAbove300')
-            )
-            commit(
-              'priceBelow0Dataset',
-              transformDataset(Regions, obj, '_volWeightedPriceBelow0')
             )
           }
 

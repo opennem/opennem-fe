@@ -105,8 +105,6 @@ export default {
   computed: {
     ...mapGetters({
       priceDataset: 'region/priceDataset',
-      priceAbove300Dataset: 'region/priceAbove300Dataset',
-      priceBelow0Dataset: 'region/priceBelow0Dataset',
       chartPrice: 'chartPrice'
     })
   },
