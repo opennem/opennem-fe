@@ -25,7 +25,7 @@
 
           <multi-line
             v-show="chartEnergy"
-            :line-domains="domains"
+            :line-domains="filteredDomains"
             :dataset="energyDataset"
             :y-max="energyMax"
             :date-hovered="dateHovered"
@@ -62,7 +62,7 @@
 
           <multi-line
             v-show="chartEmissionsVolume"
-            :line-domains="domains"
+            :line-domains="filteredDomains"
             :dataset="emissionVolDataset"
             :y-max="emissionMax"
             :date-hovered="dateHovered"
@@ -88,7 +88,7 @@
 
           <multi-line
             v-show="chartEmissionsIntensity"
-            :line-domains="domains"
+            :line-domains="filteredDomains"
             :dataset="emissionIntDataset"
             :y-max="1200"
             :date-hovered="dateHovered"
@@ -104,7 +104,7 @@
           :hover-values="hoverPriceValues"
           :hover-date="hoverDisplayDate"
           :chart-options="{
-            domains,
+            domains: filteredDomains,
             dateHovered,
             zoomRange,
             xTicks,
@@ -127,7 +127,7 @@
 
           <multi-line
             v-show="chartTemperature"
-            :line-domains="domains"
+            :line-domains="filteredDomains"
             :dataset="temperatureDataset"
             :y-max="40"
             :date-hovered="dateHovered"
@@ -188,6 +188,7 @@ export default {
   computed: {
     ...mapGetters({
       regions: 'region/regions',
+      filteredRegions: 'region/filteredRegions',
       energyDataset: 'region/energyDataset',
       emissionVolDataset: 'region/emissionVolDataset',
       emissionIntDataset: 'region/emissionIntDataset',
@@ -204,6 +205,15 @@ export default {
     }),
     domains() {
       return this.regions.map(d => {
+        return {
+          domain: d.id,
+          colour: d.colour,
+          label: d.label
+        }
+      })
+    },
+    filteredDomains() {
+      return this.filteredRegions.map(d => {
         return {
           domain: d.id,
           colour: d.colour,

@@ -170,6 +170,10 @@ export default {
   },
 
   watch: {
+    lineDomains() {
+      this.clearCursorLine()
+      this.draw()
+    },
     dataset() {
       this.clearCursorLine()
       this.draw()
