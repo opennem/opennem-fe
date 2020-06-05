@@ -18,6 +18,9 @@
         :transform="axisTransform"
         class="line-path-group" />
       <g 
+        :transform="axisTransform"
+        class="dot-group" />
+      <g 
         :transform="axisTransform" 
         class="cursor-line-group" />
       <g 
@@ -138,6 +141,7 @@ export default {
       $xAxisGroup: null,
       $yAxisGroup: null,
       $linePathGroup: null,
+      $dotGroup: null,
       $cursorLineGroup: null,
       $hoverGroup: null,
       $xShadesGroup: null
@@ -282,6 +286,9 @@ export default {
         .curve(this.curveType)
       this.line.defined(d => d.value || d.value === 0)
 
+      // Dots
+      this.$dotGroup = $svg.select('.dot-group')
+
       // Hover
       this.$hoverGroup = $svg.select('.hover-group')
       this.$hoverGroup
@@ -359,15 +366,46 @@ export default {
         .style('stroke-width', this.pathStrokeWidth)
         .style('fill', 'transparent')
         .attr('d', this.drawLinePath)
+
+      this.drawDots()
     },
 
     redraw() {
       this.$xAxisGroup.call(this.drawXAxis)
       this.$linePathGroup.selectAll('path').attr('d', this.drawLinePath)
+      this.$dotGroup
+        .selectAll('circle')
+        .attr('cx', d => this.x(d.date))
+        .attr('cy', d => this.y(d.value))
       this.$xShadesGroup
         .selectAll('rect')
         .attr('x', d => this.x(d.start))
         .attr('width', d => this.x(d.end) - this.x(d.start))
+    },
+
+    drawDots() {
+      const dotsData = []
+      this.$dotGroup.selectAll('g').remove()
+      this.dataset.forEach(d => {
+        this.keys.forEach(k => {
+          dotsData.push({
+            date: d.date,
+            value: d[k],
+            key: k,
+            colour: this.colours[k]
+          })
+        })
+      })
+
+      this.$dotGroup
+        .selectAll('circle')
+        .data(dotsData)
+        .enter()
+        .append('circle')
+        .attr('cx', d => this.x(d.date))
+        .attr('cy', d => this.y(d.value))
+        .attr('r', 3)
+        .attr('fill', d => d.colour)
     },
 
     drawXAxis(g) {
@@ -397,14 +435,18 @@ export default {
         }
         return match
       })
-      const nextXDate = this.x(nextDate)
-      const bandwidth = Math.abs(nextXDate - xDate)
 
-      this.$cursorLineGroup
-        .select('rect')
-        .attr('x', xDate)
-        .attr('width', bandwidth)
-        .attr('height', this.height)
+      // Draw bucket
+      if (nextDate) {
+        const nextXDate = this.x(nextDate)
+        const bandwidth = Math.abs(nextXDate - xDate)
+
+        this.$cursorLineGroup
+          .select('rect')
+          .attr('x', xDate)
+          .attr('width', bandwidth)
+          .attr('height', this.height)
+      }
     },
 
     clearCursorLine() {
