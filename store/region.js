@@ -77,158 +77,46 @@ export const mutations = {
 }
 
 export const actions = {
-  doGetAllRegions({ commit }, period) {
+  doGetAllRegions({ commit, state }, period) {
     const perfTime = new PerfTime()
     perfTime.time()
 
+    const regions = state.regions
+    const promises = []
     const isMinInterval =
       period.range === '7D' || period.range === '3D' || period.range === '1D'
-    const urls = getRegionURLS(Regions, period)
-    const fuelTechOrder = [...FUEL_TECHS.DEFAULT_FUEL_TECH_ORDER]
-    let hasEmissions = false
 
-    http(urls)
-      .then(responses => {
-        const promises = []
-        responses.forEach(response => {
-          const res = response.data || response
-          // remove volume_weighted_price obj as there are invalid history
-          const resData = res.filter(r => r.type !== 'volume_weighted_price')
-          const region = resData[0].region
-          const type = resData[0].type // TODO type should be derived
+    commit('hasEmissions', isMinInterval ? false : true)
 
-          const resEnergyDomains = Domain.getEnergyDomains([res])
-          const fuelTechEnergyOrder = Domain.getDomainObjsOrder(
-            resEnergyDomains,
-            fuelTechOrder
-          )
-          const energyDomains = Domain.getDomainObjs(
-            region,
-            fuelTechEnergyOrder,
-            type
-          )
+    regions.forEach(r => {
+      const urls = Data.getEnergyUrls(r.id, period.range, hostEnv)
+      promises.push(
+        http(urls).then(responses =>
+          mergeResponses(r.id, responses, period, isMinInterval)
+        )
+      )
+    })
 
-          const resEmissionDomains = Domain.getEmissionsDomains([res])
-          const emissionsOrder = Domain.getDomainObjsOrder(
-            resEmissionDomains,
-            fuelTechOrder
-          )
-          const emissionDomains = Domain.getDomainObjs(
-            region,
-            emissionsOrder,
-            'emissions'
-          )
-          hasEmissions = emissionDomains.length > 0
-          commit('hasEmissions', hasEmissions)
-
-          const marketValueDomains = Domain.getDomainObjs(
-            region,
-            fuelTechEnergyOrder,
-            'market_value'
-          )
-
-          const priceDomains = isMinInterval
-            ? Domain.getPriceDomains([res])
-            : Domain.getVolWeightedDomains()
-
-          const temperatureDomainsAndIds = Domain.getTemperatureDomainsAndIds([
-            res
-          ])
-
-          const temperatureDomains = temperatureDomainsAndIds.domains
-          const temperatureMeanId = temperatureDomainsAndIds.meanId
-          const temperatureMinId = temperatureDomainsAndIds.minId
-          const temperatureMaxId = temperatureDomainsAndIds.maxId
-
-          promises.push(
-            EnergyDataTransform.mergeResponses(
-              [res],
-              energyDomains,
-              marketValueDomains,
-              temperatureDomains,
-              priceDomains,
-              emissionDomains,
-              period.range,
-              period.interval
-            ).then(data => {
-              return {
-                region,
-                data
-              }
-            })
-          )
-        })
-
-        Promise.all(promises).then(dataset => {
-          const obj = {}
-          dataset.forEach(d => {
-            obj[d.region] = {
-              combined: d.data
-            }
-          })
-
-          console.log(obj)
-
-          const energyDataset = transformDataset(Regions, obj, '_total')
-          commit('energyDataset', energyDataset)
-
-          if (hasEmissions) {
-            const emissionVolDataset = transformDataset(
-              Regions,
-              obj,
-              '_totalEmissionsVol'
-            )
-
-            const emissionIntDataset = emissionVolDataset.map((ev, i) => {
-              const eObj = { date: ev.date }
-              Regions.forEach(region => {
-                const id = region.id
-                let ei = ev[id] / energyDataset[i][id]
-                if (
-                  period.interval === 'Year' ||
-                  period.interval === 'Fin Year'
-                ) {
-                  ei = ei / 1000
-                }
-                eObj[id] = Number.isFinite(ei) ? ei : null
-              })
-              return eObj
-            })
-
-            commit('emissionVolDataset', emissionVolDataset)
-            commit('emissionIntDataset', emissionIntDataset)
-          } else {
-            commit('emissionVolDataset', [])
-            commit('emissionIntDataset', [])
-          }
-          commit(
-            'temperatureDataset',
-            transformDataset(
-              Regions,
-              obj,
-              isMinInterval ? 'temperature' : 'temperature_mean',
-              true
-            )
-          )
-
-          if (isMinInterval) {
-            commit(
-              'priceDataset',
-              transformDataset(Regions, obj, 'price', true)
-            )
-          } else {
-            commit(
-              'priceDataset',
-              transformDataset(Regions, obj, '_volWeightedPrice')
-            )
-          }
-
-          perfTime.timeEnd('combine regions dataset')
-        })
+    Promise.all(promises).then(dataset => {
+      const regionsObj = {}
+      const hasEmissions = dataset[0].emissionDomains.length > 0
+      dataset.forEach(d => {
+        regionsObj[d.region] = {
+          combined: d.data
+        }
       })
-      .catch(e => {
-        console.error(e)
-      })
+
+      commitDatasets(
+        commit,
+        regions,
+        regionsObj,
+        hasEmissions,
+        period,
+        isMinInterval
+      )
+
+      perfTime.timeEnd('combine regions dataset')
+    })
   },
 
   hideRegion({ commit, state }, region) {
@@ -256,14 +144,59 @@ export const actions = {
 }
 
 // support functions
-function getRegionURLS(regions, period) {
-  const urls = []
-  // const urls = Data.getEnergyUrls(region, range, this.hostEnv)
-  regions.forEach(r => {
-    console.log(r, Data.getEnergyUrls(r.id, period.range, hostEnv))
-    urls.push(Data.getEnergyUrls(r.id, period.range, hostEnv)[0])
+function mergeResponses(region, responses, period, isMinInterval) {
+  const fuelTechOrder = [...FUEL_TECHS.DEFAULT_FUEL_TECH_ORDER]
+  const resEnergyDomains = Domain.getEnergyDomains(responses)
+  const fuelTechEnergyOrder = Domain.getDomainObjsOrder(
+    resEnergyDomains,
+    fuelTechOrder
+  )
+  const energyDomains = Domain.getDomainObjs(
+    region,
+    fuelTechEnergyOrder,
+    isMinInterval ? 'power' : 'energy'
+  )
+  const resEmissionDomains = Domain.getEmissionsDomains(responses)
+  const emissionsOrder = Domain.getDomainObjsOrder(
+    resEmissionDomains,
+    fuelTechOrder
+  )
+  const emissionDomains = Domain.getDomainObjs(
+    region,
+    emissionsOrder,
+    'emissions'
+  )
+  const marketValueDomains = Domain.getDomainObjs(
+    region,
+    fuelTechEnergyOrder,
+    'market_value'
+  )
+  const priceDomains = isMinInterval
+    ? Domain.getPriceDomains(responses)
+    : Domain.getVolWeightedDomains()
+  const temperatureDomainsAndIds = Domain.getTemperatureDomainsAndIds(responses)
+  const temperatureDomains = temperatureDomainsAndIds.domains
+
+  return EnergyDataTransform.mergeResponses(
+    responses,
+    energyDomains,
+    marketValueDomains,
+    temperatureDomains,
+    priceDomains,
+    emissionDomains,
+    period.range,
+    period.interval
+  ).then(data => {
+    return {
+      region,
+      energyDomains,
+      marketValueDomains,
+      temperatureDomains,
+      priceDomains,
+      emissionDomains,
+      data
+    }
   })
-  return urls
 }
 
 function transformDataset(regions, dataset, prop, regionAppend) {
@@ -303,4 +236,61 @@ function transformDataset(regions, dataset, prop, regionAppend) {
     d._lowest = lowest
   })
   return updated
+}
+
+function commitDatasets(
+  commit,
+  regions,
+  regionsObj,
+  hasEmissions,
+  period,
+  isMinInterval
+) {
+  const energyDataset = transformDataset(regions, regionsObj, '_total')
+  commit('energyDataset', energyDataset)
+
+  if (hasEmissions) {
+    const emissionVolDataset = transformDataset(
+      regions,
+      regionsObj,
+      '_totalEmissionsVol'
+    )
+
+    const emissionIntDataset = emissionVolDataset.map((ev, i) => {
+      const eObj = { date: ev.date }
+      regions.forEach(region => {
+        const id = region.id
+        let ei = ev[id] / energyDataset[i][id]
+        if (period.interval === 'Year' || period.interval === 'Fin Year') {
+          ei = ei / 1000
+        }
+        eObj[id] = Number.isFinite(ei) ? ei : null
+      })
+      return eObj
+    })
+
+    commit('emissionVolDataset', emissionVolDataset)
+    commit('emissionIntDataset', emissionIntDataset)
+  } else {
+    commit('emissionVolDataset', [])
+    commit('emissionIntDataset', [])
+  }
+  commit(
+    'temperatureDataset',
+    transformDataset(
+      regions,
+      regionsObj,
+      isMinInterval ? 'temperature' : 'temperature_mean',
+      true
+    )
+  )
+
+  if (isMinInterval) {
+    commit('priceDataset', transformDataset(regions, regionsObj, 'price', true))
+  } else {
+    commit(
+      'priceDataset',
+      transformDataset(regions, regionsObj, '_volWeightedPrice')
+    )
+  }
 }
