@@ -152,6 +152,20 @@ export default {
     id() {
       return `multi-line-${this.uuid}`
     },
+    dotsData() {
+      const dotsData = []
+      this.dataset.forEach(d => {
+        this.keys.forEach(k => {
+          dotsData.push({
+            date: d.date,
+            value: d[k],
+            key: k,
+            colour: this.colours[k]
+          })
+        })
+      })
+      return dotsData
+    },
     axisTransform() {
       return `translate(${this.marginLeft},0)`
     },
@@ -384,22 +398,10 @@ export default {
     },
 
     drawDots() {
-      const dotsData = []
-      this.$dotGroup.selectAll('g').remove()
-      this.dataset.forEach(d => {
-        this.keys.forEach(k => {
-          dotsData.push({
-            date: d.date,
-            value: d[k],
-            key: k,
-            colour: this.colours[k]
-          })
-        })
-      })
-
+      this.$dotGroup.selectAll('circle').remove()
       this.$dotGroup
         .selectAll('circle')
-        .data(dotsData)
+        .data(this.dotsData)
         .enter()
         .append('circle')
         .attr('cx', d => this.x(d.date))
