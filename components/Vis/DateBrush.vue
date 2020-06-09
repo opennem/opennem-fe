@@ -104,9 +104,17 @@ export default {
   methods: {
     handleResize() {
       this.setupWidthHeight()
-      this.setup()
-      this.draw()
+      this.resize()
     },
+
+    resize() {
+      this.x.range([0, this.width])
+      this.xAxis.tickSize(this.height)
+      this.$xAxisGroup.call(this.drawXAxis)
+      this.brushX.extent([[0, 0], [this.width, this.svgHeight]])
+      this.$brushGroup.call(this.brushX)
+    },
+
     setupWidthHeight() {
       const chartWidth = this.$el.offsetWidth
       const width = chartWidth - this.margin.left - this.margin.right
@@ -147,13 +155,11 @@ export default {
     },
 
     draw() {
-      const self = this
       this.x.domain(this.xExtent)
       this.$xAxisGroup.call(this.drawXAxis)
     },
 
     redraw() {
-      const self = this
       this.$xAxisGroup.call(this.drawXAxis)
     },
 
