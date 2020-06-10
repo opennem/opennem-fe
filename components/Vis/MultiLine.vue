@@ -268,11 +268,15 @@ export default {
 
     resize() {
       this.x.range([0, this.width])
-      this.y.range(this.yRange)
+      this.y.range(this.yRange).nice()
       this.xAxis.tickSize(this.height)
       this.yAxis.tickSize(-this.width)
       this.$xAxisGroup.call(this.drawXAxis)
       this.$yAxisGroup.call(this.drawYAxis)
+      this.$hoverGroup
+        .select('rect')
+        .attr('width', this.width)
+        .attr('height', this.height)
 
       this.redrawLineShades()
     },
@@ -299,7 +303,9 @@ export default {
       this.x = scaleTime().range([0, this.width])
       this.y = this.yLog
         ? scaleSymlog().range(this.yRange)
-        : scaleLinear().range(this.yRange)
+        : scaleLinear()
+            .range(this.yRange)
+            .nice()
       this.z = scaleOrdinal()
 
       // Axis
@@ -368,7 +374,7 @@ export default {
     draw() {
       console.log(`${this.uuid} draw`)
       this.x.domain(this.xExtent)
-      this.y.domain([this.yMin, this.yMax])
+      this.y.domain([this.yMin, this.yMax]).nice()
 
       this.$xAxisGroup.call(this.drawXAxis)
       this.$yAxisGroup.call(this.drawYAxis)
