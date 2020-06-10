@@ -345,13 +345,12 @@ export default {
       this.line.defined(d => d.value || d.value === 0)
 
       // Hover
-      if (!this.$hoverGroup) {
-        this.$hoverGroup = $svg.select('.hover-group')
-        this.$hoverGroup
-          .append('rect')
-          .attr('width', this.width)
-          .attr('height', this.height)
-      }
+      this.$hoverGroup = $svg.select('.hover-group')
+      this.$hoverGroup.select('rect').remove()
+      this.$hoverGroup
+        .append('rect')
+        .attr('width', this.width)
+        .attr('height', this.height)
 
       this.$cursorLineGroup = $svg.select('.cursor-line-group')
       if (!this.$cursorRect) {
