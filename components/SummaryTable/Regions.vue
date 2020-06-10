@@ -146,33 +146,38 @@ export default {
     }),
     getEnergyValue(domain) {
       return this.$options.filters.formatValue(
-        this.findDataPoint('energy', domain)
+        this.findDataPoint('energy', domain, false)
       )
     },
     getEmissionValue(domain) {
       return this.$options.filters.formatValue(
-        this.findDataPoint('emissionVol', domain)
+        this.findDataPoint('emissionVol', domain, false)
       )
     },
     getEmissionIntValue(domain) {
       return this.$options.filters.formatValue(
-        this.findDataPoint('emissionInt', domain)
+        this.findDataPoint('emissionInt', domain, true)
       )
     },
     getPriceValue(domain) {
       return this.$options.filters.formatCurrency(
-        this.findDataPoint('price', domain)
+        this.findDataPoint('price', domain, true)
       )
     },
     getTemperatureValue(domain) {
       return this.$options.filters.formatValue(
-        this.findDataPoint('temperature', domain)
+        this.findDataPoint('temperature', domain, true)
       )
     },
-    findDataPoint(prop, domain) {
+    findDataPoint(prop, domain, showIncompleteBucketValues) {
       if (!this.dataset || !this.dataset[prop]) return ''
       const find = this.dataset[prop].find(d => d.date === this.timeHovered)
-      return find ? find[domain] : ''
+
+      if (showIncompleteBucketValues) {
+        return find ? find[domain] : ''
+      } else {
+        return find && !find._isIncompleteBucket ? find[domain] : ''
+      }
     },
     isHidden(domain) {
       return this.hiddenRegions.find(r => r === domain)
