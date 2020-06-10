@@ -3,6 +3,7 @@ import {
   timeMinute as d3TimeMinute,
   timeDay as d3TimeDay,
   timeMonday as d3TimeMonday,
+  timeThursday,
   timeMonth as d3TimeMonth,
   timeYear as d3TimeYear
 } from 'd3-time'
@@ -134,15 +135,18 @@ export default {
           display = d3TimeFormat(formatString)(time)
         } else if (interval === 'Week') {
           formatString = getFormatStringDay(true)
-
+          const newTime = d3TimeMonday
+            .every(1)
+            .floor(time)
+            .getTime()
           if (showIntervalRange) {
-            const sixDayslater = time + 518400000
-            const sDate = d3TimeFormat('%-d')(time)
+            const sixDayslater = newTime + 518400000
+            const sDate = d3TimeFormat('%-d')(newTime)
             const eDate = d3TimeFormat(formatString)(sixDayslater)
             display = `${sDate} – ${eDate}`
           } else {
             if (isStart) {
-              display = d3TimeFormat(formatString)(time)
+              display = d3TimeFormat(formatString)(newTime)
             } else {
               const sixDayslater = time + 518400000
               display = d3TimeFormat(formatString)(sixDayslater)
@@ -165,7 +169,9 @@ export default {
           }
           display = `${seasonLabel} ${year}${nextYearStr}` // eslint-disable-line
         } else if (interval === 'Quarter') {
-          display = `${getQuarterLabel(d3TimeFormat('%-m')(time))} ${d3TimeFormat('%Y')(time)}` // eslint-disable-line
+          display = `${getQuarterLabel(
+            d3TimeFormat('%-m')(time)
+          )} ${d3TimeFormat('%Y')(time)}` // eslint-disable-line
         } else if (interval === 'Fin Year') {
           let finYearMonth = d3TimeFormat('%-m')(time)
           let finYear = d3TimeFormat('%y')(time)
@@ -176,7 +182,9 @@ export default {
         } else if (interval === 'Half Year') {
           const sixMonthsLater = time + 15552000000
           if (showIntervalRange) {
-            display = `${d3TimeFormat('%b')(time)} – ${d3TimeFormat('%b %Y')(sixMonthsLater)}` // eslint-disable-line
+            display = `${d3TimeFormat('%b')(time)} – ${d3TimeFormat('%b %Y')(
+              sixMonthsLater
+            )}` // eslint-disable-line
           } else {
             if (isStart) {
               display = `${d3TimeFormat('%b %Y')(time)}` // eslint-disable-line
@@ -204,7 +212,7 @@ export default {
     return display
   },
 
-  snapToClosestInterval(interval, date) {
+  snapToClosestInterval(interval, date, isLinear) {
     switch (interval) {
       case '5m':
         return d3TimeMinute.every(5).round(date)
@@ -213,6 +221,14 @@ export default {
       case 'Day':
         return d3TimeDay.every(1).floor(date)
       case 'Week':
+        // if (isLinear) {
+        //   // is a smooth  line (not area), put point in middle of the week (thu)
+        //   const day = date ? date.getDay() : null
+        //   if (day > 0 && day < 4) {
+        //     return timeThursday.every(1).ceil(date)
+        //   }
+        //   return timeThursday.every(1).floor(date)
+        // }
         return d3TimeMonday.every(1).floor(date)
       case 'Month':
         return d3TimeMonth.every(1).floor(date)

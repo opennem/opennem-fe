@@ -33,6 +33,8 @@
             :zoom-range="zoomRange"
             :x-ticks="xTicks"
             :x-shades="xShades"
+            :cursor-anchor="cursorAnchor"
+            :draw-incomplete-bucket="false"
             @date-hover="handleDateHover"
             @enter="handleEnter"
             @leave="handleLeave" />
@@ -71,6 +73,8 @@
             :zoom-range="zoomRange"
             :x-ticks="xTicks"
             :x-shades="xShades"
+            :cursor-anchor="cursorAnchor"
+            :draw-incomplete-bucket="false"
             @date-hover="handleDateHover"
             @enter="handleEnter"
             @leave="handleLeave" />
@@ -98,6 +102,7 @@
             :zoom-range="zoomRange"
             :x-ticks="xTicks"
             :x-shades="xShades"
+            :cursor-anchor="cursorAnchor"
             @date-hover="handleDateHover"
             @enter="handleEnter"
             @leave="handleLeave" />
@@ -112,7 +117,8 @@
             dateHovered,
             zoomRange,
             xTicks,
-            xShades
+            xShades,
+            cursorAnchor
           }"
           @date-hover="handleDateHover"
         />
@@ -139,6 +145,7 @@
             :zoom-range="zoomRange"
             :x-ticks="xTicks"
             :x-shades="xShades"
+            :cursor-anchor="cursorAnchor"
             @date-hover="handleDateHover"
             @enter="handleEnter"
             @leave="handleLeave" />
@@ -304,6 +311,14 @@ export default {
         false,
         true
       )
+    },
+    cursorAnchor() {
+      switch (this.interval) {
+        case 'Week':
+          return 'middle'
+        default:
+          return 'start'
+      }
     }
   },
   created() {
@@ -351,7 +366,11 @@ export default {
     },
 
     handleDateHover(date) {
-      this.dateHovered = DateDisplay.snapToClosestInterval(this.interval, date)
+      this.dateHovered = DateDisplay.snapToClosestInterval(
+        this.interval,
+        date,
+        true
+      )
     },
 
     handleDateFilter(range) {

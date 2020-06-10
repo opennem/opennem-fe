@@ -326,7 +326,8 @@ export default {
     priceDomains,
     emissionDomains,
     range,
-    interval
+    interval,
+    intervalOptions
   ) {
     return new Promise(resolve => {
       let data = []
@@ -437,7 +438,8 @@ export default {
           priceDomains,
           emissionDomains,
           range,
-          interval
+          interval,
+          intervalOptions
         ).then(rolledUpData => {
           const dataset = this.calculateMinTotal(
             rolledUpData,
@@ -571,7 +573,8 @@ export default {
     priceDomains,
     emissionDomains,
     range,
-    interval
+    interval,
+    intervalOptions
   ) {
     const domains = [
       ...energyDomains,
@@ -589,7 +592,11 @@ export default {
       } else if (range === '1Y' && interval === 'Day') {
         resolve(rollUp1YDay(domains, data))
       } else if (range === '1Y' && interval === 'Week') {
-        resolve(rollUp1YWeek(domains, data))
+        if (intervalOptions && intervalOptions.weekDay) {
+          resolve(rollUp1YWeek(domains, data, intervalOptions.weekDay))
+        } else {
+          resolve(rollUp1YWeek(domains, data))
+        }
       } else if (range === '1Y' && interval === 'Month') {
         resolve(rollUp1YMonth(domains, data))
       } else if (range === 'ALL' && interval === 'Month') {

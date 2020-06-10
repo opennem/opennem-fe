@@ -37,10 +37,12 @@
       :zoom-range="chartOptions.zoomRange"
       :x-ticks="chartOptions.xTicks"
       :x-shades="chartOptions.xShades"
+      :cursor-anchor="chartOptions.cursorAnchor"
       :y-tick-text="true"
       :y-log="true"
       :y-ticks="[300, 2000, 6000, 10000, 14000]"
       :curve="curve"
+      :show-cursor-dots="showCursorDots"
       class="dash-stroke-lines"
       style="height: 75px;"
       @date-hover="handleDateHover"
@@ -59,8 +61,10 @@
       :zoom-range="chartOptions.zoomRange"
       :x-ticks="chartOptions.xTicks"
       :x-shades="chartOptions.xShades"
+      :cursor-anchor="chartOptions.cursorAnchor"
       :y-ticks="yTicks"
       :curve="curve"
+      :show-cursor-dots="showCursorDots"
       style="height: 150px;"
       @date-hover="handleDateHover"
       @enter="handleEnter"
@@ -77,11 +81,13 @@
       :zoom-range="chartOptions.zoomRange"
       :x-ticks="chartOptions.xTicks"
       :x-shades="chartOptions.xShades"
+      :cursor-anchor="chartOptions.cursorAnchor"
       :y-log="true"
       :y-invert="true"
       :y-tick-text="true"
       :y-ticks="[-50, -500, -1000]"
       :curve="curve"
+      :show-cursor-dots="showCursorDots"
       class="dash-stroke-lines"
       @date-hover="handleDateHover"
       @enter="handleEnter"
@@ -152,6 +158,9 @@ export default {
     },
     showPosLogChart() {
       return this.chartPrice && this.priceMax > 300
+    },
+    showCursorDots() {
+      return this.curve === 'step' ? false : true
     }
   },
   methods: {

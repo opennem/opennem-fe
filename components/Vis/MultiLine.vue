@@ -18,9 +18,6 @@
         :transform="axisTransform"
         class="line-path-group" />
       <g 
-        :transform="axisTransform"
-        class="dot-group" />
-      <g 
         :transform="axisTransform" 
         class="cursor-line-group" />
       <g 
@@ -123,6 +120,18 @@ export default {
     pathStrokeWidth: {
       type: Number,
       default: () => 1.5
+    },
+    showCursorDots: {
+      type: Boolean,
+      default: () => true
+    },
+    cursorAnchor: {
+      type: String,
+      default: () => 'start' // like text-anchor: start, middle, end
+    },
+    drawIncompleteBucket: {
+      type: Boolean,
+      default: () => true
     }
   },
 
@@ -141,8 +150,10 @@ export default {
       $xAxisGroup: null,
       $yAxisGroup: null,
       $linePathGroup: null,
-      $dotGroup: null,
       $cursorLineGroup: null,
+      $cursorRect: null,
+      $cursorLine: null,
+      $cursorDotsGroup: null,
       $hoverGroup: null,
       $xShadesGroup: null
     }
@@ -204,10 +215,12 @@ export default {
       this.draw()
     },
     dataset() {
-      this.handleResize()
+      this.setupWidthHeight()
+      this.setup()
+      this.draw()
     },
     dateHovered(newValue) {
-      this.drawCursorLine(newValue)
+      this.drawCursor(newValue)
     },
     zoomRange(newRange) {
       if (newRange.length === 0) {
@@ -250,9 +263,20 @@ export default {
   methods: {
     handleResize() {
       this.setupWidthHeight()
-      this.setup()
-      this.draw()
+      this.resize()
     },
+
+    resize() {
+      this.x.range([0, this.width])
+      this.y.range(this.yRange)
+      this.xAxis.tickSize(this.height)
+      this.yAxis.tickSize(-this.width)
+      this.$xAxisGroup.call(this.drawXAxis)
+      this.$yAxisGroup.call(this.drawYAxis)
+
+      this.redrawLineShades()
+    },
+
     setupWidthHeight() {
       const chartWidth = this.$el.offsetWidth
       const width = chartWidth - this.marginLeft - this.marginRight
@@ -300,17 +324,25 @@ export default {
         .curve(this.curveType)
       this.line.defined(d => d.value || d.value === 0)
 
-      // Dots
-      this.$dotGroup = $svg.select('.dot-group')
-
       // Hover
-      this.$hoverGroup = $svg.select('.hover-group')
-      this.$hoverGroup
-        .append('rect')
-        .attr('width', this.width)
-        .attr('height', this.height)
+      if (!this.$hoverGroup) {
+        this.$hoverGroup = $svg.select('.hover-group')
+        this.$hoverGroup
+          .append('rect')
+          .attr('width', this.width)
+          .attr('height', this.height)
+      }
+
       this.$cursorLineGroup = $svg.select('.cursor-line-group')
-      this.$cursorLineGroup.append('rect')
+      if (!this.$cursorRect) {
+        this.$cursorRect = this.$cursorLineGroup.append('rect')
+      }
+      if (!this.$cursorLine) {
+        this.$cursorLine = this.$cursorLineGroup.append('line')
+      }
+      if (!this.$cursorDotsGroup) {
+        this.$cursorDotsGroup = this.$cursorLineGroup.append('g')
+      }
 
       // Events
       this.$hoverGroup.on('touchmove mousemove', function() {
@@ -327,36 +359,19 @@ export default {
 
     handleSvgEnter() {
       this.$emit('enter')
-      this.$yAxisGroup.call(g =>
-        g.selectAll('.y-axis .tick').style('opacity', 0.3)
-      )
-      // this.$xAxisGroup.call(g =>
-      //   g.selectAll('.x-axis .tick').style('opacity', 0.5)
-      // )
     },
     handleSvgLeave() {
       this.$emit('date-hover', null)
       this.$emit('leave')
-      this.$yAxisGroup.call(g =>
-        g.selectAll('.y-axis .tick').style('opacity', 1)
-      )
-      // this.$xAxisGroup.call(g =>
-      //   g.selectAll('.x-axis .tick').style('opacity', 1)
-      // )
     },
 
     draw() {
+      console.log(`${this.uuid} draw`)
       this.x.domain(this.xExtent)
       this.y.domain([this.yMin, this.yMax])
 
       this.$xAxisGroup.call(this.drawXAxis)
-      this.$yAxisGroup.call(this.yAxis).call(g =>
-        g
-          .selectAll('.y-axis .tick text')
-          .attr('dx', 5)
-          .attr('dy', -2)
-          .attr('opacity', this.yTickText ? 1 : 0)
-      )
+      this.$yAxisGroup.call(this.drawYAxis)
 
       this.$xShadesGroup.selectAll('rect').remove()
       this.$xShadesGroup
@@ -380,53 +395,51 @@ export default {
         .style('stroke-width', this.pathStrokeWidth)
         .style('fill', 'transparent')
         .attr('d', this.drawLinePath)
-
-      this.drawDots()
     },
 
     redraw() {
       this.$xAxisGroup.call(this.drawXAxis)
+      this.redrawLineShades()
+    },
+
+    redrawLineShades() {
       this.$linePathGroup.selectAll('path').attr('d', this.drawLinePath)
-      this.$dotGroup
-        .selectAll('circle')
-        .attr('cx', d => this.x(d.date))
-        .attr('cy', d => this.y(d.value))
       this.$xShadesGroup
         .selectAll('rect')
         .attr('x', d => this.x(d.start))
         .attr('width', d => this.x(d.end) - this.x(d.start))
     },
 
-    drawDots() {
-      this.$dotGroup.selectAll('circle').remove()
-      this.$dotGroup
-        .selectAll('circle')
-        .data(this.dotsData)
-        .enter()
-        .append('circle')
-        .attr('cx', d => this.x(d.date))
-        .attr('cy', d => this.y(d.value))
-        .attr('r', 3)
-        .attr('fill', d => d.colour)
-    },
-
     drawXAxis(g) {
-      const self = this
       g.call(this.xAxis)
       g.selectAll('.x-axis .tick text').remove()
     },
 
+    drawYAxis(g) {
+      g.call(this.yAxis)
+      g.selectAll('.y-axis .tick text')
+        .attr('dx', 5)
+        .attr('dy', -2)
+        .attr('opacity', this.yTickText ? 1 : 0)
+    },
+
     drawLinePath(key) {
       const data = this.dataset.map(d => {
+        if (this.drawIncompleteBucket) {
+          return {
+            date: d.date,
+            value: d[key]
+          }
+        }
         return {
           date: d.date,
-          value: d[key]
+          value: d._isIncompleteBucket ? null : d[key]
         }
       })
       return this.line(data)
     },
 
-    drawCursorLine(date) {
+    drawCursor(date) {
       const xDate = this.x(date)
       let nextDate = null
       const dataPoint = this.dataset.find((d, i) => {
@@ -438,24 +451,52 @@ export default {
         return match
       })
 
+      const nextXDate = this.x(nextDate)
+      const bandwidth = Math.abs(nextXDate - xDate)
+
+      // Draw line
+      this.$cursorLine
+        .attr('x1', xDate)
+        .attr('y1', 0)
+        .attr('x2', xDate)
+        .attr('y2', this.height)
+        .style('stroke', 'transparent')
+
+      if (this.showCursorDots) {
+        if (dataPoint) {
+          const dots = this.$cursorDotsGroup.selectAll('circle').data(this.keys)
+          dots
+            .enter()
+            .append('circle')
+            .merge(dots)
+            .attr('cx', this.x(dataPoint.date))
+            .attr('cy', key => this.y(dataPoint[key]))
+            .attr('r', 2)
+            .attr('fill', key => this.colours[key])
+            .exit()
+            .remove()
+        } else {
+          this.$cursorDotsGroup.selectAll('circle').remove()
+        }
+      }
+
       // Draw bucket
       if (nextDate) {
-        const nextXDate = this.x(nextDate)
-        const bandwidth = Math.abs(nextXDate - xDate)
-
-        this.$cursorLineGroup
-          .select('rect')
-          .attr('x', xDate)
+        let xPos = xDate
+        // if (this.cursorAnchor === 'middle') {
+        //   xPos = xDate - bandwidth / 2
+        // }
+        this.$cursorRect
+          .attr('x', xPos)
           .attr('width', bandwidth)
           .attr('height', this.height)
+      } else {
+        this.clearCursorLine()
       }
     },
 
     clearCursorLine() {
-      this.$cursorLineGroup
-        .select('rect')
-        .attr('width', 0)
-        .attr('height', 0)
+      this.$cursorRect.attr('width', 0).attr('height', 0)
     },
 
     getXAxisDateByMouse(evt) {
