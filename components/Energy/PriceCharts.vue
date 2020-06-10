@@ -26,6 +26,7 @@
 
     <multi-line
       v-show="showPosLogChart"
+      :toggled="showPosLogChart"
       :svg-height="75"
       :margin-bottom="0"
       :line-domains="chartOptions.domains"
@@ -50,6 +51,7 @@
       @leave="handleLeave" />
     <multi-line
       v-show="chartPrice"
+      :toggled="chartPrice"
       :svg-height="150"
       :margin-bottom="0"
       :line-domains="chartOptions.domains"
@@ -71,6 +73,7 @@
       @leave="handleLeave" />
     <multi-line
       v-show="showNegLogChart"
+      :toggled="showNegLogChart"
       :svg-height="60"
       :line-domains="chartOptions.domains"
       :highlight-domain="chartOptions.highlightDomain"

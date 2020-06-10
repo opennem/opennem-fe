@@ -25,6 +25,7 @@
 
           <multi-line
             v-show="chartEnergy"
+            :toggled="chartEnergy"
             :line-domains="filteredDomains"
             :highlight-domain="hoveredRegion"
             :dataset="energyDataset"
@@ -65,6 +66,7 @@
 
           <multi-line
             v-show="chartEmissionsVolume"
+            :toggled="chartEmissionsVolume"
             :line-domains="filteredDomains"
             :highlight-domain="hoveredRegion"
             :dataset="emissionVolDataset"
@@ -94,6 +96,7 @@
 
           <multi-line
             v-show="chartEmissionsIntensity"
+            :toggled="chartEmissionsIntensity"
             :line-domains="filteredDomains"
             :highlight-domain="hoveredRegion"
             :dataset="emissionIntDataset"
@@ -137,6 +140,7 @@
 
           <multi-line
             v-show="chartTemperature"
+            :toggled="chartTemperature"
             :line-domains="filteredDomains"
             :highlight-domain="hoveredRegion"
             :dataset="temperatureDataset"

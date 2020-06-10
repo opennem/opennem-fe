@@ -132,6 +132,10 @@ export default {
     drawIncompleteBucket: {
       type: Boolean,
       default: () => true
+    },
+    toggled: {
+      type: Boolean,
+      default: () => false
     }
   },
 
@@ -210,6 +214,13 @@ export default {
   },
 
   watch: {
+    toggled(isToggle) {
+      if (isToggle) {
+        this.setupWidthHeight()
+        this.setup()
+        this.draw()
+      }
+    },
     lineDomains() {
       this.clearCursorLine()
       this.draw()
