@@ -1,25 +1,33 @@
 import moment from 'moment'
+import { timeMonth } from 'd3-time'
 import rollUp from './roll-up'
-
-function setStartMonth(date, currentMonth) {
-  const d = moment(date)
-  d.set('month', currentMonth)
-  d.set('date', 1)
-  d.set('hour', 0)
-  d.set('minute', 0)
-  d.set('second', 0)
-  return d
-}
+import { setStartOfMonth, setEndOfMonth } from './roll-up-helpers'
 
 export default function(ids, data) {
   let currentMonth = moment(data[0].date).month()
-  let nestDate = setStartMonth(data[0].date, currentMonth)
+  let nestDate = setStartOfMonth(data[0].date, currentMonth)
+  let isIncompleteEnd = false,
+    isIncompleteStart = false
 
   data.forEach((d, i) => {
     const q = moment(d.date).month()
-    nestDate = setStartMonth(d.date, q)
+    nestDate = setStartOfMonth(d.date, q)
     data[i].nestDate = nestDate.toDate()
+
+    if (i === 0) {
+      const startDate = moment(d.date).set('hour', 0)
+      const startOfMonth = timeMonth.floor(d.date)
+      isIncompleteStart = moment(startDate).isAfter(startOfMonth)
+    }
+
+    if (i === data.length - 1) {
+      const endDate = moment(d.date).set('hour', 0)
+      const endOfMonth = setEndOfMonth(
+        moment(timeMonth.ceil(d.date)).subtract(1, 'day')
+      )
+      isIncompleteEnd = moment(endDate).isBefore(endOfMonth)
+    }
   })
 
-  return rollUp(ids, data)
+  return rollUp(ids, data, isIncompleteStart, isIncompleteEnd)
 }

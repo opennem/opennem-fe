@@ -1,53 +1,40 @@
 import moment from 'moment'
+import { timeMonth } from 'd3-time'
 import rollUp from './roll-up'
-
-// Quarters
-function getStartMonth(month) {
-  switch (month) {
-    case 0:
-    case 1:
-    case 2:
-      return 0
-
-    case 3:
-    case 4:
-    case 5:
-      return 3
-
-    case 6:
-    case 7:
-    case 8:
-      return 6
-
-    case 9:
-    case 10:
-    case 11:
-      return 9
-
-    default:
-  }
-  return null
-}
-
-function setStartMonth(date, qMonth) {
-  const d = moment(date)
-  d.set('month', qMonth)
-  d.set('date', 1)
-  d.set('hour', 0)
-  d.set('minute', 0)
-  d.set('second', 0)
-  return d
-}
+import {
+  setStartOfMonth,
+  setEndOfMonth,
+  getQuarterStartMonth
+} from './roll-up-helpers'
 
 export default function(ids, data) {
   let currentMonth = moment(data[0].date).month()
-  let nestDate = setStartMonth(data[0].date, getStartMonth(currentMonth))
+  let nestDate = setStartOfMonth(
+    data[0].date,
+    getQuarterStartMonth(currentMonth)
+  )
+  let isIncompleteEnd = false,
+    isIncompleteStart = false
 
   data.forEach((d, i) => {
     const q = moment(d.date).month()
-    nestDate = setStartMonth(d.date, getStartMonth(q))
+    nestDate = setStartOfMonth(d.date, getQuarterStartMonth(q))
     data[i].nestDate = nestDate.toDate()
+
+    if (i === 0) {
+      const startDate = moment(d.date).set('hour', 0)
+      const startOfQuarter = timeMonth.every(3).floor(d.date)
+      isIncompleteStart = moment(startDate).isAfter(startOfQuarter)
+    }
+
+    if (i === data.length - 1) {
+      const endDate = moment(d.date).set('hour', 0)
+      const endOfQuarter = setEndOfMonth(
+        moment(timeMonth.every(3).ceil(d.date)).subtract(1, 'day')
+      )
+      isIncompleteEnd = moment(endDate).isBefore(endOfQuarter)
+    }
   })
 
-  return rollUp(ids, data)
+  return rollUp(ids, data, isIncompleteStart, isIncompleteEnd)
 }

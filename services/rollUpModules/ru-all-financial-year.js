@@ -1,39 +1,18 @@
 import moment from 'moment'
+import { timeMonth } from 'd3-time'
 import rollUp from './roll-up'
-
-function getQuarterStartMonth(quarter) {
-  switch (quarter) {
-    case 1:
-      return 0
-    case 2:
-      return 3
-    case 3:
-      return 6
-    case 4:
-      return 9
-    default:
-  }
-  return null
-}
-
-function setStartFY(date, qMonth) {
-  const d = moment(date)
-  d.set('month', qMonth)
-  d.set('date', 1)
-  d.set('hour', 0)
-  d.set('minute', 0)
-  d.set('second', 0)
-  return d
-}
+import { setStartOfMonth, setEndOfMonth, getFQ } from './roll-up-helpers'
 
 export default function(ids, energyDomains, data) {
   let currentQ = moment(data[0].date).quarter()
-  let nestDate = setStartFY(data[0].date, getQuarterStartMonth(currentQ))
+  let nestDate = setStartOfMonth(data[0].date, getFQ(currentQ))
+  let isIncompleteEnd = false,
+    isIncompleteStart = false
 
   data.forEach((d, i) => {
     const q = moment(d.date).quarter()
     if (currentQ === 2 && q === 3) {
-      nestDate = setStartFY(d.date, getQuarterStartMonth(q))
+      nestDate = setStartOfMonth(d.date, getFQ(q))
     }
     currentQ = q
     data[i].nestDate = nestDate.toDate()
@@ -42,7 +21,21 @@ export default function(ids, energyDomains, data) {
     energyDomains.forEach(domain => {
       d[domain.id] = d[domain.id] / 1000
     })
+
+    if (i === 0) {
+      const startDate = moment(d.date).set('hour', 0)
+      const startOfFY = timeMonth.every(12).floor(d.date)
+      isIncompleteStart = moment(startDate).isAfter(startOfFY)
+    }
+
+    if (i === data.length - 1) {
+      const endDate = moment(d.date).set('hour', 0)
+      const endOfFY = setEndOfMonth(
+        moment(timeMonth.every(12).ceil(d.date)).subtract(1, 'day')
+      )
+      isIncompleteEnd = moment(endDate).isBefore(endOfFY)
+    }
   })
 
-  return rollUp(ids, data)
+  return rollUp(ids, data, isIncompleteStart, isIncompleteEnd)
 }

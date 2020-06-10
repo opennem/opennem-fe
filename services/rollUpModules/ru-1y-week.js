@@ -1,13 +1,6 @@
 import moment from 'moment'
 import rollUp from './roll-up'
-
-function setStartDay(day) {
-  const d = moment(day)
-  d.set('hour', 0)
-  d.set('minute', 0)
-  d.set('second', 0)
-  return d
-}
+import { setStartOfDay } from './roll-up-helpers'
 
 moment.updateLocale('en', {
   week: {
@@ -17,25 +10,25 @@ moment.updateLocale('en', {
 
 export default function(ids, data, weekDay = 0) {
   let day = moment(data[0].date).weekday(weekDay)
-  let nestDate = setStartDay(day)
+  let nestDate = setStartOfDay(day)
   let isIncompleteEnd = false,
     isIncompleteStart = false
 
   data.forEach((d, i) => {
     const q = moment(d.date).weekday(weekDay)
-    nestDate = setStartDay(q)
+    nestDate = setStartOfDay(q)
     data[i].nestDate = nestDate.toDate()
 
     if (i === 0) {
       const startDate = moment(d.date)
-      const startWeekDate = moment(d.date).weekday(0)
-      isIncompleteStart = moment(startDate).isAfter(startWeekDate)
+      const startOfWeek = moment(d.date).weekday(0)
+      isIncompleteStart = moment(startDate).isAfter(startOfWeek)
     }
 
     if (i === data.length - 1) {
       const endDate = moment(d.date)
-      const endWeekDate = moment(d.date).weekday(6)
-      isIncompleteEnd = moment(endDate).isBefore(endWeekDate)
+      const endOfWeek = moment(d.date).weekday(6)
+      isIncompleteEnd = moment(endDate).isBefore(endOfWeek)
     }
   })
 
