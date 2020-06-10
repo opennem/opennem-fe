@@ -268,7 +268,10 @@ export default {
 
     resize() {
       this.x.range([0, this.width])
-      this.y.range(this.yRange).nice()
+      this.y.range(this.yRange)
+      if (!this.yLog) {
+        this.y.nice()
+      }
       this.xAxis.tickSize(this.height)
       this.yAxis.tickSize(-this.width)
       this.$xAxisGroup.call(this.drawXAxis)
@@ -374,7 +377,10 @@ export default {
     draw() {
       console.log(`${this.uuid} draw`)
       this.x.domain(this.xExtent)
-      this.y.domain([this.yMin, this.yMax]).nice()
+      this.y.domain([this.yMin, this.yMax])
+      if (!this.yLog) {
+        this.y.nice()
+      }
 
       this.$xAxisGroup.call(this.drawXAxis)
       this.$yAxisGroup.call(this.drawYAxis)
