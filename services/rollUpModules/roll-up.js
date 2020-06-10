@@ -25,7 +25,7 @@ function checkTemperatureType(type) {
   )
 }
 
-export default function(domains, data) {
+export default function(domains, data, isIncompleteStart, isIncompleteEnd) {
   const entries = d3Nest()
     .key(d => d.nestDate)
     .rollup(a => {
@@ -106,14 +106,22 @@ export default function(domains, data) {
     })
     .entries(data)
 
-  return entries.map(e => {
+  return entries.map((e, i) => {
     const object = {
-      date: new Date(e.key).getTime()
+      date: new Date(e.key).getTime(),
+      _isIncompleteBucket: false
     }
 
     Object.keys(e.value).forEach(k => {
       object[k] = e.value[k]
     })
+
+    if (i === 0 && isIncompleteStart) {
+      object._isIncompleteBucket = isIncompleteStart
+    }
+    if (i === entries.length - 1 && isIncompleteEnd) {
+      object._isIncompleteBucket = isIncompleteEnd
+    }
     return object
   })
 }

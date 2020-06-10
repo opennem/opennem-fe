@@ -207,7 +207,8 @@ function transformDataset(regions, dataset, prop, regionAppend) {
     if (index === 0) {
       updated = dataset[id].combined.map(regionData => {
         const obj = {
-          date: regionData.date
+          date: regionData.date,
+          _isIncompleteBucket: regionData._isIncompleteBucket
         }
         obj[id] = regionData[p]
         return obj
