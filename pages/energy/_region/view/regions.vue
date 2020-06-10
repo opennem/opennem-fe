@@ -10,7 +10,7 @@
     <div class="vis-table-container">
       <div class="vis-container">
         <chart-wrapper 
-          :zoom-btn="zoomRange.length > 0"
+          :zoom-btn="chartEnergy && zoomRange.length > 0"
           :show-chart="chartEnergy"
           :hover-values="hoverEnergyValues"
           :formatter="$options.filters.formatValue"
@@ -39,12 +39,12 @@
             @enter="handleEnter"
             @leave="handleLeave" />
           <date-brush
-            v-show="chartEnergy"
             :dataset="energyDataset"
             :zoom-range="zoomRange" 
             :x-ticks="xTicks"
             :tick-format="tickFormat"
             :second-tick-format="secondTickFormat"
+            :class="{'has-energy-chart': chartEnergy}"
             class="date-brush"
             @date-hover="handleDateHover"
             @date-filter="handleDateFilter" />
@@ -437,7 +437,10 @@ export default {
 
   .date-brush {
     position: relative;
-    margin-top: -6px;
+
+    &.has-energy-chart {
+      margin-top: -6px;
+    }
   }
 }
 </style>
