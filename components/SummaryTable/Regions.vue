@@ -71,6 +71,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import EnergyDataTransform from '~/services/dataTransform/Energy.js'
 import DatesDisplay from '~/components/SummaryTable/DatesDisplay'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
 import ColumnSelector from '~/components/ui/SummaryColumnSelector'
@@ -107,6 +108,7 @@ export default {
   computed: {
     ...mapGetters({
       showSummaryColumn: 'showSummaryColumn',
+      dateFilter: 'dateFilter',
       filteredRegions: 'region/filteredRegions',
       hiddenRegions: 'region/hiddenRegions'
     }),
@@ -125,14 +127,23 @@ export default {
     timeHovered() {
       return this.dateHovered ? this.dateHovered.getTime() : 0
     },
+    filteredEnergyDataset() {
+      return this.dateFilter.length > 0
+        ? EnergyDataTransform.filterDataByStartEndDates(
+            this.dataset.energy,
+            this.dateFilter[0],
+            this.dateFilter[1]
+          )
+        : this.dataset.energy
+    },
     startDate() {
-      const dataset = this.dataset.energy
+      const dataset = this.filteredEnergyDataset
       const dataLength = dataset.length
       const startDate = dataLength > 0 ? dataset[0].date : null
       return startDate
     },
     endDate() {
-      const dataset = this.dataset.energy
+      const dataset = this.filteredEnergyDataset
       const dataLength = dataset.length
       let whichIndex = 1
       if (this.isEnergy) {

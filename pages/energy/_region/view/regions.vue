@@ -342,12 +342,6 @@ export default {
       }
     }
   },
-
-  watch: {
-    dateFilter(newValue) {
-      console.log(newValue)
-    }
-  },
   created() {
     this.doGetAllRegions({
       range: this.range,
