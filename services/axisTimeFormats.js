@@ -37,6 +37,7 @@ export default {
                 ? formatMonth
                 : formatYear)(date)
   },
+
   secondaryFormat(date) {
     const formatDay = timeFormat('%e %b')
     const formatWeek = timeFormat('%e %b')
@@ -57,6 +58,7 @@ export default {
                 ? emptyTime
                 : emptyTime)(date)
   },
+
   intervalDayTimeFormat(date) {
     return (timeSecond(date) < date
       ? formatMillisecond

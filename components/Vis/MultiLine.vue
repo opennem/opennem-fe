@@ -167,20 +167,6 @@ export default {
     id() {
       return `multi-line-${this.uuid}`
     },
-    dotsData() {
-      const dotsData = []
-      this.dataset.forEach(d => {
-        this.keys.forEach(k => {
-          dotsData.push({
-            date: d.date,
-            value: d[k],
-            key: k,
-            colour: this.colours[k]
-          })
-        })
-      })
-      return dotsData
-    },
     axisTransform() {
       return `translate(${this.marginLeft},0)`
     },
@@ -323,7 +309,9 @@ export default {
       this.z = scaleOrdinal()
 
       // Axis
-      this.xAxis = axisBottom(this.x).tickSize(this.height)
+      this.xAxis = axisBottom(this.x)
+        .tickSize(this.height)
+        .ticks(this.xTicks)
       this.yAxis =
         this.yTicks.length > 0
           ? axisLeft(this.y)
@@ -333,7 +321,7 @@ export default {
               .tickSize(-this.width)
               .ticks(5)
 
-      // Shades
+      // x axis shading
       this.$xShadesGroup = $svg.select('.x-shades')
 
       // Line

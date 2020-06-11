@@ -275,16 +275,33 @@ export default {
       return this.zoomRange.length > 0
     },
     tickFormat() {
-      if (this.interval === 'Fin Year') {
-        return d => {
-          const year = d.getFullYear() + 1 + ''
-          return `FY${year.substr(2, 2)}`
-        }
+      switch (this.interval) {
+        case 'Day':
+          return AxisTimeFormats.intervalDayTimeFormat
+        case 'Week':
+          return AxisTimeFormats.intervalWeekTimeFormat
+        case 'Month':
+          return this.range === 'ALL'
+            ? AxisTimeFormats.rangeAllIntervalMonthTimeFormat
+            : AxisTimeFormats.intervalMonthTimeFormat
+        case 'Fin Year':
+          return d => {
+            const year = d.getFullYear() + 1 + ''
+            return `FY${year.substr(2, 2)}`
+          }
+        default:
+          return AxisTimeFormats.defaultFormat
       }
-      return AxisTimeFormats.defaultFormat
     },
     secondTickFormat() {
-      return AxisTimeFormats.secondaryFormat
+      switch (this.interval) {
+        case 'Day':
+          return AxisTimeFormats.intervalDaySecondaryTimeFormat
+        case 'Week':
+          return AxisTimeFormats.intervalWeekSecondaryTimeFormat
+        default:
+          return AxisTimeFormats.secondaryFormat
+      }
     },
     xTicks() {
       return AxisTicks(this.range, this.interval, this.isZoomed)

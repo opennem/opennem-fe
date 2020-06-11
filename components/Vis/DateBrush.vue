@@ -84,12 +84,12 @@ export default {
       }
       this.redraw()
     },
-    ticks(newTicks) {
+    xTicks(newTicks) {
       this.xAxis.ticks(newTicks)
       this.redraw()
     },
     tickFormat(newFormat) {
-      this.xAxis.tickFormat(newFormat)
+      this.xAxis.tickFormat((d, i) => newFormat(d, i === 0))
       this.redraw()
     }
   },
@@ -137,8 +137,8 @@ export default {
       // Axis
       this.xAxis = axisBottom(this.x)
         .tickSize(this.height)
-        .ticks(this.ticks)
-        .tickFormat(this.tickFormat)
+        .ticks(this.xTicks)
+        .tickFormat((d, i) => this.tickFormat(d, i === 0))
 
       // Brush
       this.brushX = brushX()
@@ -170,10 +170,11 @@ export default {
       g.selectAll('.x-axis .tick text').each(function(d, i) {
         const el = select(this)
         const text2 = self.secondTickFormat(d)
+        el.attr('x', 2)
         if (text2 !== '') {
           el.append('tspan')
-            .text(text2)
-            .attr('x', 1)
+            .text(text2.trim())
+            .attr('x', 2)
             .attr('dy', 12)
         }
       })
