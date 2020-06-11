@@ -13,9 +13,17 @@
           <div class="item-region summary-item">
             <group-selector />
           </div>
-          <div class="item-energy summary-item">
+          <div 
+            v-if="isEnergy" 
+            class="item-energy summary-item">
             <span>Energy</span>
             <small>GWh</small>
+          </div>
+          <div 
+            v-else 
+            class="item-energy summary-item">
+            <span>Power</span>
+            <small>MW</small>
           </div>
           <div class="item-contribution summary-item">
             <span>Contribution</span>
@@ -102,6 +110,9 @@ export default {
       filteredRegions: 'region/filteredRegions',
       hiddenRegions: 'region/hiddenRegions'
     }),
+    isEnergy() {
+      return this.range === '30D' || this.range === '1Y' || this.range === 'ALL'
+    },
     isAvValueColumn() {
       return this.showSummaryColumn === 'av-value'
     },
@@ -124,7 +135,7 @@ export default {
       const dataset = this.dataset.energy
       const dataLength = dataset.length
       let whichIndex = 1
-      if (this.range === '30D' || this.range === '1Y' || this.range === 'ALL') {
+      if (this.isEnergy) {
         whichIndex = 2
       }
       if (dataLength > 0) {
