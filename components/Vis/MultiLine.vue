@@ -220,10 +220,10 @@ export default {
       this.drawCursor(newValue)
     },
     zoomRange(newRange) {
-      if (newRange.length === 0) {
-        this.x.domain(this.xExtent)
-      } else {
+      if (newRange.length > 0) {
         this.x.domain(newRange)
+      } else {
+        this.x.domain(this.xExtent)
       }
       this.redraw()
     },
@@ -374,7 +374,11 @@ export default {
 
     draw() {
       console.log(`${this.uuid} draw`)
-      this.x.domain(this.xExtent)
+      if (this.zoomRange.length > 0) {
+        this.x.domain(this.zoomRange)
+      } else {
+        this.x.domain(this.xExtent)
+      }
       this.y.domain([this.yMin, this.yMax])
       if (!this.yLog) {
         this.y.nice()

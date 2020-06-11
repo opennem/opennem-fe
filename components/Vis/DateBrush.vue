@@ -77,10 +77,10 @@ export default {
       this.draw()
     },
     zoomRange(newRange) {
-      if (newRange.length === 0) {
-        this.x.domain(this.xExtent)
-      } else {
+      if (newRange.length > 0) {
         this.x.domain(newRange)
+      } else {
+        this.x.domain(this.xExtent)
       }
       this.redraw()
     },
@@ -155,7 +155,11 @@ export default {
     },
 
     draw() {
-      this.x.domain(this.xExtent)
+      if (this.zoomRange.length > 0) {
+        this.x.domain(this.zoomRange)
+      } else {
+        this.x.domain(this.xExtent)
+      }
       this.$xAxisGroup.call(this.drawXAxis)
     },
 

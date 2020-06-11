@@ -10,7 +10,7 @@
     <div class="vis-table-container">
       <div class="vis-container">
         <chart-wrapper 
-          :zoom-btn="chartEnergy && zoomRange.length > 0"
+          :zoom-btn="chartEnergy && dateFilter.length > 0"
           :show-chart="chartEnergy"
           :hover-values="hoverEnergyValues"
           :formatter="$options.filters.formatValue"
@@ -31,7 +31,7 @@
             :dataset="energyDataset"
             :y-max="energyMax"
             :date-hovered="dateHovered"
-            :zoom-range="zoomRange"
+            :zoom-range="dateFilter"
             :x-ticks="xTicks"
             :x-shades="xShades"
             :cursor-anchor="cursorAnchor"
@@ -41,7 +41,7 @@
             @leave="handleLeave" />
           <date-brush
             :dataset="energyDataset"
-            :zoom-range="zoomRange" 
+            :zoom-range="dateFilter" 
             :x-ticks="xTicks"
             :tick-format="tickFormat"
             :second-tick-format="secondTickFormat"
@@ -72,7 +72,7 @@
             :dataset="emissionVolDataset"
             :y-max="emissionMax"
             :date-hovered="dateHovered"
-            :zoom-range="zoomRange"
+            :zoom-range="dateFilter"
             :x-ticks="xTicks"
             :x-shades="xShades"
             :cursor-anchor="cursorAnchor"
@@ -102,7 +102,7 @@
             :dataset="emissionIntDataset"
             :y-max="1200"
             :date-hovered="dateHovered"
-            :zoom-range="zoomRange"
+            :zoom-range="dateFilter"
             :x-ticks="xTicks"
             :x-shades="xShades"
             :cursor-anchor="cursorAnchor"
@@ -118,7 +118,7 @@
             domains: filteredDomains,
             highlightDomain: hoveredRegion,
             dateHovered,
-            zoomRange,
+            dateFilter,
             xTicks,
             xShades,
             cursorAnchor
@@ -146,7 +146,7 @@
             :dataset="temperatureDataset"
             :y-max="40"
             :date-hovered="dateHovered"
-            :zoom-range="zoomRange"
+            :zoom-range="dateFilter"
             :x-ticks="xTicks"
             :x-shades="xShades"
             :cursor-anchor="cursorAnchor"
@@ -197,8 +197,7 @@ export default {
   },
   data() {
     return {
-      dateHovered: null,
-      zoomRange: []
+      dateHovered: null
     }
   },
   computed: {
@@ -215,6 +214,7 @@ export default {
       range: 'range',
       interval: 'interval',
       filterPeriod: 'filterPeriod',
+      dateFilter: 'dateFilter',
       chartEnergy: 'chartEnergy',
       chartEmissionsVolume: 'chartEmissionsVolume',
       chartEmissionsIntensity: 'chartEmissionsIntensity',
@@ -272,7 +272,7 @@ export default {
       return []
     },
     isZoomed() {
-      return this.zoomRange.length > 0
+      return this.dateFilter.length > 0
     },
     tickFormat() {
       switch (this.interval) {
@@ -342,6 +342,12 @@ export default {
       }
     }
   },
+
+  watch: {
+    dateFilter(newValue) {
+      console.log(newValue)
+    }
+  },
   created() {
     this.doGetAllRegions({
       range: this.range,
@@ -396,7 +402,7 @@ export default {
 
     handleDateFilter(range) {
       if (range.length === 0) {
-        this.zoomRange = range
+        this.$store.dispatch('dateFilter', range)
         return
       }
 
@@ -424,7 +430,7 @@ export default {
         end,
         'ceil'
       )
-      this.zoomRange = [startTime, endTime]
+      this.$store.dispatch('dateFilter', [startTime, endTime])
     },
 
     handleEnter() {
