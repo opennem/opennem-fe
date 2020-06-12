@@ -1,6 +1,7 @@
 export const state = () => ({
   isHovering: false,
   chartEnergy: true,
+  chartEnergyType: 'area', // line, proportion
   chartEnergyRenewablesLine: false,
   chartEmissionsVolume: true,
   chartEmissionsIntensity: true,
@@ -12,6 +13,7 @@ export const state = () => ({
 export const getters = {
   isHovering: state => state.isHovering,
   chartEnergy: state => state.chartEnergy,
+  chartEnergyType: state => state.chartEnergyType,
   chartEnergyRenewablesLine: state => state.chartEnergyRenewablesLine,
   chartEmissionsVolume: state => state.chartEmissionsVolume,
   chartEmissionsIntensity: state => state.chartEmissionsIntensity,
@@ -26,6 +28,9 @@ export const mutations = {
   },
   chartEnergy(state, data) {
     state.chartEnergy = data
+  },
+  chartEnergyType(state, data) {
+    state.chartEnergyType = data
   },
   chartEnergyRenewablesLine(state, data) {
     state.chartEnergyRenewablesLine = data
