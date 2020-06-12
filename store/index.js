@@ -6,14 +6,6 @@ import * as FlexibilityGroup from '~/constants/group-flexibility.js'
 import * as RenewableFossilGroup from '~/constants/group-renewable-fossil.js'
 import * as SolarResidualGroup from '~/constants/group-solar-residual.js'
 
-const MutationTypes = {
-  FEATURE_TOGGLE_EMISSIONS: 'FEATURE_TOGGLE_EMISSIONS'
-}
-const featureEmissions = lsGet(MutationTypes.FEATURE_TOGGLE_EMISSIONS)
-if (!featureEmissions) {
-  lsSet(MutationTypes.FEATURE_TOGGLE_EMISSIONS, false)
-}
-
 export const state = () => ({
   hostEnv: null, // local, prod, dev
   currentView: 'energy', // energy, facilities
@@ -44,7 +36,6 @@ export const state = () => ({
   exportAttribution: '@name',
   percentContributionTo: 'demand', // or generation
   showSummaryColumn: 'av-value', // or emissions-volume or emissions-intensity
-  featureEmissions,
   filterPeriod: null,
   compareDifference: false,
   focusOn: false,
@@ -139,10 +130,6 @@ export const mutations = {
   },
   showSummaryColumn(state, data) {
     state.showSummaryColumn = data
-  },
-  featureEmissions(state, data) {
-    lsSet(MutationTypes.FEATURE_TOGGLE_EMISSIONS, data)
-    state.featureEmissions = data
   },
   filterPeriod(state, data) {
     state.filterPeriod = data
@@ -255,7 +242,6 @@ export const getters = {
   exportAttribution: state => state.exportAttribution,
   percentContributionTo: state => state.percentContributionTo,
   showSummaryColumn: state => state.showSummaryColumn,
-  featureEmissions: state => state.featureEmissions,
   filterPeriod: state => state.filterPeriod,
   compareDifference: state => state.compareDifference,
   focusOn: state => state.focusOn,
@@ -348,10 +334,6 @@ export const actions = {
   },
   showSummaryColumn({ commit }, data) {
     commit('showSummaryColumn', data)
-  },
-  featureEmissions({ commit }, data) {
-    commit('showSummaryColumn', 'av-value')
-    commit('featureEmissions', data)
   },
   filterPeriod({ commit }, data) {
     commit('filterPeriod', data)

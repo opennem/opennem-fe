@@ -17,7 +17,7 @@ const pageEnergyMixin = {
   computed: {
     ...mapGetters({
       hostEnv: 'hostEnv',
-      featureEmissions: 'featureEmissions',
+      featureEmissions: 'feature/emissions',
       emissionsVolumeUnit: 'si/emissionsVolumeUnit',
       emissionsVolumePrefix: 'si/emissionsVolumePrefix',
       useEVnextPrefix: 'si/useEVnextPrefix',

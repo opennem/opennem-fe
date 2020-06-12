@@ -72,7 +72,7 @@ export default {
   computed: {
     ...mapGetters({
       emissionsVolumeUnit: 'si/emissionsVolumeUnit',
-      featureEmissions: 'featureEmissions'
+      featureEmissions: 'feature/emissions'
     }),
     showSummaryColumn() {
       return this.$store.getters.showSummaryColumn

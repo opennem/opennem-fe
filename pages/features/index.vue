@@ -24,6 +24,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   data() {
     return {
@@ -32,9 +34,9 @@ export default {
     }
   },
   computed: {
-    featureEmissions() {
-      return this.$store.getters.featureEmissions
-    }
+    ...mapGetters({
+      featureEmissions: 'feature/emissions'
+    })
   },
   mounted() {
     this.fEmissions = this.featureEmissions
@@ -42,7 +44,7 @@ export default {
   methods: {
     handleClick() {
       const check = !this.fEmissions
-      this.$store.dispatch('featureEmissions', check)
+      this.$store.commit('feature/emissions', check)
     },
     handleDoneClick() {
       this.$router.push({ path: '/energy/nem' })
