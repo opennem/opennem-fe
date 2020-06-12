@@ -21,7 +21,7 @@ export const state = () => ({
   temperatureDomains: [],
   marketValueDomains: [],
   range: '7D',
-  interval: '30min',
+  interval: '30m',
   dateFilter: [],
   exportData: [],
   facilityExportData: [],

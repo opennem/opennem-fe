@@ -32,63 +32,6 @@
 
     <div class="vis-table-container">
       <div class="vis-container">
-        <chart-wrapper
-          v-if="ready"
-          :show-chart="chartEnergy"
-          :formatter="$options.filters.formatValue"
-          state-name="chartEnergy">
-          <template v-slot:header>
-            <strong>Energy Percent</strong>
-          </template>
-          <template v-slot:datetime>
-            date
-          </template>
-
-          <multi-line
-            v-if="chartEnergy"
-            :toggled="chartEnergy"
-            :line-domains="stackedEnergyPercentDomains"
-            :dataset="energyPercentDataset"
-            :y-max="100"
-            :x-ticks="null"
-            :date-hovered="hoverDate"
-            :zoom-range="dateFilter"
-            @date-hover="handleDateOver"
-            @enter="handleVisEnter"
-            @leave="handleVisLeave" />
-
-          <stacked-area-vis
-            v-if="chartEnergy"
-            :domains="stackedEnergyPercentDomains"
-            :dataset="energyPercentDataset"
-            :dynamic-extent="dateFilter"
-            :hover-date="hoverDate"
-            :hover-on="hoverOn"
-            :focus-date="focusDate"
-            :focus-on="focusOn"
-            :range="range"
-            :interval="interval"
-            :mouse-loc="mouseLoc"
-            :curve="energyCurveType"
-            :y-min="0"
-            :y-max="100"
-            :vis-height="300"
-            :zoomed="zoomed"
-            :x-guides="xGuides"
-            :x-axis-dy="xAxisDy"
-            :mobile-screen="tabletBreak"
-            :incomplete-intervals="incompleteIntervals"
-            :compare-dates="compareDates"
-            :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
-            :dataset-two-colour="renewablesLineColour"
-            class="vis-chart"
-            @eventChange="handleEventChange"
-            @dateOver="handleDateOver"
-            @domainOver="handleDomainOver"
-            @svgClick="handleSvgClick"
-          />
-        </chart-wrapper>
-
         <div
           v-if="ready"
           :class="{
@@ -101,6 +44,7 @@
             class="chart-title"
             @click="toggleChart('chartEnergy')">
             <div class="chart-label">
+              <chart-options />
               <i
                 :class="{
                   'fa-caret-down': chartEnergy,
@@ -156,6 +100,7 @@
             class="chart-title"
             @click="toggleChart('chartEnergy')">
             <div class="chart-label">
+              <chart-options />
               <i
                 :class="{
                   'fa-caret-down': chartEnergy,
@@ -206,7 +151,7 @@
           </div>
 
           <stacked-area-vis
-            v-if="chartEnergy"
+            v-if="chartEnergy && chartEnergyType === 'area'"
             :domains="stackedAreaDomains"
             :dataset="dataset"
             :dynamic-extent="dateFilter"
@@ -220,6 +165,51 @@
             :curve="energyCurveType"
             :y-min="energyMin"
             :y-max="energyMax"
+            :vis-height="stackedAreaHeight"
+            :zoomed="zoomed"
+            :x-guides="xGuides"
+            :x-axis-dy="xAxisDy"
+            :mobile-screen="tabletBreak"
+            :incomplete-intervals="incompleteIntervals"
+            :compare-dates="compareDates"
+            :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
+            :dataset-two-colour="renewablesLineColour"
+            class="vis-chart"
+            @eventChange="handleEventChange"
+            @dateOver="handleDateOver"
+            @domainOver="handleDomainOver"
+            @svgClick="handleSvgClick"
+          />
+
+          <multi-line
+            v-if="chartEnergy && chartEnergyType === 'line'"
+            :toggled="chartEnergy"
+            :line-domains="stackedEnergyPercentDomains"
+            :dataset="energyPercentDataset"
+            :svg-height="stackedAreaHeight"
+            :y-max="100"
+            :x-ticks="null"
+            :date-hovered="hoverDate"
+            :zoom-range="dateFilter"
+            @date-hover="handleDateOver"
+            @enter="handleVisEnter"
+            @leave="handleVisLeave" />
+
+          <stacked-area-vis
+            v-if="chartEnergy && chartEnergyType === 'proportion'"
+            :domains="stackedEnergyPercentDomains"
+            :dataset="energyPercentDataset"
+            :dynamic-extent="dateFilter"
+            :hover-date="hoverDate"
+            :hover-on="hoverOn"
+            :focus-date="focusDate"
+            :focus-on="focusOn"
+            :range="range"
+            :interval="interval"
+            :mouse-loc="mouseLoc"
+            :curve="energyCurveType"
+            :y-min="0"
+            :y-max="100"
             :vis-height="stackedAreaHeight"
             :zoomed="zoomed"
             :x-guides="xGuides"
@@ -748,6 +738,7 @@ import EnergyRecords from '~/components/Energy/Records.vue'
 import EnergyCompare from '~/components/Energy/Compare.vue'
 import ChartWrapper from '@/components/Vis/ChartWrapper'
 import MultiLine from '@/components/Vis/MultiLine'
+import ChartOptions from '@/components/Vis/ChartOptions'
 
 export default {
   layout: 'main',
@@ -765,7 +756,8 @@ export default {
     EnergyRecords,
     EnergyCompare,
     ChartWrapper,
-    MultiLine
+    MultiLine,
+    ChartOptions
   },
 
   mixins: [PageAllMixin, PageEnergyMixin, PerfLogMixin, PageEnergyCreatedMixin],
