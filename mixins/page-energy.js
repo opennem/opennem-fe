@@ -26,8 +26,8 @@ const pageEnergyMixin = {
       filterPeriod: 'filterPeriod',
       type: 'energyChartType',
       chartUnit: 'chartUnit',
-      chartEnergyRenewablesLine: 'chartEnergyRenewablesLine',
-      chartSummaryPie: 'chartSummaryPie',
+      chartEnergyRenewablesLine: 'visInteract/chartEnergyRenewablesLine',
+      chartSummaryPie: 'visInteract/chartSummaryPie',
       compareDifference: 'compareDifference',
       focusOn: 'focusOn',
       compareDates: 'compareDates',
@@ -52,7 +52,8 @@ const pageEnergyMixin = {
   methods: {
     calculateEnergyEmissionsDatasets() {
       const isGeneration = this.percentContributionTo === 'generation'
-      const emissionsIntensityDataset = [],
+      const energyPercentDataset = [],
+        emissionsIntensityDataset = [],
         emissionsVolumeDataset = [],
         renewablesPercentageDataset = []
       let energyMinAll = 0,
@@ -71,11 +72,23 @@ const pageEnergyMixin = {
           emissionsMin = 0,
           emissionsMax = 0
 
+        // Energy Percent
+        energyPercentDataset.push({
+          date: d.date
+        })
+
         this.stackedAreaDomains.forEach(domain => {
           const id = domain.id
+          const energyPercent = this.findEnergyPercent(id)
+
           totalDemand += d[id] || 0
           if (domain.category == 'source' && domain.fuelTech !== 'imports') {
             totalGeneration += d[id] || 0
+
+            if (energyPercent) {
+              energyPercentDataset[i][energyPercent.id] =
+                (d[id] / d._totalGeneration) * 100
+            }
           }
           energyMax += d[id] || 0
           if (d[id] < 0) {
@@ -149,6 +162,7 @@ const pageEnergyMixin = {
             : d._totalDemandRenewablesPercentage
         })
       })
+
       if (this.interval !== '5m' && this.interval !== '30m') {
         renewablesPercentageDataset.pop()
       }
@@ -162,6 +176,7 @@ const pageEnergyMixin = {
       ]._emissionsIntensity = lastValidEI
 
       return {
+        energyPercentDataset,
         emissionsIntensityDataset,
         emissionsVolumeDataset,
         renewablesPercentageDataset,
@@ -184,6 +199,7 @@ const pageEnergyMixin = {
       this.emissionsIntensityMax = d.emissionsIntensityMaxAll + 100 // add some top padding to the max value for EI chart
       this.emissionsVolumeDataset = d.emissionsVolumeDataset
       this.renewablesPercentageDataset = d.renewablesPercentageDataset
+      this.energyPercentDataset = d.energyPercentDataset
     },
 
     updateEmissionsVolumeDatasetMinMax(cal) {
@@ -236,6 +252,15 @@ const pageEnergyMixin = {
       // update values
       this.updateEmissionsVolumeDatasetMinMax(cal)
       this.setEnergyEmissionsMinMaxDataset(cal)
+    },
+
+    findEnergyPercent(id) {
+      const initId = id.split('.')
+      initId.pop()
+      let percentId = initId.join('.')
+      percentId += '.energy_percent'
+
+      return this.stackedEnergyPercentDomains.find(p => p.id === percentId)
     }
   }
 }

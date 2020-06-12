@@ -167,8 +167,8 @@ export default {
     }
   },
   methods: {
-    handleDateHover(date) {
-      this.$emit('date-hover', date)
+    handleDateHover(evt, date) {
+      this.$emit('date-hover', evt, date)
     },
     handleEnter() {
       this.$store.commit('visInteract/isHovering', true)

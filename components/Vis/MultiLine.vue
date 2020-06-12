@@ -253,6 +253,13 @@ export default {
     window.addEventListener('resize', this.handleResize)
   },
 
+  updated() {
+    console.log(`${this.uuid} update`)
+    this.setupWidthHeight()
+    this.setup()
+    this.draw()
+  },
+
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize)
   },
@@ -354,7 +361,7 @@ export default {
       // Events
       this.$hoverGroup.on('touchmove mousemove', function() {
         const date = self.getXAxisDateByMouse(this)
-        self.$emit('date-hover', date)
+        self.$emit('date-hover', this, date)
       })
       $svg.on('mouseenter', () => {
         this.handleSvgEnter()

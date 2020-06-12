@@ -44,6 +44,8 @@ const pageEnergyCreated = {
       originalDataset: [],
       dataset: [],
       energyDomains: [],
+      energyPercentDomains: [],
+      energyPercentDataset: [],
       fuelTechEnergyOrder: [],
       emissionsOrder: [],
       marketValueDomains: [],
@@ -82,11 +84,11 @@ const pageEnergyCreated = {
 
   computed: {
     ...mapGetters({
-      chartEnergy: 'chartEnergy',
-      chartEmissionsVolume: 'chartEmissionsVolume',
-      chartEmissionsIntensity: 'chartEmissionsIntensity',
-      chartPrice: 'chartPrice',
-      chartTemperature: 'chartTemperature'
+      chartEnergy: 'visInteract/chartEnergy',
+      chartEmissionsVolume: 'visInteract/chartEmissionsVolume',
+      chartEmissionsIntensity: 'visInteract/chartEmissionsIntensity',
+      chartPrice: 'visInteract/chartPrice',
+      chartTemperature: 'visInteract/chartTemperature'
     }),
     pageTitle() {
       let title = 'An Open Platform for National Electricity Market Data'

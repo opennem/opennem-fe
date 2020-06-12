@@ -12,7 +12,7 @@ export const state = () => ({
   nem: [],
   fuelTechMeta: null,
   fuelTechNames: null,
-  fuelTechGroupName: 'Default',
+  fuelTechGroupName: 'Default', // Default
   fuelTechOrder: cloneDeep(FUEL_TECHS.DEFAULT_FUEL_TECH_ORDER),
   hiddenFuelTechs: [],
   energyDomains: [],
@@ -21,18 +21,11 @@ export const state = () => ({
   temperatureDomains: [],
   marketValueDomains: [],
   range: '7D',
-  interval: '30m',
+  interval: '30min',
   dateFilter: [],
   exportData: [],
   facilityExportData: [],
   responsiveBreakWidth: 769,
-  chartEnergy: true,
-  chartEnergyRenewablesLine: false,
-  chartEmissionsVolume: true,
-  chartEmissionsIntensity: true,
-  chartPrice: true,
-  chartTemperature: true,
-  chartSummaryPie: true,
   exportAttribution: '@name',
   percentContributionTo: 'demand', // or generation
   showSummaryColumn: 'av-value', // or emissions-volume or emissions-intensity
@@ -100,27 +93,6 @@ export const mutations = {
   },
   responsiveBreakWidth(state, data) {
     state.responsiveBreakWidth = data
-  },
-  chartEnergy(state, data) {
-    state.chartEnergy = data
-  },
-  chartEnergyRenewablesLine(state, data) {
-    state.chartEnergyRenewablesLine = data
-  },
-  chartEmissionsVolume(state, data) {
-    state.chartEmissionsVolume = data
-  },
-  chartEmissionsIntensity(state, data) {
-    state.chartEmissionsIntensity = data
-  },
-  chartPrice(state, data) {
-    state.chartPrice = data
-  },
-  chartTemperature(state, data) {
-    state.chartTemperature = data
-  },
-  chartSummaryPie(state, data) {
-    state.chartSummaryPie = data
   },
   exportAttribution(state, data) {
     state.exportAttribution = data
@@ -232,13 +204,6 @@ export const getters = {
   exportData: state => state.exportData,
   facilityExportData: state => state.facilityExportData,
   responsiveBreakWidth: state => state.responsiveBreakWidth,
-  chartEnergy: state => state.chartEnergy,
-  chartEnergyRenewablesLine: state => state.chartEnergyRenewablesLine,
-  chartEmissionsVolume: state => state.chartEmissionsVolume,
-  chartEmissionsIntensity: state => state.chartEmissionsIntensity,
-  chartPrice: state => state.chartPrice,
-  chartTemperature: state => state.chartTemperature,
-  chartSummaryPie: state => state.chartSummaryPie,
   exportAttribution: state => state.exportAttribution,
   percentContributionTo: state => state.percentContributionTo,
   showSummaryColumn: state => state.showSummaryColumn,
@@ -304,27 +269,6 @@ export const actions = {
   },
   responsiveBreakWidth({ commit }, data) {
     commit('responsiveBreakWidth', data)
-  },
-  chartEnergy({ commit }, data) {
-    commit('chartEnergy', data)
-  },
-  chartEnergyRenewablesLine({ commit }, data) {
-    commit('chartEnergyRenewablesLine', data)
-  },
-  chartEmissionsVolume({ commit }, data) {
-    commit('chartEmissionsVolume', data)
-  },
-  chartEmissionsIntensity({ commit }, data) {
-    commit('chartEmissionsIntensity', data)
-  },
-  chartPrice({ commit }, data) {
-    commit('chartPrice', data)
-  },
-  chartTemperature({ commit }, data) {
-    commit('chartTemperature', data)
-  },
-  chartSummaryPie({ commit }, data) {
-    commit('chartSummaryPie', data)
   },
   exportAttribution({ commit }, data) {
     commit('exportAttribution', data)

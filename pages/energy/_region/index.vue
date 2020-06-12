@@ -32,6 +32,63 @@
 
     <div class="vis-table-container">
       <div class="vis-container">
+        <chart-wrapper
+          v-if="ready"
+          :show-chart="chartEnergy"
+          :formatter="$options.filters.formatValue"
+          state-name="chartEnergy">
+          <template v-slot:header>
+            <strong>Energy Percent</strong>
+          </template>
+          <template v-slot:datetime>
+            date
+          </template>
+
+          <multi-line
+            v-if="chartEnergy"
+            :toggled="chartEnergy"
+            :line-domains="stackedEnergyPercentDomains"
+            :dataset="energyPercentDataset"
+            :y-max="100"
+            :x-ticks="null"
+            :date-hovered="hoverDate"
+            :zoom-range="dateFilter"
+            @date-hover="handleDateOver"
+            @enter="handleVisEnter"
+            @leave="handleVisLeave" />
+
+          <stacked-area-vis
+            v-if="chartEnergy"
+            :domains="stackedEnergyPercentDomains"
+            :dataset="energyPercentDataset"
+            :dynamic-extent="dateFilter"
+            :hover-date="hoverDate"
+            :hover-on="hoverOn"
+            :focus-date="focusDate"
+            :focus-on="focusOn"
+            :range="range"
+            :interval="interval"
+            :mouse-loc="mouseLoc"
+            :curve="energyCurveType"
+            :y-min="0"
+            :y-max="100"
+            :vis-height="300"
+            :zoomed="zoomed"
+            :x-guides="xGuides"
+            :x-axis-dy="xAxisDy"
+            :mobile-screen="tabletBreak"
+            :incomplete-intervals="incompleteIntervals"
+            :compare-dates="compareDates"
+            :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
+            :dataset-two-colour="renewablesLineColour"
+            class="vis-chart"
+            @eventChange="handleEventChange"
+            @dateOver="handleDateOver"
+            @domainOver="handleDomainOver"
+            @svgClick="handleSvgClick"
+          />
+        </chart-wrapper>
+
         <div
           v-if="ready"
           :class="{
@@ -147,6 +204,7 @@
               </div>
             </div>
           </div>
+
           <stacked-area-vis
             v-if="chartEnergy"
             :domains="stackedAreaDomains"
@@ -688,6 +746,8 @@ import SummaryTable from '~/components/SummaryTable'
 import VisTooltip from '~/components/ui/Tooltip'
 import EnergyRecords from '~/components/Energy/Records.vue'
 import EnergyCompare from '~/components/Energy/Compare.vue'
+import ChartWrapper from '@/components/Vis/ChartWrapper'
+import MultiLine from '@/components/Vis/MultiLine'
 
 export default {
   layout: 'main',
@@ -703,7 +763,9 @@ export default {
     SummaryTable,
     VisTooltip,
     EnergyRecords,
-    EnergyCompare
+    EnergyCompare,
+    ChartWrapper,
+    MultiLine
   },
 
   mixins: [PageAllMixin, PageEnergyMixin, PerfLogMixin, PageEnergyCreatedMixin],
@@ -735,6 +797,11 @@ export default {
       const domains = this.energyDomains
       return Domain.parseDomains(domains, dict, 'energy')
     },
+    groupEnergyPercentDomains() {
+      const dict = this.fuelTechGroup
+      const domains = this.energyPercentDomains
+      return Domain.parseDomains(domains, dict, 'energy_percent')
+    },
     groupMarketValueDomains() {
       const dict = this.fuelTechGroup
       const domains = this.marketValueDomains
@@ -765,6 +832,16 @@ export default {
       const hidden = this.hiddenFuelTechs
       let domains =
         this.groupDomains.length > 0 ? this.groupDomains : this.energyDomains
+      return this.fuelTechGroup
+        ? domains.filter(d => !_includes(hidden, d.id))
+        : domains.filter(d => !_includes(hidden, d.fuelTech))
+    },
+    stackedEnergyPercentDomains() {
+      const hidden = this.hiddenFuelTechs
+      let domains =
+        this.groupEnergyPercentDomains.length > 0
+          ? this.groupEnergyPercentDomains
+          : this.energyPercentDomains
       return this.fuelTechGroup
         ? domains.filter(d => !_includes(hidden, d.id))
         : domains.filter(d => !_includes(hidden, d.fuelTech))
@@ -1268,6 +1345,15 @@ export default {
       }
       perfTime.timeEnd(this.getGroupPerfLabel())
     },
+    groupEnergyPercentDomains(domains) {
+      if (domains.length > 0) {
+        this.originalDataset = this.updateDatasetGroups(
+          this.originalDataset,
+          domains
+        )
+        this.updateDataset(this.filterPeriod)
+      }
+    },
     groupMarketValueDomains(domains) {
       if (domains.length > 0) {
         this.originalDataset = this.updateDatasetGroups(
@@ -1449,6 +1535,12 @@ export default {
       if (this.groupEmissionDomains.length > 0) {
         updated = this.updateDatasetGroups(updated, this.groupEmissionDomains)
       }
+      if (this.groupEnergyPercentDomains.length > 0) {
+        updated = this.updateDatasetGroups(
+          updated,
+          this.groupEnergyPercentDomains
+        )
+      }
 
       this.dataset = updated
       this.originalDataset = updated
@@ -1492,6 +1584,11 @@ export default {
         this.regionId,
         this.fuelTechEnergyOrder,
         this.type
+      )
+      this.energyPercentDomains = Domain.getDomainObjs(
+        this.regionId,
+        this.fuelTechEnergyOrder,
+        'energy_percent'
       )
       this.$store.dispatch('energyDomains', this.energyDomains)
     },
@@ -1666,13 +1763,14 @@ export default {
 
     handleDateOver(evt, date) {
       const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
-      if (this.interval === 'Fin Year') {
+      if (date && this.interval === 'Fin Year') {
         if (date.getMonth() >= 6) {
           date.setFullYear(date.getFullYear() + 1)
         }
       }
       if (
         isFilter &&
+        date &&
         (this.interval === 'Season' || this.interval === 'Quarter')
       ) {
         const periodMonth = DateDisplay.getPeriodMonth(
@@ -1715,7 +1813,7 @@ export default {
     },
 
     toggleChart(chartName) {
-      this.$store.dispatch(chartName, !this[chartName])
+      this.$store.commit(`visInteract/${chartName}`, !this[chartName])
     },
 
     handleFuelTechsHidden(hidden) {

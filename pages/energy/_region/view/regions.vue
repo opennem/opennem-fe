@@ -215,10 +215,10 @@ export default {
       interval: 'interval',
       filterPeriod: 'filterPeriod',
       dateFilter: 'dateFilter',
-      chartEnergy: 'chartEnergy',
-      chartEmissionsVolume: 'chartEmissionsVolume',
-      chartEmissionsIntensity: 'chartEmissionsIntensity',
-      chartTemperature: 'chartTemperature'
+      chartEnergy: 'visInteract/chartEnergy',
+      chartEmissionsVolume: 'visInteract/chartEmissionsVolume',
+      chartEmissionsIntensity: 'visInteract/chartEmissionsIntensity',
+      chartTemperature: 'visInteract/chartTemperature'
     }),
     domains() {
       return this.regions.map(d => {
@@ -386,7 +386,7 @@ export default {
       this.doGetAllRegions({ range: this.range, interval })
     },
 
-    handleDateHover(date) {
+    handleDateHover(evt, date) {
       this.dateHovered = DateDisplay.snapToClosestInterval(
         this.interval,
         date,

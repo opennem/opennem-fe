@@ -21,6 +21,7 @@ export default {
           })
           groupDomains.push({
             id: `${id}.${type}`,
+            domain: `${id}.${type}`,
             label: dict.FUEL_TECH_LABEL[id],
             colour: dict.FUEL_TECH_GROUP_COLOUR[id],
             category: dict.FUEL_TECH_CATEGORY[id],
@@ -211,6 +212,7 @@ export default {
     return domainIds.map(ft => {
       return {
         id: `${region}.fuel_tech.${ft}.${type}`,
+        domain: `${region}.fuel_tech.${ft}.${type}`,
         fuelTech: ft,
         label: FUEL_TECHS.FUEL_TECH_LABEL[ft],
         colour: FUEL_TECHS.DEFAULT_FUEL_TECH_COLOUR[ft],

@@ -81,7 +81,7 @@ export default {
   },
   methods: {
     toggle() {
-      this.$store.dispatch(this.stateName, !this.showChart)
+      this.$store.commit(`visInteract/${this.stateName}`, !this.showChart)
     },
     handleReset() {
       this.$emit('date-filter', [])
