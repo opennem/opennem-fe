@@ -6,10 +6,16 @@
       </div>
       <label class="panel-block">
         <input
-          v-model="fEmissions"
-          type="checkbox"
-          @click="handleClick">
-        Show Emissions Charts
+          v-model="featureEmissions"
+          type="checkbox">
+        Emissions Charts
+      </label>
+
+      <label class="panel-block">
+        <input
+          v-model="featureRegionCompare"
+          type="checkbox">
+        Region Compare Charts
       </label>
 
       <div class="panel-block">
@@ -24,28 +30,27 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
 export default {
-  data() {
-    return {
-      fEmissions: false,
-      fCompare: false
+  computed: {
+    featureEmissions: {
+      get: function() {
+        return this.$store.getters['feature/emissions']
+      },
+      set: function(newValue) {
+        this.$store.commit('feature/emissions', newValue)
+      }
+    },
+
+    featureRegionCompare: {
+      get: function() {
+        return this.$store.getters['feature/regionCompare']
+      },
+      set: function(newValue) {
+        this.$store.commit('feature/regionCompare', newValue)
+      }
     }
   },
-  computed: {
-    ...mapGetters({
-      featureEmissions: 'feature/emissions'
-    })
-  },
-  mounted() {
-    this.fEmissions = this.featureEmissions
-  },
   methods: {
-    handleClick() {
-      const check = !this.fEmissions
-      this.$store.commit('feature/emissions', check)
-    },
     handleDoneClick() {
       this.$router.push({ path: '/energy/nem' })
     }

@@ -7,15 +7,19 @@
         :value="g">
         {{ g }}
       </option>
-      <option disabled>——————————</option>
       <option 
-        v-if="regionId === 'nem'" 
+        v-if="showRegionCompareOption" 
+        disabled>——————————</option>
+      <option 
+        v-if="showRegionCompareOption" 
         value="regions">Regions</option>
     </select>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 const groups = [
   'Default',
   'Simplified',
@@ -33,14 +37,18 @@ export default {
   },
 
   computed: {
-    fuelTechGroupName() {
-      return this.$store.getters.fuelTechGroupName
-    },
+    ...mapGetters({
+      featureRegionCompare: 'feature/regionCompare',
+      fuelTechGroupName: 'fuelTechGroupName'
+    }),
     regionId() {
       return this.$route.params.region
     },
     isRegionCompareRoute() {
       return this.$route.name === 'energy-region-view-regions'
+    },
+    showRegionCompareOption() {
+      return this.regionId === 'nem' && this.featureRegionCompare
     }
   },
 
