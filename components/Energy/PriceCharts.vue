@@ -136,7 +136,7 @@ export default {
   computed: {
     ...mapGetters({
       priceDataset: 'region/priceDataset',
-      chartPrice: 'chartPrice'
+      chartPrice: 'visInteract/chartPrice'
     }),
     priceMin() {
       return min(this.priceDataset, d => d._lowest)

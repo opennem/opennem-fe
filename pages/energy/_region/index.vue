@@ -188,12 +188,22 @@
             :dataset="energyPercentDataset"
             :svg-height="stackedAreaHeight"
             :y-max="100"
-            :x-ticks="null"
+            :x-ticks="xTicks"
             :date-hovered="hoverDate"
             :zoom-range="dateFilter"
             @date-hover="handleDateOver"
             @enter="handleVisEnter"
             @leave="handleVisLeave" />
+          <date-brush
+            v-if="chartEnergy && chartEnergyType === 'line'"
+            :dataset="energyPercentDataset"
+            :zoom-range="dateFilter" 
+            :x-ticks="xTicks"
+            :tick-format="tickFormat"
+            :second-tick-format="secondTickFormat"
+            class="date-brush"
+            @date-hover="handleDateOver"
+            @date-filter="handleDatasetFilter" />
 
           <stacked-area-vis
             v-if="chartEnergy && chartEnergyType === 'proportion'"
@@ -725,6 +735,8 @@ import DateDisplay from '~/services/DateDisplay.js'
 import Data from '~/services/Data.js'
 import EnergyDataTransform from '~/services/dataTransform/Energy.js'
 import Domain from '~/services/Domain.js'
+import AxisTimeFormats from '@/services/axisTimeFormats.js'
+import AxisTicks from '@/services/axisTicks.js'
 
 import Loader from '~/components/ui/Loader'
 import DataOptionsBar from '~/components/ui/DataOptionsBar'
@@ -739,6 +751,7 @@ import EnergyCompare from '~/components/Energy/Compare.vue'
 import ChartWrapper from '@/components/Vis/ChartWrapper'
 import MultiLine from '@/components/Vis/MultiLine'
 import ChartOptions from '@/components/Vis/ChartOptions'
+import DateBrush from '@/components/Vis/DateBrush'
 
 export default {
   layout: 'main',
@@ -757,7 +770,8 @@ export default {
     EnergyCompare,
     ChartWrapper,
     MultiLine,
-    ChartOptions
+    ChartOptions,
+    DateBrush
   },
 
   mixins: [PageAllMixin, PageEnergyMixin, PerfLogMixin, PageEnergyCreatedMixin],
@@ -1308,6 +1322,39 @@ export default {
       return (
         this.chartEnergyRenewablesLine && this.stackedAreaDomains.length === 0
       )
+    },
+    tickFormat() {
+      switch (this.interval) {
+        case 'Day':
+          return AxisTimeFormats.intervalDayTimeFormat
+        case 'Week':
+          return AxisTimeFormats.intervalWeekTimeFormat
+        case 'Month':
+          return this.range === 'ALL'
+            ? AxisTimeFormats.rangeAllIntervalMonthTimeFormat
+            : AxisTimeFormats.intervalMonthTimeFormat
+        case 'Fin Year':
+          return d => {
+            const year = d.getFullYear() + 1 + ''
+            return `FY${year.substr(2, 2)}`
+          }
+        default:
+          return AxisTimeFormats.defaultFormat
+      }
+    },
+    secondTickFormat() {
+      switch (this.interval) {
+        case 'Day':
+          return AxisTimeFormats.intervalDaySecondaryTimeFormat
+        case 'Week':
+          return AxisTimeFormats.intervalWeekSecondaryTimeFormat
+        default:
+          return AxisTimeFormats.secondaryFormat
+      }
+    },
+    xTicks() {
+      console.log(this.range, this.interval, this.zoomed)
+      return AxisTicks(this.range, this.interval, this.zoomed)
     }
   },
 
