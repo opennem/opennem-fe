@@ -5,9 +5,24 @@
       @click.stop="handleMenuClick"><i class="fal fa-align-left fa-fw"/></div>
     <div
       v-on-clickaway="onClickAway"
-      v-show="showMenu"
+      v-show="show"
       class="dropdown-menu">
       <div class="dropdown-content">
+        <button 
+          class="delete close-btn is-small" 
+          aria-label="delete"
+          @click.stop="emitShow(false)" />
+        <div class="show-hide-buttons buttons has-addons">
+          <button 
+            :class="{'is-selected': chartEnergy}"
+            class="button is-small is-rounded"
+            @click.stop="handleShowChart">Show</button>
+          <button 
+            :class="{'is-selected': !chartEnergy}"
+            class="button is-small is-rounded"
+            @click.stop="handleHideChart">Hide</button>
+        </div>
+
         <div class="chart-options-buttons buttons has-addons">
           <button 
             :class="{'is-selected': chartEnergyType === 'area'}"
@@ -53,14 +68,17 @@ import { mixin as clickaway } from 'vue-clickaway'
 
 export default {
   mixins: [clickaway],
-  data() {
-    return {
-      showMenu: false
+
+  props: {
+    show: {
+      type: Boolean,
+      default: () => false
     }
   },
 
   computed: {
     ...mapGetters({
+      chartEnergy: 'visInteract/chartEnergy',
       chartEnergyType: 'visInteract/chartEnergyType'
     })
   },
@@ -68,13 +86,22 @@ export default {
   methods: {
     handleDropdownClicked(type) {
       this.$store.commit('visInteract/chartEnergyType', type)
-      // this.showMenu = false
     },
     handleMenuClick() {
-      this.showMenu = !this.showMenu
+      this.emitShow(!this.show)
     },
     onClickAway() {
-      this.showMenu = false
+      this.emitShow(false)
+    },
+    emitShow(show) {
+      this.$emit('show-change', show)
+    },
+    handleShowChart() {
+      this.$store.commit('visInteract/chartEnergy', true)
+    },
+    handleHideChart() {
+      this.$store.commit('visInteract/chartEnergy', false)
+      this.$emit('show-change', false)
     }
   }
 }
@@ -90,6 +117,12 @@ export default {
     &:last-child {
       margin-bottom: 0;
     }
+  }
+
+  .show-hide-buttons {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
   }
 }
 
@@ -140,9 +173,14 @@ export default {
   }
 
   .dropdown-content {
-    padding: 0.5rem;
-    background-color: rgba(255, 255, 255, 0.95);
+    padding: 1rem;
     box-shadow: 0 3px 3px rgba(10, 10, 10, 0.1);
+
+    .close-btn {
+      position: absolute;
+      right: 0.4rem;
+      top: 0.7rem;
+    }
   }
 
   .dropdown-item {

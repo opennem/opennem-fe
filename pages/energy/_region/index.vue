@@ -42,15 +42,17 @@
           <div
             v-if="step"
             class="chart-title"
-            @click="toggleChart('chartEnergy')">
+            @click.stop="toggleChartOptions('chartEnergy')">
             <div class="chart-label">
-              <chart-options />
-              <i
+              <chart-options 
+                :show="chartEnergyOptions" 
+                @show-change="s => handleChartOptionsChange('chartEnergy', s)" />
+              <!-- <i
                 :class="{
                   'fa-caret-down': chartEnergy,
                   'fa-caret-right': !chartEnergy
                 }"
-                class="fal fa-fw" />
+                class="fal fa-fw" /> -->
               <strong>Energy</strong>
               <small>{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</small>
             </div>
@@ -98,15 +100,17 @@
           <div
             v-else
             class="chart-title"
-            @click="toggleChart('chartEnergy')">
+            @click.stop="toggleChartOptions('chartEnergy')">
             <div class="chart-label">
-              <chart-options />
-              <i
+              <chart-options 
+                :show="chartEnergyOptions" 
+                @show-change="s => handleChartOptionsChange('chartEnergy', s)" />
+              <!-- <i
                 :class="{
                   'fa-caret-down': chartEnergy,
                   'fa-caret-right': !chartEnergy
                 }"
-                class="fal fa-fw" />
+                class="fal fa-fw" /> -->
               <strong>Generation</strong>
               <small>MW</small>
             </div>
@@ -1853,6 +1857,16 @@ export default {
 
     toggleChart(chartName) {
       this.$store.commit(`visInteract/${chartName}`, !this[chartName])
+    },
+
+    toggleChartOptions(chartName) {
+      const chartOptions = `${chartName}Options`
+      this[chartOptions] = !this[chartOptions]
+    },
+
+    handleChartOptionsChange(chartName, show) {
+      const chartOptions = `${chartName}Options`
+      this[chartOptions] = show
     },
 
     handleFuelTechsHidden(hidden) {

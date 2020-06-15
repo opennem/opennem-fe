@@ -78,7 +78,8 @@ const pageEnergyCreated = {
       isTouchDevice: false,
       compareData: [],
       summary: null,
-      renewablesPercentageDataset: []
+      renewablesPercentageDataset: [],
+      chartEnergyOptions: false
     }
   },
 

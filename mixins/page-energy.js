@@ -260,7 +260,9 @@ const pageEnergyMixin = {
       let percentId = initId.join('.')
       percentId += '.energy_percent'
 
-      return this.stackedEnergyPercentDomains.find(p => p.id === percentId)
+      return this.stackedEnergyPercentDomains
+        ? this.stackedEnergyPercentDomains.find(p => p.id === percentId)
+        : null
     }
   }
 }
