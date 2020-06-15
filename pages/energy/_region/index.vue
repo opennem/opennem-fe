@@ -186,7 +186,7 @@
             :toggled="chartEnergy"
             :line-domains="stackedEnergyPercentDomains"
             :dataset="energyPercentDataset"
-            :svg-height="stackedAreaHeight"
+            :svg-height="stackedAreaHeight - 50"
             :y-max="100"
             :x-ticks="xTicks"
             :date-hovered="hoverDate"
