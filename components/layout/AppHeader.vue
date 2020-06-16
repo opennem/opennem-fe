@@ -62,29 +62,31 @@
           alt="Share icon" >
         <span class="label-image">Export</span>
       </button>
-      <div 
-        v-if="showShareMenu" 
-        class="share-menu dropdown-menu">
-        <div class="dropdown-content">
-          <a 
-            v-if="!isFacilitiesView" 
-            class="dropdown-item button" 
-            @click="handleExportImage">
-            <i class="fal fa-fw fa-chart-bar" />
-            <span class="label-image">PNG</span>
-          </a>
-          <a 
-            class="dropdown-item button" 
-            @click="handleExportDataClick">
-            <download-csv 
-              :data="exportData" 
-              :name="`${filename}.csv`">
-              <i class="fal fa-fw fa-table" />
-              <span class="label-csv">CSV</span>
-            </download-csv>
-          </a>
+      <transition name="slide-down-fade">
+        <div 
+          v-if="showShareMenu" 
+          class="share-menu dropdown-menu">
+          <div class="dropdown-content">
+            <a 
+              v-if="!isFacilitiesView" 
+              class="dropdown-item button" 
+              @click="handleExportImage">
+              <i class="fal fa-fw fa-chart-bar" />
+              <span class="label-image">PNG</span>
+            </a>
+            <a 
+              class="dropdown-item button" 
+              @click="handleExportDataClick">
+              <download-csv 
+                :data="exportData" 
+                :name="`${filename}.csv`">
+                <i class="fal fa-fw fa-table" />
+                <span class="label-csv">CSV</span>
+              </download-csv>
+            </a>
+          </div>
         </div>
-      </div>
+      </transition>
     </div>
   </header>
 </template> 
