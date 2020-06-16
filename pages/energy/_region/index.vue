@@ -41,8 +41,7 @@
           class="chart">
           <div
             v-if="step"
-            class="chart-title"
-            @click.stop="toggleChartOptions('chartEnergy')">
+            class="chart-title">
             <div class="chart-label">
               <chart-options 
                 :show="chartEnergyOptions" 
@@ -99,8 +98,7 @@
           </div>
           <div
             v-else
-            class="chart-title"
-            @click.stop="toggleChartOptions('chartEnergy')">
+            class="chart-title">
             <div class="chart-label">
               <chart-options 
                 :show="chartEnergyOptions" 
@@ -1857,11 +1855,6 @@ export default {
 
     toggleChart(chartName) {
       this.$store.commit(`visInteract/${chartName}`, !this[chartName])
-    },
-
-    toggleChartOptions(chartName) {
-      const chartOptions = `${chartName}Options`
-      this[chartOptions] = !this[chartOptions]
     },
 
     handleChartOptionsChange(chartName, show) {
