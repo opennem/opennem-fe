@@ -1,8 +1,10 @@
 <template>
   <div class="chart-options-wrapper">
     <div 
-      class="chart-options"
-      @click.stop="handleMenuClick"><i class="fal fa-align-left fa-fw"/></div>
+      class="chart-options-icon"
+      @click.stop="handleMenuClick">
+      <i class="fal fa-bars fa-fw"/>
+    </div>
     <div
       v-on-clickaway="onClickAway"
       v-show="show"
@@ -12,48 +14,45 @@
           class="delete close-btn is-small" 
           aria-label="delete"
           @click.stop="emitShow(false)" />
-        <div class="show-hide-buttons buttons has-addons">
-          <button 
-            :class="{'is-selected': chartEnergy}"
-            class="button is-small is-rounded"
-            @click.stop="handleShowChart">Show</button>
-          <button 
-            :class="{'is-selected': !chartEnergy}"
-            class="button is-small is-rounded"
-            @click.stop="handleHideChart">Hide</button>
-        </div>
 
         <div class="chart-options-buttons buttons has-addons">
           <button 
+            :class="{'is-selected': !chartEnergy}"
+            class="button is-small"
+            @click.stop="handleHiddenClick">Hidden</button>
+          <button 
             :class="{'is-selected': chartEnergyType === 'area'}"
-            class="button is-small is-rounded"
-            @click.stop="handleDropdownClicked('area')">Stacked</button>
+            class="button is-small"
+            @click.stop="handleDropdownClick('area')">Stacked</button>
           <button 
             :class="{'is-selected': chartEnergyType === 'proportion'}"
-            class="button is-small is-rounded"
-            @click.stop="handleDropdownClicked('proportion')">Proportion</button>
+            class="button is-small"
+            @click.stop="handleDropdownClick('proportion')">Proportion</button>
           <button 
             :class="{'is-selected': chartEnergyType === 'line'}"
-            class="button is-small is-rounded"
-            @click.stop="handleDropdownClicked('line')">Line</button>
-          <button 
+            class="button is-small"
+            @click.stop="handleDropdownClick('line')">Line</button>
+            <!-- <button 
             :class="{'is-selected': chartEnergyType === 'delta'}"
-            class="button is-small is-rounded"
-            @click.stop="handleDropdownClicked('delta')">Delta</button>
+            class="button is-small"
+            @click.stop="handleDropdownClick('delta')">Delta</button> -->
         </div>
 
         <div 
-          v-if="chartEnergyType === 'line'" 
-          class="row" >
-          <div class="chart-options-buttons buttons has-addons">
-            <button class="button is-small is-rounded">Absolute</button>
-            <button class="button is-small is-rounded">Percentage</button>
+          v-if="chartEnergyType === 'line' || chartEnergyType === 'area'" 
+          class="row">
+          <div
+            v-if="chartEnergyType === 'line'"
+            class="chart-options-buttons buttons has-addons" 
+            style="margin-right: 1rem;">
+            <button class="button is-small">Absolute</button>
+            <button class="button is-small">Percentage</button>
           </div>
-          <div class="select is-rounded">
-            <select @click.stop="">
-              <option value="">GWh/day</option>
-              <option value="">TWh/day</option>
-            </select>
+          <div
+            v-if="chartEnergyType === 'line' || chartEnergyType === 'area'"
+            class="chart-options-buttons buttons has-addons">
+            <button class="button is-small">GWh</button>
+            <button class="button is-small">TWh</button>
           </div>
         </div>
 
@@ -84,7 +83,7 @@ export default {
   },
 
   methods: {
-    handleDropdownClicked(type) {
+    handleDropdownClick(type) {
       this.$store.commit('visInteract/chartEnergyType', type)
     },
     handleMenuClick() {
@@ -102,6 +101,9 @@ export default {
     handleHideChart() {
       this.$store.commit('visInteract/chartEnergy', false)
       this.$emit('show-change', false)
+    },
+    handleHiddenClick() {
+      this.$store.commit('visInteract/chartEnergy', !this.chartEnergy)
     }
   }
 }
@@ -109,20 +111,15 @@ export default {
 
 <style lang="scss" scoped>
 @import '~/assets/scss/variables.scss';
+
 .chart-options-wrapper {
   position: relative;
   .chart-options-buttons {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.7rem;
 
     &:last-child {
       margin-bottom: 0;
     }
-  }
-
-  .show-hide-buttons {
-    border-bottom: 1px solid #eee;
-    margin-bottom: 0.5rem;
-    padding-bottom: 0.5rem;
   }
 }
 
@@ -134,21 +131,15 @@ export default {
   }
 }
 
-.select {
-  width: 100%;
-  margin-left: 0.5rem;
-  margin-bottom: 0;
-  select {
-    width: 100%;
-  }
-}
-
 .buttons {
   flex-wrap: nowrap;
 }
 .button {
   &:not(.is-selected) {
     background-color: #ece9e6;
+    &:hover {
+      background-color: #ededed;
+    }
   }
   &.button:not(:last-child) {
     margin-right: 1px;
@@ -159,6 +150,7 @@ export default {
   display: block;
   left: -10px;
   margin-top: 2px;
+  width: 312px;
 
   &::after {
     content: '';
@@ -173,13 +165,13 @@ export default {
   }
 
   .dropdown-content {
-    padding: 1rem;
+    padding: 1rem 1.8rem 1rem 1rem;
     box-shadow: 0 3px 3px rgba(10, 10, 10, 0.1);
 
     .close-btn {
       position: absolute;
-      right: 0.4rem;
-      top: 0.7rem;
+      right: 5px;
+      top: 8px;
     }
   }
 

@@ -33,7 +33,6 @@
 
     .chart-title {
       font-size: 11px;
-      cursor: pointer;
       user-select: none;
 
       @include tablet {
@@ -43,13 +42,21 @@
         height: 25px;
       }
 
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.3);
-      }
-
       .chart-options {
         i {
           font-size: 12px;
+        }
+      }
+
+      .chart-options-icon {
+        cursor: pointer;
+        padding: 3px 5px;
+        margin-right: 5px;
+        margin-left: -5px;
+        border-radius: 3px;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.7);
         }
       }
 
@@ -64,9 +71,6 @@
           left: 3px;
         }
 
-        i {
-          margin-right: 5px;
-        }
       }
 
       .hover-date-value {
