@@ -494,6 +494,8 @@ export default {
         totalGeneration = 0,
         totalNetGeneration = 0,
         min = 0,
+        lowest = 0,
+        highest = 0,
         totalEmissionsVol = 0,
         totalRenewables = 0,
         totalMarketValue = 0
@@ -510,6 +512,15 @@ export default {
           if (ft === 'exports') exportsId = id
           if (ft === 'imports') importsId = id
         }
+
+        if (d[id] > highest) {
+          highest = d[id]
+        }
+        if (d[id] < lowest) {
+          lowest = d[id]
+        }
+        d._highest = highest
+        d._lowest = lowest
       })
 
       //  Derived net values

@@ -69,6 +69,8 @@ const pageEnergyCreated = {
       windowWidth: 0,
       energyMin: 0,
       energyMax: 1000,
+      energyLineAbsoluteMin: 0,
+      energyLineAbsoluteMax: 1000,
       emissionsVolumeDataset: [],
       emissionsMin: 0,
       emissionsMax: 1000,
@@ -87,6 +89,8 @@ const pageEnergyCreated = {
     ...mapGetters({
       chartEnergy: 'visInteract/chartEnergy',
       chartEnergyType: 'visInteract/chartEnergyType',
+      chartEnergyYAxis: 'visInteract/chartEnergyYAxis',
+      chartEnergyCurve: 'visInteract/chartEnergyCurve',
       chartEmissionsVolume: 'visInteract/chartEmissionsVolume',
       chartEmissionsIntensity: 'visInteract/chartEmissionsIntensity',
       chartPrice: 'visInteract/chartPrice',
@@ -106,6 +110,12 @@ const pageEnergyCreated = {
     pageImage() {
       const url = 'https://opennem.org.au/images/energy/'
       return `${url}${this.regionId}.png`
+    }
+  },
+
+  watch: {
+    chartEnergyType() {
+      this.calculateEnergyEmissionsDatasets()
     }
   },
 

@@ -38,22 +38,38 @@
             @click.stop="handleDropdownClick('delta')">Delta</button> -->
         </div>
 
-        <div 
-          v-if="chartEnergyType === 'line' || chartEnergyType === 'area'" 
-          class="row">
+        <div class="row">
           <div
             v-if="chartEnergyType === 'line'"
             class="chart-options-buttons buttons has-addons" 
             style="margin-right: 1rem;">
-            <button class="button is-small">Absolute</button>
-            <button class="button is-small">Percentage</button>
+            <button 
+              :class="{'is-selected': chartEnergyYAxis === 'absolute'}" 
+              class="button is-small"
+              @click.stop="handleYAxisClick('absolute')">Absolute</button>
+            <button 
+              :class="{'is-selected': chartEnergyYAxis === 'percentage'}" 
+              class="button is-small"
+              @click.stop="handleYAxisClick('percentage')">Percentage</button>
           </div>
           <div
+            v-if="chartEnergyType === 'area' || chartEnergyType === 'proportion'"
+            class="chart-options-buttons buttons has-addons">
+            <button 
+              :class="{'is-selected': chartEnergyCurve === 'smooth'}" 
+              class="button is-small"
+              @click.stop="handleCurveClick('smooth')">Smooth</button>
+            <button 
+              :class="{'is-selected': chartEnergyCurve === 'step'}" 
+              class="button is-small"
+              @click.stop="handleCurveClick('step')">Step</button>
+          </div>
+          <!-- <div
             v-if="chartEnergyType === 'line' || chartEnergyType === 'area'"
             class="chart-options-buttons buttons has-addons">
             <button class="button is-small">GWh</button>
             <button class="button is-small">TWh</button>
-          </div>
+          </div> -->
         </div>
 
       </div>
@@ -78,7 +94,9 @@ export default {
   computed: {
     ...mapGetters({
       chartEnergy: 'visInteract/chartEnergy',
-      chartEnergyType: 'visInteract/chartEnergyType'
+      chartEnergyType: 'visInteract/chartEnergyType',
+      chartEnergyYAxis: 'visInteract/chartEnergyYAxis',
+      chartEnergyCurve: 'visInteract/chartEnergyCurve'
     })
   },
 
@@ -104,6 +122,12 @@ export default {
     },
     handleHiddenClick() {
       this.$store.commit('visInteract/chartEnergy', !this.chartEnergy)
+    },
+    handleYAxisClick(type) {
+      this.$store.commit('visInteract/chartEnergyYAxis', type)
+    },
+    handleCurveClick(curve) {
+      this.$store.commit('visInteract/chartEnergyCurve', curve)
     }
   }
 }

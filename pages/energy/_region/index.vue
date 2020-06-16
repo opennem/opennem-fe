@@ -164,9 +164,9 @@
             :range="range"
             :interval="interval"
             :mouse-loc="mouseLoc"
-            :curve="energyCurveType"
-            :y-min="energyMin"
-            :y-max="energyMax"
+            :curve="chartEnergyCurve"
+            :y-min="energyYMin"
+            :y-max="energyYMax"
             :vis-height="stackedAreaHeight"
             :zoomed="zoomed"
             :x-guides="xGuides"
@@ -186,10 +186,11 @@
           <multi-line
             v-if="chartEnergy && chartEnergyType === 'line'"
             :toggled="chartEnergy"
-            :line-domains="stackedEnergyPercentDomains"
-            :dataset="energyPercentDataset"
-            :svg-height="stackedAreaHeight - 50"
-            :y-max="100"
+            :line-domains="chartEnergyYAxis === 'percentage' ? stackedEnergyPercentDomains : stackedAreaDomains"
+            :dataset="chartEnergyYAxis === 'percentage' ? energyPercentDataset : dataset"
+            :svg-height="stackedAreaHeight - 35"
+            :y-max="energyYMax"
+            :y-min="energyYMin"
             :x-ticks="xTicks"
             :date-hovered="hoverDate"
             :zoom-range="dateFilter"
@@ -219,9 +220,9 @@
             :range="range"
             :interval="interval"
             :mouse-loc="mouseLoc"
-            :curve="energyCurveType"
-            :y-min="0"
-            :y-max="100"
+            :curve="chartEnergyCurve"
+            :y-min="energyYMin"
+            :y-max="energyYMax"
             :vis-height="stackedAreaHeight"
             :zoomed="zoomed"
             :x-guides="xGuides"
@@ -1355,7 +1356,6 @@ export default {
       }
     },
     xTicks() {
-      console.log(this.range, this.interval, this.zoomed)
       return AxisTicks(this.range, this.interval, this.zoomed)
     }
   },
