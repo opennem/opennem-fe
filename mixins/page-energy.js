@@ -63,9 +63,21 @@ const pageEnergyMixin = {
         emissionsIntensityMinAll = 0,
         emissionsIntensityMaxAll = 0
 
+      function isNetIds(fuelTech) {
+        return (
+          fuelTech === 'battery_charging' ||
+          fuelTech === 'battery_discharging' ||
+          fuelTech === 'hydro' ||
+          fuelTech === 'pumps' ||
+          fuelTech === 'exports' ||
+          fuelTech === 'imports'
+        )
+      }
+
       this.dataset.forEach((d, i) => {
         let totalDemand = 0,
           totalGeneration = 0,
+          totalNetGeneration = 0,
           totalEmissionsVol = 0,
           energyMin = 0,
           energyMax = 0,
@@ -79,17 +91,49 @@ const pageEnergyMixin = {
 
         this.stackedAreaDomains.forEach(domain => {
           const id = domain.id
+          const ft = domain.fuelTech
+
+          if (domain.category == 'source') {
+            if (ft === 'battery_discharging') {
+              totalNetGeneration += this.dataset[i]._netBattery
+            } else if (ft === 'hydro') {
+              totalNetGeneration += this.dataset[i]._netHydro
+            } else if (ft === 'imports') {
+              totalNetGeneration += this.dataset[i]._netImports
+            } else {
+              totalNetGeneration += d[id]
+            }
+          }
+        })
+
+        this.stackedAreaDomains.forEach(domain => {
+          const id = domain.id
+          const ft = domain.fuelTech
           const energyPercent = this.findEnergyPercent(id)
 
           totalDemand += d[id] || 0
           if (domain.category == 'source' && domain.fuelTech !== 'imports') {
             totalGeneration += d[id] || 0
+          }
 
+          if (domain.category == 'source') {
             if (energyPercent) {
-              energyPercentDataset[i][energyPercent.id] =
-                (d[id] / d._totalGeneration) * 100
+              if (ft === 'battery_discharging') {
+                energyPercentDataset[i][energyPercent.id] =
+                  (d._netBattery / totalNetGeneration) * 100
+              } else if (ft === 'hydro') {
+                energyPercentDataset[i][energyPercent.id] =
+                  (d._netHydro / totalNetGeneration) * 100
+              } else if (ft === 'imports') {
+                energyPercentDataset[i][energyPercent.id] =
+                  (d._netImports / totalNetGeneration) * 100
+              } else {
+                energyPercentDataset[i][energyPercent.id] =
+                  (d[id] / totalNetGeneration) * 100
+              }
             }
           }
+
           energyMax += d[id] || 0
           if (d[id] < 0) {
             energyMin += d[id] || 0

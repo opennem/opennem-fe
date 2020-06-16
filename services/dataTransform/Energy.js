@@ -470,11 +470,29 @@ export default {
     actualStartDate,
     actualLastDate
   ) {
+    function isNetIds(fuelTech) {
+      return (
+        fuelTech === 'battery_charging' ||
+        fuelTech === 'battery_discharging' ||
+        fuelTech === 'hydro' ||
+        fuelTech === 'pumps' ||
+        fuelTech === 'exports' ||
+        fuelTech === 'imports'
+      )
+    }
+
     // Calculate total, min, reverse value for imports and load types
     dataset.forEach((d, i) => {
+      let batteryChargingId = null,
+        batteryDischargingId = null,
+        hydroId = null,
+        pumpsId = null,
+        exportsId = null,
+        importsId = null
       let totalDemand = 0,
         totalSources = 0,
         totalGeneration = 0,
+        totalNetGeneration = 0,
         min = 0,
         totalEmissionsVol = 0,
         totalRenewables = 0,
@@ -482,8 +500,55 @@ export default {
 
       energyDomains.forEach(domain => {
         const id = domain.id
+        const ft = domain.fuelTech
 
-        if (domain.category === 'load' || domain.fuelTech === 'imports') {
+        if (isNetIds(ft)) {
+          if (ft === 'battery_charging') batteryChargingId = id
+          if (ft === 'battery_discharging') batteryDischargingId = id
+          if (ft === 'hydro') hydroId = id
+          if (ft === 'pumps') pumpsId = id
+          if (ft === 'exports') exportsId = id
+          if (ft === 'imports') importsId = id
+        }
+      })
+
+      //  Derived net values
+      dataset[i]._netBattery = d[batteryDischargingId] - d[batteryChargingId]
+      dataset[i]._netHydro = d[hydroId] - d[pumpsId]
+      dataset[i]._netImports = -d[importsId] - d[exportsId] // imports comes in as negative
+
+      if (isNaN(dataset[i]._netBattery) || dataset[i]._netBattery < 0) {
+        dataset[i]._netBattery = 0
+      }
+      if (isNaN(dataset[i]._netHydro) || dataset[i]._netHydro < 0) {
+        dataset[i]._netHydro = 0
+      }
+      if (isNaN(dataset[i]._netImports) || dataset[i]._netImports < 0) {
+        dataset[i]._netImports = 0
+      }
+
+      energyDomains.forEach(domain => {
+        const id = domain.id
+        const ft = domain.fuelTech
+
+        if (domain.category == 'source') {
+          if (ft === 'battery_discharging') {
+            totalNetGeneration += dataset[i]._netBattery
+          } else if (ft === 'hydro') {
+            totalNetGeneration += dataset[i]._netHydro
+          } else if (ft === 'imports') {
+            totalNetGeneration += dataset[i]._netImports
+          } else {
+            totalNetGeneration += d[id]
+          }
+        }
+      })
+
+      energyDomains.forEach(domain => {
+        const id = domain.id
+        const ft = domain.fuelTech
+
+        if (domain.category === 'load' || ft === 'imports') {
           const negValue = -d[id]
           d[id] = negValue
         }
@@ -492,7 +557,7 @@ export default {
           totalSources += d[id] || 0
         }
 
-        if (domain.category == 'source' && domain.fuelTech !== 'imports') {
+        if (domain.category == 'source' && ft !== 'imports') {
           totalGeneration += d[id] || 0
         }
 
@@ -535,6 +600,7 @@ export default {
       }
       dataset[i]._totalSources = totalSources
       dataset[i]._totalGeneration = totalGeneration
+      dataset[i]._totalNetGeneration = totalNetGeneration
       dataset[i]._totalSourcesRenewables =
         (totalRenewables / totalSources) * 100
       dataset[i]._totalGenerationRenewables =
