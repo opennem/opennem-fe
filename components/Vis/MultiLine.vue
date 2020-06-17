@@ -120,6 +120,10 @@ export default {
       type: Boolean,
       default: () => true
     },
+    yAxisUnit: {
+      type: String,
+      default: () => ''
+    },
     pathStrokeWidth: {
       type: Number,
       default: () => 1.5
@@ -452,6 +456,7 @@ export default {
       g.call(this.yAxis)
       g.selectAll('.y-axis-text .tick line').remove()
       g.selectAll('.y-axis-text .tick text')
+        .text(t => `${t}${this.yAxisUnit}`)
         .attr('dx', 5)
         .attr('dy', -2)
         .attr('opacity', this.yTickText ? 1 : 0)

@@ -140,6 +140,7 @@
             :y-max="energyYMax"
             :y-min="energyYMin"
             :x-ticks="xTicks"
+            :y-axis-unit="chartEnergyYAxis === 'percentage' ? '%' : ''"
             :curve="chartEnergyCurve"
             :date-hovered="hoverDate"
             :zoom-range="dateFilter"
