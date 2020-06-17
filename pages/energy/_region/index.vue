@@ -177,6 +177,7 @@
             :zoomed="zoomed"
             :x-guides="xGuides"
             :x-axis-dy="xAxisDy"
+            :y-axis-unit="'%'"
             :mobile-screen="tabletBreak"
             :incomplete-intervals="incompleteIntervals"
             :compare-dates="compareDates"

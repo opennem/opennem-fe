@@ -256,6 +256,10 @@ export default {
     yAxisTicks: {
       type: Number,
       default: () => 10
+    },
+    yAxisUnit: {
+      type: String,
+      default: () => ''
     }
   },
 
@@ -1436,6 +1440,7 @@ export default {
     customYAxis(g) {
       g.call(this.yAxis)
       g.selectAll('.tick text')
+        .text(t => `${t}${this.yAxisUnit}`)
         .attr('x', 4)
         .attr('dy', -4)
       g.selectAll('.tick line').attr('class', d => (d === 0 ? 'base' : ''))
