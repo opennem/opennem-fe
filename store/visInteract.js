@@ -2,7 +2,7 @@ export const state = () => ({
   isHovering: false,
   chartEnergyType: 'area', // line, proportion, area, hidden
   chartEnergyYAxis: 'absolute', // absolute, percentage
-  chartEnergyCurve: 'smooth', // smooth, step
+  chartEnergyCurve: 'smooth', // smooth, step, linear
   chartEnergyRenewablesLine: false,
   chartEmissionsVolume: true,
   chartEmissionsIntensity: true,

@@ -42,38 +42,35 @@
             @click.stop="handleDropdownClick('delta')">Delta</button> -->
           </div>
 
-          <div class="row">
-            <div
-              v-if="chartEnergyType === 'line'"
-              class="chart-options-buttons buttons has-addons" 
-              style="margin-right: 1rem;">
-              <button 
-                :class="{'is-selected': chartEnergyYAxis === 'absolute'}" 
-                class="button is-small"
-                @click.stop="handleYAxisClick('absolute')">Absolute</button>
-              <button 
-                :class="{'is-selected': chartEnergyYAxis === 'percentage'}" 
-                class="button is-small"
-                @click.stop="handleYAxisClick('percentage')">Percentage</button>
-            </div>
-            <div
-              v-if="chartEnergyType === 'area' || chartEnergyType === 'proportion'"
-              class="chart-options-buttons buttons has-addons">
-              <button 
-                :class="{'is-selected': chartEnergyCurve === 'smooth'}" 
-                class="button is-small"
-                @click.stop="handleCurveClick('smooth')">Smooth</button>
-              <button 
-                :class="{'is-selected': chartEnergyCurve === 'step'}" 
-                class="button is-small"
-                @click.stop="handleCurveClick('step')">Step</button>
-            </div>
-          <!-- <div
-            v-if="chartEnergyType === 'line' || chartEnergyType === 'area'"
+          <div 
+            v-if="chartEnergyType !== 'hidden'" 
             class="chart-options-buttons buttons has-addons">
-            <button class="button is-small">GWh</button>
-            <button class="button is-small">TWh</button>
-          </div> -->
+            <button 
+              :class="{'is-selected': chartEnergyCurve === 'smooth'}" 
+              class="button is-small"
+              @click.stop="handleCurveClick('smooth')">Smooth</button>
+            <button 
+              :class="{'is-selected': chartEnergyCurve === 'step'}" 
+              class="button is-small"
+              @click.stop="handleCurveClick('step')">Step</button>
+            <button 
+              :class="{'is-selected': chartEnergyCurve === 'linear'}" 
+              class="button is-small"
+              @click.stop="handleCurveClick('linear')">Straight</button>
+          </div>
+
+          <div
+            v-if="chartEnergyType === 'line'"
+            class="chart-options-buttons buttons has-addons" 
+            style="margin-right: 1rem;">
+            <button 
+              :class="{'is-selected': chartEnergyYAxis === 'absolute'}" 
+              class="button is-small"
+              @click.stop="handleYAxisClick('absolute')">Absolute</button>
+            <button 
+              :class="{'is-selected': chartEnergyYAxis === 'percentage'}" 
+              class="button is-small"
+              @click.stop="handleYAxisClick('percentage')">Percentage</button>
           </div>
 
         </div>
@@ -190,7 +187,7 @@ export default {
 
     .close-btn {
       position: absolute;
-      right: 5px;
+      right: 4px;
       top: 8px;
     }
   }

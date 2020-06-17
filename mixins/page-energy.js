@@ -196,22 +196,6 @@ const pageEnergyMixin = {
           }
         })
 
-        energyPercentDataset.forEach(p => {
-          let min = 0,
-            max = 0
-          this.stackedEnergyPercentDomains.forEach(domain => {
-            const id = domain.id
-            if (p[id] < min) {
-              min = p[id]
-            }
-            if (p[id] > max) {
-              max = p[id]
-            }
-          })
-          p._lowest = min
-          p._highest = max
-        })
-
         if (energyMax > energyMaxAll) {
           energyMaxAll = energyMax
         }
@@ -277,6 +261,22 @@ const pageEnergyMixin = {
             ? d._totalGenerationRenewablesPercentage
             : d._totalDemandRenewablesPercentage
         })
+      })
+
+      energyPercentDataset.forEach(p => {
+        let min = 0,
+          max = 0
+        this.stackedEnergyPercentDomains.forEach(domain => {
+          const id = domain.id
+          if (p[id] < min) {
+            min = p[id]
+          }
+          if (p[id] > max) {
+            max = p[id]
+          }
+        })
+        p._lowest = min
+        p._highest = max
       })
 
       if (this.interval !== '5m' && this.interval !== '30m') {

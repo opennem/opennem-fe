@@ -140,6 +140,7 @@
             :y-max="energyYMax"
             :y-min="energyYMin"
             :x-ticks="xTicks"
+            :curve="chartEnergyCurve"
             :date-hovered="hoverDate"
             :zoom-range="dateFilter"
             @date-hover="handleDateOver"
@@ -1193,6 +1194,10 @@ export default {
       let total = 0
       const isGeneration = this.percentContributionTo === 'generation'
       if (this.hoverOrFocusData) {
+        const hoverDate = this.hoverOrFocusData.date
+        const hoverEmissionsVol = this.emissionsVolumeDataset.find(d => {
+          return d.date === hoverDate
+        })
         this.emissionStackedAreaDomains.forEach(domain => {
           const id = domain.id
           if (
@@ -1201,11 +1206,11 @@ export default {
               domain.fuelTech !== 'imports' &&
               domain.fuelTech !== 'exports')
           ) {
-            total += this.hoverOrFocusData[id]
+            total += hoverEmissionsVol[id]
           }
         })
       }
-      return Data.siCalculationFromBase(this.emissionsVolumePrefix, total)
+      return total
     },
     hoverEmissionsIntensity() {
       if (this.hoverOrFocusData) {
