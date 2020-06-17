@@ -46,12 +46,6 @@
               <chart-options 
                 :show="chartEnergyOptions" 
                 @show-change="s => handleChartOptionsChange('chartEnergy', s)" />
-              <!-- <i
-                :class="{
-                  'fa-caret-down': chartEnergy,
-                  'fa-caret-right': !chartEnergy
-                }"
-                class="fal fa-fw" /> -->
               <strong>Energy</strong>
               <small>{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</small>
             </div>
@@ -103,12 +97,6 @@
               <chart-options 
                 :show="chartEnergyOptions" 
                 @show-change="s => handleChartOptionsChange('chartEnergy', s)" />
-              <!-- <i
-                :class="{
-                  'fa-caret-down': chartEnergy,
-                  'fa-caret-right': !chartEnergy
-                }"
-                class="fal fa-fw" /> -->
               <strong>Generation</strong>
               <small>MW</small>
             </div>

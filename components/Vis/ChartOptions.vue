@@ -17,11 +17,13 @@
             aria-label="delete"
             @click.stop="emitShow(false)" />
 
-          <div class="chart-options-buttons buttons has-addons">
+          <div 
+            :class="{'is-chart-hidden': !chartEnergy}" 
+            class="chart-options-buttons buttons has-addons">
             <button 
               :class="{'is-selected': !chartEnergy}"
               class="button is-small"
-              @click.stop="handleHiddenClick">Hidden</button>
+              @click.stop="handleDropdownClick('hidden')">Hidden</button>
             <button 
               :class="{'is-selected': chartEnergyType === 'area'}"
               class="button is-small"
@@ -116,16 +118,6 @@ export default {
     emitShow(show) {
       this.$emit('show-change', show)
     },
-    handleShowChart() {
-      this.$store.commit('visInteract/chartEnergy', true)
-    },
-    handleHideChart() {
-      this.$store.commit('visInteract/chartEnergy', false)
-      this.$emit('show-change', false)
-    },
-    handleHiddenClick() {
-      this.$store.commit('visInteract/chartEnergy', !this.chartEnergy)
-    },
     handleYAxisClick(type) {
       this.$store.commit('visInteract/chartEnergyYAxis', type)
     },
@@ -144,7 +136,8 @@ export default {
   .chart-options-buttons {
     margin-bottom: 0.7rem;
 
-    &:last-child {
+    &:last-child,
+    &.is-chart-hidden {
       margin-bottom: 0;
     }
   }
