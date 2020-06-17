@@ -39,106 +39,66 @@
             'has-border-bottom': !chartEnergy
           }"
           class="chart">
-          <div
-            v-if="step"
-            class="chart-title">
-            <div class="chart-label">
-              <chart-options 
-                :show="chartEnergyOptions" 
-                @show-change="s => handleChartOptionsChange('chartEnergy', s)" />
-              <strong>Energy</strong>
-              <small>{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</small>
-            </div>
-            <div
-              v-show="chartEnergy"
-              class="hover-date-value">
-              <div
-                v-if="!isRenewableLineOnly"
-                class="average-value">
-                Av.
-                <strong>{{ averageEnergy | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</strong>
-              </div>
-              
-              <div class="hover-date">
-                <time>
-                  {{ hoverDisplayDate }}
-                </time>
-              </div>
-              <div class="hover-values">
-                <span
-                  v-if="hoverValue"
-                  class="ft-value">
-                  <em
-                    :style="{ 'background-color': hoverDomainColour }"
-                    class="colour-square" />
-                  {{ hoverDomainLabel }}
-                  <strong>{{ hoverValue | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}</strong>
-                </span>
+          
+          <chart-header
+            :show="chartEnergyOptions" 
+            @show-change="s => handleChartOptionsChange('chartEnergy', s)">
 
-                <span
-                  v-if="isRenewableLineOnly"
-                  class="renewables-value">
-                  <strong>{{ hoverRenewables | percentageFormatNumber }}</strong>
-                </span>
-                <span
-                  v-else
-                  class="total-value">
-                  Total
-                  <strong>{{ hoverTotal | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}</strong>
-                </span>
-                
-              </div>
-            </div>
-          </div>
-          <div
-            v-else
-            class="chart-title">
-            <div class="chart-label">
-              <chart-options 
-                :show="chartEnergyOptions" 
-                @show-change="s => handleChartOptionsChange('chartEnergy', s)" />
-              <strong>Generation</strong>
-              <small>MW</small>
-            </div>
-            <div
-              v-show="chartEnergy"
-              class="hover-date-value">
-              <div
-                v-if="!isRenewableLineOnly"
-                class="average-value">
-                Av.
-                <strong>{{ averageEnergy | formatValue }} MW</strong>
-              </div>
-              <div class="hover-date">
-                <time>
-                  {{ hoverDisplayDate }}
-                </time>
-              </div>
-              <div class="hover-values">
-                <span
-                  v-if="hoverValue"
-                  class="ft-value">
-                  <em
-                    :style="{ 'background-color': hoverDomainColour }"
-                    class="colour-square" />
-                  {{ hoverDomainLabel }}
-                  <strong>{{ hoverValue | formatValue }} MW</strong>
-                </span>
+            <template v-slot:label-unit >
+              <strong v-if="step">Energy</strong>
+              <strong v-else>Generation</strong>
 
-                <span
-                  v-if="isRenewableLineOnly"
-                  class="renewables-value">
-                  <strong>{{ hoverRenewables | percentageFormatNumber }}</strong>
-                </span>
-                <span
-                  v-else
-                  class="total-value">
-                  Total
-                  <strong>{{ hoverTotal | formatValue }} MW</strong>
-                </span>
-              </div>
-            </div>
-          </div>
+              <small v-if="chartEnergyType === 'proportion'">%</small>
+              <small v-else-if="step">{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</small>
+              <small v-else>MW</small>
+            </template>
+
+            <template 
+              v-slot:average-value 
+              v-if="!isRenewableLineOnly && chartEnergyType !== 'proportion'">
+              Av.
+              <strong>
+                {{ averageEnergy | formatValue }}
+                <span v-if="step">{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</span>
+                <span v-else>MW</span>
+              </strong>
+            </template>
+
+            <template v-slot:hover-date>
+              {{ hoverDisplayDate }}
+            </template>
+            <template v-slot:hover-values>
+              <span
+                v-if="hoverValue"
+                class="ft-value">
+                <em
+                  :style="{ 'background-color': hoverDomainColour }"
+                  class="colour-square" />
+                {{ hoverDomainLabel }}
+                <strong>
+                  {{ hoverValue | formatValue }}<span v-if="chartEnergyType === 'proportion'">%</span>
+                  <span v-else-if="step">{{ isYearInterval ? 'TWh' : 'GWh' }}</span>
+                  <span v-else>MW</span>
+                </strong>
+              </span>
+
+              <span
+                v-if="isRenewableLineOnly"
+                class="renewables-value">
+                <strong>{{ hoverRenewables | percentageFormatNumber }}</strong>
+              </span>
+              <span
+                v-else-if="chartEnergyType !== 'proportion'"
+                class="total-value">
+                Total
+                <strong>
+                  {{ hoverTotal | formatValue }}
+                  <span v-if="step">{{ isYearInterval ? 'TWh' : 'GWh' }}</span>
+                  <span v-else>MW</span>
+                </strong>
+              </span>
+            </template>
+          </chart-header>
 
           <stacked-area-vis
             v-if="chartEnergy && chartEnergyType === 'area'"
@@ -743,6 +703,7 @@ import ChartWrapper from '@/components/Vis/ChartWrapper'
 import MultiLine from '@/components/Vis/MultiLine'
 import ChartOptions from '@/components/Vis/ChartOptions'
 import DateBrush from '@/components/Vis/DateBrush'
+import ChartHeader from '@/components/Vis/ChartHeader'
 
 export default {
   layout: 'main',
@@ -762,7 +723,8 @@ export default {
     ChartWrapper,
     MultiLine,
     ChartOptions,
-    DateBrush
+    DateBrush,
+    ChartHeader
   },
 
   mixins: [PageAllMixin, PageEnergyMixin, PerfLogMixin, PageEnergyCreatedMixin],
@@ -1146,7 +1108,11 @@ export default {
     },
     hoverData() {
       const time = new Date(this.hoverDate).getTime()
-      return this.dataset.find(d => d.date === time)
+      let dataset = this.dataset
+      if (this.chartEnergyType === 'proportion') {
+        dataset = this.energyPercentDataset
+      }
+      return dataset.find(d => d.date === time)
     },
     focusData() {
       const time = new Date(this.focusDate).getTime()
@@ -1161,7 +1127,12 @@ export default {
       return null
     },
     hoverDomainLabel() {
-      const find = this.stackedAreaDomains.find(d => d.id === this.hoverDomain)
+      let find = null
+      if (this.chartEnergyType === 'proportion') {
+        find = this.energyPercentDomains.find(d => d.id === this.hoverDomain)
+      } else {
+        find = this.stackedAreaDomains.find(d => d.id === this.hoverDomain)
+      }
       return find ? find.label : '—'
     },
     hoverEmissionVolumeDomainLabel() {
@@ -1176,9 +1147,13 @@ export default {
         : null
     },
     hoverDomainColour() {
-      const find = this.stackedAreaDomains.find(d => d.id === this.hoverDomain)
-      if (find) return find.colour
-      return null
+      let find = null
+      if (this.chartEnergyType === 'proportion') {
+        find = this.energyPercentDomains.find(d => d.id === this.hoverDomain)
+      } else {
+        find = this.stackedAreaDomains.find(d => d.id === this.hoverDomain)
+      }
+      return find ? find.colour : null
     },
     hoverEmissionVolumeDomainColour() {
       const find = this.emissionStackedAreaDomains.find(

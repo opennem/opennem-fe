@@ -1,7 +1,6 @@
 export const state = () => ({
   isHovering: false,
-  chartEnergy: true,
-  chartEnergyType: 'area', // line, proportion, area
+  chartEnergyType: 'area', // line, proportion, area, hidden
   chartEnergyYAxis: 'absolute', // absolute, percentage
   chartEnergyCurve: 'smooth', // smooth, step
   chartEnergyRenewablesLine: false,
@@ -14,7 +13,7 @@ export const state = () => ({
 
 export const getters = {
   isHovering: state => state.isHovering,
-  chartEnergy: state => state.chartEnergy,
+  chartEnergy: state => state.chartEnergyType !== 'hidden',
   chartEnergyType: state => state.chartEnergyType,
   chartEnergyYAxis: state => state.chartEnergyYAxis,
   chartEnergyCurve: state => state.chartEnergyCurve,
@@ -29,9 +28,6 @@ export const getters = {
 export const mutations = {
   isHovering(state, isHovering) {
     state.isHovering = isHovering
-  },
-  chartEnergy(state, data) {
-    state.chartEnergy = data
   },
   chartEnergyType(state, data) {
     state.chartEnergyType = data
