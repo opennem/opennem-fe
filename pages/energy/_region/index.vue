@@ -48,7 +48,7 @@
               <strong v-if="step">Energy</strong>
               <strong v-else>Generation</strong>
 
-              <small v-if="chartEnergyType === 'proportion' || (chartEnergyType === 'line' && chartEnergyYAxis === 'percentage')">%/{{ interval | intervalLabel }}</small>
+              <small v-if="chartEnergyType === 'proportion' || (chartEnergyType === 'line' && chartEnergyYAxis === 'percentage')">%</small>
               <small v-else-if="step">{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</small>
               <small v-else>MW</small>
             </template>
