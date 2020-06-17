@@ -48,7 +48,7 @@
               <strong v-if="step">Energy</strong>
               <strong v-else>Generation</strong>
 
-              <small v-if="chartEnergyType === 'proportion'">%</small>
+              <small v-if="chartEnergyType === 'proportion' || (chartEnergyType === 'line' && chartEnergyYAxis === 'percentage')">%/{{ interval | intervalLabel }}</small>
               <small v-else-if="step">{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</small>
               <small v-else>MW</small>
             </template>
@@ -76,7 +76,7 @@
                   class="colour-square" />
                 {{ hoverDomainLabel }}
                 <strong>
-                  {{ hoverValue | formatValue }}<span v-if="chartEnergyType === 'proportion'">%</span>
+                  {{ hoverValue | formatValue }}<span v-if="chartEnergyType === 'proportion' || (chartEnergyType === 'line' && chartEnergyYAxis === 'percentage')">%</span>
                   <span v-else-if="step">{{ isYearInterval ? 'TWh' : 'GWh' }}</span>
                   <span v-else>MW</span>
                 </strong>
