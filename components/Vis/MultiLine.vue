@@ -19,6 +19,9 @@
         class="line-path-group" />
       <g 
         :transform="axisTransform" 
+        class="y-axis-text" />
+      <g 
+        :transform="axisTransform" 
         class="cursor-line-group" />
       <g 
         :transform="axisTransform" 
@@ -153,6 +156,7 @@ export default {
       line: null,
       $xAxisGroup: null,
       $yAxisGroup: null,
+      $yAxisTextGroup: null,
       $linePathGroup: null,
       $cursorLineGroup: null,
       $cursorRect: null,
@@ -280,6 +284,7 @@ export default {
       this.yAxis.tickSize(-this.width)
       this.$xAxisGroup.call(this.drawXAxis)
       this.$yAxisGroup.call(this.drawYAxis)
+      this.$yAxisTextGroup.call(this.drawYAxisText)
       this.$hoverGroup
         .select('rect')
         .attr('width', this.width)
@@ -304,6 +309,7 @@ export default {
       // Axis DOM
       this.$xAxisGroup = $svg.select('.x-axis')
       this.$yAxisGroup = $svg.select('.y-axis')
+      this.$yAxisTextGroup = $svg.select('.y-axis-text')
 
       // Define scales
       this.yRange = this.yInvert ? [0, this.height] : [this.height, 0]
@@ -393,6 +399,7 @@ export default {
 
       this.$xAxisGroup.call(this.drawXAxis)
       this.$yAxisGroup.call(this.drawYAxis)
+      this.$yAxisTextGroup.call(this.drawYAxisText)
 
       this.$xShadesGroup.selectAll('rect').remove()
       this.$xShadesGroup
@@ -438,7 +445,13 @@ export default {
 
     drawYAxis(g) {
       g.call(this.yAxis)
-      g.selectAll('.y-axis .tick text')
+      g.selectAll('.y-axis .tick text').remove()
+    },
+
+    drawYAxisText(g) {
+      g.call(this.yAxis)
+      g.selectAll('.y-axis-text .tick line').remove()
+      g.selectAll('.y-axis-text .tick text')
         .attr('dx', 5)
         .attr('dy', -2)
         .attr('opacity', this.yTickText ? 1 : 0)
@@ -535,7 +548,7 @@ export default {
 
 <style lang="scss" scoped>
 .multi-line-vis ::v-deep svg {
-  .y-axis .tick text {
+  .y-axis-text .tick text {
     color: #000;
     text-anchor: start;
   }
