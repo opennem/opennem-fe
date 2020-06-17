@@ -90,12 +90,22 @@ const pageEnergyMixin = {
     },
     getMaxValue(dataset) {
       let max = 0
-      dataset.forEach(d => {
-        if (d._highest > max) {
-          max = d._highest
-        }
-      })
-      return max
+      if (this.fuelTechGroupName === 'Default') {
+        dataset.forEach(d => {
+          if (d._highest > max) {
+            max = d._highest
+          }
+        })
+      } else {
+        dataset.forEach(d => {
+          this.stackedAreaDomains.forEach(domain => {
+            if (d[domain.id] > max) {
+              max = d[domain.id]
+            }
+          })
+        })
+      }
+      return max === 0 ? 100 : max
     },
     calculateEnergyEmissionsDatasets() {
       const isGeneration = this.percentContributionTo === 'generation'
