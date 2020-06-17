@@ -177,7 +177,7 @@ export default {
     transform: rotate(45deg);
     background: #fff;
     top: 0px;
-    left: 12px;
+    left: 7px;
     width: 10px;
     height: 10px;
     position: absolute;
