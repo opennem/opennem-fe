@@ -135,7 +135,7 @@
             v-if="chartEnergy && chartEnergyType === 'line'"
             :toggled="chartEnergy"
             :line-domains="chartEnergyYAxis === 'percentage' ? stackedEnergyPercentDomains : stackedAreaDomains"
-            :dataset="chartEnergyYAxis === 'percentage' ? energyPercentDataset : dataset"
+            :dataset="chartEnergyYAxis === 'percentage' ? energyPercentDataset : multiLineEnergyDataset"
             :svg-height="stackedAreaHeight - 35"
             :y-max="energyYMax"
             :y-min="energyYMin"
@@ -1327,6 +1327,21 @@ export default {
     },
     xTicks() {
       return AxisTicks(this.range, this.interval, this.zoomed)
+    },
+    multiLineEnergyDataset() {
+      return this.dataset.map(d => {
+        const obj = {
+          date: d.date
+        }
+        this.stackedAreaDomains.forEach(domain => {
+          if (domain.category === 'load') {
+            obj[domain.id] = -d[domain.id]
+          } else {
+            obj[domain.id] = d[domain.id]
+          }
+        })
+        return obj
+      })
     }
   },
 
