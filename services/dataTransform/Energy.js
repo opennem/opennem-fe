@@ -524,9 +524,10 @@ export default {
       })
 
       //  Derived net values
-      dataset[i]._netBattery = d[batteryDischargingId] - d[batteryChargingId]
-      dataset[i]._netHydro = d[hydroId] - d[pumpsId]
-      dataset[i]._netImports = -d[importsId] - d[exportsId] // imports comes in as negative
+      dataset[i]._netBattery =
+        (d[batteryDischargingId] || 0) - (d[batteryChargingId] || 0)
+      dataset[i]._netHydro = (d[hydroId] || 0) - (d[pumpsId] || 0)
+      dataset[i]._netImports = -(d[importsId] || 0) - (d[exportsId] || 0) // imports comes in as negative
 
       if (isNaN(dataset[i]._netBattery) || dataset[i]._netBattery < 0) {
         dataset[i]._netBattery = 0
