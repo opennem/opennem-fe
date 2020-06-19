@@ -46,15 +46,15 @@
             v-if="chartEnergyType !== 'hidden'" 
             class="chart-options-buttons buttons has-addons">
             <button 
-              :class="{'is-selected': chartEnergyCurve === 'smooth'}" 
+              :class="{'is-selected': isSmoothCurve}" 
               class="button is-small"
               @click.stop="handleCurveClick('smooth')">Smooth</button>
             <button 
-              :class="{'is-selected': chartEnergyCurve === 'step'}" 
+              :class="{'is-selected': isStepCurve}" 
               class="button is-small"
               @click.stop="handleCurveClick('step')">Step</button>
             <button 
-              :class="{'is-selected': chartEnergyCurve === 'linear'}" 
+              :class="{'is-selected': isStraightCurve}" 
               class="button is-small"
               @click.stop="handleCurveClick('linear')">Straight</button>
           </div>
@@ -95,11 +95,28 @@ export default {
 
   computed: {
     ...mapGetters({
+      range: 'range',
       chartEnergy: 'visInteract/chartEnergy',
       chartEnergyType: 'visInteract/chartEnergyType',
       chartEnergyYAxis: 'visInteract/chartEnergyYAxis',
-      chartEnergyCurve: 'visInteract/chartEnergyCurve'
-    })
+      chartEnergyCurve: 'visInteract/chartEnergyCurve',
+      chartPowerCurve: 'visInteract/chartPowerCurve'
+    }),
+    isEnergy() {
+      return this.range === '30D' || this.range === '1Y' || this.range === 'ALL'
+    },
+    curve() {
+      return this.isEnergy ? this.chartEnergyCurve : this.chartPowerCurve
+    },
+    isSmoothCurve() {
+      return this.curve === 'smooth'
+    },
+    isStepCurve() {
+      return this.curve === 'step'
+    },
+    isStraightCurve() {
+      return this.curve === 'linear'
+    }
   },
 
   methods: {
@@ -119,7 +136,11 @@ export default {
       this.$store.commit('visInteract/chartEnergyYAxis', type)
     },
     handleCurveClick(curve) {
-      this.$store.commit('visInteract/chartEnergyCurve', curve)
+      if (this.isEnergy) {
+        this.$store.commit('visInteract/chartEnergyCurve', curve)
+      } else {
+        this.$store.commit('visInteract/chartPowerCurve', curve)
+      }
     }
   }
 }

@@ -92,6 +92,7 @@ const pageEnergyCreated = {
       chartEnergyType: 'visInteract/chartEnergyType',
       chartEnergyYAxis: 'visInteract/chartEnergyYAxis',
       chartEnergyCurve: 'visInteract/chartEnergyCurve',
+      chartPowerCurve: 'visInteract/chartPowerCurve',
       chartEmissionsVolume: 'visInteract/chartEmissionsVolume',
       chartEmissionsIntensity: 'visInteract/chartEmissionsIntensity',
       chartPrice: 'visInteract/chartPrice',
