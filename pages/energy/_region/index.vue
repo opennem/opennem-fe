@@ -1414,6 +1414,9 @@ export default {
     stackedAreaDomains(updated) {
       this.$store.dispatch('export/stackedAreaDomains', updated)
     },
+    stackedEnergyPercentDomains(updated) {
+      this.$store.commit('export/stackedEnergyPercentDomains', updated)
+    },
     summaryDomains(updated) {
       this.$store.dispatch('export/summaryDomains', updated)
     },
