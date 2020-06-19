@@ -381,6 +381,9 @@ export default {
     stackedAreaDomains() {
       return this.$store.getters['export/stackedAreaDomains']
     },
+    stackedEnergyPercentDomains() {
+      return this.$store.getters['export/stackedEnergyPercentDomains']
+    },
     summaryDomains() {
       return this.$store.getters['export/summaryDomains']
     },

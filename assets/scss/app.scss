@@ -21,6 +21,7 @@
 @import "../../node_modules/bulma/sass/form/all.sass";
 
 // Import application styles
+@import "./colour-scheme-mixins.scss";
 @import "./vue-transitions.scss";
 @import "./loading.scss";
 @import "./header.scss";

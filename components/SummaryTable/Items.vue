@@ -151,7 +151,7 @@ export default {
     ...mapGetters({
       emissionsVolumePrefix: 'si/emissionsVolumePrefix',
       percentContributionTo: 'percentContributionTo',
-      chartEnergyRenewablesLine: 'chartEnergyRenewablesLine'
+      chartEnergyRenewablesLine: 'visInteract/chartEnergyRenewablesLine'
     }),
     showSummaryColumn() {
       return this.$store.getters.showSummaryColumn

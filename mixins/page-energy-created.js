@@ -44,6 +44,9 @@ const pageEnergyCreated = {
       originalDataset: [],
       dataset: [],
       energyDomains: [],
+      energyPercentDomains: [],
+      energyPercentDataset: [],
+      energyGrossPercentDataset: [],
       fuelTechEnergyOrder: [],
       emissionsOrder: [],
       marketValueDomains: [],
@@ -67,6 +70,8 @@ const pageEnergyCreated = {
       windowWidth: 0,
       energyMin: 0,
       energyMax: 1000,
+      energyLineAbsoluteMin: 0,
+      energyLineAbsoluteMax: 1000,
       emissionsVolumeDataset: [],
       emissionsMin: 0,
       emissionsMax: 1000,
@@ -76,17 +81,22 @@ const pageEnergyCreated = {
       isTouchDevice: false,
       compareData: [],
       summary: null,
-      renewablesPercentageDataset: []
+      renewablesPercentageDataset: [],
+      chartEnergyOptions: false
     }
   },
 
   computed: {
     ...mapGetters({
-      chartEnergy: 'chartEnergy',
-      chartEmissionsVolume: 'chartEmissionsVolume',
-      chartEmissionsIntensity: 'chartEmissionsIntensity',
-      chartPrice: 'chartPrice',
-      chartTemperature: 'chartTemperature'
+      chartEnergy: 'visInteract/chartEnergy',
+      chartEnergyType: 'visInteract/chartEnergyType',
+      chartEnergyYAxis: 'visInteract/chartEnergyYAxis',
+      chartEnergyCurve: 'visInteract/chartEnergyCurve',
+      chartPowerCurve: 'visInteract/chartPowerCurve',
+      chartEmissionsVolume: 'visInteract/chartEmissionsVolume',
+      chartEmissionsIntensity: 'visInteract/chartEmissionsIntensity',
+      chartPrice: 'visInteract/chartPrice',
+      chartTemperature: 'visInteract/chartTemperature'
     }),
     pageTitle() {
       let title = 'An Open Platform for National Electricity Market Data'
@@ -102,6 +112,12 @@ const pageEnergyCreated = {
     pageImage() {
       const url = 'https://opennem.org.au/images/energy/'
       return `${url}${this.regionId}.png`
+    }
+  },
+
+  watch: {
+    chartEnergyType() {
+      this.calculateEnergyEmissionsDatasets()
     }
   },
 

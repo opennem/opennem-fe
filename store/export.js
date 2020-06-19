@@ -9,6 +9,7 @@ export const state = () => ({
   summary: false,
   legend: true,
   stackedAreaDomains: [],
+  stackedEnergyPercentDomains: [],
   dataset: [],
   summaryDomains: [],
   xGuides: [],
@@ -51,6 +52,9 @@ export const mutations = {
   },
   stackedAreaDomains(state, data) {
     state.stackedAreaDomains = data
+  },
+  stackedEnergyPercentDomains(state, data) {
+    state.stackedEnergyPercentDomains = data
   },
   dataset(state, data) {
     state.dataset = data
@@ -95,6 +99,7 @@ export const getters = {
   summary: state => state.summary,
   legend: state => state.legend,
   stackedAreaDomains: state => state.stackedAreaDomains,
+  stackedEnergyPercentDomains: state => state.stackedEnergyPercentDomains,
   dataset: state => state.dataset,
   summaryDomains: state => state.summaryDomains,
   xGuides: state => state.xGuides,

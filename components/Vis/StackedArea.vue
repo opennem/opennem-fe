@@ -256,6 +256,10 @@ export default {
     yAxisTicks: {
       type: Number,
       default: () => 10
+    },
+    yAxisUnit: {
+      type: String,
+      default: () => ''
     }
   },
 
@@ -424,6 +428,9 @@ export default {
 
   watch: {
     domains() {
+      this.update()
+    },
+    curve() {
       this.update()
     },
     dataset() {
@@ -849,9 +856,13 @@ export default {
       this.$lineGroup.selectAll('path').remove()
 
       // Generate Stacked Area
+      const updateDataset = _cloneDeep(this.dataset)
+      if (this.curve !== 'step') {
+        updateDataset.pop()
+      }
       const stackArea = this.$stackedAreaGroup
         .selectAll(`.${this.stackedAreaPathClass}`)
-        .data(this.stack(this.dataset))
+        .data(this.stack(updateDataset))
       stackArea
         .enter()
         .append('path')
@@ -1436,6 +1447,7 @@ export default {
     customYAxis(g) {
       g.call(this.yAxis)
       g.selectAll('.tick text')
+        .text(t => `${t}${this.yAxisUnit}`)
         .attr('x', 4)
         .attr('dy', -4)
       g.selectAll('.tick line').attr('class', d => (d === 0 ? 'base' : ''))

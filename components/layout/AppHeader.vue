@@ -62,34 +62,37 @@
           alt="Share icon" >
         <span class="label-image">Export</span>
       </button>
-      <div 
-        v-if="showShareMenu" 
-        class="share-menu dropdown-menu">
-        <div class="dropdown-content">
-          <a 
-            v-if="!isFacilitiesView" 
-            class="dropdown-item button" 
-            @click="handleExportImage">
-            <i class="fal fa-fw fa-chart-bar" />
-            <span class="label-image">PNG</span>
-          </a>
-          <a 
-            class="dropdown-item button" 
-            @click="handleExportDataClick">
-            <download-csv 
-              :data="exportData" 
-              :name="`${filename}.csv`">
-              <i class="fal fa-fw fa-table" />
-              <span class="label-csv">CSV</span>
-            </download-csv>
-          </a>
+      <transition name="slide-down-fade">
+        <div 
+          v-if="showShareMenu" 
+          class="share-menu dropdown-menu">
+          <div class="dropdown-content">
+            <a 
+              v-if="!isFacilitiesView" 
+              class="dropdown-item button" 
+              @click="handleExportImage">
+              <i class="fal fa-fw fa-chart-bar" />
+              <span class="label-image">PNG</span>
+            </a>
+            <a 
+              class="dropdown-item button" 
+              @click="handleExportDataClick">
+              <download-csv 
+                :data="exportData" 
+                :name="`${filename}.csv`">
+                <i class="fal fa-fw fa-table" />
+                <span class="label-csv">CSV</span>
+              </download-csv>
+            </a>
+          </div>
         </div>
-      </div>
+      </transition>
     </div>
   </header>
 </template> 
 
 <script>
+import { mapGetters } from 'vuex'
 import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import { format as d3Format } from 'd3-format'
 import _debounce from 'lodash.debounce'
@@ -123,6 +126,9 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      chartEnergyRenewablesLine: 'visInteract/chartEnergyRenewablesLine'
+    }),
     responsiveBreakWidth() {
       return this.$store.getters.responsiveBreakWidth
     },
@@ -164,9 +170,6 @@ export default {
     },
     chartUnit() {
       return this.$store.getters.chartUnit
-    },
-    chartEnergyRenewablesLine() {
-      return this.$store.getters.chartEnergyRenewablesLine
     },
     exportData() {
       const timeFormat = d3TimeFormat('%Y-%m-%d %H:%M')
