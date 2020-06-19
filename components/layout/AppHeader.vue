@@ -1,92 +1,98 @@
 <template>
   <header>
     <div class="header-dropdowns">
-      <div
-        class="logo-wrapper"
+      <div 
+        class="logo-wrapper" 
         @click="toggleDrawer">
-        <i
-          v-if="ready && widthBreak"
+        <i 
+          v-if="ready && widthBreak" 
           class="fal fa-ellipsis-v" />
         <app-logo class="header-logo" />
-        <h1 v-if="ready && widthBreak"> {{ regionLabel }}</h1>
+        <h1 v-if="ready && widthBreak">{{ regionLabel }}</h1>
       </div>
-      <view-dropdown
-        v-if="!widthBreak"
+      <view-dropdown 
+        v-if="!widthBreak" 
         class="selection" />
-      <region-dropdown
-        v-if="!widthBreak"
+      <region-dropdown 
+        v-if="!widthBreak" 
         class="selection" />
     </div>
 
-    <app-drawer
-      v-if="widthBreak"
-      :open="openDrawer"
-      @close="closeDrawer"
-    />
+    <app-drawer 
+      v-if="widthBreak" 
+      :open="openDrawer" 
+      @close="closeDrawer" />
 
-    <div
-      v-if="!isFacilitiesView"
-      :class="{ 'hide': openDrawer }"
+    <div 
+      v-if="!isFacilitiesView" 
+      :class="{ 'hide': openDrawer }" 
       class="more-buttons">
       <div class="buttons has-addons">
         <span
           :class="{ 'is-selected': isConsumption }"
           class="button is-rounded"
-          @click="handlePercentContributionToClick">Consumption</span><span
-            :class="{ 'is-selected': isGeneration }"
-            class="button is-rounded"
-            @click="handlePercentContributionToClick">Generation</span>
+          @click="handlePercentContributionToClick"
+        >Consumption</span>
+        <span
+          :class="{ 'is-selected': isGeneration }"
+          class="button is-rounded"
+          @click="handlePercentContributionToClick"
+        >Generation</span>
       </div>
-      
+
       <button
         v-if="(focusOn || compareDifference) && isEnergy"
         :class="{ 'is-selected': compareDifference }"
         class="compare-button button is-rounded"
-        @click="handleCompareClick">Compare</button>
+        @click="handleCompareClick"
+      >Compare</button>
     </div>
 
-    <div
-      v-if="!widthBreak"
+    <div 
+      v-if="!widthBreak" 
       class="share-button-wrapper">
       <button
         v-on-clickaway="handleClickAway"
         :class="{ 'is-loading is-primary': generating }"
         class="share-button button is-rounded"
-        @click="handleShareButtonClicked">
-        <img
-          src="~/assets/img/share-icon.svg"
-          alt="Share icon">
+        @click="handleShareButtonClicked"
+      >
+        <img 
+          src="~/assets/img/share-icon.svg" 
+          alt="Share icon" >
         <span class="label-image">Export</span>
       </button>
-      <div
-        v-if="showShareMenu"
-        class="share-menu dropdown-menu">
-        <div class="dropdown-content">
-          <a
-            v-if="!isFacilitiesView"
-            class="dropdown-item button"
-            @click="handleExportImage">
-            <i class="fal fa-fw fa-chart-bar" />
-            <span class="label-image">PNG</span>
-          </a>
-          <a
-            class="dropdown-item button"
-            @click="handleExportDataClick">
-            <download-csv
-              :data="exportData"
-              :name="`${filename}.csv`"
-            >
-              <i class="fal fa-fw fa-table" />
-              <span class="label-csv">CSV</span>
-            </download-csv>
-          </a>
+      <transition name="slide-down-fade">
+        <div 
+          v-if="showShareMenu" 
+          class="share-menu dropdown-menu">
+          <div class="dropdown-content">
+            <a 
+              v-if="!isFacilitiesView" 
+              class="dropdown-item button" 
+              @click="handleExportImage">
+              <i class="fal fa-fw fa-chart-bar" />
+              <span class="label-image">PNG</span>
+            </a>
+            <a 
+              class="dropdown-item button" 
+              @click="handleExportDataClick">
+              <download-csv 
+                :data="exportData" 
+                :name="`${filename}.csv`">
+                <i class="fal fa-fw fa-table" />
+                <span class="label-csv">CSV</span>
+              </download-csv>
+            </a>
+          </div>
         </div>
-      </div>
+      </transition>
     </div>
   </header>
-</template>
+</template> 
 
 <script>
+import { mapGetters } from 'vuex'
 import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import { format as d3Format } from 'd3-format'
 import _debounce from 'lodash.debounce'
@@ -120,6 +126,9 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      chartEnergyRenewablesLine: 'visInteract/chartEnergyRenewablesLine'
+    }),
     responsiveBreakWidth() {
       return this.$store.getters.responsiveBreakWidth
     },
@@ -161,9 +170,6 @@ export default {
     },
     chartUnit() {
       return this.$store.getters.chartUnit
-    },
-    chartEnergyRenewablesLine() {
-      return this.$store.getters.chartEnergyRenewablesLine
     },
     exportData() {
       const timeFormat = d3TimeFormat('%Y-%m-%d %H:%M')

@@ -1,11 +1,11 @@
 <template>
-  <div
-    :class="{ open: drawer }"
-    class="drawer-wrapper"
+  <div 
+    :class="{ open: drawer }" 
+    class="drawer-wrapper" 
     @click="close">
     <div class="drawer">
-      <div
-        class="drawer-header"
+      <div 
+        class="drawer-header" 
         @click="close">
         <logo class="header-logo" />
         <span class="close-button">
@@ -17,9 +17,10 @@
         <nuxt-link
           v-for="view in views"
           v-show="showViewLink(view.id)"
-          :key="view.id" 
+          :key="view.id"
           :to="`/${view.id}/${regionId}/`"
-          class="menu-item">
+          class="menu-item"
+        >
           {{ view.label }}
           <span class="icon">
             <i class="fal fa-chevron-right" />
@@ -31,10 +32,11 @@
         <nuxt-link
           v-for="region in regions"
           v-show="showRegionLink(region.id)"
-          :key="region.id" 
+          :key="region.id"
           :to="`/${currentView}/${region.id}/`"
           :class="{'has-divider': region.id === 'nem'}"
-          class="menu-item">
+          class="menu-item"
+        >
           {{ region.label }}
           <span class="icon">
             <i class="fal fa-chevron-right" />

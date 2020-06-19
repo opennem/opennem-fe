@@ -39,116 +39,69 @@
             'has-border-bottom': !chartEnergy
           }"
           class="chart">
-          <div
-            v-if="step"
-            class="chart-title"
-            @click="toggleChart('chartEnergy')">
-            <div class="chart-label">
-              <i
-                :class="{
-                  'fa-caret-down': chartEnergy,
-                  'fa-caret-right': !chartEnergy
-                }"
-                class="fal fa-fw" />
-              <strong>Energy</strong>
-              <small>{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</small>
-            </div>
-            <div
-              v-show="chartEnergy"
-              class="hover-date-value">
-              <div
-                v-if="!isRenewableLineOnly"
-                class="average-value">
-                Av.
-                <strong>{{ averageEnergy | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</strong>
-              </div>
-              
-              <div class="hover-date">
-                <time>
-                  {{ hoverDisplayDate }}
-                </time>
-              </div>
-              <div class="hover-values">
-                <span
-                  v-if="hoverValue"
-                  class="ft-value">
-                  <em
-                    :style="{ 'background-color': hoverDomainColour }"
-                    class="colour-square" />
-                  {{ hoverDomainLabel }}
-                  <strong>{{ hoverValue | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}</strong>
-                </span>
+          
+          <chart-header
+            :show="chartEnergyOptions" 
+            @show-change="s => handleChartOptionsChange('chartEnergy', s)">
 
-                <span
-                  v-if="isRenewableLineOnly"
-                  class="renewables-value">
-                  <strong>{{ hoverRenewables | percentageFormatNumber }}</strong>
-                </span>
-                <span
-                  v-else
-                  class="total-value">
-                  Total
-                  <strong>{{ hoverTotal | formatValue }} {{ isYearInterval ? 'TWh' : 'GWh' }}</strong>
-                </span>
-                
-              </div>
-            </div>
-          </div>
-          <div
-            v-else
-            class="chart-title"
-            @click="toggleChart('chartEnergy')">
-            <div class="chart-label">
-              <i
-                :class="{
-                  'fa-caret-down': chartEnergy,
-                  'fa-caret-right': !chartEnergy
-                }"
-                class="fal fa-fw" />
-              <strong>Generation</strong>
-              <small>MW</small>
-            </div>
-            <div
-              v-show="chartEnergy"
-              class="hover-date-value">
-              <div
-                v-if="!isRenewableLineOnly"
-                class="average-value">
-                Av.
-                <strong>{{ averageEnergy | formatValue }} MW</strong>
-              </div>
-              <div class="hover-date">
-                <time>
-                  {{ hoverDisplayDate }}
-                </time>
-              </div>
-              <div class="hover-values">
-                <span
-                  v-if="hoverValue"
-                  class="ft-value">
-                  <em
-                    :style="{ 'background-color': hoverDomainColour }"
-                    class="colour-square" />
-                  {{ hoverDomainLabel }}
-                  <strong>{{ hoverValue | formatValue }} MW</strong>
-                </span>
+            <template v-slot:label-unit >
+              <strong v-if="step">Energy</strong>
+              <strong v-else>Generation</strong>
 
-                <span
-                  v-if="isRenewableLineOnly"
-                  class="renewables-value">
-                  <strong>{{ hoverRenewables | percentageFormatNumber }}</strong>
-                </span>
-                <span
-                  v-else
-                  class="total-value">
-                  Total
-                  <strong>{{ hoverTotal | formatValue }} MW</strong>
-                </span>
-              </div>
-            </div>
-          </div>
+              <small v-if="chartEnergyType === 'proportion' || (chartEnergyType === 'line' && chartEnergyYAxis === 'percentage')">%</small>
+              <small v-else-if="step">{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</small>
+              <small v-else>MW</small>
+            </template>
+
+            <template 
+              v-slot:average-value 
+              v-if="!isRenewableLineOnly && chartEnergyType !== 'proportion'">
+              Av.
+              <strong>
+                {{ averageEnergy | formatValue }}
+                <span v-if="step">{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</span>
+                <span v-else>MW</span>
+              </strong>
+            </template>
+
+            <template v-slot:hover-date>
+              {{ hoverDisplayDate }}
+            </template>
+            <template v-slot:hover-values>
+              <span
+                v-if="hoverValue"
+                class="ft-value">
+                <em
+                  :style="{ 'background-color': hoverDomainColour }"
+                  class="colour-square" />
+                {{ hoverDomainLabel }}
+                <strong>
+                  {{ hoverValue | formatValue }}<span v-if="chartEnergyType === 'proportion' || (chartEnergyType === 'line' && chartEnergyYAxis === 'percentage')">%</span>
+                  <span v-else-if="step">{{ isYearInterval ? ' TWh' : ' GWh' }}</span>
+                  <span v-else> MW</span>
+                </strong>
+              </span>
+
+              <span
+                v-if="isRenewableLineOnly"
+                class="renewables-value">
+                <strong>{{ hoverRenewables | percentageFormatNumber }}</strong>
+              </span>
+              <span
+                v-else-if="chartEnergyType !== 'proportion'"
+                class="total-value">
+                Total
+                <strong>
+                  {{ hoverTotal | formatValue }}
+                  <span v-if="step">{{ isYearInterval ? 'TWh' : 'GWh' }}</span>
+                  <span v-else>MW</span>
+                </strong>
+              </span>
+            </template>
+          </chart-header>
+
           <stacked-area-vis
-            v-if="chartEnergy"
+            v-if="chartEnergy && chartEnergyType === 'area'"
             :domains="stackedAreaDomains"
             :dataset="dataset"
             :dynamic-extent="dateFilter"
@@ -159,13 +112,91 @@
             :range="range"
             :interval="interval"
             :mouse-loc="mouseLoc"
-            :curve="energyCurveType"
-            :y-min="energyMin"
-            :y-max="energyMax"
+            :curve="isEnergyType ? chartEnergyCurve : chartPowerCurve"
+            :y-min="energyYMin"
+            :y-max="energyYMax"
             :vis-height="stackedAreaHeight"
             :zoomed="zoomed"
             :x-guides="xGuides"
             :x-axis-dy="xAxisDy"
+            :mobile-screen="tabletBreak"
+            :incomplete-intervals="incompleteIntervals"
+            :compare-dates="compareDates"
+            :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
+            :dataset-two-colour="renewablesLineColour"
+            class="vis-chart"
+            @eventChange="handleEventChange"
+            @dateOver="handleDateOver"
+            @domainOver="handleDomainOver"
+            @svgClick="handleSvgClick"
+          />
+
+          <button
+            v-if="chartEnergy && chartEnergyType === 'line' && zoomed"
+            class="button is-rounded is-small reset-btn"
+            @click.stop="resetZoom"
+          >
+            Zoom Out
+          </button>
+          <multi-line
+            v-if="chartEnergy && chartEnergyType === 'line'"
+            :toggled="chartEnergy"
+            :svg-height="stackedAreaHeight - 30"
+            :domains1="chartEnergyYAxis === 'percentage' ? stackedEnergyPercentDomains : stackedAreaDomains"
+            :dataset1="chartEnergyYAxis === 'percentage' ? energyGrossPercentDataset : multiLineEnergyDataset"
+            :domains2="[{
+              label: 'Renewables',
+              domain: 'value',
+              colour: renewablesLineColour
+            }]"
+            :dataset2="renewablesPercentageDataset"
+            :show-y2="chartEnergyRenewablesLine"
+            :y2-max="renewablesMax"
+            :y2-min="0"
+            :y2-axis-unit="'%'"
+            :y1-max="chartEnergyYAxis === 'percentage' ? energyLinePercentYMax : energyLineYMax"
+            :y1-min="chartEnergyYAxis === 'percentage' ? energyLinePercentYMin : energyLineYMin"
+            :x-ticks="xTicks"
+            :y1-axis-unit="chartEnergyYAxis === 'percentage' ? '%' : ''"
+            :curve="isEnergyType ? chartEnergyCurve : chartPowerCurve"
+            :date-hovered="hoverDate"
+            :zoom-range="dateFilter"
+            :draw-incomplete-bucket="false"
+            @date-hover="handleDateOver"
+            @domain-hover="handleDomainOver"
+            @enter="handleVisEnter"
+            @leave="handleVisLeave" />
+          <date-brush
+            v-if="chartEnergy && chartEnergyType === 'line'"
+            :dataset="energyGrossPercentDataset"
+            :zoom-range="dateFilter" 
+            :x-ticks="xTicks"
+            :tick-format="tickFormat"
+            :second-tick-format="secondTickFormat"
+            class="date-brush"
+            @date-hover="handleDateOver"
+            @date-filter="handleDatasetFilter" />
+
+          <stacked-area-vis
+            v-if="chartEnergy && chartEnergyType === 'proportion'"
+            :domains="stackedEnergyPercentDomains"
+            :dataset="energyPercentDataset"
+            :dynamic-extent="dateFilter"
+            :hover-date="hoverDate"
+            :hover-on="hoverOn"
+            :focus-date="focusDate"
+            :focus-on="focusOn"
+            :range="range"
+            :interval="interval"
+            :mouse-loc="mouseLoc"
+            :curve="isEnergyType ? chartEnergyCurve : chartPowerCurve"
+            :y-min="energyYMin"
+            :y-max="energyYMax"
+            :vis-height="stackedAreaHeight"
+            :zoomed="zoomed"
+            :x-guides="xGuides"
+            :x-axis-dy="xAxisDy"
+            :y-axis-unit="'%'"
             :mobile-screen="tabletBreak"
             :incomplete-intervals="incompleteIntervals"
             :compare-dates="compareDates"
@@ -658,15 +689,16 @@
 import moment from 'moment'
 import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import { mouse as d3Mouse } from 'd3-selection'
-import { extent as d3Extent, max as d3Max } from 'd3-array'
-import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 import Draggable from 'vuedraggable'
 import { saveAs } from 'file-saver'
 
+import PageAllMixin from '~/mixins/page-all.js'
 import PageEnergyMixin from '~/mixins/page-energy.js'
-import REGIONS from '~/constants/regions.js'
+import PageEnergyCreatedMixin from '~/mixins/page-energy-created.js'
+import PerfLogMixin from '~/mixins/perf-log.js'
+
 import { EMISSIONS } from '~/constants/emissions.js'
 import EventBus from '~/plugins/eventBus.js'
 import PerfTime from '~/plugins/perfTime.js'
@@ -675,6 +707,8 @@ import DateDisplay from '~/services/DateDisplay.js'
 import Data from '~/services/Data.js'
 import EnergyDataTransform from '~/services/dataTransform/Energy.js'
 import Domain from '~/services/Domain.js'
+import AxisTimeFormats from '@/services/axisTimeFormats.js'
+import AxisTicks from '@/services/axisTicks.js'
 
 import Loader from '~/components/ui/Loader'
 import DataOptionsBar from '~/components/ui/DataOptionsBar'
@@ -686,42 +720,14 @@ import SummaryTable from '~/components/SummaryTable'
 import VisTooltip from '~/components/ui/Tooltip'
 import EnergyRecords from '~/components/Energy/Records.vue'
 import EnergyCompare from '~/components/Energy/Compare.vue'
+import ChartWrapper from '@/components/Vis/ChartWrapper'
+import MultiLine from '@/components/Vis/MultiLine'
+import ChartOptions from '@/components/Vis/ChartOptions'
+import DateBrush from '@/components/Vis/DateBrush'
+import ChartHeader from '@/components/Vis/ChartHeader'
 
 export default {
   layout: 'main',
-
-  head() {
-    return {
-      title: this.pageTitle,
-      meta: [
-        {
-          hid: 'twitter:title',
-          name: 'twitter:title',
-          content: this.pageTitle
-        },
-        {
-          hid: 'twitter:image:src',
-          name: 'twitter:image:src',
-          content: this.pageImage
-        },
-        {
-          hid: 'og:title',
-          property: 'og:title',
-          content: this.pageTitle
-        },
-        {
-          hid: 'og:image',
-          property: 'og:image',
-          content: this.pageImage
-        },
-        {
-          hid: 'og:url',
-          property: 'og:url',
-          content: this.pageUrl
-        }
-      ]
-    }
-  },
 
   components: {
     Loader,
@@ -734,108 +740,22 @@ export default {
     SummaryTable,
     VisTooltip,
     EnergyRecords,
-    EnergyCompare
+    EnergyCompare,
+    ChartWrapper,
+    MultiLine,
+    ChartOptions,
+    DateBrush,
+    ChartHeader
   },
 
-  mixins: [PageEnergyMixin],
-
-  data() {
-    return {
-      mounted: false,
-      ready: false,
-      originalDataset: [],
-      dataset: [],
-      energyDomains: [],
-      fuelTechEnergyOrder: [],
-      emissionsOrder: [],
-      marketValueDomains: [],
-      temperatureDomains: [],
-      temperatureMeanId: '',
-      temperatureMinId: '',
-      temperatureMaxId: '',
-      priceDomains: [],
-      emissionDomains: [],
-      responses: [],
-      hoverDate: null,
-      hoverDomain: null,
-      hoverEmissionVolumeDomain: null,
-      focusDate: null,
-      mouseLoc: null,
-      tooltipLeft: 0,
-      filteredDataset: [],
-      visHeight: 0,
-      hoverOn: false,
-      lineColour: '#e34a33',
-      windowWidth: 0,
-      energyMin: 0,
-      energyMax: 1000,
-      emissionsVolumeDataset: [],
-      emissionsMin: 0,
-      emissionsMax: 1000,
-      emissionsIntensityDataset: [],
-      emissionsIntensityMin: 0,
-      emissionsIntensityMax: 1000,
-      isTouchDevice: false,
-      compareData: [],
-      summary: null,
-      renewablesPercentageDataset: []
-    }
-  },
+  mixins: [PageAllMixin, PageEnergyMixin, PerfLogMixin, PageEnergyCreatedMixin],
 
   computed: {
-    hostEnv() {
-      return this.$store.getters.hostEnv
-    },
-    chartUnit() {
-      return this.$store.getters.chartUnit
-    },
-    featureEmissions() {
-      return this.$store.getters.featureEmissions
-    },
-    dateFilter() {
-      return this.$store.getters.dateFilter
-    },
-    filterPeriod() {
-      return this.$store.getters.filterPeriod
-    },
     zoomed() {
-      return this.$store.getters.dateFilter.length !== 0
-    },
-    type() {
-      return this.$store.getters.energyChartType
+      return this.dateFilter.length !== 0
     },
     isEnergyType() {
       return this.type === 'energy'
-    },
-    chartEnergy() {
-      return this.$store.getters.chartEnergy
-    },
-    chartEmissionsVolume() {
-      return this.$store.getters.chartEmissionsVolume
-    },
-    chartEmissionsIntensity() {
-      return this.$store.getters.chartEmissionsIntensity
-    },
-    chartPrice() {
-      return this.$store.getters.chartPrice
-    },
-    chartTemperature() {
-      return this.$store.getters.chartTemperature
-    },
-    chartSummaryPie() {
-      return this.$store.getters.chartSummaryPie
-    },
-    compareDifference() {
-      return this.$store.getters.compareDifference
-    },
-    focusOn() {
-      return this.$store.getters.focusOn
-    },
-    compareDates() {
-      return this.$store.getters.compareDates
-    },
-    responsiveBreakWidth() {
-      return this.$store.getters.responsiveBreakWidth
     },
     tabletBreak() {
       return this.windowWidth < 769
@@ -852,43 +772,15 @@ export default {
     regionId() {
       return this.$route.params.region
     },
-    pageTitle() {
-      let title = 'An Open Platform for National Electricity Market Data'
-      const region = REGIONS.find(d => d.id === this.regionId)
-      if (region && this.regionId !== 'nem') {
-        title = region.label
-      }
-      return `OpenNEM: ${title}`
-    },
-    pageUrl() {
-      return `https://opennem.org.au/energy/${this.regionId}/`
-    },
-    pageImage() {
-      const url = 'https://opennem.org.au/images/energy/'
-      return `${url}${this.regionId}.png`
-    },
-    range() {
-      return this.$store.getters.range
-    },
-    interval() {
-      return this.$store.getters.interval
-    },
-    fuelTechOrder() {
-      return this.$store.getters.fuelTechOrder
-    },
-    fuelTechGroup() {
-      return this.$store.getters.fuelTechGroup
-    },
-    hiddenFuelTechs() {
-      return this.$store.getters.hiddenFuelTechs
-    },
-    percentContributionTo() {
-      return this.$store.getters.percentContributionTo
-    },
     groupDomains() {
       const dict = this.fuelTechGroup
       const domains = this.energyDomains
       return Domain.parseDomains(domains, dict, 'energy')
+    },
+    groupEnergyPercentDomains() {
+      const dict = this.fuelTechGroup
+      const domains = this.energyPercentDomains
+      return Domain.parseDomains(domains, dict, 'energy_percent')
     },
     groupMarketValueDomains() {
       const dict = this.fuelTechGroup
@@ -911,12 +803,6 @@ export default {
     hasEmissionData() {
       return this.emissionDomains.length > 0
     },
-    energyCurveType() {
-      return this.$store.getters.energyCurveType
-    },
-    step() {
-      return this.$store.getters.step
-    },
     mvDomains() {
       return this.groupMarketValueDomains.length > 0
         ? this.groupMarketValueDomains
@@ -926,6 +812,16 @@ export default {
       const hidden = this.hiddenFuelTechs
       let domains =
         this.groupDomains.length > 0 ? this.groupDomains : this.energyDomains
+      return this.fuelTechGroup
+        ? domains.filter(d => !_includes(hidden, d.id))
+        : domains.filter(d => !_includes(hidden, d.fuelTech))
+    },
+    stackedEnergyPercentDomains() {
+      const hidden = this.hiddenFuelTechs
+      let domains =
+        this.groupEnergyPercentDomains.length > 0
+          ? this.groupEnergyPercentDomains
+          : this.energyPercentDomains
       return this.fuelTechGroup
         ? domains.filter(d => !_includes(hidden, d.id))
         : domains.filter(d => !_includes(hidden, d.fuelTech))
@@ -1072,16 +968,17 @@ export default {
 
       if (this.interval === 'Week') {
         const incompletes = []
+        const finalDate = this.dataset[this.dataset.length - 2].date
         if (aSD > dStart) {
           incompletes.push({
             start: dStart,
             end: dStart + 604800000
           })
         }
-        if (aLD < dEnd) {
+        if (aLD < finalDate) {
           incompletes.push({
-            start: dEnd - 604800000,
-            end: dEnd
+            start: finalDate - 604800000,
+            end: finalDate
           })
         }
         return incompletes
@@ -1118,6 +1015,10 @@ export default {
         const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
         if (!isFilter) {
           aLD = moment(aLD).add(1, 'month')
+          const isSeason = this.interval === 'Season'
+          const actualEndMonth = isSeason
+            ? getSeasonStartMonth(aLD.month())
+            : getQuarterStartMonth(aLD.month())
           if (moment(aSD).month() > moment(dStart).month()) {
             incompletes.push({
               start: dStart,
@@ -1126,7 +1027,7 @@ export default {
                 .valueOf()
             })
           }
-          if (aLD.month() < moment(dEnd).month()) {
+          if (actualEndMonth - 1 <= moment(dEnd).month()) {
             incompletes.push({
               start: moment(dEnd)
                 .subtract(3, 'month')
@@ -1228,7 +1129,17 @@ export default {
     },
     hoverData() {
       const time = new Date(this.hoverDate).getTime()
-      return this.dataset.find(d => d.date === time)
+      let dataset = this.dataset
+      if (this.chartEnergyType === 'proportion') {
+        dataset = this.energyPercentDataset
+      }
+      if (
+        this.chartEnergyType === 'line' &&
+        this.chartEnergyYAxis === 'percentage'
+      ) {
+        dataset = this.energyGrossPercentDataset
+      }
+      return dataset.find(d => d.date === time)
     },
     focusData() {
       const time = new Date(this.focusDate).getTime()
@@ -1243,7 +1154,18 @@ export default {
       return null
     },
     hoverDomainLabel() {
-      const find = this.stackedAreaDomains.find(d => d.id === this.hoverDomain)
+      let find = null
+      if (
+        this.chartEnergyType === 'proportion' ||
+        (this.chartEnergyType === 'line' &&
+          this.chartEnergyYAxis === 'percentage')
+      ) {
+        find = this.stackedEnergyPercentDomains.find(
+          d => d.id === this.hoverDomain
+        )
+      } else {
+        find = this.stackedAreaDomains.find(d => d.id === this.hoverDomain)
+      }
       return find ? find.label : '—'
     },
     hoverEmissionVolumeDomainLabel() {
@@ -1258,9 +1180,19 @@ export default {
         : null
     },
     hoverDomainColour() {
-      const find = this.stackedAreaDomains.find(d => d.id === this.hoverDomain)
-      if (find) return find.colour
-      return null
+      let find = null
+      if (
+        this.chartEnergyType === 'proportion' ||
+        (this.chartEnergyType === 'line' &&
+          this.chartEnergyYAxis === 'percentage')
+      ) {
+        find = this.stackedEnergyPercentDomains.find(
+          d => d.id === this.hoverDomain
+        )
+      } else {
+        find = this.stackedAreaDomains.find(d => d.id === this.hoverDomain)
+      }
+      return find ? find.colour : null
     },
     hoverEmissionVolumeDomainColour() {
       const find = this.emissionStackedAreaDomains.find(
@@ -1300,6 +1232,10 @@ export default {
       let total = 0
       const isGeneration = this.percentContributionTo === 'generation'
       if (this.hoverOrFocusData) {
+        const hoverDate = this.hoverOrFocusData.date
+        const hoverEmissionsVol = this.emissionsVolumeDataset.find(d => {
+          return d.date === hoverDate
+        })
         this.emissionStackedAreaDomains.forEach(domain => {
           const id = domain.id
           if (
@@ -1308,11 +1244,11 @@ export default {
               domain.fuelTech !== 'imports' &&
               domain.fuelTech !== 'exports')
           ) {
-            total += this.hoverOrFocusData[id]
+            total += hoverEmissionsVol[id]
           }
         })
       }
-      return Data.siCalculationFromBase(this.emissionsVolumePrefix, total)
+      return total
     },
     hoverEmissionsIntensity() {
       if (this.hoverOrFocusData) {
@@ -1395,6 +1331,54 @@ export default {
       return (
         this.chartEnergyRenewablesLine && this.stackedAreaDomains.length === 0
       )
+    },
+    tickFormat() {
+      switch (this.interval) {
+        case 'Day':
+          return AxisTimeFormats.intervalDayTimeFormat
+        case 'Week':
+          return AxisTimeFormats.intervalWeekTimeFormat
+        case 'Month':
+          return this.range === 'ALL'
+            ? AxisTimeFormats.rangeAllIntervalMonthTimeFormat
+            : AxisTimeFormats.intervalMonthTimeFormat
+        case 'Fin Year':
+          return d => {
+            const year = d.getFullYear() + 1 + ''
+            return `FY${year.substr(2, 2)}`
+          }
+        default:
+          return AxisTimeFormats.defaultFormat
+      }
+    },
+    secondTickFormat() {
+      switch (this.interval) {
+        case 'Day':
+          return AxisTimeFormats.intervalDaySecondaryTimeFormat
+        case 'Week':
+          return AxisTimeFormats.intervalWeekSecondaryTimeFormat
+        default:
+          return AxisTimeFormats.secondaryFormat
+      }
+    },
+    xTicks() {
+      return AxisTicks(this.range, this.interval, this.zoomed)
+    },
+    multiLineEnergyDataset() {
+      return this.dataset.map(d => {
+        const obj = {
+          date: d.date,
+          _isIncompleteBucket: d._isIncompleteBucket
+        }
+        this.stackedAreaDomains.forEach(domain => {
+          if (domain.category === 'load') {
+            obj[domain.id] = -d[domain.id]
+          } else {
+            obj[domain.id] = d[domain.id]
+          }
+        })
+        return obj
+      })
     }
   },
 
@@ -1423,6 +1407,15 @@ export default {
         }
       }
       perfTime.timeEnd(this.getGroupPerfLabel())
+    },
+    groupEnergyPercentDomains(domains) {
+      if (domains.length > 0) {
+        this.originalDataset = this.updateDatasetGroups(
+          this.originalDataset,
+          domains
+        )
+        this.updateDataset(this.filterPeriod)
+      }
     },
     groupMarketValueDomains(domains) {
       if (domains.length > 0) {
@@ -1457,6 +1450,9 @@ export default {
     },
     stackedAreaDomains(updated) {
       this.$store.dispatch('export/stackedAreaDomains', updated)
+    },
+    stackedEnergyPercentDomains(updated) {
+      this.$store.commit('export/stackedEnergyPercentDomains', updated)
     },
     summaryDomains(updated) {
       this.$store.dispatch('export/summaryDomains', updated)
@@ -1501,59 +1497,6 @@ export default {
         this.$store.dispatch('compareDates', [])
       }
     }
-  },
-
-  created() {
-    this.$store.dispatch('currentView', 'energy')
-    EventBus.$on('dataset.filter', this.handleDatasetFilter)
-    EventBus.$on('vis.mousemove', this.handleVisMouseMove)
-    EventBus.$on('vis.mouseenter', this.handleVisEnter)
-    EventBus.$on('vis.mouseleave', this.handleVisLeave)
-  },
-
-  mounted() {
-    function is_touch_device() {
-      var prefixes = ' -webkit- -moz- -o- -ms- '.split(' ')
-      var mq = function(query) {
-        return window.matchMedia(query).matches
-      }
-
-      if (
-        'ontouchstart' in window ||
-        (window.DocumentTouch && document instanceof DocumentTouch)
-      ) {
-        return true
-      }
-
-      // include the 'heartz' as a way to have a non matching MQ to help terminate the join
-      // https://git.io/vznFH
-      var query = ['(', prefixes.join('touch-enabled),('), 'heartz', ')'].join(
-        ''
-      )
-      return mq(query)
-    }
-
-    this.isTouchDevice = is_touch_device()
-    this.windowWidth = window.innerWidth
-    this.visHeight = this.widthBreak ? 578 : 350
-    this.$nextTick(() => {
-      window.addEventListener(
-        'resize',
-        _debounce(() => {
-          this.windowWidth = window.innerWidth
-          this.visHeight = this.widthBreak ? 578 : 350
-        }, 200)
-      )
-    })
-    this.fetchData(this.regionId, this.range)
-    this.mounted = true
-  },
-
-  beforeDestroy() {
-    EventBus.$off('dataset.filter')
-    EventBus.$off('vis.mousemove')
-    EventBus.$off('vis.mouseenter')
-    EventBus.$off('vis.mouseleave')
   },
 
   methods: {
@@ -1615,11 +1558,12 @@ export default {
       // - due to incorrect data
       if (this.range === 'ALL') {
         responses.forEach(r => {
-          const findIndex = r.data.findIndex(
+          const rData = r.data || r
+          const findIndex = rData.findIndex(
             d => d.type === 'volume_weighted_price'
           )
           if (findIndex !== -1) {
-            r.data.splice(findIndex, 1)
+            rData.splice(findIndex, 1)
           }
         })
       }
@@ -1656,6 +1600,12 @@ export default {
       }
       if (this.groupEmissionDomains.length > 0) {
         updated = this.updateDatasetGroups(updated, this.groupEmissionDomains)
+      }
+      if (this.groupEnergyPercentDomains.length > 0) {
+        updated = this.updateDatasetGroups(
+          updated,
+          this.groupEnergyPercentDomains
+        )
       }
 
       this.dataset = updated
@@ -1700,6 +1650,11 @@ export default {
         this.regionId,
         this.fuelTechEnergyOrder,
         this.type
+      )
+      this.energyPercentDomains = Domain.getDomainObjs(
+        this.regionId,
+        this.fuelTechEnergyOrder,
+        'energy_percent'
       )
       this.$store.dispatch('energyDomains', this.energyDomains)
     },
@@ -1867,6 +1822,11 @@ export default {
       }
     },
 
+    resetZoom() {
+      this.setDateFilter([])
+      this.filteredDataset = this.dataset
+    },
+
     handleEventChange(evt) {
       this.mouseLoc = d3Mouse(evt)
       this.tooltipLeft = this.mouseLoc[0]
@@ -1874,13 +1834,14 @@ export default {
 
     handleDateOver(evt, date) {
       const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
-      if (this.interval === 'Fin Year') {
+      if (date && this.interval === 'Fin Year') {
         if (date.getMonth() >= 6) {
           date.setFullYear(date.getFullYear() + 1)
         }
       }
       if (
         isFilter &&
+        date &&
         (this.interval === 'Season' || this.interval === 'Quarter')
       ) {
         const periodMonth = DateDisplay.getPeriodMonth(
@@ -1914,14 +1875,21 @@ export default {
 
     handleVisEnter() {
       this.hoverOn = true
+      this.$store.commit('visInteract/isHovering', true)
     },
 
     handleVisLeave() {
       this.hoverOn = false
+      this.$store.commit('visInteract/isHovering', false)
     },
 
     toggleChart(chartName) {
-      this.$store.dispatch(chartName, !this[chartName])
+      this.$store.commit(`visInteract/${chartName}`, !this[chartName])
+    },
+
+    handleChartOptionsChange(chartName, show) {
+      const chartOptions = `${chartName}Options`
+      this[chartOptions] = show
     },
 
     handleFuelTechsHidden(hidden) {
@@ -2047,35 +2015,6 @@ export default {
       }
 
       this.recalculateAfterPrefixChanged()
-    },
-
-    getPerfLabel() {
-      let processLength = 0,
-        arrayLength = 0,
-        downToLength = this.dataset.length
-      try {
-        if (this.responses.length > 0 && this.responses[0].data) {
-          arrayLength = this.responses[0].data.length
-          this.responses[0].data.forEach(d => {
-            processLength += d.history.data.length
-            if (d.forecast) {
-              processLength += d.forecast.data.length
-            }
-          })
-        }
-      } catch (e) {
-        console.error('A problem getting response data lengths')
-      }
-      return `${this.regionId} — ${this.range}/${
-        this.interval
-      } (crunched ${processLength} points down to ${downToLength} points)`
-    },
-
-    getGroupPerfLabel() {
-      const group = this.fuelTechGroupName || 'Default'
-      return `${this.regionId} — ${this.range}/${
-        this.interval
-      } (grouped ${group})`
     }
   }
 }
@@ -2096,150 +2035,6 @@ export default {
 }
 .vis-chart {
   margin-right: 10px;
-}
-.vis-table-container {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: stretch;
-  margin-top: 1rem;
-
-  .vis-container {
-    width: 100%;
-    padding: 1rem 0 0;
-    @include desktop {
-      width: 65%;
-      padding: 0;
-    }
-  }
-  .table-container {
-    width: 100%;
-    padding: 0 1rem 1rem;
-
-    @include desktop {
-      width: 35%;
-      padding: 0 1rem 0 0;
-    }
-  }
-  .chart {
-    position: relative;
-
-    .chart-title {
-      font-size: 11px;
-      cursor: pointer;
-      user-select: none;
-
-      @include tablet {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.2rem 1rem 0.2rem 1rem;
-        height: 25px;
-      }
-
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.3);
-      }
-
-      .chart-label {
-        padding: 2px 0.5rem;
-      }
-
-      .hover-date-value {
-        display: flex;
-      }
-
-      .hover-date,
-      .hover-values {
-        position: absolute;
-        left: -9999em;
-        opacity: 0;
-        background: rgba(255, 255, 255, 0.5);
-        padding: 3px 12px;
-        white-space: nowrap;
-      }
-
-      .average-value {
-        position: static;
-        left: -9999em;
-        // background: rgba(255, 255, 255, 0.5);
-        padding: 3px 12px;
-        white-space: nowrap;
-        @include tablet {
-          width: auto;
-          border-radius: 20px;
-        }
-      }
-
-      .hover-date {
-        font-weight: 600;
-        background-color: rgba(199, 69, 35, 0.1);
-        color: #444;
-        // font-size: 10px;
-        // padding-top: 3px;
-        width: 30%;
-
-        @include tablet {
-          width: auto;
-          border-radius: 20px 0 0 20px;
-        }
-      }
-
-      .hover-values {
-        display: flex;
-        align-items: center;
-        // font-size: 9px;
-        width: 70%;
-
-        span {
-          flex-grow: 1;
-        }
-
-        .ft-value {
-          margin-right: 1rem;
-        }
-        .mean-temp-value {
-          margin: 0 1rem;
-        }
-
-        @include desktop {
-          width: auto;
-          border-radius: 0 20px 20px 0;
-        }
-      }
-
-      .colour-square {
-        display: inline-block;
-        border: 1px solid transparent;
-        width: 11px;
-        height: 11px;
-        border-radius: 1px;
-        position: relative;
-        top: 1px;
-      }
-
-      &.no-hover {
-        cursor: auto;
-        &:hover {
-          background-color: transparent;
-        }
-      }
-    }
-
-    &.is-hovered {
-      .hover-date,
-      .hover-values {
-        display: inline-block;
-        position: static;
-        opacity: 1;
-        transition: all 0.2s ease-in-out;
-      }
-      .average-value {
-        position: absolute;
-      }
-    }
-    &.has-border-bottom {
-      border-bottom: 1px dashed #ccc;
-    }
-  }
 }
 
 .loading-containers {
@@ -2325,5 +2120,10 @@ export default {
       transform: scaleY(-1) rotate(90deg);
     }
   }
+}
+.reset-btn {
+  position: absolute;
+  top: 39px;
+  right: 24px;
 }
 </style>

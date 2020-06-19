@@ -29,12 +29,15 @@ export default function(ref) {
       .all(calls)
       .then(
         axios.spread((...args) => {
+          const updated = []
           args.forEach(a => {
             if (a.status !== 200) {
               reject(a.originalError)
+            } else {
+              updated.push(a.data)
             }
           })
-          resolve(args)
+          resolve(updated)
         })
       )
       .catch(e => {

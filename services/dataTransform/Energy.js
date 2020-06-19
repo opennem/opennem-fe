@@ -55,7 +55,8 @@ function transformEnergyData(
     const isEnergyData = type === 'power' || type === 'energy'
     const isMarketValueData = type === 'market_value'
     const isTemperatureType = checkTemperatureType(type)
-    const isPriceData = type === 'price' || type === 'volume_weighted_price'
+    // const isPriceData = type === 'price' || type === 'volume_weighted_price'
+    const isPriceData = type === 'price'
     const isEmissionData = type === EMISSIONS
 
     newHistory.forEach(r => {
@@ -169,9 +170,11 @@ function transformEnergyData(
 function findInterpolateSeriesTypes(data) {
   const rooftopSolarItem = data.find(d => d['fuel_tech'] === 'rooftop_solar')
   const temperatureItem = data.find(d => checkTemperatureType(d.type))
-  const priceItem = data.find(
-    d => d.type === 'price' || d.type === 'volume_weighted_price'
-  )
+  // const priceItem = data.find(
+  //   d => d.type === 'price' || d.type === 'volume_weighted_price'
+  // )
+  const priceItem = data.find(d => d.type === 'price')
+
   const interpolateSeriesTypes = []
   if (rooftopSolarItem) {
     interpolateSeriesTypes.push({
@@ -323,7 +326,8 @@ export default {
     priceDomains,
     emissionDomains,
     range,
-    interval
+    interval,
+    intervalOptions
   ) {
     return new Promise(resolve => {
       let data = []
@@ -334,7 +338,7 @@ export default {
       let lastDate = null
       if (res.length) {
         try {
-          const resData = res[0].data
+          const resData = res[res.length - 1].data || res[res.length - 1]
           const e = energyDomains[0]
           const ft = resData.find(d => d.id === e.id)
           if (ft) lastDate = ft.history.last
@@ -345,9 +349,10 @@ export default {
 
       // flatten data for vis and summary
       res.forEach(r => {
+        const rData = r.data || r
         promises.push(
           this.flattenAndInterpolate(
-            r.data,
+            rData,
             energyDomains,
             marketValueDomains,
             temperatureDomains,
@@ -376,20 +381,23 @@ export default {
             d => d.date >= roundedEndDate - diff && d.date < roundedEndDate
           )
         } else if (range === '30D') {
-          let lastDateTime = new Date().getTime()
-          if (lastDate) {
-            // if has valid FT last date, use that to filter the data.
-            // Because there could be non-FT last dates that are into the future
-            lastDateTime = moment(lastDate).valueOf()
-          }
-          const thirtyDaysAgo = lastDateTime - 2592000000
+          const lastDateTime = moment(lastDate)
+            .add(1, 'day')
+            .valueOf()
+          const thirtyDaysAgo = moment(lastDateTime)
+            .subtract(30, 'days')
+            .valueOf()
           data = data.filter(
             d => d.date > thirtyDaysAgo && d.date <= lastDateTime
           )
         } else if (range === '1Y') {
           // filter 1Y because it could be a combination of two 1Y datasets
-          const now = new Date().getTime()
-          const aYearAgo = now - 31557600000
+          const now = moment(lastDate)
+            .add(1, 'day')
+            .valueOf()
+          const aYearAgo = moment(now)
+            .subtract(1, 'year')
+            .valueOf()
           data = data.filter(d => d.date >= aYearAgo && d.date <= now)
         }
 
@@ -402,7 +410,8 @@ export default {
               domain.fuelTech !== 'rooftop_solar' &&
               domain.fuelTech !== 'solar'
             ) {
-              const find = res[0].data.find(d => d.id === domain.id)
+              const resData = res[0].data || res[0]
+              const find = resData.find(d => d.id === domain.id)
               if (find) {
                 startDate = moment(find.history.start).valueOf()
                 let lastTime =
@@ -429,7 +438,8 @@ export default {
           priceDomains,
           emissionDomains,
           range,
-          interval
+          interval,
+          intervalOptions
         ).then(rolledUpData => {
           const dataset = this.calculateMinTotal(
             rolledUpData,
@@ -460,20 +470,97 @@ export default {
     actualStartDate,
     actualLastDate
   ) {
+    function isNetIds(fuelTech) {
+      return (
+        fuelTech === 'battery_charging' ||
+        fuelTech === 'battery_discharging' ||
+        fuelTech === 'hydro' ||
+        fuelTech === 'pumps' ||
+        fuelTech === 'exports' ||
+        fuelTech === 'imports'
+      )
+    }
+
     // Calculate total, min, reverse value for imports and load types
     dataset.forEach((d, i) => {
+      let batteryChargingId = null,
+        batteryDischargingId = null,
+        hydroId = null,
+        pumpsId = null,
+        exportsId = null,
+        importsId = null
       let totalDemand = 0,
         totalSources = 0,
         totalGeneration = 0,
+        totalNetGeneration = 0,
         min = 0,
+        lowest = 0,
+        highest = 0,
         totalEmissionsVol = 0,
         totalRenewables = 0,
         totalMarketValue = 0
 
       energyDomains.forEach(domain => {
         const id = domain.id
+        const ft = domain.fuelTech
 
-        if (domain.category === 'load' || domain.fuelTech === 'imports') {
+        if (isNetIds(ft)) {
+          if (ft === 'battery_charging') batteryChargingId = id
+          if (ft === 'battery_discharging') batteryDischargingId = id
+          if (ft === 'hydro') hydroId = id
+          if (ft === 'pumps') pumpsId = id
+          if (ft === 'exports') exportsId = id
+          if (ft === 'imports') importsId = id
+        }
+
+        if (d[id] > highest) {
+          highest = d[id]
+        }
+        if (d[id] < lowest) {
+          lowest = d[id]
+        }
+        d._highest = highest
+        d._lowest = lowest
+      })
+
+      //  Derived net values
+      dataset[i]._netBattery =
+        (d[batteryDischargingId] || 0) - (d[batteryChargingId] || 0)
+      dataset[i]._netHydro = (d[hydroId] || 0) - (d[pumpsId] || 0)
+      dataset[i]._netImports = -(d[importsId] || 0) - (d[exportsId] || 0) // imports comes in as negative
+
+      if (isNaN(dataset[i]._netBattery) || dataset[i]._netBattery < 0) {
+        dataset[i]._netBattery = 0
+      }
+      if (isNaN(dataset[i]._netHydro) || dataset[i]._netHydro < 0) {
+        dataset[i]._netHydro = 0
+      }
+      if (isNaN(dataset[i]._netImports) || dataset[i]._netImports < 0) {
+        dataset[i]._netImports = 0
+      }
+
+      energyDomains.forEach(domain => {
+        const id = domain.id
+        const ft = domain.fuelTech
+
+        if (domain.category == 'source') {
+          if (ft === 'battery_discharging') {
+            totalNetGeneration += dataset[i]._netBattery
+          } else if (ft === 'hydro') {
+            totalNetGeneration += dataset[i]._netHydro
+          } else if (ft === 'imports') {
+            totalNetGeneration += dataset[i]._netImports
+          } else {
+            totalNetGeneration += d[id]
+          }
+        }
+      })
+
+      energyDomains.forEach(domain => {
+        const id = domain.id
+        const ft = domain.fuelTech
+
+        if (domain.category === 'load' || ft === 'imports') {
           const negValue = -d[id]
           d[id] = negValue
         }
@@ -482,7 +569,7 @@ export default {
           totalSources += d[id] || 0
         }
 
-        if (domain.category == 'source' && domain.fuelTech !== 'imports') {
+        if (domain.category == 'source' && ft !== 'imports') {
           totalGeneration += d[id] || 0
         }
 
@@ -525,6 +612,7 @@ export default {
       }
       dataset[i]._totalSources = totalSources
       dataset[i]._totalGeneration = totalGeneration
+      dataset[i]._totalNetGeneration = totalNetGeneration
       dataset[i]._totalSourcesRenewables =
         (totalRenewables / totalSources) * 100
       dataset[i]._totalGenerationRenewables =
@@ -563,7 +651,8 @@ export default {
     priceDomains,
     emissionDomains,
     range,
-    interval
+    interval,
+    intervalOptions
   ) {
     const domains = [
       ...energyDomains,
@@ -581,7 +670,11 @@ export default {
       } else if (range === '1Y' && interval === 'Day') {
         resolve(rollUp1YDay(domains, data))
       } else if (range === '1Y' && interval === 'Week') {
-        resolve(rollUp1YWeek(domains, data))
+        if (intervalOptions && intervalOptions.weekDay) {
+          resolve(rollUp1YWeek(domains, data, intervalOptions.weekDay))
+        } else {
+          resolve(rollUp1YWeek(domains, data))
+        }
       } else if (range === '1Y' && interval === 'Month') {
         resolve(rollUp1YMonth(domains, data))
       } else if (range === 'ALL' && interval === 'Month') {

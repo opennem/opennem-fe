@@ -246,6 +246,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import { max as d3Max } from 'd3-array'
 import _includes from 'lodash.includes'
@@ -346,9 +347,9 @@ export default {
   },
 
   computed: {
-    featureEmissions() {
-      return this.$store.getters.featureEmissions
-    },
+    ...mapGetters({
+      featureEmissions: 'feature/emissions'
+    }),
 
     exportChartEnergy() {
       return this.$store.getters['export/chartEnergy']
@@ -379,6 +380,9 @@ export default {
     },
     stackedAreaDomains() {
       return this.$store.getters['export/stackedAreaDomains']
+    },
+    stackedEnergyPercentDomains() {
+      return this.$store.getters['export/stackedEnergyPercentDomains']
     },
     summaryDomains() {
       return this.$store.getters['export/summaryDomains']

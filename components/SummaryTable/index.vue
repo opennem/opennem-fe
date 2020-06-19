@@ -1,24 +1,14 @@
 <template>
   <div class="summary-table">
-    <header>
-      <span v-if="!hoverOn && !focusOn">
-        <time :datetime="startDateTime">
-          <!-- {{ startDate | formatDate }} -->
-          {{ startDate | customFormatDate({ range, interval, isStart: true }) }}
-        </time>
-        –
-        <time :datetime="endDateTime">
-          <!-- {{ endDate | formatDate }} -->
-          {{ endDate | customFormatDate({ range, interval, showYear: true, isEnd: true }) }}
-        </time>
-      </span>
-      
-      <time
-        v-if="hoverOn || focusOn" 
-        :datetime="hoveredDateTime">
-        {{ hoveredDate | customFormatDate({ range, interval, showIntervalRange: true }) }}
-      </time>
-    </header>
+    <dates-display
+      :hover-on="hoverOn"
+      :focus-on="focusOn"
+      :start-date="startDate"
+      :end-date="endDate"
+      :hovered-date="hoveredDate"
+      :range="range"
+      :interval="interval"
+    />
 
     <div class="summary-column-headers">
       <div class="summary-row">
@@ -201,12 +191,14 @@ import Domain from '~/services/Domain.js'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
 import ColumnSelector from '~/components/ui/SummaryColumnSelector'
 import Items from './Items'
+import DatesDisplay from './DatesDisplay'
 
 export default {
   components: {
     GroupSelector,
     ColumnSelector,
-    Items
+    Items,
+    DatesDisplay
   },
 
   props: {
@@ -305,7 +297,8 @@ export default {
   computed: {
     ...mapGetters({
       emissionsVolumeUnit: 'si/emissionsVolumeUnit',
-      emissionsVolumePrefix: 'si/emissionsVolumePrefix'
+      emissionsVolumePrefix: 'si/emissionsVolumePrefix',
+      chartEnergyRenewablesLine: 'visInteract/chartEnergyRenewablesLine'
     }),
 
     fuelTechGroupName() {
@@ -458,10 +451,6 @@ export default {
 
     isYearInterval() {
       return this.interval === 'Fin Year' || this.interval === 'Year'
-    },
-
-    chartEnergyRenewablesLine() {
-      return this.$store.getters.chartEnergyRenewablesLine
     },
 
     useAltRenewablesLineColour() {
@@ -1014,7 +1003,7 @@ export default {
 
     handleRenewableRowClicked() {
       const rowToggle = !this.chartEnergyRenewablesLine
-      this.$store.dispatch('chartEnergyRenewablesLine', rowToggle)
+      this.$store.commit('visInteract/chartEnergyRenewablesLine', rowToggle)
       this.emitHiddenFuelTechs()
     },
 
@@ -1037,7 +1026,7 @@ export default {
         this.hiddenSources = this.sourcesOrder.map(d => d[property])
       }
 
-      this.$store.dispatch('chartEnergyRenewablesLine', true)
+      this.$store.commit('visInteract/chartEnergyRenewablesLine', true)
       this.emitHiddenFuelTechs()
     }
   }
@@ -1051,16 +1040,6 @@ export default {
 .summary-table {
   color: #333;
   font-size: 11px;
-
-  header {
-    text-align: right;
-    font-size: 16px;
-    font-weight: 300;
-    color: #000;
-    padding-bottom: $app-padding / 5;
-    border-bottom: 1px solid #000;
-    user-select: none;
-  }
 
   .cell-value {
     font-family: $family-primary;

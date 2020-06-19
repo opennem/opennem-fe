@@ -1,6 +1,6 @@
 {
   "name": "opennem",
-  "version": "3.0.0",
+  "version": "3.3.0",
   "description": "An Open Platform for National Electricity Market Data",
   "author": "Steven Tan",
   "private": true,
@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "babel-eslint": "^8.2.1",
-    "bulma": "^0.7.2",
+    "bulma": "^0.8.1",
     "eslint": "^5.0.1",
     "eslint-config-prettier": "^3.1.0",
     "eslint-loader": "^2.0.0",

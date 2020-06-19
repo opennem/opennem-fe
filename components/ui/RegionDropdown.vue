@@ -14,7 +14,7 @@
 
     <transition name="slide-down-fade">
       <div
-        v-if="dropdownActive" 
+        v-show="dropdownActive" 
         class="dropdown-menu">
         <div class="dropdown-content">
           <nuxt-link
@@ -86,5 +86,8 @@ export default {
 <style lang="scss" scoped>
 .has-divider {
   border-bottom: 1px solid #ddd;
+}
+.dropdown-menu {
+  display: block;
 }
 </style>

@@ -19,22 +19,24 @@
         Intensity <small>kgCO₂e/MWh</small>
       </span>
     </div>
-    <div
-      v-show="showMenu"
-      class="show-column-menu dropdown-menu">
-      <div class="dropdown-content">
-        <a
-          v-for="(g, index) in groups"
-          :key="index"
-          :class="{
-            'is-selected': g.id === selected
-          }"
-          class="dropdown-item"
-          @click="handleDropdownClicked(g.id)">
-          {{ g.label }}
-        </a>
+    <transition name="slide-down-fade">
+      <div
+        v-show="showMenu"
+        class="show-column-menu dropdown-menu">
+        <div class="dropdown-content">
+          <a
+            v-for="(g, index) in groups"
+            :key="index"
+            :class="{
+              'is-selected': g.id === selected
+            }"
+            class="dropdown-item"
+            @click="handleDropdownClicked(g.id)">
+            {{ g.label }}
+          </a>
+        </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -72,7 +74,7 @@ export default {
   computed: {
     ...mapGetters({
       emissionsVolumeUnit: 'si/emissionsVolumeUnit',
-      featureEmissions: 'featureEmissions'
+      featureEmissions: 'feature/emissions'
     }),
     showSummaryColumn() {
       return this.$store.getters.showSummaryColumn
@@ -178,6 +180,9 @@ export default {
       &:hover {
         background-color: rgba(255, 255, 255, 0.7);
       }
+    }
+    small {
+      display: block;
     }
   }
 }

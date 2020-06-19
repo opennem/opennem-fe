@@ -47,11 +47,12 @@ export default {
   computed: {
     ...mapGetters({
       fuelTechGroupName: 'fuelTechGroupName',
-      chartEnergyRenewablesLine: 'chartEnergyRenewablesLine'
+      chartEnergyRenewablesLine: 'visInteract/chartEnergyRenewablesLine'
     }),
     legendItems() {
+      const prop = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
       return this.domains.filter(
-        domain => !_includes(this.hiddenFuelTechs, domain.fuelTech)
+        domain => !_includes(this.hiddenFuelTechs, domain[prop])
       )
     },
 
