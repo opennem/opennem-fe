@@ -2,7 +2,8 @@ export const state = () => ({
   isHovering: false,
   chartEnergyType: 'area', // line, proportion, area, hidden
   chartEnergyYAxis: 'absolute', // absolute, percentage
-  chartEnergyCurve: 'smooth', // smooth, step, linear
+  chartEnergyCurve: 'step', // smooth, step, linear
+  chartPowerCurve: 'smooth', // smooth, step, linear
   chartEnergyRenewablesLine: false,
   chartEmissionsVolume: true,
   chartEmissionsIntensity: true,
@@ -17,6 +18,7 @@ export const getters = {
   chartEnergyType: state => state.chartEnergyType,
   chartEnergyYAxis: state => state.chartEnergyYAxis,
   chartEnergyCurve: state => state.chartEnergyCurve,
+  chartPowerCurve: state => state.chartPowerCurve,
   chartEnergyRenewablesLine: state => state.chartEnergyRenewablesLine,
   chartEmissionsVolume: state => state.chartEmissionsVolume,
   chartEmissionsIntensity: state => state.chartEmissionsIntensity,
@@ -37,6 +39,9 @@ export const mutations = {
   },
   chartEnergyCurve(state, data) {
     state.chartEnergyCurve = data
+  },
+  chartPowerCurve(state, data) {
+    state.chartPowerCurve = data
   },
   chartEnergyRenewablesLine(state, data) {
     state.chartEnergyRenewablesLine = data
