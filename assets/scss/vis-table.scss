@@ -176,5 +176,10 @@
     &.has-border-bottom {
       border-bottom: 1px dashed #ccc;
     }
+
+    .date-brush {
+      position: relative;
+      margin-top: -6px;
+    }
   }
 }

@@ -136,7 +136,7 @@
             :toggled="chartEnergy"
             :line-domains="chartEnergyYAxis === 'percentage' ? stackedEnergyPercentDomains : stackedAreaDomains"
             :dataset="chartEnergyYAxis === 'percentage' ? energyPercentDataset : multiLineEnergyDataset"
-            :svg-height="stackedAreaHeight - 35"
+            :svg-height="stackedAreaHeight - 30"
             :y-max="energyYMax"
             :y-min="energyYMin"
             :x-ticks="xTicks"
