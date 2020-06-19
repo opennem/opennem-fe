@@ -25,6 +25,12 @@
         :transform="axisTransform" 
         class="x-shades" />
       <g 
+        :transform="axisTransform" 
+        class="cursor-line-group" />
+      <g 
+        :transform="axisTransform" 
+        class="hover-group" />
+      <g 
         :transform="axisTransform"
         class="line-left-path-group" />
       <g 
@@ -36,12 +42,7 @@
       <g 
         :transform="axisTransform" 
         class="y-axis-right-text" />
-      <g 
-        :transform="axisTransform" 
-        class="cursor-line-group" />
-      <g 
-        :transform="axisTransform" 
-        class="hover-group" />
+      
     </svg>
   </div>
 </template>
@@ -476,6 +477,7 @@ export default {
 
     draw() {
       console.log(`${this.uuid} draw`)
+      const self = this
       if (this.zoomRange.length > 0) {
         this.x.domain(this.zoomRange)
       } else {
@@ -514,6 +516,14 @@ export default {
         .style('filter', 'url(#shadow)')
         .style('fill', 'transparent')
         .attr('d', this.drawLineLeftPath)
+
+      this.$lineLeftPathGroup
+        .selectAll('path')
+        .on('mousemove touchmove', function(d) {
+          const date = self.getXAxisDateByMouse(this)
+          self.$emit('date-hover', this, date)
+          self.$emit('domain-hover', d)
+        })
 
       if (this.showY2) {
         this.drawDataset2()

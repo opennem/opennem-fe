@@ -77,8 +77,8 @@
                 {{ hoverDomainLabel }}
                 <strong>
                   {{ hoverValue | formatValue }}<span v-if="chartEnergyType === 'proportion' || (chartEnergyType === 'line' && chartEnergyYAxis === 'percentage')">%</span>
-                  <span v-else-if="step">{{ isYearInterval ? 'TWh' : 'GWh' }}</span>
-                  <span v-else>MW</span>
+                  <span v-else-if="step">{{ isYearInterval ? ' TWh' : ' GWh' }}</span>
+                  <span v-else> MW</span>
                 </strong>
               </span>
 
@@ -163,6 +163,7 @@
             :zoom-range="dateFilter"
             :draw-incomplete-bucket="false"
             @date-hover="handleDateOver"
+            @domain-hover="handleDomainOver"
             @enter="handleVisEnter"
             @leave="handleVisLeave" />
           <date-brush
@@ -1132,6 +1133,12 @@ export default {
       if (this.chartEnergyType === 'proportion') {
         dataset = this.energyPercentDataset
       }
+      if (
+        this.chartEnergyType === 'line' &&
+        this.chartEnergyYAxis === 'percentage'
+      ) {
+        dataset = this.energyGrossPercentDataset
+      }
       return dataset.find(d => d.date === time)
     },
     focusData() {
@@ -1148,8 +1155,14 @@ export default {
     },
     hoverDomainLabel() {
       let find = null
-      if (this.chartEnergyType === 'proportion') {
-        find = this.energyPercentDomains.find(d => d.id === this.hoverDomain)
+      if (
+        this.chartEnergyType === 'proportion' ||
+        (this.chartEnergyType === 'line' &&
+          this.chartEnergyYAxis === 'percentage')
+      ) {
+        find = this.stackedEnergyPercentDomains.find(
+          d => d.id === this.hoverDomain
+        )
       } else {
         find = this.stackedAreaDomains.find(d => d.id === this.hoverDomain)
       }
@@ -1168,8 +1181,14 @@ export default {
     },
     hoverDomainColour() {
       let find = null
-      if (this.chartEnergyType === 'proportion') {
-        find = this.energyPercentDomains.find(d => d.id === this.hoverDomain)
+      if (
+        this.chartEnergyType === 'proportion' ||
+        (this.chartEnergyType === 'line' &&
+          this.chartEnergyYAxis === 'percentage')
+      ) {
+        find = this.stackedEnergyPercentDomains.find(
+          d => d.id === this.hoverDomain
+        )
       } else {
         find = this.stackedAreaDomains.find(d => d.id === this.hoverDomain)
       }
