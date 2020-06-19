@@ -430,6 +430,9 @@ export default {
     domains() {
       this.update()
     },
+    curve() {
+      this.update()
+    },
     dataset() {
       // this.zoomed = false
       this.update()
