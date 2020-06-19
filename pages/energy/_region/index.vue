@@ -131,6 +131,13 @@
             @svgClick="handleSvgClick"
           />
 
+          <button
+            v-if="chartEnergy && chartEnergyType === 'line' && zoomed"
+            class="button is-rounded is-small reset-btn"
+            @click.stop="resetZoom"
+          >
+            Zoom Out
+          </button>
           <multi-line
             v-if="chartEnergy && chartEnergyType === 'line'"
             :toggled="chartEnergy"
@@ -1796,6 +1803,11 @@ export default {
       }
     },
 
+    resetZoom() {
+      this.setDateFilter([])
+      this.filteredDataset = this.dataset
+    },
+
     handleEventChange(evt) {
       this.mouseLoc = d3Mouse(evt)
       this.tooltipLeft = this.mouseLoc[0]
@@ -2089,5 +2101,10 @@ export default {
       transform: scaleY(-1) rotate(90deg);
     }
   }
+}
+.reset-btn {
+  position: absolute;
+  top: 39px;
+  right: 24px;
 }
 </style>
