@@ -136,7 +136,7 @@
             :toggled="chartEnergy"
             :svg-height="stackedAreaHeight - 30"
             :domains1="chartEnergyYAxis === 'percentage' ? stackedEnergyPercentDomains : stackedAreaDomains"
-            :dataset1="chartEnergyYAxis === 'percentage' ? energyPercentDataset : multiLineEnergyDataset"
+            :dataset1="chartEnergyYAxis === 'percentage' ? energyGrossPercentDataset : multiLineEnergyDataset"
             :domains2="[{
               label: 'Renewables',
               domain: 'value',
@@ -160,7 +160,7 @@
             @leave="handleVisLeave" />
           <date-brush
             v-if="chartEnergy && chartEnergyType === 'line'"
-            :dataset="energyPercentDataset"
+            :dataset="energyGrossPercentDataset"
             :zoom-range="dateFilter" 
             :x-ticks="xTicks"
             :tick-format="tickFormat"

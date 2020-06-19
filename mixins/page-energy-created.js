@@ -46,6 +46,7 @@ const pageEnergyCreated = {
       energyDomains: [],
       energyPercentDomains: [],
       energyPercentDataset: [],
+      energyGrossPercentDataset: [],
       fuelTechEnergyOrder: [],
       emissionsOrder: [],
       marketValueDomains: [],

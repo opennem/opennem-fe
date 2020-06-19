@@ -116,6 +116,7 @@ const pageEnergyMixin = {
     calculateEnergyEmissionsDatasets() {
       const isGeneration = this.percentContributionTo === 'generation'
       const energyPercentDataset = [],
+        energyGrossPercentDataset = [],
         emissionsIntensityDataset = [],
         emissionsVolumeDataset = [],
         renewablesPercentageDataset = []
@@ -151,6 +152,10 @@ const pageEnergyMixin = {
 
         // Energy Percent
         energyPercentDataset.push({
+          date: d.date,
+          _isIncompleteBucket: d._isIncompleteBucket
+        })
+        energyGrossPercentDataset.push({
           date: d.date,
           _isIncompleteBucket: d._isIncompleteBucket
         })
@@ -199,6 +204,9 @@ const pageEnergyMixin = {
               }
             }
           }
+
+          energyGrossPercentDataset[i][energyPercent.id] =
+            (d[id] / d._total) * 100
 
           energyMax += d[id] || 0
           if (d[id] < 0) {
@@ -296,6 +304,26 @@ const pageEnergyMixin = {
         p._highest = max
       })
 
+      energyGrossPercentDataset.forEach(p => {
+        let min = 0,
+          max = 0
+        this.stackedEnergyPercentDomains.forEach(domain => {
+          const id = domain.id
+
+          if (domain.category === 'load') {
+            p[id] = -p[id]
+          }
+          if (p[id] < min) {
+            min = p[id]
+          }
+          if (p[id] > max) {
+            max = p[id]
+          }
+        })
+        p._lowest = min
+        p._highest = max
+      })
+
       if (this.interval !== '5m' && this.interval !== '30m') {
         renewablesPercentageDataset.pop()
       }
@@ -310,6 +338,7 @@ const pageEnergyMixin = {
 
       return {
         energyPercentDataset,
+        energyGrossPercentDataset,
         emissionsIntensityDataset,
         emissionsVolumeDataset,
         renewablesPercentageDataset,
@@ -337,6 +366,7 @@ const pageEnergyMixin = {
       this.emissionsVolumeDataset = d.emissionsVolumeDataset
       this.renewablesPercentageDataset = d.renewablesPercentageDataset
       this.energyPercentDataset = d.energyPercentDataset
+      this.energyGrossPercentDataset = d.energyGrossPercentDataset
     },
 
     updateEmissionsVolumeDatasetMinMax(cal) {
