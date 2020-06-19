@@ -55,31 +55,32 @@ const pageEnergyMixin = {
       return m < 100 ? 100 : m
     },
 
-    energyYMin() {
-      const chartEnergyType = this.chartEnergyType
-      const chartEnergyYAxis = this.chartEnergyYAxis
+    energyLinePercentYMin() {
+      return this.getMinValue(this.energyGrossPercentDataset)
+    },
 
-      if (chartEnergyType === 'proportion') {
+    energyLinePercentYMax() {
+      return this.getMaxValue(this.energyGrossPercentDataset)
+    },
+
+    energyLineYMin() {
+      const lowest = this.getMinValue(this.dataset)
+      return lowest < 0 ? 0 : lowest
+    },
+
+    energyLineYMax() {
+      return this.getMaxValue(this.dataset)
+    },
+
+    energyYMin() {
+      if (this.chartEnergyType === 'proportion') {
         return 0
-      } else if (chartEnergyType === 'line') {
-        if (chartEnergyYAxis === 'percentage') {
-          return this.getMinValue(this.energyPercentDataset)
-        }
-        return this.getMinValue(this.dataset)
       }
       return this.energyMin
     },
     energyYMax() {
-      const chartEnergyType = this.chartEnergyType
-      const chartEnergyYAxis = this.chartEnergyYAxis
-
-      if (chartEnergyType === 'proportion') {
+      if (this.chartEnergyType === 'proportion') {
         return 100
-      } else if (chartEnergyType === 'line') {
-        if (chartEnergyYAxis === 'percentage') {
-          return this.getMaxValue(this.energyPercentDataset)
-        }
-        return this.getMaxValue(this.dataset)
       }
       return this.energyMax
     }
@@ -98,14 +99,14 @@ const pageEnergyMixin = {
       let max = 0
       if (this.fuelTechGroupName === 'Default') {
         dataset.forEach(d => {
-          if (d._highest > max) {
+          if (d._highest > max && !d._isIncompleteBucket) {
             max = d._highest
           }
         })
       } else {
         dataset.forEach(d => {
           this.stackedAreaDomains.forEach(domain => {
-            if (d[domain.id] > max) {
+            if (d[domain.id] > max && !d._isIncompleteBucket) {
               max = d[domain.id]
             }
           })

@@ -9,9 +9,9 @@
         <filter id="shadow">
           <feDropShadow
             dx="0"
-            dy="0"
-            stdDeviation="0.5" 
-            flood-color="rgba(0, 0, 0, 0.5)" />
+            dy="1"
+            stdDeviation="1" 
+            flood-color="rgba(0, 0, 0, 0.2)" />
         </filter>
       </defs>
       
@@ -511,6 +511,7 @@ export default {
         .attr('class', key => `${key}-path`)
         .style('stroke', key => this.colours1[key])
         .style('stroke-width', this.pathStrokeWidth)
+        .style('filter', 'url(#shadow)')
         .style('fill', 'transparent')
         .attr('d', this.drawLineLeftPath)
 
