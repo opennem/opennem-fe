@@ -97,6 +97,10 @@ const pageEnergyMixin = {
     },
     getMaxValue(dataset) {
       let max = 0
+      const domains =
+        this.chartEnergyYAxis === 'percentage'
+          ? this.stackedEnergyPercentDomains
+          : this.stackedAreaDomains
       if (this.fuelTechGroupName === 'Default') {
         dataset.forEach(d => {
           if (d._highest > max && !d._isIncompleteBucket) {
@@ -105,7 +109,7 @@ const pageEnergyMixin = {
         })
       } else {
         dataset.forEach(d => {
-          this.stackedAreaDomains.forEach(domain => {
+          domains.forEach(domain => {
             if (d[domain.id] > max && !d._isIncompleteBucket) {
               max = d[domain.id]
             }
