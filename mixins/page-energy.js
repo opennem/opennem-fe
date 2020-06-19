@@ -1,4 +1,5 @@
 import { mapGetters } from 'vuex'
+import { max } from 'd3-array'
 import Data from '~/services/Data.js'
 
 const pageEnergyMixin = {
@@ -47,6 +48,11 @@ const pageEnergyMixin = {
         this.fuelTechGroupName === 'Flexibility'
         ? '#e34a33'
         : '#52BCA3'
+    },
+
+    renewablesMax() {
+      let m = max(this.renewablesPercentageDataset, d => d.value)
+      return m < 100 ? 100 : m
     },
 
     energyYMin() {

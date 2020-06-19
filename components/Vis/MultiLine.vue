@@ -4,6 +4,16 @@
       :width="svgWidth"
       :height="svgHeight"
       :id="id">
+
+      <defs>
+        <filter id="shadow">
+          <feDropShadow
+            dx="0"
+            dy="0"
+            stdDeviation="0.5" 
+            flood-color="rgba(0, 0, 0, 0.5)" />
+        </filter>
+      </defs>
       
       <g 
         :transform="axisTransform" 
@@ -16,10 +26,16 @@
         class="x-shades" />
       <g 
         :transform="axisTransform"
-        class="line-path-group" />
+        class="line-left-path-group" />
+      <g 
+        :transform="axisTransform"
+        class="line-right-path-group" />
       <g 
         :transform="axisTransform" 
-        class="y-axis-text" />
+        class="y-axis-left-text" />
+      <g 
+        :transform="axisTransform" 
+        class="y-axis-right-text" />
       <g 
         :transform="axisTransform" 
         class="cursor-line-group" />
@@ -33,7 +49,7 @@
 <script>
 import { select, mouse } from 'd3-selection'
 import { scaleOrdinal, scaleLinear, scaleTime, scaleSymlog } from 'd3-scale'
-import { axisBottom, axisLeft } from 'd3-axis'
+import { axisBottom, axisLeft, axisRight } from 'd3-axis'
 import {
   line as d3Line,
   curveStepAfter,
@@ -64,7 +80,11 @@ export default {
       type: Number,
       default: () => 10
     },
-    lineDomains: {
+    domains1: {
+      type: Array,
+      default: () => []
+    },
+    domains2: {
       type: Array,
       default: () => []
     },
@@ -72,17 +92,13 @@ export default {
       type: String,
       default: () => null
     },
-    dataset: {
+    dataset1: {
       type: Array,
       default: () => []
     },
-    yMin: {
-      type: Number,
-      default: () => 0
-    },
-    yMax: {
-      type: Number,
-      default: () => 300
+    dataset2: {
+      type: Array,
+      default: () => []
     },
     curve: {
       type: String,
@@ -100,27 +116,51 @@ export default {
       type: Function,
       default: () => null
     },
-    yTicks: {
-      type: Array,
-      default: () => []
-    },
     xShades: {
       type: Array,
       default: () => []
     },
-    yLog: {
+    y1Min: {
+      type: Number,
+      default: () => 0
+    },
+    y1Max: {
+      type: Number,
+      default: () => 300
+    },
+    y1Ticks: {
+      type: Array,
+      default: () => []
+    },
+    y1Log: {
       type: Boolean,
       default: () => false
     },
-    yInvert: {
+    y1Invert: {
       type: Boolean,
       default: () => false
     },
-    yTickText: {
+    y1TickText: {
       type: Boolean,
       default: () => true
     },
-    yAxisUnit: {
+    y1AxisUnit: {
+      type: String,
+      default: () => ''
+    },
+    showY2: {
+      type: Boolean,
+      default: () => false
+    },
+    y2Min: {
+      type: Number,
+      default: () => 0
+    },
+    y2Max: {
+      type: Number,
+      default: () => 300
+    },
+    y2AxisUnit: {
       type: String,
       default: () => ''
     },
@@ -152,16 +192,22 @@ export default {
       width: 0,
       height: 0,
       x: null,
-      y: null,
+      y1: null,
+      y2: null,
       z: null,
       xAxis: null,
-      yAxis: null,
-      yRange: null,
-      line: null,
+      yAxisLeft: null,
+      yAxisRight: null,
+      y1Range: null,
+      y2Range: null,
+      lineLeft: null,
+      lineRight: null,
       $xAxisGroup: null,
       $yAxisGroup: null,
-      $yAxisTextGroup: null,
-      $linePathGroup: null,
+      $yAxisLeftTextGroup: null,
+      $yAxisRightTextGroup: null,
+      $lineLeftPathGroup: null,
+      $lineRightPathGroup: null,
       $cursorLineGroup: null,
       $cursorRect: null,
       $cursorLine: null,
@@ -189,18 +235,28 @@ export default {
           return curveMonotoneX
       }
     },
-    keys() {
-      return this.lineDomains.map(d => d.domain)
+    keys1() {
+      return this.domains1.map(d => d.domain)
     },
-    colours() {
+    colours1() {
       const dict = {}
-      this.lineDomains.forEach(d => {
+      this.domains1.forEach(d => {
+        dict[d.domain] = d.colour
+      })
+      return dict
+    },
+    keys2() {
+      return this.domains2.map(d => d.domain)
+    },
+    colours2() {
+      const dict = {}
+      this.domains2.forEach(d => {
         dict[d.domain] = d.colour
       })
       return dict
     },
     xExtent() {
-      return extent(this.dataset, d => new Date(d.date))
+      return extent(this.dataset1, d => new Date(d.date))
     },
     hasHighlight() {
       return this.highlightDomain ? true : false
@@ -215,11 +271,19 @@ export default {
         this.draw()
       }
     },
-    lineDomains() {
+    showY2(show) {
+      if (show) {
+        this.drawDataset2()
+      } else {
+        this.removeDataset2()
+      }
+    },
+    domains1(updated) {
+      console.log(updated)
       this.clearCursorLine()
       this.draw()
     },
-    dataset() {
+    dataset1() {
       this.setupWidthHeight()
       this.setup()
       this.draw()
@@ -241,15 +305,15 @@ export default {
     },
     highlightDomain(domain) {
       if (domain) {
-        this.$linePathGroup
+        this.$lineLeftPathGroup
           .selectAll('path')
           .attr('opacity', d => (d === domain ? 1 : 0.2))
       } else {
-        this.$linePathGroup.selectAll('path').attr('opacity', 1)
+        this.$lineLeftPathGroup.selectAll('path').attr('opacity', 1)
       }
     },
     curveType(type) {
-      this.line.curve(type)
+      this.lineLeft.curve(type)
       this.redraw()
     }
   },
@@ -280,15 +344,18 @@ export default {
 
     resize() {
       this.x.range([0, this.width])
-      this.y.range(this.yRange)
-      if (!this.yLog) {
-        this.y.nice()
+      this.y1.range(this.y1Range)
+      this.y2.range(this.y2Range)
+      if (!this.y1Log) {
+        this.y1.nice()
       }
       this.xAxis.tickSize(this.height)
-      this.yAxis.tickSize(-this.width)
+      this.yAxisLeft.tickSize(-this.width)
+      this.yAxisRight.tickSize(this.width)
       this.$xAxisGroup.call(this.drawXAxis)
-      this.$yAxisGroup.call(this.drawYAxis)
-      this.$yAxisTextGroup.call(this.drawYAxisText)
+      this.$yAxisGroup.call(this.drawLeftYAxis)
+      this.$yAxisLeftTextGroup.call(this.drawLeftYAxisText)
+      this.$yAxisRightTextGroup.call(this.drawRightYAxisText)
       this.$hoverGroup
         .select('rect')
         .attr('width', this.width)
@@ -313,41 +380,56 @@ export default {
       // Axis DOM
       this.$xAxisGroup = $svg.select('.x-axis')
       this.$yAxisGroup = $svg.select('.y-axis')
-      this.$yAxisTextGroup = $svg.select('.y-axis-text')
+      this.$yAxisLeftTextGroup = $svg.select('.y-axis-left-text')
+      this.$yAxisRightTextGroup = $svg.select('.y-axis-right-text')
 
       // Define scales
-      this.yRange = this.yInvert ? [0, this.height] : [this.height, 0]
+      this.y1Range = this.y1Invert ? [0, this.height] : [this.height, 0]
+      this.y2Range = [this.height, 0]
       this.x = scaleTime().range([0, this.width])
-      this.y = this.yLog
-        ? scaleSymlog().range(this.yRange)
+      this.y1 = this.y1Log
+        ? scaleSymlog().range(this.y1Range)
         : scaleLinear()
-            .range(this.yRange)
+            .range(this.y1Range)
             .nice()
+      this.y2 = scaleLinear()
+        .range(this.y2Range)
+        .nice()
       this.z = scaleOrdinal()
 
       // Axis
       this.xAxis = axisBottom(this.x)
         .tickSize(this.height)
         .ticks(this.xTicks)
-      this.yAxis =
-        this.yTicks.length > 0
-          ? axisLeft(this.y)
+      this.yAxisLeft =
+        this.y1Ticks.length > 0
+          ? axisLeft(this.y1)
               .tickSize(-this.width)
-              .tickValues(this.yTicks)
-          : axisLeft(this.y)
+              .tickValues(this.y1Ticks)
+          : axisLeft(this.y1)
               .tickSize(-this.width)
               .ticks(5)
+      this.yAxisRight = axisRight(this.y2)
+        .tickSize(this.width)
+        .ticks(5)
 
       // x axis shading
       this.$xShadesGroup = $svg.select('.x-shades')
 
       // Line
-      this.$linePathGroup = $svg.select('.line-path-group')
-      this.line = d3Line()
+      this.$lineLeftPathGroup = $svg.select('.line-left-path-group')
+      this.lineLeft = d3Line()
         .x(d => this.x(d.date))
-        .y(d => this.y(d.value))
+        .y(d => this.y1(d.value))
         .curve(this.curveType)
-      this.line.defined(d => d.value || d.value === 0)
+      this.lineLeft.defined(d => d.value || d.value === 0)
+
+      this.$lineRightPathGroup = $svg.select('.line-right-path-group')
+      this.lineRight = d3Line()
+        .x(d => this.x(d.date))
+        .y(d => this.y2(d.value))
+        .curve(curveMonotoneX)
+      this.lineRight.defined(d => d.value || d.value === 0)
 
       // Hover
       this.$hoverGroup = $svg.select('.hover-group')
@@ -396,14 +478,15 @@ export default {
       } else {
         this.x.domain(this.xExtent)
       }
-      this.y.domain([this.yMin, this.yMax])
-      if (!this.yLog) {
-        this.y.nice()
+      this.y1.domain([this.y1Min, this.y1Max])
+      this.y2.domain([this.y2Min, this.y2Max])
+      if (!this.y1Log) {
+        this.y1.nice()
       }
 
       this.$xAxisGroup.call(this.drawXAxis)
-      this.$yAxisGroup.call(this.drawYAxis)
-      this.$yAxisTextGroup.call(this.drawYAxisText)
+      this.$yAxisGroup.call(this.drawLeftYAxis)
+      this.$yAxisLeftTextGroup.call(this.drawLeftYAxisText)
 
       this.$xShadesGroup.selectAll('rect').remove()
       this.$xShadesGroup
@@ -416,17 +499,21 @@ export default {
         .attr('width', d => this.x(d.end) - this.x(d.start))
         .attr('height', this.height)
 
-      this.$linePathGroup.selectAll('path').remove()
-      this.$linePathGroup
+      this.$lineLeftPathGroup.selectAll('path').remove()
+      this.$lineLeftPathGroup
         .selectAll('path')
-        .data(this.keys)
+        .data(this.keys1)
         .enter()
         .append('path')
         .attr('class', key => `${key}-path`)
-        .style('stroke', key => this.colours[key])
+        .style('stroke', key => this.colours1[key])
         .style('stroke-width', this.pathStrokeWidth)
         .style('fill', 'transparent')
-        .attr('d', this.drawLinePath)
+        .attr('d', this.drawLineLeftPath)
+
+      if (this.showY2) {
+        this.drawDataset2()
+      }
     },
 
     redraw() {
@@ -435,11 +522,43 @@ export default {
     },
 
     redrawLineShades() {
-      this.$linePathGroup.selectAll('path').attr('d', this.drawLinePath)
+      this.$lineLeftPathGroup.selectAll('path').attr('d', this.drawLineLeftPath)
+      this.$lineRightPathGroup
+        .selectAll('path')
+        .attr('d', this.drawLineRightPath)
       this.$xShadesGroup
         .selectAll('rect')
         .attr('x', d => this.x(d.start))
         .attr('width', d => this.x(d.end) - this.x(d.start))
+    },
+
+    drawDataset2() {
+      let y2Height = this.y1(0)
+      if (y2Height <= 0 || this.domains1.length === 0) {
+        y2Height = this.height
+      }
+      this.y2
+        .range([y2Height, 0])
+        .domain([this.y2Min, this.y2Max])
+        .nice()
+      this.$yAxisRightTextGroup.call(this.drawRightYAxisText)
+      this.$lineRightPathGroup.selectAll('path').remove()
+      this.$lineRightPathGroup
+        .selectAll('path')
+        .data(this.keys2)
+        .enter()
+        .append('path')
+        .attr('class', key => `${key}-path`)
+        .style('stroke', key => this.colours2[key])
+        .style('stroke-width', 2)
+        .style('filter', 'url(#shadow)')
+        .style('fill', 'transparent')
+        .attr('d', this.drawLineRightPath)
+    },
+    removeDataset2() {
+      this.$lineRightPathGroup.selectAll('path').remove()
+      this.$yAxisRightTextGroup.selectAll('path').remove()
+      this.$yAxisRightTextGroup.selectAll('.tick').remove()
     },
 
     drawXAxis(g) {
@@ -447,23 +566,33 @@ export default {
       g.selectAll('.x-axis .tick text').remove()
     },
 
-    drawYAxis(g) {
-      g.call(this.yAxis)
+    drawLeftYAxis(g) {
+      g.call(this.yAxisLeft)
       g.selectAll('.y-axis .tick text').remove()
     },
 
-    drawYAxisText(g) {
-      g.call(this.yAxis)
-      g.selectAll('.y-axis-text .tick line').remove()
-      g.selectAll('.y-axis-text .tick text')
-        .text(t => `${t}${this.yAxisUnit}`)
+    drawLeftYAxisText(g) {
+      g.call(this.yAxisLeft)
+      g.selectAll('.y-axis-left-text .tick line').remove()
+      g.selectAll('.y-axis-left-text .tick text')
+        .text(t => `${t}${this.y1AxisUnit}`)
         .attr('dx', 5)
         .attr('dy', -2)
-        .attr('opacity', this.yTickText ? 1 : 0)
+        .attr('opacity', this.y1TickText ? 1 : 0)
     },
 
-    drawLinePath(key) {
-      const data = this.dataset.map(d => {
+    drawRightYAxisText(g) {
+      g.call(this.yAxisRight)
+      g.selectAll('.y-axis-right-text .tick line').remove()
+      g.selectAll('.y-axis-right-text .tick text')
+        .text(t => `${t}${this.y2AxisUnit}`)
+        .attr('dx', -5)
+        .attr('dy', -2)
+        .attr('opacity', this.y1TickText ? 1 : 0)
+    },
+
+    drawLineLeftPath(key) {
+      const data = this.dataset1.map(d => {
         if (this.drawIncompleteBucket) {
           return {
             date: d.date,
@@ -475,15 +604,31 @@ export default {
           value: d._isIncompleteBucket ? null : d[key]
         }
       })
-      return this.line(data)
+      return this.lineLeft(data)
+    },
+
+    drawLineRightPath(key) {
+      const data = this.dataset2.map(d => {
+        if (this.drawIncompleteBucket) {
+          return {
+            date: d.date,
+            value: d[key]
+          }
+        }
+        return {
+          date: d.date,
+          value: d._isIncompleteBucket ? null : d[key]
+        }
+      })
+      return this.lineRight(data)
     },
 
     drawCursor(date) {
       const xDate = this.x(date)
       let nextDate = null
-      const dataPoint = this.dataset.find((d, i) => {
+      const dataPoint = this.dataset1.find((d, i) => {
         const match = d.date === date.getTime()
-        const nextDataPoint = this.dataset[i + 1]
+        const nextDataPoint = this.dataset1[i + 1]
         if (match && nextDataPoint) {
           nextDate = nextDataPoint.date
         }
@@ -506,15 +651,15 @@ export default {
           if (!dataPoint._isIncompleteBucket) {
             const dots = this.$cursorDotsGroup
               .selectAll('circle')
-              .data(this.keys)
+              .data(this.keys1)
             dots
               .enter()
               .append('circle')
               .merge(dots)
               .attr('cx', this.x(dataPoint.date))
-              .attr('cy', key => this.y(dataPoint[key]))
+              .attr('cy', key => this.y1(dataPoint[key]))
               .attr('r', 2)
-              .attr('fill', key => this.colours[key])
+              .attr('fill', key => this.colours1[key])
               .exit()
               .remove()
           }
@@ -553,9 +698,13 @@ export default {
 
 <style lang="scss" scoped>
 .multi-line-vis ::v-deep svg {
-  .y-axis-text .tick text {
+  .y-axis-left-text .tick text {
     color: #000;
     text-anchor: start;
+  }
+  .y-axis-right-text .tick text {
+    color: #000;
+    text-anchor: end;
   }
   .hover-group rect {
     fill: transparent;

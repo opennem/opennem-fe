@@ -134,13 +134,23 @@
           <multi-line
             v-if="chartEnergy && chartEnergyType === 'line'"
             :toggled="chartEnergy"
-            :line-domains="chartEnergyYAxis === 'percentage' ? stackedEnergyPercentDomains : stackedAreaDomains"
-            :dataset="chartEnergyYAxis === 'percentage' ? energyPercentDataset : multiLineEnergyDataset"
             :svg-height="stackedAreaHeight - 30"
-            :y-max="energyYMax"
-            :y-min="energyYMin"
+            :domains1="chartEnergyYAxis === 'percentage' ? stackedEnergyPercentDomains : stackedAreaDomains"
+            :dataset1="chartEnergyYAxis === 'percentage' ? energyPercentDataset : multiLineEnergyDataset"
+            :domains2="[{
+              label: 'Renewables',
+              domain: 'value',
+              colour: renewablesLineColour
+            }]"
+            :dataset2="renewablesPercentageDataset"
+            :show-y2="chartEnergyRenewablesLine"
+            :y2-max="renewablesMax"
+            :y2-min="0"
+            :y2-axis-unit="'%'"
+            :y1-max="energyYMax"
+            :y1-min="energyYMin"
             :x-ticks="xTicks"
-            :y-axis-unit="chartEnergyYAxis === 'percentage' ? '%' : ''"
+            :y1-axis-unit="chartEnergyYAxis === 'percentage' ? '%' : ''"
             :curve="chartEnergyCurve"
             :date-hovered="hoverDate"
             :zoom-range="dateFilter"
@@ -670,7 +680,6 @@
 import moment from 'moment'
 import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import { mouse as d3Mouse } from 'd3-selection'
-import { extent as d3Extent, max as d3Max } from 'd3-array'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 import Draggable from 'vuedraggable'
