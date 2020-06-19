@@ -279,7 +279,6 @@ export default {
       }
     },
     domains1(updated) {
-      console.log(updated)
       this.clearCursorLine()
       this.draw()
     },

@@ -154,6 +154,7 @@
             :curve="chartEnergyCurve"
             :date-hovered="hoverDate"
             :zoom-range="dateFilter"
+            :draw-incomplete-bucket="false"
             @date-hover="handleDateOver"
             @enter="handleVisEnter"
             @leave="handleVisLeave" />
@@ -1340,7 +1341,8 @@ export default {
     multiLineEnergyDataset() {
       return this.dataset.map(d => {
         const obj = {
-          date: d.date
+          date: d.date,
+          _isIncompleteBucket: d._isIncompleteBucket
         }
         this.stackedAreaDomains.forEach(domain => {
           if (domain.category === 'load') {

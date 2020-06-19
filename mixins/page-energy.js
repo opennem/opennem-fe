@@ -151,7 +151,8 @@ const pageEnergyMixin = {
 
         // Energy Percent
         energyPercentDataset.push({
-          date: d.date
+          date: d.date,
+          _isIncompleteBucket: d._isIncompleteBucket
         })
 
         this.stackedAreaDomains.forEach(domain => {
