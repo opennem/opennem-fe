@@ -856,9 +856,13 @@ export default {
       this.$lineGroup.selectAll('path').remove()
 
       // Generate Stacked Area
+      const updateDataset = _cloneDeep(this.dataset)
+      if (this.curve !== 'step') {
+        updateDataset.pop()
+      }
       const stackArea = this.$stackedAreaGroup
         .selectAll(`.${this.stackedAreaPathClass}`)
-        .data(this.stack(this.dataset))
+        .data(this.stack(updateDataset))
       stackArea
         .enter()
         .append('path')
