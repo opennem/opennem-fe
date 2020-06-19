@@ -345,17 +345,21 @@ export default {
     resize() {
       this.x.range([0, this.width])
       this.y1.range(this.y1Range)
-      this.y2.range(this.y2Range)
       if (!this.y1Log) {
         this.y1.nice()
       }
       this.xAxis.tickSize(this.height)
       this.yAxisLeft.tickSize(-this.width)
-      this.yAxisRight.tickSize(this.width)
       this.$xAxisGroup.call(this.drawXAxis)
       this.$yAxisGroup.call(this.drawLeftYAxis)
       this.$yAxisLeftTextGroup.call(this.drawLeftYAxisText)
-      this.$yAxisRightTextGroup.call(this.drawRightYAxisText)
+
+      if (this.showY2) {
+        this.y2.range(this.y2Range)
+        this.yAxisRight.tickSize(this.width)
+        this.$yAxisRightTextGroup.call(this.drawRightYAxisText)
+      }
+
       this.$hoverGroup
         .select('rect')
         .attr('width', this.width)
