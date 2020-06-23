@@ -46,7 +46,9 @@ export const actions = {
     const fuelTechOrder = [...FUEL_TECHS.DEFAULT_FUEL_TECH_ORDER]
 
     http
-      .get('/data/wa.json')
+      .get(
+        'https://s3-ap-southeast-2.amazonaws.com/data.opennem.org.au/power/wa1.json'
+      )
       .then(d => d.data)
       .then(waData => {
         const domains = Domain.getEnergyDomains([waData])
