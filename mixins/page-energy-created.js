@@ -92,7 +92,10 @@ const pageEnergyCreated = {
       chartEmissionsVolume: 'visInteract/chartEmissionsVolume',
       chartEmissionsIntensity: 'visInteract/chartEmissionsIntensity',
       chartPrice: 'visInteract/chartPrice',
-      chartTemperature: 'visInteract/chartTemperature'
+      chartTemperature: 'visInteract/chartTemperature',
+      waDataset: 'wa/energyDataset',
+      waEnergyDomains: 'wa/energyDomains',
+      waEnergyPercentDomains: 'wa/energyPercentDomains'
     }),
     pageTitle() {
       let title = 'An Open Platform for National Electricity Market Data'

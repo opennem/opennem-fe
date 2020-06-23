@@ -1,11 +1,11 @@
 <template>
   <section class="region-section">
-    <data-options-bar
+    <!-- <data-options-bar
       :range="range"
       :interval="interval"
       @onRangeChange="handleRangeChange"
       @onIntervalChange="handleIntervalChange"
-    />
+    /> -->
 
     <transition name="fade">
       <div
@@ -691,6 +691,7 @@ import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import { mouse as d3Mouse } from 'd3-selection'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
+import _debounce from 'lodash.debounce'
 import Draggable from 'vuedraggable'
 import { saveAs } from 'file-saver'
 
@@ -770,7 +771,7 @@ export default {
       return this.tabletBreak ? 8 : 12
     },
     regionId() {
-      return 'wa1'
+      return this.$route.params.region
     },
     groupDomains() {
       const dict = this.fuelTechGroup
@@ -859,7 +860,7 @@ export default {
       if (this.regionId === 'nem' && !this.widthBreak) {
         height = 528
       }
-      return height
+      return 528
     },
     xGuides() {
       if (this.dataset.length <= 0) {
@@ -1383,6 +1384,16 @@ export default {
   },
 
   watch: {
+    waDataset(updated) {
+      this.dataset = updated
+      this.readyDataset(updated)
+    },
+    waEnergyDomains(updated) {
+      this.energyDomains = updated
+    },
+    waEnergyPercentDomains(updated) {
+      this.energyPercentDomains = updated
+    },
     groupDomains(domains) {
       const perfTime = new PerfTime()
       perfTime.time()
@@ -1460,7 +1471,6 @@ export default {
     dataset(updated) {
       this.$store.dispatch('export/dataset', updated)
       this.updateCompare(updated)
-      console.log(updated)
     },
     xGuides(updated) {
       this.$store.dispatch('export/xGuides', updated)
@@ -1498,6 +1508,45 @@ export default {
         this.$store.dispatch('compareDates', [])
       }
     }
+  },
+
+  mounted() {
+    function is_touch_device() {
+      var prefixes = ' -webkit- -moz- -o- -ms- '.split(' ')
+      var mq = function(query) {
+        return window.matchMedia(query).matches
+      }
+
+      if (
+        'ontouchstart' in window ||
+        (window.DocumentTouch && document instanceof DocumentTouch)
+      ) {
+        return true
+      }
+
+      // include the 'heartz' as a way to have a non matching MQ to help terminate the join
+      // https://git.io/vznFH
+      var query = ['(', prefixes.join('touch-enabled),('), 'heartz', ')'].join(
+        ''
+      )
+      return mq(query)
+    }
+
+    this.isTouchDevice = is_touch_device()
+    this.windowWidth = window.innerWidth
+    this.visHeight = this.widthBreak ? 578 : 350
+    this.$nextTick(() => {
+      window.addEventListener(
+        'resize',
+        _debounce(() => {
+          this.windowWidth = window.innerWidth
+          this.visHeight = this.widthBreak ? 578 : 350
+        }, 200)
+      )
+    })
+    // this.fetchData(this.regionId, this.range)
+    this.$store.dispatch('wa/doGetWA')
+    this.mounted = true
   },
 
   methods: {
