@@ -2,6 +2,9 @@ export default {
   getEnergyUrls(region, range, hostEnv) {
     const prepend = hostEnv === 'dev' ? '/testing' : ''
     let isProd = hostEnv === 'prod'
+    if (region === 'wa1') {
+      isProd = true
+    }
     const thisFullYear = new Date().getFullYear()
     const urls = []
     switch (range) {
