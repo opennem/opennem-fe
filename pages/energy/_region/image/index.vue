@@ -29,19 +29,15 @@
           <div
             v-if="ready && chartEnergy"
             class="chart">
-            <div
-              v-if="step"
-              class="chart-title">
-              <strong>Energy</strong>
-              <small>GWh/{{ interval | intervalLabel }}</small>
-            </div>
-            <div
-              v-else
-              class="chart-title">
-              <strong>Generation</strong>
-              <small>MW</small>
+            <div class="chart-title">
+              <strong v-if="step">Energy</strong>
+              <strong v-else>Generation</strong>
+              <small v-if="chartEnergyType === 'proportion' || (chartEnergyType === 'line' && chartEnergyYAxis === 'percentage')">%</small>
+              <small v-else-if="step">{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</small>
+              <small v-else>MW</small>
             </div>
             <stacked-area-vis
+              v-if="chartEnergy && chartEnergyType === 'area'"
               :domains="stackedAreaDomains"
               :dataset="dataset"
               :dynamic-extent="dateFilter"
@@ -58,6 +54,55 @@
               :dataset-two-colour="renewablesLineColour"
               class="vis-chart"
             />
+            <stacked-area-vis
+              v-if="chartEnergy && chartEnergyType === 'proportion'"
+              :domains="stackedEnergyPercentDomains"
+              :dataset="energyPercentDataset"
+              :dynamic-extent="dateFilter"
+              :range="range"
+              :interval="interval"
+              :curve="isEnergyType ? chartEnergyCurve : chartPowerCurve"
+              :y-min="energyYMin"
+              :y-max="energyYMax"
+              :vis-height="stackedAreaHeight"
+              :show-zoom-out="false"
+              :x-guides="xGuides"
+              :y-axis-unit="'%'"
+              :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
+              :dataset-two-colour="renewablesLineColour"
+              class="vis-chart"
+            />
+            <multi-line
+              v-if="chartEnergy && chartEnergyType === 'line'"
+              :toggled="chartEnergy"
+              :svg-height="stackedAreaHeight - 30"
+              :domains1="chartEnergyYAxis === 'percentage' ? stackedEnergyPercentDomains : stackedAreaDomains"
+              :dataset1="chartEnergyYAxis === 'percentage' ? energyGrossPercentDataset : multiLineEnergyDataset"
+              :domains2="[{
+                label: 'Renewables',
+                domain: 'value',
+                colour: renewablesLineColour
+              }]"
+              :dataset2="renewablesPercentageDataset"
+              :show-y2="chartEnergyRenewablesLine"
+              :y2-max="renewablesMax"
+              :y2-min="0"
+              :y2-axis-unit="'%'"
+              :y1-max="chartEnergyYAxis === 'percentage' ? energyLinePercentYMax : energyLineYMax"
+              :y1-min="chartEnergyYAxis === 'percentage' ? energyLinePercentYMin : energyLineYMin"
+              :x-ticks="xTicks"
+              :y1-axis-unit="chartEnergyYAxis === 'percentage' ? '%' : ''"
+              :curve="isEnergyType ? chartEnergyCurve : chartPowerCurve"
+              :zoom-range="dateFilter"
+              :draw-incomplete-bucket="false" />
+            <date-brush
+              v-if="chartEnergy && chartEnergyType === 'line'"
+              :dataset="energyGrossPercentDataset"
+              :zoom-range="dateFilter" 
+              :x-ticks="xTicks"
+              :tick-format="tickFormat"
+              :second-tick-format="secondTickFormat"
+              class="date-brush" />
           </div>
 
           <div
@@ -261,14 +306,18 @@ import Data from '~/services/Data.js'
 import EnergyDataTransform from '~/services/dataTransform/Energy.js'
 import Domain from '~/services/Domain.js'
 import domToImage from '~/services/DomToImage.js'
+import AxisTicks from '@/services/axisTicks.js'
+import AxisTimeFormats from '@/services/axisTimeFormats.js'
 
 import ExportHeader from '~/components/Energy/ExportHeader.vue'
 import ExportImageHeader from '~/components/Energy/ExportImageHeader.vue'
 import ExportImageFooter from '~/components/Energy/ExportImageFooter.vue'
 import StackedAreaVis from '~/components/Vis/StackedArea.vue'
 import LineVis from '~/components/Vis/Line.vue'
+import MultiLine from '@/components/Vis/MultiLine'
 import SummaryTable from '~/components/SummaryTable'
 import EnergyLegend from '~/components/Energy/Legend'
+import DateBrush from '@/components/Vis/DateBrush'
 
 const charts = [
   {
@@ -312,8 +361,10 @@ export default {
     ExportImageFooter,
     StackedAreaVis,
     LineVis,
+    MultiLine,
     SummaryTable,
-    EnergyLegend
+    EnergyLegend,
+    DateBrush
   },
 
   mixins: [PageEnergyMixin],
@@ -351,6 +402,9 @@ export default {
       featureEmissions: 'feature/emissions'
     }),
 
+    isEnergyType() {
+      return this.type === 'energy'
+    },
     exportChartEnergy() {
       return this.$store.getters['export/chartEnergy']
     },
@@ -477,6 +531,57 @@ export default {
       return this.groupEmissionDomains.length > 0
         ? this.groupEmissionDomains
         : this.emissionDomains
+    },
+    xTicks() {
+      return AxisTicks(this.range, this.interval, this.zoomed)
+    },
+    zoomed() {
+      return this.dateFilter.length !== 0
+    },
+    multiLineEnergyDataset() {
+      return this.dataset.map(d => {
+        const obj = {
+          date: d.date,
+          _isIncompleteBucket: d._isIncompleteBucket
+        }
+        this.stackedAreaDomains.forEach(domain => {
+          if (domain.category === 'load') {
+            obj[domain.id] = -d[domain.id]
+          } else {
+            obj[domain.id] = d[domain.id]
+          }
+        })
+        return obj
+      })
+    },
+    tickFormat() {
+      switch (this.interval) {
+        case 'Day':
+          return AxisTimeFormats.intervalDayTimeFormat
+        case 'Week':
+          return AxisTimeFormats.intervalWeekTimeFormat
+        case 'Month':
+          return this.range === 'ALL'
+            ? AxisTimeFormats.rangeAllIntervalMonthTimeFormat
+            : AxisTimeFormats.intervalMonthTimeFormat
+        case 'Fin Year':
+          return d => {
+            const year = d.getFullYear() + 1 + ''
+            return `FY${year.substr(2, 2)}`
+          }
+        default:
+          return AxisTimeFormats.defaultFormat
+      }
+    },
+    secondTickFormat() {
+      switch (this.interval) {
+        case 'Day':
+          return AxisTimeFormats.intervalDaySecondaryTimeFormat
+        case 'Week':
+          return AxisTimeFormats.intervalWeekSecondaryTimeFormat
+        default:
+          return AxisTimeFormats.secondaryFormat
+      }
     }
   },
 
@@ -565,6 +670,10 @@ export default {
 }
 .vis-chart {
   margin-right: 10px;
+}
+.date-brush {
+  position: relative;
+  margin-top: -6px;
 }
 
 // Chart style adjustments

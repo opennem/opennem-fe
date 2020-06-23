@@ -40,7 +40,11 @@ const pageEnergyMixin = {
       hiddenFuelTechs: 'hiddenFuelTechs',
       percentContributionTo: 'percentContributionTo',
       energyCurveType: 'energyCurveType',
-      step: 'step'
+      step: 'step',
+      chartEnergyType: 'visInteract/chartEnergyType',
+      chartEnergyYAxis: 'visInteract/chartEnergyYAxis',
+      chartEnergyCurve: 'visInteract/chartEnergyCurve',
+      chartPowerCurve: 'visInteract/chartPowerCurve'
     }),
 
     renewablesLineColour() {
@@ -56,7 +60,8 @@ const pageEnergyMixin = {
     },
 
     energyLinePercentYMin() {
-      return this.getMinValue(this.energyGrossPercentDataset)
+      const lowest = this.getMinValue(this.energyGrossPercentDataset)
+      return lowest < 0 ? 0 : lowest
     },
 
     energyLinePercentYMax() {
