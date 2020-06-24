@@ -856,13 +856,22 @@ export default {
       this.$lineGroup.selectAll('path').remove()
 
       // Generate Stacked Area
-      const updateDataset = _cloneDeep(this.dataset)
-      if (this.curve !== 'step') {
-        updateDataset.pop()
-      }
+      let updatedDataset = []
+      this.dataset.forEach(d => {
+        if (!d._isIncompleteBucket) {
+          const obj = {
+            date: d.date,
+            _isIncompleteBucket: d._isIncompleteBucket
+          }
+          this.domains.forEach(domain => {
+            obj[domain.id] = d[domain.id]
+          })
+          updatedDataset.push(obj)
+        }
+      })
       const stackArea = this.$stackedAreaGroup
         .selectAll(`.${this.stackedAreaPathClass}`)
-        .data(this.stack(updateDataset))
+        .data(this.stack(updatedDataset))
       stackArea
         .enter()
         .append('path')
@@ -1063,21 +1072,24 @@ export default {
       const $cursorRect = this.$cursorLineGroup.select(
         `.${this.cursorRectClass}`
       )
-      if (bandwidth) {
-        $cursorLine.attr('opacity', 0)
-        $cursorRect
-          .attr('x', xDate)
-          .attr('width', bandwidth < 0 ? 0 : bandwidth)
-          .attr('height', this.height)
-          .attr('opacity', 1)
-          .style('pointer-events', 'none')
-      } else {
-        $cursorRect.attr('opacity', 0)
-        $cursorLine.attr('opacity', 1).attr('d', () => {
-          let d = 'M' + xDate + ',' + this.height
-          d += ' ' + xDate + ',' + 0
-          return d
-        })
+
+      if (xDate) {
+        if (bandwidth) {
+          $cursorLine.attr('opacity', 0)
+          $cursorRect
+            .attr('x', xDate)
+            .attr('width', bandwidth < 0 ? 0 : bandwidth)
+            .attr('height', this.height)
+            .attr('opacity', 1)
+            .style('pointer-events', 'none')
+        } else {
+          $cursorRect.attr('opacity', 0)
+          $cursorLine.attr('opacity', 1).attr('d', () => {
+            let d = 'M' + xDate + ',' + this.height
+            d += ' ' + xDate + ',' + 0
+            return d
+          })
+        }
       }
     },
 
