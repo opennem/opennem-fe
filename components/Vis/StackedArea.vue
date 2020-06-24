@@ -345,6 +345,18 @@ export default {
     hasSecondDataset() {
       return this.datasetTwo.length > 0
     },
+    updatedDataset() {
+      if (this.curve === 'step') {
+        return this.dataset
+      }
+      const newData = []
+      this.dataset.forEach(d => {
+        if (!d._isIncompleteBucket && d._isIncompleteBucket !== null) {
+          newData.push(d)
+        }
+      })
+      return newData
+    },
     updatedDatasetTwo() {
       const updated = _cloneDeep(this.datasetTwo)
       // update datasetTwo time to move the data point in the middle of the period
@@ -433,7 +445,7 @@ export default {
     curve() {
       this.update()
     },
-    dataset() {
+    updatedDataset() {
       // this.zoomed = false
       this.update()
       this.resizeRedraw()
@@ -740,11 +752,11 @@ export default {
       const yMin =
         this.yMin || this.yMin === 0
           ? this.yMin
-          : min(this.dataset, d => d._min)
+          : min(this.updatedDataset, d => d._min)
       const yMax =
         this.yMax || this.yMax === 0
           ? this.yMax
-          : max(this.dataset, d => d._total)
+          : max(this.updatedDataset, d => d._total)
       const xDomainExtent = this.dynamicExtent.length
         ? this.dynamicExtent
         : this.datasetDateExtent
@@ -858,7 +870,7 @@ export default {
       // Generate Stacked Area
       const stackArea = this.$stackedAreaGroup
         .selectAll(`.${this.stackedAreaPathClass}`)
-        .data(this.stack(this.dataset))
+        .data(this.stack(this.updatedDataset))
       stackArea
         .enter()
         .append('path')
@@ -907,11 +919,11 @@ export default {
 
     findNextDatePeriod(time) {
       let nextDatePeriod = null
-      const find = this.dataset.find((d, i) => {
+      const find = this.updatedDataset.find((d, i) => {
         const match = d.date === time
         if (match) {
-          if (this.dataset[i + 1]) {
-            nextDatePeriod = this.dataset[i + 1].date
+          if (this.updatedDataset[i + 1]) {
+            nextDatePeriod = this.updatedDataset[i + 1].date
           }
         }
         return match
@@ -1006,11 +1018,11 @@ export default {
     updateGuides() {
       const time = new Date(this.hoverDate).getTime()
       let nextDatePeriod = null
-      const find = this.dataset.find((d, i) => {
+      const find = this.updatedDataset.find((d, i) => {
         const match = d.date === time
         if (match) {
-          if (this.dataset[i + 1]) {
-            nextDatePeriod = this.dataset[i + 1].date
+          if (this.updatedDataset[i + 1]) {
+            nextDatePeriod = this.updatedDataset[i + 1].date
           }
         }
         return match
@@ -1087,11 +1099,11 @@ export default {
     drawFocus(focusDate) {
       const time = new Date(focusDate).getTime()
       let nextDatePeriod = null
-      const find = this.dataset.find((d, i) => {
+      const find = this.updatedDataset.find((d, i) => {
         const match = d.date === time
         if (match) {
-          if (this.dataset[i + 1]) {
-            nextDatePeriod = this.dataset[i + 1].date
+          if (this.updatedDataset[i + 1]) {
+            nextDatePeriod = this.updatedDataset[i + 1].date
           }
         }
         return match
