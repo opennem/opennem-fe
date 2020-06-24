@@ -175,7 +175,9 @@
             :second-tick-format="secondTickFormat"
             class="date-brush"
             @date-hover="handleDateOver"
-            @date-filter="handleDatasetFilter" />
+            @date-filter="handleDatasetFilter"
+            @enter="handleVisEnter"
+            @leave="handleVisLeave" />
 
           <stacked-area-vis
             v-if="chartEnergy && chartEnergyType === 'proportion'"
@@ -1880,6 +1882,7 @@ export default {
 
     handleVisLeave() {
       this.hoverOn = false
+      this.hoverDate = null
       this.$store.commit('visInteract/isHovering', false)
     },
 
@@ -2034,7 +2037,7 @@ export default {
   position: relative;
 }
 .vis-chart {
-  margin-right: 10px;
+  // margin-right: 10px;
 }
 
 .loading-containers {
