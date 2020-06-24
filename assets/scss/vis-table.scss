@@ -11,9 +11,10 @@
   .vis-container {
     width: 100%;
     padding: 1rem 0 0;
+    margin-right: 10px;
 
     @include desktop {
-      width: 65%;
+      width: 63%;
       padding: 0;
     }
   }

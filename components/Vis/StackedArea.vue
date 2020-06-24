@@ -856,22 +856,9 @@ export default {
       this.$lineGroup.selectAll('path').remove()
 
       // Generate Stacked Area
-      let updatedDataset = []
-      this.dataset.forEach(d => {
-        if (!d._isIncompleteBucket) {
-          const obj = {
-            date: d.date,
-            _isIncompleteBucket: d._isIncompleteBucket
-          }
-          this.domains.forEach(domain => {
-            obj[domain.id] = d[domain.id]
-          })
-          updatedDataset.push(obj)
-        }
-      })
       const stackArea = this.$stackedAreaGroup
         .selectAll(`.${this.stackedAreaPathClass}`)
-        .data(this.stack(updatedDataset))
+        .data(this.stack(this.dataset))
       stackArea
         .enter()
         .append('path')
@@ -911,6 +898,10 @@ export default {
           self.$emit('eventChange', this)
           self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
           self.$emit('domainOver', d.key)
+        })
+        .on('mouseleave', function() {
+          self.$emit('dateOver', this, null)
+          self.$emit('domainOver', null)
         })
     },
 
