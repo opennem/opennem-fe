@@ -4,6 +4,14 @@
       :width="svgWidth"
       :height="svgHeight"
       :id="id">
+      <defs>
+        <!-- where to clip -->
+        <clipPath :id="`${id}-clip`">
+          <rect
+            :width="width"
+            :height="height"/>
+        </clipPath>
+      </defs>
       <g 
         :transform="axisTransform" 
         class="x-axis" />
@@ -50,7 +58,7 @@ export default {
       svgHeight: 30,
       width: 0,
       height: 0,
-      margin: { left: 10, right: 10, top: 20, bottom: 10 },
+      margin: { left: 10, right: 1, top: 20, bottom: 10 },
       x: null,
       brushX: null,
       xAxis: null,
@@ -60,7 +68,10 @@ export default {
   },
   computed: {
     id() {
-      return `multi-line-${this.uuid}`
+      return `date-brush-${this.uuid}`
+    },
+    clipPathUrl() {
+      return `url(#${this.id}-clip)`
     },
     axisTransform() {
       return `translate(${this.margin.left}, 0)`
@@ -138,7 +149,9 @@ export default {
       this.$xAxisGroup = $svg.select('.x-axis')
 
       // Define scales
-      this.x = scaleTime().range([0, this.width])
+      this.x = scaleTime()
+        .range([0, this.width])
+        .nice()
 
       // Axis
       this.xAxis = axisBottom(this.x)
@@ -158,6 +171,20 @@ export default {
         const date = self.getXAxisDateByMouse(this)
         self.$emit('date-hover', this, date)
       })
+      $svg.on('mouseenter', () => {
+        this.handleSvgEnter()
+      })
+      $svg.on('mouseleave', () => {
+        this.handleSvgLeave()
+      })
+    },
+
+    handleSvgEnter() {
+      this.$emit('enter')
+    },
+    handleSvgLeave() {
+      this.$emit('date-hover', null, null)
+      this.$emit('leave')
     },
 
     draw() {
@@ -175,6 +202,9 @@ export default {
 
     drawXAxis(g) {
       const self = this
+      g.select('.x-axis')
+        .style('clip-path', this.clipPathUrl)
+        .style('-webkit-clip-path', this.clipPathUrl)
       g.call(this.xAxis)
       g.selectAll('.x-axis .tick line').attr('y2', this.svgHeight)
       g.selectAll('.x-axis .tick text').each(function(d, i) {

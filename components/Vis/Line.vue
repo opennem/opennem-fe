@@ -723,31 +723,33 @@ export default {
         `.${this.cursorCircleClass}`
       )
 
-      if (bandwidth) {
-        $cursorLine.attr('opacity', 0)
-        $cursorRect
-          .attr('x', xDate)
-          .attr('width', bandwidth < 0 ? 0 : bandwidth)
-          .attr('height', this.height)
-          .attr('opacity', 1)
-
-        if (this.showPointOnHover && parseInt(value)) {
-          $cursorCircle
-            .attr('cx', xDate)
-            .attr('cy', yValue)
-            .attr('r', 2.5)
+      if (xDate) {
+        if (bandwidth) {
+          $cursorLine.attr('opacity', 0)
+          $cursorRect
+            .attr('x', xDate)
+            .attr('width', bandwidth < 0 ? 0 : bandwidth)
+            .attr('height', this.height)
             .attr('opacity', 1)
+
+          if (this.showPointOnHover && parseInt(value)) {
+            $cursorCircle
+              .attr('cx', xDate)
+              .attr('cy', yValue)
+              .attr('r', 2.5)
+              .attr('opacity', 1)
+          } else {
+            $cursorCircle.attr('opacity', 0)
+          }
         } else {
+          $cursorRect.attr('opacity', 0)
           $cursorCircle.attr('opacity', 0)
+          $cursorLine.attr('opacity', 1).attr('d', () => {
+            let d = 'M' + xDate + ',' + this.height
+            d += ' ' + xDate + ',' + 0
+            return d
+          })
         }
-      } else {
-        $cursorRect.attr('opacity', 0)
-        $cursorCircle.attr('opacity', 0)
-        $cursorLine.attr('opacity', 1).attr('d', () => {
-          let d = 'M' + xDate + ',' + this.height
-          d += ' ' + xDate + ',' + 0
-          return d
-        })
       }
     },
 

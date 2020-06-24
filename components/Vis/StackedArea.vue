@@ -345,6 +345,15 @@ export default {
     hasSecondDataset() {
       return this.datasetTwo.length > 0
     },
+    updatedDataset() {
+      if (this.curve === 'step') {
+        return this.dataset
+      }
+
+      return this.dataset.filter(
+        d => !d._isIncompleteBucket && d._isIncompleteBucket !== null
+      )
+    },
     updatedDatasetTwo() {
       const updated = _cloneDeep(this.datasetTwo)
       // update datasetTwo time to move the data point in the middle of the period
@@ -433,7 +442,7 @@ export default {
     curve() {
       this.update()
     },
-    dataset() {
+    updatedDataset() {
       // this.zoomed = false
       this.update()
       this.resizeRedraw()
@@ -740,11 +749,11 @@ export default {
       const yMin =
         this.yMin || this.yMin === 0
           ? this.yMin
-          : min(this.dataset, d => d._min)
+          : min(this.updatedDataset, d => d._min)
       const yMax =
         this.yMax || this.yMax === 0
           ? this.yMax
-          : max(this.dataset, d => d._total)
+          : max(this.updatedDataset, d => d._total)
       const xDomainExtent = this.dynamicExtent.length
         ? this.dynamicExtent
         : this.datasetDateExtent
@@ -856,13 +865,9 @@ export default {
       this.$lineGroup.selectAll('path').remove()
 
       // Generate Stacked Area
-      const updateDataset = _cloneDeep(this.dataset)
-      if (this.curve !== 'step') {
-        updateDataset.pop()
-      }
       const stackArea = this.$stackedAreaGroup
         .selectAll(`.${this.stackedAreaPathClass}`)
-        .data(this.stack(updateDataset))
+        .data(this.stack(this.updatedDataset))
       stackArea
         .enter()
         .append('path')
@@ -903,15 +908,19 @@ export default {
           self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
           self.$emit('domainOver', d.key)
         })
+        .on('mouseleave', function() {
+          self.$emit('dateOver', this, null)
+          self.$emit('domainOver', null)
+        })
     },
 
     findNextDatePeriod(time) {
       let nextDatePeriod = null
-      const find = this.dataset.find((d, i) => {
+      const find = this.updatedDataset.find((d, i) => {
         const match = d.date === time
         if (match) {
-          if (this.dataset[i + 1]) {
-            nextDatePeriod = this.dataset[i + 1].date
+          if (this.updatedDataset[i + 1]) {
+            nextDatePeriod = this.updatedDataset[i + 1].date
           }
         }
         return match
@@ -1006,11 +1015,11 @@ export default {
     updateGuides() {
       const time = new Date(this.hoverDate).getTime()
       let nextDatePeriod = null
-      const find = this.dataset.find((d, i) => {
+      const find = this.updatedDataset.find((d, i) => {
         const match = d.date === time
         if (match) {
-          if (this.dataset[i + 1]) {
-            nextDatePeriod = this.dataset[i + 1].date
+          if (this.updatedDataset[i + 1]) {
+            nextDatePeriod = this.updatedDataset[i + 1].date
           }
         }
         return match
@@ -1063,32 +1072,35 @@ export default {
       const $cursorRect = this.$cursorLineGroup.select(
         `.${this.cursorRectClass}`
       )
-      if (bandwidth) {
-        $cursorLine.attr('opacity', 0)
-        $cursorRect
-          .attr('x', xDate)
-          .attr('width', bandwidth < 0 ? 0 : bandwidth)
-          .attr('height', this.height)
-          .attr('opacity', 1)
-          .style('pointer-events', 'none')
-      } else {
-        $cursorRect.attr('opacity', 0)
-        $cursorLine.attr('opacity', 1).attr('d', () => {
-          let d = 'M' + xDate + ',' + this.height
-          d += ' ' + xDate + ',' + 0
-          return d
-        })
+
+      if (xDate) {
+        if (bandwidth) {
+          $cursorLine.attr('opacity', 0)
+          $cursorRect
+            .attr('x', xDate)
+            .attr('width', bandwidth < 0 ? 0 : bandwidth)
+            .attr('height', this.height)
+            .attr('opacity', 1)
+            .style('pointer-events', 'none')
+        } else {
+          $cursorRect.attr('opacity', 0)
+          $cursorLine.attr('opacity', 1).attr('d', () => {
+            let d = 'M' + xDate + ',' + this.height
+            d += ' ' + xDate + ',' + 0
+            return d
+          })
+        }
       }
     },
 
     drawFocus(focusDate) {
       const time = new Date(focusDate).getTime()
       let nextDatePeriod = null
-      const find = this.dataset.find((d, i) => {
+      const find = this.updatedDataset.find((d, i) => {
         const match = d.date === time
         if (match) {
-          if (this.dataset[i + 1]) {
-            nextDatePeriod = this.dataset[i + 1].date
+          if (this.updatedDataset[i + 1]) {
+            nextDatePeriod = this.updatedDataset[i + 1].date
           }
         }
         return match
