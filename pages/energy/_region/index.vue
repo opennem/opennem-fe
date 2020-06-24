@@ -970,45 +970,30 @@ export default {
 
       if (this.interval === 'Week') {
         const incompletes = []
-        const finalDate = this.dataset[this.dataset.length - 2].date
-        if (aSD > dStart) {
+        const filtered = this.dataset.filter(d => d._isIncompleteBucket)
+        filtered.forEach(f => {
           incompletes.push({
-            start: dStart,
-            end: dStart + 604800000
+            start: f.date,
+            end: moment(f.date)
+              .add(1, 'week')
+              .valueOf()
           })
-        }
-        if (aLD < finalDate) {
-          incompletes.push({
-            start: finalDate - 604800000,
-            end: finalDate
-          })
-        }
+        })
+
         return incompletes
       }
 
       if (this.range === '1Y' && this.interval === 'Month') {
         const incompletes = []
-        aLD = moment(aLD)
-        const mDEnd = moment(dEnd).subtract(1, 'day')
-        if (moment(aSD).valueOf() > moment(dStart).valueOf()) {
+        const filtered = this.dataset.filter(d => d._isIncompleteBucket)
+        filtered.forEach(f => {
           incompletes.push({
-            start: dStart,
-            end: moment(dStart)
+            start: f.date,
+            end: moment(f.date)
               .add(1, 'month')
               .valueOf()
           })
-        }
-        if (aLD.valueOf() < mDEnd.valueOf()) {
-          const incompleteStart = moment({
-            year: mDEnd.year(),
-            month: mDEnd.month(),
-            date: 1
-          })
-          incompletes.push({
-            start: incompleteStart.valueOf(),
-            end: dEnd
-          })
-        }
+        })
         return incompletes
       }
 
@@ -1111,6 +1096,7 @@ export default {
         }
         return incompletes
       }
+
       return []
     },
 
