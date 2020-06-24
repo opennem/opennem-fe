@@ -349,13 +349,10 @@ export default {
       if (this.curve === 'step') {
         return this.dataset
       }
-      const newData = []
-      this.dataset.forEach(d => {
-        if (!d._isIncompleteBucket && d._isIncompleteBucket !== null) {
-          newData.push(d)
-        }
-      })
-      return newData
+
+      return this.dataset.filter(
+        d => !d._isIncompleteBucket && d._isIncompleteBucket !== null
+      )
     },
     updatedDatasetTwo() {
       const updated = _cloneDeep(this.datasetTwo)
