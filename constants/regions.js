@@ -42,7 +42,7 @@ export default [
     colour: '#183170'
   },
   {
-    id: 'wa1',
+    id: 'wem',
     abbr: 'WA',
     label: 'Western Australia',
     colour: '#000000'
