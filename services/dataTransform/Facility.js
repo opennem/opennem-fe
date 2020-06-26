@@ -8,7 +8,7 @@ function transformFacilityData(data) {
 
   return stations.map(d => {
     const stationId = d.station_id || ''
-    const regionId = d.region_id.toLowerCase() || ''
+    let regionId = d.region_id.toLowerCase() || ''
     const location = d.location || null
     const units = []
     const duidKeys = Object.keys(d.duid_data)
@@ -19,6 +19,9 @@ function transformFacilityData(data) {
     const fuelTechRegisteredCap = {}
     const displayName = d.display_name.split('/').join(' / ')
     let generatorCap = 0
+    if (regionId === 'wa1') {
+      regionId = 'wem'
+    }
 
     duidKeys.forEach(unitName => {
       const unit = d.duid_data[unitName]
