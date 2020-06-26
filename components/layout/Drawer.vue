@@ -98,20 +98,14 @@ export default {
     },
 
     showViewLink(view) {
-      if (
-        (this.regionId === 'all' || this.regionId === 'wa1') &&
-        view === 'energy'
-      ) {
+      if (this.regionId === 'all' && view === 'energy') {
         return false
       }
       return true
     },
 
     showRegionLink(regionId) {
-      if (
-        (regionId === 'all' || regionId === 'wa1') &&
-        this.currentView === 'energy'
-      ) {
+      if (regionId === 'all' && this.currentView === 'energy') {
         return false
       }
       return true

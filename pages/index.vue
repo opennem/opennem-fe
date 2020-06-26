@@ -49,7 +49,7 @@ export default {
         this.$router.push({ path: 'facilities/vic1' })
         break
       case '#/region/wa/facilities':
-        this.$router.push({ path: 'facilities/wa1' })
+        this.$router.push({ path: 'facilities/wem' })
         break
 
       case '#/widget':

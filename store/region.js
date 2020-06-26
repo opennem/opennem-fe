@@ -7,7 +7,7 @@ import * as FUEL_TECHS from '@/constants/fuelTech.js'
 import PerfTime from '@/plugins/perfTime.js'
 
 const Regions = REGIONS.filter(
-  r => r.id !== 'all' && r.id !== 'nem' && r.id !== 'wa1'
+  r => r.id !== 'all' && r.id !== 'nem' && r.id !== 'wem'
 )
 const host = window.location.host
 let hostEnv = 'dev'

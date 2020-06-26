@@ -221,7 +221,7 @@ export default {
       const that = this
       let regionIds = [this.regionId]
       if (this.regionId === 'all') {
-        regionIds = ['nsw1', 'qld1', 'sa1', 'tas1', 'vic1', 'wa1']
+        regionIds = ['nsw1', 'qld1', 'sa1', 'tas1', 'vic1', 'wem']
       } else if (this.regionId === 'nem') {
         regionIds = ['nsw1', 'qld1', 'sa1', 'tas1', 'vic1']
       }
