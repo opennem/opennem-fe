@@ -190,6 +190,7 @@ module.exports = {
     '~plugins/mixins.js',
     '~plugins/filters.js',
     '~plugins/tooltip.js',
+    '~plugins/sentry.js',
     { src: '~/plugins/leaflet', ssr: false }
   ],
 
