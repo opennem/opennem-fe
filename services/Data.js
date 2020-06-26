@@ -15,11 +15,6 @@ export default {
   getEnergyUrls(region, range, hostEnv) {
     const prod = hostEnv === 'prod'
     const prependString = getPrependString(region, range, prod)
-    console.log(prependString)
-
-    let prepend = hostEnv === 'dev' ? '/testing' : ''
-    let isProd = hostEnv === 'prod'
-
     const thisFullYear = new Date().getFullYear()
     const urls = []
 
