@@ -6,9 +6,7 @@ import REGIONS from '@/constants/regions.js'
 import * as FUEL_TECHS from '@/constants/fuelTech.js'
 import PerfTime from '@/plugins/perfTime.js'
 
-const Regions = REGIONS.filter(
-  r => r.id !== 'all' && r.id !== 'nem' && r.id !== 'wem'
-)
+const Regions = REGIONS.filter(r => r.id !== 'all' && r.id !== 'nem')
 const host = window.location.host
 let hostEnv = 'dev'
 if (host === 'opennem.org.au') {
