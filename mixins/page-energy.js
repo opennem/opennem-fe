@@ -339,12 +339,15 @@ const pageEnergyMixin = {
       }
 
       // duplicate last valid EV value to render the step line correctly
-      const evDatasetLength = emissionsIntensityDataset.length
-      const lastValidEI =
-        emissionsIntensityDataset[evDatasetLength - 2]._emissionsIntensity
-      emissionsIntensityDataset[
-        evDatasetLength - 1
-      ]._emissionsIntensity = lastValidEI
+      if (this.emissionStackedAreaDomains.length > 0) {
+        const evLength = emissionsIntensityDataset.length
+        const lastValidEI =
+          emissionsIntensityDataset[evLength - 2]._emissionsIntensity
+
+        emissionsIntensityDataset[
+          evLength - 1
+        ]._emissionsIntensity = lastValidEI
+      }
 
       return {
         energyPercentDataset,
