@@ -932,9 +932,6 @@ export default {
       const valueFormat = d3Format(',.1f')
       const time = new Date(date).getTime()
       const nextDatePeriod = this.findNextDatePeriod(time)
-      let total = null
-      let label = ''
-      let value = 0
 
       const xDate = this.x(date)
       const nextPeriod = this.x(nextDatePeriod)
@@ -951,10 +948,6 @@ export default {
         false,
         true
       )
-
-      if (find) {
-        total = valueFormat(find._total)
-      }
 
       this.positionCursorLine(xDate, fTime, bandwidth)
     },
