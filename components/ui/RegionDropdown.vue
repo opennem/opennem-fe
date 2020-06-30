@@ -34,7 +34,7 @@
 
           <nuxt-link
             :to="`/${currentView}/nsw1/`" 
-            class="dropdown-item dropdown-item-child" 
+            class="dropdown-item dropdown-item-child dropdown-item-first-child" 
             @click.native="handleClick">New South Wales</nuxt-link>
           <nuxt-link
             :to="`/${currentView}/qld1/`" 
@@ -50,7 +50,7 @@
             @click.native="handleClick">Tasmania</nuxt-link>
           <nuxt-link
             :to="`/${currentView}/vic1/`" 
-            class="dropdown-item dropdown-item-child" 
+            class="dropdown-item dropdown-item-child dropdown-item-last-child" 
             @click.native="handleClick">Victoria</nuxt-link>
           <nuxt-link
             :to="`/${currentView}/wem/`" 
@@ -116,6 +116,7 @@ $dropdown-border-colour-hover: #999;
 .dropdown-menu {
   display: block;
 }
+
 .dropdown-item-child {
   padding-left: 2rem;
 
@@ -123,7 +124,7 @@ $dropdown-border-colour-hover: #999;
     content: '';
     border-left: 1px dashed $dropdown-border-colour;
     position: absolute;
-    top: 0;
+    top: 1px;
     bottom: 0;
     left: 1.1rem;
   }
@@ -140,6 +141,14 @@ $dropdown-border-colour-hover: #999;
   &:hover::before,
   &:hover::after {
     border-color: $dropdown-border-colour-hover;
+  }
+
+  &.dropdown-item-first-child::before {
+    top: 0px;
+  }
+
+  &.dropdown-item-last-child::before {
+    bottom: 17px;
   }
 }
 </style>
