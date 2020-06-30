@@ -111,7 +111,6 @@
             :focus-on="focusOn"
             :range="range"
             :interval="interval"
-            :mouse-loc="mouseLoc"
             :curve="isEnergyType ? chartEnergyCurve : chartPowerCurve"
             :y-min="energyYMin"
             :y-max="energyYMax"
@@ -125,7 +124,6 @@
             :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
             :dataset-two-colour="renewablesLineColour"
             class="vis-chart"
-            @eventChange="handleEventChange"
             @dateOver="handleDateOver"
             @domainOver="handleDomainOver"
             @svgClick="handleSvgClick"
@@ -190,7 +188,6 @@
             :focus-on="focusOn"
             :range="range"
             :interval="interval"
-            :mouse-loc="mouseLoc"
             :curve="isEnergyType ? chartEnergyCurve : chartPowerCurve"
             :y-min="energyYMin"
             :y-max="energyYMax"
@@ -205,7 +202,6 @@
             :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
             :dataset-two-colour="renewablesLineColour"
             class="vis-chart"
-            @eventChange="handleEventChange"
             @dateOver="handleDateOver"
             @domainOver="handleDomainOver"
             @svgClick="handleSvgClick"
@@ -295,7 +291,6 @@
             :focus-on="focusOn"
             :range="range"
             :interval="interval"
-            :mouse-loc="mouseLoc"
             :curve="'step'"
             :vis-height="200"
             :show-x-axis="false"
@@ -308,7 +303,6 @@
             :incomplete-intervals="incompleteIntervals"
             :y-axis-ticks="5"
             class="emissions-volume-vis vis-chart"
-            @eventChange="handleEventChange"
             @dateOver="handleDateOver"
             @domainOver="handleEmissionsDomainOver"
             @svgClick="handleSvgClick"
@@ -366,7 +360,6 @@
             :focus-on="focusOn"
             :range="range"
             :interval="interval"
-            :mouse-loc="mouseLoc"
             :show-x-axis="false"
             :show-tooltip="false"
             :vis-height="120"
@@ -378,7 +371,6 @@
             :zoomed="zoomed"
             :x-guides="xGuides"
             class="emissions-intensity-vis vis-chart"
-            @eventChange="handleEventChange"
             @dateOver="handleDateOver"
             @svgClick="handleSvgClick"
           />
@@ -436,7 +428,6 @@
             :focus-on="focusOn"
             :range="range"
             :interval="interval"
-            :mouse-loc="mouseLoc"
             :show-tooltip="false"
             :curve="'step'"
             :show-y-axis="false"
@@ -450,7 +441,6 @@
             :x-guides="xGuides"
             :y-guides="[300, 2000, 6000, 10000, 14000]"
             class="price-pos-vis vis-chart"
-            @eventChange="handleEventChange"
             @dateOver="handleDateOver"
             @svgClick="handleSvgClick"
           />
@@ -466,7 +456,6 @@
             :focus-on="focusOn"
             :range="range"
             :interval="interval"
-            :mouse-loc="mouseLoc"
             :show-tooltip="false"
             :curve="'step'"
             :show-y-axis="false"
@@ -480,7 +469,6 @@
             :x-guides="xGuides"
             :y-guides="[0, 100, 200, 300]"
             class="price-vis vis-chart"
-            @eventChange="handleEventChange"
             @dateOver="handleDateOver"
             @svgClick="handleSvgClick"
           />
@@ -496,7 +484,6 @@
             :focus-on="focusOn"
             :range="range"
             :interval="interval"
-            :mouse-loc="mouseLoc"
             :curve="'step'"
             :show-y-axis="false"
             :y-axis-log="true"
@@ -511,7 +498,6 @@
             :x-guides="xGuides"
             :y-guides="[-60, -400]"
             class="price-neg-vis vis-chart"
-            @eventChange="handleEventChange"
             @dateOver="handleDateOver"
             @svgClick="handleSvgClick"
           />
@@ -585,7 +571,6 @@
             :focus-on="focusOn"
             :range="range"
             :interval="interval"
-            :mouse-loc="mouseLoc"
             :curve="'smooth'"
             :y-axis-log="false"
             :y-min="0"
@@ -597,7 +582,6 @@
             :zoomed="zoomed"
             :x-guides="xGuides"
             class="temperature-vis vis-chart"
-            @eventChange="handleEventChange"
             @dateOver="handleDateOver"
             @svgClick="handleSvgClick"
           />
@@ -1815,11 +1799,6 @@ export default {
       this.filteredDataset = this.dataset
     },
 
-    handleEventChange(evt) {
-      this.mouseLoc = d3Mouse(evt)
-      this.tooltipLeft = this.mouseLoc[0]
-    },
-
     handleDateOver(evt, date) {
       const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
       if (date && this.interval === 'Fin Year') {
@@ -1846,7 +1825,7 @@ export default {
         date.setMonth(periodMonth + 1)
       }
       const closestDate = DateDisplay.snapToClosestInterval(this.interval, date)
-      EventBus.$emit('vis.mousemove', evt, this.dataset, closestDate)
+      this.hoverDate = closestDate
     },
 
     handleDomainOver(domain) {
@@ -1857,7 +1836,7 @@ export default {
       this.hoverEmissionVolumeDomain = domain
     },
 
-    handleVisMouseMove(evt, dataset, date) {
+    handleVisMouseMove(date) {
       this.hoverDate = date
     },
 
