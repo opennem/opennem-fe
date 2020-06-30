@@ -44,6 +44,10 @@
         </nuxt-link>
       </div>
 
+      <div class="app-options">
+        <consumption-generation-toggle />
+      </div>
+
       <app-footer />
     </div>
   </div>
@@ -53,11 +57,13 @@
 import VIEWS from '~/constants/views.js'
 import REGIONS from '~/constants/regions.js'
 import Logo from '~/components/ui/Logo'
+import ConsumptionGenerationToggle from '~/components/ui/ConsumptionGenerationToggle'
 import AppFooter from '~/components/layout/AppFooter'
 
 export default {
   components: {
     Logo,
+    ConsumptionGenerationToggle,
     AppFooter
   },
 
@@ -198,6 +204,9 @@ export default {
       color: rgba(100, 100, 100, 0.5);
     }
   }
+}
+.app-options {
+  padding: 1rem;
 }
 
 ::v-deep footer {
