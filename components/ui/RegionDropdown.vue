@@ -52,9 +52,6 @@
             :to="`/${currentView}/vic1/`" 
             class="dropdown-item dropdown-item-child" 
             @click.native="handleClick">Victoria</nuxt-link>
-          <hr 
-            class="dropdown-divider" 
-            style="margin-top: 0;">
           <nuxt-link
             :to="`/${currentView}/wem/`" 
             class="dropdown-item" 
@@ -113,18 +110,36 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$dropdown-border-colour: #dedede;
+$dropdown-border-colour-hover: #999;
+
 .dropdown-menu {
   display: block;
 }
 .dropdown-item-child {
   padding-left: 2rem;
+
   &::before {
     content: '';
-    border-left: 1px dashed #eee;
+    border-left: 1px dashed $dropdown-border-colour;
     position: absolute;
     top: 0;
     bottom: 0;
-    left: 1.3rem;
+    left: 1.1rem;
+  }
+  &::after {
+    content: '';
+    border-bottom: 1px dashed $dropdown-border-colour;
+    position: absolute;
+    width: 7px;
+    top: 0;
+    bottom: 17px;
+    left: 1.1rem;
+  }
+
+  &:hover::before,
+  &:hover::after {
+    border-color: $dropdown-border-colour-hover;
   }
 }
 </style>
