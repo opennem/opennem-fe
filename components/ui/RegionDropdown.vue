@@ -18,15 +18,47 @@
         class="dropdown-menu">
         <div class="dropdown-content">
           <nuxt-link
-            v-for="region in regions"
-            v-show="showRegionLink(region.id)"
-            :key="region.id" 
-            :to="`/${currentView}/${region.id}/`"
-            :class="{'has-divider': region.id === 'nem'}"
-            class="dropdown-item"
-            @click.native="handleClick">
-            {{ region.label }}
-          </nuxt-link>
+            v-show="showRegionLink('all')"
+            :to="`/${currentView}/all/`" 
+            class="dropdown-item" 
+            @click.native="handleClick">All Regions</nuxt-link>
+          
+          <hr 
+            v-show="showRegionLink('all')" 
+            class="dropdown-divider">
+          
+          <nuxt-link
+            :to="`/${currentView}/nem/`" 
+            class="dropdown-item" 
+            @click.native="handleClick">NEM</nuxt-link>
+
+          <nuxt-link
+            :to="`/${currentView}/nsw1/`" 
+            class="dropdown-item dropdown-item-child" 
+            @click.native="handleClick">New South Wales</nuxt-link>
+          <nuxt-link
+            :to="`/${currentView}/qld1/`" 
+            class="dropdown-item dropdown-item-child" 
+            @click.native="handleClick">Queensland</nuxt-link>
+          <nuxt-link
+            :to="`/${currentView}/sa1/`" 
+            class="dropdown-item dropdown-item-child" 
+            @click.native="handleClick">South Australia</nuxt-link>
+          <nuxt-link
+            :to="`/${currentView}/tas1/`" 
+            class="dropdown-item dropdown-item-child" 
+            @click.native="handleClick">Tasmania</nuxt-link>
+          <nuxt-link
+            :to="`/${currentView}/vic1/`" 
+            class="dropdown-item dropdown-item-child" 
+            @click.native="handleClick">Victoria</nuxt-link>
+          <hr 
+            class="dropdown-divider" 
+            style="margin-top: 0;">
+          <nuxt-link
+            :to="`/${currentView}/wem/`" 
+            class="dropdown-item" 
+            @click.native="handleClick">Western Australia</nuxt-link>
         </div>
       </div>
     </transition> 
@@ -81,10 +113,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.has-divider {
-  border-bottom: 1px solid #ddd;
-}
 .dropdown-menu {
   display: block;
+}
+.dropdown-item-child {
+  padding-left: 2rem;
+  &::before {
+    content: '';
+    border-left: 1px dashed #eee;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 1.3rem;
+  }
 }
 </style>
