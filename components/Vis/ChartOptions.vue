@@ -173,6 +173,7 @@ export default {
   flex-wrap: nowrap;
 }
 .button {
+  font-weight: 700;
   min-width: 85px;
   &:not(.is-selected) {
     background-color: #ece9e6;
@@ -209,12 +210,13 @@ export default {
     .close-btn {
       position: absolute;
       right: -8px;
-      top: -6px;
+      top: -3px;
       border: 4px solid #fff;
       min-width: 22px;
       max-width: 22px;
       min-height: 22px;
       max-height: 22px;
+      background-color: #999;
     }
   }
 }
