@@ -1,7 +1,8 @@
-$button-background: hsla(0,0%,100%,.5);
-$button-hover-background: hsla(0,0%,100%,.9);
+$button-background: hsla(0, 0%, 100%, .5);
+$button-hover-background: hsla(0, 0%, 100%, .9);
 
 .buttons {
+
   &:not(:last-child),
   &:last-child,
   .button {
@@ -22,6 +23,7 @@ $button-hover-background: hsla(0,0%,100%,.9);
 
   &.is-small {
     font-size: 0.76rem;
+    border-radius: 4px;
   }
 
   &:hover {

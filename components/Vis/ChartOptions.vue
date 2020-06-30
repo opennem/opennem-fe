@@ -152,7 +152,7 @@ export default {
 .chart-options-wrapper {
   position: relative;
   .chart-options-buttons {
-    margin-bottom: 0.7rem;
+    margin-bottom: 1px;
 
     &:last-child,
     &.is-chart-hidden {
@@ -173,6 +173,7 @@ export default {
   flex-wrap: nowrap;
 }
 .button {
+  min-width: 85px;
   &:not(.is-selected) {
     background-color: #ece9e6;
     &:hover {
@@ -188,7 +189,6 @@ export default {
   display: block;
   left: -10px;
   margin-top: 2px;
-  width: 312px;
 
   &::after {
     content: '';
@@ -203,25 +203,18 @@ export default {
   }
 
   .dropdown-content {
-    padding: 1rem 1.8rem 1rem 1rem;
+    padding: 6px 12px 6px 6px;
     box-shadow: 0 3px 3px rgba(10, 10, 10, 0.1);
 
     .close-btn {
       position: absolute;
-      right: 4px;
-      top: 8px;
-    }
-  }
-
-  .dropdown-item {
-    font-family: $family-primary;
-    font-weight: normal;
-    border-radius: 0;
-    min-width: 40px;
-    padding-right: 1rem;
-    &.is-selected {
-      background-color: $opennem-link-color;
-      color: #fff;
+      right: -8px;
+      top: -6px;
+      border: 4px solid #fff;
+      min-width: 22px;
+      max-width: 22px;
+      min-height: 22px;
+      max-height: 22px;
     }
   }
 }
