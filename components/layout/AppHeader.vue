@@ -25,20 +25,9 @@
 
     <div 
       v-if="!isFacilitiesView" 
-      :class="{ 'hide': openDrawer }" 
+      :class="{ 'hide': widthBreak }" 
       class="more-buttons">
-      <div class="buttons has-addons">
-        <span
-          :class="{ 'is-selected': isConsumption }"
-          class="button is-rounded"
-          @click="handlePercentContributionToClick"
-        >Consumption</span>
-        <span
-          :class="{ 'is-selected': isGeneration }"
-          class="button is-rounded"
-          @click="handlePercentContributionToClick"
-        >Generation</span>
-      </div>
+      <consumption-generation-toggle />
 
       <button
         v-if="(focusOn || compareDifference) && isEnergy"
@@ -101,6 +90,7 @@ import { mixin as clickaway } from 'vue-clickaway'
 import REGIONS from '~/constants/regions.js'
 import AppLogo from '~/components/ui/Logo'
 import ViewDropdown from '~/components/ui/ViewDropdown'
+import ConsumptionGenerationToggle from '~/components/ui/ConsumptionGenerationToggle'
 import RegionDropdown from '~/components/ui/RegionDropdown'
 import AppDrawer from '~/components/layout/Drawer'
 
@@ -110,6 +100,7 @@ export default {
     AppLogo,
     ViewDropdown,
     RegionDropdown,
+    ConsumptionGenerationToggle,
     AppDrawer
   },
   mixins: [clickaway],
@@ -251,15 +242,6 @@ export default {
     isEnergy() {
       return this.$store.getters.energyChartType === 'energy'
     },
-    percentContributionTo() {
-      return this.$store.getters.percentContributionTo
-    },
-    isConsumption() {
-      return this.percentContributionTo === 'demand'
-    },
-    isGeneration() {
-      return this.percentContributionTo === 'generation'
-    },
     compareDifference() {
       return this.$store.getters.compareDifference
     },
@@ -307,13 +289,6 @@ export default {
       setTimeout(() => {
         this.generating = false
       }, 1000)
-    },
-    handlePercentContributionToClick() {
-      if (this.isConsumption) {
-        this.$store.dispatch('percentContributionTo', 'generation')
-      } else {
-        this.$store.dispatch('percentContributionTo', 'demand')
-      }
     },
     handleCompareClick() {
       this.$store.dispatch('compareDifference', !this.compareDifference)
