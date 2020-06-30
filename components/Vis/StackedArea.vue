@@ -447,9 +447,10 @@ export default {
       this.update()
       this.resizeRedraw()
     },
-    updatedDatasetTwo() {
-      this.update()
-      this.resizeRedraw()
+    updatedDatasetTwo(updated) {
+      if (updated.length > 0) {
+        this.drawDatasetTwo()
+      }
     },
     visHeight(newValue) {
       this.svgHeight = newValue
@@ -768,19 +769,6 @@ export default {
         this.y.domain([yMin, yMax]).nice()
       }
 
-      let y2Max = max(this.updatedDatasetTwo, d => d.value)
-      let y2Height = this.y(0)
-      if (y2Max < 100) {
-        y2Max = 100
-      }
-      if (y2Height <= 0 || this.domains.length === 0) {
-        y2Height = this.height
-      }
-
-      this.y2
-        .range([y2Height, 0])
-        .domain([0, y2Max])
-        .nice()
       this.z.range(this.domainColours).domain(this.domainIds)
 
       if (yMax <= 10) {
@@ -805,6 +793,66 @@ export default {
           .call(this.customYAxis)
           .call(g => g.selectAll('.y-axis-tick .tick').style('opacity', '1'))
       }
+
+      this.updateGuides()
+
+      // Setup the keys in the stack so it knows how to draw the area
+      this.stack.keys(this.domainIds).value((d, key) => (d[key] ? d[key] : 0))
+      this.area.curve(this.curveType)
+
+      // Remove Area
+      this.$stackedAreaGroup.selectAll('path').remove()
+
+      // Generate Stacked Area
+      const stackArea = this.$stackedAreaGroup
+        .selectAll(`.${this.stackedAreaPathClass}`)
+        .data(this.stack(this.updatedDataset))
+      stackArea
+        .enter()
+        .append('path')
+        .attr('id', d => d.key)
+        .attr('class', `${this.stackedAreaPathClass}`)
+        .attr('d', this.area)
+        .attr('stroke-opacity', 0)
+        .attr('stroke-width', 1)
+        .attr('stroke', '#000')
+        .attr('fill', d => {
+          // return `url(#${d.key})`
+          return this.z(d.key)
+        })
+        .style('clip-path', this.clipPathUrl)
+        .style('-webkit-clip-path', this.clipPathUrl)
+        .style('pointer-events', 'auto')
+
+      stackArea.exit().remove()
+
+      // Event handling
+      // - find date and domain
+      this.$stackedAreaGroup
+        .selectAll('path')
+        .on('touchmove mousemove', function(d) {
+          self.$emit('eventChange', this)
+          self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
+          self.$emit('domainOver', d.key)
+        })
+
+      this.drawDatasetTwo()
+    },
+
+    drawDatasetTwo() {
+      let y2Max = max(this.updatedDatasetTwo, d => d.value)
+      let y2Height = this.y(0)
+      if (y2Max < 100) {
+        y2Max = 100
+      }
+      if (y2Height <= 0 || this.domains.length === 0) {
+        y2Height = this.height
+      }
+
+      this.y2
+        .range([y2Height, 0])
+        .domain([0, y2Max])
+        .nice()
 
       if (this.domains.length === 0) {
         this.yAxis2 = axisLeft(this.y2)
@@ -853,39 +901,8 @@ export default {
           )
       }
 
-      this.updateGuides()
-
-      // Setup the keys in the stack so it knows how to draw the area
-      this.stack.keys(this.domainIds).value((d, key) => (d[key] ? d[key] : 0))
-      this.area.curve(this.curveType)
       this.line.curve(curveMonotoneX)
-
-      // Remove Area
-      this.$stackedAreaGroup.selectAll('path').remove()
       this.$lineGroup.selectAll('path').remove()
-
-      // Generate Stacked Area
-      const stackArea = this.$stackedAreaGroup
-        .selectAll(`.${this.stackedAreaPathClass}`)
-        .data(this.stack(this.updatedDataset))
-      stackArea
-        .enter()
-        .append('path')
-        .attr('id', d => d.key)
-        .attr('class', `${this.stackedAreaPathClass}`)
-        .attr('d', this.area)
-        .attr('stroke-opacity', 0)
-        .attr('stroke-width', 1)
-        .attr('stroke', '#000')
-        .attr('fill', d => {
-          // return `url(#${d.key})`
-          return this.z(d.key)
-        })
-        .style('clip-path', this.clipPathUrl)
-        .style('-webkit-clip-path', this.clipPathUrl)
-        .style('pointer-events', 'auto')
-
-      stackArea.exit().remove()
 
       // Generate Line
       this.$lineGroup
@@ -898,20 +915,6 @@ export default {
         .style('filter', 'url(#shadow)')
         .style('clip-path', this.clipPathUrl)
         .style('-webkit-clip-path', this.clipPathUrl)
-
-      // Event handling
-      // - find date and domain
-      this.$stackedAreaGroup
-        .selectAll('path')
-        .on('mousemove touchmove', function(d) {
-          self.$emit('eventChange', this)
-          self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
-          self.$emit('domainOver', d.key)
-        })
-        .on('mouseleave', function() {
-          self.$emit('dateOver', this, null)
-          self.$emit('domainOver', null)
-        })
     },
 
     findNextDatePeriod(time) {
