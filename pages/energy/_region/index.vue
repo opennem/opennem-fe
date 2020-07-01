@@ -982,31 +982,21 @@ export default {
       }
 
       if (this.interval === 'Season' || this.interval === 'Quarter') {
-        const incompletes = []
         const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
         if (!isFilter) {
-          aLD = moment(aLD).add(1, 'month')
-          const isSeason = this.interval === 'Season'
-          const actualEndMonth = isSeason
-            ? getSeasonStartMonth(aLD.month())
-            : getQuarterStartMonth(aLD.month())
-          if (moment(aSD).month() > moment(dStart).month()) {
+          const incompletes = []
+          const filtered = this.dataset.filter(d => d._isIncompleteBucket)
+          filtered.forEach(f => {
             incompletes.push({
-              start: dStart,
-              end: moment(dStart)
+              start: f.date,
+              end: moment(f.date)
                 .add(3, 'month')
                 .valueOf()
             })
-          }
-          if (actualEndMonth - 1 <= moment(dEnd).month()) {
-            incompletes.push({
-              start: moment(dEnd)
-                .subtract(3, 'month')
-                .valueOf(),
-              end: dEnd
-            })
-          }
+          })
+          return incompletes
         } else {
+          const incompletes = []
           aLD = moment(aLD).add(1, 'year')
           const isSeason = this.interval === 'Season'
           const actualStartMonth = isSeason
@@ -1043,41 +1033,35 @@ export default {
               })
             }
           }
+          return incompletes
         }
-        return incompletes
       }
 
       if (this.interval === 'Half Year') {
         const incompletes = []
-        if (aSD > dStart) {
+        const filtered = this.dataset.filter(d => d._isIncompleteBucket)
+        filtered.forEach(f => {
           incompletes.push({
-            start: dStart,
-            end: dStart + 15552000000
+            start: f.date,
+            end: moment(f.date)
+              .add(6, 'month')
+              .valueOf()
           })
-        }
-        if (aLD < dEnd) {
-          incompletes.push({
-            start: dEnd - 15552000000,
-            end: dEnd
-          })
-        }
+        })
         return incompletes
       }
 
       if (this.interval === 'Fin Year' || this.interval === 'Year') {
         const incompletes = []
-        if (aSD > dStart) {
+        const filtered = this.dataset.filter(d => d._isIncompleteBucket)
+        filtered.forEach(f => {
           incompletes.push({
-            start: dStart,
-            end: dStart + 31557600000
+            start: f.date,
+            end: moment(f.date)
+              .add(1, 'year')
+              .valueOf()
           })
-        }
-        if (aLD < dEnd) {
-          incompletes.push({
-            start: dEnd - 31557600000,
-            end: dEnd
-          })
-        }
+        })
         return incompletes
       }
 

@@ -1,11 +1,7 @@
 import moment from 'moment'
 import { timeMonth } from 'd3-time'
 import rollUp from './roll-up'
-import {
-  setStartOfMonth,
-  setEndOfMonth,
-  setStartOfFinancialYear
-} from './roll-up-helpers'
+import { setStartOfFinancialYear } from './roll-up-helpers'
 
 export default function(ids, energyDomains, data) {
   let currentQ = moment(data[0].date).quarter()

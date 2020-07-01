@@ -18,16 +18,6 @@ export function setStartOfMonth(date, currentMonth) {
   return d
 }
 
-export function setEndOfMonth(date) {
-  const d = moment(date)
-  d.set('month', date.month() + 1)
-  d.set('date', date.day())
-  d.set('hour', 0)
-  d.set('minute', 0)
-  d.set('second', 0)
-  return d
-}
-
 export function setStartOfYear(date) {
   const d = moment(date)
   d.set('month', 0)
