@@ -1998,8 +1998,11 @@ export default {
 }
 .region-section {
   max-width: 1600px;
-  margin: 1rem auto 0;
+  margin: 0.5rem auto 0;
   position: relative;
+  @include desktop {
+    margin-top: 1rem;
+  }
 }
 .vis-chart {
   // margin-right: 10px;
