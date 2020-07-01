@@ -30,14 +30,72 @@
 
       <div class="menu">
         <nuxt-link
-          v-for="region in regions"
-          v-show="showRegionLink(region.id)"
-          :key="region.id"
-          :to="`/${currentView}/${region.id}/`"
-          :class="{'has-divider': region.id === 'nem'}"
-          class="menu-item"
-        >
-          {{ region.label }}
+          v-show="showRegionLink('all')"
+          :to="`/${currentView}/all/`" 
+          class="menu-item">
+          All Regions
+          <span class="icon">
+            <i class="fal fa-chevron-right" />
+          </span>
+        </nuxt-link>
+          
+        <hr 
+          v-show="showRegionLink('all')" 
+          class="dropdown-divider">
+          
+        <nuxt-link
+          :to="`/${currentView}/nem/`" 
+          class="menu-item">
+          NEM
+          <span class="icon">
+            <i class="fal fa-chevron-right" />
+          </span>
+        </nuxt-link>
+
+        <nuxt-link
+          :to="`/${currentView}/nsw1/`" 
+          class="menu-item menu-item-child menu-item-first-child">
+          New South Wales
+          <span class="icon">
+            <i class="fal fa-chevron-right" />
+          </span>
+        </nuxt-link>
+        <nuxt-link
+          :to="`/${currentView}/qld1/`" 
+          class="menu-item menu-item-child">
+          Queensland
+          <span class="icon">
+            <i class="fal fa-chevron-right" />
+          </span>
+        </nuxt-link>
+        <nuxt-link
+          :to="`/${currentView}/sa1/`" 
+          class="menu-item menu-item-child">
+          South Australia
+          <span class="icon">
+            <i class="fal fa-chevron-right" />
+          </span>
+        </nuxt-link>
+        <nuxt-link
+          :to="`/${currentView}/tas1/`" 
+          class="menu-item menu-item-child">
+          Tasmania
+          <span class="icon">
+            <i class="fal fa-chevron-right" />
+          </span>
+        </nuxt-link>
+        <nuxt-link
+          :to="`/${currentView}/vic1/`" 
+          class="menu-item menu-item-child menu-item-last-child">
+          Victoria
+          <span class="icon">
+            <i class="fal fa-chevron-right" />
+          </span>
+        </nuxt-link>
+        <nuxt-link
+          :to="`/${currentView}/wem/`" 
+          class="menu-item">
+          Western Australia
           <span class="icon">
             <i class="fal fa-chevron-right" />
           </span>
@@ -45,7 +103,10 @@
       </div>
 
       <div class="app-options">
-        <consumption-generation-toggle />
+        <div class="control">
+          <label>Contribution to</label>
+          <consumption-generation-toggle />
+        </div>
       </div>
 
       <app-footer />
@@ -122,6 +183,9 @@ export default {
 
 <style lang="scss" scoped>
 @import '~/assets/scss/variables.scss';
+
+$menu-border-colour: #ccc;
+$menu-border-colour-hover: #999;
 
 .drawer-wrapper {
   position: fixed;
@@ -204,9 +268,62 @@ export default {
       color: rgba(100, 100, 100, 0.5);
     }
   }
+
+  .menu-item-child {
+    padding-left: 2.5rem;
+    position: relative;
+
+    &::before {
+      content: '';
+      border-left: 1px dashed $menu-border-colour;
+      position: absolute;
+      top: 1px;
+      bottom: 0;
+      left: 1.5rem;
+    }
+    &::after {
+      content: '';
+      border-bottom: 1px dashed $menu-border-colour;
+      position: absolute;
+      width: 7px;
+      top: 0;
+      bottom: 14px;
+      left: 1.5rem;
+    }
+
+    &.nuxt-link-active::after {
+      border-color: $opennem-link-color;
+    }
+
+    &:hover::before,
+    &:hover::after {
+      border-color: $menu-border-colour-hover;
+    }
+
+    &.menu-item-first-child::before {
+      top: 0px;
+    }
+
+    &.menu-item-last-child::before {
+      bottom: 14px;
+    }
+  }
 }
 .app-options {
   padding: 1rem;
+
+  .control {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    label {
+      font-size: 0.8em;
+      font-family: $family-secondary;
+      font-weight: bold;
+      color: #333;
+    }
+  }
 }
 
 ::v-deep footer {
