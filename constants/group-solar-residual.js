@@ -29,7 +29,8 @@ FUEL_TECH_GROUP[OTHER] = [
   FT.BROWN_COAL,
   FT.WIND,
   FT.HYDRO,
-  FT.BIOMASS
+  FT.BIOMASS,
+  FT.BIOENERGY_BIOGAS
 ]
 
 // Fuel tech group order
