@@ -310,7 +310,10 @@ $menu-border-colour-hover: #999;
   }
 }
 .app-options {
-  padding: 1rem;
+  padding: 0.5rem 0.6rem;
+  margin: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
 
   .control {
     display: flex;
