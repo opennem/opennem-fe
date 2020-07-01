@@ -159,7 +159,12 @@ const pageEnergyCreated = {
         }, 200)
       )
     })
-    this.fetchData(this.regionId, this.range)
+
+    if (this.queryStart) {
+      this.fetchDataByYearWeek()
+    } else {
+      this.fetchData(this.regionId, this.range)
+    }
     this.mounted = true
   },
 
