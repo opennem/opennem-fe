@@ -944,6 +944,8 @@ export default {
         }
       }
 
+      if (this.dataset.length < 1) return []
+
       let dStart = this.dataset[0].date
       let dStartMoment = moment(dStart)
       const dEnd = this.dataset[this.dataset.length - 1].date
@@ -1724,6 +1726,10 @@ export default {
           break
         default:
           console.log('nothing yet')
+      }
+
+      if (this.regionId === 'wem' && this.isPowerRange) {
+        interval = '30m'
       }
       this.setDateFilter([])
       this.compareData = []

@@ -186,6 +186,16 @@ export const getters = {
         return 'energy'
     }
   },
+  isPowerRange: state => {
+    switch (state.range) {
+      case '1D':
+      case '3D':
+      case '7D':
+        return true
+      default:
+        return false
+    }
+  },
   chartUnit: state => {
     switch (state.range) {
       case '1D':

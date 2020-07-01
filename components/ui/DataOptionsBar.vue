@@ -77,9 +77,23 @@ export default {
   },
 
   computed: {
+    regionId() {
+      return this.$route.params.region
+    },
+    isPowerRange() {
+      return (
+        this.selectedRange === '1D' ||
+        this.selectedRange === '3D' ||
+        this.selectedRange === '7D'
+      )
+    },
     selectedRangeIntervals() {
       const range = this.ranges.find(r => r.range === this.selectedRange)
-      return range ? range.intervals : null
+      let intervals = range ? range.intervals : null
+      if (this.regionId === 'wem' && this.isPowerRange) {
+        intervals = ['30m']
+      }
+      return intervals
     },
     filterPeriod() {
       return this.$store.getters.filterPeriod

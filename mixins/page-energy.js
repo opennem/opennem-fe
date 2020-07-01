@@ -40,6 +40,7 @@ const pageEnergyMixin = {
       hiddenFuelTechs: 'hiddenFuelTechs',
       percentContributionTo: 'percentContributionTo',
       energyCurveType: 'energyCurveType',
+      isPowerRange: 'isPowerRange',
       step: 'step',
       chartEnergyType: 'visInteract/chartEnergyType',
       chartEnergyYAxis: 'visInteract/chartEnergyYAxis',

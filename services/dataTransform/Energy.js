@@ -338,11 +338,18 @@ export default {
     return new Promise(resolve => {
       let data = []
       const promises = []
-      const shouldInterpolate =
-        range === '1D' || range === '3D' || range === '7D'
+      let shouldInterpolate = range === '1D' || range === '3D' || range === '7D'
 
       let lastDate = null
-      if (res.length) {
+      let isWARegion = false
+      if (res.length > 0) {
+        try {
+          const resData = res[res.length - 1].data || res[res.length - 1]
+          isWARegion = resData[0].region === 'wa'
+        } catch (e) {
+          console.log('There is an issue checking if it is WA region')
+        }
+
         try {
           const resData = res[res.length - 1].data || res[res.length - 1]
           const e = energyDomains[0]
@@ -351,6 +358,10 @@ export default {
         } catch (e) {
           console.log('There is an issue looking for last valid FT date')
         }
+      }
+
+      if (isWARegion) {
+        shouldInterpolate = false
       }
 
       // flatten data for vis and summary
@@ -447,21 +458,25 @@ export default {
           interval,
           intervalOptions
         ).then(rolledUpData => {
-          const dataset = this.calculateMinTotal(
-            rolledUpData,
-            energyDomains,
-            marketValueDomains,
-            emissionDomains,
-            interval,
-            data[0].date,
-            data[data.length - 1].date
-          )
-          // add an empty datapoint, so the stacked step will have something to render
-          if (range !== '1D' && range !== '3D' && range !== '7D') {
-            dataset.push(addEmptyDataPoint(interval, dataset))
-          }
+          if (data.length > 0) {
+            const dataset = this.calculateMinTotal(
+              rolledUpData,
+              energyDomains,
+              marketValueDomains,
+              emissionDomains,
+              interval,
+              data[0].date,
+              data[data.length - 1].date
+            )
+            // add an empty datapoint, so the stacked step will have something to render
+            if (range !== '1D' && range !== '3D' && range !== '7D') {
+              dataset.push(addEmptyDataPoint(interval, dataset))
+            }
 
-          resolve(dataset)
+            resolve(dataset)
+          } else {
+            resolve([])
+          }
         })
       })
     })
