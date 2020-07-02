@@ -149,7 +149,8 @@ const pageEnergyCreated = {
       )
       return mq(query)
     }
-
+    const isPowerRange =
+      this.range === '1D' || this.range === '3D' || this.range === '7D'
     this.isTouchDevice = is_touch_device()
     this.windowWidth = window.innerWidth
     this.visHeight = this.widthBreak ? 578 : 350
@@ -162,7 +163,7 @@ const pageEnergyCreated = {
         }, 200)
       )
     })
-    if (this.regionId === 'wem' && this.isPowerRange) {
+    if (this.regionId === 'wem' && isPowerRange) {
       this.$store.commit('interval', '30m')
     }
     this.fetchData(this.regionId, this.range)

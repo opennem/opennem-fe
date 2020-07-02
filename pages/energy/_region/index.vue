@@ -1703,6 +1703,7 @@ export default {
     },
 
     handleRangeChange(range) {
+      const isPowerRange = range === '1D' || range === '3D' || range === '7D'
       this.$store.dispatch('compareDifference', false)
       this.$store.dispatch('focusOn', false)
       this.ready = false
@@ -1728,7 +1729,7 @@ export default {
           console.log('nothing yet')
       }
 
-      if (this.regionId === 'wem' && this.isPowerRange) {
+      if (this.regionId === 'wem' && isPowerRange) {
         interval = '30m'
       }
       this.setDateFilter([])
