@@ -737,6 +737,58 @@ export default {
   mixins: [PageAllMixin, PageEnergyMixin, PerfLogMixin, PageEnergyCreatedMixin],
 
   computed: {
+    queryStart() {
+      return this.$route.query.start
+    },
+    queryEnd() {
+      return this.$route.query.end
+    },
+    queryDates() {
+      if (this.queryStart && this.queryEnd) {
+        return {
+          startDate: moment(this.queryStart).valueOf(),
+          endDate: moment(this.queryEnd).valueOf()
+        }
+      }
+      return null
+    },
+    queryYearWeek() {
+      function zeroFill(number, width) {
+        width -= number.toString().length
+        if (width > 0) {
+          return (
+            new Array(width + (/\./.test(number) ? 2 : 1)).join('0') + number
+          )
+        }
+        return number + ''
+      }
+
+      const startWeekNum = this.queryStart
+        ? moment(this.queryStart).week()
+        : null
+      const endWeekNum = this.queryEnd ? moment(this.queryEnd).week() : null
+      const queries = []
+
+      if (endWeekNum) {
+        for (let i = startWeekNum; i <= endWeekNum; i++) {
+          const week = zeroFill(i, '2')
+          queries.push(
+            `/power/history/5minute/${this.regionId}_${moment(
+              this.queryStart
+            ).year()}W${week}.json`
+          )
+        }
+      } else if (startWeekNum && !endWeekNum) {
+        const week = zeroFill(startWeekNum, '2')
+        queries.push(
+          `/power/history/5minute/${this.regionId}_${moment(
+            this.queryStart
+          ).year()}W${week}.json`
+        )
+      }
+      console.log(queries)
+      return queries.length > 0 ? queries : null
+    },
     zoomed() {
       return this.dateFilter.length !== 0
     },
@@ -1511,6 +1563,22 @@ export default {
       }
     },
 
+    fetchDataByYearWeek() {
+      const urls = this.queryYearWeek
+
+      if (urls.length > 0) {
+        Http(urls)
+          .then(responses => {
+            this.handleResponses(responses)
+          })
+          .catch(e => {
+            console.error(e)
+          })
+      } else {
+        console.warn('fetchDataByYearWeek', 'No urls provided')
+      }
+    },
+
     handleResponses(responses) {
       // !!! Removing Vol weighted Price after requesting ALL data
       // - due to incorrect data
@@ -1538,7 +1606,9 @@ export default {
         this.priceDomains,
         this.emissionDomains,
         this.range,
-        this.interval
+        this.interval,
+        null,
+        this.queryDates
       ).then(dataset => {
         this.readyDataset(dataset)
         perfTime.timeEnd(this.getPerfLabel())
@@ -1756,7 +1826,9 @@ export default {
         this.priceDomains,
         this.emissionDomains,
         this.range,
-        interval
+        interval,
+        null,
+        this.queryDates
       ).then(dataset => {
         this.readyDataset(dataset)
         perfTime.timeEnd(this.getPerfLabel())

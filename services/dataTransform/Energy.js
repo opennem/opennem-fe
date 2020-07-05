@@ -333,7 +333,8 @@ export default {
     emissionDomains,
     range,
     interval,
-    intervalOptions
+    intervalOptions,
+    isCustomRange
   ) {
     return new Promise(resolve => {
       let data = []
@@ -441,8 +442,15 @@ export default {
             return true
           })
 
-          if (startDate && lastDate) {
+          if (startDate && lastDate && !isCustomRange) {
             data = data.filter(d => d.date >= startDate && d.date <= lastDate)
+          }
+          if (isCustomRange) {
+            data = data.filter(
+              d =>
+                d.date >= isCustomRange.startDate &&
+                d.date <= isCustomRange.endDate
+            )
           }
         }
 

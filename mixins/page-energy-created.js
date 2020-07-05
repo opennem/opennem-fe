@@ -166,7 +166,12 @@ const pageEnergyCreated = {
     if (this.regionId === 'wem' && isPowerRange) {
       this.$store.commit('interval', '30m')
     }
-    this.fetchData(this.regionId, this.range)
+
+    if (this.queryStart) {
+      this.fetchDataByYearWeek()
+    } else {
+      this.fetchData(this.regionId, this.range)
+    }
     this.mounted = true
   },
 
