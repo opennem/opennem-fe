@@ -117,6 +117,7 @@ export default {
       if (description === '') {
         this.showDescription = false
       } else {
+        this.description = description
         this.$store.dispatch('export/description', description)
       }
     }

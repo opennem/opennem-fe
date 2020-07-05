@@ -111,7 +111,6 @@
             :focus-on="focusOn"
             :range="range"
             :interval="interval"
-            :mouse-loc="mouseLoc"
             :curve="isEnergyType ? chartEnergyCurve : chartPowerCurve"
             :y-min="energyYMin"
             :y-max="energyYMax"
@@ -125,7 +124,6 @@
             :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
             :dataset-two-colour="renewablesLineColour"
             class="vis-chart"
-            @eventChange="handleEventChange"
             @dateOver="handleDateOver"
             @domainOver="handleDomainOver"
             @svgClick="handleSvgClick"
@@ -175,7 +173,9 @@
             :second-tick-format="secondTickFormat"
             class="date-brush"
             @date-hover="handleDateOver"
-            @date-filter="handleDatasetFilter" />
+            @date-filter="handleDatasetFilter"
+            @enter="handleVisEnter"
+            @leave="handleVisLeave" />
 
           <stacked-area-vis
             v-if="chartEnergy && chartEnergyType === 'proportion'"
@@ -188,7 +188,6 @@
             :focus-on="focusOn"
             :range="range"
             :interval="interval"
-            :mouse-loc="mouseLoc"
             :curve="isEnergyType ? chartEnergyCurve : chartPowerCurve"
             :y-min="energyYMin"
             :y-max="energyYMax"
@@ -203,7 +202,6 @@
             :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
             :dataset-two-colour="renewablesLineColour"
             class="vis-chart"
-            @eventChange="handleEventChange"
             @dateOver="handleDateOver"
             @domainOver="handleDomainOver"
             @svgClick="handleSvgClick"
@@ -293,7 +291,6 @@
             :focus-on="focusOn"
             :range="range"
             :interval="interval"
-            :mouse-loc="mouseLoc"
             :curve="'step'"
             :vis-height="200"
             :show-x-axis="false"
@@ -306,7 +303,6 @@
             :incomplete-intervals="incompleteIntervals"
             :y-axis-ticks="5"
             class="emissions-volume-vis vis-chart"
-            @eventChange="handleEventChange"
             @dateOver="handleDateOver"
             @domainOver="handleEmissionsDomainOver"
             @svgClick="handleSvgClick"
@@ -364,7 +360,6 @@
             :focus-on="focusOn"
             :range="range"
             :interval="interval"
-            :mouse-loc="mouseLoc"
             :show-x-axis="false"
             :show-tooltip="false"
             :vis-height="120"
@@ -376,7 +371,6 @@
             :zoomed="zoomed"
             :x-guides="xGuides"
             class="emissions-intensity-vis vis-chart"
-            @eventChange="handleEventChange"
             @dateOver="handleDateOver"
             @svgClick="handleSvgClick"
           />
@@ -434,7 +428,6 @@
             :focus-on="focusOn"
             :range="range"
             :interval="interval"
-            :mouse-loc="mouseLoc"
             :show-tooltip="false"
             :curve="'step'"
             :show-y-axis="false"
@@ -448,7 +441,6 @@
             :x-guides="xGuides"
             :y-guides="[300, 2000, 6000, 10000, 14000]"
             class="price-pos-vis vis-chart"
-            @eventChange="handleEventChange"
             @dateOver="handleDateOver"
             @svgClick="handleSvgClick"
           />
@@ -464,7 +456,6 @@
             :focus-on="focusOn"
             :range="range"
             :interval="interval"
-            :mouse-loc="mouseLoc"
             :show-tooltip="false"
             :curve="'step'"
             :show-y-axis="false"
@@ -478,7 +469,6 @@
             :x-guides="xGuides"
             :y-guides="[0, 100, 200, 300]"
             class="price-vis vis-chart"
-            @eventChange="handleEventChange"
             @dateOver="handleDateOver"
             @svgClick="handleSvgClick"
           />
@@ -494,7 +484,6 @@
             :focus-on="focusOn"
             :range="range"
             :interval="interval"
-            :mouse-loc="mouseLoc"
             :curve="'step'"
             :show-y-axis="false"
             :y-axis-log="true"
@@ -509,7 +498,6 @@
             :x-guides="xGuides"
             :y-guides="[-60, -400]"
             class="price-neg-vis vis-chart"
-            @eventChange="handleEventChange"
             @dateOver="handleDateOver"
             @svgClick="handleSvgClick"
           />
@@ -583,7 +571,6 @@
             :focus-on="focusOn"
             :range="range"
             :interval="interval"
-            :mouse-loc="mouseLoc"
             :curve="'smooth'"
             :y-axis-log="false"
             :y-min="0"
@@ -595,7 +582,6 @@
             :zoomed="zoomed"
             :x-guides="xGuides"
             class="temperature-vis vis-chart"
-            @eventChange="handleEventChange"
             @dateOver="handleDateOver"
             @svgClick="handleSvgClick"
           />
@@ -751,6 +737,58 @@ export default {
   mixins: [PageAllMixin, PageEnergyMixin, PerfLogMixin, PageEnergyCreatedMixin],
 
   computed: {
+    queryStart() {
+      return this.$route.query.start
+    },
+    queryEnd() {
+      return this.$route.query.end
+    },
+    queryDates() {
+      if (this.queryStart && this.queryEnd) {
+        return {
+          startDate: moment(this.queryStart).valueOf(),
+          endDate: moment(this.queryEnd).valueOf()
+        }
+      }
+      return null
+    },
+    queryYearWeek() {
+      function zeroFill(number, width) {
+        width -= number.toString().length
+        if (width > 0) {
+          return (
+            new Array(width + (/\./.test(number) ? 2 : 1)).join('0') + number
+          )
+        }
+        return number + ''
+      }
+
+      const startWeekNum = this.queryStart
+        ? moment(this.queryStart).week()
+        : null
+      const endWeekNum = this.queryEnd ? moment(this.queryEnd).week() : null
+      const queries = []
+
+      if (endWeekNum) {
+        for (let i = startWeekNum; i <= endWeekNum; i++) {
+          const week = zeroFill(i, '2')
+          queries.push(
+            `/power/history/5minute/${this.regionId}_${moment(
+              this.queryStart
+            ).year()}W${week}.json`
+          )
+        }
+      } else if (startWeekNum && !endWeekNum) {
+        const week = zeroFill(startWeekNum, '2')
+        queries.push(
+          `/power/history/5minute/${this.regionId}_${moment(
+            this.queryStart
+          ).year()}W${week}.json`
+        )
+      }
+      console.log(queries)
+      return queries.length > 0 ? queries : null
+    },
     zoomed() {
       return this.dateFilter.length !== 0
     },
@@ -968,74 +1006,49 @@ export default {
 
       if (this.interval === 'Week') {
         const incompletes = []
-        const finalDate = this.dataset[this.dataset.length - 2].date
-        if (aSD > dStart) {
+        const filtered = this.dataset.filter(d => d._isIncompleteBucket)
+        filtered.forEach(f => {
           incompletes.push({
-            start: dStart,
-            end: dStart + 604800000
+            start: f.date,
+            end: moment(f.date)
+              .add(1, 'week')
+              .valueOf()
           })
-        }
-        if (aLD < finalDate) {
-          incompletes.push({
-            start: finalDate - 604800000,
-            end: finalDate
-          })
-        }
+        })
+
         return incompletes
       }
 
       if (this.range === '1Y' && this.interval === 'Month') {
         const incompletes = []
-        aLD = moment(aLD)
-        const mDEnd = moment(dEnd).subtract(1, 'day')
-        if (moment(aSD).valueOf() > moment(dStart).valueOf()) {
+        const filtered = this.dataset.filter(d => d._isIncompleteBucket)
+        filtered.forEach(f => {
           incompletes.push({
-            start: dStart,
-            end: moment(dStart)
+            start: f.date,
+            end: moment(f.date)
               .add(1, 'month')
               .valueOf()
           })
-        }
-        if (aLD.valueOf() < mDEnd.valueOf()) {
-          const incompleteStart = moment({
-            year: mDEnd.year(),
-            month: mDEnd.month(),
-            date: 1
-          })
-          incompletes.push({
-            start: incompleteStart.valueOf(),
-            end: dEnd
-          })
-        }
+        })
         return incompletes
       }
 
       if (this.interval === 'Season' || this.interval === 'Quarter') {
-        const incompletes = []
         const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
         if (!isFilter) {
-          aLD = moment(aLD).add(1, 'month')
-          const isSeason = this.interval === 'Season'
-          const actualEndMonth = isSeason
-            ? getSeasonStartMonth(aLD.month())
-            : getQuarterStartMonth(aLD.month())
-          if (moment(aSD).month() > moment(dStart).month()) {
+          const incompletes = []
+          const filtered = this.dataset.filter(d => d._isIncompleteBucket)
+          filtered.forEach(f => {
             incompletes.push({
-              start: dStart,
-              end: moment(dStart)
+              start: f.date,
+              end: moment(f.date)
                 .add(3, 'month')
                 .valueOf()
             })
-          }
-          if (actualEndMonth - 1 <= moment(dEnd).month()) {
-            incompletes.push({
-              start: moment(dEnd)
-                .subtract(3, 'month')
-                .valueOf(),
-              end: dEnd
-            })
-          }
+          })
+          return incompletes
         } else {
+          const incompletes = []
           aLD = moment(aLD).add(1, 'year')
           const isSeason = this.interval === 'Season'
           const actualStartMonth = isSeason
@@ -1072,43 +1085,38 @@ export default {
               })
             }
           }
+          return incompletes
         }
-        return incompletes
       }
 
       if (this.interval === 'Half Year') {
         const incompletes = []
-        if (aSD > dStart) {
+        const filtered = this.dataset.filter(d => d._isIncompleteBucket)
+        filtered.forEach(f => {
           incompletes.push({
-            start: dStart,
-            end: dStart + 15552000000
+            start: f.date,
+            end: moment(f.date)
+              .add(6, 'month')
+              .valueOf()
           })
-        }
-        if (aLD < dEnd) {
-          incompletes.push({
-            start: dEnd - 15552000000,
-            end: dEnd
-          })
-        }
+        })
         return incompletes
       }
 
       if (this.interval === 'Fin Year' || this.interval === 'Year') {
         const incompletes = []
-        if (aSD > dStart) {
+        const filtered = this.dataset.filter(d => d._isIncompleteBucket)
+        filtered.forEach(f => {
           incompletes.push({
-            start: dStart,
-            end: dStart + 31557600000
+            start: f.date,
+            end: moment(f.date)
+              .add(1, 'year')
+              .valueOf()
           })
-        }
-        if (aLD < dEnd) {
-          incompletes.push({
-            start: dEnd - 31557600000,
-            end: dEnd
-          })
-        }
+        })
         return incompletes
       }
+
       return []
     },
 
@@ -1553,6 +1561,22 @@ export default {
       }
     },
 
+    fetchDataByYearWeek() {
+      const urls = this.queryYearWeek
+
+      if (urls.length > 0) {
+        Http(urls)
+          .then(responses => {
+            this.handleResponses(responses)
+          })
+          .catch(e => {
+            console.error(e)
+          })
+      } else {
+        console.warn('fetchDataByYearWeek', 'No urls provided')
+      }
+    },
+
     handleResponses(responses) {
       // !!! Removing Vol weighted Price after requesting ALL data
       // - due to incorrect data
@@ -1580,7 +1604,9 @@ export default {
         this.priceDomains,
         this.emissionDomains,
         this.range,
-        this.interval
+        this.interval,
+        null,
+        this.queryDates
       ).then(dataset => {
         this.readyDataset(dataset)
         perfTime.timeEnd(this.getPerfLabel())
@@ -1793,7 +1819,9 @@ export default {
         this.priceDomains,
         this.emissionDomains,
         this.range,
-        interval
+        interval,
+        null,
+        this.queryDates
       ).then(dataset => {
         this.readyDataset(dataset)
         perfTime.timeEnd(this.getPerfLabel())
@@ -1827,11 +1855,6 @@ export default {
       this.filteredDataset = this.dataset
     },
 
-    handleEventChange(evt) {
-      this.mouseLoc = d3Mouse(evt)
-      this.tooltipLeft = this.mouseLoc[0]
-    },
-
     handleDateOver(evt, date) {
       const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
       if (date && this.interval === 'Fin Year') {
@@ -1858,7 +1881,7 @@ export default {
         date.setMonth(periodMonth + 1)
       }
       const closestDate = DateDisplay.snapToClosestInterval(this.interval, date)
-      EventBus.$emit('vis.mousemove', evt, this.dataset, closestDate)
+      this.hoverDate = closestDate
     },
 
     handleDomainOver(domain) {
@@ -1869,7 +1892,7 @@ export default {
       this.hoverEmissionVolumeDomain = domain
     },
 
-    handleVisMouseMove(evt, dataset, date) {
+    handleVisMouseMove(date) {
       this.hoverDate = date
     },
 
@@ -1880,6 +1903,7 @@ export default {
 
     handleVisLeave() {
       this.hoverOn = false
+      this.hoverDate = null
       this.$store.commit('visInteract/isHovering', false)
     },
 
@@ -2030,11 +2054,14 @@ export default {
 }
 .region-section {
   max-width: 1600px;
-  margin: 1rem auto 0;
+  margin: 0.5rem auto 0;
   position: relative;
+  @include desktop {
+    margin-top: 1rem;
+  }
 }
 .vis-chart {
-  margin-right: 10px;
+  // margin-right: 10px;
 }
 
 .loading-containers {

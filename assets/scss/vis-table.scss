@@ -2,19 +2,20 @@
   display: flex;
   flex-wrap: wrap;
   align-items: stretch;
-  margin-top: 1rem;
 
   @include desktop {
     flex-wrap: nowrap;
+    margin-top: 1rem;
   }
 
   .vis-container {
     width: 100%;
-    padding: 1rem 0 0;
+    padding: 3px 10px 3px 3px;
 
     @include desktop {
-      width: 65%;
+      width: 63%;
       padding: 0;
+      margin-right: 10px;
     }
   }
 
@@ -34,6 +35,7 @@
     .chart-title {
       font-size: 11px;
       user-select: none;
+      padding-left: 10px;
 
       @include tablet {
         display: flex;
@@ -76,6 +78,10 @@
       .hover-date-value {
         display: flex;
         height: 19px;
+
+        @include mobile {
+          background-color: rgba(255, 255, 255, 0.2);
+        }
       }
 
       .hover-date,
@@ -90,11 +96,14 @@
       }
 
       .average-value {
+        font-size: 0.9em;
         position: static;
         left: -9999em;
         // background: rgba(255, 255, 255, 0.5);
-        padding: 3px 12px;
+        padding: 3px 12px 2px;
         white-space: nowrap;
+        text-align: right;
+        width: 100%;
 
         @include tablet {
           width: auto;

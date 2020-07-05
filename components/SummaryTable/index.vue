@@ -186,6 +186,7 @@ import _isEmpty from 'lodash.isempty'
 import _cloneDeep from 'lodash.clonedeep'
 import _includes from 'lodash.includes'
 import { mapGetters } from 'vuex'
+import { format as d3Format } from 'd3-format'
 import Data from '~/services/Data.js'
 import Domain from '~/services/Domain.js'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
@@ -365,7 +366,10 @@ export default {
         totalRenewables = (totalRenewables * mins) / 60 / 1000
         total = (total * mins) / 60 / 1000
       }
-      return (totalRenewables / total) * 100
+      const r = (totalRenewables / total) * 100
+      const f = d3Format(',.3f')
+      console.log(`*****Renewables: ${f(r)}%`)
+      return r
     },
 
     pointRenewables() {

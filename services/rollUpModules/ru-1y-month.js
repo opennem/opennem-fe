@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { timeMonth } from 'd3-time'
 import rollUp from './roll-up'
-import { setStartOfMonth, setEndOfMonth } from './roll-up-helpers'
+import { setStartOfMonth } from './roll-up-helpers'
 
 export default function(ids, data) {
   let currentMonth = moment(data[0].date).month()
@@ -22,9 +22,7 @@ export default function(ids, data) {
 
     if (i === data.length - 1) {
       const endDate = moment(d.date).set('hour', 0)
-      const endOfMonth = setEndOfMonth(
-        moment(timeMonth.ceil(d.date)).subtract(1, 'day')
-      )
+      const endOfMonth = moment(timeMonth.ceil(d.date)).subtract(1, 'day')
       isIncompleteEnd = moment(endDate).isBefore(endOfMonth)
     }
   })

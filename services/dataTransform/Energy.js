@@ -249,6 +249,10 @@ function getNextDatetime(interval, datetime) {
       return moment(datetime)
         .add(1, 'month')
         .valueOf()
+    case 'Week':
+      return moment(datetime)
+        .add(1, 'week')
+        .valueOf()
     default:
       return datetime + millisecondsByInterval[interval]
   }
@@ -260,6 +264,8 @@ function addEmptyDataPoint(interval, dataset) {
   Object.keys(emptyDataPoint).forEach(key => {
     if (key === 'date') {
       emptyDataPoint[key] = time
+    } else if (key === '_isIncompleteBucket') {
+      emptyDataPoint[key] = true
     } else {
       if (
         _includes(key, 'temperature') ||
@@ -327,7 +333,8 @@ export default {
     emissionDomains,
     range,
     interval,
-    intervalOptions
+    intervalOptions,
+    isCustomRange
   ) {
     return new Promise(resolve => {
       let data = []
@@ -424,8 +431,15 @@ export default {
             return true
           })
 
-          if (startDate && lastDate) {
+          if (startDate && lastDate && !isCustomRange) {
             data = data.filter(d => d.date >= startDate && d.date <= lastDate)
+          }
+          if (isCustomRange) {
+            data = data.filter(
+              d =>
+                d.date >= isCustomRange.startDate &&
+                d.date <= isCustomRange.endDate
+            )
           }
         }
 

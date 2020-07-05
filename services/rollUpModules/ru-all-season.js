@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { timeMonth } from 'd3-time'
 import rollUp from './roll-up'
-import { setEndOfMonth, getAUSeasonStartMonth } from './roll-up-helpers'
+import { getAUSeasonStartMonth } from './roll-up-helpers'
 
 function setStartOfMonth(date, currentMonth, qMonth) {
   const d = moment(date)
@@ -39,8 +39,9 @@ export default function(ids, data) {
 
     if (i === data.length - 1) {
       const endDate = moment(d.date).set('hour', 0)
-      const endOfQuarter = setEndOfMonth(
-        moment(timeMonth.every(3).ceil(d.date)).subtract(1, 'day')
+      const endOfQuarter = moment(timeMonth.every(3).ceil(d.date)).subtract(
+        1,
+        'day'
       )
       isIncompleteEnd = moment(endDate).isBefore(endOfQuarter)
     }

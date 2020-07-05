@@ -1,20 +1,18 @@
 import moment from 'moment'
 import { timeMonth } from 'd3-time'
 import rollUp from './roll-up'
-import { setStartOfMonth, setEndOfMonth, getFQ } from './roll-up-helpers'
+import { setStartOfFinancialYear } from './roll-up-helpers'
 
 export default function(ids, energyDomains, data) {
   let currentQ = moment(data[0].date).quarter()
-  let nestDate = setStartOfMonth(data[0].date, getFQ(currentQ))
   let isIncompleteEnd = false,
     isIncompleteStart = false
 
+  let nestDate = setStartOfFinancialYear(data[0].date, currentQ)
+
   data.forEach((d, i) => {
     const q = moment(d.date).quarter()
-    if (currentQ === 2 && q === 3) {
-      nestDate = setStartOfMonth(d.date, getFQ(q))
-    }
-    currentQ = q
+    nestDate = setStartOfFinancialYear(d.date, q)
     data[i].nestDate = nestDate.toDate()
 
     // also convert to TWh
@@ -30,9 +28,9 @@ export default function(ids, energyDomains, data) {
 
     if (i === data.length - 1) {
       const endDate = moment(d.date).set('hour', 0)
-      const endOfFY = setEndOfMonth(
-        moment(timeMonth.every(12).ceil(d.date)).subtract(1, 'day')
-      )
+      const endOfFY = moment(nestDate)
+        .add(1, 'year')
+        .subtract(1, 'month')
       isIncompleteEnd = moment(endDate).isBefore(endOfFY)
     }
   })
