@@ -18,16 +18,6 @@ export function setStartOfMonth(date, currentMonth) {
   return d
 }
 
-export function setEndOfMonth(date) {
-  const d = moment(date)
-  d.set('month', date.month() + 1)
-  d.set('date', date.day())
-  d.set('hour', 0)
-  d.set('minute', 0)
-  d.set('second', 0)
-  return d
-}
-
 export function setStartOfYear(date) {
   const d = moment(date)
   d.set('month', 0)
@@ -36,6 +26,19 @@ export function setStartOfYear(date) {
   d.set('minute', 0)
   d.set('second', 0)
   return d
+}
+
+export function setStartOfFinancialYear(date, quarter) {
+  // 1, 2 quarter should be -1 year in july
+  // 3, 4 quarter should this year in july
+  const d = moment(date)
+  d.set('month', 6)
+  d.set('date', 1)
+  d.set('hour', 0)
+  d.set('minute', 0)
+  d.set('second', 0)
+
+  return quarter === 1 || quarter === 2 ? moment(d).subtract(1, 'year') : d
 }
 
 export function getAUSeasonStartMonth(month) {
@@ -110,21 +113,6 @@ export function getHalfYearStartMonth(month) {
     case 11:
       return 6
 
-    default:
-  }
-  return null
-}
-
-export function getFQ(quarter) {
-  switch (quarter) {
-    case 1:
-      return 0
-    case 2:
-      return 3
-    case 3:
-      return 6
-    case 4:
-      return 9
     default:
   }
   return null

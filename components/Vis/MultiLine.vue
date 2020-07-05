@@ -6,6 +6,12 @@
       :id="id">
 
       <defs>
+        <!-- where to clip -->
+        <clipPath :id="`${id}-clip`">
+          <rect
+            :width="width"
+            :height="height"/>
+        </clipPath>
         <filter id="shadow">
           <feDropShadow
             dx="0"
@@ -71,7 +77,7 @@ export default {
     },
     marginRight: {
       type: Number,
-      default: () => 10
+      default: () => 1
     },
     marginBottom: {
       type: Number,
@@ -222,6 +228,9 @@ export default {
     id() {
       return `multi-line-${this.uuid}`
     },
+    clipPathUrl() {
+      return `url(#${this.id}-clip)`
+    },
     axisTransform() {
       return `translate(${this.marginLeft},0)`
     },
@@ -289,7 +298,11 @@ export default {
       this.draw()
     },
     dateHovered(newValue) {
-      this.drawCursor(newValue)
+      if (newValue) {
+        this.drawCursor(newValue)
+      } else {
+        this.clearCursorLine()
+      }
     },
     zoomRange(newRange) {
       if (newRange.length > 0) {
@@ -471,7 +484,7 @@ export default {
       this.$emit('enter')
     },
     handleSvgLeave() {
-      this.$emit('date-hover', null)
+      this.$emit('date-hover', null, null)
       this.$emit('leave')
     },
 
@@ -515,6 +528,8 @@ export default {
         .style('stroke-width', this.pathStrokeWidth)
         .style('filter', 'url(#shadow)')
         .style('fill', 'transparent')
+        .style('clip-path', this.clipPathUrl)
+        .style('-webkit-clip-path', this.clipPathUrl)
         .attr('d', this.drawLineLeftPath)
 
       this.$lineLeftPathGroup
@@ -567,6 +582,8 @@ export default {
         .style('stroke-width', 2)
         .style('filter', 'url(#shadow)')
         .style('fill', 'transparent')
+        .style('clip-path', this.clipPathUrl)
+        .style('-webkit-clip-path', this.clipPathUrl)
         .attr('d', this.drawLineRightPath)
     },
     removeDataset2() {
@@ -683,7 +700,7 @@ export default {
       }
 
       // Draw bucket
-      if (nextDate) {
+      if (bandwidth) {
         let xPos = xDate
         // if (this.cursorAnchor === 'middle') {
         //   xPos = xDate - bandwidth / 2

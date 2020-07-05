@@ -89,10 +89,6 @@ const pageEnergyCreated = {
   computed: {
     ...mapGetters({
       chartEnergy: 'visInteract/chartEnergy',
-      chartEnergyType: 'visInteract/chartEnergyType',
-      chartEnergyYAxis: 'visInteract/chartEnergyYAxis',
-      chartEnergyCurve: 'visInteract/chartEnergyCurve',
-      chartPowerCurve: 'visInteract/chartPowerCurve',
       chartEmissionsVolume: 'visInteract/chartEmissionsVolume',
       chartEmissionsIntensity: 'visInteract/chartEmissionsIntensity',
       chartPrice: 'visInteract/chartPrice',
@@ -163,7 +159,12 @@ const pageEnergyCreated = {
         }, 200)
       )
     })
-    this.fetchData(this.regionId, this.range)
+
+    if (this.queryStart) {
+      this.fetchDataByYearWeek()
+    } else {
+      this.fetchData(this.regionId, this.range)
+    }
     this.mounted = true
   },
 

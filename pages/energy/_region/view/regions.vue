@@ -48,7 +48,9 @@
             :class="{'has-energy-chart': chartEnergy}"
             class="date-brush"
             @date-hover="handleDateHover"
-            @date-filter="handleDateFilter" />
+            @date-filter="handleDateFilter"
+            @enter="handleEnter"
+            @leave="handleLeave" />
         </chart-wrapper>
 
         <chart-wrapper 
