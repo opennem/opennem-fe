@@ -1821,6 +1821,11 @@ export default {
       this.$store.dispatch('compareDates', [])
       this.$store.dispatch('interval', interval)
       this.$store.dispatch('range', range)
+      this.$router.push({
+        path: '',
+        params: { region: this.regionId },
+        query: {}
+      })
       this.fetchData(this.regionId, range)
     },
 
