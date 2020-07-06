@@ -434,13 +434,14 @@ export default {
           if (startDate && lastDate && !isCustomRange) {
             data = data.filter(d => d.date >= startDate && d.date <= lastDate)
           }
-          if (isCustomRange) {
-            data = data.filter(
-              d =>
-                d.date >= isCustomRange.startDate &&
-                d.date <= isCustomRange.endDate
-            )
-          }
+        }
+
+        if (isCustomRange) {
+          data = data.filter(
+            d =>
+              d.date >= isCustomRange.startDate &&
+              d.date <= isCustomRange.endDate
+          )
         }
 
         // Roll up based on interval

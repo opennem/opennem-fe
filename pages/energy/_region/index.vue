@@ -743,11 +743,19 @@ export default {
     queryEnd() {
       return this.$route.query.end
     },
+    queryInterval() {
+      return this.$route.query.interval
+    },
+    queryRange() {
+      return this.$route.query.range
+    },
     queryDates() {
-      if (this.queryStart && this.queryEnd) {
+      if (this.queryStart) {
         return {
           startDate: moment(this.queryStart).valueOf(),
-          endDate: moment(this.queryEnd).valueOf()
+          endDate: this.queryEnd ? moment(this.queryEnd).valueOf() : null,
+          range: this.queryRange ? this.queryRange : '7D',
+          interval: this.queryInterval ? this.queryInterval : '30m'
         }
       }
       return null
@@ -763,29 +771,42 @@ export default {
         return number + ''
       }
 
-      const startWeekNum = this.queryStart
-        ? moment(this.queryStart).week()
-        : null
-      const endWeekNum = this.queryEnd ? moment(this.queryEnd).week() : null
       const queries = []
+      const interval = this.queryInterval ? this.queryInterval : '30m'
 
-      if (endWeekNum) {
-        for (let i = startWeekNum; i <= endWeekNum; i++) {
-          const week = zeroFill(i, '2')
+      if (interval === '30m') {
+        const startWeekNum = this.queryStart
+          ? moment(this.queryStart).week()
+          : null
+        const endWeekNum = this.queryEnd ? moment(this.queryEnd).week() : null
+
+        if (endWeekNum) {
+          for (let i = startWeekNum; i <= endWeekNum; i++) {
+            const week = zeroFill(i, '2')
+            queries.push(
+              `/power/history/5minute/${this.regionId}_${moment(
+                this.queryStart
+              ).year()}W${week}.json`
+            )
+          }
+        } else if (startWeekNum && !endWeekNum) {
+          const week = zeroFill(startWeekNum, '2')
           queries.push(
             `/power/history/5minute/${this.regionId}_${moment(
               this.queryStart
             ).year()}W${week}.json`
           )
         }
-      } else if (startWeekNum && !endWeekNum) {
-        const week = zeroFill(startWeekNum, '2')
-        queries.push(
-          `/power/history/5minute/${this.regionId}_${moment(
-            this.queryStart
-          ).year()}W${week}.json`
-        )
+      } else if (interval === 'day') {
+        const isProd = this.hostEnv === 'prod'
+        const year = this.queryStart ? moment(this.queryStart).year() : null
+        const prepend = isProd ? '/testing/' : '/testing/v2/'
+
+        this.$store.commit('range', '1Y')
+        this.$store.commit('interval', 'Day')
+        queries.push(`${prepend}${this.regionId}/energy/daily/${year}.json`)
       }
+
       console.log(queries)
       return queries.length > 0 ? queries : null
     },
