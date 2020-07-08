@@ -933,7 +933,7 @@ export default {
       const time = new Date(date).getTime()
       const nextDatePeriod = this.findNextDatePeriod(time)
 
-      const xDate = this.x(date)
+      const xDate = this.x(time)
       const nextPeriod = this.x(nextDatePeriod)
       const bandwidth =
         this.interval !== '5m' && this.interval !== '30m'
@@ -1066,7 +1066,7 @@ export default {
         `.${this.cursorRectClass}`
       )
 
-      if (xDate) {
+      if (xDate || xDate === 0) {
         if (bandwidth) {
           $cursorLine.attr('opacity', 0)
           $cursorRect
