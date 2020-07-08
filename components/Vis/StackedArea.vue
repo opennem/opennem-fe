@@ -652,79 +652,77 @@ export default {
         self.$emit('domainOver', null)
       })
       this.brushX.on('brush', function() {
-        if (!self.focusOn) {
-          if (!event.selection) return
-          if (event.sourceEvent.type === 'brush') return
-          const s = event.selection
-          let startX = self.x.invert(s[0])
-          let endX = self.x.invert(s[1])
+        if (!event.selection) return
+        if (event.sourceEvent.type === 'brush') return
+        const s = event.selection
+        let startX = self.x.invert(s[0])
+        let endX = self.x.invert(s[1])
 
-          if (self.interval === 'Fin Year') {
-            if (startX.getMonth() >= 6) {
-              startX.setFullYear(startX.getFullYear() + 1)
-            }
-            if (endX.getMonth() >= 6) {
-              endX.setFullYear(endX.getFullYear() + 1)
-            }
+        if (self.interval === 'Fin Year') {
+          if (startX.getMonth() >= 6) {
+            startX.setFullYear(startX.getFullYear() + 1)
           }
+          if (endX.getMonth() >= 6) {
+            endX.setFullYear(endX.getFullYear() + 1)
+          }
+        }
 
-          const isFilter = !self.filterPeriod || self.filterPeriod !== 'All'
-          if (
-            isFilter &&
-            (self.interval === 'Season' || self.interval === 'Quarter')
-          ) {
-            const periodMonth = DateDisplay.getPeriodMonth(
-              self.interval,
+        const isFilter = !self.filterPeriod || self.filterPeriod !== 'All'
+        if (
+          isFilter &&
+          (self.interval === 'Season' || self.interval === 'Quarter')
+        ) {
+          const periodMonth = DateDisplay.getPeriodMonth(
+            self.interval,
+            self.filterPeriod
+          )
+          const startXMonth = startX.getMonth()
+          const endXMonth = endX.getMonth()
+
+          if (self.interval === 'Season') {
+            startX = DateDisplay.mutateSeasonDate(
+              startX,
+              startXMonth,
               self.filterPeriod
             )
-            const startXMonth = startX.getMonth()
-            const endXMonth = endX.getMonth()
-
-            if (self.interval === 'Season') {
-              startX = DateDisplay.mutateSeasonDate(
-                startX,
-                startXMonth,
-                self.filterPeriod
-              )
-              endX = DateDisplay.mutateSeasonDate(
-                endX,
-                endXMonth,
-                self.filterPeriod
-              )
-            } else if (self.interval === 'Quarter') {
-              startX = DateDisplay.mutateQuarterDate(
-                startX,
-                startXMonth,
-                self.filterPeriod
-              )
-              endX = DateDisplay.mutateQuarterDate(
-                endX,
-                endXMonth,
-                self.filterPeriod
-              )
-            }
-            startX.setMonth(periodMonth + 1)
-            endX.setMonth(periodMonth + 1)
+            endX = DateDisplay.mutateSeasonDate(
+              endX,
+              endXMonth,
+              self.filterPeriod
+            )
+          } else if (self.interval === 'Quarter') {
+            startX = DateDisplay.mutateQuarterDate(
+              startX,
+              startXMonth,
+              self.filterPeriod
+            )
+            endX = DateDisplay.mutateQuarterDate(
+              endX,
+              endXMonth,
+              self.filterPeriod
+            )
           }
-
-          const startTime = DateDisplay.roundToClosestInterval(
-            self.interval,
-            self.filterPeriod,
-            startX,
-            'floor'
-          )
-          const endTime = DateDisplay.roundToClosestInterval(
-            self.interval,
-            self.filterPeriod,
-            endX,
-            'ceil'
-          )
-          const d1 = [startTime, endTime]
-          select(this).call(self.brushX.move, d1.map(self.x))
-          self.$emit('eventChange', this)
-          self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
-          self.$emit('domainOver', null)
+          startX.setMonth(periodMonth + 1)
+          endX.setMonth(periodMonth + 1)
         }
+
+        const startTime = DateDisplay.roundToClosestInterval(
+          self.interval,
+          self.filterPeriod,
+          startX,
+          'floor'
+        )
+        const endTime = DateDisplay.roundToClosestInterval(
+          self.interval,
+          self.filterPeriod,
+          endX,
+          'ceil'
+        )
+        const d1 = [startTime, endTime]
+        select(this).call(self.brushX.move, d1.map(self.x))
+        self.$emit('eventChange', this)
+        self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
+        self.$emit('domainOver', null)
       })
       this.$xAxisBrushGroup
         .selectAll('.brush')
@@ -1180,8 +1178,6 @@ export default {
       if (!event.selection) return
       // Turn off the brush selection
       selectAll('.brush').call(this.brushX.move, null)
-
-      if (this.focusOn) return
 
       // Get the brush selection (start/end) points -> dates
       const s = event.selection
