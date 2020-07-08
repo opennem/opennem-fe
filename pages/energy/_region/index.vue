@@ -1856,7 +1856,7 @@ export default {
 
     handleDatasetFilter(dateRange) {
       if (dateRange && dateRange.length > 0) {
-        const startTime = DateDisplay.snapToClosestInterval(
+        let startTime = DateDisplay.snapToClosestInterval(
           this.interval,
           dateRange[0]
         )
@@ -1864,6 +1864,9 @@ export default {
           this.interval,
           dateRange[1]
         )
+        if (this.interval === 'Fin Year') {
+          startTime = moment(startTime).add(1, 'year')
+        }
         this.filteredDataset = EnergyDataTransform.filterDataByStartEndDates(
           this.dataset,
           startTime,
