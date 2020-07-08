@@ -808,7 +808,6 @@ export default {
         this.$store.commit('range', '1Y')
         this.$store.commit('interval', 'Day')
         for (let i = startYear; i <= endYear; i++) {
-          console.log(i)
           queries.push(`${prepend}${this.regionId}/energy/daily/${i}.json`)
         }
       }
@@ -1591,7 +1590,7 @@ export default {
     fetchDataByYearWeek() {
       const urls = this.queryYearWeek
 
-      if (urls.length > 0) {
+      if (urls && urls.length > 0) {
         Http(urls)
           .then(responses => {
             this.handleResponses(responses)
