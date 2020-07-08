@@ -799,12 +799,18 @@ export default {
         }
       } else if (interval === 'day') {
         const isProd = this.hostEnv === 'prod'
-        const year = this.queryStart ? moment(this.queryStart).year() : null
+        const startYear = this.queryStart
+          ? moment(this.queryStart).year()
+          : null
+        const endYear = this.queryEnd ? moment(this.queryEnd).year() : null
         const prepend = isProd ? '/testing/' : '/testing/v2/'
 
         this.$store.commit('range', '1Y')
         this.$store.commit('interval', 'Day')
-        queries.push(`${prepend}${this.regionId}/energy/daily/${year}.json`)
+        for (let i = startYear; i <= endYear; i++) {
+          console.log(i)
+          queries.push(`${prepend}${this.regionId}/energy/daily/${i}.json`)
+        }
       }
 
       console.log(queries)
