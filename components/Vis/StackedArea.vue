@@ -339,9 +339,6 @@ export default {
     compareDifference() {
       return this.$store.getters.compareDifference
     },
-    path() {
-      return this.$route.path
-    },
     hasSecondDataset() {
       return this.datasetTwo.length > 0
     },
@@ -1057,7 +1054,7 @@ export default {
           return width < 0 ? 0 : width
         })
         .attr('height', this.height)
-        .attr('fill', `url(${this.path}#${this.id}-incomplete-period-pattern)`)
+        .attr('fill', `url(#${this.id}-incomplete-period-pattern)`)
         .style('pointer-events', 'none')
     },
 
