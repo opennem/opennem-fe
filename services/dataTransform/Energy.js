@@ -409,14 +409,16 @@ export default {
             d => d.date > thirtyDaysAgo && d.date <= lastDateTime
           )
         } else if (range === '1Y') {
-          // filter 1Y because it could be a combination of two 1Y datasets
-          const now = moment(lastDate)
-            .add(1, 'day')
-            .valueOf()
-          const aYearAgo = moment(now)
-            .subtract(1, 'year')
-            .valueOf()
-          data = data.filter(d => d.date >= aYearAgo && d.date <= now)
+          if (!isCustomRange) {
+            // filter 1Y because it could be a combination of two 1Y datasets
+            const now = moment(lastDate)
+              .add(1, 'day')
+              .valueOf()
+            const aYearAgo = moment(now)
+              .subtract(1, 'year')
+              .valueOf()
+            data = data.filter(d => d.date >= aYearAgo && d.date <= now)
+          }
         }
 
         // Filter the start and last date based on a fuel tech other than solars
@@ -445,13 +447,14 @@ export default {
           if (startDate && lastDate && !isCustomRange) {
             data = data.filter(d => d.date >= startDate && d.date <= lastDate)
           }
-          if (isCustomRange) {
-            data = data.filter(
-              d =>
-                d.date >= isCustomRange.startDate &&
-                d.date <= isCustomRange.endDate
-            )
-          }
+        }
+
+        if (isCustomRange) {
+          data = data.filter(
+            d =>
+              d.date >= isCustomRange.startDate &&
+              d.date <= isCustomRange.endDate
+          )
         }
 
         // Roll up based on interval

@@ -1,6 +1,8 @@
 const pkg = require('./package')
 const webpack = require('webpack')
 
+const timestamp = new Date().getTime()
+
 module.exports = {
   mode: 'spa',
 
@@ -215,6 +217,7 @@ module.exports = {
     /*
     ** You can extend webpack config here
     */
+    publicPath: `/_nuxt_${timestamp}/`,
     plugins: [
       new webpack.IgnorePlugin({
         resourceRegExp: /^\.\/locale$/,
