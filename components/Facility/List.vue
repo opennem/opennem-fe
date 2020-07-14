@@ -408,7 +408,7 @@ export default {
 .card {
   margin-bottom: 1px;
   font-size: 70%;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.1s ease-in-out;
   cursor: pointer;
   opacity: 0.9;
   z-index: 9;
@@ -428,8 +428,9 @@ export default {
   &.is-selected {
     box-shadow: 0 0 5px rgba(100, 100, 100, 0.2);
     opacity: 1;
-    transform: scale(1.01);
+    transform: scale(1.02);
     z-index: 10;
+    border: 2px solid $opennem-link-color;
   }
 
   .card-content {
