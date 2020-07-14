@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
 import _orderBy from 'lodash.orderby'
@@ -82,7 +83,7 @@ export default {
       filteredFacilities: [],
       selectedFacility: null,
       hoveredFacility: null,
-      selectedStatuses: ['Commissioned'],
+      selectedStatuses: ['operating'],
       selectedTechs: [],
       selectedView: 'list',
       sortBy: 'displayName',
@@ -94,6 +95,7 @@ export default {
   },
 
   computed: {
+    ...mapGetters(['hostEnv']),
     regionId() {
       return this.$route.params.region
     },
@@ -168,7 +170,14 @@ export default {
 
   methods: {
     fetchData() {
-      const urls = ['/facility/facility_registry.json']
+      const urls = []
+
+      if (this.hostEnv === 'prod') {
+        urls.push('/facility/facility_registry.json')
+      } else {
+        urls.push('/v3/geo/wem_facilities.geojson')
+        urls.push('/v3/geo/nem_facilities.geojson')
+      }
 
       if (urls.length > 0) {
         Http(urls)
@@ -184,10 +193,22 @@ export default {
     },
 
     handleResponses(responses) {
-      const data = responses[0]
-      FacilityDataTransformService.flatten(data).then(res => {
-        this.facilityData = res
-      })
+      if (this.hostEnv === 'prod') {
+        FacilityDataTransformService.flatten(responses[0]).then(res => {
+          this.facilityData = res
+        })
+      } else {
+        if (responses.length === 2) {
+          const combined = [...responses[0].features, ...responses[1].features]
+          FacilityDataTransformService.flattenV3(combined).then(res => {
+            this.facilityData = res
+          })
+        } else {
+          console.warn(
+            'One or more of the facilities responses were not returned.'
+          )
+        }
+      }
     },
 
     updateFacilitiesData() {

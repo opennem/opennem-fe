@@ -1,7 +1,7 @@
 export const state = () => ({
   sortBy: 'displayName',
   orderBy: 'asc',
-  selectedStatuses: ['Commissioned'],
+  selectedStatuses: ['operating'],
   selectedTechs: [],
   selectedView: 'list'
 })

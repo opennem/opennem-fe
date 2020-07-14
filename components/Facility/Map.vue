@@ -324,7 +324,7 @@ export default {
       })
 
       const ftColour = FUEL_TECHS.DEFAULT_FUEL_TECH_COLOUR[highestFt]
-      return ftColour || 'black'
+      return ftColour || 'lightgrey'
     },
 
     getGeneratorCap(facility) {

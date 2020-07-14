@@ -302,7 +302,7 @@ export default {
       return this.$el.offsetWidth - 13
     },
     active(status) {
-      return status === 'Commissioned'
+      return status === 'operating'
     },
     sort(colId) {
       this.$emit('orderChanged', colId)
@@ -319,11 +319,11 @@ export default {
       }
     },
     // eslint-disable-next-line
-    handleRowHover: _debounce(function (facility) {
+    handleRowHover: _debounce(function(facility) {
       this.$emit('facilityHover', facility, true)
     }, 200),
     // eslint-disable-next-line
-    handleRowOut: _debounce(function () {
+    handleRowOut: _debounce(function() {
       this.$emit('facilityMouseout')
     }, 200),
     shouldRightAligned(colHeaderId) {
