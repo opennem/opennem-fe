@@ -161,7 +161,7 @@ const simpleGroups = [
     label: 'Solar',
     type: 'sources',
     colour: '#F8E71C',
-    fields: ['solar', 'rooftop_solar']
+    fields: ['solar_utility', 'solar_rooftop']
   },
 
   {
@@ -217,7 +217,7 @@ const simpleGroups = [
     label: 'Coal',
     type: 'sources',
     colour: '#131313',
-    fields: ['black_coal', 'brown_coal']
+    fields: ['coal_black', 'coal_brown']
   },
 
   {
@@ -294,7 +294,7 @@ export default {
       g => g.id === 'group_battery_discharging'
     )
 
-    findSolarGroup.fields = ['solar'] // remove 'rooftop_solar'
+    findSolarGroup.fields = ['solar_utility'] // remove 'rooftop_solar'
     findBatteryGroup.label = 'Battery' // rename battery discharging
 
     groups.forEach(g => {
