@@ -6,8 +6,17 @@ import * as FlexibilityGroup from '~/constants/group-flexibility.js'
 import * as RenewableFossilGroup from '~/constants/group-renewable-fossil.js'
 import * as SolarResidualGroup from '~/constants/group-solar-residual.js'
 
+const host = window.location.host
+let hostEnv = 'dev'
+if (host === 'opennem.org.au') {
+  hostEnv = 'prod'
+}
+if (host === 'dev.opennem.org.au') {
+  hostEnv = 'dev'
+}
+
 export const state = () => ({
-  hostEnv: null, // local, prod, dev
+  hostEnv, // local, prod, dev
   currentView: 'energy', // energy, facilities
   nem: [],
   fuelTechMeta: null,
