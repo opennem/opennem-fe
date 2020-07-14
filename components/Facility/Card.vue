@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import * as FUEL_TECHS from '~/constants/fuelTech.js'
+import * as FUEL_TECHS from '~/constants/fuel-tech.js'
 
 export default {
   props: {
@@ -112,10 +112,10 @@ export default {
     getFtLabel(ft) {
       const ftLabel = FUEL_TECHS.FUEL_TECH_LABEL[ft]
       if (ftLabel) {
-        if (ft === 'battery_discharging') {
+        if (ft === FUEL_TECHS.BATTERY_DISCHARGING) {
           return 'Battery'
         }
-        if (ft === 'solar') {
+        if (ft === FUEL_TECHS.SOLAR_UTILITY || ft === FUEL_TECHS.SOLAR) {
           return 'Solar'
         }
         return ftLabel

@@ -1,4 +1,4 @@
-import * as FUEL_TECHS from '~/constants/fuelTech.js'
+import * as FUEL_TECHS from '~/constants/fuel-tech.js'
 import cloneDeep from 'lodash.clonedeep'
 
 export const state = () => ({

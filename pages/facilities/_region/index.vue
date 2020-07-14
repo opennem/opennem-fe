@@ -54,7 +54,8 @@ import { mapGetters } from 'vuex'
 import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
 import _orderBy from 'lodash.orderby'
-import * as FUEL_TECHS from '~/constants/fuelTech.js'
+import * as FUEL_TECHS from '~/constants/fuel-tech.js'
+import { FACILITY_OPERATING } from '~/constants/facility-status.js'
 import REGIONS from '~/constants/regions.js'
 import Http from '~/services/Http.js'
 import FacilityDataTransformService from '~/services/dataTransform/Facility.js'
@@ -83,7 +84,7 @@ export default {
       filteredFacilities: [],
       selectedFacility: null,
       hoveredFacility: null,
-      selectedStatuses: ['operating'],
+      selectedStatuses: [FACILITY_OPERATING],
       selectedTechs: [],
       selectedView: 'list',
       sortBy: 'displayName',

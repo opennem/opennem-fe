@@ -55,36 +55,7 @@
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 import { mixin as clickaway } from 'vue-clickaway'
-
-// const statuses = [
-//   {
-//     id: 'Commissioned',
-//     label: 'Operating'
-//   },
-//   {
-//     id: 'Decommissioned',
-//     label: 'Retired'
-//   }
-// ]
-
-const statuses = [
-  {
-    id: 'committed',
-    label: 'Committed'
-  },
-  {
-    id: 'commissioning',
-    label: 'Commissioning'
-  },
-  {
-    id: 'operating',
-    label: 'Operating'
-  },
-  {
-    id: 'retired',
-    label: 'Retired'
-  }
-]
+import { FacilityStatus } from '~/constants/facility-status.js'
 
 export default {
   mixins: [clickaway],
@@ -102,7 +73,7 @@ export default {
 
   data() {
     return {
-      statuses,
+      statuses: _cloneDeep(FacilityStatus),
       selectedStatus: '',
       selected: [],
       dropdownActive: false

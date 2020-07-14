@@ -151,83 +151,14 @@ import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 import { mixin as clickaway } from 'vue-clickaway'
 import EventBus from '~/plugins/eventBus'
-import * as FUEL_TECHS from '~/constants/fuelTech.js'
+import * as FT from '~/constants/fuel-tech.js'
+import {
+  FacilityGroups,
+  FACILITY_GROUP_BATTERY,
+  FACILITY_GROUP_SOLAR
+} from '~/constants/facility-fuel-tech.js'
 import StatusFilter from '~/components/Facility/StatusFilter'
 import FacilityViewToggle from '~/components/Facility/ViewToggle'
-
-const simpleGroups = [
-  {
-    id: 'group_solar',
-    label: 'Solar',
-    type: 'sources',
-    colour: '#F8E71C',
-    fields: ['solar_utility', 'solar_rooftop']
-  },
-
-  {
-    id: 'group_wind',
-    label: 'Wind',
-    type: 'sources',
-    colour: '#417505',
-    fields: ['wind']
-  },
-
-  {
-    id: 'group_hydro',
-    label: 'Hydro',
-    type: 'sources',
-    colour: '#4582B4',
-    fields: ['hydro']
-  },
-
-  {
-    id: 'group_battery_discharging',
-    label: 'Battery (Discharging)',
-    type: 'sources',
-    colour: '#00A2FA',
-    fields: ['battery_discharging']
-  },
-
-  {
-    id: 'group_gas',
-    label: 'Gas',
-    type: 'sources',
-    colour: '#F48E1B',
-    fields: ['gas_recip', 'gas_ocgt', 'gas_ccgt', 'gas_steam', 'gas_wcmg']
-  },
-
-  {
-    id: 'group_distillate',
-    label: 'Distillate',
-    type: 'sources',
-    colour: '#F35020',
-    fields: ['distillate']
-  },
-
-  {
-    id: 'group_bioenergy',
-    label: 'Bioenergy',
-    type: 'sources',
-    colour: '#4CB9B9',
-    fields: ['bioenergy_biomass', 'bioenergy_biogas']
-  },
-
-  {
-    id: 'group_coal',
-    label: 'Coal',
-    type: 'sources',
-    colour: '#131313',
-    fields: ['coal_black', 'coal_brown']
-  },
-
-  {
-    id: 'pumps',
-    label: 'Pumps',
-    type: 'loads',
-    colour: '#88AFD0',
-    fields: ['pumps']
-  }
-]
 
 export default {
   components: {
@@ -260,7 +191,7 @@ export default {
       // selectedTechs: [],
       selectedTechGroups: [],
       groupExpanded: [],
-      simplifiedGroup: simpleGroups,
+      simplifiedGroup: _cloneDeep(FacilityGroups),
       windowWidth: 0,
       searchOn: false
     }
@@ -287,14 +218,12 @@ export default {
 
     // Filter Group
     const groups = this.simplifiedGroup.filter(
-      g => (g.type === 'sources' && g.id !== 'imports') || g.id === 'pumps'
+      g => (g.type === 'source' && g.id !== FT.IMPORTS) || g.id === FT.PUMPS
     )
-    const findSolarGroup = groups.find(g => g.id === 'group_solar')
-    const findBatteryGroup = groups.find(
-      g => g.id === 'group_battery_discharging'
-    )
+    const findSolarGroup = groups.find(g => g.id === FACILITY_GROUP_SOLAR)
+    const findBatteryGroup = groups.find(g => g.id === FACILITY_GROUP_BATTERY)
 
-    findSolarGroup.fields = ['solar_utility'] // remove 'rooftop_solar'
+    findSolarGroup.fields = [FT.SOLAR_UTILITY] // remove 'rooftop_solar'
     findBatteryGroup.label = 'Battery' // rename battery discharging
 
     groups.forEach(g => {
@@ -349,10 +278,10 @@ export default {
       return fieldsSelected !== fieldsLength
     },
     getTechLabel(techId) {
-      return FUEL_TECHS.FUEL_TECH_LABEL[techId]
+      return FT.FUEL_TECH_LABEL[techId]
     },
     getTechColour(techId) {
-      return FUEL_TECHS.DEFAULT_FUEL_TECH_COLOUR[techId]
+      return FT.DEFAULT_FUEL_TECH_COLOUR[techId]
     },
 
     handleTechGroupClick(group) {

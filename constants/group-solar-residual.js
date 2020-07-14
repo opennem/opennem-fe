@@ -1,4 +1,4 @@
-import * as FT from './fuelTech.js'
+import * as FT from './fuel-tech.js'
 
 export const GROUP_NAME = 'group.solar-residual'
 

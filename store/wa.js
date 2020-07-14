@@ -1,6 +1,6 @@
 import EnergyDataTransform from '@/services/dataTransform/Energy.js'
 import Domain from '@/services/Domain.js'
-import * as FUEL_TECHS from '@/constants/fuelTech.js'
+import * as FUEL_TECHS from '@/constants/fuel-tech.js'
 
 import axios from 'axios'
 

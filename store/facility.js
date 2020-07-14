@@ -1,7 +1,9 @@
+import { FACILITY_OPERATING } from '~/constants/facility-status.js'
+
 export const state = () => ({
   sortBy: 'displayName',
   orderBy: 'asc',
-  selectedStatuses: ['operating'],
+  selectedStatuses: [FACILITY_OPERATING],
   selectedTechs: [],
   selectedView: 'list'
 })

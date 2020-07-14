@@ -1,6 +1,6 @@
 import cloneDeep from 'lodash.clonedeep'
 import { lsGet, lsSet } from '~/services/LocalStorage'
-import * as FUEL_TECHS from '~/constants/fuelTech.js'
+import * as FUEL_TECHS from '~/constants/fuel-tech.js'
 import * as SimplifiedGroup from '~/constants/group-simplified.js'
 import * as FlexibilityGroup from '~/constants/group-flexibility.js'
 import * as RenewableFossilGroup from '~/constants/group-renewable-fossil.js'

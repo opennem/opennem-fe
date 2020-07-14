@@ -1,6 +1,6 @@
 import _includes from 'lodash.includes'
 import _uniqBy from 'lodash.uniqby'
-import * as FUEL_TECHS from '~/constants/fuelTech.js'
+import * as FUEL_TECHS from '~/constants/fuel-tech.js'
 import { EMISSIONS } from '~/constants/emissions.js'
 
 export default {

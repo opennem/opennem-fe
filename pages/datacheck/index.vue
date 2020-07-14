@@ -127,7 +127,7 @@
 // import includes from 'lodash.includes'
 // import axios from 'axios'
 // import EventBus from '~/plugins/eventBus.js'
-// import * as FUEL_TECHS from '~/constants/fuelTech.js'
+// import * as FUEL_TECHS from '~/constants/fuel-tech.js'
 // import DataService from '~/services/DataService.js'
 // import DataTransformService from '~/services/DataTransformService.js'
 // import RegionPageMethods from '~/methods/regionPage.js'

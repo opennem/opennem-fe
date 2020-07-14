@@ -1,6 +1,6 @@
 import _uniq from 'lodash.uniq'
 import _isEmpty from 'lodash.isempty'
-import * as FUEL_TECHS from '~/constants/fuelTech.js'
+import * as FUEL_TECHS from '~/constants/fuel-tech.js'
 
 function transformFacilityData(data) {
   const stationIds = Object.keys(data)
