@@ -151,7 +151,7 @@ import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
 import * as FUEL_TECHS from '~/constants/fuel-tech.js'
 import { FACILITY_OPERATING } from '~/constants/facility-status.js'
-import REGIONS from '~/constants/regions.js'
+import { FacilityRegions } from '~/constants/facility-regions.js'
 import Totals from './Totals'
 
 const colHeaders = [
@@ -309,6 +309,7 @@ export default {
       this.$emit('orderChanged', colId)
     },
     handleRowClick(facility) {
+      console.log('facility obj', facility.jsonData)
       if (!this.widthBreak) {
         if (this.selected === facility) {
           this.selected = null
@@ -353,7 +354,7 @@ export default {
       return ft || '—'
     },
     getRegionLabel(code) {
-      const find = REGIONS.find(region => region.id === code)
+      const find = FacilityRegions.find(region => region.id === code)
       return find ? find.abbr : code
     },
     getColour(fuelTech) {

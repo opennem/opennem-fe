@@ -56,7 +56,12 @@ import _includes from 'lodash.includes'
 import _orderBy from 'lodash.orderby'
 import * as FUEL_TECHS from '~/constants/fuel-tech.js'
 import { FACILITY_OPERATING } from '~/constants/facility-status.js'
-import REGIONS from '~/constants/regions.js'
+import {
+  FacilityRegions,
+  getNEMRegionArray,
+  getRegionArray
+} from '~/constants/facility-regions.js'
+
 import Http from '~/services/Http.js'
 import FacilityDataTransformService from '~/services/dataTransform/Facility.js'
 import FacilityFilters from '~/components/Facility/Filters.vue'
@@ -176,8 +181,9 @@ export default {
       if (this.hostEnv === 'prod') {
         urls.push('/facility/facility_registry.json')
       } else {
-        urls.push('/v3/geo/wem_facilities.geojson')
-        urls.push('/v3/geo/nem_facilities.geojson')
+        urls.push(
+          'https://s3-ap-southeast-2.amazonaws.com/data.opennem.org.au/v3/geo/au_facilities.json'
+        )
       }
 
       if (urls.length > 0) {
@@ -199,15 +205,14 @@ export default {
           this.facilityData = res
         })
       } else {
-        if (responses.length === 2) {
-          const combined = [...responses[0].features, ...responses[1].features]
-          FacilityDataTransformService.flattenV3(combined).then(res => {
-            this.facilityData = res
-          })
-        } else {
-          console.warn(
-            'One or more of the facilities responses were not returned.'
+        if (responses.length > 0 && responses[0].features) {
+          FacilityDataTransformService.flattenV3(responses[0].features).then(
+            res => {
+              this.facilityData = res
+            }
           )
+        } else {
+          console.warn('There is an issue parsing the response.')
         }
       }
     },
@@ -243,9 +248,9 @@ export default {
       const that = this
       let regionIds = [this.regionId]
       if (this.regionId === 'all') {
-        regionIds = ['nsw1', 'qld1', 'sa1', 'tas1', 'vic1', 'wem']
+        regionIds = getRegionArray()
       } else if (this.regionId === 'nem') {
-        regionIds = ['nsw1', 'qld1', 'sa1', 'tas1', 'vic1']
+        regionIds = getNEMRegionArray()
       }
       async function updateFilter() {
         return filtered.filter(
@@ -265,7 +270,7 @@ export default {
 
         const exportData = facilities.map(d => {
           // eslint-disable-line
-          const region = REGIONS.find(r => r.id === d.regionId)
+          const region = FacilityRegions.find(r => r.id === d.regionId)
           return {
             'Facility Name': d.displayName,
             Status: d.status,
