@@ -287,6 +287,40 @@ export default {
         this.divWidth = this.calculateDivWidth()
       }, 200)
     )
+
+    window.addEventListener('keydown', e => {
+      const isUp = e.keyCode === 38
+      const isDown = e.keyCode === 40
+      const selectedId = this.selectedFacility
+        ? this.selectedFacility.stationId
+        : null
+      const length = this.filteredFacilities.length
+      const index = this.filteredFacilities.findIndex(
+        f => f.stationId === selectedId
+      )
+      if (index !== -1) {
+        if (isUp) {
+          if (index <= 0) {
+          } else {
+            this.$emit(
+              'facilitySelect',
+              this.filteredFacilities[index - 1],
+              true
+            )
+          }
+        } else if (isDown) {
+          if (index >= length - 1) {
+          } else {
+            this.$emit(
+              'facilitySelect',
+              this.filteredFacilities[index + 1],
+              true
+            )
+          }
+        }
+      }
+    })
+    return false
   },
 
   updated() {
@@ -410,7 +444,7 @@ export default {
 .card {
   margin-bottom: 1px;
   font-size: 70%;
-  transition: all 0.1s ease-in-out;
+  // transition: all 0.1s ease-in-out;
   cursor: pointer;
   opacity: 0.9;
   z-index: 9;
