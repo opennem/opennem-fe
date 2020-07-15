@@ -71,6 +71,8 @@
           :key="ftIndex"
           :style="{ 
             backgroundColor: getColour(ft),
+            backgroundImage: getBgImage(facility.status),
+            backgroundSize: '5px 5px',
             opacity: getOpacity(ft)
           }"
           class="source-colour-side" />
@@ -150,7 +152,7 @@
 import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
 import * as FUEL_TECHS from '~/constants/fuel-tech.js'
-import { FACILITY_OPERATING } from '~/constants/facility-status.js'
+import { FACILITY_RETIRED } from '~/constants/facility-status.js'
 import { FacilityRegions } from '~/constants/facility-regions.js'
 import Totals from './Totals'
 
@@ -337,7 +339,7 @@ export default {
       return this.$el.offsetWidth - 13
     },
     active(status) {
-      return status === FACILITY_OPERATING
+      return status !== FACILITY_RETIRED
     },
     sort(colId) {
       this.$emit('orderChanged', colId)
@@ -394,6 +396,13 @@ export default {
     getColour(fuelTech) {
       const ftColour = FUEL_TECHS.DEFAULT_FUEL_TECH_COLOUR[fuelTech]
       return ftColour || 'transparent'
+    },
+    getBgImage(status) {
+      if (status === 'committed')
+        return 'linear-gradient(transparent 50%, rgba(255,255,255,.5) 50%)'
+      if (status === 'commissioning')
+        return 'linear-gradient(transparent 80%, rgba(255,255,255,.5) 80%)'
+      return 'none'
     },
     getOpacity(fuelTech) {
       if (this.selectedTechs.length === 0) {
