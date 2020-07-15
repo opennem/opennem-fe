@@ -84,6 +84,11 @@ function transformFacilityData(data) {
 function transformV3FacilityData(data) {
   const emptyProperties = []
   const emptyGeometries = []
+  const operatingCount = []
+  const committedCount = []
+  const commissioningCount = []
+  const retiredCount = []
+  const noStatusCount = []
 
   const transformed = data.map(d => {
     const props = d.properties
@@ -131,6 +136,18 @@ function transformV3FacilityData(data) {
       const type = FUEL_TECHS.FUEL_TECH_CATEGORY[fuelTech] || ''
 
       unitStatuses.push(unit.status)
+
+      if (unit.status === 'operating') {
+        operatingCount.push(unit)
+      } else if (unit.status === 'committed') {
+        committedCount.push(unit)
+      } else if (unit.status === 'commissioning') {
+        commissioningCount.push(unit)
+      } else if (unit.status === 'retired') {
+        retiredCount.push(unit)
+      } else {
+        noStatusCount.push(unit)
+      }
 
       const unitObj = {
         name: unit.duid,
@@ -183,7 +200,16 @@ function transformV3FacilityData(data) {
     }
   })
 
-  console.log('List of facilities without location:', emptyGeometries)
+  // console.log('List of facilities without location:', emptyGeometries)
+  console.log(`${committedCount.length} committed units`, committedCount)
+  console.log(
+    `${commissioningCount.length} commissioning units`,
+    commissioningCount
+  )
+  console.log(`${operatingCount.length} operating units`, operatingCount)
+  console.log(`${retiredCount.length} retired units`, retiredCount)
+  console.log(`${noStatusCount.length} no status units`, noStatusCount)
+
   return transformed
 }
 
