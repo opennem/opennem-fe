@@ -116,15 +116,18 @@ function transformV3FacilityData(data) {
     const fuelTechs = []
     const genFuelTechs = []
     const loadFuelTechs = []
+    const unitStatuses = []
     const fuelTechRegisteredCap = {}
-    let status = ''
+    const status = dispatchUnits.length > 0 ? dispatchUnits[0].status : ''
     let generatorCap = 0
 
     dispatchUnits.forEach(unit => {
       const regCap = unit.registered_capacity
       const fuelTech = unit.fuel_tech
       const type = FUEL_TECHS.FUEL_TECH_CATEGORY[fuelTech] || ''
-      status = unit.status
+
+      unitStatuses.push(unit.status)
+
       const unitObj = {
         name: unit.duid,
         fuelTech,
@@ -165,6 +168,7 @@ function transformV3FacilityData(data) {
       regionId,
       location,
       units,
+      unitStatuses: _uniq(unitStatuses).sort(),
       generatorCap,
       unitNum: dispatchUnits.length,
       fuelTechs: _uniq(fuelTechs).sort(),
@@ -176,7 +180,6 @@ function transformV3FacilityData(data) {
   })
 
   console.log('List of facilities without location:', emptyGeometries)
-
   return transformed
 }
 

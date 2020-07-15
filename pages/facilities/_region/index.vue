@@ -260,7 +260,7 @@ export default {
               .includes(that.filterString.toLowerCase()) &&
             _includes(regionIds, g.regionId.toLowerCase()) &&
             (that.selectedStatuses.length <= 0 ||
-              _includes(that.selectedStatuses, g.status))
+              g.unitStatuses.some(r => that.selectedStatuses.includes(r)))
         )
       }
 

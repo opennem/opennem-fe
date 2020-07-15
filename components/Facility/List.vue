@@ -345,7 +345,8 @@ export default {
       this.$emit('orderChanged', colId)
     },
     handleRowClick(facility) {
-      console.log('facility obj', facility.jsonData)
+      console.log(`${facility.displayName} view model`, facility)
+      console.log(`${facility.displayName} json obj`, facility.jsonData)
       if (!this.widthBreak) {
         if (this.selected === facility) {
           this.selected = null
@@ -398,10 +399,10 @@ export default {
       return ftColour || 'transparent'
     },
     getBgImage(status) {
-      if (status === 'committed')
-        return 'linear-gradient(transparent 50%, rgba(255,255,255,.5) 50%)'
-      if (status === 'commissioning')
-        return 'linear-gradient(transparent 80%, rgba(255,255,255,.5) 80%)'
+      // if (status === 'committed')
+      //   return 'linear-gradient(transparent 50%, rgba(255,255,255,.5) 50%)'
+      // if (status === 'commissioning')
+      //   return 'linear-gradient(transparent 80%, rgba(255,255,255,.5) 80%)'
       return 'none'
     },
     getOpacity(fuelTech) {
