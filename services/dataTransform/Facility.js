@@ -107,8 +107,8 @@ function transformV3FacilityData(data) {
     }
     const displayName = props.name || '-'
     const regionId = props.state
-      ? props.state === 'wem'
-        ? props.state
+      ? props.state === 'WA'
+        ? 'wem'
         : props.state.toLowerCase() + '1'
       : ''
     const units = []
