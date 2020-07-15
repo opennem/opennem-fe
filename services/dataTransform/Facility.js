@@ -2,6 +2,8 @@ import _uniq from 'lodash.uniq'
 import _isEmpty from 'lodash.isempty'
 import * as FUEL_TECHS from '~/constants/fuel-tech.js'
 
+let emptyIdCount = 0
+
 function transformFacilityData(data) {
   const stationIds = Object.keys(data)
   const stations = stationIds.map(d => data[d])
@@ -93,15 +95,15 @@ function transformV3FacilityData(data) {
     if (!props) {
       emptyProperties.push(d)
     }
-    const stationId = `station${props.id}`
-    const status = props.status_id
+    let stationId = props.station_id
+    if (!stationId) {
+      emptyIdCount++
+      stationId = `emptyStationId-${1}`
+    }
     const displayName = props.name || '-'
-    const regionId = props.region ? props.region.toLowerCase() : 'wem'
-    const generatorCap = props.nameplate_capacity || 0
-    const fuelTechs = [props.fueltech_id]
-    const genFuelTechs = [props.fueltech_id]
-    const fuelTechRegisteredCap = {}
-    const loadFuelTechs = []
+    const regionId = props.state ? props.state.toLowerCase() + '1' : 'wem'
+    const units = []
+    const dispatchUnits = props.duid_data || []
     const location = geo
       ? {
           latitude: geo.coordinates[1],
@@ -111,21 +113,68 @@ function transformV3FacilityData(data) {
           latitude: null,
           longitude: null
         }
+    const fuelTechs = []
+    const genFuelTechs = []
+    const loadFuelTechs = []
+    const fuelTechRegisteredCap = {}
+    let status = ''
+    let generatorCap = 0
 
-    fuelTechRegisteredCap[props.fueltech_id] = generatorCap
+    dispatchUnits.forEach(unit => {
+      const regCap = unit.registered_capacity
+      const fuelTech = unit.fuel_tech
+      const type = FUEL_TECHS.FUEL_TECH_CATEGORY[fuelTech] || ''
+      status = unit.status
+      const unitObj = {
+        name: unit.duid,
+        fuelTech,
+        regCap,
+        type,
+        status
+      }
+
+      if (type === 'source') {
+        generatorCap += regCap || 0
+      }
+
+      if (fuelTech) {
+        if (!fuelTechRegisteredCap[fuelTech]) {
+          fuelTechRegisteredCap[fuelTech] = 0
+        }
+        fuelTechRegisteredCap[fuelTech] += regCap
+      }
+
+      if (fuelTech !== 'battery_charging' && !_isEmpty(unit)) {
+        fuelTechs.push(fuelTech)
+        if (type === 'source') {
+          genFuelTechs.push(fuelTech)
+        } else if (type === 'load') {
+          loadFuelTechs.push(fuelTech)
+        }
+      }
+
+      if (!_isEmpty(unit)) {
+        units.push(unitObj)
+      }
+    })
+
     return {
       stationId,
-      status,
       displayName,
+      status,
       regionId,
-      generatorCap,
       location,
-      fuelTechs,
-      genFuelTechs,
-      loadFuelTechs,
-      fuelTechRegisteredCap
+      units,
+      generatorCap,
+      unitNum: dispatchUnits.length,
+      fuelTechs: _uniq(fuelTechs).sort(),
+      genFuelTechs: _uniq(genFuelTechs).sort(),
+      loadFuelTechs: _uniq(loadFuelTechs).sort(),
+      fuelTechRegisteredCap,
+      jsonData: d
     }
   })
+
   console.log('List of facilities without location:', emptyGeometries)
 
   return transformed
