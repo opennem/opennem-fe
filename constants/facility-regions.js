@@ -50,7 +50,7 @@ export const FacilityRegions = [
 ]
 
 export function getNEMRegionArray() {
-  return FacilityRegions.filter(r => r.id !== 'all' || r.id !== 'wem').map(
+  return FacilityRegions.filter(r => r.id !== 'all' && r.id !== 'wem').map(
     r => r.id
   )
 }
