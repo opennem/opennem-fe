@@ -101,7 +101,11 @@ function transformV3FacilityData(data) {
       stationId = `emptyStationId-${1}`
     }
     const displayName = props.name || '-'
-    const regionId = props.state ? props.state.toLowerCase() + '1' : 'wem'
+    const regionId = props.state
+      ? props.state === 'wem'
+        ? props.state
+        : props.state.toLowerCase() + '1'
+      : ''
     const units = []
     const dispatchUnits = props.duid_data || []
     const location = geo
