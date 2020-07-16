@@ -54,7 +54,3 @@ export function getNEMRegionArray() {
     r => r.id
   )
 }
-
-export function getRegionArray() {
-  return FacilityRegions.filter(r => r.id !== 'all').map(r => r.id)
-}

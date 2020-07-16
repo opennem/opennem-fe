@@ -58,8 +58,7 @@ import * as FUEL_TECHS from '~/constants/fuel-tech.js'
 import { FACILITY_OPERATING } from '~/constants/facility-status.js'
 import {
   FacilityRegions,
-  getNEMRegionArray,
-  getRegionArray
+  getNEMRegionArray
 } from '~/constants/facility-regions.js'
 
 import Http from '~/services/Http.js'
@@ -248,7 +247,7 @@ export default {
       const that = this
       let regionIds = [this.regionId]
       if (this.regionId === 'all') {
-        regionIds = getRegionArray()
+        regionIds = []
       } else if (this.regionId === 'nem') {
         regionIds = getNEMRegionArray()
       }
@@ -258,7 +257,9 @@ export default {
             g.displayName
               .toLowerCase()
               .includes(that.filterString.toLowerCase()) &&
-            _includes(regionIds, g.regionId.toLowerCase()) &&
+            (regionIds.length === 0 ||
+              (regionIds.length > 0 &&
+                _includes(regionIds, g.regionId.toLowerCase()))) &&
             (that.selectedStatuses.length <= 0 ||
               g.unitStatuses.some(r => that.selectedStatuses.includes(r)))
         )
@@ -274,7 +275,7 @@ export default {
           return {
             'Facility Name': d.displayName,
             Status: d.status,
-            Region: region.label,
+            Region: region ? region.label : '',
             Technology: d.fuelTechs.map(ft => FUEL_TECHS.FUEL_TECH_LABEL[ft]),
             'Generator Capacity (MW)': d.generatorCap,
             Latitude: d.location.latitude,
