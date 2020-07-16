@@ -103,7 +103,7 @@ function transformV3FacilityData(data) {
     let stationId = props.station_id
     if (!stationId) {
       emptyIdCount++
-      stationId = `emptyStationId-${1}`
+      stationId = `emptyStationId-${emptyIdCount}`
     }
     const displayName = props.name || '-'
     const regionId = props.state
