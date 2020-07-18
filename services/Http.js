@@ -1,4 +1,14 @@
 import axios from 'axios'
+import { BrowserClient } from '@sentry/browser'
+
+const host = window.location.host
+let client = null
+if (host === 'opennem.org.au') {
+  client = new BrowserClient({
+    dsn:
+      'https://c89c945a3c14478f9df55a65ddb1fbae@o402615.ingest.sentry.io/5265226'
+  })
+}
 
 const http = axios.create({
   baseURL: `https://data.opennem.org.au`,
@@ -17,6 +27,12 @@ function fetchJSON(ref) {
         resolve(data)
       })
       .catch(e => {
+        const error = e.toJSON()
+        const message = `fetch ${error.config.url} error: ${error.message}`
+        if (client) {
+          client.captureException(message)
+        }
+        console.error(message, e.toJSON())
         reject(e)
       })
   })
