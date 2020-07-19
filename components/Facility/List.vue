@@ -597,14 +597,14 @@ export default {
   }
 }
 .region-col {
-  width: 14%;
+  width: 11%;
 
   &.col-header {
     white-space: nowrap;
   }
 }
 .tech-col {
-  width: 17%;
+  width: 25%;
 
   .stat-value {
     font-size: 8px;
