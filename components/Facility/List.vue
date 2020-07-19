@@ -82,7 +82,14 @@
         <div
           :style="{ width: hideRegionColumn ? '60%' : '50%'}"
           class="name-col">
-          <h2 class="station-name">{{ facility.displayName }}</h2>
+          <h2 class="station-name">
+            {{ facility.displayName }}
+          </h2>
+          <span 
+            v-if="facility.hasLocation" 
+            class="has-location-icon">
+            <i class="fal fa-map-marker-alt"/>
+          </span>
         </div>
 
         <div
@@ -528,10 +535,17 @@ export default {
 .station-name {
   font-weight: 600;
   font-size: 12px;
+  display: inline-block;
 
   @include tablet {
     font-size: 14px;
   }
+}
+.has-location-icon {
+  position: relative;
+  top: -1px;
+  left: 2px;
+  color: $opennem-link-color;
 }
 .max-capcity {
   font-size: 70%;

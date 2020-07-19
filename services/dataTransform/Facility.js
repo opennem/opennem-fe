@@ -93,9 +93,11 @@ function transformV3FacilityData(data) {
   const transformed = data.map(d => {
     const props = d.properties
     const geo = d.geometry
+    let hasLocation = true
 
-    if (!geo) {
+    if (!geo || geo.coordinates.length !== 2) {
       emptyGeometries.push(d)
+      hasLocation = false
     }
     if (!props) {
       emptyProperties.push(d)
@@ -190,6 +192,7 @@ function transformV3FacilityData(data) {
       state,
       regionId,
       location,
+      hasLocation,
       units,
       unitStatuses: _uniq(unitStatuses).sort(),
       generatorCap,
