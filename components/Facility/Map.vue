@@ -43,6 +43,7 @@ import _orderBy from 'lodash.orderby'
 // import L from 'leaflet'
 import { scaleLinear as d3ScaleLinear } from 'd3-scale'
 import * as FUEL_TECHS from '~/constants/fuel-tech.js'
+import { getRegionLocationById } from '~/constants/facility-regions.js'
 // import * as L from 'vue2-leaflet'
 
 // import TileSelector from './MapTileSelector';
@@ -216,8 +217,13 @@ export default {
             .setLatLng([lat, lng])
             .setContent(facility.displayName)
           this.selectedMarker.openOn(this.map)
-
           this.map.setView([lat, lng], 7)
+        } else {
+          // no lat/lng, so use region or state
+          const location = getRegionLocationById(facility.regionId)
+          if (location) {
+            this.map.setView([location[0], location[1]], 6)
+          }
         }
       } else if (this.selectedMarker) {
         this.selectedMarker.remove()
