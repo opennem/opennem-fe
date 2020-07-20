@@ -270,13 +270,16 @@ export default {
     this.windowWidth = window.innerWidth
     this.windowHeight = window.innerHeight
 
-    this.setup()
-    this.updateMap(this.facilitiesData)
+    this.$nextTick(() => {
+      this.setup()
+      this.updateMap(this.facilitiesData)
+    })
 
     window.addEventListener(
       'resize',
       _debounce(() => {
         this.divWidth = this.$el.offsetWidth
+        this.windowHeight = window.innerHeight
       }, 200)
     )
   },
