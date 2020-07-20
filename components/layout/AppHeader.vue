@@ -1,5 +1,5 @@
 <template>
-  <header>
+  <header :class="{ 'facilities-header': isFacilitiesView }">
     <div class="header-dropdowns">
       <div 
         class="logo-wrapper" 
@@ -38,7 +38,7 @@
     </div>
 
     <div 
-      v-if="!widthBreak" 
+      v-if="!widthBreak"
       class="share-button-wrapper">
       <button
         v-on-clickaway="handleClickAway"
@@ -367,6 +367,35 @@ header {
     position: relative;
     .button:focus {
       color: $opennem-link-color;
+    }
+  }
+
+  &.facilities-header {
+    .share-button-wrapper {
+      position: absolute;
+      left: 50%;
+      margin-left: -50px;
+
+      @include desktop {
+        margin-left: -90px;
+      }
+
+      .button {
+        min-width: 30px;
+        border-radius: 4px;
+        padding: 0;
+        @include desktop {
+          min-width: 62px;
+          padding: 0 15px;
+        }
+      }
+
+      .label-image {
+        display: none;
+        @include desktop {
+          display: inline;
+        }
+      }
     }
   }
 

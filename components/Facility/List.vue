@@ -82,7 +82,14 @@
         <div
           :style="{ width: hideRegionColumn ? '60%' : '50%'}"
           class="name-col">
-          <h2 class="station-name">{{ facility.displayName }}</h2>
+          <h2 class="station-name">
+            {{ facility.displayName }}
+          </h2>
+          <span 
+            v-if="facility.hasLocation" 
+            class="has-location-icon">
+            <i class="fal fa-map-marker-alt"/>
+          </span>
         </div>
 
         <div
@@ -101,7 +108,9 @@
               :style="{ opacity: getOpacity(ft) }"
             >
               {{ getFtLabel(ft) }}
-              <small v-if="facility.genFuelTechs.length > 1">({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}MW)</small>
+              <small v-if="facility.genFuelTechs.length > 1">
+                ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span><span v-else>MW</span>)
+              </small>
               <span v-if="genFtIndex !== facility.genFuelTechs.length - 1"><br></span>
             </span>
           </div>
@@ -114,7 +123,7 @@
               :style="{ opacity: getOpacity(ft) }"
             >
               {{ getFtLabel(ft) }}
-              <small>({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}MW)</small>
+              <small>({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span><span v-else>MW</span>)</small>
               <span v-if="loadFtIndex !== facility.loadFuelTechs.length - 1"><br></span>
             </em>
           </div>
@@ -125,9 +134,11 @@
             v-show="facility.generatorCap"
             class="stat-value has-text-right">
             {{ getGeneratorCap(facility) | facilityFormatNumber }}
-            <span
-              v-if="getGeneratorCap(facility) !== 0"
-              class="unit">MW</span>
+            <span 
+              v-if="getGeneratorCap(facility) !== 0 && getGeneratorCap(facility) < 1" 
+              class="unit">kW</span><span 
+                v-if="getGeneratorCap(facility) !== 0 && getGeneratorCap(facility) >= 1" 
+                class="unit">MW</span>
           </div>
           <div
             v-show="!facility.generatorCap"
@@ -152,7 +163,7 @@
 import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
 import * as FUEL_TECHS from '~/constants/fuel-tech.js'
-import { FACILITY_RETIRED } from '~/constants/facility-status.js'
+import { FACILITY_OPERATING } from '~/constants/facility-status.js'
 import { FacilityRegions } from '~/constants/facility-regions.js'
 import Totals from './Totals'
 
@@ -302,6 +313,7 @@ export default {
       )
       if (index !== -1) {
         if (isUp) {
+          e.preventDefault()
           if (index <= 0) {
           } else {
             this.$emit(
@@ -311,6 +323,7 @@ export default {
             )
           }
         } else if (isDown) {
+          e.preventDefault()
           if (index >= length - 1) {
           } else {
             this.$emit(
@@ -339,7 +352,7 @@ export default {
       return this.$el.offsetWidth - 13
     },
     active(status) {
-      return status !== FACILITY_RETIRED
+      return status === FACILITY_OPERATING
     },
     sort(colId) {
       this.$emit('orderChanged', colId)
@@ -528,10 +541,17 @@ export default {
 .station-name {
   font-weight: 600;
   font-size: 12px;
+  display: inline-block;
 
   @include tablet {
     font-size: 14px;
   }
+}
+.has-location-icon {
+  position: relative;
+  top: -1px;
+  left: 2px;
+  color: $opennem-link-color;
 }
 .max-capcity {
   font-size: 70%;
@@ -583,14 +603,14 @@ export default {
   }
 }
 .region-col {
-  width: 14%;
+  width: 11%;
 
   &.col-header {
     white-space: nowrap;
   }
 }
 .tech-col {
-  width: 17%;
+  width: 25%;
 
   .stat-value {
     font-size: 8px;

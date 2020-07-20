@@ -93,9 +93,11 @@ function transformV3FacilityData(data) {
   const transformed = data.map(d => {
     const props = d.properties
     const geo = d.geometry
+    let hasLocation = true
 
-    if (!geo) {
+    if (!geo || geo.coordinates.length !== 2) {
       emptyGeometries.push(d)
+      hasLocation = false
     }
     if (!props) {
       emptyProperties.push(d)
@@ -103,13 +105,14 @@ function transformV3FacilityData(data) {
     let stationId = props.station_id
     if (!stationId) {
       emptyIdCount++
-      stationId = `emptyStationId-${1}`
+      stationId = `emptyStationId-${emptyIdCount}`
     }
     const displayName = props.name || '-'
-    const regionId = props.state
-      ? props.state === 'WA'
+    const state = props.state || ''
+    const regionId = props.network_region
+      ? props.network_region === 'WA'
         ? 'wem'
-        : props.state.toLowerCase() + '1'
+        : props.network_region.toLowerCase()
       : ''
     const units = []
     const dispatchUnits = props.duid_data || []
@@ -186,8 +189,10 @@ function transformV3FacilityData(data) {
       stationId,
       displayName,
       status,
+      state,
       regionId,
       location,
+      hasLocation,
       units,
       unitStatuses: _uniq(unitStatuses).sort(),
       generatorCap,
@@ -200,7 +205,7 @@ function transformV3FacilityData(data) {
     }
   })
 
-  // console.log('List of facilities without location:', emptyGeometries)
+  console.log('List of facilities without location:', emptyGeometries)
   console.log(`${committedCount.length} committed units`, committedCount)
   console.log(
     `${commissioningCount.length} commissioning units`,

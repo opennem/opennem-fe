@@ -11,7 +11,28 @@
       @viewSelect="handleViewSelect"
     />
 
-    <div class="facility-list-map-container">
+    <transition name="fade">
+      <div
+        v-if="!ready"
+        class="facility-list-map-container loading-containers">
+        <div class="facility-list">
+          <div
+            class="loader-block"
+            style="height: 400px" />
+        </div>
+        <div 
+          class="facility-map" 
+          style="margin-top: 127px;">
+          <div
+            class="loader-block"
+            style="height: 400px" />
+        </div>
+      </div>
+    </transition>
+
+    <div 
+      v-if="ready" 
+      class="facility-list-map-container">
       <facility-list
         v-if="!widthBreak || (widthBreak && selectedView === 'list')"
         :filtered-facilities="filteredFacilities"
@@ -58,8 +79,7 @@ import * as FUEL_TECHS from '~/constants/fuel-tech.js'
 import { FACILITY_OPERATING } from '~/constants/facility-status.js'
 import {
   FacilityRegions,
-  getNEMRegionArray,
-  getRegionArray
+  getNEMRegionArray
 } from '~/constants/facility-regions.js'
 
 import Http from '~/services/Http.js'
@@ -84,6 +104,7 @@ export default {
 
   data() {
     return {
+      ready: false,
       filterString: '',
       facilityData: [],
       filteredFacilities: [],
@@ -203,12 +224,14 @@ export default {
       if (this.hostEnv === 'prod') {
         FacilityDataTransformService.flatten(responses[0]).then(res => {
           this.facilityData = res
+          this.ready = true
         })
       } else {
         if (responses.length > 0 && responses[0].features) {
           FacilityDataTransformService.flattenV3(responses[0].features).then(
             res => {
               this.facilityData = res
+              this.ready = true
             }
           )
         } else {
@@ -248,7 +271,7 @@ export default {
       const that = this
       let regionIds = [this.regionId]
       if (this.regionId === 'all') {
-        regionIds = getRegionArray()
+        regionIds = []
       } else if (this.regionId === 'nem') {
         regionIds = getNEMRegionArray()
       }
@@ -258,7 +281,9 @@ export default {
             g.displayName
               .toLowerCase()
               .includes(that.filterString.toLowerCase()) &&
-            _includes(regionIds, g.regionId.toLowerCase()) &&
+            (regionIds.length === 0 ||
+              (regionIds.length > 0 &&
+                _includes(regionIds, g.regionId.toLowerCase()))) &&
             (that.selectedStatuses.length <= 0 ||
               g.unitStatuses.some(r => that.selectedStatuses.includes(r)))
         )
@@ -274,7 +299,7 @@ export default {
           return {
             'Facility Name': d.displayName,
             Status: d.status,
-            Region: region.label,
+            Region: region ? region.label : '',
             Technology: d.fuelTechs.map(ft => FUEL_TECHS.FUEL_TECH_LABEL[ft]),
             'Generator Capacity (MW)': d.generatorCap,
             Latitude: d.location.latitude,
@@ -368,7 +393,8 @@ export default {
       width: 50%;
       position: fixed;
       right: 0;
-      top: 100px;
+      top: 0;
+      z-index: 9999;
       padding: 0 1rem 0 0;
     }
   }
