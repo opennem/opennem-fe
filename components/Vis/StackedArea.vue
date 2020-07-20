@@ -849,6 +849,25 @@ export default {
         .domain([0, y2Max])
         .nice()
 
+      this.updateYAxisRight()
+
+      this.line.curve(curveMonotoneX)
+      this.$lineGroup.selectAll('path').remove()
+
+      // Generate Line
+      this.$lineGroup
+        .append('path')
+        .datum(this.updatedDatasetTwo)
+        .attr('class', 'line-path')
+        .attr('d', this.line)
+        .style('stroke', this.datasetTwoColour)
+        .style('stroke-width', 2)
+        .style('filter', 'url(#shadow)')
+        .style('clip-path', this.clipPathUrl)
+        .style('-webkit-clip-path', this.clipPathUrl)
+    },
+
+    updateYAxisRight() {
       if (this.domains.length === 0) {
         this.yAxis2 = axisLeft(this.y2)
           .tickSize(-this.width)
@@ -895,21 +914,6 @@ export default {
               .attr('dy', -4)
           )
       }
-
-      this.line.curve(curveMonotoneX)
-      this.$lineGroup.selectAll('path').remove()
-
-      // Generate Line
-      this.$lineGroup
-        .append('path')
-        .datum(this.updatedDatasetTwo)
-        .attr('class', 'line-path')
-        .attr('d', this.line)
-        .style('stroke', this.datasetTwoColour)
-        .style('stroke-width', 2)
-        .style('filter', 'url(#shadow)')
-        .style('clip-path', this.clipPathUrl)
-        .style('-webkit-clip-path', this.clipPathUrl)
     },
 
     findNextDatePeriod(time) {
@@ -972,6 +976,7 @@ export default {
       this.$xAxisGroup.call(this.customXAxis)
       this.$yAxisGroup.call(this.customYAxis)
       this.$yAxisTickGroup.call(this.customYAxis)
+      this.updateYAxisRight()
       this.updateGuides()
       this.drawFocus(this.focusDate)
       this.drawCompare(this.compareDates)
