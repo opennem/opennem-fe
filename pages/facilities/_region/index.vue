@@ -22,7 +22,7 @@
         </div>
         <div 
           class="facility-map" 
-          style="margin-top: 27px;">
+          style="margin-top: 127px;">
           <div
             class="loader-block"
             style="height: 400px" />
@@ -393,7 +393,8 @@ export default {
       width: 50%;
       position: fixed;
       right: 0;
-      top: 100px;
+      top: 0;
+      z-index: 9999;
       padding: 0 1rem 0 0;
     }
   }

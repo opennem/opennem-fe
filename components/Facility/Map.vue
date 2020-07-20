@@ -123,7 +123,7 @@ export default {
     },
 
     mapHeight() {
-      const offset = this.widthBreak ? 149 : 155
+      const offset = this.widthBreak ? 49 : 50
       return `${this.windowHeight - offset}px`
     },
 
@@ -456,5 +456,6 @@ export default {
   font-size: 9px;
   text-align: center;
   opacity: 0.75;
+  padding-top: 5px;
 }
 </style>
