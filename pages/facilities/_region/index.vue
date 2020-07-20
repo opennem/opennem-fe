@@ -11,7 +11,28 @@
       @viewSelect="handleViewSelect"
     />
 
-    <div class="facility-list-map-container">
+    <transition name="fade">
+      <div
+        v-if="!ready"
+        class="facility-list-map-container loading-containers">
+        <div class="facility-list">
+          <div
+            class="loader-block"
+            style="height: 400px" />
+        </div>
+        <div 
+          class="facility-map" 
+          style="margin-top: 27px;">
+          <div
+            class="loader-block"
+            style="height: 400px" />
+        </div>
+      </div>
+    </transition>
+
+    <div 
+      v-if="ready" 
+      class="facility-list-map-container">
       <facility-list
         v-if="!widthBreak || (widthBreak && selectedView === 'list')"
         :filtered-facilities="filteredFacilities"
@@ -83,6 +104,7 @@ export default {
 
   data() {
     return {
+      ready: false,
       filterString: '',
       facilityData: [],
       filteredFacilities: [],
@@ -202,12 +224,14 @@ export default {
       if (this.hostEnv === 'prod') {
         FacilityDataTransformService.flatten(responses[0]).then(res => {
           this.facilityData = res
+          this.ready = true
         })
       } else {
         if (responses.length > 0 && responses[0].features) {
           FacilityDataTransformService.flattenV3(responses[0].features).then(
             res => {
               this.facilityData = res
+              this.ready = true
             }
           )
         } else {

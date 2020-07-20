@@ -2105,37 +2105,6 @@ export default {
   // margin-right: 10px;
 }
 
-.loading-containers {
-  position: absolute;
-  width: 100%;
-  flex-wrap: wrap;
-
-  @include desktop {
-    flex-wrap: nowrap;
-  }
-
-  .loader-block {
-    background-color: #ddd;
-    border-radius: 20px;
-    height: 400px;
-    margin: 0.5rem;
-    -webkit-animation: pulse 1.4s ease-in-out infinite alternate;
-    animation: pulse 1.4s ease-in-out infinite alternate;
-  }
-  .vis-container {
-    padding: 1rem 0 1rem 0.5rem;
-    @include desktop {
-      width: 70%;
-    }
-  }
-  .table-container {
-    padding: 1rem 0.5rem 1rem 0;
-    @include desktop {
-      width: 30%;
-    }
-  }
-}
-
 // Chart style adjustments
 .price-vis {
   position: relative;
