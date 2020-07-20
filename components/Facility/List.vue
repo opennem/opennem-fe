@@ -309,6 +309,7 @@ export default {
       )
       if (index !== -1) {
         if (isUp) {
+          e.preventDefault()
           if (index <= 0) {
           } else {
             this.$emit(
@@ -318,6 +319,7 @@ export default {
             )
           }
         } else if (isDown) {
+          e.preventDefault()
           if (index >= length - 1) {
           } else {
             this.$emit(
