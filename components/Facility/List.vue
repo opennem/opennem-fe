@@ -108,7 +108,9 @@
               :style="{ opacity: getOpacity(ft) }"
             >
               {{ getFtLabel(ft) }}
-              <small v-if="facility.genFuelTechs.length > 1">({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}MW)</small>
+              <small v-if="facility.genFuelTechs.length > 1">
+                ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span><span v-else>MW</span>)
+              </small>
               <span v-if="genFtIndex !== facility.genFuelTechs.length - 1"><br></span>
             </span>
           </div>
@@ -121,7 +123,7 @@
               :style="{ opacity: getOpacity(ft) }"
             >
               {{ getFtLabel(ft) }}
-              <small>({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}MW)</small>
+              <small>({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span><span v-else>MW</span>)</small>
               <span v-if="loadFtIndex !== facility.loadFuelTechs.length - 1"><br></span>
             </em>
           </div>
@@ -132,9 +134,11 @@
             v-show="facility.generatorCap"
             class="stat-value has-text-right">
             {{ getGeneratorCap(facility) | facilityFormatNumber }}
-            <span
-              v-if="getGeneratorCap(facility) !== 0"
-              class="unit">MW</span>
+            <span 
+              v-if="getGeneratorCap(facility) !== 0 && getGeneratorCap(facility) < 1" 
+              class="unit">kW</span><span 
+                v-if="getGeneratorCap(facility) !== 0 && getGeneratorCap(facility) >= 1" 
+                class="unit">MW</span>
           </div>
           <div
             v-show="!facility.generatorCap"
