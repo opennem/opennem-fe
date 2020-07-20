@@ -159,7 +159,7 @@
 import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
 import * as FUEL_TECHS from '~/constants/fuel-tech.js'
-import { FACILITY_RETIRED } from '~/constants/facility-status.js'
+import { FACILITY_OPERATING } from '~/constants/facility-status.js'
 import { FacilityRegions } from '~/constants/facility-regions.js'
 import Totals from './Totals'
 
@@ -346,7 +346,7 @@ export default {
       return this.$el.offsetWidth - 13
     },
     active(status) {
-      return status !== FACILITY_RETIRED
+      return status === FACILITY_OPERATING
     },
     sort(colId) {
       this.$emit('orderChanged', colId)
