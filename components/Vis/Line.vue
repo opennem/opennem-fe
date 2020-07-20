@@ -723,7 +723,7 @@ export default {
         `.${this.cursorCircleClass}`
       )
 
-      if (xDate) {
+      if (xDate || xDate === 0) {
         if (bandwidth) {
           $cursorLine.attr('opacity', 0)
           $cursorRect
