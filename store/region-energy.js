@@ -53,6 +53,10 @@ export const actions = {
       commit('isFetching', false)
       commit('jsonResponses', responses)
     })
+  },
+
+  doUpdateDatasetByGroup() {
+    // with the grouping, recalculate the data
   }
 }
 
@@ -139,7 +143,7 @@ function initStore(commit, data) {
     })
   })
 
-  console.log(dataset.length, num, dataset)
+  console.log(dataset.length, num, dataset, fuelTechs)
 
   commit('energyFuelTechs', fuelTechs)
 }
