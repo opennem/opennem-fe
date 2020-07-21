@@ -130,23 +130,25 @@ function transformV3FacilityData(data) {
     const loadFuelTechs = []
     const unitStatuses = []
     const fuelTechRegisteredCap = {}
+    const unitStatusRegisteredCap = {}
     const status = dispatchUnits.length > 0 ? dispatchUnits[0].status : ''
     let generatorCap = 0
 
     dispatchUnits.forEach(unit => {
       const regCap = unit.registered_capacity
       const fuelTech = unit.fuel_tech
+      const unitStatus = unit.status
       const type = FUEL_TECHS.FUEL_TECH_CATEGORY[fuelTech] || ''
 
-      unitStatuses.push(unit.status)
+      unitStatuses.push(unitStatus)
 
-      if (unit.status === 'operating') {
+      if (unitStatus === 'operating') {
         operatingCount.push(unit)
-      } else if (unit.status === 'committed') {
+      } else if (unitStatus === 'committed') {
         committedCount.push(unit)
-      } else if (unit.status === 'commissioning') {
+      } else if (unitStatus === 'commissioning') {
         commissioningCount.push(unit)
-      } else if (unit.status === 'retired') {
+      } else if (unitStatus === 'retired') {
         retiredCount.push(unit)
       } else {
         noStatusCount.push(unit)
@@ -169,6 +171,13 @@ function transformV3FacilityData(data) {
           fuelTechRegisteredCap[fuelTech] = 0
         }
         fuelTechRegisteredCap[fuelTech] += regCap
+      }
+
+      if (unitStatus) {
+        if (!unitStatusRegisteredCap[unitStatus]) {
+          unitStatusRegisteredCap[unitStatus] = 0
+        }
+        unitStatusRegisteredCap[unitStatus] += regCap
       }
 
       if (fuelTech !== 'battery_charging' && !_isEmpty(unit)) {
@@ -201,6 +210,7 @@ function transformV3FacilityData(data) {
       genFuelTechs: _uniq(genFuelTechs).sort(),
       loadFuelTechs: _uniq(loadFuelTechs).sort(),
       fuelTechRegisteredCap,
+      unitStatusRegisteredCap,
       jsonData: d
     }
   })
