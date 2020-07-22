@@ -38,6 +38,7 @@
         :filtered-facilities="filteredFacilities"
         :selected-facility="selectedFacility"
         :selected-techs="selectedTechs"
+        :selected-statuses="selectedStatuses"
         :sort-by="sortBy"
         :order-by="orderBy"
         :hide-region-column="!isNemRegion && !isAllRegion"

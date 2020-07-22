@@ -133,12 +133,17 @@
           <div
             v-show="facility.generatorCap"
             class="stat-value has-text-right">
+            <span 
+              v-tooltip.auto="'Facility contains capacity that is excluded by filter.'"
+              v-if="hasHiddenCapacity(facility)"
+              class="has-hidden-capacity"><i class="fal fa-info-circle"/></span>
             {{ getGeneratorCap(facility) | facilityFormatNumber }}
             <span 
               v-if="getGeneratorCap(facility) !== 0 && getGeneratorCap(facility) < 1" 
-              class="unit">kW</span><span 
-                v-if="getGeneratorCap(facility) !== 0 && getGeneratorCap(facility) >= 1" 
-                class="unit">MW</span>
+              class="unit">kW</span>
+            <span 
+              v-if="getGeneratorCap(facility) !== 0 && getGeneratorCap(facility) >= 1" 
+              class="unit">MW</span>
           </div>
           <div
             v-show="!facility.generatorCap"
@@ -205,6 +210,10 @@ export default {
       default: () => null
     },
     selectedTechs: {
+      type: Array,
+      default: () => []
+    },
+    selectedStatuses: {
       type: Array,
       default: () => []
     },
@@ -440,11 +449,50 @@ export default {
       })
       return cap
     },
+    hasHiddenCapacity(facility) {
+      const ftBoolArr = []
+      if (this.selectedTechs.length > 0) {
+        facility.fuelTechs.forEach(ft => {
+          let isSelected = false
+          this.selectedTechs.forEach(selectedFt => {
+            if (selectedFt === ft) {
+              isSelected = true
+            }
+          })
+          ftBoolArr.push(isSelected)
+        })
+      } else {
+        ftBoolArr.push(true)
+      }
+
+      const statusBoolArr = []
+      if (this.selectedStatuses.length > 0) {
+        facility.unitStatuses.forEach(status => {
+          let isSelected = false
+          this.selectedStatuses.forEach(selectedStatus => {
+            if (selectedStatus === status) {
+              isSelected = true
+            }
+          })
+          statusBoolArr.push(isSelected)
+        })
+      } else {
+        statusBoolArr.push(true)
+      }
+
+      return !(
+        ftBoolArr.reduce((a, b) => a && b) &&
+        statusBoolArr.reduce((a, b) => a && b)
+      )
+    },
     isSelected(stationId) {
       if (this.selected) {
         return stationId === this.selected.stationId
       }
       return false
+    },
+    isSelectedStatus(status) {
+      return this.selectedStatuses.indexOf(status) > -1
     }
   }
 }
@@ -529,12 +577,12 @@ export default {
 }
 
 .source-colour-side {
-  width: 5px;
+  width: 3px;
   height: 100%;
   background-color: rgba(100, 100, 100, 0.8);
 
   @include tablet {
-    width: 10px;
+    width: 6px;
   }
 }
 
@@ -640,6 +688,10 @@ export default {
     @include tablet {
       font-size: 14px;
     }
+  }
+
+  .has-hidden-capacity {
+    font-size: 10px;
   }
 
   &.stat .unit {
