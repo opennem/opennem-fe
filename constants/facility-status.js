@@ -21,3 +21,8 @@ export const FacilityStatus = [
     label: 'Retired'
   }
 ]
+
+export function getFacilityStatusLabelById(id) {
+  const find = FacilityStatus.find(s => s.id === id)
+  return find ? find.label : ''
+}

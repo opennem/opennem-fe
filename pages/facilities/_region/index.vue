@@ -262,12 +262,7 @@ export default {
         [this.orderBy]
       )
 
-      const filtered =
-        this.selectedTechs.length > 0
-          ? sortedData.filter(g =>
-              g.fuelTechs.some(r => this.selectedTechs.includes(r))
-            )
-          : sortedData
+      const filtered = sortedData
 
       const that = this
       let regionIds = [this.regionId]
@@ -276,6 +271,7 @@ export default {
       } else if (this.regionId === 'nem') {
         regionIds = getNEMRegionArray()
       }
+
       async function updateFilter() {
         return filtered.filter(
           g =>
@@ -286,7 +282,9 @@ export default {
               (regionIds.length > 0 &&
                 _includes(regionIds, g.regionId.toLowerCase()))) &&
             (that.selectedStatuses.length <= 0 ||
-              g.unitStatuses.some(r => that.selectedStatuses.includes(r)))
+              g.unitStatuses.some(r => that.selectedStatuses.includes(r))) &&
+            (that.selectedTechs.length <= 0 ||
+              g.fuelTechs.some(r => that.selectedTechs.includes(r)))
         )
       }
 

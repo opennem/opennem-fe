@@ -139,27 +139,32 @@ function transformV3FacilityData(data) {
       const fuelTech = unit.fuel_tech
       const unitStatus = unit.status
       const type = FUEL_TECHS.FUEL_TECH_CATEGORY[fuelTech] || ''
+      let name = unit.duid
+      if (!name) {
+        emptyIdCount++
+        name = `emptyDuid-${emptyIdCount}`
+      }
 
       unitStatuses.push(unitStatus)
 
-      if (unitStatus === 'operating') {
-        operatingCount.push(unit)
-      } else if (unitStatus === 'committed') {
-        committedCount.push(unit)
-      } else if (unitStatus === 'commissioning') {
-        commissioningCount.push(unit)
-      } else if (unitStatus === 'retired') {
-        retiredCount.push(unit)
-      } else {
-        noStatusCount.push(unit)
-      }
+      // if (unitStatus === 'operating') {
+      //   operatingCount.push(unit)
+      // } else if (unitStatus === 'committed') {
+      //   committedCount.push(unit)
+      // } else if (unitStatus === 'commissioning') {
+      //   commissioningCount.push(unit)
+      // } else if (unitStatus === 'retired') {
+      //   retiredCount.push(unit)
+      // } else {
+      //   noStatusCount.push(unit)
+      // }
 
       const unitObj = {
-        name: unit.duid,
+        name,
         fuelTech,
         regCap,
         type,
-        status
+        status: unitStatus
       }
 
       if (type === 'source') {
@@ -216,14 +221,14 @@ function transformV3FacilityData(data) {
   })
 
   console.log('List of facilities without location:', emptyGeometries)
-  console.log(`${committedCount.length} committed units`, committedCount)
-  console.log(
-    `${commissioningCount.length} commissioning units`,
-    commissioningCount
-  )
-  console.log(`${operatingCount.length} operating units`, operatingCount)
-  console.log(`${retiredCount.length} retired units`, retiredCount)
-  console.log(`${noStatusCount.length} no status units`, noStatusCount)
+  // console.log(`${committedCount.length} committed units`, committedCount)
+  // console.log(
+  //   `${commissioningCount.length} commissioning units`,
+  //   commissioningCount
+  // )
+  // console.log(`${operatingCount.length} operating units`, operatingCount)
+  // console.log(`${retiredCount.length} retired units`, retiredCount)
+  // console.log(`${noStatusCount.length} no status units`, noStatusCount)
 
   return transformed
 }

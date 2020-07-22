@@ -134,7 +134,7 @@
             v-show="facility.generatorCap"
             class="stat-value has-text-right">
             <span 
-              v-tooltip.auto="'Facility contains capacity that is excluded by filter.'"
+              v-tooltip.auto="getFacilityInfoTooltip(facility)"
               v-if="hasHiddenCapacity(facility)"
               class="has-hidden-capacity"><i class="fal fa-info-circle"/></span>
             {{ getGeneratorCap(facility) | facilityFormatNumber }}
@@ -167,8 +167,12 @@
 <script>
 import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
+import _uniqBy from 'lodash.uniqby'
 import * as FUEL_TECHS from '~/constants/fuel-tech.js'
-import { FACILITY_OPERATING } from '~/constants/facility-status.js'
+import {
+  FACILITY_OPERATING,
+  getFacilityStatusLabelById
+} from '~/constants/facility-status.js'
 import { FacilityRegions } from '~/constants/facility-regions.js'
 import Totals from './Totals'
 
@@ -447,7 +451,37 @@ export default {
           cap += facility.fuelTechRegisteredCap[d]
         }
       })
+
       return cap
+    },
+    getFacilityInfoTooltip(facility) {
+      const units = facility.units
+      let string = ''
+      const excluded = []
+      units.forEach(u => {
+        let isTechExcluded = false,
+          isStatusExcluded = false
+        if (
+          (this.selectedTechs.length > 0 &&
+            this.selectedTechs.indexOf(u.fuelTech) === -1) ||
+          (this.selectedStatuses.length > 0 &&
+            this.selectedStatuses.indexOf(u.status) === -1)
+        ) {
+          excluded.push(u)
+        }
+      })
+
+      const uniq = _uniqBy(excluded, 'name')
+
+      uniq.forEach(e => {
+        const ftLabel = this.getFtLabel(e.fuelTech)
+        const statusLabel = getFacilityStatusLabelById(e.status)
+        const regCap = this.$options.filters.facilityFormatNumber(e.regCap)
+        const unit = regCap < 1 ? 'kW' : 'MW'
+        string += `<br>&#8226; ${ftLabel}: ${regCap} ${unit} (${statusLabel})`
+      })
+
+      return `Facility contains capacity<br>that is excluded by filter.${string}`
     },
     hasHiddenCapacity(facility) {
       const ftBoolArr = []
