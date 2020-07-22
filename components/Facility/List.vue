@@ -478,10 +478,10 @@ export default {
         const statusLabel = getFacilityStatusLabelById(e.status)
         const regCap = this.$options.filters.facilityFormatNumber(e.regCap)
         const unit = regCap < 1 ? 'kW' : 'MW'
-        string += `<br>&#8226; ${ftLabel}: ${regCap} ${unit} (${statusLabel})`
+        string += `<span>&#8226; ${ftLabel}: <strong>${regCap} ${unit}</strong> (${statusLabel})</span>`
       })
 
-      return `Facility contains capacity<br>that is excluded by filter.${string}`
+      return `Capacity that is excluded by filter:<div class="tooltip-list">${string}</div>`
     },
     hasHiddenCapacity(facility) {
       const ftBoolArr = []
