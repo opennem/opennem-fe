@@ -7,7 +7,9 @@
   "scripts": {
     "dev": "nuxt",
     "build": "nuxt build",
+    "build-export": "nuxt build && nuxt export",
     "start": "nuxt start",
+    "serve": "nuxt serve",
     "generate": "nuxt generate",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "precommit": "npm run lint"
@@ -40,7 +42,7 @@
     "lodash.uniq": "^4.5.0",
     "lodash.uniqby": "^4.7.0",
     "moment": "^2.23.0",
-    "nuxt": "^2.0.0",
+    "nuxt": "^2.13.0",
     "v-tooltip": "^2.0.2",
     "vue-clickaway": "^2.2.2",
     "vue-json-csv": "^1.2.4",

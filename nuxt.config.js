@@ -5,6 +5,7 @@ const timestamp = new Date().getTime()
 
 module.exports = {
   mode: 'spa',
+  target: 'static',
 
   server: {
     host: '0.0.0.0'
