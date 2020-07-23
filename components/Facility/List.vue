@@ -134,7 +134,10 @@
             v-show="facility.generatorCap"
             class="stat-value has-text-right">
             <span 
-              v-tooltip.auto="getFacilityInfoTooltip(facility)"
+              v-tooltip.auto="{
+                content: getFacilityInfoTooltip(facility),
+                trigger: widthBreak ? 'click' : 'hover'
+              }"
               v-if="hasHiddenCapacity(facility)"
               class="has-hidden-capacity"><i class="fal fa-info-circle"/></span>
             {{ getGeneratorCap(facility) | facilityFormatNumber }}
