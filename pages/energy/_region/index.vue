@@ -1960,9 +1960,9 @@ export default {
 
     handleChartSummaryClick(chartType) {
       if (chartType === 'pie') {
-        this.$store.dispatch('chartSummaryPie', true)
+        this.$store.commit('visInteract/chartSummaryPie', true)
       } else {
-        this.$store.dispatch('chartSummaryPie', false)
+        this.$store.commit('visInteract/chartSummaryPie', false)
       }
     },
 
