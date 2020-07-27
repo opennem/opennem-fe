@@ -1,10 +1,15 @@
-import differenceInDays from 'date-fns/differenceInDays'
-import differenceInMinutes from 'date-fns/differenceInMinutes'
-import addDays from 'date-fns/addDays'
-import addMinutes from 'date-fns/addMinutes'
 import http from '@/services/Http.js'
+import Data from '@/services/Data.js'
+import {
+  checkPowerEnergyExists,
+  getStartEndNum,
+  incrementTime
+} from '@/services/DataCheck.js'
 import PerfTime from '@/plugins/perfTime.js'
-import { getEnergyRegions } from '@/constants/v2/energy-regions.js'
+import {
+  getEnergyRegions,
+  isValidRegion
+} from '@/constants/v2/energy-regions.js'
 import * as FT from '@/constants/fuel-tech.js'
 import * as DT from '@/constants/v2/data-types.js'
 
@@ -39,20 +44,20 @@ export const mutations = {
 }
 
 export const actions = {
-  doGetRegionData({ commit }, region) {
-    console.log(region)
-    // if VALID region?
+  doGetRegionData({ commit }, { region, range }) {
+    if (isValidRegion(region)) {
+      const urls = Data.getEnergyUrls(region, range, 'prod')
+      commit('isFetching', true)
+      http(urls).then(responses => {
+        const data = responses[0]
+        initStore(commit, data)
 
-    commit('isFetching', true)
-    // const urls = ['testing/nem/energy/daily/2020.json']
-    const urls = ['power/nem.json']
-    http(urls).then(responses => {
-      const data = responses[0]
-      initStore(commit, data)
-
-      commit('isFetching', false)
-      commit('jsonResponses', responses)
-    })
+        commit('isFetching', false)
+        commit('jsonResponses', responses)
+      })
+    } else {
+      throw new Error('Invalid region')
+    }
   },
 
   doUpdateDatasetByGroup() {
@@ -89,14 +94,7 @@ function initStore(commit, data) {
     }
   })
 
-  // check that data should not have both power and energy
-  if (dataPower.length > 0 && dataEnergy.length > 0) {
-    console.warn(
-      'Parsing json error: data contains both power and energy',
-      dataPower,
-      dataEnergy
-    )
-  }
+  checkPowerEnergyExists({ dataPower, dataEnergy })
 
   // set up into its right order
   FT.DEFAULT_FUEL_TECH_ORDER.forEach(ft => {
@@ -114,15 +112,12 @@ function initStore(commit, data) {
   const fuelTechs = dataPower.length > 0 ? powerFuelTechs : energyFuelTechs
   const useData = dataPower.length > 0 ? dataPower : dataEnergy
 
-  console.log(fuelTechs, useData[0])
-  // check history object is valid
-
   // setup block of time for array.
   // Block of time can come from data or presets
   // start, end, interval
-  const start = new Date('2020-07-09T17:25')
-  const end = new Date('2020-07-16T17:25')
-  const num = differenceInMinutes(end, start) / 5
+  const { start, end, num, intervalKey, intervalValue } = getStartEndNum(
+    useData[0]
+  )
   const dataset = []
   let currentDate = start
   for (let i = 1; i <= num; i++) {
@@ -130,7 +125,11 @@ function initStore(commit, data) {
       date: currentDate,
       time: currentDate.getTime()
     })
-    currentDate = addMinutes(currentDate, 5)
+    currentDate = incrementTime({
+      date: currentDate,
+      intervalKey,
+      intervalValue
+    })
   }
   useData.forEach(d => {
     const historyData = d.history.data
@@ -143,7 +142,8 @@ function initStore(commit, data) {
     })
   })
 
-  console.log(dataset.length, num, dataset, fuelTechs)
+  console.log(dataset.length, num, fuelTechs)
+  console.log(dataset)
 
   commit('energyFuelTechs', fuelTechs)
 }

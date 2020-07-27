@@ -63,3 +63,9 @@ const EnergyRegions = [
 export function getEnergyRegions() {
   return _cloneDeep(EnergyRegions)
 }
+
+export function isValidRegion(id) {
+  if (id === ENERGY_ALL) return false
+  const find = EnergyRegions.find(r => r.id === id)
+  return find ? true : false
+}
