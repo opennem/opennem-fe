@@ -1,30 +1,32 @@
 <template>
-  <div class="vis-summary">
-    <section class="vis-section">
-      <data-options-bar />
-      <header/>
-    </section>
-    
-    <section class="summary-section"/>
+  <div class="energy-region">
+    <data-options-bar />
+    <div class="vis-summary">
+      <vis-section class="vis-section" />
+      <summary-section class="summary-section"/>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import DataOptionsBar from '~/components/Energy/DataOptionsBar'
+import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
+import VisSection from '@/components/Energy/VisSection.vue'
+import SummarySection from '@/components/Energy/SummarySection.vue'
 
 export default {
   layout: 'main',
   components: {
-    DataOptionsBar
+    DataOptionsBar,
+    VisSection,
+    SummarySection
   },
 
   computed: {
     ...mapGetters({
       range: 'range',
       interval: 'interval',
-      energyRegions: 'region-energy/energyRegions',
-      energyFuelTechs: 'region-energy/energyFuelTechs'
+      fuelTechGroupName: 'fuelTechGroupName'
     }),
     regionId() {
       return this.$route.params.region
@@ -33,11 +35,21 @@ export default {
 
   watch: {
     range(updated) {
-      this.doGetRegionData({ region: this.regionId, range: updated })
+      this.doGetRegionData({
+        region: this.regionId,
+        range: updated,
+        interval: this.interval,
+        group: this.fuelTechGroupName
+      })
     }
   },
   created() {
-    this.doGetRegionData({ region: this.regionId, range: this.range })
+    this.doGetRegionData({
+      region: this.regionId,
+      range: this.range,
+      interval: this.interval,
+      group: this.fuelTechGroupName
+    })
   },
 
   methods: {

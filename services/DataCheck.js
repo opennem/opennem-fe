@@ -44,7 +44,7 @@ function getArrLength({ intervalKey, intervalValue, start, last }) {
   }
 }
 
-export function getStartEndNum(dataObj) {
+export function getStartEndNumInterval(dataObj) {
   const history = dataObj.history
   if (!history) {
     throw new Error('No history object found')

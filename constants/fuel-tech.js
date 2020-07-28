@@ -166,3 +166,18 @@ FUEL_TECH_LABEL[SOLAR] = 'Solar (Utility)'
 FUEL_TECH_LABEL[ROOFTOP_SOLAR] = 'Solar (Rooftop)'
 FUEL_TECH_LABEL[SOLAR_UTILITY] = 'Solar (Utility)'
 FUEL_TECH_LABEL[SOLAR_ROOFTOP] = 'Solar (Rooftop)'
+
+export function getFuelTechObjs(fuelTechs, type) {
+  return Object.keys(fuelTechs).map(ft => {
+    return {
+      id: fuelTechs[ft],
+      domain: fuelTechs[ft],
+      fuelTech: ft,
+      label: FUEL_TECH_LABEL[ft],
+      colour: DEFAULT_FUEL_TECH_COLOUR[ft],
+      category: FUEL_TECH_CATEGORY[ft],
+      renewable: FUEL_TECH_RENEWABLE[ft],
+      type
+    }
+  })
+}
