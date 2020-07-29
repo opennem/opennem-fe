@@ -94,6 +94,8 @@
       :is-year-interval="isYearInterval"
       @update="handleSourcesOrderUpdate"
       @fuelTechsHidden="handleSourceFuelTechsHidden"
+      @mouse-enter="handleMouseEnter"
+      @mouse-leave="handleMouseLeave"
     />
     
     <div class="summary-column-headers">
@@ -129,6 +131,8 @@
       :emissions-domains="emissionsDomains"
       @update="handleLoadsOrderUpdate"
       @fuelTechsHidden="handleLoadFuelTechsHidden"
+      @mouse-enter="handleMouseEnter"
+      @mouse-leave="handleMouseLeave"
     />
 
     <div class="summary-column-headers">
@@ -1032,6 +1036,13 @@ export default {
 
       this.$store.commit('visInteract/chartEnergyRenewablesLine', true)
       this.emitHiddenFuelTechs()
+    },
+
+    handleMouseEnter(ft) {
+      this.$emit('mouse-enter', ft)
+    },
+    handleMouseLeave() {
+      this.$emit('mouse-leave')
     }
   }
 }

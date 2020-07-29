@@ -123,6 +123,7 @@
             :compare-dates="compareDates"
             :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
             :dataset-two-colour="renewablesLineColour"
+            :highlight-domain="highlightDomain"
             class="vis-chart"
             @dateOver="handleDateOver"
             @domainOver="handleDomainOver"
@@ -160,6 +161,7 @@
             :date-hovered="hoverDate"
             :zoom-range="dateFilter"
             :draw-incomplete-bucket="false"
+            :highlight-domain="highlightDomain"
             @date-hover="handleDateOver"
             @domain-hover="handleDomainOver"
             @enter="handleVisEnter"
@@ -201,6 +203,7 @@
             :compare-dates="compareDates"
             :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
             :dataset-two-colour="renewablesLineColour"
+            :highlight-domain="highlightDomain"
             class="vis-chart"
             @dateOver="handleDateOver"
             @domainOver="handleDomainOver"
@@ -610,6 +613,8 @@
           :hidden-fuel-techs="hiddenFuelTechs"
           @fuelTechsHidden="handleFuelTechsHidden"
           @summary-update="handleSummaryUpdated"
+          @mouse-enter="handleSummaryRowMouseEnter"
+          @mouse-leave="handleSummaryRowMouseLeave"
         />
 
         <section
@@ -2073,6 +2078,24 @@ export default {
       }
 
       this.recalculateAfterPrefixChanged()
+    },
+
+    handleSummaryRowMouseEnter(ft) {
+      if (
+        this.chartEnergyType === 'proportion' ||
+        (this.chartEnergyType === 'line' &&
+          this.chartEnergyYAxis === 'percentage')
+      ) {
+        const find = this.energyPercentDomains.find(
+          d => d.fuelTech === ft.fuelTech
+        )
+        this.highlightDomain = find ? find.id : ''
+      } else {
+        this.highlightDomain = ft.id
+      }
+    },
+    handleSummaryRowMouseLeave() {
+      this.highlightDomain = ''
     }
   }
 }
