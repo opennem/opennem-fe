@@ -162,6 +162,7 @@
             :zoom-range="dateFilter"
             :draw-incomplete-bucket="false"
             :highlight-domain="highlightDomain"
+            :x-shades="xGuides"
             @date-hover="handleDateOver"
             @domain-hover="handleDomainOver"
             @enter="handleVisEnter"
