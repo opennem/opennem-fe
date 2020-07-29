@@ -17,6 +17,8 @@
       v-for="(ft, index) in order"
       :key="ft.id"
       class="item summary-row"
+      @mouseenter="handleMouseEnter(ft)"
+      @mouseleave="handleMouseLeave"
       @touchstart="handleTouchstart(ft)"
       @touchend="handleTouchend"
       @click.exact="handleRowClick(ft)"
@@ -337,6 +339,13 @@ export default {
     clearTimeout() {
       clearTimeout(this.mousedownDelay)
       this.mousedownDelay = null
+    },
+
+    handleMouseEnter(ft) {
+      this.$emit('mouse-enter', ft)
+    },
+    handleMouseLeave() {
+      this.$emit('mouse-leave')
     }
   }
 }

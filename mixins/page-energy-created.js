@@ -82,7 +82,8 @@ const pageEnergyCreated = {
       compareData: [],
       summary: null,
       renewablesPercentageDataset: [],
-      chartEnergyOptions: false
+      chartEnergyOptions: false,
+      highlightDomain: ''
     }
   },
 

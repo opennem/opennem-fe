@@ -502,6 +502,7 @@ export default {
       this.$emit('enter')
     },
     handleSvgLeave() {
+      this.$cursorDotsGroup.selectAll('circle').remove()
       this.$emit('date-hover', null, null)
       this.$emit('leave')
     },
