@@ -2086,8 +2086,15 @@ export default {
         (this.chartEnergyType === 'line' &&
           this.chartEnergyYAxis === 'percentage')
       ) {
-        const find = this.energyPercentDomains.find(
-          d => d.fuelTech === ft.fuelTech
+        const isDefaultGrouping = this.fuelTechGroupName === 'Default'
+        let domains = isDefaultGrouping
+          ? this.energyPercentDomains
+          : this.groupEnergyPercentDomains
+        const find = domains.find(
+          d =>
+            isDefaultGrouping
+              ? d.fuelTech === ft.fuelTech
+              : d.id === `${ft.id}_percent`
         )
         this.highlightDomain = find ? find.id : ''
       } else {
