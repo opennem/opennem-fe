@@ -1,38 +1,22 @@
 import _cloneDeep from 'lodash.clonedeep'
+import PerfTime from '@/plugins/perfTime.js'
 import http from '@/services/Http.js'
 import Data from '@/services/Data.js'
 import {
-  flattenAndInterpolate,
+  getFlatDataAndDomains,
   rollUp
 } from '@/services/dataTransform/v2/Energy.js'
-import PerfTime from '@/plugins/perfTime.js'
 import { isValidRegion } from '@/constants/v2/energy-regions.js'
-import * as FT from '@/constants/fuel-tech.js'
-
-function doGetPowerEnergyDomains(ids, type) {
-  return ids ? FT.getFuelTechObjs(ids, type).reverse() : []
-}
-function doGetTemperatureDomains(ids) {
-  return ids.map(t => {
-    return {
-      id: t,
-      domain: t,
-      type: 'temperature',
-      colour: 'red'
-    }
-  })
-}
 
 export const state = () => ({
   ready: false,
   isFetching: false,
   jsonResponses: null,
-  fuelTechIdTypes: null,
-  fuelTechDataType: null,
-  temperatureIds: [],
   energyDataset: [],
   energyDatasetByInterval: [],
-  temperatureDataset: []
+  temperatureDataset: [],
+  powerEnergyDomains: [],
+  temperatureDomains: []
 })
 
 export const getters = {
@@ -41,9 +25,8 @@ export const getters = {
   energyDataset: state => state.energyDataset,
   energyDatasetByInterval: state => state.energyDatasetByInterval,
   temperatureDataset: state => state.temperatureDataset,
-  powerEnergyDomains: state =>
-    doGetPowerEnergyDomains(state.fuelTechIdTypes, state.fuelTechDataType),
-  temperatureDomains: state => doGetTemperatureDomains(state.temperatureIds)
+  powerEnergyDomains: state => state.powerEnergyDomains,
+  temperatureDomains: state => state.temperatureDomains
 }
 
 export const mutations = {
@@ -56,9 +39,6 @@ export const mutations = {
   jsonResponses(state, jsonResponses) {
     state.jsonResponses = _cloneDeep(jsonResponses)
   },
-  fuelTechDataType(state, fuelTechDataType) {
-    state.fuelTechDataType = fuelTechDataType
-  },
   energyDataset(state, energyDataset) {
     state.energyDataset = _cloneDeep(energyDataset)
   },
@@ -68,11 +48,11 @@ export const mutations = {
   temperatureDataset(state, temperatureDataset) {
     state.temperatureDataset = _cloneDeep(temperatureDataset)
   },
-  fuelTechIdTypes(state, fuelTechIdTypes) {
-    state.fuelTechIdTypes = _cloneDeep(fuelTechIdTypes)
+  powerEnergyDomains(state, powerEnergyDomains) {
+    state.powerEnergyDomains = _cloneDeep(powerEnergyDomains)
   },
-  temperatureIds(state, temperatureIds) {
-    state.temperatureIds = _cloneDeep(temperatureIds)
+  temperatureDomains(state, temperatureDomains) {
+    state.temperatureDomains = _cloneDeep(temperatureDomains)
   }
 }
 
@@ -86,33 +66,27 @@ export const actions = {
       http(urls).then(responses => {
         const perf = new PerfTime()
         perf.time()
-        const data = responses[0]
+        const data = responses[0].data || responses[0]
+
         const {
-          dataset,
-          fuelTechDataType,
-          temperatureDataset,
-          fuelTechIdTypes,
-          temperatureIds
-        } = flattenAndInterpolate(data)
+          datasetAll,
+          datasetTemperature,
+          powerEnergyDomains,
+          temperatureDomains
+        } = getFlatDataAndDomains(data)
 
         const energyDatasetByInterval = rollUp({
-          domains: [
-            ...doGetPowerEnergyDomains(fuelTechIdTypes, fuelTechDataType),
-            ...doGetTemperatureDomains(temperatureIds)
-          ],
-          dataset,
+          domains: [...powerEnergyDomains, ...temperatureDomains],
+          datasetAll,
           interval
         })
 
-        console.log(dataset, energyDatasetByInterval)
-
         commit('isFetching', false)
-        commit('energyDataset', dataset)
+        commit('energyDataset', datasetAll)
         commit('energyDatasetByInterval', energyDatasetByInterval)
-        commit('temperatureDataset', temperatureDataset)
-        commit('fuelTechIdTypes', fuelTechIdTypes)
-        commit('fuelTechDataType', fuelTechDataType)
-        commit('temperatureIds', temperatureIds)
+        commit('temperatureDataset', datasetTemperature)
+        commit('powerEnergyDomains', powerEnergyDomains)
+        commit('temperatureDomains', temperatureDomains)
         commit('jsonResponses', responses)
         commit('ready', true)
         perf.timeEnd('Initial transform done.')
@@ -122,8 +96,17 @@ export const actions = {
     }
   },
 
-  doUpdateDatasetByInterval() {
-    // with the interval, roll up
+  doUpdateDatasetByInterval({ state, commit }, { interval }) {
+    const datasetAll = state.energyDataset
+    const powerEnergyDomains = state.powerEnergyDomains
+    const temperatureDomains = state.temperatureDomains
+    const energyDatasetByInterval = rollUp({
+      domains: [...powerEnergyDomains, ...temperatureDomains],
+      datasetAll,
+      interval
+    })
+    console.log(energyDatasetByInterval)
+    commit('energyDatasetByInterval', energyDatasetByInterval)
   },
 
   doUpdateDatasetByGroup() {

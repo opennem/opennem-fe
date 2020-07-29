@@ -83,8 +83,8 @@ DEFAULT_FUEL_TECH_COLOUR[SOLAR_UTILITY] = '#DFCF00'
 DEFAULT_FUEL_TECH_COLOUR[SOLAR_ROOFTOP] = '#F8E71C'
 
 // Fuel tech type
-const LOAD = 'load'
-const SOURCE = 'source'
+export const LOAD = 'load'
+export const SOURCE = 'source'
 export const FUEL_TECH_CATEGORY = {}
 FUEL_TECH_CATEGORY[PUMPS] = LOAD
 FUEL_TECH_CATEGORY[BATTERY_CHARGING] = LOAD
@@ -180,4 +180,15 @@ export function getFuelTechObjs(fuelTechs, type) {
       type
     }
   })
+}
+
+export function isNetFuelTech(fuelTech) {
+  return (
+    fuelTech === BATTERY_CHARGING ||
+    fuelTech === BATTERY_DISCHARGING ||
+    fuelTech === HYDRO ||
+    fuelTech === PUMPS ||
+    fuelTech === EXPORTS ||
+    fuelTech === IMPORTS
+  )
 }

@@ -1,162 +1,72 @@
-import * as FT from '@/constants/fuel-tech.js'
-import * as DT from '@/constants/v2/data-types.js'
+import parseAndCheckData from '@/services/dataTransform/v2/parseAndCheckData.js'
+import getFuelTechInOrder from '@/services/dataTransform/v2/getFuelTechInOrder.js'
+import createEmptyDatasets from '@/services/dataTransform/v2/createEmptyDatasets.js'
+import flattenAndInterpolate from '@/services/dataTransform/v2/flattenAndInterpolate.js'
+import summariseDataset from '@/services/dataTransform/v2/summariseDataset.js'
 import {
-  checkPowerEnergyExists,
-  getStartEndNumInterval,
-  incrementTime
-} from '@/services/DataCheck.js'
-import rollUp30m from '@/services/rollUp/30m.js'
+  getPowerEnergyDomains,
+  getTemperatureDomains
+} from '@/services/dataTransform/v2/getDomains.js'
 
-export function flattenAndInterpolate(data) {
-  const dataPower = [],
-    dataEnergy = [],
-    dataPowerEnergy = [],
-    dataTemperature = [],
-    dataAll = []
-  const powerFuelTechs = {},
-    energyFuelTechs = {},
-    temperatureIds = []
+import rollUp30m from '@/services/dataTransform/v2/rollUp/30m.js'
 
-  // filter out each type to its own array
-  data.forEach(d => {
-    if (DT.isValidDataType(d.type)) {
-      dataAll.push(d)
-    }
-    switch (d.type) {
-      case DT.POWER:
-        dataPower.push(d)
-        dataPowerEnergy.push(d)
-        break
-      case DT.ENERGY:
-        dataEnergy.push(d)
-        dataPowerEnergy.push(d)
-        break
-      case DT.DEMAND:
-      case DT.EMISSIONS:
-      case DT.MARKET_VALUE:
-      case DT.PRICE:
-      case DT.TEMPERATURE_MIN:
-      case DT.TEMPERATURE_MAX:
-        break
-      case DT.TEMPERATURE:
-      case DT.TEMPERATURE_MEAN:
-        dataTemperature.push(d)
-        break
-      default:
-        console.warn(`Parsing json error: unknown data type found - ${d.type}`)
-    }
-  })
+export function getFlatDataAndDomains(data) {
+  const {
+    dataAll,
+    dataPowerEnergy,
+    dataTemperature,
+    temperatureIds,
+    fuelTechDataType,
+    isPowerData,
+    hasPowerEnergyData
+  } = parseAndCheckData(data)
 
-  checkPowerEnergyExists({ dataPower, dataEnergy })
-
-  // set up into its right order
-  FT.DEFAULT_FUEL_TECH_ORDER.forEach(ft => {
-    const dataPowerFT = dataPower.find(d => d.fuel_tech === ft)
-    const dataEnergyFT = dataEnergy.find(d => d.fuel_tech === ft)
-    if (dataPowerFT) {
-      powerFuelTechs[ft] = dataPowerFT.id
-    }
-    if (dataEnergyFT) {
-      energyFuelTechs[ft] = dataEnergyFT.id
-    }
-  })
-
-  // setup energy dataset
-  const isPowerData = dataPower.length > 0
-  const fuelTechIdTypes =
-    dataPower.length > 0 ? powerFuelTechs : energyFuelTechs
-  const { start, num, intervalKey, intervalValue } = getStartEndNumInterval(
-    dataPowerEnergy[0]
+  const fuelTechIdTypes = getFuelTechInOrder(dataPowerEnergy)
+  const powerEnergyDomains = getPowerEnergyDomains(
+    fuelTechIdTypes,
+    fuelTechDataType
   )
-  const dataset = [],
-    temperatureDataset = []
-  let currentDate = start
-  for (let i = 1; i <= num; i++) {
-    dataset.push({
-      date: currentDate,
-      time: currentDate.getTime()
-    })
-    temperatureDataset.push({
-      date: currentDate,
-      time: currentDate.getTime()
-    })
-    currentDate = incrementTime({
-      date: currentDate,
-      intervalKey,
-      intervalValue
-    })
-  }
+  const temperatureDomains = getTemperatureDomains(temperatureIds)
+  const dataInterval = hasPowerEnergyData
+    ? dataPowerEnergy[0].history.interval
+    : null
+  const { datasetAll, datasetTemperature } = createEmptyDatasets(
+    dataPowerEnergy
+  )
+  flattenAndInterpolate(isPowerData, dataInterval, dataAll, datasetAll)
+  summariseDataset(datasetAll, powerEnergyDomains)
 
-  dataAll.forEach(d => {
-    const historyData = d.history.data
-
-    /*
-      for power data, there are 30 min interval data to interpolate
-    */
-    if (
-      isPowerData &&
-      (d.fuel_tech === FT.ROOFTOP_SOLAR ||
-        d.fuel_tech === FT.SOLAR_ROOFTOP ||
-        DT.isTemperature(d.type) ||
-        DT.isPrice(d.type))
-    ) {
-      // 30m interval
-      let index = 0
-      if (d.forecast) {
-        // add solar forecast data
-        historyData.push.apply(historyData, d.forecast.data)
-      }
-
-      dataset.forEach((h, i) => {
-        h[d.id] =
-          typeof historyData[index] === 'undefined' ? null : historyData[index]
-        if (i !== 0) {
-          if (i % 6 === 0) {
-            index += 1
-          }
-        }
-      })
-    } else {
-      dataset.forEach((h, i) => {
-        h[d.id] = historyData[i] || null
-      })
-    }
-  })
-
-  dataTemperature.forEach(d => {
-    const historyData = d.history.data
-    // 30m interval
-    let index = 0
-    temperatureDataset.forEach((h, i) => {
-      h[d.id] =
-        typeof historyData[index] === 'undefined' ? null : historyData[index]
-      if (i !== 0) {
-        if (i % 6 === 0) {
-          index += 1
-        }
-      }
-    })
-
-    temperatureIds.push(d.id)
-  })
+  // dataTemperature.forEach(d => {
+  //   const historyData = d.history.data
+  //   // 30m interval
+  //   let index = 0
+  //   datasetTemperature.forEach((h, i) => {
+  //     h[d.id] =
+  //       typeof historyData[index] === 'undefined' ? null : historyData[index]
+  //     if (i !== 0) {
+  //       if (i % 6 === 0) {
+  //         index += 1
+  //       }
+  //     }
+  //   })
+  // })
 
   // console.log(dataset.length, num, fuelTechIdTypes)
-  // console.log(dataset, temperatureDataset)
+  console.log(datasetAll)
 
   return {
-    dataset,
-    fuelTechDataType: isPowerData ? DT.POWER : DT.ENERGY,
-    temperatureDataset,
-    fuelTechIdTypes,
-    temperatureIds
+    datasetAll,
+    datasetTemperature,
+    powerEnergyDomains,
+    temperatureDomains
   }
 }
 
-export function rollUp({ domains, dataset, interval }) {
+export function rollUp({ domains, datasetAll, interval }) {
   switch (interval) {
     case '30m':
-      return rollUp30m(domains, dataset)
+      return rollUp30m(domains, datasetAll)
     default:
-      return dataset
+      return datasetAll
   }
 }

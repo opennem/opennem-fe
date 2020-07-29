@@ -41,6 +41,9 @@ export default {
         interval: this.interval,
         group: this.fuelTechGroupName
       })
+    },
+    interval(interval) {
+      this.doUpdateDatasetByInterval({ interval })
     }
   },
   created() {
@@ -54,7 +57,8 @@ export default {
 
   methods: {
     ...mapActions({
-      doGetRegionData: 'region-energy/doGetRegionData'
+      doGetRegionData: 'regionEnergy/doGetRegionData',
+      doUpdateDatasetByInterval: 'regionEnergy/doUpdateDatasetByInterval'
     })
   }
 }

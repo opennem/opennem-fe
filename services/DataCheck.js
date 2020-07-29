@@ -26,7 +26,7 @@ export function checkPowerEnergyExists({ dataPower, dataEnergy }) {
   }
 }
 
-function getDateTime(date) {
+function getDateTimeWithoutTZ(date) {
   const dateString = date.substring(0, 16)
   return new Date(dateString)
 }
@@ -49,8 +49,8 @@ export function getStartEndNumInterval(dataObj) {
   if (!history) {
     throw new Error('No history object found')
   }
-  const startDateTime = getDateTime(history.start)
-  const lastDateTime = getDateTime(history.last)
+  const startDateTime = getDateTimeWithoutTZ(history.start)
+  const lastDateTime = getDateTimeWithoutTZ(history.last)
   const interval = intervalParser(history.interval)
   const num = getArrLength({
     intervalKey: interval.key,
@@ -66,6 +66,10 @@ export function getStartEndNumInterval(dataObj) {
     intervalKey: interval.key,
     intervalValue: interval.value
   }
+}
+
+export function checkIsSameInterval(interval, compareInterval) {
+  return interval === compareInterval
 }
 
 export function incrementTime({ date, intervalKey, intervalValue }) {

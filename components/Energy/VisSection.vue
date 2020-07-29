@@ -4,10 +4,10 @@
       <chart-header :show="false" />
       <multi-line
         v-if="ready"
-        :svg-height="250"
+        :svg-height="300"
         :domains1="powerEnergyDomains"
         :dataset1="energyDatasetByInterval"
-        :y1-max="40000"
+        :y1-max="35000"
         :y1-min="0"
         :x-ticks="xTicks"
         :draw-incomplete-bucket="false"
@@ -67,11 +67,11 @@ export default {
     ...mapGetters({
       range: 'range',
       interval: 'interval',
-      ready: 'region-energy/ready',
-      powerEnergyDomains: 'region-energy/powerEnergyDomains',
-      energyDatasetByInterval: 'region-energy/energyDatasetByInterval',
-      temperatureDataset: 'region-energy/temperatureDataset',
-      temperatureDomains: 'region-energy/temperatureDomains'
+      ready: 'regionEnergy/ready',
+      powerEnergyDomains: 'regionEnergy/powerEnergyDomains',
+      energyDatasetByInterval: 'regionEnergy/energyDatasetByInterval',
+      temperatureDataset: 'regionEnergy/temperatureDataset',
+      temperatureDomains: 'regionEnergy/temperatureDomains'
     }),
     xTicks() {
       return AxisTicks(this.range, this.interval, false)
