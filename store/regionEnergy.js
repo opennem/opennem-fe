@@ -60,7 +60,7 @@ export const actions = {
   doGetRegionData({ commit }, { region, range, interval, group }) {
     if (isValidRegion(region)) {
       const urls = Data.getEnergyUrls(region, range, 'prod')
-
+      commit('ready', false)
       commit('isFetching', true)
 
       http(urls).then(responses => {
@@ -81,6 +81,8 @@ export const actions = {
           interval
         })
 
+        // console.log(energyDatasetByInterval)
+
         commit('isFetching', false)
         commit('energyDataset', datasetAll)
         commit('energyDatasetByInterval', energyDatasetByInterval)
@@ -97,6 +99,8 @@ export const actions = {
   },
 
   doUpdateDatasetByInterval({ state, commit }, { interval }) {
+    const perf = new PerfTime()
+    perf.time()
     const datasetAll = state.energyDataset
     const powerEnergyDomains = state.powerEnergyDomains
     const temperatureDomains = state.temperatureDomains
@@ -105,8 +109,8 @@ export const actions = {
       datasetAll,
       interval
     })
-    console.log(energyDatasetByInterval)
     commit('energyDatasetByInterval', energyDatasetByInterval)
+    perf.timeEnd('Update interval done.')
   },
 
   doUpdateDatasetByGroup() {

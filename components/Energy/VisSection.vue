@@ -1,9 +1,10 @@
 <template>
   <section>
-    <div class="power-energy-vis">
+    <div 
+      v-if="ready"
+      class="power-energy-vis">
       <chart-header :show="false" />
       <multi-line
-        v-if="ready"
         :svg-height="300"
         :domains1="powerEnergyDomains"
         :dataset1="energyDatasetByInterval"
@@ -17,7 +18,6 @@
         @enter="handleVisEnter"
         @leave="handleVisLeave" />
       <date-brush
-        v-if="ready"
         :dataset="energyDatasetByInterval"
         :x-ticks="xTicks"
         :tick-format="tickFormat"

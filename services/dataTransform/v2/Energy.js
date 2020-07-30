@@ -52,7 +52,7 @@ export function getFlatDataAndDomains(data) {
   // })
 
   // console.log(dataset.length, num, fuelTechIdTypes)
-  console.log(datasetAll)
+  // console.log(datasetAll)
 
   return {
     datasetAll,

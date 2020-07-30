@@ -6,6 +6,12 @@ import addDays from 'date-fns/addDays'
 import addMonths from 'date-fns/addMonths'
 import intervalParser from '@/plugins/intervalParser.js'
 
+// TODO move this to a date module
+function getDateTimeWithoutTZ(date) {
+  const dateString = date.substring(0, 16)
+  return new Date(dateString)
+}
+
 export function checkPowerEnergyExists({ dataPower, dataEnergy }) {
   // check that data should not have both power and energy
   if (dataPower.length > 0 && dataEnergy.length > 0) {
@@ -24,11 +30,6 @@ export function checkPowerEnergyExists({ dataPower, dataEnergy }) {
       dataEnergy
     )
   }
-}
-
-function getDateTimeWithoutTZ(date) {
-  const dateString = date.substring(0, 16)
-  return new Date(dateString)
 }
 
 function getArrLength({ intervalKey, intervalValue, start, last }) {

@@ -1,35 +1,61 @@
+import _cloneDeep from 'lodash.clonedeep'
 import { checkIsSameInterval } from '@/services/DataCheck.js'
 import interpolateDataset from './interpolateDataset.js'
 
+// TODO move this to a date module
+function getDateTimeWithoutTZ(date) {
+  const dateString = date.substring(0, 16)
+  return new Date(dateString)
+}
+
+function createTemporaryDataset(time, date, value) {
+  return { time, date, value }
+}
+
 export default function(isPowerData, dataInterval, dataAll, datasetAll) {
   dataAll.forEach(d => {
-    // append forecast data into the back of the history data
-    const historyData = d.forecast
-      ? [...d.history.data, ...d.forecast.data]
-      : [...d.history.data]
     const isDifferentInterval = !checkIsSameInterval(
       dataInterval,
       d.history.interval
     )
     const updateDataset = () => {
+      const historyData = [...d.history.data]
       datasetAll.forEach((h, i) => {
         h[d.id] = historyData[i] || null
       })
     }
-    const update30mInto5mDataset = () => {
-      let index = 0
-      datasetAll.forEach((h, i) => {
-        h[d.id] = null
-        if (i === 0) {
-          h[d.id] = historyData[index]
-        }
-        if (i !== 0) {
-          if (i % 6 === 0) {
-            h[d.id] = historyData[index]
-            index += 1
-          }
+    const updateDatasetWithMixedInterval = datasetMixed => {
+      datasetAll.forEach(dAll => {
+        const find = datasetMixed.find(dMixed => dMixed.time === dAll.time)
+        if (find) {
+          dAll[d.id] = find.value
+        } else {
+          dAll[d.id] = null
         }
       })
+    }
+    const update30mInto5mDataset = () => {
+      let date = new Date(getDateTimeWithoutTZ(d.history.start))
+      let datasetForecast30m = []
+
+      const dataset30m = d.history.data.map(value => {
+        const currentTime = date.getTime()
+        const obj = createTemporaryDataset(currentTime, date, value)
+        date = new Date(currentTime + 1800000) // 30 mins
+        return obj
+      })
+
+      if (d.forecast) {
+        let dateForecast = new Date(getDateTimeWithoutTZ(d.forecast.start))
+        datasetForecast30m = d.forecast.data.map(value => {
+          const currentTime = dateForecast.getTime()
+          const obj = createTemporaryDataset(currentTime, dateForecast, value)
+          dateForecast = new Date(currentTime + 1800000) // 30 mins
+          return obj
+        })
+      }
+
+      updateDatasetWithMixedInterval([...dataset30m, ...datasetForecast30m])
     }
 
     if (isPowerData) {
@@ -45,6 +71,8 @@ export default function(isPowerData, dataInterval, dataAll, datasetAll) {
       updateDataset()
     }
   })
+
+  console.log(_cloneDeep(datasetAll))
 
   if (isPowerData) {
     interpolateDataset(dataAll, datasetAll)

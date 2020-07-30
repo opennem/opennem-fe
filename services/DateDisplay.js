@@ -375,5 +375,10 @@ export default {
           return 8
       }
     }
+  },
+
+  getDateTimeWithoutTZ(date) {
+    const dateString = date.substring(0, 16)
+    return new Date(dateString)
   }
 }
