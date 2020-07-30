@@ -140,7 +140,9 @@ export default function(datasetAll, powerEnergyDomains) {
       (totalRenewables / totalSources) * 100
     datasetAll[i]._totalGenerationRenewables =
       (totalRenewables / totalGeneration) * 100
-    datasetAll[i]._min = min
+
+    datasetAll[i]._stackedTotalMin = min
+    datasetAll[i]._stackedTotalMax = totalDemand
     // dataset[i]._totalEmissionsVol = totalEmissionsVol
     // const emissionsIntensity =
     //   interval === 'Year' || interval === 'Fin Year'

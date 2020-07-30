@@ -2,10 +2,8 @@ import _cloneDeep from 'lodash.clonedeep'
 import PerfTime from '@/plugins/perfTime.js'
 import http from '@/services/Http.js'
 import Data from '@/services/Data.js'
-import {
-  getFlatDataAndDomains,
-  rollUp
-} from '@/services/dataTransform/v2/Energy.js'
+import { dataProcess, dataRollUp } from '@/modules/dataTransform/energy'
+
 import { isValidRegion } from '@/constants/v2/energy-regions.js'
 
 export const state = () => ({
@@ -72,16 +70,9 @@ export const actions = {
           datasetAll,
           datasetTemperature,
           powerEnergyDomains,
-          temperatureDomains
-        } = getFlatDataAndDomains(data)
-
-        const energyDatasetByInterval = rollUp({
-          domains: [...powerEnergyDomains, ...temperatureDomains],
-          datasetAll,
-          interval
-        })
-
-        // console.log(energyDatasetByInterval)
+          temperatureDomains,
+          energyDatasetByInterval
+        } = dataProcess(data, interval)
 
         commit('isFetching', false)
         commit('energyDataset', datasetAll)
@@ -101,14 +92,17 @@ export const actions = {
   doUpdateDatasetByInterval({ state, commit }, { interval }) {
     const perf = new PerfTime()
     perf.time()
-    const datasetAll = state.energyDataset
+
+    const datasetAll = _cloneDeep(state.energyDataset)
     const powerEnergyDomains = state.powerEnergyDomains
     const temperatureDomains = state.temperatureDomains
-    const energyDatasetByInterval = rollUp({
-      domains: [...powerEnergyDomains, ...temperatureDomains],
+
+    const { energyDatasetByInterval } = dataRollUp(
       datasetAll,
+      [...powerEnergyDomains, ...temperatureDomains],
       interval
-    })
+    )
+
     commit('energyDatasetByInterval', energyDatasetByInterval)
     perf.timeEnd('Update interval done.')
   },

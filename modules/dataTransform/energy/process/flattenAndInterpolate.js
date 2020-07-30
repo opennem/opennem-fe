@@ -34,6 +34,8 @@ export default function(isPowerData, dataInterval, dataAll, datasetAll) {
         }
       })
     }
+
+    // Extend when we have more mixed intervals in the dataset
     const update30mInto5mDataset = () => {
       let date = new Date(getDateTimeWithoutTZ(d.history.start))
       let datasetForecast30m = []
@@ -71,8 +73,6 @@ export default function(isPowerData, dataInterval, dataAll, datasetAll) {
       updateDataset()
     }
   })
-
-  console.log(_cloneDeep(datasetAll))
 
   if (isPowerData) {
     interpolateDataset(dataAll, datasetAll)

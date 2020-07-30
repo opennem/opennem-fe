@@ -1,16 +1,10 @@
-import parseAndCheckData from '@/services/dataTransform/v2/parseAndCheckData.js'
-import getFuelTechInOrder from '@/services/dataTransform/v2/getFuelTechInOrder.js'
-import createEmptyDatasets from '@/services/dataTransform/v2/createEmptyDatasets.js'
-import flattenAndInterpolate from '@/services/dataTransform/v2/flattenAndInterpolate.js'
-import summariseDataset from '@/services/dataTransform/v2/summariseDataset.js'
-import {
-  getPowerEnergyDomains,
-  getTemperatureDomains
-} from '@/services/dataTransform/v2/getDomains.js'
+import parseAndCheckData from './parseAndCheckData.js'
+import getFuelTechInOrder from './getFuelTechInOrder.js'
+import createEmptyDatasets from './createEmptyDatasets.js'
+import flattenAndInterpolate from './flattenAndInterpolate.js'
+import { getPowerEnergyDomains, getTemperatureDomains } from './getDomains.js'
 
-import rollUp30m from '@/services/dataTransform/v2/rollUp/30m.js'
-
-export function getFlatDataAndDomains(data) {
+export default function(data) {
   const {
     dataAll,
     dataPowerEnergy,
@@ -34,7 +28,6 @@ export function getFlatDataAndDomains(data) {
     dataPowerEnergy
   )
   flattenAndInterpolate(isPowerData, dataInterval, dataAll, datasetAll)
-  summariseDataset(datasetAll, powerEnergyDomains)
 
   // dataTemperature.forEach(d => {
   //   const historyData = d.history.data
@@ -59,14 +52,5 @@ export function getFlatDataAndDomains(data) {
     datasetTemperature,
     powerEnergyDomains,
     temperatureDomains
-  }
-}
-
-export function rollUp({ domains, datasetAll, interval }) {
-  switch (interval) {
-    case '30m':
-      return rollUp30m(domains, datasetAll)
-    default:
-      return datasetAll
   }
 }

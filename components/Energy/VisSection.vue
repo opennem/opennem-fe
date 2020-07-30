@@ -8,8 +8,8 @@
         :svg-height="300"
         :domains1="powerEnergyDomains"
         :dataset1="energyDatasetByInterval"
-        :y1-max="35000"
-        :y1-min="0"
+        :y1-max="yMax"
+        :y1-min="yMin"
         :x-ticks="xTicks"
         :draw-incomplete-bucket="false"
         :stacked="true"
@@ -50,6 +50,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { min, max } from 'd3-array'
 import ChartHeader from '@/components/Vis/ChartHeader.vue'
 import MultiLine from '@/components/Vis/MultiLine.vue'
 import DateBrush from '@/components/Vis/DateBrush.vue'
@@ -73,6 +74,12 @@ export default {
       temperatureDataset: 'regionEnergy/temperatureDataset',
       temperatureDomains: 'regionEnergy/temperatureDomains'
     }),
+    yMin() {
+      return min(this.energyDatasetByInterval, d => d._stackedTotalMin)
+    },
+    yMax() {
+      return max(this.energyDatasetByInterval, d => d._stackedTotalMax)
+    },
     xTicks() {
       return AxisTicks(this.range, this.interval, false)
     },
