@@ -1,6 +1,6 @@
 import process from './process'
 import rollUp from './rollUp'
-import summariseDataset from './summariseDataset.js'
+import summariseDataset from './summarise'
 
 export function dataProcess(data, interval) {
   const {
