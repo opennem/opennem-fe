@@ -1,5 +1,6 @@
 import * as FT from './fuel-tech.js'
 
+export const GROUP_LABEL = 'Solar/Residual'
 export const GROUP_NAME = 'group.solar-residual'
 
 export const PUMPS = `${GROUP_NAME}.pumps`

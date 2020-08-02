@@ -1,5 +1,6 @@
 import * as FT from './fuel-tech.js'
 
+export const GROUP_LABEL = 'Flexibility'
 export const GROUP_NAME = 'group.flexibility'
 
 export const PUMPS = `${GROUP_NAME}.pumps`

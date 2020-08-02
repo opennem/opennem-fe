@@ -1,3 +1,6 @@
+export const GROUP_LABEL = 'Default'
+export const GROUP_NAME = 'default'
+
 export const PUMPS = 'pumps'
 export const BATTERY_CHARGING = 'battery_charging'
 export const EXPORTS = 'exports'
