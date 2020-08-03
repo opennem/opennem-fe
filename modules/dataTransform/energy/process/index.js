@@ -8,7 +8,6 @@ export default function(data) {
   const {
     dataAll,
     dataPowerEnergy,
-    dataTemperature,
     temperatureIds,
     fuelTechDataType,
     isPowerData,
@@ -16,42 +15,21 @@ export default function(data) {
   } = parseAndCheckData(data)
 
   const fuelTechIdTypes = getFuelTechInOrder(dataPowerEnergy)
-  const powerEnergyDomains = getPowerEnergyDomains(
+  const domainPowerEnergy = getPowerEnergyDomains(
     fuelTechIdTypes,
     fuelTechDataType
   )
-  const temperatureDomains = getTemperatureDomains(temperatureIds)
+  const domainTemperature = getTemperatureDomains(temperatureIds)
   const dataInterval = hasPowerEnergyData
     ? dataPowerEnergy[0].history.interval
     : null
-  const { datasetAll, datasetTemperature } = createEmptyDatasets(
-    dataPowerEnergy
-  )
-  flattenAndInterpolate(isPowerData, dataInterval, dataAll, datasetAll)
-
-  // dataTemperature.forEach(d => {
-  //   const historyData = d.history.data
-  //   // 30m interval
-  //   let index = 0
-  //   datasetTemperature.forEach((h, i) => {
-  //     h[d.id] =
-  //       typeof historyData[index] === 'undefined' ? null : historyData[index]
-  //     if (i !== 0) {
-  //       if (i % 6 === 0) {
-  //         index += 1
-  //       }
-  //     }
-  //   })
-  // })
-
-  // console.log(dataset.length, num, fuelTechIdTypes)
-  // console.log(datasetAll)
+  const datasetFlat = createEmptyDatasets(dataPowerEnergy)
+  flattenAndInterpolate(isPowerData, dataInterval, dataAll, datasetFlat)
 
   return {
-    datasetAll,
-    datasetTemperature,
-    powerEnergyDomains,
-    temperatureDomains,
+    datasetFlat,
+    domainPowerEnergy,
+    domainTemperature,
     type: isPowerData ? 'power' : 'energy'
   }
 }

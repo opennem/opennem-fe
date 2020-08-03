@@ -6,8 +6,8 @@
       <chart-header :show="false" />
       <multi-line
         :svg-height="300"
-        :domains1="currentPowerEnergyDomains"
-        :dataset1="energyDatasetByInterval"
+        :domains1="currentDomainPowerEnergy"
+        :dataset1="currentDatasetFlat"
         :y1-max="yMax"
         :y1-min="yMin"
         :x-ticks="xTicks"
@@ -18,7 +18,7 @@
         @enter="handleVisEnter"
         @leave="handleVisLeave" />
       <date-brush
-        :dataset="energyDatasetByInterval"
+        :dataset="currentDatasetFlat"
         :x-ticks="xTicks"
         :tick-format="tickFormat"
         :second-tick-format="secondTickFormat"
@@ -33,8 +33,8 @@
       <multi-line
         v-if="ready"
         :svg-height="200"
-        :domains1="temperatureDomains"
-        :dataset1="temperatureDataset"
+        :domains1="domainTemperature"
+        :dataset1="currentDatasetFlat"
         :y1-max="50"
         :y1-min="0"
         :x-ticks="xTicks"
@@ -69,17 +69,15 @@ export default {
       range: 'range',
       interval: 'interval',
       ready: 'regionEnergy/ready',
-      powerEnergyDomains: 'regionEnergy/powerEnergyDomains',
-      energyDatasetByInterval: 'regionEnergy/energyDatasetByInterval',
-      temperatureDataset: 'regionEnergy/temperatureDataset',
-      temperatureDomains: 'regionEnergy/temperatureDomains',
-      currentPowerEnergyDomains: 'regionEnergy/currentPowerEnergyDomains'
+      currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
+      domainTemperature: 'regionEnergy/domainTemperature',
+      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy'
     }),
     yMin() {
-      return min(this.energyDatasetByInterval, d => d._stackedTotalMin)
+      return min(this.currentDatasetFlat, d => d._stackedTotalMin)
     },
     yMax() {
-      return max(this.energyDatasetByInterval, d => d._stackedTotalMax)
+      return max(this.currentDatasetFlat, d => d._stackedTotalMax)
     },
     xTicks() {
       return AxisTicks(this.range, this.interval, false)

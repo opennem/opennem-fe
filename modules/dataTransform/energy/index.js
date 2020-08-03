@@ -4,50 +4,50 @@ import rollUp from './rollUp'
 import summariseDataset from './summarise'
 import groupDataset from './group'
 
-export function dataProcess(data, interval, groupName) {
+export function dataProcess(data, interval) {
   const {
-    datasetAll,
+    datasetFlat,
     datasetTemperature,
-    powerEnergyDomains,
-    temperatureDomains,
+    domainPowerEnergy,
+    domainTemperature,
     type
   } = process(data)
-  const energyDatasetByInterval = rollUp({
-    domains: [...powerEnergyDomains, ...temperatureDomains],
-    datasetAll,
+  const currentDatasetFlat = rollUp({
+    domains: [...domainPowerEnergy, ...domainTemperature],
+    datasetFlat,
     interval
   })
-  const domainPowerEnergyGrouped = getAllGroups(powerEnergyDomains, type)
-  summariseDataset(energyDatasetByInterval, powerEnergyDomains)
-  groupDataset(energyDatasetByInterval, domainPowerEnergyGrouped)
+  const domainPowerEnergyGrouped = getAllGroups(domainPowerEnergy, type)
+  summariseDataset(currentDatasetFlat, domainPowerEnergy)
+  groupDataset(currentDatasetFlat, domainPowerEnergyGrouped)
 
   return {
-    datasetAll,
+    datasetFlat,
     datasetTemperature,
-    powerEnergyDomains,
-    temperatureDomains,
-    energyDatasetByInterval,
+    domainPowerEnergy,
+    domainTemperature,
+    currentDatasetFlat,
 
     domainPowerEnergyGrouped
   }
 }
 
 export function dataRollUp(
-  datasetAll,
+  datasetFlat,
   domains,
   domainPowerEnergyGrouped,
   interval
 ) {
-  const energyDatasetByInterval = rollUp({
+  const currentDatasetFlat = rollUp({
     domains,
-    datasetAll,
+    datasetFlat,
     interval
   })
 
-  summariseDataset(energyDatasetByInterval, domains)
-  groupDataset(energyDatasetByInterval, domainPowerEnergyGrouped)
+  summariseDataset(currentDatasetFlat, domains)
+  groupDataset(currentDatasetFlat, domainPowerEnergyGrouped)
 
   return {
-    energyDatasetByInterval
+    currentDatasetFlat
   }
 }

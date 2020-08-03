@@ -4,15 +4,10 @@ export default function(dataPowerEnergy) {
   const { start, num, intervalKey, intervalValue } = getStartEndNumInterval(
     dataPowerEnergy[0]
   )
-  const datasetAll = [],
-    datasetTemperature = []
+  const datasetFlat = []
   let currentDate = start
   for (let i = 1; i <= num; i++) {
-    datasetAll.push({
-      date: currentDate,
-      time: currentDate.getTime()
-    })
-    datasetTemperature.push({
+    datasetFlat.push({
       date: currentDate,
       time: currentDate.getTime()
     })
@@ -23,8 +18,5 @@ export default function(dataPowerEnergy) {
     })
   }
 
-  return {
-    datasetAll,
-    datasetTemperature
-  }
+  return datasetFlat
 }

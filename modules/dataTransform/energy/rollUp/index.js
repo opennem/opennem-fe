@@ -1,10 +1,10 @@
 import rollUp30m from './30m.js'
 
-export default function({ domains, datasetAll, interval }) {
+export default function({ domains, datasetFlat, interval }) {
   switch (interval) {
     case '30m':
-      return rollUp30m(domains, datasetAll)
+      return rollUp30m(domains, datasetFlat)
     default:
-      return datasetAll
+      return datasetFlat
   }
 }
