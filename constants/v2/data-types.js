@@ -28,6 +28,10 @@ export function isPrice(name) {
   return name === PRICE
 }
 
+export function isMarketValue(name) {
+  return name === MARKET_VALUE
+}
+
 export function isValidDataType(name) {
   return (
     name === POWER ||

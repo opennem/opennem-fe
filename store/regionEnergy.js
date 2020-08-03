@@ -97,32 +97,32 @@ export const actions = {
   },
 
   doUpdateDatasetByInterval({ state, commit }, { interval }) {
-    const perf = new PerfTime()
-    perf.time()
+    // Ignore if data is still being fetched.
+    if (!state.isFetching) {
+      const perf = new PerfTime()
+      perf.time()
 
-    const datasetFlat = _cloneDeep(state.datasetFlat)
-    const domainPowerEnergy = state.domainPowerEnergy
-    const domainTemperature = state.domainTemperature
-    const domainPowerEnergyGrouped = state.domainPowerEnergyGrouped
+      const datasetFlat = _cloneDeep(state.datasetFlat)
+      const domainPowerEnergy = state.domainPowerEnergy
+      const domainTemperature = state.domainTemperature
+      const domainPowerEnergyGrouped = state.domainPowerEnergyGrouped
 
-    const { currentDatasetFlat } = dataRollUp(
-      datasetFlat,
-      [...domainPowerEnergy, ...domainTemperature],
-      domainPowerEnergyGrouped,
-      interval
-    )
+      const { currentDatasetFlat } = dataRollUp(
+        datasetFlat,
+        [...domainPowerEnergy, ...domainTemperature],
+        domainPowerEnergyGrouped,
+        interval
+      )
 
-    commit('currentDatasetFlat', currentDatasetFlat)
-    perf.timeEnd('Update interval done.')
+      commit('currentDatasetFlat', currentDatasetFlat)
+      perf.timeEnd('Update interval done.')
+    }
   },
 
   doUpdateDatasetByGroup({ state, commit }, { groupName }) {
-    const perf = new PerfTime()
-    perf.time()
-
-    const domainPowerEnergyGrouped = state.domainPowerEnergyGrouped
-
-    commit('currentDomainPowerEnergy', domainPowerEnergyGrouped[groupName])
-    perf.timeEnd('Update group done.')
+    commit(
+      'currentDomainPowerEnergy',
+      state.domainPowerEnergyGrouped[groupName]
+    )
   }
 }

@@ -26,8 +26,10 @@ export default function(data) {
       case DT.EMISSIONS:
       case DT.MARKET_VALUE:
       case DT.PRICE:
+        break
       case DT.TEMPERATURE_MIN:
       case DT.TEMPERATURE_MAX:
+        temperatureIds.push(d.id)
         break
       case DT.TEMPERATURE:
       case DT.TEMPERATURE_MEAN:
