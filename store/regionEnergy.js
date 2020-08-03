@@ -3,7 +3,6 @@ import PerfTime from '@/plugins/perfTime.js'
 import http from '@/services/Http.js'
 import Data from '@/services/Data.js'
 import { dataProcess, dataRollUp } from '@/modules/dataTransform/energy'
-
 import { isValidRegion } from '@/constants/v2/energy-regions.js'
 
 export const state = () => ({
@@ -14,7 +13,9 @@ export const state = () => ({
   energyDatasetByInterval: [],
   temperatureDataset: [],
   powerEnergyDomains: [],
-  temperatureDomains: []
+  temperatureDomains: [],
+  domainPowerEnergyGrouped: [],
+  currentPowerEnergyDomains: []
 })
 
 export const getters = {
@@ -24,7 +25,9 @@ export const getters = {
   energyDatasetByInterval: state => state.energyDatasetByInterval,
   temperatureDataset: state => state.temperatureDataset,
   powerEnergyDomains: state => state.powerEnergyDomains,
-  temperatureDomains: state => state.temperatureDomains
+  temperatureDomains: state => state.temperatureDomains,
+  domainPowerEnergyGrouped: state => state.domainPowerEnergyGrouped,
+  currentPowerEnergyDomains: state => state.currentPowerEnergyDomains
 }
 
 export const mutations = {
@@ -51,11 +54,17 @@ export const mutations = {
   },
   temperatureDomains(state, temperatureDomains) {
     state.temperatureDomains = _cloneDeep(temperatureDomains)
+  },
+  domainPowerEnergyGrouped(state, domainPowerEnergyGrouped) {
+    state.domainPowerEnergyGrouped = _cloneDeep(domainPowerEnergyGrouped)
+  },
+  currentPowerEnergyDomains(state, currentPowerEnergyDomains) {
+    state.currentPowerEnergyDomains = _cloneDeep(currentPowerEnergyDomains)
   }
 }
 
 export const actions = {
-  doGetRegionData({ commit }, { region, range, interval, group }) {
+  doGetRegionData({ commit }, { region, range, interval, groupName }) {
     if (isValidRegion(region)) {
       const urls = Data.getEnergyUrls(region, range, 'prod')
       commit('ready', false)
@@ -71,8 +80,12 @@ export const actions = {
           datasetTemperature,
           powerEnergyDomains,
           temperatureDomains,
-          energyDatasetByInterval
-        } = dataProcess(data, interval)
+          energyDatasetByInterval,
+
+          domainPowerEnergyGrouped
+        } = dataProcess(data, interval, groupName)
+
+        console.log(datasetAll)
 
         commit('isFetching', false)
         commit('energyDataset', datasetAll)
@@ -80,6 +93,8 @@ export const actions = {
         commit('temperatureDataset', datasetTemperature)
         commit('powerEnergyDomains', powerEnergyDomains)
         commit('temperatureDomains', temperatureDomains)
+        commit('domainPowerEnergyGrouped', domainPowerEnergyGrouped)
+        commit('currentPowerEnergyDomains', domainPowerEnergyGrouped[groupName])
         commit('jsonResponses', responses)
         commit('ready', true)
         perf.timeEnd('Initial transform done.')
@@ -96,10 +111,12 @@ export const actions = {
     const datasetAll = _cloneDeep(state.energyDataset)
     const powerEnergyDomains = state.powerEnergyDomains
     const temperatureDomains = state.temperatureDomains
+    const domainPowerEnergyGrouped = state.domainPowerEnergyGrouped
 
     const { energyDatasetByInterval } = dataRollUp(
       datasetAll,
       [...powerEnergyDomains, ...temperatureDomains],
+      domainPowerEnergyGrouped,
       interval
     )
 
@@ -107,7 +124,13 @@ export const actions = {
     perf.timeEnd('Update interval done.')
   },
 
-  doUpdateDatasetByGroup() {
-    // with the grouping, recalculate the data
+  doUpdateDatasetByGroup({ state, commit }, { groupName }) {
+    const perf = new PerfTime()
+    perf.time()
+
+    const domainPowerEnergyGrouped = state.domainPowerEnergyGrouped
+
+    commit('currentPowerEnergyDomains', domainPowerEnergyGrouped[groupName])
+    perf.timeEnd('Update group done.')
   }
 }

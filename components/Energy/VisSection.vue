@@ -6,7 +6,7 @@
       <chart-header :show="false" />
       <multi-line
         :svg-height="300"
-        :domains1="powerEnergyDomains"
+        :domains1="currentPowerEnergyDomains"
         :dataset1="energyDatasetByInterval"
         :y1-max="yMax"
         :y1-min="yMin"
@@ -72,7 +72,8 @@ export default {
       powerEnergyDomains: 'regionEnergy/powerEnergyDomains',
       energyDatasetByInterval: 'regionEnergy/energyDatasetByInterval',
       temperatureDataset: 'regionEnergy/temperatureDataset',
-      temperatureDomains: 'regionEnergy/temperatureDomains'
+      temperatureDomains: 'regionEnergy/temperatureDomains',
+      currentPowerEnergyDomains: 'regionEnergy/currentPowerEnergyDomains'
     }),
     yMin() {
       return min(this.energyDatasetByInterval, d => d._stackedTotalMin)

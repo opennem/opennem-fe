@@ -51,6 +51,7 @@ export default function(data) {
     datasetAll,
     datasetTemperature,
     powerEnergyDomains,
-    temperatureDomains
+    temperatureDomains,
+    type: isPowerData ? 'power' : 'energy'
   }
 }

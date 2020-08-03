@@ -26,7 +26,8 @@ export default {
     ...mapGetters({
       range: 'range',
       interval: 'interval',
-      fuelTechGroupName: 'fuelTechGroupName'
+      fuelTechGroupName: 'fuelTechGroupName',
+      fuelTechGroup: 'fuelTechGroup'
     }),
     regionId() {
       return this.$route.params.region
@@ -39,11 +40,14 @@ export default {
         region: this.regionId,
         range: updated,
         interval: this.interval,
-        group: this.fuelTechGroupName
+        groupName: this.fuelTechGroupName
       })
     },
     interval(interval) {
       this.doUpdateDatasetByInterval({ interval })
+    },
+    fuelTechGroupName(groupName) {
+      this.doUpdateDatasetByGroup({ groupName })
     }
   },
   created() {
@@ -51,14 +55,15 @@ export default {
       region: this.regionId,
       range: this.range,
       interval: this.interval,
-      group: this.fuelTechGroupName
+      groupName: this.fuelTechGroupName
     })
   },
 
   methods: {
     ...mapActions({
       doGetRegionData: 'regionEnergy/doGetRegionData',
-      doUpdateDatasetByInterval: 'regionEnergy/doUpdateDatasetByInterval'
+      doUpdateDatasetByInterval: 'regionEnergy/doUpdateDatasetByInterval',
+      doUpdateDatasetByGroup: 'regionEnergy/doUpdateDatasetByGroup'
     })
   }
 }
