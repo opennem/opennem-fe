@@ -4,14 +4,14 @@ import rollUp from './rollUp'
 import summariseDataset from './summarise'
 import groupDataset from './group'
 
-export function dataProcess(data, interval) {
+export function dataProcess(responses, interval) {
   const {
     datasetFlat,
     datasetTemperature,
     domainPowerEnergy,
     domainTemperature,
     type
-  } = process(data)
+  } = process(responses)
   const currentDatasetFlat = rollUp({
     domains: [...domainPowerEnergy, ...domainTemperature],
     datasetFlat,

@@ -4,7 +4,18 @@ import createEmptyDatasets from './createEmptyDatasets.js'
 import flattenAndInterpolate from './flattenAndInterpolate.js'
 import { getPowerEnergyDomains, getTemperatureDomains } from './getDomains.js'
 
-export default function(data) {
+export default function(responses) {
+  // combine multiple periods
+  const data = responses[0]
+  responses.forEach((res, i) => {
+    if (i > 0) {
+      res.forEach(r => {
+        const find = data.find(d => d.id === r.id)
+        find.history.last = r.history.last
+        find.history.data = [...find.history.data, ...r.history.data]
+      })
+    }
+  })
   const {
     dataAll,
     dataPowerEnergy,

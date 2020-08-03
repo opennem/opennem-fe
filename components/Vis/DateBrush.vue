@@ -110,7 +110,6 @@ export default {
     window.addEventListener('resize', this.handleResize)
   },
   updated() {
-    console.log(`${this.uuid} update`)
     this.setupWidthHeight()
     this.setup()
     this.draw()

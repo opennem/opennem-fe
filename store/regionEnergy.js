@@ -68,7 +68,6 @@ export const actions = {
       http(urls).then(responses => {
         const perf = new PerfTime()
         perf.time()
-        const data = responses[0].data || responses[0]
 
         const {
           datasetFlat,
@@ -76,9 +75,7 @@ export const actions = {
           domainTemperature,
           currentDatasetFlat,
           domainPowerEnergyGrouped
-        } = dataProcess(data, interval)
-
-        console.log(datasetFlat)
+        } = dataProcess(responses, interval)
 
         commit('isFetching', false)
         commit('datasetFlat', datasetFlat)

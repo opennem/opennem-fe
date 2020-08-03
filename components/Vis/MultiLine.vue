@@ -261,7 +261,6 @@ export default {
       this.domains1.forEach(d => {
         dict[d.domain] = d.colour
       })
-      console.log(dict, this.domains1)
       return dict
     },
     keys2() {
@@ -348,7 +347,6 @@ export default {
   },
 
   updated() {
-    console.log(`${this.uuid} update`)
     this.setupWidthHeight()
     this.setup()
     this.draw()
@@ -508,7 +506,6 @@ export default {
     },
 
     draw() {
-      console.log(`${this.uuid} draw`)
       const self = this
       if (this.zoomRange.length > 0) {
         this.x.domain(this.zoomRange)
