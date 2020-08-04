@@ -17,6 +17,10 @@
       v-for="(ft, index) in order"
       :key="ft.id"
       class="item summary-row"
+      @mouseenter="handleMouseEnter(ft)"
+      @mouseleave="handleMouseLeave"
+      @touchstart="handleTouchstart(ft)"
+      @touchend="handleTouchend"
       @click.exact="handleRowClick(ft)"
       @click.shift.exact="handleRowShiftClicked(ft)">
 
@@ -143,7 +147,9 @@ export default {
 
   data() {
     return {
-      order: []
+      order: [],
+      mousedownDelay: null,
+      longPress: 500
     }
   },
 
@@ -320,6 +326,26 @@ export default {
         return true
       }
       return false
+    },
+
+    handleTouchstart(ft) {
+      this.mousedownDelay = setTimeout(() => {
+        this.handleRowShiftClicked(ft)
+      }, this.longPress)
+    },
+    handleTouchend() {
+      this.clearTimeout()
+    },
+    clearTimeout() {
+      clearTimeout(this.mousedownDelay)
+      this.mousedownDelay = null
+    },
+
+    handleMouseEnter(ft) {
+      this.$emit('mouse-enter', ft)
+    },
+    handleMouseLeave() {
+      this.$emit('mouse-leave')
     }
   }
 }

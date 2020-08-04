@@ -260,6 +260,10 @@ export default {
     yAxisUnit: {
       type: String,
       default: () => ''
+    },
+    highlightDomain: {
+      type: String,
+      default: () => null
     }
   },
 
@@ -480,6 +484,15 @@ export default {
     },
     compareDates(updated) {
       this.drawCompare(updated)
+    },
+    highlightDomain(domain) {
+      if (domain) {
+        this.$stackedAreaGroup
+          .selectAll('path')
+          .attr('opacity', d => (d.key === domain ? 1 : 0.2))
+      } else {
+        this.$stackedAreaGroup.selectAll('path').attr('opacity', 1)
+      }
     }
   },
   created() {
@@ -806,7 +819,7 @@ export default {
         .enter()
         .append('path')
         .attr('id', d => d.key)
-        .attr('class', `${this.stackedAreaPathClass}`)
+        .attr('class', d => `${this.stackedAreaPathClass} .${d.key}`)
         .attr('d', this.area)
         .attr('stroke-opacity', 0)
         .attr('stroke-width', 1)
