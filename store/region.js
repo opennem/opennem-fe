@@ -210,13 +210,14 @@ function transformDataset(regions, dataset, prop, regionAppend) {
           date: regionData.date,
           _isIncompleteBucket: regionData._isIncompleteBucket
         }
-        obj[id] = regionData[p]
+        obj[id] = regionData[p] === 0 ? null : regionData[p]
         return obj
       })
     } else {
       dataset[id].combined.forEach((regionData, regionDataIndex) => {
         if (updated[regionDataIndex]) {
-          updated[regionDataIndex][id] = regionData[p]
+          updated[regionDataIndex][id] =
+            regionData[p] === 0 ? null : regionData[p]
         }
       })
     }

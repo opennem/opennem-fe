@@ -108,6 +108,7 @@
             :x-ticks="xTicks"
             :x-shades="xShades"
             :cursor-anchor="cursorAnchor"
+            :draw-incomplete-bucket="false"
             @date-hover="handleDateHover"
             @enter="handleEnter"
             @leave="handleLeave" />
