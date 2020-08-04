@@ -1414,9 +1414,9 @@ export default {
         }
         this.stackedAreaDomains.forEach(domain => {
           if (domain.category === 'load') {
-            obj[domain.id] = -d[domain.id]
+            obj[domain.id] = d[domain.id] === 0 ? null : -d[domain.id]
           } else {
-            obj[domain.id] = d[domain.id]
+            obj[domain.id] = d[domain.id] === 0 ? null : d[domain.id]
           }
         })
         return obj
