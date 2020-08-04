@@ -1,23 +1,28 @@
 <template>
   <section>
+    <label>
+      <input 
+        v-model="stacked" 
+        type="checkbox">
+      stacked
+    </label>
     <div 
       v-if="ready"
       class="power-energy-vis">
       <chart-header :show="false" />
-      <multi-line
+      <chart
         :svg-height="300"
         :domains1="currentDomainPowerEnergy"
         :dataset1="currentDatasetFlat"
         :y1-max="yMax"
         :y1-min="yMin"
-        :x-ticks="xTicks"
         :draw-incomplete-bucket="false"
-        :stacked="true"
+        :stacked="stacked"
         @date-hover="handleDateHover"
         @domain-hover="handleDomainHover"
         @enter="handleVisEnter"
         @leave="handleVisLeave" />
-      <date-brush
+        <!-- <date-brush
         :dataset="currentDatasetFlat"
         :x-ticks="xTicks"
         :tick-format="tickFormat"
@@ -25,12 +30,13 @@
         class="date-brush"
         @date-hover="handleDateHover"
         @enter="handleVisEnter"
-        @leave="handleVisLeave" />
+        @leave="handleVisLeave" /> -->
     </div>
 
+    <!-- 
     <div class="temperature-vis">
       <chart-header :show="false" />
-      <multi-line
+      <chart
         v-if="ready"
         :svg-height="200"
         :domains1="domainTemperature"
@@ -43,7 +49,7 @@
         @domain-hover="handleDomainHover"
         @enter="handleVisEnter"
         @leave="handleVisLeave" />
-    </div>
+    </div> -->
     
   </section>
 </template>
@@ -52,7 +58,7 @@
 import { mapGetters } from 'vuex'
 import { min, max } from 'd3-array'
 import ChartHeader from '@/components/Vis/ChartHeader.vue'
-import MultiLine from '@/components/Vis/MultiLine.vue'
+import Chart from '@/components/Vis/Chart.vue'
 import DateBrush from '@/components/Vis/DateBrush.vue'
 import AxisTicks from '@/services/axisTicks.js'
 import AxisTimeFormats from '@/services/axisTimeFormats.js'
@@ -60,8 +66,16 @@ import AxisTimeFormats from '@/services/axisTimeFormats.js'
 export default {
   components: {
     ChartHeader,
-    MultiLine,
+    Chart,
     DateBrush
+  },
+
+  data() {
+    return {
+      dateExtent: [new Date('2019-01-01'), new Date('2020-12-31')],
+      dateFilter: [],
+      stacked: true
+    }
   },
 
   computed: {

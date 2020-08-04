@@ -21,7 +21,7 @@ export const state = () => ({
   nem: [],
   fuelTechMeta: null,
   fuelTechNames: null,
-  fuelTechGroupName: 'Flexibility', // Default, Flexibility
+  fuelTechGroupName: 'Default', // Default, Flexibility
   fuelTechOrder: cloneDeep(FUEL_TECHS.DEFAULT_FUEL_TECH_ORDER),
   hiddenFuelTechs: [],
   energyDomains: [],
