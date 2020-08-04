@@ -102,7 +102,7 @@
             :domains1="filteredDomains"
             :highlight-domain="hoveredRegion"
             :dataset1="emissionIntDataset"
-            :y1-max="1200"
+            :y1-max="emissionIntMax"
             :date-hovered="dateHovered"
             :zoom-range="dateFilter"
             :x-ticks="xTicks"
@@ -246,6 +246,10 @@ export default {
     },
     emissionMax() {
       return max(this.emissionVolDataset, d => d._highest)
+    },
+    emissionIntMax() {
+      const yMax = max(this.emissionIntDataset, d => d._highest)
+      return yMax < 1200 ? 1200 : yMax
     },
     temperatureMax() {
       return max(this.temperatureDataset, d => d._highest)

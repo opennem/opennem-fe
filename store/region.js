@@ -222,21 +222,8 @@ function transformDataset(regions, dataset, prop, regionAppend) {
       })
     }
   })
-  updated.forEach(d => {
-    let highest = 0
-    let lowest = 0
-    regions.forEach(r => {
-      const id = r.id
-      if (d[id] > highest) {
-        highest = d[id]
-      }
-      if (d[id] < lowest) {
-        lowest = d[id]
-      }
-    })
-    d._highest = highest
-    d._lowest = lowest
-  })
+  calculateHighLow(updated, regions)
+
   return updated
 }
 
@@ -270,6 +257,7 @@ function commitDatasets(
       })
       return eObj
     })
+    calculateHighLow(emissionIntDataset, regions)
 
     commit('emissionVolDataset', emissionVolDataset)
     commit('emissionIntDataset', emissionIntDataset)
@@ -295,4 +283,22 @@ function commitDatasets(
       transformDataset(regions, regionsObj, '_volWeightedPrice')
     )
   }
+}
+
+function calculateHighLow(dataset, regions) {
+  dataset.forEach(d => {
+    let highest = 0
+    let lowest = 0
+    regions.forEach(r => {
+      const id = r.id
+      if (d[id] > highest) {
+        highest = d[id]
+      }
+      if (d[id] < lowest) {
+        lowest = d[id]
+      }
+    })
+    d._highest = highest
+    d._lowest = lowest
+  })
 }
