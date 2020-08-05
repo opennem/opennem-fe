@@ -167,16 +167,18 @@
             class="renewable-line" />
           Renewables
         </div>
-        <div class="summary-col-energy cell-value" />
+        <div class="summary-col-energy cell-value">
+          {{ renewablesValue | formatValue }}
+        </div>
         <div
           v-if="!hoverOn && !focusOn"
           class="summary-col-contribution cell-value">
-          {{ renewables | percentageFormatNumber }}
+          {{ renewablesPercentage | percentageFormatNumber }}
         </div>
         <div
           v-if="hoverOn || focusOn"
           class="summary-col-contribution cell-value">
-          {{ pointRenewables | percentageFormatNumber }}
+          {{ pointRenewablesPercentage | percentageFormatNumber }}
         </div>
         <div class="summary-col-av-value cell-value" />
       </div>
@@ -356,7 +358,21 @@ export default {
       return this.marketValueDomains.filter(d => d.category === 'load')
     },
 
-    renewables() {
+    renewablesValue() {
+      const isSummary = !this.hoverOn && !this.focusOn
+      const key =
+        this.percentContributionTo === 'demand' ? '_total' : '_totalGeneration'
+      const totalRenewables = isSummary
+        ? this.dataset.reduce((a, b) => a + b._totalRenewables, 0)
+        : this.pointSummary._totalRenewables
+      const mins = this.interval === '30m' ? 30 : 5
+
+      return this.isEnergy || !isSummary
+        ? totalRenewables
+        : (totalRenewables * mins) / 60 / 1000
+    },
+
+    renewablesPercentage() {
       const key =
         this.percentContributionTo === 'demand' ? '_total' : '_totalGeneration'
       let totalRenewables = this.dataset.reduce(
@@ -370,7 +386,7 @@ export default {
       return r
     },
 
-    pointRenewables() {
+    pointRenewablesPercentage() {
       const key =
         this.percentContributionTo === 'demand' ? '_total' : '_totalGeneration'
       const totalRenewables = this.pointSummary._totalRenewables
