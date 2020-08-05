@@ -135,7 +135,7 @@ function transformV3FacilityData(data) {
     let generatorCap = 0
 
     dispatchUnits.forEach(unit => {
-      const regCap = unit.registered_capacity
+      const regCap = unit.capacity_registered
       const fuelTech = unit.fuel_tech
       const unitStatus = unit.status
       const type = FUEL_TECHS.FUEL_TECH_CATEGORY[fuelTech] || ''
