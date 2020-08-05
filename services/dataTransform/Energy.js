@@ -458,7 +458,7 @@ export default {
           interval,
           intervalOptions
         ).then(rolledUpData => {
-          const dataset = this.calculateMinTotal(
+          const dataset = this.summarise(
             rolledUpData,
             energyDomains,
             marketValueDomains,
@@ -478,7 +478,7 @@ export default {
     })
   },
 
-  calculateMinTotal(
+  summarise(
     dataset,
     energyDomains,
     marketValueDomains,
@@ -590,7 +590,9 @@ export default {
           totalGeneration += d[id] || 0
         }
 
-        totalDemand += d[id] || 0
+        if (domain.category !== 'load' || ft === 'exports') {
+          totalDemand += d[id] || 0
+        }
 
         if (domain.renewable) {
           totalRenewables += d[id] || 0

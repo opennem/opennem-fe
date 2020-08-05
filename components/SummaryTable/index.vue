@@ -97,7 +97,7 @@
       @mouse-enter="handleMouseEnter"
       @mouse-leave="handleMouseLeave"
     />
-    
+
     <div class="summary-column-headers">
       <div class="summary-row">
         <div class="summary-col-label">Loads</div>
@@ -364,12 +364,6 @@ export default {
         0
       )
       let total = this.dataset.reduce((a, b) => a + b[key], 0)
-      if (!this.isEnergy) {
-        // calculate energy (GWh) += power * 5mins/60/1000
-        const mins = this.interval === '30m' ? 30 : 5
-        totalRenewables = (totalRenewables * mins) / 60 / 1000
-        total = (total * mins) / 60 / 1000
-      }
       const r = (totalRenewables / total) * 100
       const f = d3Format(',.3f')
       console.log(`*****Renewables: ${f(r)}%`)
@@ -642,11 +636,13 @@ export default {
         let avValue = 0
 
         this.summary[ft.id] = dataEnergySum
-        totalEnergy += dataEnergySum
-        totalPower += dataPowerSum
 
-        totalEnergyMinusHidden += dataEnergyMinusHiddenSum
-        totalPowerMinusHidden += dataPowerMinusHiddenSum
+        if (category !== 'load' || _includes(ft.id, 'exports')) {
+          totalEnergy += dataEnergySum
+          totalPower += dataPowerSum
+          totalEnergyMinusHidden += dataEnergyMinusHiddenSum
+          totalPowerMinusHidden += dataPowerMinusHiddenSum
+        }
 
         if (category === 'source') {
           this.summarySources[ft.id] = dataEnergySum
