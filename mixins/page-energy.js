@@ -196,7 +196,9 @@ const pageEnergyMixin = {
           const ft = domain.fuelTech
           const energyPercent = this.findEnergyPercent(id)
 
-          totalDemand += d[id] || 0
+          if (domain.category !== 'load' || domain.fuelTech === 'exports') {
+            totalDemand += d[id] || 0
+          }
           if (domain.category == 'source' && domain.fuelTech !== 'imports') {
             totalGeneration += d[id] || 0
           }

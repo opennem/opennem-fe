@@ -79,10 +79,11 @@ dist
 
 # IDE
 .idea
+.nova
 
 # Test local data
 static/data/
 
-# 
+#
 sw.*
 .DS_Store
