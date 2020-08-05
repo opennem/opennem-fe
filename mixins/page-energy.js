@@ -47,6 +47,10 @@ const pageEnergyMixin = {
       chartPowerCurve: 'visInteract/chartPowerCurve'
     }),
 
+    isYearInterval() {
+      return this.interval === 'Fin Year' || this.interval === 'Year'
+    },
+
     renewablesLineColour() {
       return this.fuelTechGroupName === 'Renewable/Fossil' ||
         this.fuelTechGroupName === 'Flexibility'
