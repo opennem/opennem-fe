@@ -124,6 +124,9 @@ export default {
 
   computed: {
     ...mapGetters(['hostEnv']),
+    facilityDataset() {
+      return this.$store.getters['facility/dataset']
+    },
     regionId() {
       return this.$route.params.region
     },
@@ -193,7 +196,13 @@ export default {
         }, 200)
       )
     })
-    this.fetchData()
+
+    if (this.facilityDataset.length > 0) {
+      this.facilityData = this.facilityDataset
+      this.ready = true
+    } else {
+      this.fetchData()
+    }
   },
 
   methods: {
@@ -226,6 +235,7 @@ export default {
         FacilityDataTransformService.flatten(responses[0]).then(res => {
           this.facilityData = res
           this.ready = true
+          this.$store.dispatch('facility/dataset', res)
         })
       } else {
         if (responses.length > 0 && responses[0].features) {
@@ -233,6 +243,7 @@ export default {
             res => {
               this.facilityData = res
               this.ready = true
+              this.$store.dispatch('facility/dataset', res)
             }
           )
         } else {
