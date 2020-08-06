@@ -92,15 +92,17 @@ export default function(datasetAll, powerEnergyDomains) {
         d[id] = negValue
       }
 
-      if (domain.category == FT.SOURCE) {
+      if (domain.category === FT.SOURCE) {
         totalSources += d[id] || 0
       }
 
-      if (domain.category == FT.SOURCE && ft !== FT.IMPORTS) {
+      if (domain.category === FT.SOURCE && ft !== FT.IMPORTS) {
         totalGeneration += d[id] || 0
       }
 
-      totalDemand += d[id] || 0
+      if (domain.category !== FT.LOAD || ft === FT.EXPORTS) {
+        totalDemand += d[id] || 0
+      }
 
       if (domain.renewable) {
         totalRenewables += d[id] || 0
