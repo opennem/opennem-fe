@@ -1331,10 +1331,6 @@ export default {
       return 0
     },
 
-    isYearInterval() {
-      return this.interval === 'Fin Year' || this.interval === 'Year'
-    },
-
     hasCompareDates() {
       return this.updatedCompareDates.length === 2
     },
