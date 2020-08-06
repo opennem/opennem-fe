@@ -1,6 +1,10 @@
 import { getStartEndNumInterval, incrementTime } from '@/services/DataCheck.js'
+import PerfTime from '@/plugins/perfTime.js'
+
+const perfTime = new PerfTime()
 
 export default function(dataPowerEnergy) {
+  perfTime.time()
   const { start, num, intervalKey, intervalValue } = getStartEndNumInterval(
     dataPowerEnergy[0]
   )
@@ -17,6 +21,6 @@ export default function(dataPowerEnergy) {
       intervalValue
     })
   }
-
+  perfTime.timeEnd('data.process.createEmptyDataset')
   return datasetFlat
 }

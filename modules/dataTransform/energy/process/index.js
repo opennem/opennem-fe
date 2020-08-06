@@ -1,10 +1,14 @@
+import PerfTime from '@/plugins/perfTime.js'
 import parseAndCheckData from './parseAndCheckData.js'
 import getFuelTechInOrder from './getFuelTechInOrder.js'
 import createEmptyDatasets from './createEmptyDatasets.js'
 import flattenAndInterpolate from './flattenAndInterpolate.js'
 import { getPowerEnergyDomains, getTemperatureDomains } from './getDomains.js'
 
+const perfTime = new PerfTime()
+
 export default function(responses) {
+  perfTime.time()
   // combine multiple periods
   const data = responses[0]
   responses.forEach((res, i) => {
@@ -37,6 +41,7 @@ export default function(responses) {
   const datasetFlat = createEmptyDatasets(dataPowerEnergy)
   flattenAndInterpolate(isPowerData, dataInterval, dataAll, datasetFlat)
 
+  perfTime.timeEnd('data.process')
   return {
     datasetFlat,
     domainPowerEnergy,

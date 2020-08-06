@@ -2,18 +2,28 @@ import rollUp30m from './30m.js'
 import rollUpDay from './day.js'
 import rollUpWeek from './week.js'
 import rollUpMonth from './month.js'
+import PerfTime from '@/plugins/perfTime.js'
+
+const perfTime = new PerfTime()
 
 export default function({ domains, datasetFlat, interval }) {
+  perfTime.time()
+  let rolled = datasetFlat
   switch (interval) {
     case '30m':
-      return rollUp30m(domains, datasetFlat)
+      rolled = rollUp30m(domains, datasetFlat)
+      break
     case 'Day':
-      return rollUpDay(domains, datasetFlat)
+      rolled = rollUpDay(domains, datasetFlat)
+      break
     case 'Week':
-      return rollUpWeek(domains, datasetFlat)
+      rolled = rollUpWeek(domains, datasetFlat)
+      break
     case 'Month':
-      return rollUpMonth(domains, datasetFlat)
+      rolled = rollUpMonth(domains, datasetFlat)
+      break
     default:
-      return datasetFlat
   }
+  perfTime.timeEnd(`data.rollUp.${interval}`)
+  return rolled
 }

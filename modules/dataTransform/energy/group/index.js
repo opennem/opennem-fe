@@ -1,4 +1,9 @@
+import PerfTime from '@/plugins/perfTime.js'
+const perfTime = new PerfTime()
+
 export default function(dataset, groups) {
+  perfTime.time()
+
   dataset.forEach(d => {
     Object.keys(groups).forEach(key => {
       if (key !== 'Default') {
@@ -15,4 +20,5 @@ export default function(dataset, groups) {
 
     return d
   })
+  perfTime.timeEnd('data.group')
 }

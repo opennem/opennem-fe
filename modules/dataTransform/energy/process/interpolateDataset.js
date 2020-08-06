@@ -1,6 +1,8 @@
 import * as FT from '@/constants/fuel-tech.js'
 import * as DT from '@/constants/v2/data-types.js'
+import PerfTime from '@/plugins/perfTime.js'
 
+const perfTime = new PerfTime()
 function findInterpolateSeriesTypes(data) {
   const rooftopSolarItem = data.find(
     d =>
@@ -50,6 +52,7 @@ function findInterpolateSeriesTypes(data) {
 }
 
 export default function(dataAll, datasetAll) {
+  perfTime.time()
   const forInterpolate = findInterpolateSeriesTypes(dataAll)
   if (forInterpolate.length > 0) {
     datasetAll.forEach((d, i) => {
@@ -77,4 +80,5 @@ export default function(dataAll, datasetAll) {
       })
     })
   }
+  perfTime.timeEnd('data.process.flattenAndInterpolate.interpolate')
 }

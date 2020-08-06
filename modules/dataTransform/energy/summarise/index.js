@@ -1,10 +1,14 @@
 import * as FT from '@/constants/fuel-tech.js'
+import PerfTime from '@/plugins/perfTime.js'
+const perfTime = new PerfTime()
 
 /*
   - Mutate and summarise each data point
   - Reverse value for imports and load types
 */
 export default function(datasetAll, powerEnergyDomains) {
+  perfTime.time()
+
   datasetAll.forEach((d, i) => {
     let batteryChargingId = null,
       batteryDischargingId = null,
@@ -165,4 +169,6 @@ export default function(datasetAll, powerEnergyDomains) {
     //     ? volWeightedPrice
     //     : -0.01
   })
+
+  perfTime.timeEnd('data.summarise')
 }
