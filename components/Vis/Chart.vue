@@ -514,7 +514,7 @@ export default {
         .style('width', this.width)
         .style('height', this.height)
 
-      let xz = null
+      let xz = this.x
       this.zoom = zoom()
         .scaleExtent([1, 5000])
         .extent([[this.marginLeft, 0], [this.width, this.height]])
@@ -531,11 +531,15 @@ export default {
         .on('end', () => {
           console.log('zoom end')
           console.log(xz.invert(0), xz.invert(this.width))
-
-          console.log(differenceInYears(xz.invert(this.width), xz.invert(0)))
+          // console.log(differenceInYears(xz.invert(this.width), xz.invert(0)))
         })
 
-      this.$zoomGroup.call(this.zoom)
+      this.$zoomGroup.call(this.zoom).on('touchmove mousemove', function() {
+        const m = mouse(this)
+        const date = xz.invert(m[0])
+        console.log(date)
+        self.$emit('date-hover', this, date)
+      })
 
       // Events
       this.$hoverGroup.on('touchmove mousemove', function() {
