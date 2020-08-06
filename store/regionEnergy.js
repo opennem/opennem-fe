@@ -110,9 +110,9 @@ export const actions = {
         domainPowerEnergyGrouped,
         interval
       )
+      perf.timeEnd('Update interval done.')
 
       commit('currentDatasetFlat', currentDatasetFlat)
-      perf.timeEnd('Update interval done.')
     }
   },
 

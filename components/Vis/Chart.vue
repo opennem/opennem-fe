@@ -47,12 +47,16 @@
         class="y-axis-left-text" />
       <g 
         :transform="axisTransform" 
-        class="y-axis-right-text" />     
+        class="y-axis-right-text" /> 
+      <g 
+        :transform="axisTransform"
+        class="zoom-group" />   
     </svg>
   </div>
 </template>
 
 <script>
+import differenceInYears from 'date-fns/differenceInYears'
 import { zoom } from 'd3-zoom'
 import { select, mouse, event } from 'd3-selection'
 import { scaleOrdinal, scaleLinear, scaleTime, scaleSymlog } from 'd3-scale'
@@ -229,7 +233,8 @@ export default {
       $cursorLine: null,
       $cursorDotsGroup: null,
       $hoverGroup: null,
-      $xShadesGroup: null
+      $xShadesGroup: null,
+      $zoomGroup: null
     }
   },
 
@@ -275,7 +280,7 @@ export default {
       return dict
     },
     xExtent() {
-      return [new Date('2005-01-01'), new Date('2020-12-31')]
+      return [new Date('2000-01-01'), new Date('2020-12-31')]
       // return extent(this.dataset1, d => new Date(d.date))
     },
     hasHighlight() {
@@ -502,18 +507,20 @@ export default {
         this.$cursorDotsGroup = this.$cursorLineGroup.append('g')
       }
 
+      this.$zoomGroup = $svg
+        .select('.zoom-group')
+        .append('rect')
+        .style('fill', 'transparent')
+        .style('width', this.width)
+        .style('height', this.height)
+
+      let xz = null
       this.zoom = zoom()
-        .scaleExtent([1, 32])
-        .extent([
-          [this.marginLeft, 0],
-          [this.width - this.marginRight, this.height]
-        ])
-        .translateExtent([
-          [this.marginLeft, -Infinity],
-          [this.width - this.marginRight, Infinity]
-        ])
+        .scaleExtent([1, 5000])
+        .extent([[this.marginLeft, 0], [this.width, this.height]])
+        .translateExtent([[this.marginLeft, -Infinity], [this.width, Infinity]])
         .on('zoom', () => {
-          const xz = event.transform.rescaleX(this.x)
+          xz = event.transform.rescaleX(this.x)
           if (this.stacked) {
             this.$vis1Group.selectAll('path').attr('d', d => this.vis1(d, xz))
           } else {
@@ -521,8 +528,14 @@ export default {
           }
           this.$xAxisGroup.call(axisBottom(xz).tickSize(this.height))
         })
+        .on('end', () => {
+          console.log('zoom end')
+          console.log(xz.invert(0), xz.invert(this.width))
 
-      this.$hoverGroup.call(this.zoom)
+          console.log(differenceInYears(xz.invert(this.width), xz.invert(0)))
+        })
+
+      this.$zoomGroup.call(this.zoom)
 
       // Events
       this.$hoverGroup.on('touchmove mousemove', function() {
