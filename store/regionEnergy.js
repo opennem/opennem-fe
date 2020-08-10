@@ -8,6 +8,7 @@ import { isValidRegion } from '@/constants/v2/energy-regions.js'
 export const state = () => ({
   ready: false,
   isFetching: false,
+  isEnergyType: false,
   jsonResponses: null,
   datasetFlat: [],
   currentDatasetFlat: [],
@@ -20,6 +21,7 @@ export const state = () => ({
 export const getters = {
   ready: state => state.ready,
   isFetching: state => state.isFetching,
+  isEnergyType: state => state.isEnergyType,
   datasetFlat: state => state.datasetFlat,
   currentDatasetFlat: state => state.currentDatasetFlat,
   domainPowerEnergy: state => state.domainPowerEnergy,
@@ -34,6 +36,9 @@ export const mutations = {
   },
   isFetching(state, isFetching) {
     state.isFetching = isFetching
+  },
+  isEnergyType(state, isEnergyType) {
+    state.isEnergyType = isEnergyType
   },
   jsonResponses(state, jsonResponses) {
     state.jsonResponses = _cloneDeep(jsonResponses)
@@ -74,10 +79,12 @@ export const actions = {
           domainPowerEnergy,
           domainTemperature,
           currentDatasetFlat,
-          domainPowerEnergyGrouped
+          domainPowerEnergyGrouped,
+          dataType
         } = dataProcess(responses, interval)
 
         commit('isFetching', false)
+        commit('isEnergyType', dataType === 'energy')
         commit('datasetFlat', datasetFlat)
         commit('currentDatasetFlat', currentDatasetFlat)
         commit('domainPowerEnergy', domainPowerEnergy)

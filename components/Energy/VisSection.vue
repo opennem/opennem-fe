@@ -1,56 +1,6 @@
 <template>
   <section>
-    <label>
-      <input 
-        v-model="stacked" 
-        type="checkbox">
-      stacked
-    </label>
-    <div 
-      v-if="ready"
-      class="power-energy-vis">
-      <chart-header :show="false" />
-      <chart
-        :svg-height="300"
-        :domains1="currentDomainPowerEnergy"
-        :dataset1="currentDatasetFlat"
-        :y1-max="yMax"
-        :y1-min="yMin"
-        :draw-incomplete-bucket="false"
-        :stacked="stacked"
-        @date-hover="handleDateHover"
-        @domain-hover="handleDomainHover"
-        @enter="handleVisEnter"
-        @leave="handleVisLeave" />
-        <!-- <date-brush
-        :dataset="currentDatasetFlat"
-        :x-ticks="xTicks"
-        :tick-format="tickFormat"
-        :second-tick-format="secondTickFormat"
-        class="date-brush"
-        @date-hover="handleDateHover"
-        @enter="handleVisEnter"
-        @leave="handleVisLeave" /> -->
-    </div>
-
-    <!-- 
-    <div class="temperature-vis">
-      <chart-header :show="false" />
-      <chart
-        v-if="ready"
-        :svg-height="200"
-        :domains1="domainTemperature"
-        :dataset1="currentDatasetFlat"
-        :y1-max="50"
-        :y1-min="0"
-        :x-ticks="xTicks"
-        :draw-incomplete-bucket="false"
-        @date-hover="handleDateHover"
-        @domain-hover="handleDomainHover"
-        @enter="handleVisEnter"
-        @leave="handleVisLeave" />
-    </div> -->
-    
+    <power-energy-chart />
   </section>
 </template>
 
@@ -63,8 +13,11 @@ import DateBrush from '@/components/Vis/DateBrush.vue'
 import AxisTicks from '@/services/axisTicks.js'
 import AxisTimeFormats from '@/services/axisTimeFormats.js'
 
+import PowerEnergyChart from '@/components/Energy/PowerEnergyChart'
+
 export default {
   components: {
+    PowerEnergyChart,
     ChartHeader,
     Chart,
     DateBrush

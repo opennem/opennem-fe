@@ -53,8 +53,8 @@ export default {
   created() {
     this.doGetRegionData({
       region: this.regionId,
-      range: 'ALL',
-      interval: 'Month',
+      range: this.range,
+      interval: this.interval,
       groupName: this.fuelTechGroupName
     })
   },

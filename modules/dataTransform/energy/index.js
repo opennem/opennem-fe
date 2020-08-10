@@ -22,6 +22,7 @@ export function dataProcess(responses, interval) {
   groupDataset(currentDatasetFlat, domainPowerEnergyGrouped)
 
   return {
+    dataType: type,
     datasetFlat,
     datasetTemperature,
     domainPowerEnergy,
