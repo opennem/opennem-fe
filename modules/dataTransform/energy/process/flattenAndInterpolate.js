@@ -1,9 +1,6 @@
 import _cloneDeep from 'lodash.clonedeep'
 import { checkIsSameInterval } from '@/services/DataCheck.js'
 import interpolateDataset from './interpolateDataset.js'
-import PerfTime from '@/plugins/perfTime.js'
-
-const perfTime = new PerfTime()
 
 // TODO move this to a date module
 function getDateTimeWithoutTZ(date) {
@@ -16,7 +13,6 @@ function createTemporaryDataset(time, date, value) {
 }
 
 export default function(isPowerData, dataInterval, dataAll, datasetAll) {
-  perfTime.time()
   dataAll.forEach(d => {
     const isDifferentInterval = !checkIsSameInterval(
       dataInterval,
@@ -81,6 +77,4 @@ export default function(isPowerData, dataInterval, dataAll, datasetAll) {
   if (isPowerData) {
     interpolateDataset(dataAll, datasetAll)
   }
-
-  perfTime.timeEnd('data.process.flattenAndInterpolate')
 }

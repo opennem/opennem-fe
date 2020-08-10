@@ -1,12 +1,8 @@
 import * as DT from '@/constants/v2/data-types.js'
 import { checkPowerEnergyExists } from '@/services/DataCheck.js'
-import PerfTime from '@/plugins/perfTime.js'
-
-const perfTime = new PerfTime()
 
 export default function(response) {
   const data = response.data || response
-  perfTime.time()
   const dataAll = [],
     dataPower = [],
     dataEnergy = [],
@@ -47,8 +43,6 @@ export default function(response) {
   })
 
   checkPowerEnergyExists({ dataPower, dataEnergy })
-
-  perfTime.timeEnd('data.process.parseAndCheckData')
 
   return {
     dataAll,

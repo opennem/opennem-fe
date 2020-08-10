@@ -73,6 +73,7 @@ export const actions = {
       http(urls).then(responses => {
         const perf = new PerfTime()
         perf.time()
+        console.info(`${region} ${range} ${interval} start ------`)
 
         const {
           datasetFlat,
@@ -82,6 +83,7 @@ export const actions = {
           domainPowerEnergyGrouped,
           dataType
         } = dataProcess(responses, interval)
+        perf.timeEnd(`------ ${region} end`)
 
         commit('isFetching', false)
         commit('isEnergyType', dataType === 'energy')
@@ -93,7 +95,6 @@ export const actions = {
         commit('currentDomainPowerEnergy', domainPowerEnergyGrouped[groupName])
         commit('jsonResponses', responses)
         commit('ready', true)
-        perf.timeEnd('Initial transform done.')
       })
     } else {
       throw new Error('Invalid region')
@@ -117,6 +118,7 @@ export const actions = {
         domainPowerEnergyGrouped,
         interval
       )
+
       perf.timeEnd('Update interval done.')
 
       commit('currentDatasetFlat', currentDatasetFlat)
