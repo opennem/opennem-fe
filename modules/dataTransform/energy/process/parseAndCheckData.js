@@ -4,7 +4,8 @@ import PerfTime from '@/plugins/perfTime.js'
 
 const perfTime = new PerfTime()
 
-export default function(data) {
+export default function(response) {
+  const data = response.data || response
   perfTime.time()
   const dataAll = [],
     dataPower = [],

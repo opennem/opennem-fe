@@ -61,7 +61,7 @@ export const mutations = {
 export const actions = {
   doGetRegionData({ commit }, { region, range, interval, groupName }) {
     if (isValidRegion(region)) {
-      const urls = Data.getEnergyUrls(region, range, 'prod')
+      const urls = Data.getEnergyUrls(region, range, 'dev')
       commit('ready', false)
       commit('isFetching', true)
 
