@@ -1,5 +1,11 @@
+import _cloneDeep from 'lodash.clonedeep'
 export const state = () => ({
   isHovering: false,
+  hoverDate: null,
+  hoverDomain: null,
+  isFocusing: false,
+  focusDate: null,
+  dateZoomExtent: [],
   chartEnergyType: 'area', // line, proportion, area, hidden
   chartEnergyYAxis: 'absolute', // absolute, percentage
   chartEnergyCurve: 'step', // smooth, step, linear
@@ -14,6 +20,11 @@ export const state = () => ({
 
 export const getters = {
   isHovering: state => state.isHovering,
+  hoverDate: state => state.hoverDate,
+  hoverDomain: state => state.hoverDomain,
+  isFocusing: state => state.isFocusing,
+  focusDate: state => state.focusDate,
+  dateZoomExtent: state => _cloneDeep(state.dateZoomExtent),
   chartEnergy: state => state.chartEnergyType !== 'hidden',
   chartEnergyType: state => state.chartEnergyType,
   chartEnergyYAxis: state => state.chartEnergyYAxis,
@@ -30,6 +41,21 @@ export const getters = {
 export const mutations = {
   isHovering(state, isHovering) {
     state.isHovering = isHovering
+  },
+  hoverDate(state, hoverDate) {
+    state.hoverDate = hoverDate
+  },
+  hoverDomain(state, hoverDomain) {
+    state.hoverDomain = hoverDomain
+  },
+  isFocusing(state, isFocusing) {
+    state.isFocusing = isFocusing
+  },
+  focusDate(state, focusDate) {
+    state.focusDate = focusDate
+  },
+  dateZoomExtent(state, dateZoomExtent) {
+    state.dateZoomExtent = _cloneDeep(dateZoomExtent)
   },
   chartEnergyType(state, data) {
     state.chartEnergyType = data

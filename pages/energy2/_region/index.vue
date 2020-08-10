@@ -9,7 +9,8 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+import _debounce from 'lodash.debounce'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import VisSection from '@/components/Energy/VisSection.vue'
 import SummarySection from '@/components/Energy/SummarySection.vue'
@@ -50,6 +51,7 @@ export default {
       this.doUpdateDatasetByGroup({ groupName })
     }
   },
+
   created() {
     this.doGetRegionData({
       region: this.regionId,
@@ -59,11 +61,26 @@ export default {
     })
   },
 
+  mounted() {
+    this.setWindowWidth(window.innerWidth)
+    this.$nextTick(() => {
+      window.addEventListener(
+        'resize',
+        _debounce(() => {
+          this.setWindowWidth(window.innerWidth)
+        }, 200)
+      )
+    })
+  },
+
   methods: {
     ...mapActions({
       doGetRegionData: 'regionEnergy/doGetRegionData',
       doUpdateDatasetByInterval: 'regionEnergy/doUpdateDatasetByInterval',
       doUpdateDatasetByGroup: 'regionEnergy/doUpdateDatasetByGroup'
+    }),
+    ...mapMutations({
+      setWindowWidth: 'app/windowWidth'
     })
   }
 }
