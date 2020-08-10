@@ -70,6 +70,7 @@ export default function(isPowerData, dataInterval, dataAll, datasetAll) {
       }
     } else {
       // assume energy json datas have same history intervals for now
+      // TODO check start and end is the same.
       updateDataset()
     }
   })

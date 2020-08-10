@@ -66,14 +66,14 @@ export const mutations = {
 export const actions = {
   doGetRegionData({ commit }, { region, range, interval, groupName }) {
     if (isValidRegion(region)) {
-      const urls = Data.getEnergyUrls(region, range, 'dev')
+      const urls = Data.getEnergyUrls(region, range, 'prod')
       commit('ready', false)
       commit('isFetching', true)
 
       http(urls).then(responses => {
         const perf = new PerfTime()
         perf.time()
-        console.info(`${region} ${range} ${interval} start ------`)
+        console.info(`${region} — ${range}/${interval} (start) ------`)
 
         const {
           datasetFlat,
@@ -83,7 +83,11 @@ export const actions = {
           domainPowerEnergyGrouped,
           dataType
         } = dataProcess(responses, interval)
-        perf.timeEnd(`------ ${region} end`)
+        perf.timeEnd(
+          `------ ${region} — ${range}/${interval} (-- down to ${
+            currentDatasetFlat.length
+          })`
+        )
 
         commit('isFetching', false)
         commit('isEnergyType', dataType === 'energy')
