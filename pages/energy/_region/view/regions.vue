@@ -115,6 +115,7 @@
         </chart-wrapper>
 
         <price-charts
+          :price-dataset="priceDataset"
           :hover-values="hoverPriceValues"
           :hover-date="hoverDisplayDate"
           :chart-options="{

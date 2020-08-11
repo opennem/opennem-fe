@@ -111,6 +111,10 @@ export default {
     MultiLine
   },
   props: {
+    priceDataset: {
+      type: Array,
+      default: () => []
+    },
     domains: {
       type: Array,
       default: () => []
@@ -135,7 +139,6 @@ export default {
   },
   computed: {
     ...mapGetters({
-      priceDataset: 'region/priceDataset',
       chartPrice: 'visInteract/chartPrice'
     }),
     priceMin() {
