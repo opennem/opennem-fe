@@ -20,5 +20,5 @@ export default function(dataset, groups) {
 
     return d
   })
-  perfTime.timeEnd('data.group (calculate all grouped values)')
+  perfTime.timeEnd('data.group (calculated all grouped values)')
 }

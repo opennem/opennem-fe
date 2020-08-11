@@ -149,7 +149,7 @@ export default {
       let interval = ''
       switch (range) {
         case '1D':
-          interval = '5m'
+          interval = '30m'
           break
         case '3D':
         case '7D':

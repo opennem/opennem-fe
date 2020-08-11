@@ -3,8 +3,9 @@ import process from './process'
 import rollUp from './rollUp'
 import summariseDataset from './summarise'
 import groupDataset from './group'
+import filterDatasetByRange from './filter'
 
-export function dataProcess(responses, interval) {
+export function dataProcess(responses, range, interval) {
   const {
     datasetFlat,
     datasetTemperature,
@@ -12,18 +13,20 @@ export function dataProcess(responses, interval) {
     domainTemperature,
     type
   } = process(responses)
+  const dataset = filterDatasetByRange(datasetFlat, range)
   const currentDatasetFlat = rollUp({
     domains: [...domainPowerEnergy, ...domainTemperature],
-    datasetFlat,
+    datasetFlat: dataset,
     interval
   })
   const domainPowerEnergyGrouped = getAllGroups(domainPowerEnergy, type)
+
   summariseDataset(currentDatasetFlat, domainPowerEnergy)
   groupDataset(currentDatasetFlat, domainPowerEnergyGrouped)
 
   return {
     dataType: type,
-    datasetFlat,
+    datasetFlat: dataset,
     datasetTemperature,
     domainPowerEnergy,
     domainTemperature,
@@ -37,11 +40,12 @@ export function dataRollUp(
   datasetFlat,
   domains,
   domainPowerEnergyGrouped,
+  range,
   interval
 ) {
   const currentDatasetFlat = rollUp({
     domains,
-    datasetFlat,
+    datasetFlat: filterDatasetByRange(datasetFlat, range),
     interval
   })
 

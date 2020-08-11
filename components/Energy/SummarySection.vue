@@ -62,17 +62,17 @@ export default {
 
   methods: {
     handleFuelTechsHidden(hidden) {
-      console.log('ft hidden', hidden)
+      // console.log('ft hidden', hidden)
       // this.$store.dispatch('hiddenFuelTechs', hidden)
     },
     handleSummaryUpdated(summary) {
-      console.log('summary updated', summary)
+      // console.log('summary updated', summary)
     },
     handleSummaryRowMouseEnter(ft) {
-      console.log('summary row enter', ft)
+      // console.log('summary row enter', ft)
     },
     handleSummaryRowMouseLeave() {
-      console.log('summary row leave')
+      // console.log('summary row leave')
     }
   }
 }

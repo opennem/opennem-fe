@@ -1,7 +1,7 @@
 export default [
   {
     range: '1D',
-    intervals: ['5m']
+    intervals: ['5m', '30m']
   },
   {
     range: '3D',
@@ -24,3 +24,7 @@ export default [
     intervals: ['Month', 'Season', 'Quarter', 'Half Year', 'Fin Year', 'Year']
   }
 ]
+
+export function isPowerRange(range) {
+  return range === '1D' || range === '3D' || range === '7D'
+}

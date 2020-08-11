@@ -77,12 +77,13 @@ export const actions = {
 
         const {
           datasetFlat,
+          currentDatasetFlat,
           domainPowerEnergy,
           domainTemperature,
-          currentDatasetFlat,
           domainPowerEnergyGrouped,
           dataType
-        } = dataProcess(responses, interval)
+        } = dataProcess(responses, range, interval)
+
         perf.timeEnd(
           `------ ${region} — ${range}/${interval} (-- down to ${
             currentDatasetFlat.length
@@ -105,12 +106,9 @@ export const actions = {
     }
   },
 
-  doUpdateDatasetByInterval({ state, commit }, { interval }) {
+  doUpdateDatasetByInterval({ state, commit }, { range, interval }) {
     // Ignore if data is still being fetched.
     if (!state.isFetching) {
-      const perf = new PerfTime()
-      perf.time()
-
       const datasetFlat = _cloneDeep(state.datasetFlat)
       const domainPowerEnergy = state.domainPowerEnergy
       const domainTemperature = state.domainTemperature
@@ -120,10 +118,9 @@ export const actions = {
         datasetFlat,
         [...domainPowerEnergy, ...domainTemperature],
         domainPowerEnergyGrouped,
+        range,
         interval
       )
-
-      perf.timeEnd('Update interval done.')
 
       commit('currentDatasetFlat', currentDatasetFlat)
     }
@@ -134,5 +131,22 @@ export const actions = {
       'currentDomainPowerEnergy',
       state.domainPowerEnergyGrouped[groupName]
     )
+  },
+
+  doFilterRegionData({ state, commit }, { range, interval }) {
+    const datasetFlat = _cloneDeep(state.datasetFlat)
+    const domainPowerEnergy = state.domainPowerEnergy
+    const domainTemperature = state.domainTemperature
+    const domainPowerEnergyGrouped = state.domainPowerEnergyGrouped
+
+    const { currentDatasetFlat } = dataRollUp(
+      datasetFlat,
+      [...domainPowerEnergy, ...domainTemperature],
+      domainPowerEnergyGrouped,
+      range,
+      interval
+    )
+
+    commit('currentDatasetFlat', currentDatasetFlat)
   }
 }

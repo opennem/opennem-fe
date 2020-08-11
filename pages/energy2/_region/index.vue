@@ -11,6 +11,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import _debounce from 'lodash.debounce'
+import { isPowerRange } from '@/constants/rangeInterval.js'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import VisSection from '@/components/Energy/VisSection.vue'
 import SummarySection from '@/components/Energy/SummarySection.vue'
@@ -36,16 +37,23 @@ export default {
   },
 
   watch: {
-    range(updated) {
-      this.doGetRegionData({
-        region: this.regionId,
-        range: updated,
-        interval: this.interval,
-        groupName: this.fuelTechGroupName
-      })
+    range(curr, prev) {
+      if (isPowerRange(curr) && isPowerRange(prev)) {
+        this.doFilterRegionData({
+          range: curr,
+          interval: this.interval
+        })
+      } else {
+        this.doGetRegionData({
+          region: this.regionId,
+          range: curr,
+          interval: this.interval,
+          groupName: this.fuelTechGroupName
+        })
+      }
     },
     interval(interval) {
-      this.doUpdateDatasetByInterval({ interval })
+      this.doUpdateDatasetByInterval({ range: this.range, interval })
     },
     fuelTechGroupName(groupName) {
       this.doUpdateDatasetByGroup({ groupName })
@@ -77,7 +85,8 @@ export default {
     ...mapActions({
       doGetRegionData: 'regionEnergy/doGetRegionData',
       doUpdateDatasetByInterval: 'regionEnergy/doUpdateDatasetByInterval',
-      doUpdateDatasetByGroup: 'regionEnergy/doUpdateDatasetByGroup'
+      doUpdateDatasetByGroup: 'regionEnergy/doUpdateDatasetByGroup',
+      doFilterRegionData: 'regionEnergy/doFilterRegionData'
     }),
     ...mapMutations({
       setWindowWidth: 'app/windowWidth'
