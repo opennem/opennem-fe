@@ -1,17 +1,79 @@
 <template>
   <section>
-    <h1>summary section</h1>
-    <group-selector />
+    <!--
+      :emissions-domains="emissionStackedAreaDomains"
+      :price-id="priceDomains.length > 0 ? priceDomains[0].id : null"
+      :hidden-fuel-techs="hiddenFuelTechs"
+      :market-value-domains="mvDomains"
+      :hidden-fuel-techs="hiddenFuelTechs"
+
+      -->
+    <summary-table
+      :energy-domains="domains"
+      :domains="domains"
+      :stacked-area-domains="domains"
+      :temperature-domains="domainTemperature"
+      :dataset="currentDatasetFlat"
+      :hover-date="hoverDate"
+      :hover-on="hoverOn"
+      :focus-date="focusDate"
+      :focus-on="focusOn"
+      :range="range"
+      :interval="interval"
+      :is-energy="isEnergyType"
+      @fuelTechsHidden="handleFuelTechsHidden"
+      @summary-update="handleSummaryUpdated"
+      @mouse-enter="handleSummaryRowMouseEnter"
+      @mouse-leave="handleSummaryRowMouseLeave"
+    />
   </section>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import GroupSelector from '@/components/ui/FuelTechGroupSelector.vue'
+import _cloneDeep from 'lodash.clonedeep'
+import SummaryTable from '@/components/SummaryTable/index2'
 
 export default {
   components: {
-    GroupSelector
+    SummaryTable
+  },
+
+  computed: {
+    ...mapGetters({
+      hoverOn: 'visInteract/isHovering',
+      hoverDate: 'visInteract/hoverDate',
+      hoverDomain: 'visInteract/hoverDomain',
+      focusOn: 'visInteract/isFocusing',
+      focusDate: 'visInteract/focusDate',
+      dateZoomExtent: 'visInteract/dateZoomExtent',
+      range: 'range',
+      interval: 'interval',
+      ready: 'regionEnergy/ready',
+      isEnergyType: 'regionEnergy/isEnergyType',
+      currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
+      domainTemperature: 'regionEnergy/domainTemperature',
+      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy'
+    }),
+    domains() {
+      return _cloneDeep(this.currentDomainPowerEnergy).reverse()
+    }
+  },
+
+  methods: {
+    handleFuelTechsHidden(hidden) {
+      console.log('ft hidden', hidden)
+      // this.$store.dispatch('hiddenFuelTechs', hidden)
+    },
+    handleSummaryUpdated(summary) {
+      console.log('summary updated', summary)
+    },
+    handleSummaryRowMouseEnter(ft) {
+      console.log('summary row enter', ft)
+    },
+    handleSummaryRowMouseLeave() {
+      console.log('summary row leave')
+    }
   }
 }
 </script>

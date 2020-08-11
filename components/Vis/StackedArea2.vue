@@ -348,7 +348,15 @@ export default {
     },
     updatedDataset() {
       if (this.curve === 'step') {
-        return this.dataset
+        // add another data point to the dataset to draw the final step
+        const updated = _cloneDeep(this.dataset)
+        const lastSecondItem = _cloneDeep(updated[updated.length - 2])
+        const lastItem = _cloneDeep(updated[updated.length - 1])
+        const intervalTime = lastItem.time - lastSecondItem.time
+        lastItem.time = lastItem.time + intervalTime
+        lastItem.date = new Date(lastItem.time)
+        updated.push(lastItem)
+        return updated
       }
 
       return this.dataset.filter(
@@ -376,7 +384,7 @@ export default {
       return updated
     },
     datasetDateExtent() {
-      return extent(this.dataset, d => new Date(d.date))
+      return extent(this.updatedDataset, d => new Date(d.date))
     },
     domainIds() {
       return this.domains.map(d => d.id).reverse()

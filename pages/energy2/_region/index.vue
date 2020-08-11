@@ -1,9 +1,9 @@
 <template>
   <div class="energy-region">
     <data-options-bar />
-    <div class="vis-summary">
-      <vis-section class="vis-section" />
-      <summary-section class="summary-section"/>
+    <div class="vis-summary vis-table-container">
+      <vis-section class="vis-section vis-container" />
+      <summary-section class="summary-section table-container"/>
     </div>
   </div>
 </template>
@@ -87,13 +87,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.vis-summary {
-  display: flex;
-  .vis-section {
-    width: 75%;
-  }
-  .summary-section {
-    width: 25%;
-  }
-}
 </style>
