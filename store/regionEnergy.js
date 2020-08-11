@@ -13,6 +13,7 @@ export const state = () => ({
   datasetFlat: [],
   currentDatasetFlat: [],
   domainPowerEnergy: [],
+  domainPriceMarketValue: [],
   domainTemperature: [],
   domainPowerEnergyGrouped: [],
   currentDomainPowerEnergy: [],
@@ -26,6 +27,7 @@ export const getters = {
   datasetFlat: state => state.datasetFlat,
   currentDatasetFlat: state => state.currentDatasetFlat,
   domainPowerEnergy: state => state.domainPowerEnergy,
+  domainPriceMarketValue: state => state.domainPriceMarketValue,
   domainTemperature: state => state.domainTemperature,
   domainPowerEnergyGrouped: state => state.domainPowerEnergyGrouped,
   currentDomainPowerEnergy: state => state.currentDomainPowerEnergy,
@@ -53,6 +55,9 @@ export const mutations = {
   },
   domainPowerEnergy(state, domainPowerEnergy) {
     state.domainPowerEnergy = _cloneDeep(domainPowerEnergy)
+  },
+  domainPriceMarketValue(state, domainPriceMarketValue) {
+    state.domainPriceMarketValue = _cloneDeep(domainPriceMarketValue)
   },
   domainTemperature(state, domainTemperature) {
     state.domainTemperature = _cloneDeep(domainTemperature)
@@ -84,6 +89,7 @@ export const actions = {
           datasetFlat,
           currentDatasetFlat,
           domainPowerEnergy,
+          domainPriceMarketValue,
           domainTemperature,
           domainPowerEnergyGrouped,
           dataType
@@ -100,6 +106,7 @@ export const actions = {
         commit('datasetFlat', datasetFlat)
         commit('currentDatasetFlat', currentDatasetFlat)
         commit('domainPowerEnergy', domainPowerEnergy)
+        commit('domainPriceMarketValue', domainPriceMarketValue)
         commit('domainTemperature', domainTemperature)
         commit('domainPowerEnergyGrouped', domainPowerEnergyGrouped)
         commit('currentDomainPowerEnergy', domainPowerEnergyGrouped[groupName])
@@ -116,12 +123,13 @@ export const actions = {
     if (!state.isFetching) {
       const datasetFlat = _cloneDeep(state.datasetFlat)
       const domainPowerEnergy = state.domainPowerEnergy
+      const domainPriceMarketValue = state.domainPriceMarketValue
       const domainTemperature = state.domainTemperature
       const domainPowerEnergyGrouped = state.domainPowerEnergyGrouped
 
       const { currentDatasetFlat } = dataRollUp(
         datasetFlat,
-        [...domainPowerEnergy, ...domainTemperature],
+        [...domainPowerEnergy, ...domainPriceMarketValue, ...domainTemperature],
         domainPowerEnergyGrouped,
         range,
         interval

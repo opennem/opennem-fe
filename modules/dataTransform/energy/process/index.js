@@ -3,7 +3,11 @@ import parseAndCheckData from './parseAndCheckData.js'
 import getFuelTechInOrder from './getFuelTechInOrder.js'
 import createEmptyDatasets from './createEmptyDatasets.js'
 import flattenAndInterpolate from './flattenAndInterpolate.js'
-import { getPowerEnergyDomains, getTemperatureDomains } from './getDomains.js'
+import {
+  getPowerEnergyDomains,
+  getTemperatureDomains,
+  getPriceDomains
+} from './getDomains.js'
 
 const perfTime = new PerfTime()
 
@@ -23,6 +27,7 @@ export default function(responses) {
   const {
     dataAll,
     dataPowerEnergy,
+    dataPriceMarketValue,
     temperatureIds,
     fuelTechDataType,
     isPowerData,
@@ -34,6 +39,7 @@ export default function(responses) {
     fuelTechIdTypes,
     fuelTechDataType
   )
+  const domainPriceMarketValue = getPriceDomains(dataPriceMarketValue)
   const domainTemperature = getTemperatureDomains(temperatureIds)
   const dataInterval = hasPowerEnergyData
     ? dataPowerEnergy[0].history.interval
@@ -45,6 +51,7 @@ export default function(responses) {
   return {
     datasetFlat,
     domainPowerEnergy,
+    domainPriceMarketValue,
     domainTemperature,
     type: isPowerData ? 'power' : 'energy'
   }

@@ -9,13 +9,18 @@ export function dataProcess(responses, range, interval) {
   const {
     datasetFlat,
     datasetTemperature,
+    domainPriceMarketValue,
     domainPowerEnergy,
     domainTemperature,
     type
   } = process(responses)
   const dataset = filterDatasetByRange(datasetFlat, range)
   const currentDatasetFlat = rollUp({
-    domains: [...domainPowerEnergy, ...domainTemperature],
+    domains: [
+      ...domainPowerEnergy,
+      ...domainPriceMarketValue,
+      ...domainTemperature
+    ],
     datasetFlat: dataset,
     interval
   })
@@ -24,11 +29,14 @@ export function dataProcess(responses, range, interval) {
   summariseDataset(currentDatasetFlat, domainPowerEnergy)
   groupDataset(currentDatasetFlat, domainPowerEnergyGrouped)
 
+  console.log(currentDatasetFlat)
+
   return {
     dataType: type,
     datasetFlat: dataset,
     datasetTemperature,
     domainPowerEnergy,
+    domainPriceMarketValue,
     domainTemperature,
     currentDatasetFlat,
 

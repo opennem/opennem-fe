@@ -9,6 +9,8 @@
       :compare-data="compareData"
     />
 
+    <price-market-value-chart v-if="ready"/>
+
   </section>
 </template>
 
@@ -19,17 +21,20 @@ import _cloneDeep from 'lodash.clonedeep'
 
 import PowerEnergyChart from '@/components/Energy/PowerEnergyChart'
 import EnergyCompare from '@/components/Energy/Compare2'
+import PriceMarketValueChart from '@/components/Energy/PriceMarketValueChart'
+import DateDisplay from '@/services/DateDisplay.js'
+import AxisTicks from '@/services/axisTicks.js'
+import AxisTimeFormats from '@/services/axisTimeFormats.js'
 
 import ChartHeader from '@/components/Vis/ChartHeader.vue'
 import Chart from '@/components/Vis/Chart.vue'
 import DateBrush from '@/components/Vis/DateBrush.vue'
-import AxisTicks from '@/services/axisTicks.js'
-import AxisTimeFormats from '@/services/axisTimeFormats.js'
 
 export default {
   components: {
     PowerEnergyChart,
     EnergyCompare,
+    PriceMarketValueChart,
     ChartHeader,
     Chart,
     DateBrush

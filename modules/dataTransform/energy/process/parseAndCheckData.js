@@ -7,6 +7,7 @@ export default function(response) {
     dataPower = [],
     dataEnergy = [],
     dataPowerEnergy = [],
+    dataPriceMarketValue = [],
     dataTemperature = [],
     temperatureIds = []
   // filter out each type to its own array
@@ -25,8 +26,10 @@ export default function(response) {
         break
       case DT.DEMAND:
       case DT.EMISSIONS:
+        break
       case DT.MARKET_VALUE:
       case DT.PRICE:
+        dataPriceMarketValue.push(d)
         break
       case DT.TEMPERATURE_MIN:
       case DT.TEMPERATURE_MAX:
@@ -47,6 +50,7 @@ export default function(response) {
   return {
     dataAll,
     dataPowerEnergy,
+    dataPriceMarketValue,
     dataTemperature,
     temperatureIds,
     isPowerData: dataPower.length > 0,
