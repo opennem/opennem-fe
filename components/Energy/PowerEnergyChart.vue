@@ -1,9 +1,72 @@
 <template>
-  <div>
+  <div 
+    :class="{
+      'is-hovered': hoverOn || focusOn,
+      'has-border-bottom': !chartEnergy
+    }"
+    class="chart">
+    <chart-header
+      :show="chartEnergyOptions" 
+      @show-change="s => chartEnergyOptions = s">
+
+      <template v-slot:label-unit >
+        <strong v-if="isEnergyType">Energy</strong>
+        <strong v-else>Generation</strong>
+
+        <small v-if="chartEnergyType === 'proportion' || (chartEnergyType === 'line' && chartEnergyYAxis === 'percentage')">%</small>
+        <small v-else-if="isEnergyType">{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</small>
+        <small v-else>MW</small>
+      </template>
+
+      <template 
+        v-slot:average-value 
+        v-if="!isRenewableLineOnly && chartEnergyType !== 'proportion'">
+        Av.
+        <strong>
+          {{ averageEnergy | formatValue }}
+          <span v-if="isEnergyType">{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</span>
+          <span v-else>MW</span>
+        </strong>
+      </template>
+
+      <template v-slot:hover-date>
+        {{ hoverDisplayDate }}
+      </template>
+      <template v-slot:hover-values>
+        <span
+          v-if="hoverValue"
+          class="ft-value">
+          <em
+            :style="{ 'background-color': hoverDomainColour }"
+            class="colour-square" />
+          {{ hoverDomainLabel }}
+          <strong>
+            {{ hoverValue | formatValue }}<span v-if="chartEnergyType === 'proportion' || (chartEnergyType === 'line' && chartEnergyYAxis === 'percentage')">%</span>
+            <span v-else-if="isEnergyType">{{ isYearInterval ? ' TWh' : ' GWh' }}</span>
+            <span v-else> MW</span>
+          </strong>
+        </span>
+
+        <!-- <span
+          v-if="isRenewableLineOnly"
+          class="renewables-value">
+          <strong>{{ hoverRenewables | percentageFormatNumber }}</strong>
+        </span> -->
+        <span
+          v-else-if="chartEnergyType !== 'proportion'"
+          class="total-value">
+          Total
+          <strong>
+            {{ hoverTotal | formatValue }}
+            <span v-if="isEnergyType">{{ isYearInterval ? 'TWh' : 'GWh' }}</span>
+            <span v-else>MW</span>
+          </strong>
+        </span>
+      </template>
+    </chart-header>
     <!--
       
       :incomplete-intervals="incompleteIntervals"
-
       
       summary table first
       :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
@@ -47,10 +110,12 @@ import { mapGetters, mapMutations } from 'vuex'
 import { min, max } from 'd3-array'
 import _cloneDeep from 'lodash.clonedeep'
 import DateDisplay from '@/services/DateDisplay.js'
+import ChartHeader from '@/components/Vis/ChartHeader'
 import StackedAreaVis from '@/components/Vis/StackedArea2.vue'
 
 export default {
   components: {
+    ChartHeader,
     StackedAreaVis
   },
 
@@ -74,6 +139,7 @@ export default {
       chartEnergyYAxis: 'visInteract/chartEnergyYAxis',
       chartEnergyCurve: 'visInteract/chartEnergyCurve',
       chartPowerCurve: 'visInteract/chartPowerCurve',
+      chartEnergyRenewablesLine: 'visInteract/chartEnergyRenewablesLine',
       range: 'range',
       interval: 'interval',
       compareDates: 'compareDates',
@@ -81,7 +147,8 @@ export default {
       isEnergyType: 'regionEnergy/isEnergyType',
       currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
       domainTemperature: 'regionEnergy/domainTemperature',
-      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy'
+      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
+      filteredSummary: 'regionEnergy/filteredSummary'
     }),
     yMin() {
       return min(this.currentDatasetFlat, d => d._stackedTotalMin)
@@ -107,6 +174,95 @@ export default {
     },
     domains() {
       return _cloneDeep(this.currentDomainPowerEnergy).reverse()
+    },
+    isYearInterval() {
+      return this.interval === 'Fin Year' || this.interval === 'Year'
+    },
+    isRenewableLineOnly() {
+      return this.chartEnergyRenewablesLine && this.domains.length === 0
+    },
+    averageEnergy() {
+      return this.filteredSummary ? this.filteredSummary._averageEnergy : 0
+    },
+    hoverData() {
+      if (!this.hoverDate) {
+        return null
+      }
+      const time = this.hoverDate.getTime()
+      // let dataset = this.currentDatasetFlat
+      // if (this.chartEnergyType === 'proportion') {
+      //   dataset = this.energyPercentDataset
+      // }
+      // if (
+      //   this.chartEnergyType === 'line' &&
+      //   this.chartEnergyYAxis === 'percentage'
+      // ) {
+      //   dataset = this.energyGrossPercentDataset
+      // }
+      return this.currentDatasetFlat.find(d => d.time === time)
+    },
+    hoverValue() {
+      return this.hoverData ? this.hoverData[this.hoverDomain] : null
+    },
+    hoverDisplayDate() {
+      let date = this.focusDate
+      if (this.hoverOn) {
+        date = this.hoverDate
+      }
+      return date
+        ? DateDisplay.specialDateFormats(
+            date.getTime(),
+            this.range,
+            this.interval,
+            false,
+            false,
+            false,
+            true
+          )
+        : ''
+    },
+    hoverDomainLabel() {
+      let find = null
+      // if (
+      //   this.chartEnergyType === 'proportion' ||
+      //   (this.chartEnergyType === 'line' &&
+      //     this.chartEnergyYAxis === 'percentage')
+      // ) {
+      //   find = this.stackedEnergyPercentDomains.find(
+      //     d => d.id === this.hoverDomain
+      //   )
+      // } else {
+      //   find = this.currentDomainPowerEnergy.find(d => d.id === this.hoverDomain)
+      // }
+
+      find = this.currentDomainPowerEnergy.find(d => d.id === this.hoverDomain)
+      return find ? find.label : '—'
+    },
+    hoverDomainColour() {
+      let find = null
+      // if (
+      //   this.chartEnergyType === 'proportion' ||
+      //   (this.chartEnergyType === 'line' &&
+      //     this.chartEnergyYAxis === 'percentage')
+      // ) {
+      //   find = this.stackedEnergyPercentDomains.find(
+      //     d => d.id === this.hoverDomain
+      //   )
+      // } else {
+      //   find = this.currentDomainPowerEnergy.find(d => d.id === this.hoverDomain)
+      // }
+
+      find = this.currentDomainPowerEnergy.find(d => d.id === this.hoverDomain)
+      return find ? find.colour : '—'
+    },
+    hoverTotal() {
+      let total = 0
+      if (this.hoverData) {
+        this.currentDomainPowerEnergy.forEach(d => {
+          total += this.hoverData[d.id]
+        })
+      }
+      return total
     }
   },
 

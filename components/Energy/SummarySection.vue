@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import SummaryTable from '@/components/SummaryTable/index2'
 
@@ -61,12 +61,16 @@ export default {
   },
 
   methods: {
+    ...mapMutations({
+      setFilteredSummary: 'regionEnergy/filteredSummary'
+    }),
     handleFuelTechsHidden(hidden) {
       // console.log('ft hidden', hidden)
       // this.$store.dispatch('hiddenFuelTechs', hidden)
     },
     handleSummaryUpdated(summary) {
       // console.log('summary updated', summary)
+      this.setFilteredSummary(summary)
     },
     handleSummaryRowMouseEnter(ft) {
       // console.log('summary row enter', ft)

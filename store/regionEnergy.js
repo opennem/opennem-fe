@@ -15,7 +15,8 @@ export const state = () => ({
   domainPowerEnergy: [],
   domainTemperature: [],
   domainPowerEnergyGrouped: [],
-  currentDomainPowerEnergy: []
+  currentDomainPowerEnergy: [],
+  filteredSummary: null
 })
 
 export const getters = {
@@ -27,7 +28,8 @@ export const getters = {
   domainPowerEnergy: state => state.domainPowerEnergy,
   domainTemperature: state => state.domainTemperature,
   domainPowerEnergyGrouped: state => state.domainPowerEnergyGrouped,
-  currentDomainPowerEnergy: state => state.currentDomainPowerEnergy
+  currentDomainPowerEnergy: state => state.currentDomainPowerEnergy,
+  filteredSummary: state => state.filteredSummary
 }
 
 export const mutations = {
@@ -60,6 +62,9 @@ export const mutations = {
   },
   currentDomainPowerEnergy(state, currentDomainPowerEnergy) {
     state.currentDomainPowerEnergy = _cloneDeep(currentDomainPowerEnergy)
+  },
+  filteredSummary(state, filteredSummary) {
+    state.filteredSummary = _cloneDeep(filteredSummary)
   }
 }
 
