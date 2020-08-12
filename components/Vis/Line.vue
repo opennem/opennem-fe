@@ -309,19 +309,14 @@ export default {
 
   computed: {
     updatedDataset() {
-      if (this.curve === 'step') {
-        // add another data point to the dataset to draw the final step
-        const updated = _cloneDeep(this.dataset)
-        const lastSecondItem = _cloneDeep(updated[updated.length - 2])
-        const lastItem = _cloneDeep(updated[updated.length - 1])
-        const intervalTime = lastItem.time - lastSecondItem.time
-        lastItem.time = lastItem.time + intervalTime
-        lastItem.date = new Date(lastItem.time)
-        updated.push(lastItem)
-        return updated
-      }
-
-      return this.dataset
+      const updated = _cloneDeep(this.dataset)
+      const lastSecondItem = _cloneDeep(updated[updated.length - 2])
+      const lastItem = _cloneDeep(updated[updated.length - 1])
+      const intervalTime = lastItem.time - lastSecondItem.time
+      lastItem.time = lastItem.time + intervalTime
+      lastItem.date = new Date(lastItem.time)
+      updated.push(lastItem)
+      return updated
     },
     filterPeriod() {
       return this.$store.getters.filterPeriod

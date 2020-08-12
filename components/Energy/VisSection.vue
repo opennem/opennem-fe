@@ -10,6 +10,7 @@
     /> -->
 
     <price-market-value-chart v-if="ready && domainPriceMarketValue.length > 0"/>
+    <temperature-chart v-if="ready && domainTemperature.length > 0"/>
 
   </section>
 </template>
@@ -22,6 +23,7 @@ import _cloneDeep from 'lodash.clonedeep'
 import PowerEnergyChart from '@/components/Energy/PowerEnergyChart'
 import EnergyCompare from '@/components/Energy/Compare2'
 import PriceMarketValueChart from '@/components/Energy/PriceMarketValueChart'
+import TemperatureChart from '@/components/Energy/TemperatureChart'
 import DateDisplay from '@/services/DateDisplay.js'
 import AxisTicks from '@/services/axisTicks.js'
 import AxisTimeFormats from '@/services/axisTimeFormats.js'
@@ -35,6 +37,7 @@ export default {
     PowerEnergyChart,
     EnergyCompare,
     PriceMarketValueChart,
+    TemperatureChart,
     ChartHeader,
     Chart,
     DateBrush
