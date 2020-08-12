@@ -29,7 +29,7 @@ export default function(responses) {
     dataAll,
     dataPowerEnergy,
     dataPriceMarketValue,
-    temperatureIds,
+    dataTemperature,
     fuelTechDataType,
     isPowerData,
     hasPowerEnergyData
@@ -42,7 +42,7 @@ export default function(responses) {
   )
   const domainPriceMarketValue = getPriceDomains(dataPriceMarketValue)
   const domainVolWeightedPriceDomains = getVolWeightedPriceDomains()
-  const domainTemperature = getTemperatureDomains(temperatureIds)
+  const domainTemperature = getTemperatureDomains(dataTemperature)
   const dataInterval = hasPowerEnergyData
     ? dataPowerEnergy[0].history.interval
     : null

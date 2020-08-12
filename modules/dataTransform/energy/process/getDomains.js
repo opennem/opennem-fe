@@ -1,22 +1,21 @@
 import * as FT from '@/constants/fuel-tech.js'
 import {
-  MARKET_VALUE,
   PRICE,
   PRICE_ABOVE_300,
-  PRICE_BELOW_0,
-  TEMPERATURE
+  PRICE_BELOW_0
 } from '@/constants/v2/data-types'
 
 export function getPowerEnergyDomains(ids, type) {
   return ids ? FT.getFuelTechObjs(ids, type).reverse() : []
 }
 
-export function getTemperatureDomains(ids) {
-  return ids.map(t => {
+export function getTemperatureDomains(data) {
+  console.log(data)
+  return data.map(t => {
     return {
-      id: t,
-      domain: t,
-      type: TEMPERATURE,
+      id: t.id,
+      domain: t.id,
+      type: t.type,
       colour: '#e34a33'
     }
   })

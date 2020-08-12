@@ -46,17 +46,11 @@ function reducer(a, domains) {
     const id = domain.id
     const type = domain.type
     const isPowerOrEnergy = DT.isPowerOrEnergy(type)
-    // const isTemperature = DT.isTemperature(type)
-    // const isPrice = DT.isPrice(type)
     const isMarketValueType = DT.isMarketValue(type)
-    // const isOriginalPrice =
-    //   isPrice && id !== DT.PRICE_ABOVE_300 && id !== DT.PRICE_BELOW_0
-
     if (isPowerOrEnergy || isMarketValueType) {
       obj[id] = sum(a, d => d[id] || 0)
     }
   })
-
   if (temperatureId) {
     obj[temperatureId] = obj[temperatureId] / temperatureCount
   }

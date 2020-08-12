@@ -8,8 +8,7 @@ export default function(response) {
     dataEnergy = [],
     dataPowerEnergy = [],
     dataPriceMarketValue = [],
-    dataTemperature = [],
-    temperatureIds = []
+    dataTemperature = []
   // filter out each type to its own array
   data.forEach(d => {
     if (DT.isValidDataType(d.type)) {
@@ -31,14 +30,11 @@ export default function(response) {
       case DT.PRICE:
         dataPriceMarketValue.push(d)
         break
+      case DT.TEMPERATURE:
       case DT.TEMPERATURE_MIN:
       case DT.TEMPERATURE_MAX:
-        temperatureIds.push(d.id)
-        break
-      case DT.TEMPERATURE:
       case DT.TEMPERATURE_MEAN:
         dataTemperature.push(d)
-        temperatureIds.push(d.id)
         break
       default:
         console.warn(`Unknown type in JSON response - ${d.type}`, d)
@@ -52,7 +48,6 @@ export default function(response) {
     dataPowerEnergy,
     dataPriceMarketValue,
     dataTemperature,
-    temperatureIds,
     isPowerData: dataPower.length > 0,
     hasPowerEnergyData: dataPowerEnergy.length > 0,
     fuelTechDataType: dataPower.length > 0 ? DT.POWER : DT.ENERGY
