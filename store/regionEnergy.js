@@ -130,18 +130,12 @@ export const actions = {
   doUpdateDatasetByInterval({ state, commit }, { range, interval }) {
     // Ignore if data is still being fetched.
     if (!state.isFetching) {
-      const datasetFlat = _cloneDeep(state.datasetFlat)
-      const domainPowerEnergy = state.domainPowerEnergy
-      const domainPriceMarketValue = state.domainPriceMarketValue
-      const domainTemperature = state.domainTemperature
-      const domainPowerEnergyGrouped = state.domainPowerEnergyGrouped
-
       const { currentDatasetFlat } = dataRollUp({
-        datasetFlat,
-        domainPowerEnergy,
-        domainPriceMarketValue,
-        domainTemperature,
-        domainPowerEnergyGrouped,
+        datasetFlat: _cloneDeep(state.datasetFlat),
+        domainPowerEnergy: state.domainPowerEnergy,
+        domainPriceMarketValue: state.domainPriceMarketValue,
+        domainTemperature: state.domainTemperature,
+        domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
         range,
         interval
       })
@@ -158,18 +152,12 @@ export const actions = {
   },
 
   doFilterRegionData({ state, commit }, { range, interval }) {
-    const datasetFlat = _cloneDeep(state.datasetFlat)
-    const domainPowerEnergy = state.domainPowerEnergy
-    const domainTemperature = state.domainTemperature
-    const domainPriceMarketValue = state.domainPriceMarketValue
-    const domainPowerEnergyGrouped = state.domainPowerEnergyGrouped
-
     const { currentDatasetFlat } = dataRollUp({
-      datasetFlat,
-      domainPowerEnergy,
-      domainPriceMarketValue,
-      domainTemperature,
-      domainPowerEnergyGrouped,
+      datasetFlat: _cloneDeep(state.datasetFlat),
+      domainPowerEnergy: state.domainPowerEnergy,
+      domainPriceMarketValue: state.domainPriceMarketValue,
+      domainTemperature: state.domainTemperature,
+      domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
       range,
       interval
     })
