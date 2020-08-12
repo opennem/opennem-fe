@@ -17,14 +17,14 @@ export function getTemperatureDomains(ids) {
       id: t,
       domain: t,
       type: TEMPERATURE,
-      colour: 'red'
+      colour: '#e34a33'
     }
   })
 }
 
 export function getPriceDomains(res) {
   let domains = []
-  const PRICE_COLOUR = 'red'
+  const PRICE_COLOUR = '#e34a33'
   domains = res.map(d => {
     return { id: d.id, domain: d.id, type: d.type, colour: PRICE_COLOUR }
   })
@@ -46,7 +46,7 @@ export function getPriceDomains(res) {
 }
 
 export function getVolWeightedPriceDomains() {
-  const PRICE_COLOUR = 'red'
+  const PRICE_COLOUR = '#e34a33'
   return [
     {
       id: '_volWeightedPrice',

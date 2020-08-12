@@ -82,6 +82,7 @@
 </template>
 
 <script>
+import _cloneDeep from 'lodash.clonedeep'
 import { scaleOrdinal, scaleLinear, scaleTime, scaleSymlog } from 'd3-scale'
 import { axisBottom, axisRight } from 'd3-axis'
 import {
@@ -307,11 +308,26 @@ export default {
   },
 
   computed: {
+    updatedDataset() {
+      if (this.curve === 'step') {
+        // add another data point to the dataset to draw the final step
+        const updated = _cloneDeep(this.dataset)
+        const lastSecondItem = _cloneDeep(updated[updated.length - 2])
+        const lastItem = _cloneDeep(updated[updated.length - 1])
+        const intervalTime = lastItem.time - lastSecondItem.time
+        lastItem.time = lastItem.time + intervalTime
+        lastItem.date = new Date(lastItem.time)
+        updated.push(lastItem)
+        return updated
+      }
+
+      return this.dataset
+    },
     filterPeriod() {
       return this.$store.getters.filterPeriod
     },
     datasetDateExtent() {
-      return extent(this.dataset, d => new Date(d.date))
+      return extent(this.updatedDataset, d => new Date(d.date))
     },
     hasMinMax() {
       return this.minDomainId !== '' && this.maxDomainId !== ''
@@ -348,7 +364,7 @@ export default {
   },
 
   watch: {
-    dataset() {
+    updatedDataset() {
       this.update()
       this.resizeRedraw()
     },
@@ -573,8 +589,8 @@ export default {
       const yMin =
         this.yMin || this.yMin === 0
           ? this.yMin
-          : min(this.dataset, d => d[minDomain])
-      const yMax = this.yMax || max(this.dataset, d => d[maxDomain]) + 5
+          : min(this.updatedDataset, d => d[minDomain])
+      const yMax = this.yMax || max(this.updatedDataset, d => d[maxDomain]) + 5
 
       this.x.domain(xDomainExtent)
       this.y.domain([yMin, yMax])
@@ -592,7 +608,7 @@ export default {
 
       this.$lineGroup
         .append('path')
-        .datum(this.dataset)
+        .datum(this.updatedDataset)
         .attr('class', `${this.linePathClass}`)
         .attr('d', this.line)
         .style('stroke', d => this.z(this.domainId))
@@ -603,7 +619,7 @@ export default {
       if (this.hasMinMax) {
         this.$areaGroup
           .append('path')
-          .datum(this.dataset)
+          .datum(this.updatedDataset)
           .attr('class', `${this.areaPathClass}`)
           .attr('d', this.area)
           .style('fill', 'red')
@@ -623,11 +639,11 @@ export default {
     updateXGuides() {
       const time = new Date(this.hoverDate).getTime()
       let nextDatePeriod = null
-      const find = this.dataset.find((d, i) => {
+      const find = this.updatedDataset.find((d, i) => {
         const match = d.date === time
         if (match) {
-          if (this.dataset[i + 1]) {
-            nextDatePeriod = this.dataset[i + 1].date
+          if (this.updatedDataset[i + 1]) {
+            nextDatePeriod = this.updatedDataset[i + 1].date
           }
         }
         return match
@@ -667,11 +683,11 @@ export default {
       const valueFormat = d3Format(',.1f')
       const time = new Date(date).getTime()
       let nextDatePeriod = null
-      const find = this.dataset.find((d, i) => {
-        const match = d.date === time
+      const find = this.updatedDataset.find((d, i) => {
+        const match = d.time ? d.time === time : d.date === time
         if (match) {
-          if (this.dataset[i + 1]) {
-            nextDatePeriod = this.dataset[i + 1].date
+          if (this.updatedDataset[i + 1]) {
+            nextDatePeriod = this.updatedDataset[i + 1].date
           }
         }
         return match
@@ -756,11 +772,11 @@ export default {
     drawFocus(focusDate) {
       const time = new Date(focusDate).getTime()
       let nextDatePeriod = null
-      const find = this.dataset.find((d, i) => {
+      const find = this.updatedDataset.find((d, i) => {
         const match = d.date === time
         if (match) {
-          if (this.dataset[i + 1]) {
-            nextDatePeriod = this.dataset[i + 1].date
+          if (this.updatedDataset[i + 1]) {
+            nextDatePeriod = this.updatedDataset[i + 1].date
           }
         }
         return match

@@ -41,7 +41,7 @@ export default function(response) {
         temperatureIds.push(d.id)
         break
       default:
-        console.warn(`Parsing json error: unknown data type found - ${d.type}`)
+        console.warn(`Unknown type in JSON response - ${d.type}`, d)
     }
   })
 

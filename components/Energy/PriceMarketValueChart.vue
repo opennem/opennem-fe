@@ -111,7 +111,7 @@ export default {
   data() {
     return {
       chartEnergyOptions: false,
-      lineColour: 'red'
+      lineColour: '#e34a33'
     }
   },
 

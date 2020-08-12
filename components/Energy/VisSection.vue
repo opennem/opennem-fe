@@ -4,10 +4,10 @@
       @svgClick="handleSvgClick"
     />
 
-    <energy-compare
+    <!-- <energy-compare
       :domains="domains"
       :compare-data="compareData"
-    />
+    /> -->
 
     <price-market-value-chart v-if="ready && domainPriceMarketValue.length > 0"/>
 
