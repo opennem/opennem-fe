@@ -6,7 +6,11 @@ const perfTime = new PerfTime()
   - Mutate and summarise each data point
   - Reverse value for imports and load types
 */
-export default function(datasetAll, powerEnergyDomains) {
+export default function(
+  datasetAll,
+  powerEnergyDomains,
+  domainPriceMarketValue
+) {
   perfTime.time()
 
   datasetAll.forEach((d, i) => {
@@ -114,9 +118,9 @@ export default function(datasetAll, powerEnergyDomains) {
     })
 
     // calculate vol weighted pricing
-    // marketValueDomains.forEach(domain => {
-    //   totalMarketValue += d[domain.id] || 0
-    // })
+    domainPriceMarketValue.forEach(domain => {
+      totalMarketValue += d[domain.id] || 0
+    })
 
     // emissionDomains.forEach(domain => {
     //   totalEmissionsVol += d[domain.id] || 0
@@ -126,6 +130,8 @@ export default function(datasetAll, powerEnergyDomains) {
     //   interval === 'Year' || interval === 'Fin Year'
     //     ? totalMarketValue / totalDemand / 1000 / 1000
     //     : totalMarketValue / totalDemand / 1000
+
+    const volWeightedPrice = totalMarketValue / totalDemand / 1000
 
     datasetAll[i]._total = totalDemand
     datasetAll[i]._totalRenewables = totalRenewables
@@ -157,19 +163,19 @@ export default function(datasetAll, powerEnergyDomains) {
     // dataset[i]._emissionsIntensity = emissionsIntensity || 0
     // dataset[i]._actualLastDate = actualLastDate
     // dataset[i]._actualStartDate = actualStartDate
-    // dataset[i]._totalMarketValue = totalMarketValue
-    // dataset[i]._volWeightedPrice = isNaN(volWeightedPrice)
-    //   ? null
-    //   : volWeightedPrice
+    datasetAll[i]._totalMarketValue = totalMarketValue
+    datasetAll[i]._volWeightedPrice = isNaN(volWeightedPrice)
+      ? null
+      : volWeightedPrice
 
-    // dataset[i]._volWeightedPriceAbove300 =
-    //   !isNaN(volWeightedPrice) && volWeightedPrice > 300
-    //     ? volWeightedPrice
-    //     : 0.01
-    // dataset[i]._volWeightedPriceBelow0 =
-    //   !isNaN(volWeightedPrice) && volWeightedPrice < 0
-    //     ? volWeightedPrice
-    //     : -0.01
+    datasetAll[i]._volWeightedPriceAbove300 =
+      !isNaN(volWeightedPrice) && volWeightedPrice > 300
+        ? volWeightedPrice
+        : 0.01
+    datasetAll[i]._volWeightedPriceBelow0 =
+      !isNaN(volWeightedPrice) && volWeightedPrice < 0
+        ? volWeightedPrice
+        : -0.01
   })
 
   perfTime.timeEnd('data.summarise')

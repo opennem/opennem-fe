@@ -14,6 +14,7 @@ export const state = () => ({
   currentDatasetFlat: [],
   domainPowerEnergy: [],
   domainPriceMarketValue: [],
+  domainVolWeightedPriceDomains: [],
   domainTemperature: [],
   domainPowerEnergyGrouped: [],
   currentDomainPowerEnergy: [],
@@ -28,6 +29,7 @@ export const getters = {
   currentDatasetFlat: state => state.currentDatasetFlat,
   domainPowerEnergy: state => state.domainPowerEnergy,
   domainPriceMarketValue: state => state.domainPriceMarketValue,
+  domainVolWeightedPriceDomains: state => state.domainVolWeightedPriceDomains,
   domainTemperature: state => state.domainTemperature,
   domainPowerEnergyGrouped: state => state.domainPowerEnergyGrouped,
   currentDomainPowerEnergy: state => state.currentDomainPowerEnergy,
@@ -58,6 +60,11 @@ export const mutations = {
   },
   domainPriceMarketValue(state, domainPriceMarketValue) {
     state.domainPriceMarketValue = _cloneDeep(domainPriceMarketValue)
+  },
+  domainVolWeightedPriceDomains(state, domainVolWeightedPriceDomains) {
+    state.domainVolWeightedPriceDomains = _cloneDeep(
+      domainVolWeightedPriceDomains
+    )
   },
   domainTemperature(state, domainTemperature) {
     state.domainTemperature = _cloneDeep(domainTemperature)
@@ -90,6 +97,7 @@ export const actions = {
           currentDatasetFlat,
           domainPowerEnergy,
           domainPriceMarketValue,
+          domainVolWeightedPriceDomains,
           domainTemperature,
           domainPowerEnergyGrouped,
           dataType
@@ -107,6 +115,7 @@ export const actions = {
         commit('currentDatasetFlat', currentDatasetFlat)
         commit('domainPowerEnergy', domainPowerEnergy)
         commit('domainPriceMarketValue', domainPriceMarketValue)
+        commit('domainVolWeightedPriceDomains', domainVolWeightedPriceDomains)
         commit('domainTemperature', domainTemperature)
         commit('domainPowerEnergyGrouped', domainPowerEnergyGrouped)
         commit('currentDomainPowerEnergy', domainPowerEnergyGrouped[groupName])
@@ -127,13 +136,15 @@ export const actions = {
       const domainTemperature = state.domainTemperature
       const domainPowerEnergyGrouped = state.domainPowerEnergyGrouped
 
-      const { currentDatasetFlat } = dataRollUp(
+      const { currentDatasetFlat } = dataRollUp({
         datasetFlat,
-        [...domainPowerEnergy, ...domainPriceMarketValue, ...domainTemperature],
+        domainPowerEnergy,
+        domainPriceMarketValue,
+        domainTemperature,
         domainPowerEnergyGrouped,
         range,
         interval
-      )
+      })
 
       commit('currentDatasetFlat', currentDatasetFlat)
     }
@@ -150,15 +161,18 @@ export const actions = {
     const datasetFlat = _cloneDeep(state.datasetFlat)
     const domainPowerEnergy = state.domainPowerEnergy
     const domainTemperature = state.domainTemperature
+    const domainPriceMarketValue = state.domainPriceMarketValue
     const domainPowerEnergyGrouped = state.domainPowerEnergyGrouped
 
-    const { currentDatasetFlat } = dataRollUp(
+    const { currentDatasetFlat } = dataRollUp({
       datasetFlat,
-      [...domainPowerEnergy, ...domainTemperature],
+      domainPowerEnergy,
+      domainPriceMarketValue,
+      domainTemperature,
       domainPowerEnergyGrouped,
       range,
       interval
-    )
+    })
 
     commit('currentDatasetFlat', currentDatasetFlat)
   }

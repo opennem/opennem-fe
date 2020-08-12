@@ -6,7 +6,8 @@ import flattenAndInterpolate from './flattenAndInterpolate.js'
 import {
   getPowerEnergyDomains,
   getTemperatureDomains,
-  getPriceDomains
+  getPriceDomains,
+  getVolWeightedPriceDomains
 } from './getDomains.js'
 
 const perfTime = new PerfTime()
@@ -40,6 +41,7 @@ export default function(responses) {
     fuelTechDataType
   )
   const domainPriceMarketValue = getPriceDomains(dataPriceMarketValue)
+  const domainVolWeightedPriceDomains = getVolWeightedPriceDomains()
   const domainTemperature = getTemperatureDomains(temperatureIds)
   const dataInterval = hasPowerEnergyData
     ? dataPowerEnergy[0].history.interval
@@ -52,6 +54,7 @@ export default function(responses) {
     datasetFlat,
     domainPowerEnergy,
     domainPriceMarketValue,
+    domainVolWeightedPriceDomains,
     domainTemperature,
     type: isPowerData ? 'power' : 'energy'
   }

@@ -12,7 +12,11 @@ function reducer(a, domains) {
     const isTemperature = DT.isTemperature(type)
     const isPrice = DT.isPrice(type)
     const isOriginalPrice =
-      isPrice && id !== DT.PRICE_ABOVE_300 && id !== DT.PRICE_BELOW_0
+      isPrice &&
+      id !== DT.PRICE_ABOVE_300 &&
+      id !== DT.PRICE_BELOW_0 &&
+      id !== '_volWeightedPriceAbove300' &&
+      id !== '_volWeightedPriceBelow0'
 
     if (isPowerOrEnergy || isPrice) {
       obj[id] = mean(a, d => d[id] || 0)
@@ -32,6 +36,7 @@ function reducer(a, domains) {
 
   if (priceId) {
     const newPrice = obj[priceId]
+
     obj[DT.PRICE_ABOVE_300] = newPrice > 300 ? newPrice : 0.001
     obj[DT.PRICE_BELOW_0] = newPrice < 0 ? newPrice : -0.001
   }

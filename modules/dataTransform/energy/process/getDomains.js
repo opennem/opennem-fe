@@ -44,3 +44,27 @@ export function getPriceDomains(res) {
   }
   return domains
 }
+
+export function getVolWeightedPriceDomains() {
+  const PRICE_COLOUR = 'red'
+  return [
+    {
+      id: '_volWeightedPrice',
+      domain: '_volWeightedPrice',
+      type: 'price',
+      colour: PRICE_COLOUR
+    },
+    {
+      id: '_volWeightedPriceAbove300',
+      domain: '_volWeightedPriceAbove300',
+      type: 'price',
+      colour: PRICE_COLOUR
+    },
+    {
+      id: '_volWeightedPriceBelow0',
+      domain: '_volWeightedPriceBelow0',
+      type: 'price',
+      colour: PRICE_COLOUR
+    }
+  ]
+}

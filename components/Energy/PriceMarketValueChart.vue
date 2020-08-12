@@ -8,9 +8,8 @@
     
     <line-vis
       v-if="chartPrice"
-      :domain-id="domainPriceMarketValue[1].id"
+      :domain-id="priceAbove300Domain"
       :domain-colour="lineColour"
-      :value-domain-id="domainPriceMarketValue[0].id"
       :dataset="priceDataset"
       :dynamic-extent="dateZoomExtent"
       :hover-date="hoverDate"
@@ -37,7 +36,7 @@
     />
     <line-vis
       v-if="chartPrice"
-      :domain-id="domainPriceMarketValue[0].id"
+      :domain-id="priceDomain"
       :domain-colour="lineColour"
       :dataset="priceDataset"
       :dynamic-extent="dateZoomExtent"
@@ -65,7 +64,7 @@
     />
     <line-vis
       v-if="chartPrice"
-      :domain-id="domainPriceMarketValue[2].id"
+      :domain-id="priceBelow0Domain"
       :domain-colour="lineColour"
       :dataset="priceDataset"
       :dynamic-extent="dateZoomExtent"
@@ -129,13 +128,30 @@ export default {
       range: 'range',
       interval: 'interval',
       ready: 'regionEnergy/ready',
+      isEnergyType: 'regionEnergy/isEnergyType',
       currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
       domainPriceMarketValue: 'regionEnergy/domainPriceMarketValue',
+      domainVolWeightedPriceDomains:
+        'regionEnergy/domainVolWeightedPriceDomains',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       filteredSummary: 'regionEnergy/filteredSummary'
     }),
+    priceDomains() {
+      return this.isEnergyType
+        ? this.domainVolWeightedPriceDomains
+        : this.domainPriceMarketValue
+    },
     priceDataset() {
       return this.currentDatasetFlat
+    },
+    priceAbove300Domain() {
+      return this.priceDomains.length > 0 ? this.priceDomains[1].domain : ''
+    },
+    priceDomain() {
+      return this.priceDomains.length > 0 ? this.priceDomains[0].domain : ''
+    },
+    priceBelow0Domain() {
+      return this.priceDomains.length > 0 ? this.priceDomains[2].domain : ''
     },
     yMin() {
       return min(this.currentDatasetFlat, d => d._stackedTotalMin)
@@ -247,12 +263,6 @@ export default {
         })
       }
       return total
-    }
-  },
-
-  watch: {
-    domainPriceMarketValue(update) {
-      console.log(update)
     }
   },
 

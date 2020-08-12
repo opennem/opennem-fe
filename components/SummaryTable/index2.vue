@@ -382,7 +382,9 @@ export default {
       let total = this.dataset.reduce((a, b) => a + b[key], 0)
       const r = (totalRenewables / total) * 100
       const f = d3Format(',.3f')
-      console.log(`*****Renewables: ${f(r)}%`)
+      if (!isNaN(r)) {
+        console.log(`*****Renewables: ${f(r)}%`)
+      }
       return r
     },
 

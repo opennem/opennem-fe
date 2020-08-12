@@ -9,7 +9,7 @@
       :compare-data="compareData"
     />
 
-    <price-market-value-chart v-if="ready"/>
+    <price-market-value-chart v-if="ready && domainPriceMarketValue.length > 0"/>
 
   </section>
 </template>
@@ -58,6 +58,7 @@ export default {
       ready: 'regionEnergy/ready',
       currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
       domainTemperature: 'regionEnergy/domainTemperature',
+      domainPriceMarketValue: 'regionEnergy/domainPriceMarketValue',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy'
     }),
     domains() {

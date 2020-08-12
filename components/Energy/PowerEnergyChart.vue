@@ -295,7 +295,7 @@ export default {
       this.$emit('svgClick', metaKey)
     },
     handleZoomExtent(dateRange) {
-      console.log('zoom extent', dateRange)
+      // console.log('zoom extent', dateRange)
       if (dateRange && dateRange.length > 0) {
         let startTime = DateDisplay.snapToClosestInterval(
           this.interval,
