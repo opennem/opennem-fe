@@ -94,6 +94,7 @@
       :compare-dates="compareDates"
       :focus-date="focusDate"
       :focus-on="focusOn"
+      :incomplete-intervals="incompleteIntervals"
       class="vis-chart"
       @dateOver="handleDateHover"
       @domainOver="handleDomainHover"
@@ -109,6 +110,8 @@
 import { mapGetters, mapMutations } from 'vuex'
 import { min, max } from 'd3-array'
 import _cloneDeep from 'lodash.clonedeep'
+import addWeeks from 'date-fns/addWeeks'
+import addMonths from 'date-fns/addMonths'
 import DateDisplay from '@/services/DateDisplay.js'
 import ChartHeader from '@/components/Vis/ChartHeader'
 import StackedAreaVis from '@/components/Vis/StackedArea2.vue'
@@ -275,6 +278,28 @@ export default {
         })
       }
       return total
+    },
+    incompleteIntervals() {
+      const incompletes = []
+      const filtered = this.currentDatasetFlat.filter(
+        d => d._isIncompleteBucket
+      )
+      filtered.forEach(f => {
+        if (this.interval === 'Week') {
+          incompletes.push({
+            start: f.date,
+            end: addWeeks(f.date, 1)
+          })
+        }
+        if (this.range === '1Y' && this.interval === 'Month') {
+          incompletes.push({
+            start: f.date,
+            end: addMonths(f.date, 1)
+          })
+        }
+      })
+      console.log(incompletes)
+      return incompletes
     }
   },
 
@@ -283,7 +308,6 @@ export default {
       setHoverDomain: 'visInteract/hoverDomain'
     }),
     handleDomainHover(domain) {
-      // console.log(domain)
       this.setHoverDomain(domain)
     },
     handleDateHover(evt, date) {

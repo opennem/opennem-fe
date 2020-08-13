@@ -20,8 +20,14 @@ export default function(responses) {
     if (i > 0) {
       res.forEach(r => {
         const find = data.find(d => d.id === r.id)
-        find.history.last = r.history.last
-        find.history.data = [...find.history.data, ...r.history.data]
+        if (find) {
+          find.history.last = r.history.last
+          find.history.data = [...find.history.data, ...r.history.data]
+        } else {
+          // TODO: create new object with matching start, last and data count
+          // data.push(r)
+          console.warn(`${r.id} is missing from other responses`)
+        }
       })
     }
   })

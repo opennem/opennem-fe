@@ -15,7 +15,7 @@ export default function(dataset, range) {
   } else if (range === '30D') {
     newStartDate = subDays(latestDate, 29)
   } else if (range === '1Y') {
-    newStartDate = subDays(latestDate, 365)
+    newStartDate = subMonths(latestDate, 12)
   }
   return dataset.filter(d => d.date >= newStartDate && d.date <= latestDate)
 }
