@@ -16,20 +16,8 @@ export function getFuelTechInOrder(data) {
   return fuelTechs
 }
 
-export function getPowerEnergyDomains(ids, type) {
+export function getFuelTechDomains(ids, type) {
   return ids ? FT.getFuelTechObjs(ids, type).reverse() : []
-}
-
-export function getEmissionsDomains(data) {
-  return data.map(d => {
-    return {
-      id: d.id,
-      domain: d.id,
-      fuelTech: d.fuel_tech,
-      type: d.type,
-      colour: FT.DEFAULT_FUEL_TECH_COLOUR[d.fuel_tech]
-    }
-  })
 }
 
 export function getTemperatureDomains(data) {

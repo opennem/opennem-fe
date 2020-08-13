@@ -15,6 +15,17 @@
       :compare-data="compareData"
     /> -->
 
+    <emissions-chart
+      v-if="ready && domainEmissions.length > 0" 
+      :hover-on="isHovering"
+      :hover-date="hoverDate"
+      :zoom-extent="zoomExtent"
+      @dateHover="handleDateHover"
+      @isHovering="handleIsHovering"
+      @zoomExtent="handleZoomExtent"
+      @svgClick="handleSvgClick"
+    />
+
     <price-market-value-chart 
       v-if="ready && domainPriceMarketValue.length > 0" 
       :hover-on="isHovering"
@@ -44,6 +55,7 @@ import { min, max } from 'd3-array'
 import _cloneDeep from 'lodash.clonedeep'
 
 import PowerEnergyChart from '@/components/Energy/PowerEnergyChart'
+import EmissionsChart from '@/components/Energy/EmissionsChart'
 import EnergyCompare from '@/components/Energy/Compare2'
 import PriceMarketValueChart from '@/components/Energy/PriceMarketValueChart'
 import TemperatureChart from '@/components/Energy/TemperatureChart'
@@ -58,6 +70,7 @@ import DateBrush from '@/components/Vis/DateBrush.vue'
 export default {
   components: {
     PowerEnergyChart,
+    EmissionsChart,
     EnergyCompare,
     PriceMarketValueChart,
     TemperatureChart,
@@ -86,6 +99,7 @@ export default {
       focusDate: 'visInteract/focusDate',
       ready: 'regionEnergy/ready',
       currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
+      domainEmissions: 'regionEnergy/domainEmissions',
       domainTemperature: 'regionEnergy/domainTemperature',
       domainPriceMarketValue: 'regionEnergy/domainPriceMarketValue',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy'

@@ -158,6 +158,8 @@ export default function({
     dataset[i]._stackedTotalMin = min
     dataset[i]._stackedTotalMax = totalDemand
     dataset[i]._totalEmissionsVol = totalEmissionsVol
+    dataset[i]._stackedTotalEmissionsMin = 0
+    dataset[i]._stackedTotalEmissionsMax = totalEmissionsVol
     // const emissionsIntensity =
     //   interval === 'Year' || interval === 'Fin Year'
     //     ? totalEmissionsVol / totalDemand / 1000

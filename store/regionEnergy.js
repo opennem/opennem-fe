@@ -20,6 +20,7 @@ export const state = () => ({
   domainVolWeightedPriceDomains: [],
   domainTemperature: [],
   currentDomainPowerEnergy: [],
+  currentDomainEmissions: [],
   filteredSummary: null
 })
 
@@ -37,6 +38,7 @@ export const getters = {
   domainVolWeightedPriceDomains: state => state.domainVolWeightedPriceDomains,
   domainTemperature: state => state.domainTemperature,
   currentDomainPowerEnergy: state => state.currentDomainPowerEnergy,
+  currentDomainEmissions: state => state.currentDomainEmissions,
   filteredSummary: state => state.filteredSummary
 }
 
@@ -85,6 +87,9 @@ export const mutations = {
   currentDomainPowerEnergy(state, currentDomainPowerEnergy) {
     state.currentDomainPowerEnergy = _cloneDeep(currentDomainPowerEnergy)
   },
+  currentDomainEmissions(state, currentDomainEmissions) {
+    state.currentDomainEmissions = _cloneDeep(currentDomainEmissions)
+  },
   filteredSummary(state, filteredSummary) {
     state.filteredSummary = _cloneDeep(filteredSummary)
   }
@@ -123,8 +128,10 @@ export const actions = {
 
         commit('isFetching', false)
         commit('isEnergyType', dataType === 'energy')
+
         commit('datasetFlat', datasetFlat)
         commit('currentDatasetFlat', currentDatasetFlat)
+
         commit('domainPowerEnergy', domainPowerEnergy)
         commit('domainPowerEnergyGrouped', domainPowerEnergyGrouped)
         commit('domainEmissions', domainEmissions)
@@ -133,6 +140,7 @@ export const actions = {
         commit('domainVolWeightedPriceDomains', domainVolWeightedPriceDomains)
         commit('domainTemperature', domainTemperature)
         commit('currentDomainPowerEnergy', domainPowerEnergyGrouped[groupName])
+        commit('currentDomainEmissions', domainEmissionsGrouped[groupName])
         commit('jsonResponses', responses)
         commit('ready', true)
       })
@@ -165,6 +173,7 @@ export const actions = {
       'currentDomainPowerEnergy',
       state.domainPowerEnergyGrouped[groupName]
     )
+    commit('currentDomainEmissions', state.domainEmissionsGrouped[groupName])
   },
 
   doFilterRegionData({ state, commit }, { range, interval }) {

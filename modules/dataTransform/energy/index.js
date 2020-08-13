@@ -1,4 +1,5 @@
 import { getAllGroups } from '@/constants/v2/groups'
+import { EMISSIONS } from '@/constants/v2/data-types'
 import process from './process'
 import rollUp from './rollUp'
 import summariseDataset from './summarise'
@@ -29,7 +30,7 @@ export function dataProcess(responses, range, interval) {
     interval
   })
   const domainPowerEnergyGrouped = getAllGroups(domainPowerEnergy, type)
-  const domainEmissionsGrouped = getAllGroups(domainEmissions, 'emissions')
+  const domainEmissionsGrouped = getAllGroups(domainEmissions, EMISSIONS)
 
   summariseDataset({
     currentDatasetFlat,
