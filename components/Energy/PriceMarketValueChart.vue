@@ -11,7 +11,7 @@
       :domain-id="priceAbove300Domain"
       :domain-colour="lineColour"
       :dataset="priceDataset"
-      :dynamic-extent="dateZoomExtent"
+      :dynamic-extent="zoomExtent"
       :hover-date="hoverDate"
       :hover-on="hoverOn"
       :focus-date="focusDate"
@@ -39,7 +39,7 @@
       :domain-id="priceDomain"
       :domain-colour="lineColour"
       :dataset="priceDataset"
-      :dynamic-extent="dateZoomExtent"
+      :dynamic-extent="zoomExtent"
       :hover-date="hoverDate"
       :hover-on="hoverOn"
       :focus-date="focusDate"
@@ -67,7 +67,7 @@
       :domain-id="priceBelow0Domain"
       :domain-colour="lineColour"
       :dataset="priceDataset"
-      :dynamic-extent="dateZoomExtent"
+      :dynamic-extent="zoomExtent"
       :hover-date="hoverDate"
       :hover-on="hoverOn"
       :focus-date="focusDate"
@@ -108,6 +108,21 @@ export default {
     LineVis
   },
 
+  props: {
+    hoverOn: {
+      type: Boolean,
+      default: false
+    },
+    hoverDate: {
+      type: Date,
+      default: null
+    },
+    zoomExtent: {
+      type: Array,
+      default: () => []
+    }
+  },
+
   data() {
     return {
       chartEnergyOptions: false,
@@ -118,12 +133,8 @@ export default {
   computed: {
     ...mapGetters({
       tabletBreak: 'app/tabletBreak',
-      hoverOn: 'visInteract/isHovering',
-      hoverDate: 'visInteract/hoverDate',
-      hoverDomain: 'visInteract/hoverDomain',
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
-      dateZoomExtent: 'visInteract/dateZoomExtent',
       chartPrice: 'visInteract/chartPrice',
       range: 'range',
       interval: 'interval',
@@ -220,100 +231,24 @@ export default {
             true
           )
         : ''
-    },
-    hoverDomainLabel() {
-      let find = null
-      // if (
-      //   this.chartEnergyType === 'proportion' ||
-      //   (this.chartEnergyType === 'line' &&
-      //     this.chartEnergyYAxis === 'percentage')
-      // ) {
-      //   find = this.stackedEnergyPercentDomains.find(
-      //     d => d.id === this.hoverDomain
-      //   )
-      // } else {
-      //   find = this.currentDomainPowerEnergy.find(d => d.id === this.hoverDomain)
-      // }
-
-      find = this.currentDomainPowerEnergy.find(d => d.id === this.hoverDomain)
-      return find ? find.label : '—'
-    },
-    hoverDomainColour() {
-      let find = null
-      // if (
-      //   this.chartEnergyType === 'proportion' ||
-      //   (this.chartEnergyType === 'line' &&
-      //     this.chartEnergyYAxis === 'percentage')
-      // ) {
-      //   find = this.stackedEnergyPercentDomains.find(
-      //     d => d.id === this.hoverDomain
-      //   )
-      // } else {
-      //   find = this.currentDomainPowerEnergy.find(d => d.id === this.hoverDomain)
-      // }
-
-      find = this.currentDomainPowerEnergy.find(d => d.id === this.hoverDomain)
-      return find ? find.colour : '—'
-    },
-    hoverTotal() {
-      let total = 0
-      if (this.hoverData) {
-        this.currentDomainPowerEnergy.forEach(d => {
-          total += this.hoverData[d.id]
-        })
-      }
-      return total
     }
   },
 
   methods: {
-    ...mapMutations({
-      setHoverDate: 'visInteract/hoverDate',
-      setHoverDomain: 'visInteract/hoverDomain',
-      setIsHovering: 'visInteract/isHovering',
-      setDateZoomExtent: 'visInteract/dateZoomExtent'
-    }),
     handleDateHover(evt, date) {
-      // console.log(evt, date)
-      const closestDate = DateDisplay.snapToClosestInterval(this.interval, date)
-      this.setHoverDate(closestDate)
+      this.$emit('dateHover', date)
     },
     handleVisEnter() {
-      // console.log('vis enter')
-      this.setIsHovering(true)
+      this.$emit('isHovering', true)
     },
     handleVisLeave() {
-      // console.log('vis leave')
-      this.setIsHovering(false)
+      this.$emit('isHovering', false)
     },
     handleSvgClick(metaKey) {
-      // console.log('svg click')
       this.$emit('svgClick', metaKey)
     },
     handleZoomExtent(dateRange) {
-      console.log('zoom extent', dateRange)
-      if (dateRange && dateRange.length > 0) {
-        let startTime = DateDisplay.snapToClosestInterval(
-          this.interval,
-          dateRange[0]
-        )
-        const endTime = DateDisplay.snapToClosestInterval(
-          this.interval,
-          dateRange[1]
-        )
-        // if (this.interval === 'Fin Year') {
-        //   startTime = moment(startTime).add(1, 'year')
-        // }
-        // this.filteredDataset = EnergyDataTransform.filterDataByStartEndDates(
-        //   this.dataset,
-        //   startTime,
-        //   endTime
-        // )
-        this.setDateZoomExtent([startTime, endTime])
-      } else {
-        this.setDateZoomExtent([])
-        // this.filteredDataset = this.dataset
-      }
+      this.$emit('zoomExtent', dateRange)
     }
   }
 }

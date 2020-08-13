@@ -1,6 +1,12 @@
 <template>
   <section>
     <power-energy-chart
+      :hover-on="isHovering"
+      :hover-date="hoverDate"
+      :zoom-extent="zoomExtent"
+      @dateHover="handleDateHover"
+      @isHovering="handleIsHovering"
+      @zoomExtent="handleZoomExtent"
       @svgClick="handleSvgClick"
     />
 
@@ -9,8 +15,25 @@
       :compare-data="compareData"
     /> -->
 
-    <price-market-value-chart v-if="ready && domainPriceMarketValue.length > 0"/>
-    <temperature-chart v-if="ready && domainTemperature.length > 0"/>
+    <price-market-value-chart 
+      v-if="ready && domainPriceMarketValue.length > 0" 
+      :hover-on="isHovering"
+      :hover-date="hoverDate"
+      :zoom-extent="zoomExtent"
+      @dateHover="handleDateHover"
+      @isHovering="handleIsHovering"
+      @zoomExtent="handleZoomExtent"
+      @svgClick="handleSvgClick" />
+    
+    <temperature-chart 
+      v-if="ready && domainTemperature.length > 0"
+      :hover-on="isHovering"
+      :hover-date="hoverDate"
+      :zoom-extent="zoomExtent"
+      @dateHover="handleDateHover"
+      @isHovering="handleIsHovering"
+      @zoomExtent="handleZoomExtent"
+      @svgClick="handleSvgClick" />
 
   </section>
 </template>
@@ -45,7 +68,10 @@ export default {
 
   data() {
     return {
-      compareData: []
+      compareData: [],
+      isHovering: false,
+      hoverDate: null,
+      zoomExtent: []
     }
   },
 
@@ -55,7 +81,7 @@ export default {
       interval: 'interval',
       compareDifference: 'compareDifference',
       compareDates: 'compareDates',
-      hoverDate: 'visInteract/hoverDate',
+      // hoverDate: 'visInteract/hoverDate',
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
       ready: 'regionEnergy/ready',
@@ -109,23 +135,23 @@ export default {
 
   methods: {
     ...mapMutations({
+      setIsHovering: 'visInteract/isHovering',
+      setDateZoomExtent: 'visInteract/dateZoomExtent',
+      setHoverDate: 'visInteract/hoverDate',
       setFocusDate: 'visInteract/focusDate',
       setIsFocusing: 'visInteract/isFocusing'
     }),
     getDataByTime(dataset, time) {
       return dataset.find(d => d.time === time)
     },
-    handleDateHover(evt, date) {
-      // console.log(evt, date)
+    handleDateHover(date) {
+      const closestDate = DateDisplay.snapToClosestInterval(this.interval, date)
+      this.setHoverDate(closestDate)
+      this.hoverDate = closestDate
     },
-    handleDomainHover(domain) {
-      // console.log(domain)
-    },
-    handleVisEnter() {
-      // console.log('vis enter')
-    },
-    handleVisLeave() {
-      // console.log('vis leave')
+    handleIsHovering(hover) {
+      this.setIsFocusing(hover)
+      this.isHovering = hover
     },
     handleSvgClick(metaKey) {
       if (metaKey && this.focusOn && !this.compareDifference) {
@@ -195,6 +221,33 @@ export default {
             this.setIsFocusing(true)
           }
         }
+      }
+    },
+    handleZoomExtent(dateRange) {
+      // console.log('zoom extent', dateRange)
+      if (dateRange && dateRange.length > 0) {
+        let startTime = DateDisplay.snapToClosestInterval(
+          this.interval,
+          dateRange[0]
+        )
+        const endTime = DateDisplay.snapToClosestInterval(
+          this.interval,
+          dateRange[1]
+        )
+        // if (this.interval === 'Fin Year') {
+        //   startTime = moment(startTime).add(1, 'year')
+        // }
+        // this.filteredDataset = EnergyDataTransform.filterDataByStartEndDates(
+        //   this.dataset,
+        //   startTime,
+        //   endTime
+        // )
+        this.setDateZoomExtent([startTime, endTime])
+        this.zoomExtent = [startTime, endTime]
+      } else {
+        this.setDateZoomExtent([])
+        this.zoomExtent = []
+        // this.filteredDataset = this.dataset
       }
     }
   }
