@@ -1,10 +1,11 @@
 import PerfTime from '@/plugins/perfTime.js'
 import parseAndCheckData from './parseAndCheckData.js'
-import getFuelTechInOrder from './getFuelTechInOrder.js'
 import createEmptyDatasets from './createEmptyDatasets.js'
 import flattenAndInterpolate from './flattenAndInterpolate.js'
 import {
+  getFuelTechInOrder,
   getPowerEnergyDomains,
+  getEmissionsDomains,
   getTemperatureDomains,
   getPriceDomains,
   getVolWeightedPriceDomains
@@ -34,6 +35,7 @@ export default function(responses) {
   const {
     dataAll,
     dataPowerEnergy,
+    dataEmissions,
     dataPriceMarketValue,
     dataTemperature,
     fuelTechDataType,
@@ -46,6 +48,7 @@ export default function(responses) {
     fuelTechIdTypes,
     fuelTechDataType
   )
+  const domainEmissions = getEmissionsDomains(dataEmissions)
   const domainPriceMarketValue = getPriceDomains(dataPriceMarketValue)
   const domainVolWeightedPriceDomains = getVolWeightedPriceDomains()
   const domainTemperature = getTemperatureDomains(dataTemperature)
@@ -59,6 +62,7 @@ export default function(responses) {
   return {
     datasetFlat,
     domainPowerEnergy,
+    domainEmissions,
     domainPriceMarketValue,
     domainVolWeightedPriceDomains,
     domainTemperature,

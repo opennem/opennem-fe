@@ -8,18 +8,20 @@ import filterDatasetByRange from './filter'
 export function dataProcess(responses, range, interval) {
   const {
     datasetFlat,
-    datasetTemperature,
     domainPriceMarketValue,
     domainVolWeightedPriceDomains,
     domainPowerEnergy,
     domainTemperature,
+    domainEmissions,
     type
   } = process(responses)
 
   const dataset = filterDatasetByRange(datasetFlat, range)
+
   const currentDatasetFlat = rollUp({
     domains: [
       ...domainPowerEnergy,
+      ...domainEmissions,
       ...domainPriceMarketValue,
       ...domainTemperature
     ],
@@ -27,40 +29,49 @@ export function dataProcess(responses, range, interval) {
     interval
   })
   const domainPowerEnergyGrouped = getAllGroups(domainPowerEnergy, type)
+  const domainEmissionsGrouped = getAllGroups(domainEmissions, 'emissions')
 
-  summariseDataset(
+  summariseDataset({
     currentDatasetFlat,
     domainPowerEnergy,
+    domainEmissions,
     domainPriceMarketValue
+  })
+  groupDataset(
+    currentDatasetFlat,
+    domainPowerEnergyGrouped,
+    domainEmissionsGrouped
   )
-  groupDataset(currentDatasetFlat, domainPowerEnergyGrouped)
 
   return {
     dataType: type,
     datasetFlat: dataset,
-    datasetTemperature,
     domainPowerEnergy,
+    domainPowerEnergyGrouped,
+    domainEmissions,
+    domainEmissionsGrouped,
     domainPriceMarketValue,
     domainVolWeightedPriceDomains,
     domainTemperature,
-    currentDatasetFlat,
-
-    domainPowerEnergyGrouped
+    currentDatasetFlat
   }
 }
 
 export function dataRollUp({
   datasetFlat,
   domainPowerEnergy,
+  domainPowerEnergyGrouped,
+  domainEmissions,
+  domainEmissionsGrouped,
   domainPriceMarketValue,
   domainTemperature,
-  domainPowerEnergyGrouped,
   range,
   interval
 }) {
   const currentDatasetFlat = rollUp({
     domains: [
       ...domainPowerEnergy,
+      ...domainEmissions,
       ...domainPriceMarketValue,
       ...domainTemperature
     ],
@@ -68,12 +79,17 @@ export function dataRollUp({
     interval
   })
 
-  summariseDataset(
+  summariseDataset({
     currentDatasetFlat,
     domainPowerEnergy,
+    domainEmissions,
     domainPriceMarketValue
+  })
+  groupDataset(
+    currentDatasetFlat,
+    domainPowerEnergyGrouped,
+    domainEmissionsGrouped
   )
-  groupDataset(currentDatasetFlat, domainPowerEnergyGrouped)
 
   return {
     currentDatasetFlat

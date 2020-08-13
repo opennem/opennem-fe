@@ -32,6 +32,10 @@ export function isMarketValue(name) {
   return name === MARKET_VALUE
 }
 
+export function isEmissions(name) {
+  return name === EMISSIONS
+}
+
 export function isValidDataType(name) {
   return (
     name === POWER ||

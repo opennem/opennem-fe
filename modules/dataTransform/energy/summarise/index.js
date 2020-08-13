@@ -6,14 +6,17 @@ const perfTime = new PerfTime()
   - Mutate and summarise each data point
   - Reverse value for imports and load types
 */
-export default function(
-  datasetAll,
-  powerEnergyDomains,
+export default function({
+  currentDatasetFlat,
+  domainPowerEnergy,
+  domainEmissions,
   domainPriceMarketValue
-) {
+}) {
   perfTime.time()
 
-  datasetAll.forEach((d, i) => {
+  const dataset = currentDatasetFlat
+
+  dataset.forEach((d, i) => {
     let batteryChargingId = null,
       batteryDischargingId = null,
       hydroId = null,
@@ -31,7 +34,7 @@ export default function(
       totalRenewables = 0,
       totalMarketValue = 0
 
-    powerEnergyDomains.forEach(domain => {
+    domainPowerEnergy.forEach(domain => {
       const id = domain.id
       const ft = domain.fuelTech
 
@@ -55,39 +58,39 @@ export default function(
     })
 
     //  Derived net values
-    datasetAll[i]._netBattery =
+    dataset[i]._netBattery =
       (d[batteryDischargingId] || 0) - (d[batteryChargingId] || 0)
-    datasetAll[i]._netHydro = (d[hydroId] || 0) - (d[pumpsId] || 0)
-    datasetAll[i]._netImports = -(d[importsId] || 0) - (d[exportsId] || 0) // imports comes in as negative
+    dataset[i]._netHydro = (d[hydroId] || 0) - (d[pumpsId] || 0)
+    dataset[i]._netImports = -(d[importsId] || 0) - (d[exportsId] || 0) // imports comes in as negative
 
-    if (isNaN(datasetAll[i]._netBattery) || datasetAll[i]._netBattery < 0) {
-      datasetAll[i]._netBattery = 0
+    if (isNaN(dataset[i]._netBattery) || dataset[i]._netBattery < 0) {
+      dataset[i]._netBattery = 0
     }
-    if (isNaN(datasetAll[i]._netHydro) || datasetAll[i]._netHydro < 0) {
-      datasetAll[i]._netHydro = 0
+    if (isNaN(dataset[i]._netHydro) || dataset[i]._netHydro < 0) {
+      dataset[i]._netHydro = 0
     }
-    if (isNaN(datasetAll[i]._netImports) || datasetAll[i]._netImports < 0) {
-      datasetAll[i]._netImports = 0
+    if (isNaN(dataset[i]._netImports) || dataset[i]._netImports < 0) {
+      dataset[i]._netImports = 0
     }
 
-    powerEnergyDomains.forEach(domain => {
+    domainPowerEnergy.forEach(domain => {
       const id = domain.id
       const ft = domain.fuelTech
 
       if (domain.category === FT.SOURCE) {
         if (ft === FT.BATTERY_DISCHARGING) {
-          totalNetGeneration += datasetAll[i]._netBattery
+          totalNetGeneration += dataset[i]._netBattery
         } else if (ft === FT.HYDRO) {
-          totalNetGeneration += datasetAll[i]._netHydro
+          totalNetGeneration += dataset[i]._netHydro
         } else if (ft === FT.IMPORTS) {
-          totalNetGeneration += datasetAll[i]._netImports
+          totalNetGeneration += dataset[i]._netImports
         } else {
           totalNetGeneration += d[id]
         }
       }
     })
 
-    powerEnergyDomains.forEach(domain => {
+    domainPowerEnergy.forEach(domain => {
       const id = domain.id
       const ft = domain.fuelTech
 
@@ -122,9 +125,9 @@ export default function(
       totalMarketValue += d[domain.id] || 0
     })
 
-    // emissionDomains.forEach(domain => {
-    //   totalEmissionsVol += d[domain.id] || 0
-    // })
+    domainEmissions.forEach(domain => {
+      totalEmissionsVol += d[domain.id] || 0
+    })
 
     // const volWeightedPrice =
     //   interval === 'Year' || interval === 'Fin Year'
@@ -133,29 +136,28 @@ export default function(
 
     const volWeightedPrice = totalMarketValue / totalDemand / 1000
 
-    datasetAll[i]._total = totalDemand
-    datasetAll[i]._totalRenewables = totalRenewables
-    datasetAll[i]._totalDemandRenewablesPercentage =
+    dataset[i]._total = totalDemand
+    dataset[i]._totalRenewables = totalRenewables
+    dataset[i]._totalDemandRenewablesPercentage =
       (totalRenewables / totalDemand) * 100
-    datasetAll[i]._totalGenerationRenewablesPercentage =
+    dataset[i]._totalGenerationRenewablesPercentage =
       (totalRenewables / totalGeneration) * 100
-    if (isNaN(datasetAll[i]._totalDemandRenewablesPercentage)) {
-      datasetAll[i]._totalDemandRenewablesPercentage = null
+    if (isNaN(dataset[i]._totalDemandRenewablesPercentage)) {
+      dataset[i]._totalDemandRenewablesPercentage = null
     }
-    if (isNaN(datasetAll[i]._totalGenerationRenewablesPercentage)) {
-      datasetAll[i]._totalGenerationRenewablesPercentage = null
+    if (isNaN(dataset[i]._totalGenerationRenewablesPercentage)) {
+      dataset[i]._totalGenerationRenewablesPercentage = null
     }
-    datasetAll[i]._totalSources = totalSources
-    datasetAll[i]._totalGeneration = totalGeneration
-    datasetAll[i]._totalNetGeneration = totalNetGeneration
-    datasetAll[i]._totalSourcesRenewables =
-      (totalRenewables / totalSources) * 100
-    datasetAll[i]._totalGenerationRenewables =
+    dataset[i]._totalSources = totalSources
+    dataset[i]._totalGeneration = totalGeneration
+    dataset[i]._totalNetGeneration = totalNetGeneration
+    dataset[i]._totalSourcesRenewables = (totalRenewables / totalSources) * 100
+    dataset[i]._totalGenerationRenewables =
       (totalRenewables / totalGeneration) * 100
 
-    datasetAll[i]._stackedTotalMin = min
-    datasetAll[i]._stackedTotalMax = totalDemand
-    // dataset[i]._totalEmissionsVol = totalEmissionsVol
+    dataset[i]._stackedTotalMin = min
+    dataset[i]._stackedTotalMax = totalDemand
+    dataset[i]._totalEmissionsVol = totalEmissionsVol
     // const emissionsIntensity =
     //   interval === 'Year' || interval === 'Fin Year'
     //     ? totalEmissionsVol / totalDemand / 1000
@@ -163,16 +165,16 @@ export default function(
     // dataset[i]._emissionsIntensity = emissionsIntensity || 0
     // dataset[i]._actualLastDate = actualLastDate
     // dataset[i]._actualStartDate = actualStartDate
-    datasetAll[i]._totalMarketValue = totalMarketValue
-    datasetAll[i]._volWeightedPrice = isNaN(volWeightedPrice)
+    dataset[i]._totalMarketValue = totalMarketValue
+    dataset[i]._volWeightedPrice = isNaN(volWeightedPrice)
       ? null
       : volWeightedPrice
 
-    datasetAll[i]._volWeightedPriceAbove300 =
+    dataset[i]._volWeightedPriceAbove300 =
       !isNaN(volWeightedPrice) && volWeightedPrice > 300
         ? volWeightedPrice
         : 0.01
-    datasetAll[i]._volWeightedPriceBelow0 =
+    dataset[i]._volWeightedPriceBelow0 =
       !isNaN(volWeightedPrice) && volWeightedPrice < 0
         ? volWeightedPrice
         : -0.01

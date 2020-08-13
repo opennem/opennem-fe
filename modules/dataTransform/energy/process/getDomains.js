@@ -1,21 +1,43 @@
-import * as FT from '@/constants/fuel-tech.js'
+import * as FT from '@/constants/v2/groups/group-default.js'
 import {
   PRICE,
   PRICE_ABOVE_300,
   PRICE_BELOW_0
 } from '@/constants/v2/data-types'
 
+export function getFuelTechInOrder(data) {
+  const fuelTechs = {}
+  FT.DEFAULT_FUEL_TECH_ORDER.forEach(ft => {
+    const find = data.find(d => d.fuel_tech === ft)
+    if (find) {
+      fuelTechs[ft] = find.id
+    }
+  })
+  return fuelTechs
+}
+
 export function getPowerEnergyDomains(ids, type) {
   return ids ? FT.getFuelTechObjs(ids, type).reverse() : []
 }
 
-export function getTemperatureDomains(data) {
-  console.log(data)
-  return data.map(t => {
+export function getEmissionsDomains(data) {
+  return data.map(d => {
     return {
-      id: t.id,
-      domain: t.id,
-      type: t.type,
+      id: d.id,
+      domain: d.id,
+      fuelTech: d.fuel_tech,
+      type: d.type,
+      colour: FT.DEFAULT_FUEL_TECH_COLOUR[d.fuel_tech]
+    }
+  })
+}
+
+export function getTemperatureDomains(data) {
+  return data.map(d => {
+    return {
+      id: d.id,
+      domain: d.id,
+      type: d.type,
       colour: '#e34a33'
     }
   })

@@ -47,7 +47,8 @@ function reducer(a, domains) {
     const type = domain.type
     const isPowerOrEnergy = DT.isPowerOrEnergy(type)
     const isMarketValueType = DT.isMarketValue(type)
-    if (isPowerOrEnergy || isMarketValueType) {
+    const isEmissionsType = DT.isEmissions(type)
+    if (isPowerOrEnergy || isMarketValueType || isEmissionsType) {
       obj[id] = sum(a, d => d[id] || 0)
     }
   })

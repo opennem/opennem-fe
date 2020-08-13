@@ -13,10 +13,12 @@ export const state = () => ({
   datasetFlat: [],
   currentDatasetFlat: [],
   domainPowerEnergy: [],
+  domainPowerEnergyGrouped: [],
+  domainEmissions: [],
+  domainEmissionsGrouped: [],
   domainPriceMarketValue: [],
   domainVolWeightedPriceDomains: [],
   domainTemperature: [],
-  domainPowerEnergyGrouped: [],
   currentDomainPowerEnergy: [],
   filteredSummary: null
 })
@@ -28,10 +30,12 @@ export const getters = {
   datasetFlat: state => state.datasetFlat,
   currentDatasetFlat: state => state.currentDatasetFlat,
   domainPowerEnergy: state => state.domainPowerEnergy,
+  domainPowerEnergyGrouped: state => state.domainPowerEnergyGrouped,
+  domainEmissions: state => state.domainEmissions,
+  domainEmissionsGrouped: state => state.domainEmissionsGrouped,
   domainPriceMarketValue: state => state.domainPriceMarketValue,
   domainVolWeightedPriceDomains: state => state.domainVolWeightedPriceDomains,
   domainTemperature: state => state.domainTemperature,
-  domainPowerEnergyGrouped: state => state.domainPowerEnergyGrouped,
   currentDomainPowerEnergy: state => state.currentDomainPowerEnergy,
   filteredSummary: state => state.filteredSummary
 }
@@ -58,6 +62,15 @@ export const mutations = {
   domainPowerEnergy(state, domainPowerEnergy) {
     state.domainPowerEnergy = _cloneDeep(domainPowerEnergy)
   },
+  domainPowerEnergyGrouped(state, domainPowerEnergyGrouped) {
+    state.domainPowerEnergyGrouped = _cloneDeep(domainPowerEnergyGrouped)
+  },
+  domainEmissions(state, domainEmissions) {
+    state.domainEmissions = _cloneDeep(domainEmissions)
+  },
+  domainEmissionsGrouped(state, domainEmissionsGrouped) {
+    state.domainEmissionsGrouped = _cloneDeep(domainEmissionsGrouped)
+  },
   domainPriceMarketValue(state, domainPriceMarketValue) {
     state.domainPriceMarketValue = _cloneDeep(domainPriceMarketValue)
   },
@@ -68,9 +81,6 @@ export const mutations = {
   },
   domainTemperature(state, domainTemperature) {
     state.domainTemperature = _cloneDeep(domainTemperature)
-  },
-  domainPowerEnergyGrouped(state, domainPowerEnergyGrouped) {
-    state.domainPowerEnergyGrouped = _cloneDeep(domainPowerEnergyGrouped)
   },
   currentDomainPowerEnergy(state, currentDomainPowerEnergy) {
     state.currentDomainPowerEnergy = _cloneDeep(currentDomainPowerEnergy)
@@ -96,10 +106,12 @@ export const actions = {
           datasetFlat,
           currentDatasetFlat,
           domainPowerEnergy,
+          domainPowerEnergyGrouped,
+          domainEmissions,
+          domainEmissionsGrouped,
           domainPriceMarketValue,
           domainVolWeightedPriceDomains,
           domainTemperature,
-          domainPowerEnergyGrouped,
           dataType
         } = dataProcess(responses, range, interval)
 
@@ -114,10 +126,12 @@ export const actions = {
         commit('datasetFlat', datasetFlat)
         commit('currentDatasetFlat', currentDatasetFlat)
         commit('domainPowerEnergy', domainPowerEnergy)
+        commit('domainPowerEnergyGrouped', domainPowerEnergyGrouped)
+        commit('domainEmissions', domainEmissions)
+        commit('domainEmissionsGrouped', domainEmissionsGrouped)
         commit('domainPriceMarketValue', domainPriceMarketValue)
         commit('domainVolWeightedPriceDomains', domainVolWeightedPriceDomains)
         commit('domainTemperature', domainTemperature)
-        commit('domainPowerEnergyGrouped', domainPowerEnergyGrouped)
         commit('currentDomainPowerEnergy', domainPowerEnergyGrouped[groupName])
         commit('jsonResponses', responses)
         commit('ready', true)
@@ -133,9 +147,11 @@ export const actions = {
       const { currentDatasetFlat } = dataRollUp({
         datasetFlat: _cloneDeep(state.datasetFlat),
         domainPowerEnergy: state.domainPowerEnergy,
+        domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
+        domainEmissions: state.domainEmissions,
+        domainEmissionsGrouped: state.domainEmissionsGrouped,
         domainPriceMarketValue: state.domainPriceMarketValue,
         domainTemperature: state.domainTemperature,
-        domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
         range,
         interval
       })
@@ -155,9 +171,11 @@ export const actions = {
     const { currentDatasetFlat } = dataRollUp({
       datasetFlat: _cloneDeep(state.datasetFlat),
       domainPowerEnergy: state.domainPowerEnergy,
+      domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
+      domainEmissions: state.domainEmissions,
+      domainEmissionsGrouped: state.domainEmissionsGrouped,
       domainPriceMarketValue: state.domainPriceMarketValue,
       domainTemperature: state.domainTemperature,
-      domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
       range,
       interval
     })
