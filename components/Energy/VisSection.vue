@@ -10,10 +10,11 @@
       @svgClick="handleSvgClick"
     />
 
-    <!-- <energy-compare
+    <energy-compare
+      v-if="compareDifference"
       :domains="domains"
       :compare-data="compareData"
-    /> -->
+    />
 
     <emissions-chart
       v-if="ready && domainEmissions.length > 0" 

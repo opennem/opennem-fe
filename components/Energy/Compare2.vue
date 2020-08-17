@@ -145,6 +145,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.chart-label {
+  text-align: center;
+}
 .compare-chart-legend {
   padding: 0.5rem 1rem;
   margin: 0 0.5rem 0.5rem;
