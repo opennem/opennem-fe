@@ -2,7 +2,11 @@ import _cloneDeep from 'lodash.clonedeep'
 import PerfTime from '@/plugins/perfTime.js'
 import http from '@/services/Http.js'
 import Data from '@/services/Data.js'
-import { dataProcess, dataRollUp } from '@/modules/dataTransform/energy'
+import {
+  dataProcess,
+  dataRollUp,
+  dataFilterByPeriod
+} from '@/modules/dataTransform/energy'
 import { isValidRegion } from '@/constants/v2/energy-regions.js'
 
 export const state = () => ({
@@ -190,5 +194,28 @@ export const actions = {
     })
 
     commit('currentDatasetFlat', currentDatasetFlat)
+  },
+
+  doUpdateDatasetByFilterPeriod(
+    { state, commit },
+    { range, interval, period }
+  ) {
+    const { currentDatasetFlat } = dataRollUp({
+      datasetFlat: _cloneDeep(state.datasetFlat),
+      domainPowerEnergy: state.domainPowerEnergy,
+      domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
+      domainEmissions: state.domainEmissions,
+      domainEmissionsGrouped: state.domainEmissionsGrouped,
+      domainPriceMarketValue: state.domainPriceMarketValue,
+      domainTemperature: state.domainTemperature,
+      range,
+      interval
+    })
+    const { filteredDatasetFlat } = dataFilterByPeriod({
+      currentDatasetFlat,
+      interval,
+      period
+    })
+    commit('currentDatasetFlat', filteredDatasetFlat)
   }
 }

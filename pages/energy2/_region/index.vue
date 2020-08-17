@@ -28,6 +28,7 @@ export default {
     ...mapGetters({
       range: 'range',
       interval: 'interval',
+      filterPeriod: 'filterPeriod',
       fuelTechGroupName: 'fuelTechGroupName',
       fuelTechGroup: 'fuelTechGroup'
     }),
@@ -54,6 +55,13 @@ export default {
     },
     interval(interval) {
       this.doUpdateDatasetByInterval({ range: this.range, interval })
+    },
+    filterPeriod(period) {
+      this.doUpdateDatasetByFilterPeriod({
+        range: this.range,
+        interval: this.interval,
+        period
+      })
     },
     fuelTechGroupName(groupName) {
       this.doUpdateDatasetByGroup({ groupName })
@@ -86,7 +94,9 @@ export default {
       doGetRegionData: 'regionEnergy/doGetRegionData',
       doUpdateDatasetByInterval: 'regionEnergy/doUpdateDatasetByInterval',
       doUpdateDatasetByGroup: 'regionEnergy/doUpdateDatasetByGroup',
-      doFilterRegionData: 'regionEnergy/doFilterRegionData'
+      doFilterRegionData: 'regionEnergy/doFilterRegionData',
+      doUpdateDatasetByFilterPeriod:
+        'regionEnergy/doUpdateDatasetByFilterPeriod'
     }),
     ...mapMutations({
       setWindowWidth: 'app/windowWidth'

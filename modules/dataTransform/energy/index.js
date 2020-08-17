@@ -4,7 +4,7 @@ import process from './process'
 import rollUp from './rollUp'
 import summariseDataset from './summarise'
 import groupDataset from './group'
-import filterDatasetByRange from './filter'
+import { filterDatasetByRange, filterDatasetByPeriod } from './filter'
 
 export function dataProcess(responses, range, interval) {
   const {
@@ -94,5 +94,15 @@ export function dataRollUp({
 
   return {
     currentDatasetFlat
+  }
+}
+
+export function dataFilterByPeriod({ currentDatasetFlat, interval, period }) {
+  return {
+    filteredDatasetFlat: filterDatasetByPeriod(
+      currentDatasetFlat,
+      interval,
+      period
+    )
   }
 }
