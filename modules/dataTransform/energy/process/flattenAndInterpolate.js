@@ -25,10 +25,62 @@ export default function(isPowerData, dataInterval, dataAll, datasetAll) {
       })
     }
     const updateDatasetWithMixedInterval = datasetMixed => {
+      const type = {
+        key: d.id,
+        interpolation: 'linear',
+        startIndex: -1,
+        currentValue: null
+      }
+
+      // create dataset of 5 min interval for this series
+      const datasetMixed5min = []
+      datasetMixed.forEach(dMixed => {
+        const newObj = {
+          time: dMixed.time,
+          date: dMixed.date
+        }
+        newObj[d.id] = dMixed.value
+        datasetMixed5min.push(newObj)
+
+        let currentTime = dMixed.time
+        for (let i = 1; i <= 5; i++) {
+          currentTime += 300000
+          const newObj = {
+            time: currentTime,
+            date: new Date(currentTime)
+          }
+          newObj[d.id] = null
+
+          datasetMixed5min.push(newObj)
+        }
+      })
+
+      // then interpolate the values between
+      datasetMixed5min.forEach((dMixed5min, i) => {
+        if (dMixed5min[type.key] !== null) {
+          if (type.interpolation === 'linear') {
+            if (type.startIndex === -1) {
+              type.startIndex = i
+            } else {
+              const count = i - type.startIndex
+              const addValue =
+                (dMixed5min[type.key] - type.currentValue) / count
+              for (let x = type.startIndex + 1; x <= i; x += 1) {
+                datasetMixed5min[x][type.key] = type.currentValue + addValue
+                type.currentValue = datasetMixed5min[x][type.key]
+              }
+              type.startIndex = i
+            }
+          }
+          type.currentValue = dMixed5min[type.key]
+        }
+      })
+
+      // finally apply the values to the actual dataset
       datasetAll.forEach(dAll => {
-        const find = datasetMixed.find(dMixed => dMixed.time === dAll.time)
+        const find = datasetMixed5min.find(dMixed => dMixed.time === dAll.time)
         if (find) {
-          dAll[d.id] = find.value
+          dAll[d.id] = find[d.id]
         } else {
           dAll[d.id] = null
         }
