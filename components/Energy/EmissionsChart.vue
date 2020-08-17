@@ -87,7 +87,6 @@ export default {
       chartEmissionsVolume: 'visInteract/chartEmissionsVolume',
       range: 'range',
       interval: 'interval',
-      compareDates: 'compareDates',
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
       currentDatasetFlat: 'regionEnergy/currentDatasetFlat',

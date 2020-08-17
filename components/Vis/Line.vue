@@ -543,10 +543,12 @@ export default {
       $svg.on('mouseenter', () => {
         // this.$cursorLineGroup.attr('opacity', 1)
         EventBus.$emit('vis.mouseenter')
+        this.$emit('enter')
       })
       $svg.on('mouseleave', () => {
         // this.$cursorLineGroup.attr('opacity', 0)
         EventBus.$emit('vis.mouseleave')
+        this.$emit('leave')
       })
       $svg.on('click', () => {
         this.$emit('svgClick')
@@ -768,10 +770,10 @@ export default {
       const time = new Date(focusDate).getTime()
       let nextDatePeriod = null
       const find = this.updatedDataset.find((d, i) => {
-        const match = d.date === time
+        const match = d.time === time
         if (match) {
           if (this.updatedDataset[i + 1]) {
-            nextDatePeriod = this.updatedDataset[i + 1].date
+            nextDatePeriod = this.updatedDataset[i + 1].time
           }
         }
         return match

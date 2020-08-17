@@ -94,7 +94,6 @@ export default {
       interval: 'interval',
       compareDifference: 'compareDifference',
       compareDates: 'compareDates',
-      // hoverDate: 'visInteract/hoverDate',
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
       ready: 'regionEnergy/ready',
@@ -164,28 +163,30 @@ export default {
       this.hoverDate = closestDate
     },
     handleIsHovering(hover) {
-      this.setIsFocusing(hover)
+      this.setIsHovering(hover)
       this.isHovering = hover
     },
     handleSvgClick(metaKey) {
       if (metaKey && this.focusOn && !this.compareDifference) {
         this.$store.dispatch('compareDifference', true)
-        this.setIsFocusing(false)
-        const hoverTime = this.hoverDate.valueOf()
-        const focusTime = this.focusDate.valueOf()
+        const hoverTime = this.hoverDate.getTime()
+        const focusTime = this.focusDate.getTime()
         const firstData = this.getDataByTime(this.currentDatasetFlat, focusTime)
         const secondData = this.getDataByTime(
           this.currentDatasetFlat,
           hoverTime
         )
+
         setTimeout(() => {
           this.$store.dispatch('compareDates', [focusTime, hoverTime])
           this.compareData = [firstData, secondData].slice()
+          this.setIsFocusing(false)
+          this.setFocusDate(null)
         }, 10)
       } else {
         this.setIsFocusing(false)
         if (this.compareDifference) {
-          const hoverTime = this.hoverDate.valueOf()
+          const hoverTime = this.hoverDate.getTime()
           let newCompare = false
           let compareDates = this.compareDates.slice()
 
@@ -226,7 +227,7 @@ export default {
         } else if (!this.isTouchDevice) {
           if (
             this.focusDate &&
-            this.focusDate.valueOf() === this.hoverDate.valueOf()
+            this.focusDate.getTime() === this.hoverDate.getTime()
           ) {
             this.setFocusDate(null)
             this.setIsFocusing(false)

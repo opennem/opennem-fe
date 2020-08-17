@@ -32,6 +32,8 @@
       class="temperature-vis vis-chart"
       @dateOver="handleDateHover"
       @svgClick="handleSvgClick"
+      @enter="handleVisEnter"
+      @leave="handleVisLeave"
     />
   </div>
 </template>
@@ -209,9 +211,6 @@ export default {
     },
     handleSvgClick(metaKey) {
       this.$emit('svgClick', metaKey)
-    },
-    handleZoomExtent(dateRange) {
-      this.$emit('zoomExtent', dateRange)
     }
   }
 }
