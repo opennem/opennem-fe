@@ -13,14 +13,14 @@
         <strong v-if="isEnergyType">Energy</strong>
         <strong v-else>Generation</strong>
 
-        <small v-if="chartEnergyType === 'proportion' || (chartEnergyType === 'line' && chartEnergyYAxis === 'percentage')">%</small>
+        <small v-if="isTypeProportion || (isTypeLine && isYAxisPercentage)">%</small>
         <small v-else-if="isEnergyType">{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</small>
         <small v-else>MW</small>
       </template>
 
       <template 
         v-slot:average-value 
-        v-if="!isRenewableLineOnly && chartEnergyType !== 'proportion'">
+        v-if="!isRenewableLineOnly && isTypeProportion">
         Av.
         <strong>
           {{ averageEnergy | formatValue }}
@@ -41,7 +41,7 @@
             class="colour-square" />
           {{ hoverDomainLabel }}
           <strong>
-            {{ hoverValue | formatValue }}<span v-if="chartEnergyType === 'proportion' || (chartEnergyType === 'line' && chartEnergyYAxis === 'percentage')">%</span>
+            {{ hoverValue | formatValue }}<span v-if="isTypeProportion || (isTypeLine && isYAxisPercentage)">%</span>
             <span v-else-if="isEnergyType">{{ isYearInterval ? ' TWh' : ' GWh' }}</span>
             <span v-else> MW</span>
           </strong>
@@ -53,7 +53,7 @@
           <strong>{{ hoverRenewables | percentageFormatNumber }}</strong>
         </span> -->
         <span
-          v-else-if="chartEnergyType !== 'proportion'"
+          v-else-if="isTypeProportion"
           class="total-value">
           Total
           <strong>
@@ -67,21 +67,19 @@
     <!--
             
       summary table first
-      :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
-      :dataset-two-colour="renewablesLineColour"
       :highlight-domain="highlightDomain"
       
       :mobile-screen="tabletBreak"
     -->
     <stacked-area-vis
-      v-if="chartEnergy && chartEnergyType === 'area'"
-      :domains="domains"
-      :dataset="currentDatasetFlat"
+      v-if="chartEnergy && (isTypeArea || isTypeProportion)"
+      :domains="isTypeArea ? domains : energyPercentDomains"
+      :dataset="isTypeArea ? currentDatasetFlat : energyPercentDataset"
       :range="range"
       :interval="interval"
       :curve="isEnergyType ? chartEnergyCurve : chartPowerCurve"
-      :y-min="yMin"
-      :y-max="yMax"
+      :y-min="isTypeArea ? yMin : 0"
+      :y-max="isTypeArea ? yMax : 100"
       :vis-height="350"
       :hover-on="hoverOn"
       :hover-date="hoverDate"
@@ -93,6 +91,9 @@
       :focus-date="focusDate"
       :focus-on="focusOn"
       :incomplete-intervals="incompleteIntervals"
+      :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
+      :dataset-two-colour="renewablesLineColour"
+      :mobile-screen="tabletBreak"
       class="vis-chart"
       @dateOver="handleDateHover"
       @domainOver="handleDomainHover"
@@ -101,6 +102,60 @@
       @leave="handleVisLeave"
       @zoomExtent="handleZoomExtent"
     />
+
+    <!-- 
+      :toggled="chartEnergy"
+      :highlight-domain="highlightDomain"
+
+     -->
+
+    <button
+      v-if="chartEnergy && isTypeLine && zoomExtent.length > 0"
+      class="button is-rounded is-small reset-btn"
+      @click.stop="handleZoomReset"
+    >
+      Zoom Out
+    </button>
+    <multi-line
+      v-if="chartEnergy && isTypeLine"
+      :svg-height="350 - 30"
+      :domains1="domains"
+      :dataset1="isYAxisPercentage ? energyGrossPercentDataset : multiLineEnergyDataset"
+      :domains2="[{
+        label: 'Renewables',
+        domain: 'value',
+        colour: renewablesLineColour
+      }]"
+      :dataset2="renewablesPercentageDataset"
+      :show-y2="chartEnergyRenewablesLine"
+      :y2-max="renewablesMax"
+      :y2-min="0"
+      :y2-axis-unit="'%'"
+      :y1-max="energyLineYMax"
+      :y1-min="energyLineYMin"
+      :x-ticks="xTicks"
+      :y1-axis-unit="isYAxisPercentage ? '%' : ''"
+      :curve="isEnergyType ? chartEnergyCurve : chartPowerCurve"
+      :date-hovered="hoverDate"
+      :zoom-range="zoomExtent"
+      :draw-incomplete-bucket="false"
+      :x-shades="xGuides"
+      @date-hover="handleDateHover"
+      @domain-hover="handleDomainHover"
+      @enter="handleVisEnter"
+      @leave="handleVisLeave" />
+    <date-brush
+      v-if="chartEnergy && isTypeLine"
+      :dataset="energyGrossPercentDataset"
+      :zoom-range="zoomExtent" 
+      :x-ticks="xTicks"
+      :tick-format="tickFormat"
+      :second-tick-format="secondTickFormat"
+      class="date-brush"
+      @date-hover="handleDateHover"
+      @date-filter="handleZoomExtent"
+      @enter="handleVisEnter"
+      @leave="handleVisLeave" />
   </div>
 </template>
 
@@ -112,14 +167,20 @@ import addWeeks from 'date-fns/addWeeks'
 import addMonths from 'date-fns/addMonths'
 import addQuarters from 'date-fns/addQuarters'
 import addYears from 'date-fns/addYears'
+
+import AxisTicks from '@/services/axisTicks.js'
 import DateDisplay from '@/services/DateDisplay.js'
+import MultiLine from '@/components/Vis/MultiLine'
+import DateBrush from '@/components/Vis/DateBrush'
 import ChartHeader from '@/components/Vis/ChartHeader'
-import StackedAreaVis from '@/components/Vis/StackedArea2.vue'
+import StackedAreaVis from '@/components/Vis/StackedArea2'
 
 export default {
   components: {
     ChartHeader,
-    StackedAreaVis
+    StackedAreaVis,
+    MultiLine,
+    DateBrush
   },
 
   props: {
@@ -134,6 +195,14 @@ export default {
     zoomExtent: {
       type: Array,
       default: () => []
+    },
+    tickFormat: {
+      type: Function,
+      default: () => ({})
+    },
+    secondTickFormat: {
+      type: Function,
+      default: () => ({})
     }
   },
 
@@ -158,6 +227,8 @@ export default {
       range: 'range',
       interval: 'interval',
       compareDates: 'compareDates',
+      percentContributionTo: 'percentContributionTo',
+      fuelTechGroupName: 'fuelTechGroupName',
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
       currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
@@ -165,11 +236,166 @@ export default {
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       filteredSummary: 'regionEnergy/filteredSummary'
     }),
+    isTypeArea() {
+      return this.chartEnergyType === 'area'
+    },
+    isTypeProportion() {
+      return this.chartEnergyType === 'proportion'
+    },
+    isTypeLine() {
+      return this.chartEnergyType === 'line'
+    },
+    isYAxisPercentage() {
+      return this.chartEnergyYAxis === 'percentage'
+    },
+    renewablesLineColour() {
+      return this.fuelTechGroupName === 'Renewable/Fossil' ||
+        this.fuelTechGroupName === 'Flexibility'
+        ? '#e34a33'
+        : '#52BCA3'
+    },
+    renewablesPercentageDataset() {
+      const d = this.currentDatasetFlat.map(d => {
+        return {
+          date: d.date,
+          time: d.time,
+          renewables: d._totalRenewables,
+          value:
+            this.percentContributionTo === 'generation'
+              ? d._totalGenerationRenewablesPercentage
+              : d._totalDemandRenewablesPercentage
+        }
+      })
+      return d
+    },
+    renewablesMax() {
+      let m = max(this.renewablesPercentageDataset, d => d.value)
+      return m < 100 ? 100 : m
+    },
+    energyPercentDomains() {
+      return this.domains.filter(d => d.category === 'source')
+    },
+    energyPercentDataset() {
+      const dataset = _cloneDeep(this.currentDatasetFlat)
+      dataset.forEach((d, i) => {
+        let totalNetGeneration = 0,
+          min = 0,
+          max = 0
+
+        this.domains.forEach(domain => {
+          const id = domain.id
+          const ft = domain.fuelTech
+
+          if (d[id] < min) {
+            min = d[id]
+          }
+          if (d[id] > max) {
+            max = d[id]
+          }
+
+          if (domain.category === 'source') {
+            if (ft === 'battery_discharging') {
+              totalNetGeneration += d._netBattery
+            } else if (ft === 'hydro') {
+              totalNetGeneration += d._netHydro
+            } else if (ft === 'imports') {
+              totalNetGeneration += d._netImports
+            } else {
+              totalNetGeneration += d[id]
+            }
+          }
+        })
+
+        this.domains.forEach(domain => {
+          const ft = domain.fuelTech
+          if (domain.category === 'source') {
+            if (ft === 'battery_discharging') {
+              d[domain.id] = (d._netBattery / totalNetGeneration) * 100
+            } else if (ft === 'hydro') {
+              d[domain.id] = (d._netHydro / totalNetGeneration) * 100
+            } else if (ft === 'imports') {
+              d[domain.id] = (d._netImports / totalNetGeneration) * 100
+            } else {
+              d[domain.id] = (d[domain.id] / totalNetGeneration) * 100
+            }
+          }
+        })
+
+        d._lowest = min
+        d._highest = max
+      })
+      return dataset
+    },
+    energyGrossPercentDataset() {
+      const dataset = this.currentDatasetFlat.map(d => {
+        const obj = {
+          date: d.date,
+          time: d.time,
+          _isIncompleteBucket: d._isIncompleteBucket
+        }
+        this.domains.forEach(domain => {
+          obj[domain.id] = (d[domain.id] / d._total) * 100
+        })
+        return obj
+      })
+
+      dataset.forEach(p => {
+        let min = 0,
+          max = 0
+        this.domains.forEach(domain => {
+          const id = domain.id
+
+          if (domain.category === 'load') {
+            p[id] = -p[id]
+          }
+          if (p[id] < min) {
+            min = p[id]
+          }
+          if (p[id] > max) {
+            max = p[id]
+          }
+        })
+        p._lowest = min
+        p._highest = max
+      })
+
+      return dataset
+    },
+    multiLineEnergyDataset() {
+      return this.currentDatasetFlat.map(d => {
+        const obj = {
+          date: d.date,
+          time: d.time,
+          _isIncompleteBucket: d._isIncompleteBucket
+        }
+        this.domains.forEach(domain => {
+          if (domain.category === 'load') {
+            obj[domain.id] = d[domain.id] === 0 ? null : -d[domain.id]
+          } else {
+            obj[domain.id] = d[domain.id] === 0 ? null : d[domain.id]
+          }
+        })
+        return obj
+      })
+    },
     yMin() {
       return min(this.currentDatasetFlat, d => d._stackedTotalMin)
     },
     yMax() {
       return max(this.currentDatasetFlat, d => d._stackedTotalMax)
+    },
+    energyLineYMin() {
+      const dataset = this.isYAxisPercentage
+        ? this.energyGrossPercentDataset
+        : this.currentDatasetFlat
+      const lowest = this.getMinValue(dataset)
+      return lowest < 0 ? 0 : lowest
+    },
+    energyLineYMax() {
+      const dataset = this.isYAxisPercentage
+        ? this.energyGrossPercentDataset
+        : this.currentDatasetFlat
+      return this.getMaxValue(dataset)
     },
     xGuides() {
       if (this.currentDatasetFlat.length <= 0) {
@@ -186,6 +412,9 @@ export default {
         return DateDisplay.nightGuides(dStart, dEnd)
       }
       return []
+    },
+    xTicks() {
+      return AxisTicks(this.range, this.interval, this.zoomExtent.length > 0)
     },
     domains() {
       return _cloneDeep(this.currentDomainPowerEnergy).reverse()
@@ -204,17 +433,19 @@ export default {
         return null
       }
       const time = this.hoverDate.getTime()
-      // let dataset = this.currentDatasetFlat
-      // if (this.chartEnergyType === 'proportion') {
-      //   dataset = this.energyPercentDataset
-      // }
-      // if (
-      //   this.chartEnergyType === 'line' &&
-      //   this.chartEnergyYAxis === 'percentage'
-      // ) {
-      //   dataset = this.energyGrossPercentDataset
-      // }
-      return this.currentDatasetFlat.find(d => d.time === time)
+      let dataset = this.currentDatasetFlat
+      if (this.isTypeProportion) {
+        dataset = this.energyPercentDataset
+      }
+      if (this.isTypeLine) {
+        if (this.isYAxisPercentage) {
+          dataset = this.energyGrossPercentDataset
+        } else {
+          dataset = this.multiLineEnergyDataset
+        }
+      }
+
+      return dataset.find(d => d.time === time)
     },
     hoverValue() {
       return this.hoverData ? this.hoverData[this.hoverDomain] : null
@@ -330,6 +561,34 @@ export default {
     ...mapMutations({
       setHoverDomain: 'visInteract/hoverDomain'
     }),
+    getMinValue(dataset) {
+      let min = 0
+      dataset.forEach(d => {
+        if (d._lowest < min) {
+          min = d._lowest
+        }
+      })
+      return min
+    },
+    getMaxValue(dataset) {
+      let max = 0
+      if (this.fuelTechGroupName === 'Default') {
+        dataset.forEach(d => {
+          if (d._highest > max && !d._isIncompleteBucket) {
+            max = d._highest
+          }
+        })
+      } else {
+        dataset.forEach(d => {
+          this.domains.forEach(domain => {
+            if (d[domain.id] > max && !d._isIncompleteBucket) {
+              max = d[domain.id]
+            }
+          })
+        })
+      }
+      return max === 0 ? 100 : max
+    },
     handleDomainHover(domain) {
       this.setHoverDomain(domain)
     },
@@ -347,7 +606,18 @@ export default {
     },
     handleZoomExtent(dateRange) {
       this.$emit('zoomExtent', dateRange)
+    },
+    handleZoomReset() {
+      this.$emit('zoomExtent', [])
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.reset-btn {
+  position: absolute;
+  top: 39px;
+  right: 24px;
+}
+</style>

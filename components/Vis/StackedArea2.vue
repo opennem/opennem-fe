@@ -74,7 +74,9 @@
         <g class="stacked-area-group" />
 
         <!-- where the line path will show -->
-        <g class="line-group" />
+        <g 
+          v-show="hasSecondDataset" 
+          class="line-group" />
 
         <g class="x-incomplete-group" />
         <g class="focus-group" />
@@ -86,7 +88,9 @@
         :transform="gTransform"
         class="axis-text-group">
         <g :class="yAxisTickClass" />
-        <g class="y-axis-2" />
+        <g 
+          v-show="hasSecondDataset" 
+          class="y-axis-2" />
       </g>
 
       <!-- cursor line and tooltip -->
@@ -369,8 +373,8 @@ export default {
       if (this.interval !== '5m' && this.interval !== '30m') {
         let previousBandwidth = 0
         updated.forEach((d, i) => {
-          const xDate = d.date
-          const nextDate = updated[i + 1] ? updated[i + 1].date : null
+          const xDate = d.time
+          const nextDate = updated[i + 1] ? updated[i + 1].time : null
           const nextPeriod = nextDate || xDate
           let bandwidth = nextPeriod - xDate
           if (bandwidth !== 0) {
@@ -378,7 +382,8 @@ export default {
           } else {
             bandwidth = previousBandwidth
           }
-          d.date = d.date + bandwidth / 2
+          d.time = d.time + bandwidth / 2
+          d.date = new Date(d.time)
         })
       }
       return updated

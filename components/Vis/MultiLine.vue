@@ -694,10 +694,11 @@ export default {
       const xDate = this.x(date)
       let nextDate = null
       const dataPoint = this.dataset1.find((d, i) => {
-        const match = d.date === date.getTime()
+        const time = d.time || d.date
+        const match = time === date.getTime()
         const nextDataPoint = this.dataset1[i + 1]
         if (match && nextDataPoint) {
-          nextDate = nextDataPoint.date
+          nextDate = nextDataPoint.time || nextDataPoint.date
         }
         return match
       })

@@ -20,6 +20,17 @@ export function getFuelTechDomains(ids, type) {
   return ids ? FT.getFuelTechObjs(ids, type).reverse() : []
 }
 
+export function getFuelTechWithTypeDomains(ids, type) {
+  const mutateIds = {}
+  Object.keys(ids).forEach(key => {
+    const split = ids[key].split('.')
+    split.pop()
+    const newId = `${split.join('.')}.${type}`
+    mutateIds[key] = newId
+  })
+  return FT.getFuelTechObjs(mutateIds, type).reverse()
+}
+
 export function getTemperatureDomains(data) {
   return data.map(d => {
     return {

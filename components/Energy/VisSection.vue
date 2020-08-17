@@ -1,9 +1,12 @@
 <template>
   <section>
     <power-energy-chart
+      v-if="ready"
       :hover-on="isHovering"
       :hover-date="hoverDate"
       :zoom-extent="zoomExtent"
+      :tick-format="tickFormat"
+      :second-tick-format="secondTickFormat"
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
