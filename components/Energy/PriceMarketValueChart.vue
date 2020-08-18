@@ -150,8 +150,7 @@ export default {
       domainPriceMarketValue: 'regionEnergy/domainPriceMarketValue',
       domainVolWeightedPriceDomains:
         'regionEnergy/domainVolWeightedPriceDomains',
-      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
-      filteredSummary: 'regionEnergy/filteredSummary'
+      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy'
     }),
     priceDomains() {
       return this.isEnergyType

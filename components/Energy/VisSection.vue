@@ -156,19 +156,22 @@ export default {
       setDateZoomExtent: 'visInteract/dateZoomExtent',
       setHoverDate: 'visInteract/hoverDate',
       setFocusDate: 'visInteract/focusDate',
-      setIsFocusing: 'visInteract/isFocusing'
+      setIsFocusing: 'visInteract/isFocusing',
+      setFilteredDates: 'regionEnergy/filteredDates'
     }),
     getDataByTime(dataset, time) {
       return dataset.find(d => d.time === time)
     },
     handleDateHover(date) {
       const closestDate = DateDisplay.snapToClosestInterval(this.interval, date)
-      this.setHoverDate(closestDate)
       this.hoverDate = closestDate
+      // this.setHoverDate(closestDate)
+      this.$emit('dateHover', closestDate)
     },
     handleIsHovering(hover) {
-      this.setIsHovering(hover)
       this.isHovering = hover
+      // this.setIsHovering(hover)
+      this.$emit('isHovering', hover)
     },
     handleSvgClick(metaKey) {
       if (metaKey && this.focusOn && !this.compareDifference) {
@@ -263,9 +266,11 @@ export default {
         // )
         this.setDateZoomExtent([startTime, endTime])
         this.zoomExtent = [startTime, endTime]
+        this.setFilteredDates([startTime, endTime])
       } else {
         this.setDateZoomExtent([])
         this.zoomExtent = []
+        this.setFilteredDates([])
         // this.filteredDataset = this.dataset
       }
     }

@@ -1,7 +1,7 @@
 <template>
   <div class="summary-table">
     <dates-display
-      :hover-on="hoverOn"
+      :is-hovering="hoverOn"
       :focus-on="focusOn"
       :start-date="startDate"
       :end-date="endDate"

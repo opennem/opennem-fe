@@ -94,8 +94,7 @@ export default {
       isEnergyType: 'regionEnergy/isEnergyType',
       currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
       domainTemperature: 'regionEnergy/domainTemperature',
-      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
-      filteredSummary: 'regionEnergy/filteredSummary'
+      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy'
     }),
     temperatureDomains() {
       return this.domainTemperature
@@ -147,9 +146,6 @@ export default {
     },
     isRenewableLineOnly() {
       return this.chartEnergyRenewablesLine && this.domains.length === 0
-    },
-    averageEnergy() {
-      return this.filteredSummary ? this.filteredSummary._averageEnergy : 0
     },
     hoverData() {
       if (!this.hoverDate) {

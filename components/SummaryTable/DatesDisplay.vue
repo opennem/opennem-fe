@@ -20,7 +20,7 @@
 import { mapGetters } from 'vuex'
 export default {
   props: {
-    hoverOn: {
+    isHovering: {
       type: Boolean,
       default: () => false
     },
@@ -48,12 +48,6 @@ export default {
       type: String,
       default: () => ''
     }
-  },
-
-  computed: {
-    ...mapGetters({
-      isHovering: 'visInteract/isHovering'
-    })
   }
 }
 </script>

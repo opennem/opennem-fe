@@ -90,8 +90,7 @@ export default {
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
       currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
-      currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
-      filteredSummary: 'regionEnergy/filteredSummary'
+      currentDomainEmissions: 'regionEnergy/currentDomainEmissions'
     }),
     yMax() {
       return max(this.currentDatasetFlat, d => d._stackedTotalEmissionsMax)

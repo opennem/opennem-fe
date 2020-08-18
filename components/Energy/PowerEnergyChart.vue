@@ -234,7 +234,7 @@ export default {
       currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
       domainTemperature: 'regionEnergy/domainTemperature',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
-      filteredSummary: 'regionEnergy/filteredSummary'
+      summary: 'regionEnergy/summary'
     }),
     isTypeArea() {
       return this.chartEnergyType === 'area'
@@ -426,7 +426,7 @@ export default {
       return this.chartEnergyRenewablesLine && this.domains.length === 0
     },
     averageEnergy() {
-      return this.filteredSummary ? this.filteredSummary._averageEnergy : 0
+      return this.summary ? this.summary._averageEnergy : 0
     },
     hoverData() {
       if (!this.hoverDate) {

@@ -13,9 +13,9 @@
       :domains="domains"
       :stacked-area-domains="domains"
       :temperature-domains="domainTemperature"
-      :dataset="currentDatasetFlat"
+      :dataset="filteredCurrentDatasetFlat"
       :hover-date="hoverDate"
-      :hover-on="hoverOn"
+      :hover-on="isHovering"
       :focus-date="focusDate"
       :focus-on="focusOn"
       :range="range"
@@ -39,10 +39,19 @@ export default {
     SummaryTable
   },
 
+  props: {
+    isHovering: {
+      type: Boolean,
+      default: false
+    },
+    hoverDate: {
+      type: Date,
+      default: null
+    }
+  },
+
   computed: {
     ...mapGetters({
-      hoverOn: 'visInteract/isHovering',
-      hoverDate: 'visInteract/hoverDate',
       hoverDomain: 'visInteract/hoverDomain',
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
@@ -52,6 +61,7 @@ export default {
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
       currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
+      filteredCurrentDatasetFlat: 'regionEnergy/filteredCurrentDatasetFlat',
       domainTemperature: 'regionEnergy/domainTemperature',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy'
     }),
@@ -62,7 +72,7 @@ export default {
 
   methods: {
     ...mapMutations({
-      setFilteredSummary: 'regionEnergy/filteredSummary'
+      setSummary: 'regionEnergy/summary'
     }),
     handleFuelTechsHidden(hidden) {
       // console.log('ft hidden', hidden)
@@ -70,7 +80,7 @@ export default {
     },
     handleSummaryUpdated(summary) {
       // console.log('summary updated', summary)
-      this.setFilteredSummary(summary)
+      this.setSummary(summary)
     },
     handleSummaryRowMouseEnter(ft) {
       // console.log('summary row enter', ft)

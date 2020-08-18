@@ -2,8 +2,14 @@
   <div class="energy-region">
     <data-options-bar />
     <div class="vis-summary vis-table-container">
-      <vis-section class="vis-section vis-container" />
-      <summary-section class="summary-section table-container"/>
+      <vis-section 
+        class="vis-section vis-container" 
+        @dateHover="handleDateHover"
+        @isHovering="handleIsHovering" />
+      <summary-section
+        :hover-date="hoverDate"
+        :is-hovering="isHovering"
+        class="summary-section table-container"/>
     </div>
   </div>
 </template>
@@ -22,6 +28,13 @@ export default {
     DataOptionsBar,
     VisSection,
     SummarySection
+  },
+
+  data() {
+    return {
+      isHovering: false,
+      hoverDate: null
+    }
   },
 
   computed: {
@@ -100,7 +113,13 @@ export default {
     }),
     ...mapMutations({
       setWindowWidth: 'app/windowWidth'
-    })
+    }),
+    handleDateHover(date) {
+      this.hoverDate = date
+    },
+    handleIsHovering(hover) {
+      this.isHovering = hover
+    }
   }
 }
 </script>

@@ -25,7 +25,9 @@ export const state = () => ({
   domainTemperature: [],
   currentDomainPowerEnergy: [],
   currentDomainEmissions: [],
-  filteredSummary: null
+  filteredDates: [],
+  summaryDataset: [],
+  summary: null
 })
 
 export const getters = {
@@ -43,7 +45,16 @@ export const getters = {
   domainTemperature: state => state.domainTemperature,
   currentDomainPowerEnergy: state => state.currentDomainPowerEnergy,
   currentDomainEmissions: state => state.currentDomainEmissions,
-  filteredSummary: state => state.filteredSummary
+  summaryDataset: state => state.summaryDataset,
+  summary: state => state.summary,
+  filteredCurrentDatasetFlat: state =>
+    state.filteredDates.length > 0
+      ? state.currentDatasetFlat.filter(
+          d =>
+            d.time >= state.filteredDates[0].getTime() &&
+            d.date <= state.filteredDates[1].getTime()
+        )
+      : state.currentDatasetFlat
 }
 
 export const mutations = {
@@ -94,8 +105,14 @@ export const mutations = {
   currentDomainEmissions(state, currentDomainEmissions) {
     state.currentDomainEmissions = _cloneDeep(currentDomainEmissions)
   },
-  filteredSummary(state, filteredSummary) {
-    state.filteredSummary = _cloneDeep(filteredSummary)
+  summaryDataset(state, summaryDataset) {
+    state.summaryDataset = _cloneDeep(summaryDataset)
+  },
+  summary(state, summary) {
+    state.summary = _cloneDeep(summary)
+  },
+  filteredDates(state, filteredDates) {
+    state.filteredDates = _cloneDeep(filteredDates)
   }
 }
 
