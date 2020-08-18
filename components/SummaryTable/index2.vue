@@ -213,14 +213,6 @@ export default {
       type: Array,
       default: () => []
     },
-    domains: {
-      type: Array,
-      default: () => []
-    },
-    stackedAreaDomains: {
-      type: Array,
-      default: () => []
-    },
     emissionsDomains: {
       type: Array,
       default: () => []
@@ -337,17 +329,17 @@ export default {
     },
 
     sourcesOrderLength() {
-      return this.domains.filter(
+      return this.energyDomains.filter(
         d => d.category === 'source' || d.category === 'load'
       ).length
     },
 
     sourcesOrder() {
-      return this.domains.filter(d => d.category === 'source')
+      return this.energyDomains.filter(d => d.category === 'source')
     },
 
     loadsOrder() {
-      return this.domains.filter(d => d.category === 'load')
+      return this.energyDomains.filter(d => d.category === 'load')
     },
 
     sourcesMarketValueOrder() {
@@ -491,8 +483,14 @@ export default {
     dataset(updated) {
       this.calculateSummary(updated)
     },
-    domains(updated) {
+    energyDomains(updated) {
       this.calculateSummary(this.dataset)
+    },
+    marketValueDomains(updated) {
+      this.calculateSummary(this.dataset)
+    },
+    emissionsDomains(updated) {
+      console.log(updated)
     },
     hoverDate(date) {
       this.updatePointSummary(date)
@@ -526,13 +524,13 @@ export default {
 
     // if all is hidden, then unhide all
     let hiddenLength = 0
-    this.domains.forEach(d => {
+    this.energyDomains.forEach(d => {
       if (_includes(hiddenFuelTechs, d[property])) {
         hiddenLength += 1
       }
     })
 
-    if (this.domains.length === hiddenLength) {
+    if (this.energyDomains.length === hiddenLength) {
       this.hiddenSources = []
       this.hiddenLoads = []
       hiddenFuelTechs = []
@@ -541,7 +539,9 @@ export default {
     this.$emit('fuelTechsHidden', hiddenFuelTechs)
 
     hiddenFuelTechs.forEach(fuelTech => {
-      const find = this.domains.find(domain => domain[property] === fuelTech)
+      const find = this.energyDomains.find(
+        domain => domain[property] === fuelTech
+      )
       if (find) {
         if (find.category === 'source') {
           this.hiddenSources.push(fuelTech)
@@ -555,6 +555,7 @@ export default {
 
   methods: {
     calculateSummary(data) {
+      console.log('Calculate summary')
       const isGeneration = this.percentContributionTo === 'generation'
       const hiddenFuelTechProp =
         this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
@@ -575,7 +576,7 @@ export default {
 
       const energySummary = data.map(d => {
         let p = 0
-        this.domains.forEach(ft => {
+        this.energyDomains.forEach(ft => {
           p += d[ft.id] || 0
         })
         return p
@@ -640,7 +641,7 @@ export default {
       }
 
       // Calculate Energy
-      this.stackedAreaDomains.forEach(ft => {
+      this.energyDomains.forEach(ft => {
         const category = ft.category
         const dataEnergy = dataEnergyMap(ft)
         const dataEnergyMinusHidden = dataEnergyMap(ft, true)
@@ -720,46 +721,70 @@ export default {
         0
       )
       // Calculate Market Value for Energy
-      this.marketValueDomains.forEach((ft, index) => {
-        const category = ft.category
-        let avValue = null
-        let dataMarketValueSum = 0
-
+      if (this.marketValueDomains.length > 0) {
         if (this.isEnergy) {
-          const dataMarketValue = data.map(d => {
-            const marketValue = {}
-            marketValue[ft.id] = Math.abs(d[ft.id])
-            return marketValue
+          this.marketValueDomains.forEach((ft, index) => {
+            const property =
+              this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+            const category = ft.category
+            let avValue = null
+            let dataMarketValueSum = 0
+
+            const dataMarketValue = data.map(d => {
+              const marketValue = {}
+              marketValue[ft.id] = Math.abs(d[ft.id])
+              return marketValue
+            })
+            dataMarketValueSum = dataMarketValue.reduce(
+              (prev, cur) => prev + cur[ft.id],
+              0
+            )
+            const findEnergyEq = this.energyDomains.find(
+              e => e[property] === ft[property]
+            )
+            if (!findEnergyEq) {
+              console.error(
+                'There is an issue finding the energy fuel tech in market value calculations.'
+              )
+            }
+            const ftTotal = Math.abs(this.summary[findEnergyEq.id])
+            avValue = this.isYearInterval
+              ? dataMarketValueSum / ftTotal / 1000 / 1000
+              : dataMarketValueSum / ftTotal / 1000
+
+            this.summary[ft.id] = avValue
+            totalPriceMarketValue += dataMarketValueSum
+
+            if (category === 'source') {
+              this.summarySources[ft.id] = avValue
+            } else if (category === 'load') {
+              this.summaryLoads[ft.id] = avValue
+            }
           })
-          dataMarketValueSum = dataMarketValue.reduce(
-            (prev, cur) => prev + cur[ft.id],
-            0
-          )
-          const ftTotal = Math.abs(this.summary[this.domains[index].id])
-          avValue = this.isYearInterval
-            ? dataMarketValueSum / ftTotal / 1000 / 1000
-            : dataMarketValueSum / ftTotal / 1000
         } else {
-          const ftId = this.domains[index].id
-          const dataPowerTotal = data.reduce((a, b) => a + (b[ftId] || 0), 0)
-          // calculate the price * ft total
-          const ftPrice = data.map((d, i) => {
-            const price = data[i][this.priceId] ? data[i][this.priceId] : 0
-            return Math.abs(d[ftId]) * price
-          })
-          const ftPriceTotal = ftPrice.reduce((a, b) => a + b, 0)
-          avValue = ftPriceTotal / Math.abs(dataPowerTotal)
+          // let avValue = null
+          // console.log(this.marketValueDomains)
+          // let priceId = this.marketValueDomains[0].id
+          // this.energyDomains.forEach(domain => {
+          //   const ftId = domain.id
+          //   const category = domain.category
+          //   const dataPowerTotal = data.reduce((a, b) => a + (b[ftId] || 0), 0)
+          //   // calculate the price * ft total
+          //   const ftPrice = data.map((d, i) => {
+          //     const price = data[i][this.priceId] ? data[i][this.priceId] : 0
+          //     return Math.abs(d[ftId]) * price
+          //   })
+          //   const ftPriceTotal = ftPrice.reduce((a, b) => a + b, 0)
+          //   avValue = ftPriceTotal / Math.abs(dataPowerTotal)
+          //   this.summary[priceId] = avValue
+          //   if (category === 'source') {
+          //     this.summarySources[ftId] = avValue
+          //   } else if (category === 'load') {
+          //     this.summaryLoads[ftId] = avValue
+          //   }
+          // })
         }
-
-        this.summary[ft.id] = avValue
-        totalPriceMarketValue += dataMarketValueSum
-
-        if (category === 'source') {
-          this.summarySources[ft.id] = avValue
-        } else if (category === 'load') {
-          this.summaryLoads[ft.id] = avValue
-        }
-      })
+      }
 
       // Calculate Temperature domains
       const temperatureObj = this.temperatureDomains.find(domain => {
@@ -818,7 +843,6 @@ export default {
         : totalEVMinusHidden / avTotal
       this.summary._averageTemperature =
         totalTemperatureWithoutNulls / temperatureWithoutNulls.length
-
       this.$emit('summary-update', this.summary)
     },
 
@@ -833,7 +857,7 @@ export default {
       this.pointSummaryLoads = {}
 
       if (!_isEmpty(this.pointSummary)) {
-        this.domains.forEach(ft => {
+        this.energyDomains.forEach(ft => {
           const category = ft.category
           const value = this.pointSummary[ft.id]
 
@@ -850,23 +874,35 @@ export default {
         })
 
         // Calculate Market Value
-        this.marketValueDomains.forEach((ft, index) => {
-          const category = ft.category
-          const value = Math.abs(this.pointSummary[ft.id])
-          const ftTotal = Math.abs(this.pointSummary[this.domains[index].id])
-          const avValue = this.isYearInterval
-            ? value / ftTotal / 1000 / 1000
-            : value / ftTotal / 1000
+        if (this.isEnergy) {
+          this.marketValueDomains.forEach((ft, index) => {
+            const property =
+              this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+            const category = ft.category
+            const value = Math.abs(this.pointSummary[ft.id])
+            const findEnergyEq = this.energyDomains.find(
+              e => e[property] === ft[property]
+            )
+            if (!findEnergyEq) {
+              console.error(
+                'There is an issue finding the energy fuel tech in market value calculations.'
+              )
+            }
+            const ftTotal = Math.abs(this.pointSummary[findEnergyEq.id])
+            const avValue = this.isYearInterval
+              ? value / ftTotal / 1000 / 1000
+              : value / ftTotal / 1000
 
-          this.pointSummary[ft.id] = avValue
-          totalPriceMarketValue += value
+            this.pointSummary[ft.id] = avValue
+            totalPriceMarketValue += value
 
-          if (category === 'source') {
-            this.pointSummarySources[ft.id] = avValue
-          } else if (category === 'load') {
-            this.pointSummaryLoads[ft.id] = avValue
-          }
-        })
+            if (category === 'source') {
+              this.pointSummarySources[ft.id] = avValue
+            } else if (category === 'load') {
+              this.pointSummaryLoads[ft.id] = avValue
+            }
+          })
+        }
 
         // Calculate Emissions
         this.emissionsDomains.forEach(domain => {

@@ -7,6 +7,7 @@ const perfTime = new PerfTime()
   - Reverse value for imports and load types
 */
 export default function({
+  isEnergyType,
   currentDatasetFlat,
   domainPowerEnergy,
   domainEmissions,
@@ -121,9 +122,15 @@ export default function({
     })
 
     // calculate vol weighted pricing
-    domainPriceMarketValue.forEach(domain => {
-      totalMarketValue += d[domain.id] || 0
-    })
+    if (isEnergyType) {
+      domainPriceMarketValue.forEach(domain => {
+        totalMarketValue += d[domain.id] || 0
+      })
+    } else {
+      domainPriceMarketValue.forEach(domain => {
+        dataset[i][domain.id] = 0
+      })
+    }
 
     domainEmissions.forEach(domain => {
       totalEmissionsVol += d[domain.id] || 0

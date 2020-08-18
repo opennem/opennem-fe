@@ -14,7 +14,7 @@
     :class="{ 'click-disable': !domainToggleable }"
     class="summary-list">
     <div
-      v-for="(ft, index) in order"
+      v-for="ft in order"
       :key="ft.id"
       class="item summary-row"
       @mouseenter="handleMouseEnter(ft)"
@@ -57,7 +57,7 @@
       <div
         v-show="isAvValueColumn"
         class="summary-col-av-value">
-        {{ getAverageValue(index) | formatCurrency }}
+        {{ getAverageValue(ft) | formatCurrency }}
       </div>
 
       <div
@@ -155,6 +155,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      fuelTechGroupName: 'fuelTechGroupName',
       emissionsVolumePrefix: 'si/emissionsVolumePrefix',
       percentContributionTo: 'percentContributionTo',
       chartEnergyRenewablesLine: 'visInteract/chartEnergyRenewablesLine'
@@ -245,6 +246,7 @@ export default {
           colour: d.colour,
           domainIds: d.domainIds,
           fuelTech: d.fuelTech,
+          group: d.group,
           id: d.id,
           label: d.label,
           type: d.type,
@@ -275,10 +277,11 @@ export default {
       return (rowValue / total) * 100
     },
 
-    getAverageValue(index) {
-      const id = this.hasMarketValueOrder
-        ? this.marketValueOrder[index].id
-        : null
+    getAverageValue(ft) {
+      const property =
+        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+      const find = this.marketValueOrder.find(d => d[property] === ft[property])
+      const id = find ? find.id : null
       return this.showPointSummary
         ? this.pointSummary[id] || ''
         : this.summary[id] || ''

@@ -1,13 +1,15 @@
 import PerfTime from '@/plugins/perfTime.js'
-import { EMISSIONS } from '@/constants/v2/data-types'
+import { EMISSIONS, MARKET_VALUE } from '@/constants/v2/data-types'
 import parseAndCheckData from './parseAndCheckData.js'
 import createEmptyDatasets from './createEmptyDatasets.js'
 import flattenAndInterpolate from './flattenAndInterpolate.js'
 import {
+  getFuelTechWithTypeDomains,
   getFuelTechInOrder,
   getFuelTechDomains,
   getTemperatureDomains,
   getPriceDomains,
+  getDerivedPriceDomains,
   getVolWeightedPriceDomains
 } from './getDomains.js'
 
@@ -32,6 +34,7 @@ export default function(responses) {
       })
     }
   })
+
   const {
     dataAll,
     dataPowerEnergy,
@@ -44,6 +47,7 @@ export default function(responses) {
   } = parseAndCheckData(data)
 
   const fuelTechIdTypes = getFuelTechInOrder(dataPowerEnergy)
+
   const domainPowerEnergy = getFuelTechDomains(
     fuelTechIdTypes,
     fuelTechDataType
@@ -52,17 +56,26 @@ export default function(responses) {
     getFuelTechInOrder(dataEmissions),
     EMISSIONS
   )
-  console.log(domainEmissions)
-  const domainPriceMarketValue = getPriceDomains(dataPriceMarketValue)
-  const domainVolWeightedPriceDomains = getVolWeightedPriceDomains()
+  const domainPriceMarketValue = isPowerData
+    ? getFuelTechWithTypeDomains(fuelTechIdTypes, MARKET_VALUE)
+    : getFuelTechDomains(getFuelTechInOrder(dataPriceMarketValue), MARKET_VALUE)
+
+  const domainVolWeightedPriceDomains = isPowerData
+    ? [...getPriceDomains(dataPriceMarketValue), ...getDerivedPriceDomains()]
+    : getVolWeightedPriceDomains()
+
   const domainTemperature = getTemperatureDomains(dataTemperature)
+
   const dataInterval = hasPowerEnergyData
     ? dataPowerEnergy[0].history.interval
     : null
+
   const datasetFlat = createEmptyDatasets(dataPowerEnergy)
+
   flattenAndInterpolate(isPowerData, dataInterval, dataAll, datasetFlat)
 
   perfTime.timeEnd('data.process')
+
   return {
     datasetFlat,
     domainPowerEnergy,

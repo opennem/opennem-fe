@@ -148,15 +148,9 @@ export default {
       isEnergyType: 'regionEnergy/isEnergyType',
       currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
       domainPriceMarketValue: 'regionEnergy/domainPriceMarketValue',
-      domainVolWeightedPriceDomains:
-        'regionEnergy/domainVolWeightedPriceDomains',
+      priceDomains: 'regionEnergy/domainVolWeightedPriceDomains',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy'
     }),
-    priceDomains() {
-      return this.isEnergyType
-        ? this.domainVolWeightedPriceDomains
-        : this.domainPriceMarketValue
-    },
     priceDataset() {
       return this.currentDatasetFlat
     },

@@ -1,5 +1,5 @@
 import { getAllGroups } from '@/constants/v2/groups'
-import { EMISSIONS } from '@/constants/v2/data-types'
+import { EMISSIONS, MARKET_VALUE } from '@/constants/v2/data-types'
 import process from './process'
 import rollUp from './rollUp'
 import summariseDataset from './summarise'
@@ -31,18 +31,26 @@ export function dataProcess(responses, range, interval) {
   })
   const domainPowerEnergyGrouped = getAllGroups(domainPowerEnergy, type)
   const domainEmissionsGrouped = getAllGroups(domainEmissions, EMISSIONS)
+  const domainPriceMarketValueGrouped = getAllGroups(
+    domainPriceMarketValue,
+    MARKET_VALUE
+  )
 
   summariseDataset({
+    isEnergyType: type === 'energy',
     currentDatasetFlat,
     domainPowerEnergy,
     domainEmissions,
     domainPriceMarketValue
   })
-  groupDataset(
-    currentDatasetFlat,
+  groupDataset({
+    dataset: currentDatasetFlat,
     domainPowerEnergyGrouped,
-    domainEmissionsGrouped
-  )
+    domainEmissionsGrouped,
+    domainPriceMarketValueGrouped
+  })
+
+  console.log(currentDatasetFlat)
 
   return {
     dataType: type,
@@ -52,6 +60,7 @@ export function dataProcess(responses, range, interval) {
     domainEmissions,
     domainEmissionsGrouped,
     domainPriceMarketValue,
+    domainPriceMarketValueGrouped,
     domainVolWeightedPriceDomains,
     domainTemperature,
     currentDatasetFlat
@@ -65,9 +74,11 @@ export function dataRollUp({
   domainEmissions,
   domainEmissionsGrouped,
   domainPriceMarketValue,
+  domainPriceMarketValueGrouped,
   domainTemperature,
   range,
-  interval
+  interval,
+  isEnergyType
 }) {
   const currentDatasetFlat = rollUp({
     domains: [
@@ -81,16 +92,18 @@ export function dataRollUp({
   })
 
   summariseDataset({
+    isEnergyType,
     currentDatasetFlat,
     domainPowerEnergy,
     domainEmissions,
     domainPriceMarketValue
   })
-  groupDataset(
-    currentDatasetFlat,
+  groupDataset({
+    dataset: currentDatasetFlat,
     domainPowerEnergyGrouped,
-    domainEmissionsGrouped
-  )
+    domainEmissionsGrouped,
+    domainPriceMarketValueGrouped
+  })
 
   return {
     currentDatasetFlat
