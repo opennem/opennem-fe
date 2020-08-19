@@ -49,8 +49,6 @@ export function dataProcess(responses, range, interval) {
     domainMarketValueGrouped
   })
 
-  console.log(currentDatasetFlat)
-
   return {
     dataType: type,
     datasetFlat: dataset,

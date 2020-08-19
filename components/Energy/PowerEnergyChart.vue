@@ -64,13 +64,7 @@
         </span>
       </template>
     </chart-header>
-    <!--
-            
-      summary table first
-      :highlight-domain="highlightDomain"
-      
-      :mobile-screen="tabletBreak"
-    -->
+    
     <stacked-area-vis
       v-if="chartEnergy && (isTypeArea || isTypeProportion)"
       :domains="domains"
@@ -106,8 +100,6 @@
 
     <!-- 
       :toggled="chartEnergy"
-      :highlight-domain="highlightDomain"
-
      -->
 
     <button

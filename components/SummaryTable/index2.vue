@@ -558,7 +558,7 @@ export default {
 
   methods: {
     calculateSummary(data) {
-      console.log('Calculate summary')
+      // console.log('Calculate summary')
       const isGeneration = this.percentContributionTo === 'generation'
       let totalEnergy = 0
       let totalEnergyMinusHidden = 0

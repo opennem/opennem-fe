@@ -62,7 +62,6 @@ export default function(responses) {
   const domainPrice = isPowerData
     ? getPriceDomains(dataPriceMarketValue)
     : getVolWeightedPriceDomains()
-  console.log(domainPrice)
 
   const domainTemperature = getTemperatureDomains(dataTemperature)
 
