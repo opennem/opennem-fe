@@ -73,7 +73,7 @@
     -->
     <stacked-area-vis
       v-if="chartEnergy && (isTypeArea || isTypeProportion)"
-      :domains="isTypeArea ? domains : energyPercentDomains"
+      :domains="domains"
       :dataset="isTypeArea ? currentDatasetFlat : energyPercentDataset"
       :range="range"
       :interval="interval"
@@ -162,6 +162,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex'
 import { min, max } from 'd3-array'
+import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 import addWeeks from 'date-fns/addWeeks'
 import addMonths from 'date-fns/addMonths'
@@ -229,6 +230,7 @@ export default {
       compareDates: 'compareDates',
       percentContributionTo: 'percentContributionTo',
       fuelTechGroupName: 'fuelTechGroupName',
+      hiddenFuelTechs: 'hiddenFuelTechs',
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
       currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
@@ -271,9 +273,6 @@ export default {
     renewablesMax() {
       let m = max(this.renewablesPercentageDataset, d => d.value)
       return m < 100 ? 100 : m
-    },
-    energyPercentDomains() {
-      return this.domains.filter(d => d.category === 'source')
     },
     energyPercentDataset() {
       const dataset = _cloneDeep(this.currentDatasetFlat)
@@ -368,7 +367,7 @@ export default {
           time: d.time,
           _isIncompleteBucket: d._isIncompleteBucket
         }
-        this.domains.forEach(domain => {
+        this.powerEnergyDomains.forEach(domain => {
           if (domain.category === 'load') {
             obj[domain.id] = d[domain.id] === 0 ? null : -d[domain.id]
           } else {
@@ -379,10 +378,28 @@ export default {
       })
     },
     yMin() {
-      return min(this.currentDatasetFlat, d => d._stackedTotalMin)
+      const dataset = _cloneDeep(this.currentDatasetFlat)
+      dataset.forEach(d => {
+        let stackedMin = 0
+        this.domains.forEach(domain => {
+          if (d[domain.id] < 0) {
+            stackedMin += d[domain.id] || 0
+          }
+        })
+        d._stackedTotalMin = stackedMin
+      })
+      return min(dataset, d => d._stackedTotalMin)
     },
     yMax() {
-      return max(this.currentDatasetFlat, d => d._stackedTotalMax)
+      const dataset = _cloneDeep(this.currentDatasetFlat)
+      dataset.forEach(d => {
+        let stackedMax = 0
+        this.domains.forEach(domain => {
+          stackedMax += d[domain.id]
+        })
+        d._stackedTotalMax = stackedMax
+      })
+      return max(dataset, d => d._stackedTotalMax)
     },
     energyLineYMin() {
       const dataset = this.isYAxisPercentage
@@ -417,7 +434,18 @@ export default {
       return AxisTicks(this.range, this.interval, this.zoomExtent.length > 0)
     },
     domains() {
+      const property = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
+      const domains = this.isTypeArea
+        ? this.powerEnergyDomains
+        : this.energyPercentDomains
+      const hidden = this.hiddenFuelTechs
+      return domains.filter(d => !_includes(hidden, d[property]))
+    },
+    powerEnergyDomains() {
       return _cloneDeep(this.currentDomainPowerEnergy).reverse()
+    },
+    energyPercentDomains() {
+      return this.powerEnergyDomains.filter(d => d.category === 'source')
     },
     isYearInterval() {
       return this.interval === 'Fin Year' || this.interval === 'Year'

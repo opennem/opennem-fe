@@ -77,8 +77,7 @@ export default {
       setSummary: 'regionEnergy/summary'
     }),
     handleFuelTechsHidden(hidden) {
-      // console.log('ft hidden', hidden)
-      // this.$store.dispatch('hiddenFuelTechs', hidden)
+      this.$store.dispatch('hiddenFuelTechs', hidden)
     },
     handleSummaryUpdated(summary) {
       // console.log('summary updated', summary)
