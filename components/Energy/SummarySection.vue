@@ -58,6 +58,7 @@ export default {
       dateZoomExtent: 'visInteract/dateZoomExtent',
       range: 'range',
       interval: 'interval',
+      fuelTechGroupName: 'fuelTechGroupName',
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
       currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
@@ -74,7 +75,8 @@ export default {
 
   methods: {
     ...mapMutations({
-      setSummary: 'regionEnergy/summary'
+      setSummary: 'regionEnergy/summary',
+      setHighlightDomain: 'visInteract/highlightDomain'
     }),
     handleFuelTechsHidden(hidden) {
       this.$store.dispatch('hiddenFuelTechs', hidden)
@@ -84,10 +86,12 @@ export default {
       this.setSummary(summary)
     },
     handleSummaryRowMouseEnter(ft) {
-      // console.log('summary row enter', ft)
+      const property =
+        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+      this.setHighlightDomain(ft[property])
     },
     handleSummaryRowMouseLeave() {
-      // console.log('summary row leave')
+      this.setHighlightDomain('')
     }
   }
 }

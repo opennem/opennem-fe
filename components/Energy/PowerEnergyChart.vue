@@ -93,6 +93,7 @@
       :incomplete-intervals="incompleteIntervals"
       :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
       :dataset-two-colour="renewablesLineColour"
+      :highlight-domain="highlightId"
       :mobile-screen="tabletBreak"
       class="vis-chart"
       @dateOver="handleDateHover"
@@ -140,6 +141,7 @@
       :zoom-range="zoomExtent"
       :draw-incomplete-bucket="false"
       :x-shades="xGuides"
+      :highlight-domain="highlightId"
       @date-hover="handleDateHover"
       @domain-hover="handleDomainHover"
       @enter="handleVisEnter"
@@ -225,6 +227,7 @@ export default {
       chartEnergyCurve: 'visInteract/chartEnergyCurve',
       chartPowerCurve: 'visInteract/chartPowerCurve',
       chartEnergyRenewablesLine: 'visInteract/chartEnergyRenewablesLine',
+      highlightDomain: 'visInteract/highlightDomain',
       range: 'range',
       interval: 'interval',
       compareDates: 'compareDates',
@@ -238,6 +241,13 @@ export default {
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       summary: 'regionEnergy/summary'
     }),
+    highlightId() {
+      const domain = this.highlightDomain
+      const property =
+        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+      const find = this.domains.find(d => d[property] === domain)
+      return find ? find.id : ''
+    },
     isTypeArea() {
       return this.chartEnergyType === 'area'
     },

@@ -3,6 +3,7 @@ export const state = () => ({
   isHovering: false,
   hoverDate: null,
   hoverDomain: null,
+  highlightDomain: '',
   isFocusing: false,
   focusDate: null,
   dateZoomExtent: [],
@@ -22,6 +23,7 @@ export const getters = {
   isHovering: state => state.isHovering,
   hoverDate: state => state.hoverDate,
   hoverDomain: state => state.hoverDomain,
+  highlightDomain: state => state.highlightDomain,
   isFocusing: state => state.isFocusing,
   focusDate: state => state.focusDate,
   dateZoomExtent: state => _cloneDeep(state.dateZoomExtent),
@@ -47,6 +49,9 @@ export const mutations = {
   },
   hoverDomain(state, hoverDomain) {
     state.hoverDomain = hoverDomain
+  },
+  highlightDomain(state, highlightDomain) {
+    state.highlightDomain = highlightDomain
   },
   isFocusing(state, isFocusing) {
     state.isFocusing = isFocusing

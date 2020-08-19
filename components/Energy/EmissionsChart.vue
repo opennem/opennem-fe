@@ -27,6 +27,7 @@
       :focus-date="focusDate"
       :focus-on="focusOn"
       :incomplete-intervals="incompleteIntervals"
+      :highlight-domain="highlightId"
       class="vis-chart"
       @dateOver="handleDateHover"
       @domainOver="handleDomainHover"
@@ -86,6 +87,7 @@ export default {
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
       chartEmissionsVolume: 'visInteract/chartEmissionsVolume',
+      highlightDomain: 'visInteract/highlightDomain',
       range: 'range',
       interval: 'interval',
       fuelTechGroupName: 'fuelTechGroupName',
@@ -95,6 +97,13 @@ export default {
       currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions'
     }),
+    highlightId() {
+      const domain = this.highlightDomain
+      const property =
+        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+      const find = this.domains.find(d => d[property] === domain)
+      return find ? find.id : ''
+    },
     yMax() {
       const dataset = _cloneDeep(this.currentDatasetFlat)
       dataset.forEach(d => {
