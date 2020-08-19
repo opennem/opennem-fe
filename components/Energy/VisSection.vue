@@ -31,7 +31,7 @@
     />
 
     <price-market-value-chart 
-      v-if="ready && domainPriceMarketValue.length > 0" 
+      v-if="ready && domainPrice.length > 0" 
       :hover-on="isHovering"
       :hover-date="hoverDate"
       :zoom-extent="zoomExtent"
@@ -104,7 +104,7 @@ export default {
       currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
       domainEmissions: 'regionEnergy/domainEmissions',
       domainTemperature: 'regionEnergy/domainTemperature',
-      domainPriceMarketValue: 'regionEnergy/domainPriceMarketValue',
+      domainPrice: 'regionEnergy/domainPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy'
     }),
     domains() {

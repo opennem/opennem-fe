@@ -20,13 +20,13 @@ export const state = () => ({
   domainPowerEnergyGrouped: [],
   domainEmissions: [],
   domainEmissionsGrouped: [],
-  domainPriceMarketValue: [],
-  domainPriceMarketValueGrouped: [],
-  domainVolWeightedPriceDomains: [],
+  domainMarketValue: [],
+  domainMarketValueGrouped: [],
+  domainPrice: [],
   domainTemperature: [],
   currentDomainPowerEnergy: [],
   currentDomainEmissions: [],
-  currentDomainPriceMarketValue: [],
+  currentDomainMarketValue: [],
   filteredDates: [],
   summaryDataset: [],
   summary: null
@@ -42,13 +42,13 @@ export const getters = {
   domainPowerEnergyGrouped: state => state.domainPowerEnergyGrouped,
   domainEmissions: state => state.domainEmissions,
   domainEmissionsGrouped: state => state.domainEmissionsGrouped,
-  domainPriceMarketValue: state => state.domainPriceMarketValue,
-  domainPriceMarketValueGrouped: state => state.domainPriceMarketValueGrouped,
-  domainVolWeightedPriceDomains: state => state.domainVolWeightedPriceDomains,
+  domainMarketValue: state => state.domainMarketValue,
+  domainMarketValueGrouped: state => state.domainMarketValueGrouped,
+  domainPrice: state => state.domainPrice,
   domainTemperature: state => state.domainTemperature,
   currentDomainPowerEnergy: state => state.currentDomainPowerEnergy,
   currentDomainEmissions: state => state.currentDomainEmissions,
-  currentDomainPriceMarketValue: state => state.currentDomainPriceMarketValue,
+  currentDomainMarketValue: state => state.currentDomainMarketValue,
   summaryDataset: state => state.summaryDataset,
   summary: state => state.summary,
   filteredCurrentDatasetFlat: state =>
@@ -92,18 +92,14 @@ export const mutations = {
   domainEmissionsGrouped(state, domainEmissionsGrouped) {
     state.domainEmissionsGrouped = _cloneDeep(domainEmissionsGrouped)
   },
-  domainPriceMarketValue(state, domainPriceMarketValue) {
-    state.domainPriceMarketValue = _cloneDeep(domainPriceMarketValue)
+  domainMarketValue(state, domainMarketValue) {
+    state.domainMarketValue = _cloneDeep(domainMarketValue)
   },
-  domainPriceMarketValueGrouped(state, domainPriceMarketValueGrouped) {
-    state.domainPriceMarketValueGrouped = _cloneDeep(
-      domainPriceMarketValueGrouped
-    )
+  domainMarketValueGrouped(state, domainMarketValueGrouped) {
+    state.domainMarketValueGrouped = _cloneDeep(domainMarketValueGrouped)
   },
-  domainVolWeightedPriceDomains(state, domainVolWeightedPriceDomains) {
-    state.domainVolWeightedPriceDomains = _cloneDeep(
-      domainVolWeightedPriceDomains
-    )
+  domainPrice(state, domainPrice) {
+    state.domainPrice = _cloneDeep(domainPrice)
   },
   domainTemperature(state, domainTemperature) {
     state.domainTemperature = _cloneDeep(domainTemperature)
@@ -114,10 +110,8 @@ export const mutations = {
   currentDomainEmissions(state, currentDomainEmissions) {
     state.currentDomainEmissions = _cloneDeep(currentDomainEmissions)
   },
-  currentDomainPriceMarketValue(state, currentDomainPriceMarketValue) {
-    state.currentDomainPriceMarketValue = _cloneDeep(
-      currentDomainPriceMarketValue
-    )
+  currentDomainMarketValue(state, currentDomainMarketValue) {
+    state.currentDomainMarketValue = _cloneDeep(currentDomainMarketValue)
   },
   summaryDataset(state, summaryDataset) {
     state.summaryDataset = _cloneDeep(summaryDataset)
@@ -149,9 +143,9 @@ export const actions = {
           domainPowerEnergyGrouped,
           domainEmissions,
           domainEmissionsGrouped,
-          domainPriceMarketValue,
-          domainPriceMarketValueGrouped,
-          domainVolWeightedPriceDomains,
+          domainMarketValue,
+          domainMarketValueGrouped,
+          domainPrice,
           domainTemperature,
           dataType
         } = dataProcess(responses, range, interval)
@@ -172,16 +166,13 @@ export const actions = {
         commit('domainPowerEnergyGrouped', domainPowerEnergyGrouped)
         commit('domainEmissions', domainEmissions)
         commit('domainEmissionsGrouped', domainEmissionsGrouped)
-        commit('domainPriceMarketValue', domainPriceMarketValue)
-        commit('domainPriceMarketValueGrouped', domainPriceMarketValueGrouped)
-        commit('domainVolWeightedPriceDomains', domainVolWeightedPriceDomains)
+        commit('domainMarketValue', domainMarketValue)
+        commit('domainMarketValueGrouped', domainMarketValueGrouped)
+        commit('domainPrice', domainPrice)
         commit('domainTemperature', domainTemperature)
         commit('currentDomainPowerEnergy', domainPowerEnergyGrouped[groupName])
         commit('currentDomainEmissions', domainEmissionsGrouped[groupName])
-        commit(
-          'currentDomainPriceMarketValue',
-          domainPriceMarketValueGrouped[groupName]
-        )
+        commit('currentDomainMarketValue', domainMarketValueGrouped[groupName])
         commit('jsonResponses', responses)
         commit('ready', true)
       })
@@ -200,8 +191,9 @@ export const actions = {
         domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
         domainEmissions: state.domainEmissions,
         domainEmissionsGrouped: state.domainEmissionsGrouped,
-        domainPriceMarketValue: state.domainPriceMarketValue,
-        domainPriceMarketValueGrouped: state.domainPriceMarketValueGrouped,
+        domainMarketValue: state.domainMarketValue,
+        domainMarketValueGrouped: state.domainMarketValueGrouped,
+        domainPrice: state.domainPrice,
         domainTemperature: state.domainTemperature,
         range,
         interval
@@ -218,8 +210,8 @@ export const actions = {
     )
     commit('currentDomainEmissions', state.domainEmissionsGrouped[groupName])
     commit(
-      'currentDomainPriceMarketValue',
-      state.domainPriceMarketValueGrouped[groupName]
+      'currentDomainMarketValue',
+      state.domainMarketValueGrouped[groupName]
     )
   },
 
@@ -231,8 +223,9 @@ export const actions = {
       domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
       domainEmissions: state.domainEmissions,
       domainEmissionsGrouped: state.domainEmissionsGrouped,
-      domainPriceMarketValue: state.domainPriceMarketValue,
-      domainPriceMarketValueGrouped: state.domainPriceMarketValueGrouped,
+      domainMarketValue: state.domainMarketValue,
+      domainMarketValueGrouped: state.domainMarketValueGrouped,
+      domainPrice: state.domainPrice,
       domainTemperature: state.domainTemperature,
       range,
       interval
@@ -252,8 +245,9 @@ export const actions = {
       domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
       domainEmissions: state.domainEmissions,
       domainEmissionsGrouped: state.domainEmissionsGrouped,
-      domainPriceMarketValue: state.domainPriceMarketValue,
-      domainPriceMarketValueGrouped: state.domainPriceMarketValueGrouped,
+      domainMarketValue: state.domainMarketValue,
+      domainMarketValueGrouped: state.domainMarketValueGrouped,
+      domainPrice: state.domainPrice,
       domainTemperature: state.domainTemperature,
       range,
       interval

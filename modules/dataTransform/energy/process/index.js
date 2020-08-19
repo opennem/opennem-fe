@@ -9,7 +9,6 @@ import {
   getFuelTechDomains,
   getTemperatureDomains,
   getPriceDomains,
-  getDerivedPriceDomains,
   getVolWeightedPriceDomains
 } from './getDomains.js'
 
@@ -56,13 +55,14 @@ export default function(responses) {
     getFuelTechInOrder(dataEmissions),
     EMISSIONS
   )
-  const domainPriceMarketValue = isPowerData
+  const domainMarketValue = isPowerData
     ? getFuelTechWithTypeDomains(fuelTechIdTypes, MARKET_VALUE)
     : getFuelTechDomains(getFuelTechInOrder(dataPriceMarketValue), MARKET_VALUE)
 
-  const domainVolWeightedPriceDomains = isPowerData
-    ? [...getPriceDomains(dataPriceMarketValue), ...getDerivedPriceDomains()]
+  const domainPrice = isPowerData
+    ? getPriceDomains(dataPriceMarketValue)
     : getVolWeightedPriceDomains()
+  console.log(domainPrice)
 
   const domainTemperature = getTemperatureDomains(dataTemperature)
 
@@ -80,8 +80,8 @@ export default function(responses) {
     datasetFlat,
     domainPowerEnergy,
     domainEmissions,
-    domainPriceMarketValue,
-    domainVolWeightedPriceDomains,
+    domainMarketValue,
+    domainPrice,
     domainTemperature,
     type: isPowerData ? 'power' : 'energy'
   }

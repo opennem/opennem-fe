@@ -6,7 +6,7 @@ export default function({
   dataset,
   domainPowerEnergyGrouped,
   domainEmissionsGrouped,
-  domainPriceMarketValueGrouped
+  domainMarketValueGrouped
 }) {
   perfTime.time()
 
@@ -15,7 +15,7 @@ export default function({
     groups[key] = [
       ...groups[key],
       ...domainEmissionsGrouped[key],
-      ...domainPriceMarketValueGrouped[key]
+      ...domainMarketValueGrouped[key]
     ]
   })
 

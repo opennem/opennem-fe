@@ -9,21 +9,23 @@ import { filterDatasetByRange, filterDatasetByPeriod } from './filter'
 export function dataProcess(responses, range, interval) {
   const {
     datasetFlat,
-    domainPriceMarketValue,
-    domainVolWeightedPriceDomains,
+    domainMarketValue,
+    domainPrice,
     domainPowerEnergy,
     domainTemperature,
     domainEmissions,
     type
   } = process(responses)
 
+  const isEnergyType = type === 'energy'
   const dataset = filterDatasetByRange(datasetFlat, range)
 
   const currentDatasetFlat = rollUp({
     domains: [
       ...domainPowerEnergy,
       ...domainEmissions,
-      ...domainPriceMarketValue,
+      ...domainMarketValue,
+      ...domainPrice,
       ...domainTemperature
     ],
     datasetFlat: dataset,
@@ -31,23 +33,20 @@ export function dataProcess(responses, range, interval) {
   })
   const domainPowerEnergyGrouped = getAllGroups(domainPowerEnergy, type)
   const domainEmissionsGrouped = getAllGroups(domainEmissions, EMISSIONS)
-  const domainPriceMarketValueGrouped = getAllGroups(
-    domainPriceMarketValue,
-    MARKET_VALUE
-  )
+  const domainMarketValueGrouped = getAllGroups(domainMarketValue, MARKET_VALUE)
 
   summariseDataset({
-    isEnergyType: type === 'energy',
+    isEnergyType,
     currentDatasetFlat,
     domainPowerEnergy,
     domainEmissions,
-    domainPriceMarketValue
+    domainPrice: isEnergyType ? domainMarketValue : domainPrice
   })
   groupDataset({
     dataset: currentDatasetFlat,
     domainPowerEnergyGrouped,
     domainEmissionsGrouped,
-    domainPriceMarketValueGrouped
+    domainMarketValueGrouped
   })
 
   console.log(currentDatasetFlat)
@@ -59,9 +58,9 @@ export function dataProcess(responses, range, interval) {
     domainPowerEnergyGrouped,
     domainEmissions,
     domainEmissionsGrouped,
-    domainPriceMarketValue,
-    domainPriceMarketValueGrouped,
-    domainVolWeightedPriceDomains,
+    domainMarketValue,
+    domainMarketValueGrouped,
+    domainPrice,
     domainTemperature,
     currentDatasetFlat
   }
@@ -73,8 +72,9 @@ export function dataRollUp({
   domainPowerEnergyGrouped,
   domainEmissions,
   domainEmissionsGrouped,
-  domainPriceMarketValue,
-  domainPriceMarketValueGrouped,
+  domainMarketValue,
+  domainMarketValueGrouped,
+  domainPrice,
   domainTemperature,
   range,
   interval,
@@ -84,7 +84,7 @@ export function dataRollUp({
     domains: [
       ...domainPowerEnergy,
       ...domainEmissions,
-      ...domainPriceMarketValue,
+      ...domainMarketValue,
       ...domainTemperature
     ],
     datasetFlat: filterDatasetByRange(datasetFlat, range),
@@ -96,13 +96,13 @@ export function dataRollUp({
     currentDatasetFlat,
     domainPowerEnergy,
     domainEmissions,
-    domainPriceMarketValue
+    domainPrice: isEnergyType ? domainMarketValue : domainPrice
   })
   groupDataset({
     dataset: currentDatasetFlat,
     domainPowerEnergyGrouped,
     domainEmissionsGrouped,
-    domainPriceMarketValueGrouped
+    domainMarketValueGrouped
   })
 
   return {

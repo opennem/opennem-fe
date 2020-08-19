@@ -11,7 +11,7 @@ export default function({
   currentDatasetFlat,
   domainPowerEnergy,
   domainEmissions,
-  domainPriceMarketValue
+  domainPrice
 }) {
   perfTime.time()
 
@@ -123,12 +123,8 @@ export default function({
 
     // calculate vol weighted pricing
     if (isEnergyType) {
-      domainPriceMarketValue.forEach(domain => {
+      domainPrice.forEach(domain => {
         totalMarketValue += d[domain.id] || 0
-      })
-    } else {
-      domainPriceMarketValue.forEach(domain => {
-        dataset[i][domain.id] = 0
       })
     }
 

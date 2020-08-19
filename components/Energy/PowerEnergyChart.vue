@@ -444,7 +444,6 @@ export default {
           dataset = this.multiLineEnergyDataset
         }
       }
-
       return dataset.find(d => d.time === time)
     },
     hoverValue() {

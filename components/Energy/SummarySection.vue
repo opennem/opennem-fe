@@ -11,7 +11,8 @@
     <summary-table
       :energy-domains="domains"
       :temperature-domains="domainTemperature"
-      :market-value-domains="currentDomainPriceMarketValue"
+      :market-value-domains="currentDomainMarketValue"
+      :price-id="domainPrice.length > 0 ? domainPrice[0].id : ''"
       :dataset="filteredCurrentDatasetFlat"
       :hover-date="hoverDate"
       :hover-on="isHovering"
@@ -62,9 +63,9 @@ export default {
       currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
       filteredCurrentDatasetFlat: 'regionEnergy/filteredCurrentDatasetFlat',
       domainTemperature: 'regionEnergy/domainTemperature',
+      domainPrice: 'regionEnergy/domainPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
-      currentDomainPriceMarketValue:
-        'regionEnergy/currentDomainPriceMarketValue'
+      currentDomainMarketValue: 'regionEnergy/currentDomainMarketValue'
     }),
     domains() {
       return _cloneDeep(this.currentDomainPowerEnergy).reverse()

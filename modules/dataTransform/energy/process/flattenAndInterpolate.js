@@ -27,7 +27,7 @@ export default function(isPowerData, dataInterval, dataAll, datasetAll) {
     const updateDatasetWithMixedInterval = datasetMixed => {
       const type = {
         key: d.id,
-        interpolation: 'linear',
+        interpolation: d.type === 'price' ? 'step' : 'linear',
         startIndex: -1,
         currentValue: null
       }
@@ -73,6 +73,10 @@ export default function(isPowerData, dataInterval, dataAll, datasetAll) {
             }
           }
           type.currentValue = dMixed5min[type.key]
+        } else if (dMixed5min[type.key] === null) {
+          if (type.interpolation === 'step') {
+            dMixed5min[type.key] = type.currentValue
+          }
         }
       })
 

@@ -221,6 +221,10 @@ export default {
       type: Array,
       default: () => []
     },
+    priceId: {
+      type: String,
+      default: () => ''
+    },
     temperatureDomains: {
       type: Array,
       default: () => []
@@ -248,10 +252,6 @@ export default {
     focusOn: {
       type: Boolean,
       default: () => false
-    },
-    priceId: {
-      type: String,
-      default: () => ''
     },
     temperatureId: {
       type: String,
@@ -721,6 +721,7 @@ export default {
         0
       )
       // Calculate Market Value for Energy
+      // TODO: refactor price market value calcuation
       if (this.marketValueDomains.length > 0) {
         if (this.isEnergy) {
           this.marketValueDomains.forEach((ft, index) => {
@@ -762,27 +763,59 @@ export default {
             }
           })
         } else {
-          // let avValue = null
-          // console.log(this.marketValueDomains)
-          // let priceId = this.marketValueDomains[0].id
-          // this.energyDomains.forEach(domain => {
-          //   const ftId = domain.id
-          //   const category = domain.category
-          //   const dataPowerTotal = data.reduce((a, b) => a + (b[ftId] || 0), 0)
-          //   // calculate the price * ft total
-          //   const ftPrice = data.map((d, i) => {
-          //     const price = data[i][this.priceId] ? data[i][this.priceId] : 0
-          //     return Math.abs(d[ftId]) * price
-          //   })
-          //   const ftPriceTotal = ftPrice.reduce((a, b) => a + b, 0)
-          //   avValue = ftPriceTotal / Math.abs(dataPowerTotal)
-          //   this.summary[priceId] = avValue
-          //   if (category === 'source') {
-          //     this.summarySources[ftId] = avValue
-          //   } else if (category === 'load') {
-          //     this.summaryLoads[ftId] = avValue
-          //   }
-          // })
+          let avValue = null
+
+          this.energyDomains.forEach(domain => {
+            const id = domain.id
+            const ftPrice = data.map((p, pIndex) => {
+              const price = data[pIndex][this.priceId]
+                ? data[pIndex][this.priceId]
+                : 0
+              return Math.abs(p[id]) * price
+            })
+            const ftPriceTotal = ftPrice.reduce((a, b) => a + b, 0)
+            avValue = ftPriceTotal / Math.abs(totalPower)
+          })
+
+          this.summary[this.priceId] = avValue
+
+          avValue = null
+
+          const property =
+            this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+
+          this.marketValueDomains.forEach(domain => {
+            const category = domain.category
+            const id = domain.id
+            const findEnergyEq = this.energyDomains.find(
+              e => e[property] === domain[property]
+            )
+            const ftId = findEnergyEq.id
+            let avValue = null
+            if (!findEnergyEq) {
+              console.error(
+                'There is an issue finding the energy fuel tech in market value calculations.'
+              )
+            }
+            const dataPowerTotal = data.reduce((a, b) => a + (b[ftId] || 0), 0)
+            const ftPrice = data.map((p, pIndex) => {
+              const price = data[pIndex][this.priceId]
+                ? data[pIndex][this.priceId]
+                : 0
+              return Math.abs(p[ftId]) * price
+            })
+
+            const ftPriceTotal = ftPrice.reduce((a, b) => a + b, 0)
+            avValue = ftPriceTotal / Math.abs(dataPowerTotal)
+
+            this.summary[id] = avValue
+
+            if (category === 'source') {
+              this.summarySources[id] = avValue
+            } else if (category === 'load') {
+              this.summaryLoads[id] = avValue
+            }
+          })
         }
       }
 

@@ -147,8 +147,8 @@ export default {
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
       currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
-      domainPriceMarketValue: 'regionEnergy/domainPriceMarketValue',
-      priceDomains: 'regionEnergy/domainVolWeightedPriceDomains',
+      domainMarketValue: 'regionEnergy/domainMarketValue',
+      priceDomains: 'regionEnergy/domainPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy'
     }),
     priceDataset() {
