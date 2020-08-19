@@ -434,7 +434,8 @@ export default {
       return AxisTicks(this.range, this.interval, this.zoomExtent.length > 0)
     },
     domains() {
-      const property = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
+      const property =
+        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
       const domains = this.isTypeArea
         ? this.powerEnergyDomains
         : this.energyPercentDomains

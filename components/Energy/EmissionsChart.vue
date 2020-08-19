@@ -41,6 +41,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex'
 import { min, max } from 'd3-array'
+import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 import addWeeks from 'date-fns/addWeeks'
 import addMonths from 'date-fns/addMonths'
@@ -87,13 +88,23 @@ export default {
       chartEmissionsVolume: 'visInteract/chartEmissionsVolume',
       range: 'range',
       interval: 'interval',
+      fuelTechGroupName: 'fuelTechGroupName',
+      hiddenFuelTechs: 'hiddenFuelTechs',
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
       currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions'
     }),
     yMax() {
-      return max(this.currentDatasetFlat, d => d._stackedTotalEmissionsMax)
+      const dataset = _cloneDeep(this.currentDatasetFlat)
+      dataset.forEach(d => {
+        let stackedMax = 0
+        this.domains.forEach(domain => {
+          stackedMax += d[domain.id]
+        })
+        d._stackedTotalEmissionsMax = stackedMax
+      })
+      return max(dataset, d => d._stackedTotalEmissionsMax)
     },
     xGuides() {
       if (this.currentDatasetFlat.length <= 0) {
@@ -112,6 +123,13 @@ export default {
       return []
     },
     domains() {
+      const property =
+        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+      const domains = this.emissionsDomains
+      const hidden = this.hiddenFuelTechs
+      return domains.filter(d => !_includes(hidden, d[property]))
+    },
+    emissionsDomains() {
       return _cloneDeep(this.currentDomainEmissions).reverse()
     },
     isYearInterval() {

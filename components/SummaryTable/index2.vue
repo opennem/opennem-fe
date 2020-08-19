@@ -308,6 +308,10 @@ export default {
       return this.$store.getters.fuelTechGroup
     },
 
+    propRef() {
+      return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+    },
+
     percentContributionTo() {
       return this.$store.getters.percentContributionTo
     },
@@ -520,12 +524,11 @@ export default {
 
   mounted() {
     let hiddenFuelTechs = this.hiddenFuelTechs
-    const property = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
 
     // if all is hidden, then unhide all
     let hiddenLength = 0
     this.energyDomains.forEach(d => {
-      if (_includes(hiddenFuelTechs, d[property])) {
+      if (_includes(hiddenFuelTechs, d[this.propRef])) {
         hiddenLength += 1
       }
     })
@@ -540,7 +543,7 @@ export default {
 
     hiddenFuelTechs.forEach(fuelTech => {
       const find = this.energyDomains.find(
-        domain => domain[property] === fuelTech
+        domain => domain[this.propRef] === fuelTech
       )
       if (find) {
         if (find.category === 'source') {
@@ -557,8 +560,6 @@ export default {
     calculateSummary(data) {
       console.log('Calculate summary')
       const isGeneration = this.percentContributionTo === 'generation'
-      const hiddenFuelTechProp =
-        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
       let totalEnergy = 0
       let totalEnergyMinusHidden = 0
       let totalPower = 0
@@ -602,7 +603,7 @@ export default {
           }
 
           if (excludeHidden) {
-            if (!_includes(this.hiddenFuelTechs, ft[hiddenFuelTechProp])) {
+            if (!_includes(this.hiddenFuelTechs, ft[this.propRef])) {
               energy[ft.id] = setEnergy()
             } else {
               energy[ft.id] = 0
@@ -625,7 +626,7 @@ export default {
           }
 
           if (excludeHidden) {
-            if (!_includes(this.hiddenFuelTechs, ft[hiddenFuelTechProp])) {
+            if (!_includes(this.hiddenFuelTechs, ft[this.propRef])) {
               power[ft.id] = setPower()
             } else {
               power[ft.id] = 0
@@ -725,8 +726,6 @@ export default {
       if (this.marketValueDomains.length > 0) {
         if (this.isEnergy) {
           this.marketValueDomains.forEach((ft, index) => {
-            const property =
-              this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
             const category = ft.category
             let avValue = null
             let dataMarketValueSum = 0
@@ -741,7 +740,7 @@ export default {
               0
             )
             const findEnergyEq = this.energyDomains.find(
-              e => e[property] === ft[property]
+              e => e[this.propRef] === ft[this.propRef]
             )
             if (!findEnergyEq) {
               console.error(
@@ -781,14 +780,11 @@ export default {
 
           avValue = null
 
-          const property =
-            this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
-
           this.marketValueDomains.forEach(domain => {
             const category = domain.category
             const id = domain.id
             const findEnergyEq = this.energyDomains.find(
-              e => e[property] === domain[property]
+              e => e[this.propRef] === domain[this.propRef]
             )
             const ftId = findEnergyEq.id
             let avValue = null
@@ -909,12 +905,10 @@ export default {
         // Calculate Market Value
         if (this.isEnergy) {
           this.marketValueDomains.forEach((ft, index) => {
-            const property =
-              this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
             const category = ft.category
             const value = Math.abs(this.pointSummary[ft.id])
             const findEnergyEq = this.energyDomains.find(
-              e => e[property] === ft[property]
+              e => e[this.propRef] === ft[this.propRef]
             )
             if (!findEnergyEq) {
               console.error(
@@ -1001,18 +995,17 @@ export default {
     },
 
     emitHiddenFuelTechs() {
-      const property = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
       let hiddenFuelTechs = [...this.hiddenSources, ...this.hiddenLoads]
       // if all is hidden, then unhide all
       let sourcesHiddenLength = 0
       this.sourcesOrder.forEach(d => {
-        if (_includes(this.hiddenSources, d[property])) {
+        if (_includes(this.hiddenSources, d[this.propRef])) {
           sourcesHiddenLength += 1
         }
       })
       let loadsHiddenLength = 0
       this.loadsOrder.forEach(d => {
-        if (_includes(this.hiddenLoads, d[property])) {
+        if (_includes(this.hiddenLoads, d[this.propRef])) {
           loadsHiddenLength += 1
         }
       })
@@ -1030,7 +1023,6 @@ export default {
     },
 
     handleSourceFuelTechsHidden(hidden, hideOthers, onlyFt) {
-      const property = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
       this.hiddenSources = hidden
       if (hideOthers) {
         if (this.fuelTechGroupName === 'Default') {
@@ -1046,7 +1038,7 @@ export default {
           const hiddenLoads = Domain.getAllGroupDomains(
             this.fuelTechGroup
           ).filter(d => d.category === 'load')
-          this.hiddenLoads = hiddenLoads.map(d => d[property])
+          this.hiddenLoads = hiddenLoads.map(d => d[this.propRef])
           // this.hiddenLoads = this.loadsOrder.map(d => d[property])
         }
       }
@@ -1054,7 +1046,6 @@ export default {
     },
 
     handleLoadFuelTechsHidden(hidden, hideOthers, onlyFt) {
-      const property = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
       this.hiddenLoads = hidden
       if (hideOthers) {
         if (this.fuelTechGroupName === 'Default') {
@@ -1067,7 +1058,7 @@ export default {
           this.hiddenSources = hiddenSources.map(d => d.fuelTech)
           this.hiddenLoads = hiddenLoads.map(d => d.fuelTech)
         } else {
-          this.hiddenSources = this.sourcesOrder.map(d => d[property])
+          this.hiddenSources = this.sourcesOrder.map(d => d[this.propRef])
         }
       }
       this.emitHiddenFuelTechs()
@@ -1088,7 +1079,6 @@ export default {
     },
 
     handleRenewableRowShiftClicked() {
-      const property = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
       if (this.fuelTechGroupName === 'Default') {
         const hiddenSources = Domain.getAllDomainObjs().filter(
           d => d.category === 'source'
@@ -1102,8 +1092,8 @@ export default {
         const hiddenLoads = Domain.getAllGroupDomains(
           this.fuelTechGroup
         ).filter(d => d.category === 'load')
-        this.hiddenLoads = hiddenLoads.map(d => d[property])
-        this.hiddenSources = this.sourcesOrder.map(d => d[property])
+        this.hiddenLoads = hiddenLoads.map(d => d[this.propRef])
+        this.hiddenSources = this.sourcesOrder.map(d => d[this.propRef])
       }
 
       this.$store.commit('visInteract/chartEnergyRenewablesLine', true)

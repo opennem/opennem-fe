@@ -217,12 +217,12 @@ export default {
 
     handleRowClick(ft) {
       if (this.domainToggleable) {
-        const fuelTech = ft.fuelTech || ft.id
+        const property = ft.fuelTech ? 'fuelTech' : 'group'
         const hidden = _cloneDeep(this.hiddenFuelTechs)
-        if (_includes(hidden, fuelTech)) {
-          _remove(hidden, d => d === fuelTech)
+        if (_includes(hidden, ft[property])) {
+          _remove(hidden, d => d === ft[property])
         } else {
-          hidden.push(fuelTech)
+          hidden.push(ft[property])
         }
         this.order = this.updateOrder(this.originalOrder)
         this.$emit('fuelTechsHidden', hidden, false)
@@ -231,7 +231,7 @@ export default {
 
     handleRowShiftClicked(ft) {
       if (this.domainToggleable) {
-        const property = ft.fuelTech ? 'fuelTech' : 'id'
+        const property = ft.fuelTech ? 'fuelTech' : 'group'
         const hiddenObjs = this.order.filter(d => d[property] !== ft[property])
         const hidden = hiddenObjs.map(d => d[property])
         this.order = this.updateOrder(this.originalOrder)
@@ -256,8 +256,8 @@ export default {
     },
 
     isHidden(ft) {
-      const fuelTech = ft.fuelTech || ft.id
-      return _includes(this.hiddenFuelTechs, fuelTech)
+      const property = ft.fuelTech ? 'fuelTech' : 'group'
+      return _includes(this.hiddenFuelTechs, ft[property])
     },
 
     getValue(key) {
