@@ -20,6 +20,7 @@
         v-if="hasCompareData"
         :domains="updatedDomains"
         :dataset="dataset"
+        :dataset-percent="datasetPercent"
         :vis-height="visHeight" />
     </div>
   </div>
@@ -89,6 +90,29 @@ export default {
           }
         })
         return change
+      }
+      return null
+    },
+    datasetPercent() {
+      if (this.hasCompareData) {
+        const changePercent = {}
+        const former = this.updatedCompareData[0]
+        const latter = this.updatedCompareData[1]
+        Object.keys(latter).forEach(d => {
+          if (d !== 'date' && d.length > 0) {
+            if (
+              former[d] === null ||
+              latter[d] === null ||
+              former[d] === 0 ||
+              latter[d] === 0
+            ) {
+              changePercent[d] = null
+            } else {
+              changePercent[d] = ((latter[d] - former[d]) / former[d]) * 100
+            }
+          }
+        })
+        return changePercent
       }
       return null
     },

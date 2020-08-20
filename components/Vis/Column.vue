@@ -41,6 +41,10 @@ export default {
       type: Object,
       default: () => {}
     },
+    datasetPercent: {
+      type: Object,
+      default: () => {}
+    },
     domains: {
       type: Array,
       default: () => []
@@ -232,7 +236,29 @@ export default {
         )
         // .attr('transform', 'rotate(-1)')
         // .text(d => d.label)
-        .text(d => this.$options.filters.formatValue(d.value))
+        .text(d => {
+          const percent = this.datasetPercent[d.name]
+          const value = this.$options.filters.formatValue(d.value)
+          let string = value
+
+          return string
+        })
+
+      this.$columnLabelGroup
+        .selectAll('text')
+        .data(this.columnData)
+        .append('tspan')
+        .style('fill', '#444')
+        .style('font-size', '9px')
+        .text(d => {
+          const bandwidth = this.x.bandwidth()
+          const percent = this.datasetPercent[d.name]
+          let string = ''
+          if (percent && bandwidth > 60) {
+            string += ` (${this.$options.filters.formatValue(percent)}%)`
+          }
+          return string
+        })
     },
 
     resizeRedraw() {
