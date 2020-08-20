@@ -43,7 +43,8 @@ export default {
       interval: 'interval',
       filterPeriod: 'filterPeriod',
       fuelTechGroupName: 'fuelTechGroupName',
-      fuelTechGroup: 'fuelTechGroup'
+      fuelTechGroup: 'fuelTechGroup',
+      currentDatasetFlat: 'regionEnergy/currentDatasetFlat'
     }),
     regionId() {
       return this.$route.params.region
@@ -65,9 +66,11 @@ export default {
           groupName: this.fuelTechGroupName
         })
       }
+      this.doUpdateTickFormats({ range: curr, interval: this.interval })
     },
     interval(interval) {
       this.doUpdateDatasetByInterval({ range: this.range, interval })
+      this.doUpdateTickFormats({ range: this.range, interval: interval })
     },
     filterPeriod(period) {
       this.doUpdateDatasetByFilterPeriod({
@@ -78,6 +81,15 @@ export default {
     },
     fuelTechGroupName(groupName) {
       this.doUpdateDatasetByGroup({ groupName })
+    },
+    currentDatasetFlat(dataset) {
+      if (dataset.length > 0) {
+        this.doUpdateXGuides({
+          interval: this.interval,
+          start: dataset[0].time,
+          end: dataset[dataset.length - 1].time
+        })
+      }
     }
   },
 
@@ -109,7 +121,9 @@ export default {
       doUpdateDatasetByGroup: 'regionEnergy/doUpdateDatasetByGroup',
       doFilterRegionData: 'regionEnergy/doFilterRegionData',
       doUpdateDatasetByFilterPeriod:
-        'regionEnergy/doUpdateDatasetByFilterPeriod'
+        'regionEnergy/doUpdateDatasetByFilterPeriod',
+      doUpdateXGuides: 'visInteract/doUpdateXGuides',
+      doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
     }),
     ...mapMutations({
       setWindowWidth: 'app/windowWidth'

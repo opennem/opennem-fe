@@ -141,6 +141,8 @@ export default {
       tabletBreak: 'app/tabletBreak',
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
+      xGuides: 'visInteract/xGuides',
+
       chartPrice: 'visInteract/chartPrice',
       range: 'range',
       interval: 'interval',
@@ -169,22 +171,7 @@ export default {
     yMax() {
       return max(this.currentDatasetFlat, d => d._stackedTotalMax)
     },
-    xGuides() {
-      if (this.currentDatasetFlat.length <= 0) {
-        return []
-      }
-      let dStart = this.currentDatasetFlat[0].time
-      const dEnd = this.currentDatasetFlat[this.currentDatasetFlat.length - 1]
-        .time
 
-      if (this.interval === 'Day') {
-        return DateDisplay.weekendGuides(dStart, dEnd)
-      }
-      if (this.interval === '5m' || this.interval === '30m') {
-        return DateDisplay.nightGuides(dStart, dEnd)
-      }
-      return []
-    },
     domains() {
       return _cloneDeep(this.currentDomainPowerEnergy).reverse()
     },

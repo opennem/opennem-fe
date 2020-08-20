@@ -86,6 +86,8 @@ export default {
       hoverDomain: 'visInteract/hoverDomain',
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
+      xGuides: 'visInteract/xGuides',
+
       chartEmissionsVolume: 'visInteract/chartEmissionsVolume',
       highlightDomain: 'visInteract/highlightDomain',
       range: 'range',
@@ -115,22 +117,7 @@ export default {
       })
       return max(dataset, d => d._stackedTotalEmissionsMax)
     },
-    xGuides() {
-      if (this.currentDatasetFlat.length <= 0) {
-        return []
-      }
-      let dStart = this.currentDatasetFlat[0].time
-      const dEnd = this.currentDatasetFlat[this.currentDatasetFlat.length - 1]
-        .time
 
-      if (this.interval === 'Day') {
-        return DateDisplay.weekendGuides(dStart, dEnd)
-      }
-      if (this.interval === '5m' || this.interval === '30m') {
-        return DateDisplay.nightGuides(dStart, dEnd)
-      }
-      return []
-    },
     domains() {
       const property =
         this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'

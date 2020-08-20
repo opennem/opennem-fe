@@ -163,7 +163,6 @@ import addMonths from 'date-fns/addMonths'
 import addQuarters from 'date-fns/addQuarters'
 import addYears from 'date-fns/addYears'
 
-import AxisTicks from '@/services/axisTicks.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
@@ -190,14 +189,6 @@ export default {
     zoomExtent: {
       type: Array,
       default: () => []
-    },
-    tickFormat: {
-      type: Function,
-      default: () => ({})
-    },
-    secondTickFormat: {
-      type: Function,
-      default: () => ({})
     }
   },
 
@@ -213,6 +204,10 @@ export default {
       hoverDomain: 'visInteract/hoverDomain',
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
+      xTicks: 'visInteract/xTicks',
+      xGuides: 'visInteract/xGuides',
+      tickFormat: 'visInteract/tickFormat',
+      secondTickFormat: 'visInteract/secondTickFormat',
       chartEnergy: 'visInteract/chartEnergy',
       chartEnergyType: 'visInteract/chartEnergyType',
       chartEnergyYAxis: 'visInteract/chartEnergyYAxis',
@@ -229,7 +224,6 @@ export default {
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
       currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
-      domainTemperature: 'regionEnergy/domainTemperature',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       summary: 'regionEnergy/summary'
     }),
@@ -415,25 +409,6 @@ export default {
         ? this.energyGrossPercentDataset
         : this.currentDatasetFlat
       return this.getMaxValue(dataset)
-    },
-    xGuides() {
-      if (this.currentDatasetFlat.length <= 0) {
-        return []
-      }
-      let dStart = this.currentDatasetFlat[0].time
-      const dEnd = this.currentDatasetFlat[this.currentDatasetFlat.length - 1]
-        .time
-
-      if (this.interval === 'Day') {
-        return DateDisplay.weekendGuides(dStart, dEnd)
-      }
-      if (this.interval === '5m' || this.interval === '30m') {
-        return DateDisplay.nightGuides(dStart, dEnd)
-      }
-      return []
-    },
-    xTicks() {
-      return AxisTicks(this.range, this.interval, this.zoomExtent.length > 0)
     },
     domains() {
       const property =

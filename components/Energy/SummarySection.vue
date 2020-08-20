@@ -55,7 +55,6 @@ export default {
       hoverDomain: 'visInteract/hoverDomain',
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
-      dateZoomExtent: 'visInteract/dateZoomExtent',
       range: 'range',
       interval: 'interval',
       fuelTechGroupName: 'fuelTechGroupName',

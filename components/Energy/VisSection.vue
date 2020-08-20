@@ -5,8 +5,6 @@
       :hover-on="isHovering"
       :hover-date="hoverDate"
       :zoom-extent="zoomExtent"
-      :tick-format="tickFormat"
-      :second-tick-format="secondTickFormat"
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
@@ -54,22 +52,17 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { min, max } from 'd3-array'
 import _cloneDeep from 'lodash.clonedeep'
+import addYears from 'date-fns/addYears'
 
+import DateDisplay from '@/services/DateDisplay.js'
 import PowerEnergyChart from '@/components/Energy/PowerEnergyChart'
 import EmissionsChart from '@/components/Energy/EmissionsChart'
 import EnergyCompare from '@/components/Energy/Compare2'
 import PriceMarketValueChart from '@/components/Energy/PriceMarketValueChart'
 import TemperatureChart from '@/components/Energy/TemperatureChart'
-import DateDisplay from '@/services/DateDisplay.js'
-import AxisTicks from '@/services/axisTicks.js'
-import AxisTimeFormats from '@/services/axisTimeFormats.js'
-
-import ChartHeader from '@/components/Vis/ChartHeader.vue'
-import Chart from '@/components/Vis/Chart.vue'
-import DateBrush from '@/components/Vis/DateBrush.vue'
 
 export default {
   components: {
@@ -77,10 +70,7 @@ export default {
     EmissionsChart,
     EnergyCompare,
     PriceMarketValueChart,
-    TemperatureChart,
-    ChartHeader,
-    Chart,
-    DateBrush
+    TemperatureChart
   },
 
   data() {
@@ -109,68 +99,36 @@ export default {
     }),
     domains() {
       return _cloneDeep(this.currentDomainPowerEnergy).reverse()
-    },
-    yMin() {
-      return min(this.currentDatasetFlat, d => d._stackedTotalMin)
-    },
-    yMax() {
-      return max(this.currentDatasetFlat, d => d._stackedTotalMax)
-    },
-    xTicks() {
-      return AxisTicks(this.range, this.interval, false)
-    },
-    tickFormat() {
-      switch (this.interval) {
-        case 'Day':
-          return AxisTimeFormats.intervalDayTimeFormat
-        case 'Week':
-          return AxisTimeFormats.intervalWeekTimeFormat
-        case 'Month':
-          return this.range === 'ALL'
-            ? AxisTimeFormats.rangeAllIntervalMonthTimeFormat
-            : AxisTimeFormats.intervalMonthTimeFormat
-        case 'Fin Year':
-          return d => {
-            const year = d.getFullYear() + 1 + ''
-            return `FY${year.substr(2, 2)}`
-          }
-        default:
-          return AxisTimeFormats.defaultFormat
-      }
-    },
-    secondTickFormat() {
-      switch (this.interval) {
-        case 'Day':
-          return AxisTimeFormats.intervalDaySecondaryTimeFormat
-        case 'Week':
-          return AxisTimeFormats.intervalWeekSecondaryTimeFormat
-        default:
-          return AxisTimeFormats.secondaryFormat
-      }
     }
   },
 
   methods: {
     ...mapMutations({
-      setIsHovering: 'visInteract/isHovering',
-      setDateZoomExtent: 'visInteract/dateZoomExtent',
-      setHoverDate: 'visInteract/hoverDate',
       setFocusDate: 'visInteract/focusDate',
-      setIsFocusing: 'visInteract/isFocusing',
       setFilteredDates: 'regionEnergy/filteredDates'
+    }),
+    ...mapActions({
+      doUpdateXTicks: 'visInteract/doUpdateXTicks'
     }),
     getDataByTime(dataset, time) {
       return dataset.find(d => d.time === time)
     },
+    updateFilteredDates(filteredDates) {
+      this.zoomExtent = filteredDates
+      this.setFilteredDates(filteredDates)
+      this.doUpdateXTicks({
+        range: this.range,
+        interval: this.interval,
+        isZoomed: filteredDates.length > 0
+      })
+    },
     handleDateHover(date) {
       const closestDate = DateDisplay.snapToClosestInterval(this.interval, date)
       this.hoverDate = closestDate
-      // this.setHoverDate(closestDate)
       this.$emit('dateHover', closestDate)
     },
     handleIsHovering(hover) {
       this.isHovering = hover
-      // this.setIsHovering(hover)
       this.$emit('isHovering', hover)
     },
     handleSvgClick(metaKey) {
@@ -187,11 +145,9 @@ export default {
         setTimeout(() => {
           this.$store.dispatch('compareDates', [focusTime, hoverTime])
           this.compareData = [firstData, secondData].slice()
-          this.setIsFocusing(false)
           this.setFocusDate(null)
         }, 10)
       } else {
-        this.setIsFocusing(false)
         if (this.compareDifference) {
           const hoverTime = this.hoverDate.getTime()
           let newCompare = false
@@ -237,16 +193,14 @@ export default {
             this.focusDate.getTime() === this.hoverDate.getTime()
           ) {
             this.setFocusDate(null)
-            this.setIsFocusing(false)
           } else {
             this.setFocusDate(this.hoverDate)
-            this.setIsFocusing(true)
           }
         }
       }
     },
     handleZoomExtent(dateRange) {
-      // console.log('zoom extent', dateRange)
+      let filteredDates = []
       if (dateRange && dateRange.length > 0) {
         let startTime = DateDisplay.snapToClosestInterval(
           this.interval,
@@ -256,23 +210,16 @@ export default {
           this.interval,
           dateRange[1]
         )
-        // if (this.interval === 'Fin Year') {
-        //   startTime = moment(startTime).add(1, 'year')
-        // }
-        // this.filteredDataset = EnergyDataTransform.filterDataByStartEndDates(
-        //   this.dataset,
-        //   startTime,
-        //   endTime
-        // )
-        this.setDateZoomExtent([startTime, endTime])
-        this.zoomExtent = [startTime, endTime]
-        this.setFilteredDates([startTime, endTime])
+        if (this.interval === 'Fin Year') {
+          startTime = addYears(startTime, 1)
+        }
+
+        filteredDates = [startTime, endTime]
       } else {
-        this.setDateZoomExtent([])
-        this.zoomExtent = []
-        this.setFilteredDates([])
-        // this.filteredDataset = this.dataset
+        filteredDates = []
       }
+
+      this.updateFilteredDates(filteredDates)
     }
   }
 }
