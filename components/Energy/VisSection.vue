@@ -58,11 +58,11 @@ import _cloneDeep from 'lodash.clonedeep'
 import addYears from 'date-fns/addYears'
 
 import DateDisplay from '@/services/DateDisplay.js'
-import PowerEnergyChart from '@/components/Energy/PowerEnergyChart'
-import EmissionsChart from '@/components/Energy/EmissionsChart'
-import EnergyCompare from '@/components/Energy/Compare2'
-import PriceMarketValueChart from '@/components/Energy/PriceMarketValueChart'
-import TemperatureChart from '@/components/Energy/TemperatureChart'
+import PowerEnergyChart from '@/components/Energy/Charts/PowerEnergyChart'
+import EmissionsChart from '@/components/Energy/Charts/EmissionsChart'
+import EnergyCompare from '@/components/Energy/Charts/CompareChart'
+import PriceMarketValueChart from '@/components/Energy/Charts/PriceMarketValueChart'
+import TemperatureChart from '@/components/Energy/Charts/TemperatureChart'
 
 export default {
   components: {
