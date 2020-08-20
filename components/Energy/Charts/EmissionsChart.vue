@@ -5,6 +5,37 @@
       'has-border-bottom': !chartEmissionsVolume
     }"
     class="chart">
+    <chart-header>
+      <template v-slot:label-unit>
+        <strong>Emissions Volume</strong>
+        <small>{{ emissionsVolumeUnit }}/{{ interval | intervalLabel }}</small>
+      </template>
+      <template v-slot:average-value>
+        Av.
+        <strong>
+          {{ averageEmissionsVolume | formatValue }}
+          {{ emissionsVolumeUnit }}/{{ interval | intervalLabel }}
+        </strong>
+      </template>
+      <template v-slot:hover-date>
+        {{ hoverDisplayDate }}
+      </template>
+      <template v-slot:hover-values>
+        <span
+          v-if="hoverValue"
+          class="ft-value">
+          <em
+            :style="{ 'background-color': hoverDomainColour }"
+            class="colour-square" />
+          {{ hoverDomainLabel }}
+          <strong>{{ hoverValue | formatValue2 }} {{ emissionsVolumeUnit }}</strong>
+        </span>
+        <span>
+          Total
+          <strong>{{ hoverTotal | formatValue2 }} {{ emissionsVolumeUnit }}</strong>
+        </span>
+      </template>
+    </chart-header>
     <stacked-area-vis
       v-if="chartEmissionsVolume"
       :domains="domains"
@@ -48,6 +79,7 @@ import addWeeks from 'date-fns/addWeeks'
 import addMonths from 'date-fns/addMonths'
 import addQuarters from 'date-fns/addQuarters'
 import addYears from 'date-fns/addYears'
+import { EMISSIONS } from '@/constants/v2/data-types.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import ChartHeader from '@/components/Vis/ChartHeader'
 import StackedAreaVis from '@/components/Vis/StackedArea2.vue'
@@ -94,11 +126,24 @@ export default {
       interval: 'interval',
       fuelTechGroupName: 'fuelTechGroupName',
       hiddenFuelTechs: 'hiddenFuelTechs',
+
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
       currentDataset: 'regionEnergy/currentDataset',
-      currentDomainEmissions: 'regionEnergy/currentDomainEmissions'
+      currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
+      summary: 'regionEnergy/summary',
+
+      emissionsVolumeUnit: 'si/emissionsVolumeUnit'
     }),
+    hoverEmissionsDomain() {
+      const domain = this.hoverDomain
+      if (domain) {
+        const split = domain.split('.')
+        split.pop()
+        return `${split.join('.')}.${EMISSIONS}`
+      }
+      return ''
+    },
     highlightId() {
       const domain = this.highlightDomain
       const property =
@@ -131,25 +176,19 @@ export default {
     isYearInterval() {
       return this.interval === 'Fin Year' || this.interval === 'Year'
     },
+    averageEmissionsVolume() {
+      return this.summary ? this.summary._averageEmissionsVolume : 0
+    },
     hoverData() {
       if (!this.hoverDate) {
         return null
       }
       const time = this.hoverDate.getTime()
-      // let dataset = this.currentDataset
-      // if (this.chartEnergyType === 'proportion') {
-      //   dataset = this.energyPercentDataset
-      // }
-      // if (
-      //   this.chartEnergyType === 'line' &&
-      //   this.chartEnergyYAxis === 'percentage'
-      // ) {
-      //   dataset = this.energyGrossPercentDataset
-      // }
-      return this.currentDataset.find(d => d.time === time)
+      let dataset = this.currentDataset
+      return dataset.find(d => d.time === time)
     },
     hoverValue() {
-      return this.hoverData ? this.hoverData[this.hoverDomain] : null
+      return this.hoverData ? this.hoverData[this.hoverEmissionsDomain] : null
     },
     hoverDisplayDate() {
       let date = this.focusDate
@@ -182,7 +221,7 @@ export default {
       //   find = this.currentDomainPowerEnergy.find(d => d.id === this.hoverDomain)
       // }
 
-      find = this.currentDomainPowerEnergy.find(d => d.id === this.hoverDomain)
+      find = this.domains.find(d => d.id === this.hoverEmissionsDomain)
       return find ? find.label : '—'
     },
     hoverDomainColour() {
@@ -199,13 +238,13 @@ export default {
       //   find = this.currentDomainPowerEnergy.find(d => d.id === this.hoverDomain)
       // }
 
-      find = this.currentDomainPowerEnergy.find(d => d.id === this.hoverDomain)
+      find = this.domains.find(d => d.id === this.hoverEmissionsDomain)
       return find ? find.colour : '—'
     },
     hoverTotal() {
       let total = 0
       if (this.hoverData) {
-        this.currentDomainPowerEnergy.forEach(d => {
+        this.domains.forEach(d => {
           total += this.hoverData[d.id]
         })
       }

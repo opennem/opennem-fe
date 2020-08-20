@@ -54,6 +54,7 @@ export default {
 
   watch: {
     range(curr, prev) {
+      this.doUpdateTickFormats({ range: curr, interval: this.interval })
       if (isPowerRange(curr) && isPowerRange(prev)) {
         this.doFilterRegionData({
           range: curr,
@@ -67,11 +68,10 @@ export default {
           groupName: this.fuelTechGroupName
         })
       }
-      this.doUpdateTickFormats({ range: curr, interval: this.interval })
     },
     interval(interval) {
-      this.doUpdateDatasetByInterval({ range: this.range, interval })
       this.doUpdateTickFormats({ range: this.range, interval: interval })
+      this.doUpdateDatasetByInterval({ range: this.range, interval })
     },
     filteredDates(dates) {
       this.doUpdateXTicks({
@@ -108,6 +108,7 @@ export default {
       interval: this.interval,
       groupName: this.fuelTechGroupName
     })
+    this.doUpdateTickFormats({ range: this.range, interval: this.interval })
   },
 
   mounted() {

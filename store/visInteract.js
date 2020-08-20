@@ -11,8 +11,8 @@ export const state = () => ({
   focusDate: null,
   xTicks: null,
   xGuides: null,
-  tickFormat: null,
-  secondTickFormat: null,
+  tickFormat: () => ({}),
+  secondTickFormat: () => ({}),
 
   chartEnergyType: 'area', // line, proportion, area, hidden
   chartEnergyYAxis: 'absolute', // absolute, percentage
@@ -129,8 +129,8 @@ export const actions = {
   },
 
   doUpdateTickFormats({ commit }, { range, interval }) {
-    let tickFormat = null,
-      secondTickFormat = null
+    let tickFormat = AxisTimeFormats.defaultFormat,
+      secondTickFormat = AxisTimeFormats.secondaryFormat
     switch (interval) {
       case 'Day':
         tickFormat = AxisTimeFormats.intervalDayTimeFormat
@@ -144,14 +144,14 @@ export const actions = {
         range === 'ALL'
           ? (tickFormat = AxisTimeFormats.rangeAllIntervalMonthTimeFormat)
           : (tickFormat = AxisTimeFormats.intervalMonthTimeFormat)
+        break
       case 'Fin Year':
         tickFormat = d => {
           const year = d.getFullYear() + 1 + ''
           return `FY${year.substr(2, 2)}`
         }
+        break
       default:
-        tickFormat = AxisTimeFormats.defaultFormat
-        secondTickFormat = AxisTimeFormats.secondaryFormat
     }
     commit('tickFormat', tickFormat)
     commit('secondTickFormat', secondTickFormat)
