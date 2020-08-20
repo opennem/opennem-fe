@@ -93,7 +93,7 @@ export default {
       compareDates: 'compareDates',
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
-      currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
+      currentDataset: 'regionEnergy/currentDataset',
       domainTemperature: 'regionEnergy/domainTemperature',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy'
     }),
@@ -101,7 +101,7 @@ export default {
       return this.domainTemperature
     },
     temperatureDataset() {
-      return this.currentDatasetFlat
+      return this.currentDataset
     },
     temperatureMeanDomain() {
       const find = this.temperatureDomains.find(
@@ -118,10 +118,10 @@ export default {
       return find ? find.domain : ''
     },
     yMin() {
-      return min(this.currentDatasetFlat, d => d._stackedTotalMin)
+      return min(this.currentDataset, d => d._stackedTotalMin)
     },
     yMax() {
-      return max(this.currentDatasetFlat, d => d._stackedTotalMax)
+      return max(this.currentDataset, d => d._stackedTotalMax)
     },
 
     domains() {
@@ -138,7 +138,7 @@ export default {
         return null
       }
       const time = this.hoverDate.getTime()
-      // let dataset = this.currentDatasetFlat
+      // let dataset = this.currentDataset
       // if (this.chartEnergyType === 'proportion') {
       //   dataset = this.energyPercentDataset
       // }
@@ -148,7 +148,7 @@ export default {
       // ) {
       //   dataset = this.energyGrossPercentDataset
       // }
-      return this.currentDatasetFlat.find(d => d.time === time)
+      return this.currentDataset.find(d => d.time === time)
     },
     hoverValue() {
       return this.hoverData ? this.hoverData[this.hoverDomain] : null

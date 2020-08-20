@@ -13,7 +13,7 @@
       :temperature-domains="domainTemperature"
       :market-value-domains="currentDomainMarketValue"
       :price-id="domainPrice.length > 0 ? domainPrice[0].id : ''"
-      :dataset="filteredCurrentDatasetFlat"
+      :dataset="filteredCurrentDataset"
       :hover-date="hoverDate"
       :hover-on="isHovering"
       :focus-date="focusDate"
@@ -60,8 +60,7 @@ export default {
       fuelTechGroupName: 'fuelTechGroupName',
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
-      currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
-      filteredCurrentDatasetFlat: 'regionEnergy/filteredCurrentDatasetFlat',
+      filteredCurrentDataset: 'regionEnergy/filteredCurrentDataset',
       domainTemperature: 'regionEnergy/domainTemperature',
       domainPrice: 'regionEnergy/domainPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',

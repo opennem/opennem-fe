@@ -8,7 +8,7 @@
     <stacked-area-vis
       v-if="chartEmissionsVolume"
       :domains="domains"
-      :dataset="currentDatasetFlat"
+      :dataset="currentDataset"
       :range="range"
       :interval="interval"
       :curve="'step'"
@@ -96,7 +96,7 @@ export default {
       hiddenFuelTechs: 'hiddenFuelTechs',
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
-      currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
+      currentDataset: 'regionEnergy/currentDataset',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions'
     }),
     highlightId() {
@@ -107,7 +107,7 @@ export default {
       return find ? find.id : ''
     },
     yMax() {
-      const dataset = _cloneDeep(this.currentDatasetFlat)
+      const dataset = _cloneDeep(this.currentDataset)
       dataset.forEach(d => {
         let stackedMax = 0
         this.domains.forEach(domain => {
@@ -136,7 +136,7 @@ export default {
         return null
       }
       const time = this.hoverDate.getTime()
-      // let dataset = this.currentDatasetFlat
+      // let dataset = this.currentDataset
       // if (this.chartEnergyType === 'proportion') {
       //   dataset = this.energyPercentDataset
       // }
@@ -146,7 +146,7 @@ export default {
       // ) {
       //   dataset = this.energyGrossPercentDataset
       // }
-      return this.currentDatasetFlat.find(d => d.time === time)
+      return this.currentDataset.find(d => d.time === time)
     },
     hoverValue() {
       return this.hoverData ? this.hoverData[this.hoverDomain] : null
@@ -213,9 +213,7 @@ export default {
     },
     incompleteIntervals() {
       const incompletes = []
-      const filtered = this.currentDatasetFlat.filter(
-        d => d._isIncompleteBucket
-      )
+      const filtered = this.currentDataset.filter(d => d._isIncompleteBucket)
       filtered.forEach(f => {
         if (this.interval === 'Week') {
           incompletes.push({

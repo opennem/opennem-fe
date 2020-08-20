@@ -68,7 +68,7 @@
     <stacked-area-vis
       v-if="chartEnergy && (isTypeArea || isTypeProportion)"
       :domains="domains"
-      :dataset="isTypeArea ? currentDatasetFlat : energyPercentDataset"
+      :dataset="isTypeArea ? currentDataset : energyPercentDataset"
       :range="range"
       :interval="interval"
       :curve="isEnergyType ? chartEnergyCurve : chartPowerCurve"
@@ -223,7 +223,7 @@ export default {
       hiddenFuelTechs: 'hiddenFuelTechs',
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
-      currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
+      currentDataset: 'regionEnergy/currentDataset',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       summary: 'regionEnergy/summary'
     }),
@@ -253,7 +253,7 @@ export default {
         : '#52BCA3'
     },
     renewablesPercentageDataset() {
-      const d = this.currentDatasetFlat.map(d => {
+      const d = this.currentDataset.map(d => {
         return {
           date: d.date,
           time: d.time,
@@ -271,7 +271,7 @@ export default {
       return m < 100 ? 100 : m
     },
     energyPercentDataset() {
-      const dataset = _cloneDeep(this.currentDatasetFlat)
+      const dataset = _cloneDeep(this.currentDataset)
       dataset.forEach((d, i) => {
         let totalNetGeneration = 0,
           min = 0,
@@ -322,7 +322,7 @@ export default {
       return dataset
     },
     energyGrossPercentDataset() {
-      const dataset = this.currentDatasetFlat.map(d => {
+      const dataset = this.currentDataset.map(d => {
         const obj = {
           date: d.date,
           time: d.time,
@@ -357,7 +357,7 @@ export default {
       return dataset
     },
     multiLineEnergyDataset() {
-      return this.currentDatasetFlat.map(d => {
+      return this.currentDataset.map(d => {
         const obj = {
           date: d.date,
           time: d.time,
@@ -374,7 +374,7 @@ export default {
       })
     },
     yMin() {
-      const dataset = _cloneDeep(this.currentDatasetFlat)
+      const dataset = _cloneDeep(this.currentDataset)
       dataset.forEach(d => {
         let stackedMin = 0
         this.domains.forEach(domain => {
@@ -387,7 +387,7 @@ export default {
       return min(dataset, d => d._stackedTotalMin)
     },
     yMax() {
-      const dataset = _cloneDeep(this.currentDatasetFlat)
+      const dataset = _cloneDeep(this.currentDataset)
       dataset.forEach(d => {
         let stackedMax = 0
         this.domains.forEach(domain => {
@@ -400,14 +400,14 @@ export default {
     energyLineYMin() {
       const dataset = this.isYAxisPercentage
         ? this.energyGrossPercentDataset
-        : this.currentDatasetFlat
+        : this.currentDataset
       const lowest = this.getMinValue(dataset)
       return lowest < 0 ? 0 : lowest
     },
     energyLineYMax() {
       const dataset = this.isYAxisPercentage
         ? this.energyGrossPercentDataset
-        : this.currentDatasetFlat
+        : this.currentDataset
       return this.getMaxValue(dataset)
     },
     domains() {
@@ -439,7 +439,7 @@ export default {
         return null
       }
       const time = this.hoverDate.getTime()
-      let dataset = this.currentDatasetFlat
+      let dataset = this.currentDataset
       if (this.isTypeProportion) {
         dataset = this.energyPercentDataset
       }
@@ -517,9 +517,7 @@ export default {
     },
     incompleteIntervals() {
       const incompletes = []
-      const filtered = this.currentDatasetFlat.filter(
-        d => d._isIncompleteBucket
-      )
+      const filtered = this.currentDataset.filter(d => d._isIncompleteBucket)
       filtered.forEach(f => {
         if (this.interval === 'Week') {
           incompletes.push({

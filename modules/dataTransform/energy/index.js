@@ -20,7 +20,7 @@ export function dataProcess(responses, range, interval) {
   const isEnergyType = type === 'energy'
   const dataset = filterDatasetByRange(datasetFlat, range)
 
-  const currentDatasetFlat = rollUp({
+  const currentDataset = rollUp({
     domains: [
       ...domainPowerEnergy,
       ...domainEmissions,
@@ -37,13 +37,13 @@ export function dataProcess(responses, range, interval) {
 
   summariseDataset({
     isEnergyType,
-    currentDatasetFlat,
+    currentDataset,
     domainPowerEnergy,
     domainEmissions,
     domainPrice: isEnergyType ? domainMarketValue : domainPrice
   })
   groupDataset({
-    dataset: currentDatasetFlat,
+    dataset: currentDataset,
     domainPowerEnergyGrouped,
     domainEmissionsGrouped,
     domainMarketValueGrouped
@@ -60,7 +60,7 @@ export function dataProcess(responses, range, interval) {
     domainMarketValueGrouped,
     domainPrice,
     domainTemperature,
-    currentDatasetFlat
+    currentDataset
   }
 }
 
@@ -78,7 +78,7 @@ export function dataRollUp({
   interval,
   isEnergyType
 }) {
-  const currentDatasetFlat = rollUp({
+  const currentDataset = rollUp({
     domains: [
       ...domainPowerEnergy,
       ...domainEmissions,
@@ -91,29 +91,25 @@ export function dataRollUp({
 
   summariseDataset({
     isEnergyType,
-    currentDatasetFlat,
+    currentDataset,
     domainPowerEnergy,
     domainEmissions,
     domainPrice: isEnergyType ? domainMarketValue : domainPrice
   })
   groupDataset({
-    dataset: currentDatasetFlat,
+    dataset: currentDataset,
     domainPowerEnergyGrouped,
     domainEmissionsGrouped,
     domainMarketValueGrouped
   })
 
   return {
-    currentDatasetFlat
+    currentDataset
   }
 }
 
-export function dataFilterByPeriod({ currentDatasetFlat, interval, period }) {
+export function dataFilterByPeriod({ currentDataset, interval, period }) {
   return {
-    filteredDatasetFlat: filterDatasetByPeriod(
-      currentDatasetFlat,
-      interval,
-      period
-    )
+    filteredDatasetFlat: filterDatasetByPeriod(currentDataset, interval, period)
   }
 }

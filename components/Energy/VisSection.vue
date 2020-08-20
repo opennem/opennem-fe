@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapActions } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import { min, max } from 'd3-array'
 import _cloneDeep from 'lodash.clonedeep'
 import addYears from 'date-fns/addYears'
@@ -91,7 +91,7 @@ export default {
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
       ready: 'regionEnergy/ready',
-      currentDatasetFlat: 'regionEnergy/currentDatasetFlat',
+      currentDataset: 'regionEnergy/currentDataset',
       domainEmissions: 'regionEnergy/domainEmissions',
       domainTemperature: 'regionEnergy/domainTemperature',
       domainPrice: 'regionEnergy/domainPrice',
@@ -107,20 +107,12 @@ export default {
       setFocusDate: 'visInteract/focusDate',
       setFilteredDates: 'regionEnergy/filteredDates'
     }),
-    ...mapActions({
-      doUpdateXTicks: 'visInteract/doUpdateXTicks'
-    }),
     getDataByTime(dataset, time) {
       return dataset.find(d => d.time === time)
     },
     updateFilteredDates(filteredDates) {
       this.zoomExtent = filteredDates
       this.setFilteredDates(filteredDates)
-      this.doUpdateXTicks({
-        range: this.range,
-        interval: this.interval,
-        isZoomed: filteredDates.length > 0
-      })
     },
     handleDateHover(date) {
       const closestDate = DateDisplay.snapToClosestInterval(this.interval, date)
@@ -136,11 +128,8 @@ export default {
         this.$store.dispatch('compareDifference', true)
         const hoverTime = this.hoverDate.getTime()
         const focusTime = this.focusDate.getTime()
-        const firstData = this.getDataByTime(this.currentDatasetFlat, focusTime)
-        const secondData = this.getDataByTime(
-          this.currentDatasetFlat,
-          hoverTime
-        )
+        const firstData = this.getDataByTime(this.currentDataset, focusTime)
+        const secondData = this.getDataByTime(this.currentDataset, hoverTime)
 
         setTimeout(() => {
           this.$store.dispatch('compareDates', [focusTime, hoverTime])
@@ -173,11 +162,11 @@ export default {
 
           if (compareDates.length === 2) {
             const firstData = this.getDataByTime(
-              this.currentDatasetFlat,
+              this.currentDataset,
               compareDates[0]
             )
             const secondData = this.getDataByTime(
-              this.currentDatasetFlat,
+              this.currentDataset,
               compareDates[1]
             )
             this.compareData = [firstData, secondData]

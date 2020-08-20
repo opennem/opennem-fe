@@ -8,14 +8,14 @@ const perfTime = new PerfTime()
 */
 export default function({
   isEnergyType,
-  currentDatasetFlat,
+  currentDataset,
   domainPowerEnergy,
   domainEmissions,
   domainPrice
 }) {
   perfTime.time()
 
-  const dataset = currentDatasetFlat
+  const dataset = currentDataset
 
   dataset.forEach((d, i) => {
     let batteryChargingId = null,

@@ -15,7 +15,7 @@ export const state = () => ({
   isEnergyType: false,
   jsonResponses: null,
   datasetFlat: [],
-  currentDatasetFlat: [],
+  currentDataset: [],
   domainPowerEnergy: [],
   domainPowerEnergyGrouped: [],
   domainEmissions: [],
@@ -37,7 +37,7 @@ export const getters = {
   isFetching: state => state.isFetching,
   isEnergyType: state => state.isEnergyType,
   datasetFlat: state => state.datasetFlat,
-  currentDatasetFlat: state => state.currentDatasetFlat,
+  currentDataset: state => state.currentDataset,
   domainPowerEnergy: state => state.domainPowerEnergy,
   domainPowerEnergyGrouped: state => state.domainPowerEnergyGrouped,
   domainEmissions: state => state.domainEmissions,
@@ -51,14 +51,15 @@ export const getters = {
   currentDomainMarketValue: state => state.currentDomainMarketValue,
   summaryDataset: state => state.summaryDataset,
   summary: state => state.summary,
-  filteredCurrentDatasetFlat: state =>
+  filteredDates: state => state.filteredDates,
+  filteredCurrentDataset: state =>
     state.filteredDates.length > 0
-      ? state.currentDatasetFlat.filter(
+      ? state.currentDataset.filter(
           d =>
             d.time >= state.filteredDates[0].getTime() &&
             d.date <= state.filteredDates[1].getTime()
         )
-      : state.currentDatasetFlat
+      : state.currentDataset
 }
 
 export const mutations = {
@@ -77,8 +78,8 @@ export const mutations = {
   datasetFlat(state, datasetFlat) {
     state.datasetFlat = _cloneDeep(datasetFlat)
   },
-  currentDatasetFlat(state, currentDatasetFlat) {
-    state.currentDatasetFlat = _cloneDeep(currentDatasetFlat)
+  currentDataset(state, currentDataset) {
+    state.currentDataset = _cloneDeep(currentDataset)
   },
   domainPowerEnergy(state, domainPowerEnergy) {
     state.domainPowerEnergy = _cloneDeep(domainPowerEnergy)
@@ -138,7 +139,7 @@ export const actions = {
 
         const {
           datasetFlat,
-          currentDatasetFlat,
+          currentDataset,
           domainPowerEnergy,
           domainPowerEnergyGrouped,
           domainEmissions,
@@ -152,7 +153,7 @@ export const actions = {
 
         perf.timeEnd(
           `------ ${region} — ${range}/${interval} (-- down to ${
-            currentDatasetFlat.length
+            currentDataset.length
           })`
         )
 
@@ -160,7 +161,7 @@ export const actions = {
         commit('isEnergyType', dataType === 'energy')
 
         commit('datasetFlat', datasetFlat)
-        commit('currentDatasetFlat', currentDatasetFlat)
+        commit('currentDataset', currentDataset)
 
         commit('domainPowerEnergy', domainPowerEnergy)
         commit('domainPowerEnergyGrouped', domainPowerEnergyGrouped)
@@ -184,7 +185,7 @@ export const actions = {
   doUpdateDatasetByInterval({ state, commit }, { range, interval }) {
     // Ignore if data is still being fetched.
     if (!state.isFetching) {
-      const { currentDatasetFlat } = dataRollUp({
+      const { currentDataset } = dataRollUp({
         isEnergyType: state.isEnergyType,
         datasetFlat: _cloneDeep(state.datasetFlat),
         domainPowerEnergy: state.domainPowerEnergy,
@@ -199,7 +200,7 @@ export const actions = {
         interval
       })
 
-      commit('currentDatasetFlat', currentDatasetFlat)
+      commit('currentDataset', currentDataset)
     }
   },
 
@@ -216,7 +217,7 @@ export const actions = {
   },
 
   doFilterRegionData({ state, commit }, { range, interval }) {
-    const { currentDatasetFlat } = dataRollUp({
+    const { currentDataset } = dataRollUp({
       isEnergyType: state.isEnergyType,
       datasetFlat: _cloneDeep(state.datasetFlat),
       domainPowerEnergy: state.domainPowerEnergy,
@@ -231,14 +232,14 @@ export const actions = {
       interval
     })
 
-    commit('currentDatasetFlat', currentDatasetFlat)
+    commit('currentDataset', currentDataset)
   },
 
   doUpdateDatasetByFilterPeriod(
     { state, commit },
     { range, interval, period }
   ) {
-    const { currentDatasetFlat } = dataRollUp({
+    const { currentDataset } = dataRollUp({
       isEnergyType: state.isEnergyType,
       datasetFlat: _cloneDeep(state.datasetFlat),
       domainPowerEnergy: state.domainPowerEnergy,
@@ -253,10 +254,10 @@ export const actions = {
       interval
     })
     const { filteredDatasetFlat } = dataFilterByPeriod({
-      currentDatasetFlat,
+      currentDataset,
       interval,
       period
     })
-    commit('currentDatasetFlat', filteredDatasetFlat)
+    commit('currentDataset', filteredDatasetFlat)
   }
 }

@@ -44,7 +44,8 @@ export default {
       filterPeriod: 'filterPeriod',
       fuelTechGroupName: 'fuelTechGroupName',
       fuelTechGroup: 'fuelTechGroup',
-      currentDatasetFlat: 'regionEnergy/currentDatasetFlat'
+      currentDataset: 'regionEnergy/currentDataset',
+      filteredDates: 'regionEnergy/filteredDates'
     }),
     regionId() {
       return this.$route.params.region
@@ -72,6 +73,13 @@ export default {
       this.doUpdateDatasetByInterval({ range: this.range, interval })
       this.doUpdateTickFormats({ range: this.range, interval: interval })
     },
+    filteredDates(dates) {
+      this.doUpdateXTicks({
+        range: this.range,
+        interval: this.interval,
+        isZoomed: dates.length > 0
+      })
+    },
     filterPeriod(period) {
       this.doUpdateDatasetByFilterPeriod({
         range: this.range,
@@ -82,7 +90,7 @@ export default {
     fuelTechGroupName(groupName) {
       this.doUpdateDatasetByGroup({ groupName })
     },
-    currentDatasetFlat(dataset) {
+    currentDataset(dataset) {
       if (dataset.length > 0) {
         this.doUpdateXGuides({
           interval: this.interval,
@@ -123,7 +131,8 @@ export default {
       doUpdateDatasetByFilterPeriod:
         'regionEnergy/doUpdateDatasetByFilterPeriod',
       doUpdateXGuides: 'visInteract/doUpdateXGuides',
-      doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
+      doUpdateTickFormats: 'visInteract/doUpdateTickFormats',
+      doUpdateXTicks: 'visInteract/doUpdateXTicks'
     }),
     ...mapMutations({
       setWindowWidth: 'app/windowWidth'
