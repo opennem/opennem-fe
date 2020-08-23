@@ -1,4 +1,4 @@
-import * as FT from './fuel-tech.js'
+import * as FT from './group-default.js'
 
 export const GROUP_NAME = 'group.coal-gas-renewables'
 
