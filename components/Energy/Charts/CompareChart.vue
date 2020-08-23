@@ -28,6 +28,7 @@
           v-if="hasCompareData"
           :domains="updatedDomains"
           :dataset="dataset"
+          :dataset-percent="datasetPercent"
           :vis-height="visHeight" />
       </div>
     </div>
@@ -36,6 +37,10 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import _includes from 'lodash.includes'
+import _cloneDeep from 'lodash.clonedeep'
+
 import ColumnVis from '~/components/Vis/Column.vue'
 export default {
   components: {
@@ -44,10 +49,6 @@ export default {
 
   props: {
     compareData: {
-      type: Array,
-      default: () => []
-    },
-    domains: {
       type: Array,
       default: () => []
     }
@@ -61,6 +62,21 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      fuelTechGroupName: 'fuelTechGroupName',
+      hiddenFuelTechs: 'hiddenFuelTechs',
+      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy'
+    }),
+    powerEnergyDomains() {
+      return _cloneDeep(this.currentDomainPowerEnergy).reverse()
+    },
+    domains() {
+      const property =
+        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+      const domains = this.powerEnergyDomains
+      const hidden = this.hiddenFuelTechs
+      return domains.filter(d => !_includes(hidden, d[property]))
+    },
     hasCompareData() {
       return this.updatedCompareData.length === 2
     },
@@ -102,6 +118,29 @@ export default {
           }
         })
         return change
+      }
+      return null
+    },
+    datasetPercent() {
+      if (this.hasCompareData) {
+        const changePercent = {}
+        const former = this.updatedCompareData[0]
+        const latter = this.updatedCompareData[1]
+        Object.keys(latter).forEach(d => {
+          if (d !== 'date' && d.length > 0) {
+            if (
+              former[d] === null ||
+              latter[d] === null ||
+              former[d] === 0 ||
+              latter[d] === 0
+            ) {
+              changePercent[d] = null
+            } else {
+              changePercent[d] = ((latter[d] - former[d]) / former[d]) * 100
+            }
+          }
+        })
+        return changePercent
       }
       return null
     },
