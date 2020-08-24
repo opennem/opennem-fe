@@ -6,6 +6,11 @@
     }"
     class="chart">
     <power-energy-chart-options
+      :options="options"
+      :chart-shown="chartEnergy"
+      :chart-type="chartEnergyType"
+      :chart-curve="chartCurve"
+      :chart-y-axis="chartEnergyYAxis"
       :interval="interval"
       :is-energy-type="isEnergyType"
       :is-type-proportion="isTypeProportion"
@@ -117,10 +122,26 @@ import addQuarters from 'date-fns/addQuarters'
 import addYears from 'date-fns/addYears'
 
 import DateDisplay from '@/services/DateDisplay.js'
+import * as OPTIONS from '@/constants/v2/chart-options.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
 import StackedAreaVis from '@/components/Vis/StackedArea2'
 import PowerEnergyChartOptions from '@/components/Energy/Charts/PowerEnergyChartOptions'
+
+const options = {
+  type: [
+    OPTIONS.CHART_HIDDEN,
+    OPTIONS.CHART_STACKED,
+    OPTIONS.CHART_PROPORTION,
+    OPTIONS.CHART_LINE
+  ],
+  curve: [
+    OPTIONS.CHART_CURVE_SMOOTH,
+    OPTIONS.CHART_CURVE_STEP,
+    OPTIONS.CHART_CURVE_STRAIGHT
+  ],
+  yAxis: [OPTIONS.CHART_YAXIS_ABSOLUTE, OPTIONS.CHART_YAXIS_PERCENTAGE]
+}
 
 export default {
   components: {
@@ -145,6 +166,12 @@ export default {
     }
   },
 
+  data() {
+    return {
+      options
+    }
+  },
+
   computed: {
     ...mapGetters({
       tabletBreak: 'app/tabletBreak',
@@ -155,13 +182,14 @@ export default {
       xGuides: 'visInteract/xGuides',
       tickFormat: 'visInteract/tickFormat',
       secondTickFormat: 'visInteract/secondTickFormat',
-      chartEnergy: 'visInteract/chartEnergy',
-      chartEnergyType: 'visInteract/chartEnergyType',
-      chartEnergyYAxis: 'visInteract/chartEnergyYAxis',
-      chartEnergyCurve: 'visInteract/chartEnergyCurve',
-      chartPowerCurve: 'visInteract/chartPowerCurve',
-      chartEnergyRenewablesLine: 'visInteract/chartEnergyRenewablesLine',
       highlightDomain: 'visInteract/highlightDomain',
+      chartEnergy: 'chartOptionsPowerEnergy/chartShown',
+      chartEnergyType: 'chartOptionsPowerEnergy/chartType',
+      chartEnergyYAxis: 'chartOptionsPowerEnergy/chartYAxis',
+      chartEnergyCurve: 'chartOptionsPowerEnergy/chartEnergyCurve',
+      chartPowerCurve: 'chartOptionsPowerEnergy/chartPowerCurve',
+      chartEnergyRenewablesLine:
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
       range: 'range',
       interval: 'interval',
       compareDates: 'compareDates',
@@ -195,6 +223,9 @@ export default {
     },
     isYAxisPercentage() {
       return this.chartEnergyYAxis === 'percentage'
+    },
+    chartCurve() {
+      return this.isEnergyType ? this.chartEnergyCurve : this.chartPowerCurve
     },
     renewablesLineColour() {
       return this.fuelTechGroupName === 'Renewable/Fossil' ||

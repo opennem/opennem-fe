@@ -5,37 +5,17 @@
       'has-border-bottom': !chartEmissionsVolume
     }"
     class="chart">
-    <chart-header>
-      <template v-slot:label-unit>
-        <strong>Emissions Volume</strong>
-        <small>{{ emissionsVolumeUnit }}/{{ interval | intervalLabel }}</small>
-      </template>
-      <template v-slot:average-value>
-        Av.
-        <strong>
-          {{ averageEmissionsVolume | formatValue }}
-          {{ emissionsVolumeUnit }}/{{ interval | intervalLabel }}
-        </strong>
-      </template>
-      <template v-slot:hover-date>
-        {{ hoverDisplayDate }}
-      </template>
-      <template v-slot:hover-values>
-        <span
-          v-if="hoverValue"
-          class="ft-value">
-          <em
-            :style="{ 'background-color': hoverDomainColour }"
-            class="colour-square" />
-          {{ hoverDomainLabel }}
-          <strong>{{ hoverValue | formatValue2 }} {{ emissionsVolumeUnit }}</strong>
-        </span>
-        <span>
-          Total
-          <strong>{{ hoverTotal | formatValue2 }} {{ emissionsVolumeUnit }}</strong>
-        </span>
-      </template>
-    </chart-header>
+    <emissions-chart-options
+      :interval="interval"
+      :average-emissions-volume="averageEmissionsVolume"
+      :emissions-volume-unit="emissionsVolumeUnit"
+      :hover-display-date="hoverDisplayDate"
+      :hover-value="hoverValue"
+      :hover-domain-colour="hoverDomainColour"
+      :hover-domain-label="hoverDomainLabel"
+      :hover-total="hoverTotal"
+    />
+    
     <stacked-area-vis
       v-if="chartEmissionsVolume"
       :domains="domains"
@@ -81,12 +61,12 @@ import addQuarters from 'date-fns/addQuarters'
 import addYears from 'date-fns/addYears'
 import { EMISSIONS } from '@/constants/v2/data-types.js'
 import DateDisplay from '@/services/DateDisplay.js'
-import ChartHeader from '@/components/Vis/ChartHeader'
 import StackedAreaVis from '@/components/Vis/StackedArea2.vue'
+import EmissionsChartOptions from '@/components/Energy/Charts/EmissionsChartOptions'
 
 export default {
   components: {
-    ChartHeader,
+    EmissionsChartOptions,
     StackedAreaVis
   },
 

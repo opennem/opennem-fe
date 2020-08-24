@@ -47,7 +47,8 @@ export default {
   computed: {
     ...mapGetters({
       fuelTechGroupName: 'fuelTechGroupName',
-      chartEnergyRenewablesLine: 'visInteract/chartEnergyRenewablesLine'
+      chartEnergyRenewablesLine:
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine'
     }),
     legendItems() {
       const prop = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'

@@ -297,7 +297,8 @@ export default {
     ...mapGetters({
       emissionsVolumeUnit: 'si/emissionsVolumeUnit',
       emissionsVolumePrefix: 'si/emissionsVolumePrefix',
-      chartEnergyRenewablesLine: 'visInteract/chartEnergyRenewablesLine'
+      chartEnergyRenewablesLine:
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine'
     }),
 
     fuelTechGroupName() {
@@ -1074,7 +1075,10 @@ export default {
 
     handleRenewableRowClicked() {
       const rowToggle = !this.chartEnergyRenewablesLine
-      this.$store.commit('visInteract/chartEnergyRenewablesLine', rowToggle)
+      this.$store.commit(
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+        rowToggle
+      )
       this.emitHiddenFuelTechs()
     },
 
@@ -1096,7 +1100,10 @@ export default {
         this.hiddenSources = this.sourcesOrder.map(d => d[this.propRef])
       }
 
-      this.$store.commit('visInteract/chartEnergyRenewablesLine', true)
+      this.$store.commit(
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+        true
+      )
       this.emitHiddenFuelTechs()
     },
 

@@ -118,7 +118,8 @@ export default {
 
   computed: {
     ...mapGetters({
-      chartEnergyRenewablesLine: 'visInteract/chartEnergyRenewablesLine'
+      chartEnergyRenewablesLine:
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine'
     }),
     responsiveBreakWidth() {
       return this.$store.getters.responsiveBreakWidth

@@ -18,59 +18,37 @@
             @click.stop="emitShow(false)" />
 
           <div 
-            :class="{'is-chart-hidden': !chartEnergy}" 
+            :class="{'is-chart-hidden': !chartShown}" 
             class="chart-options-buttons buttons has-addons">
-            <button 
-              :class="{'is-selected': !chartEnergy}"
+            <button
+              v-for="type in types"
+              :key="type"
+              :class="{'is-selected': chartType === type}"
               class="button is-small"
-              @click.stop="handleDropdownClick('hidden')">Hidden</button>
-            <button 
-              :class="{'is-selected': chartEnergyType === 'area'}"
-              class="button is-small"
-              @click.stop="handleDropdownClick('area')">Stacked</button>
-            <button 
-              :class="{'is-selected': chartEnergyType === 'proportion'}"
-              class="button is-small"
-              @click.stop="handleDropdownClick('proportion')">Proportion</button>
-            <button 
-              :class="{'is-selected': chartEnergyType === 'line'}"
-              class="button is-small"
-              @click.stop="handleDropdownClick('line')">Line</button>
-              <!-- <button 
-            :class="{'is-selected': chartEnergyType === 'delta'}"
-            class="button is-small"
-            @click.stop="handleDropdownClick('delta')">Delta</button> -->
+              @click.stop="handleTypeClick(type)">{{ chartLabel[type] }}</button>
           </div>
 
           <div 
-            v-if="chartEnergyType !== 'hidden'" 
+            v-if="chartShown" 
             class="chart-options-buttons buttons has-addons">
-            <button 
-              :class="{'is-selected': isSmoothCurve}" 
+            <button
+              v-for="curve in curves"
+              :key="curve"
+              :class="{'is-selected': chartCurve === curve}"
               class="button is-small"
-              @click.stop="handleCurveClick('smooth')">Smooth</button>
-            <button 
-              :class="{'is-selected': isStepCurve}" 
-              class="button is-small"
-              @click.stop="handleCurveClick('step')">Step</button>
-            <button 
-              :class="{'is-selected': isStraightCurve}" 
-              class="button is-small"
-              @click.stop="handleCurveClick('linear')">Straight</button>
+              @click.stop="handleCurveClick(curve)">{{ chartLabel[curve] }}</button>
           </div>
 
           <div
-            v-if="chartEnergyType === 'line'"
+            v-if="isLineType"
             class="chart-options-buttons buttons has-addons" 
             style="margin-right: 1rem;">
-            <button 
-              :class="{'is-selected': chartEnergyYAxis === 'absolute'}" 
+            <button
+              v-for="yAxis in yAxes"
+              :key="yAxis"
+              :class="{'is-selected': chartYAxis === yAxis}"
               class="button is-small"
-              @click.stop="handleYAxisClick('absolute')">Absolute</button>
-            <button 
-              :class="{'is-selected': chartEnergyYAxis === 'percentage'}" 
-              class="button is-small"
-              @click.stop="handleYAxisClick('percentage')">Percentage</button>
+              @click.stop="handleYAxisClick(yAxis)">{{ chartLabel[yAxis] }}</button>
           </div>
 
         </div>
@@ -82,47 +60,69 @@
 <script>
 import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
+import { CHART_LABEL, CHART_LINE } from '@/constants/v2/chart-options.js'
 
 export default {
   mixins: [clickaway],
 
   props: {
+    options: {
+      type: Object,
+      default: () => {
+        return {
+          type: [],
+          curve: [],
+          yAxis: []
+        }
+      }
+    },
+    chartShown: {
+      type: Boolean,
+      default: false
+    },
+    chartType: {
+      type: String,
+      default: ''
+    },
+    chartCurve: {
+      type: String,
+      default: ''
+    },
+    chartYAxis: {
+      type: String,
+      default: ''
+    },
     show: {
       type: Boolean,
       default: () => false
     }
   },
 
+  data() {
+    return {
+      chartLabel: CHART_LABEL
+    }
+  },
+
   computed: {
     ...mapGetters({
-      range: 'range',
-      chartEnergy: 'visInteract/chartEnergy',
-      chartEnergyType: 'visInteract/chartEnergyType',
-      chartEnergyYAxis: 'visInteract/chartEnergyYAxis',
-      chartEnergyCurve: 'visInteract/chartEnergyCurve',
-      chartPowerCurve: 'visInteract/chartPowerCurve'
+      range: 'range'
     }),
-    isEnergy() {
-      return this.range === '30D' || this.range === '1Y' || this.range === 'ALL'
+    types() {
+      return this.options.type
     },
-    curve() {
-      return this.isEnergy ? this.chartEnergyCurve : this.chartPowerCurve
+    curves() {
+      return this.options.curve
     },
-    isSmoothCurve() {
-      return this.curve === 'smooth'
+    yAxes() {
+      return this.options.yAxis
     },
-    isStepCurve() {
-      return this.curve === 'step'
-    },
-    isStraightCurve() {
-      return this.curve === 'linear'
+    isLineType() {
+      return this.chartType === CHART_LINE
     }
   },
 
   methods: {
-    handleDropdownClick(type) {
-      this.$store.commit('visInteract/chartEnergyType', type)
-    },
     handleMenuClick() {
       this.emitShow(!this.show)
     },
@@ -132,15 +132,14 @@ export default {
     emitShow(show) {
       this.$emit('show-change', show)
     },
-    handleYAxisClick(type) {
-      this.$store.commit('visInteract/chartEnergyYAxis', type)
+    handleTypeClick(type) {
+      this.$emit('type-click', type)
+    },
+    handleYAxisClick(yAxis) {
+      this.$emit('y-axis-click', yAxis)
     },
     handleCurveClick(curve) {
-      if (this.isEnergy) {
-        this.$store.commit('visInteract/chartEnergyCurve', curve)
-      } else {
-        this.$store.commit('visInteract/chartPowerCurve', curve)
-      }
+      this.$emit('curve-click', curve)
     }
   }
 }

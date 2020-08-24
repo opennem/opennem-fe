@@ -219,7 +219,7 @@ export default {
       interval: 'interval',
       filterPeriod: 'filterPeriod',
       dateFilter: 'dateFilter',
-      chartEnergy: 'visInteract/chartEnergy',
+      chartEnergy: 'chartOptionsPowerEnergy/chartShown',
       chartEmissionsVolume: 'visInteract/chartEmissionsVolume',
       chartEmissionsIntensity: 'visInteract/chartEmissionsIntensity',
       chartTemperature: 'visInteract/chartTemperature'

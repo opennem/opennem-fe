@@ -158,7 +158,8 @@ export default {
       fuelTechGroupName: 'fuelTechGroupName',
       emissionsVolumePrefix: 'si/emissionsVolumePrefix',
       percentContributionTo: 'percentContributionTo',
-      chartEnergyRenewablesLine: 'visInteract/chartEnergyRenewablesLine'
+      chartEnergyRenewablesLine:
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine'
     }),
     showSummaryColumn() {
       return this.$store.getters.showSummaryColumn

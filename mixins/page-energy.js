@@ -27,7 +27,8 @@ const pageEnergyMixin = {
       filterPeriod: 'filterPeriod',
       type: 'energyChartType',
       chartUnit: 'chartUnit',
-      chartEnergyRenewablesLine: 'visInteract/chartEnergyRenewablesLine',
+      chartEnergyRenewablesLine:
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
       chartSummaryPie: 'visInteract/chartSummaryPie',
       compareDifference: 'compareDifference',
       focusOn: 'focusOn',
@@ -41,10 +42,10 @@ const pageEnergyMixin = {
       percentContributionTo: 'percentContributionTo',
       energyCurveType: 'energyCurveType',
       step: 'step',
-      chartEnergyType: 'visInteract/chartEnergyType',
-      chartEnergyYAxis: 'visInteract/chartEnergyYAxis',
-      chartEnergyCurve: 'visInteract/chartEnergyCurve',
-      chartPowerCurve: 'visInteract/chartPowerCurve'
+      chartEnergyType: 'chartOptionsPowerEnergy/chartType',
+      chartEnergyYAxis: 'chartOptionsPowerEnergy/chartYAxis',
+      chartEnergyCurve: 'chartOptionsPowerEnergy/chartEnergyCurve',
+      chartPowerCurve: 'chartOptionsPowerEnergy/chartPowerCurve'
     }),
 
     isYearInterval() {

@@ -2,8 +2,16 @@
   <chart-header>
     <template v-slot:options>
       <chart-options 
+        :options="options"
+        :chart-type="chartType"
+        :chart-curve="chartCurve"
+        :chart-shown="chartShown"
+        :chart-y-axis="chartYAxis"
         :show="chartEnergyOptions" 
-        @show-change="s => chartEnergyOptions = s" />
+        @show-change="s => chartEnergyOptions = s"
+        @type-click="handleTypeClick"
+        @y-axis-click="handleYAxisClick"
+        @curve-click="handleCurveClick" />
     </template>
 
     <template v-slot:label-unit>
@@ -74,6 +82,32 @@ export default {
     ChartOptions
   },
   props: {
+    options: {
+      type: Object,
+      default: () => {
+        return {
+          type: [],
+          curve: [],
+          yAxis: []
+        }
+      }
+    },
+    chartShown: {
+      type: Boolean,
+      default: false
+    },
+    chartType: {
+      type: String,
+      default: ''
+    },
+    chartCurve: {
+      type: String,
+      default: ''
+    },
+    chartYAxis: {
+      type: String,
+      default: ''
+    },
     interval: {
       type: String,
       default: ''
@@ -136,6 +170,20 @@ export default {
       chartEnergyOptions: false
     }
   },
-  computed: {}
+  methods: {
+    handleTypeClick(type) {
+      this.$store.commit('chartOptionsPowerEnergy/chartType', type)
+    },
+    handleYAxisClick(yAxis) {
+      this.$store.commit('chartOptionsPowerEnergy/chartYAxis', yAxis)
+    },
+    handleCurveClick(curve) {
+      if (this.isEnergyType) {
+        this.$store.commit('chartOptionsPowerEnergy/chartEnergyCurve', curve)
+      } else {
+        this.$store.commit('chartOptionsPowerEnergy/chartPowerCurve', curve)
+      }
+    }
+  }
 }
 </script>
