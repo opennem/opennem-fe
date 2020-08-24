@@ -15,7 +15,6 @@ export const state = () => ({
   secondTickFormat: () => ({}),
 
   chartEmissionsIntensity: true,
-  chartTemperature: true,
   chartSummaryPie: true
 })
 
@@ -32,7 +31,6 @@ export const getters = {
   secondTickFormat: state => state.secondTickFormat,
 
   chartEmissionsIntensity: state => state.chartEmissionsIntensity,
-  chartTemperature: state => state.chartTemperature,
   chartSummaryPie: state => state.chartSummaryPie
 }
 
@@ -67,9 +65,6 @@ export const mutations = {
 
   chartEmissionsIntensity(state, data) {
     state.chartEmissionsIntensity = data
-  },
-  chartTemperature(state, data) {
-    state.chartTemperature = data
   },
   chartSummaryPie(state, data) {
     state.chartSummaryPie = data

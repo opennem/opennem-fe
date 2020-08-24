@@ -2,12 +2,26 @@
   <div 
     :class="{
       'is-hovered': hoverOn || focusOn,
-      'has-border-bottom': !chartTemperature,
+      'has-border-bottom': !chartShown,
       'adjustment': chartPrice
     }"
     class="temperature-chart chart">
+
+    <temperature-chart-options
+      :options="options"
+      :chart-shown="chartShown"
+      :chart-type="chartType"
+      :chart-curve="chartCurve"
+      :interval="interval"
+      :average-temperature="averageTemperature"
+      :hover-display-date="hoverDisplayDate"
+      :hover-min-temperature="hoverMinTemperature"
+      :hover-mean-temperature="hoverMeanTemperature"
+      :hover-max-temperature="hoverMaxTemperature"
+    />
+
     <line-vis
-      v-if="chartTemperature"
+      v-if="chartShown"
       :domain-id="temperatureMeanDomain"
       :min-domain-id="temperatureMinDomain"
       :max-domain-id="temperatureMaxDomain"
@@ -20,7 +34,7 @@
       :focus-on="focusOn"
       :range="range"
       :interval="interval"
-      :curve="'smooth'"
+      :curve="chartCurve"
       :y-axis-log="false"
       :y-min="0"
       :show-x-axis="false"
@@ -42,8 +56,9 @@
 import { mapGetters, mapMutations } from 'vuex'
 import { min, max } from 'd3-array'
 import _cloneDeep from 'lodash.clonedeep'
+import * as OPTIONS from '@/constants/v2/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
-import ChartHeader from '@/components/Vis/ChartHeader'
+import TemperatureChartOptions from '@/components/Energy/Charts/TemperatureChartOptions'
 import LineVis from '@/components/Vis/Line.vue'
 import {
   TEMPERATURE,
@@ -52,9 +67,19 @@ import {
   TEMPERATURE_MAX
 } from '@/constants/v2/data-types.js'
 
+const options = {
+  type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_LINE],
+  curve: [
+    OPTIONS.CHART_CURVE_SMOOTH,
+    OPTIONS.CHART_CURVE_STEP,
+    OPTIONS.CHART_CURVE_STRAIGHT
+  ],
+  yAxis: []
+}
+
 export default {
   components: {
-    ChartHeader,
+    TemperatureChartOptions,
     LineVis
   },
 
@@ -75,7 +100,7 @@ export default {
 
   data() {
     return {
-      chartEnergyOptions: false,
+      options,
       lineColour: '#e34a33'
     }
   },
@@ -86,8 +111,11 @@ export default {
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
       xGuides: 'visInteract/xGuides',
-      chartTemperature: 'visInteract/chartTemperature',
       chartPrice: 'chartOptionsPrice/chartShown',
+      chartShown: 'chartOptionsTemperature/chartShown',
+      chartType: 'chartOptionsTemperature/chartType',
+      chartCurve: 'chartOptionsTemperature/chartCurve',
+
       range: 'range',
       interval: 'interval',
       compareDates: 'compareDates',
@@ -95,7 +123,8 @@ export default {
       isEnergyType: 'regionEnergy/isEnergyType',
       currentDataset: 'regionEnergy/currentDataset',
       domainTemperature: 'regionEnergy/domainTemperature',
-      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy'
+      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
+      summary: 'regionEnergy/summary'
     }),
     temperatureDomains() {
       return this.domainTemperature
@@ -124,6 +153,10 @@ export default {
       return max(this.currentDataset, d => d._stackedTotalMax)
     },
 
+    averageTemperature() {
+      return this.summary ? this.summary._averageTemperature : 0
+    },
+
     domains() {
       return _cloneDeep(this.currentDomainPowerEnergy).reverse()
     },
@@ -149,6 +182,15 @@ export default {
       //   dataset = this.energyGrossPercentDataset
       // }
       return this.currentDataset.find(d => d.time === time)
+    },
+    hoverMeanTemperature() {
+      return this.hoverData ? this.hoverData[this.temperatureMeanDomain] : 0
+    },
+    hoverMinTemperature() {
+      return this.hoverData ? this.hoverData[this.temperatureMinDomain] : 0
+    },
+    hoverMaxTemperature() {
+      return this.hoverData ? this.hoverData[this.temperatureMaxDomain] : 0
     },
     hoverValue() {
       return this.hoverData ? this.hoverData[this.hoverDomain] : null

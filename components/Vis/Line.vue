@@ -597,6 +597,7 @@ export default {
       this.z.range([this.domainColour]).domain([this.domainId])
 
       this.line.curve(this.curveType)
+      this.area.curve(this.curveType)
 
       this.$xAxisGroup.call(this.customXAxis)
       this.$yAxisGroup.call(this.customYAxis)

@@ -222,7 +222,7 @@ export default {
       chartEnergy: 'chartOptionsPowerEnergy/chartShown',
       chartEmissionsVolume: 'chartOptionsEmissionsVolume/chartShown',
       chartEmissionsIntensity: 'visInteract/chartEmissionsIntensity',
-      chartTemperature: 'visInteract/chartTemperature'
+      chartTemperature: 'chartOptionsTemperature/chartShown'
     }),
     domains() {
       return this.regions.map(d => {
