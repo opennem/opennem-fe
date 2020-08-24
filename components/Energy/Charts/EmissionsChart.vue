@@ -56,7 +56,7 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
-import { min, max } from 'd3-array'
+import { max } from 'd3-array'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 import addWeeks from 'date-fns/addWeeks'
@@ -109,6 +109,10 @@ export default {
 
   computed: {
     ...mapGetters({
+      range: 'range',
+      interval: 'interval',
+      fuelTechGroupName: 'fuelTechGroupName',
+      hiddenFuelTechs: 'hiddenFuelTechs',
       tabletBreak: 'app/tabletBreak',
       hoverDomain: 'visInteract/hoverDomain',
       focusOn: 'visInteract/isFocusing',
@@ -118,16 +122,9 @@ export default {
       chartShown: 'chartOptionsEmissionsVolume/chartShown',
       chartType: 'chartOptionsEmissionsVolume/chartType',
       chartCurve: 'chartOptionsEmissionsVolume/chartCurve',
-      range: 'range',
-      interval: 'interval',
-      fuelTechGroupName: 'fuelTechGroupName',
-      hiddenFuelTechs: 'hiddenFuelTechs',
-      ready: 'regionEnergy/ready',
-      isEnergyType: 'regionEnergy/isEnergyType',
       currentDataset: 'regionEnergy/currentDataset',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
       summary: 'regionEnergy/summary',
-
       emissionsVolumeUnit: 'si/emissionsVolumeUnit'
     }),
     hoverEmissionsDomain() {
@@ -157,19 +154,15 @@ export default {
       })
       return max(dataset, d => d._stackedTotalEmissionsMax)
     },
-
+    emissionsDomains() {
+      return _cloneDeep(this.currentDomainEmissions).reverse()
+    },
     domains() {
       const property =
         this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
       const domains = this.emissionsDomains
       const hidden = this.hiddenFuelTechs
       return domains.filter(d => !_includes(hidden, d[property]))
-    },
-    emissionsDomains() {
-      return _cloneDeep(this.currentDomainEmissions).reverse()
-    },
-    isYearInterval() {
-      return this.interval === 'Fin Year' || this.interval === 'Year'
     },
     averageEmissionsVolume() {
       return this.summary ? this.summary._averageEmissionsVolume : 0
@@ -203,37 +196,11 @@ export default {
         : ''
     },
     hoverDomainLabel() {
-      let find = null
-      // if (
-      //   this.chartEnergyType === 'proportion' ||
-      //   (this.chartEnergyType === 'line' &&
-      //     this.chartEnergyYAxis === 'percentage')
-      // ) {
-      //   find = this.stackedEnergyPercentDomains.find(
-      //     d => d.id === this.hoverDomain
-      //   )
-      // } else {
-      //   find = this.currentDomainPowerEnergy.find(d => d.id === this.hoverDomain)
-      // }
-
-      find = this.domains.find(d => d.id === this.hoverEmissionsDomain)
+      const find = this.domains.find(d => d.id === this.hoverEmissionsDomain)
       return find ? find.label : '—'
     },
     hoverDomainColour() {
-      let find = null
-      // if (
-      //   this.chartEnergyType === 'proportion' ||
-      //   (this.chartEnergyType === 'line' &&
-      //     this.chartEnergyYAxis === 'percentage')
-      // ) {
-      //   find = this.stackedEnergyPercentDomains.find(
-      //     d => d.id === this.hoverDomain
-      //   )
-      // } else {
-      //   find = this.currentDomainPowerEnergy.find(d => d.id === this.hoverDomain)
-      // }
-
-      find = this.domains.find(d => d.id === this.hoverEmissionsDomain)
+      const find = this.domains.find(d => d.id === this.hoverEmissionsDomain)
       return find ? find.colour : '—'
     },
     hoverTotal() {

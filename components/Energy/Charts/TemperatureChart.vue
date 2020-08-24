@@ -53,9 +53,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
-import { min, max } from 'd3-array'
-import _cloneDeep from 'lodash.clonedeep'
+import { mapGetters } from 'vuex'
 import * as OPTIONS from '@/constants/v2/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import TemperatureChartOptions from '@/components/Energy/Charts/TemperatureChartOptions'
@@ -107,7 +105,6 @@ export default {
 
   computed: {
     ...mapGetters({
-      tabletBreak: 'app/tabletBreak',
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
       xGuides: 'visInteract/xGuides',
@@ -118,12 +115,8 @@ export default {
 
       range: 'range',
       interval: 'interval',
-      compareDates: 'compareDates',
-      ready: 'regionEnergy/ready',
-      isEnergyType: 'regionEnergy/isEnergyType',
       currentDataset: 'regionEnergy/currentDataset',
       domainTemperature: 'regionEnergy/domainTemperature',
-      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       summary: 'regionEnergy/summary'
     }),
     temperatureDomains() {
@@ -146,41 +139,14 @@ export default {
       const find = this.temperatureDomains.find(t => t.type === TEMPERATURE_MAX)
       return find ? find.domain : ''
     },
-    yMin() {
-      return min(this.currentDataset, d => d._stackedTotalMin)
-    },
-    yMax() {
-      return max(this.currentDataset, d => d._stackedTotalMax)
-    },
-
     averageTemperature() {
       return this.summary ? this.summary._averageTemperature : 0
-    },
-
-    domains() {
-      return _cloneDeep(this.currentDomainPowerEnergy).reverse()
-    },
-    isYearInterval() {
-      return this.interval === 'Fin Year' || this.interval === 'Year'
-    },
-    isRenewableLineOnly() {
-      return this.chartEnergyRenewablesLine && this.domains.length === 0
     },
     hoverData() {
       if (!this.hoverDate) {
         return null
       }
       const time = this.hoverDate.getTime()
-      // let dataset = this.currentDataset
-      // if (this.chartEnergyType === 'proportion') {
-      //   dataset = this.energyPercentDataset
-      // }
-      // if (
-      //   this.chartEnergyType === 'line' &&
-      //   this.chartEnergyYAxis === 'percentage'
-      // ) {
-      //   dataset = this.energyGrossPercentDataset
-      // }
       return this.currentDataset.find(d => d.time === time)
     },
     hoverMeanTemperature() {
@@ -211,15 +177,6 @@ export default {
             true
           )
         : ''
-    },
-    hoverTotal() {
-      let total = 0
-      if (this.hoverData) {
-        this.currentDomainPowerEnergy.forEach(d => {
-          total += this.hoverData[d.id]
-        })
-      }
-      return total
     }
   },
 

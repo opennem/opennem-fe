@@ -196,7 +196,6 @@ export default {
       percentContributionTo: 'percentContributionTo',
       fuelTechGroupName: 'fuelTechGroupName',
       hiddenFuelTechs: 'hiddenFuelTechs',
-      ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
       currentDataset: 'regionEnergy/currentDataset',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',

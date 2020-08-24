@@ -111,8 +111,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
-import { min, max } from 'd3-array'
+import { mapGetters } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import * as OPTIONS from '@/constants/v2/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
@@ -159,22 +158,16 @@ export default {
 
   computed: {
     ...mapGetters({
-      tabletBreak: 'app/tabletBreak',
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
       xGuides: 'visInteract/xGuides',
-
       chartShown: 'chartOptionsPrice/chartShown',
       chartType: 'chartOptionsPrice/chartType',
       chartCurve: 'chartOptionsPrice/chartCurve',
       range: 'range',
       interval: 'interval',
-      ready: 'regionEnergy/ready',
-      isEnergyType: 'regionEnergy/isEnergyType',
       currentDataset: 'regionEnergy/currentDataset',
-      domainMarketValue: 'regionEnergy/domainMarketValue',
       priceDomains: 'regionEnergy/domainPrice',
-      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       summary: 'regionEnergy/summary'
     }),
     priceDataset() {
@@ -189,22 +182,6 @@ export default {
     priceBelow0Domain() {
       return this.priceDomains.length > 0 ? this.priceDomains[2].domain : ''
     },
-    yMin() {
-      return min(this.currentDataset, d => d._stackedTotalMin)
-    },
-    yMax() {
-      return max(this.currentDataset, d => d._stackedTotalMax)
-    },
-
-    domains() {
-      return _cloneDeep(this.currentDomainPowerEnergy).reverse()
-    },
-    isYearInterval() {
-      return this.interval === 'Fin Year' || this.interval === 'Year'
-    },
-    isRenewableLineOnly() {
-      return this.chartEnergyRenewablesLine && this.domains.length === 0
-    },
     totalAverageValue() {
       return this.summary ? this.summary._totalAverageValue : 0
     },
@@ -213,20 +190,10 @@ export default {
         return null
       }
       const time = this.hoverDate.getTime()
-      // let dataset = this.currentDataset
-      // if (this.chartEnergyType === 'proportion') {
-      //   dataset = this.energyPercentDataset
-      // }
-      // if (
-      //   this.chartEnergyType === 'line' &&
-      //   this.chartEnergyYAxis === 'percentage'
-      // ) {
-      //   dataset = this.energyGrossPercentDataset
-      // }
       return this.currentDataset.find(d => d.time === time)
     },
     hoverValue() {
-      return this.hoverData ? this.hoverData[this.hoverDomain] : null
+      return this.hoverData ? this.hoverData[this.priceDomain] : null
     },
     hoverDisplayDate() {
       let date = this.focusDate

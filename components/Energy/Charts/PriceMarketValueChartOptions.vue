@@ -20,7 +20,6 @@
       Av.
       <strong>
         {{ totalAverageValue | formatCurrency }}
-        $/MWh
       </strong>
     </template>
     <template v-slot:hover-date>
