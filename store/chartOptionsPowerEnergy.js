@@ -1,13 +1,15 @@
+import * as OPTIONS from '@/constants/v2/chart-options.js'
+
 export const state = () => ({
-  chartType: 'area', // line, proportion, area, hidden
-  chartYAxis: 'absolute', // absolute, percentage
-  chartEnergyCurve: 'step', // smooth, step, linear
-  chartPowerCurve: 'smooth', // smooth, step, linear
+  chartType: OPTIONS.CHART_STACKED,
+  chartYAxis: OPTIONS.CHART_YAXIS_ABSOLUTE,
+  chartEnergyCurve: OPTIONS.CHART_CURVE_STEP,
+  chartPowerCurve: OPTIONS.CHART_CURVE_SMOOTH,
   chartEnergyRenewablesLine: false
 })
 
 export const getters = {
-  chartShown: state => state.chartType !== 'hidden',
+  chartShown: state => state.chartType !== OPTIONS.CHART_HIDDEN,
   chartType: state => state.chartType,
   chartYAxis: state => state.chartYAxis,
   chartEnergyCurve: state => state.chartEnergyCurve,

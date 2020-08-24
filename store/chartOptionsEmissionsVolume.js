@@ -1,11 +1,13 @@
+import * as OPTIONS from '@/constants/v2/chart-options.js'
+
 export const state = () => ({
-  chartType: 'area', // line, proportion, area, hidden
-  chartYAxis: 'absolute', // absolute, percentage
-  chartCurve: 'step' // smooth, step, linear
+  chartType: OPTIONS.CHART_STACKED,
+  chartYAxis: OPTIONS.CHART_YAXIS_ABSOLUTE,
+  chartCurve: OPTIONS.CHART_CURVE_STEP
 })
 
 export const getters = {
-  chartShown: state => state.chartType !== 'hidden',
+  chartShown: state => state.chartType !== OPTIONS.CHART_HIDDEN,
   chartType: state => state.chartType,
   chartYAxis: state => state.chartYAxis,
   chartCurve: state => state.chartCurve

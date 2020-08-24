@@ -2,10 +2,14 @@
   <div 
     :class="{
       'is-hovered': hoverOn || focusOn,
-      'has-border-bottom': !chartEmissionsVolume
+      'has-border-bottom': !chartShown
     }"
     class="chart">
     <emissions-chart-options
+      :options="options"
+      :chart-shown="chartShown"
+      :chart-type="chartType"
+      :chart-curve="chartCurve"
       :interval="interval"
       :average-emissions-volume="averageEmissionsVolume"
       :emissions-volume-unit="emissionsVolumeUnit"
@@ -17,12 +21,12 @@
     />
     
     <stacked-area-vis
-      v-if="chartEmissionsVolume"
+      v-if="chartShown"
       :domains="domains"
       :dataset="currentDataset"
       :range="range"
       :interval="interval"
-      :curve="'step'"
+      :curve="chartCurve"
       :y-min="yMin"
       :y-max="yMax"
       :vis-height="200"
@@ -60,9 +64,20 @@ import addMonths from 'date-fns/addMonths'
 import addQuarters from 'date-fns/addQuarters'
 import addYears from 'date-fns/addYears'
 import { EMISSIONS } from '@/constants/v2/data-types.js'
+import * as OPTIONS from '@/constants/v2/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import StackedAreaVis from '@/components/Vis/StackedArea2.vue'
 import EmissionsChartOptions from '@/components/Energy/Charts/EmissionsChartOptions'
+
+const options = {
+  type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_STACKED],
+  curve: [
+    OPTIONS.CHART_CURVE_SMOOTH,
+    OPTIONS.CHART_CURVE_STEP,
+    OPTIONS.CHART_CURVE_STRAIGHT
+  ],
+  yAxis: []
+}
 
 export default {
   components: {
@@ -87,7 +102,7 @@ export default {
 
   data() {
     return {
-      chartEnergyOptions: false,
+      options,
       yMin: 0
     }
   },
@@ -99,14 +114,14 @@ export default {
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
       xGuides: 'visInteract/xGuides',
-
-      chartEmissionsVolume: 'visInteract/chartEmissionsVolume',
       highlightDomain: 'visInteract/highlightDomain',
+      chartShown: 'chartOptionsEmissionsVolume/chartShown',
+      chartType: 'chartOptionsEmissionsVolume/chartType',
+      chartCurve: 'chartOptionsEmissionsVolume/chartCurve',
       range: 'range',
       interval: 'interval',
       fuelTechGroupName: 'fuelTechGroupName',
       hiddenFuelTechs: 'hiddenFuelTechs',
-
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
       currentDataset: 'regionEnergy/currentDataset',

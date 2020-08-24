@@ -14,7 +14,6 @@ export const state = () => ({
   tickFormat: () => ({}),
   secondTickFormat: () => ({}),
 
-  chartEmissionsVolume: true,
   chartEmissionsIntensity: true,
   chartPrice: true,
   chartTemperature: true,
@@ -33,7 +32,6 @@ export const getters = {
   tickFormat: state => state.tickFormat,
   secondTickFormat: state => state.secondTickFormat,
 
-  chartEmissionsVolume: state => state.chartEmissionsVolume,
   chartEmissionsIntensity: state => state.chartEmissionsIntensity,
   chartPrice: state => state.chartPrice,
   chartTemperature: state => state.chartTemperature,
@@ -69,9 +67,6 @@ export const mutations = {
     state.secondTickFormat = secondTickFormat
   },
 
-  chartEmissionsVolume(state, data) {
-    state.chartEmissionsVolume = data
-  },
   chartEmissionsIntensity(state, data) {
     state.chartEmissionsIntensity = data
   },

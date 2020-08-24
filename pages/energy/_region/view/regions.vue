@@ -220,7 +220,7 @@ export default {
       filterPeriod: 'filterPeriod',
       dateFilter: 'dateFilter',
       chartEnergy: 'chartOptionsPowerEnergy/chartShown',
-      chartEmissionsVolume: 'visInteract/chartEmissionsVolume',
+      chartEmissionsVolume: 'chartOptionsEmissionsVolume/chartShown',
       chartEmissionsIntensity: 'visInteract/chartEmissionsIntensity',
       chartTemperature: 'visInteract/chartTemperature'
     }),
