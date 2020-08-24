@@ -92,7 +92,7 @@ const pageEnergyCreated = {
       chartEnergy: 'chartOptionsPowerEnergy/chartShown',
       chartEmissionsVolume: 'chartOptionsEmissionsVolume/chartShown',
       chartEmissionsIntensity: 'visInteract/chartEmissionsIntensity',
-      chartPrice: 'visInteract/chartPrice',
+      chartPrice: 'chartOptionsPrice/chartShown',
       chartTemperature: 'visInteract/chartTemperature',
       waDataset: 'wa/energyDataset',
       waEnergyDomains: 'wa/energyDomains',

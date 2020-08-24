@@ -2,12 +2,22 @@
   <div
     :class="{
       'is-hovered': hoverOn || focusOn,
-      'has-border-bottom': !chartPrice
+      'has-border-bottom': !chartShown
     }"
     class="chart">
+    <price-market-value-chart-options
+      :options="options"
+      :chart-shown="chartShown"
+      :chart-type="chartType"
+      :chart-curve="chartCurve"
+      :interval="interval"
+      :total-average-value="totalAverageValue"
+      :hover-display-date="hoverDisplayDate"
+      :hover-value="hoverValue"
+    />
     
     <line-vis
-      v-if="chartPrice"
+      v-if="chartShown"
       :domain-id="priceAbove300Domain"
       :domain-colour="lineColour"
       :dataset="priceDataset"
@@ -19,7 +29,7 @@
       :range="range"
       :interval="interval"
       :show-tooltip="false"
-      :curve="'step'"
+      :curve="chartCurve"
       :show-y-axis="false"
       :y-axis-log="true"
       :y-min="300"
@@ -37,7 +47,7 @@
       @leave="handleVisLeave"
     />
     <line-vis
-      v-if="chartPrice"
+      v-if="chartShown"
       :domain-id="priceDomain"
       :domain-colour="lineColour"
       :dataset="priceDataset"
@@ -49,7 +59,7 @@
       :range="range"
       :interval="interval"
       :show-tooltip="false"
-      :curve="'step'"
+      :curve="chartCurve"
       :show-y-axis="false"
       :y-axis-log="false"
       :y-min="0"
@@ -67,7 +77,7 @@
       @leave="handleVisLeave"
     />
     <line-vis
-      v-if="chartPrice"
+      v-if="chartShown"
       :domain-id="priceBelow0Domain"
       :domain-colour="lineColour"
       :dataset="priceDataset"
@@ -78,7 +88,7 @@
       :focus-on="focusOn"
       :range="range"
       :interval="interval"
-      :curve="'step'"
+      :curve="chartCurve"
       :show-y-axis="false"
       :y-axis-log="true"
       :y-axis-invert="true"
@@ -104,13 +114,24 @@
 import { mapGetters, mapMutations } from 'vuex'
 import { min, max } from 'd3-array'
 import _cloneDeep from 'lodash.clonedeep'
+import * as OPTIONS from '@/constants/v2/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
-import ChartHeader from '@/components/Vis/ChartHeader'
+import PriceMarketValueChartOptions from '@/components/Energy/Charts/PriceMarketValueChartOptions'
 import LineVis from '@/components/Vis/Line.vue'
+
+const options = {
+  type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_LINE],
+  curve: [
+    OPTIONS.CHART_CURVE_SMOOTH,
+    OPTIONS.CHART_CURVE_STEP,
+    OPTIONS.CHART_CURVE_STRAIGHT
+  ],
+  yAxis: []
+}
 
 export default {
   components: {
-    ChartHeader,
+    PriceMarketValueChartOptions,
     LineVis
   },
 
@@ -131,7 +152,7 @@ export default {
 
   data() {
     return {
-      chartEnergyOptions: false,
+      options,
       lineColour: '#e34a33'
     }
   },
@@ -143,7 +164,9 @@ export default {
       focusDate: 'visInteract/focusDate',
       xGuides: 'visInteract/xGuides',
 
-      chartPrice: 'visInteract/chartPrice',
+      chartShown: 'chartOptionsPrice/chartShown',
+      chartType: 'chartOptionsPrice/chartType',
+      chartCurve: 'chartOptionsPrice/chartCurve',
       range: 'range',
       interval: 'interval',
       ready: 'regionEnergy/ready',
@@ -151,7 +174,8 @@ export default {
       currentDataset: 'regionEnergy/currentDataset',
       domainMarketValue: 'regionEnergy/domainMarketValue',
       priceDomains: 'regionEnergy/domainPrice',
-      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy'
+      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
+      summary: 'regionEnergy/summary'
     }),
     priceDataset() {
       return this.currentDataset
@@ -180,6 +204,9 @@ export default {
     },
     isRenewableLineOnly() {
       return this.chartEnergyRenewablesLine && this.domains.length === 0
+    },
+    totalAverageValue() {
+      return this.summary ? this.summary._totalAverageValue : 0
     },
     hoverData() {
       if (!this.hoverDate) {

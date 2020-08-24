@@ -87,7 +87,7 @@ export default {
       focusDate: 'visInteract/focusDate',
       xGuides: 'visInteract/xGuides',
       chartTemperature: 'visInteract/chartTemperature',
-      chartPrice: 'visInteract/chartPrice',
+      chartPrice: 'chartOptionsPrice/chartShown',
       range: 'range',
       interval: 'interval',
       compareDates: 'compareDates',

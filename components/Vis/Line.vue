@@ -363,6 +363,9 @@ export default {
       this.update()
       this.resizeRedraw()
     },
+    curve() {
+      this.update()
+    },
     visHeight(newValue) {
       this.svgHeight = newValue
       this.handleResize()
@@ -592,6 +595,8 @@ export default {
       this.x.domain(xDomainExtent)
       this.y.domain([yMin, yMax])
       this.z.range([this.domainColour]).domain([this.domainId])
+
+      this.line.curve(this.curveType)
 
       this.$xAxisGroup.call(this.customXAxis)
       this.$yAxisGroup.call(this.customYAxis)
