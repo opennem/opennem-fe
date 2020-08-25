@@ -6,21 +6,20 @@
         :chart-type="chartType"
         :chart-curve="chartCurve"
         :chart-shown="chartShown"
-        :show="chartOptions" 
-        @show-change="s => chartOptions = s"
+        :show="showChartOptions" 
+        @show-change="s => showChartOptions = s"
         @type-click="handleTypeClick"
         @curve-click="handleCurveClick"/>
     </template>
 
     <template v-slot:label-unit>
-      <strong>Emissions Volume</strong>
-      <small>{{ emissionsVolumeUnit }}/{{ interval | intervalLabel }}</small>
+      <strong>Emission Intensity</strong>
+      <small>kgCO₂e/MWh</small>
     </template>
     <template v-slot:average-value>
       Av.
       <strong>
-        {{ averageEmissionsVolume | formatValue }}
-        {{ emissionsVolumeUnit }}/{{ interval | intervalLabel }}
+        {{ averageEmissionIntensity | formatValue }} kgCO₂e/MWh
       </strong>
     </template>
     <template v-slot:hover-date>
@@ -30,15 +29,7 @@
       <span
         v-if="hoverValue"
         class="ft-value">
-        <em
-          :style="{ 'background-color': hoverDomainColour }"
-          class="colour-square" />
-        {{ hoverDomainLabel }}
-        <strong>{{ hoverValue | formatValue2 }} {{ emissionsVolumeUnit }}</strong>
-      </span>
-      <span>
-        Total
-        <strong>{{ hoverTotal | formatValue2 }} {{ emissionsVolumeUnit }}</strong>
+        <strong>{{ hoverValue | formatValue }} kgCO₂e/MWh</strong>
       </span>
     </template>
   </chart-header>
@@ -81,13 +72,9 @@ export default {
       type: String,
       default: ''
     },
-    averageEmissionsVolume: {
+    averageEmissionIntensity: {
       type: Number,
       default: 0
-    },
-    emissionsVolumeUnit: {
-      type: String,
-      default: ''
     },
     hoverDisplayDate: {
       type: String,
@@ -96,31 +83,19 @@ export default {
     hoverValue: {
       type: Number,
       default: 0
-    },
-    hoverDomainColour: {
-      type: String,
-      default: ''
-    },
-    hoverDomainLabel: {
-      type: String,
-      default: ''
-    },
-    hoverTotal: {
-      type: Number,
-      default: 0
     }
   },
   data() {
     return {
-      chartOptions: false
+      showChartOptions: false
     }
   },
   methods: {
     handleTypeClick(type) {
-      this.$store.commit('chartOptionsEmissionsVolume/chartType', type)
+      this.$store.commit('chartOptionsEmissionIntensity/chartType', type)
     },
     handleCurveClick(curve) {
-      this.$store.commit('chartOptionsEmissionsVolume/chartCurve', curve)
+      this.$store.commit('chartOptionsEmissionIntensity/chartCurve', curve)
     }
   }
 }

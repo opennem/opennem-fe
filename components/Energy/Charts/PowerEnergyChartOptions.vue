@@ -7,8 +7,8 @@
         :chart-curve="chartCurve"
         :chart-shown="chartShown"
         :chart-y-axis="chartYAxis"
-        :show="chartEnergyOptions" 
-        @show-change="s => chartEnergyOptions = s"
+        :show="chartOptions" 
+        @show-change="s => chartOptions = s"
         @type-click="handleTypeClick"
         @y-axis-click="handleYAxisClick"
         @curve-click="handleCurveClick" />
@@ -167,7 +167,7 @@ export default {
   },
   data() {
     return {
-      chartEnergyOptions: false
+      chartOptions: false
     }
   },
   methods: {

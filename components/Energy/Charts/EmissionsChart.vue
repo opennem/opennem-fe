@@ -56,7 +56,7 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
-import { max } from 'd3-array'
+import { min, max } from 'd3-array'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 import addWeeks from 'date-fns/addWeeks'
@@ -102,8 +102,7 @@ export default {
 
   data() {
     return {
-      options,
-      yMin: 0
+      options
     }
   },
 
@@ -153,6 +152,19 @@ export default {
         d._stackedTotalEmissionsMax = stackedMax
       })
       return max(dataset, d => d._stackedTotalEmissionsMax)
+    },
+    yMin() {
+      const dataset = _cloneDeep(this.currentDataset)
+      dataset.forEach(d => {
+        let emissionsMin = 0
+        this.domains.forEach(domain => {
+          if (d[domain.id] < 0) {
+            emissionsMin += d[domain.id] || 0
+          }
+        })
+        d._stackedTotalEmissionsMin = emissionsMin
+      })
+      return min(dataset, d => d._stackedTotalEmissionsMin)
     },
     emissionsDomains() {
       return _cloneDeep(this.currentDomainEmissions).reverse()

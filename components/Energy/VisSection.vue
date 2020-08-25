@@ -28,6 +28,16 @@
       @svgClick="handleSvgClick"
     />
 
+    <emission-intensity-chart 
+      v-if="ready && domainEmissions.length > 0"
+      :hover-on="isHovering"
+      :hover-date="hoverDate"
+      :zoom-extent="zoomExtent"
+      @dateHover="handleDateHover"
+      @isHovering="handleIsHovering"
+      @zoomExtent="handleZoomExtent"
+      @svgClick="handleSvgClick" />
+
     <price-market-value-chart 
       v-if="ready && domainPrice.length > 0" 
       :hover-on="isHovering"
@@ -60,6 +70,7 @@ import addYears from 'date-fns/addYears'
 import DateDisplay from '@/services/DateDisplay.js'
 import PowerEnergyChart from '@/components/Energy/Charts/PowerEnergyChart'
 import EmissionsChart from '@/components/Energy/Charts/EmissionsChart'
+import EmissionIntensityChart from '@/components/Energy/Charts/EmissionIntensityChart'
 import EnergyCompare from '@/components/Energy/Charts/CompareChart'
 import PriceMarketValueChart from '@/components/Energy/Charts/PriceMarketValueChart'
 import TemperatureChart from '@/components/Energy/Charts/TemperatureChart'
@@ -68,6 +79,7 @@ export default {
   components: {
     PowerEnergyChart,
     EmissionsChart,
+    EmissionIntensityChart,
     EnergyCompare,
     PriceMarketValueChart,
     TemperatureChart

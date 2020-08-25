@@ -221,7 +221,7 @@ export default {
       dateFilter: 'dateFilter',
       chartEnergy: 'chartOptionsPowerEnergy/chartShown',
       chartEmissionsVolume: 'chartOptionsEmissionsVolume/chartShown',
-      chartEmissionsIntensity: 'visInteract/chartEmissionsIntensity',
+      chartEmissionsIntensity: 'chartOptionsEmissionIntensity/chartShown',
       chartTemperature: 'chartOptionsTemperature/chartShown'
     }),
     domains() {

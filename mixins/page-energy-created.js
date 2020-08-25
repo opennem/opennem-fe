@@ -91,7 +91,7 @@ const pageEnergyCreated = {
     ...mapGetters({
       chartEnergy: 'chartOptionsPowerEnergy/chartShown',
       chartEmissionsVolume: 'chartOptionsEmissionsVolume/chartShown',
-      chartEmissionsIntensity: 'visInteract/chartEmissionsIntensity',
+      chartEmissionsIntensity: 'chartOptionsEmissionIntensity/chartShown',
       chartPrice: 'chartOptionsPrice/chartShown',
       chartTemperature: 'chartOptionsTemperature/chartShown',
       waDataset: 'wa/energyDataset',
