@@ -7,7 +7,8 @@
         :chart-curve="chartCurve"
         :chart-shown="chartShown"
         :chart-y-axis="chartYAxis"
-        :show="chartOptions" 
+        :show-y-axis-options="showYAxisOptions"
+        :show="chartOptions"
         @show-change="s => chartOptions = s"
         @type-click="handleTypeClick"
         @y-axis-click="handleYAxisClick"
@@ -73,8 +74,43 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import _cloneDeep from 'lodash.clonedeep'
 import ChartHeader from '@/components/Vis/ChartHeader'
 import ChartOptions from '@/components/Vis/ChartOptions'
+import * as OPTIONS from '@/constants/v2/chart-options.js'
+
+const powerOptions = {
+  type: [
+    OPTIONS.CHART_HIDDEN,
+    OPTIONS.CHART_STACKED,
+    OPTIONS.CHART_PROPORTION,
+    OPTIONS.CHART_LINE
+  ],
+  curve: [
+    OPTIONS.CHART_CURVE_SMOOTH,
+    OPTIONS.CHART_CURVE_STEP,
+    OPTIONS.CHART_CURVE_STRAIGHT
+  ],
+  yAxis: [OPTIONS.CHART_YAXIS_ABSOLUTE, OPTIONS.CHART_YAXIS_PERCENTAGE]
+}
+const energyOptions = {
+  type: [
+    OPTIONS.CHART_HIDDEN,
+    OPTIONS.CHART_STACKED,
+    OPTIONS.CHART_PROPORTION,
+    OPTIONS.CHART_LINE
+  ],
+  curve: [
+    OPTIONS.CHART_CURVE_SMOOTH,
+    OPTIONS.CHART_CURVE_STEP,
+    OPTIONS.CHART_CURVE_STRAIGHT
+  ],
+  yAxis: [
+    OPTIONS.CHART_YAXIS_ENERGY,
+    OPTIONS.CHART_YAXIS_AVERAGE_POWER,
+    OPTIONS.CHART_YAXIS_PERCENTAGE
+  ]
+}
 
 export default {
   components: {
@@ -82,16 +118,6 @@ export default {
     ChartOptions
   },
   props: {
-    options: {
-      type: Object,
-      default: () => {
-        return {
-          type: [],
-          curve: [],
-          yAxis: []
-        }
-      }
-    },
     chartShown: {
       type: Boolean,
       default: false
@@ -170,18 +196,64 @@ export default {
       chartOptions: false
     }
   },
+  computed: {
+    showYAxisOptions() {
+      if (this.isEnergyType) {
+        return true
+      } else {
+        if (this.isTypeLine) {
+          return true
+        }
+        return false
+      }
+    },
+    options() {
+      if (this.isEnergyType) {
+        if (this.isTypeLine) {
+          energyOptions.yAxis = [
+            OPTIONS.CHART_YAXIS_ENERGY,
+            OPTIONS.CHART_YAXIS_AVERAGE_POWER,
+            OPTIONS.CHART_YAXIS_PERCENTAGE
+          ]
+          return _cloneDeep(energyOptions)
+        } else {
+          energyOptions.yAxis = [
+            OPTIONS.CHART_YAXIS_ENERGY,
+            OPTIONS.CHART_YAXIS_AVERAGE_POWER
+          ]
+          return _cloneDeep(energyOptions)
+        }
+      } else {
+        return _cloneDeep(powerOptions)
+      }
+    }
+  },
   methods: {
     handleTypeClick(type) {
+      if (
+        this.isEnergyType &&
+        this.chartType === OPTIONS.CHART_LINE &&
+        this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE
+      ) {
+        this.$store.commit(
+          'chartOptionsPowerEnergy/chartEnergyYAxis',
+          OPTIONS.CHART_YAXIS_ENERGY
+        )
+      }
       this.$store.commit('chartOptionsPowerEnergy/chartType', type)
-    },
-    handleYAxisClick(yAxis) {
-      this.$store.commit('chartOptionsPowerEnergy/chartYAxis', yAxis)
     },
     handleCurveClick(curve) {
       if (this.isEnergyType) {
         this.$store.commit('chartOptionsPowerEnergy/chartEnergyCurve', curve)
       } else {
         this.$store.commit('chartOptionsPowerEnergy/chartPowerCurve', curve)
+      }
+    },
+    handleYAxisClick(yAxis) {
+      if (this.isEnergyType) {
+        this.$store.commit('chartOptionsPowerEnergy/chartEnergyYAxis', yAxis)
+      } else {
+        this.$store.commit('chartOptionsPowerEnergy/chartPowerYAxis', yAxis)
       }
     }
   }

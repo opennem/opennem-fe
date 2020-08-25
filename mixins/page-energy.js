@@ -43,7 +43,8 @@ const pageEnergyMixin = {
       energyCurveType: 'energyCurveType',
       step: 'step',
       chartEnergyType: 'chartOptionsPowerEnergy/chartType',
-      chartEnergyYAxis: 'chartOptionsPowerEnergy/chartYAxis',
+      chartEnergyYAxis: 'chartOptionsPowerEnergy/chartEnergyYAxis',
+      chartPowerYAxis: 'chartOptionsPowerEnergy/chartPowerYAxis',
       chartEnergyCurve: 'chartOptionsPowerEnergy/chartEnergyCurve',
       chartPowerCurve: 'chartOptionsPowerEnergy/chartPowerCurve'
     }),

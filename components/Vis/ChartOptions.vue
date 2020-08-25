@@ -40,7 +40,7 @@
           </div>
 
           <div
-            v-if="isLineType"
+            v-if="showYAxisOptions"
             class="chart-options-buttons buttons has-addons" 
             style="margin-right: 1rem;">
             <button
@@ -91,6 +91,10 @@ export default {
     chartYAxis: {
       type: String,
       default: ''
+    },
+    showYAxisOptions: {
+      type: Boolean,
+      default: true
     },
     show: {
       type: Boolean,

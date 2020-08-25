@@ -6,11 +6,10 @@
     }"
     class="chart">
     <power-energy-chart-options
-      :options="options"
       :chart-shown="chartEnergy"
       :chart-type="chartEnergyType"
       :chart-curve="chartCurve"
-      :chart-y-axis="chartEnergyYAxis"
+      :chart-y-axis="chartYAxis"
       :interval="interval"
       :is-energy-type="isEnergyType"
       :is-type-proportion="isTypeProportion"
@@ -71,7 +70,7 @@
       v-if="chartEnergy && isTypeLine"
       :svg-height="350 - 30"
       :domains1="domains"
-      :dataset1="isYAxisPercentage ? energyGrossPercentDataset : multiLineEnergyDataset"
+      :dataset1="multiLineDataset"
       :domains2="[{
         label: 'Renewables',
         domain: 'value',
@@ -120,27 +119,35 @@ import addWeeks from 'date-fns/addWeeks'
 import addMonths from 'date-fns/addMonths'
 import addQuarters from 'date-fns/addQuarters'
 import addYears from 'date-fns/addYears'
+import endOfMonth from 'date-fns/endOfMonth'
+import endOfYear from 'date-fns/endOfYear'
+import differenceInHours from 'date-fns/differenceInHours'
 
-import DateDisplay from '@/services/DateDisplay.js'
 import * as OPTIONS from '@/constants/v2/chart-options.js'
+import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
 import StackedAreaVis from '@/components/Vis/StackedArea2'
 import PowerEnergyChartOptions from '@/components/Energy/Charts/PowerEnergyChartOptions'
 
-const options = {
-  type: [
-    OPTIONS.CHART_HIDDEN,
-    OPTIONS.CHART_STACKED,
-    OPTIONS.CHART_PROPORTION,
-    OPTIONS.CHART_LINE
-  ],
-  curve: [
-    OPTIONS.CHART_CURVE_SMOOTH,
-    OPTIONS.CHART_CURVE_STEP,
-    OPTIONS.CHART_CURVE_STRAIGHT
-  ],
-  yAxis: [OPTIONS.CHART_YAXIS_ABSOLUTE, OPTIONS.CHART_YAXIS_PERCENTAGE]
+function getNumberOfHoursByInterval(interval, date) {
+  let start, end
+  switch (interval) {
+    case 'Day':
+      return 24
+    case 'Week':
+      return 168
+    case 'Month':
+      start = date
+      end = endOfMonth(date)
+      return differenceInHours(end, start)
+    case 'Year':
+      start = date
+      end = endOfYear(date)
+      return differenceInHours(end, start)
+    default:
+      return 0
+  }
 }
 
 export default {
@@ -166,12 +173,6 @@ export default {
     }
   },
 
-  data() {
-    return {
-      options
-    }
-  },
-
   computed: {
     ...mapGetters({
       tabletBreak: 'app/tabletBreak',
@@ -185,7 +186,8 @@ export default {
       highlightDomain: 'visInteract/highlightDomain',
       chartEnergy: 'chartOptionsPowerEnergy/chartShown',
       chartEnergyType: 'chartOptionsPowerEnergy/chartType',
-      chartEnergyYAxis: 'chartOptionsPowerEnergy/chartYAxis',
+      chartEnergyYAxis: 'chartOptionsPowerEnergy/chartEnergyYAxis',
+      chartPowerYAxis: 'chartOptionsPowerEnergy/chartPowerYAxis',
       chartEnergyCurve: 'chartOptionsPowerEnergy/chartEnergyCurve',
       chartPowerCurve: 'chartOptionsPowerEnergy/chartPowerCurve',
       chartEnergyRenewablesLine:
@@ -201,6 +203,9 @@ export default {
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       summary: 'regionEnergy/summary'
     }),
+    chartYAxis() {
+      return this.isEnergyType ? this.chartEnergyYAxis : this.chartPowerYAxis
+    },
     calculateByGeneration() {
       return this.percentContributionTo === 'generation'
     },
@@ -212,16 +217,22 @@ export default {
       return find ? find.id : ''
     },
     isTypeArea() {
-      return this.chartEnergyType === 'area'
+      return this.chartEnergyType === OPTIONS.CHART_STACKED
     },
     isTypeProportion() {
-      return this.chartEnergyType === 'proportion'
+      return this.chartEnergyType === OPTIONS.CHART_PROPORTION
     },
     isTypeLine() {
-      return this.chartEnergyType === 'line'
+      return this.chartEnergyType === OPTIONS.CHART_LINE
     },
     isYAxisPercentage() {
-      return this.chartEnergyYAxis === 'percentage'
+      return this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE
+    },
+    isYAxisEnergy() {
+      return (
+        this.chartYAxis === OPTIONS.CHART_YAXIS_ENERGY ||
+        this.chartYAxis === OPTIONS.CHART_YAXIS_ABSOLUTE
+      )
     },
     chartCurve() {
       return this.isEnergyType ? this.chartEnergyCurve : this.chartPowerCurve
@@ -336,7 +347,7 @@ export default {
       return dataset
     },
     multiLineEnergyDataset() {
-      return this.currentDataset.map(d => {
+      const dataset = this.currentDataset.map(d => {
         const obj = {
           date: d.date,
           time: d.time,
@@ -351,6 +362,67 @@ export default {
         })
         return obj
       })
+
+      dataset.forEach(p => {
+        let min = 0,
+          max = 0
+        this.domains.forEach(domain => {
+          const id = domain.id
+
+          if (p[id] < min) {
+            min = p[id]
+          }
+          if (p[id] > max) {
+            max = p[id]
+          }
+        })
+        p._lowest = min
+        p._highest = max
+      })
+
+      return dataset
+    },
+    averagePowerDataset() {
+      const dataset = this.currentDataset.map(d => {
+        const obj = {
+          date: d.date,
+          time: d.time,
+          _isIncompleteBucket: d._isIncompleteBucket
+        }
+        const hours = getNumberOfHoursByInterval(this.interval, d.date)
+        this.powerEnergyDomains.forEach(domain => {
+          obj[domain.id] =
+            d[domain.id] === 0 ? null : (d[domain.id] / hours) * 1000
+        })
+        return obj
+      })
+
+      dataset.forEach(p => {
+        let min = 0,
+          max = 0
+        this.domains.forEach(domain => {
+          const id = domain.id
+
+          if (p[id] < min) {
+            min = p[id]
+          }
+          if (p[id] > max) {
+            max = p[id]
+          }
+        })
+        p._lowest = min
+        p._highest = max
+      })
+
+      return dataset
+    },
+    multiLineDataset() {
+      if (this.isYAxisEnergy) {
+        return this.multiLineEnergyDataset
+      } else if (this.isYAxisPercentage) {
+        return this.energyGrossPercentDataset
+      }
+      return this.averagePowerDataset
     },
     yMin() {
       const dataset = _cloneDeep(this.currentDataset)
@@ -377,16 +449,12 @@ export default {
       return max(dataset, d => d._stackedTotalMax)
     },
     energyLineYMin() {
-      const dataset = this.isYAxisPercentage
-        ? this.energyGrossPercentDataset
-        : this.currentDataset
+      const dataset = this.multiLineDataset
       const lowest = this.getMinValue(dataset)
       return lowest < 0 ? 0 : lowest
     },
     energyLineYMax() {
-      const dataset = this.isYAxisPercentage
-        ? this.energyGrossPercentDataset
-        : this.currentDataset
+      const dataset = this.multiLineDataset
       return this.getMaxValue(dataset)
     },
     domains() {
@@ -433,11 +501,7 @@ export default {
         dataset = this.energyPercentDataset
       }
       if (this.isTypeLine) {
-        if (this.isYAxisPercentage) {
-          dataset = this.energyGrossPercentDataset
-        } else {
-          dataset = this.multiLineEnergyDataset
-        }
+        dataset = this.multiLineDataset
       }
       return dataset.find(d => d.time === time)
     },

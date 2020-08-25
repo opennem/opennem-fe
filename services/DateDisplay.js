@@ -3,7 +3,6 @@ import {
   timeMinute as d3TimeMinute,
   timeDay as d3TimeDay,
   timeMonday as d3TimeMonday,
-  timeThursday,
   timeMonth as d3TimeMonth,
   timeYear as d3TimeYear
 } from 'd3-time'
