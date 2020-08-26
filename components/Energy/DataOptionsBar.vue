@@ -168,7 +168,7 @@ export default {
           console.log('nothing yet')
       }
 
-      if (this.regionId === 'wem' && isPowerRange) {
+      if (this.regionId === 'wem' && this.isPowerRange) {
         interval = '30m'
       }
 
