@@ -10,12 +10,12 @@
       :chart-type="chartEnergyType"
       :chart-curve="chartCurve"
       :chart-y-axis="chartYAxis"
-      :interval="interval"
       :is-energy-type="isEnergyType"
+      :is-type-area="isTypeArea"
       :is-type-proportion="isTypeProportion"
       :is-type-line="isTypeLine"
       :is-y-axis-percentage="isYAxisPercentage"
-      :is-year-interval="isYearInterval"
+      :is-y-axis-average-power="isYAxisAveragePower"
       :is-renewable-line-only="isRenewableLineOnly"
       :average-energy="averageEnergy"
       :hover-display-date="hoverDisplayDate"
@@ -24,15 +24,17 @@
       :hover-domain-label="hoverDomainLabel"
       :hover-renewables="hoverRenewables"
       :hover-total="hoverTotal"
+      :display-unit="displayUnit"
+      :display-title="displayTitle"
     />
     
     <stacked-area-vis
       v-if="chartEnergy && (isTypeArea || isTypeProportion)"
       :domains="domains"
-      :dataset="isTypeArea ? currentDataset : energyPercentDataset"
+      :dataset="stackedAreaDataset"
       :range="range"
       :interval="interval"
-      :curve="isEnergyType ? chartEnergyCurve : chartPowerCurve"
+      :curve="chartCurve"
       :y-min="isTypeArea ? yMin : 0"
       :y-max="isTypeArea ? yMax : 100"
       :vis-height="350"
@@ -85,7 +87,7 @@
       :y1-min="energyLineYMin"
       :x-ticks="xTicks"
       :y1-axis-unit="isYAxisPercentage ? '%' : ''"
-      :curve="isEnergyType ? chartEnergyCurve : chartPowerCurve"
+      :curve="chartCurve"
       :date-hovered="hoverDate"
       :zoom-range="zoomExtent"
       :draw-incomplete-bucket="false"
@@ -206,16 +208,10 @@ export default {
     chartYAxis() {
       return this.isEnergyType ? this.chartEnergyYAxis : this.chartPowerYAxis
     },
-    calculateByGeneration() {
-      return this.percentContributionTo === 'generation'
+    chartCurve() {
+      return this.isEnergyType ? this.chartEnergyCurve : this.chartPowerCurve
     },
-    highlightId() {
-      const domain = this.highlightDomain
-      const property =
-        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
-      const find = this.domains.find(d => d[property] === domain)
-      return find ? find.id : ''
-    },
+
     isTypeArea() {
       return this.chartEnergyType === OPTIONS.CHART_STACKED
     },
@@ -234,32 +230,72 @@ export default {
         this.chartYAxis === OPTIONS.CHART_YAXIS_ABSOLUTE
       )
     },
-    chartCurve() {
-      return this.isEnergyType ? this.chartEnergyCurve : this.chartPowerCurve
+    isYAxisAveragePower() {
+      return this.chartYAxis === OPTIONS.CHART_YAXIS_AVERAGE_POWER
     },
-    renewablesLineColour() {
-      return this.fuelTechGroupName === 'Renewable/Fossil' ||
-        this.fuelTechGroupName === 'Flexibility'
-        ? '#e34a33'
-        : '#52BCA3'
+
+    calculateByGeneration() {
+      return this.percentContributionTo === 'generation'
     },
-    renewablesPercentageDataset() {
-      const d = this.currentDataset.map(d => {
-        return {
-          date: d.date,
-          time: d.time,
-          renewables: d._totalRenewables,
-          value: this.calculateByGeneration
-            ? d._totalGenerationRenewablesPercentage
-            : d._totalDemandRenewablesPercentage
+
+    property() {
+      return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+    },
+
+    domains() {
+      const domains = this.isTypeArea
+        ? this.powerEnergyDomains
+        : this.energyPercentDomains
+      const hidden = this.hiddenFuelTechs
+      return domains.filter(d => !_includes(hidden, d[this.property]))
+    },
+    powerEnergyDomains() {
+      return _cloneDeep(this.currentDomainPowerEnergy).reverse()
+    },
+    energyPercentDomains() {
+      return this.powerEnergyDomains.filter(d => d.category === 'source')
+    },
+
+    highlightId() {
+      const domain = this.highlightDomain
+      const property =
+        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+      const find = this.domains.find(d => d[property] === domain)
+      return find ? find.id : ''
+    },
+
+    displayTitle() {
+      if (this.isEnergyType) {
+        if (this.isYAxisAveragePower) {
+          return 'Average Power'
+        } else {
+          return 'Energy'
         }
-      })
-      return d
+      } else {
+        // power
+        return 'Generation'
+      }
     },
-    renewablesMax() {
-      let m = max(this.renewablesPercentageDataset, d => d.value)
-      return m < 100 ? 100 : m
+
+    displayUnit() {
+      if (this.isEnergyType) {
+        if (this.isTypeProportion || this.isYAxisPercentage) {
+          return '%'
+        } else if (this.isYAxisAveragePower) {
+          return 'MW'
+        } else {
+          return `GWh/${this.intervalLabel(this.interval)}`
+        }
+      } else {
+        // power
+        if (this.isTypeProportion || this.isYAxisPercentage) {
+          return '%'
+        } else {
+          return 'MW'
+        }
+      }
     },
+
     energyPercentDataset() {
       const dataset = _cloneDeep(this.currentDataset)
       dataset.forEach((d, i) => {
@@ -424,8 +460,27 @@ export default {
       }
       return this.averagePowerDataset
     },
+    stackedAreaDataset() {
+      if (this.isTypeArea) {
+        if (this.isYAxisEnergy) {
+          return this.currentDataset
+        }
+        // else return average power
+        return this.averagePowerDataset
+      } else {
+        // return proportions dataset
+        return this.energyPercentDataset
+      }
+    },
+    dataset() {
+      if (this.isTypeLine) {
+        return this.multiLineDataset
+      } else {
+        return this.stackedAreaDataset
+      }
+    },
     yMin() {
-      const dataset = _cloneDeep(this.currentDataset)
+      const dataset = _cloneDeep(this.stackedAreaDataset)
       dataset.forEach(d => {
         let stackedMin = 0
         this.domains.forEach(domain => {
@@ -438,7 +493,7 @@ export default {
       return min(dataset, d => d._stackedTotalMin)
     },
     yMax() {
-      const dataset = _cloneDeep(this.currentDataset)
+      const dataset = _cloneDeep(this.stackedAreaDataset)
       dataset.forEach(d => {
         let stackedMax = 0
         this.domains.forEach(domain => {
@@ -457,27 +512,34 @@ export default {
       const dataset = this.multiLineDataset
       return this.getMaxValue(dataset)
     },
-    domains() {
-      const property =
-        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
-      const domains = this.isTypeArea
-        ? this.powerEnergyDomains
-        : this.energyPercentDomains
-      const hidden = this.hiddenFuelTechs
-      return domains.filter(d => !_includes(hidden, d[property]))
+
+    renewablesLineColour() {
+      return this.fuelTechGroupName === 'Renewable/Fossil' ||
+        this.fuelTechGroupName === 'Flexibility'
+        ? '#e34a33'
+        : '#52BCA3'
     },
-    powerEnergyDomains() {
-      return _cloneDeep(this.currentDomainPowerEnergy).reverse()
+    renewablesPercentageDataset() {
+      const d = this.currentDataset.map(d => {
+        return {
+          date: d.date,
+          time: d.time,
+          renewables: d._totalRenewables,
+          value: this.calculateByGeneration
+            ? d._totalGenerationRenewablesPercentage
+            : d._totalDemandRenewablesPercentage
+        }
+      })
+      return d
     },
-    energyPercentDomains() {
-      return this.powerEnergyDomains.filter(d => d.category === 'source')
-    },
-    isYearInterval() {
-      return this.interval === 'Fin Year' || this.interval === 'Year'
+    renewablesMax() {
+      let m = max(this.renewablesPercentageDataset, d => d.value)
+      return m < 100 ? 100 : m
     },
     isRenewableLineOnly() {
       return this.chartEnergyRenewablesLine && this.domains.length === 0
     },
+
     averageEnergy() {
       return this.summary ? this.summary._averageEnergy : 0
     },
@@ -496,14 +558,7 @@ export default {
         return null
       }
       const time = this.hoverDate.getTime()
-      let dataset = this.currentDataset
-      if (this.isTypeProportion) {
-        dataset = this.energyPercentDataset
-      }
-      if (this.isTypeLine) {
-        dataset = this.multiLineDataset
-      }
-      return dataset.find(d => d.time === time)
+      return this.dataset.find(d => d.time === time)
     },
     hoverValue() {
       return this.hoverData ? this.hoverData[this.hoverPowerEnergyDomain] : null
@@ -554,6 +609,7 @@ export default {
         ? this.hoverData._totalGenerationRenewablesPercentage
         : this.hoverData._totalDemandRenewablesPercentage
     },
+
     incompleteIntervals() {
       const incompletes = []
       const filtered = this.currentDataset.filter(d => d._isIncompleteBucket)
@@ -630,6 +686,12 @@ export default {
         })
       }
       return max === 0 ? 100 : max
+    },
+    intervalLabel(interval) {
+      if (interval === 'Fin Year') {
+        return 'year'
+      }
+      return interval.toLowerCase()
     },
     handleDomainHover(domain) {
       this.setHoverDomain(domain)

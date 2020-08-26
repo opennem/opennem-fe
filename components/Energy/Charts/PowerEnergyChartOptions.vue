@@ -16,22 +16,17 @@
     </template>
 
     <template v-slot:label-unit>
-      <strong v-if="isEnergyType">Energy</strong>
-      <strong v-else>Generation</strong>
-
-      <small v-if="isTypeProportion || (isTypeLine && isYAxisPercentage)">%</small>
-      <small v-else-if="isEnergyType">{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</small>
-      <small v-else>MW</small>
+      <strong>{{ displayTitle }}</strong>
+      <small>{{ displayUnit }}</small>
     </template>
 
     <template 
       v-slot:average-value 
-      v-if="!isRenewableLineOnly && !isTypeProportion">
+      v-if="!isRenewableLineOnly && !isTypeProportion && !isYAxisAveragePower">
       Av.
       <strong>
         {{ averageEnergy | formatValue }}
-        <span v-if="isEnergyType">{{ isYearInterval ? 'TWh' : 'GWh' }}/{{ interval | intervalLabel }}</span>
-        <span v-else>MW</span>
+        <span>{{ displayUnit }}</span>
       </strong>
     </template>
 
@@ -47,9 +42,8 @@
           class="colour-square" />
         {{ hoverDomainLabel }}
         <strong>
-          {{ hoverValue | formatValue }}<span v-if="isTypeProportion || (isTypeLine && isYAxisPercentage)">%</span>
-          <span v-else-if="isEnergyType">{{ isYearInterval ? ' TWh' : ' GWh' }}</span>
-          <span v-else> MW</span>
+          {{ hoverValue | formatValue }}
+          <span>{{ displayUnit }}</span>
         </strong>
       </span>
 
@@ -64,8 +58,7 @@
         Total
         <strong>
           {{ hoverTotal | formatValue }}
-          <span v-if="isEnergyType">{{ isYearInterval ? 'TWh' : 'GWh' }}</span>
-          <span v-else>MW</span>
+          <span>{{ displayUnit }}</span>
         </strong>
       </span>
     </template>
@@ -134,11 +127,11 @@ export default {
       type: String,
       default: ''
     },
-    interval: {
-      type: String,
-      default: ''
-    },
     isEnergyType: {
+      type: Boolean,
+      default: false
+    },
+    isTypeArea: {
       type: Boolean,
       default: false
     },
@@ -154,7 +147,7 @@ export default {
       type: Boolean,
       default: false
     },
-    isYearInterval: {
+    isYAxisAveragePower: {
       type: Boolean,
       default: false
     },
@@ -189,6 +182,14 @@ export default {
     hoverTotal: {
       type: Number,
       default: 0
+    },
+    displayUnit: {
+      type: String,
+      default: ''
+    },
+    displayTitle: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -216,11 +217,14 @@ export default {
             OPTIONS.CHART_YAXIS_PERCENTAGE
           ]
           return _cloneDeep(energyOptions)
-        } else {
+        } else if (this.isTypeArea) {
           energyOptions.yAxis = [
             OPTIONS.CHART_YAXIS_ENERGY,
             OPTIONS.CHART_YAXIS_AVERAGE_POWER
           ]
+          return _cloneDeep(energyOptions)
+        } else {
+          energyOptions.yAxis = [OPTIONS.CHART_YAXIS_ENERGY]
           return _cloneDeep(energyOptions)
         }
       } else {
@@ -228,17 +232,23 @@ export default {
       }
     }
   },
+
   methods: {
     handleTypeClick(type) {
-      if (
-        this.isEnergyType &&
-        this.chartType === OPTIONS.CHART_LINE &&
-        this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE
-      ) {
-        this.$store.commit(
-          'chartOptionsPowerEnergy/chartEnergyYAxis',
-          OPTIONS.CHART_YAXIS_ENERGY
-        )
+      if (this.isEnergyType) {
+        if (
+          (this.chartType === OPTIONS.CHART_LINE &&
+            this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE) ||
+          ((this.chartType === OPTIONS.CHART_LINE ||
+            this.chartType === OPTIONS.CHART_STACKED) &&
+            this.chartYAxis === OPTIONS.CHART_YAXIS_AVERAGE_POWER &&
+            type === OPTIONS.CHART_PROPORTION)
+        ) {
+          this.$store.commit(
+            'chartOptionsPowerEnergy/chartEnergyYAxis',
+            OPTIONS.CHART_YAXIS_ENERGY
+          )
+        }
       }
       this.$store.commit('chartOptionsPowerEnergy/chartType', type)
     },
