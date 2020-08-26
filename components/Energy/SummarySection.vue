@@ -26,6 +26,18 @@
       @mouse-enter="handleSummaryRowMouseEnter"
       @mouse-leave="handleSummaryRowMouseLeave"
     />
+
+    <energy-records
+      :domains="domains"
+      :dataset="filteredCurrentDataset"
+      :range="range"
+      :interval="interval"
+      :price-id="domainPrice.length > 0 ? domainPrice[0].id : ''"
+      :temperature-id="temperatureMeanDomain"
+      @recordSelect="handleRecordSelect"
+      @recordDeselect="handleRecordDeselect"
+      @recordMouseEnter="handleRecordMouseEnter"
+      @recordMouseLeave="handleRecordMouseLeave" />
   </section>
 </template>
 
@@ -33,10 +45,12 @@
 import { mapGetters, mapMutations } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import SummaryTable from '@/components/SummaryTable/index2'
-
+import EnergyRecords from '~/components/Energy/Records.vue'
+import { TEMPERATURE, TEMPERATURE_MEAN } from '@/constants/v2/data-types.js'
 export default {
   components: {
-    SummaryTable
+    SummaryTable,
+    EnergyRecords
   },
 
   props: {
@@ -68,19 +82,25 @@ export default {
     }),
     domains() {
       return _cloneDeep(this.currentDomainPowerEnergy).reverse()
+    },
+    temperatureMeanDomain() {
+      const find = this.domainTemperature.find(
+        t => t.type === TEMPERATURE || t.type === TEMPERATURE_MEAN
+      )
+      return find ? find.domain : ''
     }
   },
 
   methods: {
     ...mapMutations({
       setSummary: 'regionEnergy/summary',
-      setHighlightDomain: 'visInteract/highlightDomain'
+      setHighlightDomain: 'visInteract/highlightDomain',
+      setFocusDate: 'visInteract/focusDate'
     }),
     handleFuelTechsHidden(hidden) {
       this.$store.dispatch('hiddenFuelTechs', hidden)
     },
     handleSummaryUpdated(summary) {
-      // console.log('summary updated', summary)
       this.setSummary(summary)
     },
     handleSummaryRowMouseEnter(ft) {
@@ -90,6 +110,20 @@ export default {
     },
     handleSummaryRowMouseLeave() {
       this.setHighlightDomain('')
+    },
+    handleRecordMouseEnter(date) {
+      this.$emit('dateHover', new Date(date))
+      this.$emit('isHovering', true)
+    },
+    handleRecordMouseLeave() {
+      this.$emit('dateHover', null)
+      this.$emit('isHovering', false)
+    },
+    handleRecordSelect(date) {
+      this.setFocusDate(new Date(date))
+    },
+    handleRecordDeselect() {
+      this.setFocusDate(null)
     }
   }
 }

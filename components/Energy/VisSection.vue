@@ -88,6 +88,17 @@ export default {
     TemperatureChart
   },
 
+  props: {
+    onHover: {
+      type: Boolean,
+      default: false
+    },
+    dateHover: {
+      type: Date,
+      default: null
+    }
+  },
+
   data() {
     return {
       compareData: [],
@@ -118,6 +129,15 @@ export default {
     }),
     domains() {
       return _cloneDeep(this.currentDomainPowerEnergy).reverse()
+    }
+  },
+
+  watch: {
+    onHover(hover) {
+      this.isHovering = hover
+    },
+    dateHover(date) {
+      this.hoverDate = date
     }
   },
 

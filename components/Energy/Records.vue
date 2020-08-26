@@ -240,28 +240,28 @@ export default {
       updatedDataset.every(d => {
         if (d._total) {
           maxDemand = d._total
-          maxDemandDate = d.date
+          maxDemandDate = d.time
           minDemandRenewables = d._totalDemandRenewablesPercentage
-          minDemandRenewablesDate = d.date
+          minDemandRenewablesDate = d.time
           maxDemandRenewables = d._totalDemandRenewablesPercentage
-          maxDemandRenewablesDate = d.date
+          maxDemandRenewablesDate = d.time
 
           maxGeneration = d._totalGeneration
-          maxGenerationDate = d.date
+          maxGenerationDate = d.time
           minGenerationRenewables = d._totalGenerationRenewables
-          minGenerationRenewablesDate = d.date
+          minGenerationRenewablesDate = d.time
           maxGenerationRenewables = d._totalGenerationRenewables
-          maxGenerationRenewablesDate = d.date
+          maxGenerationRenewablesDate = d.time
 
           if (this.priceId) {
             minPrice = d[this.priceId]
-            minPriceDate = d.date
+            minPriceDate = d.time
             maxPrice = d[this.priceId]
-            maxPriceDate = d.date
+            maxPriceDate = d.time
           }
           if (this.temperatureId) {
             maxTemperature = d[this.temperatureId]
-            maxTemperatureDate = d.date
+            maxTemperatureDate = d.time
           }
           return false
         }
@@ -271,29 +271,29 @@ export default {
       updatedDataset.forEach(d => {
         if (!minDemandDate && d._total !== null && d._total !== 0) {
           minDemand = d._total
-          minDemandDate = d.date
+          minDemandDate = d.time
         }
         if (d._total !== null && d._total < minDemand) {
           minDemand = d._total
-          minDemandDate = d.date
+          minDemandDate = d.time
         }
         if (d._total !== null && d._total > maxDemand) {
           maxDemand = d._total
-          maxDemandDate = d.date
+          maxDemandDate = d.time
         }
         if (
           d._totalDemandRenewablesPercentage !== null &&
           d._totalDemandRenewablesPercentage < minDemandRenewables
         ) {
           minDemandRenewables = d._totalDemandRenewablesPercentage
-          minDemandRenewablesDate = d.date
+          minDemandRenewablesDate = d.time
         }
         if (
           d._totalDemandRenewablesPercentage !== null &&
           d._totalDemandRenewablesPercentage > maxDemandRenewables
         ) {
           maxDemandRenewables = d._totalDemandRenewablesPercentage
-          maxDemandRenewablesDate = d.date
+          maxDemandRenewablesDate = d.time
         }
 
         if (
@@ -302,7 +302,7 @@ export default {
           d._totalGeneration !== 0
         ) {
           minGeneration = d._totalGeneration
-          minGenerationDate = d.date
+          minGenerationDate = d.time
         }
         if (
           d._totalGeneration !== null &&
@@ -310,11 +310,11 @@ export default {
           d._totalGeneration < minGeneration
         ) {
           minGeneration = d._totalGeneration
-          minGenerationDate = d.date
+          minGenerationDate = d.time
         }
         if (d._totalGeneration !== null && d._totalGeneration > maxGeneration) {
           maxGeneration = d._totalGeneration
-          maxGenerationDate = d.date
+          maxGenerationDate = d.time
         }
 
         if (
@@ -322,14 +322,14 @@ export default {
           d._totalGenerationRenewables < minGenerationRenewables
         ) {
           minGenerationRenewables = d._totalGenerationRenewables
-          minGenerationRenewablesDate = d.date
+          minGenerationRenewablesDate = d.time
         }
         if (
           d._totalGenerationRenewables !== null &&
           d._totalGenerationRenewables > maxGenerationRenewables
         ) {
           maxGenerationRenewables = d._totalGenerationRenewables
-          maxGenerationRenewablesDate = d.date
+          maxGenerationRenewablesDate = d.time
         }
 
         if (
@@ -338,7 +338,7 @@ export default {
           d[this.priceId] < minPrice
         ) {
           minPrice = d[this.priceId]
-          minPriceDate = d.date
+          minPriceDate = d.time
         }
         if (
           this.priceId &&
@@ -346,7 +346,7 @@ export default {
           d[this.priceId] > maxPrice
         ) {
           maxPrice = d[this.priceId]
-          maxPriceDate = d.date
+          maxPriceDate = d.time
         }
 
         if (
@@ -355,7 +355,7 @@ export default {
           d[this.temperatureId] !== null
         ) {
           minTemperature = d[this.temperatureId]
-          minTemperatureDate = d.date
+          minTemperatureDate = d.time
         }
 
         if (
@@ -364,7 +364,7 @@ export default {
           d[this.temperatureId] < minTemperature
         ) {
           minTemperature = d[this.temperatureId]
-          minTemperatureDate = d.date
+          minTemperatureDate = d.time
         }
         if (
           this.temperatureId &&
@@ -372,7 +372,7 @@ export default {
           d[this.temperatureId] > maxTemperature
         ) {
           maxTemperature = d[this.temperatureId]
-          maxTemperatureDate = d.date
+          maxTemperatureDate = d.time
         }
       })
 

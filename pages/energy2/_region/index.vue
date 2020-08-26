@@ -2,14 +2,18 @@
   <div class="energy-region">
     <data-options-bar />
     <div class="vis-summary vis-table-container">
-      <vis-section 
+      <vis-section
+        :date-hover="hoverDate"
+        :on-hover="isHovering"
         class="vis-section vis-container" 
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering" />
       <summary-section
         :hover-date="hoverDate"
         :is-hovering="isHovering"
-        class="summary-section table-container"/>
+        class="summary-section table-container"
+        @dateHover="handleDateHover"
+        @isHovering="handleIsHovering" />
     </div>
   </div>
 </template>
