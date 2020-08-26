@@ -143,6 +143,19 @@ function getNumberOfHoursByInterval(interval, date) {
       start = date
       end = endOfMonth(date)
       return differenceInHours(end, start)
+    case 'Season':
+    case 'Quarter':
+      start = date
+      end = endOfMonth(addMonths(date, 3))
+      return differenceInHours(end, start)
+    case 'Half Year':
+      start = date
+      end = endOfMonth(addMonths(date, 6))
+      return differenceInHours(end, start)
+    case 'Fin Year':
+      start = date
+      end = endOfMonth(addMonths(date, 12))
+      return differenceInHours(end, start)
     case 'Year':
       start = date
       end = endOfYear(date)
@@ -612,7 +625,7 @@ export default {
 
     incompleteIntervals() {
       const incompletes = []
-      const filtered = this.currentDataset.filter(d => d._isIncompleteBucket)
+      const filtered = this.dataset.filter(d => d._isIncompleteBucket)
       filtered.forEach(f => {
         if (this.interval === 'Week') {
           incompletes.push({
