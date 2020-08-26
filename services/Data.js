@@ -80,7 +80,7 @@ export default {
       case 'G':
         return 'T'
       case 'T':
-        return ''
+        return 'P'
       default:
         return 'k'
     }
