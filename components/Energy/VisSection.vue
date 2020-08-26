@@ -21,7 +21,7 @@
     />
 
     <emissions-chart
-      v-if="ready && domainEmissions.length > 0" 
+      v-if="ready && domainEmissions.length > 0 && featureEmissions" 
       :hover-on="isHovering"
       :hover-date="hoverDate"
       :zoom-extent="zoomExtent"
@@ -32,7 +32,7 @@
     />
 
     <emission-intensity-chart 
-      v-if="ready && domainEmissions.length > 0"
+      v-if="ready && domainEmissions.length > 0 && featureEmissions"
       :hover-on="isHovering"
       :hover-date="hoverDate"
       :zoom-extent="zoomExtent"
@@ -112,7 +112,9 @@ export default {
       domainEmissions: 'regionEnergy/domainEmissions',
       domainTemperature: 'regionEnergy/domainTemperature',
       domainPrice: 'regionEnergy/domainPrice',
-      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy'
+      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
+
+      featureEmissions: 'feature/emissions'
     }),
     domains() {
       return _cloneDeep(this.currentDomainPowerEnergy).reverse()
