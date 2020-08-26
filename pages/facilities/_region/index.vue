@@ -38,6 +38,7 @@
         :filtered-facilities="filteredFacilities"
         :selected-facility="selectedFacility"
         :selected-techs="selectedTechs"
+        :selected-statuses="selectedStatuses"
         :sort-by="sortBy"
         :order-by="orderBy"
         :hide-region-column="!isNemRegion && !isAllRegion"
@@ -123,6 +124,9 @@ export default {
 
   computed: {
     ...mapGetters(['hostEnv']),
+    facilityDataset() {
+      return this.$store.getters['facility/dataset']
+    },
     regionId() {
       return this.$route.params.region
     },
@@ -192,7 +196,13 @@ export default {
         }, 200)
       )
     })
-    this.fetchData()
+
+    if (this.facilityDataset.length > 0) {
+      this.facilityData = this.facilityDataset
+      this.ready = true
+    } else {
+      this.fetchData()
+    }
   },
 
   methods: {
@@ -225,6 +235,7 @@ export default {
         FacilityDataTransformService.flatten(responses[0]).then(res => {
           this.facilityData = res
           this.ready = true
+          this.$store.dispatch('facility/dataset', res)
         })
       } else {
         if (responses.length > 0 && responses[0].features) {
@@ -232,6 +243,7 @@ export default {
             res => {
               this.facilityData = res
               this.ready = true
+              this.$store.dispatch('facility/dataset', res)
             }
           )
         } else {
@@ -261,12 +273,7 @@ export default {
         [this.orderBy]
       )
 
-      const filtered =
-        this.selectedTechs.length > 0
-          ? sortedData.filter(g =>
-              g.fuelTechs.some(r => this.selectedTechs.includes(r))
-            )
-          : sortedData
+      const filtered = sortedData
 
       const that = this
       let regionIds = [this.regionId]
@@ -275,6 +282,7 @@ export default {
       } else if (this.regionId === 'nem') {
         regionIds = getNEMRegionArray()
       }
+
       async function updateFilter() {
         return filtered.filter(
           g =>
@@ -285,7 +293,9 @@ export default {
               (regionIds.length > 0 &&
                 _includes(regionIds, g.regionId.toLowerCase()))) &&
             (that.selectedStatuses.length <= 0 ||
-              g.unitStatuses.some(r => that.selectedStatuses.includes(r)))
+              g.unitStatuses.some(r => that.selectedStatuses.includes(r))) &&
+            (that.selectedTechs.length <= 0 ||
+              g.fuelTechs.some(r => that.selectedTechs.includes(r)))
         )
       }
 

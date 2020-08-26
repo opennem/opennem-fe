@@ -109,11 +109,6 @@ function transformV3FacilityData(data) {
     }
     const displayName = props.name || '-'
     const state = props.state || ''
-    const regionId = props.network_region
-      ? props.network_region === 'WA'
-        ? 'wem'
-        : props.network_region.toLowerCase()
-      : ''
     const units = []
     const dispatchUnits = props.duid_data || []
     const location = geo
@@ -130,34 +125,43 @@ function transformV3FacilityData(data) {
     const loadFuelTechs = []
     const unitStatuses = []
     const fuelTechRegisteredCap = {}
+    const unitStatusRegisteredCap = {}
     const status = dispatchUnits.length > 0 ? dispatchUnits[0].status : ''
+    const unitNetworkRegions = []
     let generatorCap = 0
 
     dispatchUnits.forEach(unit => {
-      const regCap = unit.registered_capacity
+      const regCap = unit.capacity_registered
       const fuelTech = unit.fuel_tech
+      const unitStatus = unit.status
       const type = FUEL_TECHS.FUEL_TECH_CATEGORY[fuelTech] || ''
-
-      unitStatuses.push(unit.status)
-
-      if (unit.status === 'operating') {
-        operatingCount.push(unit)
-      } else if (unit.status === 'committed') {
-        committedCount.push(unit)
-      } else if (unit.status === 'commissioning') {
-        commissioningCount.push(unit)
-      } else if (unit.status === 'retired') {
-        retiredCount.push(unit)
-      } else {
-        noStatusCount.push(unit)
+      let name = unit.duid
+      if (!name) {
+        emptyIdCount++
+        name = `emptyDuid-${emptyIdCount}`
       }
 
+      unitStatuses.push(unitStatus)
+      unitNetworkRegions.push(unit.network_region)
+
+      // if (unitStatus === 'operating') {
+      //   operatingCount.push(unit)
+      // } else if (unitStatus === 'committed') {
+      //   committedCount.push(unit)
+      // } else if (unitStatus === 'commissioning') {
+      //   commissioningCount.push(unit)
+      // } else if (unitStatus === 'retired') {
+      //   retiredCount.push(unit)
+      // } else {
+      //   noStatusCount.push(unit)
+      // }
+
       const unitObj = {
-        name: unit.duid,
+        name,
         fuelTech,
         regCap,
         type,
-        status
+        status: unitStatus
       }
 
       if (type === 'source') {
@@ -169,6 +173,13 @@ function transformV3FacilityData(data) {
           fuelTechRegisteredCap[fuelTech] = 0
         }
         fuelTechRegisteredCap[fuelTech] += regCap
+      }
+
+      if (unitStatus) {
+        if (!unitStatusRegisteredCap[unitStatus]) {
+          unitStatusRegisteredCap[unitStatus] = 0
+        }
+        unitStatusRegisteredCap[unitStatus] += regCap
       }
 
       if (fuelTech !== 'battery_charging' && !_isEmpty(unit)) {
@@ -184,6 +195,9 @@ function transformV3FacilityData(data) {
         units.push(unitObj)
       }
     })
+
+    const regions = _uniq(unitNetworkRegions).filter(r => r && r !== 'SNOWY1')
+    const regionId = regions[0] ? regions[0].toLowerCase() : ''
 
     return {
       stationId,
@@ -201,19 +215,20 @@ function transformV3FacilityData(data) {
       genFuelTechs: _uniq(genFuelTechs).sort(),
       loadFuelTechs: _uniq(loadFuelTechs).sort(),
       fuelTechRegisteredCap,
+      unitStatusRegisteredCap,
       jsonData: d
     }
   })
 
   console.log('List of facilities without location:', emptyGeometries)
-  console.log(`${committedCount.length} committed units`, committedCount)
-  console.log(
-    `${commissioningCount.length} commissioning units`,
-    commissioningCount
-  )
-  console.log(`${operatingCount.length} operating units`, operatingCount)
-  console.log(`${retiredCount.length} retired units`, retiredCount)
-  console.log(`${noStatusCount.length} no status units`, noStatusCount)
+  // console.log(`${committedCount.length} committed units`, committedCount)
+  // console.log(
+  //   `${commissioningCount.length} commissioning units`,
+  //   commissioningCount
+  // )
+  // console.log(`${operatingCount.length} operating units`, operatingCount)
+  // console.log(`${retiredCount.length} retired units`, retiredCount)
+  // console.log(`${noStatusCount.length} no status units`, noStatusCount)
 
   return transformed
 }

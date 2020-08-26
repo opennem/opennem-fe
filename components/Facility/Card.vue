@@ -189,7 +189,7 @@ export default {
   display: flex;
 }
 .source-colour {
-  width: 15px;
+  width: 6px;
   height: 100%;
 }
 </style>
