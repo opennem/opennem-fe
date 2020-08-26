@@ -23,7 +23,7 @@
         </div>
       </div>
       <div class="compare-chart">
-        <div class="compare-chart-unit">{{ yUnit }}</div>
+        <div class="compare-chart-unit">{{ unit }}</div>
         <column-vis
           v-if="hasCompareData"
           :domains="updatedDomains"
@@ -51,6 +51,10 @@ export default {
     compareData: {
       type: Array,
       default: () => []
+    },
+    unit: {
+      type: String,
+      default: () => ''
     }
   },
 

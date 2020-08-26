@@ -291,22 +291,25 @@ export default {
     },
 
     displayUnit() {
+      let unit = ''
       if (this.isEnergyType) {
         if (this.isTypeProportion || this.isYAxisPercentage) {
-          return '%'
+          unit = '%'
         } else if (this.isYAxisAveragePower) {
-          return 'MW'
+          unit = 'MW'
         } else {
-          return `GWh/${this.intervalLabel(this.interval)}`
+          unit = `GWh/${this.intervalLabel(this.interval)}`
         }
       } else {
         // power
         if (this.isTypeProportion || this.isYAxisPercentage) {
-          return '%'
+          unit = '%'
         } else {
-          return 'MW'
+          unit = 'MW'
         }
       }
+      this.$emit('displayUnit', unit)
+      return unit
     },
 
     energyPercentDataset() {
@@ -486,11 +489,14 @@ export default {
       }
     },
     dataset() {
+      let ds = null
       if (this.isTypeLine) {
-        return this.multiLineDataset
+        ds = this.multiLineDataset
       } else {
-        return this.stackedAreaDataset
+        ds = this.stackedAreaDataset
       }
+      this.$emit('selectedDataset', ds)
+      return ds
     },
     yMin() {
       const dataset = _cloneDeep(this.stackedAreaDataset)

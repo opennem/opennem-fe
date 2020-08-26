@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import ChartHeader from '@/components/Vis/ChartHeader'
 import ChartOptions from '@/components/Vis/ChartOptions'
@@ -234,6 +234,9 @@ export default {
   },
 
   methods: {
+    ...mapMutations({
+      updateCompareDiffernece: 'compareDifference'
+    }),
     handleTypeClick(type) {
       if (this.isEnergyType) {
         if (
@@ -251,6 +254,7 @@ export default {
         }
       }
       this.$store.commit('chartOptionsPowerEnergy/chartType', type)
+      this.updateCompareDiffernece(false)
     },
     handleCurveClick(curve) {
       if (this.isEnergyType) {
@@ -258,6 +262,7 @@ export default {
       } else {
         this.$store.commit('chartOptionsPowerEnergy/chartPowerCurve', curve)
       }
+      this.updateCompareDiffernece(false)
     },
     handleYAxisClick(yAxis) {
       if (this.isEnergyType) {
@@ -265,6 +270,7 @@ export default {
       } else {
         this.$store.commit('chartOptionsPowerEnergy/chartPowerYAxis', yAxis)
       }
+      this.updateCompareDiffernece(false)
     }
   }
 }

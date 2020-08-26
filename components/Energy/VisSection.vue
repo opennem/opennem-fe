@@ -9,11 +9,14 @@
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
       @svgClick="handleSvgClick"
+      @selectedDataset="ds => selectedDataset = ds"
+      @displayUnit="unit => selectedUnit = unit"
     />
 
     <energy-compare
       v-if="compareDifference"
       :domains="domains"
+      :unit="selectedUnit"
       :compare-data="compareData"
     />
 
@@ -90,7 +93,9 @@ export default {
       compareData: [],
       isHovering: false,
       hoverDate: null,
-      zoomExtent: []
+      zoomExtent: [],
+      selectedDataset: [],
+      selectedUnit: ''
     }
   },
 
@@ -140,8 +145,8 @@ export default {
         this.$store.dispatch('compareDifference', true)
         const hoverTime = this.hoverDate.getTime()
         const focusTime = this.focusDate.getTime()
-        const firstData = this.getDataByTime(this.currentDataset, focusTime)
-        const secondData = this.getDataByTime(this.currentDataset, hoverTime)
+        const firstData = this.getDataByTime(this.selectedDataset, focusTime)
+        const secondData = this.getDataByTime(this.selectedDataset, hoverTime)
 
         setTimeout(() => {
           this.$store.dispatch('compareDates', [focusTime, hoverTime])
@@ -174,11 +179,11 @@ export default {
 
           if (compareDates.length === 2) {
             const firstData = this.getDataByTime(
-              this.currentDataset,
+              this.selectedDataset,
               compareDates[0]
             )
             const secondData = this.getDataByTime(
-              this.currentDataset,
+              this.selectedDataset,
               compareDates[1]
             )
             this.compareData = [firstData, secondData]
