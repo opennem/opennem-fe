@@ -53,6 +53,7 @@
             class="dropdown-item dropdown-item-child dropdown-item-last-child" 
             @click.native="handleClick">Victoria</nuxt-link>
           <nuxt-link
+            v-if="wemEnergy"
             :to="`/${currentView}/wem/`" 
             class="dropdown-item" 
             @click.native="handleClick">Western Australia</nuxt-link>
@@ -63,6 +64,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
 import REGIONS from '~/constants/regions.js'
 
@@ -77,6 +79,9 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      wemEnergy: 'feature/wemEnergy'
+    }),
     regionId() {
       return this.$route.params.region
     },
