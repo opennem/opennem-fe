@@ -27,6 +27,44 @@
       @mouse-leave="handleSummaryRowMouseLeave"
     />
 
+    <section class="bar-donut-wrapper">
+      <header>
+        <div class="buttons has-addons">
+          <button
+            :class="{ 'is-selected': !chartSummaryPie }"
+            class="button is-rounded"
+            @click="handleChartSummaryClick('bar')">
+            <i class="fal fa-chart-bar" />
+          </button>
+          <button
+            :class="{ 'is-selected': chartSummaryPie }"
+            class="button is-rounded"
+            @click="handleChartSummaryClick('pie')">
+            <i class="fal fa-chart-pie" />
+          </button>
+        </div>
+      </header>
+
+      <energy-bar
+        v-show="!chartSummaryPie"
+        :bar-width="250"
+        :domains="donutDomains"
+        :dataset="filteredCurrentDataset"
+        :hover-on="isHovering"
+        :hover-data="hoverData"
+        :focus-on="focusOn" />
+
+      <donut-vis
+        v-show="chartSummaryPie"
+        :unit="chartUnit"
+        :domains="donutDomains"
+        :dataset="filteredCurrentDataset"
+        :dynamic-extent="filteredDates"
+        :hover-on="isHovering"
+        :hover-data="hoverData"
+        :focus-on="focusOn" />
+    </section>
+
     <energy-records
       :domains="domains"
       :dataset="filteredCurrentDataset"
@@ -44,13 +82,20 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
+import _includes from 'lodash.includes'
+
 import SummaryTable from '@/components/SummaryTable/index2'
 import EnergyRecords from '~/components/Energy/Records.vue'
+import DonutVis from '~/components/Vis/Donut.vue'
+import EnergyBar from '~/components/Energy/EnergyBar.vue'
+
 import { TEMPERATURE, TEMPERATURE_MEAN } from '@/constants/v2/data-types.js'
 export default {
   components: {
     SummaryTable,
-    EnergyRecords
+    EnergyRecords,
+    EnergyBar,
+    DonutVis
   },
 
   props: {
@@ -69,25 +114,47 @@ export default {
       hoverDomain: 'visInteract/hoverDomain',
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
+      chartSummaryPie: 'visInteract/chartSummaryPie',
       range: 'range',
       interval: 'interval',
       fuelTechGroupName: 'fuelTechGroupName',
+      hiddenFuelTechs: 'hiddenFuelTechs',
+      chartUnit: 'chartUnit',
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
+      filteredDates: 'regionEnergy/filteredDates',
       filteredCurrentDataset: 'regionEnergy/filteredCurrentDataset',
       domainTemperature: 'regionEnergy/domainTemperature',
       domainPrice: 'regionEnergy/domainPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       currentDomainMarketValue: 'regionEnergy/currentDomainMarketValue'
     }),
-    domains() {
+    property() {
+      return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+    },
+    powerEnergyDomains() {
       return _cloneDeep(this.currentDomainPowerEnergy).reverse()
+    },
+    domains() {
+      const domains = this.powerEnergyDomains
+      const hidden = this.hiddenFuelTechs
+      return domains.filter(d => !_includes(hidden, d[this.property]))
+    },
+    donutDomains() {
+      return this.domains.filter(d => d.category === 'source')
     },
     temperatureMeanDomain() {
       const find = this.domainTemperature.find(
         t => t.type === TEMPERATURE || t.type === TEMPERATURE_MEAN
       )
       return find ? find.domain : ''
+    },
+    hoverData() {
+      if (!this.hoverDate) {
+        return null
+      }
+      const time = this.hoverDate.getTime()
+      return this.filteredCurrentDataset.find(d => d.time === time)
     }
   },
 
@@ -124,7 +191,36 @@ export default {
     },
     handleRecordDeselect() {
       this.setFocusDate(null)
+    },
+    handleChartSummaryClick(chartType) {
+      if (chartType === 'pie') {
+        this.$store.commit('visInteract/chartSummaryPie', true)
+      } else {
+        this.$store.commit('visInteract/chartSummaryPie', false)
+      }
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.bar-donut-wrapper {
+  margin-bottom: 1rem;
+  header {
+    margin: 1rem 0;
+    .buttons {
+      justify-content: center;
+    }
+    button {
+      font-size: 11px;
+      min-width: 30px;
+    }
+    i.fa-chart-bar {
+      -moz-transform: scaleY(-1) rotate(90deg);
+      -o-transform: scaleY(-1) rotate(90deg);
+      -webkit-transform: scaleY(-1) rotate(90deg);
+      transform: scaleY(-1) rotate(90deg);
+    }
+  }
+}
+</style>
