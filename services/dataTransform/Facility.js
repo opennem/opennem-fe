@@ -20,6 +20,14 @@ function transformFacilityData(data) {
     const loadFuelTechs = []
     const fuelTechRegisteredCap = {}
     const displayName = d.display_name.split('/').join(' / ')
+    let status = ''
+
+    if (d.status.state === 'Commissioned') {
+      status = 'operating'
+    } else if (d.status.state === 'Decommissioned') {
+      status = 'retired'
+    }
+
     let generatorCap = 0
     if (regionId === 'wa1') {
       regionId = 'wem'
@@ -35,7 +43,8 @@ function transformFacilityData(data) {
         name: unitName,
         fuelTech,
         regCap,
-        type
+        type,
+        status
       }
 
       if (type === 'source') {
@@ -66,17 +75,20 @@ function transformFacilityData(data) {
     return {
       stationId,
       displayName,
-      status: d.status.state,
+      status,
       statusDate: d.status.date,
       regionId,
       location,
       units,
+      unitStatuses: [status],
       generatorCap,
       unitNum,
       fuelTechs: _uniq(fuelTechs).sort(),
       genFuelTechs: _uniq(genFuelTechs).sort(),
       loadFuelTechs: _uniq(loadFuelTechs).sort(),
-      fuelTechRegisteredCap
+      fuelTechRegisteredCap,
+      unitStatusRegisteredCap: {},
+      jsonData: d
     }
   })
 }
