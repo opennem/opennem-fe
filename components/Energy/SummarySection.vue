@@ -9,7 +9,7 @@
 
       -->
     <summary-table
-      :energy-domains="domains"
+      :energy-domains="powerEnergyDomains"
       :temperature-domains="domainTemperature"
       :market-value-domains="currentDomainMarketValue"
       :price-id="domainPrice.length > 0 ? domainPrice[0].id : ''"
