@@ -139,6 +139,25 @@ export default {
     },
     dateHover(date) {
       this.hoverDate = date
+    },
+    compareDifference(compare) {
+      if (!compare) {
+        this.compareData = []
+        this.$store.dispatch('compareDates', [])
+      }
+    },
+    selectedDataset(ds) {
+      if (this.compareDates.length === 2) {
+        const firstData = this.getDataByTime(
+          this.selectedDataset,
+          this.compareDates[0]
+        )
+        const secondData = this.getDataByTime(
+          this.selectedDataset,
+          this.compareDates[1]
+        )
+        this.compareData = [firstData, secondData]
+      }
     }
   },
 

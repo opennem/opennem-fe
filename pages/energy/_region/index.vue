@@ -83,6 +83,7 @@ export default {
 
   watch: {
     range(curr, prev) {
+      this.setCompareDifference(false)
       this.doUpdateTickFormats({ range: curr, interval: this.interval })
       if (isPowerRange(curr) && isPowerRange(prev)) {
         this.doFilterRegionData({
@@ -99,6 +100,7 @@ export default {
       }
     },
     interval(interval) {
+      this.setCompareDifference(false)
       this.doUpdateTickFormats({ range: this.range, interval: interval })
       this.doUpdateDatasetByInterval({ range: this.range, interval })
     },
@@ -166,7 +168,8 @@ export default {
       doUpdateXTicks: 'visInteract/doUpdateXTicks'
     }),
     ...mapMutations({
-      setWindowWidth: 'app/windowWidth'
+      setWindowWidth: 'app/windowWidth',
+      setCompareDifference: 'compareDifference'
     }),
     handleDateHover(date) {
       this.hoverDate = date
