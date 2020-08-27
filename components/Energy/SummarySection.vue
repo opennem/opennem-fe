@@ -21,6 +21,7 @@
       :range="range"
       :interval="interval"
       :is-energy="isEnergyType"
+      :hidden-fuel-techs="hiddenFuelTechs"
       @fuelTechsHidden="handleFuelTechsHidden"
       @summary-update="handleSummaryUpdated"
       @mouse-enter="handleSummaryRowMouseEnter"
