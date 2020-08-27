@@ -9,6 +9,23 @@ import {
 } from '@/modules/dataTransform/energy'
 import { isValidRegion } from '@/constants/v2/energy-regions.js'
 
+let currentRegion = ''
+
+function getDataCount(responses) {
+  let count = 0
+  responses.forEach(r => {
+    r.forEach(d => {
+      if (d.history && d.history.data) {
+        count += d.history.data.length
+      }
+      if (d.forecast && d.forecast.data) {
+        count += d.forecast.data.length
+      }
+    })
+  })
+  return count
+}
+
 export const state = () => ({
   ready: false,
   isFetching: false,
@@ -129,13 +146,15 @@ export const actions = {
   doGetRegionData({ commit }, { region, range, interval, groupName }) {
     if (isValidRegion(region)) {
       const urls = Data.getEnergyUrls(region, range, 'prod')
+      currentRegion = region
       commit('ready', false)
       commit('isFetching', true)
 
       http(urls).then(responses => {
+        const dataCount = getDataCount(responses)
         const perf = new PerfTime()
         perf.time()
-        console.info(`${region} — ${range}/${interval} (start) ------`)
+        console.info(`------ ${currentRegion} — ${range}/${interval} (start)`)
 
         const {
           datasetFlat,
@@ -152,7 +171,7 @@ export const actions = {
         } = dataProcess(responses, range, interval)
 
         perf.timeEnd(
-          `------ ${region} — ${range}/${interval} (-- down to ${
+          `------ ${currentRegion} — ${range}/${interval} (${dataCount} down to ${
             currentDataset.length
           })`
         )
@@ -185,6 +204,8 @@ export const actions = {
   doUpdateDatasetByInterval({ state, commit }, { range, interval }) {
     // Ignore if data is still being fetched.
     if (!state.isFetching) {
+      // console.log('****** doUpdateDatasetByInterval')
+      console.info(`------ ${currentRegion} — ${range}/${interval} (start)`)
       const { currentDataset } = dataRollUp({
         isEnergyType: state.isEnergyType,
         datasetFlat: _cloneDeep(state.datasetFlat),
@@ -199,7 +220,7 @@ export const actions = {
         range,
         interval
       })
-
+      console.info(`------ ${currentRegion} — ${range}/${interval} (end)`)
       commit('currentDataset', currentDataset)
     }
   },
@@ -217,6 +238,7 @@ export const actions = {
   },
 
   doFilterRegionData({ state, commit }, { range, interval }) {
+    // console.log('****** doFilterRegionData')
     const { currentDataset } = dataRollUp({
       isEnergyType: state.isEnergyType,
       datasetFlat: _cloneDeep(state.datasetFlat),
@@ -239,6 +261,7 @@ export const actions = {
     { state, commit },
     { range, interval, period }
   ) {
+    // console.log('****** doUpdateDatasetByFilterPeriod')
     const { currentDataset } = dataRollUp({
       isEnergyType: state.isEnergyType,
       datasetFlat: _cloneDeep(state.datasetFlat),
@@ -258,6 +281,7 @@ export const actions = {
       interval,
       period
     })
+    console.log(period, filteredDatasetFlat)
     commit('currentDataset', filteredDatasetFlat)
   }
 }

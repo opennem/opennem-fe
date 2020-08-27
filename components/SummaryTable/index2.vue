@@ -380,7 +380,7 @@ export default {
       const r = (totalRenewables / total) * 100
       const f = d3Format(',.3f')
       if (!isNaN(r)) {
-        console.log(`*****Renewables: ${f(r)}%`)
+        console.log(`***** Renewables: ${f(r)}%`)
       }
       return r
     },

@@ -149,7 +149,7 @@ export default {
       }
     },
     handleRangeChange(range) {
-      this.$store.dispatch('filterPeriod', null)
+      this.$store.dispatch('filterPeriod', 'All')
       this.$emit('onRangeChange', range)
       this.$store.dispatch('si/emissionsVolumePrefix', '')
     },

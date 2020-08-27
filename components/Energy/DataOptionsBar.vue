@@ -143,7 +143,7 @@ export default {
       }
     },
     handleRangeChange(range) {
-      this.$store.dispatch('filterPeriod', null)
+      this.$store.dispatch('filterPeriod', 'All')
       this.$store.dispatch('si/emissionsVolumePrefix', '')
 
       let interval = ''

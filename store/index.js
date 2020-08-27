@@ -39,7 +39,7 @@ export const state = () => ({
   exportAttribution: '@name',
   percentContributionTo: 'demand', // or generation
   showSummaryColumn: 'av-value', // or emissions-volume or emissions-intensity
-  filterPeriod: null,
+  filterPeriod: 'All',
   compareDifference: false,
   focusOn: false,
   compareDates: [],
