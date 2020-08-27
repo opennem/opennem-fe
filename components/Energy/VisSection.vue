@@ -116,6 +116,7 @@ export default {
       interval: 'interval',
       compareDifference: 'compareDifference',
       compareDates: 'compareDates',
+      filterPeriod: 'filterPeriod',
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
       ready: 'regionEnergy/ready',
@@ -154,7 +155,44 @@ export default {
       this.setFilteredDates(filteredDates)
     },
     handleDateHover(date) {
-      const closestDate = DateDisplay.snapToClosestInterval(this.interval, date)
+      let hoverDate = date
+      const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
+      if (hoverDate && this.interval === 'Fin Year') {
+        if (hoverDate.getMonth() >= 6) {
+          hoverDate.setFullYear(hoverDate.getFullYear() + 1)
+        }
+      }
+      if (
+        isFilter &&
+        hoverDate &&
+        (this.interval === 'Season' || this.interval === 'Quarter')
+      ) {
+        const periodMonth = DateDisplay.getPeriodMonth(
+          this.interval,
+          this.filterPeriod
+        )
+        const month = hoverDate.getMonth()
+
+        if (this.interval === 'Season') {
+          hoverDate = DateDisplay.mutateSeasonDate(
+            hoverDate,
+            month,
+            this.filterPeriod
+          )
+        } else if (this.interval === 'Quarter') {
+          hoverDate = DateDisplay.mutateQuarterDate(
+            hoverDate,
+            month,
+            this.filterPeriod
+          )
+        }
+        hoverDate.setMonth(periodMonth + 1)
+      }
+
+      const closestDate = DateDisplay.snapToClosestInterval(
+        this.interval,
+        hoverDate
+      )
       this.hoverDate = closestDate
       this.$emit('dateHover', closestDate)
     },
