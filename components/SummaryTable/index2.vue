@@ -20,7 +20,7 @@
         <div
           v-if="(!hoverOn && !focusOn) || isEnergy"
           class="summary-col-energy">
-          Energy <small>{{ isYearInterval ? 'TWh' : 'GWh' }}</small>
+          Energy <small>GWh</small>
         </div>
         <div
           v-if="(hoverOn || focusOn) && !isEnergy"

@@ -206,9 +206,6 @@ export const getters = {
       case '7D':
         return ' MW'
       default:
-        if (state.interval === 'Fin Year' || state.interval === 'Year') {
-          return ' TWh'
-        }
         return ' GWh'
     }
   },
