@@ -60,7 +60,11 @@
 <script>
 import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
-import { CHART_LABEL, CHART_LINE } from '@/constants/v2/chart-options.js'
+import {
+  CHART_LABEL,
+  CHART_LINE,
+  CHART_HIDDEN
+} from '@/constants/v2/chart-options.js'
 
 export default {
   mixins: [clickaway],
@@ -137,6 +141,9 @@ export default {
       this.$emit('show-change', show)
     },
     handleTypeClick(type) {
+      if (type === CHART_HIDDEN) {
+        this.emitShow(false)
+      }
       this.$emit('type-click', type)
     },
     handleYAxisClick(yAxis) {
