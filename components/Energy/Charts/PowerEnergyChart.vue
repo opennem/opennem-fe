@@ -37,7 +37,7 @@
       :curve="chartCurve"
       :y-min="isTypeArea ? yMin : 0"
       :y-max="isTypeArea ? yMax : 100"
-      :vis-height="350"
+      :vis-height="chartHeight"
       :hover-on="hoverOn"
       :hover-date="hoverDate"
       :dynamic-extent="zoomExtent"
@@ -70,7 +70,7 @@
     </button>
     <multi-line
       v-if="chartEnergy && isTypeLine"
-      :svg-height="350 - 30"
+      :svg-height="chartHeight - 30"
       :domains1="domains"
       :dataset1="multiLineDataset"
       :domains2="[{
@@ -218,6 +218,17 @@ export default {
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       summary: 'regionEnergy/summary'
     }),
+    regionId() {
+      return this.$route.params.region
+    },
+    chartHeight() {
+      let height = 330
+      if (this.regionId === 'nem' && !this.tabletBreak) {
+        height = 520
+      }
+      return height
+    },
+
     chartYAxis() {
       return this.isEnergyType ? this.chartEnergyYAxis : this.chartPowerYAxis
     },
