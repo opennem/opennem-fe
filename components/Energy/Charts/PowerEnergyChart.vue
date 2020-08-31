@@ -6,6 +6,7 @@
     }"
     class="chart">
     <power-energy-chart-options
+      :read-only="readOnly"
       :chart-shown="chartEnergy"
       :chart-type="chartEnergyType"
       :chart-curve="chartCurve"
@@ -30,6 +31,7 @@
     
     <stacked-area-vis
       v-if="chartEnergy && (isTypeArea || isTypeProportion)"
+      :read-only="readOnly"
       :domains="domains"
       :dataset="stackedAreaDataset"
       :range="range"
@@ -62,7 +64,7 @@
     />
 
     <button
-      v-if="chartEnergy && isTypeLine && zoomExtent.length > 0"
+      v-if="chartEnergy && isTypeLine && zoomExtent.length > 0 && !readOnly"
       class="button is-rounded is-small reset-btn"
       @click.stop="handleZoomReset"
     >
@@ -104,6 +106,7 @@
       :x-ticks="xTicks"
       :tick-format="tickFormat"
       :second-tick-format="secondTickFormat"
+      :read-only="readOnly"
       class="date-brush"
       @date-hover="handleDateHover"
       @date-filter="handleZoomExtent"
@@ -185,6 +188,10 @@ export default {
     zoomExtent: {
       type: Array,
       default: () => []
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
     }
   },
 

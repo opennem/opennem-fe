@@ -6,6 +6,7 @@
     }"
     class="chart">
     <price-market-value-chart-options
+      :read-only="readOnly"
       :options="options"
       :chart-shown="chartShown"
       :chart-type="chartType"
@@ -18,6 +19,7 @@
     
     <line-vis
       v-if="chartShown"
+      :read-only="readOnly"
       :domain-id="priceAbove300Domain"
       :domain-colour="lineColour"
       :dataset="priceDataset"
@@ -48,6 +50,7 @@
     />
     <line-vis
       v-if="chartShown"
+      :read-only="readOnly"
       :domain-id="priceDomain"
       :domain-colour="lineColour"
       :dataset="priceDataset"
@@ -78,6 +81,7 @@
     />
     <line-vis
       v-if="chartShown"
+      :read-only="readOnly"
       :domain-id="priceBelow0Domain"
       :domain-colour="lineColour"
       :dataset="priceDataset"
@@ -146,6 +150,10 @@ export default {
     zoomExtent: {
       type: Array,
       default: () => []
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
     }
   },
 

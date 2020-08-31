@@ -1,6 +1,8 @@
 <template>
   <chart-header>
-    <template v-slot:options>
+    <template 
+      v-slot:options 
+      v-if="!readOnly">
       <chart-options 
         :options="options"
         :chart-type="chartType"
@@ -16,7 +18,9 @@
       <strong>Temperature</strong>
       <small>°C</small>
     </template>
-    <template v-slot:average-value>
+    <template 
+      v-slot:average-value 
+      v-if="!readOnly">
       Av.
       <strong>
         {{ averageTemperature | formatValue }}°C
@@ -100,6 +104,10 @@ export default {
     hoverMaxTemperature: {
       type: Number,
       default: 0
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

@@ -143,6 +143,7 @@ export default {
       }
     },
     handleRangeChange(range) {
+      this.$store.commit('regionEnergy/filteredDates', [])
       this.$store.dispatch('filterPeriod', 'All')
       this.$store.dispatch('si/emissionsVolumePrefix', '')
 

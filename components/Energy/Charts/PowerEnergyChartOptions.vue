@@ -1,6 +1,8 @@
 <template>
   <chart-header>
-    <template v-slot:options>
+    <template 
+      v-slot:options 
+      v-if="!readOnly">
       <chart-options 
         :options="options"
         :chart-type="chartType"
@@ -20,9 +22,9 @@
       <small>{{ displayUnit }}</small>
     </template>
 
-    <template 
+    <template
       v-slot:average-value 
-      v-if="!isRenewableLineOnly && !isTypeProportion && !isYAxisAveragePower">
+      v-if="!isRenewableLineOnly && !isTypeProportion && !isYAxisAveragePower && !readOnly">
       Av.
       <strong>
         {{ averageEnergy | formatValue }}
@@ -190,6 +192,10 @@ export default {
     displayTitle: {
       type: String,
       default: ''
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

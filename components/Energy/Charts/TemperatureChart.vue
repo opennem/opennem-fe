@@ -8,6 +8,7 @@
     class="temperature-chart chart">
 
     <temperature-chart-options
+      :read-only="readOnly"
       :options="options"
       :chart-shown="chartShown"
       :chart-type="chartType"
@@ -22,6 +23,7 @@
 
     <line-vis
       v-if="chartShown"
+      :read-only="readOnly"
       :domain-id="temperatureMeanDomain"
       :min-domain-id="temperatureMinDomain"
       :max-domain-id="temperatureMaxDomain"
@@ -93,6 +95,10 @@ export default {
     zoomExtent: {
       type: Array,
       default: () => []
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
     }
   },
 

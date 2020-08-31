@@ -1,6 +1,8 @@
 <template>
   <chart-header>
-    <template v-slot:options>
+    <template 
+      v-slot:options 
+      v-if="!readOnly">
       <chart-options 
         :options="options"
         :chart-type="chartType"
@@ -16,7 +18,9 @@
       <strong>Emissions Volume</strong>
       <small>{{ emissionsVolumeUnit }}/{{ interval | intervalLabel }}</small>
     </template>
-    <template v-slot:average-value>
+    <template 
+      v-slot:average-value 
+      v-if="!readOnly">
       Av.
       <strong>
         {{ averageEmissionsVolume | formatValue }}
@@ -108,6 +112,10 @@ export default {
     hoverTotal: {
       type: Number,
       default: 0
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

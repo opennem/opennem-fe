@@ -1,6 +1,7 @@
 import * as OPTIONS from '@/constants/v2/chart-options.js'
 
 export const state = () => ({
+  chartDefaultType: OPTIONS.CHART_STACKED,
   chartType: OPTIONS.CHART_STACKED,
   chartYAxis: OPTIONS.CHART_YAXIS_ABSOLUTE,
   chartCurve: OPTIONS.CHART_CURVE_STEP
@@ -8,6 +9,7 @@ export const state = () => ({
 
 export const getters = {
   chartShown: state => state.chartType !== OPTIONS.CHART_HIDDEN,
+  chartDefaultType: state => state.chartDefaultType,
   chartType: state => state.chartType,
   chartYAxis: state => state.chartYAxis,
   chartCurve: state => state.chartCurve

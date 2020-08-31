@@ -193,6 +193,17 @@
   }
 }
 
+.export-region {
+  .vis-table-container {
+    display: block;
+
+    .vis-container,
+    .table-container {
+      width: 100%;
+    }
+  }
+}
+
 .loading-containers {
   position: absolute;
   width: 100%;

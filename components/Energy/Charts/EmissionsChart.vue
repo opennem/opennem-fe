@@ -6,6 +6,7 @@
     }"
     class="chart">
     <emissions-chart-options
+      :read-only="readOnly"
       :options="options"
       :chart-shown="chartShown"
       :chart-type="chartType"
@@ -22,6 +23,7 @@
     
     <stacked-area-vis
       v-if="chartShown"
+      :read-only="readOnly"
       :domains="domains"
       :dataset="currentDataset"
       :range="range"
@@ -97,6 +99,10 @@ export default {
     zoomExtent: {
       type: Array,
       default: () => []
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
     }
   },
 

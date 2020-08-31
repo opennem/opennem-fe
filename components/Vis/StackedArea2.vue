@@ -1,7 +1,7 @@
 <template>
   <div class="vis stacked-area-vis">
     <button
-      v-if="zoomed && showZoomOut"
+      v-if="zoomed && showZoomOut && !readOnly"
       class="button is-rounded is-small reset-btn"
       @click.stop="handleReset"
     >
@@ -56,7 +56,7 @@
 
         <!-- x axis layer to allow zoom in (brush) -->
         <g 
-          v-if="showXAxis && brush"
+          v-if="showXAxis && brush && !readOnly"
           :transform="xAxisBrushTransform" 
           class="x-axis-brush-group" />
       </g>
@@ -144,6 +144,10 @@ import AxisTimeFormats from '~/services/axisTimeFormats.js'
 
 export default {
   props: {
+    readOnly: {
+      type: Boolean,
+      default: false
+    },
     dataset: {
       type: Array,
       default: () => []

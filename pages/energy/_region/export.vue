@@ -1,19 +1,20 @@
 <template>
-  <div class="energy-region">
-    <data-options-bar />
+  <div class="energy-region export-region">
+    <export-header
+      :summary="summary"
+      :legend="legend"
+      @exportClick="handleExportClick"
+      @exportCancel="handleCancelClick"
+      @tableToggle="handleTableToggle"
+    />
+
     <transition name="fade">
       <div
         v-if="!ready"
         class="vis-table-container loading-containers">
-        <div class="vis-container">
-          <div
-            class="loader-block"
-            style="height: 30px" />
-          <div
-            class="loader-block"
-            style="height: 400px" />
-        </div>
-        <div class="table-container">
+        <div 
+          class="vis-container" 
+          style="width: 100%">
           <div
             class="loader-block"
             style="height: 30px" />
@@ -23,45 +24,57 @@
         </div>
       </div>
     </transition>
-    <div 
-      v-if="ready" 
-      class="vis-table-container">
-      <vis-section
-        :date-hover="hoverDate"
-        :on-hover="isHovering"
-        class="vis-container" 
-        @dateHover="handleDateHover"
-        @isHovering="handleIsHovering" />
-      <summary-section
-        :hover-date="hoverDate"
-        :is-hovering="isHovering"
-        class="table-container"
-        @dateHover="handleDateHover"
-        @isHovering="handleIsHovering" />
+
+    <div id="export-container">
+      <div 
+        v-if="ready" 
+        class="vis-legend-container" 
+      >
+        <export-image-header :exporting="exporting" />
+
+        <div class="vis-table-container">
+          <vis-section class="vis-container" />
+          <summary-legend-section 
+            :show-summary="summary" 
+            :show-legend="legend" 
+            class="table-container" />
+        </div>
+
+        <export-image-footer
+          :show-bom-source="showBomSource"
+          :exporting="exporting"/>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import _debounce from 'lodash.debounce'
+import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import { isPowerRange } from '@/constants/rangeInterval.js'
-import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
-import VisSection from '@/components/Energy/VisSection.vue'
-import SummarySection from '@/components/Energy/SummarySection.vue'
+import REGIONS from '~/constants/regions.js'
+import domToImage from '~/services/DomToImage.js'
+import VisSection from '@/components/Energy/Export/VisSection.vue'
+import SummaryLegendSection from '@/components/Energy/Export/SummaryLegendSection.vue'
+import ExportHeader from '~/components/Energy/Export/Header.vue'
+import ExportImageHeader from '~/components/Energy/ExportImageHeader.vue'
+import ExportImageFooter from '~/components/Energy/ExportImageFooter.vue'
 
 export default {
-  layout: 'main',
+  layout: 'export',
   components: {
-    DataOptionsBar,
+    ExportHeader,
+    ExportImageHeader,
+    ExportImageFooter,
     VisSection,
-    SummarySection
+    SummaryLegendSection
   },
 
   data() {
     return {
-      isHovering: false,
-      hoverDate: null
+      summary: false,
+      legend: true,
+      exporting: false
     }
   },
 
@@ -74,8 +87,14 @@ export default {
       fuelTechGroup: 'fuelTechGroup',
       ready: 'regionEnergy/ready',
       currentDataset: 'regionEnergy/currentDataset',
-      filteredDates: 'regionEnergy/filteredDates'
+      filteredCurrentDataset: 'regionEnergy/filteredCurrentDataset',
+      filteredDates: 'regionEnergy/filteredDates',
+      domainTemperature: 'regionEnergy/domainTemperature',
+      showChartTemperature: 'chartOptionsTemperature/chartShown'
     }),
+    showBomSource() {
+      return this.domainTemperature.length > 0 && this.showChartTemperature
+    },
     regionId() {
       return this.$route.params.region
     }
@@ -143,18 +162,6 @@ export default {
     this.doUpdateTickFormats({ range: this.range, interval: this.interval })
   },
 
-  mounted() {
-    this.setWindowWidth(window.innerWidth)
-    this.$nextTick(() => {
-      window.addEventListener(
-        'resize',
-        _debounce(() => {
-          this.setWindowWidth(window.innerWidth)
-        }, 200)
-      )
-    })
-  },
-
   methods: {
     ...mapActions({
       doGetRegionData: 'regionEnergy/doGetRegionData',
@@ -168,18 +175,51 @@ export default {
       doUpdateXTicks: 'visInteract/doUpdateXTicks'
     }),
     ...mapMutations({
-      setWindowWidth: 'app/windowWidth',
       setCompareDifference: 'compareDifference'
     }),
-    handleDateHover(date) {
-      this.hoverDate = date
+
+    handleTableToggle(widgetName) {
+      this[widgetName] = !this[widgetName]
     },
-    handleIsHovering(hover) {
-      this.isHovering = hover
+    handleExportClick() {
+      this.exporting = true
+      let date = ''
+      let region = REGIONS.find(r => r.id === this.regionId).label
+      if (this.filteredCurrentDataset.length > 0) {
+        date = d3TimeFormat('%Y%m%d')(this.filteredCurrentDataset[0].date)
+      }
+      if (this.regionId === 'nem') {
+        region = 'OpenNEM'
+      }
+      domToImage
+        .toBlob(document.getElementById('export-container'))
+        .then(blob => {
+          saveAs(blob, `${date} ${region}.png`)
+          this.exporting = false
+        })
+    },
+    handleCancelClick() {
+      this.$router.go(-1)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@import '~/assets/scss/responsive-mixins.scss';
+@import '~/assets/scss/variables.scss';
+#export-container {
+  background-color: $body-background-color;
+  border-radius: 4px;
+  box-shadow: 0 0 2rem rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+
+  .table-container {
+    margin: 0.5rem;
+  }
+}
+
+::v-deep .vis-chart {
+  margin-right: 10px;
+}
 </style>

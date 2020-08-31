@@ -1,6 +1,8 @@
 <template>
   <chart-header>
-    <template v-slot:options>
+    <template 
+      v-slot:options 
+      v-if="!readOnly">
       <chart-options 
         :options="options"
         :chart-type="chartType"
@@ -16,7 +18,9 @@
       <strong>Emission Intensity</strong>
       <small>kgCO₂e/MWh</small>
     </template>
-    <template v-slot:average-value>
+    <template 
+      v-slot:average-value 
+      v-if="!readOnly">
       Av.
       <strong>
         {{ averageEmissionIntensity | formatValue }} kgCO₂e/MWh
@@ -83,6 +87,10 @@ export default {
     hoverValue: {
       type: Number,
       default: 0
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

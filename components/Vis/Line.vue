@@ -41,7 +41,7 @@
 
         <!-- x axis layer to allow zoom in (brush) -->
         <g 
-          v-if="showXAxis"
+          v-if="showXAxis && !readOnly"
           :transform="xAxisBrushTransform" 
           class="x-axis-brush-group" />
       </g>
@@ -244,6 +244,10 @@ export default {
     connectZero: {
       type: Boolean,
       default: () => false
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
     }
   },
 
