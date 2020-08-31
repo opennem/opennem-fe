@@ -73,7 +73,7 @@ export default function(responses) {
 
   flattenAndInterpolate(isPowerData, dataInterval, dataAll, datasetFlat)
 
-  perfTime.timeEnd('data.process')
+  perfTime.timeEnd('--- data.process')
 
   return {
     datasetFlat,

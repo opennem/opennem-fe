@@ -185,5 +185,5 @@ export default function({
         : -0.01
   })
 
-  perfTime.timeEnd('data.summarise')
+  perfTime.timeEnd('--- data.summarise')
 }

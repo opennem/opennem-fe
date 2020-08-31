@@ -44,6 +44,6 @@ export default function({ domains, datasetFlat, interval }) {
       break
     default:
   }
-  perfTime.timeEnd(`data.rollUp.${interval}`)
+  perfTime.timeEnd(`--- data.rollUp.${interval}`)
   return rolled
 }
