@@ -45,7 +45,6 @@ export const state = () => ({
   currentDomainEmissions: [],
   currentDomainMarketValue: [],
   filteredDates: [],
-  summaryDataset: [],
   summary: null
 })
 
@@ -66,7 +65,6 @@ export const getters = {
   currentDomainPowerEnergy: state => state.currentDomainPowerEnergy,
   currentDomainEmissions: state => state.currentDomainEmissions,
   currentDomainMarketValue: state => state.currentDomainMarketValue,
-  summaryDataset: state => state.summaryDataset,
   summary: state => state.summary,
   filteredDates: state => state.filteredDates,
   filteredCurrentDataset: state =>
@@ -130,9 +128,6 @@ export const mutations = {
   },
   currentDomainMarketValue(state, currentDomainMarketValue) {
     state.currentDomainMarketValue = _cloneDeep(currentDomainMarketValue)
-  },
-  summaryDataset(state, summaryDataset) {
-    state.summaryDataset = _cloneDeep(summaryDataset)
   },
   summary(state, summary) {
     state.summary = _cloneDeep(summary)

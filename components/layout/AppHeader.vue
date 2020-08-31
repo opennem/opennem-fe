@@ -119,7 +119,13 @@ export default {
   computed: {
     ...mapGetters({
       chartEnergyRenewablesLine:
-        'chartOptionsPowerEnergy/chartEnergyRenewablesLine'
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+      energyExportData: 'regionEnergy/filteredCurrentDataset',
+      energyDomains: 'regionEnergy/currentDomainPowerEnergy',
+      emissionDomains: 'regionEnergy/currentDomainEmissions',
+      priceDomains: 'regionEnergy/domainPrice',
+      temperatureDomains: 'regionEnergy/domainTemperature',
+      marketValueDomains: 'regionEnergy/currentDomainMarketValue'
     }),
     responsiveBreakWidth() {
       return this.$store.getters.responsiveBreakWidth
@@ -141,24 +147,6 @@ export default {
     },
     isFacilitiesView() {
       return this.$store.getters.currentView === 'facilities'
-    },
-    energyDomains() {
-      return this.$store.getters.energyDomains
-    },
-    emissionDomains() {
-      return this.$store.getters.emissionDomains
-    },
-    priceDomains() {
-      return this.$store.getters.priceDomains
-    },
-    temperatureDomains() {
-      return this.$store.getters.temperatureDomains
-    },
-    marketValueDomains() {
-      return this.$store.getters.marketValueDomains
-    },
-    energyExportData() {
-      return this.$store.getters.exportData
     },
     chartUnit() {
       return this.$store.getters.chartUnit
