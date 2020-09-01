@@ -2,19 +2,22 @@
   <div 
     :class="{
       'is-hovered': hoverOn || focusOn,
-      'has-border-bottom': !chartEnergy
+      'has-border-bottom': !chartShown
     }"
     class="chart">
     <power-energy-chart-options
       :read-only="readOnly"
-      :chart-shown="chartEnergy"
-      :chart-type="chartEnergyType"
+      :chart-shown="chartShown"
+      :chart-type="chartType"
       :chart-curve="chartCurve"
       :chart-y-axis="chartYAxis"
+      :chart-unit="chartUnit"
+      :chart-display-prefix="chartDisplayPrefix"
       :is-energy-type="isEnergyType"
       :is-type-area="isTypeArea"
       :is-type-proportion="isTypeProportion"
       :is-type-line="isTypeLine"
+      :is-y-axis-absolute="isYAxisAbsolute"
       :is-y-axis-percentage="isYAxisPercentage"
       :is-y-axis-average-power="isYAxisAveragePower"
       :is-renewable-line-only="isRenewableLineOnly"
@@ -30,7 +33,7 @@
     />
     
     <stacked-area-vis
-      v-if="chartEnergy && (isTypeArea || isTypeProportion)"
+      v-if="chartShown && (isTypeArea || isTypeProportion)"
       :read-only="readOnly"
       :domains="domains"
       :dataset="stackedAreaDataset"
@@ -64,14 +67,14 @@
     />
 
     <button
-      v-if="chartEnergy && isTypeLine && zoomExtent.length > 0 && !readOnly"
+      v-if="chartShown && isTypeLine && zoomExtent.length > 0 && !readOnly"
       class="button is-rounded is-small reset-btn"
       @click.stop="handleZoomReset"
     >
       Zoom Out
     </button>
     <multi-line
-      v-if="chartEnergy && isTypeLine"
+      v-if="chartShown && isTypeLine"
       :svg-height="chartHeight - 30"
       :domains1="domains"
       :dataset1="multiLineDataset"
@@ -100,7 +103,7 @@
       @enter="handleVisEnter"
       @leave="handleVisLeave" />
     <date-brush
-      v-if="chartEnergy && isTypeLine"
+      v-if="chartShown && isTypeLine"
       :dataset="energyGrossPercentDataset"
       :zoom-range="zoomExtent" 
       :x-ticks="xTicks"
@@ -129,6 +132,7 @@ import endOfYear from 'date-fns/endOfYear'
 import differenceInHours from 'date-fns/differenceInHours'
 
 import * as OPTIONS from '@/constants/v2/chart-options.js'
+import * as SI from '@/constants/v2/si.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
@@ -206,12 +210,25 @@ export default {
       tickFormat: 'visInteract/tickFormat',
       secondTickFormat: 'visInteract/secondTickFormat',
       highlightDomain: 'visInteract/highlightDomain',
-      chartEnergy: 'chartOptionsPowerEnergy/chartShown',
-      chartEnergyType: 'chartOptionsPowerEnergy/chartType',
+      chartShown: 'chartOptionsPowerEnergy/chartShown',
+      chartType: 'chartOptionsPowerEnergy/chartType',
+
       chartEnergyYAxis: 'chartOptionsPowerEnergy/chartEnergyYAxis',
-      chartPowerYAxis: 'chartOptionsPowerEnergy/chartPowerYAxis',
       chartEnergyCurve: 'chartOptionsPowerEnergy/chartEnergyCurve',
+      chartEnergyUnit: 'chartOptionsPowerEnergy/chartEnergyUnit',
+      chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
+      chartEnergyDisplayPrefix:
+        'chartOptionsPowerEnergy/chartEnergyDisplayPrefix',
+      chartEnergyCurrentUnit: 'chartOptionsPowerEnergy/chartEnergyCurrentUnit',
+
       chartPowerCurve: 'chartOptionsPowerEnergy/chartPowerCurve',
+      chartPowerYAxis: 'chartOptionsPowerEnergy/chartPowerYAxis',
+      chartPowerUnit: 'chartOptionsPowerEnergy/chartPowerUnit',
+      chartPowerUnitPrefix: 'chartOptionsPowerEnergy/chartPowerUnitPrefix',
+      chartPowerDisplayPrefix:
+        'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
+      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
+
       chartEnergyRenewablesLine:
         'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
       range: 'range',
@@ -242,20 +259,33 @@ export default {
     chartCurve() {
       return this.isEnergyType ? this.chartEnergyCurve : this.chartPowerCurve
     },
+    chartUnit() {
+      return this.isEnergyType ? this.chartEnergyUnit : this.chartPowerUnit
+    },
+    chartUnitPrefix() {
+      return this.isEnergyType
+        ? this.chartEnergyUnitPrefix
+        : this.chartPowerUnitPrefix
+    },
+    chartDisplayPrefix() {
+      return this.isEnergyType
+        ? this.chartEnergyDisplayPrefix
+        : this.chartPowerDisplayPrefix
+    },
 
     isTypeArea() {
-      return this.chartEnergyType === OPTIONS.CHART_STACKED
+      return this.chartType === OPTIONS.CHART_STACKED
     },
     isTypeProportion() {
-      return this.chartEnergyType === OPTIONS.CHART_PROPORTION
+      return this.chartType === OPTIONS.CHART_PROPORTION
     },
     isTypeLine() {
-      return this.chartEnergyType === OPTIONS.CHART_LINE
+      return this.chartType === OPTIONS.CHART_LINE
     },
     isYAxisPercentage() {
       return this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE
     },
-    isYAxisEnergy() {
+    isYAxisAbsolute() {
       return (
         this.chartYAxis === OPTIONS.CHART_YAXIS_ENERGY ||
         this.chartYAxis === OPTIONS.CHART_YAXIS_ABSOLUTE
@@ -316,14 +346,16 @@ export default {
         } else if (this.isYAxisAveragePower) {
           unit = 'MW'
         } else {
-          unit = `GWh/${this.intervalLabel(this.interval)}`
+          unit = `${this.chartEnergyCurrentUnit}/${this.intervalLabel(
+            this.interval
+          )}`
         }
       } else {
         // power
         if (this.isTypeProportion || this.isYAxisPercentage) {
           unit = '%'
         } else {
-          unit = 'MW'
+          unit = this.chartPowerCurrentUnit
         }
       }
       this.$emit('displayUnit', unit)
@@ -487,7 +519,7 @@ export default {
       return dataset
     },
     multiLineDataset() {
-      if (this.isYAxisEnergy) {
+      if (this.isYAxisAbsolute) {
         return this.multiLineEnergyDataset
       } else if (this.isYAxisPercentage) {
         return this.energyGrossPercentDataset
@@ -496,7 +528,7 @@ export default {
     },
     stackedAreaDataset() {
       if (this.isTypeArea) {
-        if (this.isYAxisEnergy) {
+        if (this.isYAxisAbsolute) {
           return this.currentDataset
         }
         // else return average power
@@ -578,7 +610,7 @@ export default {
     },
 
     averageEnergy() {
-      return this.summary ? this.summary._averageEnergy : 0
+      return this.summary ? this.convertValue(this.summary._averageEnergy) : 0
     },
     hoverPowerEnergyDomain() {
       const domain = this.hoverDomain
@@ -696,6 +728,13 @@ export default {
     ...mapMutations({
       setHoverDomain: 'visInteract/hoverDomain'
     }),
+    convertValue(value) {
+      return SI.convertValue(
+        this.chartUnitPrefix,
+        this.chartDisplayPrefix,
+        value
+      )
+    },
     getMinValue(dataset) {
       let min = 0
       dataset.forEach(d => {

@@ -51,6 +51,18 @@
               @click.stop="handleYAxisClick(yAxis)">{{ chartLabel[yAxis] }}</button>
           </div>
 
+          <div
+            v-if="chartShown"
+            class="chart-options-buttons buttons has-addons" 
+            style="margin-right: 1rem;">
+            <button
+              v-for="prefix in prefixes"
+              :key="prefix"
+              :class="{'is-selected': chartDisplayPrefix === prefix}"
+              class="button is-small"
+              @click.stop="handlePrefixClick(prefix)">{{ `${prefix}${chartUnit}` }}</button>
+          </div>
+
         </div>
       </div>
     </transition>
@@ -100,6 +112,14 @@ export default {
       type: Boolean,
       default: true
     },
+    chartUnit: {
+      type: String,
+      default: ''
+    },
+    chartDisplayPrefix: {
+      type: String,
+      default: ''
+    },
     show: {
       type: Boolean,
       default: () => false
@@ -124,6 +144,9 @@ export default {
     },
     yAxes() {
       return this.options.yAxis
+    },
+    prefixes() {
+      return this.options.si
     },
     isLineType() {
       return this.chartType === CHART_LINE
@@ -151,6 +174,9 @@ export default {
     },
     handleCurveClick(curve) {
       this.$emit('curve-click', curve)
+    },
+    handlePrefixClick(prefix) {
+      this.$emit('prefix-click', prefix)
     }
   }
 }

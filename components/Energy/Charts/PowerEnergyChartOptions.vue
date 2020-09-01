@@ -10,11 +10,14 @@
         :chart-shown="chartShown"
         :chart-y-axis="chartYAxis"
         :show-y-axis-options="showYAxisOptions"
+        :chart-unit="chartUnit"
+        :chart-display-prefix="chartDisplayPrefix"
         :show="chartOptions"
         @show-change="s => chartOptions = s"
         @type-click="handleTypeClick"
         @y-axis-click="handleYAxisClick"
-        @curve-click="handleCurveClick" />
+        @curve-click="handleCurveClick"
+        @prefix-click="handlePrefixClick" />
     </template>
 
     <template v-slot:label-unit>
@@ -73,6 +76,10 @@ import _cloneDeep from 'lodash.clonedeep'
 import ChartHeader from '@/components/Vis/ChartHeader'
 import ChartOptions from '@/components/Vis/ChartOptions'
 import * as OPTIONS from '@/constants/v2/chart-options.js'
+import * as SI from '@/constants/v2/si'
+
+const powerSi = [SI.MEGA, SI.GIGA]
+const energySi = [SI.GIGA, SI.TERA]
 
 const powerOptions = {
   type: [
@@ -129,6 +136,14 @@ export default {
       type: String,
       default: ''
     },
+    chartUnit: {
+      type: String,
+      default: ''
+    },
+    chartDisplayPrefix: {
+      type: String,
+      default: ''
+    },
     isEnergyType: {
       type: Boolean,
       default: false
@@ -142,6 +157,10 @@ export default {
       default: false
     },
     isTypeLine: {
+      type: Boolean,
+      default: false
+    },
+    isYAxisAbsolute: {
       type: Boolean,
       default: false
     },
@@ -215,27 +234,34 @@ export default {
       }
     },
     options() {
+      let options = []
       if (this.isEnergyType) {
+        options = _cloneDeep(energyOptions)
         if (this.isTypeLine) {
-          energyOptions.yAxis = [
+          options.yAxis = [
             OPTIONS.CHART_YAXIS_ENERGY,
             OPTIONS.CHART_YAXIS_AVERAGE_POWER,
             OPTIONS.CHART_YAXIS_PERCENTAGE
           ]
-          return _cloneDeep(energyOptions)
         } else if (this.isTypeArea) {
-          energyOptions.yAxis = [
+          options.yAxis = [
             OPTIONS.CHART_YAXIS_ENERGY,
             OPTIONS.CHART_YAXIS_AVERAGE_POWER
           ]
-          return _cloneDeep(energyOptions)
-        } else {
-          energyOptions.yAxis = [OPTIONS.CHART_YAXIS_ENERGY]
-          return _cloneDeep(energyOptions)
+        } else if (this.isTypeProportion) {
+          options.yAxis = []
+        }
+
+        if (this.isYAxisAbsolute && !this.isTypeProportion) {
+          options.si = energySi
         }
       } else {
-        return _cloneDeep(powerOptions)
+        options = _cloneDeep(powerOptions)
+        if (this.isTypeArea || (this.isTypeLine && this.isYAxisAbsolute)) {
+          options.si = powerSi
+        }
       }
+      return options
     }
   },
 
@@ -270,6 +296,19 @@ export default {
         this.$store.commit('chartOptionsPowerEnergy/chartEnergyYAxis', yAxis)
       } else {
         this.$store.commit('chartOptionsPowerEnergy/chartPowerYAxis', yAxis)
+      }
+    },
+    handlePrefixClick(prefix) {
+      if (this.isEnergyType) {
+        this.$store.commit(
+          'chartOptionsPowerEnergy/chartEnergyDisplayPrefix',
+          prefix
+        )
+      } else {
+        this.$store.commit(
+          'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
+          prefix
+        )
       }
     }
   }
