@@ -28,7 +28,9 @@
       @mouse-leave="handleSummaryRowMouseLeave"
     />
 
-    <section class="bar-donut-wrapper">
+    <section 
+      v-if="showDonutBar" 
+      class="bar-donut-wrapper">
       <header>
         <div class="buttons has-addons">
           <button
@@ -67,6 +69,7 @@
     </section>
 
     <energy-records
+      v-if="showRecords"
       :domains="domains"
       :dataset="filteredCurrentDataset"
       :range="range"
@@ -107,6 +110,14 @@ export default {
     hoverDate: {
       type: Date,
       default: null
+    },
+    showRecords: {
+      type: Boolean,
+      default: true
+    },
+    showDonutBar: {
+      type: Boolean,
+      default: true
     }
   },
 
