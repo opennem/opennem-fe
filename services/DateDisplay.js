@@ -1,3 +1,4 @@
+import parseISO from 'date-fns/parseISO'
 import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import {
   timeMinute as d3TimeMinute,
@@ -378,6 +379,6 @@ export default {
 
   getDateTimeWithoutTZ(date) {
     const dateString = date.substring(0, 16)
-    return new Date(dateString)
+    return parseISO(dateString)
   }
 }

@@ -1,12 +1,7 @@
 import _cloneDeep from 'lodash.clonedeep'
+import dateDisplay from '@/services/DateDisplay.js'
 import { checkIsSameInterval } from '@/services/DataCheck.js'
 import interpolateDataset from './interpolateDataset.js'
-
-// TODO move this to a date module
-function getDateTimeWithoutTZ(date) {
-  const dateString = date.substring(0, 16)
-  return new Date(dateString)
-}
 
 function createTemporaryDataset(time, date, value) {
   return { time, date, value }
@@ -93,7 +88,7 @@ export default function(isPowerData, dataInterval, dataAll, datasetAll) {
 
     // Extend when we have more mixed intervals in the dataset
     const update30mInto5mDataset = () => {
-      let date = new Date(getDateTimeWithoutTZ(d.history.start))
+      let date = dateDisplay.getDateTimeWithoutTZ(d.history.start)
       let datasetForecast30m = []
 
       const dataset30m = d.history.data.map(value => {
@@ -104,7 +99,8 @@ export default function(isPowerData, dataInterval, dataAll, datasetAll) {
       })
 
       if (d.forecast) {
-        let dateForecast = new Date(getDateTimeWithoutTZ(d.forecast.start))
+        let dateForecast = dateDisplay.getDateTimeWithoutTZ(d.forecast.start)
+
         datasetForecast30m = d.forecast.data.map(value => {
           const currentTime = dateForecast.getTime()
           const obj = createTemporaryDataset(currentTime, dateForecast, value)

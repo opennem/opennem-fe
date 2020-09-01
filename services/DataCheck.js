@@ -5,12 +5,7 @@ import addMinutes from 'date-fns/addMinutes'
 import addDays from 'date-fns/addDays'
 import addMonths from 'date-fns/addMonths'
 import intervalParser from '@/plugins/intervalParser.js'
-
-// TODO move this to a date module
-function getDateTimeWithoutTZ(date) {
-  const dateString = date.substring(0, 16)
-  return new Date(dateString)
-}
+import dateDisplay from '@/services/DateDisplay.js'
 
 export function checkPowerEnergyExists({ dataPower, dataEnergy }) {
   // check that data should not have both power and energy
@@ -50,8 +45,8 @@ export function getStartEndNumInterval(dataObj) {
   if (!history) {
     throw new Error('No history object found')
   }
-  const startDateTime = getDateTimeWithoutTZ(history.start)
-  const lastDateTime = getDateTimeWithoutTZ(history.last)
+  const startDateTime = dateDisplay.getDateTimeWithoutTZ(history.start)
+  const lastDateTime = dateDisplay.getDateTimeWithoutTZ(history.last)
   const interval = intervalParser(history.interval)
   const num = getArrLength({
     intervalKey: interval.key,
