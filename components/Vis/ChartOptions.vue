@@ -40,7 +40,7 @@
           </div>
 
           <div
-            v-if="showYAxisOptions"
+            v-if="chartShown && showYAxisOptions"
             class="chart-options-buttons buttons has-addons" 
             style="margin-right: 1rem;">
             <button
