@@ -49,9 +49,8 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { timeFormat as d3TimeFormat } from 'd3-time-format'
-import { isPowerRange } from '@/constants/rangeInterval.js'
 import REGIONS from '~/constants/regions.js'
 import domToImage from '~/services/DomToImage.js'
 import VisSection from '@/components/Energy/Export/VisSection.vue'
@@ -101,28 +100,6 @@ export default {
   },
 
   watch: {
-    range(curr, prev) {
-      this.setCompareDifference(false)
-      this.doUpdateTickFormats({ range: curr, interval: this.interval })
-      if (isPowerRange(curr) && isPowerRange(prev)) {
-        this.doFilterRegionData({
-          range: curr,
-          interval: this.interval
-        })
-      } else {
-        this.doGetRegionData({
-          region: this.regionId,
-          range: curr,
-          interval: this.interval,
-          groupName: this.fuelTechGroupName
-        })
-      }
-    },
-    interval(interval) {
-      this.setCompareDifference(false)
-      this.doUpdateTickFormats({ range: this.range, interval: interval })
-      this.doUpdateDatasetByInterval({ range: this.range, interval })
-    },
     filteredDates(dates) {
       this.doUpdateXTicks({
         range: this.range,
@@ -165,17 +142,12 @@ export default {
   methods: {
     ...mapActions({
       doGetRegionData: 'regionEnergy/doGetRegionData',
-      doUpdateDatasetByInterval: 'regionEnergy/doUpdateDatasetByInterval',
       doUpdateDatasetByGroup: 'regionEnergy/doUpdateDatasetByGroup',
-      doFilterRegionData: 'regionEnergy/doFilterRegionData',
       doUpdateDatasetByFilterPeriod:
         'regionEnergy/doUpdateDatasetByFilterPeriod',
       doUpdateXGuides: 'visInteract/doUpdateXGuides',
       doUpdateTickFormats: 'visInteract/doUpdateTickFormats',
       doUpdateXTicks: 'visInteract/doUpdateXTicks'
-    }),
-    ...mapMutations({
-      setCompareDifference: 'compareDifference'
     }),
 
     handleTableToggle(widgetName) {
@@ -206,7 +178,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~/assets/scss/responsive-mixins.scss';
 @import '~/assets/scss/variables.scss';
 #export-container {
   background-color: $body-background-color;
