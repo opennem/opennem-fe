@@ -17,16 +17,25 @@
           style="padding-top: 3px;">
           <group-selector v-if="groupSelection" />
         </div>
+
         <div
-          v-if="(!hoverOn && !focusOn) || isEnergy"
+          v-if="isEnergy"
           class="summary-col-energy">
-          Energy <small>GWh</small>
+          <span>
+            Energy <small>{{ chartCurrentUnit }}</small>
+          </span>
         </div>
         <div
-          v-if="(hoverOn || focusOn) && !isEnergy"
+          v-else
           class="summary-col-energy">
-          Power <small>MW</small>
+          <span v-if="hoverOn || focusOn">
+            Power <small>{{ chartCurrentUnit }}</small>
+          </span>
+          <span v-else>
+            Energy <small>GWh</small>
+          </span>
         </div>
+
         <div
           class="summary-col-contribution contribution-toggle"
           @click="handlePercentContributionToClick">
@@ -36,18 +45,31 @@
           <column-selector />
         </div>
       </div>
+      
       <div class="summary-row">
         <div class="summary-col-label">Sources</div>
+
         <div
-          v-if="!hoverOn && !focusOn"
+          v-if="isEnergy"
           class="summary-col-energy cell-value">
-          {{ summarySources._totalEnergy | formatValue }}
+          <span v-if="hoverOn || focusOn">
+            {{ pointSummarySources._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
+          <span v-else>
+            {{ summarySources._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
         </div>
         <div
-          v-if="hoverOn || focusOn"
+          v-else
           class="summary-col-energy cell-value">
-          {{ pointSummarySources._total | formatValue }}
+          <span v-if="hoverOn || focusOn">
+            {{ pointSummarySources._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
+          <span v-else>
+            {{ summarySources._totalEnergy | formatValue }}
+          </span>
         </div>
+
         <div class="summary-col-contribution cell-value" />
         <div
           v-if="!hoverOn && !focusOn"
@@ -101,16 +123,28 @@
     <div class="summary-column-headers">
       <div class="summary-row">
         <div class="summary-col-label">Loads</div>
+   
         <div
-          v-if="!hoverOn && !focusOn"
+          v-if="isEnergy"
           class="summary-col-energy cell-value">
-          {{ summaryLoads._totalEnergy | formatValue }}
+          <span v-if="hoverOn || focusOn">
+            {{ pointSummaryLoads._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
+          <span v-else>
+            {{ summaryLoads._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
         </div>
         <div
-          v-if="hoverOn || focusOn"
+          v-else
           class="summary-col-energy cell-value">
-          {{ pointSummaryLoads._total | formatValue }}
+          <span v-if="hoverOn || focusOn">
+            {{ pointSummaryLoads._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
+          <span v-else>
+            {{ summaryLoads._totalEnergy | formatValue }}
+          </span>
         </div>
+
         <div class="summary-col-contribution cell-value" />
         <div class="summary-col-av-value cell-value" />
       </div>
@@ -138,16 +172,28 @@
     <div class="summary-column-headers">
       <div class="summary-row last-row">
         <div class="summary-col-label">Net</div>
+
         <div
-          v-if="!hoverOn && !focusOn"
+          v-if="isEnergy"
           class="summary-col-energy cell-value">
-          {{ summary._totalEnergy | formatValue }}
+          <span v-if="hoverOn || focusOn">
+            {{ pointSummary._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
+          <span v-else>
+            {{ summary._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
         </div>
         <div
-          v-if="hoverOn || focusOn"
+          v-else
           class="summary-col-energy cell-value">
-          {{ pointSummary._total | formatValue }}
+          <span v-if="hoverOn || focusOn">
+            {{ pointSummary._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
+          <span v-else>
+            {{ summary._totalEnergy | formatValue }}
+          </span>
         </div>
+
         <div class="summary-col-contribution cell-value" />
         <div class="summary-col-av-value cell-value" />
       </div>
@@ -167,9 +213,25 @@
             class="renewable-line" />
           Renewables
         </div>
-        <div class="summary-col-energy cell-value">
-          {{ renewablesValue | formatValue }}
+
+        <div
+          v-if="isEnergy"
+          class="summary-col-energy cell-value">
+          <span>
+            {{ renewablesValue | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
         </div>
+        <div
+          v-else
+          class="summary-col-energy cell-value">
+          <span v-if="hoverOn || focusOn">
+            {{ renewablesValue | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
+          <span v-else>
+            {{ renewablesValue | formatValue }}
+          </span>
+        </div>
+
         <div
           v-if="!hoverOn && !focusOn"
           class="summary-col-contribution cell-value">
@@ -298,8 +360,39 @@ export default {
       emissionsVolumeUnit: 'si/emissionsVolumeUnit',
       emissionsVolumePrefix: 'si/emissionsVolumePrefix',
       chartEnergyRenewablesLine:
-        'chartOptionsPowerEnergy/chartEnergyRenewablesLine'
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+
+      chartEnergyUnit: 'chartOptionsPowerEnergy/chartEnergyUnit',
+      chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
+      chartEnergyDisplayPrefix:
+        'chartOptionsPowerEnergy/chartEnergyDisplayPrefix',
+      chartEnergyCurrentUnit: 'chartOptionsPowerEnergy/chartEnergyCurrentUnit',
+
+      chartPowerUnit: 'chartOptionsPowerEnergy/chartPowerUnit',
+      chartPowerUnitPrefix: 'chartOptionsPowerEnergy/chartPowerUnitPrefix',
+      chartPowerDisplayPrefix:
+        'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
+      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit'
     }),
+
+    chartUnit() {
+      return this.isEnergy ? this.chartEnergyUnit : this.chartPowerUnit
+    },
+    chartUnitPrefix() {
+      return this.isEnergy
+        ? this.chartEnergyUnitPrefix
+        : this.chartPowerUnitPrefix
+    },
+    chartDisplayPrefix() {
+      return this.isEnergy
+        ? this.chartEnergyDisplayPrefix
+        : this.chartPowerDisplayPrefix
+    },
+    chartCurrentUnit() {
+      return this.isEnergy
+        ? this.chartEnergyCurrentUnit
+        : this.chartPowerCurrentUnit
+    },
 
     fuelTechGroupName() {
       return this.$store.getters.fuelTechGroupName
@@ -749,9 +842,7 @@ export default {
               )
             }
             const ftTotal = Math.abs(this.summary[findEnergyEq.id])
-            avValue = this.isYearInterval
-              ? dataMarketValueSum / ftTotal / 1000 / 1000
-              : dataMarketValueSum / ftTotal / 1000
+            avValue = dataMarketValueSum / ftTotal / 1000
 
             this.summary[ft.id] = avValue
             totalPriceMarketValue += dataMarketValueSum
@@ -837,12 +928,7 @@ export default {
 
       let totalAverageValue = 0
       if (this.isEnergy) {
-        if (this.isYearInterval) {
-          totalAverageValue =
-            totalPriceMarketValue / energySummaryTotal / 1000 / 1000
-        } else {
-          totalAverageValue = totalPriceMarketValue / energySummaryTotal / 1000
-        }
+        totalAverageValue = totalPriceMarketValue / energySummaryTotal / 1000
       } else {
         totalAverageValue = volWeightPriceTotal / energySummaryTotal
       }
@@ -868,9 +954,7 @@ export default {
         this.emissionsVolumePrefix,
         totalEVMinusHidden / data.length
       )
-      this.summary._averageEmissionsIntensity = this.isYearInterval
-        ? totalEVMinusHidden / avTotal / 1000
-        : totalEVMinusHidden / avTotal
+      this.summary._averageEmissionsIntensity = totalEVMinusHidden / avTotal
       this.summary._averageTemperature =
         totalTemperatureWithoutNulls / temperatureWithoutNulls.length
       this.$emit('summary-update', this.summary)
@@ -917,9 +1001,7 @@ export default {
               )
             }
             const ftTotal = Math.abs(this.pointSummary[findEnergyEq.id])
-            const avValue = this.isYearInterval
-              ? value / ftTotal / 1000 / 1000
-              : value / ftTotal / 1000
+            const avValue = value / ftTotal / 1000
 
             this.pointSummary[ft.id] = avValue
             totalPriceMarketValue += value
@@ -956,9 +1038,8 @@ export default {
       if (this.priceId) {
         this.pointSummary._totalAverageValue = this.pointSummary[this.priceId]
       } else {
-        this.pointSummary._totalAverageValue = this.isYearInterval
-          ? totalPriceMarketValue / this.pointSummary._total / 1000 / 1000
-          : totalPriceMarketValue / this.pointSummary._total / 1000
+        this.pointSummary._totalAverageValue =
+          totalPriceMarketValue / this.pointSummary._total / 1000
       }
       this.pointSummarySources._total = totalSources
       this.pointSummarySources._totalGeneration = totalGeneration

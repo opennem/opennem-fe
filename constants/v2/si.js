@@ -3,15 +3,15 @@ export const MEGA = 'M'
 export const GIGA = 'G'
 export const TERA = 'T'
 
-export const FACTOR = {}
-FACTOR[KILO] = 3
-FACTOR[MEGA] = 6
-FACTOR[GIGA] = 9
-FACTOR[TERA] = 12
+export const EXPONENT = {}
+EXPONENT[KILO] = 3
+EXPONENT[MEGA] = 6
+EXPONENT[GIGA] = 9
+EXPONENT[TERA] = 12
 
 export function convertValue(fromPrefix, toPrefix, value) {
-  const fromFactor = FACTOR[fromPrefix]
-  const toFactor = FACTOR[toPrefix]
+  const fromExponent = EXPONENT[fromPrefix]
+  const toExponent = EXPONENT[toPrefix]
 
-  return value * Math.pow(10, fromFactor - toFactor)
+  return value * Math.pow(10, fromExponent - toExponent)
 }

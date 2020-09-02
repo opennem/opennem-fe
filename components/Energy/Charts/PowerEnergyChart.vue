@@ -630,7 +630,14 @@ export default {
       return this.dataset.find(d => d.time === time)
     },
     hoverValue() {
-      return this.hoverData ? this.hoverData[this.hoverPowerEnergyDomain] : null
+      let value = null
+      if (this.hoverData) {
+        value = this.hoverData[this.hoverPowerEnergyDomain]
+      }
+      return this.isTypeProportion ||
+        (this.isTypeLine && this.isYAxisPercentage)
+        ? value
+        : this.convertValue(value)
     },
     hoverDisplayDate() {
       let date = this.focusDate
@@ -668,7 +675,10 @@ export default {
           total += this.hoverData[d.id]
         })
       }
-      return total
+      return this.isTypeProportion ||
+        (this.isTypeLine && this.isYAxisPercentage)
+        ? total
+        : this.convertValue(total)
     },
     hoverRenewables() {
       if (!this.hoverData) {

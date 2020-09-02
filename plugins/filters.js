@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import { format as d3Format } from 'd3-format'
 import DateDisplay from '~/services/DateDisplay.js'
+import * as SI from '@/constants/v2/si.js'
 
 function smartFormatString(v) {
   const value = Math.abs(v)
@@ -119,4 +120,8 @@ Vue.filter('formatCurrency', value => {
 
 Vue.filter('toLowerCase', string => {
   return string.toLowerCase()
+})
+
+Vue.filter('convertValue', (value, fromPrefix, toPrefix) => {
+  return SI.convertValue(fromPrefix, toPrefix, value)
 })

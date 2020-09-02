@@ -38,14 +38,21 @@
       </div>
 
       <div
-        v-if="isYearInterval"
+        v-if="isEnergyType"
         class="summary-col-energy">
-        {{ getValue(ft.id) | customFormatValue({formatter: ',.1f'}) }}
+        <span>
+          {{ getValue(ft.id) | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+        </span>
       </div>
       <div
         v-else
         class="summary-col-energy">
-        {{ getValue(ft.id) | formatValue }}
+        <span v-if="showPointSummary">
+          {{ getValue(ft.id) | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+        </span>
+        <span v-else>
+          {{ getValue(ft.id) | formatValue }}
+        </span>
       </div>
 
       <div class="summary-col-contribution">
@@ -159,8 +166,32 @@ export default {
       emissionsVolumePrefix: 'si/emissionsVolumePrefix',
       percentContributionTo: 'percentContributionTo',
       chartEnergyRenewablesLine:
-        'chartOptionsPowerEnergy/chartEnergyRenewablesLine'
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+
+      isEnergyType: 'regionEnergy/isEnergyType',
+
+      chartEnergyUnit: 'chartOptionsPowerEnergy/chartEnergyUnit',
+      chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
+      chartEnergyDisplayPrefix:
+        'chartOptionsPowerEnergy/chartEnergyDisplayPrefix',
+      chartEnergyCurrentUnit: 'chartOptionsPowerEnergy/chartEnergyCurrentUnit',
+
+      chartPowerUnit: 'chartOptionsPowerEnergy/chartPowerUnit',
+      chartPowerUnitPrefix: 'chartOptionsPowerEnergy/chartPowerUnitPrefix',
+      chartPowerDisplayPrefix:
+        'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
+      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit'
     }),
+    chartUnitPrefix() {
+      return this.isEnergyType
+        ? this.chartEnergyUnitPrefix
+        : this.chartPowerUnitPrefix
+    },
+    chartDisplayPrefix() {
+      return this.isEnergyType
+        ? this.chartEnergyDisplayPrefix
+        : this.chartPowerDisplayPrefix
+    },
     showSummaryColumn() {
       return this.$store.getters.showSummaryColumn
     },
@@ -316,9 +347,7 @@ export default {
           this.emissionsVolumePrefix,
           emissionsVolume
         )
-        return this.isYearInterval
-          ? emissionsVolume / energy / 1000
-          : emissionsVolume / energy
+        return emissionsVolume / energy
       }
       return '-'
     },

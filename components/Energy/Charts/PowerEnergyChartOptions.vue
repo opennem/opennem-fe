@@ -58,7 +58,7 @@
         <strong>{{ hoverRenewables | percentageFormatNumber }}</strong>
       </span>
       <span
-        v-else-if="!isTypeProportion"
+        v-else-if="!isTypeProportion && !(isTypeLine && isYAxisPercentage)"
         class="total-value">
         Total
         <strong>
