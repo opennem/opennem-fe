@@ -196,6 +196,18 @@ export default {
     toggled: {
       type: Boolean,
       default: () => false
+    },
+    displayPrefix: {
+      type: String,
+      default: () => ''
+    },
+    shouldConvertValue: {
+      type: Boolean,
+      default: () => false
+    },
+    convertValue: {
+      type: Function,
+      default: () => function() {}
     }
   },
 
@@ -336,6 +348,9 @@ export default {
     curveType(type) {
       this.vis1.curve(type)
       this.redraw()
+    },
+    displayPrefix() {
+      this.$yAxisLeftTextGroup.call(this.drawLeftYAxisText)
     }
   },
 
@@ -642,7 +657,10 @@ export default {
       g.call(this.yAxisLeft)
       g.selectAll('.y-axis-left-text .tick line').remove()
       g.selectAll('.y-axis-left-text .tick text')
-        .text(t => `${t}${this.y1AxisUnit}`)
+        .text(t => {
+          const tickText = this.shouldConvertValue ? this.convertValue(t) : t
+          return `${tickText}${this.y1AxisUnit}`
+        })
         .attr('dx', 5)
         .attr('dy', -2)
         .attr('opacity', this.y1TickText ? 1 : 0)

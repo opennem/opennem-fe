@@ -57,6 +57,9 @@
       :dataset-two-colour="renewablesLineColour"
       :highlight-domain="highlightId"
       :mobile-screen="tabletBreak"
+      :display-prefix="chartDisplayPrefix"
+      :should-convert-value="shouldConvertValue"
+      :convert-value="convertValue"
       class="vis-chart"
       @dateOver="handleDateHover"
       @domainOver="handleDomainHover"
@@ -98,6 +101,9 @@
       :draw-incomplete-bucket="false"
       :x-shades="xGuides"
       :highlight-domain="highlightId"
+      :display-prefix="chartDisplayPrefix"
+      :should-convert-value="shouldConvertValue"
+      :convert-value="convertValue"
       @date-hover="handleDateHover"
       @domain-hover="handleDomainHover"
       @enter="handleVisEnter"
@@ -271,6 +277,10 @@ export default {
       return this.isEnergyType
         ? this.chartEnergyDisplayPrefix
         : this.chartPowerDisplayPrefix
+    },
+
+    shouldConvertValue() {
+      return this.isTypeArea || (this.isTypeLine && this.isYAxisAbsolute)
     },
 
     isTypeArea() {

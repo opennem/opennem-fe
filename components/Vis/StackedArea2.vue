@@ -272,6 +272,18 @@ export default {
     highlightDomain: {
       type: String,
       default: () => null
+    },
+    displayPrefix: {
+      type: String,
+      default: () => ''
+    },
+    shouldConvertValue: {
+      type: Boolean,
+      default: () => false
+    },
+    convertValue: {
+      type: Function,
+      default: () => function() {}
     }
   },
 
@@ -459,6 +471,9 @@ export default {
       this.update()
     },
     curve() {
+      this.update()
+    },
+    displayPrefix() {
       this.update()
     },
     updatedDataset() {
@@ -1489,7 +1504,10 @@ export default {
     customYAxis(g) {
       g.call(this.yAxis)
       g.selectAll('.tick text')
-        .text(t => `${t}${this.yAxisUnit}`)
+        .text(t => {
+          const tickText = this.shouldConvertValue ? this.convertValue(t) : t
+          return `${tickText}${this.yAxisUnit}`
+        })
         .attr('x', 4)
         .attr('dy', -4)
       g.selectAll('.tick line').attr('class', d => (d === 0 ? 'base' : ''))

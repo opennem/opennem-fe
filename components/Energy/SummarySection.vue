@@ -29,7 +29,7 @@
     />
 
     <section 
-      v-if="showDonutBar" 
+      v-show="showDonutBar" 
       class="bar-donut-wrapper">
       <header>
         <div class="buttons has-addons">
@@ -55,17 +55,19 @@
         :dataset="filteredCurrentDataset"
         :hover-on="isHovering"
         :hover-data="hoverData"
-        :focus-on="focusOn" />
+        :focus-on="focusOn"
+      />
 
       <donut-vis
         v-show="chartSummaryPie"
-        :unit="chartUnit"
+        :unit="` ${chartCurrentUnit}`"
         :domains="donutDomains"
         :dataset="filteredCurrentDataset"
         :dynamic-extent="filteredDates"
         :hover-on="isHovering"
         :hover-data="hoverData"
-        :focus-on="focusOn" />
+        :focus-on="focusOn"
+        :convert-value="convertValue" />
     </section>
 
     <energy-records
@@ -94,6 +96,8 @@ import DonutVis from '~/components/Vis/Donut.vue'
 import EnergyBar from '~/components/Energy/EnergyBar.vue'
 
 import { TEMPERATURE, TEMPERATURE_MEAN } from '@/constants/v2/data-types.js'
+import * as SI from '@/constants/v2/si.js'
+
 export default {
   components: {
     SummaryTable,
@@ -139,8 +143,34 @@ export default {
       domainTemperature: 'regionEnergy/domainTemperature',
       domainPrice: 'regionEnergy/domainPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
-      currentDomainMarketValue: 'regionEnergy/currentDomainMarketValue'
+      currentDomainMarketValue: 'regionEnergy/currentDomainMarketValue',
+
+      chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
+      chartEnergyDisplayPrefix:
+        'chartOptionsPowerEnergy/chartEnergyDisplayPrefix',
+      chartEnergyCurrentUnit: 'chartOptionsPowerEnergy/chartEnergyCurrentUnit',
+
+      chartPowerUnitPrefix: 'chartOptionsPowerEnergy/chartPowerUnitPrefix',
+      chartPowerDisplayPrefix:
+        'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
+      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit'
     }),
+    chartCurrentUnit() {
+      return this.isEnergyType
+        ? this.chartEnergyCurrentUnit
+        : this.chartPowerCurrentUnit
+    },
+    chartUnitPrefix() {
+      return this.isEnergyType
+        ? this.chartEnergyUnitPrefix
+        : this.chartPowerUnitPrefix
+    },
+    chartDisplayPrefix() {
+      return this.isEnergyType
+        ? this.chartEnergyDisplayPrefix
+        : this.chartPowerDisplayPrefix
+    },
+
     property() {
       return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
     },
@@ -176,6 +206,13 @@ export default {
       setHighlightDomain: 'visInteract/highlightDomain',
       setFocusDate: 'visInteract/focusDate'
     }),
+    convertValue(value) {
+      return SI.convertValue(
+        this.chartUnitPrefix,
+        this.chartDisplayPrefix,
+        value
+      )
+    },
     handleFuelTechsHidden(hidden) {
       this.$store.dispatch('hiddenFuelTechs', hidden)
     },

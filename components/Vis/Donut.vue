@@ -73,6 +73,10 @@ export default {
     focusOn: {
       type: Boolean,
       default: () => false
+    },
+    convertValue: {
+      type: Function,
+      default: () => function() {}
     }
   },
 
@@ -143,10 +147,13 @@ export default {
     },
 
     total() {
+      let total = 0
       if (this.isTotalPower) {
-        return d3Mean(this.updatedDataset, d => d._totalSources)
+        total = d3Mean(this.updatedDataset, d => d._totalSources)
+      } else {
+        total = this.donutDataset.reduce((a, b) => a + b.value, 0)
       }
-      return this.donutDataset.reduce((a, b) => a + b.value, 0)
+      return this.convertValue(total)
     },
 
     domainIds() {

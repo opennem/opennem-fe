@@ -13,11 +13,11 @@
 
         <energy-record
           :row-label="'Demand'"
-          :row-unit="energyUnit"
+          :row-unit="` ${chartCurrentUnit}`"
           :min-date="minDemandDate"
-          :min-value="minDemand"
+          :min-value="convertValue(minDemand)"
           :max-date="maxDemandDate"
-          :max-value="maxDemand"
+          :max-value="convertValue(maxDemand)"
           :range="range"
           :interval="interval"
           :record-select-date="recordSelectDate"
@@ -44,11 +44,11 @@
         
         <energy-record
           :row-label="'Generation'"
-          :row-unit="energyUnit"
+          :row-unit="` ${chartCurrentUnit}`"
           :min-date="minGenerationDate"
-          :min-value="minGeneration"
+          :min-value="convertValue(minGeneration)"
           :max-date="maxGenerationDate"
-          :max-value="maxGeneration"
+          :max-value="convertValue(maxGeneration)"
           :range="range"
           :interval="interval"
           :record-select-date="recordSelectDate"
@@ -112,6 +112,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import * as SI from '@/constants/v2/si.js'
 import EnergyRecord from '~/components/Energy/Record.vue'
 export default {
   components: {
@@ -184,6 +186,35 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      isEnergyType: 'regionEnergy/isEnergyType',
+
+      chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
+      chartEnergyDisplayPrefix:
+        'chartOptionsPowerEnergy/chartEnergyDisplayPrefix',
+      chartEnergyCurrentUnit: 'chartOptionsPowerEnergy/chartEnergyCurrentUnit',
+
+      chartPowerUnitPrefix: 'chartOptionsPowerEnergy/chartPowerUnitPrefix',
+      chartPowerDisplayPrefix:
+        'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
+      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit'
+    }),
+    chartCurrentUnit() {
+      return this.isEnergyType
+        ? this.chartEnergyCurrentUnit
+        : this.chartPowerCurrentUnit
+    },
+    chartUnitPrefix() {
+      return this.isEnergyType
+        ? this.chartEnergyUnitPrefix
+        : this.chartPowerUnitPrefix
+    },
+    chartDisplayPrefix() {
+      return this.isEnergyType
+        ? this.chartEnergyDisplayPrefix
+        : this.chartPowerDisplayPrefix
+    },
+
     energyUnit() {
       return this.$store.getters.chartUnit
     },
@@ -208,6 +239,13 @@ export default {
   },
 
   methods: {
+    convertValue(value) {
+      return SI.convertValue(
+        this.chartUnitPrefix,
+        this.chartDisplayPrefix,
+        value
+      )
+    },
     updateMinMax(dataset) {
       const updatedDataset = this.isColumnVis
         ? dataset.slice(0, dataset.length - 1)
