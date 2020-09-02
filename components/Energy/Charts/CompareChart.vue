@@ -29,7 +29,9 @@
           :domains="updatedDomains"
           :dataset="dataset"
           :dataset-percent="datasetPercent"
-          :vis-height="visHeight" />
+          :vis-height="visHeight"
+          :display-prefix="chartDisplayPrefix"
+          :convert-value="convertValue" />
       </div>
     </div>
     
@@ -41,6 +43,7 @@ import { mapGetters } from 'vuex'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 
+import * as SI from '@/constants/v2/si.js'
 import ColumnVis from '~/components/Vis/Column.vue'
 export default {
   components: {
@@ -69,8 +72,28 @@ export default {
     ...mapGetters({
       fuelTechGroupName: 'fuelTechGroupName',
       hiddenFuelTechs: 'hiddenFuelTechs',
-      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy'
+      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
+      isEnergyType: 'regionEnergy/isEnergyType',
+
+      chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
+      chartEnergyDisplayPrefix:
+        'chartOptionsPowerEnergy/chartEnergyDisplayPrefix',
+
+      chartPowerUnitPrefix: 'chartOptionsPowerEnergy/chartPowerUnitPrefix',
+      chartPowerDisplayPrefix: 'chartOptionsPowerEnergy/chartPowerDisplayPrefix'
     }),
+
+    chartUnitPrefix() {
+      return this.isEnergyType
+        ? this.chartEnergyUnitPrefix
+        : this.chartPowerUnitPrefix
+    },
+    chartDisplayPrefix() {
+      return this.isEnergyType
+        ? this.chartEnergyDisplayPrefix
+        : this.chartPowerDisplayPrefix
+    },
+
     powerEnergyDomains() {
       return _cloneDeep(this.currentDomainPowerEnergy).reverse()
     },
@@ -99,18 +122,7 @@ export default {
     interval() {
       return this.$store.getters.interval
     },
-    isYearInterval() {
-      return this.interval === 'Fin Year' || this.interval === 'Year'
-    },
-    yUnit() {
-      let unit = 'MW'
-      if (this.chartType === 'energy') {
-        unit = this.isYearInterval ? 'TWh' : 'GWh'
-      }
-      // const interval = this.interval.toLowerCase()
-      // return `${unit}/${interval}`
-      return unit
-    },
+
     dataset() {
       if (this.hasCompareData) {
         const change = {}
@@ -183,6 +195,16 @@ export default {
   mounted() {
     const $height = this.$el.offsetHeight < 200 ? 200 : this.$el.offsetHeight
     this.visHeight = $height
+  },
+
+  methods: {
+    convertValue(value) {
+      return SI.convertValue(
+        this.chartUnitPrefix,
+        this.chartDisplayPrefix,
+        value
+      )
+    }
   }
 }
 </script>

@@ -53,6 +53,14 @@ export default {
     visHeight: {
       type: Number,
       default: () => 200
+    },
+    displayPrefix: {
+      type: String,
+      default: () => ''
+    },
+    convertValue: {
+      type: Function,
+      default: () => function() {}
     }
   },
 
@@ -114,6 +122,9 @@ export default {
     },
     domains() {
       this.setup()
+      this.update()
+    },
+    displayPrefix() {
       this.update()
     }
   },
@@ -205,6 +216,7 @@ export default {
     customYAxis(g) {
       g.call(this.yAxis)
       g.selectAll('.tick text')
+        .text(t => this.convertValue(t))
         .attr('x', 4)
         .attr('dy', -4)
       g.selectAll('.tick line').attr('class', d => (d === 0 ? 'base' : ''))
@@ -238,7 +250,9 @@ export default {
         // .text(d => d.label)
         .text(d => {
           const percent = this.datasetPercent[d.name]
-          const value = this.$options.filters.formatValue(d.value)
+          const value = this.$options.filters.formatValue(
+            this.convertValue(d.value)
+          )
           let string = value
 
           return string
