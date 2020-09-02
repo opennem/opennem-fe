@@ -29,7 +29,7 @@
     />
 
     <section 
-      v-show="showDonutBar" 
+      v-if="showDonutBar" 
       class="bar-donut-wrapper">
       <header>
         <div class="buttons has-addons">
@@ -49,7 +49,7 @@
       </header>
 
       <energy-bar
-        v-show="!chartSummaryPie"
+        v-if="!chartSummaryPie"
         :bar-width="250"
         :domains="donutDomains"
         :dataset="filteredCurrentDataset"
@@ -59,7 +59,7 @@
       />
 
       <donut-vis
-        v-show="chartSummaryPie"
+        v-if="chartSummaryPie"
         :unit="` ${chartCurrentUnit}`"
         :domains="donutDomains"
         :dataset="filteredCurrentDataset"

@@ -121,6 +121,7 @@ export default {
 
   mounted() {
     this.x = d3ScaleLinear().range([0, this.barWidth])
+    this.xDomains = this.domains.slice(0)
   },
 
   methods: {

@@ -82,7 +82,6 @@ export default {
 
   data() {
     return {
-      id: 'donut-99',
       svgWidth: 0,
       svgHeight: 0,
       width: 0,
@@ -97,6 +96,9 @@ export default {
   },
 
   computed: {
+    id() {
+      return `donut-${this._uid}`
+    },
     donutDataset() {
       const domains = this.domains
       const dataset = this.dataset
@@ -194,6 +196,7 @@ export default {
     window.addEventListener('resize', _debounce(this.handleResize, 10))
     this.setupWidthHeight()
     this.setup()
+    this.update()
   },
 
   beforeDestroy() {
