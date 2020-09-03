@@ -309,6 +309,7 @@ export default {
       stack: null,
       brushX: null,
       yAxisTextFormat: null,
+      yMinComputed: 0,
       // zoomed: false,
       mouseEvt: null,
       $xAxisGroup: null,
@@ -798,6 +799,7 @@ export default {
         this.yMin || this.yMin === 0
           ? this.yMin
           : min(this.updatedDataset, d => d._min)
+      this.yMinComputed = yMin
       const yMax =
         this.yMax || this.yMax === 0
           ? this.yMax
@@ -1518,7 +1520,10 @@ export default {
         })
         .attr('x', 4)
         .attr('dy', -4)
-      g.selectAll('.tick line').attr('class', d => (d === 0 ? 'base' : ''))
+      g.selectAll('.tick line').attr(
+        'class',
+        d => (d === 0 && this.yMinComputed !== 0 ? 'base' : '')
+      )
     },
 
     getXAxisDateByMouse(evt) {
