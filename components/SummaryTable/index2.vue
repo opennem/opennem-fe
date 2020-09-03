@@ -1038,8 +1038,12 @@ export default {
       if (this.priceId) {
         this.pointSummary._totalAverageValue = this.pointSummary[this.priceId]
       } else {
-        this.pointSummary._totalAverageValue =
+        let totalAverageValue =
           totalPriceMarketValue / this.pointSummary._total / 1000
+        if (totalAverageValue === 0) {
+          totalAverageValue = '–'
+        }
+        this.pointSummary._totalAverageValue = totalAverageValue
       }
       this.pointSummarySources._total = totalSources
       this.pointSummarySources._totalGeneration = totalGeneration
