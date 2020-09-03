@@ -22,7 +22,7 @@
 
     <template v-slot:label-unit>
       <strong>{{ displayTitle }}</strong>
-      <small>{{ displayUnit }}</small>
+      <small v-if="!isRenewableLineOnly">{{ displayUnit }}</small>
     </template>
 
     <template
