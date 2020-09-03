@@ -266,21 +266,29 @@ export default {
       return this.isEnergyType ? this.chartEnergyCurve : this.chartPowerCurve
     },
     chartUnit() {
-      return this.isEnergyType ? this.chartEnergyUnit : this.chartPowerUnit
+      return this.isEnergyType
+        ? this.isYAxisAveragePower
+          ? this.chartPowerUnit
+          : this.chartEnergyUnit
+        : this.chartPowerUnit
     },
     chartUnitPrefix() {
       return this.isEnergyType
-        ? this.chartEnergyUnitPrefix
+        ? this.isYAxisAveragePower
+          ? this.chartPowerUnitPrefix
+          : this.chartEnergyUnitPrefix
         : this.chartPowerUnitPrefix
     },
     chartDisplayPrefix() {
       return this.isEnergyType
-        ? this.chartEnergyDisplayPrefix
+        ? this.isYAxisAveragePower
+          ? this.chartPowerDisplayPrefix
+          : this.chartEnergyDisplayPrefix
         : this.chartPowerDisplayPrefix
     },
 
     shouldConvertValue() {
-      return this.isTypeArea || (this.isTypeLine && this.isYAxisAbsolute)
+      return this.isTypeArea || (this.isTypeLine && !this.isYAxisPercentage)
     },
 
     isTypeArea() {
@@ -354,7 +362,7 @@ export default {
         if (this.isTypeProportion || this.isYAxisPercentage) {
           unit = '%'
         } else if (this.isYAxisAveragePower) {
-          unit = 'MW'
+          unit = this.chartPowerCurrentUnit
         } else {
           unit = `${this.chartEnergyCurrentUnit}/${this.intervalLabel(
             this.interval

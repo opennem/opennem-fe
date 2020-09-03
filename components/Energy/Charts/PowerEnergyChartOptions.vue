@@ -243,17 +243,23 @@ export default {
             OPTIONS.CHART_YAXIS_AVERAGE_POWER,
             OPTIONS.CHART_YAXIS_PERCENTAGE
           ]
+          if (this.isYAxisAbsolute) {
+            options.si = energySi
+          } else if (this.isYAxisAveragePower) {
+            options.si = powerSi
+          }
         } else if (this.isTypeArea) {
           options.yAxis = [
             OPTIONS.CHART_YAXIS_ENERGY,
             OPTIONS.CHART_YAXIS_AVERAGE_POWER
           ]
+          if (this.isYAxisAbsolute) {
+            options.si = energySi
+          } else if (this.isYAxisAveragePower) {
+            options.si = powerSi
+          }
         } else if (this.isTypeProportion) {
           options.yAxis = []
-        }
-
-        if (this.isYAxisAbsolute && !this.isTypeProportion) {
-          options.si = energySi
         }
       } else {
         options = _cloneDeep(powerOptions)
@@ -300,10 +306,17 @@ export default {
     },
     handlePrefixClick(prefix) {
       if (this.isEnergyType) {
-        this.$store.commit(
-          'chartOptionsPowerEnergy/chartEnergyDisplayPrefix',
-          prefix
-        )
+        if (this.isYAxisAveragePower) {
+          this.$store.commit(
+            'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
+            prefix
+          )
+        } else {
+          this.$store.commit(
+            'chartOptionsPowerEnergy/chartEnergyDisplayPrefix',
+            prefix
+          )
+        }
       } else {
         this.$store.commit(
           'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
