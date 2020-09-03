@@ -308,6 +308,7 @@ export default {
       colours: schemeCategory10,
       stack: null,
       brushX: null,
+      yAxisTextFormat: null,
       // zoomed: false,
       mouseEvt: null,
       $xAxisGroup: null,
@@ -602,6 +603,8 @@ export default {
         .ticks(5)
         .tickFormat(d => `${d}%`)
 
+      this.yAxisTextFormat = d3Format(',.0f')
+
       // Setup the 'brush' area and event handler
       this.brushX = brushX()
         .extent([[0, 0], [this.width, 40]])
@@ -815,10 +818,13 @@ export default {
 
       this.z.range(this.domainColours).domain(this.domainIds)
 
-      if (yMax <= 10) {
+      const yMaxConverted = this.convertValue(yMax)
+      if (yMaxConverted <= 10) {
         this.yAxis.tickFormat(d => d3Format(',.1f')(d))
+        this.yAxisTextFormat = d3Format(',.1f')
       } else {
         this.yAxis.tickFormat(d => d3Format(',.0f')(d))
+        this.yAxisTextFormat = d3Format(',.0f')
       }
 
       this.$xAxisGroup.call(this.customXAxis)
@@ -1505,7 +1511,9 @@ export default {
       g.call(this.yAxis)
       g.selectAll('.tick text')
         .text(t => {
-          const tickText = this.shouldConvertValue ? this.convertValue(t) : t
+          const tickText = this.shouldConvertValue
+            ? this.yAxisTextFormat(this.convertValue(t))
+            : t
           return `${tickText}${this.yAxisUnit}`
         })
         .attr('x', 4)
