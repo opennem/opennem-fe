@@ -17,52 +17,59 @@
             aria-label="delete"
             @click.stop="emitShow(false)" />
 
-          <div 
-            :class="{'is-chart-hidden': !chartShown}" 
-            class="chart-options-buttons buttons has-addons">
-            <button
-              v-for="type in types"
-              :key="type"
-              :class="{'is-selected': chartType === type}"
-              class="button is-small"
-              @click.stop="handleTypeClick(type)">{{ chartLabel[type] }}</button>
-          </div>
+          <fieldset>
+            <label>Chart</label>
+            <div 
+              :class="{'is-chart-hidden': !chartShown}" 
+              class="chart-options-buttons buttons has-addons">
+              <button
+                v-for="type in types"
+                :key="type"
+                :class="{'is-selected': chartType === type}"
+                class="button is-small"
+                @click.stop="handleTypeClick(type)">{{ chartLabel[type] }}</button>
+            </div>
+          </fieldset>
+          
+          <fieldset v-if="chartShown">
+            <label>Style</label>
+            <div class="chart-options-buttons buttons has-addons">
+              <button
+                v-for="curve in curves"
+                :key="curve"
+                :class="{'is-selected': chartCurve === curve}"
+                class="button is-small"
+                @click.stop="handleCurveClick(curve)">{{ chartLabel[curve] }}</button>
+            </div>
+          </fieldset>
 
-          <div 
-            v-if="chartShown" 
-            class="chart-options-buttons buttons has-addons">
-            <button
-              v-for="curve in curves"
-              :key="curve"
-              :class="{'is-selected': chartCurve === curve}"
-              class="button is-small"
-              @click.stop="handleCurveClick(curve)">{{ chartLabel[curve] }}</button>
-          </div>
+          <fieldset v-if="chartShown && showYAxisOptions && yAxes.length > 0">
+            <label>Measurement</label>
+            <div 
+              class="chart-options-buttons buttons has-addons" 
+              style="margin-right: 1rem;">
+              <button
+                v-for="yAxis in yAxes"
+                :key="yAxis"
+                :class="{'is-selected': chartYAxis === yAxis}"
+                class="button is-small"
+                @click.stop="handleYAxisClick(yAxis)">{{ chartLabel[yAxis] }}</button>
+            </div>
+          </fieldset>
 
-          <div
-            v-if="chartShown && showYAxisOptions"
-            class="chart-options-buttons buttons has-addons" 
-            style="margin-right: 1rem;">
-            <button
-              v-for="yAxis in yAxes"
-              :key="yAxis"
-              :class="{'is-selected': chartYAxis === yAxis}"
-              class="button is-small"
-              @click.stop="handleYAxisClick(yAxis)">{{ chartLabel[yAxis] }}</button>
-          </div>
-
-          <div
-            v-if="chartShown"
-            class="chart-options-buttons buttons has-addons" 
-            style="margin-right: 1rem;">
-            <button
-              v-for="prefix in prefixes"
-              :key="prefix"
-              :class="{'is-selected': chartDisplayPrefix === prefix}"
-              class="button is-small"
-              @click.stop="handlePrefixClick(prefix)">{{ `${prefix}${chartUnit}` }}</button>
-          </div>
-
+          <fieldset v-if="chartShown && prefixes.length > 0">
+            <label>Units</label>
+            <div 
+              class="chart-options-buttons buttons has-addons" 
+              style="margin-right: 1rem;">
+              <button
+                v-for="prefix in prefixes"
+                :key="prefix"
+                :class="{'is-selected': chartDisplayPrefix === prefix}"
+                class="button is-small"
+                @click.stop="handlePrefixClick(prefix)">{{ `${prefix}${chartUnit}` }}</button>
+            </div>
+          </fieldset>
         </div>
       </div>
     </transition>
@@ -143,10 +150,10 @@ export default {
       return this.options.curve
     },
     yAxes() {
-      return this.options.yAxis
+      return this.options.yAxis || []
     },
     prefixes() {
-      return this.options.si
+      return this.options.si || []
     },
     isLineType() {
       return this.chartType === CHART_LINE
@@ -197,6 +204,18 @@ export default {
   }
 }
 
+fieldset {
+  margin-bottom: 0.3rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+  label {
+    font-family: $header-font-family;
+    font-weight: 700;
+  }
+}
+
 .row {
   display: flex;
   justify-content: space-between;
@@ -209,8 +228,6 @@ export default {
   flex-wrap: nowrap;
 }
 .button {
-  font-weight: 700;
-  min-width: 85px;
   &:not(.is-selected) {
     background-color: #ece9e6;
     &:hover {
