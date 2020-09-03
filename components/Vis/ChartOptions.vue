@@ -202,17 +202,19 @@ export default {
       margin-bottom: 0;
     }
   }
-}
 
-fieldset {
-  margin-bottom: 0.3rem;
+  fieldset {
+    padding-bottom: 0.3rem;
 
-  &:last-child {
-    margin-bottom: 0;
-  }
-  label {
-    font-family: $header-font-family;
-    font-weight: 700;
+    label {
+      font-family: $header-font-family;
+      font-weight: 700;
+      padding-left: 0.3rem;
+    }
+
+    &:last-child {
+      padding-bottom: 0;
+    }
   }
 }
 
