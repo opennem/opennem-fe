@@ -72,7 +72,7 @@ export const getters = {
       ? state.currentDataset.filter(
           d =>
             d.time >= state.filteredDates[0].getTime() &&
-            d.date <= state.filteredDates[1].getTime()
+            d.time <= state.filteredDates[1].getTime() - 1
         )
       : state.currentDataset
 }

@@ -246,7 +246,8 @@ export default {
       isEnergyType: 'regionEnergy/isEnergyType',
       currentDataset: 'regionEnergy/currentDataset',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
-      summary: 'regionEnergy/summary'
+      summary: 'regionEnergy/summary',
+      filteredDates: 'regionEnergy/filteredDates'
     }),
     regionId() {
       return this.$route.params.region
@@ -514,10 +515,13 @@ export default {
           _isIncompleteBucket: d._isIncompleteBucket
         }
         const hours = getNumberOfHoursByInterval(this.interval, d.date)
+        let totalPower = 0
         this.powerEnergyDomains.forEach(domain => {
           obj[domain.id] =
             d[domain.id] === 0 ? null : (d[domain.id] / hours) * 1000
+          totalPower += obj[domain.id] || 0
         })
+        obj._totalPower = totalPower
         return obj
       })
 
@@ -632,7 +636,21 @@ export default {
     },
 
     averageEnergy() {
-      return this.summary ? this.convertValue(this.summary._averageEnergy) : 0
+      let average = this.summary ? this.summary._averageEnergy : 0
+      if (this.isYAxisAveragePower) {
+        const dataset =
+          this.filteredDates.length > 0
+            ? this.averagePowerDataset.filter(
+                d =>
+                  d.time >= this.filteredDates[0].getTime() &&
+                  d.time <= this.filteredDates[1].getTime() - 1
+              )
+            : this.averagePowerDataset
+
+        const totalPower = dataset.reduce((a, b) => a + b._totalPower, 0)
+        average = totalPower / dataset.length
+      }
+      return this.convertValue(average)
     },
     hoverPowerEnergyDomain() {
       const domain = this.hoverDomain

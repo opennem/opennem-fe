@@ -29,7 +29,7 @@
 
     <template
       v-slot:average-value 
-      v-if="!isRenewableLineOnly && !isTypeProportion && !isYAxisAveragePower && !readOnly">
+      v-if="!isRenewableLineOnly && !isTypeProportion && !readOnly">
       Av.
       <strong>
         {{ averageEnergy | formatValue }}
