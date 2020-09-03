@@ -22,7 +22,9 @@
 
     <template v-slot:label-unit>
       <strong>{{ displayTitle }}</strong>
-      <small v-if="!isRenewableLineOnly">{{ displayUnit }}</small>
+      <small 
+        :class="{ 'display-unit': allowDisplayHover }"
+        @click.stop="handleUnitClick">{{ displayUnit }}</small>
     </template>
 
     <template
@@ -223,6 +225,12 @@ export default {
     }
   },
   computed: {
+    allowDisplayHover() {
+      return (
+        !this.isRenewableLineOnly &&
+        (this.isTypeArea || (this.isTypeLine && !this.isYAxisPercentage))
+      )
+    },
     showYAxisOptions() {
       if (this.isEnergyType) {
         return true
@@ -323,7 +331,40 @@ export default {
           prefix
         )
       }
+    },
+    togglePrefix(prefix) {
+      let updatedPrefix = prefix
+      if (this.isEnergyType) {
+        if (this.isYAxisAveragePower) {
+          updatedPrefix = powerSi.find(p => p !== prefix)
+        } else {
+          updatedPrefix = energySi.find(p => p !== prefix)
+        }
+      } else {
+        updatedPrefix = powerSi.find(p => p !== prefix)
+      }
+      return updatedPrefix
+    },
+    handleUnitClick() {
+      if (!this.isRenewableLineOnly) {
+        if (this.isTypeArea || (this.isTypeLine && !this.isYAxisPercentage)) {
+          const updatedPrefix = this.togglePrefix(this.chartDisplayPrefix)
+          this.handlePrefixClick(updatedPrefix)
+        }
+      }
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.display-unit {
+  cursor: pointer;
+  padding: 2px 4px 1px;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+}
+</style>

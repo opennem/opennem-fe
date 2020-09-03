@@ -376,6 +376,10 @@ export default {
           unit = this.chartPowerCurrentUnit
         }
       }
+
+      if (this.isRenewableLineOnly) {
+        unit = '%'
+      }
       this.$emit('displayUnit', unit)
       return unit
     },
