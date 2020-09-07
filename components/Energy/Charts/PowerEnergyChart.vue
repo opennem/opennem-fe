@@ -686,7 +686,7 @@ export default {
     hoverTotal() {
       let total = 0
       if (this.hoverData) {
-        this.currentDomainPowerEnergy.forEach(d => {
+        this.domains.forEach(d => {
           total += this.hoverData[d.id]
         })
       }
