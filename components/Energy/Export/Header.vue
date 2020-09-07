@@ -23,7 +23,7 @@
           :class="{ 'is-primary': isEnabled(chart.name) }"
           class="tag is-rounded is-white"
           @click="handleChartToggle(chart)">
-          {{ chart.name === 'chartOptionsPowerEnergy' ? getPowerEnergyChartLabel(chart.label) : chart.label }}
+          {{ chart.name === 'chartShownPowerEnergy' ? getPowerEnergyChartLabel(chart.label) : chart.label }}
         </a>
         <hr>
         <a
@@ -45,29 +45,39 @@ import { CHART_HIDDEN } from '@/constants/v2/chart-options'
 
 const charts = [
   {
-    name: 'chartOptionsPowerEnergy',
+    name: 'chartShownPowerEnergy',
+    currentType: 'chartTypePowerEnergy',
     defaultType: 'chartDefaultTypePowerEnergy',
-    label: 'Energy'
+    label: 'Energy',
+    commit: 'chartOptionsPowerEnergy'
   },
   {
-    name: 'chartOptionsEmissionsVolume',
+    name: 'chartShownEmissionsVolume',
+    currentType: 'chartTypeEmissionsVolume',
     defaultType: 'chartDefaultTypeEmissionsVolume',
-    label: 'Emissions Volume'
+    label: 'Emissions Volume',
+    commit: 'chartOptionsEmissionsVolume'
   },
   {
-    name: 'chartOptionsEmissionIntensity',
+    name: 'chartShownEmissionIntensity',
+    currentType: 'chartTypeEmissionIntensity',
     defaultType: 'chartDefaultTypeEmissionIntensity',
-    label: 'Emissions Intensity'
+    label: 'Emissions Intensity',
+    commit: 'chartOptionsEmissionIntensity'
   },
   {
-    name: 'chartOptionsPrice',
+    name: 'chartShownPrice',
+    currentType: 'chartTypePrice',
     defaultType: 'chartDefaultTypePrice',
-    label: 'Price'
+    label: 'Price',
+    commit: 'chartOptionsPrice'
   },
   {
-    name: 'chartOptionsTemperature',
+    name: 'chartShownTemperature',
+    currentType: 'chartTypeTemperature',
     defaultType: 'chartDefaultTypeTemperature',
-    label: 'Temperature'
+    label: 'Temperature',
+    commit: 'chartOptionsTemperature'
   }
 ]
 const tables = [
@@ -95,7 +105,8 @@ export default {
   data() {
     return {
       charts,
-      tables
+      tables,
+      previousChartStates: {}
     }
   },
 
@@ -106,11 +117,16 @@ export default {
       domainPrice: 'regionEnergy/domainPrice',
       domainTemperature: 'regionEnergy/domainTemperature',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
-      chartOptionsPowerEnergy: 'chartOptionsPowerEnergy/chartShown',
-      chartOptionsEmissionsVolume: 'chartOptionsEmissionsVolume/chartShown',
-      chartOptionsEmissionIntensity: 'chartOptionsEmissionIntensity/chartShown',
-      chartOptionsPrice: 'chartOptionsPrice/chartShown',
-      chartOptionsTemperature: 'chartOptionsTemperature/chartShown',
+      chartShownPowerEnergy: 'chartOptionsPowerEnergy/chartShown',
+      chartShownEmissionsVolume: 'chartOptionsEmissionsVolume/chartShown',
+      chartShownEmissionIntensity: 'chartOptionsEmissionIntensity/chartShown',
+      chartShownPrice: 'chartOptionsPrice/chartShown',
+      chartShownTemperature: 'chartOptionsTemperature/chartShown',
+      chartTypePowerEnergy: 'chartOptionsPowerEnergy/chartType',
+      chartTypeEmissionsVolume: 'chartOptionsEmissionsVolume/chartType',
+      chartTypeEmissionIntensity: 'chartOptionsEmissionIntensity/chartType',
+      chartTypePrice: 'chartOptionsPrice/chartType',
+      chartTypeTemperature: 'chartOptionsTemperature/chartType',
       chartDefaultTypePowerEnergy: 'chartOptionsPowerEnergy/chartDefaultType',
       chartDefaultTypeEmissionsVolume:
         'chartOptionsEmissionsVolume/chartDefaultType',
@@ -134,12 +150,18 @@ export default {
         c =>
           (this.hasEmissions && this.featureEmissions
             ? true
-            : c.name !== 'chartOptionsEmissionsVolume' &&
-              c.name !== 'chartOptionsEmissionIntensity') &&
-          (this.hasTemperature ? true : c.name !== 'chartOptionsTemperature') &&
-          (this.hasPrice ? true : c.name !== 'chartOptionsPrice')
+            : c.name !== 'chartShownEmissionsVolume' &&
+              c.name !== 'chartShownEmissionIntensity') &&
+          (this.hasTemperature ? true : c.name !== 'chartShownTemperature') &&
+          (this.hasPrice ? true : c.name !== 'chartShownPrice')
       )
     }
+  },
+
+  mounted() {
+    this.charts.forEach(c => {
+      this.previousChartStates[c.name] = this[c.currentType]
+    })
   },
 
   methods: {
@@ -147,8 +169,18 @@ export default {
       return this[widgetName]
     },
 
+    restorePreviousChartStates() {
+      this.charts.forEach(c => {
+        this.$store.commit(
+          `${c.commit}/chartType`,
+          this.previousChartStates[c.name]
+        )
+      })
+    },
+
     handleCancelClick() {
       this.$emit('exportCancel')
+      this.restorePreviousChartStates()
     },
 
     handleExportClick() {
@@ -156,11 +188,21 @@ export default {
     },
 
     handleChartToggle(chart) {
-      const name = chart.name
-      if (this[name]) {
-        this.$store.commit(`${name}/chartType`, CHART_HIDDEN)
+      if (this[chart.name]) {
+        this.$store.commit(`${chart.commit}/chartType`, CHART_HIDDEN)
       } else {
-        this.$store.commit(`${name}/chartType`, this[chart.defaultType])
+        if (this.previousChartStates[chart.name] === CHART_HIDDEN) {
+          // if previous state is hidden, use default chart type
+          this.$store.commit(
+            `${chart.commit}/chartType`,
+            this[chart.defaultType]
+          )
+        } else {
+          this.$store.commit(
+            `${chart.commit}/chartType`,
+            this.previousChartStates[chart.name]
+          )
+        }
       }
     },
 

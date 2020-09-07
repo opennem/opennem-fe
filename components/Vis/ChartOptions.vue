@@ -209,7 +209,8 @@ export default {
     label {
       font-family: $header-font-family;
       font-weight: 700;
-      padding-left: 0.3rem;
+      padding-left: 0.1rem;
+      font-size: 1.1em;
     }
 
     &:last-child {
