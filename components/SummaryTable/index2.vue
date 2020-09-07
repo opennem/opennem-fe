@@ -921,7 +921,7 @@ export default {
         : []
       const totalTemperatureWithoutNulls = temperatureObj
         ? temperatureWithoutNulls.reduce(
-            (prev, cur) => prev + cur[temperatureObj.id],
+            (prev, cur) => prev + (cur[temperatureObj.id] || 0),
             0
           )
         : 0
