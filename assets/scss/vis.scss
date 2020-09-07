@@ -3,35 +3,43 @@ path.line-path {
   stroke: #000;
   stroke-width: 1;
 }
+
 .cursor-line {
   stroke: $opennem-link-color;
   stroke-width: 1px;
 }
+
 .cursor-line-rect,
 .cursor-line-focus-top-rect,
 .cursor-line-focus-bottom-rect {
   fill: $opennem-link-color;
 }
+
 .cursor-rect {
   fill: rgba(199, 69, 35, 0.1);
   // fill: rgba(0, 0, 0, 0.1);
   // stroke: rgba(199, 69, 35, 0.3);
   // stroke-width: 0.5px;
 }
+
 .cursor-circle {
   fill: $opennem-link-color;
 }
+
 .tooltip-rect {
   fill: $opennem-link-color;
 }
+
 .tooltip-text {
   font-size: 10px;
   fill: #fff;
 }
+
 .cursor-line-text {
   font-size: 10px;
   fill: #fff;
 }
+
 .hover-layer {
   fill: transparent;
 }
@@ -42,14 +50,16 @@ path.line-path {
     // stroke: rgba(199, 69, 35, 0.5);
     // stroke-width: 0.5;
   }
+
   .focus-line {
     stroke: $opennem-link-color;
     stroke-width: 1px;
   }
+
   .focus-top-rect,
   .focus-bottom-rect {
     fill: $opennem-link-color;
-  }  
+  }
 }
 
 .compare-group rect {
@@ -60,7 +70,9 @@ path.line-path {
 .domain {
   stroke: none;
 }
+
 .x-axis .tick:last-child {
+
   .interval-5m,
   .range-3d,
   .interval-day,
@@ -68,6 +80,7 @@ path.line-path {
     opacity: 1;
   }
 }
+
 .x-axis .tick text {
   color: #666;
   text-anchor: start;
@@ -77,13 +90,16 @@ path.line-path {
     font-size: 9px;
   }
 }
+
 .x-axis .tick line {
   stroke-dasharray: 4.8;
   stroke: rgba(0, 0, 0, 0.1);
 }
+
 .x-axis-tick .tick line {
   stroke: none;
 }
+
 // .y-axis .tick:not(:first-of-type) line {
 //   stroke-dasharray: 4.8;
 //   stroke: rgba(0, 0, 0, 0.1);
@@ -92,24 +108,29 @@ path.line-path {
 .y-axis-2 .tick text {
   color: #000;
   text-anchor: start;
-  text-shadow: 1px 1px 2px #fff;
+  text-shadow: 2px 2px 1px $beige-light;
 }
+
 .y-axis-2 .tick text {
   text-anchor: end;
 }
+
 .y-axis .tick text {
   color: transparent;
 }
+
 .y-axis-tick .tick line,
 .y-axis .tick line {
   stroke: rgba(0, 0, 0, 0.05);
   stroke-dasharray: 4.8;
 }
+
 .y-axis-tick .tick line.base {
   stroke: rgb(110, 110, 110);
   stroke-dasharray: 5;
   stroke-width: 2;
 }
+
 // .y-axis-tick .tick:not(:first-of-type) line,
 // .y-axis .tick:not(:first-of-type) line {
 //   stroke: none;
@@ -125,6 +146,7 @@ path.line-path {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+
     &::selection {
       background: none;
     }
@@ -157,18 +179,22 @@ path.line-path {
     color: #000;
     text-anchor: start;
   }
+
   .x-axis .tick line {
     stroke: transparent;
   }
+
   .column-label-group {
     font-family: $family-primary;
     font-size: 11px;
     font-weight: 700;
   }
+
   .tick line.base {
     stroke: rgb(130, 130, 130);
     stroke-dasharray: 2;
   }
+
   rect._total {
     stroke-width: 1px;
     stroke: $opennem-link-color;

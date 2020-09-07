@@ -27,7 +27,7 @@
           patternUnits="userSpaceOnUse"
           patternTransform="rotate(45)">
           <line
-            stroke="#ece9e6"
+            stroke="rgba(236, 233, 230, 0.4)"
             stroke-width="2px"
             y2="10" />
         </pattern>
