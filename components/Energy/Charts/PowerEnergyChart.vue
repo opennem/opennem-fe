@@ -133,9 +133,6 @@ import addWeeks from 'date-fns/addWeeks'
 import addMonths from 'date-fns/addMonths'
 import addQuarters from 'date-fns/addQuarters'
 import addYears from 'date-fns/addYears'
-import endOfMonth from 'date-fns/endOfMonth'
-import endOfYear from 'date-fns/endOfYear'
-import differenceInHours from 'date-fns/differenceInHours'
 
 import * as OPTIONS from '@/constants/v2/chart-options.js'
 import * as SI from '@/constants/v2/si.js'
@@ -144,39 +141,6 @@ import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
 import StackedAreaVis from '@/components/Vis/StackedArea2'
 import PowerEnergyChartOptions from '@/components/Energy/Charts/PowerEnergyChartOptions'
-
-function getNumberOfHoursByInterval(interval, date) {
-  let start, end
-  switch (interval) {
-    case 'Day':
-      return 24
-    case 'Week':
-      return 168
-    case 'Month':
-      start = date
-      end = endOfMonth(date)
-      return differenceInHours(end, start)
-    case 'Season':
-    case 'Quarter':
-      start = date
-      end = endOfMonth(addMonths(date, 3))
-      return differenceInHours(end, start)
-    case 'Half Year':
-      start = date
-      end = endOfMonth(addMonths(date, 6))
-      return differenceInHours(end, start)
-    case 'Fin Year':
-      start = date
-      end = endOfMonth(addMonths(date, 12))
-      return differenceInHours(end, start)
-    case 'Year':
-      start = date
-      end = endOfYear(date)
-      return differenceInHours(end, start)
-    default:
-      return 0
-  }
-}
 
 export default {
   components: {
@@ -508,17 +472,28 @@ export default {
       return dataset
     },
     averagePowerDataset() {
-      const dataset = this.currentDataset.map(d => {
+      const datasetLength = this.currentDataset.length - 1
+      const dataset = this.currentDataset.map((d, i) => {
+        const isStart = i === 0
+        const isEnd = i === datasetLength
         const obj = {
           date: d.date,
           time: d.time,
           _isIncompleteBucket: d._isIncompleteBucket
         }
-        const hours = getNumberOfHoursByInterval(this.interval, d.date)
+        const hours = DateDisplay.getSecondsByInterval(
+          this.range,
+          this.interval,
+          d.date,
+          d._incompleteDate,
+          isStart,
+          isEnd
+        )
         let totalPower = 0
         this.powerEnergyDomains.forEach(domain => {
+          // convert energy to average power
           obj[domain.id] =
-            d[domain.id] === 0 ? null : (d[domain.id] / hours) * 1000
+            d[domain.id] === 0 ? null : (d[domain.id] / hours) * 1000 * 3600
           totalPower += obj[domain.id] || 0
         })
         obj._totalPower = totalPower

@@ -59,7 +59,14 @@ function reducer(a, domains) {
   return obj
 }
 
-export default function(domains, data, isIncompleteStart, isIncompleteEnd) {
+export default function(
+  domains,
+  data,
+  isIncompleteStart,
+  isIncompleteEnd,
+  incompleteStartDate,
+  incompleteEndDate
+) {
   const entries = rollups(data, v => reducer(v, domains), d => d._rollUpDate)
   return entries.map((e, i) => {
     const object = {
@@ -74,9 +81,11 @@ export default function(domains, data, isIncompleteStart, isIncompleteEnd) {
 
     if (i === 0 && isIncompleteStart) {
       object._isIncompleteBucket = isIncompleteStart
+      object._incompleteDate = incompleteStartDate
     }
     if (i === entries.length - 1 && isIncompleteEnd) {
       object._isIncompleteBucket = isIncompleteEnd
+      object._incompleteDate = incompleteEndDate
     }
     return object
   })

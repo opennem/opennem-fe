@@ -35,7 +35,9 @@ function startOfHalfYear(date, halfYearStartMonth) {
 
 export default function(domains, data) {
   let isIncompleteEnd = false,
-    isIncompleteStart = false
+    isIncompleteStart = false,
+    incompleteStartDate = null,
+    incompleteEndDate = null
   data.forEach((d, i) => {
     const halfYearStartMonth = getHalfYearStartMonth(getMonth(d.date))
     const start = startOfHalfYear(d.date, halfYearStartMonth)
@@ -44,11 +46,24 @@ export default function(domains, data) {
 
     if (i == 0) {
       isIncompleteStart = isAfter(d.date, start)
+      if (isIncompleteStart) {
+        incompleteStartDate = d.date
+      }
     }
     if (i === data.length - 1) {
       const end = subMonths(addMonths(start, 6), 1)
       isIncompleteEnd = isBefore(d.date, end)
+      if (isIncompleteEnd) {
+        incompleteEndDate = d.date
+      }
     }
   })
-  return rollUp(domains, data, isIncompleteStart, isIncompleteEnd)
+  return rollUp(
+    domains,
+    data,
+    isIncompleteStart,
+    isIncompleteEnd,
+    incompleteStartDate,
+    incompleteEndDate
+  )
 }

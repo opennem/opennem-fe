@@ -1,4 +1,9 @@
 import parseISO from 'date-fns/parseISO'
+import addDays from 'date-fns/addDays'
+import addMonths from 'date-fns/addMonths'
+import endOfDay from 'date-fns/endOfDay'
+import endOfMonth from 'date-fns/endOfMonth'
+import differenceInSeconds from 'date-fns/differenceInSeconds'
 import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import {
   timeMinute as d3TimeMinute,
@@ -380,5 +385,107 @@ export default {
   getDateTimeWithoutTZ(date) {
     const dateString = date.substring(0, 16)
     return parseISO(dateString)
+  },
+
+  getSecondsByInterval(range, interval, date, incompleteDate, isStart, isEnd) {
+    let start, end
+    switch (interval) {
+      case 'Day':
+        start = date
+        end = endOfDay(date)
+
+        return differenceInSeconds(end, start)
+
+      case 'Week':
+        if (isStart && incompleteDate) {
+          start = incompleteDate
+          end = endOfDay(addDays(date, 6))
+        } else if (isEnd && incompleteDate) {
+          start = date
+          end = endOfDay(incompleteDate)
+        } else {
+          start = date
+          end = endOfDay(addDays(date, 6))
+        }
+        return differenceInSeconds(end, start)
+
+      case 'Month':
+        if (isStart && incompleteDate) {
+          start = incompleteDate
+          end = endOfMonth(date)
+        } else if (isEnd && incompleteDate) {
+          start = date
+          end =
+            range === '1Y'
+              ? endOfDay(incompleteDate)
+              : endOfMonth(incompleteDate)
+          console.log(date, incompleteDate, end)
+        } else {
+          start = date
+          end = endOfMonth(date)
+        }
+
+        return differenceInSeconds(end, start)
+
+      case 'Season':
+      case 'Quarter':
+        if (isStart && incompleteDate) {
+          start = incompleteDate
+          end = endOfMonth(addMonths(date, 2))
+        } else if (isEnd && incompleteDate) {
+          start = date
+          end = endOfMonth(incompleteDate)
+        } else {
+          start = date
+          end = endOfMonth(addMonths(date, 2))
+        }
+
+        return differenceInSeconds(end, start)
+
+      case 'Half Year':
+        if (isStart && incompleteDate) {
+          start = incompleteDate
+          end = endOfMonth(addMonths(date, 5))
+        } else if (isEnd && incompleteDate) {
+          start = date
+          end = endOfMonth(incompleteDate)
+        } else {
+          start = date
+          end = endOfMonth(addMonths(date, 5))
+        }
+
+        return differenceInSeconds(end, start)
+
+      case 'Fin Year':
+        if (isStart && incompleteDate) {
+          start = incompleteDate
+          end = endOfMonth(addMonths(date, 11))
+        } else if (isEnd && incompleteDate) {
+          start = date
+          end = endOfMonth(incompleteDate)
+        } else {
+          start = date
+          end = endOfMonth(addMonths(date, 11))
+        }
+
+        return differenceInSeconds(end, start)
+
+      case 'Year':
+        if (isStart && incompleteDate) {
+          start = incompleteDate
+          end = endOfMonth(addMonths(date, 11))
+        } else if (isEnd && incompleteDate) {
+          start = date
+          end = endOfMonth(incompleteDate)
+        } else {
+          start = date
+          end = endOfMonth(addMonths(date, 11))
+        }
+
+        return differenceInSeconds(end, start)
+
+      default:
+        return 0
+    }
   }
 }
