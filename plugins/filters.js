@@ -7,7 +7,7 @@ import * as SI from '@/constants/si.js'
 function smartFormatString(v) {
   const value = Math.abs(v)
   let fString = ',.0f'
-  if (value < 10 && value > 0.1) {
+  if (value < 30 && value > 0.1) {
     fString = ',.1f'
   } else if (value < 0.1 && value > 0.01) {
     fString = ',.2f'
