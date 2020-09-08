@@ -90,13 +90,13 @@ import { mapGetters, mapMutations } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import _includes from 'lodash.includes'
 
-import SummaryTable from '@/components/SummaryTable/index2'
-import EnergyRecords from '~/components/Energy/Records.vue'
+import SummaryTable from '@/components/SummaryTable'
+import EnergyRecords from '~/components/Energy/Records'
 import DonutVis from '~/components/Vis/Donut.vue'
-import EnergyBar from '~/components/Energy/EnergyBar.vue'
+import EnergyBar from '~/components/Energy/Charts/EnergyBarChart.vue'
 
-import { TEMPERATURE, TEMPERATURE_MEAN } from '@/constants/v2/data-types.js'
-import * as SI from '@/constants/v2/si.js'
+import { TEMPERATURE, TEMPERATURE_MEAN } from '@/constants/data-types.js'
+import * as SI from '@/constants/si.js'
 
 export default {
   components: {

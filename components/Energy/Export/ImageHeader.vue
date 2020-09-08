@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import REGIONS from '~/constants/regions.js'
+import { getEnergyRegions } from '@/constants/energy-regions.js'
 export default {
   props: {
     exporting: {
@@ -53,7 +53,8 @@ export default {
       showTitle: true,
       showDescription: true,
       title: '',
-      description: '[Description]'
+      description: '[Description]',
+      regions: getEnergyRegions()
     }
   },
 
@@ -95,7 +96,7 @@ export default {
   methods: {
     getRegionLabel() {
       const id = this.regionId
-      const find = REGIONS.find(region => region.id === id)
+      const find = this.regions.find(region => region.id === id)
       if (id === 'nem') {
         return 'OpenNEM'
       }

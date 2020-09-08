@@ -117,7 +117,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
-import * as OPTIONS from '@/constants/v2/chart-options.js'
+import * as OPTIONS from '@/constants/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import PriceMarketValueChartOptions from '@/components/Energy/Charts/PriceMarketValueChartOptions'
 import LineVis from '@/components/Vis/Line.vue'

@@ -2,11 +2,11 @@ import http from '@/services/Http.js'
 import EnergyDataTransform from '@/services/dataTransform/Energy.js'
 import Domain from '@/services/Domain.js'
 import Data from '@/services/Data.js'
-import REGIONS from '@/constants/regions.js'
+import { getEnergyRegions } from '@/constants/energy-regions.js'
 import * as FUEL_TECHS from '@/constants/fuel-tech.js'
 import PerfTime from '@/plugins/perfTime.js'
 
-const Regions = REGIONS.filter(r => r.id !== 'all' && r.id !== 'nem')
+const Regions = getEnergyRegions().filter(r => r.id !== 'all' && r.id !== 'nem')
 const host = window.location.host
 let hostEnv = 'dev'
 if (host === 'opennem.org.au') {

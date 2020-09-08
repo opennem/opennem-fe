@@ -116,7 +116,7 @@
 
 <script>
 import VIEWS from '~/constants/views.js'
-import REGIONS from '~/constants/regions.js'
+import { getEnergyRegions } from '@/constants/energy-regions.js'
 import Logo from '~/components/ui/Logo'
 import ConsumptionGenerationToggle from '~/components/ui/ConsumptionGenerationToggle'
 import AppFooter from '~/components/layout/AppFooter'
@@ -139,7 +139,7 @@ export default {
     return {
       drawer: false,
       views: VIEWS,
-      regions: REGIONS
+      regions: getEnergyRegions()
     }
   },
 

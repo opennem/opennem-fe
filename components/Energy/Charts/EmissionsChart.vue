@@ -65,10 +65,10 @@ import addWeeks from 'date-fns/addWeeks'
 import addMonths from 'date-fns/addMonths'
 import addQuarters from 'date-fns/addQuarters'
 import addYears from 'date-fns/addYears'
-import { EMISSIONS } from '@/constants/v2/data-types.js'
-import * as OPTIONS from '@/constants/v2/chart-options.js'
+import { EMISSIONS } from '@/constants/data-types.js'
+import * as OPTIONS from '@/constants/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
-import StackedAreaVis from '@/components/Vis/StackedArea2.vue'
+import StackedAreaVis from '@/components/Vis/StackedArea.vue'
 import EmissionsChartOptions from '@/components/Energy/Charts/EmissionsChartOptions'
 
 const options = {

@@ -134,12 +134,12 @@ import addMonths from 'date-fns/addMonths'
 import addQuarters from 'date-fns/addQuarters'
 import addYears from 'date-fns/addYears'
 
-import * as OPTIONS from '@/constants/v2/chart-options.js'
-import * as SI from '@/constants/v2/si.js'
+import * as OPTIONS from '@/constants/chart-options.js'
+import * as SI from '@/constants/si.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
-import StackedAreaVis from '@/components/Vis/StackedArea2'
+import StackedAreaVis from '@/components/Vis/StackedArea'
 import PowerEnergyChartOptions from '@/components/Energy/Charts/PowerEnergyChartOptions'
 
 export default {

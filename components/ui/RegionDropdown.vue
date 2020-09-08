@@ -66,7 +66,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
-import REGIONS from '~/constants/regions.js'
+import { getEnergyRegions } from '@/constants/energy-regions.js'
 
 export default {
   mixins: [clickaway],
@@ -74,7 +74,7 @@ export default {
   data() {
     return {
       dropdownActive: false,
-      regions: REGIONS
+      regions: getEnergyRegions()
     }
   },
 

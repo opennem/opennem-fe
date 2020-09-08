@@ -7,7 +7,7 @@ import {
   dataRollUp,
   dataFilterByPeriod
 } from '@/modules/dataTransform/energy'
-import { isValidRegion } from '@/constants/v2/energy-regions.js'
+import { isValidRegion } from '@/constants/energy-regions.js'
 
 let currentRegion = ''
 

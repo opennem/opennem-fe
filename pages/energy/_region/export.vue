@@ -51,13 +51,13 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { timeFormat as d3TimeFormat } from 'd3-time-format'
-import REGIONS from '~/constants/regions.js'
+import { getEnergyRegions } from '@/constants/energy-regions.js'
 import domToImage from '~/services/DomToImage.js'
 import VisSection from '@/components/Energy/Export/VisSection.vue'
 import SummaryLegendSection from '@/components/Energy/Export/SummaryLegendSection.vue'
 import ExportHeader from '~/components/Energy/Export/Header.vue'
-import ExportImageHeader from '~/components/Energy/ExportImageHeader.vue'
-import ExportImageFooter from '~/components/Energy/ExportImageFooter.vue'
+import ExportImageHeader from '~/components/Energy/Export/ImageHeader.vue'
+import ExportImageFooter from '~/components/Energy/Export/ImageFooter.vue'
 
 export default {
   layout: 'export',
@@ -73,7 +73,8 @@ export default {
     return {
       summary: false,
       legend: true,
-      exporting: false
+      exporting: false,
+      regions: getEnergyRegions()
     }
   },
 
@@ -83,7 +84,6 @@ export default {
       interval: 'interval',
       filterPeriod: 'filterPeriod',
       fuelTechGroupName: 'fuelTechGroupName',
-      fuelTechGroup: 'fuelTechGroup',
       ready: 'regionEnergy/ready',
       currentDataset: 'regionEnergy/currentDataset',
       filteredCurrentDataset: 'regionEnergy/filteredCurrentDataset',
@@ -156,7 +156,7 @@ export default {
     handleExportClick() {
       this.exporting = true
       let date = ''
-      let region = REGIONS.find(r => r.id === this.regionId).label
+      let region = this.regions.find(r => r.id === this.regionId).label
       if (this.filteredCurrentDataset.length > 0) {
         date = d3TimeFormat('%Y%m%d')(this.filteredCurrentDataset[0].date)
       }

@@ -1,5 +1,5 @@
 import { mean, rollups } from 'd3-array'
-import * as DT from '@/constants/v2/data-types.js'
+import * as DT from '@/constants/data-types.js'
 
 function reducer(a, domains) {
   let obj = {}

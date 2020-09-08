@@ -71,7 +71,6 @@ export default {
       interval: 'interval',
       filterPeriod: 'filterPeriod',
       fuelTechGroupName: 'fuelTechGroupName',
-      fuelTechGroup: 'fuelTechGroup',
       ready: 'regionEnergy/ready',
       currentDataset: 'regionEnergy/currentDataset',
       filteredDates: 'regionEnergy/filteredDates'

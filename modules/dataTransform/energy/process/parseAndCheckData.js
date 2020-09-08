@@ -1,4 +1,4 @@
-import * as DT from '@/constants/v2/data-types.js'
+import * as DT from '@/constants/data-types.js'
 import { checkPowerEnergyExists } from '@/services/DataCheck.js'
 
 export default function(response) {

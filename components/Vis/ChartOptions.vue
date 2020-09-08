@@ -83,7 +83,7 @@ import {
   CHART_LABEL,
   CHART_LINE,
   CHART_HIDDEN
-} from '@/constants/v2/chart-options.js'
+} from '@/constants/chart-options.js'
 
 export default {
   mixins: [clickaway],

@@ -77,8 +77,8 @@ import { mapGetters } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import ChartHeader from '@/components/Vis/ChartHeader'
 import ChartOptions from '@/components/Vis/ChartOptions'
-import * as OPTIONS from '@/constants/v2/chart-options.js'
-import * as SI from '@/constants/v2/si'
+import * as OPTIONS from '@/constants/chart-options.js'
+import * as SI from '@/constants/si'
 
 const powerSi = [SI.MEGA, SI.GIGA]
 const energySi = [SI.GIGA, SI.TERA]

@@ -1,5 +1,5 @@
-import * as OPTIONS from '@/constants/v2/chart-options.js'
-import * as SI from '@/constants/v2/si'
+import * as OPTIONS from '@/constants/chart-options.js'
+import * as SI from '@/constants/si'
 
 export const state = () => ({
   chartDefaultType: OPTIONS.CHART_STACKED,

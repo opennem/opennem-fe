@@ -28,7 +28,7 @@ import { mapGetters } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import _includes from 'lodash.includes'
 
-import SummaryTable from '@/components/SummaryTable/index2'
+import SummaryTable from '@/components/SummaryTable'
 import ExportLegend from '@/components/Energy/Export/Legend'
 export default {
   components: {

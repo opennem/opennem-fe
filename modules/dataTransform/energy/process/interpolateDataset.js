@@ -1,5 +1,5 @@
 import * as FT from '@/constants/fuel-tech.js'
-import * as DT from '@/constants/v2/data-types.js'
+import * as DT from '@/constants/data-types.js'
 
 function findInterpolateSeriesTypes(data) {
   const rooftopSolarItem = data.find(

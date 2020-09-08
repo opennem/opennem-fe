@@ -41,7 +41,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { CHART_HIDDEN } from '@/constants/v2/chart-options'
+import { CHART_HIDDEN } from '@/constants/chart-options'
 
 const charts = [
   {

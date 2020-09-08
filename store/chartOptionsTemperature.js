@@ -1,4 +1,4 @@
-import * as OPTIONS from '@/constants/v2/chart-options.js'
+import * as OPTIONS from '@/constants/chart-options.js'
 
 export const state = () => ({
   chartDefaultType: OPTIONS.CHART_LINE,

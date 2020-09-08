@@ -1,5 +1,5 @@
 import PerfTime from '@/plugins/perfTime.js'
-import { EMISSIONS, MARKET_VALUE } from '@/constants/v2/data-types'
+import { EMISSIONS, MARKET_VALUE } from '@/constants/data-types'
 import parseAndCheckData from './parseAndCheckData.js'
 import createEmptyDatasets from './createEmptyDatasets.js'
 import flattenAndInterpolate from './flattenAndInterpolate.js'

@@ -103,7 +103,7 @@
 import { mapGetters } from 'vuex'
 import { min, max } from 'd3-array'
 import MultiLine from '@/components/Vis/MultiLine'
-import ChartWrapper from '@/components/Vis/ChartWrapper'
+import ChartWrapper from '@/components/Vis/_wip/ChartWrapper'
 
 export default {
   components: {

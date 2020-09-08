@@ -56,7 +56,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import * as OPTIONS from '@/constants/v2/chart-options.js'
+import * as OPTIONS from '@/constants/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import TemperatureChartOptions from '@/components/Energy/Charts/TemperatureChartOptions'
 import LineVis from '@/components/Vis/Line.vue'
@@ -65,7 +65,7 @@ import {
   TEMPERATURE_MIN,
   TEMPERATURE_MEAN,
   TEMPERATURE_MAX
-} from '@/constants/v2/data-types.js'
+} from '@/constants/data-types.js'
 
 const options = {
   type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_LINE],

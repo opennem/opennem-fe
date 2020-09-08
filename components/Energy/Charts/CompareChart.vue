@@ -43,7 +43,7 @@ import { mapGetters } from 'vuex'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 
-import * as SI from '@/constants/v2/si.js'
+import * as SI from '@/constants/si.js'
 import ColumnVis from '~/components/Vis/Column.vue'
 export default {
   components: {

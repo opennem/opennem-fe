@@ -113,8 +113,8 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import * as SI from '@/constants/v2/si.js'
-import EnergyRecord from '~/components/Energy/Record.vue'
+import * as SI from '@/constants/si.js'
+import EnergyRecord from '~/components/Energy/Records/Record.vue'
 export default {
   components: {
     EnergyRecord

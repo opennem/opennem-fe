@@ -181,19 +181,17 @@ import DateDisplay from '@/services/DateDisplay.js'
 import AxisTimeFormats from '@/services/axisTimeFormats.js'
 import AxisTicks from '@/services/axisTicks.js'
 import RegionsTable from '@/components/SummaryTable/Regions'
-import Datatable from '@/components/Vis/Datatable'
-import DataOptionsBar from '@/components/ui/DataOptionsBar'
+import DataOptionsBar from '@/components/Energy/DataOptionsBar'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
-import ChartWrapper from '@/components/Vis/ChartWrapper'
-import PriceCharts from '@/components/Energy/PriceCharts'
+import ChartWrapper from '@/components/Vis/_wip/ChartWrapper'
+import PriceCharts from '@/components/Energy/Charts/RegionPriceChart'
 
 export default {
   layout: 'main',
   components: {
     DataOptionsBar,
     RegionsTable,
-    Datatable,
     MultiLine,
     DateBrush,
     ChartWrapper,

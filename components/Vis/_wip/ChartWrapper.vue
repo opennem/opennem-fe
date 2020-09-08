@@ -46,7 +46,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import HoverValues from '@/components/Vis/HoverValues'
+import HoverValues from '@/components/Vis/_wip/HoverValues'
 
 export default {
   components: {

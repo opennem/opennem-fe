@@ -87,7 +87,7 @@ import { format as d3Format } from 'd3-format'
 import _debounce from 'lodash.debounce'
 import DownloadCsv from 'vue-json-csv'
 import { mixin as clickaway } from 'vue-clickaway'
-import REGIONS from '~/constants/regions.js'
+import { getEnergyRegions } from '@/constants/energy-regions.js'
 import AppLogo from '~/components/ui/Logo'
 import ViewDropdown from '~/components/ui/ViewDropdown'
 import ConsumptionGenerationToggle from '~/components/ui/ConsumptionGenerationToggle'
@@ -112,7 +112,7 @@ export default {
       openDrawer: false,
       showShareMenu: false,
       windowWidth: 0,
-      regions: REGIONS
+      regions: getEnergyRegions()
     }
   },
 

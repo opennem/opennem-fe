@@ -7,7 +7,6 @@
 <script>
 export default {
   layout: 'default',
-  // middleware: 'root-redirect',
 
   created() {
     switch (this.$route.hash) {

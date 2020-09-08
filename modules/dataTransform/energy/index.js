@@ -1,5 +1,5 @@
-import { getAllGroups } from '@/constants/v2/groups'
-import { EMISSIONS, MARKET_VALUE } from '@/constants/v2/data-types'
+import { getAllGroups } from '@/constants/groups'
+import { EMISSIONS, MARKET_VALUE } from '@/constants/data-types'
 import process from './process'
 import rollUp from './rollUp'
 import summariseDataset from './summarise'

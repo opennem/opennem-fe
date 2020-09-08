@@ -51,7 +51,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import _includes from 'lodash.includes'
-import * as OPTIONS from '@/constants/v2/chart-options.js'
+import * as OPTIONS from '@/constants/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import EmissionIntensityChartOptions from '@/components/Energy/Charts/EmissionIntensityChartOptions'
 import LineVis from '@/components/Vis/Line.vue'

@@ -5,7 +5,7 @@ import _includes from 'lodash.includes'
 import { timeMinute as d3TimeMinute } from 'd3-time'
 import parseInterval from '~/plugins/intervalParser.js'
 import millisecondsByInterval from '~/constants/millisecondsByInterval.js'
-import { EMISSIONS } from '~/constants/emissions.js'
+import { EMISSIONS } from '~/constants/data-types.js'
 
 import rollUp30m from '../rollUpModules/ru-30m.js'
 import rollUp1YDay from '../rollUpModules/ru-1y-day.js'
