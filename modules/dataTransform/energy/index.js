@@ -18,6 +18,7 @@ export function dataProcess(responses, range, interval) {
   } = process(responses)
 
   const isEnergyType = type === 'energy'
+  const datasetFull = datasetFlat
   const dataset = filterDatasetByRange(datasetFlat, range)
 
   const currentDataset = rollUp({
@@ -51,6 +52,7 @@ export function dataProcess(responses, range, interval) {
 
   return {
     dataType: type,
+    datasetFull,
     datasetFlat: dataset,
     domainPowerEnergy,
     domainPowerEnergyGrouped,

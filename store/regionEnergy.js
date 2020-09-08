@@ -31,6 +31,7 @@ export const state = () => ({
   isFetching: false,
   isEnergyType: false,
   jsonResponses: null,
+  datasetFull: [],
   datasetFlat: [],
   currentDataset: [],
   domainPowerEnergy: [],
@@ -89,6 +90,9 @@ export const mutations = {
   },
   jsonResponses(state, jsonResponses) {
     state.jsonResponses = _cloneDeep(jsonResponses)
+  },
+  datasetFull(state, datasetFull) {
+    state.datasetFull = datasetFull
   },
   datasetFlat(state, datasetFlat) {
     state.datasetFlat = _cloneDeep(datasetFlat)
@@ -152,6 +156,7 @@ export const actions = {
         console.info(`------ ${currentRegion} — ${range}/${interval} (start)`)
 
         const {
+          datasetFull,
           datasetFlat,
           currentDataset,
           domainPowerEnergy,
@@ -174,6 +179,7 @@ export const actions = {
         commit('isFetching', false)
         commit('isEnergyType', dataType === 'energy')
 
+        commit('datasetFull', datasetFull)
         commit('datasetFlat', datasetFlat)
         commit('currentDataset', currentDataset)
 
@@ -236,7 +242,7 @@ export const actions = {
     // console.log('****** doFilterRegionData')
     const { currentDataset } = dataRollUp({
       isEnergyType: state.isEnergyType,
-      datasetFlat: _cloneDeep(state.datasetFlat),
+      datasetFlat: _cloneDeep(state.datasetFull),
       domainPowerEnergy: state.domainPowerEnergy,
       domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
       domainEmissions: state.domainEmissions,
