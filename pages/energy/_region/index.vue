@@ -94,6 +94,7 @@ export default {
           region: this.regionId,
           range: curr,
           interval: this.interval,
+          period: this.filterPeriod,
           groupName: this.fuelTechGroupName
         })
       }
@@ -137,6 +138,7 @@ export default {
       region: this.regionId,
       range: this.range,
       interval: this.interval,
+      period: this.filterPeriod,
       groupName: this.fuelTechGroupName
     })
     this.doUpdateTickFormats({ range: this.range, interval: this.interval })

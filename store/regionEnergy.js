@@ -142,7 +142,7 @@ export const mutations = {
 }
 
 export const actions = {
-  doGetRegionData({ commit }, { region, range, interval, groupName }) {
+  doGetRegionData({ commit }, { region, range, interval, period, groupName }) {
     if (isValidRegion(region)) {
       const urls = Data.getEnergyUrls(region, range, 'prod')
       currentRegion = region
@@ -168,7 +168,7 @@ export const actions = {
           domainPrice,
           domainTemperature,
           dataType
-        } = dataProcess(responses, range, interval)
+        } = dataProcess(responses, range, interval, period)
 
         perf.timeEnd(
           `------ ${currentRegion} — ${range}/${interval} (${dataCount} down to ${

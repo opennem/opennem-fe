@@ -6,7 +6,7 @@ import summariseDataset from './summarise'
 import groupDataset from './group'
 import { filterDatasetByRange, filterDatasetByPeriod } from './filter'
 
-export function dataProcess(responses, range, interval) {
+export function dataProcess(responses, range, interval, period) {
   const {
     datasetFlat,
     domainMarketValue,
@@ -62,7 +62,7 @@ export function dataProcess(responses, range, interval) {
     domainMarketValueGrouped,
     domainPrice,
     domainTemperature,
-    currentDataset
+    currentDataset: filterDatasetByPeriod(currentDataset, interval, period)
   }
 }
 

@@ -84,6 +84,7 @@ export default {
     ...mapGetters({
       range: 'range',
       interval: 'interval',
+      filterPeriod: 'filterPeriod',
       fuelTechGroupName: 'fuelTechGroupName',
       ready: 'regionEnergy/ready',
       currentDataset: 'regionEnergy/currentDataset'
@@ -120,6 +121,7 @@ export default {
       region: this.regionId,
       range: this.range,
       interval: this.interval,
+      period: this.filterPeriod,
       groupName: this.fuelTechGroupName
     })
     this.doUpdateTickFormats({ range: this.range, interval: this.interval })

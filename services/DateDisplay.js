@@ -419,7 +419,6 @@ export default {
             range === '1Y'
               ? endOfDay(incompleteDate)
               : endOfMonth(incompleteDate)
-          console.log(date, incompleteDate, end)
         } else {
           start = date
           end = endOfMonth(date)

@@ -54,7 +54,6 @@ export default {
       return this.$store.getters.currentView
     },
     viewLabel() {
-      console.log(this.currentView)
       const view = this.views.find(d => d.id === this.currentView)
       return view ? view.label : ''
     }
