@@ -309,7 +309,9 @@ export default {
     },
 
     displayTitle() {
-      if (this.isEnergyType) {
+      if (this.isRenewableLineOnly) {
+        return 'Renewables'
+      } else if (this.isEnergyType) {
         if (this.isYAxisAveragePower) {
           return 'Average Power'
         } else {
