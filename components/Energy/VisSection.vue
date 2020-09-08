@@ -184,7 +184,9 @@ export default {
       if (
         isFilter &&
         hoverDate &&
-        (this.interval === 'Season' || this.interval === 'Quarter')
+        (this.interval === 'Season' ||
+          this.interval === 'Quarter' ||
+          this.interval === 'Half Year')
       ) {
         const periodMonth = DateDisplay.getPeriodMonth(
           this.interval,

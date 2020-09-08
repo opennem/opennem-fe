@@ -69,6 +69,15 @@ function getQuarterOffset(quarter) {
   }
 }
 
+function getHalfYearOffset(period) {
+  switch (period) {
+    case '1st Half':
+      return 0
+    case '2nd Half':
+      return 6
+  }
+}
+
 function getSeasonClosestDate(date, isFloor, filterPeriod) {
   const isFilter = !filterPeriod || filterPeriod !== 'All'
   if (isFilter) {
@@ -100,9 +109,16 @@ function getQuarterClosestDate(date, isFloor, filterPeriod) {
 
 function get6MonthClosestDate(date, isFloor, filterPeriod) {
   const isFilter = !filterPeriod || filterPeriod !== 'All'
-  return isFloor
-    ? d3TimeMonth.every(6).floor(date)
-    : d3TimeMonth.every(6).ceil(date)
+  if (isFilter) {
+    const yearDate = isFloor
+      ? d3TimeYear.every(1).floor(date)
+      : d3TimeYear.every(1).ceil(date)
+    return d3TimeMonth.offset(yearDate, getHalfYearOffset(filterPeriod))
+  } else {
+    return isFloor
+      ? d3TimeMonth.every(6).floor(date)
+      : d3TimeMonth.every(6).ceil(date)
+  }
 }
 
 export default {
@@ -378,6 +394,15 @@ export default {
           return 5
         case 'Spring':
           return 8
+      }
+    }
+
+    if (interval === 'Half Year') {
+      switch (period) {
+        case '1st Half':
+          return 0
+        case '2nd Half':
+          return 6
       }
     }
   },

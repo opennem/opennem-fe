@@ -723,7 +723,9 @@ export default {
         const isFilter = !self.filterPeriod || self.filterPeriod !== 'All'
         if (
           isFilter &&
-          (self.interval === 'Season' || self.interval === 'Quarter')
+          (self.interval === 'Season' ||
+            self.interval === 'Quarter' ||
+            self.interval === 'Half Year')
         ) {
           const periodMonth = DateDisplay.getPeriodMonth(
             self.interval,
@@ -1259,7 +1261,9 @@ export default {
       const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
       if (
         isFilter &&
-        (this.interval === 'Season' || this.interval === 'Quarter')
+        (this.interval === 'Season' ||
+          this.interval === 'Quarter' ||
+          this.interval === 'Half Year')
       ) {
         const periodMonth = DateDisplay.getPeriodMonth(
           this.interval,
@@ -1423,6 +1427,15 @@ export default {
             if (isFilter && periodMonth) {
               tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
             }
+          } else if (this.interval === 'Half Year') {
+            className = 'interval-half-year'
+            const periodMonth = DateDisplay.getPeriodMonth(
+              this.interval,
+              this.filterPeriod
+            )
+            if (isFilter && periodMonth) {
+              tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+            }
           } else if (this.interval === 'Year') {
             className = 'interval-year'
           } else if (this.interval === 'Fin Year') {
@@ -1454,7 +1467,9 @@ export default {
 
       if (
         isFilter &&
-        (this.interval === 'Season' || this.interval === 'Quarter')
+        (this.interval === 'Season' ||
+          this.interval === 'Quarter' ||
+          this.interval === 'Half Year')
       ) {
         this.xAxis.tickFormat((d, i) => {
           const year = d.getFullYear() + ''

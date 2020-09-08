@@ -1004,6 +1004,15 @@ export default {
             if (isFilter && periodMonth) {
               tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
             }
+          } else if (this.interval === 'Half Year') {
+            className = 'interval-half-year'
+            const periodMonth = DateDisplay.getPeriodMonth(
+              this.interval,
+              this.filterPeriod
+            )
+            if (isFilter && periodMonth) {
+              tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+            }
           } else if (this.interval === 'Year') {
             className = 'interval-year'
           } else if (this.interval === 'Fin Year') {

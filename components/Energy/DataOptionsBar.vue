@@ -61,8 +61,10 @@ export default {
       selectedInterval: '',
       showSeasonFilter: false,
       showQuarterFilter: false,
+      showHalfYearFilter: false,
       seasonFilters: INTERVAL_PERIOD['Season'],
-      quarterFilters: INTERVAL_PERIOD['Quarter']
+      quarterFilters: INTERVAL_PERIOD['Quarter'],
+      halfYearFilters: INTERVAL_PERIOD['Half Year']
     }
   },
 
@@ -96,10 +98,15 @@ export default {
       return this.intervalPeriod[this.selectedInterval]
     },
     filters() {
-      if (this.interval === 'Season') {
-        return this.seasonFilters
+      switch (this.interval) {
+        case 'Season':
+          return this.seasonFilters
+        case 'Quarter':
+          return this.quarterFilters
+        default:
+          // Half Year
+          return this.halfYearFilters
       }
-      return this.quarterFilters
     }
   },
 
@@ -126,13 +133,16 @@ export default {
     showFilter(interval) {
       return (
         (interval === 'Season' && this.showSeasonFilter) ||
-        (interval === 'Quarter' && this.showQuarterFilter)
+        (interval === 'Quarter' && this.showQuarterFilter) ||
+        (interval === 'Half Year' && this.showHalfYearFilter)
       )
     },
     hasFilter(interval) {
       return (
         this.interval === interval &&
-        (interval === 'Season' || interval === 'Quarter')
+        (interval === 'Season' ||
+          interval === 'Quarter' ||
+          interval === 'Half Year')
       )
     },
     intervalLabel(interval) {
@@ -190,9 +200,13 @@ export default {
         if (interval === 'Quarter') {
           this.showQuarterFilter = true
         }
+        if (interval === 'Half Year') {
+          this.showHalfYearFilter = true
+        }
       } else {
         this.showSeasonFilter = false
         this.showQuarterFilter = false
+        this.showHalfYearFilter = false
         this.$store.dispatch('filterPeriod', 'All')
         this.$store.dispatch('si/emissionsVolumePrefix', '')
         this.$store.dispatch('interval', interval)
@@ -204,10 +218,12 @@ export default {
       this.$store.dispatch('compareDates', [])
       this.showSeasonFilter = false
       this.showQuarterFilter = false
+      this.showHalfYearFilter = false
     },
     handleClickAway() {
       this.showSeasonFilter = false
       this.showQuarterFilter = false
+      this.showHalfYearFilter = false
     }
   }
 }

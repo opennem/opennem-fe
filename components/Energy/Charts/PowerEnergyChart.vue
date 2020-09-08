@@ -207,6 +207,7 @@ export default {
       compareDates: 'compareDates',
       percentContributionTo: 'percentContributionTo',
       fuelTechGroupName: 'fuelTechGroupName',
+      filterPeriod: 'filterPeriod',
       hiddenFuelTechs: 'hiddenFuelTechs',
       isEnergyType: 'regionEnergy/isEnergyType',
       currentDataset: 'regionEnergy/currentDataset',
@@ -731,19 +732,28 @@ export default {
         if (this.interval === 'Season') {
           incompletes.push({
             start: f.date,
-            end: addMonths(f.date, 3)
+            end:
+              this.filterPeriod === 'All'
+                ? addMonths(f.date, 3)
+                : addYears(f.date, 1)
           })
         }
         if (this.interval === 'Quarter') {
           incompletes.push({
             start: f.date,
-            end: addQuarters(f.date, 1)
+            end:
+              this.filterPeriod === 'All'
+                ? addQuarters(f.date, 1)
+                : addYears(f.date, 1)
           })
         }
         if (this.interval === 'Half Year') {
           incompletes.push({
             start: f.date,
-            end: addMonths(f.date, 6)
+            end:
+              this.filterPeriod === 'All'
+                ? addMonths(f.date, 6)
+                : addYears(f.date, 1)
           })
         }
         if (this.interval === 'Year' || this.interval === 'Fin Year') {
