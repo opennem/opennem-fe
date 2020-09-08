@@ -249,7 +249,6 @@
 </template>
 
 <script>
-import moment from 'moment'
 import _isEmpty from 'lodash.isempty'
 import _cloneDeep from 'lodash.clonedeep'
 import _includes from 'lodash.includes'
