@@ -136,6 +136,7 @@ import addYears from 'date-fns/addYears'
 
 import * as OPTIONS from '@/constants/chart-options.js'
 import * as SI from '@/constants/si.js'
+import { LOAD } from '@/constants/groups/group-default.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
@@ -552,17 +553,22 @@ export default {
       return ds
     },
     yMin() {
-      const dataset = _cloneDeep(this.stackedAreaDataset)
-      dataset.forEach(d => {
-        let stackedMin = 0
-        this.domains.forEach(domain => {
-          if (d[domain.id] < 0) {
-            stackedMin += d[domain.id] || 0
-          }
+      const loadDomains = this.domains.filter(d => d.category === LOAD)
+      if (loadDomains.length === 0) {
+        return 0
+      } else {
+        const dataset = _cloneDeep(this.stackedAreaDataset)
+        dataset.forEach(d => {
+          let stackedMin = 0
+          this.domains.forEach(domain => {
+            if (d[domain.id] < 0) {
+              stackedMin += d[domain.id] || 0
+            }
+          })
+          d._stackedTotalMin = stackedMin
         })
-        d._stackedTotalMin = stackedMin
-      })
-      return min(dataset, d => d._stackedTotalMin)
+        return min(dataset, d => d._stackedTotalMin)
+      }
     },
     yMax() {
       const dataset = _cloneDeep(this.stackedAreaDataset)
