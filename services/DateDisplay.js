@@ -14,7 +14,7 @@ import {
 } from 'd3-time'
 
 function getFormatStringDay(showYear) {
-  return showYear ? '%-d %b %Y' : '%-d %b'
+  return showYear ? '%a, %-d %b %Y' : '%a, %-d %b'
 }
 
 function getSeasonLabel(month) {
@@ -139,7 +139,7 @@ export default {
           formatString = getFormatStringDay(sYear)
           display = d3TimeFormat(formatString)(time)
         } else if (interval === 'Week') {
-          formatString = getFormatStringDay(true)
+          formatString = '%-d %b %Y'
           const newTime = d3TimeMonday
             .every(1)
             .floor(time)
@@ -207,9 +207,9 @@ export default {
         if (today === fDate) {
           formatString = 'Today at %-I:%M %p'
         } else if (thisYear === fYear) {
-          formatString = '%d %b, %-I:%M %p'
+          formatString = '%-d %b, %-I:%M %p'
         } else {
-          formatString = '%d %b %Y, %-I:%M %p'
+          formatString = '%-d %b %Y, %-I:%M %p'
         }
         display = d3TimeFormat(formatString)(time)
     }
