@@ -135,6 +135,19 @@ import { timeFormat as d3Timeformat } from 'd3-time-format'
 import debounce from 'lodash.debounce'
 
 import millisecondsByInterval from '~/constants/millisecondsByInterval.js'
+import {
+  INTERVAL_5MIN,
+  INTERVAL_30MIN,
+  INTERVAL_DAY,
+  INTERVAL_WEEK,
+  INTERVAL_MONTH,
+  INTERVAL_SEASON,
+  INTERVAL_QUARTER,
+  INTERVAL_HALFYEAR,
+  INTERVAL_FINYEAR,
+  INTERVAL_YEAR,
+  hasIntervalFilters
+} from '@/constants/interval-filters.js'
 import EventBus from '~/plugins/eventBus.js'
 import * as CONFIG from './shared/config.js'
 import axisTimeFormat from './shared/timeFormat.js'
@@ -389,7 +402,7 @@ export default {
     updatedDatasetTwo() {
       const updated = _cloneDeep(this.datasetTwo)
       // update datasetTwo time to move the data point in the middle of the period
-      if (this.interval !== '5m' && this.interval !== '30m') {
+      if (this.interval !== INTERVAL_5MIN && this.interval !== INTERVAL_30MIN) {
         let previousBandwidth = 0
         updated.forEach((d, i) => {
           const xDate = d.time
@@ -444,11 +457,11 @@ export default {
     },
     timeFormats() {
       switch (this.interval) {
-        case 'Day':
+        case INTERVAL_DAY:
           return AxisTimeFormats.intervalDayTimeFormat
-        case 'Week':
+        case INTERVAL_WEEK:
           return AxisTimeFormats.intervalWeekTimeFormat
-        case 'Month':
+        case INTERVAL_MONTH:
           return this.range === 'ALL'
             ? AxisTimeFormats.rangeAllIntervalMonthTimeFormat
             : AxisTimeFormats.intervalMonthTimeFormat
@@ -458,9 +471,9 @@ export default {
     },
     secondaryTimeFormats() {
       switch (this.interval) {
-        case 'Day':
+        case INTERVAL_DAY:
           return AxisTimeFormats.intervalDaySecondaryTimeFormat
-        case 'Week':
+        case INTERVAL_WEEK:
           return AxisTimeFormats.intervalWeekSecondaryTimeFormat
         default:
           return axisSecondaryTimeFormat
@@ -711,7 +724,7 @@ export default {
         let startX = self.x.invert(s[0])
         let endX = self.x.invert(s[1])
 
-        if (self.interval === 'Fin Year') {
+        if (self.interval === INTERVAL_YEAR) {
           if (startX.getMonth() >= 6) {
             startX.setFullYear(startX.getFullYear() + 1)
           }
@@ -721,12 +734,7 @@ export default {
         }
 
         const isFilter = !self.filterPeriod || self.filterPeriod !== 'All'
-        if (
-          isFilter &&
-          (self.interval === 'Season' ||
-            self.interval === 'Quarter' ||
-            self.interval === 'Half Year')
-        ) {
+        if (isFilter && hasIntervalFilters(self.interval)) {
           const periodMonth = DateDisplay.getPeriodMonth(
             self.interval,
             self.filterPeriod
@@ -734,7 +742,7 @@ export default {
           const startXMonth = startX.getMonth()
           const endXMonth = endX.getMonth()
 
-          if (self.interval === 'Season') {
+          if (self.interval === INTERVAL_SEASON) {
             startX = DateDisplay.mutateSeasonDate(
               startX,
               startXMonth,
@@ -745,13 +753,24 @@ export default {
               endXMonth,
               self.filterPeriod
             )
-          } else if (self.interval === 'Quarter') {
+          } else if (self.interval === INTERVAL_QUARTER) {
             startX = DateDisplay.mutateQuarterDate(
               startX,
               startXMonth,
               self.filterPeriod
             )
             endX = DateDisplay.mutateQuarterDate(
+              endX,
+              endXMonth,
+              self.filterPeriod
+            )
+          } else if (self.interval === INTERVAL_HALFYEAR) {
+            startX = DateDisplay.mutateHalfYearDate(
+              startX,
+              startXMonth,
+              self.filterPeriod
+            )
+            endX = DateDisplay.mutateHalfYearDate(
               endX,
               endXMonth,
               self.filterPeriod
@@ -997,7 +1016,7 @@ export default {
       const xDate = this.x(time)
       const nextPeriod = this.x(nextDatePeriod)
       const bandwidth =
-        this.interval !== '5m' && this.interval !== '30m'
+        this.interval !== INTERVAL_5MIN && this.interval !== INTERVAL_30MIN
           ? nextPeriod - xDate
           : null
       const fTime = DateDisplay.specialDateFormats(
@@ -1083,7 +1102,7 @@ export default {
       const xDate = this.x(time)
       const nextPeriod = this.x(nextDatePeriod)
       const bandwidth =
-        this.interval !== '5m' && this.interval !== '30m'
+        this.interval !== INTERVAL_5MIN && this.interval !== INTERVAL_30MIN
           ? nextPeriod - xDate
           : null
 
@@ -1164,7 +1183,7 @@ export default {
       const xDate = this.x(time)
       const nextPeriod = this.x(nextDatePeriod)
       const bandwidth =
-        this.interval !== '5m' && this.interval !== '30m'
+        this.interval !== INTERVAL_5MIN && this.interval !== INTERVAL_30MIN
           ? nextPeriod - xDate
           : null
 
@@ -1249,7 +1268,7 @@ export default {
       let startX = this.x.invert(s[0])
       let endX = this.x.invert(s[1])
 
-      if (this.interval === 'Fin Year') {
+      if (this.interval === INTERVAL_YEAR) {
         if (startX.getMonth() >= 6) {
           startX.setFullYear(startX.getFullYear() + 1)
         }
@@ -1259,12 +1278,7 @@ export default {
       }
 
       const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
-      if (
-        isFilter &&
-        (this.interval === 'Season' ||
-          this.interval === 'Quarter' ||
-          this.interval === 'Half Year')
-      ) {
+      if (isFilter && hasIntervalFilters(this.interval)) {
         const periodMonth = DateDisplay.getPeriodMonth(
           this.interval,
           this.filterPeriod
@@ -1272,7 +1286,7 @@ export default {
         const startXMonth = startX.getMonth()
         const endXMonth = endX.getMonth()
 
-        if (this.interval === 'Season') {
+        if (this.interval === INTERVAL_SEASON) {
           startX = DateDisplay.mutateSeasonDate(
             startX,
             startXMonth,
@@ -1283,7 +1297,7 @@ export default {
             endXMonth,
             this.filterPeriod
           )
-        } else if (this.interval === 'Quarter') {
+        } else if (this.interval === INTERVAL_QUARTER) {
           startX = DateDisplay.mutateQuarterDate(
             startX,
             startXMonth,
@@ -1293,6 +1307,17 @@ export default {
             endX,
             endXMonth,
             this.filterPeriod
+          )
+        } else if (self.interval === INTERVAL_HALFYEAR) {
+          startX = DateDisplay.mutateHalfYearDate(
+            startX,
+            startXMonth,
+            this.filterPeriod
+          )
+          endX = DateDisplay.mutateHalfYearDate(
+            endX,
+            endXMonth,
+            sethislf.filterPeriod
           )
         }
         startX.setMonth(periodMonth + 1)
@@ -1348,25 +1373,26 @@ export default {
 
       // Limit the zoom level based on interval
       switch (this.interval) {
-        case '5m':
-        case '30m':
+        case INTERVAL_5MIN:
+        case INTERVAL_30MIN:
           limit = 14400000
           break
-        case 'Day':
+        case INTERVAL_DAY:
           limit = 345600000
           break
-        case 'Week':
+        case INTERVAL_WEEK:
           limit = 2419200000
           break
-        case 'Month':
+        case INTERVAL_MONTH:
           limit = 10519200000
           break
-        case 'Season':
-        case 'Quarter':
+        case INTERVAL_SEASON:
+        case INTERVAL_QUARTER:
+        case INTERVAL_HALFYEAR:
           limit = 23668200000
           break
-        case 'Fin Year':
-        case 'Year':
+        case INTERVAL_YEAR:
+        case INTERVAL_YEAR:
           limit = 126230400000
           break
       }
@@ -1395,13 +1421,13 @@ export default {
             className = 'interval-day'
           }
         } else if (this.range === '1Y') {
-          if (this.interval === 'Day') {
+          if (this.interval === INTERVAL_DAY) {
             const every = this.mobileScreen ? 8 : 4
             tickLength = timeMonday.every(every)
-          } else if (this.interval === 'Week') {
+          } else if (this.interval === INTERVAL_WEEK) {
             const every = this.mobileScreen ? 8 : 4
             tickLength = timeMonday.every(every)
-          } else if (this.interval === 'Month') {
+          } else if (this.interval === INTERVAL_MONTH) {
             const every = this.mobileScreen ? 2 : 1
             tickLength = timeMonth.every(every)
           }
@@ -1409,7 +1435,7 @@ export default {
           const every = this.mobileScreen ? 2 : 1
           tickLength = timeYear.every(every)
 
-          if (this.interval === 'Season') {
+          if (this.interval === INTERVAL_SEASON) {
             className = 'interval-season'
             const periodMonth = DateDisplay.getPeriodMonth(
               this.interval,
@@ -1418,7 +1444,7 @@ export default {
             if (isFilter && periodMonth) {
               tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
             }
-          } else if (this.interval === 'Quarter') {
+          } else if (this.interval === INTERVAL_QUARTER) {
             className = 'interval-quarter'
             const periodMonth = DateDisplay.getPeriodMonth(
               this.interval,
@@ -1427,7 +1453,7 @@ export default {
             if (isFilter && periodMonth) {
               tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
             }
-          } else if (this.interval === 'Half Year') {
+          } else if (this.interval === INTERVAL_HALFYEAR) {
             className = 'interval-half-year'
             const periodMonth = DateDisplay.getPeriodMonth(
               this.interval,
@@ -1436,9 +1462,9 @@ export default {
             if (isFilter && periodMonth) {
               tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
             }
-          } else if (this.interval === 'Year') {
+          } else if (this.interval === INTERVAL_YEAR) {
             className = 'interval-year'
-          } else if (this.interval === 'Fin Year') {
+          } else if (this.interval === INTERVAL_YEAR) {
             tickLength = timeMonth.filter(d => {
               return d.getMonth() === 6
             })
@@ -1450,27 +1476,22 @@ export default {
           tickLength = timeDay.every(1)
         }
         if (this.range === '1Y') {
-          if (this.interval === 'Day') {
+          if (this.interval === INTERVAL_DAY) {
             const zoomDates = this.x.domain()
             if (zoomDates[1].getTime() - zoomDates[0].getTime() < 2592000000) {
               tickLength = timeDay.every(1)
             } else {
               tickLength = 7
             }
-          } else if (this.interval === 'Week') {
+          } else if (this.interval === INTERVAL_WEEK) {
             tickLength = 7
-          } else if (this.interval === 'Month') {
+          } else if (this.interval === INTERVAL_MONTH) {
             tickLength = timeMonth.every(1)
           }
         }
       }
 
-      if (
-        isFilter &&
-        (this.interval === 'Season' ||
-          this.interval === 'Quarter' ||
-          this.interval === 'Half Year')
-      ) {
+      if (isFilter && hasIntervalFilters(this.interval)) {
         this.xAxis.tickFormat((d, i) => {
           const year = d.getFullYear() + ''
           const nextYear = d.getFullYear() + 1 + ''
@@ -1487,7 +1508,7 @@ export default {
         if (isFilter && periodMonth) {
           tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
         }
-      } else if (this.interval === 'Fin Year') {
+      } else if (this.interval === INTERVAL_YEAR) {
         this.xAxis.tickFormat(d => {
           const year = d.getFullYear() + 1 + ''
           return `FY${year.substr(2, 2)}`

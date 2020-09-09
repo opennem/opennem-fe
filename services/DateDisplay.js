@@ -370,6 +370,13 @@ export default {
     return date
   },
 
+  mutateHalfYearDate(date, month, filterPeriod) {
+    if (filterPeriod === '2nd Half' && month >= 0 && month <= 6) {
+      date.setFullYear(date.getFullYear() - 1)
+    }
+    return date
+  },
+
   getPeriodMonth(interval, period) {
     if (interval === 'Quarter') {
       switch (period) {

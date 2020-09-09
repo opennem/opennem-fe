@@ -74,6 +74,7 @@ import {
   FILTER_NONE,
   INTERVAL_SEASON,
   INTERVAL_QUARTER,
+  INTERVAL_HALFYEAR,
   hasIntervalFilters
 } from '@/constants/interval-filters.js'
 
@@ -203,6 +204,12 @@ export default {
           )
         } else if (this.interval === INTERVAL_QUARTER) {
           hoverDate = DateDisplay.mutateQuarterDate(
+            hoverDate,
+            month,
+            this.filterPeriod
+          )
+        } else if (this.interval === INTERVAL_HALFYEAR) {
+          hoverDate = DateDisplay.mutateHalfYearDate(
             hoverDate,
             month,
             this.filterPeriod
