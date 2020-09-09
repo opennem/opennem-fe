@@ -51,19 +51,6 @@ export default {
     })
   },
 
-  getAllGroupDomains(dict) {
-    const order = dict.FUEL_TECH_ORDER
-    return order.map(ft => {
-      return {
-        id: `${ft}.energy`,
-        label: dict.FUEL_TECH_LABEL[ft],
-        colour: dict.FUEL_TECH_GROUP_COLOUR[ft],
-        category: dict.FUEL_TECH_CATEGORY[ft],
-        group: ft
-      }
-    })
-  },
-
   getDomainObjsOrder(domainObjs, domainOrder) {
     // get the unique domains in the right order
     const order = domainOrder

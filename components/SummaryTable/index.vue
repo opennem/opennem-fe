@@ -356,6 +356,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      domainPowerEnergyGrouped: 'regionEnergy/domainPowerEnergyGrouped',
       emissionsVolumeUnit: 'si/emissionsVolumeUnit',
       emissionsVolumePrefix: 'si/emissionsVolumePrefix',
       chartEnergyRenewablesLine:
@@ -395,10 +396,6 @@ export default {
 
     fuelTechGroupName() {
       return this.$store.getters.fuelTechGroupName
-    },
-
-    fuelTechGroup() {
-      return this.$store.getters.fuelTechGroup
     },
 
     propRef() {
@@ -1120,9 +1117,9 @@ export default {
           this.hiddenSources = hiddenSources.map(d => d.fuelTech)
           this.hiddenLoads = hiddenLoads.map(d => d.fuelTech)
         } else {
-          const hiddenLoads = Domain.getAllGroupDomains(
-            this.fuelTechGroup
-          ).filter(d => d.category === 'load')
+          const hiddenLoads = this.domainPowerEnergyGrouped[
+            this.fuelTechGroupName
+          ].filter(d => d.category === 'load')
           this.hiddenLoads = hiddenLoads.map(d => d[this.propRef])
           // this.hiddenLoads = this.loadsOrder.map(d => d[property])
         }
@@ -1177,9 +1174,9 @@ export default {
         this.hiddenSources = hiddenSources.map(d => d.fuelTech)
         this.hiddenLoads = hiddenLoads.map(d => d.fuelTech)
       } else {
-        const hiddenLoads = Domain.getAllGroupDomains(
-          this.fuelTechGroup
-        ).filter(d => d.category === 'load')
+        const hiddenLoads = this.domainPowerEnergyGrouped[
+          this.fuelTechGroupName
+        ].filter(d => d.category === 'load')
         this.hiddenLoads = hiddenLoads.map(d => d[this.propRef])
         this.hiddenSources = this.sourcesOrder.map(d => d[this.propRef])
       }
