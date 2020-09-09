@@ -108,10 +108,10 @@ export default {
       return this.updatedCompareData.length === 2
     },
     firstDate() {
-      return this.hasCompareData ? this.updatedCompareData[0].date : null
+      return this.hasCompareData ? this.updatedCompareData[0].time : null
     },
     secondDate() {
-      return this.hasCompareData ? this.updatedCompareData[1].date : null
+      return this.hasCompareData ? this.updatedCompareData[1].time : null
     },
     chartType() {
       return this.$store.getters.energyChartType
