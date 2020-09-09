@@ -45,7 +45,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import _debounce from 'lodash.debounce'
-import { isPowerRange } from '@/constants/rangeInterval.js'
+import { isPowerRange } from '@/constants/ranges.js'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import VisSection from '@/components/Energy/VisSection.vue'
 import SummarySection from '@/components/Energy/SummarySection.vue'

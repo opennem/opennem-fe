@@ -282,7 +282,6 @@ export const actions = {
       interval,
       period
     })
-    console.log(period, filteredDatasetFlat)
     commit('currentDataset', filteredDatasetFlat)
   }
 }

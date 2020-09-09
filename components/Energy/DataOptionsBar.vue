@@ -48,23 +48,30 @@
 <script>
 import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
-import RANGE_INTERVAL from '~/constants/rangeInterval.js'
-import INTERVAL_PERIOD from '~/constants/intervalPeriod.js'
+import RANGE_INTERVAL from '~/constants/ranges.js'
+import {
+  INTERVAL_FILTERS,
+  FILTER_NONE,
+  INTERVAL_SEASON,
+  INTERVAL_QUARTER,
+  INTERVAL_HALFYEAR,
+  hasIntervalFilters
+} from '@/constants/interval-filters.js'
 
 export default {
   mixins: [clickaway],
   data() {
     return {
       ranges: RANGE_INTERVAL,
-      intervalPeriod: INTERVAL_PERIOD,
+      intervalFilters: INTERVAL_FILTERS,
       selectedRange: '',
       selectedInterval: '',
       showSeasonFilter: false,
       showQuarterFilter: false,
       showHalfYearFilter: false,
-      seasonFilters: INTERVAL_PERIOD['Season'],
-      quarterFilters: INTERVAL_PERIOD['Quarter'],
-      halfYearFilters: INTERVAL_PERIOD['Half Year']
+      seasonFilters: INTERVAL_FILTERS[INTERVAL_SEASON],
+      quarterFilters: INTERVAL_FILTERS[INTERVAL_QUARTER],
+      halfYearFilters: INTERVAL_FILTERS[INTERVAL_HALFYEAR]
     }
   },
 
@@ -95,13 +102,13 @@ export default {
       return this.$store.getters.filterPeriod
     },
     periodArray() {
-      return this.intervalPeriod[this.selectedInterval]
+      return this.intervalFilters[this.selectedInterval]
     },
     filters() {
       switch (this.interval) {
-        case 'Season':
+        case INTERVAL_SEASON:
           return this.seasonFilters
-        case 'Quarter':
+        case INTERVAL_QUARTER:
           return this.quarterFilters
         default:
           // Half Year
@@ -119,7 +126,7 @@ export default {
     },
     periodArray(arr) {
       if (arr && !this.filterPeriod) {
-        this.$store.dispatch('filterPeriod', 'All')
+        this.$store.dispatch('filterPeriod', FILTER_NONE)
       }
     }
   },
@@ -132,21 +139,16 @@ export default {
   methods: {
     showFilter(interval) {
       return (
-        (interval === 'Season' && this.showSeasonFilter) ||
-        (interval === 'Quarter' && this.showQuarterFilter) ||
-        (interval === 'Half Year' && this.showHalfYearFilter)
+        (interval === INTERVAL_SEASON && this.showSeasonFilter) ||
+        (interval === INTERVAL_QUARTER && this.showQuarterFilter) ||
+        (interval === INTERVAL_HALFYEAR && this.showHalfYearFilter)
       )
     },
     hasFilter(interval) {
-      return (
-        this.interval === interval &&
-        (interval === 'Season' ||
-          interval === 'Quarter' ||
-          interval === 'Half Year')
-      )
+      return this.interval === interval && hasIntervalFilters(interval)
     },
     intervalLabel(interval) {
-      if (this.filterPeriod === 'All') {
+      if (this.filterPeriod === FILTER_NONE) {
         return this.interval
       } else {
         return this.filterPeriod
@@ -154,7 +156,7 @@ export default {
     },
     handleRangeChange(range) {
       this.$store.commit('regionEnergy/filteredDates', [])
-      this.$store.dispatch('filterPeriod', 'All')
+      this.$store.dispatch('filterPeriod', FILTER_NONE)
       this.$store.dispatch('si/emissionsVolumePrefix', '')
 
       let interval = ''
@@ -194,20 +196,20 @@ export default {
     handleIntervalChange(interval) {
       const hasFilter = this.hasFilter(interval)
       if (hasFilter && this.interval === interval) {
-        if (interval === 'Season') {
+        if (interval === INTERVAL_SEASON) {
           this.showSeasonFilter = true
         }
-        if (interval === 'Quarter') {
+        if (interval === INTERVAL_QUARTER) {
           this.showQuarterFilter = true
         }
-        if (interval === 'Half Year') {
+        if (interval === INTERVAL_HALFYEAR) {
           this.showHalfYearFilter = true
         }
       } else {
         this.showSeasonFilter = false
         this.showQuarterFilter = false
         this.showHalfYearFilter = false
-        this.$store.dispatch('filterPeriod', 'All')
+        this.$store.dispatch('filterPeriod', FILTER_NONE)
         this.$store.dispatch('si/emissionsVolumePrefix', '')
         this.$store.dispatch('interval', interval)
       }

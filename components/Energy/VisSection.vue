@@ -70,6 +70,13 @@ import { min, max } from 'd3-array'
 import _cloneDeep from 'lodash.clonedeep'
 import addYears from 'date-fns/addYears'
 
+import {
+  FILTER_NONE,
+  INTERVAL_SEASON,
+  INTERVAL_QUARTER,
+  hasIntervalFilters
+} from '@/constants/interval-filters.js'
+
 import DateDisplay from '@/services/DateDisplay.js'
 import PowerEnergyChart from '@/components/Energy/Charts/PowerEnergyChart'
 import EmissionsChart from '@/components/Energy/Charts/EmissionsChart'
@@ -175,32 +182,26 @@ export default {
     },
     handleDateHover(date) {
       let hoverDate = date
-      const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
+      const isFilter = !this.filterPeriod || this.filterPeriod !== FILTER_NONE
       if (hoverDate && this.interval === 'Fin Year') {
         if (hoverDate.getMonth() >= 6) {
           hoverDate.setFullYear(hoverDate.getFullYear() + 1)
         }
       }
-      if (
-        isFilter &&
-        hoverDate &&
-        (this.interval === 'Season' ||
-          this.interval === 'Quarter' ||
-          this.interval === 'Half Year')
-      ) {
+      if (isFilter && hoverDate && hasIntervalFilters(this.interval)) {
         const periodMonth = DateDisplay.getPeriodMonth(
           this.interval,
           this.filterPeriod
         )
         const month = hoverDate.getMonth()
 
-        if (this.interval === 'Season') {
+        if (this.interval === INTERVAL_SEASON) {
           hoverDate = DateDisplay.mutateSeasonDate(
             hoverDate,
             month,
             this.filterPeriod
           )
-        } else if (this.interval === 'Quarter') {
+        } else if (this.interval === INTERVAL_QUARTER) {
           hoverDate = DateDisplay.mutateQuarterDate(
             hoverDate,
             month,
