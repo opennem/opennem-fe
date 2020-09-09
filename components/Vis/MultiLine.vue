@@ -258,7 +258,7 @@ export default {
       switch (this.curve) {
         case 'step':
           return curveStepAfter
-        case 'linear':
+        case 'straight':
           return curveLinear
         case 'smooth':
         default:
