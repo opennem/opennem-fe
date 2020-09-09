@@ -742,7 +742,18 @@ export default {
           const startXMonth = startX.getMonth()
           const endXMonth = endX.getMonth()
 
-          if (self.interval === INTERVAL_SEASON) {
+          if (self.interval === INTERVAL_MONTH) {
+            startX = DateDisplay.mutateMonthDate(
+              startX,
+              startXMonth,
+              self.filterPeriod
+            )
+            endX = DateDisplay.mutateMonthDate(
+              endX,
+              endXMonth,
+              self.filterPeriod
+            )
+          } else if (self.interval === INTERVAL_SEASON) {
             startX = DateDisplay.mutateSeasonDate(
               startX,
               startXMonth,
@@ -1286,7 +1297,14 @@ export default {
         const startXMonth = startX.getMonth()
         const endXMonth = endX.getMonth()
 
-        if (this.interval === INTERVAL_SEASON) {
+        if (this.interval === INTERVAL_MONTH) {
+          startX = DateDisplay.mutateMonthDate(
+            startX,
+            startXMonth,
+            this.filterPeriod
+          )
+          endX = DateDisplay.mutateMonthDate(endX, endXMonth, this.filterPeriod)
+        } else if (this.interval === INTERVAL_SEASON) {
           startX = DateDisplay.mutateSeasonDate(
             startX,
             startXMonth,

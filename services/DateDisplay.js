@@ -346,6 +346,11 @@ export default {
     return guides
   },
 
+  mutateMonthDate(date, month, filterPeriod) {
+    date.setFullYear(date.getFullYear() - 1)
+    return date
+  },
+
   mutateSeasonDate(date, month, filterPeriod) {
     if (filterPeriod === 'Summer' && month !== 11) {
       date.setFullYear(date.getFullYear() - 1)
@@ -378,6 +383,35 @@ export default {
   },
 
   getPeriodMonth(interval, period) {
+    if (interval === 'Month') {
+      switch (period) {
+        case 'January':
+          return 0
+        case 'February':
+          return 1
+        case 'March':
+          return 2
+        case 'April':
+          return 3
+        case 'May':
+          return 4
+        case 'June':
+          return 5
+        case 'July':
+          return 6
+        case 'August':
+          return 7
+        case 'September':
+          return 8
+        case 'October':
+          return 9
+        case 'November':
+          return 10
+        case 'December':
+          return 11
+      }
+    }
+
     if (interval === 'Quarter') {
       switch (period) {
         case 'Q1':

@@ -52,6 +52,7 @@ import RANGE_INTERVAL from '~/constants/ranges.js'
 import {
   INTERVAL_FILTERS,
   FILTER_NONE,
+  INTERVAL_MONTH,
   INTERVAL_SEASON,
   INTERVAL_QUARTER,
   INTERVAL_HALFYEAR,
@@ -66,9 +67,11 @@ export default {
       intervalFilters: INTERVAL_FILTERS,
       selectedRange: '',
       selectedInterval: '',
+      showMonthFilter: false,
       showSeasonFilter: false,
       showQuarterFilter: false,
       showHalfYearFilter: false,
+      monthFilters: INTERVAL_FILTERS[INTERVAL_MONTH],
       seasonFilters: INTERVAL_FILTERS[INTERVAL_SEASON],
       quarterFilters: INTERVAL_FILTERS[INTERVAL_QUARTER],
       halfYearFilters: INTERVAL_FILTERS[INTERVAL_HALFYEAR]
@@ -106,6 +109,8 @@ export default {
     },
     filters() {
       switch (this.interval) {
+        case INTERVAL_MONTH:
+          return this.monthFilters
         case INTERVAL_SEASON:
           return this.seasonFilters
         case INTERVAL_QUARTER:
@@ -139,10 +144,17 @@ export default {
   methods: {
     showFilter(interval) {
       return (
+        (interval === INTERVAL_MONTH && this.showMonthFilter) ||
         (interval === INTERVAL_SEASON && this.showSeasonFilter) ||
         (interval === INTERVAL_QUARTER && this.showQuarterFilter) ||
         (interval === INTERVAL_HALFYEAR && this.showHalfYearFilter)
       )
+    },
+    hideAllFilters() {
+      this.showMonthFilter = false
+      this.showSeasonFilter = false
+      this.showQuarterFilter = false
+      this.showHalfYearFilter = false
     },
     hasFilter(interval) {
       return this.interval === interval && hasIntervalFilters(interval)
@@ -196,6 +208,9 @@ export default {
     handleIntervalChange(interval) {
       const hasFilter = this.hasFilter(interval)
       if (hasFilter && this.interval === interval) {
+        if (interval === INTERVAL_MONTH) {
+          this.showMonthFilter = true
+        }
         if (interval === INTERVAL_SEASON) {
           this.showSeasonFilter = true
         }
@@ -206,9 +221,7 @@ export default {
           this.showHalfYearFilter = true
         }
       } else {
-        this.showSeasonFilter = false
-        this.showQuarterFilter = false
-        this.showHalfYearFilter = false
+        this.hideAllFilters()
         this.$store.dispatch('filterPeriod', FILTER_NONE)
         this.$store.dispatch('si/emissionsVolumePrefix', '')
         this.$store.dispatch('interval', interval)
@@ -218,14 +231,10 @@ export default {
       this.$store.dispatch('filterPeriod', period)
       this.$store.dispatch('compareDifference', false)
       this.$store.dispatch('compareDates', [])
-      this.showSeasonFilter = false
-      this.showQuarterFilter = false
-      this.showHalfYearFilter = false
+      this.hideAllFilters()
     },
     handleClickAway() {
-      this.showSeasonFilter = false
-      this.showQuarterFilter = false
-      this.showHalfYearFilter = false
+      this.hideAllFilters()
     }
   }
 }

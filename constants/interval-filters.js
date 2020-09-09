@@ -2,9 +2,22 @@ export const INTERVAL_5MIN = '5m'
 export const INTERVAL_30MIN = '30m'
 export const INTERVAL_DAY = 'Day'
 export const INTERVAL_WEEK = 'Week'
-export const INTERVAL_MONTH = 'Month'
 export const INTERVAL_FINYEAR = 'Fin Year'
 export const INTERVAL_YEAR = 'Year'
+
+export const INTERVAL_MONTH = 'Month'
+export const FILTER_MONTH_1 = 'January'
+export const FILTER_MONTH_2 = 'February'
+export const FILTER_MONTH_3 = 'March'
+export const FILTER_MONTH_4 = 'April'
+export const FILTER_MONTH_5 = 'May'
+export const FILTER_MONTH_6 = 'June'
+export const FILTER_MONTH_7 = 'July'
+export const FILTER_MONTH_8 = 'August'
+export const FILTER_MONTH_9 = 'September'
+export const FILTER_MONTH_10 = 'October'
+export const FILTER_MONTH_11 = 'November'
+export const FILTER_MONTH_12 = 'December'
 
 export const INTERVAL_SEASON = 'Season'
 export const FILTER_SEASON_SUMMER = 'Summer'
@@ -25,6 +38,21 @@ export const FILTER_HALFYEAR_2ND = '2nd Half'
 export const FILTER_NONE = 'All'
 
 export const INTERVAL_FILTERS = {}
+INTERVAL_FILTERS[INTERVAL_MONTH] = [
+  FILTER_NONE,
+  FILTER_MONTH_1,
+  FILTER_MONTH_2,
+  FILTER_MONTH_3,
+  FILTER_MONTH_4,
+  FILTER_MONTH_5,
+  FILTER_MONTH_6,
+  FILTER_MONTH_7,
+  FILTER_MONTH_8,
+  FILTER_MONTH_9,
+  FILTER_MONTH_10,
+  FILTER_MONTH_11,
+  FILTER_MONTH_12
+]
 INTERVAL_FILTERS[INTERVAL_SEASON] = [
   FILTER_NONE,
   FILTER_SEASON_SUMMER,
@@ -47,6 +75,7 @@ INTERVAL_FILTERS[INTERVAL_HALFYEAR] = [
 
 export function hasIntervalFilters(interval) {
   return (
+    // interval === INTERVAL_MONTH ||
     interval === INTERVAL_SEASON ||
     interval === INTERVAL_QUARTER ||
     interval === INTERVAL_HALFYEAR

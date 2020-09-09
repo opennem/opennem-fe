@@ -72,6 +72,7 @@ import addYears from 'date-fns/addYears'
 
 import {
   FILTER_NONE,
+  INTERVAL_MONTH,
   INTERVAL_SEASON,
   INTERVAL_QUARTER,
   INTERVAL_HALFYEAR,
@@ -196,7 +197,13 @@ export default {
         )
         const month = hoverDate.getMonth()
 
-        if (this.interval === INTERVAL_SEASON) {
+        if (this.interval === INTERVAL_MONTH) {
+          hoverDate = DateDisplay.mutateMonthDate(
+            hoverDate,
+            month,
+            this.filterPeriod
+          )
+        } else if (this.interval === INTERVAL_SEASON) {
           hoverDate = DateDisplay.mutateSeasonDate(
             hoverDate,
             month,
