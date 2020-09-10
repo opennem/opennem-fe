@@ -7,13 +7,16 @@ import * as FUEL_TECHS from '@/constants/fuel-tech.js'
 import PerfTime from '@/plugins/perfTime.js'
 
 const Regions = getEnergyRegions().filter(r => r.id !== 'all' && r.id !== 'nem')
-const host = window.location.host
+
 let hostEnv = 'dev'
-if (host === 'opennem.org.au') {
-  hostEnv = 'prod'
-}
-if (host === 'dev.opennem.org.au') {
-  hostEnv = 'dev'
+if (typeof window !== 'undefined') {
+  const host = window.location.host
+  if (host === 'opennem.org.au') {
+    hostEnv = 'prod'
+  }
+  if (host === 'dev.opennem.org.au') {
+    hostEnv = 'dev'
+  }
 }
 
 export const state = () => ({

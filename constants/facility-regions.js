@@ -64,6 +64,11 @@ export function getNEMRegionArray() {
   )
 }
 
+export function getFacilityRegionLabel(id) {
+  const find = FacilityRegions.find(r => r.id === id)
+  return find ? find.label : ''
+}
+
 export function getRegionLocationById(id) {
   const region = FacilityRegions.find(r => r.id === id)
   return region ? region.location : null

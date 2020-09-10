@@ -46,12 +46,44 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import _debounce from 'lodash.debounce'
 import { isPowerRange } from '@/constants/ranges.js'
+import { getEnergyRegionLabel } from '@/constants/energy-regions.js'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import VisSection from '@/components/Energy/VisSection.vue'
 import SummarySection from '@/components/Energy/SummarySection.vue'
 
 export default {
   layout: 'main',
+
+  head() {
+    return {
+      title: getEnergyRegionLabel(this.regionId),
+      meta: [
+        {
+          hid: 'twitter:title',
+          name: 'twitter:title',
+          content: getEnergyRegionLabel(this.regionId)
+        },
+        {
+          hid: 'twitter:image:src',
+          name: 'twitter:image:src',
+          content: 'https://dev.opennem.org.au/images/energy/opennem-energy.png'
+        },
+        {
+          hid: 'og:title',
+          property: 'og:title',
+          content: getEnergyRegionLabel(this.regionId)
+        },
+        {
+          hid: 'og:image',
+          property: 'og:image',
+          content: 'https://dev.opennem.org.au/images/energy/opennem-energy.png'
+        },
+        { hid: 'og:image:width', property: 'og:image:width', content: '1447' },
+        { hid: 'og:image:height', property: 'og:image:height', content: '932' }
+      ]
+    }
+  },
+
   components: {
     DataOptionsBar,
     VisSection,

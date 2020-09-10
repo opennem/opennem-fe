@@ -1,13 +1,17 @@
 import axios from 'axios'
 import { BrowserClient } from '@sentry/browser'
 
-const host = window.location.host
-let client = null
-if (host === 'opennem.org.au') {
-  client = new BrowserClient({
-    dsn:
-      'https://c89c945a3c14478f9df55a65ddb1fbae@o402615.ingest.sentry.io/5265226'
-  })
+let host = null,
+  client = null
+
+if (typeof window !== 'undefined') {
+  host = window.location.host
+  if (host === 'opennem.org.au') {
+    client = new BrowserClient({
+      dsn:
+        'https://c89c945a3c14478f9df55a65ddb1fbae@o402615.ingest.sentry.io/5265226'
+    })
+  }
 }
 
 const http = axios.create({

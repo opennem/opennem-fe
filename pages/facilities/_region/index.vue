@@ -80,7 +80,8 @@ import * as FUEL_TECHS from '~/constants/fuel-tech.js'
 import { FACILITY_OPERATING } from '~/constants/facility-status.js'
 import {
   FacilityRegions,
-  getNEMRegionArray
+  getNEMRegionArray,
+  getFacilityRegionLabel
 } from '~/constants/facility-regions.js'
 
 import Http from '~/services/Http.js'
@@ -95,6 +96,38 @@ const DESCENDING = 'desc'
 
 export default {
   layout: 'main',
+
+  head() {
+    return {
+      title: getFacilityRegionLabel(this.regionId),
+      meta: [
+        {
+          hid: 'twitter:title',
+          name: 'twitter:title',
+          content: getFacilityRegionLabel(this.regionId)
+        },
+        {
+          hid: 'twitter:image:src',
+          name: 'twitter:image:src',
+          content:
+            'https://dev.opennem.org.au/images/energy/opennem-facilities.png'
+        },
+        {
+          hid: 'og:title',
+          property: 'og:title',
+          content: getFacilityRegionLabel(this.regionId)
+        },
+        {
+          hid: 'og:image',
+          property: 'og:image',
+          content:
+            'https://dev.opennem.org.au/images/energy/opennem-facilities.png'
+        },
+        { hid: 'og:image:width', property: 'og:image:width', content: '1447' },
+        { hid: 'og:image:height', property: 'og:image:height', content: '932' }
+      ]
+    }
+  },
 
   components: {
     FacilityFilters,
