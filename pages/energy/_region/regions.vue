@@ -310,7 +310,12 @@ export default {
       }
     },
     xTicks() {
-      return AxisTicks(this.range, this.interval, this.isZoomed)
+      return AxisTicks(
+        this.range,
+        this.interval,
+        this.isZoomed,
+        this.filterPeriod
+      )
     },
     hoverEnergyValues() {
       return this.getHoverArray(this.energyDataset, this.dateHovered)

@@ -108,7 +108,8 @@ export default {
       this.doUpdateXTicks({
         range: this.range,
         interval: this.interval,
-        isZoomed: dates.length > 0
+        isZoomed: dates.length > 0,
+        filterPeriod: this.filterPeriod
       })
     },
     filterPeriod(period) {
