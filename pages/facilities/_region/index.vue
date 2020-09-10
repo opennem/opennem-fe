@@ -104,7 +104,7 @@ export default {
         {
           hid: 'twitter:title',
           name: 'twitter:title',
-          content: getFacilityRegionLabel(this.regionId)
+          content: `OpenNEM: ${getFacilityRegionLabel(this.regionId)}`
         },
         {
           hid: 'twitter:image:src',
@@ -115,7 +115,7 @@ export default {
         {
           hid: 'og:title',
           property: 'og:title',
-          content: getFacilityRegionLabel(this.regionId)
+          content: `OpenNEM: ${getFacilityRegionLabel(this.regionId)}`
         },
         {
           hid: 'og:image',

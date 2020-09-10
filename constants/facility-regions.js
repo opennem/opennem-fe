@@ -8,7 +8,7 @@ export const FacilityRegions = [
     location: [-25, 133]
   },
   {
-    id: 'nem1',
+    id: 'nem',
     abbr: 'NEM',
     label: 'NEM',
     colour: '#e34a33',
