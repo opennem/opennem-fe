@@ -222,7 +222,12 @@ export default {
             this.filterPeriod
           )
         }
-        hoverDate.setMonth(periodMonth + 1)
+
+        if (this.interval === INTERVAL_MONTH) {
+          hoverDate.setMonth(periodMonth)
+        } else {
+          hoverDate.setMonth(periodMonth + 1)
+        }
       }
 
       const closestDate = DateDisplay.snapToClosestInterval(

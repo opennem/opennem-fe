@@ -787,8 +787,14 @@ export default {
               self.filterPeriod
             )
           }
-          startX.setMonth(periodMonth + 1)
-          endX.setMonth(periodMonth + 1)
+
+          if (self.interval === INTERVAL_MONTH) {
+            startX.setMonth(periodMonth)
+            endX.setMonth(periodMonth)
+          } else {
+            startX.setMonth(periodMonth + 1)
+            endX.setMonth(periodMonth + 1)
+          }
         }
 
         const startTime = DateDisplay.roundToClosestInterval(
@@ -1326,7 +1332,7 @@ export default {
             endXMonth,
             this.filterPeriod
           )
-        } else if (self.interval === INTERVAL_HALFYEAR) {
+        } else if (this.interval === INTERVAL_HALFYEAR) {
           startX = DateDisplay.mutateHalfYearDate(
             startX,
             startXMonth,
@@ -1335,11 +1341,17 @@ export default {
           endX = DateDisplay.mutateHalfYearDate(
             endX,
             endXMonth,
-            sethislf.filterPeriod
+            this.filterPeriod
           )
         }
-        startX.setMonth(periodMonth + 1)
-        endX.setMonth(periodMonth + 1)
+
+        if (this.interval === INTERVAL_MONTH) {
+          startX.setMonth(periodMonth)
+          endX.setMonth(periodMonth)
+        } else {
+          startX.setMonth(periodMonth + 1)
+          endX.setMonth(periodMonth + 1)
+        }
       }
 
       const startTime = DateDisplay.roundToClosestInterval(

@@ -73,9 +73,9 @@ INTERVAL_FILTERS[INTERVAL_HALFYEAR] = [
   FILTER_HALFYEAR_2ND
 ]
 
-export function hasIntervalFilters(interval) {
+export function hasIntervalFilters(interval, range) {
   return (
-    // interval === INTERVAL_MONTH ||
+    (range !== '1Y' && interval === INTERVAL_MONTH) ||
     interval === INTERVAL_SEASON ||
     interval === INTERVAL_QUARTER ||
     interval === INTERVAL_HALFYEAR

@@ -157,7 +157,9 @@ export default {
       this.showHalfYearFilter = false
     },
     hasFilter(interval) {
-      return this.interval === interval && hasIntervalFilters(interval)
+      return (
+        this.interval === interval && hasIntervalFilters(interval, this.range)
+      )
     },
     intervalLabel(interval) {
       if (this.filterPeriod === FILTER_NONE) {

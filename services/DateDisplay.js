@@ -78,6 +78,35 @@ function getHalfYearOffset(period) {
   }
 }
 
+function getMonthOffset(period) {
+  switch (period) {
+    case 'January':
+      return 0
+    case 'February':
+      return 1
+    case 'March':
+      return 2
+    case 'April':
+      return 3
+    case 'May':
+      return 4
+    case 'June':
+      return 5
+    case 'July':
+      return 6
+    case 'August':
+      return 7
+    case 'September':
+      return 8
+    case 'October':
+      return 9
+    case 'November':
+      return 10
+    case 'December':
+      return 11
+  }
+}
+
 function getSeasonClosestDate(date, isFloor, filterPeriod) {
   const isFilter = !filterPeriod || filterPeriod !== 'All'
   if (isFilter) {
@@ -118,6 +147,20 @@ function get6MonthClosestDate(date, isFloor, filterPeriod) {
     return isFloor
       ? d3TimeMonth.every(6).floor(date)
       : d3TimeMonth.every(6).ceil(date)
+  }
+}
+
+function getMonthClosestDate(date, isFloor, filterPeriod) {
+  const isFilter = !filterPeriod || filterPeriod !== 'All'
+  if (isFilter) {
+    const yearDate = isFloor
+      ? d3TimeYear.every(1).floor(date)
+      : d3TimeYear.every(1).ceil(date)
+    return d3TimeMonth.offset(yearDate, getMonthOffset(filterPeriod))
+  } else {
+    return isFloor
+      ? d3TimeMonth.every(1).floor(date)
+      : d3TimeMonth.every(1).ceil(date)
   }
 }
 
@@ -286,9 +329,7 @@ export default {
           ? d3TimeMonday.every(1).floor(date)
           : d3TimeMonday.every(1).ceil(date)
       case 'Month':
-        return isFloor
-          ? d3TimeMonth.every(1).floor(date)
-          : d3TimeMonth.every(1).ceil(date)
+        return getMonthClosestDate(date, isFloor, filterPeriod)
       case 'Season':
         return getSeasonClosestDate(date, isFloor, filterPeriod)
       case 'Quarter':
@@ -347,7 +388,32 @@ export default {
   },
 
   mutateMonthDate(date, month, filterPeriod) {
-    date.setFullYear(date.getFullYear() - 1)
+    if (filterPeriod === 'January' && month === 0) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'February' && month >= 0 && month <= 1) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'March' && month >= 0 && month <= 2) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'April' && month >= 0 && month <= 3) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'May' && month >= 0 && month <= 4) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'June' && month >= 0 && month <= 5) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'July' && month >= 0 && month <= 6) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'August' && month >= 0 && month <= 7) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'September' && month >= 0 && month <= 8) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'October' && month >= 0 && month <= 9) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'November' && month >= 0 && month <= 10) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'December' && month >= 0 && month <= 11) {
+      date.setFullYear(date.getFullYear() - 1)
+    }
+    date.setDate(1)
     return date
   },
 
