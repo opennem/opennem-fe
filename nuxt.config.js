@@ -9,7 +9,7 @@ module.exports = {
   },
 
   head: {
-    titleTemplate: 'OpenNEM: %s',
+    titleTemplate: 'OpenNEM%s',
     meta: [
       { charset: 'utf-8' },
       {
@@ -30,7 +30,7 @@ module.exports = {
       {
         hid: 'twitter:image:src',
         name: 'twitter:image:src',
-        content: 'https://opennem.org.au/images/energy/nem.png'
+        content: 'https://opennem.org.au/images/screens/opennem-nem.png'
       },
       // Facebook
       {
@@ -49,11 +49,12 @@ module.exports = {
       {
         hid: 'og:image',
         property: 'og:image',
-        content: 'https://opennem.org.au/images/energy/nem.png'
+        content: 'https://opennem.org.au/images/screens/opennem-nem.png'
       },
-      { hid: 'og:image:width', property: 'og:image:width', content: '2768' },
-      { hid: 'og:image:height', property: 'og:image:height', content: '1922' }
+      { hid: 'og:image:width', property: 'og:image:width', content: '1447' },
+      { hid: 'og:image:height', property: 'og:image:height', content: '932' }
     ],
+
     link: [
       {
         rel: 'stylesheet',

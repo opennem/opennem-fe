@@ -56,7 +56,7 @@ export default {
 
   head() {
     return {
-      title: getEnergyRegionLabel(this.regionId),
+      title: `: ${getEnergyRegionLabel(this.regionId)}`,
       meta: [
         {
           hid: 'twitter:title',
@@ -66,7 +66,7 @@ export default {
         {
           hid: 'twitter:image:src',
           name: 'twitter:image:src',
-          content: 'https://dev.opennem.org.au/images/energy/opennem-energy.png'
+          content: this.cardFilename
         },
         {
           hid: 'og:title',
@@ -76,10 +76,18 @@ export default {
         {
           hid: 'og:image',
           property: 'og:image',
-          content: 'https://dev.opennem.org.au/images/energy/opennem-energy.png'
+          content: this.cardFilename
         },
-        { hid: 'og:image:width', property: 'og:image:width', content: '1447' },
-        { hid: 'og:image:height', property: 'og:image:height', content: '932' }
+        {
+          hid: 'og:image:width',
+          property: 'og:image:width',
+          content: '1447'
+        },
+        {
+          hid: 'og:image:height',
+          property: 'og:image:height',
+          content: '932'
+        }
       ]
     }
   },
@@ -93,7 +101,8 @@ export default {
   data() {
     return {
       isHovering: false,
-      hoverDate: null
+      hoverDate: null,
+      baseUrl: 'https://opennem.org.au/images/screens/'
     }
   },
 
@@ -109,6 +118,9 @@ export default {
     }),
     regionId() {
       return this.$route.params.region
+    },
+    cardFilename() {
+      return `${this.baseUrl}opennem-${this.regionId}.png`
     }
   },
 

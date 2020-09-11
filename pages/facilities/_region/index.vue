@@ -99,32 +99,42 @@ export default {
 
   head() {
     return {
-      title: getFacilityRegionLabel(this.regionId),
+      title: ` Facilities: ${getFacilityRegionLabel(this.regionId)}`,
       meta: [
         {
           hid: 'twitter:title',
           name: 'twitter:title',
-          content: `OpenNEM: ${getFacilityRegionLabel(this.regionId)}`
+          content: `OpenNEM Facilities: ${getFacilityRegionLabel(
+            this.regionId
+          )}`
         },
         {
           hid: 'twitter:image:src',
           name: 'twitter:image:src',
-          content:
-            'https://dev.opennem.org.au/images/energy/opennem-facilities.png'
+          content: this.cardFilename
         },
         {
           hid: 'og:title',
           property: 'og:title',
-          content: `OpenNEM: ${getFacilityRegionLabel(this.regionId)}`
+          content: `OpenNEM Facilities: ${getFacilityRegionLabel(
+            this.regionId
+          )}`
         },
         {
           hid: 'og:image',
           property: 'og:image',
-          content:
-            'https://dev.opennem.org.au/images/energy/opennem-facilities.png'
+          content: this.cardFilename
         },
-        { hid: 'og:image:width', property: 'og:image:width', content: '1447' },
-        { hid: 'og:image:height', property: 'og:image:height', content: '932' }
+        {
+          hid: 'og:image:width',
+          property: 'og:image:width',
+          content: '1447'
+        },
+        {
+          hid: 'og:image:height',
+          property: 'og:image:height',
+          content: '932'
+        }
       ]
     }
   },
@@ -151,7 +161,8 @@ export default {
       orderBy: ASCENDING,
       totalFacilities: 0,
       shouldZoomWhenSelected: false,
-      windowWidth: 0
+      windowWidth: 0,
+      baseUrl: 'https://opennem.org.au/images/screens/'
     }
   },
 
@@ -186,6 +197,9 @@ export default {
     },
     facilitySelectedView() {
       return this.$store.getters['facility/selectedView']
+    },
+    cardFilename() {
+      return `${this.baseUrl}opennem-facilities-${this.regionId}.png`
     }
   },
 
