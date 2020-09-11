@@ -5,6 +5,7 @@ const timestamp = new Date().getTime()
 
 module.exports = {
   publicRuntimeConfig: {
+    version: pkg.version,
     useDev: process.env.FOR === 'dev',
     url:
       process.env.FOR === 'dev'

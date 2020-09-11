@@ -1,7 +1,7 @@
 <template>
   <footer class="has-background-warning">
     <div class="left">
-      <span class="version">v3.3 beta</span>
+      <span class="version">v{{ version }} beta</span>
       <div class="sources">
         Sources:
         <a
@@ -35,6 +35,16 @@
     </div>
   </footer>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      version: this.$config.version
+    }
+  }
+}
+</script>
 
 <style lang="scss" scoped>
 @import '~/assets/scss/responsive-mixins.scss';
