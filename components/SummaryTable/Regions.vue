@@ -37,6 +37,8 @@
           v-for="d in domains" 
           :key="d.domain"
           class="summary-row"
+          @touchstart="handleTouchstart(d.domain)"
+          @touchend="handleTouchend"
           @mouseenter="handleRegionEnter(d.domain)"
           @mouseleave="handleRegionLeave()"
           @click.exact="handleRegionClick(d.domain)"
@@ -102,6 +104,12 @@ export default {
     interval: {
       type: String,
       default: () => ''
+    }
+  },
+  data() {
+    return {
+      mousedownDelay: null,
+      longPress: 500
     }
   },
 
@@ -215,6 +223,18 @@ export default {
     },
     handleRegionLeave() {
       this.$store.commit('region/hoveredRegion', null)
+    },
+    handleTouchstart(domain) {
+      this.mousedownDelay = setTimeout(() => {
+        this.handleRegionShiftClick(domain)
+      }, this.longPress)
+    },
+    handleTouchend() {
+      this.clearTimeout()
+    },
+    clearTimeout() {
+      clearTimeout(this.mousedownDelay)
+      this.mousedownDelay = null
     }
   }
 }

@@ -73,12 +73,15 @@ export default {
     focusOn: {
       type: Boolean,
       default: () => false
+    },
+    convertValue: {
+      type: Function,
+      default: () => function() {}
     }
   },
 
   data() {
     return {
-      id: 'donut-99',
       svgWidth: 0,
       svgHeight: 0,
       width: 0,
@@ -93,6 +96,9 @@ export default {
   },
 
   computed: {
+    id() {
+      return `donut-${this._uid}`
+    },
     donutDataset() {
       const domains = this.domains
       const dataset = this.dataset
@@ -143,10 +149,13 @@ export default {
     },
 
     total() {
+      let total = 0
       if (this.isTotalPower) {
-        return d3Mean(this.updatedDataset, d => d._totalSources)
+        total = d3Mean(this.updatedDataset, d => d._totalSources)
+      } else {
+        total = this.donutDataset.reduce((a, b) => a + b.value, 0)
       }
-      return this.donutDataset.reduce((a, b) => a + b.value, 0)
+      return this.convertValue(total)
     },
 
     domainIds() {
@@ -187,6 +196,7 @@ export default {
     window.addEventListener('resize', _debounce(this.handleResize, 10))
     this.setupWidthHeight()
     this.setup()
+    this.update()
   },
 
   beforeDestroy() {

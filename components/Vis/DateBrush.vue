@@ -16,6 +16,7 @@
         :transform="axisTransform" 
         class="x-axis" />
       <g 
+        v-if="!readOnly"
         :transform="brushTransform" 
         class="brush-group" />
     </svg>
@@ -31,6 +32,10 @@ import { brushX } from 'd3-brush'
 
 export default {
   props: {
+    readOnly: {
+      type: Boolean,
+      default: false
+    },
     dataset: {
       type: Array,
       default: () => []
@@ -110,7 +115,6 @@ export default {
     window.addEventListener('resize', this.handleResize)
   },
   updated() {
-    console.log(`${this.uuid} update`)
     this.setupWidthHeight()
     this.setup()
     this.draw()

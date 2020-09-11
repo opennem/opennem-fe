@@ -23,6 +23,7 @@ import { mapGetters } from 'vuex'
 const groups = [
   'Default',
   'Simplified',
+  'Coal/Gas/Renewables',
   'Flexibility',
   'Renewable/Fossil',
   'Solar/Residual'

@@ -17,62 +17,59 @@
             aria-label="delete"
             @click.stop="emitShow(false)" />
 
-          <div 
-            :class="{'is-chart-hidden': !chartEnergy}" 
-            class="chart-options-buttons buttons has-addons">
-            <button 
-              :class="{'is-selected': !chartEnergy}"
-              class="button is-small"
-              @click.stop="handleDropdownClick('hidden')">Hidden</button>
-            <button 
-              :class="{'is-selected': chartEnergyType === 'area'}"
-              class="button is-small"
-              @click.stop="handleDropdownClick('area')">Stacked</button>
-            <button 
-              :class="{'is-selected': chartEnergyType === 'proportion'}"
-              class="button is-small"
-              @click.stop="handleDropdownClick('proportion')">Proportion</button>
-            <button 
-              :class="{'is-selected': chartEnergyType === 'line'}"
-              class="button is-small"
-              @click.stop="handleDropdownClick('line')">Line</button>
-              <!-- <button 
-            :class="{'is-selected': chartEnergyType === 'delta'}"
-            class="button is-small"
-            @click.stop="handleDropdownClick('delta')">Delta</button> -->
-          </div>
+          <fieldset>
+            <label>Chart</label>
+            <div 
+              :class="{'is-chart-hidden': !chartShown}" 
+              class="chart-options-buttons buttons has-addons">
+              <button
+                v-for="type in types"
+                :key="type"
+                :class="{'is-selected': chartType === type}"
+                class="button is-small"
+                @click.stop="handleTypeClick(type)">{{ chartLabel[type] }}</button>
+            </div>
+          </fieldset>
+          
+          <fieldset v-if="chartShown">
+            <label>Style</label>
+            <div class="chart-options-buttons buttons has-addons">
+              <button
+                v-for="curve in curves"
+                :key="curve"
+                :class="{'is-selected': chartCurve === curve}"
+                class="button is-small"
+                @click.stop="handleCurveClick(curve)">{{ chartLabel[curve] }}</button>
+            </div>
+          </fieldset>
 
-          <div 
-            v-if="chartEnergyType !== 'hidden'" 
-            class="chart-options-buttons buttons has-addons">
-            <button 
-              :class="{'is-selected': isSmoothCurve}" 
-              class="button is-small"
-              @click.stop="handleCurveClick('smooth')">Smooth</button>
-            <button 
-              :class="{'is-selected': isStepCurve}" 
-              class="button is-small"
-              @click.stop="handleCurveClick('step')">Step</button>
-            <button 
-              :class="{'is-selected': isStraightCurve}" 
-              class="button is-small"
-              @click.stop="handleCurveClick('linear')">Straight</button>
-          </div>
+          <fieldset v-if="chartShown && showYAxisOptions && yAxes.length > 0">
+            <label>Measurement</label>
+            <div 
+              class="chart-options-buttons buttons has-addons" 
+              style="margin-right: 1rem;">
+              <button
+                v-for="yAxis in yAxes"
+                :key="yAxis"
+                :class="{'is-selected': chartYAxis === yAxis}"
+                class="button is-small"
+                @click.stop="handleYAxisClick(yAxis)">{{ chartLabel[yAxis] }}</button>
+            </div>
+          </fieldset>
 
-          <div
-            v-if="chartEnergyType === 'line'"
-            class="chart-options-buttons buttons has-addons" 
-            style="margin-right: 1rem;">
-            <button 
-              :class="{'is-selected': chartEnergyYAxis === 'absolute'}" 
-              class="button is-small"
-              @click.stop="handleYAxisClick('absolute')">Absolute</button>
-            <button 
-              :class="{'is-selected': chartEnergyYAxis === 'percentage'}" 
-              class="button is-small"
-              @click.stop="handleYAxisClick('percentage')">Percentage</button>
-          </div>
-
+          <fieldset v-if="chartShown && prefixes.length > 0">
+            <label>Units</label>
+            <div 
+              class="chart-options-buttons buttons has-addons" 
+              style="margin-right: 1rem;">
+              <button
+                v-for="prefix in prefixes"
+                :key="prefix"
+                :class="{'is-selected': chartDisplayPrefix === prefix}"
+                class="button is-small"
+                @click.stop="handlePrefixClick(prefix)">{{ `${prefix}${chartUnit}` }}</button>
+            </div>
+          </fieldset>
         </div>
       </div>
     </transition>
@@ -82,47 +79,88 @@
 <script>
 import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
+import {
+  CHART_LABEL,
+  CHART_LINE,
+  CHART_HIDDEN
+} from '@/constants/chart-options.js'
 
 export default {
   mixins: [clickaway],
 
   props: {
+    options: {
+      type: Object,
+      default: () => {
+        return {
+          type: [],
+          curve: [],
+          yAxis: []
+        }
+      }
+    },
+    chartShown: {
+      type: Boolean,
+      default: false
+    },
+    chartType: {
+      type: String,
+      default: ''
+    },
+    chartCurve: {
+      type: String,
+      default: ''
+    },
+    chartYAxis: {
+      type: String,
+      default: ''
+    },
+    showYAxisOptions: {
+      type: Boolean,
+      default: true
+    },
+    chartUnit: {
+      type: String,
+      default: ''
+    },
+    chartDisplayPrefix: {
+      type: String,
+      default: ''
+    },
     show: {
       type: Boolean,
       default: () => false
     }
   },
 
+  data() {
+    return {
+      chartLabel: CHART_LABEL
+    }
+  },
+
   computed: {
     ...mapGetters({
-      range: 'range',
-      chartEnergy: 'visInteract/chartEnergy',
-      chartEnergyType: 'visInteract/chartEnergyType',
-      chartEnergyYAxis: 'visInteract/chartEnergyYAxis',
-      chartEnergyCurve: 'visInteract/chartEnergyCurve',
-      chartPowerCurve: 'visInteract/chartPowerCurve'
+      range: 'range'
     }),
-    isEnergy() {
-      return this.range === '30D' || this.range === '1Y' || this.range === 'ALL'
+    types() {
+      return this.options.type
     },
-    curve() {
-      return this.isEnergy ? this.chartEnergyCurve : this.chartPowerCurve
+    curves() {
+      return this.options.curve
     },
-    isSmoothCurve() {
-      return this.curve === 'smooth'
+    yAxes() {
+      return this.options.yAxis || []
     },
-    isStepCurve() {
-      return this.curve === 'step'
+    prefixes() {
+      return this.options.si || []
     },
-    isStraightCurve() {
-      return this.curve === 'linear'
+    isLineType() {
+      return this.chartType === CHART_LINE
     }
   },
 
   methods: {
-    handleDropdownClick(type) {
-      this.$store.commit('visInteract/chartEnergyType', type)
-    },
     handleMenuClick() {
       this.emitShow(!this.show)
     },
@@ -132,15 +170,20 @@ export default {
     emitShow(show) {
       this.$emit('show-change', show)
     },
-    handleYAxisClick(type) {
-      this.$store.commit('visInteract/chartEnergyYAxis', type)
+    handleTypeClick(type) {
+      if (type === CHART_HIDDEN) {
+        this.emitShow(false)
+      }
+      this.$emit('type-click', type)
+    },
+    handleYAxisClick(yAxis) {
+      this.$emit('y-axis-click', yAxis)
     },
     handleCurveClick(curve) {
-      if (this.isEnergy) {
-        this.$store.commit('visInteract/chartEnergyCurve', curve)
-      } else {
-        this.$store.commit('visInteract/chartPowerCurve', curve)
-      }
+      this.$emit('curve-click', curve)
+    },
+    handlePrefixClick(prefix) {
+      this.$emit('prefix-click', prefix)
     }
   }
 }
@@ -152,11 +195,26 @@ export default {
 .chart-options-wrapper {
   position: relative;
   .chart-options-buttons {
-    margin-bottom: 0.7rem;
+    margin-bottom: 1px;
 
     &:last-child,
     &.is-chart-hidden {
       margin-bottom: 0;
+    }
+  }
+
+  fieldset {
+    padding-bottom: 0.3rem;
+
+    label {
+      font-family: $header-font-family;
+      font-weight: 700;
+      padding-left: 0.1rem;
+      font-size: 1.1em;
+    }
+
+    &:last-child {
+      padding-bottom: 0;
     }
   }
 }
@@ -188,7 +246,6 @@ export default {
   display: block;
   left: -10px;
   margin-top: 2px;
-  width: 312px;
 
   &::after {
     content: '';
@@ -203,25 +260,19 @@ export default {
   }
 
   .dropdown-content {
-    padding: 1rem 1.8rem 1rem 1rem;
+    padding: 6px 12px 6px 6px;
     box-shadow: 0 3px 3px rgba(10, 10, 10, 0.1);
 
     .close-btn {
       position: absolute;
-      right: 4px;
-      top: 8px;
-    }
-  }
-
-  .dropdown-item {
-    font-family: $family-primary;
-    font-weight: normal;
-    border-radius: 0;
-    min-width: 40px;
-    padding-right: 1rem;
-    &.is-selected {
-      background-color: $opennem-link-color;
-      color: #fff;
+      right: -8px;
+      top: -3px;
+      border: 4px solid #fff;
+      min-width: 22px;
+      max-width: 22px;
+      min-height: 22px;
+      max-height: 22px;
+      background-color: #999;
     }
   }
 }

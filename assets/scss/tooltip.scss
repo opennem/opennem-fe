@@ -4,6 +4,14 @@
   font-size: 11px;
   font-family: 'IBM Plex Serif', Georgia, 'Times New Roman', Times, serif;
 
+  .tooltip-list {
+    margin-top: 5px;
+
+    span {
+      display: block;
+    }
+  }
+
   .tooltip-inner {
     // background: rgba(237, 233, 231, 0.95);
     background: rgba(255, 255, 255, 0.9);

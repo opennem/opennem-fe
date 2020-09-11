@@ -71,6 +71,8 @@
           :key="ftIndex"
           :style="{ 
             backgroundColor: getColour(ft),
+            backgroundImage: getBgImage(facility.status),
+            backgroundSize: '5px 5px',
             opacity: getOpacity(ft)
           }"
           class="source-colour-side" />
@@ -80,7 +82,14 @@
         <div
           :style="{ width: hideRegionColumn ? '60%' : '50%'}"
           class="name-col">
-          <h2 class="station-name">{{ facility.displayName }}</h2>
+          <h2 class="station-name">
+            {{ facility.displayName }}
+          </h2>
+          <span 
+            v-if="facility.hasLocation" 
+            class="has-location-icon">
+            <i class="fal fa-map-marker-alt"/>
+          </span>
         </div>
 
         <div
@@ -99,7 +108,9 @@
               :style="{ opacity: getOpacity(ft) }"
             >
               {{ getFtLabel(ft) }}
-              <small v-if="facility.genFuelTechs.length > 1">({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}MW)</small>
+              <small v-if="facility.genFuelTechs.length > 1">
+                ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span><span v-else>MW</span>)
+              </small>
               <span v-if="genFtIndex !== facility.genFuelTechs.length - 1"><br></span>
             </span>
           </div>
@@ -112,7 +123,7 @@
               :style="{ opacity: getOpacity(ft) }"
             >
               {{ getFtLabel(ft) }}
-              <small>({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}MW)</small>
+              <small>({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span><span v-else>MW</span>)</small>
               <span v-if="loadFtIndex !== facility.loadFuelTechs.length - 1"><br></span>
             </em>
           </div>
@@ -122,9 +133,19 @@
           <div
             v-show="facility.generatorCap"
             class="stat-value has-text-right">
+            <span 
+              v-tooltip.auto="{
+                content: getFacilityInfoTooltip(facility),
+                trigger: widthBreak ? 'click' : 'hover'
+              }"
+              v-if="hasHiddenCapacity(facility)"
+              class="has-hidden-capacity"><i class="fal fa-info-circle"/></span>
             {{ getGeneratorCap(facility) | facilityFormatNumber }}
-            <span
-              v-if="getGeneratorCap(facility) !== 0"
+            <span 
+              v-if="getGeneratorCap(facility) !== 0 && getGeneratorCap(facility) < 1" 
+              class="unit">kW</span>
+            <span 
+              v-if="getGeneratorCap(facility) !== 0 && getGeneratorCap(facility) >= 1" 
               class="unit">MW</span>
           </div>
           <div
@@ -149,8 +170,13 @@
 <script>
 import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
-import * as FUEL_TECHS from '~/constants/fuelTech.js'
-import REGIONS from '~/constants/regions.js'
+import _uniqBy from 'lodash.uniqby'
+import * as FUEL_TECHS from '~/constants/fuel-tech.js'
+import {
+  FACILITY_OPERATING,
+  getFacilityStatusLabelById
+} from '~/constants/facility-status.js'
+import { FacilityRegions } from '~/constants/facility-regions.js'
 import Totals from './Totals'
 
 const colHeaders = [
@@ -191,6 +217,10 @@ export default {
       default: () => null
     },
     selectedTechs: {
+      type: Array,
+      default: () => []
+    },
+    selectedStatuses: {
       type: Array,
       default: () => []
     },
@@ -286,6 +316,42 @@ export default {
         this.divWidth = this.calculateDivWidth()
       }, 200)
     )
+
+    window.addEventListener('keydown', e => {
+      const isUp = e.keyCode === 38
+      const isDown = e.keyCode === 40
+      const selectedId = this.selectedFacility
+        ? this.selectedFacility.stationId
+        : null
+      const length = this.filteredFacilities.length
+      const index = this.filteredFacilities.findIndex(
+        f => f.stationId === selectedId
+      )
+      if (index !== -1) {
+        if (isUp) {
+          e.preventDefault()
+          if (index <= 0) {
+          } else {
+            this.$emit(
+              'facilitySelect',
+              this.filteredFacilities[index - 1],
+              true
+            )
+          }
+        } else if (isDown) {
+          e.preventDefault()
+          if (index >= length - 1) {
+          } else {
+            this.$emit(
+              'facilitySelect',
+              this.filteredFacilities[index + 1],
+              true
+            )
+          }
+        }
+      }
+    })
+    return false
   },
 
   updated() {
@@ -302,12 +368,14 @@ export default {
       return this.$el.offsetWidth - 13
     },
     active(status) {
-      return status === 'Commissioned'
+      return status === FACILITY_OPERATING
     },
     sort(colId) {
       this.$emit('orderChanged', colId)
     },
     handleRowClick(facility) {
+      console.log(`${facility.displayName} view model`, facility)
+      console.log(`${facility.displayName} json obj`, facility.jsonData)
       if (!this.widthBreak) {
         if (this.selected === facility) {
           this.selected = null
@@ -319,11 +387,11 @@ export default {
       }
     },
     // eslint-disable-next-line
-    handleRowHover: _debounce(function (facility) {
+    handleRowHover: _debounce(function(facility) {
       this.$emit('facilityHover', facility, true)
     }, 200),
     // eslint-disable-next-line
-    handleRowOut: _debounce(function () {
+    handleRowOut: _debounce(function() {
       this.$emit('facilityMouseout')
     }, 200),
     shouldRightAligned(colHeaderId) {
@@ -341,10 +409,10 @@ export default {
     getFtLabel(ft) {
       const ftLabel = FUEL_TECHS.FUEL_TECH_LABEL[ft]
       if (ftLabel) {
-        if (ft === 'battery_discharging') {
+        if (ft === FUEL_TECHS.BATTERY_DISCHARGING) {
           return 'Battery'
         }
-        if (ft === 'solar') {
+        if (ft === FUEL_TECHS.SOLAR_UTILITY || ft === FUEL_TECHS.SOLAR) {
           return 'Solar'
         }
         return ftLabel
@@ -352,12 +420,19 @@ export default {
       return ft || '—'
     },
     getRegionLabel(code) {
-      const find = REGIONS.find(region => region.id === code)
+      const find = FacilityRegions.find(region => region.id === code)
       return find ? find.abbr : code
     },
     getColour(fuelTech) {
       const ftColour = FUEL_TECHS.DEFAULT_FUEL_TECH_COLOUR[fuelTech]
       return ftColour || 'transparent'
+    },
+    getBgImage(status) {
+      // if (status === 'committed')
+      //   return 'linear-gradient(transparent 50%, rgba(255,255,255,.5) 50%)'
+      // if (status === 'commissioning')
+      //   return 'linear-gradient(transparent 80%, rgba(255,255,255,.5) 80%)'
+      return 'none'
     },
     getOpacity(fuelTech) {
       if (this.selectedTechs.length === 0) {
@@ -379,13 +454,82 @@ export default {
           cap += facility.fuelTechRegisteredCap[d]
         }
       })
+
       return cap
+    },
+    getFacilityInfoTooltip(facility) {
+      const units = facility.units
+      let string = ''
+      const excluded = []
+      units.forEach(u => {
+        let isTechExcluded = false,
+          isStatusExcluded = false
+        if (
+          (this.selectedTechs.length > 0 &&
+            this.selectedTechs.indexOf(u.fuelTech) === -1) ||
+          (this.selectedStatuses.length > 0 &&
+            this.selectedStatuses.indexOf(u.status) === -1)
+        ) {
+          excluded.push(u)
+        }
+      })
+
+      const uniq = _uniqBy(excluded, 'name')
+
+      uniq.forEach(e => {
+        const ftLabel = this.getFtLabel(e.fuelTech)
+        const statusLabel = getFacilityStatusLabelById(e.status)
+        const regCap = this.$options.filters.facilityFormatNumber(e.regCap)
+        const unit = regCap < 1 ? 'kW' : 'MW'
+        string += `<span>&#8226; ${ftLabel}: <strong>${regCap} ${unit}</strong> (${statusLabel})</span>`
+      })
+
+      return `Capacity that is excluded by filter:<div class="tooltip-list">${string}</div>`
+    },
+    hasHiddenCapacity(facility) {
+      const ftBoolArr = []
+      if (this.selectedTechs.length > 0) {
+        facility.fuelTechs.forEach(ft => {
+          let isSelected = false
+          this.selectedTechs.forEach(selectedFt => {
+            if (selectedFt === ft) {
+              isSelected = true
+            }
+          })
+          ftBoolArr.push(isSelected)
+        })
+      } else {
+        ftBoolArr.push(true)
+      }
+
+      const statusBoolArr = []
+      if (this.selectedStatuses.length > 0) {
+        facility.unitStatuses.forEach(status => {
+          let isSelected = false
+          this.selectedStatuses.forEach(selectedStatus => {
+            if (selectedStatus === status) {
+              isSelected = true
+            }
+          })
+          statusBoolArr.push(isSelected)
+        })
+      } else {
+        statusBoolArr.push(true)
+      }
+
+      return !(
+        ftBoolArr.reduce((a, b) => a && b) &&
+        statusBoolArr.reduce((a, b) => a && b)
+      )
     },
     isSelected(stationId) {
       if (this.selected) {
         return stationId === this.selected.stationId
       }
       return false
+    },
+    isSelectedStatus(status) {
+      return this.selectedStatuses.indexOf(status) > -1
     }
   }
 }
@@ -408,7 +552,7 @@ export default {
 .card {
   margin-bottom: 1px;
   font-size: 70%;
-  transition: all 0.2s ease-in-out;
+  // transition: all 0.1s ease-in-out;
   cursor: pointer;
   opacity: 0.9;
   z-index: 9;
@@ -428,8 +572,9 @@ export default {
   &.is-selected {
     box-shadow: 0 0 5px rgba(100, 100, 100, 0.2);
     opacity: 1;
-    transform: scale(1.01);
+    transform: scale(1.02);
     z-index: 10;
+    border: 2px solid $opennem-link-color;
   }
 
   .card-content {
@@ -469,22 +614,29 @@ export default {
 }
 
 .source-colour-side {
-  width: 5px;
+  width: 3px;
   height: 100%;
   background-color: rgba(100, 100, 100, 0.8);
 
   @include tablet {
-    width: 10px;
+    width: 6px;
   }
 }
 
 .station-name {
   font-weight: 600;
   font-size: 12px;
+  display: inline-block;
 
   @include tablet {
     font-size: 14px;
   }
+}
+.has-location-icon {
+  position: relative;
+  top: -1px;
+  left: 2px;
+  color: $opennem-link-color;
 }
 .max-capcity {
   font-size: 70%;
@@ -536,14 +688,14 @@ export default {
   }
 }
 .region-col {
-  width: 14%;
+  width: 11%;
 
   &.col-header {
     white-space: nowrap;
   }
 }
 .tech-col {
-  width: 17%;
+  width: 25%;
 
   .stat-value {
     font-size: 8px;
@@ -573,6 +725,10 @@ export default {
     @include tablet {
       font-size: 14px;
     }
+  }
+
+  .has-hidden-capacity {
+    font-size: 10px;
   }
 
   &.stat .unit {

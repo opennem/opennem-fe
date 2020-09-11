@@ -11,18 +11,6 @@ export const getters = {
   useEVnextPrefix: state => state.useEVnextPrefix
 }
 
-export const actions = {
-  emissionsVolumeUnit({ commit }, data) {
-    commit('emissionsVolumeUnit', data)
-  },
-  emissionsVolumePrefix({ commit }, data) {
-    commit('emissionsVolumePrefix', data)
-  },
-  useEVnextPrefix({ commit }, data) {
-    commit('useEVnextPrefix', data)
-  }
-}
-
 export const mutations = {
   emissionsVolumeUnit(state, emissionsVolumeUnit) {
     state.emissionsVolumeUnit = emissionsVolumeUnit
@@ -32,5 +20,17 @@ export const mutations = {
   },
   useEVnextPrefix(state, data) {
     state.useEVnextPrefix = data
+  }
+}
+
+export const actions = {
+  emissionsVolumeUnit({ commit }, data) {
+    commit('emissionsVolumeUnit', data)
+  },
+  emissionsVolumePrefix({ commit }, data) {
+    commit('emissionsVolumePrefix', data)
+  },
+  useEVnextPrefix({ commit }, data) {
+    commit('useEVnextPrefix', data)
   }
 }

@@ -1,9 +1,7 @@
 <template>
   <div class="chart-title">
     <div class="chart-label">
-      <chart-options 
-        :show="show" 
-        @show-change="handleChartOptionsChange" />
+      <slot name="options" />
       <slot name="label-unit"/>
     </div>
     
@@ -22,23 +20,3 @@
     </div>
   </div>
 </template>
-<script>
-import ChartOptions from '@/components/Vis/ChartOptions'
-
-export default {
-  components: {
-    ChartOptions
-  },
-  props: {
-    show: {
-      type: Boolean,
-      default: () => false
-    }
-  },
-  methods: {
-    handleChartOptionsChange(show) {
-      this.$emit('show-change', show)
-    }
-  }
-}
-</script>

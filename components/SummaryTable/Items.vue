@@ -14,9 +14,13 @@
     :class="{ 'click-disable': !domainToggleable }"
     class="summary-list">
     <div
-      v-for="(ft, index) in order"
+      v-for="ft in order"
       :key="ft.id"
       class="item summary-row"
+      @mouseenter="handleMouseEnter(ft)"
+      @mouseleave="handleMouseLeave"
+      @touchstart="handleTouchstart(ft)"
+      @touchend="handleTouchend"
       @click.exact="handleRowClick(ft)"
       @click.shift.exact="handleRowShiftClicked(ft)">
 
@@ -34,14 +38,21 @@
       </div>
 
       <div
-        v-if="isYearInterval"
+        v-if="isEnergyType"
         class="summary-col-energy">
-        {{ getValue(ft.id) | customFormatValue({formatter: ',.1f'}) }}
+        <span>
+          {{ getValue(ft.id) | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+        </span>
       </div>
       <div
         v-else
         class="summary-col-energy">
-        {{ getValue(ft.id) | formatValue }}
+        <span v-if="showPointSummary">
+          {{ getValue(ft.id) | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+        </span>
+        <span v-else>
+          {{ getValue(ft.id) | formatValue }}
+        </span>
       </div>
 
       <div class="summary-col-contribution">
@@ -53,7 +64,7 @@
       <div
         v-show="isAvValueColumn"
         class="summary-col-av-value">
-        {{ getAverageValue(index) | formatCurrency }}
+        {{ getAverageValue(ft) | formatCurrency }}
       </div>
 
       <div
@@ -143,16 +154,44 @@ export default {
 
   data() {
     return {
-      order: []
+      order: [],
+      mousedownDelay: null,
+      longPress: 500
     }
   },
 
   computed: {
     ...mapGetters({
+      fuelTechGroupName: 'fuelTechGroupName',
       emissionsVolumePrefix: 'si/emissionsVolumePrefix',
       percentContributionTo: 'percentContributionTo',
-      chartEnergyRenewablesLine: 'visInteract/chartEnergyRenewablesLine'
+      chartEnergyRenewablesLine:
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+
+      isEnergyType: 'regionEnergy/isEnergyType',
+
+      chartEnergyUnit: 'chartOptionsPowerEnergy/chartEnergyUnit',
+      chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
+      chartEnergyDisplayPrefix:
+        'chartOptionsPowerEnergy/chartEnergyDisplayPrefix',
+      chartEnergyCurrentUnit: 'chartOptionsPowerEnergy/chartEnergyCurrentUnit',
+
+      chartPowerUnit: 'chartOptionsPowerEnergy/chartPowerUnit',
+      chartPowerUnitPrefix: 'chartOptionsPowerEnergy/chartPowerUnitPrefix',
+      chartPowerDisplayPrefix:
+        'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
+      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit'
     }),
+    chartUnitPrefix() {
+      return this.isEnergyType
+        ? this.chartEnergyUnitPrefix
+        : this.chartPowerUnitPrefix
+    },
+    chartDisplayPrefix() {
+      return this.isEnergyType
+        ? this.chartEnergyDisplayPrefix
+        : this.chartPowerDisplayPrefix
+    },
     showSummaryColumn() {
       return this.$store.getters.showSummaryColumn
     },
@@ -210,12 +249,12 @@ export default {
 
     handleRowClick(ft) {
       if (this.domainToggleable) {
-        const fuelTech = ft.fuelTech || ft.id
+        const property = ft.fuelTech ? 'fuelTech' : 'group'
         const hidden = _cloneDeep(this.hiddenFuelTechs)
-        if (_includes(hidden, fuelTech)) {
-          _remove(hidden, d => d === fuelTech)
+        if (_includes(hidden, ft[property])) {
+          _remove(hidden, d => d === ft[property])
         } else {
-          hidden.push(fuelTech)
+          hidden.push(ft[property])
         }
         this.order = this.updateOrder(this.originalOrder)
         this.$emit('fuelTechsHidden', hidden, false)
@@ -224,7 +263,7 @@ export default {
 
     handleRowShiftClicked(ft) {
       if (this.domainToggleable) {
-        const property = ft.fuelTech ? 'fuelTech' : 'id'
+        const property = ft.fuelTech ? 'fuelTech' : 'group'
         const hiddenObjs = this.order.filter(d => d[property] !== ft[property])
         const hidden = hiddenObjs.map(d => d[property])
         this.order = this.updateOrder(this.originalOrder)
@@ -239,6 +278,7 @@ export default {
           colour: d.colour,
           domainIds: d.domainIds,
           fuelTech: d.fuelTech,
+          group: d.group,
           id: d.id,
           label: d.label,
           type: d.type,
@@ -248,8 +288,8 @@ export default {
     },
 
     isHidden(ft) {
-      const fuelTech = ft.fuelTech || ft.id
-      return _includes(this.hiddenFuelTechs, fuelTech)
+      const property = ft.fuelTech ? 'fuelTech' : 'group'
+      return _includes(this.hiddenFuelTechs, ft[property])
     },
 
     getValue(key) {
@@ -269,10 +309,11 @@ export default {
       return (rowValue / total) * 100
     },
 
-    getAverageValue(index) {
-      const id = this.hasMarketValueOrder
-        ? this.marketValueOrder[index].id
-        : null
+    getAverageValue(ft) {
+      const property =
+        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+      const find = this.marketValueOrder.find(d => d[property] === ft[property])
+      const id = find ? find.id : null
       return this.showPointSummary
         ? this.pointSummary[id] || ''
         : this.summary[id] || ''
@@ -306,9 +347,7 @@ export default {
           this.emissionsVolumePrefix,
           emissionsVolume
         )
-        return this.isYearInterval
-          ? emissionsVolume / energy / 1000
-          : emissionsVolume / energy
+        return emissionsVolume / energy
       }
       return '-'
     },
@@ -320,6 +359,26 @@ export default {
         return true
       }
       return false
+    },
+
+    handleTouchstart(ft) {
+      this.mousedownDelay = setTimeout(() => {
+        this.handleRowShiftClicked(ft)
+      }, this.longPress)
+    },
+    handleTouchend() {
+      this.clearTimeout()
+    },
+    clearTimeout() {
+      clearTimeout(this.mousedownDelay)
+      this.mousedownDelay = null
+    },
+
+    handleMouseEnter(ft) {
+      this.$emit('mouse-enter', ft)
+    },
+    handleMouseLeave() {
+      this.$emit('mouse-leave')
     }
   }
 }

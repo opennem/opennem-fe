@@ -11,12 +11,34 @@
       @viewSelect="handleViewSelect"
     />
 
-    <div class="facility-list-map-container">
+    <transition name="fade">
+      <div
+        v-if="!ready"
+        class="facility-list-map-container loading-containers">
+        <div class="facility-list">
+          <div
+            class="loader-block"
+            style="height: 400px" />
+        </div>
+        <div 
+          class="facility-map" 
+          style="margin-top: 127px;">
+          <div
+            class="loader-block"
+            style="height: 400px" />
+        </div>
+      </div>
+    </transition>
+
+    <div 
+      v-if="ready" 
+      class="facility-list-map-container">
       <facility-list
         v-if="!widthBreak || (widthBreak && selectedView === 'list')"
         :filtered-facilities="filteredFacilities"
         :selected-facility="selectedFacility"
         :selected-techs="selectedTechs"
+        :selected-statuses="selectedStatuses"
         :sort-by="sortBy"
         :order-by="orderBy"
         :hide-region-column="!isNemRegion && !isAllRegion"
@@ -50,11 +72,18 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
 import _orderBy from 'lodash.orderby'
-import * as FUEL_TECHS from '~/constants/fuelTech.js'
-import REGIONS from '~/constants/regions.js'
+import * as FUEL_TECHS from '~/constants/fuel-tech.js'
+import { FACILITY_OPERATING } from '~/constants/facility-status.js'
+import {
+  FacilityRegions,
+  getNEMRegionArray,
+  getFacilityRegionLabel
+} from '~/constants/facility-regions.js'
+
 import Http from '~/services/Http.js'
 import FacilityDataTransformService from '~/services/dataTransform/Facility.js'
 import FacilityFilters from '~/components/Facility/Filters.vue'
@@ -68,6 +97,48 @@ const DESCENDING = 'desc'
 export default {
   layout: 'main',
 
+  head() {
+    return {
+      title: ` Facilities: ${getFacilityRegionLabel(this.regionId)}`,
+      meta: [
+        {
+          hid: 'twitter:title',
+          name: 'twitter:title',
+          content: `OpenNEM Facilities: ${getFacilityRegionLabel(
+            this.regionId
+          )}`
+        },
+        {
+          hid: 'twitter:image:src',
+          name: 'twitter:image:src',
+          content: this.cardFilename
+        },
+        {
+          hid: 'og:title',
+          property: 'og:title',
+          content: `OpenNEM Facilities: ${getFacilityRegionLabel(
+            this.regionId
+          )}`
+        },
+        {
+          hid: 'og:image',
+          property: 'og:image',
+          content: this.cardFilename
+        },
+        {
+          hid: 'og:image:width',
+          property: 'og:image:width',
+          content: '1447'
+        },
+        {
+          hid: 'og:image:height',
+          property: 'og:image:height',
+          content: '932'
+        }
+      ]
+    }
+  },
+
   components: {
     FacilityFilters,
     FacilityList,
@@ -77,23 +148,30 @@ export default {
 
   data() {
     return {
+      ready: false,
       filterString: '',
       facilityData: [],
       filteredFacilities: [],
       selectedFacility: null,
       hoveredFacility: null,
-      selectedStatuses: ['Commissioned'],
+      selectedStatuses: [FACILITY_OPERATING],
       selectedTechs: [],
       selectedView: 'list',
       sortBy: 'displayName',
       orderBy: ASCENDING,
       totalFacilities: 0,
       shouldZoomWhenSelected: false,
-      windowWidth: 0
+      windowWidth: 0,
+      baseUrl: `${this.$config.url}/images/screens/`,
+      useDev: this.$config.useDev
     }
   },
 
   computed: {
+    ...mapGetters(['hostEnv']),
+    facilityDataset() {
+      return this.$store.getters['facility/dataset']
+    },
     regionId() {
       return this.$route.params.region
     },
@@ -120,6 +198,11 @@ export default {
     },
     facilitySelectedView() {
       return this.$store.getters['facility/selectedView']
+    },
+    cardFilename() {
+      return this.useDev
+        ? `${this.baseUrl}opennem-facilities-dev.png`
+        : `${this.baseUrl}opennem-facilities-${this.regionId}.png`
     }
   },
 
@@ -163,12 +246,26 @@ export default {
         }, 200)
       )
     })
-    this.fetchData()
+
+    if (this.facilityDataset.length > 0) {
+      this.facilityData = this.facilityDataset
+      this.ready = true
+    } else {
+      this.fetchData()
+    }
   },
 
   methods: {
     fetchData() {
-      const urls = ['/facility/facility_registry.json']
+      const urls = []
+
+      if (this.hostEnv === 'prod') {
+        urls.push('/facility/facility_registry.json')
+      } else {
+        urls.push(
+          'https://s3-ap-southeast-2.amazonaws.com/data.opennem.org.au/v3/geo/au_facilities.json'
+        )
+      }
 
       if (urls.length > 0) {
         Http(urls)
@@ -184,10 +281,25 @@ export default {
     },
 
     handleResponses(responses) {
-      const data = responses[0]
-      FacilityDataTransformService.flatten(data).then(res => {
-        this.facilityData = res
-      })
+      if (this.hostEnv === 'prod') {
+        FacilityDataTransformService.flatten(responses[0]).then(res => {
+          this.facilityData = res
+          this.ready = true
+          this.$store.dispatch('facility/dataset', res)
+        })
+      } else {
+        if (responses.length > 0 && responses[0].features) {
+          FacilityDataTransformService.flattenV3(responses[0].features).then(
+            res => {
+              this.facilityData = res
+              this.ready = true
+              this.$store.dispatch('facility/dataset', res)
+            }
+          )
+        } else {
+          console.warn('There is an issue parsing the response.')
+        }
+      }
     },
 
     updateFacilitiesData() {
@@ -211,29 +323,29 @@ export default {
         [this.orderBy]
       )
 
-      const filtered =
-        this.selectedTechs.length > 0
-          ? sortedData.filter(g =>
-              g.fuelTechs.some(r => this.selectedTechs.includes(r))
-            )
-          : sortedData
+      const filtered = sortedData
 
       const that = this
       let regionIds = [this.regionId]
       if (this.regionId === 'all') {
-        regionIds = ['nsw1', 'qld1', 'sa1', 'tas1', 'vic1', 'wa1']
+        regionIds = []
       } else if (this.regionId === 'nem') {
-        regionIds = ['nsw1', 'qld1', 'sa1', 'tas1', 'vic1']
+        regionIds = getNEMRegionArray()
       }
+
       async function updateFilter() {
         return filtered.filter(
           g =>
             g.displayName
               .toLowerCase()
               .includes(that.filterString.toLowerCase()) &&
-            _includes(regionIds, g.regionId.toLowerCase()) &&
+            (regionIds.length === 0 ||
+              (regionIds.length > 0 &&
+                _includes(regionIds, g.regionId.toLowerCase()))) &&
             (that.selectedStatuses.length <= 0 ||
-              _includes(that.selectedStatuses, g.status))
+              g.unitStatuses.some(r => that.selectedStatuses.includes(r))) &&
+            (that.selectedTechs.length <= 0 ||
+              g.fuelTechs.some(r => that.selectedTechs.includes(r)))
         )
       }
 
@@ -243,11 +355,11 @@ export default {
 
         const exportData = facilities.map(d => {
           // eslint-disable-line
-          const region = REGIONS.find(r => r.id === d.regionId)
+          const region = FacilityRegions.find(r => r.id === d.regionId)
           return {
             'Facility Name': d.displayName,
             Status: d.status,
-            Region: region.label,
+            Region: region ? region.label : '',
             Technology: d.fuelTechs.map(ft => FUEL_TECHS.FUEL_TECH_LABEL[ft]),
             'Generator Capacity (MW)': d.generatorCap,
             Latitude: d.location.latitude,
@@ -341,7 +453,8 @@ export default {
       width: 50%;
       position: fixed;
       right: 0;
-      top: 100px;
+      top: 0;
+      z-index: 9999;
       padding: 0 1rem 0 0;
     }
   }

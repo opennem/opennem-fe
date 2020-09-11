@@ -32,7 +32,7 @@
         >
           {{ getFtLabel(ft) }}
           <small v-if="facility.genFuelTechs.length > 1">
-            ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}MW)
+            ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span><span v-else>MW</span>)
           </small><span v-if="genFtIndex !== facility.genFuelTechs.length - 1">,</span> 
         </span>
         <span v-if="facility.loadFuelTechs.length && facility.genFuelTechs.length">,</span>
@@ -42,7 +42,7 @@
         >
           {{ getFtLabel(ft) }}
           <small>
-            ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}MW)
+            ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span><span v-else>MW</span>)
           </small><span v-if="loadFtIndex !== facility.loadFuelTechs.length - 1">,</span>
         </em>
       </div>
@@ -51,9 +51,11 @@
     <div class="capacity-wrapper">
       <div v-show="facility.generatorCap">
         {{ generatorCap | facilityFormatNumber }}
-        <span
-          v-if="generatorCap !== 0"
-          class="unit">MW</span>
+        <span 
+          v-if="generatorCap !== 0 && generatorCap < 1" 
+          class="unit">kW</span><span 
+            v-if="generatorCap !== 0 && generatorCap >= 1" 
+            class="unit">MW</span>
       </div>
       <div v-show="!facility.generatorCap">
         –
@@ -63,7 +65,7 @@
 </template>
 
 <script>
-import * as FUEL_TECHS from '~/constants/fuelTech.js'
+import * as FUEL_TECHS from '~/constants/fuel-tech.js'
 
 export default {
   props: {
@@ -112,10 +114,10 @@ export default {
     getFtLabel(ft) {
       const ftLabel = FUEL_TECHS.FUEL_TECH_LABEL[ft]
       if (ftLabel) {
-        if (ft === 'battery_discharging') {
+        if (ft === FUEL_TECHS.BATTERY_DISCHARGING) {
           return 'Battery'
         }
-        if (ft === 'solar') {
+        if (ft === FUEL_TECHS.SOLAR_UTILITY || ft === FUEL_TECHS.SOLAR) {
           return 'Solar'
         }
         return ftLabel
@@ -187,7 +189,7 @@ export default {
   display: flex;
 }
 .source-colour {
-  width: 15px;
+  width: 6px;
   height: 100%;
 }
 </style>

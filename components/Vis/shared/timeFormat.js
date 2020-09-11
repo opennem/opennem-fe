@@ -1,4 +1,3 @@
-import moment from 'moment'
 import { timeFormat } from 'd3-time-format'
 import {
   timeSecond,
@@ -20,10 +19,7 @@ const formatMillisecond = timeFormat('.%L'),
   formatYear = timeFormat('%Y')
 
 export default function(d) {
-  // TODO: check if moment is needed here
-  const date = moment(d)
-    .utcOffset(600)
-    .toDate()
+  const date = d
   return (timeSecond(date) < date
     ? formatMillisecond
     : timeMinute(date) < date

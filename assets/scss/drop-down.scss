@@ -1,6 +1,14 @@
 .header-dropdowns .dropdown {
   font-size: 1.3rem;
 
+  .dropdown-content {
+    padding: 5px;
+  }
+
+  .dropdown-item {
+    border-radius: 4px;
+  }
+
   .fa-chevron-down {
     font-size: 0.8rem;
     color: $opennem-link-color;
@@ -18,7 +26,7 @@
 
     &:hover {
       background-color: $row-hover;
-    }  
+    }
   }
 
   .dropdown-item {

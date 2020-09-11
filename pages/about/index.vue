@@ -167,6 +167,10 @@ import AppLogo from '~/components/ui/Logo'
 export default {
   components: {
     AppLogo
+  },
+
+  head: {
+    title: 'About'
   }
 }
 </script>

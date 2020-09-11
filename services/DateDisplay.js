@@ -1,15 +1,20 @@
+import parseISO from 'date-fns/parseISO'
+import addDays from 'date-fns/addDays'
+import addMonths from 'date-fns/addMonths'
+import endOfDay from 'date-fns/endOfDay'
+import endOfMonth from 'date-fns/endOfMonth'
+import differenceInSeconds from 'date-fns/differenceInSeconds'
 import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import {
   timeMinute as d3TimeMinute,
   timeDay as d3TimeDay,
   timeMonday as d3TimeMonday,
-  timeThursday,
   timeMonth as d3TimeMonth,
   timeYear as d3TimeYear
 } from 'd3-time'
 
 function getFormatStringDay(showYear) {
-  return showYear ? '%-d %b %Y' : '%-d %b'
+  return showYear ? '%a, %-d %b %Y' : '%a, %-d %b'
 }
 
 function getSeasonLabel(month) {
@@ -64,6 +69,44 @@ function getQuarterOffset(quarter) {
   }
 }
 
+function getHalfYearOffset(period) {
+  switch (period) {
+    case '1st Half':
+      return 0
+    case '2nd Half':
+      return 6
+  }
+}
+
+function getMonthOffset(period) {
+  switch (period) {
+    case 'January':
+      return 0
+    case 'February':
+      return 1
+    case 'March':
+      return 2
+    case 'April':
+      return 3
+    case 'May':
+      return 4
+    case 'June':
+      return 5
+    case 'July':
+      return 6
+    case 'August':
+      return 7
+    case 'September':
+      return 8
+    case 'October':
+      return 9
+    case 'November':
+      return 10
+    case 'December':
+      return 11
+  }
+}
+
 function getSeasonClosestDate(date, isFloor, filterPeriod) {
   const isFilter = !filterPeriod || filterPeriod !== 'All'
   if (isFilter) {
@@ -95,9 +138,30 @@ function getQuarterClosestDate(date, isFloor, filterPeriod) {
 
 function get6MonthClosestDate(date, isFloor, filterPeriod) {
   const isFilter = !filterPeriod || filterPeriod !== 'All'
-  return isFloor
-    ? d3TimeMonth.every(6).floor(date)
-    : d3TimeMonth.every(6).ceil(date)
+  if (isFilter) {
+    const yearDate = isFloor
+      ? d3TimeYear.every(1).floor(date)
+      : d3TimeYear.every(1).ceil(date)
+    return d3TimeMonth.offset(yearDate, getHalfYearOffset(filterPeriod))
+  } else {
+    return isFloor
+      ? d3TimeMonth.every(6).floor(date)
+      : d3TimeMonth.every(6).ceil(date)
+  }
+}
+
+function getMonthClosestDate(date, isFloor, filterPeriod) {
+  const isFilter = !filterPeriod || filterPeriod !== 'All'
+  if (isFilter) {
+    const yearDate = isFloor
+      ? d3TimeYear.every(1).floor(date)
+      : d3TimeYear.every(1).ceil(date)
+    return d3TimeMonth.offset(yearDate, getMonthOffset(filterPeriod))
+  } else {
+    return isFloor
+      ? d3TimeMonth.every(1).floor(date)
+      : d3TimeMonth.every(1).ceil(date)
+  }
 }
 
 export default {
@@ -134,7 +198,7 @@ export default {
           formatString = getFormatStringDay(sYear)
           display = d3TimeFormat(formatString)(time)
         } else if (interval === 'Week') {
-          formatString = getFormatStringDay(true)
+          formatString = '%-d %b %Y'
           const newTime = d3TimeMonday
             .every(1)
             .floor(time)
@@ -202,9 +266,9 @@ export default {
         if (today === fDate) {
           formatString = 'Today at %-I:%M %p'
         } else if (thisYear === fYear) {
-          formatString = '%d %b, %-I:%M %p'
+          formatString = '%-d %b, %-I:%M %p'
         } else {
-          formatString = '%d %b %Y, %-I:%M %p'
+          formatString = '%-d %b %Y, %-I:%M %p'
         }
         display = d3TimeFormat(formatString)(time)
     }
@@ -265,9 +329,7 @@ export default {
           ? d3TimeMonday.every(1).floor(date)
           : d3TimeMonday.every(1).ceil(date)
       case 'Month':
-        return isFloor
-          ? d3TimeMonth.every(1).floor(date)
-          : d3TimeMonth.every(1).ceil(date)
+        return getMonthClosestDate(date, isFloor, filterPeriod)
       case 'Season':
         return getSeasonClosestDate(date, isFloor, filterPeriod)
       case 'Quarter':
@@ -325,6 +387,36 @@ export default {
     return guides
   },
 
+  mutateMonthDate(date, month, filterPeriod) {
+    if (filterPeriod === 'January' && month === 0) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'February' && month >= 0 && month <= 1) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'March' && month >= 0 && month <= 2) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'April' && month >= 0 && month <= 3) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'May' && month >= 0 && month <= 4) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'June' && month >= 0 && month <= 5) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'July' && month >= 0 && month <= 6) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'August' && month >= 0 && month <= 7) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'September' && month >= 0 && month <= 8) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'October' && month >= 0 && month <= 9) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'November' && month >= 0 && month <= 10) {
+      date.setFullYear(date.getFullYear() - 1)
+    } else if (filterPeriod === 'December' && month >= 0 && month <= 11) {
+      date.setFullYear(date.getFullYear() - 1)
+    }
+    date.setDate(1)
+    return date
+  },
+
   mutateSeasonDate(date, month, filterPeriod) {
     if (filterPeriod === 'Summer' && month !== 11) {
       date.setFullYear(date.getFullYear() - 1)
@@ -349,7 +441,43 @@ export default {
     return date
   },
 
+  mutateHalfYearDate(date, month, filterPeriod) {
+    if (filterPeriod === '2nd Half' && month >= 0 && month <= 6) {
+      date.setFullYear(date.getFullYear() - 1)
+    }
+    return date
+  },
+
   getPeriodMonth(interval, period) {
+    if (interval === 'Month') {
+      switch (period) {
+        case 'January':
+          return 0
+        case 'February':
+          return 1
+        case 'March':
+          return 2
+        case 'April':
+          return 3
+        case 'May':
+          return 4
+        case 'June':
+          return 5
+        case 'July':
+          return 6
+        case 'August':
+          return 7
+        case 'September':
+          return 8
+        case 'October':
+          return 9
+        case 'November':
+          return 10
+        case 'December':
+          return 11
+      }
+    }
+
     if (interval === 'Quarter') {
       switch (period) {
         case 'Q1':
@@ -374,6 +502,121 @@ export default {
         case 'Spring':
           return 8
       }
+    }
+
+    if (interval === 'Half Year') {
+      switch (period) {
+        case '1st Half':
+          return 0
+        case '2nd Half':
+          return 6
+      }
+    }
+  },
+
+  getDateTimeWithoutTZ(date) {
+    const dateString = date.substring(0, 16)
+    return parseISO(dateString)
+  },
+
+  getSecondsByInterval(range, interval, date, incompleteDate, isStart, isEnd) {
+    let start, end
+    switch (interval) {
+      case 'Day':
+        start = date
+        end = endOfDay(date)
+
+        return differenceInSeconds(end, start)
+
+      case 'Week':
+        if (isStart && incompleteDate) {
+          start = incompleteDate
+          end = endOfDay(addDays(date, 6))
+        } else if (isEnd && incompleteDate) {
+          start = date
+          end = endOfDay(incompleteDate)
+        } else {
+          start = date
+          end = endOfDay(addDays(date, 6))
+        }
+        return differenceInSeconds(end, start)
+
+      case 'Month':
+        if (isStart && incompleteDate) {
+          start = incompleteDate
+          end = endOfMonth(date)
+        } else if (isEnd && incompleteDate) {
+          start = date
+          end =
+            range === '1Y'
+              ? endOfDay(incompleteDate)
+              : endOfMonth(incompleteDate)
+        } else {
+          start = date
+          end = endOfMonth(date)
+        }
+
+        return differenceInSeconds(end, start)
+
+      case 'Season':
+      case 'Quarter':
+        if (isStart && incompleteDate) {
+          start = incompleteDate
+          end = endOfMonth(addMonths(date, 2))
+        } else if (isEnd && incompleteDate) {
+          start = date
+          end = endOfMonth(incompleteDate)
+        } else {
+          start = date
+          end = endOfMonth(addMonths(date, 2))
+        }
+
+        return differenceInSeconds(end, start)
+
+      case 'Half Year':
+        if (isStart && incompleteDate) {
+          start = incompleteDate
+          end = endOfMonth(addMonths(date, 5))
+        } else if (isEnd && incompleteDate) {
+          start = date
+          end = endOfMonth(incompleteDate)
+        } else {
+          start = date
+          end = endOfMonth(addMonths(date, 5))
+        }
+
+        return differenceInSeconds(end, start)
+
+      case 'Fin Year':
+        if (isStart && incompleteDate) {
+          start = incompleteDate
+          end = endOfMonth(addMonths(date, 11))
+        } else if (isEnd && incompleteDate) {
+          start = date
+          end = endOfMonth(incompleteDate)
+        } else {
+          start = date
+          end = endOfMonth(addMonths(date, 11))
+        }
+
+        return differenceInSeconds(end, start)
+
+      case 'Year':
+        if (isStart && incompleteDate) {
+          start = incompleteDate
+          end = endOfMonth(addMonths(date, 11))
+        } else if (isEnd && incompleteDate) {
+          start = date
+          end = endOfMonth(incompleteDate)
+        } else {
+          start = date
+          end = endOfMonth(addMonths(date, 11))
+        }
+
+        return differenceInSeconds(end, start)
+
+      default:
+        return 0
     }
   }
 }

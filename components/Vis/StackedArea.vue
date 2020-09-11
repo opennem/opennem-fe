@@ -1,7 +1,7 @@
 <template>
   <div class="vis stacked-area-vis">
     <button
-      v-if="zoomed && showZoomOut"
+      v-if="zoomed && showZoomOut && !readOnly"
       class="button is-rounded is-small reset-btn"
       @click.stop="handleReset"
     >
@@ -27,7 +27,7 @@
           patternUnits="userSpaceOnUse"
           patternTransform="rotate(45)">
           <line
-            stroke="#ece9e6"
+            stroke="rgba(236, 233, 230, 0.4)"
             stroke-width="2px"
             y2="10" />
         </pattern>
@@ -56,7 +56,7 @@
 
         <!-- x axis layer to allow zoom in (brush) -->
         <g 
-          v-if="showXAxis && brush"
+          v-if="showXAxis && brush && !readOnly"
           :transform="xAxisBrushTransform" 
           class="x-axis-brush-group" />
       </g>
@@ -74,7 +74,9 @@
         <g class="stacked-area-group" />
 
         <!-- where the line path will show -->
-        <g class="line-group" />
+        <g 
+          v-show="hasSecondDataset" 
+          class="line-group" />
 
         <g class="x-incomplete-group" />
         <g class="focus-group" />
@@ -86,7 +88,9 @@
         :transform="gTransform"
         class="axis-text-group">
         <g :class="yAxisTickClass" />
-        <g class="y-axis-2" />
+        <g 
+          v-show="hasSecondDataset" 
+          class="y-axis-2" />
       </g>
 
       <!-- cursor line and tooltip -->
@@ -131,6 +135,19 @@ import { timeFormat as d3Timeformat } from 'd3-time-format'
 import debounce from 'lodash.debounce'
 
 import millisecondsByInterval from '~/constants/millisecondsByInterval.js'
+import {
+  INTERVAL_5MIN,
+  INTERVAL_30MIN,
+  INTERVAL_DAY,
+  INTERVAL_WEEK,
+  INTERVAL_MONTH,
+  INTERVAL_SEASON,
+  INTERVAL_QUARTER,
+  INTERVAL_HALFYEAR,
+  INTERVAL_FINYEAR,
+  INTERVAL_YEAR,
+  hasIntervalFilters
+} from '@/constants/interval-filters.js'
 import EventBus from '~/plugins/eventBus.js'
 import * as CONFIG from './shared/config.js'
 import axisTimeFormat from './shared/timeFormat.js'
@@ -140,6 +157,10 @@ import AxisTimeFormats from '~/services/axisTimeFormats.js'
 
 export default {
   props: {
+    readOnly: {
+      type: Boolean,
+      default: false
+    },
     dataset: {
       type: Array,
       default: () => []
@@ -260,6 +281,22 @@ export default {
     yAxisUnit: {
       type: String,
       default: () => ''
+    },
+    highlightDomain: {
+      type: String,
+      default: () => null
+    },
+    displayPrefix: {
+      type: String,
+      default: () => ''
+    },
+    shouldConvertValue: {
+      type: Boolean,
+      default: () => false
+    },
+    convertValue: {
+      type: Function,
+      default: () => function() {}
     }
   },
 
@@ -284,6 +321,8 @@ export default {
       colours: schemeCategory10,
       stack: null,
       brushX: null,
+      yAxisTextFormat: null,
+      yMinComputed: 0,
       // zoomed: false,
       mouseEvt: null,
       $xAxisGroup: null,
@@ -339,29 +378,35 @@ export default {
     compareDifference() {
       return this.$store.getters.compareDifference
     },
-    path() {
-      return this.$route.path
-    },
     hasSecondDataset() {
       return this.datasetTwo.length > 0
     },
     updatedDataset() {
-      if (this.curve === 'step') {
+      if (this.dataset.length > 0) {
+        const isEnergyType =
+          this.range !== '1D' && this.range !== '3D' && this.range !== '7D'
+        if (isEnergyType) {
+          const updated = _cloneDeep(this.dataset)
+          const lastSecondItem = _cloneDeep(updated[updated.length - 2])
+          const lastItem = _cloneDeep(updated[updated.length - 1])
+          const intervalTime = lastItem.time - lastSecondItem.time
+          lastItem.time = lastItem.time + intervalTime
+          lastItem.date = new Date(lastItem.time)
+          updated.push(lastItem)
+          return updated
+        }
         return this.dataset
       }
-
-      return this.dataset.filter(
-        d => !d._isIncompleteBucket && d._isIncompleteBucket !== null
-      )
+      return []
     },
     updatedDatasetTwo() {
       const updated = _cloneDeep(this.datasetTwo)
       // update datasetTwo time to move the data point in the middle of the period
-      if (this.interval !== '5m' && this.interval !== '30m') {
+      if (this.interval !== INTERVAL_5MIN && this.interval !== INTERVAL_30MIN) {
         let previousBandwidth = 0
         updated.forEach((d, i) => {
-          const xDate = d.date
-          const nextDate = updated[i + 1] ? updated[i + 1].date : null
+          const xDate = d.time
+          const nextDate = updated[i + 1] ? updated[i + 1].time : null
           const nextPeriod = nextDate || xDate
           let bandwidth = nextPeriod - xDate
           if (bandwidth !== 0) {
@@ -369,13 +414,14 @@ export default {
           } else {
             bandwidth = previousBandwidth
           }
-          d.date = d.date + bandwidth / 2
+          d.time = d.time + bandwidth / 2
+          d.date = new Date(d.time)
         })
       }
       return updated
     },
     datasetDateExtent() {
-      return extent(this.dataset, d => new Date(d.date))
+      return extent(this.updatedDataset, d => new Date(d.date))
     },
     domainIds() {
       return this.domains.map(d => d.id).reverse()
@@ -411,11 +457,11 @@ export default {
     },
     timeFormats() {
       switch (this.interval) {
-        case 'Day':
+        case INTERVAL_DAY:
           return AxisTimeFormats.intervalDayTimeFormat
-        case 'Week':
+        case INTERVAL_WEEK:
           return AxisTimeFormats.intervalWeekTimeFormat
-        case 'Month':
+        case INTERVAL_MONTH:
           return this.range === 'ALL'
             ? AxisTimeFormats.rangeAllIntervalMonthTimeFormat
             : AxisTimeFormats.intervalMonthTimeFormat
@@ -425,9 +471,9 @@ export default {
     },
     secondaryTimeFormats() {
       switch (this.interval) {
-        case 'Day':
+        case INTERVAL_DAY:
           return AxisTimeFormats.intervalDaySecondaryTimeFormat
-        case 'Week':
+        case INTERVAL_WEEK:
           return AxisTimeFormats.intervalWeekSecondaryTimeFormat
         default:
           return axisSecondaryTimeFormat
@@ -440,6 +486,9 @@ export default {
       this.update()
     },
     curve() {
+      this.update()
+    },
+    displayPrefix() {
       this.update()
     },
     updatedDataset() {
@@ -465,7 +514,7 @@ export default {
       this.zoomRedraw()
     },
     hoverDate(date) {
-      this.updateCursorLineTooltip(new Date(date).getTime())
+      this.updateCursorLineTooltip(date)
     },
 
     focusDate(updated) {
@@ -483,6 +532,15 @@ export default {
     },
     compareDates(updated) {
       this.drawCompare(updated)
+    },
+    highlightDomain(domain) {
+      if (domain) {
+        this.$stackedAreaGroup
+          .selectAll('path')
+          .attr('opacity', d => (d.key === domain ? 1 : 0.2))
+      } else {
+        this.$stackedAreaGroup.selectAll('path').attr('opacity', 1)
+      }
     }
   },
   created() {
@@ -558,6 +616,8 @@ export default {
         .tickSize(30)
         .ticks(5)
         .tickFormat(d => `${d}%`)
+
+      this.yAxisTextFormat = d3Format(',.0f')
 
       // Setup the 'brush' area and event handler
       this.brushX = brushX()
@@ -639,10 +699,13 @@ export default {
       // - Control tooltip visibility for mouse entering/leaving svg
       $svg.on('mouseenter', () => {
         EventBus.$emit('vis.mouseenter')
+        this.$emit('enter')
       })
       $svg.on('mouseleave', () => {
         this.mouseEvt = null
         EventBus.$emit('vis.mouseleave')
+        this.$emit('date-hover', null, null)
+        this.$emit('leave')
       })
       $svg.on('click', () => {
         this.$emit('svgClick', event.metaKey)
@@ -655,79 +718,102 @@ export default {
         self.$emit('domainOver', null)
       })
       this.brushX.on('brush', function() {
-        if (!self.focusOn) {
-          if (!event.selection) return
-          if (event.sourceEvent.type === 'brush') return
-          const s = event.selection
-          let startX = self.x.invert(s[0])
-          let endX = self.x.invert(s[1])
+        if (!event.selection) return
+        if (event.sourceEvent.type === 'brush') return
+        const s = event.selection
+        let startX = self.x.invert(s[0])
+        let endX = self.x.invert(s[1])
 
-          if (self.interval === 'Fin Year') {
-            if (startX.getMonth() >= 6) {
-              startX.setFullYear(startX.getFullYear() + 1)
-            }
-            if (endX.getMonth() >= 6) {
-              endX.setFullYear(endX.getFullYear() + 1)
-            }
+        if (self.interval === INTERVAL_YEAR) {
+          if (startX.getMonth() >= 6) {
+            startX.setFullYear(startX.getFullYear() + 1)
           }
+          if (endX.getMonth() >= 6) {
+            endX.setFullYear(endX.getFullYear() + 1)
+          }
+        }
 
-          const isFilter = !self.filterPeriod || self.filterPeriod !== 'All'
-          if (
-            isFilter &&
-            (self.interval === 'Season' || self.interval === 'Quarter')
-          ) {
-            const periodMonth = DateDisplay.getPeriodMonth(
-              self.interval,
+        const isFilter = !self.filterPeriod || self.filterPeriod !== 'All'
+        if (isFilter && hasIntervalFilters(self.interval)) {
+          const periodMonth = DateDisplay.getPeriodMonth(
+            self.interval,
+            self.filterPeriod
+          )
+          const startXMonth = startX.getMonth()
+          const endXMonth = endX.getMonth()
+
+          if (self.interval === INTERVAL_MONTH) {
+            startX = DateDisplay.mutateMonthDate(
+              startX,
+              startXMonth,
               self.filterPeriod
             )
-            const startXMonth = startX.getMonth()
-            const endXMonth = endX.getMonth()
+            endX = DateDisplay.mutateMonthDate(
+              endX,
+              endXMonth,
+              self.filterPeriod
+            )
+          } else if (self.interval === INTERVAL_SEASON) {
+            startX = DateDisplay.mutateSeasonDate(
+              startX,
+              startXMonth,
+              self.filterPeriod
+            )
+            endX = DateDisplay.mutateSeasonDate(
+              endX,
+              endXMonth,
+              self.filterPeriod
+            )
+          } else if (self.interval === INTERVAL_QUARTER) {
+            startX = DateDisplay.mutateQuarterDate(
+              startX,
+              startXMonth,
+              self.filterPeriod
+            )
+            endX = DateDisplay.mutateQuarterDate(
+              endX,
+              endXMonth,
+              self.filterPeriod
+            )
+          } else if (self.interval === INTERVAL_HALFYEAR) {
+            startX = DateDisplay.mutateHalfYearDate(
+              startX,
+              startXMonth,
+              self.filterPeriod
+            )
+            endX = DateDisplay.mutateHalfYearDate(
+              endX,
+              endXMonth,
+              self.filterPeriod
+            )
+          }
 
-            if (self.interval === 'Season') {
-              startX = DateDisplay.mutateSeasonDate(
-                startX,
-                startXMonth,
-                self.filterPeriod
-              )
-              endX = DateDisplay.mutateSeasonDate(
-                endX,
-                endXMonth,
-                self.filterPeriod
-              )
-            } else if (self.interval === 'Quarter') {
-              startX = DateDisplay.mutateQuarterDate(
-                startX,
-                startXMonth,
-                self.filterPeriod
-              )
-              endX = DateDisplay.mutateQuarterDate(
-                endX,
-                endXMonth,
-                self.filterPeriod
-              )
-            }
+          if (self.interval === INTERVAL_MONTH) {
+            startX.setMonth(periodMonth)
+            endX.setMonth(periodMonth)
+          } else {
             startX.setMonth(periodMonth + 1)
             endX.setMonth(periodMonth + 1)
           }
-
-          const startTime = DateDisplay.roundToClosestInterval(
-            self.interval,
-            self.filterPeriod,
-            startX,
-            'floor'
-          )
-          const endTime = DateDisplay.roundToClosestInterval(
-            self.interval,
-            self.filterPeriod,
-            endX,
-            'ceil'
-          )
-          const d1 = [startTime, endTime]
-          select(this).call(self.brushX.move, d1.map(self.x))
-          self.$emit('eventChange', this)
-          self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
-          self.$emit('domainOver', null)
         }
+
+        const startTime = DateDisplay.roundToClosestInterval(
+          self.interval,
+          self.filterPeriod,
+          startX,
+          'floor'
+        )
+        const endTime = DateDisplay.roundToClosestInterval(
+          self.interval,
+          self.filterPeriod,
+          endX,
+          'ceil'
+        )
+        const d1 = [startTime, endTime]
+        select(this).call(self.brushX.move, d1.map(self.x))
+        self.$emit('eventChange', this)
+        self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
+        self.$emit('domainOver', null)
       })
       this.$xAxisBrushGroup
         .selectAll('.brush')
@@ -751,6 +837,7 @@ export default {
         this.yMin || this.yMin === 0
           ? this.yMin
           : min(this.updatedDataset, d => d._min)
+      this.yMinComputed = yMin
       const yMax =
         this.yMax || this.yMax === 0
           ? this.yMax
@@ -771,10 +858,13 @@ export default {
 
       this.z.range(this.domainColours).domain(this.domainIds)
 
-      if (yMax <= 10) {
+      const yMaxConverted = this.convertValue(yMax)
+      if (yMaxConverted <= 10) {
         this.yAxis.tickFormat(d => d3Format(',.1f')(d))
+        this.yAxisTextFormat = d3Format(',.1f')
       } else {
         this.yAxis.tickFormat(d => d3Format(',.0f')(d))
+        this.yAxisTextFormat = d3Format(',.0f')
       }
 
       this.$xAxisGroup.call(this.customXAxis)
@@ -811,7 +901,7 @@ export default {
         .enter()
         .append('path')
         .attr('id', d => d.key)
-        .attr('class', `${this.stackedAreaPathClass}`)
+        .attr('class', d => `${this.stackedAreaPathClass} .${d.key}`)
         .attr('d', this.area)
         .attr('stroke-opacity', 0)
         .attr('stroke-width', 1)
@@ -854,6 +944,25 @@ export default {
         .domain([0, y2Max])
         .nice()
 
+      this.updateYAxisRight()
+
+      this.line.curve(curveMonotoneX)
+      this.$lineGroup.selectAll('path').remove()
+
+      // Generate Line
+      this.$lineGroup
+        .append('path')
+        .datum(this.updatedDatasetTwo)
+        .attr('class', 'line-path')
+        .attr('d', this.line)
+        .style('stroke', this.datasetTwoColour)
+        .style('stroke-width', 2)
+        .style('filter', 'url(#shadow)')
+        .style('clip-path', this.clipPathUrl)
+        .style('-webkit-clip-path', this.clipPathUrl)
+    },
+
+    updateYAxisRight() {
       if (this.domains.length === 0) {
         this.yAxis2 = axisLeft(this.y2)
           .tickSize(-this.width)
@@ -900,30 +1009,15 @@ export default {
               .attr('dy', -4)
           )
       }
-
-      this.line.curve(curveMonotoneX)
-      this.$lineGroup.selectAll('path').remove()
-
-      // Generate Line
-      this.$lineGroup
-        .append('path')
-        .datum(this.updatedDatasetTwo)
-        .attr('class', 'line-path')
-        .attr('d', this.line)
-        .style('stroke', this.datasetTwoColour)
-        .style('stroke-width', 2)
-        .style('filter', 'url(#shadow)')
-        .style('clip-path', this.clipPathUrl)
-        .style('-webkit-clip-path', this.clipPathUrl)
     },
 
     findNextDatePeriod(time) {
       let nextDatePeriod = null
       const find = this.updatedDataset.find((d, i) => {
-        const match = d.date === time
+        const match = d.time === time
         if (match) {
           if (this.updatedDataset[i + 1]) {
-            nextDatePeriod = this.updatedDataset[i + 1].date
+            nextDatePeriod = this.updatedDataset[i + 1].time
           }
         }
         return match
@@ -936,10 +1030,10 @@ export default {
       const time = new Date(date).getTime()
       const nextDatePeriod = this.findNextDatePeriod(time)
 
-      const xDate = this.x(date)
+      const xDate = this.x(time)
       const nextPeriod = this.x(nextDatePeriod)
       const bandwidth =
-        this.interval !== '5m' && this.interval !== '30m'
+        this.interval !== INTERVAL_5MIN && this.interval !== INTERVAL_30MIN
           ? nextPeriod - xDate
           : null
       const fTime = DateDisplay.specialDateFormats(
@@ -965,6 +1059,7 @@ export default {
       this.x.domain(this.datasetDateExtent)
       this.zoomRedraw()
       EventBus.$emit('dataset.filter', [])
+      this.$emit('zoomExtent', [])
     },
 
     resizeRedraw() {
@@ -977,6 +1072,7 @@ export default {
       this.$xAxisGroup.call(this.customXAxis)
       this.$yAxisGroup.call(this.customYAxis)
       this.$yAxisTickGroup.call(this.customYAxis)
+      this.updateYAxisRight()
       this.updateGuides()
       this.drawFocus(this.focusDate)
       this.drawCompare(this.compareDates)
@@ -1023,7 +1119,7 @@ export default {
       const xDate = this.x(time)
       const nextPeriod = this.x(nextDatePeriod)
       const bandwidth =
-        this.interval !== '5m' && this.interval !== '30m'
+        this.interval !== INTERVAL_5MIN && this.interval !== INTERVAL_30MIN
           ? nextPeriod - xDate
           : null
 
@@ -1057,7 +1153,7 @@ export default {
           return width < 0 ? 0 : width
         })
         .attr('height', this.height)
-        .attr('fill', `url(${this.path}#${this.id}-incomplete-period-pattern)`)
+        .attr('fill', `url(#${this.id}-incomplete-period-pattern)`)
         .style('pointer-events', 'none')
     },
 
@@ -1069,7 +1165,7 @@ export default {
         `.${this.cursorRectClass}`
       )
 
-      if (xDate) {
+      if (xDate || xDate === 0) {
         if (bandwidth) {
           $cursorLine.attr('opacity', 0)
           $cursorRect
@@ -1093,10 +1189,10 @@ export default {
       const time = new Date(focusDate).getTime()
       let nextDatePeriod = null
       const find = this.updatedDataset.find((d, i) => {
-        const match = d.date === time
+        const match = d.time === time
         if (match) {
           if (this.updatedDataset[i + 1]) {
-            nextDatePeriod = this.updatedDataset[i + 1].date
+            nextDatePeriod = this.updatedDataset[i + 1].time
           }
         }
         return match
@@ -1104,7 +1200,7 @@ export default {
       const xDate = this.x(time)
       const nextPeriod = this.x(nextDatePeriod)
       const bandwidth =
-        this.interval !== '5m' && this.interval !== '30m'
+        this.interval !== INTERVAL_5MIN && this.interval !== INTERVAL_30MIN
           ? nextPeriod - xDate
           : null
 
@@ -1184,14 +1280,12 @@ export default {
       // Turn off the brush selection
       selectAll('.brush').call(this.brushX.move, null)
 
-      if (this.focusOn) return
-
       // Get the brush selection (start/end) points -> dates
       const s = event.selection
       let startX = this.x.invert(s[0])
       let endX = this.x.invert(s[1])
 
-      if (this.interval === 'Fin Year') {
+      if (this.interval === INTERVAL_YEAR) {
         if (startX.getMonth() >= 6) {
           startX.setFullYear(startX.getFullYear() + 1)
         }
@@ -1201,10 +1295,7 @@ export default {
       }
 
       const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
-      if (
-        isFilter &&
-        (this.interval === 'Season' || this.interval === 'Quarter')
-      ) {
+      if (isFilter && hasIntervalFilters(this.interval)) {
         const periodMonth = DateDisplay.getPeriodMonth(
           this.interval,
           this.filterPeriod
@@ -1212,7 +1303,14 @@ export default {
         const startXMonth = startX.getMonth()
         const endXMonth = endX.getMonth()
 
-        if (this.interval === 'Season') {
+        if (this.interval === INTERVAL_MONTH) {
+          startX = DateDisplay.mutateMonthDate(
+            startX,
+            startXMonth,
+            this.filterPeriod
+          )
+          endX = DateDisplay.mutateMonthDate(endX, endXMonth, this.filterPeriod)
+        } else if (this.interval === INTERVAL_SEASON) {
           startX = DateDisplay.mutateSeasonDate(
             startX,
             startXMonth,
@@ -1223,7 +1321,7 @@ export default {
             endXMonth,
             this.filterPeriod
           )
-        } else if (this.interval === 'Quarter') {
+        } else if (this.interval === INTERVAL_QUARTER) {
           startX = DateDisplay.mutateQuarterDate(
             startX,
             startXMonth,
@@ -1234,9 +1332,26 @@ export default {
             endXMonth,
             this.filterPeriod
           )
+        } else if (this.interval === INTERVAL_HALFYEAR) {
+          startX = DateDisplay.mutateHalfYearDate(
+            startX,
+            startXMonth,
+            this.filterPeriod
+          )
+          endX = DateDisplay.mutateHalfYearDate(
+            endX,
+            endXMonth,
+            this.filterPeriod
+          )
         }
-        startX.setMonth(periodMonth + 1)
-        endX.setMonth(periodMonth + 1)
+
+        if (this.interval === INTERVAL_MONTH) {
+          startX.setMonth(periodMonth)
+          endX.setMonth(periodMonth)
+        } else {
+          startX.setMonth(periodMonth + 1)
+          endX.setMonth(periodMonth + 1)
+        }
       }
 
       const startTime = DateDisplay.roundToClosestInterval(
@@ -1261,6 +1376,7 @@ export default {
 
       this.zoomRedraw()
       EventBus.$emit('dataset.filter', dateRange)
+      this.$emit('zoomExtent', dateRange)
     },
 
     getZoomDateRanges(startDate, endDate) {
@@ -1287,25 +1403,26 @@ export default {
 
       // Limit the zoom level based on interval
       switch (this.interval) {
-        case '5m':
-        case '30m':
+        case INTERVAL_5MIN:
+        case INTERVAL_30MIN:
           limit = 14400000
           break
-        case 'Day':
+        case INTERVAL_DAY:
           limit = 345600000
           break
-        case 'Week':
+        case INTERVAL_WEEK:
           limit = 2419200000
           break
-        case 'Month':
+        case INTERVAL_MONTH:
           limit = 10519200000
           break
-        case 'Season':
-        case 'Quarter':
+        case INTERVAL_SEASON:
+        case INTERVAL_QUARTER:
+        case INTERVAL_HALFYEAR:
           limit = 23668200000
           break
-        case 'Fin Year':
-        case 'Year':
+        case INTERVAL_YEAR:
+        case INTERVAL_YEAR:
           limit = 126230400000
           break
       }
@@ -1334,13 +1451,13 @@ export default {
             className = 'interval-day'
           }
         } else if (this.range === '1Y') {
-          if (this.interval === 'Day') {
+          if (this.interval === INTERVAL_DAY) {
             const every = this.mobileScreen ? 8 : 4
             tickLength = timeMonday.every(every)
-          } else if (this.interval === 'Week') {
+          } else if (this.interval === INTERVAL_WEEK) {
             const every = this.mobileScreen ? 8 : 4
             tickLength = timeMonday.every(every)
-          } else if (this.interval === 'Month') {
+          } else if (this.interval === INTERVAL_MONTH) {
             const every = this.mobileScreen ? 2 : 1
             tickLength = timeMonth.every(every)
           }
@@ -1348,7 +1465,7 @@ export default {
           const every = this.mobileScreen ? 2 : 1
           tickLength = timeYear.every(every)
 
-          if (this.interval === 'Season') {
+          if (this.interval === INTERVAL_SEASON) {
             className = 'interval-season'
             const periodMonth = DateDisplay.getPeriodMonth(
               this.interval,
@@ -1357,7 +1474,7 @@ export default {
             if (isFilter && periodMonth) {
               tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
             }
-          } else if (this.interval === 'Quarter') {
+          } else if (this.interval === INTERVAL_QUARTER) {
             className = 'interval-quarter'
             const periodMonth = DateDisplay.getPeriodMonth(
               this.interval,
@@ -1366,9 +1483,18 @@ export default {
             if (isFilter && periodMonth) {
               tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
             }
-          } else if (this.interval === 'Year') {
+          } else if (this.interval === INTERVAL_HALFYEAR) {
+            className = 'interval-half-year'
+            const periodMonth = DateDisplay.getPeriodMonth(
+              this.interval,
+              this.filterPeriod
+            )
+            if (isFilter && periodMonth) {
+              tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+            }
+          } else if (this.interval === INTERVAL_YEAR) {
             className = 'interval-year'
-          } else if (this.interval === 'Fin Year') {
+          } else if (this.interval === INTERVAL_YEAR) {
             tickLength = timeMonth.filter(d => {
               return d.getMonth() === 6
             })
@@ -1380,25 +1506,22 @@ export default {
           tickLength = timeDay.every(1)
         }
         if (this.range === '1Y') {
-          if (this.interval === 'Day') {
+          if (this.interval === INTERVAL_DAY) {
             const zoomDates = this.x.domain()
             if (zoomDates[1].getTime() - zoomDates[0].getTime() < 2592000000) {
               tickLength = timeDay.every(1)
             } else {
               tickLength = 7
             }
-          } else if (this.interval === 'Week') {
+          } else if (this.interval === INTERVAL_WEEK) {
             tickLength = 7
-          } else if (this.interval === 'Month') {
+          } else if (this.interval === INTERVAL_MONTH) {
             tickLength = timeMonth.every(1)
           }
         }
       }
 
-      if (
-        isFilter &&
-        (this.interval === 'Season' || this.interval === 'Quarter')
-      ) {
+      if (isFilter && hasIntervalFilters(this.interval)) {
         this.xAxis.tickFormat((d, i) => {
           const year = d.getFullYear() + ''
           const nextYear = d.getFullYear() + 1 + ''
@@ -1415,7 +1538,7 @@ export default {
         if (isFilter && periodMonth) {
           tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
         }
-      } else if (this.interval === 'Fin Year') {
+      } else if (this.interval === INTERVAL_YEAR) {
         this.xAxis.tickFormat(d => {
           const year = d.getFullYear() + 1 + ''
           return `FY${year.substr(2, 2)}`
@@ -1455,10 +1578,18 @@ export default {
     customYAxis(g) {
       g.call(this.yAxis)
       g.selectAll('.tick text')
-        .text(t => `${t}${this.yAxisUnit}`)
+        .text(t => {
+          const tickText = this.shouldConvertValue
+            ? this.yAxisTextFormat(this.convertValue(t))
+            : t
+          return `${tickText}${this.yAxisUnit}`
+        })
         .attr('x', 4)
         .attr('dy', -4)
-      g.selectAll('.tick line').attr('class', d => (d === 0 ? 'base' : ''))
+      g.selectAll('.tick line').attr(
+        'class',
+        d => (d === 0 && this.yMinComputed !== 0 ? 'base' : '')
+      )
     },
 
     getXAxisDateByMouse(evt) {

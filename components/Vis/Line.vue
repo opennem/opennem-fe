@@ -41,7 +41,7 @@
 
         <!-- x axis layer to allow zoom in (brush) -->
         <g 
-          v-if="showXAxis"
+          v-if="showXAxis && !readOnly"
           :transform="xAxisBrushTransform" 
           class="x-axis-brush-group" />
       </g>
@@ -82,6 +82,7 @@
 </template>
 
 <script>
+import _cloneDeep from 'lodash.clonedeep'
 import { scaleOrdinal, scaleLinear, scaleTime, scaleSymlog } from 'd3-scale'
 import { axisBottom, axisRight } from 'd3-axis'
 import {
@@ -243,6 +244,10 @@ export default {
     connectZero: {
       type: Boolean,
       default: () => false
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -307,11 +312,21 @@ export default {
   },
 
   computed: {
+    updatedDataset() {
+      const updated = _cloneDeep(this.dataset)
+      const lastSecondItem = _cloneDeep(updated[updated.length - 2])
+      const lastItem = _cloneDeep(updated[updated.length - 1])
+      const intervalTime = lastItem.time - lastSecondItem.time
+      lastItem.time = lastItem.time + intervalTime
+      lastItem.date = new Date(lastItem.time)
+      updated.push(lastItem)
+      return updated
+    },
     filterPeriod() {
       return this.$store.getters.filterPeriod
     },
     datasetDateExtent() {
-      return extent(this.dataset, d => new Date(d.date))
+      return extent(this.updatedDataset, d => new Date(d.date))
     },
     hasMinMax() {
       return this.minDomainId !== '' && this.maxDomainId !== ''
@@ -348,9 +363,12 @@ export default {
   },
 
   watch: {
-    dataset() {
+    updatedDataset() {
       this.update()
       this.resizeRedraw()
+    },
+    curve() {
+      this.update()
     },
     visHeight(newValue) {
       this.svgHeight = newValue
@@ -532,10 +550,12 @@ export default {
       $svg.on('mouseenter', () => {
         // this.$cursorLineGroup.attr('opacity', 1)
         EventBus.$emit('vis.mouseenter')
+        this.$emit('enter')
       })
       $svg.on('mouseleave', () => {
         // this.$cursorLineGroup.attr('opacity', 0)
         EventBus.$emit('vis.mouseleave')
+        this.$emit('leave')
       })
       $svg.on('click', () => {
         this.$emit('svgClick')
@@ -573,12 +593,15 @@ export default {
       const yMin =
         this.yMin || this.yMin === 0
           ? this.yMin
-          : min(this.dataset, d => d[minDomain])
-      const yMax = this.yMax || max(this.dataset, d => d[maxDomain]) + 5
+          : min(this.updatedDataset, d => d[minDomain])
+      const yMax = this.yMax || max(this.updatedDataset, d => d[maxDomain]) + 5
 
       this.x.domain(xDomainExtent)
       this.y.domain([yMin, yMax])
       this.z.range([this.domainColour]).domain([this.domainId])
+
+      this.line.curve(this.curveType)
+      this.area.curve(this.curveType)
 
       this.$xAxisGroup.call(this.customXAxis)
       this.$yAxisGroup.call(this.customYAxis)
@@ -592,7 +615,7 @@ export default {
 
       this.$lineGroup
         .append('path')
-        .datum(this.dataset)
+        .datum(this.updatedDataset)
         .attr('class', `${this.linePathClass}`)
         .attr('d', this.line)
         .style('stroke', d => this.z(this.domainId))
@@ -603,7 +626,7 @@ export default {
       if (this.hasMinMax) {
         this.$areaGroup
           .append('path')
-          .datum(this.dataset)
+          .datum(this.updatedDataset)
           .attr('class', `${this.areaPathClass}`)
           .attr('d', this.area)
           .style('fill', 'red')
@@ -623,11 +646,11 @@ export default {
     updateXGuides() {
       const time = new Date(this.hoverDate).getTime()
       let nextDatePeriod = null
-      const find = this.dataset.find((d, i) => {
+      const find = this.updatedDataset.find((d, i) => {
         const match = d.date === time
         if (match) {
-          if (this.dataset[i + 1]) {
-            nextDatePeriod = this.dataset[i + 1].date
+          if (this.updatedDataset[i + 1]) {
+            nextDatePeriod = this.updatedDataset[i + 1].date
           }
         }
         return match
@@ -667,11 +690,11 @@ export default {
       const valueFormat = d3Format(',.1f')
       const time = new Date(date).getTime()
       let nextDatePeriod = null
-      const find = this.dataset.find((d, i) => {
-        const match = d.date === time
+      const find = this.updatedDataset.find((d, i) => {
+        const match = d.time ? d.time === time : d.date === time
         if (match) {
-          if (this.dataset[i + 1]) {
-            nextDatePeriod = this.dataset[i + 1].date
+          if (this.updatedDataset[i + 1]) {
+            nextDatePeriod = this.updatedDataset[i + 1].date
           }
         }
         return match
@@ -723,7 +746,7 @@ export default {
         `.${this.cursorCircleClass}`
       )
 
-      if (xDate) {
+      if (xDate || xDate === 0) {
         if (bandwidth) {
           $cursorLine.attr('opacity', 0)
           $cursorRect
@@ -756,11 +779,11 @@ export default {
     drawFocus(focusDate) {
       const time = new Date(focusDate).getTime()
       let nextDatePeriod = null
-      const find = this.dataset.find((d, i) => {
-        const match = d.date === time
+      const find = this.updatedDataset.find((d, i) => {
+        const match = d.time === time
         if (match) {
-          if (this.dataset[i + 1]) {
-            nextDatePeriod = this.dataset[i + 1].date
+          if (this.updatedDataset[i + 1]) {
+            nextDatePeriod = this.updatedDataset[i + 1].time
           }
         }
         return match
@@ -974,6 +997,15 @@ export default {
             }
           } else if (this.interval === 'Quarter') {
             className = 'interval-quarter'
+            const periodMonth = DateDisplay.getPeriodMonth(
+              this.interval,
+              this.filterPeriod
+            )
+            if (isFilter && periodMonth) {
+              tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+            }
+          } else if (this.interval === 'Half Year') {
+            className = 'interval-half-year'
             const periodMonth = DateDisplay.getPeriodMonth(
               this.interval,
               this.filterPeriod

@@ -1,15 +1,23 @@
 const pkg = require('./package')
 const webpack = require('webpack')
 
+const timestamp = new Date().getTime()
+
 module.exports = {
-  mode: 'spa',
+  publicRuntimeConfig: {
+    useDev: process.env.FOR === 'dev',
+    url:
+      process.env.FOR === 'dev'
+        ? 'https://dev.opennem.org.au'
+        : 'https://opennem.org.au'
+  },
 
   server: {
     host: '0.0.0.0'
   },
 
   head: {
-    title: 'OpenNEM: An Open Platform for National Electricity Market Data',
+    titleTemplate: 'OpenNEM%s',
     meta: [
       { charset: 'utf-8' },
       {
@@ -30,7 +38,7 @@ module.exports = {
       {
         hid: 'twitter:image:src',
         name: 'twitter:image:src',
-        content: 'https://opennem.org.au/images/energy/nem.png'
+        content: 'https://opennem.org.au/images/screens/opennem-nem.png'
       },
       // Facebook
       {
@@ -49,11 +57,12 @@ module.exports = {
       {
         hid: 'og:image',
         property: 'og:image',
-        content: 'https://opennem.org.au/images/energy/nem.png'
+        content: 'https://opennem.org.au/images/screens/opennem-nem.png'
       },
-      { property: 'og:image:width', content: '2768' },
-      { property: 'og:image:height', content: '1922' }
+      { hid: 'og:image:width', property: 'og:image:width', content: '1447' },
+      { hid: 'og:image:height', property: 'og:image:height', content: '932' }
     ],
+
     link: [
       {
         rel: 'stylesheet',
@@ -215,6 +224,7 @@ module.exports = {
     /*
     ** You can extend webpack config here
     */
+    publicPath: `/_nuxt_${timestamp}/`,
     plugins: [
       new webpack.IgnorePlugin({
         resourceRegExp: /^\.\/locale$/,

@@ -1,5 +1,5 @@
 <template>
-  <header>
+  <header :class="{ 'facilities-header': isFacilitiesView }">
     <div class="header-dropdowns">
       <div 
         class="logo-wrapper" 
@@ -38,7 +38,7 @@
     </div>
 
     <div 
-      v-if="!widthBreak" 
+      v-if="!widthBreak"
       class="share-button-wrapper">
       <button
         v-on-clickaway="handleClickAway"
@@ -87,7 +87,7 @@ import { format as d3Format } from 'd3-format'
 import _debounce from 'lodash.debounce'
 import DownloadCsv from 'vue-json-csv'
 import { mixin as clickaway } from 'vue-clickaway'
-import REGIONS from '~/constants/regions.js'
+import { getEnergyRegions } from '@/constants/energy-regions.js'
 import AppLogo from '~/components/ui/Logo'
 import ViewDropdown from '~/components/ui/ViewDropdown'
 import ConsumptionGenerationToggle from '~/components/ui/ConsumptionGenerationToggle'
@@ -112,13 +112,20 @@ export default {
       openDrawer: false,
       showShareMenu: false,
       windowWidth: 0,
-      regions: REGIONS
+      regions: getEnergyRegions()
     }
   },
 
   computed: {
     ...mapGetters({
-      chartEnergyRenewablesLine: 'visInteract/chartEnergyRenewablesLine'
+      chartEnergyRenewablesLine:
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+      energyExportData: 'regionEnergy/filteredCurrentDataset',
+      energyDomains: 'regionEnergy/currentDomainPowerEnergy',
+      emissionDomains: 'regionEnergy/currentDomainEmissions',
+      priceDomains: 'regionEnergy/domainPrice',
+      temperatureDomains: 'regionEnergy/domainTemperature',
+      marketValueDomains: 'regionEnergy/currentDomainMarketValue'
     }),
     responsiveBreakWidth() {
       return this.$store.getters.responsiveBreakWidth
@@ -140,24 +147,6 @@ export default {
     },
     isFacilitiesView() {
       return this.$store.getters.currentView === 'facilities'
-    },
-    energyDomains() {
-      return this.$store.getters.energyDomains
-    },
-    emissionDomains() {
-      return this.$store.getters.emissionDomains
-    },
-    priceDomains() {
-      return this.$store.getters.priceDomains
-    },
-    temperatureDomains() {
-      return this.$store.getters.temperatureDomains
-    },
-    marketValueDomains() {
-      return this.$store.getters.marketValueDomains
-    },
-    energyExportData() {
-      return this.$store.getters.exportData
     },
     chartUnit() {
       return this.$store.getters.chartUnit
@@ -280,8 +269,7 @@ export default {
         query.end = new Date(this.dateFilter[1]).getTime()
       }
       this.$router.push({
-        path: `/energy/${this.regionId}/image`,
-        query
+        path: `/energy/${this.regionId}/export`
       })
     },
     handleExportDataClick() {
@@ -367,6 +355,35 @@ header {
     position: relative;
     .button:focus {
       color: $opennem-link-color;
+    }
+  }
+
+  &.facilities-header {
+    .share-button-wrapper {
+      position: absolute;
+      left: 50%;
+      margin-left: -50px;
+
+      @include desktop {
+        margin-left: -90px;
+      }
+
+      .button {
+        min-width: 30px;
+        border-radius: 4px;
+        padding: 0;
+        @include desktop {
+          min-width: 62px;
+          padding: 0 15px;
+        }
+      }
+
+      .label-image {
+        display: none;
+        @include desktop {
+          display: inline;
+        }
+      }
     }
   }
 

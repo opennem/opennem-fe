@@ -67,10 +67,7 @@ export default {
       this.dropdownActive = false
     },
     showLink(view) {
-      if (
-        (this.regionId === 'all' || this.regionId === 'wa1') &&
-        view === 'energy'
-      ) {
+      if (this.regionId === 'all' && view === 'energy') {
         return false
       }
       return true

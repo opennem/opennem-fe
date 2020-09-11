@@ -11,7 +11,7 @@ import {
   max as d3Max
 } from 'd3-array'
 
-import { EMISSIONS } from '~/constants/emissions.js'
+import { EMISSIONS } from '~/constants/data-types.js'
 
 const PRICE_ABOVE_300 = 'price.above300'
 const PRICE_BELOW_0 = 'price.below0'

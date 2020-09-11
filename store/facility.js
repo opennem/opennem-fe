@@ -1,12 +1,19 @@
+import _cloneDeep from 'lodash.clonedeep'
+import { FACILITY_OPERATING } from '~/constants/facility-status.js'
+
 export const state = () => ({
+  dataset: [],
   sortBy: 'displayName',
   orderBy: 'asc',
-  selectedStatuses: ['Commissioned'],
+  selectedStatuses: [FACILITY_OPERATING],
   selectedTechs: [],
   selectedView: 'list'
 })
 
 export const mutations = {
+  dataset(state, data) {
+    state.dataset = _cloneDeep(data)
+  },
   sortBy(state, data) {
     state.sortBy = data
   },
@@ -25,6 +32,7 @@ export const mutations = {
 }
 
 export const getters = {
+  dataset: state => state.dataset,
   sortBy: state => state.sortBy,
   orderBy: state => state.orderBy,
   selectedStatuses: state => state.selectedStatuses,
@@ -33,6 +41,9 @@ export const getters = {
 }
 
 export const actions = {
+  dataset({ commit }, data) {
+    commit('dataset', data)
+  },
   sortBy({ commit }, data) {
     commit('sortBy', data)
   },
