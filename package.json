@@ -13,7 +13,8 @@
     "generate": "FOR=prod nuxt generate",
     "generate-dev": "FOR=dev nuxt generate",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "precommit": "npm run lint"
+    "precommit": "npm run lint",
+    "release": "release-it"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.0.0",
@@ -62,6 +63,7 @@
     "node-sass": "^4.11.0",
     "nodemon": "^1.11.0",
     "prettier": "1.14.3",
+    "release-it": "^14.0.2",
     "sass-loader": "^7.1.0"
   }
 }
