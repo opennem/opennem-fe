@@ -102,7 +102,8 @@ export default {
     return {
       isHovering: false,
       hoverDate: null,
-      baseUrl: 'https://opennem.org.au/images/screens/'
+      baseUrl: `${this.$config.url}/images/screens/`,
+      useDev: this.$config.useDev
     }
   },
 
@@ -120,7 +121,9 @@ export default {
       return this.$route.params.region
     },
     cardFilename() {
-      return `${this.baseUrl}opennem-${this.regionId}.png`
+      return this.useDev
+        ? `${this.baseUrl}opennem-dev.png`
+        : `${this.baseUrl}opennem-${this.regionId}.png`
     }
   },
 

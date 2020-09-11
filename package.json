@@ -10,7 +10,8 @@
     "build-export": "nuxt build && nuxt export",
     "start": "nuxt start",
     "serve": "nuxt serve",
-    "generate": "nuxt generate",
+    "generate": "nuxt generate FOR=prod",
+    "generate-dev": "nuxt generate FOR=dev",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "precommit": "npm run lint"
   },

@@ -4,6 +4,14 @@ const webpack = require('webpack')
 const timestamp = new Date().getTime()
 
 module.exports = {
+  publicRuntimeConfig: {
+    useDev: process.env.FOR === 'dev',
+    url:
+      process.env.FOR === 'dev'
+        ? 'https://dev.opennem.org.au'
+        : 'https://opennem.org.au'
+  },
+
   server: {
     host: '0.0.0.0'
   },

@@ -162,7 +162,8 @@ export default {
       totalFacilities: 0,
       shouldZoomWhenSelected: false,
       windowWidth: 0,
-      baseUrl: 'https://opennem.org.au/images/screens/'
+      baseUrl: `${this.$config.url}/images/screens/`,
+      useDev: this.$config.useDev
     }
   },
 
@@ -199,7 +200,9 @@ export default {
       return this.$store.getters['facility/selectedView']
     },
     cardFilename() {
-      return `${this.baseUrl}opennem-facilities-${this.regionId}.png`
+      return this.useDev
+        ? `${this.baseUrl}opennem-facilities-dev.png`
+        : `${this.baseUrl}opennem-facilities-${this.regionId}.png`
     }
   },
 
