@@ -9,11 +9,8 @@
       @click="dropdownActive = !dropdownActive"
     >
       <div class="dropdown-label">
-        <span v-if="selected.length === 0">All</span>
-        <strong v-if="selected.length === 1">{{ getStatusLabel(selected[0]) }}</strong>
-        <strong v-else-if="selected.length === statuses.length">
-          All
-        </strong>
+        <strong v-if="selected.length === 0">Status</strong>
+        <strong v-if="selected.length > 0">{{ getStatusLabel(selected) }}</strong>
       </div>
       <i class="fal fa-chevron-down" />
     </button>
@@ -55,26 +52,12 @@
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 import { mixin as clickaway } from 'vue-clickaway'
-
-const statuses = [
-  {
-    id: 'Commissioned',
-    label: 'Operating'
-  },
-  {
-    id: 'Decommissioned',
-    label: 'Retired'
-  }
-]
+import { FacilityStatus } from '~/constants/facility-status.js'
 
 export default {
   mixins: [clickaway],
 
   props: {
-    status: {
-      type: String,
-      default: () => ''
-    },
     selectedStatuses: {
       type: Array,
       default: () => []
@@ -83,23 +66,13 @@ export default {
 
   data() {
     return {
-      statuses,
-      selectedStatus: '',
+      statuses: _cloneDeep(FacilityStatus),
       selected: [],
       dropdownActive: false
     }
   },
 
-  computed: {
-    selectedStatusLabel() {
-      return this.statuses.find(s => s.id === this.status).label
-    }
-  },
-
   watch: {
-    status(newValue) {
-      this.selectedStatus = newValue
-    },
     selectedStatuses(selected) {
       this.selectedStatus = selected
     }
@@ -125,14 +98,16 @@ export default {
         this.selected.push(status)
       }
 
-      this.$emit('selectedStatuses', this.selected)
+      this.$emit('selectedStatuses', _cloneDeep(this.selected))
     },
     clearSelected() {
       this.selected = []
-      this.$emit('selectedStatuses', this.selected)
+      this.$emit('selectedStatuses', _cloneDeep(this.selected))
     },
-    getStatusLabel(id) {
-      return this.statuses.find(d => d.id === id).label
+    getStatusLabel(selected) {
+      return selected.length > 1
+        ? `Status (${selected.length})`
+        : this.statuses.find(s => s.id === selected[0]).label
     }
   }
 }

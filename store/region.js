@@ -2,20 +2,21 @@ import http from '@/services/Http.js'
 import EnergyDataTransform from '@/services/dataTransform/Energy.js'
 import Domain from '@/services/Domain.js'
 import Data from '@/services/Data.js'
-import REGIONS from '@/constants/regions.js'
-import * as FUEL_TECHS from '@/constants/fuelTech.js'
+import { getEnergyRegions } from '@/constants/energy-regions.js'
+import * as FUEL_TECHS from '@/constants/fuel-tech.js'
 import PerfTime from '@/plugins/perfTime.js'
 
-const Regions = REGIONS.filter(
-  r => r.id !== 'all' && r.id !== 'nem' && r.id !== 'wa1'
-)
-const host = window.location.host
+const Regions = getEnergyRegions().filter(r => r.id !== 'all' && r.id !== 'nem')
+
 let hostEnv = 'dev'
-if (host === 'opennem.org.au') {
-  hostEnv = 'prod'
-}
-if (host === 'dev.opennem.org.au') {
-  hostEnv = 'dev'
+if (typeof window !== 'undefined') {
+  const host = window.location.host
+  if (host === 'opennem.org.au') {
+    hostEnv = 'prod'
+  }
+  if (host === 'dev.opennem.org.au') {
+    hostEnv = 'dev'
+  }
 }
 
 export const state = () => ({
@@ -210,32 +211,20 @@ function transformDataset(regions, dataset, prop, regionAppend) {
           date: regionData.date,
           _isIncompleteBucket: regionData._isIncompleteBucket
         }
-        obj[id] = regionData[p]
+        obj[id] = regionData[p] === 0 ? null : regionData[p]
         return obj
       })
     } else {
       dataset[id].combined.forEach((regionData, regionDataIndex) => {
         if (updated[regionDataIndex]) {
-          updated[regionDataIndex][id] = regionData[p]
+          updated[regionDataIndex][id] =
+            regionData[p] === 0 ? null : regionData[p]
         }
       })
     }
   })
-  updated.forEach(d => {
-    let highest = 0
-    let lowest = 0
-    regions.forEach(r => {
-      const id = r.id
-      if (d[id] > highest) {
-        highest = d[id]
-      }
-      if (d[id] < lowest) {
-        lowest = d[id]
-      }
-    })
-    d._highest = highest
-    d._lowest = lowest
-  })
+  calculateHighLow(updated, regions)
+
   return updated
 }
 
@@ -269,6 +258,7 @@ function commitDatasets(
       })
       return eObj
     })
+    calculateHighLow(emissionIntDataset, regions)
 
     commit('emissionVolDataset', emissionVolDataset)
     commit('emissionIntDataset', emissionIntDataset)
@@ -294,4 +284,22 @@ function commitDatasets(
       transformDataset(regions, regionsObj, '_volWeightedPrice')
     )
   }
+}
+
+function calculateHighLow(dataset, regions) {
+  dataset.forEach(d => {
+    let highest = 0
+    let lowest = 0
+    regions.forEach(r => {
+      const id = r.id
+      if (d[id] > highest) {
+        highest = d[id]
+      }
+      if (d[id] < lowest) {
+        lowest = d[id]
+      }
+    })
+    d._highest = highest
+    d._lowest = lowest
+  })
 }

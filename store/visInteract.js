@@ -1,29 +1,34 @@
+import _cloneDeep from 'lodash.clonedeep'
+import AxisTicks from '@/services/axisTicks.js'
+import AxisTimeFormats from '@/services/axisTimeFormats.js'
+import DateDisplay from '@/services/DateDisplay.js'
+
 export const state = () => ({
   isHovering: false,
-  chartEnergyType: 'area', // line, proportion, area, hidden
-  chartEnergyYAxis: 'absolute', // absolute, percentage
-  chartEnergyCurve: 'step', // smooth, step, linear
-  chartPowerCurve: 'smooth', // smooth, step, linear
-  chartEnergyRenewablesLine: false,
-  chartEmissionsVolume: true,
-  chartEmissionsIntensity: true,
-  chartPrice: true,
-  chartTemperature: true,
+  hoverDate: null,
+  hoverDomain: null,
+  highlightDomain: '',
+  focusDate: null,
+  xTicks: null,
+  xGuides: null,
+  tickFormat: () => ({}),
+  secondTickFormat: () => ({}),
+
   chartSummaryPie: true
 })
 
 export const getters = {
   isHovering: state => state.isHovering,
-  chartEnergy: state => state.chartEnergyType !== 'hidden',
-  chartEnergyType: state => state.chartEnergyType,
-  chartEnergyYAxis: state => state.chartEnergyYAxis,
-  chartEnergyCurve: state => state.chartEnergyCurve,
-  chartPowerCurve: state => state.chartPowerCurve,
-  chartEnergyRenewablesLine: state => state.chartEnergyRenewablesLine,
-  chartEmissionsVolume: state => state.chartEmissionsVolume,
-  chartEmissionsIntensity: state => state.chartEmissionsIntensity,
-  chartPrice: state => state.chartPrice,
-  chartTemperature: state => state.chartTemperature,
+  hoverDate: state => state.hoverDate,
+  hoverDomain: state => state.hoverDomain,
+  highlightDomain: state => state.highlightDomain,
+  isFocusing: state => state.focusDate !== null,
+  focusDate: state => state.focusDate,
+  xTicks: state => state.xTicks,
+  xGuides: state => state.xGuides,
+  tickFormat: state => state.tickFormat,
+  secondTickFormat: state => state.secondTickFormat,
+
   chartSummaryPie: state => state.chartSummaryPie
 }
 
@@ -31,36 +36,78 @@ export const mutations = {
   isHovering(state, isHovering) {
     state.isHovering = isHovering
   },
-  chartEnergyType(state, data) {
-    state.chartEnergyType = data
+  hoverDate(state, hoverDate) {
+    state.hoverDate = hoverDate
   },
-  chartEnergyYAxis(state, data) {
-    state.chartEnergyYAxis = data
+  hoverDomain(state, hoverDomain) {
+    state.hoverDomain = hoverDomain
   },
-  chartEnergyCurve(state, data) {
-    state.chartEnergyCurve = data
+  highlightDomain(state, highlightDomain) {
+    state.highlightDomain = highlightDomain
   },
-  chartPowerCurve(state, data) {
-    state.chartPowerCurve = data
+  focusDate(state, focusDate) {
+    state.focusDate = focusDate
   },
-  chartEnergyRenewablesLine(state, data) {
-    state.chartEnergyRenewablesLine = data
+  xTicks(state, xTicks) {
+    state.xTicks = xTicks
   },
-  chartEmissionsVolume(state, data) {
-    state.chartEmissionsVolume = data
+  xGuides(state, xGuides) {
+    state.xGuides = xGuides
   },
-  chartEmissionsIntensity(state, data) {
-    state.chartEmissionsIntensity = data
+  tickFormat(state, tickFormat) {
+    state.tickFormat = tickFormat
   },
-  chartPrice(state, data) {
-    state.chartPrice = data
+  secondTickFormat(state, secondTickFormat) {
+    state.secondTickFormat = secondTickFormat
   },
-  chartTemperature(state, data) {
-    state.chartTemperature = data
-  },
+
   chartSummaryPie(state, data) {
     state.chartSummaryPie = data
   }
 }
 
-export const actions = {}
+export const actions = {
+  doUpdateXTicks({ commit }, { range, interval, isZoomed, fitlerPeriod }) {
+    commit('xTicks', AxisTicks(range, interval, isZoomed, fitlerPeriod))
+  },
+
+  doUpdateXGuides({ commit }, { interval, start, end }) {
+    let xGuides = []
+    if (interval === 'Day') {
+      xGuides = DateDisplay.weekendGuides(start, end)
+    }
+    if (interval === '5m' || interval === '30m') {
+      xGuides = DateDisplay.nightGuides(start, end)
+    }
+    commit('xGuides', xGuides)
+  },
+
+  doUpdateTickFormats({ commit }, { range, interval }) {
+    let tickFormat = AxisTimeFormats.defaultFormat,
+      secondTickFormat = AxisTimeFormats.secondaryFormat
+    switch (interval) {
+      case 'Day':
+        tickFormat = AxisTimeFormats.intervalDayTimeFormat
+        secondTickFormat = AxisTimeFormats.intervalDaySecondaryTimeFormat
+        break
+      case 'Week':
+        tickFormat = AxisTimeFormats.intervalWeekTimeFormat
+        secondTickFormat = AxisTimeFormats.intervalWeekSecondaryTimeFormat
+        break
+      case 'Month':
+        range === 'ALL'
+          ? (tickFormat = AxisTimeFormats.rangeAllIntervalMonthTimeFormat)
+          : (tickFormat = AxisTimeFormats.intervalMonthTimeFormat)
+        break
+      case 'Fin Year':
+        tickFormat = d => {
+          const year = d.getFullYear() + 1 + ''
+          return `FY${year.substr(2, 2)}`
+        }
+        break
+      default:
+    }
+    commit('tickFormat', tickFormat)
+    commit('secondTickFormat', secondTickFormat)
+  }
+}

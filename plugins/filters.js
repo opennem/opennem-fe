@@ -2,11 +2,12 @@ import Vue from 'vue'
 import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import { format as d3Format } from 'd3-format'
 import DateDisplay from '~/services/DateDisplay.js'
+import * as SI from '@/constants/si.js'
 
 function smartFormatString(v) {
   const value = Math.abs(v)
   let fString = ',.0f'
-  if (value < 10 && value > 0.1) {
+  if (value < 30 && value > 0.1) {
     fString = ',.1f'
   } else if (value < 0.1 && value > 0.01) {
     fString = ',.2f'
@@ -69,9 +70,15 @@ Vue.filter('formatValue2', value => {
 })
 
 Vue.filter('facilityFormatNumber', value => {
-  const fString = value < 10 ? ',.1f' : ',.0f'
+  let v = value
+  let fString = ',.0f'
+  if (v < 10 && v >= 1) {
+    fString = ',.1f'
+  } else if (v < 1) {
+    v = v * Math.pow(10, 3)
+  }
   const f = d3Format(fString)
-  return f(value)
+  return f(v)
 })
 
 Vue.filter('customFormatValue', value => {
@@ -113,4 +120,8 @@ Vue.filter('formatCurrency', value => {
 
 Vue.filter('toLowerCase', string => {
   return string.toLowerCase()
+})
+
+Vue.filter('convertValue', (value, fromPrefix, toPrefix) => {
+  return SI.convertValue(fromPrefix, toPrefix, value)
 })

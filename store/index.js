@@ -1,18 +1,24 @@
 import cloneDeep from 'lodash.clonedeep'
-import { lsGet, lsSet } from '~/services/LocalStorage'
-import * as FUEL_TECHS from '~/constants/fuelTech.js'
-import * as SimplifiedGroup from '~/constants/group-simplified.js'
-import * as FlexibilityGroup from '~/constants/group-flexibility.js'
-import * as RenewableFossilGroup from '~/constants/group-renewable-fossil.js'
-import * as SolarResidualGroup from '~/constants/group-solar-residual.js'
+import * as FUEL_TECHS from '~/constants/fuel-tech.js'
+
+let hostEnv = 'dev'
+if (typeof window !== 'undefined') {
+  const host = window.location.host
+  if (host === 'opennem.org.au') {
+    hostEnv = 'prod'
+  }
+  if (host === 'dev.opennem.org.au') {
+    hostEnv = 'dev'
+  }
+}
 
 export const state = () => ({
-  hostEnv: null, // local, prod, dev
+  hostEnv, // local, prod, dev
   currentView: 'energy', // energy, facilities
   nem: [],
   fuelTechMeta: null,
   fuelTechNames: null,
-  fuelTechGroupName: 'Default', // Default
+  fuelTechGroupName: 'Default', // Default, Flexibility
   fuelTechOrder: cloneDeep(FUEL_TECHS.DEFAULT_FUEL_TECH_ORDER),
   hiddenFuelTechs: [],
   energyDomains: [],
@@ -29,7 +35,7 @@ export const state = () => ({
   exportAttribution: '@name',
   percentContributionTo: 'demand', // or generation
   showSummaryColumn: 'av-value', // or emissions-volume or emissions-intensity
-  filterPeriod: null,
+  filterPeriod: 'All',
   compareDifference: false,
   focusOn: false,
   compareDates: [],
@@ -128,26 +134,6 @@ export const getters = {
   fuelTechMeta: state => state.fuelTechMeta,
   fuelTechNames: state => state.fuelTechNames,
   fuelTechGroupName: state => state.fuelTechGroupName,
-  fuelTechGroup: state => {
-    const fuelTechGroupName = state.fuelTechGroupName
-    let group = null
-    switch (fuelTechGroupName) {
-      case 'Simplified':
-        group = SimplifiedGroup
-        break
-      case 'Flexibility':
-        group = FlexibilityGroup
-        break
-      case 'Renewable/Fossil':
-        group = RenewableFossilGroup
-        break
-      case 'Solar/Residual':
-        group = SolarResidualGroup
-        break
-      default:
-    }
-    return group
-  },
   fuelTechOrder: state => state.fuelTechOrder,
   hiddenFuelTechs: state => state.hiddenFuelTechs,
   energyDomains: state => state.energyDomains,
@@ -193,9 +179,6 @@ export const getters = {
       case '7D':
         return ' MW'
       default:
-        if (state.interval === 'Fin Year' || state.interval === 'Year') {
-          return ' TWh'
-        }
         return ' GWh'
     }
   },

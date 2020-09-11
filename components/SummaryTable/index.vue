@@ -1,7 +1,7 @@
 <template>
   <div class="summary-table">
     <dates-display
-      :hover-on="hoverOn"
+      :is-hovering="hoverOn"
       :focus-on="focusOn"
       :start-date="startDate"
       :end-date="endDate"
@@ -17,16 +17,25 @@
           style="padding-top: 3px;">
           <group-selector v-if="groupSelection" />
         </div>
+
         <div
-          v-if="(!hoverOn && !focusOn) || isEnergy"
+          v-if="isEnergy"
           class="summary-col-energy">
-          Energy <small>{{ isYearInterval ? 'TWh' : 'GWh' }}</small>
+          <span>
+            Energy <small>{{ chartCurrentUnit }}</small>
+          </span>
         </div>
         <div
-          v-if="(hoverOn || focusOn) && !isEnergy"
+          v-else
           class="summary-col-energy">
-          Power <small>MW</small>
+          <span v-if="hoverOn || focusOn">
+            Power <small>{{ chartCurrentUnit }}</small>
+          </span>
+          <span v-else>
+            Energy <small>GWh</small>
+          </span>
         </div>
+
         <div
           class="summary-col-contribution contribution-toggle"
           @click="handlePercentContributionToClick">
@@ -36,18 +45,31 @@
           <column-selector />
         </div>
       </div>
+      
       <div class="summary-row">
         <div class="summary-col-label">Sources</div>
+
         <div
-          v-if="!hoverOn && !focusOn"
+          v-if="isEnergy"
           class="summary-col-energy cell-value">
-          {{ summarySources._totalEnergy | formatValue }}
+          <span v-if="hoverOn || focusOn">
+            {{ pointSummarySources._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
+          <span v-else>
+            {{ summarySources._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
         </div>
         <div
-          v-if="hoverOn || focusOn"
+          v-else
           class="summary-col-energy cell-value">
-          {{ pointSummarySources._total | formatValue }}
+          <span v-if="hoverOn || focusOn">
+            {{ pointSummarySources._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
+          <span v-else>
+            {{ summarySources._totalEnergy | formatValue }}
+          </span>
         </div>
+
         <div class="summary-col-contribution cell-value" />
         <div
           v-if="!hoverOn && !focusOn"
@@ -94,21 +116,35 @@
       :is-year-interval="isYearInterval"
       @update="handleSourcesOrderUpdate"
       @fuelTechsHidden="handleSourceFuelTechsHidden"
+      @mouse-enter="handleMouseEnter"
+      @mouse-leave="handleMouseLeave"
     />
-    
+
     <div class="summary-column-headers">
       <div class="summary-row">
         <div class="summary-col-label">Loads</div>
+   
         <div
-          v-if="!hoverOn && !focusOn"
+          v-if="isEnergy"
           class="summary-col-energy cell-value">
-          {{ summaryLoads._totalEnergy | formatValue }}
+          <span v-if="hoverOn || focusOn">
+            {{ pointSummaryLoads._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
+          <span v-else>
+            {{ summaryLoads._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
         </div>
         <div
-          v-if="hoverOn || focusOn"
+          v-else
           class="summary-col-energy cell-value">
-          {{ pointSummaryLoads._total | formatValue }}
+          <span v-if="hoverOn || focusOn">
+            {{ pointSummaryLoads._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
+          <span v-else>
+            {{ summaryLoads._totalEnergy | formatValue }}
+          </span>
         </div>
+
         <div class="summary-col-contribution cell-value" />
         <div class="summary-col-av-value cell-value" />
       </div>
@@ -129,21 +165,35 @@
       :emissions-domains="emissionsDomains"
       @update="handleLoadsOrderUpdate"
       @fuelTechsHidden="handleLoadFuelTechsHidden"
+      @mouse-enter="handleMouseEnter"
+      @mouse-leave="handleMouseLeave"
     />
 
     <div class="summary-column-headers">
       <div class="summary-row last-row">
         <div class="summary-col-label">Net</div>
+
         <div
-          v-if="!hoverOn && !focusOn"
+          v-if="isEnergy"
           class="summary-col-energy cell-value">
-          {{ summary._totalEnergy | formatValue }}
+          <span v-if="hoverOn || focusOn">
+            {{ pointSummary._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
+          <span v-else>
+            {{ summary._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
         </div>
         <div
-          v-if="hoverOn || focusOn"
+          v-else
           class="summary-col-energy cell-value">
-          {{ pointSummary._total | formatValue }}
+          <span v-if="hoverOn || focusOn">
+            {{ pointSummary._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
+          <span v-else>
+            {{ summary._totalEnergy | formatValue }}
+          </span>
         </div>
+
         <div class="summary-col-contribution cell-value" />
         <div class="summary-col-av-value cell-value" />
       </div>
@@ -163,16 +213,34 @@
             class="renewable-line" />
           Renewables
         </div>
-        <div class="summary-col-energy cell-value" />
+
+        <div
+          v-if="isEnergy"
+          class="summary-col-energy cell-value">
+          <span>
+            {{ renewablesValue | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
+        </div>
+        <div
+          v-else
+          class="summary-col-energy cell-value">
+          <span v-if="hoverOn || focusOn">
+            {{ renewablesValue | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          </span>
+          <span v-else>
+            {{ renewablesValue | formatValue }}
+          </span>
+        </div>
+
         <div
           v-if="!hoverOn && !focusOn"
           class="summary-col-contribution cell-value">
-          {{ renewables | percentageFormatNumber }}
+          {{ renewablesPercentage | percentageFormatNumber }}
         </div>
         <div
           v-if="hoverOn || focusOn"
           class="summary-col-contribution cell-value">
-          {{ pointRenewables | percentageFormatNumber }}
+          {{ pointRenewablesPercentage | percentageFormatNumber }}
         </div>
         <div class="summary-col-av-value cell-value" />
       </div>
@@ -181,7 +249,6 @@
 </template>
 
 <script>
-import moment from 'moment'
 import _isEmpty from 'lodash.isempty'
 import _cloneDeep from 'lodash.clonedeep'
 import _includes from 'lodash.includes'
@@ -207,14 +274,6 @@ export default {
       type: Array,
       default: () => []
     },
-    domains: {
-      type: Array,
-      default: () => []
-    },
-    stackedAreaDomains: {
-      type: Array,
-      default: () => []
-    },
     emissionsDomains: {
       type: Array,
       default: () => []
@@ -222,6 +281,10 @@ export default {
     marketValueDomains: {
       type: Array,
       default: () => []
+    },
+    priceId: {
+      type: String,
+      default: () => ''
     },
     temperatureDomains: {
       type: Array,
@@ -250,10 +313,6 @@ export default {
     focusOn: {
       type: Boolean,
       default: () => false
-    },
-    priceId: {
-      type: String,
-      default: () => ''
     },
     temperatureId: {
       type: String,
@@ -297,17 +356,50 @@ export default {
 
   computed: {
     ...mapGetters({
+      domainPowerEnergyGrouped: 'regionEnergy/domainPowerEnergyGrouped',
       emissionsVolumeUnit: 'si/emissionsVolumeUnit',
       emissionsVolumePrefix: 'si/emissionsVolumePrefix',
-      chartEnergyRenewablesLine: 'visInteract/chartEnergyRenewablesLine'
+      chartEnergyRenewablesLine:
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+
+      chartEnergyUnit: 'chartOptionsPowerEnergy/chartEnergyUnit',
+      chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
+      chartEnergyDisplayPrefix:
+        'chartOptionsPowerEnergy/chartEnergyDisplayPrefix',
+      chartEnergyCurrentUnit: 'chartOptionsPowerEnergy/chartEnergyCurrentUnit',
+
+      chartPowerUnit: 'chartOptionsPowerEnergy/chartPowerUnit',
+      chartPowerUnitPrefix: 'chartOptionsPowerEnergy/chartPowerUnitPrefix',
+      chartPowerDisplayPrefix:
+        'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
+      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit'
     }),
+
+    chartUnit() {
+      return this.isEnergy ? this.chartEnergyUnit : this.chartPowerUnit
+    },
+    chartUnitPrefix() {
+      return this.isEnergy
+        ? this.chartEnergyUnitPrefix
+        : this.chartPowerUnitPrefix
+    },
+    chartDisplayPrefix() {
+      return this.isEnergy
+        ? this.chartEnergyDisplayPrefix
+        : this.chartPowerDisplayPrefix
+    },
+    chartCurrentUnit() {
+      return this.isEnergy
+        ? this.chartEnergyCurrentUnit
+        : this.chartPowerCurrentUnit
+    },
 
     fuelTechGroupName() {
       return this.$store.getters.fuelTechGroupName
     },
 
-    fuelTechGroup() {
-      return this.$store.getters.fuelTechGroup
+    propRef() {
+      return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
     },
 
     percentContributionTo() {
@@ -331,17 +423,17 @@ export default {
     },
 
     sourcesOrderLength() {
-      return this.domains.filter(
+      return this.energyDomains.filter(
         d => d.category === 'source' || d.category === 'load'
       ).length
     },
 
     sourcesOrder() {
-      return this.domains.filter(d => d.category === 'source')
+      return this.energyDomains.filter(d => d.category === 'source')
     },
 
     loadsOrder() {
-      return this.domains.filter(d => d.category === 'load')
+      return this.energyDomains.filter(d => d.category === 'load')
     },
 
     sourcesMarketValueOrder() {
@@ -352,7 +444,21 @@ export default {
       return this.marketValueDomains.filter(d => d.category === 'load')
     },
 
-    renewables() {
+    renewablesValue() {
+      const isSummary = !this.hoverOn && !this.focusOn
+      const key =
+        this.percentContributionTo === 'demand' ? '_total' : '_totalGeneration'
+      const totalRenewables = isSummary
+        ? this.dataset.reduce((a, b) => a + b._totalRenewables, 0)
+        : this.pointSummary._totalRenewables
+      const mins = this.interval === '30m' ? 30 : 5
+
+      return this.isEnergy || !isSummary
+        ? totalRenewables
+        : (totalRenewables * mins) / 60 / 1000
+    },
+
+    renewablesPercentage() {
       const key =
         this.percentContributionTo === 'demand' ? '_total' : '_totalGeneration'
       let totalRenewables = this.dataset.reduce(
@@ -360,19 +466,15 @@ export default {
         0
       )
       let total = this.dataset.reduce((a, b) => a + b[key], 0)
-      if (!this.isEnergy) {
-        // calculate energy (GWh) += power * 5mins/60/1000
-        const mins = this.interval === '30m' ? 30 : 5
-        totalRenewables = (totalRenewables * mins) / 60 / 1000
-        total = (total * mins) / 60 / 1000
-      }
       const r = (totalRenewables / total) * 100
       const f = d3Format(',.3f')
-      console.log(`*****Renewables: ${f(r)}%`)
+      if (!isNaN(r)) {
+        console.log(`***** Renewables: ${f(r)}%`)
+      }
       return r
     },
 
-    pointRenewables() {
+    pointRenewablesPercentage() {
       const key =
         this.percentContributionTo === 'demand' ? '_total' : '_totalGeneration'
       const totalRenewables = this.pointSummary._totalRenewables
@@ -409,7 +511,7 @@ export default {
 
     hoveredDate() {
       const item = this.pointSummary
-      return item ? item.date : null
+      return item ? item.time : null
     },
 
     hoveredDateTime() {
@@ -420,7 +522,7 @@ export default {
 
     startDate() {
       const dataLength = this.dataset.length
-      const startDate = dataLength > 0 ? this.dataset[0].date : null
+      const startDate = dataLength > 0 ? this.dataset[0].time : null
       return startDate
     },
 
@@ -433,14 +535,14 @@ export default {
     endDate() {
       const dataLength = this.dataset.length
       let whichIndex = 1
-      if (this.range === '30D' || this.range === '1Y' || this.range === 'ALL') {
-        whichIndex = 2
-      }
+      // if (this.range === '30D' || this.range === '1Y' || this.range === 'ALL') {
+      //   whichIndex = 2
+      // }
       if (dataLength > 0) {
-        const date = this.dataset[dataLength - whichIndex]
-          ? this.dataset[dataLength - whichIndex].date
-          : this.dataset[dataLength - 1].date
-        const endDate = date
+        const time = this.dataset[dataLength - whichIndex]
+          ? this.dataset[dataLength - whichIndex].time
+          : this.dataset[dataLength - 1].time
+        const endDate = time
         return endDate
       } else {
         return null
@@ -475,8 +577,14 @@ export default {
     dataset(updated) {
       this.calculateSummary(updated)
     },
-    domains(updated) {
+    energyDomains(updated) {
       this.calculateSummary(this.dataset)
+    },
+    marketValueDomains(updated) {
+      this.calculateSummary(this.dataset)
+    },
+    emissionsDomains(updated) {
+      console.log(updated)
     },
     hoverDate(date) {
       this.updatePointSummary(date)
@@ -506,17 +614,16 @@ export default {
 
   mounted() {
     let hiddenFuelTechs = this.hiddenFuelTechs
-    const property = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
 
     // if all is hidden, then unhide all
     let hiddenLength = 0
-    this.domains.forEach(d => {
-      if (_includes(hiddenFuelTechs, d[property])) {
+    this.energyDomains.forEach(d => {
+      if (_includes(hiddenFuelTechs, d[this.propRef])) {
         hiddenLength += 1
       }
     })
 
-    if (this.domains.length === hiddenLength) {
+    if (this.energyDomains.length === hiddenLength) {
       this.hiddenSources = []
       this.hiddenLoads = []
       hiddenFuelTechs = []
@@ -525,7 +632,9 @@ export default {
     this.$emit('fuelTechsHidden', hiddenFuelTechs)
 
     hiddenFuelTechs.forEach(fuelTech => {
-      const find = this.domains.find(domain => domain[property] === fuelTech)
+      const find = this.energyDomains.find(
+        domain => domain[this.propRef] === fuelTech
+      )
       if (find) {
         if (find.category === 'source') {
           this.hiddenSources.push(fuelTech)
@@ -539,9 +648,8 @@ export default {
 
   methods: {
     calculateSummary(data) {
+      // console.log('Calculate summary')
       const isGeneration = this.percentContributionTo === 'generation'
-      const hiddenFuelTechProp =
-        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
       let totalEnergy = 0
       let totalEnergyMinusHidden = 0
       let totalPower = 0
@@ -559,7 +667,7 @@ export default {
 
       const energySummary = data.map(d => {
         let p = 0
-        this.domains.forEach(ft => {
+        this.energyDomains.forEach(ft => {
           p += d[ft.id] || 0
         })
         return p
@@ -585,7 +693,7 @@ export default {
           }
 
           if (excludeHidden) {
-            if (!_includes(this.hiddenFuelTechs, ft[hiddenFuelTechProp])) {
+            if (!_includes(this.hiddenFuelTechs, ft[this.propRef])) {
               energy[ft.id] = setEnergy()
             } else {
               energy[ft.id] = 0
@@ -608,7 +716,7 @@ export default {
           }
 
           if (excludeHidden) {
-            if (!_includes(this.hiddenFuelTechs, ft[hiddenFuelTechProp])) {
+            if (!_includes(this.hiddenFuelTechs, ft[this.propRef])) {
               power[ft.id] = setPower()
             } else {
               power[ft.id] = 0
@@ -624,7 +732,7 @@ export default {
       }
 
       // Calculate Energy
-      this.stackedAreaDomains.forEach(ft => {
+      this.energyDomains.forEach(ft => {
         const category = ft.category
         const dataEnergy = dataEnergyMap(ft)
         const dataEnergyMinusHidden = dataEnergyMap(ft, true)
@@ -638,11 +746,13 @@ export default {
         let avValue = 0
 
         this.summary[ft.id] = dataEnergySum
-        totalEnergy += dataEnergySum
-        totalPower += dataPowerSum
 
-        totalEnergyMinusHidden += dataEnergyMinusHiddenSum
-        totalPowerMinusHidden += dataPowerMinusHiddenSum
+        if (category !== 'load' || _includes(ft.id, 'exports')) {
+          totalEnergy += dataEnergySum
+          totalPower += dataPowerSum
+          totalEnergyMinusHidden += dataEnergyMinusHiddenSum
+          totalPowerMinusHidden += dataPowerMinusHiddenSum
+        }
 
         if (category === 'source') {
           this.summarySources[ft.id] = dataEnergySum
@@ -702,46 +812,96 @@ export default {
         0
       )
       // Calculate Market Value for Energy
-      this.marketValueDomains.forEach((ft, index) => {
-        const category = ft.category
-        let avValue = null
-        let dataMarketValueSum = 0
-
+      // TODO: refactor price market value calcuation
+      if (this.marketValueDomains.length > 0) {
         if (this.isEnergy) {
-          const dataMarketValue = data.map(d => {
-            const marketValue = {}
-            marketValue[ft.id] = Math.abs(d[ft.id])
-            return marketValue
+          this.marketValueDomains.forEach((ft, index) => {
+            const category = ft.category
+            let avValue = null
+            let dataMarketValueSum = 0
+
+            const dataMarketValue = data.map(d => {
+              const marketValue = {}
+              marketValue[ft.id] = Math.abs(d[ft.id])
+              return marketValue
+            })
+            dataMarketValueSum = dataMarketValue.reduce(
+              (prev, cur) => prev + cur[ft.id],
+              0
+            )
+            const findEnergyEq = this.energyDomains.find(
+              e => e[this.propRef] === ft[this.propRef]
+            )
+            if (!findEnergyEq) {
+              console.error(
+                'There is an issue finding the energy fuel tech in market value calculations.'
+              )
+            }
+            const ftTotal = Math.abs(this.summary[findEnergyEq.id])
+            avValue = dataMarketValueSum / ftTotal / 1000
+
+            this.summary[ft.id] = avValue
+            totalPriceMarketValue += dataMarketValueSum
+
+            if (category === 'source') {
+              this.summarySources[ft.id] = avValue
+            } else if (category === 'load') {
+              this.summaryLoads[ft.id] = avValue
+            }
           })
-          dataMarketValueSum = dataMarketValue.reduce(
-            (prev, cur) => prev + cur[ft.id],
-            0
-          )
-          const ftTotal = Math.abs(this.summary[this.domains[index].id])
-          avValue = this.isYearInterval
-            ? dataMarketValueSum / ftTotal / 1000 / 1000
-            : dataMarketValueSum / ftTotal / 1000
         } else {
-          const ftId = this.domains[index].id
-          const dataPowerTotal = data.reduce((a, b) => a + (b[ftId] || 0), 0)
-          // calculate the price * ft total
-          const ftPrice = data.map((d, i) => {
-            const price = data[i][this.priceId] ? data[i][this.priceId] : 0
-            return Math.abs(d[ftId]) * price
+          let avValue = null
+
+          this.energyDomains.forEach(domain => {
+            const id = domain.id
+            const ftPrice = data.map((p, pIndex) => {
+              const price = data[pIndex][this.priceId]
+                ? data[pIndex][this.priceId]
+                : 0
+              return Math.abs(p[id]) * price
+            })
+            const ftPriceTotal = ftPrice.reduce((a, b) => a + b, 0)
+            avValue = ftPriceTotal / Math.abs(totalPower)
           })
-          const ftPriceTotal = ftPrice.reduce((a, b) => a + b, 0)
-          avValue = ftPriceTotal / Math.abs(dataPowerTotal)
-        }
 
-        this.summary[ft.id] = avValue
-        totalPriceMarketValue += dataMarketValueSum
+          this.summary[this.priceId] = avValue
 
-        if (category === 'source') {
-          this.summarySources[ft.id] = avValue
-        } else if (category === 'load') {
-          this.summaryLoads[ft.id] = avValue
+          avValue = null
+
+          this.marketValueDomains.forEach(domain => {
+            const category = domain.category
+            const id = domain.id
+            const findEnergyEq = this.energyDomains.find(
+              e => e[this.propRef] === domain[this.propRef]
+            )
+            const ftId = findEnergyEq.id
+            let avValue = null
+            if (!findEnergyEq) {
+              console.error(
+                'There is an issue finding the energy fuel tech in market value calculations.'
+              )
+            }
+            const dataPowerTotal = data.reduce((a, b) => a + (b[ftId] || 0), 0)
+            const ftPrice = data.map((p, pIndex) => {
+              const price = data[pIndex][this.priceId]
+                ? data[pIndex][this.priceId]
+                : 0
+              return Math.abs(p[ftId]) * price
+            })
+
+            const ftPriceTotal = ftPrice.reduce((a, b) => a + b, 0)
+            avValue = ftPriceTotal / Math.abs(dataPowerTotal)
+
+            this.summary[id] = avValue
+
+            if (category === 'source') {
+              this.summarySources[id] = avValue
+            } else if (category === 'load') {
+              this.summaryLoads[id] = avValue
+            }
+          })
         }
-      })
+      }
 
       // Calculate Temperature domains
       const temperatureObj = this.temperatureDomains.find(domain => {
@@ -757,19 +917,14 @@ export default {
         : []
       const totalTemperatureWithoutNulls = temperatureObj
         ? temperatureWithoutNulls.reduce(
-            (prev, cur) => prev + cur[temperatureObj.id],
+            (prev, cur) => prev + (cur[temperatureObj.id] || 0),
             0
           )
         : 0
 
       let totalAverageValue = 0
       if (this.isEnergy) {
-        if (this.isYearInterval) {
-          totalAverageValue =
-            totalPriceMarketValue / energySummaryTotal / 1000 / 1000
-        } else {
-          totalAverageValue = totalPriceMarketValue / energySummaryTotal / 1000
-        }
+        totalAverageValue = totalPriceMarketValue / energySummaryTotal / 1000
       } else {
         totalAverageValue = volWeightPriceTotal / energySummaryTotal
       }
@@ -795,12 +950,9 @@ export default {
         this.emissionsVolumePrefix,
         totalEVMinusHidden / data.length
       )
-      this.summary._averageEmissionsIntensity = this.isYearInterval
-        ? totalEVMinusHidden / avTotal / 1000
-        : totalEVMinusHidden / avTotal
+      this.summary._averageEmissionsIntensity = totalEVMinusHidden / avTotal
       this.summary._averageTemperature =
         totalTemperatureWithoutNulls / temperatureWithoutNulls.length
-
       this.$emit('summary-update', this.summary)
     },
 
@@ -815,7 +967,7 @@ export default {
       this.pointSummaryLoads = {}
 
       if (!_isEmpty(this.pointSummary)) {
-        this.domains.forEach(ft => {
+        this.energyDomains.forEach(ft => {
           const category = ft.category
           const value = this.pointSummary[ft.id]
 
@@ -832,23 +984,31 @@ export default {
         })
 
         // Calculate Market Value
-        this.marketValueDomains.forEach((ft, index) => {
-          const category = ft.category
-          const value = Math.abs(this.pointSummary[ft.id])
-          const ftTotal = Math.abs(this.pointSummary[this.domains[index].id])
-          const avValue = this.isYearInterval
-            ? value / ftTotal / 1000 / 1000
-            : value / ftTotal / 1000
+        if (this.isEnergy) {
+          this.marketValueDomains.forEach((ft, index) => {
+            const category = ft.category
+            const value = Math.abs(this.pointSummary[ft.id])
+            const findEnergyEq = this.energyDomains.find(
+              e => e[this.propRef] === ft[this.propRef]
+            )
+            if (!findEnergyEq) {
+              console.error(
+                'There is an issue finding the energy fuel tech in market value calculations.'
+              )
+            }
+            const ftTotal = Math.abs(this.pointSummary[findEnergyEq.id])
+            const avValue = value / ftTotal / 1000
 
-          this.pointSummary[ft.id] = avValue
-          totalPriceMarketValue += value
+            this.pointSummary[ft.id] = avValue
+            totalPriceMarketValue += value
 
-          if (category === 'source') {
-            this.pointSummarySources[ft.id] = avValue
-          } else if (category === 'load') {
-            this.pointSummaryLoads[ft.id] = avValue
-          }
-        })
+            if (category === 'source') {
+              this.pointSummarySources[ft.id] = avValue
+            } else if (category === 'load') {
+              this.pointSummaryLoads[ft.id] = avValue
+            }
+          })
+        }
 
         // Calculate Emissions
         this.emissionsDomains.forEach(domain => {
@@ -874,9 +1034,12 @@ export default {
       if (this.priceId) {
         this.pointSummary._totalAverageValue = this.pointSummary[this.priceId]
       } else {
-        this.pointSummary._totalAverageValue = this.isYearInterval
-          ? totalPriceMarketValue / this.pointSummary._total / 1000 / 1000
-          : totalPriceMarketValue / this.pointSummary._total / 1000
+        let totalAverageValue =
+          totalPriceMarketValue / this.pointSummary._total / 1000
+        if (totalAverageValue === 0) {
+          totalAverageValue = '–'
+        }
+        this.pointSummary._totalAverageValue = totalAverageValue
       }
       this.pointSummarySources._total = totalSources
       this.pointSummarySources._totalGeneration = totalGeneration
@@ -888,19 +1051,8 @@ export default {
     },
 
     updatePointSummary(date) {
-      const dataFound = this.dataset.find(d => {
-        const fDate = moment(d.date)
-        const rDate = moment(date)
-        if (this.interval === 'Day') {
-          fDate.hour(0)
-          fDate.minute(0)
-          fDate.second(0)
-
-          return fDate.valueOf() === rDate.valueOf()
-        } else {
-          return d.date === rDate.valueOf()
-        }
-      })
+      if (!date) return
+      const dataFound = this.dataset.find(d => d.time === date.getTime())
 
       this.hoveredTemperature =
         dataFound && dataFound[this.temperatureId]
@@ -925,18 +1077,17 @@ export default {
     },
 
     emitHiddenFuelTechs() {
-      const property = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
       let hiddenFuelTechs = [...this.hiddenSources, ...this.hiddenLoads]
       // if all is hidden, then unhide all
       let sourcesHiddenLength = 0
       this.sourcesOrder.forEach(d => {
-        if (_includes(this.hiddenSources, d[property])) {
+        if (_includes(this.hiddenSources, d[this.propRef])) {
           sourcesHiddenLength += 1
         }
       })
       let loadsHiddenLength = 0
       this.loadsOrder.forEach(d => {
-        if (_includes(this.hiddenLoads, d[property])) {
+        if (_includes(this.hiddenLoads, d[this.propRef])) {
           loadsHiddenLength += 1
         }
       })
@@ -954,7 +1105,6 @@ export default {
     },
 
     handleSourceFuelTechsHidden(hidden, hideOthers, onlyFt) {
-      const property = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
       this.hiddenSources = hidden
       if (hideOthers) {
         if (this.fuelTechGroupName === 'Default') {
@@ -967,10 +1117,10 @@ export default {
           this.hiddenSources = hiddenSources.map(d => d.fuelTech)
           this.hiddenLoads = hiddenLoads.map(d => d.fuelTech)
         } else {
-          const hiddenLoads = Domain.getAllGroupDomains(
-            this.fuelTechGroup
-          ).filter(d => d.category === 'load')
-          this.hiddenLoads = hiddenLoads.map(d => d[property])
+          const hiddenLoads = this.domainPowerEnergyGrouped[
+            this.fuelTechGroupName
+          ].filter(d => d.category === 'load')
+          this.hiddenLoads = hiddenLoads.map(d => d[this.propRef])
           // this.hiddenLoads = this.loadsOrder.map(d => d[property])
         }
       }
@@ -978,7 +1128,6 @@ export default {
     },
 
     handleLoadFuelTechsHidden(hidden, hideOthers, onlyFt) {
-      const property = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
       this.hiddenLoads = hidden
       if (hideOthers) {
         if (this.fuelTechGroupName === 'Default') {
@@ -991,7 +1140,7 @@ export default {
           this.hiddenSources = hiddenSources.map(d => d.fuelTech)
           this.hiddenLoads = hiddenLoads.map(d => d.fuelTech)
         } else {
-          this.hiddenSources = this.sourcesOrder.map(d => d[property])
+          this.hiddenSources = this.sourcesOrder.map(d => d[this.propRef])
         }
       }
       this.emitHiddenFuelTechs()
@@ -1007,12 +1156,14 @@ export default {
 
     handleRenewableRowClicked() {
       const rowToggle = !this.chartEnergyRenewablesLine
-      this.$store.commit('visInteract/chartEnergyRenewablesLine', rowToggle)
+      this.$store.commit(
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+        rowToggle
+      )
       this.emitHiddenFuelTechs()
     },
 
     handleRenewableRowShiftClicked() {
-      const property = this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'id'
       if (this.fuelTechGroupName === 'Default') {
         const hiddenSources = Domain.getAllDomainObjs().filter(
           d => d.category === 'source'
@@ -1023,15 +1174,25 @@ export default {
         this.hiddenSources = hiddenSources.map(d => d.fuelTech)
         this.hiddenLoads = hiddenLoads.map(d => d.fuelTech)
       } else {
-        const hiddenLoads = Domain.getAllGroupDomains(
-          this.fuelTechGroup
-        ).filter(d => d.category === 'load')
-        this.hiddenLoads = hiddenLoads.map(d => d[property])
-        this.hiddenSources = this.sourcesOrder.map(d => d[property])
+        const hiddenLoads = this.domainPowerEnergyGrouped[
+          this.fuelTechGroupName
+        ].filter(d => d.category === 'load')
+        this.hiddenLoads = hiddenLoads.map(d => d[this.propRef])
+        this.hiddenSources = this.sourcesOrder.map(d => d[this.propRef])
       }
 
-      this.$store.commit('visInteract/chartEnergyRenewablesLine', true)
+      this.$store.commit(
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+        true
+      )
       this.emitHiddenFuelTechs()
+    },
+
+    handleMouseEnter(ft) {
+      this.$emit('mouse-enter', ft)
+    },
+    handleMouseLeave() {
+      this.$emit('mouse-leave')
     }
   }
 }

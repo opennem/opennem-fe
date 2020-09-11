@@ -1,25 +1,39 @@
+function getPrependString(region, range, prod) {
+  let string = ''
+  string = prod ? '/' : '/testing/v2/'
+
+  if (prod && (range === '30D' || range === '1Y')) {
+    string = '/testing/'
+  }
+  if (region === 'wem') {
+    string = '/'
+  }
+  return string
+}
+
 export default {
   getEnergyUrls(region, range, hostEnv) {
-    const prepend = hostEnv === 'dev' ? '/testing' : ''
-    let isProd = hostEnv === 'prod'
+    const prod = hostEnv === 'prod'
+    const prependString = getPrependString(region, range, prod)
     const thisFullYear = new Date().getFullYear()
     const urls = []
+
     switch (range) {
       case '1D':
       case '3D':
       case '7D':
-        if (isProd) {
+        if (prod) {
           urls.push(`/power/${region}.json`)
         } else {
-          urls.push(`/testing/v2/${region}/power/5min/live.json`)
+          if (region === 'wem') {
+            urls.push(`/power/${region}.json`)
+          } else {
+            urls.push(`${prependString}${region}/power/5min/live.json`)
+          }
         }
         break
       case '30D':
-        if (isProd) {
-          urls.push(`/testing/${region}/energy/daily/${thisFullYear}.json`)
-        } else {
-          urls.push(`/testing/v2/${region}/energy/daily/${thisFullYear}.json`)
-        }
+        urls.push(`${prependString}${region}/energy/daily/${thisFullYear}.json`)
         break
       case '1Y':
         const now = new Date().getTime()
@@ -27,25 +41,15 @@ export default {
         const lastFullYear = new Date(aYearAgo).getFullYear()
 
         if (thisFullYear !== lastFullYear) {
-          if (isProd) {
-            urls.push(`/testing/${region}/energy/daily/${lastFullYear}.json`)
-          } else {
-            urls.push(`/testing/v2/${region}/energy/daily/${lastFullYear}.json`)
-          }
+          urls.push(
+            `${prependString}${region}/energy/daily/${lastFullYear}.json`
+          )
         }
 
-        if (isProd) {
-          urls.push(`/testing/${region}/energy/daily/${thisFullYear}.json`)
-        } else {
-          urls.push(`/testing/v2/${region}/energy/daily/${thisFullYear}.json`)
-        }
+        urls.push(`${prependString}${region}/energy/daily/${thisFullYear}.json`)
         break
       case 'ALL':
-        if (isProd) {
-          urls.push(`${prepend}/${region}/energy/monthly/all.json`)
-        } else {
-          urls.push(`/testing/v2/${region}/energy/monthly/all.json`)
-        }
+        urls.push(`${prependString}${region}/energy/monthly/all.json`)
         break
       default:
     }
@@ -76,7 +80,7 @@ export default {
       case 'G':
         return 'T'
       case 'T':
-        return ''
+        return 'P'
       default:
         return 'k'
     }

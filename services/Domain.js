@@ -1,7 +1,7 @@
 import _includes from 'lodash.includes'
 import _uniqBy from 'lodash.uniqby'
-import * as FUEL_TECHS from '~/constants/fuelTech.js'
-import { EMISSIONS } from '~/constants/emissions.js'
+import * as FUEL_TECHS from '~/constants/fuel-tech.js'
+import { EMISSIONS } from '~/constants/data-types.js'
 
 export default {
   parseDomains(domains, dict, type) {
@@ -47,19 +47,6 @@ export default {
         category: FUEL_TECHS.FUEL_TECH_CATEGORY[ft],
         renewable: FUEL_TECHS.FUEL_TECH_RENEWABLE[ft],
         group: null
-      }
-    })
-  },
-
-  getAllGroupDomains(dict) {
-    const order = dict.FUEL_TECH_ORDER
-    return order.map(ft => {
-      return {
-        id: `${ft}.energy`,
-        label: dict.FUEL_TECH_LABEL[ft],
-        colour: dict.FUEL_TECH_GROUP_COLOUR[ft],
-        category: dict.FUEL_TECH_CATEGORY[ft],
-        group: ft
       }
     })
   },

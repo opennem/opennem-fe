@@ -1,6 +1,20 @@
 import { timeDay, timeMonday, timeMonth, timeYear } from 'd3-time'
+import DateDisplay from '@/services/DateDisplay.js'
+import {
+  INTERVAL_5MIN,
+  INTERVAL_30MIN,
+  INTERVAL_DAY,
+  INTERVAL_WEEK,
+  INTERVAL_MONTH,
+  INTERVAL_SEASON,
+  INTERVAL_QUARTER,
+  INTERVAL_HALFYEAR,
+  INTERVAL_FINYEAR,
+  INTERVAL_YEAR,
+  hasIntervalFilters
+} from '@/constants/interval-filters.js'
 
-export default function(range, interval, isZoomed) {
+export default function(range, interval, isZoomed, filterPeriod) {
   if (range === '3D') {
     return timeDay.every(0.5)
   }
@@ -32,6 +46,7 @@ export default function(range, interval, isZoomed) {
     }
   }
   if (range === 'ALL') {
+    const isFilter = !filterPeriod || filterPeriod !== 'All'
     if (interval === 'Fin Year') {
       return timeMonth.filter(d => d.getMonth() === 6)
     }

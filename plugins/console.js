@@ -1,5 +1,5 @@
 function console() {
-  if (window.console) {
+  if (typeof window !== 'undefined' && window.console) {
     return window.console
   }
 }

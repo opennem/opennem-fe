@@ -41,6 +41,10 @@ export default {
       type: Object,
       default: () => {}
     },
+    datasetPercent: {
+      type: Object,
+      default: () => {}
+    },
     domains: {
       type: Array,
       default: () => []
@@ -49,6 +53,14 @@ export default {
     visHeight: {
       type: Number,
       default: () => 200
+    },
+    displayPrefix: {
+      type: String,
+      default: () => ''
+    },
+    convertValue: {
+      type: Function,
+      default: () => function() {}
     }
   },
 
@@ -110,6 +122,9 @@ export default {
     },
     domains() {
       this.setup()
+      this.update()
+    },
+    displayPrefix() {
       this.update()
     }
   },
@@ -201,6 +216,7 @@ export default {
     customYAxis(g) {
       g.call(this.yAxis)
       g.selectAll('.tick text')
+        .text(t => this.convertValue(t))
         .attr('x', 4)
         .attr('dy', -4)
       g.selectAll('.tick line').attr('class', d => (d === 0 ? 'base' : ''))
@@ -232,7 +248,31 @@ export default {
         )
         // .attr('transform', 'rotate(-1)')
         // .text(d => d.label)
-        .text(d => this.$options.filters.formatValue(d.value))
+        .text(d => {
+          const percent = this.datasetPercent[d.name]
+          const value = this.$options.filters.formatValue(
+            this.convertValue(d.value)
+          )
+          let string = value
+
+          return string
+        })
+
+      this.$columnLabelGroup
+        .selectAll('text')
+        .data(this.columnData)
+        .append('tspan')
+        .style('fill', '#444')
+        .style('font-size', '9px')
+        .text(d => {
+          const bandwidth = this.x.bandwidth()
+          const percent = this.datasetPercent[d.name]
+          let string = ''
+          if (percent && bandwidth > 60) {
+            string += ` (${this.$options.filters.formatValue(percent)}%)`
+          }
+          return string
+        })
     },
 
     resizeRedraw() {

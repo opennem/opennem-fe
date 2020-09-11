@@ -5,7 +5,7 @@ import _includes from 'lodash.includes'
 import { timeMinute as d3TimeMinute } from 'd3-time'
 import parseInterval from '~/plugins/intervalParser.js'
 import millisecondsByInterval from '~/constants/millisecondsByInterval.js'
-import { EMISSIONS } from '~/constants/emissions.js'
+import { EMISSIONS } from '~/constants/data-types.js'
 
 import rollUp30m from '../rollUpModules/ru-30m.js'
 import rollUp1YDay from '../rollUpModules/ru-1y-day.js'
@@ -339,11 +339,18 @@ export default {
     return new Promise(resolve => {
       let data = []
       const promises = []
-      const shouldInterpolate =
-        range === '1D' || range === '3D' || range === '7D'
+      let shouldInterpolate = range === '1D' || range === '3D' || range === '7D'
 
       let lastDate = null
-      if (res.length) {
+      let isWARegion = false
+      if (res.length > 0) {
+        try {
+          const resData = res[res.length - 1].data || res[res.length - 1]
+          isWARegion = resData[0].region === 'wa'
+        } catch (e) {
+          console.log('There is an issue checking if it is WA region')
+        }
+
         try {
           const resData = res[res.length - 1].data || res[res.length - 1]
           const e = energyDomains[0]
@@ -352,6 +359,10 @@ export default {
         } catch (e) {
           console.log('There is an issue looking for last valid FT date')
         }
+      }
+
+      if (isWARegion) {
+        shouldInterpolate = false
       }
 
       // flatten data for vis and summary
@@ -398,14 +409,16 @@ export default {
             d => d.date > thirtyDaysAgo && d.date <= lastDateTime
           )
         } else if (range === '1Y') {
-          // filter 1Y because it could be a combination of two 1Y datasets
-          const now = moment(lastDate)
-            .add(1, 'day')
-            .valueOf()
-          const aYearAgo = moment(now)
-            .subtract(1, 'year')
-            .valueOf()
-          data = data.filter(d => d.date >= aYearAgo && d.date <= now)
+          if (!isCustomRange) {
+            // filter 1Y because it could be a combination of two 1Y datasets
+            const now = moment(lastDate)
+              .add(1, 'day')
+              .valueOf()
+            const aYearAgo = moment(now)
+              .subtract(1, 'year')
+              .valueOf()
+            data = data.filter(d => d.date >= aYearAgo && d.date <= now)
+          }
         }
 
         // Filter the start and last date based on a fuel tech other than solars
@@ -434,13 +447,14 @@ export default {
           if (startDate && lastDate && !isCustomRange) {
             data = data.filter(d => d.date >= startDate && d.date <= lastDate)
           }
-          if (isCustomRange) {
-            data = data.filter(
-              d =>
-                d.date >= isCustomRange.startDate &&
-                d.date <= isCustomRange.endDate
-            )
-          }
+        }
+
+        if (isCustomRange) {
+          data = data.filter(
+            d =>
+              d.date >= isCustomRange.startDate &&
+              d.date <= isCustomRange.endDate
+          )
         }
 
         // Roll up based on interval
@@ -455,27 +469,31 @@ export default {
           interval,
           intervalOptions
         ).then(rolledUpData => {
-          const dataset = this.calculateMinTotal(
-            rolledUpData,
-            energyDomains,
-            marketValueDomains,
-            emissionDomains,
-            interval,
-            data[0].date,
-            data[data.length - 1].date
-          )
-          // add an empty datapoint, so the stacked step will have something to render
-          if (range !== '1D' && range !== '3D' && range !== '7D') {
-            dataset.push(addEmptyDataPoint(interval, dataset))
-          }
+          if (data.length > 0) {
+            const dataset = this.summarise(
+              rolledUpData,
+              energyDomains,
+              marketValueDomains,
+              emissionDomains,
+              interval,
+              data[0].date,
+              data[data.length - 1].date
+            )
+            // add an empty datapoint, so the stacked step will have something to render
+            if (range !== '1D' && range !== '3D' && range !== '7D') {
+              dataset.push(addEmptyDataPoint(interval, dataset))
+            }
 
-          resolve(dataset)
+            resolve(dataset)
+          } else {
+            resolve([])
+          }
         })
       })
     })
   },
 
-  calculateMinTotal(
+  summarise(
     dataset,
     energyDomains,
     marketValueDomains,
@@ -587,7 +605,9 @@ export default {
           totalGeneration += d[id] || 0
         }
 
-        totalDemand += d[id] || 0
+        if (domain.category !== 'load' || ft === 'exports') {
+          totalDemand += d[id] || 0
+        }
 
         if (domain.renewable) {
           totalRenewables += d[id] || 0

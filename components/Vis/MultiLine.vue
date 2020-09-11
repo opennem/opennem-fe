@@ -38,10 +38,10 @@
         class="hover-group" />
       <g 
         :transform="axisTransform"
-        class="line-left-path-group" />
+        class="vis1-group" />
       <g 
         :transform="axisTransform"
-        class="line-right-path-group" />
+        class="vis2-group" />
       <g 
         :transform="axisTransform" 
         class="y-axis-left-text" />
@@ -58,7 +58,9 @@ import { select, mouse } from 'd3-selection'
 import { scaleOrdinal, scaleLinear, scaleTime, scaleSymlog } from 'd3-scale'
 import { axisBottom, axisLeft, axisRight } from 'd3-axis'
 import {
+  area as d3Area,
   line as d3Line,
+  stack,
   curveStepAfter,
   curveLinear,
   curveMonotoneX
@@ -187,9 +189,25 @@ export default {
       type: Boolean,
       default: () => true
     },
+    stacked: {
+      type: Boolean,
+      default: () => false
+    },
     toggled: {
       type: Boolean,
       default: () => false
+    },
+    displayPrefix: {
+      type: String,
+      default: () => ''
+    },
+    shouldConvertValue: {
+      type: Boolean,
+      default: () => false
+    },
+    convertValue: {
+      type: Function,
+      default: () => function() {}
     }
   },
 
@@ -207,14 +225,16 @@ export default {
       yAxisRight: null,
       y1Range: null,
       y2Range: null,
-      lineLeft: null,
+      area: null,
+      stack: null,
+      vis1: null,
       lineRight: null,
       $xAxisGroup: null,
       $yAxisGroup: null,
       $yAxisLeftTextGroup: null,
       $yAxisRightTextGroup: null,
-      $lineLeftPathGroup: null,
-      $lineRightPathGroup: null,
+      $vis1Group: null,
+      $vis2Group: null,
       $cursorLineGroup: null,
       $cursorRect: null,
       $cursorLine: null,
@@ -238,7 +258,7 @@ export default {
       switch (this.curve) {
         case 'step':
           return curveStepAfter
-        case 'linear':
+        case 'straight':
           return curveLinear
         case 'smooth':
         default:
@@ -318,16 +338,19 @@ export default {
     },
     highlightDomain(domain) {
       if (domain) {
-        this.$lineLeftPathGroup
+        this.$vis1Group
           .selectAll('path')
           .attr('opacity', d => (d === domain ? 1 : 0.2))
       } else {
-        this.$lineLeftPathGroup.selectAll('path').attr('opacity', 1)
+        this.$vis1Group.selectAll('path').attr('opacity', 1)
       }
     },
     curveType(type) {
-      this.lineLeft.curve(type)
+      this.vis1.curve(type)
       this.redraw()
+    },
+    displayPrefix() {
+      this.$yAxisLeftTextGroup.call(this.drawLeftYAxisText)
     }
   },
 
@@ -339,7 +362,6 @@ export default {
   },
 
   updated() {
-    console.log(`${this.uuid} update`)
     this.setupWidthHeight()
     this.setup()
     this.draw()
@@ -433,15 +455,24 @@ export default {
       // x axis shading
       this.$xShadesGroup = $svg.select('.x-shades')
 
-      // Line
-      this.$lineLeftPathGroup = $svg.select('.line-left-path-group')
-      this.lineLeft = d3Line()
-        .x(d => this.x(d.date))
-        .y(d => this.y1(d.value))
-        .curve(this.curveType)
-      this.lineLeft.defined(d => d.value || d.value === 0)
+      // Vis
+      this.$vis1Group = $svg.select('.vis1-group')
+      this.stack = stack()
+      if (this.stacked) {
+        this.vis1 = d3Area()
+          .x(d => this.x(d.data.date))
+          .y0(d => this.y1(d[0]))
+          .y1(d => this.y1(d[1]))
+          .curve(this.curveType)
+      } else {
+        this.vis1 = d3Line()
+          .x(d => this.x(d.date))
+          .y(d => this.y1(d.value))
+          .curve(this.curveType)
+        this.vis1.defined(d => d.value || d.value === 0)
+      }
 
-      this.$lineRightPathGroup = $svg.select('.line-right-path-group')
+      this.$vis2Group = $svg.select('.vis2-group')
       this.lineRight = d3Line()
         .x(d => this.x(d.date))
         .y(d => this.y2(d.value))
@@ -484,12 +515,12 @@ export default {
       this.$emit('enter')
     },
     handleSvgLeave() {
+      this.$cursorDotsGroup.selectAll('circle').remove()
       this.$emit('date-hover', null, null)
       this.$emit('leave')
     },
 
     draw() {
-      console.log(`${this.uuid} draw`)
       const self = this
       if (this.zoomRange.length > 0) {
         this.x.domain(this.zoomRange)
@@ -517,28 +548,46 @@ export default {
         .attr('width', d => this.x(d.end) - this.x(d.start))
         .attr('height', this.height)
 
-      this.$lineLeftPathGroup.selectAll('path').remove()
-      this.$lineLeftPathGroup
-        .selectAll('path')
-        .data(this.keys1)
-        .enter()
-        .append('path')
-        .attr('class', key => `${key}-path`)
-        .style('stroke', key => this.colours1[key])
-        .style('stroke-width', this.pathStrokeWidth)
-        .style('filter', 'url(#shadow)')
-        .style('fill', 'transparent')
-        .style('clip-path', this.clipPathUrl)
-        .style('-webkit-clip-path', this.clipPathUrl)
-        .attr('d', this.drawLineLeftPath)
+      this.$vis1Group.selectAll('path').remove()
 
-      this.$lineLeftPathGroup
-        .selectAll('path')
-        .on('mousemove touchmove', function(d) {
-          const date = self.getXAxisDateByMouse(this)
-          self.$emit('date-hover', this, date)
-          self.$emit('domain-hover', d)
-        })
+      if (this.stacked) {
+        this.stack.keys(this.keys1).value((d, key) => (d[key] ? d[key] : 0))
+      }
+
+      const vis1 = this.stacked
+        ? this.$vis1Group.selectAll('path').data(this.stack(this.dataset1))
+        : this.$vis1Group.selectAll('path').data(this.keys1)
+
+      if (this.stacked) {
+        vis1
+          .enter()
+          .append('path')
+          .attr('class', key => `${key}-path`)
+          .attr('d', this.vis1)
+          .attr('stroke-opacity', 0)
+          .attr('fill', d => this.colours1[d.key])
+          .style('clip-path', this.clipPathUrl)
+          .style('-webkit-clip-path', this.clipPathUrl)
+          .style('pointer-events', 'auto')
+      } else {
+        vis1
+          .enter()
+          .append('path')
+          .attr('class', key => `${key}-path`)
+          .style('stroke', key => this.colours1[key])
+          .style('stroke-width', this.pathStrokeWidth)
+          .style('filter', 'url(#shadow)')
+          .style('fill', 'transparent')
+          .style('clip-path', this.clipPathUrl)
+          .style('-webkit-clip-path', this.clipPathUrl)
+          .attr('d', this.drawVis1Path)
+      }
+
+      this.$vis1Group.selectAll('path').on('mousemove touchmove', function(d) {
+        const date = self.getXAxisDateByMouse(this)
+        self.$emit('date-hover', this, date)
+        self.$emit('domain-hover', d)
+      })
 
       if (this.showY2) {
         this.drawDataset2()
@@ -551,10 +600,12 @@ export default {
     },
 
     redrawLineShades() {
-      this.$lineLeftPathGroup.selectAll('path').attr('d', this.drawLineLeftPath)
-      this.$lineRightPathGroup
-        .selectAll('path')
-        .attr('d', this.drawLineRightPath)
+      if (this.stacked) {
+        this.$vis1Group.selectAll('path').attr('d', this.vis1)
+      } else {
+        this.$vis1Group.selectAll('path').attr('d', this.drawVis1Path)
+      }
+      this.$vis2Group.selectAll('path').attr('d', this.drawLineRightPath)
       this.$xShadesGroup
         .selectAll('rect')
         .attr('x', d => this.x(d.start))
@@ -571,8 +622,8 @@ export default {
         .domain([this.y2Min, this.y2Max])
         .nice()
       this.$yAxisRightTextGroup.call(this.drawRightYAxisText)
-      this.$lineRightPathGroup.selectAll('path').remove()
-      this.$lineRightPathGroup
+      this.$vis2Group.selectAll('path').remove()
+      this.$vis2Group
         .selectAll('path')
         .data(this.keys2)
         .enter()
@@ -587,7 +638,7 @@ export default {
         .attr('d', this.drawLineRightPath)
     },
     removeDataset2() {
-      this.$lineRightPathGroup.selectAll('path').remove()
+      this.$vis2Group.selectAll('path').remove()
       this.$yAxisRightTextGroup.selectAll('path').remove()
       this.$yAxisRightTextGroup.selectAll('.tick').remove()
     },
@@ -606,7 +657,10 @@ export default {
       g.call(this.yAxisLeft)
       g.selectAll('.y-axis-left-text .tick line').remove()
       g.selectAll('.y-axis-left-text .tick text')
-        .text(t => `${t}${this.y1AxisUnit}`)
+        .text(t => {
+          const tickText = this.shouldConvertValue ? this.convertValue(t) : t
+          return `${tickText}${this.y1AxisUnit}`
+        })
         .attr('dx', 5)
         .attr('dy', -2)
         .attr('opacity', this.y1TickText ? 1 : 0)
@@ -622,7 +676,7 @@ export default {
         .attr('opacity', this.y1TickText ? 1 : 0)
     },
 
-    drawLineLeftPath(key) {
+    drawVis1Path(key) {
       const data = this.dataset1.map(d => {
         if (this.drawIncompleteBucket) {
           return {
@@ -635,7 +689,7 @@ export default {
           value: d._isIncompleteBucket ? null : d[key]
         }
       })
-      return this.lineLeft(data)
+      return this.vis1(data)
     },
 
     drawLineRightPath(key) {
@@ -658,10 +712,11 @@ export default {
       const xDate = this.x(date)
       let nextDate = null
       const dataPoint = this.dataset1.find((d, i) => {
-        const match = d.date === date.getTime()
+        const time = d.time || d.date
+        const match = time === date.getTime()
         const nextDataPoint = this.dataset1[i + 1]
         if (match && nextDataPoint) {
-          nextDate = nextDataPoint.date
+          nextDate = nextDataPoint.time || nextDataPoint.date
         }
         return match
       })
