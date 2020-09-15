@@ -822,7 +822,7 @@ export default {
 
             const dataMarketValue = data.map(d => {
               const marketValue = {}
-              marketValue[ft.id] = Math.abs(d[ft.id])
+              marketValue[ft.id] = d[ft.id]
               return marketValue
             })
             dataMarketValueSum = dataMarketValue.reduce(
@@ -837,7 +837,7 @@ export default {
                 'There is an issue finding the energy fuel tech in market value calculations.'
               )
             }
-            const ftTotal = Math.abs(this.summary[findEnergyEq.id])
+            const ftTotal = this.summary[findEnergyEq.id]
             avValue = dataMarketValueSum / ftTotal / 1000
 
             this.summary[ft.id] = avValue
@@ -846,7 +846,7 @@ export default {
             if (category === 'source') {
               this.summarySources[ft.id] = avValue
             } else if (category === 'load') {
-              this.summaryLoads[ft.id] = avValue
+              this.summaryLoads[ft.id] = -avValue
             }
           })
         } else {
@@ -987,7 +987,7 @@ export default {
         if (this.isEnergy) {
           this.marketValueDomains.forEach((ft, index) => {
             const category = ft.category
-            const value = Math.abs(this.pointSummary[ft.id])
+            const value = this.pointSummary[ft.id]
             const findEnergyEq = this.energyDomains.find(
               e => e[this.propRef] === ft[this.propRef]
             )
@@ -996,7 +996,7 @@ export default {
                 'There is an issue finding the energy fuel tech in market value calculations.'
               )
             }
-            const ftTotal = Math.abs(this.pointSummary[findEnergyEq.id])
+            const ftTotal = this.pointSummary[findEnergyEq.id]
             const avValue = value / ftTotal / 1000
 
             this.pointSummary[ft.id] = avValue
@@ -1004,8 +1004,12 @@ export default {
 
             if (category === 'source') {
               this.pointSummarySources[ft.id] = avValue
+
+              if (findEnergyEq.fuelTech === 'imports') {
+                this.pointSummarySources[ft.id] = -avValue
+              }
             } else if (category === 'load') {
-              this.pointSummaryLoads[ft.id] = avValue
+              this.pointSummaryLoads[ft.id] = -avValue
             }
           })
         }
