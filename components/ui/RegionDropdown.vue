@@ -53,7 +53,7 @@
             class="dropdown-item dropdown-item-child dropdown-item-last-child" 
             @click.native="handleClick">Victoria</nuxt-link>
           <nuxt-link
-            v-if="wemEnergy"
+            v-if="wemEnergy || currentView === 'facilities'"
             :to="`/${currentView}/wem/`" 
             class="dropdown-item" 
             @click.native="handleClick">Western Australia</nuxt-link>

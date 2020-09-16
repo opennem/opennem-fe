@@ -164,7 +164,7 @@ export default {
       windowWidth: 0,
       baseUrl: `${this.$config.url}/images/screens/`,
       useDev: this.$config.useDev,
-      hostEnv: 'prod'
+      hostEnv: 'dev'
     }
   },
 
