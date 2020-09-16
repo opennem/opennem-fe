@@ -422,7 +422,7 @@ export default {
     },
     handleOpenFacilityView(facility) {
       console.log(facility, facility.facilityId)
-      this.$router.push({ path: `/facility/${facility.facilityId}` })
+      this.$router.push({ path: `/facility?facilityId=${facility.facilityId}` })
     }
   }
 }
