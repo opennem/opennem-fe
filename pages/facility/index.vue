@@ -19,37 +19,29 @@
         7 day power
       </div>
 
-      <section class="facility-units">
-        <div
-          v-for="(d,i) in facilityUnits"
-          :key="i" 
-          class="meta">
-          
-          <table>
-            <tbody>
-              <tr>
-                <th>Code</th>
-                <td>{{ d.code }}</td>
-              </tr>
-              <tr>
-                <th>Region</th>
-                <td>{{ d.network_region }}</td>
-              </tr>
-              <tr>
-                <th>Status</th>
-                <td>{{ d.status.label }}</td>
-              </tr>
-              <tr>
-                <th>Fuel tech</th>
-                <td>{{ d.fueltech.label }}</td>
-              </tr>
-              <tr>
-                <th>Registered capacity</th>
-                <td>{{ d.capacity_registered }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <section class="facility-units meta">
+        <table>
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Region</th>
+              <th>Status</th>
+              <th>Fuel tech</th>
+              <th>Registered capacity</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr 
+              v-for="(d,i) in facilityUnits"
+              :key="i" >
+              <td>{{ d.code }}</td>
+              <td>{{ d.network_region }}</td>
+              <td>{{ d.status.label }}</td>
+              <td>{{ d.fueltech.label }}</td>
+              <td>{{ d.capacity_registered }}</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
 
       <section class="facility-info">
@@ -270,13 +262,7 @@ summary {
 }
 
 .facility-units {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 0.5rem;
-  .meta {
-    width: calc(50% - 1rem);
-    margin: 0.5rem;
-  }
+  margin: 0.5rem 0;
 }
 
 aside {
