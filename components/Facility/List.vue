@@ -62,6 +62,7 @@
       @mouseover="handleRowHover(facility)"
       @mouseout="handleRowOut"
       @click="handleRowClick(facility)"
+      @dblclick="handleRowDoubleClick(facility)"
     >
       <div
         class="bar-left"
@@ -245,7 +246,8 @@ export default {
       divWidth: 0,
       divHeight: 0,
       windowWidth: 0,
-      windowHeight: 0
+      windowHeight: 0,
+      waitForDblClickCB: false
     }
   },
 
@@ -373,19 +375,20 @@ export default {
     sort(colId) {
       this.$emit('orderChanged', colId)
     },
-    handleRowClick(facility) {
+    handleRowClick: _debounce(function(facility) {
       console.log(`${facility.displayName} view model`, facility)
       console.log(`${facility.displayName} json obj`, facility.jsonData)
       if (!this.widthBreak) {
-        if (this.selected === facility) {
+        if (this.selected === facility && !this.waitForDblClickCB) {
           this.selected = null
           this.$emit('facilitySelect', null, true)
         } else {
           this.selected = facility
+          this.waitForDblClickCB = false
           this.$emit('facilitySelect', facility, true)
         }
       }
-    },
+    }, 200),
     // eslint-disable-next-line
     handleRowHover: _debounce(function(facility) {
       this.$emit('facilityHover', facility, true)
@@ -396,6 +399,10 @@ export default {
     }, 200),
     shouldRightAligned(colHeaderId) {
       return colHeaderId === 'generatorCap'
+    },
+    handleRowDoubleClick(facility) {
+      this.waitForDblClickCB = true
+      this.$emit('openFacilityView', facility)
     },
     getColumnIcon(colHeaderId) {
       if (colHeaderId === this.sortBy) {

@@ -47,6 +47,7 @@
         @facilitySelect="handleFacilitySelect"
         @facilityHover="handleFacilityHover"
         @facilityMouseout="handleFacilityOut"
+        @openFacilityView="handleOpenFacilityView"
       />
 
       <facility-map
@@ -418,6 +419,10 @@ export default {
     },
     handleCloseDetail() {
       this.selectedFacility = null
+    },
+    handleOpenFacilityView(facility) {
+      console.log(facility, facility.facilityId)
+      this.$router.push({ path: `/facility/${facility.facilityId}` })
     }
   }
 }

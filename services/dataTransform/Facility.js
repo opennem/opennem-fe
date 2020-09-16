@@ -140,6 +140,7 @@ function transformV3FacilityData(data) {
     const unitStatusRegisteredCap = {}
     const status = dispatchUnits.length > 0 ? dispatchUnits[0].status : ''
     const unitNetworkRegions = []
+    const facilityId = props.facility_id
     let generatorCap = 0
 
     dispatchUnits.forEach(unit => {
@@ -213,6 +214,7 @@ function transformV3FacilityData(data) {
 
     return {
       stationId,
+      facilityId,
       displayName,
       status,
       state,

@@ -1,4 +1,5 @@
 import _cloneDeep from 'lodash.clonedeep'
+import http from '@/services/Http.js'
 import { FACILITY_OPERATING } from '~/constants/facility-status.js'
 
 export const state = () => ({
@@ -7,7 +8,9 @@ export const state = () => ({
   orderBy: 'asc',
   selectedStatuses: [FACILITY_OPERATING],
   selectedTechs: [],
-  selectedView: 'list'
+  selectedView: 'list',
+
+  selectedFacility: null
 })
 
 export const mutations = {
@@ -28,6 +31,9 @@ export const mutations = {
   },
   selectedView(state, data) {
     state.selectedView = data
+  },
+  selectedFacility(state, data) {
+    state.selectedFacility = data
   }
 }
 
@@ -37,7 +43,9 @@ export const getters = {
   orderBy: state => state.orderBy,
   selectedStatuses: state => state.selectedStatuses,
   selectedTechs: state => state.selectedTechs,
-  selectedView: state => state.selectedView
+  selectedView: state => state.selectedView,
+
+  selectedFacility: state => _cloneDeep(state.selectedFacility)
 }
 
 export const actions = {
@@ -58,5 +66,16 @@ export const actions = {
   },
   selectedView({ commit }, data) {
     commit('selectedView', data)
+  },
+
+  doGetFacilityById({ commit }, { facilityId }) {
+    console.log('fetching', facilityId)
+    const urls = [
+      `https://api.opennem.org.au/station/${facilityId}?history_include=true`
+    ]
+    http(urls).then(responses => {
+      console.log('fetched', responses[0])
+      commit('selectedFacility', responses[0])
+    })
   }
 }
