@@ -164,12 +164,12 @@ export default {
       shouldZoomWhenSelected: false,
       windowWidth: 0,
       baseUrl: `${this.$config.url}/images/screens/`,
-      useDev: this.$config.useDev
+      useDev: this.$config.useDev,
+      hostEnv: 'dev'
     }
   },
 
   computed: {
-    ...mapGetters(['hostEnv']),
     facilityDataset() {
       return this.$store.getters['facility/dataset']
     },
@@ -229,6 +229,14 @@ export default {
   },
 
   created() {
+    const host = typeof window !== 'undefined' ? window.location.host : ''
+    if (host === 'opennem.org.au') {
+      this.hostEnv = 'prod'
+    }
+    if (host === 'dev.opennem.org.au') {
+      this.hostEnv = 'dev'
+    }
+
     this.$store.dispatch('currentView', 'facilities')
     this.sortBy = this.facilitySortBy
     this.orderBy = this.facilityOrderBy
