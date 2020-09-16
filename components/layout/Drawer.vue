@@ -93,6 +93,7 @@
           </span>
         </nuxt-link>
         <nuxt-link
+          v-if="wemEnergy || currentView === 'facilities'"
           :to="`/${currentView}/wem/`" 
           class="menu-item">
           Western Australia
@@ -115,6 +116,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import VIEWS from '~/constants/views.js'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
 import Logo from '~/components/ui/Logo'
@@ -144,6 +146,9 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      wemEnergy: 'feature/wemEnergy'
+    }),
     regionId() {
       return this.$route.params.region
     },
