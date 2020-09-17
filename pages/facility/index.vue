@@ -15,11 +15,11 @@
       </summary>
 
       <h3>Facility units</h3>
-      <div class="facility-chart">
+      <div class="facility-chart card">
         7 day power
       </div>
 
-      <section class="facility-units meta">
+      <section class="facility-units card">
         <table>
           <thead>
             <tr>
@@ -68,34 +68,9 @@
             <li>Weight: 1,342 metric tons (1,479 short tons)</li>
           </ul>
         </div>
-
-        <div class="info">
-          <h4 class="info-title">Turbine house</h4>
-          <ul>
-            <li>Length: 510 metres (1,670 ft)</li>
-            <li>Height: 38 metres (125 ft)</li>
-            <li>Width: 40 metres (130 ft)</li>
-          </ul>
-        </div>
-
-        <div class="info">
-          <h4 class="info-title">Emission stacks</h4>
-          <ul>
-            <li>Height: 248 metres (814 ft)</li>
-            <li>Diameter at base: 23 metres (75 ft)</li>
-            <li>Diameter at top: 12 metres (39 ft)</li>
-          </ul>
-        </div>
-
-        <div class="info">
-          <h4 class="info-title">Cooling towers</h4>
-          <ul>
-            <li>Height: 132 metres (433 ft)</li>
-            <li>Diameter at base: 100 metres (330 ft)</li>
-            <li>Diameter at top: 52 metres (171 ft)</li>
-          </ul>
-        </div>
       </section>
+
+      <FacilityProperties :facility="facility" />
     </div>
     
     <aside>
@@ -107,6 +82,7 @@
           <figcaption>{{ facilityName }} facility</figcaption>
         </figure>
       </section>
+      
       <section class="map">
         <figure>
           <img
@@ -116,12 +92,17 @@
         </figure>
         
       </section>
-      <section class="meta">
+      
+      <section class="facility-meta card">
         <table>
           <tbody>
             <tr>
               <th>Code</th>
               <td>{{ facilityId }}</td>
+            </tr>
+            <tr>
+              <th>State</th>
+              <td>{{ facilityState }}</td>
             </tr>
             <tr>
               <th>Number of units</th>
@@ -140,7 +121,11 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import FacilityProperties from '@/components/Facility/Properties.vue'
 export default {
+  components: {
+    FacilityProperties
+  },
   computed: {
     ...mapGetters({
       facility: 'facility/selectedFacility'
@@ -156,6 +141,11 @@ export default {
     },
     facilityLocation() {
       return this.facility ? this.facility.location : { lat: 0, lng: 0 }
+    },
+    facilityState() {
+      return this.facility && this.facility.location
+        ? this.facility.location.state
+        : ''
     },
     participant() {
       return this.facility ? this.facility.participant : ''
@@ -237,7 +227,7 @@ summary {
 }
 
 .facility-info {
-  margin-top: 1rem;
+  margin: 1rem 0;
   font-size: 0.9em;
 
   h4 {
@@ -265,6 +255,10 @@ summary {
   margin: 0.5rem 0;
 }
 
+.facility-meta {
+  margin: 0.5rem 0;
+}
+
 aside {
   width: 30%;
   margin-top: 1rem;
@@ -284,11 +278,54 @@ aside {
   }
 }
 
-.meta {
+::v-deep .card {
   background-color: #fff;
   border-radius: $radius;
   padding: 1rem;
-  font-size: 0.8em;
+  font-size: 0.9em;
+
+  & > .card {
+    font-size: 1em;
+  }
+
+  &.dark {
+    background-color: #333;
+    color: #fff;
+
+    table th,
+    table td {
+      color: #fff;
+      border-bottom-color: #666;
+    }
+
+    header h4 {
+      border-bottom-color: #666;
+    }
+  }
+
+  &.dim {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+
+    table th,
+    table td {
+      color: #fff;
+      border-bottom-color: #666;
+    }
+
+    header h4 {
+      border-bottom-color: #666;
+    }
+  }
+
+  header {
+    h4 {
+      font-family: $header-font-family;
+      font-size: 1.5em;
+      font-weight: 700;
+      border-bottom: 1px solid #ddd;
+    }
+  }
 
   table {
     width: 100%;
@@ -296,6 +333,7 @@ aside {
   td,
   th {
     border-bottom: 1px solid #efefef;
+    padding: 3px 6px;
   }
 }
 </style>
