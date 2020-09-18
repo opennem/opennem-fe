@@ -228,13 +228,25 @@ export default {
     }
   },
 
-  created() {
-    const host = typeof window !== 'undefined' ? window.location.host : ''
-    if (host === 'opennem.org.au') {
-      this.hostEnv = 'prod'
-    }
-    if (host === 'dev.opennem.org.au') {
-      this.hostEnv = 'dev'
+  mounted() {
+    if (process.client) {
+      this.windowWidth = window.innerWidth
+      this.$nextTick(() => {
+        window.addEventListener(
+          'resize',
+          _debounce(() => {
+            this.windowWidth = window.innerWidth
+          }, 200)
+        )
+      })
+
+      const host = window.location.host
+      if (host === 'opennem.org.au') {
+        this.hostEnv = 'prod'
+      }
+      if (host === 'dev.opennem.org.au') {
+        this.hostEnv = 'dev'
+      }
     }
 
     this.$store.dispatch('currentView', 'facilities')
@@ -243,18 +255,6 @@ export default {
     this.selectedStatuses = this.facilitySelectedStatuses
     this.selectedTechs = this.facilitySelectedTechs
     this.selectedView = this.facilitySelectedView
-  },
-
-  mounted() {
-    this.windowWidth = window.innerWidth
-    this.$nextTick(() => {
-      window.addEventListener(
-        'resize',
-        _debounce(() => {
-          this.windowWidth = window.innerWidth
-        }, 200)
-      )
-    })
 
     if (this.facilityDataset.length > 0) {
       this.facilityData = this.facilityDataset

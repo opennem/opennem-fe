@@ -36,7 +36,8 @@ function transformFacilityData(data) {
     duidKeys.forEach(unitName => {
       const unit = d.duid_data[unitName]
       const regCap = unit.registered_capacity
-      const fuelTech = unit.fuel_tech
+      const fuelTech =
+        unit.fuel_tech === 'solar' ? 'solar_utility' : unit.fuel_tech
       const type = FUEL_TECHS.FUEL_TECH_CATEGORY[fuelTech] || ''
 
       const unitObj = {

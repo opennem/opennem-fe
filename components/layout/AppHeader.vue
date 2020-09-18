@@ -240,13 +240,16 @@ export default {
   },
 
   mounted() {
-    this.windowWidth = window.innerWidth
-    window.addEventListener(
-      'resize',
-      _debounce(() => {
-        this.windowWidth = window.innerWidth
-      }, 200)
-    )
+    if (process.client) {
+      this.windowWidth = window.innerWidth
+      window.addEventListener(
+        'resize',
+        _debounce(() => {
+          this.windowWidth = window.innerWidth
+        }, 200)
+      )
+    }
+
     this.ready = true
   },
 
