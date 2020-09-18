@@ -206,15 +206,17 @@ export default {
   mounted() {
     EventBus.$on('facilities.filter.clear', this.clearFilter)
 
-    this.windowWidth = window.innerWidth
-    this.$nextTick(() => {
-      window.addEventListener(
-        'resize',
-        _debounce(() => {
-          this.windowWidth = window.innerWidth
-        }, 200)
-      )
-    })
+    if (process.client) {
+      this.windowWidth = window.innerWidth
+      this.$nextTick(() => {
+        window.addEventListener(
+          'resize',
+          _debounce(() => {
+            this.windowWidth = window.innerWidth
+          }, 200)
+        )
+      })
+    }
 
     // Filter Group
     const groups = this.simplifiedGroup.filter(

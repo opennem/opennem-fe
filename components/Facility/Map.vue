@@ -266,22 +266,23 @@ export default {
       shadowSize: [41, 41]
     })
 
-    this.divWidth = this.$el.offsetWidth
-    this.windowWidth = window.innerWidth
-    this.windowHeight = window.innerHeight
-
     this.$nextTick(() => {
       this.setup()
       this.updateMap(this.facilitiesData)
     })
 
-    window.addEventListener(
-      'resize',
-      _debounce(() => {
-        this.divWidth = this.$el.offsetWidth
-        this.windowHeight = window.innerHeight
-      }, 200)
-    )
+    if (process.client) {
+      this.divWidth = this.$el.offsetWidth
+      this.windowWidth = window.innerWidth
+      this.windowHeight = window.innerHeight
+      window.addEventListener(
+        'resize',
+        _debounce(() => {
+          this.divWidth = this.$el.offsetWidth
+          this.windowHeight = window.innerHeight
+        }, 200)
+      )
+    }
   },
 
   methods: {
