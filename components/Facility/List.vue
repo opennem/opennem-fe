@@ -304,54 +304,55 @@ export default {
   },
 
   mounted() {
-    this.windowWidth = window.innerWidth
-    this.windowHeight = window.innerHeight
-    this.divWidth = this.calculateDivWidth()
+    if (process.client) {
+      this.windowWidth = window.innerWidth
+      this.windowHeight = window.innerHeight
+      this.divWidth = this.calculateDivWidth()
 
-    window.addEventListener(
-      'resize',
-      _debounce(() => {
-        this.windowWidth = window.innerWidth
-        this.windowHeight = window.innerHeight
-        this.divWidth = this.calculateDivWidth()
-      }, 200)
-    )
-
-    window.addEventListener('keydown', e => {
-      const isUp = e.keyCode === 38
-      const isDown = e.keyCode === 40
-      const selectedId = this.selectedFacility
-        ? this.selectedFacility.stationId
-        : null
-      const length = this.filteredFacilities.length
-      const index = this.filteredFacilities.findIndex(
-        f => f.stationId === selectedId
+      window.addEventListener(
+        'resize',
+        _debounce(() => {
+          this.windowWidth = window.innerWidth
+          this.windowHeight = window.innerHeight
+          this.divWidth = this.calculateDivWidth()
+        }, 200)
       )
-      if (index !== -1) {
-        if (isUp) {
-          e.preventDefault()
-          if (index <= 0) {
-          } else {
-            this.$emit(
-              'facilitySelect',
-              this.filteredFacilities[index - 1],
-              true
-            )
-          }
-        } else if (isDown) {
-          e.preventDefault()
-          if (index >= length - 1) {
-          } else {
-            this.$emit(
-              'facilitySelect',
-              this.filteredFacilities[index + 1],
-              true
-            )
+
+      window.addEventListener('keydown', e => {
+        const isUp = e.keyCode === 38
+        const isDown = e.keyCode === 40
+        const selectedId = this.selectedFacility
+          ? this.selectedFacility.stationId
+          : null
+        const length = this.filteredFacilities.length
+        const index = this.filteredFacilities.findIndex(
+          f => f.stationId === selectedId
+        )
+        if (index !== -1) {
+          if (isUp) {
+            e.preventDefault()
+            if (index <= 0) {
+            } else {
+              this.$emit(
+                'facilitySelect',
+                this.filteredFacilities[index - 1],
+                true
+              )
+            }
+          } else if (isDown) {
+            e.preventDefault()
+            if (index >= length - 1) {
+            } else {
+              this.$emit(
+                'facilitySelect',
+                this.filteredFacilities[index + 1],
+                true
+              )
+            }
           }
         }
-      }
-    })
-    return false
+      })
+    }
   },
 
   updated() {
