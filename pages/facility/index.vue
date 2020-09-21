@@ -36,8 +36,8 @@
               :key="i" >
               <td>{{ d.code }}</td>
               <td>{{ d.network_region }}</td>
-              <td>{{ d.status.label }}</td>
-              <td>{{ d.fueltech.label }}</td>
+              <td>{{ d.status ? d.status.label : '' }}</td>
+              <td>{{ d.fueltech ? d.fueltech.label : '' }}</td>
               <td>{{ d.capacity_registered }}</td>
             </tr>
           </tbody>
@@ -84,6 +84,7 @@
       </section>
       
       <section class="map">
+        <Mapbox />
         <figure>
           <img
             src="~/assets/img/placeholder-map.png"
@@ -121,9 +122,11 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import Mapbox from '@/components/Vis/Mapbox.vue'
 import FacilityProperties from '@/components/Facility/Properties.vue'
 export default {
   components: {
+    Mapbox,
     FacilityProperties
   },
   computed: {

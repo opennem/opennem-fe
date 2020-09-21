@@ -13,6 +13,10 @@ module.exports = {
         : 'https://opennem.org.au'
   },
 
+  env: {
+    mapboxToken: process.env.MAPBOX_TOKEN || ''
+  },
+
   server: {
     host: '0.0.0.0'
   },
@@ -201,7 +205,8 @@ module.exports = {
     '~plugins/filters.js',
     '~plugins/tooltip.js',
     '~plugins/sentry.js',
-    { src: '~/plugins/leaflet', ssr: false }
+    { src: '~/plugins/leaflet', ssr: false },
+    { src: '~/plugins/mapbox', mode: 'client' }
   ],
 
   /*
