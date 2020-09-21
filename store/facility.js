@@ -12,6 +12,14 @@ const http = axios.create({
   }
 })
 
+let useProxy = false
+if (typeof window !== 'undefined') {
+  const host = window.location.host
+  if (host === 'localhost:3000') {
+    useProxy = true
+  }
+}
+
 export const state = () => ({
   dataset: [],
   sortBy: 'displayName',
@@ -83,7 +91,9 @@ export const actions = {
     // const urls = [
     //   `https://api.opennem.org.au/station/${facilityId}?history_include=true`
     // ]
-    const ref = `/${facilityId}?history_include=true`
+    const ref = useProxy
+      ? `/${facilityId}?history_include=true`
+      : `https://api.opennem.org.au/station/${facilityId}?history_include=true`
     // http(urls).then(responses => {
     //   console.log('fetched', responses[0])
     //   commit('selectedFacility', responses[0])
