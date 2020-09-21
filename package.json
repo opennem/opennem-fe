@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.0.0",
+    "@nuxtjs/proxy": "^2.0.1",
     "@sentry/browser": "^5.18.0",
     "@sentry/integrations": "^5.18.0",
     "cross-env": "^5.2.0",

@@ -1,6 +1,16 @@
 import _cloneDeep from 'lodash.clonedeep'
-import http from '@/services/Http.js'
+import axios from 'axios'
+
+// import http from '@/services/Http.js'
 import { FACILITY_OPERATING } from '~/constants/facility-status.js'
+
+const http = axios.create({
+  baseURL: `/api`,
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json'
+  }
+})
 
 export const state = () => ({
   dataset: [],
@@ -70,12 +80,25 @@ export const actions = {
 
   doGetFacilityById({ commit }, { facilityId }) {
     console.log('fetching', facilityId)
-    const urls = [
-      `https://api.opennem.org.au/station/${facilityId}?history_include=true`
-    ]
-    http(urls).then(responses => {
-      console.log('fetched', responses[0])
-      commit('selectedFacility', responses[0])
-    })
+    // const urls = [
+    //   `https://api.opennem.org.au/station/${facilityId}?history_include=true`
+    // ]
+    const ref = `/${facilityId}?history_include=true`
+    // http(urls).then(responses => {
+    //   console.log('fetched', responses[0])
+    //   commit('selectedFacility', responses[0])
+    // })
+
+    http
+      .get(ref)
+      .then(response => {
+        console.log('fetched', response, response.data)
+        commit('selectedFacility', response.data)
+      })
+      .catch(e => {
+        const error = e.toJSON()
+        const message = `fetch ${error.config.url} error: ${error.message}`
+        console.error(message, e.toJSON())
+      })
   }
 }

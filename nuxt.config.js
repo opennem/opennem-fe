@@ -209,8 +209,19 @@ module.exports = {
   */
   modules: [
     // Doc: https://github.com/nuxt-community/axios-module#usage
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    '@nuxtjs/proxy'
   ],
+
+  proxy: {
+    '/api': {
+      target: 'https://api.opennem.org.au/station', //https://api.opennem.org.au/station/BARRON?history_include=true
+      pathRewrite: {
+        '^/api': '/'
+      }
+    }
+  },
+
   /*
   ** Axios module configuration
   */
