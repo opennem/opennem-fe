@@ -8,7 +8,7 @@ module.exports = {
     version: pkg.version,
     useDev: process.env.FOR === 'dev',
     url:
-      process.env.FOR === 'dev'
+      process.env.FOR === 'dev' // this is to get the right social media card images for prod and dev
         ? 'https://dev.opennem.org.au'
         : 'https://opennem.org.au'
   },
