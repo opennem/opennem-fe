@@ -130,7 +130,8 @@ export default {
       facility: 'facility/selectedFacility'
     }),
     facilityId() {
-      return this.$route.query.facilityId
+      console.log(this.$route.params.facilityId)
+      return this.$route.params.facilityId
     },
     facilityName() {
       return this.facility ? this.facility.name : ''
