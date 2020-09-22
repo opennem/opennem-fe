@@ -84,14 +84,10 @@
       </section>
       
       <section class="map">
-        <Mapbox />
-        <figure>
-          <img
-            src="~/assets/img/placeholder-map.png"
-            alt="Facility map placeholder">
-          <figcaption>Lat: {{ facilityLocation.lat }} Lng: {{ facilityLocation.lng }}</figcaption>
-        </figure>
-        
+        <MiniMap 
+          :lat="facilityLocation.lat" 
+          :lng="facilityLocation.lng" />
+        <small>Lat: {{ facilityLocation.lat }} Lng: {{ facilityLocation.lng }}</small>
       </section>
       
       <section class="facility-meta card">
@@ -122,11 +118,11 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import Mapbox from '@/components/Vis/Mapbox.vue'
+import MiniMap from '@/components/Facility/MiniMap.vue'
 import FacilityProperties from '@/components/Facility/Properties.vue'
 export default {
   components: {
-    Mapbox,
+    MiniMap,
     FacilityProperties
   },
   computed: {
