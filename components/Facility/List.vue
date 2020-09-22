@@ -252,6 +252,9 @@ export default {
   },
 
   computed: {
+    queryFacilityId() {
+      return this.$route.query.selected
+    },
     widthBreak() {
       return this.windowWidth < 769
     },
@@ -302,6 +305,15 @@ export default {
       this.$nextTick(() => {
         this.divHeight = this.$el.offsetHeight
       })
+
+      if (this.queryFacilityId) {
+        const find = this.filteredFacilities.find(
+          f => f.facilityId === this.queryFacilityId
+        )
+        if (find) {
+          this.handleRowClick(find)
+        }
+      }
     }
   },
 

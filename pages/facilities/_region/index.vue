@@ -403,6 +403,11 @@ export default {
       this.$store.dispatch('facility/orderBy', this.orderBy)
     },
     handleFacilitySelect(facility, shouldZoom) {
+      if (facility) {
+        this.$router.push({ query: { selected: facility.facilityId } })
+      } else {
+        this.$router.push({ query: {} })
+      }
       this.selectedFacility = facility
       this.shouldZoomWhenSelected = shouldZoom
     },
@@ -430,6 +435,7 @@ export default {
     },
     handleOpenFacilityView(facility) {
       console.log(facility, facility.facilityId)
+      this.handleFacilitySelect(facility, true)
       this.$router.push({ path: `/facility/${facility.facilityId}` })
     }
   }
