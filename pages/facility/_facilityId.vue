@@ -1,6 +1,6 @@
 <template>
   <section class="facility">
-    <div>
+    <div v-if="facility">
       <header>
         <h2>{{ facilityName }}</h2>
       </header>
@@ -73,7 +73,7 @@
       <FacilityProperties :facility="facility" />
     </div>
     
-    <aside>
+    <aside v-if="facility">
       <section>
         <figure>
           <img
