@@ -1,5 +1,6 @@
 import _cloneDeep from 'lodash.clonedeep'
 import PerfTime from '@/plugins/perfTime.js'
+import hostEnv from '@/services/HostEnv.js'
 import http from '@/services/Http.js'
 import Data from '@/services/Data.js'
 import {
@@ -144,12 +145,19 @@ export const mutations = {
 export const actions = {
   doGetRegionData({ commit }, { region, range, interval, period, groupName }) {
     if (isValidRegion(region)) {
-      const urls = Data.getEnergyUrls(region, range, 'prod')
+      const env = hostEnv()
+      const urls = Data.getEnergyUrls(region, range, env)
       currentRegion = region
       commit('ready', false)
       commit('isFetching', true)
 
-      http(urls).then(responses => {
+      http(urls).then(res => {
+        const responses =
+          env === 'dev'
+            ? res.map(d => {
+                return d.data
+              })
+            : res
         const dataCount = getDataCount(responses)
         const perf = new PerfTime()
         perf.time()
