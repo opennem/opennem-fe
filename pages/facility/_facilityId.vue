@@ -58,28 +58,12 @@
         <small>Lat: {{ facilityLocation.lat }} Lng: {{ facilityLocation.lng }}</small>
       </section>
       
-      <section class="facility-meta card">
-        <table>
-          <tbody>
-            <tr>
-              <th>Code</th>
-              <td>{{ facilityId }}</td>
-            </tr>
-            <tr>
-              <th>State</th>
-              <td>{{ facilityState }}</td>
-            </tr>
-            <tr>
-              <th>Number of units</th>
-              <td>{{ facilityUnits.length }}</td>
-            </tr>
-            <tr>
-              <th>Participant</th>
-              <td>{{ participant }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
+      <MetaInfo 
+        :facility-id="facilityId"
+        :facility-state="facilityState"
+        :units-num="facilityUnits.length"
+        :participant-name="participant"
+      />
     </aside>
   </section>
 </template>
@@ -87,12 +71,14 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import MiniMap from '@/components/Facility/MiniMap.vue'
+import MetaInfo from '@/components/Facility/MetaInfo.vue'
 import FacilityProperties from '@/components/Facility/Properties.vue'
 import SummaryPlaceholder from '@/components/Facility/SummaryPlaceholder.vue'
 import InfoPlaceholder from '@/components/Facility/InfoPlaceholder.vue'
 export default {
   components: {
     MiniMap,
+    MetaInfo,
     FacilityProperties,
     SummaryPlaceholder,
     InfoPlaceholder
@@ -120,7 +106,7 @@ export default {
         : ''
     },
     participant() {
-      return this.facility ? this.facility.participant : ''
+      return this.facility ? this.facility.participant_id : ''
     }
   },
 
