@@ -89,11 +89,11 @@ export const actions = {
   doGetFacilityById({ commit }, { facilityId }) {
     console.log('fetching', facilityId)
     // const urls = [
-    //   `https://api.opennem.org.au/station/${facilityId}?history_include=true`
+    //   `https://api.opennem.org.au/station/${facilityId}?power_include=true`
     // ]
     const ref = useProxy
-      ? `/${facilityId}?history_include=true`
-      : `https://api.opennem.org.au/station/${facilityId}?history_include=true`
+      ? `/${facilityId}?power_include=true`
+      : `https://api.opennem.org.au/station/${facilityId}?power_include=true`
     // http(urls).then(responses => {
     //   console.log('fetched', responses[0])
     //   commit('selectedFacility', responses[0])

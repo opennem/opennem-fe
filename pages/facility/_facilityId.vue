@@ -7,29 +7,33 @@
       <SummaryPlaceholder />
 
       <h3>Facility units</h3>
-      <div class="facility-chart card">
-        7 day power
-      </div>
+      <PowerChart 
+        :units="facilityUnits" 
+        class="facility-chart"/>
 
       <section class="facility-units card">
-        <table>
+        <table class="summary-list">
           <thead>
             <tr>
+              <th/>
               <th>Code</th>
-              <th>Region</th>
               <th>Status</th>
-              <th>Fuel tech</th>
               <th>Registered capacity</th>
             </tr>
           </thead>
           <tbody>
             <tr 
-              v-for="(d,i) in facilityUnits"
-              :key="i" >
-              <td>{{ d.code }}</td>
-              <td>{{ d.network_region }}</td>
+              v-for="(d, i) in facilityUnits"
+              :key="i">
+              <td>
+                <div 
+                  :style="{ backgroundColor: getUnitColour(d.fueltech)}" 
+                  class="colour-square" />
+              </td>
+              <td>
+                {{ d.code }}
+              </td>
               <td>{{ d.status ? d.status.label : '' }}</td>
-              <td>{{ d.fueltech ? d.fueltech.label : '' }}</td>
               <td>{{ d.capacity_registered }}</td>
             </tr>
           </tbody>
@@ -70,13 +74,20 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import _uniq from 'lodash.uniq'
+import _sortBy from 'lodash.sortby'
+
+import PowerChart from '@/components/Facility/Charts/PowerChart.vue'
 import MiniMap from '@/components/Facility/MiniMap.vue'
 import MetaInfo from '@/components/Facility/MetaInfo.vue'
 import FacilityProperties from '@/components/Facility/Properties.vue'
 import SummaryPlaceholder from '@/components/Facility/SummaryPlaceholder.vue'
 import InfoPlaceholder from '@/components/Facility/InfoPlaceholder.vue'
+import * as FT from '~/constants/fuel-tech.js'
+
 export default {
   components: {
+    PowerChart,
     MiniMap,
     MetaInfo,
     FacilityProperties,
@@ -88,14 +99,15 @@ export default {
       facility: 'facility/selectedFacility'
     }),
     facilityId() {
-      console.log(this.$route.params.facilityId)
       return this.$route.params.facilityId
     },
     facilityName() {
       return this.facility ? this.facility.name : ''
     },
     facilityUnits() {
-      return this.facility ? this.facility.facilities : []
+      return this.facility
+        ? _sortBy(this.facility.facilities, ['status.code', 'code'])
+        : []
     },
     facilityLocation() {
       return this.facility ? this.facility.location : { lat: 0, lng: 0 }
@@ -119,7 +131,15 @@ export default {
   methods: {
     ...mapActions({
       doGetFacilityById: 'facility/doGetFacilityById'
-    })
+    }),
+    getUnitColour(fuelTech) {
+      const unknownColour = '#ccc'
+      if (fuelTech) {
+        const colour = FT.DEFAULT_FUEL_TECH_COLOUR[fuelTech.code]
+        return colour || unknownColour
+      }
+      return unknownColour
+    }
   }
 }
 </script>
@@ -128,6 +148,11 @@ export default {
 @import '~/assets/scss/variables.scss';
 
 $radius: 0.5rem;
+
+.colour-square {
+  width: 18px;
+  height: 18px;
+}
 
 .facility {
   display: flex;
@@ -155,10 +180,6 @@ header {
 
 .facility-chart {
   width: 100%;
-  height: 200px;
-  background-color: #fff;
-  padding: 1rem;
-  border-radius: $radius;
   margin-top: 1rem;
 }
 

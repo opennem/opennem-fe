@@ -28,167 +28,209 @@
       padding: 0 1rem 0 0;
     }
   }
+}
 
-  .chart {
-    position: relative;
+.chart {
+  position: relative;
 
-    .chart-title {
-      font-size: 11px;
-      user-select: none;
-      padding-left: 10px;
+  .chart-title {
+    font-size: 11px;
+    user-select: none;
+    padding-left: 10px;
 
-      @include tablet {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.2rem 1rem 0.2rem 1rem;
-        height: 25px;
+    @include tablet {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.2rem 1rem 0.2rem 1rem;
+      height: 25px;
+    }
+
+    .chart-options {
+      i {
+        font-size: 12px;
       }
+    }
 
-      .chart-options {
-        i {
-          font-size: 12px;
-        }
+    .chart-options-icon {
+      cursor: pointer;
+      padding: 3px 5px;
+      margin-right: 5px;
+      margin-left: -10px;
+      border-radius: 3px;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.7);
       }
+    }
 
-      .chart-options-icon {
-        cursor: pointer;
-        padding: 3px 5px;
-        margin-right: 5px;
-        margin-left: -10px;
-        border-radius: 3px;
+    .chart-label {
+      padding: 2px 0.5rem;
+      display: flex;
+      align-items: center;
 
-        &:hover {
-          background-color: rgba(255, 255, 255, 0.7);
-        }
-      }
-
-      .chart-label {
-        padding: 2px 0.5rem;
-        display: flex;
-        align-items: center;
-
-        small {
-          position: relative;
-          top: 1px;
-          left: 3px;
-        }
-
-      }
-
-      .hover-date-value {
-        display: flex;
-        height: 19px;
-
-        @include mobile {
-          background-color: rgba(255, 255, 255, 0.2);
-        }
-      }
-
-      .hover-date,
-      .hover-values {
-        position: absolute;
-        left: -9999em;
-        opacity: 0;
-        background: rgba(255, 255, 255, 0.5);
-        padding: 3px 12px 2px;
-        white-space: nowrap;
-        font-size: 0.9em;
-      }
-
-      .average-value {
-        font-size: 0.9em;
-        position: static;
-        left: -9999em;
-        // background: rgba(255, 255, 255, 0.5);
-        padding: 3px 12px 2px;
-        white-space: nowrap;
-        text-align: right;
-        width: 100%;
-
-        @include tablet {
-          width: auto;
-          border-radius: 20px;
-        }
-      }
-
-      .hover-date {
-        font-weight: 600;
-        background-color: rgba(199, 69, 35, 0.1);
-        color: #444;
-        // font-size: 10px;
-        // padding-top: 3px;
-        width: 30%;
-
-        @include tablet {
-          width: auto;
-          border-radius: 20px 0 0 20px;
-        }
-      }
-
-      .hover-values {
-        display: flex;
-        align-items: center;
-        // font-size: 9px;
-        width: 70%;
-
-        span {
-          flex-grow: 1;
-        }
-
-        .ft-value {
-          margin-right: 1rem;
-        }
-
-        .mean-temp-value {
-          margin: 0 1rem;
-        }
-
-        @include desktop {
-          width: auto;
-          border-radius: 0 20px 20px 0;
-        }
-      }
-
-      .colour-square {
-        display: inline-block;
-        border: 1px solid transparent;
-        width: 10px;
-        height: 10px;
-        border-radius: 1px;
+      small {
         position: relative;
         top: 1px;
+        left: 3px;
       }
 
-      &.no-hover {
-        cursor: auto;
+    }
 
-        &:hover {
-          background-color: transparent;
-        }
+    .hover-date-value {
+      display: flex;
+      height: 19px;
+
+      @include mobile {
+        background-color: rgba(255, 255, 255, 0.2);
       }
     }
 
-    &.is-hovered {
+    .hover-date,
+    .hover-values {
+      position: absolute;
+      left: -9999em;
+      opacity: 0;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 3px 12px 2px;
+      white-space: nowrap;
+      font-size: 0.9em;
+    }
 
-      .hover-date,
-      .hover-values {
-        position: static;
-        opacity: 1;
-        transition: all 0.2s ease-in-out;
-      }
+    .average-value {
+      font-size: 0.9em;
+      position: static;
+      left: -9999em;
+      // background: rgba(255, 255, 255, 0.5);
+      padding: 3px 12px 2px;
+      white-space: nowrap;
+      text-align: right;
+      width: 100%;
 
-      .average-value {
-        position: absolute;
+      @include tablet {
+        width: auto;
+        border-radius: 20px;
       }
     }
 
-    &.has-border-bottom {
-      border-bottom: 1px dashed #ccc;
+    .hover-date {
+      font-weight: 600;
+      background-color: rgba(199, 69, 35, 0.1);
+      color: #444;
+      // font-size: 10px;
+      // padding-top: 3px;
+      width: 30%;
+
+      @include tablet {
+        width: auto;
+        border-radius: 20px 0 0 20px;
+      }
     }
 
-    .date-brush {
+    .hover-values {
+      display: flex;
+      align-items: center;
+      // font-size: 9px;
+      width: 70%;
+
+      span {
+        flex-grow: 1;
+      }
+
+      .ft-value {
+        margin-right: 1rem;
+      }
+
+      .mean-temp-value {
+        margin: 0 1rem;
+      }
+
+      @include desktop {
+        width: auto;
+        border-radius: 0 20px 20px 0;
+      }
+    }
+
+    .colour-square {
+      display: inline-block;
+      border: 1px solid transparent;
+      width: 10px;
+      height: 10px;
+      border-radius: 1px;
       position: relative;
-      margin-top: -6px;
+      top: 1px;
+    }
+
+    &.no-hover {
+      cursor: auto;
+
+      &:hover {
+        background-color: transparent;
+      }
+    }
+  }
+
+  &.is-hovered {
+
+    .hover-date,
+    .hover-values {
+      position: static;
+      opacity: 1;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .average-value {
+      position: absolute;
+    }
+  }
+
+  &.has-border-bottom {
+    border-bottom: 1px dashed #ccc;
+  }
+
+  .date-brush {
+    position: relative;
+    margin-top: -6px;
+  }
+}
+
+.summary-list {
+  .item {
+    // cursor: move;
+    cursor: pointer;
+    user-select: none;
+
+    &.drag-placeholder {
+      opacity: 0.1;
+    }
+
+    &:hover {
+      background-color: $row-hover;
+    }
+  }
+
+  .summary-col-label {
+    display: flex;
+    align-items: center;
+
+    .ft-label {
+      padding-left: 5px;
+    }
+  }
+
+  .colour-square {
+    border: 1px solid transparent;
+    width: 15px;
+    height: 15px;
+  }
+
+  &.click-disable {
+    .item {
+      cursor: auto;
+      user-select: auto;
+
+      &:hover {
+        background-color: transparent;
+      }
     }
   }
 }
