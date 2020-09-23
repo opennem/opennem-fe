@@ -2,9 +2,6 @@ function getPrependString(region, range, prod) {
   let string = ''
   string = prod ? '/' : '/testing/v2/'
 
-  if (prod && (range === '30D' || range === '1Y')) {
-    string = '/testing/'
-  }
   if (region === 'wem') {
     string = '/'
   }
