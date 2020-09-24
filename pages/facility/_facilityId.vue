@@ -8,8 +8,18 @@
 
       <h3>Facility units</h3>
       <PowerChart 
-        :units="facilityUnits" 
-        class="facility-chart"/>
+        :hover-on="isHovering"
+        :hover-date="hoverDate"
+        :dataset="powerDataset"
+        :domains="unitsSummary"
+        :display-unit="powerUnit"
+        :zoom-extent="zoomExtent"
+        :facility-id="facilityId"
+        class="facility-chart"
+        @dateHover="handleDateHover"
+        @isHovering="handleIsHovering"
+        @zoomExtent="handleZoomExtent"
+      />
 
       <section class="facility-units card">
         <table class="summary-list">
@@ -23,18 +33,20 @@
           </thead>
           <tbody>
             <tr 
-              v-for="(d, i) in facilityUnits"
-              :key="i">
+              v-for="(d, i) in unitsSummary"
+              :key="i"
+              @mouseenter="handleMouseEnter(d.code)"
+              @mouseleave="handleMouseLeave">
               <td>
                 <div 
-                  :style="{ backgroundColor: getUnitColour(d.fueltech)}" 
+                  :style="{ backgroundColor: d.colour}" 
                   class="colour-square" />
               </td>
               <td>
                 {{ d.code }}
               </td>
-              <td>{{ d.status ? d.status.label : '' }}</td>
-              <td>{{ d.capacity_registered }}</td>
+              <td>{{ d.status }}</td>
+              <td>{{ d.registeredCapacity }}</td>
             </tr>
           </tbody>
         </table>
@@ -73,10 +85,13 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import _uniq from 'lodash.uniq'
 import _sortBy from 'lodash.sortby'
+import { interpolateRgb, quantize } from 'd3-interpolate'
+import { color } from 'd3-color'
 
+import DateDisplay from '@/services/DateDisplay.js'
 import PowerChart from '@/components/Facility/Charts/PowerChart.vue'
 import MiniMap from '@/components/Facility/MiniMap.vue'
 import MetaInfo from '@/components/Facility/MetaInfo.vue'
@@ -94,10 +109,23 @@ export default {
     SummaryPlaceholder,
     InfoPlaceholder
   },
+
+  data() {
+    return {
+      zoomExtent: [],
+      isHovering: false,
+      hoverDate: null
+    }
+  },
+
   computed: {
     ...mapGetters({
-      facility: 'facility/selectedFacility'
+      facility: 'facility/selectedFacility',
+      powerDataset: 'facility/selectedFacilityUnitsDataset'
     }),
+    powerUnit() {
+      return 'MW'
+    },
     facilityId() {
       return this.$route.params.facilityId
     },
@@ -117,8 +145,75 @@ export default {
         ? this.facility.location.state
         : ''
     },
+    facilityFuelTechsColours() {
+      const fuelTechs = this.facilityUnits.map(d => {
+        return d.fueltech ? d.fueltech.code : ''
+      })
+
+      // get only unique fuel techs
+      const uniqFuelTechs = _uniq(fuelTechs.filter(d => d !== '')).sort()
+      const uniqFuelTechsCount = {}
+      uniqFuelTechs.forEach(d => {
+        uniqFuelTechsCount[d] = fuelTechs.filter(ft => ft === d).length
+      })
+
+      // set different opacity variations of fuel tech
+      const colours = {}
+      uniqFuelTechs.forEach(ft => {
+        const colour = color(this.getUnitColour(ft))
+        const count = uniqFuelTechsCount[ft]
+
+        colours[ft] =
+          count > 1
+            ? quantize(
+                interpolateRgb(
+                  colour,
+                  colour.copy({ opacity: 1 / count + 0.3 })
+                ),
+                count
+              ).reverse()
+            : [colour.formatRgb()]
+      })
+
+      // apply each colour variation to facility unit
+      const obj = {}
+      uniqFuelTechs.forEach(ft => {
+        const filter = this.facilityUnits.filter(
+          d => d.fueltech && d.fueltech.code === ft
+        )
+        filter.forEach((f, i) => {
+          obj[f.code] = colours[ft][i]
+        })
+      })
+
+      return obj
+    },
     participant() {
       return this.facility ? this.facility.participant_id : ''
+    },
+    unitsSummary() {
+      return this.facilityUnits.map((d, i) => {
+        return {
+          colour: this.facilityFuelTechsColours[d.code],
+          domain: d.code,
+          id: d.code,
+          code: d.code,
+          registeredCapacity: d.capacity_registered,
+          status: d.status ? d.status.label : ''
+        }
+      })
+    }
+  },
+
+  watch: {
+    facilityUnits(units) {
+      // this.doProcessData(units)
+    },
+    facility(update) {
+      const facilities = update.facilities
+      const networkRegion = update.network ? update.network.code : ''
+      const facilityId = update.code
+      this.doGetStationStats({ networkRegion, facilityId })
     }
   },
 
@@ -129,16 +224,37 @@ export default {
   },
 
   methods: {
+    ...mapMutations({
+      setHighlightDomain: 'visInteract/highlightDomain'
+    }),
     ...mapActions({
-      doGetFacilityById: 'facility/doGetFacilityById'
+      doGetFacilityById: 'facility/doGetFacilityById',
+      doGetStationStats: 'facility/doGetStationStats',
+      doProcessData: 'facility/doProcessData'
     }),
     getUnitColour(fuelTech) {
       const unknownColour = '#ccc'
       if (fuelTech) {
-        const colour = FT.DEFAULT_FUEL_TECH_COLOUR[fuelTech.code]
+        const colour = FT.DEFAULT_FUEL_TECH_COLOUR[fuelTech]
         return colour || unknownColour
       }
       return unknownColour
+    },
+    handleZoomExtent(dateRange) {
+      this.zoomExtent = dateRange
+    },
+    handleMouseEnter(code) {
+      this.setHighlightDomain(code)
+    },
+    handleMouseLeave() {
+      this.setHighlightDomain('')
+    },
+    handleDateHover(date) {
+      const closestDate = DateDisplay.snapToClosestInterval('5m', date)
+      this.hoverDate = closestDate
+    },
+    handleIsHovering(hovering) {
+      this.isHovering = hovering
     }
   }
 }

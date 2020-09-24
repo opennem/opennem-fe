@@ -1,7 +1,7 @@
 import PerfTime from '@/plugins/perfTime.js'
 import { EMISSIONS, MARKET_VALUE } from '@/constants/data-types'
+import createEmptyDatasets from '@/modules/dataTransform/helpers/createEmptyDatasets.js'
 import parseAndCheckData from './parseAndCheckData.js'
-import createEmptyDatasets from './createEmptyDatasets.js'
 import flattenAndInterpolate from './flattenAndInterpolate.js'
 import {
   getFuelTechWithTypeDomains,

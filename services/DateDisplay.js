@@ -276,6 +276,24 @@ export default {
     return display
   },
 
+  defaultDisplayDate(time) {
+    const now = Date.now()
+    const today = d3TimeFormat('%d/%m/%Y')(now)
+    const fDate = d3TimeFormat('%d/%m/%Y')(time)
+    const thisYear = d3TimeFormat('%Y')(now)
+    const fYear = d3TimeFormat('%Y')(time)
+    let formatString = ''
+
+    if (today === fDate) {
+      formatString = 'Today at %-I:%M %p'
+    } else if (thisYear === fYear) {
+      formatString = '%-d %b, %-I:%M %p'
+    } else {
+      formatString = '%-d %b %Y, %-I:%M %p'
+    }
+    return d3TimeFormat(formatString)(time)
+  },
+
   snapToClosestInterval(interval, date, isLinear) {
     switch (interval) {
       case '5m':

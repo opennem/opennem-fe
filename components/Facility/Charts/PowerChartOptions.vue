@@ -16,21 +16,33 @@
 
     <template v-slot:label-unit>
       <strong>Power</strong>
-      <small>MW</small>
+      <small>{{ displayUnit }}</small>
     </template>
-    <template 
+    <!-- <template 
       v-slot:average-value 
       v-if="!readOnly">
       Av.
       <strong>
         --
       </strong>
-    </template>
+    </template> -->
     <template v-slot:hover-date>
       {{ hoverDisplayDate }}
     </template>
     <template v-slot:hover-values>
-      <div>--</div>
+      <span
+        v-if="hoverValue"
+        class="ft-value">
+        <em
+          :style="{ 'background-color': hoverDomainColour }"
+          class="colour-square" />
+        {{ hoverDomainLabel }}
+        <strong>{{ hoverValue | formatValue2 }} {{ displayUnit }}</strong>
+      </span>
+      <span>
+        Total
+        <strong>{{ hoverTotal | formatValue2 }} {{ displayUnit }}</strong>
+      </span>
     </template>
   </chart-header>
 </template>
@@ -68,15 +80,7 @@ export default {
       type: String,
       default: ''
     },
-    interval: {
-      type: String,
-      default: ''
-    },
-    averageEmissionsVolume: {
-      type: Number,
-      default: 0
-    },
-    emissionsVolumeUnit: {
+    displayUnit: {
       type: String,
       default: ''
     },
@@ -112,10 +116,10 @@ export default {
   },
   methods: {
     handleTypeClick(type) {
-      // this.$store.commit('chartOptionsEmissionsVolume/chartType', type)
+      this.$store.commit('chartOptionsFacilityPower/chartType', type)
     },
     handleCurveClick(curve) {
-      // this.$store.commit('chartOptionsEmissionsVolume/chartCurve', curve)
+      this.$store.commit('chartOptionsFacilityPower/chartCurve', curve)
     }
   }
 }

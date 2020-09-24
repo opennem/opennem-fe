@@ -220,7 +220,7 @@ module.exports = {
 
   proxy: {
     '/api': {
-      target: 'https://api.opennem.org.au/station',
+      target: 'https://api.opennem.org.au',
       pathRewrite: {
         '^/api': '/'
       }

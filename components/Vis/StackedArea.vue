@@ -1032,10 +1032,13 @@ export default {
 
       const xDate = this.x(time)
       const nextPeriod = this.x(nextDatePeriod)
-      const bandwidth =
-        this.interval !== INTERVAL_5MIN && this.interval !== INTERVAL_30MIN
-          ? nextPeriod - xDate
-          : null
+      let bandwidth = null
+      if (this.interval && this.interval !== '') {
+        bandwidth =
+          this.interval !== INTERVAL_5MIN && this.interval !== INTERVAL_30MIN
+            ? nextPeriod - xDate
+            : null
+      }
       const fTime = DateDisplay.specialDateFormats(
         new Date(date).getTime(),
         this.range,

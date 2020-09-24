@@ -1,8 +1,12 @@
 import { getStartEndNumInterval, incrementTime } from '@/services/DataCheck.js'
 
-export default function(dataPowerEnergy) {
+export default function(data) {
+  if (data.length <= 0 || (data.length > 0 && !data[0].history)) {
+    return []
+  }
+
   const { start, num, intervalKey, intervalValue } = getStartEndNumInterval(
-    dataPowerEnergy[0]
+    data[0]
   )
   const datasetFlat = []
   let currentDate = start
