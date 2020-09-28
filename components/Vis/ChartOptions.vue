@@ -260,7 +260,7 @@ export default {
   }
 
   .dropdown-content {
-    padding: 6px 12px 6px 6px;
+    padding: 6px;
     box-shadow: 0 3px 3px rgba(10, 10, 10, 0.1);
 
     .close-btn {
