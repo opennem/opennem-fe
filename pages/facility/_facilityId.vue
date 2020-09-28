@@ -9,20 +9,35 @@
         :description="facilityDescription" 
         :wiki-link="facilityWikiLink" />
 
-      <PowerChart 
-        :hover-on="isHovering"
-        :hover-date="hoverDate"
-        :dataset="powerDataset"
-        :domains="unitsSummary"
-        :display-unit="powerUnit"
-        :zoom-extent="zoomExtent"
-        :facility-id="facilityId"
-        :y-max="facilityRegisteredCapacity"
-        class="facility-chart"
-        @dateHover="handleDateHover"
-        @isHovering="handleIsHovering"
-        @zoomExtent="handleZoomExtent"
-      />
+      <div class="facility-chart">
+        <transition name="fade">
+          <div 
+            v-if="!fetchingStats && powerDataset.length === 0" 
+            class="not-found-card card">
+            <i class="fal fa-chart-area"/>
+            <span>Power and energy data not available</span>
+          </div>
+        </transition>
+
+        <transition name="fade">
+          <PowerChart 
+            v-if="!fetchingStats && powerDataset.length > 0"
+            :hover-on="isHovering"
+            :hover-date="hoverDate"
+            :dataset="powerDataset"
+            :domains="unitsSummary"
+            :display-unit="powerUnit"
+            :zoom-extent="zoomExtent"
+            :facility-id="facilityId"
+            :y-max="facilityRegisteredCapacity"
+            @dateHover="handleDateHover"
+            @isHovering="handleIsHovering"
+            @zoomExtent="handleZoomExtent"
+          />
+        </transition>
+      </div>
+
+      
 
       <section class="facility-units card">
         <table class="summary-list">
@@ -74,19 +89,23 @@
         </figure> -->
       </section>
       
-      <section> 
-        <MiniMap
-          v-if="hasFacilityLocation"
-          :lat="facilityLocation.lat"
-          :lng="facilityLocation.lng"
-          class="map" />
+      <section>
+        <transition name="fade">
+          <MiniMap
+            v-if="hasFacilityLocation"
+            :lat="facilityLocation.lat"
+            :lng="facilityLocation.lng"
+            class="map" />
+        </transition>
 
-        <div 
-          v-else 
-          class="not-found-card card">
-          <i class="fal fa-map-marker-alt"/>
-          <span>Location not available</span>
-        </div>
+        <transition name="fade">
+          <div 
+            v-if="!hasFacilityLocation" 
+            class="not-found-card card">
+            <i class="fal fa-map-marker-alt"/>
+            <span>Location not available</span>
+          </div>
+        </transition>
       </section>
       
       <MetaInfo 
@@ -136,6 +155,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      fetchingStats: 'facility/fetchingStats',
       facility: 'facility/selectedFacility',
       powerDataset: 'facility/selectedFacilityUnitsDataset'
     }),
@@ -325,6 +345,7 @@ $radius: 0.5rem;
 }
 
 header {
+  margin-bottom: 1rem;
   h2 {
     font-family: $header-font-family;
     font-size: 1.8em;
@@ -339,8 +360,14 @@ header {
 }
 
 .facility-chart {
+  $chartHeight: 231px;
   width: 100%;
-  margin-top: 1rem;
+  min-height: $chartHeight;
+  margin-bottom: 1rem;
+
+  .not-found-card {
+    height: $chartHeight;
+  }
 }
 
 .facility-units {
@@ -383,7 +410,8 @@ aside {
   align-content: center;
   flex-wrap: wrap;
   box-shadow: none;
-  color: #aaa;
+  color: #888;
+  background: rgba(0, 0, 0, 0.1);
   i {
     font-size: 1.3em;
     width: 100%;
@@ -395,7 +423,6 @@ aside {
 }
 
 ::v-deep .card {
-  background-color: #fff;
   border-radius: $radius;
   padding: 1rem;
   font-size: 0.9em;
