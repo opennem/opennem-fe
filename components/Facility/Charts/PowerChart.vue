@@ -21,7 +21,7 @@
         :domains="domains"
         :dataset="dataset"
         :y-min="yMin"
-        :y-max="yMax"
+        :y-max="computedYMax"
         :y-axis-ticks="5"
         :vis-height="200"
         :curve="chartCurve"
@@ -95,6 +95,10 @@ export default {
     facilityId: {
       type: String,
       default: ''
+    },
+    yMax: {
+      type: Number,
+      default: 0
     }
   },
 
@@ -133,7 +137,7 @@ export default {
 
       return lowest
     },
-    yMax() {
+    computedYMax() {
       let highest = 0
 
       this.dataset.forEach(d => {
@@ -147,7 +151,7 @@ export default {
         }
       })
 
-      return highest
+      return highest > this.yMax ? highest : this.yMax
     },
     hoverData() {
       if (!this.hoverDate) {

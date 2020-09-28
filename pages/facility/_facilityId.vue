@@ -17,6 +17,7 @@
         :display-unit="powerUnit"
         :zoom-extent="zoomExtent"
         :facility-id="facilityId"
+        :y-max="facilityRegisteredCapacity"
         class="facility-chart"
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"
@@ -87,7 +88,6 @@
           <span>Location not available</span>
         </div>
       </section>
-      
       
       <MetaInfo 
         :facility-id="facilityId"
@@ -165,6 +165,14 @@ export default {
       return this.facility
         ? _sortBy(this.facility.facilities, ['status.code', 'code'])
         : []
+    },
+    facilityRegisteredCapacity() {
+      return this.facilityUnits.length > 0
+        ? this.facilityUnits.reduce(
+            (acc, cur) => acc + (cur.capacity_registered || 0),
+            0
+          )
+        : 0
     },
     facilityLocation() {
       return this.facility ? this.facility.location : null
