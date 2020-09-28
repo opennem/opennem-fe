@@ -63,16 +63,31 @@
     
     <aside v-if="facility">
       <section>
-        <figure>
-          <div class="card"><i class="fal fa-image"/></div>
-          <!-- <figcaption>{{ facilityName }} facility</figcaption> -->
-        </figure>
+        <div class="not-found-card card">
+          <i class="fal fa-image"/>
+          <span>Image not available</span>
+        </div>
+        <!-- <figure>
+          <img src="" alt="">
+          <figcaption>{{ facilityName }} facility</figcaption>
+        </figure> -->
       </section>
       
-      <MiniMap 
-        :lat="facilityLocation.lat"
-        :lng="facilityLocation.lng"
-        class="map aside-section" />
+      <section> 
+        <MiniMap
+          v-if="hasFacilityLocation"
+          :lat="facilityLocation.lat"
+          :lng="facilityLocation.lng"
+          class="map" />
+
+        <div 
+          v-else 
+          class="not-found-card card">
+          <i class="fal fa-map-marker-alt"/>
+          <span>Location not available</span>
+        </div>
+      </section>
+      
       
       <MetaInfo 
         :facility-id="facilityId"
@@ -152,7 +167,14 @@ export default {
         : []
     },
     facilityLocation() {
-      return this.facility ? this.facility.location : { lat: 0, lng: 0 }
+      return this.facility ? this.facility.location : null
+    },
+    hasFacilityLocation() {
+      return (
+        this.facilityLocation &&
+        this.facilityLocation.lat &&
+        this.facilityLocation.lng
+      )
     },
     facilityState() {
       return this.facility && this.facility.location
@@ -331,19 +353,6 @@ aside {
   }
 
   figure {
-    div {
-      width: 100%;
-      height: 150px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: none;
-
-      i {
-        font-size: 2em;
-        color: #ccc;
-      }
-    }
   }
 
   img {
@@ -354,6 +363,26 @@ aside {
     text-align: center;
     font-size: 0.8em;
     font-weight: 700;
+  }
+}
+
+.not-found-card {
+  width: 100%;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  flex-wrap: wrap;
+  box-shadow: none;
+  color: #aaa;
+  i {
+    font-size: 1.3em;
+    width: 100%;
+    text-align: center;
+  }
+  span {
+    font-size: 0.9em;
   }
 }
 
