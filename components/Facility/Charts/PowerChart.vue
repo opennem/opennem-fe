@@ -15,6 +15,7 @@
         :hover-domain-label="hoverDomainLabel"
         :hover-domain-colour="hoverDomainColour"
         :hover-total="hoverTotal"
+        :show-total="domains.length > 1"
       />
       <stacked-area-vis
         v-if="chartShown"

@@ -39,7 +39,7 @@
         {{ hoverDomainLabel }}
         <strong>{{ hoverValue | formatValue2 }} {{ displayUnit }}</strong>
       </span>
-      <span>
+      <span v-if="showTotal">
         Total
         <strong>{{ hoverTotal | formatValue2 }} {{ displayUnit }}</strong>
       </span>
@@ -107,6 +107,10 @@ export default {
     readOnly: {
       type: Boolean,
       default: false
+    },
+    showTotal: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
