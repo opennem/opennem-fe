@@ -4,7 +4,7 @@
       <header>
         <h2>{{ facilityName }}</h2>
       </header>
-      <SummaryPlaceholder
+      <Summary
         v-if="hasDescriptionOrWikiLink"
         :description="facilityDescription" 
         :wiki-link="facilityWikiLink" />
@@ -97,7 +97,7 @@ import PowerChart from '@/components/Facility/Charts/PowerChart.vue'
 import MiniMap from '@/components/Facility/MiniMap.vue'
 import MetaInfo from '@/components/Facility/MetaInfo.vue'
 import FacilityProperties from '@/components/Facility/Properties.vue'
-import SummaryPlaceholder from '@/components/Facility/SummaryPlaceholder.vue'
+import Summary from '@/components/Facility/Summary.vue'
 import InfoPlaceholder from '@/components/Facility/InfoPlaceholder.vue'
 import * as FT from '~/constants/fuel-tech.js'
 
@@ -107,7 +107,7 @@ export default {
     MiniMap,
     MetaInfo,
     FacilityProperties,
-    SummaryPlaceholder,
+    Summary,
     InfoPlaceholder
   },
 
@@ -297,7 +297,7 @@ $radius: 0.5rem;
 header {
   h2 {
     font-family: $header-font-family;
-    font-size: 1.6em;
+    font-size: 1.8em;
     font-weight: 700;
   }
 }

@@ -36,7 +36,8 @@ export default {
 <style lang="scss" scoped>
 summary {
   padding: 1rem 1rem 2rem 0;
-  line-height: 1.4em;
+  line-height: 1.45em;
+  font-size: 1.05em;
   p {
     margin-bottom: 1rem;
 
