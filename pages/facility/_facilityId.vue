@@ -4,9 +4,11 @@
       <header>
         <h2>{{ facilityName }}</h2>
       </header>
-      <SummaryPlaceholder />
+      <SummaryPlaceholder
+        v-if="hasDescriptionOrWikiLink"
+        :description="facilityDescription" 
+        :wiki-link="facilityWikiLink" />
 
-      <h3>Facility units</h3>
       <PowerChart 
         :hover-on="isHovering"
         :hover-date="hoverDate"
@@ -52,33 +54,32 @@
         </table>
       </section>
 
-      <InfoPlaceholder />
+      <!-- <InfoPlaceholder /> -->
 
-      <FacilityProperties :facility="facility" />
+      <FacilityProperties 
+        :facility="facility" 
+        class="facility-props" />
     </div>
     
     <aside v-if="facility">
       <section>
         <figure>
-          <img
-            src="~/assets/img/placeholder-facility.png"
-            alt="Facility image placeholder">
-          <figcaption>{{ facilityName }} facility</figcaption>
+          <div class="card"><i class="fal fa-image"/></div>
+          <!-- <figcaption>{{ facilityName }} facility</figcaption> -->
         </figure>
       </section>
       
-      <section class="map">
-        <MiniMap 
-          :lat="facilityLocation.lat" 
-          :lng="facilityLocation.lng" />
-        <small>Lat: {{ facilityLocation.lat }} Lng: {{ facilityLocation.lng }}</small>
-      </section>
+      <MiniMap 
+        :lat="facilityLocation.lat"
+        :lng="facilityLocation.lng"
+        class="map aside-section" />
       
       <MetaInfo 
         :facility-id="facilityId"
         :facility-state="facilityState"
         :units-num="facilityUnits.length"
         :participant-name="participant"
+        class="aside-section"
       />
     </aside>
   </section>
@@ -130,7 +131,20 @@ export default {
       return this.$route.params.facilityId
     },
     facilityName() {
-      return this.facility ? this.facility.name : ''
+      return this.facility && this.facility.name ? this.facility.name : ''
+    },
+    facilityDescription() {
+      return this.facility && this.facility.description
+        ? this.facility.description
+        : ''
+    },
+    facilityWikiLink() {
+      return this.facility && this.facility.wikipedia_link
+        ? this.facility.wikipedia_link
+        : ''
+    },
+    hasDescriptionOrWikiLink() {
+      return this.facilityDescription !== '' || this.facilityWikiLink !== ''
     },
     facilityUnits() {
       return this.facility
@@ -311,8 +325,25 @@ aside {
   width: 30%;
   margin-top: 1rem;
 
-  figure {
+  section,
+  .aside-section {
     margin-bottom: 1rem;
+  }
+
+  figure {
+    div {
+      width: 100%;
+      height: 150px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: none;
+
+      i {
+        font-size: 2em;
+        color: #ccc;
+      }
+    }
   }
 
   img {
@@ -345,10 +376,6 @@ aside {
       color: #fff;
       border-bottom-color: #666;
     }
-
-    header h4 {
-      border-bottom-color: #666;
-    }
   }
 
   &.dim {
@@ -360,10 +387,6 @@ aside {
       color: #fff;
       border-bottom-color: #666;
     }
-
-    header h4 {
-      border-bottom-color: #666;
-    }
   }
 
   header {
@@ -371,7 +394,6 @@ aside {
       font-family: $header-font-family;
       font-size: 1.5em;
       font-weight: 700;
-      border-bottom: 1px solid #ddd;
     }
   }
 
@@ -383,5 +405,9 @@ aside {
     border-bottom: 1px solid #efefef;
     padding: 3px 6px;
   }
+}
+
+.facility-props {
+  margin-top: 3rem;
 }
 </style>

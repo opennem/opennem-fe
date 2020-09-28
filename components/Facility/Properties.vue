@@ -1,11 +1,16 @@
 <template>
   <section class="card dark">
     <header>
-      <h4>All properties</h4>
+      <h4>
+        All properties
+      </h4>
+      <button 
+        class="button is-small is-light" 
+        @click="show = !show">{{ show ? 'Hide' : 'Show' }}</button>
     </header>
 
     
-    <table v-if="hasFacility">
+    <table v-if="hasFacility && show">
       <tbody>
         <tr 
           v-for="d in keys" 
@@ -48,6 +53,12 @@ export default {
     }
   },
 
+  data() {
+    return {
+      show: false
+    }
+  },
+
   computed: {
     hasFacility() {
       return this.facility ? true : false
@@ -66,6 +77,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+header {
+  display: flex;
+  justify-content: space-between;
+}
+table {
+  margin-top: 1rem;
+}
 .unit-card {
   margin: 1rem;
 
