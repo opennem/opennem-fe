@@ -189,10 +189,6 @@ export default {
     }
   },
 
-  updated() {
-    // console.log(this.dataset)
-  },
-
   methods: {
     handleDomainHover(domain) {
       this.hoverDomain = domain
