@@ -29,13 +29,14 @@ export const state = () => ({
   selectedTechs: [],
   selectedView: 'list',
 
+  fetchingStats: false,
   selectedFacility: null,
   selectedFacilityUnitsDataset: []
 })
 
 export const mutations = {
   dataset(state, data) {
-    state.dataset = _cloneDeep(data)
+    state.dataset = data
   },
   sortBy(state, data) {
     state.sortBy = data
@@ -49,6 +50,10 @@ export const mutations = {
   selectedTechs(state, data) {
     state.selectedTechs = data
   },
+
+  fetchingStats(state, data) {
+    state.fetchingStats = data
+  },
   selectedView(state, data) {
     state.selectedView = data
   },
@@ -61,13 +66,14 @@ export const mutations = {
 }
 
 export const getters = {
-  dataset: state => state.dataset,
+  dataset: state => _cloneDeep(state.dataset),
   sortBy: state => state.sortBy,
   orderBy: state => state.orderBy,
   selectedStatuses: state => state.selectedStatuses,
   selectedTechs: state => state.selectedTechs,
   selectedView: state => state.selectedView,
 
+  fetchingStats: state => state.fetchingStats,
   selectedFacility: state => _cloneDeep(state.selectedFacility),
   selectedFacilityUnitsDataset: state =>
     _cloneDeep(state.selectedFacilityUnitsDataset)
@@ -120,6 +126,9 @@ export const actions = {
       ? `/stats/power/station/${networkRegion}/${encode}`
       : `https://api.opennem.org.au/stats/power/station/${networkRegion}/${encode}`
 
+    commit('fetchingStats', true)
+    commit('selectedFacilityUnitsDataset', [])
+
     http
       .get(ref)
       .then(response => {
@@ -137,6 +146,9 @@ export const actions = {
         const error = e.toJSON()
         const message = `fetch ${error.config.url} error: ${error.message}`
         console.error(message, e.toJSON())
+      })
+      .then(() => {
+        commit('fetchingStats', false)
       })
   }
 }
