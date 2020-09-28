@@ -100,9 +100,10 @@ export const actions = {
     //   `https://api.opennem.org.au/station/${facilityId}?power_include=true`
     // ]
     // https://api.opennem.org.au/stats/power/station/nem/BAYSW
+    const encode = encodeURIComponent(facilityId)
     const ref = useProxy
-      ? `/station/${facilityId}?power_include=true`
-      : `https://api.opennem.org.au/station/${facilityId}?power_include=true`
+      ? `/station/${encode}?power_include=true`
+      : `https://api.opennem.org.au/station/${encode}?power_include=true`
     // http(urls).then(responses => {
     //   console.log('fetched', responses[0])
     //   commit('selectedFacility', responses[0])
@@ -123,9 +124,10 @@ export const actions = {
   },
 
   doGetStationStats({ commit }, { networkRegion, facilityId }) {
+    const encode = encodeURIComponent(facilityId)
     const ref = useProxy
-      ? `/stats/power/station/${networkRegion}/${facilityId}`
-      : `https://api.opennem.org.au/stats/power/station/${networkRegion}/${facilityId}`
+      ? `/stats/power/station/${networkRegion}/${encode}`
+      : `https://api.opennem.org.au/stats/power/station/${networkRegion}/${encode}`
 
     http
       .get(ref)
