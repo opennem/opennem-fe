@@ -1,7 +1,6 @@
 import _cloneDeep from 'lodash.clonedeep'
 import axios from 'axios'
 
-// import http from '@/services/Http.js'
 import PerfTime from '@/plugins/perfTime.js'
 import { FACILITY_OPERATING } from '~/constants/facility-status.js'
 import { dataProcess } from '@/modules/dataTransform/facility-power'
@@ -96,18 +95,10 @@ export const actions = {
 
   doGetFacilityById({ commit }, { facilityId }) {
     console.log('fetching', facilityId)
-    // const urls = [
-    //   `https://api.opennem.org.au/station/${facilityId}?power_include=true`
-    // ]
-    // https://api.opennem.org.au/stats/power/station/nem/BAYSW
     const encode = encodeURIComponent(facilityId)
     const ref = useProxy
       ? `/station/${encode}?power_include=true`
       : `https://api.opennem.org.au/station/${encode}?power_include=true`
-    // http(urls).then(responses => {
-    //   console.log('fetched', responses[0])
-    //   commit('selectedFacility', responses[0])
-    // })
 
     http
       .get(ref)
