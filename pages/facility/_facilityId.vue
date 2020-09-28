@@ -162,9 +162,9 @@ export default {
         : []
     },
     facilityRegisteredCapacity() {
-      return this.facilityUnits.length > 0
-        ? this.facilityUnits.reduce(
-            (acc, cur) => acc + (cur.capacity_registered || 0),
+      return this.operatingDomains.length > 0
+        ? this.operatingDomains.reduce(
+            (acc, cur) => acc + (cur.registeredCapacity || 0),
             0
           )
         : 0
@@ -241,6 +241,9 @@ export default {
           status: d.status ? d.status.label : ''
         }
       })
+    },
+    operatingDomains() {
+      return this.unitsSummary.filter(d => d.status === 'Operating')
     }
   },
 
