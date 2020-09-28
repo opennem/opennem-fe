@@ -9,7 +9,7 @@
         :description="facilityDescription" 
         :wiki-link="facilityWikiLink" />
 
-      <div class="facility-chart">
+      <section class="facility-chart">
         <transition name="fade">
           <div 
             v-if="!fetchingStats && powerDataset.length === 0" 
@@ -35,39 +35,12 @@
             @zoomExtent="handleZoomExtent"
           />
         </transition>
-      </div>
-
-      
+      </section>
 
       <section class="facility-units card">
-        <table class="summary-list">
-          <thead>
-            <tr>
-              <th/>
-              <th>Code</th>
-              <th>Status</th>
-              <th>Registered capacity</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr 
-              v-for="(d, i) in unitsSummary"
-              :key="i"
-              @mouseenter="handleMouseEnter(d.code)"
-              @mouseleave="handleMouseLeave">
-              <td>
-                <div 
-                  :style="{ backgroundColor: d.colour}" 
-                  class="colour-square" />
-              </td>
-              <td>
-                {{ d.code }}
-              </td>
-              <td>{{ d.status }}</td>
-              <td>{{ d.registeredCapacity }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <UnitList 
+          :units="unitsSummary" 
+          @codeHover="handleCodeHover" />
       </section>
 
       <!-- <InfoPlaceholder /> -->
@@ -128,6 +101,7 @@ import { color } from 'd3-color'
 
 import DateDisplay from '@/services/DateDisplay.js'
 import PowerChart from '@/components/Facility/Charts/PowerChart.vue'
+import UnitList from '@/components/Facility/UnitList.vue'
 import MiniMap from '@/components/Facility/MiniMap.vue'
 import MetaInfo from '@/components/Facility/MetaInfo.vue'
 import FacilityProperties from '@/components/Facility/Properties.vue'
@@ -138,6 +112,7 @@ import * as FT from '~/constants/fuel-tech.js'
 export default {
   components: {
     PowerChart,
+    UnitList,
     MiniMap,
     MetaInfo,
     FacilityProperties,
@@ -307,11 +282,8 @@ export default {
     handleZoomExtent(dateRange) {
       this.zoomExtent = dateRange
     },
-    handleMouseEnter(code) {
+    handleCodeHover(code) {
       this.setHighlightDomain(code)
-    },
-    handleMouseLeave() {
-      this.setHighlightDomain('')
     },
     handleDateHover(date) {
       const closestDate = DateDisplay.snapToClosestInterval('5m', date)
@@ -328,11 +300,6 @@ export default {
 @import '~/assets/scss/variables.scss';
 
 $radius: 0.5rem;
-
-.colour-square {
-  width: 18px;
-  height: 18px;
-}
 
 .facility {
   display: flex;
