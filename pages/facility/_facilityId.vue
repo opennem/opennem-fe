@@ -1,6 +1,5 @@
 <template>
   <section class="facility">
-
     <transition name="fade">
       <div 
         v-if="!fetchingFacility && !facility"
@@ -52,7 +51,10 @@
 
         <section class="facility-units card">
           <UnitList 
-            :units="unitsSummary" 
+            :units="unitsSummary"
+            :hover-on="isHovering"
+            :hover-date="hoverDate"
+            :dataset="powerDataset"
             @codeHover="handleCodeHover" />
         </section>
 

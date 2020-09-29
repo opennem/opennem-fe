@@ -3,7 +3,12 @@
     <thead>
       <tr>
         <th>Unit</th>
-        <th>Registered capacity</th>
+        <th class="align-right">Registered capacity</th>
+        <th class="data-col align-right">
+          <span v-if="hoverOn">
+            {{ hoverDisplayDate }}
+          </span>
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -21,18 +26,51 @@
             class="colour-square" />
           {{ d.code }}
         </td>
-        <td>{{ d.registeredCapacity }}</td>
+        <td class="align-right">{{ d.registeredCapacity }}</td>
+        <td class="align-right">
+          <span v-if="hoverOn">
+            {{ getValue(d.code) | formatValue }}
+          </span>
+        </td>
       </tr>
     </tbody>
   </table>
 </template>
 
 <script>
+import DateDisplay from '@/services/DateDisplay.js'
+
 export default {
   props: {
     units: {
       type: Array,
       default: () => []
+    },
+    dataset: {
+      type: Array,
+      default: () => []
+    },
+    hoverOn: {
+      type: Boolean,
+      default: false
+    },
+    hoverDate: {
+      type: Date,
+      default: null
+    }
+  },
+
+  computed: {
+    hoverData() {
+      return this.hoverDate && this.dataset.length > 0
+        ? this.dataset.find(d => d.time === this.hoverDate.getTime())
+        : null
+    },
+    hoverDisplayDate() {
+      if (!this.hoverDate) {
+        return ''
+      }
+      return DateDisplay.defaultDisplayDate(this.hoverDate.getTime())
     }
   },
 
@@ -47,6 +85,9 @@ export default {
     },
     handleMouseLeave() {
       this.$emit('codeHover', '')
+    },
+    getValue(code) {
+      return this.hoverData ? this.hoverData[code] : ''
     }
   }
 }
@@ -64,5 +105,13 @@ export default {
   height: 18px;
   float: left;
   margin-right: 5px;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.data-col {
+  width: 150px;
 }
 </style>

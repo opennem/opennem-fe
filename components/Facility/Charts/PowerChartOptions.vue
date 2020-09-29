@@ -41,7 +41,7 @@
       </span>
       <span v-if="showTotal">
         Total
-        <strong>{{ hoverTotal | formatValue2 }} {{ displayUnit }}</strong>
+        <strong>{{ hoverTotal | formatValue }} {{ displayUnit }}</strong>
       </span>
     </template>
   </chart-header>
