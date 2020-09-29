@@ -29,6 +29,7 @@ export const state = () => ({
   selectedTechs: [],
   selectedView: 'list',
 
+  previousPath: '',
   fetchingStats: false,
   selectedFacility: null,
   selectedFacilityUnitsDataset: []
@@ -51,6 +52,9 @@ export const mutations = {
     state.selectedTechs = data
   },
 
+  previousPath(state, data) {
+    state.previousPath = data
+  },
   fetchingStats(state, data) {
     state.fetchingStats = data
   },
@@ -73,6 +77,7 @@ export const getters = {
   selectedTechs: state => state.selectedTechs,
   selectedView: state => state.selectedView,
 
+  previousPath: state => state.previousPath,
   fetchingStats: state => state.fetchingStats,
   selectedFacility: state => _cloneDeep(state.selectedFacility),
   selectedFacilityUnitsDataset: state =>
@@ -103,8 +108,8 @@ export const actions = {
     console.log('fetching', facilityId)
     const encode = encodeURIComponent(facilityId)
     const ref = useProxy
-      ? `/station/${encode}?power_include=true`
-      : `https://api.opennem.org.au/station/${encode}?power_include=true`
+      ? `/station/${encode}`
+      : `https://api.opennem.org.au/station/${encode}`
 
     http
       .get(ref)

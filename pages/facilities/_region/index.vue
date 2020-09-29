@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
 import _orderBy from 'lodash.orderby'
@@ -265,6 +265,9 @@ export default {
   },
 
   methods: {
+    ...mapMutations({
+      previousPath: 'facility/previousPath'
+    }),
     fetchData() {
       const urls = []
 
@@ -435,6 +438,7 @@ export default {
     },
     handleOpenFacilityView(facility) {
       this.handleFacilitySelect(facility, true)
+      this.previousPath(this.$route.fullPath)
       this.$router.push({
         path: `/facility/${encodeURIComponent(facility.facilityId)}`
       })

@@ -110,6 +110,7 @@ import InfoPlaceholder from '@/components/Facility/InfoPlaceholder.vue'
 import * as FT from '~/constants/fuel-tech.js'
 
 export default {
+  layout: 'facility',
   components: {
     PowerChart,
     UnitList,
