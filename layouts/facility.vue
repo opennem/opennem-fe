@@ -23,7 +23,8 @@ export default {
 @import '~/assets/scss/variables.scss';
 
 .container-fluid {
-  margin-bottom: 1rem;
+  max-width: 1400px;
+  margin: 0 auto 1rem;
   @include tablet {
     margin-bottom: 3rem;
   }
