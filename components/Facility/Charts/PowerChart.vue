@@ -32,6 +32,11 @@
         :highlight-domain="highlightId"
         :hover-on="hoverOn"
         :hover-date="hoverDate"
+        :x-guides="xGuides"
+        :y-guides="[{
+          value: yMax,
+          text: 'Registered Capacity'
+        }]"
         class="vis-chart"
         @dateOver="handleDateHover"
         @domainOver="handleDomainHover"
@@ -44,7 +49,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import parseISO from 'date-fns/parseISO'
 import getTime from 'date-fns/getTime'
 import DateDisplay from '@/services/DateDisplay.js'
@@ -115,7 +120,8 @@ export default {
       chartShown: 'chartOptionsFacilityPower/chartShown',
       chartType: 'chartOptionsFacilityPower/chartType',
       chartCurve: 'chartOptionsFacilityPower/chartCurve',
-      highlightDomain: 'visInteract/highlightDomain'
+      highlightDomain: 'visInteract/highlightDomain',
+      xGuides: 'visInteract/xGuides'
     }),
 
     highlightId() {
@@ -152,7 +158,11 @@ export default {
         }
       })
 
-      return highest > this.yMax ? highest : this.yMax
+      if (highest <= this.yMax) {
+        highest = this.yMax
+      }
+
+      return highest + (highest * 10) / 100
     },
     hoverData() {
       if (!this.hoverDate) {
@@ -189,7 +199,20 @@ export default {
     }
   },
 
+  created() {
+    if (this.dataset.length > 0) {
+      this.doUpdateXGuides({
+        interval: '5m',
+        start: this.dataset[0].time,
+        end: this.dataset[this.dataset.length - 1].time
+      })
+    }
+  },
+
   methods: {
+    ...mapActions({
+      doUpdateXGuides: 'visInteract/doUpdateXGuides'
+    }),
     handleDomainHover(domain) {
       this.hoverDomain = domain
     },

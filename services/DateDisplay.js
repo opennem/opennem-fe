@@ -1,5 +1,6 @@
 import parseISO from 'date-fns/parseISO'
 import addDays from 'date-fns/addDays'
+import subDays from 'date-fns/subDays'
 import addMonths from 'date-fns/addMonths'
 import endOfDay from 'date-fns/endOfDay'
 import endOfMonth from 'date-fns/endOfMonth'
@@ -388,7 +389,7 @@ export default {
 
   nightGuides(datasetStart, datasetEnd) {
     const guides = []
-    let dStart = datasetStart
+    let dStart = subDays(new Date(datasetStart), 1).getTime()
     const dEnd = datasetEnd
 
     while (dStart <= dEnd) {

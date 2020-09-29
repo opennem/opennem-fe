@@ -258,6 +258,10 @@ export default {
       type: Array,
       default: () => []
     },
+    yGuides: {
+      type: Array,
+      default: () => []
+    },
     xAxisDy: {
       type: Number,
       default: () => 12
@@ -1143,6 +1147,33 @@ export default {
           return width < 0 ? 0 : width
         })
         .attr('height', this.height)
+        .style('clip-path', this.clipPathUrl)
+        .style('-webkit-clip-path', this.clipPathUrl)
+
+      this.$xGuideGroup.selectAll('g').remove()
+      const yGuides = this.$xGuideGroup
+        .selectAll('g')
+        .data(this.yGuides)
+        .enter()
+        .append('g')
+
+      yGuides
+        .append('line')
+        .attr('x1', 0)
+        .attr('y1', d => this.y(d.value))
+        .attr('x2', this.width)
+        .attr('y2', d => this.y(d.value))
+        .attr('stroke', '#c74523')
+        .attr('stroke-dasharray', 4.8)
+      yGuides
+        .append('text')
+        .attr('x', this.width)
+        .attr('y', d => this.y(d.value))
+        .attr('dy', -4)
+        .text(d => d.text)
+        .style('fill', '#c74523')
+        .style('font-size', '10px')
+        .style('text-anchor', 'end')
 
       this.$xIncompleteGroup
         .selectAll('rect')
