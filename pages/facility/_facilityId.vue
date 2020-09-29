@@ -69,6 +69,7 @@
         <section>
           <transition name="fade">
             <Photos 
+              v-if="facilityPhotos.length > 0" 
               :photos="facilityPhotos" 
               :name="facilityName" />
           </transition>
