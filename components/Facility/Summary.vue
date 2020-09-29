@@ -38,6 +38,7 @@ summary {
   margin-bottom: 1rem;
   line-height: 1.45em;
   font-size: 1.05em;
+  padding: 0 1.5rem;
   p {
     margin-bottom: 1rem;
 

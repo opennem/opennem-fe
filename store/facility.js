@@ -30,6 +30,7 @@ export const state = () => ({
   selectedView: 'list',
 
   previousPath: '',
+  fetchingFacility: false,
   fetchingStats: false,
   selectedFacility: null,
   selectedFacilityUnitsDataset: []
@@ -55,6 +56,9 @@ export const mutations = {
   previousPath(state, data) {
     state.previousPath = data
   },
+  fetchingFacility(state, data) {
+    state.fetchingFacility = data
+  },
   fetchingStats(state, data) {
     state.fetchingStats = data
   },
@@ -78,6 +82,7 @@ export const getters = {
   selectedView: state => state.selectedView,
 
   previousPath: state => state.previousPath,
+  fetchingFacility: state => state.fetchingFacility,
   fetchingStats: state => state.fetchingStats,
   selectedFacility: state => _cloneDeep(state.selectedFacility),
   selectedFacilityUnitsDataset: state =>
@@ -111,6 +116,9 @@ export const actions = {
       ? `/station/${encode}`
       : `https://api.opennem.org.au/station/${encode}`
 
+    commit('fetchingFacility', true)
+    commit('selectedFacility', null)
+
     http
       .get(ref)
       .then(response => {
@@ -122,6 +130,9 @@ export const actions = {
         const error = e.toJSON()
         const message = `fetch ${error.config.url} error: ${error.message}`
         console.error(message, e.toJSON())
+      })
+      .then(() => {
+        commit('fetchingFacility', false)
       })
   },
 

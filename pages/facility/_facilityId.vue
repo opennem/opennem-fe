@@ -1,94 +1,110 @@
 <template>
   <section class="facility">
-    <div v-if="facility">
-      <header>
-        <h2>{{ facilityName }}</h2>
-      </header>
-      <Summary
-        v-if="hasDescriptionOrWikiLink"
-        :description="facilityDescription" 
-        :wiki-link="facilityWikiLink" />
 
-      <section class="facility-chart">
-        <transition name="fade">
-          <div 
-            v-if="!fetchingStats && powerDataset.length === 0" 
-            class="not-found-card card">
-            <i class="fal fa-chart-area"/>
-            <span>Power and energy data not available</span>
-          </div>
-        </transition>
+    <transition name="fade">
+      <div 
+        v-if="!fetchingFacility && !facility"
+        class="not-found-card card"
+        style="height: 60vh; margin: 0 auto;">
+        <i class="fal fa-industry-alt"/>
+        <span>Facility not available</span>
+      </div>
+    </transition>
 
-        <transition name="fade">
-          <PowerChart 
-            v-if="!fetchingStats && powerDataset.length > 0"
-            :hover-on="isHovering"
-            :hover-date="hoverDate"
-            :dataset="powerDataset"
-            :domains="unitsSummary"
-            :display-unit="powerUnit"
-            :zoom-extent="zoomExtent"
-            :facility-id="facilityId"
-            :y-max="facilityRegisteredCapacity"
-            @dateHover="handleDateHover"
-            @isHovering="handleIsHovering"
-            @zoomExtent="handleZoomExtent"
-          />
-        </transition>
-      </section>
+    <transition name="fade">
+      <div v-if="facility">
+        <header>
+          <h2>{{ facilityName }}</h2>
+        </header>
+      
+        <Summary
+          v-if="hasDescriptionOrWikiLink"
+          :description="facilityDescription" 
+          :wiki-link="facilityWikiLink" />
 
-      <section class="facility-units card">
-        <UnitList 
-          :units="unitsSummary" 
-          @codeHover="handleCodeHover" />
-      </section>
+        <section class="facility-chart">
+          <transition name="fade">
+            <div 
+              v-if="!fetchingStats && powerDataset.length === 0" 
+              class="not-found-card card">
+              <i class="fal fa-chart-area"/>
+              <span>Power and energy data not available</span>
+            </div>
+          </transition>
 
-      <!-- <InfoPlaceholder /> -->
+          <transition name="fade">
+            <PowerChart 
+              v-if="!fetchingStats && powerDataset.length > 0"
+              :hover-on="isHovering"
+              :hover-date="hoverDate"
+              :dataset="powerDataset"
+              :domains="unitsSummary"
+              :display-unit="powerUnit"
+              :zoom-extent="zoomExtent"
+              :facility-id="facilityId"
+              :y-max="facilityRegisteredCapacity"
+              @dateHover="handleDateHover"
+              @isHovering="handleIsHovering"
+              @zoomExtent="handleZoomExtent"
+            />
+          </transition>
+        </section>
 
-      <FacilityProperties 
-        :facility="facility" 
-        class="facility-props" />
-    </div>
+        <section class="facility-units card">
+          <UnitList 
+            :units="unitsSummary" 
+            @codeHover="handleCodeHover" />
+        </section>
+
+        <!-- <InfoPlaceholder /> -->
+
+        <FacilityProperties 
+          :facility="facility" 
+          class="facility-props" />
+      </div>
+    </transition>
     
-    <aside v-if="facility">
-      <section>
-        <div class="not-found-card card">
-          <i class="fal fa-image"/>
-          <span>Image not available</span>
-        </div>
+    <transition name="fade">
+      <aside v-if="facility">
+        <section>
+          <div class="not-found-card card">
+            <i class="fal fa-image"/>
+            <span>Image not available</span>
+          </div>
         <!-- <figure>
           <img src="" alt="">
           <figcaption>{{ facilityName }} facility</figcaption>
         </figure> -->
-      </section>
+        </section>
       
-      <section>
-        <transition name="fade">
-          <MiniMap
-            v-if="hasFacilityLocation"
-            :lat="facilityLocation.lat"
-            :lng="facilityLocation.lng"
-            class="map" />
-        </transition>
+        <section>
+          <transition name="fade">
+            <MiniMap
+              v-if="hasFacilityLocation"
+              :lat="facilityLocation.lat"
+              :lng="facilityLocation.lng"
+              class="map" />
+          </transition>
 
-        <transition name="fade">
-          <div 
-            v-if="!hasFacilityLocation" 
-            class="not-found-card card">
-            <i class="fal fa-map-marker-alt"/>
-            <span>Location not available</span>
-          </div>
-        </transition>
-      </section>
+          <transition name="fade">
+            <div 
+              v-if="!hasFacilityLocation" 
+              class="not-found-card card">
+              <i class="fal fa-map-marker-alt"/>
+              <span>Location not available</span>
+            </div>
+          </transition>
+        </section>
       
-      <MetaInfo 
-        :facility-id="facilityId"
-        :facility-state="facilityState"
-        :units-num="facilityUnits.length"
-        :participant-name="participant"
-        class="aside-section"
-      />
-    </aside>
+        <MetaInfo 
+          :facility-id="facilityId"
+          :facility-state="facilityState"
+          :units-num="facilityUnits.length"
+          :participant-name="participant"
+          class="aside-section"
+        />
+      </aside>
+    </transition>
   </section>
 </template>
 
@@ -131,6 +147,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      fetchingFacility: 'facility/fetchingFacility',
       fetchingStats: 'facility/fetchingStats',
       facility: 'facility/selectedFacility',
       powerDataset: 'facility/selectedFacilityUnitsDataset'
@@ -253,10 +270,12 @@ export default {
       // this.doProcessData(units)
     },
     facility(update) {
-      const facilities = update.facilities
-      const networkRegion = update.network ? update.network.code : ''
-      const facilityId = update.code
-      this.doGetStationStats({ networkRegion, facilityId })
+      if (update) {
+        const facilities = update.facilities
+        const networkRegion = update.network ? update.network.code : ''
+        const facilityId = update.code
+        this.doGetStationStats({ networkRegion, facilityId })
+      }
     }
   },
 
@@ -317,6 +336,8 @@ $radius: 0.5rem;
 
 header {
   margin-bottom: 1rem;
+  padding: 0 1.5rem;
+
   h2 {
     font-family: $header-font-family;
     font-size: 1.8em;
@@ -335,6 +356,7 @@ header {
   width: 100%;
   min-height: $chartHeight;
   margin-bottom: 1rem;
+  padding: 0 12px 0 11px;
 
   .not-found-card {
     height: $chartHeight;
