@@ -1,7 +1,7 @@
 <template>
   <figure>
     <img 
-      :src="firstPhoto" 
+      :src="photo" 
       :alt="`${name} facility`" >
       <!-- <figcaption>
         1 of {{ photos.length }}
@@ -23,8 +23,7 @@ export default {
   },
 
   computed: {
-    firstPhoto() {
-      console.log(this.photos[0])
+    photo() {
       let width = this.photos[0].width
       let photoIndex = 0
       this.photos.forEach((d, i) => {
