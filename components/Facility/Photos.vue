@@ -3,7 +3,7 @@
     <img 
       :src="photo.photo_url" 
       :alt="`${name} facility`"
-      :style="{ 'height': ratio > 4 ? '150px' : 'auto'}"
+      :style="{ 'height': ratio > 2 ? '180px' : 'auto'}"
     >
     <!-- <figcaption>
       1 of {{ ratio }}
