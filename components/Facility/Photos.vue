@@ -25,7 +25,15 @@ export default {
   computed: {
     firstPhoto() {
       console.log(this.photos[0])
-      return this.photos.length > 0 ? this.photos[0].photo_url : ''
+      let width = this.photos[0].width
+      let photoIndex = 0
+      this.photos.forEach((d, i) => {
+        if (d.width > width) {
+          width = d.width
+          photoIndex = i
+        }
+      })
+      return this.photos[photoIndex].photo_url
     }
   }
 }
