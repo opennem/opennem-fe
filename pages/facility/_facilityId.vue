@@ -105,13 +105,13 @@
           </transition>
         </section>
       
-        <MetaInfo 
+        <!-- <MetaInfo 
           :facility-id="facilityId"
           :facility-state="facilityState"
           :units-num="facilityUnits.length"
           :participant-name="participant"
           class="aside-section"
-        />
+        /> -->
       </aside>
     </transition>
   </section>
