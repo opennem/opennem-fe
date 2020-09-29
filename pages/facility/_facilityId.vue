@@ -67,14 +67,20 @@
     <transition name="fade">
       <aside v-if="facility">
         <section>
-          <div class="not-found-card card">
-            <i class="fal fa-image"/>
-            <span>Image not available</span>
-          </div>
-        <!-- <figure>
-          <img src="" alt="">
-          <figcaption>{{ facilityName }} facility</figcaption>
-        </figure> -->
+          <transition name="fade">
+            <Photos 
+              :photos="facilityPhotos" 
+              :name="facilityName" />
+          </transition>
+
+          <transition name="fade">
+            <div 
+              v-if="facilityPhotos.length === 0" 
+              class="not-found-card card">
+              <i class="fal fa-image"/>
+              <span>Image not available</span>
+            </div>
+          </transition>
         </section>
       
         <section>
@@ -118,6 +124,7 @@ import { color } from 'd3-color'
 import DateDisplay from '@/services/DateDisplay.js'
 import PowerChart from '@/components/Facility/Charts/PowerChart.vue'
 import UnitList from '@/components/Facility/UnitList.vue'
+import Photos from '@/components/Facility/Photos.vue'
 import MiniMap from '@/components/Facility/MiniMap.vue'
 import MetaInfo from '@/components/Facility/MetaInfo.vue'
 import FacilityProperties from '@/components/Facility/Properties.vue'
@@ -130,6 +137,7 @@ export default {
   components: {
     PowerChart,
     UnitList,
+    Photos,
     MiniMap,
     MetaInfo,
     FacilityProperties,
@@ -247,6 +255,9 @@ export default {
     },
     participant() {
       return this.facility ? this.facility.participant_id : ''
+    },
+    facilityPhotos() {
+      return this.facility ? this.facility.photos : []
     },
     unitsSummary() {
       return this.facilityUnits.map((d, i) => {
@@ -378,13 +389,6 @@ aside {
   section,
   .aside-section {
     margin-bottom: 1rem;
-  }
-
-  figure {
-  }
-
-  img {
-    border-radius: $radius;
   }
 
   figcaption {
