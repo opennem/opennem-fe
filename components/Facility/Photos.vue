@@ -1,11 +1,13 @@
 <template>
   <figure>
     <img 
-      :src="photo" 
-      :alt="`${name} facility`" >
-      <!-- <figcaption>
-        1 of {{ photos.length }}
-      </figcaption> -->
+      :src="photo.photo_url" 
+      :alt="`${name} facility`"
+      :style="{ 'height': ratio > 4 ? '150px' : 'auto'}"
+    >
+    <!-- <figcaption>
+      1 of {{ ratio }}
+    </figcaption> -->
   </figure>
 </template>
 
@@ -32,7 +34,10 @@ export default {
           photoIndex = i
         }
       })
-      return this.photos[photoIndex].photo_url
+      return this.photos[photoIndex]
+    },
+    ratio() {
+      return this.photo.width / this.photo.height
     }
   }
 }
@@ -46,5 +51,6 @@ img {
   max-height: 400px;
   margin: 0 auto;
   display: block;
+  object-fit: cover;
 }
 </style>
