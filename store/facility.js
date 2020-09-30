@@ -33,7 +33,8 @@ export const state = () => ({
   fetchingFacility: false,
   fetchingStats: false,
   selectedFacility: null,
-  selectedFacilityUnitsDataset: []
+  selectedFacilityUnitsDataset: [],
+  selectedFacilityInterval: null
 })
 
 export const mutations = {
@@ -70,6 +71,9 @@ export const mutations = {
   },
   selectedFacilityUnitsDataset(state, data) {
     state.selectedFacilityUnitsDataset = data
+  },
+  selectedFacilityInterval(state, data) {
+    state.selectedFacilityInterval = data
   }
 }
 
@@ -86,7 +90,8 @@ export const getters = {
   fetchingStats: state => state.fetchingStats,
   selectedFacility: state => _cloneDeep(state.selectedFacility),
   selectedFacilityUnitsDataset: state =>
-    _cloneDeep(state.selectedFacilityUnitsDataset)
+    _cloneDeep(state.selectedFacilityUnitsDataset),
+  selectedFacilityInterval: state => state.selectedFacilityInterval
 }
 
 export const actions = {
@@ -144,6 +149,7 @@ export const actions = {
 
     commit('fetchingStats', true)
     commit('selectedFacilityUnitsDataset', [])
+    commit('selectedFacilityInterval', null)
 
     http
       .get(ref)
@@ -153,9 +159,10 @@ export const actions = {
         const perf = new PerfTime()
         perf.time()
         console.info(`------ facility data process (start)`)
-        const { dataset } = dataProcess(response.data.data)
+        const { dataset, interval } = dataProcess(response.data.data)
 
         commit('selectedFacilityUnitsDataset', dataset)
+        commit('selectedFacilityInterval', interval)
         perf.timeEnd(`------ facility data process (end)`)
       })
       .catch(e => {

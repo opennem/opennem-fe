@@ -19,12 +19,13 @@ export function dataProcess(data) {
     .filter(d => d.history)
 
   const dataset = createEmptyDatasets(units)
+  const interval = data.length > 0 ? data[0].history.interval : null
 
   units.forEach(u => {
     const updateDataset = () => {
       const historyData = [...u.history.data]
       dataset.forEach((h, i) => {
-        h[u.code] = historyData[i] || null
+        h[u.code] = historyData[i]
       })
     }
 
@@ -32,6 +33,7 @@ export function dataProcess(data) {
   })
 
   return {
-    dataset
+    dataset,
+    interval
   }
 }

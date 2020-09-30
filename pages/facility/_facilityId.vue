@@ -37,7 +37,7 @@
               :hover-on="isHovering"
               :hover-date="hoverDate"
               :dataset="powerDataset"
-              :domains="unitsSummary"
+              :domains="operatingDomains"
               :display-unit="powerUnit"
               :zoom-extent="zoomExtent"
               :facility-id="facilityId"
@@ -168,7 +168,8 @@ export default {
       fetchingFacility: 'facility/fetchingFacility',
       fetchingStats: 'facility/fetchingStats',
       facility: 'facility/selectedFacility',
-      powerDataset: 'facility/selectedFacilityUnitsDataset'
+      powerDataset: 'facility/selectedFacilityUnitsDataset',
+      interval: 'facility/selectedFacilityInterval'
     }),
     powerUnit() {
       return 'MW'
@@ -330,7 +331,7 @@ export default {
       this.setHighlightDomain(code)
     },
     handleDateHover(date) {
-      const closestDate = DateDisplay.snapToClosestInterval('5m', date)
+      const closestDate = DateDisplay.snapToClosestInterval(this.interval, date)
       this.hoverDate = closestDate
     },
     handleIsHovering(hovering) {

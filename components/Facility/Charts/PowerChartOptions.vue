@@ -31,7 +31,7 @@
     </template>
     <template v-slot:hover-values>
       <span
-        v-if="hoverValue"
+        v-if="hoverValue && showHover"
         class="ft-value">
         <em
           :style="{ 'background-color': hoverDomainColour }"
@@ -39,8 +39,8 @@
         {{ hoverDomainLabel }}
         <strong>{{ hoverValue | formatValue2 }} {{ displayUnit }}</strong>
       </span>
-      <span v-if="showTotal">
-        Total
+      <span>
+        <span v-if="showHover">Total</span>
         <strong>{{ hoverTotal | formatValue }} {{ displayUnit }}</strong>
       </span>
     </template>
@@ -108,7 +108,7 @@ export default {
       type: Boolean,
       default: false
     },
-    showTotal: {
+    showHover: {
       type: Boolean,
       default: true
     }
