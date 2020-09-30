@@ -1,15 +1,27 @@
 <template>
-  <summary>
-    <p>{{ description }}</p>
-    <p v-if="hasWikiLink">
-      <a
-        :href="wikiLink"
-        class="wiki-link" 
-        target="facility-wiki-link">
-        Wikipedia
-        <i class="fal fa-external-link"/>
-      </a>
+  <summary> 
+    <p>
+      {{ description }}
+
+      <v-popover 
+        class="wiki-link-text" 
+        placement="auto">
+        <i class="fal fa-info-circle"/>
+
+        <template slot="popover">
+          Copied content from <a
+            :href="wikiLink"
+            class="wiki-link" 
+            target="facility-wiki-link">
+            Wikipedia
+            <i class="fal fa-external-link"/>
+          </a>; see that page's history for attribution.
+        </template>
+      </v-popover>
     </p>
+
+    
+
   </summary>
 </template>
 
@@ -34,6 +46,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~/assets/scss/variables.scss';
+
 summary {
   margin-bottom: 1rem;
   line-height: 1.45em;
@@ -47,8 +61,10 @@ summary {
     }
   }
 
-  .wiki-link {
+  .wiki-link-text {
+    display: inline-block;
     font-size: 0.8em;
+    color: $opennem-link-color;
   }
 }
 </style>

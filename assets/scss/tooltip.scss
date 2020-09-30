@@ -95,11 +95,11 @@
     $color: #f9f9f9;
 
     .popover-inner {
-      background: $color;
-      color: black;
-      padding: 24px;
-      border-radius: 5px;
-      box-shadow: 0 5px 30px rgba(black, .1);
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      border-radius: 6px;
+      padding: 5px 10px 4px;
+      box-shadow: 0 0 20px rgba(50, 50, 50, 0.2);
     }
 
     .popover-arrow {
