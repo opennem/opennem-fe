@@ -39,7 +39,7 @@
         </td>
         <td class="align-right hover-cell">
           <span v-if="hoverOn">
-            {{ getValue(d.code) / d.registeredCapacity | formatValue }}
+            {{ getValue(d.code) / d.registeredCapacity * 100 | percentageFormatNumber }}
           </span>
         </td>
       </tr>
@@ -58,7 +58,7 @@
         </td>
         <td class="align-right hover-cell">
           <span v-if="hoverOn">
-            Average: {{ hoverTotal / operatingUnitsTotalCapacity | formatValue }}
+            Average: {{ hoverTotal / operatingUnitsTotalCapacity * 100 | percentageFormatNumber }}
           </span>
         </td>
       </tr>

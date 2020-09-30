@@ -99,7 +99,7 @@ Vue.filter('percentageFormatNumber', value => {
   }
   const f = d3Format(fString)
   const fValue = f(value) + '%'
-  return isFinite(value) && !isNaN(value) && value ? fValue : '–'
+  return isFinite(value) && !isNaN(value) && value !== null ? fValue : '–'
 })
 
 Vue.filter('percentageFormatNumber2', value => {
