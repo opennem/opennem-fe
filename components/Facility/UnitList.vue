@@ -4,9 +4,14 @@
       <tr>
         <th>Unit</th>
         <th class="align-right">Registered capacity</th>
-        <th class="data-col align-right">
+        <th class="data-col date-col align-right hover-cell">
           <span v-if="hoverOn">
             {{ hoverDisplayDate }}
+          </span>
+        </th>
+        <th class="data-col align-right hover-cell">
+          <span v-if="hoverOn">
+            Capacity factor
           </span>
         </th>
       </tr>
@@ -27,13 +32,38 @@
           {{ d.code }}
         </td>
         <td class="align-right">{{ d.registeredCapacity }}</td>
-        <td class="align-right">
+        <td class="align-right hover-cell">
           <span v-if="hoverOn">
             {{ getValue(d.code) | formatValue }}
           </span>
         </td>
+        <td class="align-right hover-cell">
+          <span v-if="hoverOn">
+            {{ getValue(d.code) / d.registeredCapacity | formatValue }}
+          </span>
+        </td>
       </tr>
+
+      
     </tbody>
+
+    <tfoot>
+      <tr>
+        <td>&nbsp;</td>
+        <td />
+        <td class="align-right hover-cell">
+          <span v-if="hoverOn">
+            Total: {{ hoverTotal | formatValue }}
+          </span>
+        </td>
+        <td class="align-right hover-cell">
+          <span v-if="hoverOn">
+            Average: {{ hoverTotal / operatingUnitsTotalCapacity | formatValue }}
+          </span>
+        </td>
+      </tr>
+    </tfoot>
+    
   </table>
 </template>
 
@@ -71,6 +101,32 @@ export default {
         return ''
       }
       return DateDisplay.defaultDisplayDate(this.hoverDate.getTime())
+    },
+    operatingUnits() {
+      return this.units.filter(u => u.status === 'Operating')
+    },
+    operatingUnitsTotalCapacity() {
+      let total = null
+      this.operatingUnits.forEach(u => {
+        const value = u.registeredCapacity
+        if (value || value === 0) {
+          total += value
+        }
+      })
+      return total
+    },
+    hoverTotal() {
+      if (!this.hoverData) {
+        return null
+      }
+      let total = null
+      this.operatingUnits.forEach(u => {
+        const value = this.hoverData[u.code]
+        if (value || value === 0) {
+          total += value
+        }
+      })
+      return total
     }
   },
 
@@ -94,6 +150,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~/assets/scss/variables.scss';
+
 .is-inactive {
   td {
     color: #aaa;
@@ -112,6 +170,32 @@ export default {
 }
 
 .data-col {
-  width: 150px;
+  width: 25%;
+}
+
+table th {
+  font-family: $header-font-family;
+  border-bottom: 1px solid #000;
+
+  &.date-col {
+    font-family: $family-primary;
+  }
+}
+
+table td.hover-cell,
+table th.hover-cell {
+  background-color: #efefef;
+}
+table td.hover-cell {
+  border-bottom: 1px solid #dfdfdf;
+}
+table th.hover-cell {
+  border-bottom: 1px solid #000;
+}
+
+table tfoot {
+  td.hover-cell {
+    font-weight: 700;
+  }
 }
 </style>

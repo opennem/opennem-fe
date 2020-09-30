@@ -355,10 +355,6 @@ header {
   }
 }
 
-.facility-units {
-  margin: 0.5rem 0;
-}
-
 .facility-meta {
   margin: 0.5rem 0;
 }
@@ -428,8 +424,45 @@ header {
   }
   td,
   th {
-    border-bottom: 1px solid #efefef;
     padding: 3px 6px;
+  }
+  th {
+    border-bottom: 1px solid #000;
+  }
+  td {
+    border-bottom: 1px solid #ddd;
+  }
+
+  thead {
+    th:first-child {
+      border-radius: $radius 0 0 0;
+    }
+    th:last-child {
+      border-radius: 0 $radius 0 0;
+    }
+  }
+
+  tfoot {
+    td {
+      border: none;
+    }
+    td:first-child {
+      border-radius: 0 0 0 $radius;
+    }
+    td:last-child {
+      border-radius: 0 0 $radius 0;
+    }
+  }
+
+  &.facility-units {
+    margin: 0.5rem 1rem 0.5rem 1rem;
+    padding: 0;
+    background-color: $body-background-color;
+    box-shadow: none;
+
+    @include desktop {
+      margin: 0.5rem 1rem 0.5rem 1.25rem;
+    }
   }
 }
 
