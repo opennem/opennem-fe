@@ -137,6 +137,13 @@ import * as FT from '~/constants/fuel-tech.js'
 
 export default {
   layout: 'facility',
+
+  head() {
+    return {
+      title: ` Facility: ${this.facilityName}`
+    }
+  },
+
   components: {
     PowerChart,
     UnitList,
