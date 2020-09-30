@@ -1,27 +1,43 @@
 <template>
-  <figure>
-    <v-popover 
-      class="wiki-link-text" 
-      placement="auto">
-      <i class="fal fa-info-circle"/>
-      <template slot="popover">
-        Photo by <a :href="photo.author_link">{{ photo.author }}</a>
-      </template>
-    </v-popover>
+  <section>
+    <transition name="fade">
+      <figure v-if="hasPhotos">
+        <v-popover 
+          class="wiki-link-text" 
+          placement="auto">
+          <i class="fal fa-info-circle"/>
+          <template slot="popover">
+            Photo by <a :href="photo.author_link">{{ photo.author }}</a>
+          </template>
+        </v-popover>
 
-    <img 
-      :src="photo.photo_url" 
-      :alt="`${name} facility`"
-      :style="{ 'height': ratio > 2 ? '180px' : 'auto'}"
-    >
+        <img 
+          :src="photo.photo_url" 
+          :alt="`${name} facility`"
+          :style="{ 'height': ratio > 2 ? '180px' : 'auto', 'max-height': height}"
+        >
+      </figure>
+    </transition>
 
-    
-  </figure>
+    <transition name="fade">
+      <div 
+        v-if="!hasPhotos" 
+        class="not-found-card card">
+        <i class="fal fa-image"/>
+        <span>Image not available</span>
+      </div>
+    </transition>
+
+  </section>
 </template>
 
 <script>
 export default {
   props: {
+    hasPhotos: {
+      type: Boolean,
+      default: false
+    },
     photos: {
       type: Array,
       default: () => []
@@ -29,6 +45,10 @@ export default {
     name: {
       type: String,
       default: ''
+    },
+    height: {
+      type: String,
+      default: '250px'
     }
   },
 
@@ -58,10 +78,10 @@ figure {
   position: relative;
   img {
     border-radius: $radius;
-    max-height: 400px;
     margin: 0 auto;
     display: block;
     object-fit: cover;
+    width: 100%;
   }
 
   .wiki-link-text {
@@ -74,6 +94,7 @@ figure {
     i {
       position: relative;
       top: 2px;
+      text-shadow: 1px 1px 1px #999;
     }
   }
 }

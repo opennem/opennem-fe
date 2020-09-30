@@ -1,16 +1,29 @@
 <template>
-  <section class="mapbox">
+  <section 
+    :style="{ height: `${height}px`}" 
+    class="mapbox">
     <client-only>
-      <MglMap
-        v-if="hasCoordinates"
-        :access-token="accessToken" 
-        :map-style="mapStyle"
-        @load="onMapLoaded" >
-        <MglMarker 
-          :coordinates="coordinates" 
-          color="#e34a33" />
-      </MglMap>
+      <transition name="fade">
+        <MglMap
+          v-if="hasCoordinates"
+          :access-token="accessToken" 
+          :map-style="mapStyle"
+          @load="onMapLoaded" >
+          <MglMarker 
+            :coordinates="coordinates" 
+            color="#e34a33" />
+        </MglMap>
+      </transition>
     </client-only>
+
+    <transition name="fade">
+      <div 
+        v-if="!hasLocation" 
+        class="not-found-card card">
+        <i class="fal fa-map-marker-alt"/>
+        <span>Location not available</span>
+      </div>
+    </transition>
   </section>
 </template>
 
@@ -19,6 +32,14 @@ const ACCESS_TOKEN = process.env.mapboxToken
 
 export default {
   props: {
+    hasLocation: {
+      type: Boolean,
+      default: false
+    },
+    height: {
+      type: Number,
+      default: 200
+    },
     lat: {
       type: Number,
       default: null
@@ -68,8 +89,6 @@ export default {
 
 <style lang="scss" scoped>
 .mapbox {
-  height: 200px;
-
   ::v-deep .mapboxgl-map {
     border-radius: 10px;
   }

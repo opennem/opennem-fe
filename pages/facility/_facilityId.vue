@@ -11,7 +11,9 @@
     </transition>
 
     <transition name="fade">
-      <div v-if="facility">
+      <div 
+        v-if="facility" 
+        class="main">
         <header>
           <h2>{{ facilityName }}</h2>
         </header>
@@ -20,6 +22,17 @@
           v-if="hasDescriptionOrWikiLink"
           :description="facilityDescription" 
           :wiki-link="facilityWikiLink" />
+        
+        <transition name="fade">
+          <PhotoMap
+            v-if="facility && widthBreak"
+            :facility-name="facilityName"
+            :facility-photos="facilityPhotos"
+            :has-facility-location="hasFacilityLocation"
+            :facility-location="facilityLocation"
+            :layout="'normal'"
+          />
+        </transition>
 
         <section class="facility-chart">
           <transition name="fade">
@@ -66,54 +79,13 @@
       </div>
     </transition>
     
-    <transition name="fade">
-      <aside v-if="facility">
-        <section>
-          <transition name="fade">
-            <Photos 
-              v-if="facilityPhotos.length > 0" 
-              :photos="facilityPhotos" 
-              :name="facilityName" />
-          </transition>
-
-          <transition name="fade">
-            <div 
-              v-if="facilityPhotos.length === 0" 
-              class="not-found-card card">
-              <i class="fal fa-image"/>
-              <span>Image not available</span>
-            </div>
-          </transition>
-        </section>
-      
-        <section>
-          <transition name="fade">
-            <MiniMap
-              v-if="hasFacilityLocation"
-              :lat="facilityLocation.lat"
-              :lng="facilityLocation.lng"
-              class="map" />
-          </transition>
-
-          <transition name="fade">
-            <div 
-              v-if="!hasFacilityLocation" 
-              class="not-found-card card">
-              <i class="fal fa-map-marker-alt"/>
-              <span>Location not available</span>
-            </div>
-          </transition>
-        </section>
-      
-        <!-- <MetaInfo 
-          :facility-id="facilityId"
-          :facility-state="facilityState"
-          :units-num="facilityUnits.length"
-          :participant-name="participant"
-          class="aside-section"
-        /> -->
-      </aside>
-    </transition>
+    <PhotoMap
+      v-if="facility && !widthBreak"
+      :facility-name="facilityName"
+      :facility-photos="facilityPhotos"
+      :has-facility-location="hasFacilityLocation"
+      :facility-location="facilityLocation"
+    />
   </section>
 </template>
 
@@ -127,9 +99,7 @@ import { color } from 'd3-color'
 import DateDisplay from '@/services/DateDisplay.js'
 import PowerChart from '@/components/Facility/Charts/PowerChart.vue'
 import UnitList from '@/components/Facility/UnitList.vue'
-import Photos from '@/components/Facility/Photos.vue'
-import MiniMap from '@/components/Facility/MiniMap.vue'
-import MetaInfo from '@/components/Facility/MetaInfo.vue'
+import PhotoMap from '@/components/Facility/PhotoMap.vue'
 import FacilityProperties from '@/components/Facility/Properties.vue'
 import Summary from '@/components/Facility/Summary.vue'
 import InfoPlaceholder from '@/components/Facility/InfoPlaceholder.vue'
@@ -147,9 +117,8 @@ export default {
   components: {
     PowerChart,
     UnitList,
-    Photos,
-    MiniMap,
-    MetaInfo,
+    PhotoMap,
+
     FacilityProperties,
     Summary,
     InfoPlaceholder
@@ -165,6 +134,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      widthBreak: 'app/widthBreak',
       fetchingFacility: 'facility/fetchingFacility',
       fetchingStats: 'facility/fetchingStats',
       facility: 'facility/selectedFacility',
@@ -210,11 +180,11 @@ export default {
       return this.facility ? this.facility.location : null
     },
     hasFacilityLocation() {
-      return (
-        this.facilityLocation &&
+      return this.facilityLocation &&
         this.facilityLocation.lat &&
         this.facilityLocation.lng
-      )
+        ? true
+        : false
     },
     facilityState() {
       return this.facility && this.facility.location
@@ -288,9 +258,6 @@ export default {
   },
 
   watch: {
-    facilityUnits(units) {
-      // this.doProcessData(units)
-    },
     facility(update) {
       if (update) {
         const facilities = update.facilities
@@ -342,17 +309,20 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~/assets/scss/responsive-mixins.scss';
 @import '~/assets/scss/variables.scss';
 
 $radius: 0.5rem;
 
 .facility {
-  display: flex;
-  margin: 1rem;
+  @include desktop {
+    display: flex;
+    margin: 1rem;
 
-  & > div {
-    width: 70%;
-    padding: 1rem;
+    .main {
+      width: 70%;
+      padding: 1rem;
+    }
   }
 }
 
@@ -393,23 +363,7 @@ header {
   margin: 0.5rem 0;
 }
 
-aside {
-  width: 30%;
-  margin-top: 1rem;
-
-  section,
-  .aside-section {
-    margin-bottom: 1rem;
-  }
-
-  figcaption {
-    text-align: center;
-    font-size: 0.8em;
-    font-weight: 700;
-  }
-}
-
-.not-found-card {
+::v-deep .not-found-card {
   width: 100%;
   height: 150px;
   display: flex;

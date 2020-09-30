@@ -7,6 +7,9 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+import _debounce from 'lodash.debounce'
+
 import AppHeader from '~/components/layout/AppFacilityHeader'
 import AppFooter from '~/components/layout/AppFooter'
 
@@ -14,6 +17,24 @@ export default {
   components: {
     AppHeader,
     AppFooter
+  },
+
+  mounted() {
+    this.setWindowWidth(window.innerWidth)
+    this.$nextTick(() => {
+      window.addEventListener(
+        'resize',
+        _debounce(() => {
+          this.setWindowWidth(window.innerWidth)
+        }, 200)
+      )
+    })
+  },
+
+  methods: {
+    ...mapMutations({
+      setWindowWidth: 'app/windowWidth'
+    })
   }
 }
 </script>
