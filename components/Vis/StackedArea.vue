@@ -708,7 +708,7 @@ export default {
         this.$emit('leave')
       })
       $svg.on('click', () => {
-        this.$emit('svgClick', event.metaKey)
+        this.$emit('svgClick', event.metaKey || event.altKey)
       })
 
       // - find date when on the hoverLayer or brushLayer or when brushing
