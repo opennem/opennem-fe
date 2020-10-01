@@ -750,21 +750,19 @@ export default {
 
       if (this.showCursorDots) {
         if (dataPoint) {
-          if (!dataPoint._isIncompleteBucket) {
-            const dots = this.$cursorDotsGroup
-              .selectAll('circle')
-              .data(this.keys1)
-            dots
-              .enter()
-              .append('circle')
-              .merge(dots)
-              .attr('cx', this.x(dataPoint.date))
-              .attr('cy', key => this.y1(dataPoint[key]))
-              .attr('r', 2)
-              .attr('fill', key => this.colours1[key])
-              .exit()
-              .remove()
-          }
+          const dots = this.$cursorDotsGroup
+            .selectAll('circle')
+            .data(this.keys1)
+          dots
+            .enter()
+            .append('circle')
+            .merge(dots)
+            .attr('cx', this.x(dataPoint.date))
+            .attr('cy', key => this.y1(dataPoint[key]))
+            .attr('r', 2)
+            .attr('fill', key => this.colours1[key])
+            .exit()
+            .remove()
         } else {
           this.$cursorDotsGroup.selectAll('circle').remove()
         }
