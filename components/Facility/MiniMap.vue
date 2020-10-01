@@ -89,8 +89,9 @@ export default {
 
 <style lang="scss" scoped>
 .mapbox {
-  ::v-deep .mapboxgl-map {
+  ::v-deep .mapboxgl-canvas {
     border-radius: 10px;
+    outline: none;
   }
 }
 </style>
