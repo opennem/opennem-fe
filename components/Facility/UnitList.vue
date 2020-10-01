@@ -29,7 +29,7 @@
           <div 
             :style="{ backgroundColor: d.colour}" 
             class="colour-square" />
-          {{ d.code }}
+          <span>{{ d.code }}</span>
         </td>
         <td class="align-right">{{ d.registeredCapacity }}</td>
         <td class="align-right hover-cell">
@@ -58,7 +58,7 @@
         </td>
         <td class="align-right hover-cell">
           <span v-if="hoverOn">
-            Average: {{ hoverTotal / operatingUnitsTotalCapacity * 100 | percentageFormatNumber }}
+            Av.: {{ hoverTotal / operatingUnitsTotalCapacity * 100 | percentageFormatNumber }}
           </span>
         </td>
       </tr>
@@ -150,6 +150,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~/assets/scss/responsive-mixins.scss';
 @import '~/assets/scss/variables.scss';
 
 .is-inactive {
@@ -163,6 +164,11 @@ export default {
   height: 18px;
   float: left;
   margin-right: 5px;
+
+  @include mobile {
+    display: inline;
+    float: none;
+  }
 }
 
 .align-right {
@@ -171,6 +177,14 @@ export default {
 
 .data-col {
   width: 25%;
+}
+
+.summary-list {
+  font-size: 1em;
+
+  @include mobile {
+    font-size: 0.8em;
+  }
 }
 
 table th {
