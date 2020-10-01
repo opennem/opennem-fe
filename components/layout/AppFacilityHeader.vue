@@ -30,10 +30,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~/assets/scss/responsive-mixins.scss';
 @import '~/assets/scss/variables.scss';
 
 .back-link {
   $item-margin: 0.75rem;
+
   display: inline-flex;
   align-items: center;
   border-radius: $header-hover-radius;
@@ -41,6 +43,11 @@ export default {
   margin-left: 1.5rem;
   padding: $app-padding / 3 $app-padding / 2;
   background-color: $background-alpha;
+
+  @include mobile {
+    margin-top: 0.5rem;
+    margin-left: 0rem;
+  }
 
   i {
     font-size: 1.6rem;
