@@ -360,6 +360,10 @@ header {
   margin-bottom: 1rem;
   padding: 0 12px 0 11px;
 
+  @include mobile {
+    padding: 0 12px 0 0;
+  }
+
   .not-found-card {
     height: $chartHeight;
   }

@@ -58,6 +58,7 @@ summary {
   @include mobile {
     padding: 0 $facility-mobile-padding;
     font-size: 0.9em;
+    margin-bottom: 0;
   }
 
   p {
