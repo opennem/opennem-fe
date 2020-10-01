@@ -91,6 +91,7 @@
         <g 
           v-show="hasSecondDataset" 
           class="y-axis-2" />
+        <g class="y-guides-group" />
       </g>
 
       <!-- cursor line and tooltip -->
@@ -341,6 +342,7 @@ export default {
       $stackedAreaGroup: null,
       $lineGroup: null,
       $xGuideGroup: null,
+      $yGuideGroup: null,
       $xIncompleteGroup: null,
       $compareGroup: null,
       // Stacked Area
@@ -591,6 +593,7 @@ export default {
       this.$yAxisGroup2 = $svg.select('.y-axis-2')
       this.$yAxisTickGroup = $svg.select(`.${this.yAxisTickClass}`)
       this.$xGuideGroup = $svg.select(`.${this.xGuideGroupClass}`)
+      this.$yGuideGroup = $svg.select('.y-guides-group')
       this.$xIncompleteGroup = $svg.select(`.${this.xIncompleteGroupClass}`)
 
       // Brush
@@ -1150,8 +1153,8 @@ export default {
         .style('clip-path', this.clipPathUrl)
         .style('-webkit-clip-path', this.clipPathUrl)
 
-      this.$xGuideGroup.selectAll('g').remove()
-      const yGuides = this.$xGuideGroup
+      this.$yGuideGroup.selectAll('g').remove()
+      const yGuides = this.$yGuideGroup
         .selectAll('g')
         .data(this.yGuides)
         .enter()
