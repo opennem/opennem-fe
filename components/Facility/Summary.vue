@@ -46,13 +46,20 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~/assets/scss/responsive-mixins.scss';
 @import '~/assets/scss/variables.scss';
 
 summary {
   margin-bottom: 1rem;
   line-height: 1.45em;
   font-size: 1.05em;
-  padding: 0 1.5rem;
+  padding: 0 $facility-tablet-padding;
+
+  @include mobile {
+    padding: 0 $facility-mobile-padding;
+    font-size: 0.9em;
+  }
+
   p {
     margin-bottom: 1rem;
 

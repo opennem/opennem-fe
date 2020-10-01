@@ -328,12 +328,22 @@ $radius: 0.5rem;
 
 header {
   margin-bottom: 1rem;
-  padding: 0 1.5rem;
+  padding: 0 $facility-tablet-padding;
+
+  @include mobile {
+    padding: 0 $facility-mobile-padding;
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
+  }
 
   h2 {
     font-family: $header-font-family;
     font-size: 1.8em;
     font-weight: 700;
+
+    @include mobile {
+      font-size: 1.6em;
+    }
   }
 }
 

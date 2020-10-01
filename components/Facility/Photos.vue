@@ -14,7 +14,7 @@
         <img 
           :src="photo.photo_url" 
           :alt="`${name} facility`"
-          :style="{ 'height': ratio > 2 ? '180px' : 'auto', 'max-height': height}"
+          :style="{ 'height': ratio > 2 ? '180px' : height }"
         >
       </figure>
     </transition>
