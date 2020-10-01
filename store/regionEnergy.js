@@ -1,5 +1,7 @@
 import _cloneDeep from 'lodash.clonedeep'
+
 import PerfTime from '@/plugins/perfTime.js'
+import { lsGet, lsSet } from '@/services/LocalStorage'
 import hostEnv from '@/services/HostEnv.js'
 import http from '@/services/Http.js'
 import Data from '@/services/Data.js'
@@ -151,17 +153,15 @@ export const actions = {
       commit('ready', false)
       commit('isFetching', true)
 
-      http(urls).then(res => {
-        const responses =
-          env === 'dev'
-            ? res.map(d => {
-                return d.data
-              })
-            : res
+      const key = urls.toString()
+
+      function processResponses(responses) {
         const dataCount = getDataCount(responses)
         const perf = new PerfTime()
         perf.time()
         console.info(`------ ${currentRegion} — ${range}/${interval} (start)`)
+
+        lsSet(key, JSON.stringify(responses))
 
         const {
           datasetFull,
@@ -204,7 +204,22 @@ export const actions = {
         commit('currentDomainMarketValue', domainMarketValueGrouped[groupName])
         commit('jsonResponses', responses)
         commit('ready', true)
-      })
+      }
+
+      http(urls)
+        .then(res => {
+          let responses =
+            env === 'dev'
+              ? res.map(d => {
+                  return d.data
+                })
+              : res
+          processResponses(responses)
+        })
+        .catch(() => {
+          console.log('using cached copy')
+          processResponses(JSON.parse(lsGet(key)))
+        })
     } else {
       throw new Error('Invalid region')
     }
