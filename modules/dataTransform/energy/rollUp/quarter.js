@@ -1,3 +1,4 @@
+import startOfMonth from 'date-fns/startOfMonth'
 import startOfQuarter from 'date-fns/startOfQuarter'
 import endOfQuarter from 'date-fns/endOfQuarter'
 import isAfter from 'date-fns/isAfter'
@@ -21,7 +22,8 @@ export default function(domains, data) {
       }
     }
     if (i === data.length - 1) {
-      const end = endOfQuarter(d.date)
+      const end = startOfMonth(endOfQuarter(d.date))
+
       isIncompleteEnd = isBefore(d.date, end)
       if (isIncompleteEnd) {
         incompleteEndDate = d.date
