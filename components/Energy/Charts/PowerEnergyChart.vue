@@ -98,7 +98,7 @@
       :curve="chartCurve"
       :date-hovered="hoverDate"
       :zoom-range="zoomExtent"
-      :draw-incomplete-bucket="false"
+      :draw-incomplete-bucket="true"
       :x-shades="xGuides"
       :highlight-domain="highlightId"
       :display-prefix="chartDisplayPrefix"
