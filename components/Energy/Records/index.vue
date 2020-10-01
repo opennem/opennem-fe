@@ -217,9 +217,6 @@ export default {
 
     energyUnit() {
       return this.$store.getters.chartUnit
-    },
-    isColumnVis() {
-      return this.interval !== '5m' && this.interval !== '30m'
     }
   },
 
@@ -247,9 +244,7 @@ export default {
       )
     },
     updateMinMax(dataset) {
-      const updatedDataset = this.isColumnVis
-        ? dataset.slice(0, dataset.length - 1)
-        : dataset
+      const updatedDataset = dataset
       let minDemand = 0,
         minDemandDate = null,
         maxDemand = 0,
