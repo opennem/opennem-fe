@@ -54,6 +54,7 @@
 </template>
 
 <script>
+import _cloneDeep from 'lodash.clonedeep'
 import { select, mouse } from 'd3-selection'
 import { scaleOrdinal, scaleLinear, scaleTime, scaleSymlog } from 'd3-scale'
 import { axisBottom, axisLeft, axisRight } from 'd3-axis'
@@ -286,10 +287,23 @@ export default {
       return dict
     },
     xExtent() {
-      return extent(this.dataset1, d => new Date(d.date))
+      return extent(this.updatedDataset1, d => new Date(d.date))
     },
     hasHighlight() {
       return this.highlightDomain ? true : false
+    },
+    updatedDataset1() {
+      if (this.dataset1.length > 0) {
+        const updated = _cloneDeep(this.dataset1)
+        const lastSecondItem = _cloneDeep(updated[updated.length - 2])
+        const lastItem = _cloneDeep(updated[updated.length - 1])
+        const intervalTime = lastItem.time - lastSecondItem.time
+        lastItem.time = lastItem.time + intervalTime
+        lastItem.date = new Date(lastItem.time)
+        updated.push(lastItem)
+        return updated
+      }
+      return []
     }
   },
 
@@ -555,7 +569,9 @@ export default {
       }
 
       const vis1 = this.stacked
-        ? this.$vis1Group.selectAll('path').data(this.stack(this.dataset1))
+        ? this.$vis1Group
+            .selectAll('path')
+            .data(this.stack(this.updatedDataset1))
         : this.$vis1Group.selectAll('path').data(this.keys1)
 
       if (this.stacked) {
@@ -677,7 +693,7 @@ export default {
     },
 
     drawVis1Path(key) {
-      const data = this.dataset1.map(d => {
+      const data = this.updatedDataset1.map(d => {
         if (this.drawIncompleteBucket) {
           return {
             date: d.date,
@@ -711,10 +727,10 @@ export default {
     drawCursor(date) {
       const xDate = this.x(date)
       let nextDate = null
-      const dataPoint = this.dataset1.find((d, i) => {
+      const dataPoint = this.updatedDataset1.find((d, i) => {
         const time = d.time || d.date
         const match = time === date.getTime()
-        const nextDataPoint = this.dataset1[i + 1]
+        const nextDataPoint = this.updatedDataset1[i + 1]
         if (match && nextDataPoint) {
           nextDate = nextDataPoint.time || nextDataPoint.date
         }
@@ -734,21 +750,19 @@ export default {
 
       if (this.showCursorDots) {
         if (dataPoint) {
-          if (!dataPoint._isIncompleteBucket) {
-            const dots = this.$cursorDotsGroup
-              .selectAll('circle')
-              .data(this.keys1)
-            dots
-              .enter()
-              .append('circle')
-              .merge(dots)
-              .attr('cx', this.x(dataPoint.date))
-              .attr('cy', key => this.y1(dataPoint[key]))
-              .attr('r', 2)
-              .attr('fill', key => this.colours1[key])
-              .exit()
-              .remove()
-          }
+          const dots = this.$cursorDotsGroup
+            .selectAll('circle')
+            .data(this.keys1)
+          dots
+            .enter()
+            .append('circle')
+            .merge(dots)
+            .attr('cx', this.x(dataPoint.date))
+            .attr('cy', key => this.y1(dataPoint[key]))
+            .attr('r', 2)
+            .attr('fill', key => this.colours1[key])
+            .exit()
+            .remove()
         } else {
           this.$cursorDotsGroup.selectAll('circle').remove()
         }
