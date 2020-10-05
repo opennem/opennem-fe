@@ -119,6 +119,8 @@ export default {
   computed: {
     ...mapGetters({
       dataType: 'facility/dataType',
+      range: 'facility/range',
+      interval: 'facility/interval',
       chartShown: 'chartOptionsFacilityPower/chartShown',
       chartType: 'chartOptionsFacilityPower/chartType',
       chartCurve: 'chartOptionsFacilityPower/chartCurve',
@@ -204,7 +206,7 @@ export default {
   created() {
     if (this.dataset.length > 0) {
       this.doUpdateXGuides({
-        interval: 'Day',
+        interval: this.interval,
         start: this.dataset[0].time,
         end: this.dataset[this.dataset.length - 1].time
       })
