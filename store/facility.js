@@ -42,8 +42,8 @@ export const state = () => ({
   selectedFacilityUnitsDataset: [],
 
   dataType: 'power', // power, energy
-  range: RANGE_30D,
-  interval: INTERVAL_DAY
+  range: RANGE_7D,
+  interval: INTERVAL_5MIN
 })
 
 export const mutations = {
