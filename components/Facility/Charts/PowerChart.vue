@@ -92,10 +92,6 @@ export default {
       type: Date,
       default: null
     },
-    displayUnit: {
-      type: String,
-      default: ''
-    },
     facilityId: {
       type: String,
       default: ''
@@ -118,13 +114,28 @@ export default {
       dataType: 'facility/dataType',
       range: 'facility/range',
       interval: 'facility/interval',
+      highlightDomain: 'visInteract/highlightDomain',
+      xGuides: 'visInteract/xGuides',
+
       chartShown: 'chartOptionsFacilityPower/chartShown',
       chartType: 'chartOptionsFacilityPower/chartType',
       chartCurve: 'chartOptionsFacilityPower/chartCurve',
-      highlightDomain: 'visInteract/highlightDomain',
-      xGuides: 'visInteract/xGuides'
-    }),
 
+      chartEnergyUnit: 'chartOptionsFacilityPower/chartEnergyUnit',
+      chartEnergyUnitPrefix: 'chartOptionsFacilityPower/chartEnergyUnitPrefix',
+      chartEnergyDisplayPrefix:
+        'chartOptionsFacilityPower/chartEnergyDisplayPrefix',
+      chartEnergyCurrentUnit:
+        'chartOptionsFacilityPower/chartEnergyCurrentUnit',
+      chartPowerUnit: 'chartOptionsFacilityPower/chartPowerUnit',
+      chartPowerUnitPrefix: 'chartOptionsFacilityPower/chartPowerUnitPrefix',
+      chartPowerDisplayPrefix:
+        'chartOptionsFacilityPower/chartPowerDisplayPrefix',
+      chartPowerCurrentUnit: 'chartOptionsFacilityPower/chartPowerCurrentUnit'
+    }),
+    isEnergyType() {
+      return this.dataType === 'energy'
+    },
     highlightId() {
       const domain = this.highlightDomain
       const find = this.domains.find(d => d.code === domain)
@@ -207,6 +218,19 @@ export default {
     hoverDomainColour() {
       const find = this.domains.find(d => d.code === this.hoverDomain)
       return find ? find.colour : '—'
+    },
+    displayUnit() {
+      let unit = ''
+      if (this.isEnergyType) {
+        unit = `${this.chartEnergyCurrentUnit}/${this.intervalLabel(
+          this.interval
+        )}`
+      } else {
+        unit = this.chartPowerCurrentUnit
+      }
+
+      // this.$emit('displayUnit', unit)
+      return unit
     }
   },
 
@@ -224,6 +248,12 @@ export default {
     ...mapActions({
       doUpdateXGuides: 'visInteract/doUpdateXGuides'
     }),
+    intervalLabel(interval) {
+      if (interval === 'Fin Year') {
+        return 'year'
+      }
+      return interval.toLowerCase()
+    },
     handleDomainHover(domain) {
       this.hoverDomain = domain
     },

@@ -53,7 +53,6 @@
               :hover-date="hoverDate"
               :dataset="powerDataset"
               :domains="operatingDomains"
-              :display-unit="powerUnit"
               :zoom-extent="zoomExtent"
               :facility-id="facilityId"
               :y-max="facilityRegisteredCapacity"
@@ -145,9 +144,6 @@ export default {
       powerDataset: 'facility/selectedFacilityUnitsDataset',
       interval: 'facility/selectedFacilityInterval'
     }),
-    powerUnit() {
-      return 'MW'
-    },
     facilityId() {
       return this.$route.params.facilityId
     },
