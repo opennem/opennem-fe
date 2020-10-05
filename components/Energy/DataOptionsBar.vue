@@ -48,7 +48,12 @@
 <script>
 import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
-import { FuelTechRanges } from '~/constants/ranges.js'
+import {
+  FuelTechRanges,
+  RANGE_1D,
+  RANGE_3D,
+  RANGE_7D
+} from '~/constants/ranges.js'
 import {
   INTERVAL_FILTERS,
   FILTER_NONE,
@@ -88,9 +93,9 @@ export default {
     },
     isPowerRange() {
       return (
-        this.selectedRange === '1D' ||
-        this.selectedRange === '3D' ||
-        this.selectedRange === '7D'
+        this.selectedRange === RANGE_1D ||
+        this.selectedRange === RANGE_3D ||
+        this.selectedRange === RANGE_7D
       )
     },
     selectedRangeIntervals() {
