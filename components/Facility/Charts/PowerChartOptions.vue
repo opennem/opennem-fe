@@ -15,7 +15,7 @@
     </template>
 
     <template v-slot:label-unit>
-      <strong>Power</strong>
+      <strong class="is-capitalized">{{ chartTitle }}</strong>
       <small>{{ displayUnit }}</small>
     </template>
     <!-- <template 
@@ -48,7 +48,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import ChartHeader from '@/components/Vis/ChartHeader'
 import ChartOptions from '@/components/Vis/ChartOptions'
 
@@ -58,6 +57,10 @@ export default {
     ChartOptions
   },
   props: {
+    chartTitle: {
+      type: String,
+      default: ''
+    },
     options: {
       type: Object,
       default: () => {

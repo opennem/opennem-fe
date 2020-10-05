@@ -5,6 +5,7 @@
       'is-hovered': hoverOn }" 
       class="chart">
       <power-chart-options
+        :chart-title="dataType"
         :options="options"
         :chart-shown="chartShown"
         :chart-type="chartType"
@@ -117,6 +118,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      dataType: 'facility/dataType',
       chartShown: 'chartOptionsFacilityPower/chartShown',
       chartType: 'chartOptionsFacilityPower/chartType',
       chartCurve: 'chartOptionsFacilityPower/chartCurve',
@@ -202,7 +204,7 @@ export default {
   created() {
     if (this.dataset.length > 0) {
       this.doUpdateXGuides({
-        interval: '5m',
+        interval: 'Day',
         start: this.dataset[0].time,
         end: this.dataset[this.dataset.length - 1].time
       })

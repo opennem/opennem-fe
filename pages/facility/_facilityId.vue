@@ -35,6 +35,8 @@
         </transition>
 
         <section class="facility-chart">
+          <RangeIntervalSelectors @rangeChange="handleRangeChange" />
+
           <transition name="fade">
             <div 
               v-if="!fetchingStats && powerDataset.length === 0" 
@@ -97,6 +99,7 @@ import { interpolateRgb, quantize } from 'd3-interpolate'
 import { color } from 'd3-color'
 
 import DateDisplay from '@/services/DateDisplay.js'
+import RangeIntervalSelectors from '@/components/Facility/RangeIntervalSelectors.vue'
 import PowerChart from '@/components/Facility/Charts/PowerChart.vue'
 import UnitList from '@/components/Facility/UnitList.vue'
 import PhotoMap from '@/components/Facility/PhotoMap.vue'
@@ -115,6 +118,7 @@ export default {
   },
 
   components: {
+    RangeIntervalSelectors,
     PowerChart,
     UnitList,
     PhotoMap,
@@ -153,6 +157,11 @@ export default {
     facilityDescription() {
       return this.facility && this.facility.description
         ? this.facility.description
+        : ''
+    },
+    facilityNetworkRegion() {
+      return this.facility && this.facility.network
+        ? this.facility.network.code
         : ''
     },
     facilityWikiLink() {
@@ -260,7 +269,6 @@ export default {
   watch: {
     facility(update) {
       if (update) {
-        const facilities = update.facilities
         const networkRegion = update.network ? update.network.code : ''
         const facilityId = update.code
         this.doGetStationStats({ networkRegion, facilityId })
@@ -303,6 +311,11 @@ export default {
     },
     handleIsHovering(hovering) {
       this.isHovering = hovering
+    },
+    handleRangeChange() {
+      const networkRegion = this.facilityNetworkRegion
+      const facilityId = this.facilityId
+      this.doGetStationStats({ networkRegion, facilityId })
     }
   }
 }

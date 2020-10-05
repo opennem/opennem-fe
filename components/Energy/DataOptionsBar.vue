@@ -1,5 +1,5 @@
 <template>
-  <div class="period-interval-selectors">
+  <div class="range-interval-selectors">
     <div class="range-buttons buttons has-addons">
       <button
         v-for="(r, i) in ranges"

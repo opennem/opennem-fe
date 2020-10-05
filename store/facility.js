@@ -2,7 +2,13 @@ import _cloneDeep from 'lodash.clonedeep'
 import axios from 'axios'
 
 import PerfTime from '@/plugins/perfTime.js'
-import { FACILITY_OPERATING } from '~/constants/facility-status.js'
+import { FACILITY_OPERATING } from '@/constants/facility-status.js'
+import { isPowerRange, RANGE_7D, RANGE_30D } from '@/constants/ranges.js'
+import {
+  INTERVAL_5MIN,
+  INTERVAL_30MIN,
+  INTERVAL_DAY
+} from '@/constants/interval-filters.js'
 import { dataProcess } from '@/modules/dataTransform/facility-power'
 
 const http = axios.create({
@@ -34,7 +40,11 @@ export const state = () => ({
   fetchingStats: false,
   selectedFacility: null,
   selectedFacilityUnitsDataset: [],
-  selectedFacilityInterval: null
+  selectedFacilityInterval: null,
+
+  dataType: 'power', // power, energy
+  range: RANGE_30D,
+  interval: INTERVAL_DAY
 })
 
 export const mutations = {
@@ -74,6 +84,15 @@ export const mutations = {
   },
   selectedFacilityInterval(state, data) {
     state.selectedFacilityInterval = data
+  },
+  dataType(state, data) {
+    state.dataType = data
+  },
+  range(state, data) {
+    state.range = data
+  },
+  interval(state, data) {
+    state.interval = data
   }
 }
 
@@ -91,7 +110,10 @@ export const getters = {
   selectedFacility: state => _cloneDeep(state.selectedFacility),
   selectedFacilityUnitsDataset: state =>
     _cloneDeep(state.selectedFacilityUnitsDataset),
-  selectedFacilityInterval: state => state.selectedFacilityInterval
+  selectedFacilityInterval: state => state.selectedFacilityInterval,
+  dataType: state => state.dataType,
+  range: state => state.range,
+  interval: state => state.interval
 }
 
 export const actions = {
@@ -141,15 +163,21 @@ export const actions = {
       })
   },
 
-  doGetStationStats({ commit }, { networkRegion, facilityId }) {
+  doGetStationStats({ commit, getters }, { networkRegion, facilityId }) {
     const encode = encodeURIComponent(facilityId)
+    const range = getters.range
+    const type = isPowerRange(range) ? 'power' : 'energy'
+    const query = isPowerRange(range) ? '' : '?period=1M'
     const ref = useProxy
-      ? `/stats/power/station/${networkRegion}/${encode}`
-      : `https://api.opennem.org.au/stats/power/station/${networkRegion}/${encode}`
+      ? `/stats/${type}/station/${networkRegion}/${encode}${query}`
+      : `https://api.opennem.org.au/stats/${type}/station/${networkRegion}/${encode}${query}`
+
+    // https://api.opennem.org.au/stats/energy/station/{network_code}/{station_code}
 
     commit('fetchingStats', true)
     commit('selectedFacilityUnitsDataset', [])
     commit('selectedFacilityInterval', null)
+    commit('dataType', type)
 
     http
       .get(ref)
