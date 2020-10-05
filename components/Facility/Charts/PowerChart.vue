@@ -206,12 +206,17 @@ export default {
     },
     hoverTotal() {
       let total = 0
+      let allNulls = true
       if (this.hoverData) {
         this.domains.forEach(d => {
-          total += this.hoverData[d.code] || 0
+          const value = this.hoverData[d.code]
+          total += value || 0
+          if (value || value === 0) {
+            allNulls = false
+          }
         })
       }
-      return total
+      return allNulls ? null : total
     },
     hoverDomainLabel() {
       const find = this.domains.find(d => d.code === this.hoverDomain)
