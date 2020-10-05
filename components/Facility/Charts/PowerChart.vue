@@ -34,10 +34,7 @@
         :hover-on="hoverOn"
         :hover-date="hoverDate"
         :x-guides="xGuides"
-        :y-guides="[{
-          value: yMax,
-          text: 'Registered Capacity'
-        }]"
+        :y-guides="yGuides"
         class="vis-chart"
         @dateOver="handleDateHover"
         @domainOver="handleDomainHover"
@@ -147,6 +144,16 @@ export default {
       })
 
       return lowest
+    },
+    yGuides() {
+      return this.dataType === 'power'
+        ? [
+            {
+              value: this.yMax,
+              text: 'Registered Capacity'
+            }
+          ]
+        : []
     },
     computedYMax() {
       let highest = 0
