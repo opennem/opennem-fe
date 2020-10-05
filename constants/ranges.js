@@ -11,7 +11,7 @@ export function isPowerRange(range) {
   return range === RANGE_1D || range === RANGE_3D || range === RANGE_7D
 }
 
-export default [
+export const FuelTechRanges = [
   {
     range: RANGE_1D,
     intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN]

@@ -48,7 +48,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
-import RANGE_INTERVAL from '~/constants/ranges.js'
+import { FuelTechRanges } from '~/constants/ranges.js'
 import {
   INTERVAL_FILTERS,
   FILTER_NONE,
@@ -63,7 +63,7 @@ export default {
   mixins: [clickaway],
   data() {
     return {
-      ranges: RANGE_INTERVAL,
+      ranges: FuelTechRanges,
       intervalFilters: INTERVAL_FILTERS,
       selectedRange: '',
       selectedInterval: '',
