@@ -50,28 +50,28 @@ export const FuelTechRanges = [
 ]
 
 export const FacilityPowerEnergyRanges = [
-  {
-    range: RANGE_1D,
-    intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN]
-  },
-  {
-    range: RANGE_3D,
-    intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN]
-  },
+  // {
+  //   range: RANGE_1D,
+  //   intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN]
+  // },
+  // {
+  //   range: RANGE_3D,
+  //   intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN]
+  // },
   {
     range: RANGE_7D,
-    intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN]
+    intervals: [INTERVALS.INTERVAL_5MIN]
   },
   {
     range: RANGE_30D,
     intervals: [INTERVALS.INTERVAL_DAY]
-  },
-  {
-    range: RANGE_1Y,
-    intervals: [
-      INTERVALS.INTERVAL_DAY,
-      INTERVALS.INTERVAL_WEEK,
-      INTERVALS.INTERVAL_MONTH
-    ]
   }
+  // {
+  //   range: RANGE_1Y,
+  //   intervals: [
+  //     INTERVALS.INTERVAL_DAY,
+  //     INTERVALS.INTERVAL_WEEK,
+  //     INTERVALS.INTERVAL_MONTH
+  //   ]
+  // }
 ]
