@@ -1,0 +1,59 @@
+.period-interval-selectors {
+  .buttons {
+    background-color: rgba(255, 255, 255, 0.5);
+
+    @include desktop {
+      background-color: transparent;
+    }
+  }
+
+  @include desktop {
+    padding: $app-padding / 2 $app-padding;
+    display: flex;
+    align-items: center;
+  }
+
+  .button {
+    font-size: 11px;
+    border-radius: 0;
+    position: relative;
+
+    &.is-rounded {
+      min-width: 45px;
+    }
+
+    @include desktop {
+      border-radius: 290486px;
+    }
+
+    .filter-caret {
+      margin-left: 5px;
+    }
+  }
+
+  .range-buttons {
+    @include desktop {
+      margin-bottom: 0;
+      margin-right: $app-padding;
+    }
+  }
+
+  .filter-period-buttons {
+    @include desktop {
+      margin-left: 1rem;
+    }
+  }
+
+  .dropdown-item {
+    &.is-selected {
+      background-color: #c74523;
+      color: #fff;
+    }
+  }
+
+  .filter-menu {
+    min-width: 80px;
+    text-align: left;
+    display: block;
+  }
+}
