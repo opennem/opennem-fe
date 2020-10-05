@@ -142,7 +142,7 @@ export default {
       fetchingStats: 'facility/fetchingStats',
       facility: 'facility/selectedFacility',
       powerDataset: 'facility/selectedFacilityUnitsDataset',
-      interval: 'facility/selectedFacilityInterval'
+      interval: 'facility/interval'
     }),
     facilityId() {
       return this.$route.params.facilityId

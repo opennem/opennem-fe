@@ -40,7 +40,6 @@ export const state = () => ({
   fetchingStats: false,
   selectedFacility: null,
   selectedFacilityUnitsDataset: [],
-  selectedFacilityInterval: null,
 
   dataType: 'power', // power, energy
   range: RANGE_30D,
@@ -82,9 +81,6 @@ export const mutations = {
   selectedFacilityUnitsDataset(state, data) {
     state.selectedFacilityUnitsDataset = data
   },
-  selectedFacilityInterval(state, data) {
-    state.selectedFacilityInterval = data
-  },
   dataType(state, data) {
     state.dataType = data
   },
@@ -110,7 +106,6 @@ export const getters = {
   selectedFacility: state => _cloneDeep(state.selectedFacility),
   selectedFacilityUnitsDataset: state =>
     _cloneDeep(state.selectedFacilityUnitsDataset),
-  selectedFacilityInterval: state => state.selectedFacilityInterval,
   dataType: state => state.dataType,
   range: state => state.range,
   interval: state => state.interval
@@ -176,7 +171,6 @@ export const actions = {
 
     commit('fetchingStats', true)
     commit('selectedFacilityUnitsDataset', [])
-    commit('selectedFacilityInterval', null)
     commit('dataType', type)
 
     http
@@ -190,7 +184,6 @@ export const actions = {
         const { dataset, interval } = dataProcess(response.data.data)
 
         commit('selectedFacilityUnitsDataset', dataset)
-        commit('selectedFacilityInterval', interval)
         perf.timeEnd(`------ facility data process (end)`)
       })
       .catch(e => {

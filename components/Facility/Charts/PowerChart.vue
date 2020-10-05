@@ -20,11 +20,13 @@
       />
       <stacked-area-vis
         v-if="chartShown"
+        :range="range"
+        :interval="interval"
         :domains="domains"
         :dataset="dataset"
         :y-min="yMin"
         :y-max="computedYMax"
-        :y-axis-ticks="5"
+        :y-axis-ticks="3"
         :vis-height="200"
         :curve="chartCurve"
         :dynamic-extent="zoomExtent"
