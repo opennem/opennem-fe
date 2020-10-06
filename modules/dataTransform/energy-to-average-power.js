@@ -1,6 +1,8 @@
 import DateDisplay from '@/services/DateDisplay.js'
+import * as SI from '@/constants/si.js'
 
-export default function({ data, domains, range, interval }) {
+// assume average power is MW
+export default function({ data, domains, range, interval, exponent }) {
   const datasetLength = data.length - 1
   const dataset = data.map((d, i) => {
     const isStart = i === 0
@@ -10,7 +12,7 @@ export default function({ data, domains, range, interval }) {
       time: d.time,
       _isIncompleteBucket: d._isIncompleteBucket
     }
-    const hours = DateDisplay.getSecondsByInterval(
+    const seconds = DateDisplay.getSecondsByInterval(
       range,
       interval,
       d.date,
@@ -22,7 +24,10 @@ export default function({ data, domains, range, interval }) {
     domains.forEach(domain => {
       // convert energy to average power
       obj[domain.id] =
-        d[domain.id] === 0 ? null : (d[domain.id] / hours) * 1000 * 3600
+        d[domain.id] === 0 ? null : (d[domain.id] / seconds) * 3600
+      if (exponent === SI.GIGA) {
+        obj[domain.id] = obj[domain.id] * 1000
+      }
       totalPower += obj[domain.id] || 0
     })
     obj._totalPower = totalPower
@@ -45,6 +50,8 @@ export default function({ data, domains, range, interval }) {
     p._lowest = min
     p._highest = max
   })
+
+  console.log(dataset)
 
   return dataset
 }

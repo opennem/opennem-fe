@@ -481,7 +481,8 @@ export default {
         data: this.currentDataset,
         domains: this.powerEnergyDomains,
         range: this.range,
-        interval: this.interval
+        interval: this.interval,
+        exponent: this.chartEnergyUnitPrefix
       })
     },
     multiLineDataset() {
