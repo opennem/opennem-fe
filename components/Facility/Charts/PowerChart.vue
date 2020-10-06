@@ -5,7 +5,7 @@
       'is-hovered': hoverOn }" 
       class="chart">
       <power-chart-options
-        :chart-title="dataType"
+        :chart-title="chartTitle"
         :options="chartOptions"
         :chart-shown="chartShown"
         :chart-type="chartType"
@@ -232,12 +232,25 @@ export default {
       const find = this.domains.find(d => d.code === this.hoverDomain)
       return find ? find.colour : '—'
     },
+
+    chartTitle() {
+      if (this.isEnergyType) {
+        if (this.isYAxisAveragePower) {
+          return 'Average Power'
+        }
+      }
+      return this.dataType
+    },
     displayUnit() {
       let unit = ''
       if (this.isEnergyType) {
-        unit = `${this.chartEnergyCurrentUnit}/${this.intervalLabel(
-          this.interval
-        )}`
+        if (this.isYAxisAveragePower) {
+          unit = this.chartPowerCurrentUnit
+        } else {
+          unit = `${this.chartEnergyCurrentUnit}/${this.intervalLabel(
+            this.interval
+          )}`
+        }
       } else {
         unit = this.chartPowerCurrentUnit
       }

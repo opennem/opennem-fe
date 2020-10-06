@@ -8,8 +8,8 @@ export const state = () => ({
 
   chartEnergyYAxis: OPTIONS.CHART_YAXIS_ENERGY,
   chartEnergyUnit: 'Wh',
-  chartEnergyUnitPrefix: SI.GIGA,
-  chartEnergyDisplayPrefix: SI.GIGA,
+  chartEnergyUnitPrefix: SI.MEGA,
+  chartEnergyDisplayPrefix: SI.MEGA,
 
   chartPowerUnit: 'W',
   chartPowerUnitPrefix: SI.MEGA,
