@@ -72,7 +72,6 @@ summary {
   .wiki-link-text {
     display: inline-block;
     font-size: 0.8em;
-    color: $opennem-link-color;
   }
 }
 </style>
