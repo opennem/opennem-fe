@@ -161,8 +161,12 @@ export const actions = {
   doGetStationStats({ commit, getters }, { networkRegion, facilityId }) {
     const encode = encodeURIComponent(facilityId)
     const range = getters.range
+    let period = range
+    if (range === '30D') {
+      period = '1M'
+    }
     const type = isPowerRange(range) ? 'power' : 'energy'
-    const query = isPowerRange(range) ? '' : '?period=1M'
+    const query = isPowerRange(range) ? '' : `?period=${period}`
     const ref = useProxy
       ? `/stats/${type}/station/${networkRegion}/${encode}${query}`
       : `https://api.opennem.org.au/stats/${type}/station/${networkRegion}/${encode}${query}`
