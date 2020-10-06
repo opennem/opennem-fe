@@ -6,10 +6,11 @@
       class="chart">
       <power-chart-options
         :chart-title="dataType"
-        :options="options"
+        :options="chartOptions"
         :chart-shown="chartShown"
         :chart-type="chartType"
         :chart-curve="chartCurve"
+        :chart-y-axis="chartYAxis"
         :display-unit="displayUnit"
         :hover-display-date="hoverDisplayDate"
         :hover-value="hoverValue"
@@ -23,7 +24,7 @@
         :range="range"
         :interval="interval"
         :domains="domains"
-        :dataset="dataset"
+        :dataset="stackedAreaDataset"
         :y-min="yMin"
         :y-max="computedYMax"
         :y-axis-ticks="3"
@@ -52,8 +53,12 @@
 import { mapGetters, mapActions } from 'vuex'
 import parseISO from 'date-fns/parseISO'
 import getTime from 'date-fns/getTime'
+import _cloneDeep from 'lodash.clonedeep'
+
+import EnergyToAveragePower from '@/modules/dataTransform/energy-to-average-power.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import * as OPTIONS from '@/constants/chart-options.js'
+import * as SI from '@/constants/si.js'
 import StackedAreaVis from '@/components/Vis/StackedArea.vue'
 import PowerChartOptions from '@/components/Facility/Charts/PowerChartOptions'
 
@@ -106,7 +111,6 @@ export default {
 
   data() {
     return {
-      options,
       hoverDomain: ''
     }
   },
@@ -123,12 +127,14 @@ export default {
       chartType: 'chartOptionsFacilityPower/chartType',
       chartCurve: 'chartOptionsFacilityPower/chartCurve',
 
+      chartEnergyYAxis: 'chartOptionsFacilityPower/chartEnergyYAxis',
       chartEnergyUnit: 'chartOptionsFacilityPower/chartEnergyUnit',
       chartEnergyUnitPrefix: 'chartOptionsFacilityPower/chartEnergyUnitPrefix',
       chartEnergyDisplayPrefix:
         'chartOptionsFacilityPower/chartEnergyDisplayPrefix',
       chartEnergyCurrentUnit:
         'chartOptionsFacilityPower/chartEnergyCurrentUnit',
+
       chartPowerUnit: 'chartOptionsFacilityPower/chartPowerUnit',
       chartPowerUnitPrefix: 'chartOptionsFacilityPower/chartPowerUnitPrefix',
       chartPowerDisplayPrefix:
@@ -145,7 +151,7 @@ export default {
     },
     yMin() {
       let lowest = 0
-      this.dataset.forEach(d => {
+      this.stackedAreaDataset.forEach(d => {
         let total = 0
         this.domains.forEach(domain => {
           total += d[domain.id] || 0
@@ -171,7 +177,7 @@ export default {
     computedYMax() {
       let highest = 0
 
-      this.dataset.forEach(d => {
+      this.stackedAreaDataset.forEach(d => {
         let total = 0
         this.domains.forEach(domain => {
           total += d[domain.id] || 0
@@ -193,7 +199,7 @@ export default {
         return null
       }
       const time = this.hoverDate.getTime()
-      return this.dataset.find(d => d.time === time)
+      return this.stackedAreaDataset.find(d => d.time === time)
     },
     hoverValue() {
       return this.hoverData ? this.hoverData[this.hoverDomain] : null
@@ -238,6 +244,43 @@ export default {
 
       // this.$emit('displayUnit', unit)
       return unit
+    },
+
+    stackedAreaDataset() {
+      if (this.isEnergyType) {
+        if (this.isYAxisAveragePower) {
+          return this.averagePowerDataset
+        }
+      }
+      return this.dataset
+    },
+
+    averagePowerDataset() {
+      return EnergyToAveragePower({
+        data: this.dataset,
+        domains: this.domains,
+        range: this.range,
+        interval: this.interval,
+        exponent: SI.MEGA
+      })
+    },
+
+    chartOptions() {
+      let o = _cloneDeep(options)
+      if (this.isEnergyType) {
+        o.yAxis = [
+          OPTIONS.CHART_YAXIS_ENERGY,
+          OPTIONS.CHART_YAXIS_AVERAGE_POWER
+        ]
+      }
+      return o
+    },
+    chartYAxis() {
+      return this.chartEnergyYAxis
+      // return this.isEnergyType ? this.chartEnergyYAxis : this.chartPowerYAxis
+    },
+    isYAxisAveragePower() {
+      return this.chartYAxis === OPTIONS.CHART_YAXIS_AVERAGE_POWER
     }
   },
 

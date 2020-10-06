@@ -8,10 +8,12 @@
         :chart-type="chartType"
         :chart-curve="chartCurve"
         :chart-shown="chartShown"
+        :chart-y-axis="chartYAxis"
         :show="chartOptions" 
         @show-change="s => chartOptions = s"
         @type-click="handleTypeClick"
-        @curve-click="handleCurveClick"/>
+        @curve-click="handleCurveClick"
+        @y-axis-click="handleYAxisClick"/>
     </template>
 
     <template v-slot:label-unit>
@@ -83,6 +85,10 @@ export default {
       type: String,
       default: ''
     },
+    chartYAxis: {
+      type: String,
+      default: ''
+    },
     displayUnit: {
       type: String,
       default: ''
@@ -127,6 +133,14 @@ export default {
     },
     handleCurveClick(curve) {
       this.$store.commit('chartOptionsFacilityPower/chartCurve', curve)
+    },
+    handleYAxisClick(yAxis) {
+      this.$store.commit('chartOptionsFacilityPower/chartEnergyYAxis', yAxis)
+      // if (this.isEnergyType) {
+      //   this.$store.commit('chartOptionsPowerEnergy/chartEnergyYAxis', yAxis)
+      // } else {
+      //   this.$store.commit('chartOptionsPowerEnergy/chartPowerYAxis', yAxis)
+      // }
     }
   }
 }
