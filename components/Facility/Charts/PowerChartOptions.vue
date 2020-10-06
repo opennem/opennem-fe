@@ -129,13 +129,13 @@ export default {
   },
   methods: {
     handleTypeClick(type) {
-      this.$store.commit('chartOptionsFacilityPower/chartType', type)
+      this.$store.commit('chartOptionsPowerEnergy/chartType', type)
     },
     handleCurveClick(curve) {
-      this.$store.commit('chartOptionsFacilityPower/chartCurve', curve)
+      this.$store.commit('chartOptionsPowerEnergy/chartPowerCurve', curve)
     },
     handleYAxisClick(yAxis) {
-      this.$store.commit('chartOptionsFacilityPower/chartEnergyYAxis', yAxis)
+      this.$store.commit('chartOptionsPowerEnergy/chartEnergyYAxis', yAxis)
       // if (this.isEnergyType) {
       //   this.$store.commit('chartOptionsPowerEnergy/chartEnergyYAxis', yAxis)
       // } else {

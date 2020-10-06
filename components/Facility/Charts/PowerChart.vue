@@ -123,23 +123,22 @@ export default {
       highlightDomain: 'visInteract/highlightDomain',
       xGuides: 'visInteract/xGuides',
 
-      chartShown: 'chartOptionsFacilityPower/chartShown',
-      chartType: 'chartOptionsFacilityPower/chartType',
-      chartCurve: 'chartOptionsFacilityPower/chartCurve',
+      chartShown: 'chartOptionsPowerEnergy/chartShown',
+      chartType: 'chartOptionsPowerEnergy/chartType',
 
-      chartEnergyYAxis: 'chartOptionsFacilityPower/chartEnergyYAxis',
-      chartEnergyUnit: 'chartOptionsFacilityPower/chartEnergyUnit',
-      chartEnergyUnitPrefix: 'chartOptionsFacilityPower/chartEnergyUnitPrefix',
+      chartEnergyYAxis: 'chartOptionsPowerEnergy/chartEnergyYAxis',
+      chartEnergyUnit: 'chartOptionsPowerEnergy/chartEnergyUnit',
+      chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
       chartEnergyDisplayPrefix:
-        'chartOptionsFacilityPower/chartEnergyDisplayPrefix',
-      chartEnergyCurrentUnit:
-        'chartOptionsFacilityPower/chartEnergyCurrentUnit',
+        'chartOptionsPowerEnergy/chartEnergyDisplayPrefix',
+      chartEnergyCurrentUnit: 'chartOptionsPowerEnergy/chartEnergyCurrentUnit',
 
-      chartPowerUnit: 'chartOptionsFacilityPower/chartPowerUnit',
-      chartPowerUnitPrefix: 'chartOptionsFacilityPower/chartPowerUnitPrefix',
+      chartPowerUnit: 'chartOptionsPowerEnergy/chartPowerUnit',
+      chartPowerCurve: 'chartOptionsPowerEnergy/chartPowerCurve',
+      chartPowerUnitPrefix: 'chartOptionsPowerEnergy/chartPowerUnitPrefix',
       chartPowerDisplayPrefix:
-        'chartOptionsFacilityPower/chartPowerDisplayPrefix',
-      chartPowerCurrentUnit: 'chartOptionsFacilityPower/chartPowerCurrentUnit'
+        'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
+      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit'
     }),
     isEnergyType() {
       return this.dataType === 'energy'
@@ -291,6 +290,9 @@ export default {
     chartYAxis() {
       return this.chartEnergyYAxis
       // return this.isEnergyType ? this.chartEnergyYAxis : this.chartPowerYAxis
+    },
+    chartCurve() {
+      return this.chartPowerCurve
     },
     isYAxisAveragePower() {
       return this.chartYAxis === OPTIONS.CHART_YAXIS_AVERAGE_POWER
