@@ -47,7 +47,7 @@
       
     </tbody>
 
-    <tfoot>
+    <tfoot v-if="units.length > 1">
       <tr>
         <td>&nbsp;</td>
         <td />
