@@ -343,11 +343,6 @@ $radius: 0.5rem;
   }
 }
 
-.facility-chart-loader {
-  position: absolute;
-  margin-top: 30px;
-}
-
 header {
   margin-bottom: 1rem;
   padding: 0 $facility-tablet-padding;
@@ -381,6 +376,7 @@ header {
   min-height: $chartHeight;
   margin-bottom: 1rem;
   padding: 0 12px 0 11px;
+  position: relative;
 
   @include mobile {
     padding: 0 12px 0 0;
@@ -389,6 +385,12 @@ header {
   .not-found-card {
     height: $chartHeight;
   }
+}
+
+.facility-chart-loader {
+  position: absolute;
+  margin: 100px auto 0;
+  left: 45%;
 }
 
 .facility-meta {
