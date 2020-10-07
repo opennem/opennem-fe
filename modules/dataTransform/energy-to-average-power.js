@@ -51,7 +51,5 @@ export default function({ data, domains, range, interval, exponent }) {
     p._highest = max
   })
 
-  console.log(dataset)
-
   return dataset
 }
