@@ -164,7 +164,8 @@ export default {
       return lowest
     },
     yGuides() {
-      return this.dataType === 'power'
+      return this.dataType === 'power' ||
+        (this.dataType === 'energy' && this.isYAxisAveragePower)
         ? [
             {
               value: this.yMax,
