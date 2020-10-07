@@ -39,7 +39,7 @@
         </td>
         <td class="align-right hover-cell">
           <span v-if="hoverOn">
-            {{ getValue(d.code) / d.registeredCapacity * 100 | percentageFormatNumber }}
+            {{ calculateCapacityFactor(getValue(d.code), d.registeredCapacity) | percentageFormatNumber }}
           </span>
         </td>
       </tr>
@@ -58,7 +58,7 @@
         </td>
         <td class="align-right hover-cell">
           <span v-if="hoverOn">
-            Av.: {{ hoverTotal / operatingUnitsTotalCapacity * 100 | percentageFormatNumber }}
+            Av.: {{ calculateCapacityFactor(hoverTotal, operatingUnitsTotalCapacity) | percentageFormatNumber }}
           </span>
         </td>
       </tr>
@@ -144,6 +144,9 @@ export default {
     },
     getValue(code) {
       return this.hoverData ? this.hoverData[code] : ''
+    },
+    calculateCapacityFactor(value, capacity) {
+      return value && value === 0 ? (value / capacity) * 100 : null
     }
   }
 }
