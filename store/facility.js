@@ -11,6 +11,7 @@ import {
 } from '@/constants/interval-filters.js'
 import { dataProcess } from '@/modules/dataTransform/facility-power'
 
+let request = null
 const http = axios.create({
   baseURL: `/api`,
   headers: {
@@ -161,6 +162,7 @@ export const actions = {
   doGetStationStats({ commit, getters }, { networkRegion, facilityId }) {
     const encode = encodeURIComponent(facilityId)
     const range = getters.range
+    const fetchingStats = getters.fetchingStats
     let period = range
     if (range === '30D') {
       period = '1M'
@@ -173,12 +175,20 @@ export const actions = {
 
     // https://api.opennem.org.au/stats/energy/station/{network_code}/{station_code}
 
+    if (request) {
+      request.cancel('Operation canceled by the user.')
+    }
+
+    request = axios.CancelToken.source()
+
     commit('fetchingStats', true)
     commit('selectedFacilityUnitsDataset', [])
     commit('dataType', type)
 
     http
-      .get(ref)
+      .get(ref, {
+        cancelToken: request.token
+      })
       .then(response => {
         console.log('fetched stats', response.data)
 
@@ -189,14 +199,19 @@ export const actions = {
 
         commit('selectedFacilityUnitsDataset', dataset)
         perf.timeEnd(`------ facility data process (end)`)
+        request = null
+        commit('fetchingStats', false)
       })
       .catch(e => {
-        const error = e.toJSON()
-        const message = `fetch ${error.config.url} error: ${error.message}`
-        console.error(message, e.toJSON())
-      })
-      .then(() => {
-        commit('fetchingStats', false)
+        if (axios.isCancel(e)) {
+          console.log('Request canceled', e.message)
+        } else {
+          const error = e.toJSON()
+          const message = `fetch ${error.config.url} error: ${error.message}`
+          console.error(message, e.toJSON())
+          request = null
+          commit('fetchingStats', false)
+        }
       })
   }
 }
