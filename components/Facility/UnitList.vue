@@ -146,7 +146,7 @@ export default {
       return this.hoverData ? this.hoverData[code] : ''
     },
     calculateCapacityFactor(value, capacity) {
-      return value && value === 0 ? (value / capacity) * 100 : null
+      return value || value === 0 ? (value / capacity) * 100 : null
     }
   }
 }
