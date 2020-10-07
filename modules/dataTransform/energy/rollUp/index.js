@@ -1,13 +1,15 @@
-import rollUp30m from './30m.js'
-import rollUpDay from './day.js'
-import rollUpWeek from './week.js'
-import rollUpMonth from './month.js'
-import rollUpSeason from './season.js'
-import rollUpQuarter from './quarter.js'
-import rollUpYearHalf from './yearHalf.js'
-import rollUpYearFin from './yearFin.js'
-import rollUpYear from './year.js'
+import timeGroup30m from '@/modules/dataTransform/helpers/time-groups/30m.js'
+import timeGroupDay from '@/modules/dataTransform/helpers/time-groups/day.js'
+import timeGroupWeek from '@/modules/dataTransform/helpers/time-groups/week.js'
+import timeGroupMonth from '@/modules/dataTransform/helpers/time-groups/month.js'
+import timeGroupSeason from '@/modules/dataTransform/helpers/time-groups/season.js'
+import timeGroupQuarter from '@/modules/dataTransform/helpers/time-groups/quarter.js'
+import timeGroupYearHalf from '@/modules/dataTransform/helpers/time-groups/yearHalf.js'
+import timeGroupYearFin from '@/modules/dataTransform/helpers/time-groups/yearFin.js'
+import timeGroupYear from '@/modules/dataTransform/helpers/time-groups/year.js'
 import PerfTime from '@/plugins/perfTime.js'
+import energyRollUp from './energyRollUp'
+import powerRollUp from './powerRollUp'
 
 const perfTime = new PerfTime()
 
@@ -16,31 +18,31 @@ export default function({ domains, datasetFlat, interval }) {
   let rolled = datasetFlat
   switch (interval) {
     case '30m':
-      rolled = rollUp30m(domains, datasetFlat)
+      rolled = timeGroup30m(domains, datasetFlat, powerRollUp)
       break
     case 'Day':
-      rolled = rollUpDay(domains, datasetFlat)
+      rolled = timeGroupDay(domains, datasetFlat, energyRollUp)
       break
     case 'Week':
-      rolled = rollUpWeek(domains, datasetFlat)
+      rolled = timeGroupWeek(domains, datasetFlat, energyRollUp)
       break
     case 'Month':
-      rolled = rollUpMonth(domains, datasetFlat)
+      rolled = timeGroupMonth(domains, datasetFlat, energyRollUp)
       break
     case 'Season':
-      rolled = rollUpSeason(domains, datasetFlat)
+      rolled = timeGroupSeason(domains, datasetFlat, energyRollUp)
       break
     case 'Quarter':
-      rolled = rollUpQuarter(domains, datasetFlat)
+      rolled = timeGroupQuarter(domains, datasetFlat, energyRollUp)
       break
     case 'Half Year':
-      rolled = rollUpYearHalf(domains, datasetFlat)
+      rolled = timeGroupYearHalf(domains, datasetFlat, energyRollUp)
       break
     case 'Fin Year':
-      rolled = rollUpYearFin(domains, datasetFlat)
+      rolled = timeGroupYearFin(domains, datasetFlat, energyRollUp)
       break
     case 'Year':
-      rolled = rollUpYear(domains, datasetFlat)
+      rolled = timeGroupYear(domains, datasetFlat, energyRollUp)
       break
     default:
   }

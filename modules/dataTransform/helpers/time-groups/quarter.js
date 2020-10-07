@@ -1,16 +1,17 @@
-import startOfYear from 'date-fns/startOfYear'
-import endOfYear from 'date-fns/endOfYear'
+import startOfMonth from 'date-fns/startOfMonth'
+import startOfQuarter from 'date-fns/startOfQuarter'
+import endOfQuarter from 'date-fns/endOfQuarter'
 import isAfter from 'date-fns/isAfter'
 import isBefore from 'date-fns/isBefore'
-import rollUp from './energyRollUp'
 
-export default function(domains, data) {
+export default function(domains, data, rollUp) {
   let isIncompleteEnd = false,
     isIncompleteStart = false,
     incompleteStartDate = null,
     incompleteEndDate = null
   data.forEach((d, i) => {
-    const start = startOfYear(d.date)
+    const start = startOfQuarter(d.date)
+
     data[i]._rollUpDate = start.getTime()
 
     if (i == 0) {
@@ -20,7 +21,8 @@ export default function(domains, data) {
       }
     }
     if (i === data.length - 1) {
-      const end = endOfYear(d.date)
+      const end = startOfMonth(endOfQuarter(d.date))
+
       isIncompleteEnd = isBefore(d.date, end)
       if (isIncompleteEnd) {
         incompleteEndDate = d.date
