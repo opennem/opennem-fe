@@ -39,7 +39,7 @@
 
           <transition name="fade">
             <div 
-              v-if="!fetchingStats && powerDataset.length === 0" 
+              v-if="!fetchingStats && stackedAreaDataset.length === 0" 
               class="not-found-card card">
               <i class="fal fa-chart-area"/>
               <span>Power and energy data not available</span>
@@ -54,14 +54,21 @@
 
           <transition name="fade">
             <PowerChart 
-              v-if="!fetchingStats && powerDataset.length > 0"
+              v-if="!fetchingStats && stackedAreaDataset.length > 0"
               :hover-on="isHovering"
               :hover-date="hoverDate"
-              :dataset="powerDataset"
+              :dataset="stackedAreaDataset"
               :domains="operatingDomains"
               :zoom-extent="zoomExtent"
               :facility-id="facilityId"
               :y-max="facilityRegisteredCapacity"
+              :chart-title="chartTitle"
+              :chart-shown="chartShown"
+              :chart-type="chartType"
+              :chart-y-axis="chartYAxis"
+              :chart-curve="chartCurve"
+              :is-y-axis-average-power="isYAxisAveragePower"
+              :display-unit="displayUnit"
               @dateHover="handleDateHover"
               @isHovering="handleIsHovering"
               @zoomExtent="handleZoomExtent"
@@ -70,11 +77,13 @@
         </section>
 
         <section class="facility-units card">
-          <UnitList 
+          <UnitList
+            :is-energy-type="isEnergyType"
             :units="unitsSummary"
             :hover-on="isHovering"
             :hover-date="hoverDate"
-            :dataset="powerDataset"
+            :dataset="stackedAreaDataset"
+            :average-power-dataset="averagePowerDataset"
             @codeHover="handleCodeHover" />
         </section>
 
@@ -101,6 +110,10 @@ import _sortBy from 'lodash.sortby'
 import { interpolateRgb, quantize } from 'd3-interpolate'
 import { color } from 'd3-color'
 
+import * as FT from '~/constants/fuel-tech.js'
+import * as SI from '@/constants/si'
+import * as OPTIONS from '@/constants/chart-options.js'
+import EnergyToAveragePower from '@/modules/dataTransform/energy-to-average-power.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import RangeIntervalSelectors from '@/components/Facility/RangeIntervalSelectors.vue'
 import PowerChart from '@/components/Facility/Charts/PowerChart.vue'
@@ -109,8 +122,6 @@ import PhotoMap from '@/components/Facility/PhotoMap.vue'
 import FacilityProperties from '@/components/Facility/Properties.vue'
 import Summary from '@/components/Facility/Summary.vue'
 import Loader from '@/components/ui/Loader'
-import * as FT from '~/constants/fuel-tech.js'
-import * as SI from '@/constants/si'
 
 export default {
   layout: 'facility',
@@ -146,9 +157,22 @@ export default {
       fetchingFacility: 'facility/fetchingFacility',
       fetchingStats: 'facility/fetchingStats',
       facility: 'facility/selectedFacility',
-      powerDataset: 'facility/selectedFacilityUnitsDataset',
-      interval: 'facility/interval'
+      selectedFacilityUnitsDataset: 'facility/selectedFacilityUnitsDataset',
+      dataType: 'facility/dataType',
+      range: 'facility/range',
+      interval: 'facility/interval',
+
+      chartShown: 'chartOptionsPowerEnergy/chartShown',
+      chartType: 'chartOptionsPowerEnergy/chartType',
+      chartEnergyCurve: 'chartOptionsPowerEnergy/chartEnergyCurve',
+      chartEnergyYAxis: 'chartOptionsPowerEnergy/chartEnergyYAxis',
+      chartPowerCurve: 'chartOptionsPowerEnergy/chartPowerCurve',
+      chartEnergyCurrentUnit: 'chartOptionsPowerEnergy/chartEnergyCurrentUnit',
+      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit'
     }),
+    isEnergyType() {
+      return this.dataType === 'energy'
+    },
     facilityId() {
       return this.$route.params.facilityId
     },
@@ -264,6 +288,59 @@ export default {
     },
     operatingDomains() {
       return this.unitsSummary.filter(d => d.status === 'Operating')
+    },
+
+    stackedAreaDataset() {
+      if (this.isEnergyType) {
+        if (this.isYAxisAveragePower) {
+          return this.averagePowerDataset
+        }
+      }
+      return this.selectedFacilityUnitsDataset
+    },
+    averagePowerDataset() {
+      return EnergyToAveragePower({
+        data: this.selectedFacilityUnitsDataset,
+        domains: this.operatingDomains,
+        range: this.range,
+        interval: this.interval,
+        exponent: SI.MEGA
+      })
+    },
+    chartTitle() {
+      if (this.isEnergyType) {
+        if (this.isYAxisAveragePower) {
+          return 'Average Power'
+        }
+      }
+      return this.dataType
+    },
+    chartYAxis() {
+      return this.chartEnergyYAxis
+      // return this.isEnergyType ? this.chartEnergyYAxis : this.chartPowerYAxis
+    },
+    chartCurve() {
+      return this.isEnergyType ? this.chartEnergyCurve : this.chartPowerCurve
+    },
+    isYAxisAveragePower() {
+      return this.chartYAxis === OPTIONS.CHART_YAXIS_AVERAGE_POWER
+    },
+    displayUnit() {
+      let unit = ''
+      if (this.isEnergyType) {
+        if (this.isYAxisAveragePower) {
+          unit = this.chartPowerCurrentUnit
+        } else {
+          unit = `${this.chartEnergyCurrentUnit}/${this.getIntervalLabel(
+            this.interval
+          )}`
+        }
+      } else {
+        unit = this.chartPowerCurrentUnit
+      }
+
+      // this.$emit('displayUnit', unit)
+      return unit
     }
   },
 
@@ -295,6 +372,12 @@ export default {
       doSetChartEnergyPrefixes:
         'chartOptionsPowerEnergy/doSetChartEnergyPrefixes'
     }),
+    getIntervalLabel(interval) {
+      if (interval === 'Fin Year') {
+        return 'year'
+      }
+      return interval.toLowerCase()
+    },
     getUnitColour(fuelTech) {
       const unknownColour = '#ccc'
       if (fuelTech) {

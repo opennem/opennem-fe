@@ -25,7 +25,7 @@
         :range="range"
         :interval="interval"
         :domains="domains"
-        :dataset="stackedAreaDataset"
+        :dataset="dataset"
         :y-min="yMin"
         :y-max="computedYMax"
         :y-axis-ticks="3"
@@ -107,6 +107,35 @@ export default {
     yMax: {
       type: Number,
       default: 0
+    },
+
+    chartTitle: {
+      type: String,
+      default: ''
+    },
+    chartShown: {
+      type: Boolean,
+      default: false
+    },
+    chartType: {
+      type: String,
+      default: ''
+    },
+    chartYAxis: {
+      type: String,
+      default: ''
+    },
+    isYAxisAveragePower: {
+      type: Boolean,
+      default: false
+    },
+    chartCurve: {
+      type: String,
+      default: ''
+    },
+    displayUnit: {
+      type: String,
+      default: ''
     }
   },
 
@@ -122,25 +151,7 @@ export default {
       range: 'facility/range',
       interval: 'facility/interval',
       highlightDomain: 'visInteract/highlightDomain',
-      xGuides: 'visInteract/xGuides',
-
-      chartShown: 'chartOptionsPowerEnergy/chartShown',
-      chartType: 'chartOptionsPowerEnergy/chartType',
-
-      chartEnergyYAxis: 'chartOptionsPowerEnergy/chartEnergyYAxis',
-      chartEnergyCurve: 'chartOptionsPowerEnergy/chartEnergyCurve',
-      chartEnergyUnit: 'chartOptionsPowerEnergy/chartEnergyUnit',
-      chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
-      chartEnergyDisplayPrefix:
-        'chartOptionsPowerEnergy/chartEnergyDisplayPrefix',
-      chartEnergyCurrentUnit: 'chartOptionsPowerEnergy/chartEnergyCurrentUnit',
-
-      chartPowerUnit: 'chartOptionsPowerEnergy/chartPowerUnit',
-      chartPowerCurve: 'chartOptionsPowerEnergy/chartPowerCurve',
-      chartPowerUnitPrefix: 'chartOptionsPowerEnergy/chartPowerUnitPrefix',
-      chartPowerDisplayPrefix:
-        'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
-      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit'
+      xGuides: 'visInteract/xGuides'
     }),
     isEnergyType() {
       return this.dataType === 'energy'
@@ -152,7 +163,7 @@ export default {
     },
     yMin() {
       let lowest = 0
-      this.stackedAreaDataset.forEach(d => {
+      this.dataset.forEach(d => {
         let total = 0
         this.domains.forEach(domain => {
           total += d[domain.id] || 0
@@ -179,7 +190,7 @@ export default {
     computedYMax() {
       let highest = 0
 
-      this.stackedAreaDataset.forEach(d => {
+      this.dataset.forEach(d => {
         let total = 0
         this.domains.forEach(domain => {
           total += d[domain.id] || 0
@@ -201,7 +212,7 @@ export default {
         return null
       }
       const time = this.hoverDate.getTime()
-      return this.stackedAreaDataset.find(d => d.time === time)
+      return this.dataset.find(d => d.time === time)
     },
     hoverValue() {
       return this.hoverData ? this.hoverData[this.hoverDomain] : null
@@ -235,51 +246,6 @@ export default {
       return find ? find.colour : '—'
     },
 
-    chartTitle() {
-      if (this.isEnergyType) {
-        if (this.isYAxisAveragePower) {
-          return 'Average Power'
-        }
-      }
-      return this.dataType
-    },
-    displayUnit() {
-      let unit = ''
-      if (this.isEnergyType) {
-        if (this.isYAxisAveragePower) {
-          unit = this.chartPowerCurrentUnit
-        } else {
-          unit = `${this.chartEnergyCurrentUnit}/${this.intervalLabel(
-            this.interval
-          )}`
-        }
-      } else {
-        unit = this.chartPowerCurrentUnit
-      }
-
-      // this.$emit('displayUnit', unit)
-      return unit
-    },
-
-    stackedAreaDataset() {
-      if (this.isEnergyType) {
-        if (this.isYAxisAveragePower) {
-          return this.averagePowerDataset
-        }
-      }
-      return this.dataset
-    },
-
-    averagePowerDataset() {
-      return EnergyToAveragePower({
-        data: this.dataset,
-        domains: this.domains,
-        range: this.range,
-        interval: this.interval,
-        exponent: SI.MEGA
-      })
-    },
-
     chartOptions() {
       let o = _cloneDeep(options)
       if (this.isEnergyType) {
@@ -289,16 +255,6 @@ export default {
         ]
       }
       return o
-    },
-    chartYAxis() {
-      return this.chartEnergyYAxis
-      // return this.isEnergyType ? this.chartEnergyYAxis : this.chartPowerYAxis
-    },
-    chartCurve() {
-      return this.isEnergyType ? this.chartEnergyCurve : this.chartPowerCurve
-    },
-    isYAxisAveragePower() {
-      return this.chartYAxis === OPTIONS.CHART_YAXIS_AVERAGE_POWER
     }
   },
 
@@ -316,12 +272,7 @@ export default {
     ...mapActions({
       doUpdateXGuides: 'visInteract/doUpdateXGuides'
     }),
-    intervalLabel(interval) {
-      if (interval === 'Fin Year') {
-        return 'year'
-      }
-      return interval.toLowerCase()
-    },
+
     handleDomainHover(domain) {
       this.hoverDomain = domain
     },

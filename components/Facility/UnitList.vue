@@ -39,7 +39,7 @@
         </td>
         <td class="align-right hover-cell">
           <span v-if="hoverOn">
-            {{ calculateCapacityFactor(getValue(d.code), d.registeredCapacity) | percentageFormatNumber }}
+            {{ calculateCapacityFactor(getPowerValue(d.code), d.registeredCapacity) | percentageFormatNumber }}
           </span>
         </td>
       </tr>
@@ -58,7 +58,7 @@
         </td>
         <td class="align-right hover-cell">
           <span v-if="hoverOn">
-            Av.: {{ calculateCapacityFactor(hoverTotal, operatingUnitsTotalCapacity) | percentageFormatNumber }}
+            Av.: {{ calculateCapacityFactor(isEnergyType ? hoverAveragePowerTotal : hoverTotal, operatingUnitsTotalCapacity) | percentageFormatNumber }}
           </span>
         </td>
       </tr>
@@ -72,11 +72,19 @@ import DateDisplay from '@/services/DateDisplay.js'
 
 export default {
   props: {
+    isEnergyType: {
+      type: Boolean,
+      default: false
+    },
     units: {
       type: Array,
       default: () => []
     },
     dataset: {
+      type: Array,
+      default: () => []
+    },
+    averagePowerDataset: {
       type: Array,
       default: () => []
     },
@@ -94,6 +102,13 @@ export default {
     hoverData() {
       return this.hoverDate && this.dataset.length > 0
         ? this.dataset.find(d => d.time === this.hoverDate.getTime())
+        : null
+    },
+    hoverAveragePowerData() {
+      return this.hoverDate && this.averagePowerDataset.length > 0
+        ? this.averagePowerDataset.find(
+            d => d.time === this.hoverDate.getTime()
+          )
         : null
     },
     hoverDisplayDate() {
@@ -127,6 +142,19 @@ export default {
         }
       })
       return total
+    },
+    hoverAveragePowerTotal() {
+      if (!this.hoverAveragePowerData) {
+        return null
+      }
+      let total = null
+      this.operatingUnits.forEach(u => {
+        const value = this.hoverAveragePowerData[u.code]
+        if (value || value === 0) {
+          total += value
+        }
+      })
+      return total
     }
   },
 
@@ -144,6 +172,12 @@ export default {
     },
     getValue(code) {
       return this.hoverData ? this.hoverData[code] : ''
+    },
+    getPowerValue(code) {
+      const hover = this.isEnergyType
+        ? this.hoverAveragePowerData
+        : this.hoverData
+      return hover ? hover[code] : ''
     },
     calculateCapacityFactor(value, capacity) {
       return value || value === 0 ? (value / capacity) * 100 : null
