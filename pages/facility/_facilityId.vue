@@ -47,6 +47,12 @@
           </transition>
 
           <transition name="fade">
+            <Loader 
+              v-if="fetchingStats" 
+              class="facility-chart-loader" />
+          </transition>
+
+          <transition name="fade">
             <PowerChart 
               v-if="!fetchingStats && powerDataset.length > 0"
               :hover-on="isHovering"
@@ -71,8 +77,6 @@
             :dataset="powerDataset"
             @codeHover="handleCodeHover" />
         </section>
-
-        <!-- <InfoPlaceholder /> -->
 
         <FacilityProperties 
           :facility="facility" 
@@ -104,7 +108,7 @@ import UnitList from '@/components/Facility/UnitList.vue'
 import PhotoMap from '@/components/Facility/PhotoMap.vue'
 import FacilityProperties from '@/components/Facility/Properties.vue'
 import Summary from '@/components/Facility/Summary.vue'
-import InfoPlaceholder from '@/components/Facility/InfoPlaceholder.vue'
+import Loader from '@/components/ui/Loader'
 import * as FT from '~/constants/fuel-tech.js'
 import * as SI from '@/constants/si'
 
@@ -125,7 +129,7 @@ export default {
 
     FacilityProperties,
     Summary,
-    InfoPlaceholder
+    Loader
   },
 
   data() {
@@ -339,6 +343,11 @@ $radius: 0.5rem;
   }
 }
 
+.facility-chart-loader {
+  position: absolute;
+  margin-top: 30px;
+}
+
 header {
   margin-bottom: 1rem;
   padding: 0 $facility-tablet-padding;
@@ -367,7 +376,7 @@ header {
 }
 
 .facility-chart {
-  $chartHeight: 231px;
+  $chartHeight: 275px;
   width: 100%;
   min-height: $chartHeight;
   margin-bottom: 1rem;
