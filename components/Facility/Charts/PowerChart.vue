@@ -18,6 +18,7 @@
         :hover-domain-colour="hoverDomainColour"
         :hover-total="hoverTotal"
         :show-hover="domains.length > 1"
+        :is-energy-type="isEnergyType"
       />
       <stacked-area-vis
         v-if="chartShown"
@@ -127,6 +128,7 @@ export default {
       chartType: 'chartOptionsPowerEnergy/chartType',
 
       chartEnergyYAxis: 'chartOptionsPowerEnergy/chartEnergyYAxis',
+      chartEnergyCurve: 'chartOptionsPowerEnergy/chartEnergyCurve',
       chartEnergyUnit: 'chartOptionsPowerEnergy/chartEnergyUnit',
       chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
       chartEnergyDisplayPrefix:
@@ -293,7 +295,7 @@ export default {
       // return this.isEnergyType ? this.chartEnergyYAxis : this.chartPowerYAxis
     },
     chartCurve() {
-      return this.chartPowerCurve
+      return this.isEnergyType ? this.chartEnergyCurve : this.chartPowerCurve
     },
     isYAxisAveragePower() {
       return this.chartYAxis === OPTIONS.CHART_YAXIS_AVERAGE_POWER

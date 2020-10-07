@@ -120,6 +120,10 @@ export default {
     showHover: {
       type: Boolean,
       default: true
+    },
+    isEnergyType: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -132,15 +136,14 @@ export default {
       this.$store.commit('chartOptionsPowerEnergy/chartType', type)
     },
     handleCurveClick(curve) {
-      this.$store.commit('chartOptionsPowerEnergy/chartPowerCurve', curve)
+      if (this.isEnergyType) {
+        this.$store.commit('chartOptionsPowerEnergy/chartEnergyCurve', curve)
+      } else {
+        this.$store.commit('chartOptionsPowerEnergy/chartPowerCurve', curve)
+      }
     },
     handleYAxisClick(yAxis) {
       this.$store.commit('chartOptionsPowerEnergy/chartEnergyYAxis', yAxis)
-      // if (this.isEnergyType) {
-      //   this.$store.commit('chartOptionsPowerEnergy/chartEnergyYAxis', yAxis)
-      // } else {
-      //   this.$store.commit('chartOptionsPowerEnergy/chartPowerYAxis', yAxis)
-      // }
     }
   }
 }
