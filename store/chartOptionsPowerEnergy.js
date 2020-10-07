@@ -86,4 +86,9 @@ export const mutations = {
   }
 }
 
-export const actions = {}
+export const actions = {
+  doSetChartEnergyPrefixes({ commit }, prefix) {
+    commit('chartEnergyUnitPrefix', prefix)
+    commit('chartEnergyDisplayPrefix', prefix)
+  }
+}

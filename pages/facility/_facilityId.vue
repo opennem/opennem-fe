@@ -106,6 +106,7 @@ import FacilityProperties from '@/components/Facility/Properties.vue'
 import Summary from '@/components/Facility/Summary.vue'
 import InfoPlaceholder from '@/components/Facility/InfoPlaceholder.vue'
 import * as FT from '~/constants/fuel-tech.js'
+import * as SI from '@/constants/si'
 
 export default {
   layout: 'facility',
@@ -276,6 +277,7 @@ export default {
     this.doGetFacilityById({
       facilityId: this.facilityId
     })
+    this.doSetChartEnergyPrefixes(SI.MEGA)
   },
 
   methods: {
@@ -285,7 +287,9 @@ export default {
     ...mapActions({
       doGetFacilityById: 'facility/doGetFacilityById',
       doGetStationStats: 'facility/doGetStationStats',
-      doProcessData: 'facility/doProcessData'
+      doProcessData: 'facility/doProcessData',
+      doSetChartEnergyPrefixes:
+        'chartOptionsPowerEnergy/doSetChartEnergyPrefixes'
     }),
     getUnitColour(fuelTech) {
       const unknownColour = '#ccc'
