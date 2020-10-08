@@ -4,7 +4,7 @@ import process from './process'
 import rollUp from './rollUp'
 import summariseDataset from './summarise'
 import groupDataset from './group'
-import { filterDatasetByRange, filterDatasetByPeriod } from './filter'
+import { filterDatasetByRange, filterDatasetByPeriod } from '../helpers/filter'
 
 export function dataProcess(responses, range, interval, period) {
   const {
