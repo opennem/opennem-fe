@@ -395,7 +395,11 @@ export default {
           const updated = _cloneDeep(this.dataset)
           const lastSecondItem = _cloneDeep(updated[updated.length - 2])
           const lastItem = _cloneDeep(updated[updated.length - 1])
-          const intervalTime = lastItem.time - lastSecondItem.time
+          const intervalTime =
+            this.dataset.length > 1
+              ? lastItem.time - lastSecondItem.time
+              : millisecondsByInterval[this.interval]
+
           lastItem.time = lastItem.time + intervalTime
           lastItem.date = new Date(lastItem.time)
           updated.push(lastItem)
