@@ -50,14 +50,14 @@ export const FuelTechRanges = [
 ]
 
 export const FacilityPowerEnergyRanges = [
-  // {
-  //   range: RANGE_1D,
-  //   intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN]
-  // },
-  // {
-  //   range: RANGE_3D,
-  //   intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN]
-  // },
+  {
+    range: RANGE_1D,
+    intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN]
+  },
+  {
+    range: RANGE_3D,
+    intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN]
+  },
   {
     range: RANGE_7D,
     intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN]
@@ -73,5 +73,9 @@ export const FacilityPowerEnergyRanges = [
       INTERVALS.INTERVAL_WEEK,
       INTERVALS.INTERVAL_MONTH
     ]
+  },
+  {
+    range: RANGE_ALL,
+    intervals: [INTERVALS.INTERVAL_MONTH]
   }
 ]

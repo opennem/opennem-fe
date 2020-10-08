@@ -179,6 +179,10 @@ export const actions = {
     if (range === '30D') {
       period = '1M'
     }
+    if (range === 'ALL') {
+      period = 'ALL&interval=1M'
+    }
+
     const type = isPowerRange(range) ? 'power' : 'energy'
     const query = isPowerRange(range) ? '' : `?period=${period}`
     const ref = useProxy
@@ -211,6 +215,7 @@ export const actions = {
         console.info(`------ facility data process (start)`)
         const { dataset, datasetFlat, units } = dataProcess(
           response.data.data,
+          range,
           interval
         )
 

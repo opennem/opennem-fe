@@ -26,7 +26,14 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
-import { FacilityPowerEnergyRanges, RANGE_7D } from '@/constants/ranges.js'
+import {
+  FacilityPowerEnergyRanges,
+  RANGE_1D,
+  RANGE_3D,
+  RANGE_7D,
+  RANGE_1Y
+} from '@/constants/ranges.js'
+import { INTERVAL_30MIN, INTERVAL_WEEK } from '@/constants/interval-filters.js'
 
 export default {
   data() {
@@ -56,7 +63,13 @@ export default {
       const find = this.ranges.find(r => r.range === range)
       const intervals = find ? find.intervals : null
       this.setRange(range)
-      this.setInterval(intervals[0])
+      if (range === RANGE_1D || range === RANGE_3D || range === RANGE_7D) {
+        this.setInterval(INTERVAL_30MIN)
+      } else if (range === RANGE_1Y) {
+        this.setInterval(INTERVAL_WEEK)
+      } else {
+        this.setInterval(intervals[0])
+      }
       this.$emit('rangeChange')
     },
     handleIntervalChange(interval) {

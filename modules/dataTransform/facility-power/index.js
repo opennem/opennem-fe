@@ -1,7 +1,12 @@
 import createEmptyDatasets from '@/modules/dataTransform/helpers/createEmptyDatasets.js'
+import {
+  filterDatasetByRange,
+  filterDatasetByPeriod
+} from '@/modules/dataTransform/helpers/filter'
+
 import rollUp from './rollUp'
 
-export function dataProcess(data, interval) {
+export function dataProcess(data, range, interval) {
   // map to existing structure and filter out null histories
   const units = data
     .map(d => {
@@ -19,7 +24,7 @@ export function dataProcess(data, interval) {
     })
     .filter(d => d.history)
 
-  const dataset = createEmptyDatasets(units)
+  const dataset = filterDatasetByRange(createEmptyDatasets(units), range)
   const type = units.length > 0 ? units[0].type : ''
 
   units.forEach(u => {
