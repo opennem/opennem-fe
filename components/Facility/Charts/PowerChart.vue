@@ -221,7 +221,15 @@ export default {
       if (!this.hoverDate) {
         return ''
       }
-      return DateDisplay.defaultDisplayDate(this.hoverDate.getTime())
+      return DateDisplay.specialDateFormats(
+        this.hoverDate.getTime(),
+        this.range,
+        this.interval,
+        false,
+        false,
+        false,
+        true
+      )
     },
     hoverTotal() {
       let total = 0
