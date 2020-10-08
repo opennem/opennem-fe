@@ -20,6 +20,7 @@ export function dataProcess(data, interval) {
     .filter(d => d.history)
 
   const dataset = createEmptyDatasets(units)
+  const type = units.length > 0 ? units[0].type : ''
 
   units.forEach(u => {
     const updateDataset = () => {
@@ -36,17 +37,19 @@ export function dataProcess(data, interval) {
     dataset: rollUp({
       domains: units,
       datasetFlat: dataset,
-      interval
+      interval,
+      isEnergyType: type === 'energy'
     }),
     datasetFlat: dataset,
     units
   }
 }
 
-export function dataRollUp(datasetFlat, domains, interval) {
+export function dataRollUp(datasetFlat, domains, interval, isEnergyType) {
   return rollUp({
     domains,
     datasetFlat,
-    interval
+    interval,
+    isEnergyType
   })
 }

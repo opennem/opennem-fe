@@ -1,11 +1,11 @@
-import { mean, rollups } from 'd3-array'
+import { sum, rollups } from 'd3-array'
 
 function reducer(a, domains) {
   let obj = {}
 
   domains.forEach(domain => {
     const id = domain.id
-    obj[id] = mean(a, d => d[id])
+    obj[id] = sum(a, d => d[id] || 0)
   })
 
   return obj

@@ -235,10 +235,11 @@ export const actions = {
   },
 
   doUpdateDatasetByInterval({ commit, getters }) {
+    const type = getters.dataType
     const interval = getters.interval
     const units = getters.selectedFacilityUnits
     const datasetFlat = getters.selectedFacilityUnitsDatasetFlat
-    const dataset = dataRollUp(datasetFlat, units, interval)
+    const dataset = dataRollUp(datasetFlat, units, interval, type === 'energy')
     commit('selectedFacilityUnitsDataset', dataset)
   }
 }

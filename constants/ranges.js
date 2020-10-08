@@ -68,6 +68,10 @@ export const FacilityPowerEnergyRanges = [
   },
   {
     range: RANGE_1Y,
-    intervals: [INTERVALS.INTERVAL_DAY]
+    intervals: [
+      INTERVALS.INTERVAL_DAY,
+      INTERVALS.INTERVAL_WEEK,
+      INTERVALS.INTERVAL_MONTH
+    ]
   }
 ]

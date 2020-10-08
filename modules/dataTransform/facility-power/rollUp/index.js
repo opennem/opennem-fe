@@ -1,11 +1,12 @@
 import timeGroups from '@/modules/dataTransform/helpers/time-groups'
 import powerRollUp from './powerRollUp'
+import energyRollUp from './energyRollUp'
 
-export default function({ domains, datasetFlat, interval }) {
+export default function({ domains, datasetFlat, interval, isEnergyType }) {
   return timeGroups({
     domains,
     datasetFlat,
     interval,
-    rollUp: powerRollUp
+    rollUp: isEnergyType ? energyRollUp : powerRollUp
   })
 }
