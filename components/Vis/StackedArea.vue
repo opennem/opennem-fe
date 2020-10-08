@@ -724,7 +724,7 @@ export default {
         let startX = self.x.invert(s[0])
         let endX = self.x.invert(s[1])
 
-        if (self.interval === INTERVAL_YEAR) {
+        if (self.interval === INTERVAL_FINYEAR) {
           if (startX.getMonth() >= 6) {
             startX.setFullYear(startX.getFullYear() + 1)
           }
@@ -1494,7 +1494,7 @@ export default {
             }
           } else if (this.interval === INTERVAL_YEAR) {
             className = 'interval-year'
-          } else if (this.interval === INTERVAL_YEAR) {
+          } else if (this.interval === INTERVAL_FINYEAR) {
             tickLength = timeMonth.filter(d => {
               return d.getMonth() === 6
             })
@@ -1538,7 +1538,7 @@ export default {
         if (isFilter && periodMonth) {
           tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
         }
-      } else if (this.interval === INTERVAL_YEAR) {
+      } else if (this.interval === INTERVAL_FINYEAR) {
         this.xAxis.tickFormat(d => {
           const year = d.getFullYear() + 1 + ''
           return `FY${year.substr(2, 2)}`
