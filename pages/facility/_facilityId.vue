@@ -35,7 +35,9 @@
         </transition>
 
         <section class="facility-chart">
-          <RangeIntervalSelectors @rangeChange="handleRangeChange" />
+          <RangeIntervalSelectors 
+            @rangeChange="handleRangeChange" 
+            @intervalChange="handleIntervalChange" />
 
           <transition name="fade">
             <div 
@@ -368,7 +370,7 @@ export default {
     ...mapActions({
       doGetFacilityById: 'facility/doGetFacilityById',
       doGetStationStats: 'facility/doGetStationStats',
-      doProcessData: 'facility/doProcessData',
+      doUpdateDatasetByInterval: 'facility/doUpdateDatasetByInterval',
       doSetChartEnergyPrefixes:
         'chartOptionsPowerEnergy/doSetChartEnergyPrefixes'
     }),
@@ -403,6 +405,9 @@ export default {
       const networkRegion = this.facilityNetworkRegion
       const facilityId = this.facilityId
       this.doGetStationStats({ networkRegion, facilityId })
+    },
+    handleIntervalChange() {
+      this.doUpdateDatasetByInterval()
     }
   }
 }

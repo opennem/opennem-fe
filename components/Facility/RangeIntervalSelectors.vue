@@ -60,7 +60,6 @@ export default {
       this.$emit('rangeChange')
     },
     handleIntervalChange(interval) {
-      console.log(interval)
       this.setInterval(interval)
       this.$emit('intervalChange')
     }

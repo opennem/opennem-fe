@@ -1,6 +1,7 @@
 import createEmptyDatasets from '@/modules/dataTransform/helpers/createEmptyDatasets.js'
+import rollUp from './rollUp'
 
-export function dataProcess(data) {
+export function dataProcess(data, interval) {
   // map to existing structure and filter out null histories
   const units = data
     .map(d => {
@@ -19,7 +20,6 @@ export function dataProcess(data) {
     .filter(d => d.history)
 
   const dataset = createEmptyDatasets(units)
-  const interval = data.length > 0 ? data[0].history.interval : null
 
   units.forEach(u => {
     const updateDataset = () => {
@@ -33,7 +33,20 @@ export function dataProcess(data) {
   })
 
   return {
-    dataset,
-    interval
+    dataset: rollUp({
+      domains: units,
+      datasetFlat: dataset,
+      interval
+    }),
+    datasetFlat: dataset,
+    units
   }
+}
+
+export function dataRollUp(datasetFlat, domains, interval) {
+  return rollUp({
+    domains,
+    datasetFlat,
+    interval
+  })
 }

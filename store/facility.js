@@ -9,7 +9,7 @@ import {
   INTERVAL_30MIN,
   INTERVAL_DAY
 } from '@/constants/interval-filters.js'
-import { dataProcess } from '@/modules/dataTransform/facility-power'
+import { dataProcess, dataRollUp } from '@/modules/dataTransform/facility-power'
 
 let request = null
 const http = axios.create({
@@ -40,11 +40,13 @@ export const state = () => ({
   fetchingFacility: false,
   fetchingStats: false,
   selectedFacility: null,
+  selectedFacilityUnits: [],
   selectedFacilityUnitsDataset: [],
+  selectedFacilityUnitsDatasetFlat: [], // as returned transform
 
   dataType: 'power', // power, energy
   range: RANGE_7D,
-  interval: INTERVAL_5MIN
+  interval: INTERVAL_30MIN
 })
 
 export const mutations = {
@@ -79,8 +81,14 @@ export const mutations = {
   selectedFacility(state, data) {
     state.selectedFacility = data
   },
+  selectedFacilityUnits(state, data) {
+    state.selectedFacilityUnits = data
+  },
   selectedFacilityUnitsDataset(state, data) {
     state.selectedFacilityUnitsDataset = data
+  },
+  selectedFacilityUnitsDatasetFlat(state, data) {
+    state.selectedFacilityUnitsDatasetFlat = data
   },
   dataType(state, data) {
     state.dataType = data
@@ -105,8 +113,11 @@ export const getters = {
   fetchingFacility: state => state.fetchingFacility,
   fetchingStats: state => state.fetchingStats,
   selectedFacility: state => _cloneDeep(state.selectedFacility),
+  selectedFacilityUnits: state => _cloneDeep(state.selectedFacilityUnits),
   selectedFacilityUnitsDataset: state =>
     _cloneDeep(state.selectedFacilityUnitsDataset),
+  selectedFacilityUnitsDatasetFlat: state =>
+    _cloneDeep(state.selectedFacilityUnitsDatasetFlat),
   dataType: state => state.dataType,
   range: state => state.range,
   interval: state => state.interval
@@ -162,7 +173,8 @@ export const actions = {
   doGetStationStats({ commit, getters }, { networkRegion, facilityId }) {
     const encode = encodeURIComponent(facilityId)
     const range = getters.range
-    const fetchingStats = getters.fetchingStats
+    const interval = getters.interval
+
     let period = range
     if (range === '30D') {
       period = '1M'
@@ -176,13 +188,15 @@ export const actions = {
     // https://api.opennem.org.au/stats/energy/station/{network_code}/{station_code}
 
     if (request) {
-      request.cancel('Operation canceled by the user.')
+      request.cancel('Operation cancelled by the user.')
     }
 
     request = axios.CancelToken.source()
 
     commit('fetchingStats', true)
     commit('selectedFacilityUnitsDataset', [])
+    commit('selectedFacilityUnitsDatasetFlat', [])
+    commit('selectedFacilityUnits', [])
     commit('dataType', type)
 
     http
@@ -195,9 +209,14 @@ export const actions = {
         const perf = new PerfTime()
         perf.time()
         console.info(`------ facility data process (start)`)
-        const { dataset, interval } = dataProcess(response.data.data)
+        const { dataset, datasetFlat, units } = dataProcess(
+          response.data.data,
+          interval
+        )
 
         commit('selectedFacilityUnitsDataset', dataset)
+        commit('selectedFacilityUnitsDatasetFlat', datasetFlat)
+        commit('selectedFacilityUnits', units)
         perf.timeEnd(`------ facility data process (end)`)
         request = null
         commit('fetchingStats', false)
@@ -206,12 +225,20 @@ export const actions = {
         if (axios.isCancel(e)) {
           console.log('Request canceled', e.message)
         } else {
-          const error = e.toJSON()
-          const message = `fetch ${error.config.url} error: ${error.message}`
-          console.error(message, e.toJSON())
+          const error = e
+          // const message = `fetch ${error.config.url} error: ${error.message}`
+          console.error(e)
           request = null
           commit('fetchingStats', false)
         }
       })
+  },
+
+  doUpdateDatasetByInterval({ commit, getters }) {
+    const interval = getters.interval
+    const units = getters.selectedFacilityUnits
+    const datasetFlat = getters.selectedFacilityUnitsDatasetFlat
+    const dataset = dataRollUp(datasetFlat, units, interval)
+    commit('selectedFacilityUnitsDataset', dataset)
   }
 }

@@ -60,7 +60,7 @@ export const FacilityPowerEnergyRanges = [
   // },
   {
     range: RANGE_7D,
-    intervals: [INTERVALS.INTERVAL_5MIN]
+    intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN]
   },
   {
     range: RANGE_30D,
