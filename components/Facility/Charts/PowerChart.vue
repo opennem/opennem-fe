@@ -29,6 +29,7 @@
         :y-min="yMin"
         :y-max="computedYMax"
         :y-axis-ticks="3"
+        :x-ticks="xTicks"
         :vis-height="200"
         :curve="chartCurve"
         :dynamic-extent="zoomExtent"
@@ -151,7 +152,8 @@ export default {
       range: 'facility/range',
       interval: 'facility/interval',
       highlightDomain: 'visInteract/highlightDomain',
-      xGuides: 'visInteract/xGuides'
+      xGuides: 'visInteract/xGuides',
+      xTicks: 'visInteract/xTicks'
     }),
     isEnergyType() {
       return this.dataType === 'energy'
@@ -267,18 +269,24 @@ export default {
   },
 
   watch: {
-    interval() {
+    interval(val) {
       this.updateXGuides()
+      this.updateXTicks()
+    },
+    range() {
+      this.updateXTicks()
     }
   },
 
   created() {
     this.updateXGuides()
+    this.updateXTicks()
   },
 
   methods: {
     ...mapActions({
-      doUpdateXGuides: 'visInteract/doUpdateXGuides'
+      doUpdateXGuides: 'visInteract/doUpdateXGuides',
+      doUpdateXTicks: 'visInteract/doUpdateXTicks'
     }),
 
     updateXGuides() {
@@ -289,6 +297,15 @@ export default {
           end: this.dataset[this.dataset.length - 1].time
         })
       }
+    },
+
+    updateXTicks() {
+      this.doUpdateXTicks({
+        range: this.range,
+        interval: this.interval,
+        isZoomed: this.zoomExtent.length > 0,
+        filterPeriod: 'All'
+      })
     },
 
     handleDomainHover(domain) {
