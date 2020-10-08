@@ -258,20 +258,30 @@ export default {
     }
   },
 
-  created() {
-    if (this.dataset.length > 0) {
-      this.doUpdateXGuides({
-        interval: this.interval,
-        start: this.dataset[0].time,
-        end: this.dataset[this.dataset.length - 1].time
-      })
+  watch: {
+    interval() {
+      this.updateXGuides()
     }
+  },
+
+  created() {
+    this.updateXGuides()
   },
 
   methods: {
     ...mapActions({
       doUpdateXGuides: 'visInteract/doUpdateXGuides'
     }),
+
+    updateXGuides() {
+      if (this.dataset.length > 0) {
+        this.doUpdateXGuides({
+          interval: this.interval,
+          start: this.dataset[0].time,
+          end: this.dataset[this.dataset.length - 1].time
+        })
+      }
+    },
 
     handleDomainHover(domain) {
       this.hoverDomain = domain
