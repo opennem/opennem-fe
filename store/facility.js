@@ -35,6 +35,7 @@ export const state = () => ({
   selectedStatuses: [FACILITY_OPERATING],
   selectedTechs: [],
   selectedView: 'list',
+  filteredFacilities: [],
 
   previousPath: '',
   fetchingFacility: false,
@@ -64,6 +65,9 @@ export const mutations = {
   },
   selectedTechs(state, data) {
     state.selectedTechs = data
+  },
+  filteredFacilities(state, data) {
+    state.filteredFacilities = data
   },
 
   previousPath(state, data) {
@@ -108,6 +112,7 @@ export const getters = {
   selectedStatuses: state => state.selectedStatuses,
   selectedTechs: state => state.selectedTechs,
   selectedView: state => state.selectedView,
+  filteredFacilities: state => state.filteredFacilities,
 
   previousPath: state => state.previousPath,
   fetchingFacility: state => state.fetchingFacility,

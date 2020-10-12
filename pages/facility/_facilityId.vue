@@ -89,9 +89,9 @@
             @codeHover="handleCodeHover" />
         </section>
 
-        <FacilityProperties 
+        <!-- <FacilityProperties 
           :facility="facility" 
-          class="facility-props" />
+          class="facility-props" /> -->
       </div>
     </transition>
     

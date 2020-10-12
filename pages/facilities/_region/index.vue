@@ -152,7 +152,6 @@ export default {
       ready: false,
       filterString: '',
       facilityData: [],
-      filteredFacilities: [],
       selectedFacility: null,
       hoveredFacility: null,
       selectedStatuses: [FACILITY_OPERATING],
@@ -170,6 +169,14 @@ export default {
   },
 
   computed: {
+    filteredFacilities: {
+      get() {
+        return this.$store.getters['facility/filteredFacilities']
+      },
+      set(facilities) {
+        this.setFilteredFacilities(facilities)
+      }
+    },
     facilityDataset() {
       return this.$store.getters['facility/dataset']
     },
@@ -266,7 +273,8 @@ export default {
 
   methods: {
     ...mapMutations({
-      previousPath: 'facility/previousPath'
+      previousPath: 'facility/previousPath',
+      setFilteredFacilities: 'facility/filteredFacilities'
     }),
     fetchData() {
       const urls = []
@@ -378,6 +386,7 @@ export default {
             Longitude: d.location.longitude
           }
         })
+
         that.$store.dispatch('facilityExportData', exportData)
       })
     },
