@@ -85,6 +85,7 @@ export function dataRollUp({
       ...domainPowerEnergy,
       ...domainEmissions,
       ...domainMarketValue,
+      ...domainPrice,
       ...domainTemperature
     ],
     datasetFlat: filterDatasetByRange(datasetFlat, range),
