@@ -1,4 +1,5 @@
 import _cloneDeep from 'lodash.clonedeep'
+import * as DT from '@/constants/data-types.js'
 import dateDisplay from '@/services/DateDisplay.js'
 import { checkIsSameInterval } from '@/services/DataCheck.js'
 import interpolateDataset from './interpolateDataset.js'
@@ -128,6 +129,17 @@ export default function(isPowerData, dataInterval, dataAll, datasetAll) {
   })
 
   if (isPowerData) {
+    const priceObj = dataAll.find(d => d.type === 'price')
+    if (priceObj) {
+      const priceId = priceObj.id
+      // set up pos/neg properties
+      datasetAll.forEach(d => {
+        const priceValue = d[priceId]
+        d[DT.PRICE_ABOVE_300] = priceValue > 300 ? priceValue : 0.001
+        d[DT.PRICE_BELOW_0] = priceValue < 0 ? priceValue : -0.001
+      })
+    }
+
     interpolateDataset(dataAll, datasetAll)
   }
 }
