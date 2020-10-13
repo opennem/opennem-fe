@@ -1,5 +1,8 @@
 import * as DT from '@/constants/data-types.js'
-import { checkPowerEnergyExists } from '@/services/DataCheck.js'
+import {
+  checkHistoryObject,
+  checkPowerEnergyExists
+} from '@/services/DataCheck.js'
 
 export default function(response) {
   const data = response.data || response
@@ -12,6 +15,8 @@ export default function(response) {
     dataTemperature = []
   // filter out each type to its own array
   data.forEach(d => {
+    checkHistoryObject(d)
+
     if (DT.isValidDataType(d.type)) {
       dataAll.push(d)
     }
