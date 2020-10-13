@@ -1,3 +1,4 @@
+import parseISO from 'date-fns/parseISO'
 import differenceInMinutes from 'date-fns/differenceInMinutes'
 import differenceInDays from 'date-fns/differenceInDays'
 import differenceInMonths from 'date-fns/differenceInMonths'
@@ -24,6 +25,83 @@ export function checkPowerEnergyExists({ dataPower, dataEnergy }) {
       dataPower,
       dataEnergy
     )
+  }
+}
+
+export function checkHistoryObject(d) {
+  const id = d.id
+  const history = d.history
+
+  // check if history exist
+  if (!history) {
+    console.error(`History is undefined for ${d.id}`)
+  }
+
+  const start = history.start
+  const last = history.last
+  const interval = history.interval
+  const data = history.data
+  let intervalObj = null
+
+  // check if start exist
+  if (!start) {
+    console.error(`History start date is undefined for ${id}`)
+  }
+  // check if last exist
+  if (!last) {
+    console.error(`History last date is undefined for ${id}`)
+  }
+  // check if interval exist
+  if (!interval) {
+    console.error(`History interval is undefined for ${id}`)
+  } else {
+    // test parsing interval
+    intervalObj = intervalParser(interval)
+    if (!intervalObj) {
+      console.error(`Invalid interval for ${id}: ${interval}`)
+    }
+  }
+  // check if data exist
+  if (!data) {
+    console.error(`History data is undefined for ${id}`)
+  } else {
+    if (data.length === 0) {
+      console.error(`History data is empty for ${id}`)
+    } else {
+      const intervalKey = intervalObj.key
+      const intervalValue = intervalObj.value
+      const startDate = parseISO(start)
+      const lastDate = parseISO(last)
+      let diff = 0
+
+      switch (intervalKey) {
+        case 'm':
+          diff = differenceInMinutes(lastDate, startDate)
+          break
+        case 'd':
+          diff = differenceInDays(lastDate, startDate)
+          break
+        case 'M':
+          diff = differenceInMonths(lastDate, startDate)
+          break
+        default:
+          console.warn(`${interval} interval not support for ${id}`)
+      }
+
+      // check if start, last, interval matches data length
+      const dataLength = data.length
+      const expectedLength = diff / intervalValue
+      if (dataLength !== expectedLength) {
+        console.warn(`--${id}`)
+        console.warn(
+          'History data length does not match start, last and interval'
+        )
+        console.warn(
+          `Data length: ${dataLength} (expected ${expectedLength}), start: ${start}, last: ${last}, interval: ${interval}`
+        )
+        console.warn(`----`)
+      }
+    }
   }
 }
 
