@@ -1,3 +1,4 @@
+import { checkHistoryObject } from '@/services/DataCheck.js'
 import createEmptyDatasets from '@/modules/dataTransform/helpers/createEmptyDatasets.js'
 import {
   filterDatasetByRange,
@@ -28,6 +29,7 @@ export function dataProcess(data, range, interval) {
   const type = units.length > 0 ? units[0].type : ''
 
   units.forEach(u => {
+    checkHistoryObject(u)
     const updateDataset = () => {
       const historyData = [...u.history.data]
       dataset.forEach((h, i) => {
