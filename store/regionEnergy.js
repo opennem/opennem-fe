@@ -217,7 +217,7 @@ export const actions = {
           processResponses(responses)
         })
         .catch(() => {
-          console.log('using cached copy')
+          console.warn('using cached copy')
           processResponses(JSON.parse(lsGet(key)))
         })
     } else {
