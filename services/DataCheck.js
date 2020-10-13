@@ -21,7 +21,7 @@ export function checkPowerEnergyExists({ dataPower, dataEnergy }) {
   // check that at least power or energy exists
   if (dataPower.length === 0 && dataEnergy.length === 0) {
     throw new Error(
-      'Parsing json error: data doest not contain power or energy',
+      'Parsing json error: data does not contain power or energy',
       dataPower,
       dataEnergy
     )
