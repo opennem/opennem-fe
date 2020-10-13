@@ -179,13 +179,16 @@ export default {
       this.$store.dispatch('si/emissionsVolumePrefix', '')
 
       let interval = ''
+      let isPower = false
       switch (range) {
         case '1D':
           interval = '30m'
+          isPower = true
           break
         case '3D':
         case '7D':
           interval = '30m'
+          isPower = true
           break
         case '30D':
           interval = 'Day'
@@ -200,7 +203,7 @@ export default {
           console.log('nothing yet')
       }
 
-      if (this.regionId === 'wem' && this.isPowerRange) {
+      if (this.regionId === 'wem' && isPower) {
         interval = '30m'
       }
 
