@@ -208,12 +208,12 @@ export const actions = {
 
       http(urls)
         .then(res => {
-          let responses =
-            env === 'dev'
-              ? res.map(d => {
-                  return d.data
-                })
-              : res
+          const check = res.length > 0 ? (res[0].data ? true : false) : false
+          let responses = check
+            ? res.map(d => {
+                return d.data
+              })
+            : res
           processResponses(responses)
         })
         .catch(() => {
