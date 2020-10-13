@@ -4,7 +4,6 @@
       :class="{
       'is-hovered': hoverOn }" 
       class="chart">
-      <span>Av: {{ averageValue }}</span>
       <power-chart-options
         :chart-title="chartTitle"
         :options="chartOptions"
