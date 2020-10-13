@@ -1,54 +1,25 @@
-import { checkHistoryObject } from '@/services/DataCheck.js'
-import createEmptyDatasets from '@/modules/dataTransform/helpers/createEmptyDatasets.js'
-import {
-  filterDatasetByRange,
-  filterDatasetByPeriod
-} from '@/modules/dataTransform/helpers/filter'
-
+import process from './process'
 import rollUp from './rollUp'
+import summarise from './summarise'
 
 export function dataProcess(data, range, interval) {
-  // map to existing structure and filter out null histories
-  const units = data
-    .map(d => {
-      const type = d.data_type || ''
-      const units = d.units || ''
-      const history = d.history || null
+  const { domains, dataset, type } = process(data, range)
+  const currentDataset = rollUp({
+    domains,
+    datasetFlat: dataset,
+    interval,
+    isEnergyType: type === 'energy'
+  })
 
-      return {
-        id: d.code,
-        code: d.code,
-        type,
-        units,
-        history
-      }
-    })
-    .filter(d => d.history)
-
-  const dataset = filterDatasetByRange(createEmptyDatasets(units), range)
-  const type = units.length > 0 ? units[0].type : ''
-
-  units.forEach(u => {
-    checkHistoryObject(u)
-    const updateDataset = () => {
-      const historyData = [...u.history.data]
-      dataset.forEach((h, i) => {
-        h[u.code] = historyData[i]
-      })
-    }
-
-    updateDataset()
+  summarise({
+    currentDataset,
+    domains
   })
 
   return {
-    dataset: rollUp({
-      domains: units,
-      datasetFlat: dataset,
-      interval,
-      isEnergyType: type === 'energy'
-    }),
+    dataset: currentDataset,
     datasetFlat: dataset,
-    units
+    units: domains
   }
 }
 

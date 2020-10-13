@@ -20,14 +20,13 @@
       <strong class="is-capitalized">{{ chartTitle }}</strong>
       <small>{{ displayUnit }}</small>
     </template>
-    <!-- <template 
-      v-slot:average-value 
-      v-if="!readOnly">
+    <template v-slot:average-value>
       Av.
       <strong>
-        --
+        {{ averageValue | formatValue }}
+        <span>{{ displayUnit }}</span>
       </strong>
-    </template> -->
+    </template>
     <template v-slot:hover-date>
       {{ hoverDisplayDate }}
     </template>
@@ -124,6 +123,10 @@ export default {
     isEnergyType: {
       type: Boolean,
       default: false
+    },
+    averageValue: {
+      type: Number,
+      default: 0
     }
   },
   data() {

@@ -4,6 +4,7 @@
       :class="{
       'is-hovered': hoverOn }" 
       class="chart">
+      <span>Av: {{ averageValue }}</span>
       <power-chart-options
         :chart-title="chartTitle"
         :options="chartOptions"
@@ -17,6 +18,7 @@
         :hover-domain-label="hoverDomainLabel"
         :hover-domain-colour="hoverDomainColour"
         :hover-total="hoverTotal"
+        :average-value="averageValue"
         :show-hover="domains.length > 1"
         :is-energy-type="isEnergyType"
       />
@@ -142,7 +144,8 @@ export default {
 
   data() {
     return {
-      hoverDomain: ''
+      hoverDomain: '',
+      filteredDataset: []
     }
   },
 
@@ -157,6 +160,13 @@ export default {
     }),
     isEnergyType() {
       return this.dataType === 'energy'
+    },
+    averageValue() {
+      const total = this.filteredDataset.reduce((a, b) => a + b._total, 0)
+      const average = total / this.filteredDataset.length
+
+      console.log(total, average)
+      return average
     },
     highlightId() {
       const domain = this.highlightDomain
@@ -275,12 +285,16 @@ export default {
     },
     range() {
       this.updateXTicks()
+    },
+    zoomExtent() {
+      this.updateFilteredDataset()
     }
   },
 
   created() {
     this.updateXGuides()
     this.updateXTicks()
+    this.updateFilteredDataset()
   },
 
   methods: {
@@ -288,6 +302,18 @@ export default {
       doUpdateXGuides: 'visInteract/doUpdateXGuides',
       doUpdateXTicks: 'visInteract/doUpdateXTicks'
     }),
+
+    updateFilteredDataset() {
+      if (this.zoomExtent.length === 2) {
+        const start = this.zoomExtent[0].getTime()
+        const end = this.zoomExtent[1].getTime()
+        this.filteredDataset = this.dataset.filter(
+          d => d.time >= start && d.time <= end
+        )
+      } else {
+        this.filteredDataset = this.dataset
+      }
+    },
 
     updateXGuides() {
       if (this.dataset.length > 0) {
