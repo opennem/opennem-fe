@@ -123,7 +123,7 @@ function transformV3FacilityData(data) {
     if (!props) {
       emptyProperties.push(d)
     }
-    let stationId = props.station_id
+    let stationId = props.station_code
     if (!stationId) {
       emptyIdCount++
       stationId = `emptyStationId-${emptyIdCount}`
