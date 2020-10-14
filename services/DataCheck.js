@@ -90,7 +90,8 @@ export function checkHistoryObject(d) {
 
       // check if start, last, interval matches data length
       const dataLength = data.length
-      const expectedLength = diff / intervalValue
+      const expectedLength =
+        intervalValue === 5 ? diff / intervalValue : diff / intervalValue + 1
       if (dataLength !== expectedLength) {
         console.warn(`--${id}`)
         console.warn(
