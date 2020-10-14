@@ -136,7 +136,7 @@ import addYears from 'date-fns/addYears'
 
 import * as OPTIONS from '@/constants/chart-options.js'
 import * as SI from '@/constants/si.js'
-import { LOAD } from '@/constants/groups/group-default.js'
+import { LOAD } from '@/constants/energy-fuel-techs/group-default.js'
 import EnergyToAveragePower from '@/modules/dataTransform/energy-to-average-power.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
