@@ -1,4 +1,4 @@
-import { getAllGroups } from '@/constants/groups'
+import { getAllGroups } from '@/constants/energy-fuel-techs'
 import { EMISSIONS, MARKET_VALUE } from '@/constants/data-types'
 import process from './process'
 import rollUp from './rollUp'
