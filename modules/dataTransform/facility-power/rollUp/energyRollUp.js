@@ -10,7 +10,7 @@ function reducer(a, domains) {
       if (value || value === 0) {
         allNulls = false
       }
-      return d[id]
+      return value
     })
     obj[id] = allNulls ? null : total
   })

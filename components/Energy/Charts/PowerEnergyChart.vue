@@ -656,11 +656,18 @@ export default {
     },
     hoverTotal() {
       let total = 0
+      let allNulls = true
       if (this.hoverData) {
         this.domains.forEach(d => {
-          total += this.hoverData[d.id]
+          const value = this.hoverData[d.id]
+          total += value || 0
+          if (value || value === 0) {
+            allNulls = false
+          }
         })
       }
+
+      total = allNulls ? null : total
       return this.isTypeProportion ||
         (this.isTypeLine && this.isYAxisPercentage)
         ? total

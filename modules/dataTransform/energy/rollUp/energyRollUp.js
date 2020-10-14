@@ -4,7 +4,8 @@ import * as DT from '@/constants/data-types.js'
 function reducer(a, domains) {
   let obj = {},
     temperatureId = null,
-    temperatureCount = 0
+    temperatureCount = 0,
+    allNulls = true
 
   a.forEach(point => {
     domains.forEach(domain => {
@@ -49,7 +50,15 @@ function reducer(a, domains) {
     const isMarketValueType = DT.isMarketValue(type)
     const isEmissionsType = DT.isEmissions(type)
     if (isPowerOrEnergy || isMarketValueType || isEmissionsType) {
-      obj[id] = sum(a, d => d[id] || 0)
+      const total = sum(a, d => {
+        const value = d[id]
+        if (value || value === 0) {
+          allNulls = false
+        }
+        return value
+      })
+
+      obj[id] = allNulls ? null : total
     }
   })
   if (temperatureId) {
