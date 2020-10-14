@@ -77,7 +77,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
 import _orderBy from 'lodash.orderby'
-import * as FUEL_TECHS from '~/constants/fuel-tech.js'
+import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 import { FACILITY_OPERATING } from '~/constants/facility-status.js'
 import {
   FacilityRegions,

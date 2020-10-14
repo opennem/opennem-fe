@@ -112,7 +112,7 @@ import _sortBy from 'lodash.sortby'
 import { interpolateRgb, quantize } from 'd3-interpolate'
 import { color } from 'd3-color'
 
-import * as FT from '~/constants/fuel-tech.js'
+import * as FT from '~/constants/energy-fuel-techs/group-default.js'
 import * as SI from '@/constants/si'
 import * as OPTIONS from '@/constants/chart-options.js'
 import EnergyToAveragePower from '@/modules/dataTransform/energy-to-average-power.js'

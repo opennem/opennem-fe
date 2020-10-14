@@ -151,7 +151,7 @@ import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 import { mixin as clickaway } from 'vue-clickaway'
 import EventBus from '~/plugins/eventBus'
-import * as FT from '~/constants/fuel-tech.js'
+import * as FT from '~/constants/energy-fuel-techs/group-default.js'
 import {
   FacilityGroups,
   FACILITY_GROUP_BATTERY,

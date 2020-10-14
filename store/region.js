@@ -3,7 +3,7 @@ import EnergyDataTransform from '@/services/dataTransform/Energy.js'
 import Domain from '@/services/Domain.js'
 import Data from '@/services/Data.js'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
-import * as FUEL_TECHS from '@/constants/fuel-tech.js'
+import * as FUEL_TECHS from '@/constants/energy-fuel-techs/group-default.js'
 import PerfTime from '@/plugins/perfTime.js'
 
 const Regions = getEnergyRegions().filter(r => r.id !== 'all' && r.id !== 'nem')

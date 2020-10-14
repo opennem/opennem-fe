@@ -172,7 +172,7 @@
 import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
 import _uniqBy from 'lodash.uniqby'
-import * as FUEL_TECHS from '~/constants/fuel-tech.js'
+import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 import {
   FACILITY_OPERATING,
   getFacilityStatusLabelById

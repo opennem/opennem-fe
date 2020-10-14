@@ -42,7 +42,7 @@ import _isEmpty from 'lodash.isempty'
 import _orderBy from 'lodash.orderby'
 // import L from 'leaflet'
 import { scaleLinear as d3ScaleLinear } from 'd3-scale'
-import * as FUEL_TECHS from '~/constants/fuel-tech.js'
+import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 import { getRegionLocationById } from '~/constants/facility-regions.js'
 // import * as L from 'vue2-leaflet'
 

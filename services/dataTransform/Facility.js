@@ -1,6 +1,6 @@
 import _uniq from 'lodash.uniq'
 import _isEmpty from 'lodash.isempty'
-import * as FUEL_TECHS from '~/constants/fuel-tech.js'
+import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 
 let emptyIdCount = 0
 
