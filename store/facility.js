@@ -197,8 +197,6 @@ export const actions = {
       ? `/stats/${type}/station/${networkRegion}/${encode}${query}`
       : `https://api.opennem.org.au/stats/${type}/station/${networkRegion}/${encode}${query}`
 
-    // https://api.opennem.org.au/stats/energy/station/{network_code}/{station_code}
-
     if (request) {
       request.cancel('Operation cancelled by the user.')
     }

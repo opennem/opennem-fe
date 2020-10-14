@@ -161,10 +161,9 @@ export default {
       return this.dataType === 'energy'
     },
     averageValue() {
-      const total = this.filteredDataset.reduce((a, b) => a + b._total, 0)
+      const prop = this.isYAxisAveragePower ? '_totalPower' : '_total'
+      const total = this.filteredDataset.reduce((a, b) => a + b[prop], 0)
       const average = total / this.filteredDataset.length
-
-      console.log(total, average)
       return average
     },
     highlightId() {
@@ -284,6 +283,9 @@ export default {
     },
     range() {
       this.updateXTicks()
+    },
+    dataset() {
+      this.updateFilteredDataset()
     },
     zoomExtent() {
       this.updateFilteredDataset()
