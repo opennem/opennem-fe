@@ -45,6 +45,7 @@ export default function(responses) {
     hasPowerEnergyData
   } = parseAndCheckData(data)
 
+  const hasPriceMarketValue = dataPriceMarketValue.length > 0
   const fuelTechIdTypes = getFuelTechInOrder(dataPowerEnergy)
 
   const domainPowerEnergy = getFuelTechDomains(
@@ -55,13 +56,22 @@ export default function(responses) {
     getFuelTechInOrder(dataEmissions),
     EMISSIONS
   )
-  const domainMarketValue = isPowerData
-    ? getFuelTechWithTypeDomains(fuelTechIdTypes, MARKET_VALUE)
-    : getFuelTechDomains(getFuelTechInOrder(dataPriceMarketValue), MARKET_VALUE)
 
-  const domainPrice = isPowerData
-    ? getPriceDomains(dataPriceMarketValue)
-    : getVolWeightedPriceDomains()
+  let domainMarketValue = [],
+    domainPrice = []
+  if (hasPriceMarketValue) {
+    domainMarketValue = isPowerData
+      ? getFuelTechWithTypeDomains(fuelTechIdTypes, MARKET_VALUE)
+      : getFuelTechDomains(
+          getFuelTechInOrder(dataPriceMarketValue),
+          MARKET_VALUE
+        )
+    domainPrice = isPowerData
+      ? getPriceDomains(dataPriceMarketValue)
+      : getVolWeightedPriceDomains()
+  } else {
+    console.warn('There is no price or market value in this dataset')
+  }
 
   const domainTemperature = getTemperatureDomains(dataTemperature)
 
