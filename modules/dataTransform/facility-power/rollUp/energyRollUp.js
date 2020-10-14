@@ -2,10 +2,17 @@ import { sum, rollups } from 'd3-array'
 
 function reducer(a, domains) {
   let obj = {}
-
+  let allNulls = true
   domains.forEach(domain => {
     const id = domain.id
-    obj[id] = sum(a, d => d[id] || 0)
+    const total = sum(a, d => {
+      const value = d[id]
+      if (value || value === 0) {
+        allNulls = false
+      }
+      return d[id]
+    })
+    obj[id] = allNulls ? null : total
   })
 
   return obj

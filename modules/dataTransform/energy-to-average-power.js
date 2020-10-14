@@ -21,16 +21,22 @@ export default function({ data, domains, range, interval, exponent }) {
       isEnd
     )
     let totalPower = 0
+    let allNulls = true
     domains.forEach(domain => {
       // convert energy to average power
-      obj[domain.id] =
-        d[domain.id] === 0 ? null : (d[domain.id] / seconds) * 3600
-      if (exponent === SI.GIGA) {
-        obj[domain.id] = obj[domain.id] * 1000
+      const value = d[domain.id]
+      if (value || value === 0) {
+        allNulls = false
+        obj[domain.id] = value === 0 ? null : (value / seconds) * 3600
+        if (exponent === SI.GIGA) {
+          obj[domain.id] = obj[domain.id] * 1000
+        }
+        totalPower += obj[domain.id] || 0
+      } else {
+        obj[domain.id] = null
       }
-      totalPower += obj[domain.id] || 0
     })
-    obj._totalPower = totalPower
+    obj._totalPower = allNulls ? null : totalPower
     return obj
   })
 
