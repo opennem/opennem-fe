@@ -5,9 +5,8 @@ export const PUMPS = 'pumps'
 export const BATTERY_CHARGING = 'battery_charging'
 export const EXPORTS = 'exports'
 export const IMPORTS = 'imports'
-export const BROWN_COAL = 'brown_coal'
-export const BLACK_COAL = 'black_coal'
-export const BIOMASS = 'biomass'
+export const COAL_BROWN = 'coal_brown'
+export const COAL_BLACK = 'coal_black'
 export const BIOENERGY_BIOMASS = 'bioenergy_biomass'
 export const BIOENERGY_BIOGAS = 'bioenergy_biogas'
 export const DISTILLATE = 'distillate'
@@ -20,13 +19,15 @@ export const GAS_WCMG = 'gas_wcmg'
 export const BATTERY_DISCHARGING = 'battery_discharging'
 export const HYDRO = 'hydro'
 export const WIND = 'wind'
-export const SOLAR = 'solar'
-export const ROOFTOP_SOLAR = 'rooftop_solar'
-// v3 ids
-export const COAL_BROWN = 'coal_brown'
-export const COAL_BLACK = 'coal_black'
 export const SOLAR_UTILITY = 'solar_utility'
 export const SOLAR_ROOFTOP = 'solar_rooftop'
+
+// to be deprecated
+export const BROWN_COAL = 'brown_coal'
+export const BLACK_COAL = 'black_coal'
+export const BIOMASS = 'biomass'
+export const SOLAR = 'solar'
+export const ROOFTOP_SOLAR = 'rooftop_solar'
 
 // Fuel tech default order
 export const DEFAULT_FUEL_TECH_ORDER = [
