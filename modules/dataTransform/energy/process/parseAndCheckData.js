@@ -17,9 +17,11 @@ export default function(response) {
   data.forEach(d => {
     checkHistoryObject(d)
 
-    if (DT.isValidDataType(d.type)) {
+    const typeProp = typeof d.data_type === 'undefined' ? 'type' : 'data_type'
+    if (DT.isValidDataType(d[typeProp])) {
       dataAll.push(d)
     }
+
     switch (d.type) {
       case DT.POWER:
         dataPower.push(d)
