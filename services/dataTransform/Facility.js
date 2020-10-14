@@ -130,6 +130,7 @@ function transformV3FacilityData(data) {
     }
     const displayName = props.name || '-'
     const state = props.state || ''
+    const network = props.network || ''
     const units = []
     const dispatchUnits = props.duid_data || []
     const location = geo
@@ -229,6 +230,7 @@ function transformV3FacilityData(data) {
       state,
       regionId,
       location,
+      network,
       hasLocation,
       units,
       unitStatuses: _uniq(unitStatuses).sort(),

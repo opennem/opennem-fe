@@ -448,8 +448,13 @@ export default {
     handleOpenFacilityView(facility) {
       this.handleFacilitySelect(facility, true)
       this.previousPath(this.$route.fullPath)
+
+      const id = facility.facilityId
+      const network = facility.network
       this.$router.push({
-        path: `/facility/${encodeURIComponent(facility.facilityId)}`
+        path: `/facility/${encodeURIComponent(network)}/${encodeURIComponent(
+          id
+        )}`
       })
     }
   }

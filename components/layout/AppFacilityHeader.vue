@@ -69,9 +69,7 @@ export default {
 
   watch: {
     facilityId() {
-      this.$nextTick(() => {
-        this.updatePaths()
-      })
+      this.updatePaths()
     }
   },
 
@@ -101,33 +99,43 @@ export default {
     },
     updatePaths() {
       const facilitiesLength = this.filteredFacilities.length
-      const currIndex = this.filteredFacilities.findIndex(
+      const currentIndex = this.filteredFacilities.findIndex(
+        f => f.facilityId === this.facilityId
+      )
+      const currentFacility = this.filteredFacilities.find(
         f => f.facilityId === this.facilityId
       )
 
-      if (currIndex !== -1) {
-        const isFirstItem = currIndex === 0
-        const isLastItem = currIndex === facilitiesLength - 1
+      if (currentIndex !== -1) {
+        const isFirstItem = currentIndex === 0
+        const isLastItem = currentIndex === facilitiesLength - 1
 
-        const nextFacilityId = isLastItem
+        const nextFacility = isLastItem
           ? null
-          : this.filteredFacilities[currIndex + 1].facilityId
-        const prevFacilityId = isFirstItem
+          : this.filteredFacilities[currentIndex + 1]
+        const prevFacility = isFirstItem
           ? null
-          : this.filteredFacilities[currIndex - 1].facilityId
+          : this.filteredFacilities[currentIndex - 1]
+
+        const nextFacilityId = nextFacility ? nextFacility.facilityId : null
+        const nextFacilityName = nextFacility ? nextFacility.displayName : null
+        const nextFacilityNetwork = nextFacility ? nextFacility.network : null
+        const prevFacilityId = prevFacility ? prevFacility.facilityId : null
+        const prevFacilityName = prevFacility ? prevFacility.displayName : null
+        const prevFacilityNetwork = prevFacility ? prevFacility.network : null
 
         this.nextFacilityPath = nextFacilityId
-          ? `/facility/${nextFacilityId}`
+          ? `/facility/${encodeURIComponent(
+              nextFacilityNetwork
+            )}/${encodeURIComponent(nextFacilityId)}`
           : null
         this.prevFacilityPath = prevFacilityId
-          ? `/facility/${prevFacilityId}`
+          ? `/facility/${encodeURIComponent(
+              prevFacilityNetwork
+            )}/${encodeURIComponent(prevFacilityId)}`
           : null
-        this.nextFacilityName = isLastItem
-          ? null
-          : this.filteredFacilities[currIndex + 1].displayName
-        this.prevFacilityName = isFirstItem
-          ? null
-          : this.filteredFacilities[currIndex - 1].displayName
+        this.nextFacilityName = nextFacilityName
+        this.prevFacilityName = prevFacilityName
       }
     }
   }
