@@ -185,7 +185,7 @@ export const actions = {
       period = '1M'
     }
     if (range === 'ALL') {
-      period = 'ALL&interval=1M'
+      period = 'all&interval=1M'
     }
 
     const type = isPowerRange(range) ? 'power' : 'energy'
