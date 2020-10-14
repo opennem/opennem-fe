@@ -192,7 +192,7 @@ export const actions = {
     }
 
     const type = isPowerRange(range) ? 'power' : 'energy'
-    const query = isPowerRange(range) ? '' : `?period=${period}`
+    const query = isPowerRange(range) ? '?period=7d' : `?period=${period}`
     const ref = useProxy
       ? `/stats/${type}/station/${networkRegion}/${encode}${query}`
       : `https://api.opennem.org.au/stats/${type}/station/${networkRegion}/${encode}${query}`
