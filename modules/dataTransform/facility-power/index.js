@@ -24,10 +24,16 @@ export function dataProcess(data, range, interval) {
 }
 
 export function dataRollUp(datasetFlat, domains, interval, isEnergyType) {
-  return rollUp({
+  const currentDataset = rollUp({
     domains,
     datasetFlat,
     interval,
     isEnergyType
   })
+
+  summarise({
+    currentDataset,
+    domains
+  })
+  return currentDataset
 }
