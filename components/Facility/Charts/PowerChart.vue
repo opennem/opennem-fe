@@ -162,8 +162,11 @@ export default {
     },
     averageValue() {
       const prop = this.isYAxisAveragePower ? '_totalPower' : '_total'
-      const total = this.filteredDataset.reduce((a, b) => a + b[prop], 0)
-      const average = total / this.filteredDataset.length
+      const filteredOutNulls = this.filteredDataset.filter(
+        d => d[prop] !== null
+      )
+      const total = filteredOutNulls.reduce((a, b) => a + b[prop], 0)
+      const average = total / filteredOutNulls.length
       return average
     },
     highlightId() {
