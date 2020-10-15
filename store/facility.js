@@ -42,6 +42,7 @@ export const state = () => ({
   fetchingFacility: false,
   fetchingStats: false,
   selectedFacility: null,
+  selectedFacilityNetworkRegion: '',
   selectedFacilityUnits: [],
   selectedFacilityUnitsDataset: [],
   selectedFacilityUnitsDatasetFlat: [], // as returned transform
@@ -89,6 +90,9 @@ export const mutations = {
   selectedFacility(state, data) {
     state.selectedFacility = data
   },
+  selectedFacilityNetworkRegion(state, data) {
+    state.selectedFacilityNetworkRegion = data
+  },
   selectedFacilityUnits(state, data) {
     state.selectedFacilityUnits = data
   },
@@ -123,6 +127,8 @@ export const getters = {
   fetchingFacility: state => state.fetchingFacility,
   fetchingStats: state => state.fetchingStats,
   selectedFacility: state => _cloneDeep(state.selectedFacility),
+  selectedFacilityNetworkRegion: state =>
+    _cloneDeep(state.selectedFacilityNetworkRegion),
   selectedFacilityUnits: state => _cloneDeep(state.selectedFacilityUnits),
   selectedFacilityUnitsDataset: state =>
     _cloneDeep(state.selectedFacilityUnitsDataset),
@@ -162,13 +168,17 @@ export const actions = {
 
     commit('fetchingFacility', true)
     commit('selectedFacility', null)
+    commit('selectedFacilityNetworkRegion', '')
 
     http
       .get(ref)
       .then(response => {
         console.log('fetched', response.data)
-
+        const networkCode = response.data.network
+          ? response.data.network.code
+          : ''
         commit('selectedFacility', response.data)
+        commit('selectedFacilityNetworkRegion', networkCode)
       })
       .catch(e => {
         const error = e.toJSON()
