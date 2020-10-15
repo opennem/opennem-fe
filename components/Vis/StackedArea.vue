@@ -82,8 +82,8 @@
         </g>
 
         <!-- where the stacked area path will show -->
-        <g class="stacked-area-group" />
         <g class="stacked-area-null-group" />
+        <g class="stacked-area-group" />
 
         <!-- where the line path will show -->
         <g 
