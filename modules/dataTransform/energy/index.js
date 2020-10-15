@@ -14,7 +14,8 @@ export function dataProcess(responses, range, interval, period) {
     domainPowerEnergy,
     domainTemperature,
     domainEmissions,
-    type
+    type,
+    units
   } = process(responses)
 
   const isEnergyType = type === 'energy'
@@ -62,7 +63,8 @@ export function dataProcess(responses, range, interval, period) {
     domainMarketValueGrouped,
     domainPrice,
     domainTemperature,
-    currentDataset: filterDatasetByPeriod(currentDataset, interval, period)
+    currentDataset: filterDatasetByPeriod(currentDataset, interval, period),
+    units
   }
 }
 

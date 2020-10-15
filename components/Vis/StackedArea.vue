@@ -714,7 +714,6 @@ export default {
         .y0(d => this.y(d[0]))
         .y1(d => this.y(d[1]))
 
-      console.log(this.y(0) - this.y(0.9), this.y(0) - 10)
       this.nullArea = d3Area()
         .x(d => this.x(d.data.date))
         .y0(

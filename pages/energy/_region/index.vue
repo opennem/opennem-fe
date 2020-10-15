@@ -114,6 +114,7 @@ export default {
       filterPeriod: 'filterPeriod',
       fuelTechGroupName: 'fuelTechGroupName',
       ready: 'regionEnergy/ready',
+      powerEnergyPrefix: 'regionEnergy/powerEnergyPrefix',
       currentDataset: 'regionEnergy/currentDataset',
       filteredDates: 'regionEnergy/filteredDates'
     }),
@@ -177,6 +178,9 @@ export default {
           end: dataset[dataset.length - 1].time
         })
       }
+    },
+    powerEnergyPrefix(prefix) {
+      this.doSetChartEnergyUnitPrefix(prefix)
     }
   },
 
@@ -214,7 +218,9 @@ export default {
         'regionEnergy/doUpdateDatasetByFilterPeriod',
       doUpdateXGuides: 'visInteract/doUpdateXGuides',
       doUpdateTickFormats: 'visInteract/doUpdateTickFormats',
-      doUpdateXTicks: 'visInteract/doUpdateXTicks'
+      doUpdateXTicks: 'visInteract/doUpdateXTicks',
+      doSetChartEnergyUnitPrefix:
+        'chartOptionsPowerEnergy/doSetChartEnergyUnitPrefix'
     }),
     ...mapMutations({
       setWindowWidth: 'app/windowWidth',

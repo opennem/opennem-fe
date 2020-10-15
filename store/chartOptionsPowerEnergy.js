@@ -90,5 +90,9 @@ export const actions = {
   doSetChartEnergyPrefixes({ commit }, prefix) {
     commit('chartEnergyUnitPrefix', prefix)
     commit('chartEnergyDisplayPrefix', prefix)
+  },
+  doSetChartEnergyUnitPrefix({ commit }, prefix) {
+    // WORKAROUND: update this when units is returned correctly
+    commit('chartEnergyUnitPrefix', prefix.toUpperCase())
   }
 }

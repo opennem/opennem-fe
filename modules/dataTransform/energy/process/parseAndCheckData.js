@@ -61,6 +61,7 @@ export default function(response) {
     dataTemperature,
     isPowerData: dataPower.length > 0,
     hasPowerEnergyData: dataPowerEnergy.length > 0,
-    fuelTechDataType: dataPower.length > 0 ? DT.POWER : DT.ENERGY
+    fuelTechDataType: dataPower.length > 0 ? DT.POWER : DT.ENERGY,
+    units: dataPowerEnergy.length > 0 ? dataPowerEnergy[0].units : ''
   }
 }

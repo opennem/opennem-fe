@@ -42,7 +42,8 @@ export default function(responses) {
     dataTemperature,
     fuelTechDataType,
     isPowerData,
-    hasPowerEnergyData
+    hasPowerEnergyData,
+    units
   } = parseAndCheckData(data)
 
   const hasPriceMarketValue = dataPriceMarketValue.length > 0
@@ -92,6 +93,7 @@ export default function(responses) {
     domainMarketValue,
     domainPrice,
     domainTemperature,
-    type: isPowerData ? 'power' : 'energy'
+    type: isPowerData ? 'power' : 'energy',
+    units
   }
 }
