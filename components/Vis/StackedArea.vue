@@ -31,6 +31,17 @@
             stroke-width="2px"
             y2="10" />
         </pattern>
+        <pattern
+          :id="`${id}-incomplete-period-pattern-2`"
+          width="3"
+          height="3"
+          patternUnits="userSpaceOnUse"
+          patternTransform="rotate(45)">
+          <line
+            stroke="rgba(199, 69, 35, 0.4)"
+            stroke-width="2px"
+            y2="10" />
+        </pattern>
 
         <filter id="shadow">
           <feDropShadow
@@ -72,6 +83,7 @@
 
         <!-- where the stacked area path will show -->
         <g class="stacked-area-group" />
+        <g class="stacked-area-null-group" />
 
         <!-- where the line path will show -->
         <g 
@@ -322,6 +334,7 @@ export default {
       yAxis: null,
       yAxis2: null,
       area: null,
+      nullArea: null,
       line: null,
       colours: schemeCategory10,
       stack: null,
@@ -340,6 +353,7 @@ export default {
       $focusGroup: null,
       $tooltipGroup: null,
       $stackedAreaGroup: null,
+      $stackedAreaNullGroup: null,
       $lineGroup: null,
       $xGuideGroup: null,
       $yGuideGroup: null,
@@ -700,6 +714,17 @@ export default {
         .y0(d => this.y(d[0]))
         .y1(d => this.y(d[1]))
 
+      console.log(this.y(0) - this.y(0.9), this.y(0) - 10)
+      this.nullArea = d3Area()
+        .x(d => this.x(d.data.date))
+        .y0(
+          d =>
+            d.data._total || d.data._total === 0 ? this.height : this.y(0) - 5
+        )
+        .y1(
+          d => (d.data._total || d.data._total === 0 ? this.height : this.y(0))
+        )
+
       // How to draw the line
       this.line = d3Line()
         .x(d => this.x(d.date))
@@ -840,6 +865,9 @@ export default {
       this.$stackedAreaGroup = select(
         `#${this.id} .${this.stackedAreaGroupClass}`
       )
+      this.$stackedAreaNullGroup = select(
+        `#${this.id} .stacked-area-null-group`
+      )
       this.$lineGroup = select(`#${this.id} .line-group`)
 
       // Setup the x/y/z Axis domains
@@ -900,14 +928,32 @@ export default {
       // Setup the keys in the stack so it knows how to draw the area
       this.stack.keys(this.domainIds).value((d, key) => (d[key] ? d[key] : 0))
       this.area.curve(this.curveType)
+      this.nullArea.curve(curveStepAfter)
 
       // Remove Area
       this.$stackedAreaGroup.selectAll('path').remove()
+      this.$stackedAreaNullGroup.selectAll('path').remove()
+
+      const stackedData = this.stack(this.updatedDataset)
+
+      // Generate null areas
+      const stackNullArea = this.$stackedAreaNullGroup
+        .selectAll('path')
+        .data(stackedData)
+      stackNullArea
+        .enter()
+        .append('path')
+        .attr('d', this.nullArea)
+        .attr('stroke-opacity', 0)
+        .attr('stroke-width', 1)
+        .attr('stroke', '#000')
+        .attr('fill', `url(#${this.id}-incomplete-period-pattern-2)`)
+        .style('pointer-events', 'none')
 
       // Generate Stacked Area
       const stackArea = this.$stackedAreaGroup
         .selectAll(`.${this.stackedAreaPathClass}`)
-        .data(this.stack(this.updatedDataset))
+        .data(stackedData)
       stackArea
         .enter()
         .append('path')
@@ -1094,6 +1140,7 @@ export default {
       this.brushX.extent([[0, 0], [this.width, 40]])
       this.$xAxisBrushGroup.selectAll('.brush').call(this.brushX)
       this.$stackedAreaGroup.selectAll('path').attr('d', this.area)
+      this.$stackedAreaNullGroup.selectAll('path').attr('d', this.nullArea)
       if (this.hasSecondDataset) {
         this.$lineGroup.selectAll('path').attr('d', this.line)
       }
@@ -1110,6 +1157,10 @@ export default {
         .selectAll('path')
         .transition(transition)
         .attr('d', this.area)
+      this.$stackedAreaNullGroup
+        .selectAll('path')
+        .transition(transition)
+        .attr('d', this.nullArea)
       if (this.hasSecondDataset) {
         this.$lineGroup
           .selectAll('path')
