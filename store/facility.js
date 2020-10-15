@@ -33,6 +33,7 @@ export const state = () => ({
   sortBy: 'displayName',
   orderBy: 'asc',
   selectedStatuses: [FACILITY_OPERATING],
+  selectedTechGroups: [],
   selectedTechs: [],
   selectedView: 'list',
   filteredFacilities: [],
@@ -62,6 +63,9 @@ export const mutations = {
   },
   selectedStatuses(state, data) {
     state.selectedStatuses = data
+  },
+  selectedTechGroups(state, data) {
+    state.selectedTechGroups = data
   },
   selectedTechs(state, data) {
     state.selectedTechs = data
@@ -109,8 +113,9 @@ export const getters = {
   dataset: state => _cloneDeep(state.dataset),
   sortBy: state => state.sortBy,
   orderBy: state => state.orderBy,
-  selectedStatuses: state => state.selectedStatuses,
-  selectedTechs: state => state.selectedTechs,
+  selectedStatuses: state => _cloneDeep(state.selectedStatuses),
+  selectedTechGroups: state => _cloneDeep(state.selectedTechGroups),
+  selectedTechs: state => _cloneDeep(state.selectedTechs),
   selectedView: state => state.selectedView,
   filteredFacilities: state => state.filteredFacilities,
 

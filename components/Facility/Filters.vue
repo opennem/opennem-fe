@@ -146,6 +146,7 @@
 </template>
 
 <script>
+import { mapGetters, mapMutations } from 'vuex'
 import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
@@ -188,8 +189,6 @@ export default {
       filterFacilityName: '',
       techDropdownActive: false,
       allTechs: [],
-      // selectedTechs: [],
-      selectedTechGroups: [],
       groupExpanded: [],
       simplifiedGroup: _cloneDeep(FacilityGroups),
       windowWidth: 0,
@@ -198,8 +197,19 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      facilitySelectedTechGroups: 'facility/selectedTechGroups'
+    }),
     widthBreak() {
       return this.windowWidth < 769
+    },
+    selectedTechGroups: {
+      get() {
+        return this.facilitySelectedTechGroups
+      },
+      set(value) {
+        this.setSelectedTechGroups(value)
+      }
     }
   },
 
@@ -247,6 +257,9 @@ export default {
     EventBus.$off('facilities.filter.clear')
   },
   methods: {
+    ...mapMutations({
+      setSelectedTechGroups: 'facility/selectedTechGroups'
+    }),
     handleKeyup() {
       this.$emit('facilityNameFilter', this.filterFacilityName)
     },
@@ -303,7 +316,6 @@ export default {
           selected.push(f)
         })
       }
-
       this.$emit('techsSelect', selected)
     },
     handleTechClick(group, techId) {
@@ -332,7 +344,6 @@ export default {
           this.selectedTechGroups.push(group.id)
         }
       }
-
       this.$emit('techsSelect', selected)
     },
     handleExpandCollapseClick(groupId) {
