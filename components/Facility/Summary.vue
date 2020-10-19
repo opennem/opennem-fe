@@ -4,6 +4,7 @@
       {{ description }}
 
       <v-popover 
+        v-if="hasWikiLink" 
         class="wiki-link-text" 
         placement="auto">
         <i class="fal fa-info-circle"/>
