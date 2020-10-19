@@ -18,8 +18,20 @@
           <small>MW</small>
         </th>
         <th class="data-col date-col align-right hover-cell">
-          Power
-          <small>MW</small>
+          <span v-if="(isEnergyType && !isYAxisAveragePower) || (!isEnergyType && !hoverOn)">
+            Energy
+            <small>MWh</small>
+          </span>
+          
+          <span v-if="isEnergyType && isYAxisAveragePower">
+            Av. Power
+            <small>MW</small>
+          </span>
+
+          <span v-if="!isEnergyType && hoverOn">
+            Power
+            <small>MW</small>
+          </span>
         </th>
         <th class="data-col align-right hover-cell">
           Capacity factor
@@ -47,10 +59,19 @@
           <span v-if="hoverOn">
             {{ getValue(d.code) | formatValue }}
           </span>
+          <span v-if="!hoverOn && !isYAxisAveragePower">
+            {{ summary[d.code].energy | formatValue }}
+          </span>
+          <span v-if="!hoverOn && isYAxisAveragePower">
+            {{ summary[d.code].avPower | formatValue }}
+          </span>
         </td>
         <td class="align-right hover-cell">
           <span v-if="hoverOn">
             {{ calculateCapacityFactor(getPowerValue(d.code), d.registeredCapacity) | percentageFormatNumber }}
+          </span>
+          <span v-else>
+            {{ summary[d.code].capFactor | percentageFormatNumber }}
           </span>
         </td>
       </tr>
@@ -64,10 +85,20 @@
           <span v-if="hoverOn">
             {{ hoverTotal | formatValue }}
           </span>
+          <span v-if="!hoverOn && !isYAxisAveragePower">
+            {{ summary.totalEnergy | formatValue }}
+          </span>
+          <span v-if="!hoverOn && isYAxisAveragePower">
+            {{ summary.totalAvPower | formatValue }}
+          </span>
         </th>
         <th class="align-right hover-cell cell-value">
+          Av. 
           <span v-if="hoverOn">
-            Av. {{ calculateCapacityFactor(isEnergyType ? hoverAveragePowerTotal : hoverTotal, operatingUnitsTotalCapacity) | percentageFormatNumber }}
+            {{ calculateCapacityFactor(isEnergyType ? hoverAveragePowerTotal : hoverTotal, operatingUnitsTotalCapacity) | percentageFormatNumber }}
+          </span>
+          <span v-else>
+            {{ summary.capFactor | percentageFormatNumber }}
           </span>
         </th>
       </tr>
@@ -86,6 +117,10 @@ export default {
   },
   props: {
     isEnergyType: {
+      type: Boolean,
+      default: false
+    },
+    isYAxisAveragePower: {
       type: Boolean,
       default: false
     },
@@ -140,6 +175,96 @@ export default {
         return this.dataset[this.dataset.length - 1].time
       }
       return null
+    },
+    summary() {
+      // dataset length not including undefined or null values
+      const ds = this.dataset.filter(d => {
+        let allNulls = true
+        this.units.forEach(u => {
+          const id = u.id
+          if (d[id] || d[id] === 0) {
+            allNulls = false
+          }
+        })
+        return !allNulls
+      })
+
+      const summary = {}
+      const unitNonNullLength = {}
+      let totalRegCap = 0,
+        totalPower = null,
+        totalEnergy = null
+
+      // setup and calculate total Registered capacity
+      this.units.forEach(u => {
+        const id = u.id
+        summary[id] = {
+          power: null,
+          avPower: null,
+          energy: null,
+          capFactor: null
+        }
+        unitNonNullLength[id] = 0
+        totalRegCap += u.registeredCapacity
+      })
+
+      const getEnergy = value => {
+        if (this.isEnergyType) {
+          return value
+        } else {
+          // calculate energy (MWh) += power * 5mins/60
+          const mins = this.interval === '30m' ? 30 : 5
+          return (value * mins) / 60
+        }
+      }
+
+      const getPower = (obj, id) => {
+        if (this.isEnergyType) {
+          // get power from average power dataset
+          const find = this.averagePowerDataset.find(d => d.time === obj.time)
+          return find ? find[id] : null
+        } else {
+          return obj[id]
+        }
+      }
+
+      // sum power / energy for each Unit
+      ds.forEach(d => {
+        this.units.forEach(u => {
+          const id = u.id
+          if (d[id] || d[id] === 0) {
+            summary[id].power += getPower(d, id)
+            summary[id].energy += getEnergy(d[id])
+            unitNonNullLength[id]++
+          }
+        })
+      })
+
+      this.units.forEach(u => {
+        const id = u.id
+
+        // calculate capacity factor - av power / registered capacity
+        // - average power is calculated using non null length
+        summary[id].capFactor = unitNonNullLength[id]
+          ? (summary[id].power / unitNonNullLength[id] / u.registeredCapacity) *
+            100
+          : null
+
+        summary[id].avPower = unitNonNullLength[id]
+          ? summary[id].power / unitNonNullLength[id]
+          : null
+
+        totalPower += summary[id].power
+        totalEnergy += summary[id].energy
+      })
+
+      summary.totalPower = totalPower
+      summary.totalAvPower = totalPower / ds.length
+      summary.totalEnergy = totalEnergy
+      summary.avPower = totalPower / ds.length
+      summary.capFactor = (summary.avPower / totalRegCap) * 100
+
+      return summary
     },
 
     hoverData() {
