@@ -78,14 +78,16 @@
           </transition>
         </section>
 
-        <section class="facility-units card">
+        <section class="facility-units">
           <UnitList
             :is-energy-type="isEnergyType"
             :units="unitsSummary"
             :hover-on="isHovering"
             :hover-date="hoverDate"
-            :dataset="stackedAreaDataset"
+            :dataset="datasetFilteredByZoomExtent"
             :average-power-dataset="averagePowerDataset"
+            :range="range"
+            :interval="interval"
             @codeHover="handleCodeHover" />
         </section>
 
@@ -292,6 +294,17 @@ export default {
       return this.unitsSummary.filter(d => d.status === 'Operating')
     },
 
+    datasetFilteredByZoomExtent() {
+      if (this.zoomExtent.length === 2) {
+        const start = this.zoomExtent[0]
+        const end = this.zoomExtent[1]
+
+        return this.stackedAreaDataset.filter(
+          d => d.date >= start && d.date <= end
+        )
+      }
+      return this.stackedAreaDataset
+    },
     stackedAreaDataset() {
       if (this.isEnergyType) {
         if (this.isYAxisAveragePower) {
@@ -506,89 +519,11 @@ header {
   }
 }
 
-::v-deep .card {
-  border-radius: $radius;
-  padding: 1rem;
-  font-size: 0.9em;
+.facility-units {
+  margin: 0.5rem 1rem 0.5rem 1rem;
 
-  & > .card {
-    font-size: 1em;
-  }
-
-  &.dark {
-    background-color: #333;
-    color: #fff;
-
-    table th,
-    table td {
-      color: #fff;
-      border-bottom-color: #666;
-    }
-  }
-
-  &.dim {
-    background-color: rgba(0, 0, 0, 0.5);
-    color: #fff;
-
-    table th,
-    table td {
-      color: #fff;
-      border-bottom-color: #666;
-    }
-  }
-
-  header {
-    h4 {
-      font-family: $header-font-family;
-      font-size: 1.5em;
-      font-weight: 700;
-    }
-  }
-
-  table {
-    width: 100%;
-  }
-  td,
-  th {
-    padding: 3px 6px;
-  }
-  th {
-    border-bottom: 1px solid #000;
-  }
-  td {
-    border-bottom: 1px solid #ddd;
-  }
-
-  thead {
-    th:first-child {
-      border-radius: $radius 0 0 0;
-    }
-    th:last-child {
-      border-radius: 0 $radius 0 0;
-    }
-  }
-
-  tfoot {
-    td {
-      border: none;
-    }
-    td:first-child {
-      border-radius: 0 0 0 $radius;
-    }
-    td:last-child {
-      border-radius: 0 0 $radius 0;
-    }
-  }
-
-  &.facility-units {
-    margin: 0.5rem 1rem 0.5rem 1rem;
-    padding: 0;
-    background-color: $body-background-color;
-    box-shadow: none;
-
-    @include desktop {
-      margin: 0.5rem 1rem 0.5rem 1.25rem;
-    }
+  @include desktop {
+    margin: 0.5rem 1rem 0.5rem 1.25rem;
   }
 }
 

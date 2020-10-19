@@ -1,18 +1,29 @@
 <template>
   <table class="summary-list">
-    <thead>
+    <caption>
+      <dates-display
+        :is-hovering="hoverOn"
+        :start-date="startTime"
+        :end-date="endTime"
+        :hovered-date="hoverDate ? hoverDate.getTime() : null"
+        :range="range"
+        :interval="interval"
+      />
+    </caption>
+    <thead class="unit-header-row">
       <tr>
         <th>Unit</th>
-        <th class="align-right">Registered capacity</th>
+        <th class="align-right">
+          Registered capacity
+          <small>MW</small>
+        </th>
         <th class="data-col date-col align-right hover-cell">
-          <span v-if="hoverOn">
-            {{ hoverDisplayDate }}
-          </span>
+          Power
+          <small>MW</small>
         </th>
         <th class="data-col align-right hover-cell">
-          <span v-if="hoverOn">
-            Capacity factor
-          </span>
+          Capacity factor
+          <small>%</small>
         </th>
       </tr>
     </thead>
@@ -43,24 +54,22 @@
           </span>
         </td>
       </tr>
-
-      
     </tbody>
 
-    <tfoot v-if="units.length > 1">
+    <tfoot>
       <tr>
-        <td>&nbsp;</td>
-        <td />
-        <td class="align-right hover-cell">
+        <th>Total</th>
+        <th class="align-right cell-value">{{ unitsTotalCapacity }}</th>
+        <th class="align-right hover-cell cell-value">
           <span v-if="hoverOn">
-            Total: {{ hoverTotal | formatValue }}
+            {{ hoverTotal | formatValue }}
           </span>
-        </td>
-        <td class="align-right hover-cell">
+        </th>
+        <th class="align-right hover-cell cell-value">
           <span v-if="hoverOn">
-            Av.: {{ calculateCapacityFactor(isEnergyType ? hoverAveragePowerTotal : hoverTotal, operatingUnitsTotalCapacity) | percentageFormatNumber }}
+            Av. {{ calculateCapacityFactor(isEnergyType ? hoverAveragePowerTotal : hoverTotal, operatingUnitsTotalCapacity) | percentageFormatNumber }}
           </span>
-        </td>
+        </th>
       </tr>
     </tfoot>
     
@@ -69,8 +78,12 @@
 
 <script>
 import DateDisplay from '@/services/DateDisplay.js'
+import DatesDisplay from '@/components/SummaryTable/DatesDisplay'
 
 export default {
+  components: {
+    DatesDisplay
+  },
   props: {
     isEnergyType: {
       type: Boolean,
@@ -95,10 +108,40 @@ export default {
     hoverDate: {
       type: Date,
       default: null
+    },
+    range: {
+      type: String,
+      default: null
+    },
+    interval: {
+      type: String,
+      default: null
     }
   },
 
   computed: {
+    operatingUnits() {
+      return this.units.filter(u => u.status === 'Operating')
+    },
+    operatingUnitsTotalCapacity() {
+      return this.calculateTotalRegisteredCapacity(this.operatingUnits)
+    },
+    unitsTotalCapacity() {
+      return this.calculateTotalRegisteredCapacity(this.units)
+    },
+    startTime() {
+      if (this.dataset.length > 0) {
+        return this.dataset[0].time
+      }
+      return null
+    },
+    endTime() {
+      if (this.dataset.length > 0) {
+        return this.dataset[this.dataset.length - 1].time
+      }
+      return null
+    },
+
     hoverData() {
       return this.hoverDate && this.dataset.length > 0
         ? this.dataset.find(d => d.time === this.hoverDate.getTime())
@@ -116,19 +159,6 @@ export default {
         return ''
       }
       return DateDisplay.defaultDisplayDate(this.hoverDate.getTime())
-    },
-    operatingUnits() {
-      return this.units.filter(u => u.status === 'Operating')
-    },
-    operatingUnitsTotalCapacity() {
-      let total = null
-      this.operatingUnits.forEach(u => {
-        const value = u.registeredCapacity
-        if (value || value === 0) {
-          total += value
-        }
-      })
-      return total
     },
     hoverTotal() {
       if (!this.hoverData) {
@@ -181,6 +211,16 @@ export default {
     },
     calculateCapacityFactor(value, capacity) {
       return value || value === 0 ? (value / capacity) * 100 : null
+    },
+    calculateTotalRegisteredCapacity(units) {
+      let total = null
+      units.forEach(u => {
+        const value = u.registeredCapacity
+        if (value || value === 0) {
+          total += value
+        }
+      })
+      return total
     }
   }
 }
@@ -217,36 +257,46 @@ export default {
 }
 
 .summary-list {
-  font-size: 1em;
-
   @include mobile {
     font-size: 0.8em;
   }
 }
 
-table th {
-  font-family: $header-font-family;
-  border-bottom: 1px solid #000;
+table {
+  font-size: 12px;
+  width: 100%;
 
-  &.date-col {
+  .cell-value {
     font-family: $family-primary;
   }
-}
 
-table td.hover-cell,
-table th.hover-cell {
-  background-color: #efefef;
-}
-table td.hover-cell {
-  border-bottom: 1px solid #dfdfdf;
-}
-table th.hover-cell {
-  border-bottom: 1px solid #000;
-}
-
-table tfoot {
-  td.hover-cell {
+  td,
+  th {
+    padding: 3px 6px;
+    border-bottom: 1px solid #ddd;
+  }
+  th {
+    font-family: $family-secondary;
     font-weight: 700;
+    // border-bottom: 1px solid #000;
+    vertical-align: bottom;
+  }
+
+  .unit-header-row {
+    th {
+      font-weight: 700;
+      small {
+        display: block;
+        color: #999;
+      }
+    }
+  }
+
+  td {
+    border-bottom: 1px solid #ddd;
+  }
+
+  tfoot {
   }
 }
 </style>
