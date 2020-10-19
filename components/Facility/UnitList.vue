@@ -77,7 +77,7 @@
       </tr>
     </tbody>
 
-    <tfoot>
+    <tfoot v-if="units.length > 1">
       <tr>
         <th>Total</th>
         <th class="align-right cell-value">{{ unitsTotalCapacity }}</th>
