@@ -287,7 +287,8 @@ export default {
           id: d.code,
           code: d.code,
           registeredCapacity: d.capacity_registered,
-          status: d.status ? d.status.label : ''
+          status: d.status ? d.status.label : '',
+          fuelTechLabel: d.fueltech ? d.fueltech.label : ''
         }
       })
     },

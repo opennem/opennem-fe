@@ -12,7 +12,10 @@
     </caption>
     <thead class="unit-header-row">
       <tr>
-        <th>Unit</th>
+        <th>
+          Unit
+          <span v-if="areAllUnitsOfSameFuelTech">— {{ getFirstUnitFuelTech }}</span>
+        </th>
         <th class="align-right">
           Registered capacity
           <small>MW</small>
@@ -53,6 +56,7 @@
             :style="{ backgroundColor: d.colour}" 
             class="colour-square" />
           <span>{{ d.code }}</span>
+          <span v-if="!areAllUnitsOfSameFuelTech">— {{ d.fuelTechLabel }}</span>
         </td>
         <td class="align-right">{{ d.registeredCapacity }}</td>
         <td class="align-right hover-cell">
@@ -160,6 +164,21 @@ export default {
     },
     operatingUnitsTotalCapacity() {
       return this.calculateTotalRegisteredCapacity(this.operatingUnits)
+    },
+    areAllUnitsOfSameFuelTech() {
+      let same = true,
+        currentFuelTech =
+          this.units.length > 0 ? this.units[0].fuelTechLabel : null
+
+      this.units.forEach(u => {
+        if (u.fuelTechLabel !== currentFuelTech) {
+          same = false
+        }
+      })
+      return same
+    },
+    getFirstUnitFuelTech() {
+      return this.units.length > 0 ? this.units[0].fuelTechLabel : null
     },
     startTime() {
       if (this.dataset.length > 0) {
