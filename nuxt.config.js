@@ -18,7 +18,8 @@ module.exports = {
   },
 
   server: {
-    host: '0.0.0.0'
+    host: process.env.HOST || '0.0.0.0',
+    port: process.env.PORT || 3000
   },
 
   head: {
@@ -222,7 +223,7 @@ module.exports = {
 
   proxy: {
     '/api': {
-      target: 'https://api.opennem.org.au',
+      target: process.env.API_BASE_URL || 'https://api.opennem.org.au',
       pathRewrite: {
         '^/api': '/'
       }
