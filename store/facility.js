@@ -21,9 +21,14 @@ const http = axios.create({
 })
 
 let useProxy = false
+
 if (typeof window !== 'undefined') {
   const host = window.location.host
-  if (host === 'localhost:3000') {
+  if (
+    host === 'localhost:3000' ||
+    host.startsWith('127') ||
+    host.startsWith('192')
+  ) {
     useProxy = true
   }
 }
