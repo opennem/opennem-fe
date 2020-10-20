@@ -5,10 +5,10 @@
   "author": "Steven Tan",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
+    "dev": "./node_modules/.bin/nuxt",
     "build": "nuxt build",
     "build-export": "nuxt build && nuxt export",
-    "start": "nuxt start",
+    "start": "./node_modules/.bin/nuxt start",
     "serve": "nuxt serve",
     "generate": "FOR=prod nuxt generate",
     "generate-dev": "FOR=dev nuxt generate",
