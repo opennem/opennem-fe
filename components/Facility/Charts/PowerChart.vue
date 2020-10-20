@@ -43,7 +43,7 @@
         :focus-on="focusOn"
         :x-guides="xGuides"
         :y-guides="yGuides"
-        :null-check-prop="isYAxisAveragePower ? '_totalPower' : '_total'"
+        :null-check-prop="totalProp"
         class="vis-chart"
         @dateOver="handleDateHover"
         @domainOver="handleDomainHover"
