@@ -11,7 +11,7 @@ export function isPowerRange(range) {
   return range === RANGE_1D || range === RANGE_3D || range === RANGE_7D
 }
 
-export default [
+export const FuelTechRanges = [
   {
     range: RANGE_1D,
     intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN]
@@ -27,6 +27,44 @@ export default [
   {
     range: RANGE_30D,
     intervals: [INTERVALS.INTERVAL_DAY]
+  },
+  {
+    range: RANGE_1Y,
+    intervals: [
+      INTERVALS.INTERVAL_DAY,
+      INTERVALS.INTERVAL_WEEK,
+      INTERVALS.INTERVAL_MONTH
+    ]
+  },
+  {
+    range: RANGE_ALL,
+    intervals: [
+      INTERVALS.INTERVAL_MONTH,
+      INTERVALS.INTERVAL_SEASON,
+      INTERVALS.INTERVAL_QUARTER,
+      INTERVALS.INTERVAL_HALFYEAR,
+      INTERVALS.INTERVAL_FINYEAR,
+      INTERVALS.INTERVAL_YEAR
+    ]
+  }
+]
+
+export const FacilityPowerEnergyRanges = [
+  {
+    range: RANGE_1D,
+    intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN]
+  },
+  {
+    range: RANGE_3D,
+    intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN]
+  },
+  {
+    range: RANGE_7D,
+    intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN]
+  },
+  {
+    range: RANGE_30D,
+    intervals: [INTERVALS.INTERVAL_30MIN, INTERVALS.INTERVAL_DAY]
   },
   {
     range: RANGE_1Y,

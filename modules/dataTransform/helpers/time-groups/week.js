@@ -2,9 +2,8 @@ import startOfWeek from 'date-fns/startOfWeek'
 import endOfWeek from 'date-fns/endOfWeek'
 import isAfter from 'date-fns/isAfter'
 import isBefore from 'date-fns/isBefore'
-import rollUp from './energyRollUp'
 
-export default function(domains, data) {
+export default function(domains, data, rollUp) {
   let isIncompleteEnd = false,
     isIncompleteStart = false,
     incompleteStartDate = null,

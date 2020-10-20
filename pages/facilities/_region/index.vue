@@ -12,19 +12,19 @@
     />
 
     <transition name="fade">
-      <div
-        v-if="!ready"
+      <div 
+        v-if="!ready" 
         class="facility-list-map-container loading-containers">
         <div class="facility-list">
-          <div
-            class="loader-block"
+          <div 
+            class="loader-block" 
             style="height: 400px" />
         </div>
         <div 
           class="facility-map" 
           style="margin-top: 127px;">
-          <div
-            class="loader-block"
+          <div 
+            class="loader-block" 
             style="height: 400px" />
         </div>
       </div>
@@ -47,6 +47,7 @@
         @facilitySelect="handleFacilitySelect"
         @facilityHover="handleFacilityHover"
         @facilityMouseout="handleFacilityOut"
+        @openFacilityView="handleOpenFacilityView"
       />
 
       <facility-map
@@ -72,11 +73,11 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
 import _orderBy from 'lodash.orderby'
-import * as FUEL_TECHS from '~/constants/fuel-tech.js'
+import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 import { FACILITY_OPERATING } from '~/constants/facility-status.js'
 import {
   FacilityRegions,
@@ -151,7 +152,6 @@ export default {
       ready: false,
       filterString: '',
       facilityData: [],
-      filteredFacilities: [],
       selectedFacility: null,
       hoveredFacility: null,
       selectedStatuses: [FACILITY_OPERATING],
@@ -169,6 +169,14 @@ export default {
   },
 
   computed: {
+    filteredFacilities: {
+      get() {
+        return this.$store.getters['facility/filteredFacilities']
+      },
+      set(facilities) {
+        this.setFilteredFacilities(facilities)
+      }
+    },
     facilityDataset() {
       return this.$store.getters['facility/dataset']
     },
@@ -264,6 +272,10 @@ export default {
   },
 
   methods: {
+    ...mapMutations({
+      previousPath: 'facility/previousPath',
+      setFilteredFacilities: 'facility/filteredFacilities'
+    }),
     fetchData() {
       const urls = []
 
@@ -374,6 +386,7 @@ export default {
             Longitude: d.location.longitude
           }
         })
+
         that.$store.dispatch('facilityExportData', exportData)
       })
     },
@@ -402,6 +415,11 @@ export default {
       this.$store.dispatch('facility/orderBy', this.orderBy)
     },
     handleFacilitySelect(facility, shouldZoom) {
+      if (facility) {
+        this.$router.push({ query: { selected: facility.facilityId } })
+      } else {
+        this.$router.push({ query: {} })
+      }
       this.selectedFacility = facility
       this.shouldZoomWhenSelected = shouldZoom
     },
@@ -426,6 +444,18 @@ export default {
     },
     handleCloseDetail() {
       this.selectedFacility = null
+    },
+    handleOpenFacilityView(facility) {
+      this.handleFacilitySelect(facility, true)
+      this.previousPath(this.$route.fullPath)
+
+      const id = facility.facilityId
+      const network = facility.network
+      this.$router.push({
+        path: `/facility/${encodeURIComponent(network)}/${encodeURIComponent(
+          id
+        )}`
+      })
     }
   }
 }

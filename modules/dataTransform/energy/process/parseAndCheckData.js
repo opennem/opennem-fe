@@ -17,9 +17,11 @@ export default function(response) {
   data.forEach(d => {
     checkHistoryObject(d)
 
-    if (DT.isValidDataType(d.type)) {
+    const typeProp = typeof d.data_type === 'undefined' ? 'type' : 'data_type'
+    if (DT.isValidDataType(d[typeProp])) {
       dataAll.push(d)
     }
+
     switch (d.type) {
       case DT.POWER:
         dataPower.push(d)
@@ -59,6 +61,7 @@ export default function(response) {
     dataTemperature,
     isPowerData: dataPower.length > 0,
     hasPowerEnergyData: dataPowerEnergy.length > 0,
-    fuelTechDataType: dataPower.length > 0 ? DT.POWER : DT.ENERGY
+    fuelTechDataType: dataPower.length > 0 ? DT.POWER : DT.ENERGY,
+    units: dataPowerEnergy.length > 0 ? dataPowerEnergy[0].units : ''
   }
 }

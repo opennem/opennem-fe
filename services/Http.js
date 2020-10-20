@@ -14,8 +14,29 @@ if (typeof window !== 'undefined') {
   }
 }
 
+const getBaseUrl = () => {
+  let baseUrl = `https://data.opennem.org.au`
+  let host = undefined
+
+  if (typeof window !== 'undefined') {
+    host = window.location.host
+  }
+
+  if (host && host.startsWith('127')) {
+    baseUrl = `http://127.0.0.1:8000/export/`
+  }
+
+  if (process.env.DATA_BASE_URL !== undefined) {
+    baseUrl = process.env.DATA_BASE_URL
+  }
+
+  console.info('baseUrl', baseUrl)
+
+  return baseUrl
+}
+
 const http = axios.create({
-  baseURL: `https://data.opennem.org.au`,
+  baseURL: getBaseUrl(),
   withCredentials: false,
   headers: {
     Accept: 'application/json',

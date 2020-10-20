@@ -45,12 +45,7 @@ function reducer(a, domains) {
 }
 
 export default function(domains, data) {
-  const coeff = 1000 * 60 * 30
-  const entries = rollups(
-    data,
-    v => reducer(v, domains),
-    d => Math.round(d.time / coeff) * coeff
-  )
+  const entries = rollups(data, v => reducer(v, domains), d => d._rollUpDate)
 
   return entries.map(e => {
     const object = {

@@ -7,7 +7,9 @@ import * as SI from '@/constants/si.js'
 function smartFormatString(v) {
   const value = Math.abs(v)
   let fString = ',.0f'
-  if (value < 30 && value > 0.1) {
+  if (value === 0) {
+    fString = ',.0f'
+  } else if (value < 30 && value > 0.1) {
     fString = ',.1f'
   } else if (value < 0.1 && value > 0.01) {
     fString = ',.2f'
@@ -60,7 +62,7 @@ Vue.filter('formatValue', value => {
   const fString = smartFormatString(value)
   const f = d3Format(fString)
   const fValue = f(value)
-  return isFinite(value) && !isNaN(value) && value ? fValue : '–'
+  return isFinite(value) && !isNaN(value) && value !== null ? fValue : '–'
 })
 Vue.filter('formatValue2', value => {
   const fString = smartFormatString(value)
@@ -97,7 +99,7 @@ Vue.filter('percentageFormatNumber', value => {
   }
   const f = d3Format(fString)
   const fValue = f(value) + '%'
-  return isFinite(value) && !isNaN(value) && value ? fValue : '–'
+  return isFinite(value) && !isNaN(value) && value !== null ? fValue : '–'
 })
 
 Vue.filter('percentageFormatNumber2', value => {

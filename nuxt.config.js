@@ -8,13 +8,18 @@ module.exports = {
     version: pkg.version,
     useDev: process.env.FOR === 'dev',
     url:
-      process.env.FOR === 'dev'
+      process.env.FOR === 'dev' // this is to get the right social media card images for prod and dev
         ? 'https://dev.opennem.org.au'
         : 'https://opennem.org.au'
   },
 
+  env: {
+    mapboxToken: process.env.MAPBOX_TOKEN || ''
+  },
+
   server: {
-    host: '0.0.0.0'
+    host: process.env.HOST || '0.0.0.0',
+    port: process.env.PORT || 3000
   },
 
   head: {
@@ -203,7 +208,8 @@ module.exports = {
     '~plugins/filters.js',
     '~plugins/tooltip.js',
     '~plugins/sentry.js',
-    { src: '~/plugins/leaflet', ssr: false }
+    { src: '~/plugins/leaflet', ssr: false },
+    { src: '~/plugins/mapbox', mode: 'client' }
   ],
 
   /*
@@ -211,8 +217,19 @@ module.exports = {
   */
   modules: [
     // Doc: https://github.com/nuxt-community/axios-module#usage
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    '@nuxtjs/proxy'
   ],
+
+  proxy: {
+    '/api': {
+      target: process.env.API_BASE_URL || 'https://api.opennem.org.au',
+      pathRewrite: {
+        '^/api': '/'
+      }
+    }
+  },
+
   /*
   ** Axios module configuration
   */

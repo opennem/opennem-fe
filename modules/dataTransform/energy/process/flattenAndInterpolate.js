@@ -17,7 +17,7 @@ export default function(isPowerData, dataInterval, dataAll, datasetAll) {
     const updateDataset = () => {
       const historyData = [...d.history.data]
       datasetAll.forEach((h, i) => {
-        h[d.id] = historyData[i] || null
+        h[d.id] = historyData[i]
       })
     }
     const updateDatasetWithMixedInterval = datasetMixed => {

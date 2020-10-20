@@ -386,45 +386,4 @@ export default {
 
 <style lang="scss" scoped>
 @import '~/assets/scss/variables.scss';
-
-.summary-list {
-  .item {
-    // cursor: move;
-    cursor: pointer;
-    user-select: none;
-
-    &.drag-placeholder {
-      opacity: 0.1;
-    }
-
-    &:hover {
-      background-color: $row-hover;
-    }
-  }
-
-  .summary-col-label {
-    display: flex;
-    align-items: center;
-    .ft-label {
-      padding-left: 5px;
-    }
-  }
-
-  .colour-square {
-    border: 1px solid transparent;
-    width: 15px;
-    height: 15px;
-  }
-
-  &.click-disable {
-    .item {
-      cursor: auto;
-      user-select: auto;
-
-      &:hover {
-        background-color: transparent;
-      }
-    }
-  }
-}
 </style>

@@ -1,5 +1,6 @@
 import parseISO from 'date-fns/parseISO'
 import addDays from 'date-fns/addDays'
+import subDays from 'date-fns/subDays'
 import addMonths from 'date-fns/addMonths'
 import endOfDay from 'date-fns/endOfDay'
 import endOfMonth from 'date-fns/endOfMonth'
@@ -276,6 +277,24 @@ export default {
     return display
   },
 
+  defaultDisplayDate(time) {
+    const now = Date.now()
+    const today = d3TimeFormat('%d/%m/%Y')(now)
+    const fDate = d3TimeFormat('%d/%m/%Y')(time)
+    const thisYear = d3TimeFormat('%Y')(now)
+    const fYear = d3TimeFormat('%Y')(time)
+    let formatString = ''
+
+    if (today === fDate) {
+      formatString = 'Today at %-I:%M %p'
+    } else if (thisYear === fYear) {
+      formatString = '%-d %b, %-I:%M %p'
+    } else {
+      formatString = '%-d %b %Y, %-I:%M %p'
+    }
+    return d3TimeFormat(formatString)(time)
+  },
+
   snapToClosestInterval(interval, date, isLinear) {
     switch (interval) {
       case '5m':
@@ -370,7 +389,7 @@ export default {
 
   nightGuides(datasetStart, datasetEnd) {
     const guides = []
-    let dStart = datasetStart
+    let dStart = subDays(new Date(datasetStart), 1).getTime()
     const dEnd = datasetEnd
 
     while (dStart <= dEnd) {

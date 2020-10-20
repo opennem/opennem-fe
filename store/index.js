@@ -1,5 +1,5 @@
 import cloneDeep from 'lodash.clonedeep'
-import * as FUEL_TECHS from '~/constants/fuel-tech.js'
+import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 
 let hostEnv = 'dev'
 if (typeof window !== 'undefined') {

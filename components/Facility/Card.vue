@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import * as FUEL_TECHS from '~/constants/fuel-tech.js'
+import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 
 export default {
   props: {

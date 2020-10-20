@@ -49,7 +49,8 @@ export const state = () => ({
   currentDomainEmissions: [],
   currentDomainMarketValue: [],
   filteredDates: [],
-  summary: null
+  summary: null,
+  powerEnergyPrefix: ''
 })
 
 export const getters = {
@@ -70,6 +71,7 @@ export const getters = {
   currentDomainEmissions: state => state.currentDomainEmissions,
   currentDomainMarketValue: state => state.currentDomainMarketValue,
   summary: state => state.summary,
+  powerEnergyPrefix: state => state.powerEnergyPrefix,
   filteredDates: state => state.filteredDates,
   filteredCurrentDataset: state =>
     state.filteredDates.length > 0
@@ -139,6 +141,9 @@ export const mutations = {
   summary(state, summary) {
     state.summary = _cloneDeep(summary)
   },
+  powerEnergyPrefix(state, powerEnergyPrefix) {
+    state.powerEnergyPrefix = powerEnergyPrefix
+  },
   filteredDates(state, filteredDates) {
     state.filteredDates = _cloneDeep(filteredDates)
   }
@@ -175,7 +180,8 @@ export const actions = {
           domainMarketValueGrouped,
           domainPrice,
           domainTemperature,
-          dataType
+          dataType,
+          units
         } = dataProcess(responses, range, interval, period)
 
         perf.timeEnd(
@@ -202,6 +208,24 @@ export const actions = {
         commit('currentDomainPowerEnergy', domainPowerEnergyGrouped[groupName])
         commit('currentDomainEmissions', domainEmissionsGrouped[groupName])
         commit('currentDomainMarketValue', domainMarketValueGrouped[groupName])
+
+        // parse units
+        let prefix = ''
+        const isWattsPerHour =
+          units.toLowerCase().indexOf('wh') >= 0 ? true : false
+        const isWatts = isWattsPerHour ? false : true
+
+        if (isWattsPerHour) {
+          if (units.length === 3) {
+            prefix = units[0]
+          }
+        } else if (isWatts) {
+          if (units.length === 2) {
+            prefix = units[0]
+          }
+        }
+        commit('powerEnergyPrefix', prefix)
+
         commit('jsonResponses', responses)
         commit('ready', true)
       }
