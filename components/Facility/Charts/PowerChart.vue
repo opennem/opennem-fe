@@ -161,7 +161,11 @@ export default {
       return this.dataType === 'energy'
     },
     averageValue() {
-      const prop = this.isYAxisAveragePower ? '_totalPower' : '_total'
+      const prop = this.isEnergyType
+        ? this.isYAxisAveragePower
+          ? '_totalPower'
+          : '_total'
+        : '_total'
       const filteredOutNulls = this.filteredDataset.filter(
         d => d[prop] !== null
       )
