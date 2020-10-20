@@ -2,7 +2,7 @@
   <div>
     <div 
       :class="{
-      'is-hovered': hoverOn }" 
+      'is-hovered': hoverOn || focusOn }" 
       class="chart">
       <power-chart-options
         :chart-title="chartTitle"
@@ -12,11 +12,11 @@
         :chart-curve="chartCurve"
         :chart-y-axis="chartYAxis"
         :display-unit="displayUnit"
-        :hover-display-date="hoverDisplayDate"
-        :hover-value="hoverValue"
-        :hover-domain-label="hoverDomainLabel"
-        :hover-domain-colour="hoverDomainColour"
-        :hover-total="hoverTotal"
+        :hover-display-date="hoverOn ? hoverDisplayDate : focusDisplayDate"
+        :hover-value="hoverOn ? hoverValue : focusValue"
+        :hover-domain-label="hoverOn ? hoverDomainLabel : focusDomainLabel"
+        :hover-domain-colour="hoverOn ? hoverDomainColour : focusDomainColour"
+        :hover-total="hoverOn ? hoverTotal : focusTotal"
         :average-value="averageValue"
         :show-hover="domains.length > 1"
         :is-energy-type="isEnergyType"
@@ -156,6 +156,7 @@ export default {
   data() {
     return {
       hoverDomain: '',
+      focusDomain: '',
       filteredDataset: []
     }
   },
@@ -238,52 +239,6 @@ export default {
 
       return highest + (highest * 10) / 100
     },
-    hoverData() {
-      if (!this.hoverDate) {
-        return null
-      }
-      const time = this.hoverDate.getTime()
-      return this.dataset.find(d => d.time === time)
-    },
-    hoverValue() {
-      return this.hoverData ? this.hoverData[this.hoverDomain] : null
-    },
-    hoverDisplayDate() {
-      if (!this.hoverDate) {
-        return ''
-      }
-      return DateDisplay.specialDateFormats(
-        this.hoverDate.getTime(),
-        this.range,
-        this.interval,
-        false,
-        false,
-        false,
-        true
-      )
-    },
-    hoverTotal() {
-      let total = 0
-      let allNulls = true
-      if (this.hoverData) {
-        this.domains.forEach(d => {
-          const value = this.hoverData[d.code]
-          total += value || 0
-          if (value || value === 0) {
-            allNulls = false
-          }
-        })
-      }
-      return allNulls ? null : total
-    },
-    hoverDomainLabel() {
-      const find = this.domains.find(d => d.code === this.hoverDomain)
-      return find ? find.code : '—'
-    },
-    hoverDomainColour() {
-      const find = this.domains.find(d => d.code === this.hoverDomain)
-      return find ? find.colour : '—'
-    },
 
     chartOptions() {
       let o = _cloneDeep(options)
@@ -294,6 +249,44 @@ export default {
         ]
       }
       return o
+    },
+
+    hoverData() {
+      return this.getDataByDate(this.hoverDate)
+    },
+    hoverValue() {
+      return this.hoverData ? this.hoverData[this.hoverDomain] : null
+    },
+    hoverDisplayDate() {
+      return this.getDisplayDate(this.hoverDate)
+    },
+    hoverTotal() {
+      return this.getTotal(this.hoverData)
+    },
+    hoverDomainLabel() {
+      return this.getDomainLabel(this.hoverDomain)
+    },
+    hoverDomainColour() {
+      return this.getDomainColour(this.hoverDomain)
+    },
+
+    focusData() {
+      return this.getDataByDate(this.focusDate)
+    },
+    focusValue() {
+      return this.focusData ? this.focusData[this.focusDomain] : null
+    },
+    focusDisplayDate() {
+      return this.getDisplayDate(this.focusDate)
+    },
+    focusTotal() {
+      return this.getTotal(this.focusData)
+    },
+    focusDomainLabel() {
+      return this.getDomainLabel(this.focusDomain)
+    },
+    focusDomainColour() {
+      return this.getDomainColour(this.focusDomain)
     }
   },
 
@@ -324,6 +317,58 @@ export default {
       doUpdateXGuides: 'visInteract/doUpdateXGuides',
       doUpdateXTicks: 'visInteract/doUpdateXTicks'
     }),
+
+    getDataByDate(date) {
+      if (!date) {
+        return null
+      }
+      const time = date.getTime()
+      return this.dataset.find(d => d.time === time)
+    },
+
+    getDisplayDate(date) {
+      if (!date) {
+        return ''
+      }
+      return DateDisplay.specialDateFormats(
+        date.getTime(),
+        this.range,
+        this.interval,
+        false,
+        false,
+        false,
+        true
+      )
+    },
+
+    getTotal(data) {
+      let total = 0
+      let allNulls = true
+      if (data) {
+        this.domains.forEach(d => {
+          const value = data[d.code]
+          total += value || 0
+          if (value || value === 0) {
+            allNulls = false
+          }
+        })
+      }
+      return allNulls ? null : total
+    },
+
+    getDomain(domain) {
+      return this.domains.find(d => d.code === domain)
+    },
+
+    getDomainLabel(domain) {
+      const find = this.getDomain(domain)
+      return find ? find.code : '—'
+    },
+
+    getDomainColour(domain) {
+      const find = this.getDomain(domain)
+      return find ? find.colour : '—'
+    },
 
     updateFilteredDataset() {
       if (this.zoomExtent.length === 2) {
@@ -372,6 +417,7 @@ export default {
       this.$emit('zoomExtent', dateRange)
     },
     handleSvgClick() {
+      this.focusDomain = this.hoverDomain
       this.$emit('svgClick')
     }
   }
