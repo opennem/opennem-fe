@@ -197,7 +197,11 @@ export const actions = {
 
     let period = range
     if (range === '30D') {
-      period = '1M&interval=1d'
+      if (interval === '30m') {
+        period = '1M&interval=30m'
+      } else {
+        period = '1M&interval=1d'
+      }
     }
     if (range === '1Y') {
       period = '1Y&interval=1d'
