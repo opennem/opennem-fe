@@ -80,7 +80,7 @@
     <tfoot v-if="units.length > 1">
       <tr>
         <th>Total</th>
-        <th class="align-right cell-value">{{ unitsTotalCapacity }}</th>
+        <th class="align-right cell-value">{{ operatingUnitsTotalCapacity }}</th>
         <th class="align-right hover-cell cell-value">
           <span v-if="hoverOn">
             {{ hoverTotal | formatValue }}
@@ -161,9 +161,6 @@ export default {
     operatingUnitsTotalCapacity() {
       return this.calculateTotalRegisteredCapacity(this.operatingUnits)
     },
-    unitsTotalCapacity() {
-      return this.calculateTotalRegisteredCapacity(this.units)
-    },
     startTime() {
       if (this.dataset.length > 0) {
         return this.dataset[0].time
@@ -191,7 +188,7 @@ export default {
 
       const summary = {}
       const unitNonNullLength = {}
-      let totalRegCap = 0,
+      let totalOperatingRegCap = 0,
         totalPower = null,
         totalEnergy = null
 
@@ -205,7 +202,9 @@ export default {
           capFactor: null
         }
         unitNonNullLength[id] = 0
-        totalRegCap += u.registeredCapacity
+        if (u.status === 'Operating') {
+          totalOperatingRegCap += u.registeredCapacity
+        }
       })
 
       const getEnergy = value => {
@@ -262,7 +261,7 @@ export default {
       summary.totalAvPower = totalPower / ds.length
       summary.totalEnergy = totalEnergy
       summary.avPower = totalPower / ds.length
-      summary.capFactor = (summary.avPower / totalRegCap) * 100
+      summary.capFactor = (summary.avPower / totalOperatingRegCap) * 100
 
       return summary
     },
