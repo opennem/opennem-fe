@@ -1,6 +1,5 @@
 import { checkHistoryObject } from '@/services/DataCheck.js'
 import createEmptyDatasets from '@/modules/dataTransform/helpers/createEmptyDatasets.js'
-import { filterDatasetByRange } from '@/modules/dataTransform/helpers/filter'
 
 export default function(data, range) {
   // map to existing structure and filter out null histories
@@ -20,7 +19,7 @@ export default function(data, range) {
     })
     .filter(d => d.history)
 
-  const dataset = filterDatasetByRange(createEmptyDatasets(units), range)
+  const dataset = createEmptyDatasets(units)
   const type = units.length > 0 ? units[0].type : ''
 
   units.forEach(u => {

@@ -1,12 +1,15 @@
 import process from './process'
 import rollUp from './rollUp'
 import summarise from './summarise'
+import { filterDatasetByRange } from '../helpers/filter'
 
 export function dataProcess(data, range, interval) {
   const { domains, dataset, type } = process(data, range)
+
+  const datasetFlat = filterDatasetByRange(dataset, range)
   const currentDataset = rollUp({
     domains,
-    datasetFlat: dataset,
+    datasetFlat,
     interval,
     isEnergyType: type === 'energy'
   })
@@ -18,7 +21,7 @@ export function dataProcess(data, range, interval) {
 
   return {
     dataset: currentDataset,
-    datasetFlat: dataset,
+    datasetFlat,
     units: domains
   }
 }
