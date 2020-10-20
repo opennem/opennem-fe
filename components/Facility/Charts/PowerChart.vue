@@ -39,11 +39,14 @@
         :highlight-domain="highlightId"
         :hover-on="hoverOn"
         :hover-date="hoverDate"
+        :focus-date="focusDate"
+        :focus-on="focusOn"
         :x-guides="xGuides"
         :y-guides="yGuides"
         class="vis-chart"
         @dateOver="handleDateHover"
         @domainOver="handleDomainHover"
+        @svgClick="handleSvgClick"
         @enter="handleVisEnter"
         @leave="handleVisLeave"
         @zoomExtent="handleZoomExtent"
@@ -98,7 +101,15 @@ export default {
       type: Boolean,
       default: false
     },
+    focusOn: {
+      type: Boolean,
+      default: false
+    },
     hoverDate: {
+      type: Date,
+      default: null
+    },
+    focusDate: {
       type: Date,
       default: null
     },
@@ -356,6 +367,9 @@ export default {
     },
     handleZoomExtent(dateRange) {
       this.$emit('zoomExtent', dateRange)
+    },
+    handleSvgClick() {
+      this.$emit('svgClick')
     }
   }
 }

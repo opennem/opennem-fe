@@ -3,9 +3,11 @@
     <caption>
       <dates-display
         :is-hovering="hoverOn"
+        :focus-on="focusOn"
+        :hovered-date="hoverDate ? hoverDate.getTime() : null"
+        :focus-date="focusDate ? focusDate.getTime() : null"
         :start-date="startTime"
         :end-date="endTime"
-        :hovered-date="hoverDate ? hoverDate.getTime() : null"
         :range="range"
         :interval="interval"
       />
@@ -21,7 +23,7 @@
           <small>MW</small>
         </th>
         <th class="data-col date-col align-right hover-cell">
-          <span v-if="(isEnergyType && !isYAxisAveragePower) || (!isEnergyType && !hoverOn)">
+          <span v-if="(isEnergyType && !isYAxisAveragePower) || (!isEnergyType && !(hoverOn || focusOn))">
             Energy
             <small>MWh</small>
           </span>
@@ -31,7 +33,7 @@
             <small>MW</small>
           </span>
 
-          <span v-if="!isEnergyType && hoverOn">
+          <span v-if="!isEnergyType && (hoverOn || focusOn)">
             Power
             <small>MW</small>
           </span>
@@ -61,20 +63,26 @@
         <td class="align-right">{{ d.registeredCapacity }}</td>
         <td class="align-right hover-cell">
           <span v-if="hoverOn">
-            {{ getValue(d.code) | formatValue }}
+            {{ getHoverValue(d.code) | formatValue }}
           </span>
-          <span v-if="!hoverOn && !isYAxisAveragePower">
+          <span v-if="!hoverOn && focusOn">
+            {{ getFocusValue(d.code) | formatValue }}
+          </span>
+          <span v-if="!hoverOn && !focusOn && !isYAxisAveragePower">
             {{ summary[d.code].energy | formatValue }}
           </span>
-          <span v-if="!hoverOn && isYAxisAveragePower">
+          <span v-if="!hoverOn && !focusOn && isYAxisAveragePower">
             {{ summary[d.code].avPower | formatValue }}
           </span>
         </td>
         <td class="align-right hover-cell">
           <span v-if="hoverOn">
-            {{ calculateCapacityFactor(getPowerValue(d.code), d.registeredCapacity) | percentageFormatNumber }}
+            {{ calculateCapacityFactor(getHoverPowerValue(d.code), d.registeredCapacity) | percentageFormatNumber }}
           </span>
-          <span v-else>
+          <span v-if="!hoverOn && focusOn">
+            {{ calculateCapacityFactor(getFocusPowerValue(d.code), d.registeredCapacity) | percentageFormatNumber }}
+          </span>
+          <span v-if="!hoverOn && !focusOn">
             {{ summary[d.code].capFactor | percentageFormatNumber }}
           </span>
         </td>
@@ -89,10 +97,13 @@
           <span v-if="hoverOn">
             {{ hoverTotal | formatValue }}
           </span>
-          <span v-if="!hoverOn && !isYAxisAveragePower">
+          <span v-if="!hoverOn && focusOn">
+            {{ focusTotal | formatValue }}
+          </span>
+          <span v-if="!hoverOn && !focusOn && !isYAxisAveragePower">
             {{ summary.totalEnergy | formatValue }}
           </span>
-          <span v-if="!hoverOn && isYAxisAveragePower">
+          <span v-if="!hoverOn && !focusOn && isYAxisAveragePower">
             {{ summary.totalAvPower | formatValue }}
           </span>
         </th>
@@ -101,7 +112,10 @@
           <span v-if="hoverOn">
             {{ calculateCapacityFactor(isEnergyType ? hoverAveragePowerTotal : hoverTotal, operatingUnitsTotalCapacity) | percentageFormatNumber }}
           </span>
-          <span v-else>
+          <span v-if="!hoverOn && focusOn">
+            {{ calculateCapacityFactor(isEnergyType ? focusAveragePowerTotal : focusTotal, operatingUnitsTotalCapacity) | percentageFormatNumber }}
+          </span>
+          <span v-if="!hoverOn && !focusOn">
             {{ summary.capFactor | percentageFormatNumber }}
           </span>
         </th>
@@ -145,6 +159,14 @@ export default {
       default: false
     },
     hoverDate: {
+      type: Date,
+      default: null
+    },
+    focusOn: {
+      type: Boolean,
+      default: false
+    },
+    focusDate: {
       type: Date,
       default: null
     },
@@ -297,12 +319,6 @@ export default {
           )
         : null
     },
-    hoverDisplayDate() {
-      if (!this.hoverDate) {
-        return ''
-      }
-      return DateDisplay.defaultDisplayDate(this.hoverDate.getTime())
-    },
     hoverTotal() {
       if (!this.hoverData) {
         return null
@@ -328,6 +344,45 @@ export default {
         }
       })
       return total
+    },
+
+    focusData() {
+      return this.focusDate && this.dataset.length > 0
+        ? this.dataset.find(d => d.time === this.focusDate.getTime())
+        : null
+    },
+    focusAveragePowerData() {
+      return this.focusDate && this.averagePowerDataset.length > 0
+        ? this.averagePowerDataset.find(
+            d => d.time === this.focusDate.getTime()
+          )
+        : null
+    },
+    focusTotal() {
+      if (!this.focusData) {
+        return null
+      }
+      let total = null
+      this.operatingUnits.forEach(u => {
+        const value = this.focusData[u.code]
+        if (value || value === 0) {
+          total += value
+        }
+      })
+      return total
+    },
+    focusAveragePowerTotal() {
+      if (!this.focusAveragePowerData) {
+        return null
+      }
+      let total = null
+      this.operatingUnits.forEach(u => {
+        const value = this.focusAveragePowerData[u.code]
+        if (value || value === 0) {
+          total += value
+        }
+      })
+      return total
     }
   },
 
@@ -343,14 +398,23 @@ export default {
     handleMouseLeave() {
       this.$emit('codeHover', '')
     },
-    getValue(code) {
+    getHoverValue(code) {
       return this.hoverData ? this.hoverData[code] : ''
     },
-    getPowerValue(code) {
+    getFocusValue(code) {
+      return this.focusData ? this.focusData[code] : ''
+    },
+    getHoverPowerValue(code) {
       const hover = this.isEnergyType
         ? this.hoverAveragePowerData
         : this.hoverData
       return hover ? hover[code] : ''
+    },
+    getFocusPowerValue(code) {
+      const focus = this.isEnergyType
+        ? this.focusAveragePowerData
+        : this.focusData
+      return focus ? focus[code] : ''
     },
     calculateCapacityFactor(value, capacity) {
       return value || value === 0 ? (value / capacity) * 100 : null

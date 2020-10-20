@@ -59,6 +59,8 @@
               v-if="!fetchingStats && stackedAreaDataset.length > 0"
               :hover-on="isHovering"
               :hover-date="hoverDate"
+              :focus-on="isFocusing"
+              :focus-date="focusDate"
               :dataset="stackedAreaDataset"
               :domains="operatingDomains"
               :zoom-extent="zoomExtent"
@@ -74,6 +76,7 @@
               @dateHover="handleDateHover"
               @isHovering="handleIsHovering"
               @zoomExtent="handleZoomExtent"
+              @svgClick="handleSvgClick"
             />
           </transition>
         </section>
@@ -85,6 +88,8 @@
             :units="unitsSummary"
             :hover-on="isHovering"
             :hover-date="hoverDate"
+            :focus-on="isFocusing"
+            :focus-date="focusDate"
             :dataset="datasetFilteredByZoomExtent"
             :average-power-dataset="averagePowerDataset"
             :range="range"
@@ -173,7 +178,10 @@ export default {
       chartEnergyYAxis: 'chartOptionsPowerEnergy/chartEnergyYAxis',
       chartPowerCurve: 'chartOptionsPowerEnergy/chartPowerCurve',
       chartEnergyCurrentUnit: 'chartOptionsPowerEnergy/chartEnergyCurrentUnit',
-      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit'
+      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
+
+      isFocusing: 'visInteract/isFocusing',
+      focusDate: 'visInteract/focusDate'
     }),
     isEnergyType() {
       return this.dataType === 'energy'
@@ -368,6 +376,10 @@ export default {
         const facilityId = update.code
         this.doGetStationStats({ networkRegion, facilityId })
       }
+    },
+    selectedFacilityUnitsDataset() {
+      // clear dates
+      this.setFocusDate(null)
     }
   },
 
@@ -380,7 +392,8 @@ export default {
 
   methods: {
     ...mapMutations({
-      setHighlightDomain: 'visInteract/highlightDomain'
+      setHighlightDomain: 'visInteract/highlightDomain',
+      setFocusDate: 'visInteract/focusDate'
     }),
     ...mapActions({
       doGetFacilityById: 'facility/doGetFacilityById',
@@ -423,6 +436,16 @@ export default {
     },
     handleIntervalChange() {
       this.doUpdateDatasetByInterval()
+    },
+    handleSvgClick() {
+      if (
+        this.focusDate &&
+        this.focusDate.getTime() === this.hoverDate.getTime()
+      ) {
+        this.setFocusDate(null)
+      } else {
+        this.setFocusDate(this.hoverDate)
+      }
     }
   }
 }
