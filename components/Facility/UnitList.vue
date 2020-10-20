@@ -308,81 +308,29 @@ export default {
     },
 
     hoverData() {
-      return this.hoverDate && this.dataset.length > 0
-        ? this.dataset.find(d => d.time === this.hoverDate.getTime())
-        : null
+      return this.getData(this.hoverDate)
     },
     hoverAveragePowerData() {
-      return this.hoverDate && this.averagePowerDataset.length > 0
-        ? this.averagePowerDataset.find(
-            d => d.time === this.hoverDate.getTime()
-          )
-        : null
+      return this.getAveragePowerData(this.hoverDate)
     },
     hoverTotal() {
-      if (!this.hoverData) {
-        return null
-      }
-      let total = null
-      this.operatingUnits.forEach(u => {
-        const value = this.hoverData[u.code]
-        if (value || value === 0) {
-          total += value
-        }
-      })
-      return total
+      return this.getTotal(this.hoverData)
     },
     hoverAveragePowerTotal() {
-      if (!this.hoverAveragePowerData) {
-        return null
-      }
-      let total = null
-      this.operatingUnits.forEach(u => {
-        const value = this.hoverAveragePowerData[u.code]
-        if (value || value === 0) {
-          total += value
-        }
-      })
-      return total
+      return this.getTotal(this.hoverAveragePowerData)
     },
 
     focusData() {
-      return this.focusDate && this.dataset.length > 0
-        ? this.dataset.find(d => d.time === this.focusDate.getTime())
-        : null
+      return this.getData(this.focusDate)
     },
     focusAveragePowerData() {
-      return this.focusDate && this.averagePowerDataset.length > 0
-        ? this.averagePowerDataset.find(
-            d => d.time === this.focusDate.getTime()
-          )
-        : null
+      return this.getAveragePowerData(this.focusDate)
     },
     focusTotal() {
-      if (!this.focusData) {
-        return null
-      }
-      let total = null
-      this.operatingUnits.forEach(u => {
-        const value = this.focusData[u.code]
-        if (value || value === 0) {
-          total += value
-        }
-      })
-      return total
+      return this.getTotal(this.focusData)
     },
     focusAveragePowerTotal() {
-      if (!this.focusAveragePowerData) {
-        return null
-      }
-      let total = null
-      this.operatingUnits.forEach(u => {
-        const value = this.focusAveragePowerData[u.code]
-        if (value || value === 0) {
-          total += value
-        }
-      })
-      return total
+      return this.getTotal(this.focusAveragePowerData)
     }
   },
 
@@ -390,6 +338,31 @@ export default {
     isActive(status) {
       return status === 'Operating'
     },
+
+    getData(date) {
+      return date && this.dataset.length > 0
+        ? this.dataset.find(d => d.time === date.getTime())
+        : null
+    },
+    getAveragePowerData(date) {
+      return date && this.averagePowerDataset.length > 0
+        ? this.averagePowerDataset.find(d => d.time === date.getTime())
+        : null
+    },
+    getTotal(data) {
+      if (!data) {
+        return null
+      }
+      let total = null
+      this.operatingUnits.forEach(u => {
+        const value = data[u.code]
+        if (value || value === 0) {
+          total += value
+        }
+      })
+      return total
+    },
+
     handleMouseEnter(code, status) {
       if (this.isActive(status)) {
         this.$emit('codeHover', code)
