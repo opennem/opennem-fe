@@ -43,6 +43,7 @@
         :focus-on="focusOn"
         :x-guides="xGuides"
         :y-guides="yGuides"
+        :null-check-prop="isYAxisAveragePower ? '_totalPower' : '_total'"
         class="vis-chart"
         @dateOver="handleDateHover"
         @domainOver="handleDomainHover"
@@ -171,16 +172,18 @@ export default {
     isEnergyType() {
       return this.dataType === 'energy'
     },
-    averageValue() {
-      const prop = this.isEnergyType
+    totalProp() {
+      return this.isEnergyType
         ? this.isYAxisAveragePower
           ? '_totalPower'
           : '_total'
         : '_total'
+    },
+    averageValue() {
       const filteredOutNulls = this.filteredDataset.filter(
-        d => d[prop] !== null
+        d => d[this.totalProp] !== null
       )
-      const total = filteredOutNulls.reduce((a, b) => a + b[prop], 0)
+      const total = filteredOutNulls.reduce((a, b) => a + b[this.totalProp], 0)
       const average = total / filteredOutNulls.length
       return average
     },

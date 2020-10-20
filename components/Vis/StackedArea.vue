@@ -314,6 +314,10 @@ export default {
     convertValue: {
       type: Function,
       default: () => function() {}
+    },
+    nullCheckProp: {
+      type: String,
+      default: '_total'
     }
   },
 
@@ -718,10 +722,15 @@ export default {
         .x(d => this.x(d.data.date))
         .y0(
           d =>
-            d.data._total || d.data._total === 0 ? this.height : this.y(0) - 5
+            d.data[this.nullCheckProp] || d.data[this.nullCheckProp] === 0
+              ? this.height
+              : this.y(0) - 5
         )
         .y1(
-          d => (d.data._total || d.data._total === 0 ? this.height : this.y(0))
+          d =>
+            d.data[this.nullCheckProp] || d.data[this.nullCheckProp] === 0
+              ? this.height
+              : this.y(0)
         )
 
       // How to draw the line
