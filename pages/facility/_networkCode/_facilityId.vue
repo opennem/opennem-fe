@@ -435,7 +435,13 @@ export default {
       this.doGetStationStats({ networkRegion, facilityId })
     },
     handleIntervalChange() {
-      this.doUpdateDatasetByInterval()
+      if (this.range === '30D') {
+        const networkRegion = this.facilityNetworkRegion
+        const facilityId = this.facilityId
+        this.doGetStationStats({ networkRegion, facilityId })
+      } else {
+        this.doUpdateDatasetByInterval()
+      }
     },
     handleSvgClick() {
       if (
