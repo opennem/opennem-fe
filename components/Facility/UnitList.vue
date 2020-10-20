@@ -14,7 +14,7 @@
       <tr>
         <th>
           Unit
-          <span v-if="areAllUnitsOfSameFuelTech">— {{ getFirstUnitFuelTech }}</span>
+          <small v-if="areAllUnitsOfSameFuelTech">{{ getFirstUnitFuelTech }}</small>
         </th>
         <th class="align-right">
           Registered capacity
