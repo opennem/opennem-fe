@@ -26,36 +26,43 @@ const EnergyRegions = [
     id: ENERGY_NSW,
     abbr: 'NSW',
     label: 'New South Wales',
-    colour: '#24CBF9'
+    colour: '#24CBF9',
+    parentRegion: ENERGY_NEM,
+    parentFirstChild: true
   },
   {
     id: ENERGY_QLD,
     abbr: 'Qld',
     label: 'Queensland',
-    colour: '#E71D36'
+    colour: '#E71D36',
+    parentRegion: ENERGY_NEM
   },
   {
     id: ENERGY_SA,
     abbr: 'SA',
     label: 'South Australia',
-    colour: '#FF9F1C'
+    colour: '#FF9F1C',
+    parentRegion: ENERGY_NEM
   },
   {
     id: ENERGY_TAS,
     abbr: 'Tas',
     label: 'Tasmania',
-    colour: '#5F9E7D'
+    colour: '#5F9E7D',
+    parentRegion: ENERGY_NEM
   },
   {
     id: ENERGY_VIC,
     abbr: 'Vic',
     label: 'Victoria',
-    colour: '#183170'
+    colour: '#183170',
+    parentRegion: ENERGY_NEM,
+    parentLastChild: true
   },
   {
     id: ENERGY_WEM,
     abbr: 'WA',
-    label: 'Western Australia',
+    label: 'Western Australia (SWIS)',
     colour: '#000000'
   }
 ]

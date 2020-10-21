@@ -28,35 +28,18 @@
             class="dropdown-divider">
           
           <nuxt-link
-            :to="`/${currentView}/nem/`" 
+            v-for="link in links"
+            :key="link.id"
+            :to="`/${currentView}/${link.id}/`"
+            :class="{
+              'dropdown-item-child': link.isChild,
+              'dropdown-item-first-child': link.isFirstChild,
+              'dropdown-item-last-child': link.isLastChild
+            }"
             class="dropdown-item" 
-            @click.native="handleClick">NEM</nuxt-link>
-
-          <nuxt-link
-            :to="`/${currentView}/nsw1/`" 
-            class="dropdown-item dropdown-item-child dropdown-item-first-child" 
-            @click.native="handleClick">New South Wales</nuxt-link>
-          <nuxt-link
-            :to="`/${currentView}/qld1/`" 
-            class="dropdown-item dropdown-item-child" 
-            @click.native="handleClick">Queensland</nuxt-link>
-          <nuxt-link
-            :to="`/${currentView}/sa1/`" 
-            class="dropdown-item dropdown-item-child" 
-            @click.native="handleClick">South Australia</nuxt-link>
-          <nuxt-link
-            :to="`/${currentView}/tas1/`" 
-            class="dropdown-item dropdown-item-child" 
-            @click.native="handleClick">Tasmania</nuxt-link>
-          <nuxt-link
-            :to="`/${currentView}/vic1/`" 
-            class="dropdown-item dropdown-item-child dropdown-item-last-child" 
-            @click.native="handleClick">Victoria</nuxt-link>
-          <nuxt-link
-            v-if="wemEnergy || currentView === 'facilities'"
-            :to="`/${currentView}/wem/`" 
-            class="dropdown-item" 
-            @click.native="handleClick">Western Australia</nuxt-link>
+            @click.native="handleClick">
+            {{ link.label }}
+          </nuxt-link>
         </div>
       </div>
     </transition> 
@@ -86,15 +69,37 @@ export default {
       return this.$route.params.region
     },
     regionLabel() {
-      const region = this.regions.find(d => d.id === this.regionId)
-      return region ? region.label : ''
+      return this.getRegionLabel(this.regionId)
     },
     currentView() {
       return this.$store.getters.currentView
     }
   },
 
+  created() {
+    // create links without 'all' since a divider is needed
+    this.links = this.regions
+      .map(r => {
+        const isChild = r.parentRegion ? true : false
+        const isFirstChild = r.parentFirstChild ? true : false
+        const isLastChild = r.parentLastChild ? true : false
+
+        return {
+          id: r.id,
+          label: r.label,
+          isChild,
+          isFirstChild,
+          isLastChild
+        }
+      })
+      .filter(r => r.id !== 'all')
+  },
+
   methods: {
+    getRegionLabel(regionId) {
+      const region = this.regions.find(d => d.id === regionId)
+      return region ? region.label : ''
+    },
     handleClick() {
       this.dropdownActive = !this.dropdownActive
       this.$store.dispatch('export/title', '')
