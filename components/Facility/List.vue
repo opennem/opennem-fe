@@ -87,9 +87,10 @@
             {{ facility.displayName }}
           </h2>
           <span 
-            v-if="facility.hasLocation" 
-            class="has-location-icon">
-            <i class="fal fa-map-marker-alt"/>
+            v-if="!facility.hasLocation" 
+            class="has-location-icon fa-stack fa-1x">
+            <i class="fal fa-map-marker-alt fa-stack-1x"/>
+            <i class="fal fa-ban fa-stack-2x" />
           </span>
         </div>
 
@@ -656,7 +657,15 @@ export default {
   position: relative;
   top: -1px;
   left: 2px;
-  color: $opennem-link-color;
+  font-size: 0.8em;
+  opacity: 0.75;
+  .fa-map-marker-alt {
+    font-size: 1.3em;
+    color: #000;
+  }
+  .fa-ban {
+    color: $opennem-link-color;
+  }
 }
 .max-capcity {
   font-size: 70%;
