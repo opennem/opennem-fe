@@ -121,7 +121,9 @@
       @mouse-leave="handleMouseLeave"
     />
 
-    <div class="summary-column-headers">
+    <div 
+      v-if="loadsOrder.length > 0" 
+      class="summary-column-headers">
       <div class="summary-row">
         <div class="summary-col-label">Loads</div>
    
@@ -170,7 +172,9 @@
       @mouse-leave="handleMouseLeave"
     />
 
-    <div class="summary-column-headers">
+    <div 
+      v-if="loadsOrder.length > 0" 
+      class="summary-column-headers" >
       <div class="summary-row last-row">
         <div class="summary-col-label">Net</div>
 
@@ -434,6 +438,7 @@ export default {
     },
 
     loadsOrder() {
+      console.log(this.energyDomains.filter(d => d.category === 'load'))
       return this.energyDomains.filter(d => d.category === 'load')
     },
 
