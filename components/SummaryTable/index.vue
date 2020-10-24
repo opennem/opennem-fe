@@ -2,10 +2,11 @@
   <div class="summary-table">
     <dates-display
       :is-hovering="hoverOn"
+      :hovered-date="hoveredDate"
       :focus-on="focusOn"
+      :focus-date="focusDate ? focusDate.getTime() : null"
       :start-date="startDate"
       :end-date="endDate"
-      :hovered-date="hoveredDate"
       :range="range"
       :interval="interval"
     />
