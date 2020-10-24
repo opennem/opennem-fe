@@ -47,7 +47,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
 
@@ -62,9 +61,6 @@ export default {
   },
 
   computed: {
-    ...mapGetters({
-      wemEnergy: 'feature/wemEnergy'
-    }),
     regionId() {
       return this.$route.params.region
     },

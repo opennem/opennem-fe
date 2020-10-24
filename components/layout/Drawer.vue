@@ -73,7 +73,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import VIEWS from '~/constants/views.js'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
 import Logo from '~/components/ui/Logo'
@@ -103,9 +102,6 @@ export default {
   },
 
   computed: {
-    ...mapGetters({
-      wemEnergy: 'feature/wemEnergy'
-    }),
     regionId() {
       return this.$route.params.region
     },
