@@ -72,7 +72,7 @@
         :convert-value="convertValue" />
     </section>
 
-    <energy-records
+    <EnergyRecords
       v-if="showRecords"
       :domains="domains"
       :dataset="filteredCurrentDataset"

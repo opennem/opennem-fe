@@ -10,8 +10,8 @@
         </tr>
       </thead>
       <tbody>
-
         <energy-record
+          v-if="isContributionDemand"
           :row-label="'Demand'"
           :row-unit="` ${chartCurrentUnit}`"
           :min-date="minDemandDate"
@@ -27,6 +27,7 @@
           @recordMouseLeave="handleRecordLeave" />
 
         <energy-record
+          v-if="isContributionDemand"
           :row-label="'Renewables'"
           :row-unit="'%'"
           :min-date="minDemandRenewablesDate"
@@ -43,6 +44,7 @@
           @recordMouseLeave="handleRecordLeave" />
         
         <energy-record
+          v-if="isContributionGeneration"
           :row-label="'Generation'"
           :row-unit="` ${chartCurrentUnit}`"
           :min-date="minGenerationDate"
@@ -58,6 +60,7 @@
           @recordMouseLeave="handleRecordLeave" />
         
         <energy-record
+          v-if="isContributionGeneration"
           :row-label="'Renewables'"
           :row-unit="'%'"
           :min-date="minGenerationRenewablesDate"
@@ -197,7 +200,10 @@ export default {
       chartPowerUnitPrefix: 'chartOptionsPowerEnergy/chartPowerUnitPrefix',
       chartPowerDisplayPrefix:
         'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
-      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit'
+      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
+
+      isContributionDemand: 'isContributionDemand',
+      isContributionGeneration: 'isContributionGeneration'
     }),
     chartCurrentUnit() {
       return this.isEnergyType
