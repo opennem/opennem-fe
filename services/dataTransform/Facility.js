@@ -20,6 +20,7 @@ function transformFacilityData(data) {
     const loadFuelTechs = []
     const fuelTechRegisteredCap = {}
     const displayName = d.display_name.split('/').join(' / ')
+
     let status = ''
 
     if (d.status.state === 'Commissioned') {
@@ -88,6 +89,7 @@ function transformFacilityData(data) {
       statusDate: d.status.date,
       regionId,
       location,
+      hasLocation: location ? true : false,
       units,
       unitStatuses: [status],
       generatorCap,
