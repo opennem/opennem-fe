@@ -18,13 +18,6 @@
         Region Compare Charts
       </label>
 
-      <label class="panel-block">
-        <input
-          v-model="featureWemEnergy"
-          type="checkbox">
-        WEM Region
-      </label>
-
       <div class="panel-block">
         <button
           class="button is-primary is-outlined is-fullwidth"
@@ -54,15 +47,6 @@ export default {
       },
       set: function(newValue) {
         this.$store.commit('feature/regionCompare', newValue)
-      }
-    },
-
-    featureWemEnergy: {
-      get: function() {
-        return this.$store.getters['feature/wemEnergy']
-      },
-      set: function(newValue) {
-        this.$store.commit('feature/wemEnergy', newValue)
       }
     }
   },

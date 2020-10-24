@@ -56,6 +56,7 @@
         :hover-on="isHovering"
         :hover-data="hoverData"
         :focus-on="focusOn"
+        :focus-data="focusData"
       />
 
       <donut-vis
@@ -67,12 +68,14 @@
         :hover-on="isHovering"
         :hover-data="hoverData"
         :focus-on="focusOn"
+        :focus-data="focusData"
         :convert-value="convertValue" />
     </section>
 
-    <energy-records
+    <EnergyRecords
       v-if="showRecords"
-      :domains="domains"
+      :selected-power-energy-domains="domains"
+      :power-energy-domains="powerEnergyDomains"
       :dataset="filteredCurrentDataset"
       :range="range"
       :interval="interval"
@@ -196,6 +199,13 @@ export default {
         return null
       }
       const time = this.hoverDate.getTime()
+      return this.filteredCurrentDataset.find(d => d.time === time)
+    },
+    focusData() {
+      if (!this.focusDate) {
+        return null
+      }
+      const time = this.focusDate.getTime()
       return this.filteredCurrentDataset.find(d => d.time === time)
     }
   },

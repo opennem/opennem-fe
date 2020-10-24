@@ -14,6 +14,7 @@ export function dataProcess(responses, range, interval, period) {
     domainPowerEnergy,
     domainTemperature,
     domainEmissions,
+    dataPowerEnergyInterval,
     type,
     units
   } = process(responses)
@@ -22,17 +23,20 @@ export function dataProcess(responses, range, interval, period) {
   const datasetFull = datasetFlat
   const dataset = filterDatasetByRange(datasetFlat, range)
 
-  const currentDataset = rollUp({
-    domains: [
-      ...domainPowerEnergy,
-      ...domainEmissions,
-      ...domainMarketValue,
-      ...domainPrice,
-      ...domainTemperature
-    ],
-    datasetFlat: dataset,
-    interval
-  })
+  const currentDataset =
+    dataPowerEnergyInterval === interval
+      ? dataset
+      : rollUp({
+          domains: [
+            ...domainPowerEnergy,
+            ...domainEmissions,
+            ...domainMarketValue,
+            ...domainPrice,
+            ...domainTemperature
+          ],
+          datasetFlat: dataset,
+          interval
+        })
   const domainPowerEnergyGrouped = getAllGroups(domainPowerEnergy, type)
   const domainEmissionsGrouped = getAllGroups(domainEmissions, EMISSIONS)
   const domainMarketValueGrouped = getAllGroups(domainMarketValue, MARKET_VALUE)
@@ -55,6 +59,7 @@ export function dataProcess(responses, range, interval, period) {
     dataType: type,
     datasetFull,
     datasetFlat: dataset,
+    dataPowerEnergyInterval,
     domainPowerEnergy,
     domainPowerEnergyGrouped,
     domainEmissions,
@@ -78,21 +83,25 @@ export function dataRollUp({
   domainMarketValueGrouped,
   domainPrice,
   domainTemperature,
+  dataPowerEnergyInterval,
   range,
   interval,
   isEnergyType
 }) {
-  const currentDataset = rollUp({
-    domains: [
-      ...domainPowerEnergy,
-      ...domainEmissions,
-      ...domainMarketValue,
-      ...domainPrice,
-      ...domainTemperature
-    ],
-    datasetFlat: filterDatasetByRange(datasetFlat, range),
-    interval
-  })
+  const currentDataset =
+    dataPowerEnergyInterval === interval
+      ? filterDatasetByRange(datasetFlat, range)
+      : rollUp({
+          domains: [
+            ...domainPowerEnergy,
+            ...domainEmissions,
+            ...domainMarketValue,
+            ...domainPrice,
+            ...domainTemperature
+          ],
+          datasetFlat: filterDatasetByRange(datasetFlat, range),
+          interval
+        })
 
   summariseDataset({
     isEnergyType,

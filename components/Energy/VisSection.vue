@@ -143,6 +143,12 @@ export default {
   },
 
   watch: {
+    range() {
+      this.clearHoverFocus()
+    },
+    interval() {
+      this.clearHoverFocus()
+    },
     onHover(hover) {
       this.isHovering = hover
     },
@@ -170,11 +176,20 @@ export default {
     }
   },
 
+  created() {
+    this.clearHoverFocus()
+  },
+
   methods: {
     ...mapMutations({
       setFocusDate: 'visInteract/focusDate',
       setFilteredDates: 'regionEnergy/filteredDates'
     }),
+    clearHoverFocus() {
+      this.isHovering = false
+      this.hoverDate = null
+      this.setFocusDate(null)
+    },
     getDataByTime(dataset, time) {
       return dataset.find(d => d.time === time)
     },
