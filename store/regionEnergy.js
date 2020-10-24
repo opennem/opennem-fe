@@ -50,7 +50,8 @@ export const state = () => ({
   currentDomainMarketValue: [],
   filteredDates: [],
   summary: null,
-  powerEnergyPrefix: ''
+  powerEnergyPrefix: '',
+  dataPowerEnergyInterval: null
 })
 
 export const getters = {
@@ -72,6 +73,7 @@ export const getters = {
   currentDomainMarketValue: state => state.currentDomainMarketValue,
   summary: state => state.summary,
   powerEnergyPrefix: state => state.powerEnergyPrefix,
+  dataPowerEnergyInterval: state => state.dataPowerEnergyInterval,
   filteredDates: state => state.filteredDates,
   filteredCurrentDataset: state =>
     state.filteredDates.length > 0
@@ -144,6 +146,9 @@ export const mutations = {
   powerEnergyPrefix(state, powerEnergyPrefix) {
     state.powerEnergyPrefix = powerEnergyPrefix
   },
+  dataPowerEnergyInterval(state, dataPowerEnergyInterval) {
+    state.dataPowerEnergyInterval = dataPowerEnergyInterval
+  },
   filteredDates(state, filteredDates) {
     state.filteredDates = _cloneDeep(filteredDates)
   }
@@ -172,6 +177,7 @@ export const actions = {
           datasetFull,
           datasetFlat,
           currentDataset,
+          dataPowerEnergyInterval,
           domainPowerEnergy,
           domainPowerEnergyGrouped,
           domainEmissions,
@@ -196,6 +202,7 @@ export const actions = {
         commit('datasetFull', datasetFull)
         commit('datasetFlat', datasetFlat)
         commit('currentDataset', currentDataset)
+        commit('dataPowerEnergyInterval', dataPowerEnergyInterval)
 
         commit('domainPowerEnergy', domainPowerEnergy)
         commit('domainPowerEnergyGrouped', domainPowerEnergyGrouped)
@@ -298,6 +305,7 @@ export const actions = {
       domainMarketValueGrouped: state.domainMarketValueGrouped,
       domainPrice: state.domainPrice,
       domainTemperature: state.domainTemperature,
+      dataPowerEnergyInterval: state.dataPowerEnergyInterval,
       range,
       interval
     })
@@ -321,6 +329,7 @@ export const actions = {
       domainMarketValueGrouped: state.domainMarketValueGrouped,
       domainPrice: state.domainPrice,
       domainTemperature: state.domainTemperature,
+      dataPowerEnergyInterval: state.dataPowerEnergyInterval,
       range,
       interval
     })

@@ -114,6 +114,7 @@ export default {
       filterPeriod: 'filterPeriod',
       fuelTechGroupName: 'fuelTechGroupName',
       ready: 'regionEnergy/ready',
+      isEnergyType: 'regionEnergy/isEnergyType',
       powerEnergyPrefix: 'regionEnergy/powerEnergyPrefix',
       currentDataset: 'regionEnergy/currentDataset',
       filteredDates: 'regionEnergy/filteredDates'
@@ -186,6 +187,9 @@ export default {
 
   created() {
     this.$store.dispatch('currentView', 'energy')
+    if (this.regionId === 'wem' && !this.isEnergyType) {
+      this.setInterval('30m')
+    }
     this.doGetRegionData({
       region: this.regionId,
       range: this.range,
@@ -224,7 +228,8 @@ export default {
     }),
     ...mapMutations({
       setWindowWidth: 'app/windowWidth',
-      setCompareDifference: 'compareDifference'
+      setCompareDifference: 'compareDifference',
+      setInterval: 'interval'
     }),
     handleDateHover(date) {
       this.hoverDate = date

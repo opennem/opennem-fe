@@ -438,7 +438,6 @@ export default {
     },
 
     loadsOrder() {
-      console.log(this.energyDomains.filter(d => d.category === 'load'))
       return this.energyDomains.filter(d => d.category === 'load')
     },
 

@@ -46,6 +46,13 @@ export default function(responses) {
     units
   } = parseAndCheckData(data)
 
+  const dataPowerEnergyInterval =
+    dataPowerEnergy.length > 0
+      ? dataPowerEnergy[0].history
+        ? dataPowerEnergy[0].history.interval
+        : null
+      : null
+
   const hasPriceMarketValue = dataPriceMarketValue.length > 0
   const fuelTechIdTypes = getFuelTechInOrder(dataPowerEnergy)
 
@@ -93,6 +100,7 @@ export default function(responses) {
     domainMarketValue,
     domainPrice,
     domainTemperature,
+    dataPowerEnergyInterval,
     type: isPowerData ? 'power' : 'energy',
     units
   }
