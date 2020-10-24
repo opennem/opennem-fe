@@ -74,7 +74,8 @@
 
     <EnergyRecords
       v-if="showRecords"
-      :domains="domains"
+      :selected-power-energy-domains="domains"
+      :power-energy-domains="powerEnergyDomains"
       :dataset="filteredCurrentDataset"
       :range="range"
       :interval="interval"

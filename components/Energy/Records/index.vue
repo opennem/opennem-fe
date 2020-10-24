@@ -11,6 +11,23 @@
       </thead>
       <tbody>
         <energy-record
+          v-if="showSelectedRow"
+          :row-label="'Selected'"
+          :row-unit="` ${chartCurrentUnit}`"
+          :min-date="minSelectedDate"
+          :min-value="convertValue(minSelected)"
+          :max-date="maxSelectedDate"
+          :max-value="convertValue(maxSelected)"
+          :range="range"
+          :interval="interval"
+          :record-select-date="recordSelectDate"
+          :divider="true"
+          @recordSelect="handleRecordSelect"
+          @recordDeselect="handleRecordDeselect"
+          @recordMouseEnter="handleRecordEnter"
+          @recordMouseLeave="handleRecordLeave" />
+
+        <energy-record
           v-if="isContributionDemand"
           :row-label="'Demand'"
           :row-unit="` ${chartCurrentUnit}`"
@@ -116,15 +133,22 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import _cloneDeep from 'lodash.clonedeep'
+
 import * as SI from '@/constants/si.js'
 import EnergyRecord from '~/components/Energy/Records/Record.vue'
+import { minTime } from 'date-fns/fp'
 export default {
   components: {
     EnergyRecord
   },
 
   props: {
-    domains: {
+    selectedPowerEnergyDomains: {
+      type: Array,
+      default: () => []
+    },
+    powerEnergyDomains: {
       type: Array,
       default: () => []
     },
@@ -184,7 +208,12 @@ export default {
       minTemperature: null,
       minTemperatureDate: null,
       maxTemperature: null,
-      maxTemperatureDate: null
+      maxTemperatureDate: null,
+
+      minSelectedDate: null,
+      minSelected: null,
+      maxSelectedDate: null,
+      maxSelected: null
     }
   },
 
@@ -223,11 +252,22 @@ export default {
 
     energyUnit() {
       return this.$store.getters.chartUnit
+    },
+
+    showSelectedRow() {
+      return (
+        this.selectedPowerEnergyDomains.length !==
+        this.powerEnergyDomains.length
+      )
     }
   },
 
   watch: {
+    selectedPowerEnergyDomains() {
+      this.calculateSelectedMinMax()
+    },
     dataset(d) {
+      this.calculateSelectedMinMax()
       this.updateMinMax(d)
     },
     focusOn(d) {
@@ -238,10 +278,48 @@ export default {
   },
 
   mounted() {
+    this.calculateSelectedMinMax()
     this.updateMinMax(this.dataset)
   },
 
   methods: {
+    calculateSelectedMinMax() {
+      const dataset = _cloneDeep(this.dataset)
+
+      dataset.forEach(d => {
+        let selectedTotal = null
+
+        this.selectedPowerEnergyDomains.forEach(domain => {
+          if (d[domain.id]) {
+            selectedTotal += d[domain.id]
+          }
+        })
+
+        d._selectedTotal = selectedTotal
+      })
+
+      let minSelected = dataset[0]._selectedTotal,
+        maxSelected = dataset[0]._selectedTotal,
+        minSelectedDate = dataset[0].date,
+        maxSelectedDate = dataset[0].date
+
+      dataset.forEach(d => {
+        const selectedTotal = d._selectedTotal
+        if (selectedTotal <= minSelected || !minSelected) {
+          minSelected = selectedTotal
+          minSelectedDate = d.time
+        }
+        if (selectedTotal >= maxSelected || !maxSelected) {
+          maxSelected = selectedTotal
+          maxSelectedDate = d.time
+        }
+      })
+
+      this.minSelected = minSelected
+      this.minSelectedDate = minSelectedDate
+      this.maxSelected = maxSelected
+      this.maxSelectedDate = maxSelectedDate
+    },
     convertValue(value) {
       return SI.convertValue(
         this.chartUnitPrefix,
