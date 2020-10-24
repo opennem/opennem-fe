@@ -56,6 +56,7 @@
         :hover-on="isHovering"
         :hover-data="hoverData"
         :focus-on="focusOn"
+        :focus-data="focusData"
       />
 
       <donut-vis
@@ -67,6 +68,7 @@
         :hover-on="isHovering"
         :hover-data="hoverData"
         :focus-on="focusOn"
+        :focus-data="focusData"
         :convert-value="convertValue" />
     </section>
 
@@ -196,6 +198,13 @@ export default {
         return null
       }
       const time = this.hoverDate.getTime()
+      return this.filteredCurrentDataset.find(d => d.time === time)
+    },
+    focusData() {
+      if (!this.focusDate) {
+        return null
+      }
+      const time = this.focusDate.getTime()
       return this.filteredCurrentDataset.find(d => d.time === time)
     }
   },
