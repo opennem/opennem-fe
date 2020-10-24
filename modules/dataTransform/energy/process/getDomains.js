@@ -1,4 +1,4 @@
-import * as FT from '@/constants/groups/group-default.js'
+import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import { PRICE, PRICE_ABOVE_300, PRICE_BELOW_0 } from '@/constants/data-types'
 
 const PRICE_COLOUR = '#e34a33'

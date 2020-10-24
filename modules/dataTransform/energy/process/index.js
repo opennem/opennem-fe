@@ -1,7 +1,7 @@
 import PerfTime from '@/plugins/perfTime.js'
 import { EMISSIONS, MARKET_VALUE } from '@/constants/data-types'
+import createEmptyDatasets from '@/modules/dataTransform/helpers/createEmptyDatasets.js'
 import parseAndCheckData from './parseAndCheckData.js'
-import createEmptyDatasets from './createEmptyDatasets.js'
 import flattenAndInterpolate from './flattenAndInterpolate.js'
 import {
   getFuelTechWithTypeDomains,
@@ -42,9 +42,18 @@ export default function(responses) {
     dataTemperature,
     fuelTechDataType,
     isPowerData,
-    hasPowerEnergyData
+    hasPowerEnergyData,
+    units
   } = parseAndCheckData(data)
 
+  const dataPowerEnergyInterval =
+    dataPowerEnergy.length > 0
+      ? dataPowerEnergy[0].history
+        ? dataPowerEnergy[0].history.interval
+        : null
+      : null
+
+  const hasPriceMarketValue = dataPriceMarketValue.length > 0
   const fuelTechIdTypes = getFuelTechInOrder(dataPowerEnergy)
 
   const domainPowerEnergy = getFuelTechDomains(
@@ -55,13 +64,22 @@ export default function(responses) {
     getFuelTechInOrder(dataEmissions),
     EMISSIONS
   )
-  const domainMarketValue = isPowerData
-    ? getFuelTechWithTypeDomains(fuelTechIdTypes, MARKET_VALUE)
-    : getFuelTechDomains(getFuelTechInOrder(dataPriceMarketValue), MARKET_VALUE)
 
-  const domainPrice = isPowerData
-    ? getPriceDomains(dataPriceMarketValue)
-    : getVolWeightedPriceDomains()
+  let domainMarketValue = [],
+    domainPrice = []
+  if (hasPriceMarketValue) {
+    domainMarketValue = isPowerData
+      ? getFuelTechWithTypeDomains(fuelTechIdTypes, MARKET_VALUE)
+      : getFuelTechDomains(
+          getFuelTechInOrder(dataPriceMarketValue),
+          MARKET_VALUE
+        )
+    domainPrice = isPowerData
+      ? getPriceDomains(dataPriceMarketValue)
+      : getVolWeightedPriceDomains()
+  } else {
+    console.warn('There is no price or market value in this dataset')
+  }
 
   const domainTemperature = getTemperatureDomains(dataTemperature)
 
@@ -82,6 +100,8 @@ export default function(responses) {
     domainMarketValue,
     domainPrice,
     domainTemperature,
-    type: isPowerData ? 'power' : 'energy'
+    dataPowerEnergyInterval,
+    type: isPowerData ? 'power' : 'energy',
+    units
   }
 }

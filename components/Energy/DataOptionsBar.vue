@@ -1,5 +1,5 @@
 <template>
-  <div class="data-options-bar">
+  <div class="range-interval-selectors">
     <div class="range-buttons buttons has-addons">
       <button
         v-for="(r, i) in ranges"
@@ -48,7 +48,12 @@
 <script>
 import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
-import RANGE_INTERVAL from '~/constants/ranges.js'
+import {
+  FuelTechRanges,
+  RANGE_1D,
+  RANGE_3D,
+  RANGE_7D
+} from '~/constants/ranges.js'
 import {
   INTERVAL_FILTERS,
   FILTER_NONE,
@@ -63,7 +68,7 @@ export default {
   mixins: [clickaway],
   data() {
     return {
-      ranges: RANGE_INTERVAL,
+      ranges: FuelTechRanges,
       intervalFilters: INTERVAL_FILTERS,
       selectedRange: '',
       selectedInterval: '',
@@ -88,9 +93,9 @@ export default {
     },
     isPowerRange() {
       return (
-        this.selectedRange === '1D' ||
-        this.selectedRange === '3D' ||
-        this.selectedRange === '7D'
+        this.selectedRange === RANGE_1D ||
+        this.selectedRange === RANGE_3D ||
+        this.selectedRange === RANGE_7D
       )
     },
     selectedRangeIntervals() {
@@ -244,62 +249,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-@import '~/assets/scss/responsive-mixins.scss';
-@import '~/assets/scss/variables.scss';
-
-.data-options-bar {
-  .buttons {
-    background-color: rgba(255, 255, 255, 0.5);
-
-    @include desktop {
-      background-color: transparent;
-    }
-  }
-  @include desktop {
-    padding: $app-padding / 2 $app-padding;
-    display: flex;
-    align-items: center;
-  }
-}
-.button {
-  font-size: 11px;
-  border-radius: 0;
-  position: relative;
-
-  &.is-rounded {
-    min-width: 45px;
-  }
-
-  @include desktop {
-    border-radius: 290486px;
-  }
-
-  .filter-caret {
-    margin-left: 5px;
-  }
-}
-.range-buttons {
-  @include desktop {
-    margin-bottom: 0;
-    margin-right: $app-padding;
-  }
-}
-.filter-period-buttons {
-  @include desktop {
-    margin-left: 1rem;
-  }
-}
-.dropdown-item {
-  &.is-selected {
-    background-color: #c74523;
-    color: #fff;
-  }
-}
-.filter-menu {
-  min-width: 80px;
-  text-align: left;
-  display: block;
-}
-</style>

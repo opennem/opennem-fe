@@ -31,6 +31,17 @@
             stroke-width="2px"
             y2="10" />
         </pattern>
+        <pattern
+          :id="`${id}-incomplete-period-pattern-2`"
+          width="3"
+          height="3"
+          patternUnits="userSpaceOnUse"
+          patternTransform="rotate(45)">
+          <line
+            stroke="rgba(199, 69, 35, 0.4)"
+            stroke-width="2px"
+            y2="10" />
+        </pattern>
 
         <filter id="shadow">
           <feDropShadow
@@ -71,6 +82,7 @@
         </g>
 
         <!-- where the stacked area path will show -->
+        <g class="stacked-area-null-group" />
         <g class="stacked-area-group" />
 
         <!-- where the line path will show -->
@@ -91,6 +103,7 @@
         <g 
           v-show="hasSecondDataset" 
           class="y-axis-2" />
+        <g class="y-guides-group" />
       </g>
 
       <!-- cursor line and tooltip -->
@@ -258,6 +271,10 @@ export default {
       type: Array,
       default: () => []
     },
+    yGuides: {
+      type: Array,
+      default: () => []
+    },
     xAxisDy: {
       type: Number,
       default: () => 12
@@ -297,6 +314,10 @@ export default {
     convertValue: {
       type: Function,
       default: () => function() {}
+    },
+    nullCheckProp: {
+      type: String,
+      default: '_total'
     }
   },
 
@@ -317,6 +338,7 @@ export default {
       yAxis: null,
       yAxis2: null,
       area: null,
+      nullArea: null,
       line: null,
       colours: schemeCategory10,
       stack: null,
@@ -335,8 +357,10 @@ export default {
       $focusGroup: null,
       $tooltipGroup: null,
       $stackedAreaGroup: null,
+      $stackedAreaNullGroup: null,
       $lineGroup: null,
       $xGuideGroup: null,
+      $yGuideGroup: null,
       $xIncompleteGroup: null,
       $compareGroup: null,
       // Stacked Area
@@ -389,7 +413,11 @@ export default {
           const updated = _cloneDeep(this.dataset)
           const lastSecondItem = _cloneDeep(updated[updated.length - 2])
           const lastItem = _cloneDeep(updated[updated.length - 1])
-          const intervalTime = lastItem.time - lastSecondItem.time
+          const intervalTime =
+            this.dataset.length > 1
+              ? lastItem.time - lastSecondItem.time
+              : millisecondsByInterval[this.interval]
+
           lastItem.time = lastItem.time + intervalTime
           lastItem.date = new Date(lastItem.time)
           updated.push(lastItem)
@@ -587,6 +615,7 @@ export default {
       this.$yAxisGroup2 = $svg.select('.y-axis-2')
       this.$yAxisTickGroup = $svg.select(`.${this.yAxisTickClass}`)
       this.$xGuideGroup = $svg.select(`.${this.xGuideGroupClass}`)
+      this.$yGuideGroup = $svg.select('.y-guides-group')
       this.$xIncompleteGroup = $svg.select(`.${this.xIncompleteGroupClass}`)
 
       // Brush
@@ -688,6 +717,21 @@ export default {
         .x(d => this.x(d.data.date))
         .y0(d => this.y(d[0]))
         .y1(d => this.y(d[1]))
+
+      this.nullArea = d3Area()
+        .x(d => this.x(d.data.date))
+        .y0(
+          d =>
+            d.data[this.nullCheckProp] || d.data[this.nullCheckProp] === 0
+              ? this.height
+              : this.y(0) - 5
+        )
+        .y1(
+          d =>
+            d.data[this.nullCheckProp] || d.data[this.nullCheckProp] === 0
+              ? this.height
+              : this.y(0)
+        )
 
       // How to draw the line
       this.line = d3Line()
@@ -829,6 +873,9 @@ export default {
       this.$stackedAreaGroup = select(
         `#${this.id} .${this.stackedAreaGroupClass}`
       )
+      this.$stackedAreaNullGroup = select(
+        `#${this.id} .stacked-area-null-group`
+      )
       this.$lineGroup = select(`#${this.id} .line-group`)
 
       // Setup the x/y/z Axis domains
@@ -889,14 +936,32 @@ export default {
       // Setup the keys in the stack so it knows how to draw the area
       this.stack.keys(this.domainIds).value((d, key) => (d[key] ? d[key] : 0))
       this.area.curve(this.curveType)
+      this.nullArea.curve(curveStepAfter)
 
       // Remove Area
       this.$stackedAreaGroup.selectAll('path').remove()
+      this.$stackedAreaNullGroup.selectAll('path').remove()
+
+      const stackedData = this.stack(this.updatedDataset)
+
+      // Generate null areas
+      const stackNullArea = this.$stackedAreaNullGroup
+        .selectAll('path')
+        .data(stackedData)
+      stackNullArea
+        .enter()
+        .append('path')
+        .attr('d', this.nullArea)
+        .attr('stroke-opacity', 0)
+        .attr('stroke-width', 1)
+        .attr('stroke', '#000')
+        .attr('fill', `url(#${this.id}-incomplete-period-pattern-2)`)
+        .style('pointer-events', 'none')
 
       // Generate Stacked Area
       const stackArea = this.$stackedAreaGroup
         .selectAll(`.${this.stackedAreaPathClass}`)
-        .data(this.stack(this.updatedDataset))
+        .data(stackedData)
       stackArea
         .enter()
         .append('path')
@@ -1032,10 +1097,13 @@ export default {
 
       const xDate = this.x(time)
       const nextPeriod = this.x(nextDatePeriod)
-      const bandwidth =
-        this.interval !== INTERVAL_5MIN && this.interval !== INTERVAL_30MIN
-          ? nextPeriod - xDate
-          : null
+      let bandwidth = null
+      if (this.interval && this.interval !== '') {
+        bandwidth =
+          this.interval !== INTERVAL_5MIN && this.interval !== INTERVAL_30MIN
+            ? nextPeriod - xDate
+            : null
+      }
       const fTime = DateDisplay.specialDateFormats(
         new Date(date).getTime(),
         this.range,
@@ -1080,6 +1148,7 @@ export default {
       this.brushX.extent([[0, 0], [this.width, 40]])
       this.$xAxisBrushGroup.selectAll('.brush').call(this.brushX)
       this.$stackedAreaGroup.selectAll('path').attr('d', this.area)
+      this.$stackedAreaNullGroup.selectAll('path').attr('d', this.nullArea)
       if (this.hasSecondDataset) {
         this.$lineGroup.selectAll('path').attr('d', this.line)
       }
@@ -1096,6 +1165,10 @@ export default {
         .selectAll('path')
         .transition(transition)
         .attr('d', this.area)
+      this.$stackedAreaNullGroup
+        .selectAll('path')
+        .transition(transition)
+        .attr('d', this.nullArea)
       if (this.hasSecondDataset) {
         this.$lineGroup
           .selectAll('path')
@@ -1140,6 +1213,33 @@ export default {
           return width < 0 ? 0 : width
         })
         .attr('height', this.height)
+        .style('clip-path', this.clipPathUrl)
+        .style('-webkit-clip-path', this.clipPathUrl)
+
+      this.$yGuideGroup.selectAll('g').remove()
+      const yGuides = this.$yGuideGroup
+        .selectAll('g')
+        .data(this.yGuides)
+        .enter()
+        .append('g')
+
+      yGuides
+        .append('line')
+        .attr('x1', 0)
+        .attr('y1', d => this.y(d.value))
+        .attr('x2', this.width)
+        .attr('y2', d => this.y(d.value))
+        .attr('stroke', '#c74523')
+        .attr('stroke-dasharray', 4.8)
+      yGuides
+        .append('text')
+        .attr('x', this.width)
+        .attr('y', d => this.y(d.value))
+        .attr('dy', -4)
+        .text(d => d.text)
+        .style('fill', '#c74523')
+        .style('font-size', '10px')
+        .style('text-anchor', 'end')
 
       this.$xIncompleteGroup
         .selectAll('rect')

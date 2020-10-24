@@ -1,4 +1,4 @@
-import * as FT from '~/constants/fuel-tech.js'
+import * as FT from '~/constants/energy-fuel-techs/group-default.js'
 
 export const FACILITY_GROUP_SOLAR = 'group_solar'
 export const FACILITY_GROUP_WIND = 'group_wind'

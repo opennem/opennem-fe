@@ -136,7 +136,8 @@ import addYears from 'date-fns/addYears'
 
 import * as OPTIONS from '@/constants/chart-options.js'
 import * as SI from '@/constants/si.js'
-import { LOAD } from '@/constants/groups/group-default.js'
+import { LOAD } from '@/constants/energy-fuel-techs/group-default.js'
+import EnergyToAveragePower from '@/modules/dataTransform/energy-to-average-power.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
@@ -476,52 +477,13 @@ export default {
       return dataset
     },
     averagePowerDataset() {
-      const datasetLength = this.currentDataset.length - 1
-      const dataset = this.currentDataset.map((d, i) => {
-        const isStart = i === 0
-        const isEnd = i === datasetLength
-        const obj = {
-          date: d.date,
-          time: d.time,
-          _isIncompleteBucket: d._isIncompleteBucket
-        }
-        const hours = DateDisplay.getSecondsByInterval(
-          this.range,
-          this.interval,
-          d.date,
-          d._incompleteDate,
-          isStart,
-          isEnd
-        )
-        let totalPower = 0
-        this.powerEnergyDomains.forEach(domain => {
-          // convert energy to average power
-          obj[domain.id] =
-            d[domain.id] === 0 ? null : (d[domain.id] / hours) * 1000 * 3600
-          totalPower += obj[domain.id] || 0
-        })
-        obj._totalPower = totalPower
-        return obj
+      return EnergyToAveragePower({
+        data: this.currentDataset,
+        domains: this.powerEnergyDomains,
+        range: this.range,
+        interval: this.interval,
+        exponent: this.chartEnergyUnitPrefix
       })
-
-      dataset.forEach(p => {
-        let min = 0,
-          max = 0
-        this.domains.forEach(domain => {
-          const id = domain.id
-
-          if (p[id] < min) {
-            min = p[id]
-          }
-          if (p[id] > max) {
-            max = p[id]
-          }
-        })
-        p._lowest = min
-        p._highest = max
-      })
-
-      return dataset
     },
     multiLineDataset() {
       if (this.isYAxisAbsolute) {
@@ -694,11 +656,18 @@ export default {
     },
     hoverTotal() {
       let total = 0
+      let allNulls = true
       if (this.hoverData) {
         this.domains.forEach(d => {
-          total += this.hoverData[d.id]
+          const value = this.hoverData[d.id]
+          total += value || 0
+          if (value || value === 0) {
+            allNulls = false
+          }
         })
       }
+
+      total = allNulls ? null : total
       return this.isTypeProportion ||
         (this.isTypeLine && this.isYAxisPercentage)
         ? total

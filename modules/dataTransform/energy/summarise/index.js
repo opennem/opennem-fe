@@ -1,4 +1,4 @@
-import * as FT from '@/constants/fuel-tech.js'
+import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import PerfTime from '@/plugins/perfTime.js'
 const perfTime = new PerfTime()
 

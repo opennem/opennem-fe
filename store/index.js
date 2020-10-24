@@ -1,5 +1,5 @@
 import cloneDeep from 'lodash.clonedeep'
-import * as FUEL_TECHS from '~/constants/fuel-tech.js'
+import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 
 let hostEnv = 'dev'
 if (typeof window !== 'undefined') {
@@ -188,13 +188,18 @@ export const getters = {
   facilityExportData: state => state.facilityExportData,
   responsiveBreakWidth: state => state.responsiveBreakWidth,
   exportAttribution: state => state.exportAttribution,
-  percentContributionTo: state => state.percentContributionTo,
+
   showSummaryColumn: state => state.showSummaryColumn,
   filterPeriod: state => state.filterPeriod,
   compareDifference: state => state.compareDifference,
   focusOn: state => state.focusOn,
   compareDates: state => state.compareDates,
-  drawer: state => state.drawer
+  drawer: state => state.drawer,
+
+  percentContributionTo: state => state.percentContributionTo,
+  isContributionDemand: state => state.percentContributionTo === 'demand',
+  isContributionGeneration: state =>
+    state.percentContributionTo === 'generation'
 }
 
 export const actions = {

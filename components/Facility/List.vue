@@ -62,6 +62,7 @@
       @mouseover="handleRowHover(facility)"
       @mouseout="handleRowOut"
       @click="handleRowClick(facility)"
+      @dblclick="handleRowDoubleClick(facility)"
     >
       <div
         class="bar-left"
@@ -86,9 +87,10 @@
             {{ facility.displayName }}
           </h2>
           <span 
-            v-if="facility.hasLocation" 
-            class="has-location-icon">
-            <i class="fal fa-map-marker-alt"/>
+            v-if="!facility.hasLocation" 
+            class="has-location-icon fa-stack fa-1x">
+            <i class="fal fa-map-marker-alt fa-stack-1x"/>
+            <i class="fal fa-ban fa-stack-2x" />
           </span>
         </div>
 
@@ -171,7 +173,7 @@
 import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
 import _uniqBy from 'lodash.uniqby'
-import * as FUEL_TECHS from '~/constants/fuel-tech.js'
+import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 import {
   FACILITY_OPERATING,
   getFacilityStatusLabelById
@@ -245,11 +247,15 @@ export default {
       divWidth: 0,
       divHeight: 0,
       windowWidth: 0,
-      windowHeight: 0
+      windowHeight: 0,
+      waitForDblClickCB: false
     }
   },
 
   computed: {
+    queryFacilityId() {
+      return this.$route.query.selected
+    },
     widthBreak() {
       return this.windowWidth < 769
     },
@@ -300,6 +306,15 @@ export default {
       this.$nextTick(() => {
         this.divHeight = this.$el.offsetHeight
       })
+
+      if (this.queryFacilityId) {
+        const find = this.filteredFacilities.find(
+          f => f.facilityId === this.queryFacilityId
+        )
+        if (find) {
+          this.handleRowClick(find)
+        }
+      }
     }
   },
 
@@ -374,19 +389,20 @@ export default {
     sort(colId) {
       this.$emit('orderChanged', colId)
     },
-    handleRowClick(facility) {
+    handleRowClick: _debounce(function(facility) {
       console.log(`${facility.displayName} view model`, facility)
       console.log(`${facility.displayName} json obj`, facility.jsonData)
       if (!this.widthBreak) {
-        if (this.selected === facility) {
+        if (this.selected === facility && !this.waitForDblClickCB) {
           this.selected = null
           this.$emit('facilitySelect', null, true)
         } else {
           this.selected = facility
+          this.waitForDblClickCB = false
           this.$emit('facilitySelect', facility, true)
         }
       }
-    },
+    }, 200),
     // eslint-disable-next-line
     handleRowHover: _debounce(function(facility) {
       this.$emit('facilityHover', facility, true)
@@ -397,6 +413,10 @@ export default {
     }, 200),
     shouldRightAligned(colHeaderId) {
       return colHeaderId === 'generatorCap'
+    },
+    handleRowDoubleClick(facility) {
+      this.waitForDblClickCB = true
+      this.$emit('openFacilityView', facility)
     },
     getColumnIcon(colHeaderId) {
       if (colHeaderId === this.sortBy) {
@@ -637,7 +657,15 @@ export default {
   position: relative;
   top: -1px;
   left: 2px;
-  color: $opennem-link-color;
+  font-size: 0.8em;
+  opacity: 0.75;
+  .fa-map-marker-alt {
+    font-size: 1.3em;
+    color: #000;
+  }
+  .fa-ban {
+    color: $opennem-link-color;
+  }
 }
 .max-capcity {
   font-size: 70%;

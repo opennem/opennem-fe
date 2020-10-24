@@ -42,61 +42,18 @@
         <hr 
           v-show="showRegionLink('all')" 
           class="dropdown-divider">
-          
-        <nuxt-link
-          :to="`/${currentView}/nem/`" 
-          class="menu-item">
-          NEM
-          <span class="icon">
-            <i class="fal fa-chevron-right" />
-          </span>
-        </nuxt-link>
 
         <nuxt-link
-          :to="`/${currentView}/nsw1/`" 
-          class="menu-item menu-item-child menu-item-first-child">
-          New South Wales
-          <span class="icon">
-            <i class="fal fa-chevron-right" />
-          </span>
-        </nuxt-link>
-        <nuxt-link
-          :to="`/${currentView}/qld1/`" 
-          class="menu-item menu-item-child">
-          Queensland
-          <span class="icon">
-            <i class="fal fa-chevron-right" />
-          </span>
-        </nuxt-link>
-        <nuxt-link
-          :to="`/${currentView}/sa1/`" 
-          class="menu-item menu-item-child">
-          South Australia
-          <span class="icon">
-            <i class="fal fa-chevron-right" />
-          </span>
-        </nuxt-link>
-        <nuxt-link
-          :to="`/${currentView}/tas1/`" 
-          class="menu-item menu-item-child">
-          Tasmania
-          <span class="icon">
-            <i class="fal fa-chevron-right" />
-          </span>
-        </nuxt-link>
-        <nuxt-link
-          :to="`/${currentView}/vic1/`" 
-          class="menu-item menu-item-child menu-item-last-child">
-          Victoria
-          <span class="icon">
-            <i class="fal fa-chevron-right" />
-          </span>
-        </nuxt-link>
-        <nuxt-link
-          v-if="wemEnergy || currentView === 'facilities'"
-          :to="`/${currentView}/wem/`" 
+          v-for="link in links"
+          :key="link.id"
+          :to="`/${currentView}/${link.id}/`"
+          :class="{
+            'menu-item-child': link.isChild,
+            'menu-item-first-child': link.isFirstChild,
+            'menu-item-last-child': link.isLastChild
+          }"
           class="menu-item">
-          Western Australia
+          {{ link.label }}
           <span class="icon">
             <i class="fal fa-chevron-right" />
           </span>
@@ -116,7 +73,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import VIEWS from '~/constants/views.js'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
 import Logo from '~/components/ui/Logo'
@@ -146,9 +102,6 @@ export default {
   },
 
   computed: {
-    ...mapGetters({
-      wemEnergy: 'feature/wemEnergy'
-    }),
     regionId() {
       return this.$route.params.region
     },
@@ -161,6 +114,25 @@ export default {
     open(value) {
       this.drawer = value
     }
+  },
+
+  created() {
+    // create links without 'all' since a divider is needed
+    this.links = this.regions
+      .map(r => {
+        const isChild = r.parentRegion ? true : false
+        const isFirstChild = r.parentFirstChild ? true : false
+        const isLastChild = r.parentLastChild ? true : false
+
+        return {
+          id: r.id,
+          label: r.label,
+          isChild,
+          isFirstChild,
+          isLastChild
+        }
+      })
+      .filter(r => r.id !== 'all')
   },
 
   methods: {

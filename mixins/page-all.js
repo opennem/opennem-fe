@@ -2,8 +2,7 @@ import { mapMutations } from 'vuex'
 import { lsGet, lsSet } from '~/services/LocalStorage'
 import {
   FEATURE_TOGGLE_EMISSIONS,
-  FEATURE_TOGGLE_REGION_COMPARE,
-  FEATURE_TOGGLE_WEM_ENERGY
+  FEATURE_TOGGLE_REGION_COMPARE
 } from '@/constants/mutation-types/features.js'
 
 let uuid = 0
@@ -17,23 +16,19 @@ export default {
     if (process.client) {
       const emissions = lsGet(FEATURE_TOGGLE_EMISSIONS)
       const regionCompare = lsGet(FEATURE_TOGGLE_REGION_COMPARE)
-      const wemEnergy = lsGet(FEATURE_TOGGLE_WEM_ENERGY)
 
       if (!emissions) lsSet(FEATURE_TOGGLE_EMISSIONS, false)
       if (!regionCompare) lsSet(FEATURE_TOGGLE_REGION_COMPARE, false)
-      if (!wemEnergy) lsSet(FEATURE_TOGGLE_WEM_ENERGY, false)
 
       this.setEmissions(emissions)
       this.setRegionCompare(regionCompare)
-      this.setWemEnergy(wemEnergy)
     }
   },
 
   methods: {
     ...mapMutations({
       setEmissions: 'feature/emissions',
-      setRegionCompare: 'feature/regionCompare',
-      setWemEnergy: 'feature/wemEnergy'
+      setRegionCompare: 'feature/regionCompare'
     })
   }
 }

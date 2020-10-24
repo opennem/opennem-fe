@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { timeFormat as d3TimeFormat } from 'd3-time-format'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
 import domToImage from '~/services/DomToImage.js'
@@ -130,6 +130,7 @@ export default {
   },
 
   created() {
+    this.setFocusDate(null)
     this.$store.dispatch('currentView', 'energy')
     this.doGetRegionData({
       region: this.regionId,
@@ -150,6 +151,10 @@ export default {
       doUpdateXGuides: 'visInteract/doUpdateXGuides',
       doUpdateTickFormats: 'visInteract/doUpdateTickFormats',
       doUpdateXTicks: 'visInteract/doUpdateXTicks'
+    }),
+
+    ...mapMutations({
+      setFocusDate: 'visInteract/focusDate'
     }),
 
     handleTableToggle(widgetName) {

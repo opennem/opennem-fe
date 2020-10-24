@@ -1,10 +1,10 @@
-import { getAllGroups } from '@/constants/groups'
+import { getAllGroups } from '@/constants/energy-fuel-techs'
 import { EMISSIONS, MARKET_VALUE } from '@/constants/data-types'
 import process from './process'
 import rollUp from './rollUp'
 import summariseDataset from './summarise'
 import groupDataset from './group'
-import { filterDatasetByRange, filterDatasetByPeriod } from './filter'
+import { filterDatasetByRange, filterDatasetByPeriod } from '../helpers/filter'
 
 export function dataProcess(responses, range, interval, period) {
   const {
@@ -14,24 +14,29 @@ export function dataProcess(responses, range, interval, period) {
     domainPowerEnergy,
     domainTemperature,
     domainEmissions,
-    type
+    dataPowerEnergyInterval,
+    type,
+    units
   } = process(responses)
 
   const isEnergyType = type === 'energy'
   const datasetFull = datasetFlat
   const dataset = filterDatasetByRange(datasetFlat, range)
 
-  const currentDataset = rollUp({
-    domains: [
-      ...domainPowerEnergy,
-      ...domainEmissions,
-      ...domainMarketValue,
-      ...domainPrice,
-      ...domainTemperature
-    ],
-    datasetFlat: dataset,
-    interval
-  })
+  const currentDataset =
+    dataPowerEnergyInterval === interval
+      ? dataset
+      : rollUp({
+          domains: [
+            ...domainPowerEnergy,
+            ...domainEmissions,
+            ...domainMarketValue,
+            ...domainPrice,
+            ...domainTemperature
+          ],
+          datasetFlat: dataset,
+          interval
+        })
   const domainPowerEnergyGrouped = getAllGroups(domainPowerEnergy, type)
   const domainEmissionsGrouped = getAllGroups(domainEmissions, EMISSIONS)
   const domainMarketValueGrouped = getAllGroups(domainMarketValue, MARKET_VALUE)
@@ -54,6 +59,7 @@ export function dataProcess(responses, range, interval, period) {
     dataType: type,
     datasetFull,
     datasetFlat: dataset,
+    dataPowerEnergyInterval,
     domainPowerEnergy,
     domainPowerEnergyGrouped,
     domainEmissions,
@@ -62,7 +68,8 @@ export function dataProcess(responses, range, interval, period) {
     domainMarketValueGrouped,
     domainPrice,
     domainTemperature,
-    currentDataset: filterDatasetByPeriod(currentDataset, interval, period)
+    currentDataset: filterDatasetByPeriod(currentDataset, interval, period),
+    units
   }
 }
 
@@ -76,21 +83,25 @@ export function dataRollUp({
   domainMarketValueGrouped,
   domainPrice,
   domainTemperature,
+  dataPowerEnergyInterval,
   range,
   interval,
   isEnergyType
 }) {
-  const currentDataset = rollUp({
-    domains: [
-      ...domainPowerEnergy,
-      ...domainEmissions,
-      ...domainMarketValue,
-      ...domainPrice,
-      ...domainTemperature
-    ],
-    datasetFlat: filterDatasetByRange(datasetFlat, range),
-    interval
-  })
+  const currentDataset =
+    dataPowerEnergyInterval === interval
+      ? filterDatasetByRange(datasetFlat, range)
+      : rollUp({
+          domains: [
+            ...domainPowerEnergy,
+            ...domainEmissions,
+            ...domainMarketValue,
+            ...domainPrice,
+            ...domainTemperature
+          ],
+          datasetFlat: filterDatasetByRange(datasetFlat, range),
+          interval
+        })
 
   summariseDataset({
     isEnergyType,

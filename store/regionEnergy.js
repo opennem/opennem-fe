@@ -49,7 +49,9 @@ export const state = () => ({
   currentDomainEmissions: [],
   currentDomainMarketValue: [],
   filteredDates: [],
-  summary: null
+  summary: null,
+  powerEnergyPrefix: '',
+  dataPowerEnergyInterval: null
 })
 
 export const getters = {
@@ -70,13 +72,15 @@ export const getters = {
   currentDomainEmissions: state => state.currentDomainEmissions,
   currentDomainMarketValue: state => state.currentDomainMarketValue,
   summary: state => state.summary,
+  powerEnergyPrefix: state => state.powerEnergyPrefix,
+  dataPowerEnergyInterval: state => state.dataPowerEnergyInterval,
   filteredDates: state => state.filteredDates,
   filteredCurrentDataset: state =>
     state.filteredDates.length > 0
       ? state.currentDataset.filter(
           d =>
             d.time >= state.filteredDates[0].getTime() &&
-            d.time <= state.filteredDates[1].getTime() - 1
+            d.time <= state.filteredDates[1].getTime()
         )
       : state.currentDataset
 }
@@ -139,6 +143,12 @@ export const mutations = {
   summary(state, summary) {
     state.summary = _cloneDeep(summary)
   },
+  powerEnergyPrefix(state, powerEnergyPrefix) {
+    state.powerEnergyPrefix = powerEnergyPrefix
+  },
+  dataPowerEnergyInterval(state, dataPowerEnergyInterval) {
+    state.dataPowerEnergyInterval = dataPowerEnergyInterval
+  },
   filteredDates(state, filteredDates) {
     state.filteredDates = _cloneDeep(filteredDates)
   }
@@ -167,6 +177,7 @@ export const actions = {
           datasetFull,
           datasetFlat,
           currentDataset,
+          dataPowerEnergyInterval,
           domainPowerEnergy,
           domainPowerEnergyGrouped,
           domainEmissions,
@@ -175,7 +186,8 @@ export const actions = {
           domainMarketValueGrouped,
           domainPrice,
           domainTemperature,
-          dataType
+          dataType,
+          units
         } = dataProcess(responses, range, interval, period)
 
         perf.timeEnd(
@@ -190,6 +202,7 @@ export const actions = {
         commit('datasetFull', datasetFull)
         commit('datasetFlat', datasetFlat)
         commit('currentDataset', currentDataset)
+        commit('dataPowerEnergyInterval', dataPowerEnergyInterval)
 
         commit('domainPowerEnergy', domainPowerEnergy)
         commit('domainPowerEnergyGrouped', domainPowerEnergyGrouped)
@@ -202,6 +215,24 @@ export const actions = {
         commit('currentDomainPowerEnergy', domainPowerEnergyGrouped[groupName])
         commit('currentDomainEmissions', domainEmissionsGrouped[groupName])
         commit('currentDomainMarketValue', domainMarketValueGrouped[groupName])
+
+        // parse units
+        let prefix = ''
+        const isWattsPerHour =
+          units.toLowerCase().indexOf('wh') >= 0 ? true : false
+        const isWatts = isWattsPerHour ? false : true
+
+        if (isWattsPerHour) {
+          if (units.length === 3) {
+            prefix = units[0]
+          }
+        } else if (isWatts) {
+          if (units.length === 2) {
+            prefix = units[0]
+          }
+        }
+        commit('powerEnergyPrefix', prefix)
+
         commit('jsonResponses', responses)
         commit('ready', true)
       }
@@ -274,6 +305,7 @@ export const actions = {
       domainMarketValueGrouped: state.domainMarketValueGrouped,
       domainPrice: state.domainPrice,
       domainTemperature: state.domainTemperature,
+      dataPowerEnergyInterval: state.dataPowerEnergyInterval,
       range,
       interval
     })
@@ -297,6 +329,7 @@ export const actions = {
       domainMarketValueGrouped: state.domainMarketValueGrouped,
       domainPrice: state.domainPrice,
       domainTemperature: state.domainTemperature,
+      dataPowerEnergyInterval: state.dataPowerEnergyInterval,
       range,
       interval
     })

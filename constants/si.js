@@ -12,6 +12,7 @@ EXPONENT[TERA] = 12
 export function convertValue(fromPrefix, toPrefix, value) {
   const fromExponent = EXPONENT[fromPrefix]
   const toExponent = EXPONENT[toPrefix]
-
-  return value * Math.pow(10, fromExponent - toExponent)
+  return value || value === 0
+    ? value * Math.pow(10, fromExponent - toExponent)
+    : null
 }

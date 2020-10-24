@@ -2,10 +2,11 @@
   <div class="summary-table">
     <dates-display
       :is-hovering="hoverOn"
+      :hovered-date="hoveredDate"
       :focus-on="focusOn"
+      :focus-date="focusDate ? focusDate.getTime() : null"
       :start-date="startDate"
       :end-date="endDate"
-      :hovered-date="hoveredDate"
       :range="range"
       :interval="interval"
     />
@@ -120,7 +121,9 @@
       @mouse-leave="handleMouseLeave"
     />
 
-    <div class="summary-column-headers">
+    <div 
+      v-if="loadsOrder.length > 0" 
+      class="summary-column-headers">
       <div class="summary-row">
         <div class="summary-col-label">Loads</div>
    
@@ -169,7 +172,9 @@
       @mouse-leave="handleMouseLeave"
     />
 
-    <div class="summary-column-headers">
+    <div 
+      v-if="loadsOrder.length > 0" 
+      class="summary-column-headers" >
       <div class="summary-row last-row">
         <div class="summary-col-label">Net</div>
 

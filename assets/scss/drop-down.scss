@@ -6,7 +6,7 @@
   }
 
   .dropdown-item {
-    border-radius: 4px;
+    border-radius: $header-hover-radius;
   }
 
   .fa-chevron-down {
@@ -22,7 +22,7 @@
     margin-right: $app-padding / 2;
     padding: $app-padding / 8 $app-padding / 2;
     color: #000;
-    border-radius: 4px;
+    border-radius: $header-hover-radius;
 
     &:hover {
       background-color: $row-hover;

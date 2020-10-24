@@ -1,6 +1,6 @@
 import _uniq from 'lodash.uniq'
 import _isEmpty from 'lodash.isempty'
-import * as FUEL_TECHS from '~/constants/fuel-tech.js'
+import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 
 let emptyIdCount = 0
 
@@ -123,13 +123,14 @@ function transformV3FacilityData(data) {
     if (!props) {
       emptyProperties.push(d)
     }
-    let stationId = props.station_id
+    let stationId = props.station_code
     if (!stationId) {
       emptyIdCount++
       stationId = `emptyStationId-${emptyIdCount}`
     }
     const displayName = props.name || '-'
     const state = props.state || ''
+    const network = props.network || ''
     const units = []
     const dispatchUnits = props.duid_data || []
     const location = geo
@@ -149,6 +150,7 @@ function transformV3FacilityData(data) {
     const unitStatusRegisteredCap = {}
     const status = dispatchUnits.length > 0 ? dispatchUnits[0].status : ''
     const unitNetworkRegions = []
+    const facilityId = props.facility_id
     let generatorCap = 0
 
     dispatchUnits.forEach(unit => {
@@ -222,11 +224,13 @@ function transformV3FacilityData(data) {
 
     return {
       stationId,
+      facilityId,
       displayName,
       status,
       state,
       regionId,
       location,
+      network,
       hasLocation,
       units,
       unitStatuses: _uniq(unitStatuses).sort(),
