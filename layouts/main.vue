@@ -1,6 +1,7 @@
 <template>
   <div class="container-fluid">
     <div 
+      v-if="showBanner"
       class="banner has-background-warning"
       v-html="bannerText" />
     <app-header />
@@ -24,7 +25,7 @@ export default {
 
   data() {
     return {
-      bannerText: 'You are viewing a locally stored copy of the data'
+      bannerText: ''
     }
   },
 
