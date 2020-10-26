@@ -223,6 +223,27 @@ $menu-border-colour-hover: #999;
       left: 0;
     }
   }
+
+  ::v-deep footer {
+    display: flex;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    .left,
+    .right {
+      display: block;
+    }
+
+    .right {
+      text-align: right;
+    }
+
+    .about-link {
+      display: block;
+    }
+  }
 }
 
 .header-logo {
@@ -325,27 +346,6 @@ $menu-border-colour-hover: #999;
       font-weight: bold;
       color: #333;
     }
-  }
-}
-
-::v-deep footer {
-  display: flex;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-
-  .left,
-  .right {
-    display: block;
-  }
-
-  .right {
-    text-align: right;
-  }
-
-  .about-link {
-    display: block;
   }
 }
 </style>
