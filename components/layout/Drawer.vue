@@ -73,6 +73,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import VIEWS from '~/constants/views.js'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
 import Logo from '~/components/ui/Logo'
@@ -97,11 +98,16 @@ export default {
     return {
       drawer: false,
       views: VIEWS,
-      regions: getEnergyRegions()
+      regions: getEnergyRegions(),
+      links: []
     }
   },
 
   computed: {
+    ...mapGetters({
+      wemEnergy: 'feature/wemEnergy'
+    }),
+
     regionId() {
       return this.$route.params.region
     },
@@ -113,29 +119,45 @@ export default {
   watch: {
     open(value) {
       this.drawer = value
+    },
+    currentView(view) {
+      // create links without 'all' since a divider is needed
+      this.links = this.getLinks()
+
+      if (!this.wemEnergy && this.currentView !== 'facilities') {
+        this.links = this.links.filter(r => r.id !== 'wem')
+      }
     }
   },
 
   created() {
     // create links without 'all' since a divider is needed
-    this.links = this.regions
-      .map(r => {
-        const isChild = r.parentRegion ? true : false
-        const isFirstChild = r.parentFirstChild ? true : false
-        const isLastChild = r.parentLastChild ? true : false
+    this.links = this.getLinks()
 
-        return {
-          id: r.id,
-          label: r.label,
-          isChild,
-          isFirstChild,
-          isLastChild
-        }
-      })
-      .filter(r => r.id !== 'all')
+    if (!this.wemEnergy && this.currentView !== 'facilities') {
+      this.links = this.links.filter(r => r.id !== 'wem')
+    }
   },
 
   methods: {
+    getLinks() {
+      return this.regions
+        .map(r => {
+          const isChild = r.parentRegion ? true : false
+          const isFirstChild = r.parentFirstChild ? true : false
+          const isLastChild = r.parentLastChild ? true : false
+
+          return {
+            id: r.id,
+            label: r.label,
+            isChild,
+            isFirstChild,
+            isLastChild
+          }
+        })
+        .filter(r => r.id !== 'all')
+    },
+
     close() {
       window.scrollTo(0, 0)
       this.$emit('close')

@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
 
@@ -56,11 +57,16 @@ export default {
   data() {
     return {
       dropdownActive: false,
-      regions: getEnergyRegions()
+      regions: getEnergyRegions(),
+      links: []
     }
   },
 
   computed: {
+    ...mapGetters({
+      wemEnergy: 'feature/wemEnergy'
+    }),
+
     regionId() {
       return this.$route.params.region
     },
@@ -72,26 +78,44 @@ export default {
     }
   },
 
+  watch: {
+    currentView(view) {
+      // create links without 'all' since a divider is needed
+      this.links = this.getLinks()
+
+      if (!this.wemEnergy && this.currentView !== 'facilities') {
+        this.links = this.links.filter(r => r.id !== 'wem')
+      }
+    }
+  },
+
   created() {
     // create links without 'all' since a divider is needed
-    this.links = this.regions
-      .map(r => {
-        const isChild = r.parentRegion ? true : false
-        const isFirstChild = r.parentFirstChild ? true : false
-        const isLastChild = r.parentLastChild ? true : false
+    this.links = this.getLinks()
 
-        return {
-          id: r.id,
-          label: r.label,
-          isChild,
-          isFirstChild,
-          isLastChild
-        }
-      })
-      .filter(r => r.id !== 'all')
+    if (!this.wemEnergy && this.currentView !== 'facilities') {
+      this.links = this.links.filter(r => r.id !== 'wem')
+    }
   },
 
   methods: {
+    getLinks() {
+      return this.regions
+        .map(r => {
+          const isChild = r.parentRegion ? true : false
+          const isFirstChild = r.parentFirstChild ? true : false
+          const isLastChild = r.parentLastChild ? true : false
+
+          return {
+            id: r.id,
+            label: r.label,
+            isChild,
+            isFirstChild,
+            isLastChild
+          }
+        })
+        .filter(r => r.id !== 'all')
+    },
     getRegionLabel(regionId) {
       const region = this.regions.find(d => d.id === regionId)
       return region ? region.label : ''
