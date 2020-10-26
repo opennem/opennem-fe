@@ -34,6 +34,8 @@ export const state = () => ({
   isFetching: false,
   isEnergyType: false,
   jsonResponses: null,
+  isCachedData: false,
+  cachedDate: null,
   datasetFull: [],
   datasetFlat: [],
   currentDataset: [],
@@ -58,6 +60,8 @@ export const getters = {
   ready: state => state.ready,
   isFetching: state => state.isFetching,
   isEnergyType: state => state.isEnergyType,
+  isCachedData: state => state.isCachedData,
+  cachedDate: state => state.cachedDate,
   datasetFlat: state => state.datasetFlat,
   currentDataset: state => state.currentDataset,
   domainPowerEnergy: state => state.domainPowerEnergy,
@@ -94,6 +98,12 @@ export const mutations = {
   },
   isEnergyType(state, isEnergyType) {
     state.isEnergyType = isEnergyType
+  },
+  isCachedData(state, isCachedData) {
+    state.isCachedData = isCachedData
+  },
+  cachedDate(state, cachedDate) {
+    state.cachedDate = cachedDate
   },
   jsonResponses(state, jsonResponses) {
     state.jsonResponses = _cloneDeep(jsonResponses)
@@ -156,6 +166,9 @@ export const mutations = {
 
 export const actions = {
   doGetRegionData({ commit }, { region, range, interval, period, groupName }) {
+    commit('isCachedData', false)
+    commit('cachedDate', null)
+    commit('app/showBanner', false, { root: true })
     if (isValidRegion(region)) {
       const env = hostEnv()
       const urls = Data.getEnergyUrls(region, range, env)
@@ -172,6 +185,7 @@ export const actions = {
         console.info(`------ ${currentRegion} — ${range}/${interval} (start)`)
 
         lsSet(key, JSON.stringify(responses))
+        lsSet(`${key}-date`, new Date())
 
         const {
           datasetFull,
@@ -245,10 +259,15 @@ export const actions = {
                 return d.data
               })
             : res
+
           processResponses(responses)
         })
         .catch(() => {
           console.warn('using cached copy')
+
+          commit('isCachedData', true)
+          commit('cachedDate', new Date(lsGet(`${key}-date`)))
+          commit('app/showBanner', true, { root: true })
           processResponses(JSON.parse(lsGet(key)))
         })
     } else {
