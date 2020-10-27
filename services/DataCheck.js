@@ -106,10 +106,17 @@ export function checkHistoryObject(d) {
   }
 }
 
-function getArrLength({ intervalKey, intervalValue, start, last }) {
+function getArrLength({
+  intervalKey,
+  intervalValue,
+  start,
+  last,
+  includeLastPoint
+}) {
+  const plusCount = includeLastPoint ? 1 : 0
   switch (intervalKey) {
     case 'm':
-      return differenceInMinutes(last, start) / intervalValue
+      return differenceInMinutes(last, start) / intervalValue + plusCount
     case 'd':
       return differenceInDays(last, start) / intervalValue + 1
     case 'M':
@@ -120,6 +127,8 @@ function getArrLength({ intervalKey, intervalValue, start, last }) {
 }
 
 export function getStartEndNumInterval(dataObj) {
+  const region = dataObj.region
+  const includeLastPoint = region === 'WEM' ? true : false
   const history = dataObj.history
   if (!history) {
     throw new Error('No history object found')
@@ -131,7 +140,8 @@ export function getStartEndNumInterval(dataObj) {
     intervalKey: interval.key,
     intervalValue: interval.value,
     start: startDateTime,
-    last: lastDateTime
+    last: lastDateTime,
+    includeLastPoint
   })
 
   return {
