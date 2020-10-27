@@ -17,6 +17,10 @@
         {{ endDate | customFormatDate({ range, interval, showYear: true, isEnd: true }) }}
       </time>
     </span>
+
+    <span>
+      {{ timezoneString }}
+    </span>
   </header>
 </template>
 
@@ -53,6 +57,10 @@ export default {
       default: () => ''
     },
     interval: {
+      type: String,
+      default: () => ''
+    },
+    timezoneString: {
       type: String,
       default: () => ''
     }
