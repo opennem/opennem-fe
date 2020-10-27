@@ -18,7 +18,7 @@
       </time>
     </span>
 
-    <small style="font-size: 0.8em">
+    <small>
       {{ timezoneString }}
     </small>
   </header>
@@ -77,5 +77,9 @@ header {
   padding-bottom: 1rem / 5;
   border-bottom: 1px solid #000;
   user-select: none;
+
+  small {
+    font-size: 0.8em;
+  }
 }
 </style>
