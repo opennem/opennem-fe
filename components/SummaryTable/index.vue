@@ -9,6 +9,7 @@
       :end-date="endDate"
       :range="range"
       :interval="interval"
+      :timezone-string="regionTimezoneString"
     />
 
     <div class="summary-column-headers">
@@ -362,6 +363,8 @@ export default {
   computed: {
     ...mapGetters({
       domainPowerEnergyGrouped: 'regionEnergy/domainPowerEnergyGrouped',
+      regionTimezoneString: 'regionEnergy/regionTimezoneString',
+
       emissionsVolumeUnit: 'si/emissionsVolumeUnit',
       emissionsVolumePrefix: 'si/emissionsVolumePrefix',
       chartEnergyRenewablesLine:

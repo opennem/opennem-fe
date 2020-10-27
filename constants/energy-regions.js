@@ -14,19 +14,22 @@ const EnergyRegions = [
     id: ENERGY_ALL,
     abbr: 'All',
     label: 'All Regions',
-    colour: '#e34a33'
+    colour: '#e34a33',
+    timezoneString: 'AEST'
   },
   {
     id: ENERGY_NEM,
     abbr: 'NEM',
     label: 'NEM',
-    colour: '#e34a33'
+    colour: '#e34a33',
+    timezoneString: 'AEST'
   },
   {
     id: ENERGY_NSW,
     abbr: 'NSW',
     label: 'New South Wales',
     colour: '#24CBF9',
+    timezoneString: 'AEST',
     parentRegion: ENERGY_NEM,
     parentFirstChild: true
   },
@@ -35,6 +38,7 @@ const EnergyRegions = [
     abbr: 'Qld',
     label: 'Queensland',
     colour: '#E71D36',
+    timezoneString: 'AEST',
     parentRegion: ENERGY_NEM
   },
   {
@@ -42,6 +46,7 @@ const EnergyRegions = [
     abbr: 'SA',
     label: 'South Australia',
     colour: '#FF9F1C',
+    timezoneString: 'AEST',
     parentRegion: ENERGY_NEM
   },
   {
@@ -49,6 +54,7 @@ const EnergyRegions = [
     abbr: 'Tas',
     label: 'Tasmania',
     colour: '#5F9E7D',
+    timezoneString: 'AEST',
     parentRegion: ENERGY_NEM
   },
   {
@@ -56,6 +62,7 @@ const EnergyRegions = [
     abbr: 'Vic',
     label: 'Victoria',
     colour: '#183170',
+    timezoneString: 'AEST',
     parentRegion: ENERGY_NEM,
     parentLastChild: true
   },
@@ -63,7 +70,8 @@ const EnergyRegions = [
     id: ENERGY_WEM,
     abbr: 'WA',
     label: 'Western Australia (SWIS)',
-    colour: '#000000'
+    colour: '#000000',
+    timezoneString: 'AWST'
   }
 ]
 

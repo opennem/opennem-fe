@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
 
@@ -79,6 +79,9 @@ export default {
   },
 
   watch: {
+    regionId(val) {
+      this.setRegionTimezoneString(this.getRegionTimezoneString(val))
+    },
     currentView(view) {
       // create links without 'all' since a divider is needed
       this.links = this.getLinks()
@@ -90,6 +93,7 @@ export default {
   },
 
   created() {
+    this.setRegionTimezoneString(this.getRegionTimezoneString(this.regionId))
     // create links without 'all' since a divider is needed
     this.links = this.getLinks()
 
@@ -99,6 +103,9 @@ export default {
   },
 
   methods: {
+    ...mapMutations({
+      setRegionTimezoneString: 'regionEnergy/regionTimezoneString'
+    }),
     getLinks() {
       return this.regions
         .map(r => {
@@ -119,6 +126,10 @@ export default {
     getRegionLabel(regionId) {
       const region = this.regions.find(d => d.id === regionId)
       return region ? region.label : ''
+    },
+    getRegionTimezoneString(regionId) {
+      const region = this.regions.find(d => d.id === regionId)
+      return region ? region.timezoneString : null
     },
     handleClick() {
       this.dropdownActive = !this.dropdownActive

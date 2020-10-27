@@ -53,7 +53,8 @@ export const state = () => ({
   filteredDates: [],
   summary: null,
   powerEnergyPrefix: '',
-  dataPowerEnergyInterval: null
+  dataPowerEnergyInterval: null,
+  regionTimezoneString: null
 })
 
 export const getters = {
@@ -78,6 +79,7 @@ export const getters = {
   summary: state => state.summary,
   powerEnergyPrefix: state => state.powerEnergyPrefix,
   dataPowerEnergyInterval: state => state.dataPowerEnergyInterval,
+  regionTimezoneString: state => state.regionTimezoneString,
   filteredDates: state => state.filteredDates,
   filteredCurrentDataset: state =>
     state.filteredDates.length > 0
@@ -158,6 +160,9 @@ export const mutations = {
   },
   dataPowerEnergyInterval(state, dataPowerEnergyInterval) {
     state.dataPowerEnergyInterval = dataPowerEnergyInterval
+  },
+  regionTimezoneString(state, regionTimezoneString) {
+    state.regionTimezoneString = regionTimezoneString
   },
   filteredDates(state, filteredDates) {
     state.filteredDates = _cloneDeep(filteredDates)
