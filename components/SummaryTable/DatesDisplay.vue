@@ -18,9 +18,9 @@
       </time>
     </span>
 
-    <span>
+    <small style="font-size: 0.8em">
       {{ timezoneString }}
-    </span>
+    </small>
   </header>
 </template>
 
