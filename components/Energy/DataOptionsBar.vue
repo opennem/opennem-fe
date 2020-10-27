@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
 import {
   FuelTechRanges,
@@ -63,6 +63,7 @@ import {
   INTERVAL_HALFYEAR,
   hasIntervalFilters
 } from '@/constants/interval-filters.js'
+import { isValidIntervalQuery } from '@/constants/interval-queries.js'
 
 export default {
   mixins: [clickaway],
@@ -90,6 +91,12 @@ export default {
     }),
     regionId() {
       return this.$route.params.region
+    },
+    queryRange() {
+      return this.$route.query.range
+    },
+    queryInterval() {
+      return this.$route.query.interval
     },
     isPowerRange() {
       return (
@@ -141,12 +148,27 @@ export default {
     }
   },
 
+  created() {
+    console.log(this.queryRange, this.queryInterval)
+
+    if (isValidIntervalQuery(this.queryInterval)) {
+      console.log('valid')
+      // and valid
+    } else {
+      console.log('invalid')
+    }
+  },
+
   mounted() {
     this.selectedRange = this.range
     this.selectedInterval = this.interval
   },
 
   methods: {
+    ...mapMutations({
+      setRange: 'range',
+      setInterval: 'interval'
+    }),
     showFilter(interval) {
       return (
         (interval === INTERVAL_MONTH && this.showMonthFilter) ||
