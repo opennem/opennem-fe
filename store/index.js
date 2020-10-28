@@ -1,4 +1,5 @@
 import cloneDeep from 'lodash.clonedeep'
+import { lsSet } from '~/services/LocalStorage'
 import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 
 let hostEnv = 'dev'
@@ -101,6 +102,7 @@ export const mutations = {
     state.responsiveBreakWidth = data
   },
   exportAttribution(state, data) {
+    lsSet('exportAttribution', data)
     state.exportAttribution = data
   },
   percentContributionTo(state, data) {
