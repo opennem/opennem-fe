@@ -30,6 +30,9 @@ export default {
       this.setEmissions(emissions)
       this.setRegionCompare(regionCompare)
       this.setWemEnergy(wemEnergy)
+
+      const exportAttribution = lsGet('exportAttribution') || '@name'
+      this.setExportAttribution(exportAttribution)
     }
   },
 
@@ -37,7 +40,9 @@ export default {
     ...mapMutations({
       setEmissions: 'feature/emissions',
       setRegionCompare: 'feature/regionCompare',
-      setWemEnergy: 'feature/wemEnergy'
+      setWemEnergy: 'feature/wemEnergy',
+
+      setExportAttribution: 'exportAttribution'
     })
   }
 }

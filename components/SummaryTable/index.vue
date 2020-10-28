@@ -9,7 +9,7 @@
       :end-date="endDate"
       :range="range"
       :interval="interval"
-      :timezone-string="regionTimezoneString"
+      :timezone-string="isEnergyType ? '' : regionTimezoneString"
     />
 
     <div class="summary-column-headers">
@@ -364,6 +364,7 @@ export default {
     ...mapGetters({
       domainPowerEnergyGrouped: 'regionEnergy/domainPowerEnergyGrouped',
       regionTimezoneString: 'regionEnergy/regionTimezoneString',
+      isEnergyType: 'regionEnergy/isEnergyType',
 
       emissionsVolumeUnit: 'si/emissionsVolumeUnit',
       emissionsVolumePrefix: 'si/emissionsVolumePrefix',

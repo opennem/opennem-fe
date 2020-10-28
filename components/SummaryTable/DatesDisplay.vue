@@ -18,9 +18,9 @@
       </time>
     </span>
 
-    <span>
+    <small>
       {{ timezoneString }}
-    </span>
+    </small>
   </header>
 </template>
 
@@ -77,5 +77,9 @@ header {
   padding-bottom: 1rem / 5;
   border-bottom: 1px solid #000;
   user-select: none;
+
+  small {
+    font-size: 0.8em;
+  }
 }
 </style>
