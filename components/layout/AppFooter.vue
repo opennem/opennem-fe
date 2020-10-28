@@ -8,6 +8,9 @@
           href="https://www.aemo.com.au/"
           title="Link to AEMO">AEMO</a>,
         <a
+          href="http://apvi.org.au/"
+          title="Link to APVI">APVI</a>,
+        <a
           href="http://www.bom.gov.au/"
           title="Link to BoM">BoM</a>
       </div>

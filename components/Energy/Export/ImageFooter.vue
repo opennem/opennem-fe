@@ -50,9 +50,9 @@ export default {
     },
     sources() {
       if (this.showBomSource) {
-        return 'AEMO, BoM, OpenNEM'
+        return 'AEMO, APVI, BoM, OpenNEM'
       }
-      return 'AEMO, OpenNEM'
+      return 'AEMO, APVI, OpenNEM'
     }
   },
   watch: {
