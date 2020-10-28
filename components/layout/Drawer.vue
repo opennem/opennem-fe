@@ -230,6 +230,7 @@ $menu-border-colour-hover: #999;
     bottom: 0;
     left: 0;
     right: 0;
+    align-items: flex-end;
 
     .left,
     .right {
