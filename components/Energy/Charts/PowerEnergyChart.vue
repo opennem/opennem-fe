@@ -110,7 +110,7 @@
       @leave="handleVisLeave" />
     <date-brush
       v-if="chartShown && isTypeLine"
-      :dataset="energyGrossPercentDataset"
+      :dataset="multiLineDataset"
       :zoom-range="zoomExtent" 
       :x-ticks="xTicks"
       :tick-format="tickFormat"
