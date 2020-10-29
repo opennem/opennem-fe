@@ -755,6 +755,7 @@ export default {
       const bucketSizeMins = differenceInMinutes(endDate, startDate) + 1
       if (!this.isEnergyType) {
         console.log('bucket size', bucketSizeMins)
+        console.log('filtered dataset', fullDatasetFiltered)
       }
 
       // Calculate Energy
