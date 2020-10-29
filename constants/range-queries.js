@@ -16,8 +16,23 @@ RANGE_QUERIES[RANGE_QUERY_30D] = RANGES.RANGE_30D
 RANGE_QUERIES[RANGE_QUERY_1Y] = RANGES.RANGE_1Y
 RANGE_QUERIES[RANGE_QUERY_ALL] = RANGES.RANGE_ALL
 
+const DEFAULT_QUERY = RANGE_QUERY_7D
+
 const rangeQueries = Object.keys(RANGE_QUERIES)
 
 export function isValidRangeQuery(query) {
   return _includes(rangeQueries, query)
+}
+
+export function getDefaultRange() {
+  return RANGE_QUERIES[DEFAULT_QUERY]
+}
+
+export function getRangeQueryByRange(range) {
+  const find = rangeQueries.find(rq => RANGE_QUERIES[rq] === range)
+  return find ? find : DEFAULT_QUERY
+}
+
+export function getRangeByRangeQuery(query) {
+  return RANGE_QUERIES[query] || RANGE_QUERIES[DEFAULT_QUERY]
 }

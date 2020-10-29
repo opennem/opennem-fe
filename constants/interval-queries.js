@@ -27,8 +27,23 @@ INTERVAL_QUERIES[INTERVAL_QUERY_QUARTER] = INTERVALS.INTERVAL_QUARTER
 INTERVAL_QUERIES[INTERVAL_QUERY_HALFYEAR] = INTERVALS.INTERVAL_HALFYEAR
 INTERVAL_QUERIES[INTERVAL_QUERY_FINYEAR] = INTERVALS.INTERVAL_FINYEAR
 
+const DEFAULT_QUERY = INTERVAL_QUERY_30MIN
+
 const intervalQueries = Object.keys(INTERVAL_QUERIES)
 
 export function isValidIntervalQuery(query) {
   return _includes(intervalQueries, query)
+}
+
+export function getDefaultInterval() {
+  return INTERVAL_QUERIES[DEFAULT_QUERY]
+}
+
+export function getIntervalQueryByInterval(interval) {
+  const find = intervalQueries.find(iq => INTERVAL_QUERIES[iq] === interval)
+  return find ? find : DEFAULT_QUERY
+}
+
+export function getIntervalByIntervalQuery(query) {
+  return INTERVAL_QUERIES[query] || INTERVAL_QUERIES[DEFAULT_QUERY]
 }

@@ -19,7 +19,7 @@
         <div class="dropdown-content">
           <nuxt-link
             v-show="showRegionLink('all')"
-            :to="`/${currentView}/all/`" 
+            :to="`/${currentView}/all`" 
             class="dropdown-item" 
             @click.native="handleClick">All Regions</nuxt-link>
           
@@ -30,7 +30,7 @@
           <nuxt-link
             v-for="link in links"
             :key="link.id"
-            :to="`/${currentView}/${link.id}/`"
+            :to="`/${currentView}/${link.id}`"
             :class="{
               'dropdown-item-child': link.isChild,
               'dropdown-item-first-child': link.isFirstChild,

@@ -63,7 +63,18 @@ import {
   INTERVAL_HALFYEAR,
   hasIntervalFilters
 } from '@/constants/interval-filters.js'
-import { isValidIntervalQuery } from '@/constants/interval-queries.js'
+import {
+  isValidIntervalQuery,
+  getDefaultInterval,
+  getIntervalQueryByInterval,
+  getIntervalByIntervalQuery
+} from '@/constants/interval-queries.js'
+import {
+  isValidRangeQuery,
+  getDefaultRange,
+  getRangeQueryByRange,
+  getRangeByRangeQuery
+} from '@/constants/range-queries.js'
 
 export default {
   mixins: [clickaway],
@@ -149,13 +160,23 @@ export default {
   },
 
   created() {
+    console.log(this.range, this.interval)
     console.log(this.queryRange, this.queryInterval)
 
-    if (isValidIntervalQuery(this.queryInterval)) {
+    const validRangeQuery = isValidRangeQuery(this.queryRange)
+    const validIntervalQuery = isValidIntervalQuery(this.queryInterval)
+
+    if (validRangeQuery && validIntervalQuery) {
       console.log('valid')
-      // and valid
-    } else {
+      this.setRange(getRangeByRangeQuery(this.queryRange))
+      this.setInterval(getIntervalByIntervalQuery(this.queryInterval))
+    } else if (!validRangeQuery && !validIntervalQuery) {
       console.log('invalid')
+      this.updateRoute(this.range, this.interval)
+    } else if (validRangeQuery && !validIntervalQuery) {
+      console.log('valid range, invalid interval:', this.queryInterval)
+    } else if (!validRangeQuery && validIntervalQuery) {
+      console.log('valid interval, invalid range:', this.queryRange)
     }
   },
 
@@ -231,11 +252,7 @@ export default {
 
       this.$store.dispatch('interval', interval)
       this.$store.dispatch('range', range)
-      this.$router.push({
-        path: '',
-        params: { region: this.regionId },
-        query: {}
-      })
+      this.updateRoute(range, interval)
     },
     handleIntervalChange(interval) {
       const hasFilter = this.hasFilter(interval)
@@ -258,6 +275,7 @@ export default {
         this.$store.dispatch('si/emissionsVolumePrefix', '')
         this.$store.dispatch('interval', interval)
       }
+      this.updateRoute(this.range, interval)
     },
     handleFilterPeriodClick(period) {
       this.$store.dispatch('filterPeriod', period)
@@ -267,6 +285,15 @@ export default {
     },
     handleClickAway() {
       this.hideAllFilters()
+    },
+    updateRoute(range, interval) {
+      this.$router.push({
+        params: { region: this.regionId },
+        query: {
+          range: getRangeQueryByRange(range),
+          interval: getIntervalQueryByInterval(interval)
+        }
+      })
     }
   }
 }
