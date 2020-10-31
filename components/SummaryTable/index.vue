@@ -753,10 +753,6 @@ export default {
         df => df.time >= start.time && df.time <= end.time
       )
       const bucketSizeMins = differenceInMinutes(endDate, startDate) + 1
-      if (!this.isEnergyType) {
-        console.log('bucket size', bucketSizeMins)
-        console.log('filtered dataset', fullDatasetFiltered)
-      }
 
       // Calculate Energy
       this.energyDomains.forEach(ft => {
@@ -777,10 +773,6 @@ export default {
         const dataEnergyMinusHiddenSum = this.isEnergyType
           ? sumMap(ft, dataEnergyMinusHidden)
           : energy_sum(fullDomainDataMinusHidden, bucketSizeMins) / 1000
-
-        if (!this.isEnergyType) {
-          console.log(ft.id, dataEnergySum)
-        }
 
         const dataPower = dataPowerMap(ft)
         const dataPowerMinusHidden = dataPowerMap(ft, true)
