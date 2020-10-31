@@ -73,7 +73,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import VIEWS from '~/constants/views.js'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
 import Logo from '~/components/ui/Logo'
@@ -104,10 +103,6 @@ export default {
   },
 
   computed: {
-    ...mapGetters({
-      wemEnergy: 'feature/wemEnergy'
-    }),
-
     regionId() {
       return this.$route.params.region
     },
@@ -121,26 +116,17 @@ export default {
       this.drawer = value
     },
     currentView(view) {
-      // create links without 'all' since a divider is needed
       this.links = this.getLinks()
-
-      if (!this.wemEnergy && this.currentView !== 'facilities') {
-        this.links = this.links.filter(r => r.id !== 'wem')
-      }
     }
   },
 
   created() {
-    // create links without 'all' since a divider is needed
     this.links = this.getLinks()
-
-    if (!this.wemEnergy && this.currentView !== 'facilities') {
-      this.links = this.links.filter(r => r.id !== 'wem')
-    }
   },
 
   methods: {
     getLinks() {
+      // create links without 'all' since a divider is needed
       return this.regions
         .map(r => {
           const isChild = r.parentRegion ? true : false
