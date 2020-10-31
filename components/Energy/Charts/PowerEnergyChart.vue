@@ -784,21 +784,13 @@ export default {
     },
     getMaxValue(dataset) {
       let max = 0
-      if (this.fuelTechGroupName === 'Default') {
-        dataset.forEach(d => {
-          if (d._highest > max && !d._isIncompleteBucket) {
-            max = d._highest
+      dataset.forEach(d => {
+        this.domains.forEach(domain => {
+          if (d[domain.id] > max && !d._isIncompleteBucket) {
+            max = d[domain.id]
           }
         })
-      } else {
-        dataset.forEach(d => {
-          this.domains.forEach(domain => {
-            if (d[domain.id] > max && !d._isIncompleteBucket) {
-              max = d[domain.id]
-            }
-          })
-        })
-      }
+      })
       return max === 0 ? 100 : max
     },
     intervalLabel(interval) {
