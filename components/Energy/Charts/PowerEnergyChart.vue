@@ -126,7 +126,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { min, max } from 'd3-array'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
@@ -737,10 +737,35 @@ export default {
     }
   },
 
+  watch: {
+    interval(val) {
+      this.updateXTicks()
+    },
+    range() {
+      this.updateXTicks()
+    }
+  },
+
+  created() {
+    this.updateXTicks()
+  },
+
   methods: {
     ...mapMutations({
       setHoverDomain: 'visInteract/hoverDomain'
     }),
+    ...mapActions({
+      doUpdateXTicks: 'visInteract/doUpdateXTicks'
+    }),
+
+    updateXTicks() {
+      this.doUpdateXTicks({
+        range: this.range,
+        interval: this.interval,
+        isZoomed: this.zoomExtent.length > 0,
+        filterPeriod: 'All'
+      })
+    },
     convertValue(value) {
       return SI.convertValue(
         this.chartUnitPrefix,
