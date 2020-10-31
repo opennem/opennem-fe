@@ -55,6 +55,23 @@ export function dataProcess(responses, range, interval, period) {
     domainMarketValueGrouped
   })
 
+  // summarise and group original dataset
+  if (!isEnergyType) {
+    summariseDataset({
+      isEnergyType,
+      currentDataset: dataset,
+      domainPowerEnergy,
+      domainEmissions,
+      domainPrice: domainPrice
+    })
+    groupDataset({
+      dataset: dataset,
+      domainPowerEnergyGrouped,
+      domainEmissionsGrouped,
+      domainMarketValueGrouped
+    })
+  }
+
   return {
     dataType: type,
     datasetFull,
