@@ -57,6 +57,8 @@ import {
 import {
   INTERVAL_FILTERS,
   FILTER_NONE,
+  INTERVAL_5MIN,
+  INTERVAL_30MIN,
   INTERVAL_MONTH,
   INTERVAL_SEASON,
   INTERVAL_QUARTER,
@@ -178,16 +180,16 @@ export default {
       this.$store.dispatch('filterPeriod', FILTER_NONE)
       this.$store.dispatch('si/emissionsVolumePrefix', '')
 
+      const is5mOr30m =
+        this.interval === INTERVAL_5MIN || this.interval === INTERVAL_30MIN
+
       let interval = ''
       let isPower = false
       switch (range) {
         case '1D':
-          interval = '30m'
-          isPower = true
-          break
         case '3D':
         case '7D':
-          interval = '30m'
+          interval = is5mOr30m ? this.interval : '30m'
           isPower = true
           break
         case '30D':

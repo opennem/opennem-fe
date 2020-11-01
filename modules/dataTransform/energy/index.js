@@ -1,3 +1,4 @@
+import _cloneDeep from 'lodash.clonedeep'
 import { getAllGroups } from '@/constants/energy-fuel-techs'
 import { EMISSIONS, MARKET_VALUE } from '@/constants/data-types'
 import process from './process'
@@ -20,9 +21,10 @@ export function dataProcess(responses, range, interval, period) {
   } = process(responses)
 
   const isEnergyType = type === 'energy'
-  const datasetFull = datasetFlat
+  const datasetFull = _cloneDeep(datasetFlat)
   const dataset = filterDatasetByRange(datasetFlat, range)
 
+  //TODO: check dataPowerEnergyInterval === interval
   const currentDataset =
     dataPowerEnergyInterval === interval
       ? dataset
@@ -100,25 +102,21 @@ export function dataRollUp({
   domainMarketValueGrouped,
   domainPrice,
   domainTemperature,
-  dataPowerEnergyInterval,
   range,
   interval,
   isEnergyType
 }) {
-  const currentDataset =
-    dataPowerEnergyInterval === interval
-      ? filterDatasetByRange(datasetFlat, range)
-      : rollUp({
-          domains: [
-            ...domainPowerEnergy,
-            ...domainEmissions,
-            ...domainMarketValue,
-            ...domainPrice,
-            ...domainTemperature
-          ],
-          datasetFlat: filterDatasetByRange(datasetFlat, range),
-          interval
-        })
+  const currentDataset = rollUp({
+    domains: [
+      ...domainPowerEnergy,
+      ...domainEmissions,
+      ...domainMarketValue,
+      ...domainPrice,
+      ...domainTemperature
+    ],
+    datasetFlat: filterDatasetByRange(datasetFlat, range),
+    interval
+  })
 
   summariseDataset({
     isEnergyType,
