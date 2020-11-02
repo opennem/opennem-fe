@@ -303,6 +303,17 @@ export default {
             OPTIONS.CHART_YAXIS_ENERGY
           )
         }
+      } else {
+        console.log('power', this.chartYAxis)
+        if (
+          this.chartType === OPTIONS.CHART_LINE &&
+          this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE
+        ) {
+          this.$store.commit(
+            'chartOptionsPowerEnergy/chartPowerYAxis',
+            OPTIONS.CHART_YAXIS_ABSOLUTE
+          )
+        }
       }
       this.$store.commit('chartOptionsPowerEnergy/chartType', type)
     },
