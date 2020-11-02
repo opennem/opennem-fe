@@ -267,12 +267,16 @@ export const actions = {
           processResponses(responses)
         })
         .catch(() => {
-          console.warn('using cached copy')
+          const jsonData = JSON.parse(lsGet(key))
+          if (jsonData) {
+            console.warn('using cached copy')
 
-          commit('isCachedData', true)
-          commit('cachedDate', new Date(lsGet(`${key}-date`)))
-          commit('app/showBanner', true, { root: true })
-          processResponses(JSON.parse(lsGet(key)))
+            commit('isCachedData', true)
+            commit('cachedDate', new Date(lsGet(`${key}-date`)))
+            commit('app/showBanner', true, { root: true })
+
+            processResponses(JSON.parse(lsGet(key)))
+          }
         })
     } else {
       throw new Error('Invalid region')
