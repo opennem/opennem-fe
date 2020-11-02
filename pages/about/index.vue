@@ -45,12 +45,17 @@
           href="https://twitter.com/simonahac"
           title="Simon's twitter page"
           rel="external"
-        >Simon Holmes à Court</a> and
+        >Simon Holmes à Court</a>,
         <a
           href="https://twitter.com/chienleng"
           title="Steven's twitter page"
           rel="external"
-        >Steven Tan</a>
+        >Steven Tan</a> and
+        <a
+          href="https://nikcub.me"
+          title="Nik's web site"
+          rel="external"
+        >Nik Cubrilovic</a>
       </p>
     </section>
 
@@ -170,7 +175,7 @@ export default {
   },
 
   head: {
-    title: 'About'
+    titleTemplate: 'About OpenNEM'
   }
 }
 </script>
@@ -250,6 +255,14 @@ h1 {
 
   p {
     margin: 2rem auto;
+  }
+
+  p.credits {
+    font-size: 0.8em;
+    font-weight: 600;
+    a {
+      margin-left: 2px;
+    }
   }
 }
 
