@@ -63,10 +63,6 @@ export default {
   },
 
   computed: {
-    ...mapGetters({
-      wemEnergy: 'feature/wemEnergy'
-    }),
-
     regionId() {
       return this.$route.params.region
     },
@@ -83,23 +79,13 @@ export default {
       this.setRegionTimezoneString(this.getRegionTimezoneString(val))
     },
     currentView(view) {
-      // create links without 'all' since a divider is needed
       this.links = this.getLinks()
-
-      if (!this.wemEnergy && this.currentView !== 'facilities') {
-        this.links = this.links.filter(r => r.id !== 'wem')
-      }
     }
   },
 
   created() {
     this.setRegionTimezoneString(this.getRegionTimezoneString(this.regionId))
-    // create links without 'all' since a divider is needed
     this.links = this.getLinks()
-
-    if (!this.wemEnergy && this.currentView !== 'facilities') {
-      this.links = this.links.filter(r => r.id !== 'wem')
-    }
   },
 
   methods: {
@@ -107,6 +93,7 @@ export default {
       setRegionTimezoneString: 'regionEnergy/regionTimezoneString'
     }),
     getLinks() {
+      // create links without 'all' since a divider is needed
       return this.regions
         .map(r => {
           const isChild = r.parentRegion ? true : false

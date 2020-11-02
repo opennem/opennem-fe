@@ -104,19 +104,20 @@
       :display-prefix="chartDisplayPrefix"
       :should-convert-value="shouldConvertValue"
       :convert-value="convertValue"
+      class="vis-chart"
       @date-hover="handleDateHover"
       @domain-hover="handleDomainHover"
       @enter="handleVisEnter"
       @leave="handleVisLeave" />
     <date-brush
       v-if="chartShown && isTypeLine"
-      :dataset="energyGrossPercentDataset"
+      :dataset="multiLineDataset"
       :zoom-range="zoomExtent" 
       :x-ticks="xTicks"
       :tick-format="tickFormat"
       :second-tick-format="secondTickFormat"
       :read-only="readOnly"
-      class="date-brush"
+      class="date-brush vis-chart"
       @date-hover="handleDateHover"
       @date-filter="handleZoomExtent"
       @enter="handleVisEnter"
@@ -125,7 +126,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { min, max } from 'd3-array'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
@@ -736,10 +737,35 @@ export default {
     }
   },
 
+  watch: {
+    interval(val) {
+      this.updateXTicks()
+    },
+    range() {
+      this.updateXTicks()
+    }
+  },
+
+  created() {
+    this.updateXTicks()
+  },
+
   methods: {
     ...mapMutations({
       setHoverDomain: 'visInteract/hoverDomain'
     }),
+    ...mapActions({
+      doUpdateXTicks: 'visInteract/doUpdateXTicks'
+    }),
+
+    updateXTicks() {
+      this.doUpdateXTicks({
+        range: this.range,
+        interval: this.interval,
+        isZoomed: this.zoomExtent.length > 0,
+        filterPeriod: 'All'
+      })
+    },
     convertValue(value) {
       return SI.convertValue(
         this.chartUnitPrefix,
@@ -758,21 +784,13 @@ export default {
     },
     getMaxValue(dataset) {
       let max = 0
-      if (this.fuelTechGroupName === 'Default') {
-        dataset.forEach(d => {
-          if (d._highest > max && !d._isIncompleteBucket) {
-            max = d._highest
+      dataset.forEach(d => {
+        this.domains.forEach(domain => {
+          if (d[domain.id] > max && !d._isIncompleteBucket) {
+            max = d[domain.id]
           }
         })
-      } else {
-        dataset.forEach(d => {
-          this.domains.forEach(domain => {
-            if (d[domain.id] > max && !d._isIncompleteBucket) {
-              max = d[domain.id]
-            }
-          })
-        })
-      }
+      })
       return max === 0 ? 100 : max
     },
     intervalLabel(interval) {

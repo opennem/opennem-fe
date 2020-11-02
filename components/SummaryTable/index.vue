@@ -260,6 +260,9 @@ import _cloneDeep from 'lodash.clonedeep'
 import _includes from 'lodash.includes'
 import { mapGetters } from 'vuex'
 import { format as d3Format } from 'd3-format'
+import differenceInMinutes from 'date-fns/differenceInMinutes'
+import { energy_sum } from '@opennem/energy-tools'
+
 import Data from '~/services/Data.js'
 import Domain from '~/services/Domain.js'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
@@ -362,6 +365,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      datasetFlat: 'regionEnergy/datasetFlat',
       domainPowerEnergyGrouped: 'regionEnergy/domainPowerEnergyGrouped',
       regionTimezoneString: 'regionEnergy/regionTimezoneString',
       isEnergyType: 'regionEnergy/isEnergyType',
@@ -740,13 +744,36 @@ export default {
         return dataMap.reduce((prev, cur) => prev + cur[ft.id], 0)
       }
 
+      // fetch original data
+      const start = data[0]
+      const end = data[data.length - 1]
+      const startDate = start.date
+      const endDate = end.date
+      const fullDatasetFiltered = this.datasetFlat.filter(
+        df => df.time >= start.time && df.time <= end.time
+      )
+      const bucketSizeMins = differenceInMinutes(endDate, startDate) + 1
+
       // Calculate Energy
       this.energyDomains.forEach(ft => {
         const category = ft.category
+        const fullDomainData = fullDatasetFiltered.map(fd => fd[ft.id])
+        const fullDomainDataMinusHidden = fullDatasetFiltered.map(
+          fd =>
+            _includes(this.hiddenFuelTechs, ft[this.propRef]) ? 0 : fd[ft.id]
+        )
+
         const dataEnergy = dataEnergyMap(ft)
         const dataEnergyMinusHidden = dataEnergyMap(ft, true)
-        const dataEnergySum = sumMap(ft, dataEnergy)
-        const dataEnergyMinusHiddenSum = sumMap(ft, dataEnergyMinusHidden)
+
+        // For Power, calculate using trapezoid, then convert to GWh
+        const dataEnergySum = this.isEnergyType
+          ? sumMap(ft, dataEnergy)
+          : energy_sum(fullDomainData, bucketSizeMins) / 1000
+        const dataEnergyMinusHiddenSum = this.isEnergyType
+          ? sumMap(ft, dataEnergyMinusHidden)
+          : energy_sum(fullDomainDataMinusHidden, bucketSizeMins) / 1000
+
         const dataPower = dataPowerMap(ft)
         const dataPowerMinusHidden = dataPowerMap(ft, true)
         const dataPowerSum = sumMap(ft, dataPower)

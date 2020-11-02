@@ -134,7 +134,7 @@ export default {
       this.setCompareDifference(false)
       this.doUpdateTickFormats({ range: curr, interval: this.interval })
       if (isPowerRange(curr) && isPowerRange(prev)) {
-        this.doFilterRegionData({
+        this.doUpdateDatasetByFilterRange({
           range: curr,
           interval: this.interval
         })
@@ -217,7 +217,7 @@ export default {
       doGetRegionData: 'regionEnergy/doGetRegionData',
       doUpdateDatasetByInterval: 'regionEnergy/doUpdateDatasetByInterval',
       doUpdateDatasetByGroup: 'regionEnergy/doUpdateDatasetByGroup',
-      doFilterRegionData: 'regionEnergy/doFilterRegionData',
+      doUpdateDatasetByFilterRange: 'regionEnergy/doUpdateDatasetByFilterRange',
       doUpdateDatasetByFilterPeriod:
         'regionEnergy/doUpdateDatasetByFilterPeriod',
       doUpdateXGuides: 'visInteract/doUpdateXGuides',

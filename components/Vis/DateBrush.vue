@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import _cloneDeep from 'lodash.clonedeep'
 import { select, mouse, event, selectAll } from 'd3-selection'
 import { scaleTime } from 'd3-scale'
 import { axisBottom } from 'd3-axis'
@@ -85,7 +86,20 @@ export default {
       return `translate(${this.margin.left}, 0)`
     },
     xExtent() {
-      return extent(this.dataset, d => new Date(d.date))
+      return extent(this.updatedDataset, d => new Date(d.date))
+    },
+    updatedDataset() {
+      if (this.dataset.length > 0) {
+        const updated = _cloneDeep(this.dataset)
+        const lastSecondItem = _cloneDeep(updated[updated.length - 2])
+        const lastItem = _cloneDeep(updated[updated.length - 1])
+        const intervalTime = lastItem.time - lastSecondItem.time
+        lastItem.time = lastItem.time + intervalTime
+        lastItem.date = new Date(lastItem.time)
+        updated.push(lastItem)
+        return updated
+      }
+      return []
     }
   },
   watch: {

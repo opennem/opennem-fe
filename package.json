@@ -1,6 +1,6 @@
 {
   "name": "opennem",
-  "version": "3.5.7",
+  "version": "3.5.13",
   "description": "An Open Platform for National Electricity Market Data",
   "author": "Steven Tan",
   "private": true,
@@ -19,6 +19,7 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.0.0",
     "@nuxtjs/proxy": "^2.0.1",
+    "@opennem/energy-tools": "^1.4.1",
     "@sentry/browser": "^5.18.0",
     "@sentry/integrations": "^5.18.0",
     "cross-env": "^5.2.0",

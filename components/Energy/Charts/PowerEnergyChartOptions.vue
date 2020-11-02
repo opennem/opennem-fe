@@ -29,7 +29,7 @@
 
     <template
       v-slot:average-value 
-      v-if="!isRenewableLineOnly && !isTypeProportion && !readOnly">
+      v-if="showAverageValue">
       Av.
       <strong>
         {{ averageEnergy | formatValue }}
@@ -231,6 +231,14 @@ export default {
         (this.isTypeArea || (this.isTypeLine && !this.isYAxisPercentage))
       )
     },
+    showAverageValue() {
+      return (
+        !this.isRenewableLineOnly &&
+        !this.isTypeProportion &&
+        (this.isTypeLine && !this.isYAxisPercentage) &&
+        !this.readOnly
+      )
+    },
     showYAxisOptions() {
       if (this.isEnergyType) {
         return true
@@ -293,6 +301,17 @@ export default {
           this.$store.commit(
             'chartOptionsPowerEnergy/chartEnergyYAxis',
             OPTIONS.CHART_YAXIS_ENERGY
+          )
+        }
+      } else {
+        console.log('power', this.chartYAxis)
+        if (
+          this.chartType === OPTIONS.CHART_LINE &&
+          this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE
+        ) {
+          this.$store.commit(
+            'chartOptionsPowerEnergy/chartPowerYAxis',
+            OPTIONS.CHART_YAXIS_ABSOLUTE
           )
         }
       }
