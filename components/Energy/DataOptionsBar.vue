@@ -86,6 +86,8 @@ export default {
       intervalFilters: INTERVAL_FILTERS,
       selectedRange: '',
       selectedInterval: '',
+      selectedRangeIntervals: [],
+      filters: [],
       showMonthFilter: false,
       showSeasonFilter: false,
       showQuarterFilter: false,
@@ -118,42 +120,15 @@ export default {
         this.selectedRange === RANGE_7D
       )
     },
-    selectedRangeIntervals() {
-      const range = this.ranges.find(r => r.range === this.selectedRange)
-      let intervals = range ? range.intervals : null
-      if (this.regionId === 'wem' && this.isPowerRange) {
-        intervals = ['30m']
-      }
-      return intervals
-    },
     filterPeriod() {
       return this.$store.getters.filterPeriod
     },
     periodArray() {
       return this.intervalFilters[this.selectedInterval]
-    },
-    filters() {
-      switch (this.interval) {
-        case INTERVAL_MONTH:
-          return this.monthFilters
-        case INTERVAL_SEASON:
-          return this.seasonFilters
-        case INTERVAL_QUARTER:
-          return this.quarterFilters
-        default:
-          // Half Year
-          return this.halfYearFilters
-      }
     }
   },
 
   watch: {
-    range(updated) {
-      this.selectedRange = updated
-    },
-    interval(updated) {
-      this.selectedInterval = updated
-    },
     periodArray(arr) {
       if (arr && !this.filterPeriod) {
         this.$store.dispatch('filterPeriod', FILTER_NONE)
@@ -161,30 +136,34 @@ export default {
     }
   },
 
-  created() {
-    console.log(this.range, this.interval)
-    console.log(this.queryRange, this.queryInterval)
-
+  mounted() {
     const validRangeQuery = isValidRangeQuery(this.queryRange)
     const validIntervalQuery = isValidIntervalQuery(this.queryInterval)
 
+    let range = this.range
+    let interval = this.interval
+
     if (validRangeQuery && validIntervalQuery) {
       console.log('valid')
-      this.setRange(getRangeByRangeQuery(this.queryRange))
-      this.setInterval(getIntervalByIntervalQuery(this.queryInterval))
+      range = getRangeByRangeQuery(this.queryRange)
+      interval = getIntervalByIntervalQuery(this.queryInterval)
     } else if (!validRangeQuery && !validIntervalQuery) {
       console.log('invalid')
-      this.updateRoute(this.range, this.interval)
+      if (range === '') {
+        range = '7D'
+      }
+      if (interval === '') {
+        interval = '30m'
+      }
+
+      this.updateRoute(range, interval)
     } else if (validRangeQuery && !validIntervalQuery) {
       console.log('valid range, invalid interval:', this.queryInterval)
     } else if (!validRangeQuery && validIntervalQuery) {
       console.log('valid interval, invalid range:', this.queryRange)
     }
-  },
 
-  mounted() {
-    this.selectedRange = this.range
-    this.selectedInterval = this.interval
+    this.setRangeInterval(range, interval)
   },
 
   methods: {
@@ -192,6 +171,42 @@ export default {
       setRange: 'range',
       setInterval: 'interval'
     }),
+
+    setRangeInterval(range, interval) {
+      this.setRange(range)
+      this.setInterval(interval)
+      this.selectedRange = range
+      this.selectedInterval = interval
+      this.setSelectedRangeIntervals(range)
+      this.setFilters(interval)
+    },
+
+    setSelectedRangeIntervals(selected) {
+      if (selected !== '') {
+        const range = this.ranges.find(r => r.range === selected)
+        let intervals = range ? range.intervals : null
+        if (this.regionId === 'wem' && this.isPowerRange) {
+          intervals = ['30m']
+        }
+        this.selectedRangeIntervals = intervals
+      }
+    },
+    setFilters(interval) {
+      let filters = []
+      switch (interval) {
+        case INTERVAL_MONTH:
+          filters = this.monthFilters
+        case INTERVAL_SEASON:
+          filters = this.seasonFilters
+        case INTERVAL_QUARTER:
+          filters = this.quarterFilters
+        default:
+          // Half Year
+          filters = this.halfYearFilters
+      }
+      this.filters = filters
+    },
+
     showFilter(interval) {
       return (
         (interval === INTERVAL_MONTH && this.showMonthFilter) ||
@@ -252,11 +267,12 @@ export default {
         interval = '30m'
       }
 
-      this.$store.dispatch('interval', interval)
-      this.$store.dispatch('range', range)
+      this.setRangeInterval(range, interval)
       this.updateRoute(range, interval)
     },
     handleIntervalChange(interval) {
+      this.selectedInterval = interval
+
       const hasFilter = this.hasFilter(interval)
       if (hasFilter && this.interval === interval) {
         if (interval === INTERVAL_MONTH) {
@@ -275,8 +291,9 @@ export default {
         this.hideAllFilters()
         this.$store.dispatch('filterPeriod', FILTER_NONE)
         this.$store.dispatch('si/emissionsVolumePrefix', '')
-        this.$store.dispatch('interval', interval)
+        this.setInterval(interval)
       }
+      this.setFilters(interval)
       this.updateRoute(this.range, interval)
     },
     handleFilterPeriodClick(period) {
