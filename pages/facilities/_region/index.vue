@@ -454,7 +454,7 @@ export default {
       this.$router.push({
         path: `/facility/${encodeURIComponent(network)}/${encodeURIComponent(
           id
-        )}`
+        )}/`
       })
     }
   }
