@@ -272,7 +272,7 @@ export default {
         query.end = new Date(this.dateFilter[1]).getTime()
       }
       this.$router.push({
-        path: `/energy/${this.regionId}/export`
+        path: `/energy/${this.regionId}/export/`
       })
     },
     handleExportDataClick() {
