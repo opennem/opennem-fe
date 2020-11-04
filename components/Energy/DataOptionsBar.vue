@@ -85,7 +85,6 @@ export default {
   data() {
     return {
       ranges: FuelTechRanges,
-      intervalFilters: INTERVAL_FILTERS,
       selectedRange: '',
       selectedInterval: '',
       selectedRangeIntervals: [],
@@ -104,7 +103,8 @@ export default {
   computed: {
     ...mapGetters({
       range: 'range',
-      interval: 'interval'
+      interval: 'interval',
+      filterPeriod: 'filterPeriod'
     }),
     regionId() {
       return this.$route.params.region
@@ -124,20 +124,6 @@ export default {
         this.selectedRange === RANGE_3D ||
         this.selectedRange === RANGE_7D
       )
-    },
-    filterPeriod() {
-      return this.$store.getters.filterPeriod
-    },
-    periodArray() {
-      return this.intervalFilters[this.selectedInterval]
-    }
-  },
-
-  watch: {
-    periodArray(arr) {
-      if (arr && !this.filterPeriod) {
-        this.$store.dispatch('filterPeriod', FILTER_NONE)
-      }
     }
   },
 
@@ -184,7 +170,8 @@ export default {
   methods: {
     ...mapMutations({
       setRange: 'range',
-      setInterval: 'interval'
+      setInterval: 'interval',
+      setFilterPeriod: 'filterPeriod'
     }),
 
     setRangeInterval(range, interval) {
@@ -211,14 +198,18 @@ export default {
       switch (interval) {
         case INTERVAL_MONTH:
           filters = this.monthFilters
+          break
         case INTERVAL_SEASON:
           filters = this.seasonFilters
+          break
         case INTERVAL_QUARTER:
           filters = this.quarterFilters
+          break
         default:
           // Half Year
           filters = this.halfYearFilters
       }
+      console.log(filters, interval)
       this.filters = filters
     },
 
@@ -250,7 +241,7 @@ export default {
     },
     handleRangeChange(range) {
       this.$store.commit('regionEnergy/filteredDates', [])
-      this.$store.dispatch('filterPeriod', FILTER_NONE)
+      this.setFilterPeriod(FILTER_NONE)
       this.$store.dispatch('si/emissionsVolumePrefix', '')
 
       const is5mOr30m =
@@ -304,7 +295,7 @@ export default {
         }
       } else {
         this.hideAllFilters()
-        this.$store.dispatch('filterPeriod', FILTER_NONE)
+        this.setFilterPeriod(FILTER_NONE)
         this.$store.dispatch('si/emissionsVolumePrefix', '')
         this.setInterval(interval)
       }
@@ -312,7 +303,7 @@ export default {
       this.updateRoute(this.range, interval)
     },
     handleFilterPeriodClick(period) {
-      this.$store.dispatch('filterPeriod', period)
+      this.setFilterPeriod(period)
       this.$store.dispatch('compareDifference', false)
       this.$store.dispatch('compareDates', [])
       this.hideAllFilters()
