@@ -1,3 +1,4 @@
+import _includes from 'lodash.includes'
 import * as INTERVALS from '@/constants/interval-filters.js'
 
 export const RANGE_1D = '1D'
@@ -14,19 +15,23 @@ export function isPowerRange(range) {
 export const FuelTechRanges = [
   {
     range: RANGE_1D,
-    intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN]
+    intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN],
+    defaultInterval: INTERVALS.INTERVAL_30MIN
   },
   {
     range: RANGE_3D,
-    intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN]
+    intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN],
+    defaultInterval: INTERVALS.INTERVAL_30MIN
   },
   {
     range: RANGE_7D,
-    intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN]
+    intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN],
+    defaultInterval: INTERVALS.INTERVAL_30MIN
   },
   {
     range: RANGE_30D,
-    intervals: [INTERVALS.INTERVAL_DAY]
+    intervals: [INTERVALS.INTERVAL_DAY],
+    defaultInterval: INTERVALS.INTERVAL_DAY
   },
   {
     range: RANGE_1Y,
@@ -34,7 +39,8 @@ export const FuelTechRanges = [
       INTERVALS.INTERVAL_DAY,
       INTERVALS.INTERVAL_WEEK,
       INTERVALS.INTERVAL_MONTH
-    ]
+    ],
+    defaultInterval: INTERVALS.INTERVAL_WEEK
   },
   {
     range: RANGE_ALL,
@@ -45,9 +51,21 @@ export const FuelTechRanges = [
       INTERVALS.INTERVAL_HALFYEAR,
       INTERVALS.INTERVAL_FINYEAR,
       INTERVALS.INTERVAL_YEAR
-    ]
+    ],
+    defaultInterval: INTERVALS.INTERVAL_MONTH
   }
 ]
+
+export function getDefaultIntervalByRange(range) {
+  const find = FuelTechRanges.find(r => r.range === range)
+  return find ? find.defaultInterval : null
+}
+
+export function isValidRangeInterval(range, interval) {
+  const find = FuelTechRanges.find(r => r.range === range)
+  console.log(_includes(find.intervals, interval))
+  return find ? _includes(find.intervals, interval) : false
+}
 
 export const FacilityPowerEnergyRanges = [
   {

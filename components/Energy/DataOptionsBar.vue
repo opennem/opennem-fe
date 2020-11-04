@@ -52,7 +52,9 @@ import {
   FuelTechRanges,
   RANGE_1D,
   RANGE_3D,
-  RANGE_7D
+  RANGE_7D,
+  getDefaultIntervalByRange,
+  isValidRangeInterval
 } from '~/constants/ranges.js'
 import {
   INTERVAL_FILTERS,
@@ -113,6 +115,9 @@ export default {
     queryInterval() {
       return this.$route.query.interval
     },
+    queryFilter() {
+      return this.$route.query.only
+    },
     isPowerRange() {
       return (
         this.selectedRange === RANGE_1D ||
@@ -139,16 +144,20 @@ export default {
   mounted() {
     const validRangeQuery = isValidRangeQuery(this.queryRange)
     const validIntervalQuery = isValidIntervalQuery(this.queryInterval)
+    const validIntervalFilterQuery = true
+    console.log('query filter: ', this.queryFilter)
 
     let range = this.range
     let interval = this.interval
 
     if (validRangeQuery && validIntervalQuery) {
-      console.log('valid')
       range = getRangeByRangeQuery(this.queryRange)
       interval = getIntervalByIntervalQuery(this.queryInterval)
+      if (!isValidRangeInterval(range, interval)) {
+        interval = getDefaultIntervalByRange(range)
+        this.updateRoute(range, interval)
+      }
     } else if (!validRangeQuery && !validIntervalQuery) {
-      console.log('invalid')
       if (range === '') {
         range = '7D'
       }
@@ -159,8 +168,14 @@ export default {
       this.updateRoute(range, interval)
     } else if (validRangeQuery && !validIntervalQuery) {
       console.log('valid range, invalid interval:', this.queryInterval)
+      range = getRangeByRangeQuery(this.queryRange)
+      interval = getDefaultIntervalByRange(range)
+      this.updateRoute(range, interval)
     } else if (!validRangeQuery && validIntervalQuery) {
       console.log('valid interval, invalid range:', this.queryRange)
+      range = '7D'
+      interval = '30m'
+      this.updateRoute(range, interval)
     }
 
     this.setRangeInterval(range, interval)
