@@ -1,7 +1,5 @@
 <template>
-  <section>
-    redirecting...
-  </section>
+  <div/>
 </template>
 
 <script>
