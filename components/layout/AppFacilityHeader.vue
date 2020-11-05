@@ -63,7 +63,7 @@ export default {
       return this.$route.params.facilityId
     },
     path() {
-      return this.previousPath === '' ? '/facilities/all' : this.previousPath
+      return this.previousPath === '' ? '/facilities/all/' : this.previousPath
     }
   },
 

@@ -1,13 +1,15 @@
 export const state = () => ({
   windowWidth: 600,
-  showBanner: false
+  showBanner: false,
+  query: null
 })
 
 export const getters = {
   windowWidth: state => state.windowWidth,
   widthBreak: state => state.windowWidth < 1024,
   tabletBreak: state => state.windowWidth < 769,
-  showBanner: state => state.showBanner
+  showBanner: state => state.showBanner,
+  query: state => state.query
 }
 
 export const mutations = {
@@ -16,6 +18,9 @@ export const mutations = {
   },
   showBanner(state, showBanner) {
     state.showBanner = showBanner
+  },
+  query(state, query) {
+    state.query = query
   }
 }
 

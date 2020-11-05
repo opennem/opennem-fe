@@ -173,7 +173,7 @@ export const actions = {
     commit('isCachedData', false)
     commit('cachedDate', null)
     commit('app/showBanner', false, { root: true })
-    if (isValidRegion(region)) {
+    if (isValidRegion(region) && range !== '' && interval !== '') {
       const env = hostEnv()
       const urls = Data.getEnergyUrls(region, range, env)
       currentRegion = region
@@ -279,7 +279,7 @@ export const actions = {
           }
         })
     } else {
-      throw new Error('Invalid region')
+      console.log('not processing data')
     }
   },
 

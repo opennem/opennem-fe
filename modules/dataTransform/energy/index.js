@@ -24,7 +24,6 @@ export function dataProcess(responses, range, interval, period) {
   const datasetFull = _cloneDeep(datasetFlat)
   const dataset = filterDatasetByRange(datasetFlat, range)
 
-  //TODO: check dataPowerEnergyInterval === interval
   const currentDataset =
     dataPowerEnergyInterval === interval
       ? dataset
@@ -58,7 +57,7 @@ export function dataProcess(responses, range, interval, period) {
   })
 
   // summarise and group original dataset
-  if (!isEnergyType) {
+  if (!isEnergyType && dataPowerEnergyInterval !== interval) {
     summariseDataset({
       isEnergyType,
       currentDataset: dataset,

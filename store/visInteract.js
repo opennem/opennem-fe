@@ -11,8 +11,8 @@ export const state = () => ({
   focusDate: null,
   xTicks: null,
   xGuides: null,
-  tickFormat: () => ({}),
-  secondTickFormat: () => ({}),
+  tickFormat: '',
+  secondTickFormat: '',
 
   chartSummaryPie: true
 })
@@ -83,21 +83,22 @@ export const actions = {
   },
 
   doUpdateTickFormats({ commit }, { range, interval }) {
-    let tickFormat = AxisTimeFormats.defaultFormat,
-      secondTickFormat = AxisTimeFormats.secondaryFormat
+    // AxisTimeFormats.defaultFormat
+    let tickFormat = 'defaultFormat',
+      secondTickFormat = 'secondaryFormat'
     switch (interval) {
       case 'Day':
-        tickFormat = AxisTimeFormats.intervalDayTimeFormat
-        secondTickFormat = AxisTimeFormats.intervalDaySecondaryTimeFormat
+        tickFormat = 'intervalDayTimeFormat'
+        secondTickFormat = 'intervalDaySecondaryTimeFormat'
         break
       case 'Week':
-        tickFormat = AxisTimeFormats.intervalWeekTimeFormat
-        secondTickFormat = AxisTimeFormats.intervalWeekSecondaryTimeFormat
+        tickFormat = 'intervalWeekTimeFormat'
+        secondTickFormat = 'intervalWeekSecondaryTimeFormat'
         break
       case 'Month':
         range === 'ALL'
-          ? (tickFormat = AxisTimeFormats.rangeAllIntervalMonthTimeFormat)
-          : (tickFormat = AxisTimeFormats.intervalMonthTimeFormat)
+          ? (tickFormat = 'rangeAllIntervalMonthTimeFormat')
+          : (tickFormat = 'intervalMonthTimeFormat')
         break
       case 'Fin Year':
         tickFormat = d => {
