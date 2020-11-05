@@ -232,12 +232,19 @@ export default {
       )
     },
     showAverageValue() {
-      return (
-        !this.isRenewableLineOnly &&
-        !this.isTypeProportion &&
-        (this.isTypeLine && !this.isYAxisPercentage) &&
-        !this.readOnly
-      )
+      if (this.isRenewableLineOnly) {
+        return false
+      }
+
+      if (this.isTypeArea) {
+        return true
+      } else if (this.isTypeLine) {
+        if (this.isYAxisAbsolute || this.isYAxisAveragePower) {
+          return true
+        }
+      }
+
+      return false
     },
     showYAxisOptions() {
       if (this.isEnergyType) {
