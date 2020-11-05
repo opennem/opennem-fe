@@ -1,6 +1,5 @@
 import _cloneDeep from 'lodash.clonedeep'
 import AxisTicks from '@/services/axisTicks.js'
-import AxisTimeFormats from '@/services/axisTimeFormats.js'
 import DateDisplay from '@/services/DateDisplay.js'
 
 export const state = () => ({
@@ -83,7 +82,6 @@ export const actions = {
   },
 
   doUpdateTickFormats({ commit }, { range, interval }) {
-    // AxisTimeFormats.defaultFormat
     let tickFormat = 'defaultFormat',
       secondTickFormat = 'secondaryFormat'
     switch (interval) {
