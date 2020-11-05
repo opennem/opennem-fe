@@ -1304,7 +1304,7 @@ export default {
   }
 
   .summary-col-label {
-    width: 30%;
+    width: 200px;
   }
   .summary-col-energy,
   .summary-col-contribution,
