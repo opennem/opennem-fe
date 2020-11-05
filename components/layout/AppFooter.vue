@@ -19,7 +19,7 @@
     <div class="right">
       <nuxt-link
         class="icon-link"
-        to="/features">
+        to="/features/">
         <i class="fal fa-vial" />
       </nuxt-link>
       <a

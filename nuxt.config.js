@@ -176,28 +176,29 @@ module.exports = {
 
   generate: {
     routes: [
-      '/energy/nem',
-      '/energy/nsw1',
-      '/energy/qld1',
-      '/energy/sa1',
-      '/energy/tas1',
-      '/energy/vic1',
-      '/energy/wem',
-      '/facilities/nem',
-      '/facilities/nsw1',
-      '/facilities/qld1',
-      '/facilities/sa1',
-      '/facilities/tas1',
-      '/facilities/vic1',
-      '/facilities/wem',
-      '/widget',
-      '/widget/small',
-      '/widget/large'
+      '/energy/nem/',
+      '/energy/nsw1/',
+      '/energy/qld1/',
+      '/energy/sa1/',
+      '/energy/tas1/',
+      '/energy/vic1/',
+      '/energy/wem/',
+      '/facilities/nem/',
+      '/facilities/nsw1/',
+      '/facilities/qld1/',
+      '/facilities/sa1/',
+      '/facilities/tas1/',
+      '/facilities/vic1/',
+      '/facilities/wem/',
+      '/widget/',
+      '/widget/small/',
+      '/widget/large/'
     ]
   },
 
   router: {
-    base: '/'
+    base: '/',
+    trailingSlash: true
   },
 
   /*

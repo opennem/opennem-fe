@@ -1,10 +1,9 @@
 <template>
   <div class="container">
-    <nuxt-link
-      to="/"
-      class="back-link">
-      &larr; back
-    </nuxt-link>
+
+    <a 
+      class="back-link" 
+      @click="$router.go(-1)">&larr; back</a>
 
     <h1>
       <nuxt-link

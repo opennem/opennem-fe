@@ -135,6 +135,8 @@ import addMonths from 'date-fns/addMonths'
 import addQuarters from 'date-fns/addQuarters'
 import addYears from 'date-fns/addYears'
 
+import AxisTimeFormats from '@/services/axisTimeFormats.js'
+
 import * as OPTIONS from '@/constants/chart-options.js'
 import * as SI from '@/constants/si.js'
 import { LOAD } from '@/constants/energy-fuel-techs/group-default.js'
@@ -180,8 +182,8 @@ export default {
       focusDate: 'visInteract/focusDate',
       xTicks: 'visInteract/xTicks',
       xGuides: 'visInteract/xGuides',
-      tickFormat: 'visInteract/tickFormat',
-      secondTickFormat: 'visInteract/secondTickFormat',
+      visTickFormat: 'visInteract/tickFormat',
+      visSecondTickFormat: 'visInteract/secondTickFormat',
       highlightDomain: 'visInteract/highlightDomain',
       chartShown: 'chartOptionsPowerEnergy/chartShown',
       chartType: 'chartOptionsPowerEnergy/chartType',
@@ -220,6 +222,14 @@ export default {
     regionId() {
       return this.$route.params.region
     },
+
+    tickFormat() {
+      return AxisTimeFormats[this.visTickFormat]
+    },
+    secondTickFormat() {
+      return AxisTimeFormats[this.visSecondTickFormat]
+    },
+
     chartHeight() {
       let height = 330
       if (this.regionId === 'nem' && !this.tabletBreak) {

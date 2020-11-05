@@ -52,7 +52,7 @@ export default {
   },
   methods: {
     handleDoneClick() {
-      this.$router.push({ path: '/energy/nem' })
+      this.$router.go(-1)
     }
   }
 }

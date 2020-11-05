@@ -1,6 +1,6 @@
 <template>
   <div class="energy-region">
-    <data-options-bar />
+    <data-options-bar @queryChange="handleQueryChange"/>
     <transition name="fade">
       <div
         v-if="!ready"
@@ -46,7 +46,10 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import _debounce from 'lodash.debounce'
 import { isPowerRange } from '@/constants/ranges.js'
-import { getEnergyRegionLabel } from '@/constants/energy-regions.js'
+import {
+  isValidRegion,
+  getEnergyRegionLabel
+} from '@/constants/energy-regions.js'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import VisSection from '@/components/Energy/VisSection.vue'
 import SummarySection from '@/components/Energy/SummarySection.vue'
@@ -117,7 +120,8 @@ export default {
       isEnergyType: 'regionEnergy/isEnergyType',
       powerEnergyPrefix: 'regionEnergy/powerEnergyPrefix',
       currentDataset: 'regionEnergy/currentDataset',
-      filteredDates: 'regionEnergy/filteredDates'
+      filteredDates: 'regionEnergy/filteredDates',
+      query: 'app/query'
     }),
     regionId() {
       return this.$route.params.region
@@ -186,18 +190,25 @@ export default {
   },
 
   created() {
-    this.$store.dispatch('currentView', 'energy')
-    if (this.regionId === 'wem' && !this.isEnergyType) {
-      this.setInterval('30m')
+    if (isValidRegion(this.regionId)) {
+      this.$store.dispatch('currentView', 'energy')
+      if (this.regionId === 'wem' && !this.isEnergyType) {
+        this.setInterval('30m')
+      }
+      this.doGetRegionData({
+        region: this.regionId,
+        range: this.range,
+        interval: this.interval,
+        period: this.filterPeriod,
+        groupName: this.fuelTechGroupName
+      })
+      this.doUpdateTickFormats({ range: this.range, interval: this.interval })
+    } else {
+      this.$router.push({
+        params: { region: 'nem' },
+        query: this.query
+      })
     }
-    this.doGetRegionData({
-      region: this.regionId,
-      range: this.range,
-      interval: this.interval,
-      period: this.filterPeriod,
-      groupName: this.fuelTechGroupName
-    })
-    this.doUpdateTickFormats({ range: this.range, interval: this.interval })
   },
 
   mounted() {
@@ -229,13 +240,22 @@ export default {
     ...mapMutations({
       setWindowWidth: 'app/windowWidth',
       setCompareDifference: 'compareDifference',
-      setInterval: 'interval'
+      setInterval: 'interval',
+      setQuery: 'app/query'
     }),
     handleDateHover(date) {
       this.hoverDate = date
     },
     handleIsHovering(hover) {
       this.isHovering = hover
+    },
+    handleQueryChange(query) {
+      this.$router.push({
+        params: { region: this.regionId },
+        query
+      })
+
+      this.setQuery(query)
     }
   }
 }
