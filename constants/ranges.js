@@ -63,7 +63,6 @@ export function getDefaultIntervalByRange(range) {
 
 export function isValidRangeInterval(range, interval) {
   const find = FuelTechRanges.find(r => r.range === range)
-  console.log(_includes(find.intervals, interval))
   return find ? _includes(find.intervals, interval) : false
 }
 

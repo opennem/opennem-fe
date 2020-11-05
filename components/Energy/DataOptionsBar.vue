@@ -68,17 +68,22 @@ import {
   hasIntervalFilters
 } from '@/constants/interval-filters.js'
 import {
+  isValidRangeQuery,
+  getDefaultRange,
+  getRangeQueryByRange,
+  getRangeByRangeQuery
+} from '@/constants/range-queries.js'
+import {
   isValidIntervalQuery,
   getDefaultInterval,
   getIntervalQueryByInterval,
   getIntervalByIntervalQuery
 } from '@/constants/interval-queries.js'
 import {
-  isValidRangeQuery,
-  getDefaultRange,
-  getRangeQueryByRange,
-  getRangeByRangeQuery
-} from '@/constants/range-queries.js'
+  isValidFilterQuery,
+  getFilterQueryByFilter,
+  getFilterByFilterQuery
+} from '@/constants/filter-queries.js'
 
 export default {
   mixins: [clickaway],
@@ -116,7 +121,7 @@ export default {
       return this.$route.query.interval
     },
     queryFilter() {
-      return this.$route.query.only
+      return this.$route.query.filter
     },
     isPowerRange() {
       return (
@@ -128,43 +133,7 @@ export default {
   },
 
   mounted() {
-    const validRangeQuery = isValidRangeQuery(this.queryRange)
-    const validIntervalQuery = isValidIntervalQuery(this.queryInterval)
-    const validIntervalFilterQuery = true
-    console.log('query filter: ', this.queryFilter)
-
-    let range = this.range
-    let interval = this.interval
-
-    if (validRangeQuery && validIntervalQuery) {
-      range = getRangeByRangeQuery(this.queryRange)
-      interval = getIntervalByIntervalQuery(this.queryInterval)
-      if (!isValidRangeInterval(range, interval)) {
-        interval = getDefaultIntervalByRange(range)
-        this.updateRoute(range, interval)
-      }
-    } else if (!validRangeQuery && !validIntervalQuery) {
-      if (range === '') {
-        range = '7D'
-      }
-      if (interval === '') {
-        interval = '30m'
-      }
-
-      this.updateRoute(range, interval)
-    } else if (validRangeQuery && !validIntervalQuery) {
-      console.log('valid range, invalid interval:', this.queryInterval)
-      range = getRangeByRangeQuery(this.queryRange)
-      interval = getDefaultIntervalByRange(range)
-      this.updateRoute(range, interval)
-    } else if (!validRangeQuery && validIntervalQuery) {
-      console.log('valid interval, invalid range:', this.queryRange)
-      range = '7D'
-      interval = '30m'
-      this.updateRoute(range, interval)
-    }
-
-    this.setRangeInterval(range, interval)
+    this.checkQueries()
   },
 
   methods: {
@@ -174,13 +143,62 @@ export default {
       setFilterPeriod: 'filterPeriod'
     }),
 
-    setRangeInterval(range, interval) {
+    checkQueries() {
+      const validRangeQuery = isValidRangeQuery(this.queryRange)
+      const validIntervalQuery = isValidIntervalQuery(this.queryInterval)
+      const validIntervalFilterQuery = isValidFilterQuery(this.queryFilter)
+
+      let range = this.range
+      let interval = this.interval
+      let filterPeriod = this.filterPeriod
+
+      if (validRangeQuery && validIntervalQuery) {
+        range = getRangeByRangeQuery(this.queryRange)
+        interval = getIntervalByIntervalQuery(this.queryInterval)
+
+        if (!isValidRangeInterval(range, interval)) {
+          interval = getDefaultIntervalByRange(range)
+          this.updateRoute(range, interval)
+        } else if (validIntervalFilterQuery) {
+          filterPeriod = getFilterByFilterQuery(this.queryFilter)
+        } else if (!validIntervalFilterQuery) {
+          this.updateRoute(range, interval, filterPeriod)
+        }
+      } else if (!validRangeQuery && !validIntervalQuery) {
+        if (range === '') {
+          range = '7D'
+        }
+        if (interval === '') {
+          interval = '30m'
+        }
+
+        this.updateRoute(range, interval, filterPeriod)
+      } else if (validRangeQuery && !validIntervalQuery) {
+        range = getRangeByRangeQuery(this.queryRange)
+        interval = getDefaultIntervalByRange(range)
+
+        this.updateRoute(range, interval, filterPeriod)
+      } else if (!validRangeQuery && validIntervalQuery) {
+        range = '7D'
+        interval = '30m'
+
+        this.updateRoute(range, interval, filterPeriod)
+      }
+
+      this.setRangeInterval(range, interval, filterPeriod)
+    },
+
+    setRangeInterval(range, interval, filter) {
       this.setRange(range)
       this.setInterval(interval)
       this.selectedRange = range
       this.selectedInterval = interval
       this.setSelectedRangeIntervals(range)
       this.setFilters(interval)
+
+      if (filter) {
+        this.setFilterPeriod(filter)
+      }
     },
 
     setSelectedRangeIntervals(selected) {
@@ -205,11 +223,12 @@ export default {
         case INTERVAL_QUARTER:
           filters = this.quarterFilters
           break
-        default:
-          // Half Year
+        case INTERVAL_HALFYEAR:
           filters = this.halfYearFilters
+          break
+        default:
+          filters = []
       }
-      console.log(filters, interval)
       this.filters = filters
     },
 
@@ -295,29 +314,35 @@ export default {
         }
       } else {
         this.hideAllFilters()
-        this.setFilterPeriod(FILTER_NONE)
         this.$store.dispatch('si/emissionsVolumePrefix', '')
         this.setInterval(interval)
+        this.setFilterPeriod(FILTER_NONE)
       }
       this.setFilters(interval)
       this.updateRoute(this.range, interval)
     },
     handleFilterPeriodClick(period) {
-      this.setFilterPeriod(period)
       this.$store.dispatch('compareDifference', false)
       this.$store.dispatch('compareDates', [])
+      this.setFilterPeriod(period)
       this.hideAllFilters()
+      this.updateRoute(this.range, this.interval, period)
     },
     handleClickAway() {
       this.hideAllFilters()
     },
-    updateRoute(range, interval) {
+    updateRoute(range, interval, filter) {
+      const query = {
+        range: getRangeQueryByRange(range),
+        interval: getIntervalQueryByInterval(interval)
+      }
+      const filterQuery = getFilterQueryByFilter(filter)
+      if (filterQuery) {
+        query.filter = filterQuery
+      }
       this.$router.push({
         params: { region: this.regionId },
-        query: {
-          range: getRangeQueryByRange(range),
-          interval: getIntervalQueryByInterval(interval)
-        }
+        query
       })
     }
   }
