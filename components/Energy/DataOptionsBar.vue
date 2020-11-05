@@ -166,6 +166,11 @@ export default {
         range = getRangeByRangeQuery(this.queryRange)
         interval = getIntervalByIntervalQuery(this.queryInterval)
 
+        if (this.regionId === 'wem' && interval === INTERVAL_5MIN) {
+          interval = INTERVAL_30MIN
+          this.updateQuery(range, interval, filter)
+        }
+
         if (!isValidRangeInterval(range, interval)) {
           interval = getDefaultIntervalByRange(range)
           this.updateQuery(range, interval, filter)
@@ -179,10 +184,10 @@ export default {
         }
       } else if (!validRangeQuery && !validIntervalQuery) {
         if (range === '') {
-          range = '7D'
+          range = RANGE_7D
         }
         if (interval === '') {
-          interval = '30m'
+          interval = INTERVAL_30MIN
         }
 
         this.updateQuery(range, interval, filter)
@@ -192,8 +197,8 @@ export default {
 
         this.updateQuery(range, interval, filter)
       } else if (!validRangeQuery && validIntervalQuery) {
-        range = '7D'
-        interval = '30m'
+        range = RANGE_7D
+        interval = INTERVAL_30MIN
 
         this.updateQuery(range, interval, filter)
       }
