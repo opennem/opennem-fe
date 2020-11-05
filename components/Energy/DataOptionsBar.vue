@@ -31,12 +31,12 @@
           class="filter-menu dropdown-menu">
           <div class="dropdown-content">
             <a
-              v-for="(period, i) in filters"
-              :key="`period${i}`"
-              :class="{ 'is-selected': filterPeriod === period }"
+              v-for="(f, i) in filters"
+              :key="`filter${i}`"
+              :class="{ 'is-selected': f === selectedFilter }"
               class="dropdown-item"
-              @click.stop="handleFilterPeriodClick(period)">
-              {{ period }}
+              @click.stop="handleFilterPeriodClick(f)">
+              {{ f }}
             </a>
           </div>
         </div>
@@ -92,6 +92,7 @@ export default {
       ranges: FuelTechRanges,
       selectedRange: '',
       selectedInterval: '',
+      selectedFilter: '',
       selectedRangeIntervals: [],
       filters: [],
       showMonthFilter: false,
@@ -132,6 +133,10 @@ export default {
     }
   },
 
+  watch: {
+    '$route.query': 'checkQueries'
+  },
+
   mounted() {
     this.checkQueries()
   },
@@ -146,11 +151,16 @@ export default {
     checkQueries() {
       const validRangeQuery = isValidRangeQuery(this.queryRange)
       const validIntervalQuery = isValidIntervalQuery(this.queryInterval)
-      const validIntervalFilterQuery = isValidFilterQuery(this.queryFilter)
+      const validIntervalFilterQuery =
+        isValidFilterQuery(this.queryFilter) || !this.queryFilter
+
+      if (!this.queryFilter) {
+        this.selectedFilter = this.filterPeriod
+      }
 
       let range = this.range
       let interval = this.interval
-      let filterPeriod = this.filterPeriod
+      let filter = this.filterPeriod
 
       if (validRangeQuery && validIntervalQuery) {
         range = getRangeByRangeQuery(this.queryRange)
@@ -158,11 +168,14 @@ export default {
 
         if (!isValidRangeInterval(range, interval)) {
           interval = getDefaultIntervalByRange(range)
-          this.updateRoute(range, interval)
+          this.updateQuery(range, interval, filter)
         } else if (validIntervalFilterQuery) {
-          filterPeriod = getFilterByFilterQuery(this.queryFilter)
+          filter = this.queryFilter
+            ? getFilterByFilterQuery(this.queryFilter)
+            : FILTER_NONE
         } else if (!validIntervalFilterQuery) {
-          this.updateRoute(range, interval, filterPeriod)
+          filter = FILTER_NONE
+          this.updateQuery(range, interval, filter)
         }
       } else if (!validRangeQuery && !validIntervalQuery) {
         if (range === '') {
@@ -172,20 +185,20 @@ export default {
           interval = '30m'
         }
 
-        this.updateRoute(range, interval, filterPeriod)
+        this.updateQuery(range, interval, filter)
       } else if (validRangeQuery && !validIntervalQuery) {
         range = getRangeByRangeQuery(this.queryRange)
         interval = getDefaultIntervalByRange(range)
 
-        this.updateRoute(range, interval, filterPeriod)
+        this.updateQuery(range, interval, filter)
       } else if (!validRangeQuery && validIntervalQuery) {
         range = '7D'
         interval = '30m'
 
-        this.updateRoute(range, interval, filterPeriod)
+        this.updateQuery(range, interval, filter)
       }
 
-      this.setRangeInterval(range, interval, filterPeriod)
+      this.setRangeInterval(range, interval, filter)
     },
 
     setRangeInterval(range, interval, filter) {
@@ -198,6 +211,7 @@ export default {
 
       if (filter) {
         this.setFilterPeriod(filter)
+        this.selectedFilter = filter
       }
     },
 
@@ -211,6 +225,7 @@ export default {
         this.selectedRangeIntervals = intervals
       }
     },
+
     setFilters(interval) {
       let filters = []
       switch (interval) {
@@ -240,26 +255,31 @@ export default {
         (interval === INTERVAL_HALFYEAR && this.showHalfYearFilter)
       )
     },
+
     hideAllFilters() {
       this.showMonthFilter = false
       this.showSeasonFilter = false
       this.showQuarterFilter = false
       this.showHalfYearFilter = false
     },
+
     hasFilter(interval) {
       return (
         this.interval === interval && hasIntervalFilters(interval, this.range)
       )
     },
+
     intervalLabel(interval) {
-      if (this.filterPeriod === FILTER_NONE) {
+      if (this.selectedFilter === FILTER_NONE) {
         return this.interval
       } else {
-        return this.filterPeriod
+        return this.selectedFilter
       }
     },
+
     handleRangeChange(range) {
       this.$store.commit('regionEnergy/filteredDates', [])
+      this.selectedFilter = FILTER_NONE
       this.setFilterPeriod(FILTER_NONE)
       this.$store.dispatch('si/emissionsVolumePrefix', '')
 
@@ -293,8 +313,9 @@ export default {
       }
 
       this.setRangeInterval(range, interval)
-      this.updateRoute(range, interval)
+      this.updateQuery(range, interval, this.selectedFilter)
     },
+
     handleIntervalChange(interval) {
       this.selectedInterval = interval
 
@@ -317,21 +338,28 @@ export default {
         this.$store.dispatch('si/emissionsVolumePrefix', '')
         this.setInterval(interval)
         this.setFilterPeriod(FILTER_NONE)
+        this.selectedFilter = FILTER_NONE
+
+        this.updateQuery(this.range, interval, this.selectedFilter)
       }
       this.setFilters(interval)
-      this.updateRoute(this.range, interval)
     },
-    handleFilterPeriodClick(period) {
+
+    handleFilterPeriodClick(filter) {
+      this.selectedFilter = filter
+      this.setFilterPeriod(filter)
+      this.hideAllFilters()
       this.$store.dispatch('compareDifference', false)
       this.$store.dispatch('compareDates', [])
-      this.setFilterPeriod(period)
-      this.hideAllFilters()
-      this.updateRoute(this.range, this.interval, period)
+
+      this.updateQuery(this.range, this.interval, filter)
     },
+
     handleClickAway() {
       this.hideAllFilters()
     },
-    updateRoute(range, interval, filter) {
+
+    updateQuery(range, interval, filter) {
       const query = {
         range: getRangeQueryByRange(range),
         interval: getIntervalQueryByInterval(interval)
@@ -340,10 +368,8 @@ export default {
       if (filterQuery) {
         query.filter = filterQuery
       }
-      this.$router.push({
-        params: { region: this.regionId },
-        query
-      })
+
+      this.$emit('queryChange', query)
     }
   }
 }

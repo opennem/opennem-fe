@@ -1,6 +1,6 @@
 <template>
   <div class="energy-region">
-    <data-options-bar />
+    <data-options-bar @queryChange="handleQueryChange"/>
     <transition name="fade">
       <div
         v-if="!ready"
@@ -229,13 +229,22 @@ export default {
     ...mapMutations({
       setWindowWidth: 'app/windowWidth',
       setCompareDifference: 'compareDifference',
-      setInterval: 'interval'
+      setInterval: 'interval',
+      setQuery: 'app/query'
     }),
     handleDateHover(date) {
       this.hoverDate = date
     },
     handleIsHovering(hover) {
       this.isHovering = hover
+    },
+    handleQueryChange(query) {
+      this.$router.push({
+        params: { region: this.regionId },
+        query
+      })
+
+      this.setQuery(query)
     }
   }
 }

@@ -27,6 +27,8 @@ export const FILTER_QUERY_QUARTER_Q4 = 'q4'
 export const FILTER_QUERY_HALFYEAR_1ST = '1st-half'
 export const FILTER_QUERY_HALFYEAR_2ND = '2nd-half'
 
+export const FILTER_QUERY_NONE = 'all'
+
 export const FILTER_QUERIES = {}
 FILTER_QUERIES[FILTER_QUERY_MONTH_1] = FILTERS.FILTER_MONTH_1
 FILTER_QUERIES[FILTER_QUERY_MONTH_2] = FILTERS.FILTER_MONTH_2
@@ -54,6 +56,8 @@ FILTER_QUERIES[FILTER_QUERY_QUARTER_Q4] = FILTERS.FILTER_QUARTER_Q4
 FILTER_QUERIES[FILTER_QUERY_HALFYEAR_1ST] = FILTERS.FILTER_HALFYEAR_1ST
 FILTER_QUERIES[FILTER_QUERY_HALFYEAR_2ND] = FILTERS.FILTER_HALFYEAR_2ND
 
+FILTER_QUERIES[FILTER_QUERY_NONE] = FILTERS.FILTER_NONE
+
 const filterQueries = Object.keys(FILTER_QUERIES)
 
 export function isValidFilterQuery(filter) {
@@ -62,7 +66,7 @@ export function isValidFilterQuery(filter) {
 
 export function getFilterQueryByFilter(filter) {
   const find = filterQueries.find(d => FILTER_QUERIES[d] === filter)
-  return find ? find : null
+  return find && find !== FILTER_QUERY_NONE ? find : null
 }
 
 export function getFilterByFilterQuery(query) {

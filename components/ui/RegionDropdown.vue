@@ -30,7 +30,7 @@
           <nuxt-link
             v-for="link in links"
             :key="link.id"
-            :to="`/${currentView}/${link.id}/`"
+            :to="{ path: `/${currentView}/${link.id}/`, query}"
             :class="{
               'dropdown-item-child': link.isChild,
               'dropdown-item-first-child': link.isFirstChild,
@@ -63,6 +63,9 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      query: 'app/query'
+    }),
     regionId() {
       return this.$route.params.region
     },
