@@ -23,7 +23,11 @@ const getBaseUrl = () => {
   }
 
   if (host && host.startsWith('127')) {
-    baseUrl = `http://127.0.0.1:8000/export/`
+    baseUrl = `http://127.0.0.1:8000/static/`
+  }
+
+  if (host && host.startsWith('dev')) {
+    baseUrl = `https://dev.data.opennem.org.au/`
   }
 
   if (process.env.DATA_BASE_URL !== undefined) {
