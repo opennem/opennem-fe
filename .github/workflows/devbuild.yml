@@ -7,12 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main
-      - uses: borales/actions-yarn@v2.0.0
+      - uses: actions/setup-node@v2-beta
         with:
-          cmd: install
-      - uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: generate-dev
+          node-version: '12'
+      - run: yarn install
+      - run: yarn generate-dev
       - uses: shallwefootball/s3-upload-action@master
         with:
           aws_key_id: ${{ secrets.AWS_KEY_ID }}
