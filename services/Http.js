@@ -26,6 +26,10 @@ const getBaseUrl = () => {
     baseUrl = `http://127.0.0.1:8000/static/`
   }
 
+  if (host && host.startsWith('dev')) {
+    baseUrl = `https://dev.data.opennem.org.au/`
+  }
+
   if (process.env.DATA_BASE_URL !== undefined) {
     baseUrl = process.env.DATA_BASE_URL
   }
