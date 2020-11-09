@@ -25,6 +25,7 @@ export default function({
       exportsId = null,
       importsId = null
     let totalDemand = 0,
+      totalEnergyForPercentageCalculation = 0,
       totalSources = 0,
       totalGeneration = 0,
       totalNetGeneration = 0,
@@ -109,12 +110,14 @@ export default function({
       }
 
       if (domain.category !== FT.LOAD || ft === FT.EXPORTS) {
-        totalDemand += d[id] || 0
+        totalEnergyForPercentageCalculation += d[id] || 0
       }
 
       if (domain.renewable) {
         totalRenewables += d[id] || 0
       }
+
+      totalDemand += d[id] || 0
 
       if (d[id] < 0) {
         min += d[id] || 0
@@ -140,9 +143,12 @@ export default function({
     const volWeightedPrice = totalMarketValue / totalDemand / 1000
 
     dataset[i]._total = totalDemand
+    dataset[
+      i
+    ]._totalEnergyForPercentageCalculation = totalEnergyForPercentageCalculation
     dataset[i]._totalRenewables = totalRenewables
     dataset[i]._totalDemandRenewablesPercentage =
-      (totalRenewables / totalDemand) * 100
+      (totalRenewables / totalEnergyForPercentageCalculation) * 100
     dataset[i]._totalGenerationRenewablesPercentage =
       (totalRenewables / totalGeneration) * 100
     if (isNaN(dataset[i]._totalDemandRenewablesPercentage)) {

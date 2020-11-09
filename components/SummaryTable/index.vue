@@ -161,9 +161,9 @@
       :market-value-order="loadsMarketValueOrder"
       :show-point-summary="hoverOn || focusOn"
       :point-summary="pointSummaryLoads"
-      :point-summary-total="pointSummary._total"
+      :point-summary-total="pointSummary._totalEnergyForPercentageCalculation"
       :summary="summaryLoads"
-      :summary-total="summary._totalEnergy"
+      :summary-total="summary._totalEnergyForPercentageCalculation"
       :is-year-interval="isYearInterval"
       :energy-domains="energyDomains"
       :emissions-domains="emissionsDomains"
@@ -459,8 +459,6 @@ export default {
 
     renewablesValue() {
       const isSummary = !this.hoverOn && !this.focusOn
-      const key =
-        this.percentContributionTo === 'demand' ? '_total' : '_totalGeneration'
       const totalRenewables = isSummary
         ? this.dataset.reduce((a, b) => a + b._totalRenewables, 0)
         : this.pointSummary._totalRenewables
@@ -473,12 +471,15 @@ export default {
 
     renewablesPercentage() {
       const key =
-        this.percentContributionTo === 'demand' ? '_total' : '_totalGeneration'
+        this.percentContributionTo === 'demand'
+          ? '_totalEnergyForPercentageCalculation'
+          : '_totalGeneration'
       let totalRenewables = this.dataset.reduce(
         (a, b) => a + b._totalRenewables,
         0
       )
       let total = this.dataset.reduce((a, b) => a + b[key], 0)
+
       const r = (totalRenewables / total) * 100
       const f = d3Format(',.3f')
       if (!isNaN(r)) {
@@ -489,7 +490,9 @@ export default {
 
     pointRenewablesPercentage() {
       const key =
-        this.percentContributionTo === 'demand' ? '_total' : '_totalGeneration'
+        this.percentContributionTo === 'demand'
+          ? '_totalEnergyForPercentageCalculation'
+          : '_totalGeneration'
       const totalRenewables = this.pointSummary._totalRenewables
       const total = this.pointSummary[key]
       return (totalRenewables / total) * 100
@@ -497,7 +500,7 @@ export default {
 
     pointSummarySourcesTotal() {
       if (this.percentContributionTo === 'demand') {
-        return this.pointSummary._total
+        return this.pointSummary._totalEnergyForPercentageCalculation
       } else {
         return this.pointSummarySources._totalGeneration
       }
@@ -505,7 +508,7 @@ export default {
 
     summarySourcesTotal() {
       if (this.percentContributionTo === 'demand') {
-        return this.summary._totalEnergy
+        return this.summary._totalEnergyForPercentageCalculation
       } else {
         return this.summarySources._totalGeneration
       }
@@ -665,6 +668,7 @@ export default {
       const isGeneration = this.percentContributionTo === 'generation'
       let totalEnergy = 0
       let totalEnergyMinusHidden = 0
+      let totalEnergyForPercentageCalculation = 0
       let totalPower = 0
       let totalPowerMinusHidden = 0
       let totalGenerationEnergyMinusHidden = 0
@@ -783,11 +787,13 @@ export default {
 
         this.summary[ft.id] = dataEnergySum
 
+        totalEnergy += dataEnergySum
+        totalPower += dataPowerSum
+        totalEnergyMinusHidden += dataEnergyMinusHiddenSum
+        totalPowerMinusHidden += dataPowerMinusHiddenSum
+
         if (category !== 'load' || _includes(ft.id, 'exports')) {
-          totalEnergy += dataEnergySum
-          totalPower += dataPowerSum
-          totalEnergyMinusHidden += dataEnergyMinusHiddenSum
-          totalPowerMinusHidden += dataPowerMinusHiddenSum
+          totalEnergyForPercentageCalculation += dataEnergySum
         }
 
         if (category === 'source') {
@@ -966,6 +972,7 @@ export default {
       }
 
       this.summary._totalEnergy = totalEnergy
+      this.summary._totalEnergyForPercentageCalculation = totalEnergyForPercentageCalculation
       this.summary._totalAverageValue = totalAverageValue
       this.summarySources._totalEnergy = totalSources
       this.summarySources._totalGeneration = totalGeneration
