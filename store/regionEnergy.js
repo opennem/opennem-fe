@@ -193,14 +193,16 @@ export const actions = {
 
       const key = urls.toString()
 
-      function processResponses(responses) {
+      function processResponses(responses, isNewData) {
         const dataCount = getDataCount(responses)
         const perf = new PerfTime()
         perf.time()
         console.info(`------ ${currentRegion} — ${range}/${interval} (start)`)
 
         lsSet(key, JSON.stringify(responses))
-        lsSet(`${key}-date`, new Date())
+        if (isNewData) {
+          lsSet(`${key}-date`, new Date())
+        }
 
         const {
           datasetFull,
@@ -275,7 +277,7 @@ export const actions = {
               })
             : res
 
-          processResponses(responses)
+          processResponses(responses, true)
         })
         .catch(() => {
           const jsonData = JSON.parse(lsGet(key))
@@ -286,7 +288,7 @@ export const actions = {
             commit('cachedDate', new Date(lsGet(`${key}-date`)))
             commit('app/showBanner', true, { root: true })
 
-            processResponses(JSON.parse(lsGet(key)))
+            processResponses(JSON.parse(lsGet(key)), false)
           }
         })
     } else {
