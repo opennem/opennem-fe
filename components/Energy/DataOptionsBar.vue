@@ -11,7 +11,7 @@
       </button>
     </div>
 
-    <div class="buttons has-addons">
+    <div class="interval-buttons buttons has-addons">
       <button
         v-on-clickaway="handleClickAway"
         v-for="(interval, i) in selectedRangeIntervals"
@@ -20,7 +20,7 @@
         class="button is-rounded"
         @click.stop="handleIntervalChange(interval)">
 
-        <div v-if="!hasFilter(interval)">{{ interval }}</div>
+        <div v-if="!hasFilter(interval)">{{ getIntervalLabel(interval) }}</div>
         <div v-if="hasFilter(interval)">{{ intervalLabel(interval) }}</div>
         <i
           v-if="hasFilter(interval)"
@@ -65,6 +65,7 @@ import {
   INTERVAL_SEASON,
   INTERVAL_QUARTER,
   INTERVAL_HALFYEAR,
+  INTERVAL_ABBR_LABELS,
   hasIntervalFilters
 } from '@/constants/interval-filters.js'
 import {
@@ -110,7 +111,8 @@ export default {
     ...mapGetters({
       range: 'range',
       interval: 'interval',
-      filterPeriod: 'filterPeriod'
+      filterPeriod: 'filterPeriod',
+      tabletBreak: 'app/tabletBreak'
     }),
     regionId() {
       return this.$route.params.region
@@ -274,9 +276,15 @@ export default {
       )
     },
 
+    getIntervalLabel(interval) {
+      return this.tabletBreak
+        ? INTERVAL_ABBR_LABELS[interval] || interval
+        : interval
+    },
+
     intervalLabel(interval) {
       if (this.selectedFilter === FILTER_NONE) {
-        return this.interval
+        return this.getIntervalLabel(this.interval)
       } else {
         return this.selectedFilter
       }
@@ -379,3 +387,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.interval-buttons {
+  flex-wrap: nowrap;
+}
+</style>
