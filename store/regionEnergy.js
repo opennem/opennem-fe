@@ -80,14 +80,25 @@ export const getters = {
   dataPowerEnergyInterval: state => state.dataPowerEnergyInterval,
   regionTimezoneString: state => state.regionTimezoneString,
   filteredDates: state => state.filteredDates,
-  filteredCurrentDataset: state =>
-    state.filteredDates.length > 0
-      ? state.currentDataset.filter(
-          d =>
-            d.time >= state.filteredDates[0].getTime() &&
-            d.time <= state.filteredDates[1].getTime()
-        )
-      : state.currentDataset
+  filteredCurrentDataset: state => {
+    if (state.isEnergyType) {
+      return state.filteredDates.length > 0
+        ? state.currentDataset.filter(
+            d =>
+              d.time >= state.filteredDates[0].getTime() &&
+              d.time < state.filteredDates[1].getTime()
+          )
+        : state.currentDataset
+    } else {
+      return state.filteredDates.length > 0
+        ? state.currentDataset.filter(
+            d =>
+              d.time >= state.filteredDates[0].getTime() &&
+              d.time <= state.filteredDates[1].getTime()
+          )
+        : state.currentDataset
+    }
+  }
 }
 
 export const mutations = {
