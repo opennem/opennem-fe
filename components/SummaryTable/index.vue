@@ -589,6 +589,10 @@ export default {
       this.hiddenSources = []
       this.hiddenLoads = []
       this.emitHiddenFuelTechs()
+
+      if (this.focusOn) {
+        this.updatePointSummary(this.focusDate)
+      }
     },
     dataset(updated) {
       this.calculateSummary(updated)
