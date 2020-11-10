@@ -24,11 +24,15 @@ export default function({
       if (key !== 'Default') {
         const groupDomains = groups[key]
         groupDomains.forEach(g => {
-          let groupValue = 0
+          let groupValue = 0,
+            allNulls = true
           g.domainIds.forEach(dId => {
             groupValue += d[dId]
+            if (d[dId] || d[dId === 0]) {
+              allNulls = false
+            }
           })
-          d[g.id] = groupValue
+          d[g.id] = allNulls ? null : groupValue
         })
       }
     })
