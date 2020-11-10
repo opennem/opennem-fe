@@ -49,9 +49,15 @@ function reducer(a, domains) {
     const isPowerOrEnergy = DT.isPowerOrEnergy(type)
     const isMarketValueType = DT.isMarketValue(type)
     const isEmissionsType = DT.isEmissions(type)
+
     if (isPowerOrEnergy || isMarketValueType || isEmissionsType) {
       const total = sum(a, d => {
-        const value = d[id]
+        let value = d[id]
+        // invert imports market value
+        if (isMarketValueType && domain.fuelTech === 'imports') {
+          value = -d[id]
+        }
+
         if (value || value === 0) {
           allNulls = false
         }
