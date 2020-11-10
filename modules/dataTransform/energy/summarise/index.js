@@ -124,23 +124,24 @@ export default function({
       }
     })
 
-    // calculate vol weighted pricing
-    if (isEnergyType) {
-      domainPrice.forEach(domain => {
-        totalMarketValue += d[domain.id] || 0
-      })
-    }
-
     domainEmissions.forEach(domain => {
       totalEmissionsVol += d[domain.id] || 0
     })
 
-    // const volWeightedPrice =
-    //   interval === 'Year' || interval === 'Fin Year'
-    //     ? totalMarketValue / totalDemand / 1000 / 1000
-    //     : totalMarketValue / totalDemand / 1000
+    // calculate vol weighted pricing
+    let allMarketValueNulls = true
+    if (isEnergyType) {
+      domainPrice.forEach(domain => {
+        totalMarketValue += d[domain.id] || 0
+        if (d[domain.id] || d[domain.id] === 0) {
+          allMarketValueNulls = false
+        }
+      })
+    }
 
-    const volWeightedPrice = totalMarketValue / totalDemand / 1000
+    const volWeightedPrice = allMarketValueNulls
+      ? null
+      : totalMarketValue / totalDemand / 1000
 
     dataset[i]._total = totalDemand
     dataset[
@@ -177,6 +178,7 @@ export default function({
     // dataset[i]._actualLastDate = actualLastDate
     // dataset[i]._actualStartDate = actualStartDate
     dataset[i]._totalMarketValue = totalMarketValue
+
     dataset[i]._volWeightedPrice = isNaN(volWeightedPrice)
       ? null
       : volWeightedPrice
