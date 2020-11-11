@@ -1,4 +1,4 @@
-function getPrependString(region, range, prod) {
+function getPrependString(region, prod) {
   let string = ''
   string = prod ? '/' : '/testing/v2/'
 
@@ -11,7 +11,7 @@ function getPrependString(region, range, prod) {
 export default {
   getEnergyUrls(region, range, hostEnv) {
     const prod = hostEnv === 'prod'
-    const prependString = getPrependString(region, range, prod)
+    const prependString = getPrependString(region, prod)
     const thisFullYear = new Date().getFullYear()
     const urls = []
 
@@ -25,12 +25,20 @@ export default {
           if (region === 'wem') {
             urls.push(`/power/${region}.json`)
           } else {
-            urls.push(`${prependString}${region}/power/5min/live.json`)
+            urls.push(`v3/stats/au/${region.toUpperCase()}/power/7d.json`)
           }
         }
         break
       case '30D':
-        urls.push(`${prependString}${region}/energy/daily/${thisFullYear}.json`)
+        if (prod) {
+          urls.push(
+            `${prependString}${region}/energy/daily/${thisFullYear}.json`
+          )
+        } else {
+          urls.push(
+            `v3/stats/au/${region.toUpperCase()}/energy/${thisFullYear}.json`
+          )
+        }
         break
       case '1Y':
         const now = new Date().getTime()
@@ -38,15 +46,34 @@ export default {
         const lastFullYear = new Date(aYearAgo).getFullYear()
 
         if (thisFullYear !== lastFullYear) {
+          if (prod) {
+            urls.push(
+              `${prependString}${region}/energy/daily/${lastFullYear}.json`
+            )
+          } else {
+            urls.push(
+              `v3/stats/au/${region.toUpperCase()}/energy/${lastFullYear}.json`
+            )
+          }
+        }
+
+        if (prod) {
           urls.push(
-            `${prependString}${region}/energy/daily/${lastFullYear}.json`
+            `${prependString}${region}/energy/daily/${thisFullYear}.json`
+          )
+        } else {
+          urls.push(
+            `v3/stats/au/${region.toUpperCase()}/energy/${thisFullYear}.json`
           )
         }
 
-        urls.push(`${prependString}${region}/energy/daily/${thisFullYear}.json`)
         break
       case 'ALL':
-        urls.push(`${prependString}${region}/energy/monthly/all.json`)
+        if (prod) {
+          urls.push(`${prependString}${region}/energy/monthly/all.json`)
+        } else {
+          urls.push(`v3/stats/au/${region.toUpperCase()}/energy/all.json`)
+        }
         break
       default:
     }
