@@ -60,6 +60,7 @@
       :display-prefix="chartDisplayPrefix"
       :should-convert-value="shouldConvertValue"
       :convert-value="convertValue"
+      :unit="` ${chartDisplayPrefix}${chartUnit}`"
       class="vis-chart"
       @dateOver="handleDateHover"
       @domainOver="handleDomainHover"

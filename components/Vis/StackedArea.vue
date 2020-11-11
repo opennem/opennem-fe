@@ -50,6 +50,18 @@
             stdDeviation="0.5" 
             flood-color="rgba(0, 0, 0, 0.5)" />
         </filter>
+
+        <marker 
+          :id="`${id}-arrowhead`"
+          markerWidth="8" 
+          markerHeight="8" 
+          refX="7" 
+          refY="4" 
+          orient="auto">
+          <polygon 
+            points="0 0, 8 4, 0 8" 
+            fill="darkred" />
+        </marker>
       </defs>
 
       <g 
@@ -318,6 +330,10 @@ export default {
     nullCheckProp: {
       type: String,
       default: '_total'
+    },
+    unit: {
+      type: String,
+      default: ''
     }
   },
 
@@ -512,12 +528,14 @@ export default {
   watch: {
     domains() {
       this.update()
+      this.drawCompare(this.compareDates)
     },
     curve() {
       this.update()
     },
     displayPrefix() {
       this.update()
+      this.drawCompare(this.compareDates)
     },
     updatedDataset() {
       // this.zoomed = false
@@ -1349,16 +1367,118 @@ export default {
       $focusBottomRect.attr('opacity', 0)
     },
 
+    getCompareLineCoords(dates) {
+      let compareDate1 = dates[0],
+        compareDate2 = dates[1]
+
+      if (compareDate1 > compareDate2) {
+        compareDate1 = dates[1]
+        compareDate2 = dates[0]
+      }
+      const compareData1 = this.findDataAndMidPoint(compareDate1)
+      const compareData2 = this.findDataAndMidPoint(compareDate2)
+
+      return {
+        compareData1,
+        compareData2
+      }
+    },
+
+    findDataAndMidPoint(t) {
+      const time = new Date(t).getTime()
+      const { current, next } = this.getCurrentAndNextData(time)
+      const middleTime = next ? (next.time - time) / 2 + time : null
+
+      let total = 0
+      if (current) {
+        this.domains.forEach(domain => {
+          total += current[domain.id] || 0
+        })
+      }
+      return { data: current, time: middleTime, value: total }
+    },
+
+    getCurrentAndNextData(time) {
+      let next = null
+      const find = this.updatedDataset.find((d, i) => {
+        const match = d.time === time
+        if (match) {
+          if (this.updatedDataset[i + 1]) {
+            next = this.updatedDataset[i + 1]
+          }
+        }
+        return match
+      })
+      return {
+        current: find,
+        next
+      }
+    },
+
     drawCompare(compareDates) {
       const compareLength = compareDates.length
+
       this.$compareGroup.selectAll('rect').remove()
+      this.$compareGroup.select('path').remove()
+      this.$compareGroup.select('text').remove()
+
       if (compareLength > 0 && compareLength < 3) {
-        this.$compareGroup
+        const compareFocusGroup = this.$compareGroup.append('g')
+        const { compareData1, compareData2 } = this.getCompareLineCoords(
+          compareDates
+        )
+
+        if (compareData2.time) {
+          // only draw line if second point is available
+          const format = this.$options.filters.formatValue
+          const formatPercentage = this.$options.filters.percentageFormatNumber2
+          const time1 = compareData1.time
+          const time2 = compareData2.time
+          const value1 = compareData1.value
+          const value2 = compareData2.value
+          const change = value2 - value1
+          const changePercentage = (change / value1) * 100
+          const changeType = change < 0 ? 'decrease' : 'increase'
+          const compareString = `${changeType} of ${format(
+            this.convertValue(change)
+          )}${this.unit} (${formatPercentage(changePercentage)})`
+          const line = d3Line()
+            .x(d => this.x(d[0]))
+            .y(d => this.y(d[1]))
+
+          this.$compareGroup
+            .append('rect')
+            .attr('width', this.width)
+            .attr('height', this.height)
+            .style('opacity', 0.3)
+            .style('fill', '#ece9e6')
+
+          this.$compareGroup
+            .append('path')
+            .attr('id', `${this.id}-compare-line`)
+            .attr('d', line([[time1, value1], [time2, value2]]))
+            .attr('marker-end', `url(#${this.id}-arrowhead)`)
+            .style('stroke', 'darkred')
+            .style('stroke-width', 2)
+
+          this.$compareGroup
+            .append('text')
+            .attr('x', 10)
+            .attr('dy', -5)
+            .style('font-size', '12px')
+            .style('fill', 'darkred')
+            .style('text-shadow', '2px 2px 0 #D0D1CD')
+            .append('textPath')
+            .attr('href', `#${this.id}-compare-line`)
+            .text(compareString)
+        }
+
+        compareFocusGroup
           .selectAll('rect')
           .data(compareDates)
           .enter()
           .append('rect')
-          .attr('opacity', 0.3)
+          .attr('opacity', 1)
           .attr('x', d => this.x(d))
           .attr('width', d => {
             const time = new Date(d).getTime()
@@ -1369,7 +1489,7 @@ export default {
             return bandwidth
           })
           .attr('height', this.height)
-          .attr('fill', '#e34a33')
+          .attr('fill', 'rgba(199, 69, 35, 0.5') // e34a33
       }
     },
 
