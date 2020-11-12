@@ -138,7 +138,9 @@ export default {
       featureEmissions: 'feature/emissions'
     }),
     domains() {
-      return _cloneDeep(this.currentDomainPowerEnergy).reverse()
+      return this.currentDomainPowerEnergy
+        ? _cloneDeep(this.currentDomainPowerEnergy).reverse()
+        : []
     }
   },
 
