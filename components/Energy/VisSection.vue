@@ -138,7 +138,9 @@ export default {
       featureEmissions: 'feature/emissions'
     }),
     domains() {
-      return _cloneDeep(this.currentDomainPowerEnergy).reverse()
+      return this.currentDomainPowerEnergy
+        ? _cloneDeep(this.currentDomainPowerEnergy).reverse()
+        : []
     }
   },
 
@@ -259,8 +261,8 @@ export default {
     handleSvgClick(metaKey) {
       if (metaKey && this.focusOn && !this.compareDifference) {
         this.$store.dispatch('compareDifference', true)
-        const hoverTime = this.hoverDate.getTime()
-        const focusTime = this.focusDate.getTime()
+        const hoverTime = this.hoverDate ? this.hoverDate.getTime() : 0
+        const focusTime = this.focusDate ? this.focusDate.getTime() : 0
         const firstData = this.getDataByTime(this.selectedDataset, focusTime)
         const secondData = this.getDataByTime(this.selectedDataset, hoverTime)
 
@@ -271,7 +273,7 @@ export default {
         }, 10)
       } else {
         if (this.compareDifference) {
-          const hoverTime = this.hoverDate.getTime()
+          const hoverTime = this.hoverDate ? this.hoverDate.getTime() : 0
           let newCompare = false
           let compareDates = this.compareDates.slice()
 
@@ -310,10 +312,9 @@ export default {
           }
           this.$store.dispatch('compareDates', compareDates)
         } else if (!this.isTouchDevice) {
-          if (
-            this.focusDate &&
-            this.focusDate.getTime() === this.hoverDate.getTime()
-          ) {
+          const hoverTime = this.hoverDate ? this.hoverDate.getTime() : 0
+          const focusTime = this.focusDate ? this.focusDate.getTime() : 0
+          if (this.focusDate && focusTime === hoverTime) {
             this.setFocusDate(null)
           } else {
             this.setFocusDate(this.hoverDate)

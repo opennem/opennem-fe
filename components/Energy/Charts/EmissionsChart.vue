@@ -173,7 +173,9 @@ export default {
       return min(dataset, d => d._stackedTotalEmissionsMin)
     },
     emissionsDomains() {
-      return _cloneDeep(this.currentDomainEmissions).reverse()
+      return this.currentDomainEmissions
+        ? _cloneDeep(this.currentDomainEmissions).reverse()
+        : []
     },
     domains() {
       const property =

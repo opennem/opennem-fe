@@ -127,7 +127,9 @@ export default {
     emissionsDomains() {
       const domains = this.currentDomainEmissions
       const hidden = this.hiddenFuelTechs
-      return domains.filter(d => !_includes(hidden, d[this.property]))
+      return domains
+        ? domains.filter(d => !_includes(hidden, d[this.property]))
+        : []
     },
     powerEnergyDomains() {
       const domains = this.currentDomainPowerEnergy

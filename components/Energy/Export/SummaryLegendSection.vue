@@ -61,7 +61,9 @@ export default {
       currentDomainMarketValue: 'regionEnergy/currentDomainMarketValue'
     }),
     powerEnergyDomains() {
-      return _cloneDeep(this.currentDomainPowerEnergy).reverse()
+      return this.currentDomainPowerEnergy
+        ? _cloneDeep(this.currentDomainPowerEnergy).reverse()
+        : []
     },
     property() {
       return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'

@@ -313,6 +313,10 @@ export default {
 
   computed: {
     updatedDataset() {
+      if (this.dataset.length <= 0) {
+        return []
+      }
+
       const updated = _cloneDeep(this.dataset)
       const lastSecondItem = _cloneDeep(updated[updated.length - 2])
       const lastItem = _cloneDeep(updated[updated.length - 1])

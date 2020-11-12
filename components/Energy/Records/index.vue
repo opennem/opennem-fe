@@ -284,41 +284,43 @@ export default {
 
   methods: {
     calculateSelectedMinMax() {
-      const dataset = _cloneDeep(this.dataset)
+      if (this.dataset.length > 0) {
+        const dataset = _cloneDeep(this.dataset)
 
-      dataset.forEach(d => {
-        let selectedTotal = null
+        dataset.forEach(d => {
+          let selectedTotal = null
 
-        this.selectedPowerEnergyDomains.forEach(domain => {
-          if (d[domain.id]) {
-            selectedTotal += d[domain.id]
+          this.selectedPowerEnergyDomains.forEach(domain => {
+            if (d[domain.id]) {
+              selectedTotal += d[domain.id]
+            }
+          })
+
+          d._selectedTotal = selectedTotal
+        })
+
+        let minSelected = dataset[0]._selectedTotal,
+          maxSelected = dataset[0]._selectedTotal,
+          minSelectedDate = dataset[0].date,
+          maxSelectedDate = dataset[0].date
+
+        dataset.forEach(d => {
+          const selectedTotal = d._selectedTotal
+          if (selectedTotal <= minSelected || !minSelected) {
+            minSelected = selectedTotal
+            minSelectedDate = d.time
+          }
+          if (selectedTotal >= maxSelected || !maxSelected) {
+            maxSelected = selectedTotal
+            maxSelectedDate = d.time
           }
         })
 
-        d._selectedTotal = selectedTotal
-      })
-
-      let minSelected = dataset[0]._selectedTotal,
-        maxSelected = dataset[0]._selectedTotal,
-        minSelectedDate = dataset[0].date,
-        maxSelectedDate = dataset[0].date
-
-      dataset.forEach(d => {
-        const selectedTotal = d._selectedTotal
-        if (selectedTotal <= minSelected || !minSelected) {
-          minSelected = selectedTotal
-          minSelectedDate = d.time
-        }
-        if (selectedTotal >= maxSelected || !maxSelected) {
-          maxSelected = selectedTotal
-          maxSelectedDate = d.time
-        }
-      })
-
-      this.minSelected = minSelected
-      this.minSelectedDate = minSelectedDate
-      this.maxSelected = maxSelected
-      this.maxSelectedDate = maxSelectedDate
+        this.minSelected = minSelected
+        this.minSelectedDate = minSelectedDate
+        this.maxSelected = maxSelected
+        this.maxSelectedDate = maxSelectedDate
+      }
     },
     convertValue(value) {
       return SI.convertValue(

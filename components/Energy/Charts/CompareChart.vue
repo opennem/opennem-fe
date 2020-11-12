@@ -95,7 +95,9 @@ export default {
     },
 
     powerEnergyDomains() {
-      return _cloneDeep(this.currentDomainPowerEnergy).reverse()
+      return this.currentDomainPowerEnergy
+        ? _cloneDeep(this.currentDomainPowerEnergy).reverse()
+        : []
     },
     domains() {
       const property =
