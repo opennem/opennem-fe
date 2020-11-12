@@ -1,12 +1,12 @@
 name: dev build to s3
 on:
   push:
-    branches: [main]
+    branches: [develop]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@main
+      - uses: actions/checkout@develop
       - uses: actions/setup-node@v2-beta
         with:
           node-version: '12'
