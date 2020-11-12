@@ -144,7 +144,9 @@ export const mutations = {
     state.domainTemperature = _cloneDeep(domainTemperature)
   },
   currentDomainPowerEnergy(state, currentDomainPowerEnergy) {
-    state.currentDomainPowerEnergy = _cloneDeep(currentDomainPowerEnergy)
+    state.currentDomainPowerEnergy = currentDomainPowerEnergy
+      ? _cloneDeep(currentDomainPowerEnergy)
+      : []
   },
   currentDomainEmissions(state, currentDomainEmissions) {
     state.currentDomainEmissions = _cloneDeep(currentDomainEmissions)
