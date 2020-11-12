@@ -669,338 +669,343 @@ export default {
   methods: {
     calculateSummary(data) {
       // console.log('Calculate summary')
-      const isGeneration = this.percentContributionTo === 'generation'
-      let totalEnergy = 0
-      let totalEnergyMinusHidden = 0
-      let totalEnergyForPercentageCalculation = 0
-      let totalPower = 0
-      let totalPowerMinusHidden = 0
-      let totalGenerationEnergyMinusHidden = 0
-      let totalSources = 0
-      let totalGeneration = 0
-      let totalLoads = 0
-      let totalPriceMarketValue = 0
-      let totalEVMinusHidden = 0
-      let totalEIMinusHidden = 0
-      this.summary = {}
-      this.summarySources = {}
-      this.summaryLoads = {}
+      if (data.length > 0) {
+        const isGeneration = this.percentContributionTo === 'generation'
+        let totalEnergy = 0
+        let totalEnergyMinusHidden = 0
+        let totalEnergyForPercentageCalculation = 0
+        let totalPower = 0
+        let totalPowerMinusHidden = 0
+        let totalGenerationEnergyMinusHidden = 0
+        let totalSources = 0
+        let totalGeneration = 0
+        let totalLoads = 0
+        let totalPriceMarketValue = 0
+        let totalEVMinusHidden = 0
+        let totalEIMinusHidden = 0
+        this.summary = {}
+        this.summarySources = {}
+        this.summaryLoads = {}
 
-      const energySummary = data.map(d => {
-        let p = 0
-        this.energyDomains.forEach(ft => {
-          p += d[ft.id] || 0
+        const energySummary = data.map(d => {
+          let p = 0
+          this.energyDomains.forEach(ft => {
+            p += d[ft.id] || 0
+          })
+          return p
         })
-        return p
-      })
-      const energySummaryTotal = energySummary.reduce((a, b) => a + b, 0)
-      const volWeightPrice = energySummary.map((d, i) => {
-        const price = data[i][this.priceId]
-        return price * d
-      })
-      const volWeightPriceTotal = volWeightPrice.reduce((a, b) => a + b, 0)
+        const energySummaryTotal = energySummary.reduce((a, b) => a + b, 0)
+        const volWeightPrice = energySummary.map((d, i) => {
+          const price = data[i][this.priceId]
+          return price * d
+        })
+        const volWeightPriceTotal = volWeightPrice.reduce((a, b) => a + b, 0)
 
-      const dataEnergyMap = (ft, excludeHidden) => {
-        return data.map(d => {
-          const energy = {}
-          const setEnergy = () => {
-            if (this.isEnergy) {
-              return d[ft.id]
-            } else {
-              // calculate energy (GWh) += power * 5mins/60/1000
-              const mins = this.interval === '30m' ? 30 : 5
-              return (d[ft.id] * mins) / 60 / 1000
+        const dataEnergyMap = (ft, excludeHidden) => {
+          return data.map(d => {
+            const energy = {}
+            const setEnergy = () => {
+              if (this.isEnergy) {
+                return d[ft.id]
+              } else {
+                // calculate energy (GWh) += power * 5mins/60/1000
+                const mins = this.interval === '30m' ? 30 : 5
+                return (d[ft.id] * mins) / 60 / 1000
+              }
             }
-          }
 
-          if (excludeHidden) {
-            if (!_includes(this.hiddenFuelTechs, ft[this.propRef])) {
+            if (excludeHidden) {
+              if (!_includes(this.hiddenFuelTechs, ft[this.propRef])) {
+                energy[ft.id] = setEnergy()
+              } else {
+                energy[ft.id] = 0
+              }
+            } else {
               energy[ft.id] = setEnergy()
+            }
+
+            return energy
+          })
+        }
+        const dataPowerMap = (ft, excludeHidden) => {
+          return data.map(d => {
+            const power = {}
+            const setPower = () => {
+              if (!this.isEnergy) {
+                return d[ft.id]
+              }
+              return 0
+            }
+
+            if (excludeHidden) {
+              if (!_includes(this.hiddenFuelTechs, ft[this.propRef])) {
+                power[ft.id] = setPower()
+              } else {
+                power[ft.id] = 0
+              }
             } else {
-              energy[ft.id] = 0
-            }
-          } else {
-            energy[ft.id] = setEnergy()
-          }
-
-          return energy
-        })
-      }
-      const dataPowerMap = (ft, excludeHidden) => {
-        return data.map(d => {
-          const power = {}
-          const setPower = () => {
-            if (!this.isEnergy) {
-              return d[ft.id]
-            }
-            return 0
-          }
-
-          if (excludeHidden) {
-            if (!_includes(this.hiddenFuelTechs, ft[this.propRef])) {
               power[ft.id] = setPower()
-            } else {
-              power[ft.id] = 0
             }
-          } else {
-            power[ft.id] = setPower()
-          }
-          return power
-        })
-      }
-      const sumMap = (ft, dataMap) => {
-        return dataMap.reduce((prev, cur) => prev + cur[ft.id], 0)
-      }
+            return power
+          })
+        }
+        const sumMap = (ft, dataMap) => {
+          return dataMap.reduce((prev, cur) => prev + cur[ft.id], 0)
+        }
 
-      // fetch original data
-      const start = data[0]
-      const end = data[data.length - 1]
-      const startDate = start.date
-      const endDate = end.date
-      const fullDatasetFiltered = this.datasetFlat.filter(
-        df => df.time >= start.time && df.time <= end.time
-      )
-      const bucketSizeMins = differenceInMinutes(endDate, startDate) + 1
-
-      // Calculate Energy
-      this.energyDomains.forEach(ft => {
-        const category = ft.category
-        const fullDomainData = fullDatasetFiltered.map(fd => fd[ft.id])
-        const fullDomainDataMinusHidden = fullDatasetFiltered.map(
-          fd =>
-            _includes(this.hiddenFuelTechs, ft[this.propRef]) ? 0 : fd[ft.id]
+        // fetch original data
+        const start = data[0]
+        const end = data[data.length - 1]
+        const startDate = start.date
+        const endDate = end.date
+        const fullDatasetFiltered = this.datasetFlat.filter(
+          df => df.time >= start.time && df.time <= end.time
         )
+        const bucketSizeMins = differenceInMinutes(endDate, startDate) + 1
 
-        const dataEnergy = dataEnergyMap(ft)
-        const dataEnergyMinusHidden = dataEnergyMap(ft, true)
+        // Calculate Energy
+        this.energyDomains.forEach(ft => {
+          const category = ft.category
+          const fullDomainData = fullDatasetFiltered.map(fd => fd[ft.id])
+          const fullDomainDataMinusHidden = fullDatasetFiltered.map(
+            fd =>
+              _includes(this.hiddenFuelTechs, ft[this.propRef]) ? 0 : fd[ft.id]
+          )
 
-        // For Power, calculate using trapezoid, then convert to GWh
-        const dataEnergySum = this.isEnergyType
-          ? sumMap(ft, dataEnergy)
-          : energy_sum(fullDomainData, bucketSizeMins) / 1000
-        const dataEnergyMinusHiddenSum = this.isEnergyType
-          ? sumMap(ft, dataEnergyMinusHidden)
-          : energy_sum(fullDomainDataMinusHidden, bucketSizeMins) / 1000
+          const dataEnergy = dataEnergyMap(ft)
+          const dataEnergyMinusHidden = dataEnergyMap(ft, true)
 
-        const dataPower = dataPowerMap(ft)
-        const dataPowerMinusHidden = dataPowerMap(ft, true)
-        const dataPowerSum = sumMap(ft, dataPower)
-        const dataPowerMinusHiddenSum = sumMap(ft, dataPowerMinusHidden)
+          // For Power, calculate using trapezoid, then convert to GWh
+          const dataEnergySum = this.isEnergyType
+            ? sumMap(ft, dataEnergy)
+            : energy_sum(fullDomainData, bucketSizeMins) / 1000
+          const dataEnergyMinusHiddenSum = this.isEnergyType
+            ? sumMap(ft, dataEnergyMinusHidden)
+            : energy_sum(fullDomainDataMinusHidden, bucketSizeMins) / 1000
 
-        let avValue = 0
+          const dataPower = dataPowerMap(ft)
+          const dataPowerMinusHidden = dataPowerMap(ft, true)
+          const dataPowerSum = sumMap(ft, dataPower)
+          const dataPowerMinusHiddenSum = sumMap(ft, dataPowerMinusHidden)
 
-        this.summary[ft.id] = dataEnergySum
+          let avValue = 0
 
-        totalEnergy += dataEnergySum
-        totalPower += dataPowerSum
-        totalEnergyMinusHidden += dataEnergyMinusHiddenSum
-        totalPowerMinusHidden += dataPowerMinusHiddenSum
+          this.summary[ft.id] = dataEnergySum
 
-        if (category !== 'load' || _includes(ft.id, 'exports')) {
-          totalEnergyForPercentageCalculation += dataEnergySum
-        }
+          totalEnergy += dataEnergySum
+          totalPower += dataPowerSum
+          totalEnergyMinusHidden += dataEnergyMinusHiddenSum
+          totalPowerMinusHidden += dataPowerMinusHiddenSum
 
-        if (category === 'source') {
-          this.summarySources[ft.id] = dataEnergySum
-          totalSources += dataEnergySum
-          if (!_includes(ft.id, 'imports')) {
-            totalGeneration += dataEnergySum
+          if (category !== 'load' || _includes(ft.id, 'exports')) {
+            totalEnergyForPercentageCalculation += dataEnergySum
           }
-        } else if (category === 'load') {
-          this.summaryLoads[ft.id] = dataEnergySum
-          totalLoads += dataEnergySum
-        }
-      })
 
-      // Calculate Emissions
-      this.emissionsDomains.forEach(ft => {
-        const category = ft.category
-        const dataEVMinusHidden = data.map(d => {
-          const emissionsVol = {}
-          if (!_includes(this.hiddenFuelTechs, ft[ft.fuelTech])) {
-            if (
-              !isGeneration ||
-              (isGeneration &&
-                ft.fuelTech !== 'imports' &&
-                ft.fuelTech !== 'exports')
-            ) {
-              emissionsVol[ft.id] = d[ft.id]
+          if (category === 'source') {
+            this.summarySources[ft.id] = dataEnergySum
+            totalSources += dataEnergySum
+            if (!_includes(ft.id, 'imports')) {
+              totalGeneration += dataEnergySum
+            }
+          } else if (category === 'load') {
+            this.summaryLoads[ft.id] = dataEnergySum
+            totalLoads += dataEnergySum
+          }
+        })
+
+        // Calculate Emissions
+        this.emissionsDomains.forEach(ft => {
+          const category = ft.category
+          const dataEVMinusHidden = data.map(d => {
+            const emissionsVol = {}
+            if (!_includes(this.hiddenFuelTechs, ft[ft.fuelTech])) {
+              if (
+                !isGeneration ||
+                (isGeneration &&
+                  ft.fuelTech !== 'imports' &&
+                  ft.fuelTech !== 'exports')
+              ) {
+                emissionsVol[ft.id] = d[ft.id]
+              } else {
+                emissionsVol[ft.id] = 0
+              }
             } else {
               emissionsVol[ft.id] = 0
             }
-          } else {
-            emissionsVol[ft.id] = 0
+            return emissionsVol
+          })
+          const evSum = sumMap(ft, dataEVMinusHidden)
+          this.summary[ft.id] = Data.siCalculationFromBase(
+            this.emissionsVolumePrefix,
+            evSum
+          )
+          totalEVMinusHidden += evSum
+
+          if (category === 'source') {
+            this.summarySources[ft.id] = Data.siCalculationFromBase(
+              this.emissionsVolumePrefix,
+              evSum
+            )
+          } else if (category === 'load') {
+            this.summaryLoads[ft.id] = Data.siCalculationFromBase(
+              this.emissionsVolumePrefix,
+              evSum
+            )
           }
-          return emissionsVol
         })
-        const evSum = sumMap(ft, dataEVMinusHidden)
-        this.summary[ft.id] = Data.siCalculationFromBase(
-          this.emissionsVolumePrefix,
-          evSum
+
+        totalEIMinusHidden = data.reduce(
+          (prev, cur) => prev + cur._emissionsIntensity,
+          0
         )
-        totalEVMinusHidden += evSum
+        // Calculate Market Value for Energy
+        // TODO: refactor price market value calcuation
+        if (this.marketValueDomains.length > 0) {
+          if (this.isEnergy) {
+            this.marketValueDomains.forEach((ft, index) => {
+              const category = ft.category
+              let avValue = null
+              let dataMarketValueSum = 0
 
-        if (category === 'source') {
-          this.summarySources[ft.id] = Data.siCalculationFromBase(
-            this.emissionsVolumePrefix,
-            evSum
-          )
-        } else if (category === 'load') {
-          this.summaryLoads[ft.id] = Data.siCalculationFromBase(
-            this.emissionsVolumePrefix,
-            evSum
-          )
-        }
-      })
+              const dataMarketValue = data.map(d => {
+                const marketValue = {}
+                marketValue[ft.id] = d[ft.id]
+                return marketValue
+              })
+              dataMarketValueSum = dataMarketValue.reduce(
+                (prev, cur) => prev + cur[ft.id],
+                0
+              )
+              const findEnergyEq = this.energyDomains.find(
+                e => e[this.propRef] === ft[this.propRef]
+              )
+              if (!findEnergyEq) {
+                console.error(
+                  'There is an issue finding the energy fuel tech in market value calculations.'
+                )
+              }
+              const ftTotal = this.summary[findEnergyEq.id]
+              avValue = dataMarketValueSum / ftTotal / 1000
 
-      totalEIMinusHidden = data.reduce(
-        (prev, cur) => prev + cur._emissionsIntensity,
-        0
-      )
-      // Calculate Market Value for Energy
-      // TODO: refactor price market value calcuation
-      if (this.marketValueDomains.length > 0) {
-        if (this.isEnergy) {
-          this.marketValueDomains.forEach((ft, index) => {
-            const category = ft.category
-            let avValue = null
-            let dataMarketValueSum = 0
+              this.summary[ft.id] = avValue
+              totalPriceMarketValue += dataMarketValueSum
 
-            const dataMarketValue = data.map(d => {
-              const marketValue = {}
-              marketValue[ft.id] = d[ft.id]
-              return marketValue
+              if (category === 'source') {
+                this.summarySources[ft.id] = avValue
+              } else if (category === 'load') {
+                this.summaryLoads[ft.id] = -avValue
+              }
             })
-            dataMarketValueSum = dataMarketValue.reduce(
-              (prev, cur) => prev + cur[ft.id],
+          } else {
+            let avValue = null
+
+            this.energyDomains.forEach(domain => {
+              const id = domain.id
+              const ftPrice = data.map((p, pIndex) => {
+                const price = data[pIndex][this.priceId]
+                  ? data[pIndex][this.priceId]
+                  : 0
+                return Math.abs(p[id]) * price
+              })
+              const ftPriceTotal = ftPrice.reduce((a, b) => a + b, 0)
+              avValue = ftPriceTotal / Math.abs(totalPower)
+            })
+
+            this.summary[this.priceId] = avValue
+
+            avValue = null
+
+            this.marketValueDomains.forEach(domain => {
+              const category = domain.category
+              const id = domain.id
+              const findEnergyEq = this.energyDomains.find(
+                e => e[this.propRef] === domain[this.propRef]
+              )
+              const ftId = findEnergyEq.id
+              let avValue = null
+              if (!findEnergyEq) {
+                console.error(
+                  'There is an issue finding the energy fuel tech in market value calculations.'
+                )
+              }
+              const dataPowerTotal = data.reduce(
+                (a, b) => a + (b[ftId] || 0),
+                0
+              )
+              const ftPrice = data.map((p, pIndex) => {
+                const price = data[pIndex][this.priceId]
+                  ? data[pIndex][this.priceId]
+                  : 0
+                return Math.abs(p[ftId]) * price
+              })
+
+              const ftPriceTotal = ftPrice.reduce((a, b) => a + b, 0)
+              avValue = ftPriceTotal / Math.abs(dataPowerTotal)
+
+              this.summary[id] = avValue
+
+              if (category === 'source') {
+                this.summarySources[id] = avValue
+              } else if (category === 'load') {
+                this.summaryLoads[id] = avValue
+              }
+            })
+          }
+        }
+
+        // Calculate Temperature domains
+        const temperatureObj = this.temperatureDomains.find(domain => {
+          return domain.type === 'temperature' ||
+            domain.type === 'temperature_mean'
+            ? domain.id
+            : null
+        })
+        const temperatureWithoutNulls = temperatureObj
+          ? data.filter(d => {
+              return d[temperatureObj.id] !== null
+            })
+          : []
+        const totalTemperatureWithoutNulls = temperatureObj
+          ? temperatureWithoutNulls.reduce(
+              (prev, cur) => prev + (cur[temperatureObj.id] || 0),
               0
             )
-            const findEnergyEq = this.energyDomains.find(
-              e => e[this.propRef] === ft[this.propRef]
-            )
-            if (!findEnergyEq) {
-              console.error(
-                'There is an issue finding the energy fuel tech in market value calculations.'
-              )
-            }
-            const ftTotal = this.summary[findEnergyEq.id]
-            avValue = dataMarketValueSum / ftTotal / 1000
+          : 0
 
-            this.summary[ft.id] = avValue
-            totalPriceMarketValue += dataMarketValueSum
-
-            if (category === 'source') {
-              this.summarySources[ft.id] = avValue
-            } else if (category === 'load') {
-              this.summaryLoads[ft.id] = -avValue
-            }
-          })
+        let totalAverageValue = 0
+        if (this.isEnergy) {
+          totalAverageValue = totalPriceMarketValue / energySummaryTotal / 1000
         } else {
-          let avValue = null
-
-          this.energyDomains.forEach(domain => {
-            const id = domain.id
-            const ftPrice = data.map((p, pIndex) => {
-              const price = data[pIndex][this.priceId]
-                ? data[pIndex][this.priceId]
-                : 0
-              return Math.abs(p[id]) * price
-            })
-            const ftPriceTotal = ftPrice.reduce((a, b) => a + b, 0)
-            avValue = ftPriceTotal / Math.abs(totalPower)
-          })
-
-          this.summary[this.priceId] = avValue
-
-          avValue = null
-
-          this.marketValueDomains.forEach(domain => {
-            const category = domain.category
-            const id = domain.id
-            const findEnergyEq = this.energyDomains.find(
-              e => e[this.propRef] === domain[this.propRef]
-            )
-            const ftId = findEnergyEq.id
-            let avValue = null
-            if (!findEnergyEq) {
-              console.error(
-                'There is an issue finding the energy fuel tech in market value calculations.'
-              )
-            }
-            const dataPowerTotal = data.reduce((a, b) => a + (b[ftId] || 0), 0)
-            const ftPrice = data.map((p, pIndex) => {
-              const price = data[pIndex][this.priceId]
-                ? data[pIndex][this.priceId]
-                : 0
-              return Math.abs(p[ftId]) * price
-            })
-
-            const ftPriceTotal = ftPrice.reduce((a, b) => a + b, 0)
-            avValue = ftPriceTotal / Math.abs(dataPowerTotal)
-
-            this.summary[id] = avValue
-
-            if (category === 'source') {
-              this.summarySources[id] = avValue
-            } else if (category === 'load') {
-              this.summaryLoads[id] = avValue
-            }
-          })
+          totalAverageValue = volWeightPriceTotal / energySummaryTotal
         }
+
+        this.summary._totalEnergy = totalEnergy
+        this.summary._totalEnergyForPercentageCalculation = totalEnergyForPercentageCalculation
+        this.summary._totalAverageValue = totalAverageValue
+        this.summarySources._totalEnergy = totalSources
+        this.summarySources._totalGeneration = totalGeneration
+        this.summaryLoads._totalEnergy = totalLoads
+
+        // calculate averages
+        const avTotal = this.isEnergy
+          ? totalEnergyMinusHidden
+          : totalPowerMinusHidden
+
+        const average = avTotal / data.length
+        this.summary._averageEnergy = average
+        this.summary._totalEmissionsVolume = Data.siCalculationFromBase(
+          this.emissionsVolumePrefix,
+          totalEVMinusHidden
+        )
+        this.summary._averageEmissionsVolume = Data.siCalculationFromBase(
+          this.emissionsVolumePrefix,
+          totalEVMinusHidden / data.length
+        )
+        this.summary._averageEmissionsIntensity = totalEVMinusHidden / avTotal
+        this.summary._averageTemperature =
+          totalTemperatureWithoutNulls / temperatureWithoutNulls.length
+        this.$emit('summary-update', this.summary)
       }
-
-      // Calculate Temperature domains
-      const temperatureObj = this.temperatureDomains.find(domain => {
-        return domain.type === 'temperature' ||
-          domain.type === 'temperature_mean'
-          ? domain.id
-          : null
-      })
-      const temperatureWithoutNulls = temperatureObj
-        ? data.filter(d => {
-            return d[temperatureObj.id] !== null
-          })
-        : []
-      const totalTemperatureWithoutNulls = temperatureObj
-        ? temperatureWithoutNulls.reduce(
-            (prev, cur) => prev + (cur[temperatureObj.id] || 0),
-            0
-          )
-        : 0
-
-      let totalAverageValue = 0
-      if (this.isEnergy) {
-        totalAverageValue = totalPriceMarketValue / energySummaryTotal / 1000
-      } else {
-        totalAverageValue = volWeightPriceTotal / energySummaryTotal
-      }
-
-      this.summary._totalEnergy = totalEnergy
-      this.summary._totalEnergyForPercentageCalculation = totalEnergyForPercentageCalculation
-      this.summary._totalAverageValue = totalAverageValue
-      this.summarySources._totalEnergy = totalSources
-      this.summarySources._totalGeneration = totalGeneration
-      this.summaryLoads._totalEnergy = totalLoads
-
-      // calculate averages
-      const avTotal = this.isEnergy
-        ? totalEnergyMinusHidden
-        : totalPowerMinusHidden
-
-      const average = avTotal / data.length
-      this.summary._averageEnergy = average
-      this.summary._totalEmissionsVolume = Data.siCalculationFromBase(
-        this.emissionsVolumePrefix,
-        totalEVMinusHidden
-      )
-      this.summary._averageEmissionsVolume = Data.siCalculationFromBase(
-        this.emissionsVolumePrefix,
-        totalEVMinusHidden / data.length
-      )
-      this.summary._averageEmissionsIntensity = totalEVMinusHidden / avTotal
-      this.summary._averageTemperature =
-        totalTemperatureWithoutNulls / temperatureWithoutNulls.length
-      this.$emit('summary-update', this.summary)
     },
 
     calculatePointSummary(data) {

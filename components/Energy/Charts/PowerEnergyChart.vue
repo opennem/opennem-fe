@@ -309,7 +309,9 @@ export default {
       return domains.filter(d => !_includes(hidden, d[this.property]))
     },
     powerEnergyDomains() {
-      return _cloneDeep(this.currentDomainPowerEnergy).reverse()
+      return this.currentDomainPowerEnergy
+        ? _cloneDeep(this.currentDomainPowerEnergy).reverse()
+        : []
     },
     energyPercentDomains() {
       return this.powerEnergyDomains.filter(d => d.category === 'source')
@@ -661,9 +663,11 @@ export default {
       return find ? find.label : '—'
     },
     hoverDomainColour() {
-      const find = this.currentDomainPowerEnergy.find(
-        d => d.id === this.hoverPowerEnergyDomain
-      )
+      const find = this.currentDomainPowerEnergy
+        ? this.currentDomainPowerEnergy.find(
+            d => d.id === this.hoverPowerEnergyDomain
+          )
+        : null
       return find ? find.colour : '—'
     },
     hoverTotal() {

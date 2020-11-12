@@ -178,7 +178,9 @@ export default {
       return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
     },
     powerEnergyDomains() {
-      return _cloneDeep(this.currentDomainPowerEnergy).reverse()
+      return this.currentDomainPowerEnergy
+        ? _cloneDeep(this.currentDomainPowerEnergy).reverse()
+        : []
     },
     domains() {
       const domains = this.powerEnergyDomains
