@@ -1,9 +1,22 @@
 <template>
   <div class="container-fluid">
-    <div 
-      v-if="showBanner"
-      class="banner has-background-warning"
-      v-html="bannerText" />
+    <transition name="slide-down-fade">
+      <article 
+        v-if="showError" 
+        class="error-message message is-warning">
+        <div class="message-header">
+          <p>{{ errorHeader }}</p>
+          <button 
+            class="delete" 
+            aria-label="delete"
+            @click="doClearError"/>
+        </div>
+        <div 
+          class="message-body" 
+          v-html="errorMessage" />
+      </article>  
+    </transition>
+    
     <app-header />
     <nuxt/>
     <app-footer />
@@ -11,9 +24,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import intervalToDuration from 'date-fns/intervalToDuration'
-import formatDuration from 'date-fns/formatDuration'
+import { mapGetters, mapActions } from 'vuex'
 import AppHeader from '~/components/layout/AppHeader'
 import AppFooter from '~/components/layout/AppFooter'
 
@@ -25,30 +36,22 @@ export default {
 
   data() {
     return {
-      bannerText: ''
+      bannerText: 'Error'
     }
   },
 
   computed: {
     ...mapGetters({
-      showBanner: 'app/showBanner',
-      isCachedData: 'regionEnergy/isCachedData',
-      cachedDate: 'regionEnergy/cachedDate'
+      showError: 'app/showError',
+      errorHeader: 'app/errorHeader',
+      errorMessage: 'app/errorMessage'
     })
   },
 
-  watch: {
-    isCachedData(cached) {
-      if (cached) {
-        const start = this.cachedDate
-        const end = new Date()
-
-        const duration = intervalToDuration({ start, end })
-        const formatted = formatDuration(duration)
-
-        this.bannerText = `You are viewing a locally stored copy of the data. (stored ${formatted} ago)`
-      }
-    }
+  methods: {
+    ...mapActions({
+      doClearError: 'app/doClearError'
+    })
   }
 }
 </script>
@@ -63,13 +66,14 @@ export default {
     margin-bottom: 3rem;
   }
 
-  .banner {
-    text-align: center;
-    background-color: #fff;
-    vertical-align: middle;
-    padding: 3px;
-    font-size: 0.8em;
-    font-weight: bold;
+  .error-message {
+    position: absolute;
+    top: 3rem;
+    width: 500px;
+    left: 50%;
+    margin-left: -250px;
+    z-index: 99999;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   }
 }
 </style>

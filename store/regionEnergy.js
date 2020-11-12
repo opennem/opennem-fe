@@ -33,8 +33,6 @@ export const state = () => ({
   isFetching: false,
   isEnergyType: false,
   jsonResponses: null,
-  isCachedData: false,
-  cachedDate: null,
   datasetFull: [],
   datasetFlat: [],
   currentDataset: [],
@@ -60,8 +58,6 @@ export const getters = {
   ready: state => state.ready,
   isFetching: state => state.isFetching,
   isEnergyType: state => state.isEnergyType,
-  isCachedData: state => state.isCachedData,
-  cachedDate: state => state.cachedDate,
   datasetFlat: state => state.datasetFlat,
   currentDataset: state => state.currentDataset,
   domainPowerEnergy: state => state.domainPowerEnergy,
@@ -110,12 +106,6 @@ export const mutations = {
   },
   isEnergyType(state, isEnergyType) {
     state.isEnergyType = isEnergyType
-  },
-  isCachedData(state, isCachedData) {
-    state.isCachedData = isCachedData
-  },
-  cachedDate(state, cachedDate) {
-    state.cachedDate = cachedDate
   },
   jsonResponses(state, jsonResponses) {
     state.jsonResponses = _cloneDeep(jsonResponses)
@@ -180,10 +170,12 @@ export const mutations = {
 }
 
 export const actions = {
-  doGetRegionData({ commit }, { region, range, interval, period, groupName }) {
-    commit('isCachedData', false)
-    commit('cachedDate', null)
-    commit('app/showBanner', false, { root: true })
+  doGetRegionData(
+    { commit, dispatch },
+    { region, range, interval, period, groupName }
+  ) {
+    dispatch('app/doClearError', null, { root: true })
+
     if (isValidRegion(region) && range !== '' && interval !== '') {
       const env = hostEnv()
       const urls = Data.getEnergyUrls(region, range, env)
@@ -191,18 +183,12 @@ export const actions = {
       commit('ready', false)
       commit('isFetching', true)
 
-      const key = urls.toString()
-
-      function processResponses(responses, isNewData) {
+      function processResponses(responses) {
         const dataCount = getDataCount(responses)
         const perf = new PerfTime()
         perf.time()
         console.info(`------ ${currentRegion} — ${range}/${interval} (start)`)
-
-        lsSet(key, JSON.stringify(responses))
-        if (isNewData) {
-          lsSet(`${key}-date`, new Date())
-        }
+        console.log(responses)
 
         const {
           datasetFull,
@@ -277,19 +263,31 @@ export const actions = {
               })
             : res
 
-          processResponses(responses, true)
+          processResponses(responses)
         })
-        .catch(() => {
-          const jsonData = JSON.parse(lsGet(key))
-          if (jsonData) {
-            console.warn('using cached copy')
+        .catch(e => {
+          console.error('error', e)
+          let header = 'Error'
+          let message = ''
 
-            commit('isCachedData', true)
-            commit('cachedDate', new Date(lsGet(`${key}-date`)))
-            commit('app/showBanner', true, { root: true })
+          if (!e) {
+            message =
+              'There is an issue processing the responses. Please check the developer console and contact OpenNEM.'
+          } else {
+            const error = e.toJSON()
+            header = `${error.message}`
+            message = `Trying to fetch <code>${error.config.url}</code>`
 
-            processResponses(JSON.parse(lsGet(key)), false)
+            console.log(error)
           }
+          dispatch(
+            'app/doUpdateError',
+            {
+              header,
+              message
+            },
+            { root: true }
+          )
         })
     } else {
       console.log('not processing data')
