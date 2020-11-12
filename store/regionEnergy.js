@@ -15,16 +15,18 @@ let currentRegion = ''
 
 function getDataCount(responses) {
   let count = 0
-  responses.forEach(r => {
-    r.forEach(d => {
-      if (d.history && d.history.data) {
-        count += d.history.data.length
-      }
-      if (d.forecast && d.forecast.data) {
-        count += d.forecast.data.length
-      }
+  if (responses.length > 0) {
+    responses.forEach(r => {
+      r.forEach(d => {
+        if (d.history && d.history.data) {
+          count += d.history.data.length
+        }
+        if (d.forecast && d.forecast.data) {
+          count += d.forecast.data.length
+        }
+      })
     })
-  })
+  }
   return count
 }
 
