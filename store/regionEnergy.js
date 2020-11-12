@@ -149,7 +149,9 @@ export const mutations = {
       : []
   },
   currentDomainEmissions(state, currentDomainEmissions) {
-    state.currentDomainEmissions = _cloneDeep(currentDomainEmissions)
+    state.currentDomainEmissions = currentDomainEmissions
+      ? _cloneDeep(currentDomainEmissions)
+      : []
   },
   currentDomainMarketValue(state, currentDomainMarketValue) {
     state.currentDomainMarketValue = _cloneDeep(currentDomainMarketValue)
