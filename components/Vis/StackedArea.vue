@@ -1440,18 +1440,11 @@ export default {
           const changePercentage = (change / value1) * 100
           const changeType = change < 0 ? 'decrease' : 'increase'
           const compareString = `${changeType} of ${format(
-            this.convertValue(change)
+            this.convertValue(Math.abs(change))
           )}${this.unit} (${formatPercentage(changePercentage)})`
           const line = d3Line()
             .x(d => this.x(d[0]))
             .y(d => this.y(d[1]))
-
-          this.$compareGroup
-            .append('rect')
-            .attr('width', this.width)
-            .attr('height', this.height)
-            .style('opacity', 0.3)
-            .style('fill', '#ece9e6')
 
           this.$compareGroup
             .append('path')
@@ -1489,7 +1482,7 @@ export default {
             return bandwidth
           })
           .attr('height', this.height)
-          .attr('fill', 'rgba(199, 69, 35, 0.5') // e34a33
+          .attr('fill', 'rgba(199, 69, 35, 0.1') // e34a33
       }
     },
 
