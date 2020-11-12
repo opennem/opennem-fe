@@ -663,9 +663,11 @@ export default {
       return find ? find.label : '—'
     },
     hoverDomainColour() {
-      const find = this.currentDomainPowerEnergy.find(
-        d => d.id === this.hoverPowerEnergyDomain
-      )
+      const find = this.currentDomainPowerEnergy
+        ? this.currentDomainPowerEnergy.find(
+            d => d.id === this.hoverPowerEnergyDomain
+          )
+        : null
       return find ? find.colour : '—'
     },
     hoverTotal() {
