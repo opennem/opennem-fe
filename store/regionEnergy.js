@@ -177,14 +177,15 @@ export const mutations = {
 
 export const actions = {
   doGetRegionData(
-    { commit, dispatch },
+    { commit, dispatch, rootGetters },
     { region, range, interval, period, groupName }
   ) {
     dispatch('app/doClearError', null, { root: true })
 
     if (isValidRegion(region) && range !== '' && interval !== '') {
       const env = hostEnv()
-      const urls = Data.getEnergyUrls(region, range, env)
+      const useV3Paths = rootGetters['feature/v3Paths']
+      const urls = Data.getEnergyUrls(region, range, useV3Paths)
       currentRegion = region
       commit('ready', false)
       commit('isFetching', true)
@@ -194,7 +195,6 @@ export const actions = {
         const perf = new PerfTime()
         perf.time()
         console.info(`------ ${currentRegion} — ${range}/${interval} (start)`)
-        console.log(responses)
 
         const {
           datasetFull,

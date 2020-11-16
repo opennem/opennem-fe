@@ -1,17 +1,6 @@
-function getPrependString(region, prod) {
-  let string = ''
-  string = prod ? '/' : '/testing/v2/'
-
-  if (region === 'wem') {
-    string = '/'
-  }
-  return string
-}
-
 export default {
-  getEnergyUrls(region, range, hostEnv) {
-    const prod = hostEnv === 'prod'
-    const prependString = getPrependString(region, prod)
+  getEnergyUrls(region, range, useV3Paths) {
+    const prepend = region === 'wem' || region === 'nem' ? '' : '/NEM'
     const thisFullYear = new Date().getFullYear()
     const urls = []
 
@@ -19,25 +8,21 @@ export default {
       case '1D':
       case '3D':
       case '7D':
-        if (prod) {
-          urls.push(`/power/${region}.json`)
+        if (useV3Paths || region === 'wem') {
+          urls.push(
+            `v3/stats/au${prepend}/${region.toUpperCase()}/power/7d.json`
+          )
         } else {
-          if (region === 'wem') {
-            urls.push(`/power/${region}.json`)
-          } else {
-            urls.push(`v3/stats/au/${region.toUpperCase()}/power/7d.json`)
-          }
+          urls.push(`power/${region}.json`)
         }
         break
       case '30D':
-        if (prod) {
+        if (useV3Paths || region === 'wem') {
           urls.push(
-            `${prependString}${region}/energy/daily/${thisFullYear}.json`
+            `v3/stats/au${prepend}/${region.toUpperCase()}/energy/${thisFullYear}.json`
           )
         } else {
-          urls.push(
-            `v3/stats/au/${region.toUpperCase()}/energy/${thisFullYear}.json`
-          )
+          urls.push(`${region}/energy/daily/${thisFullYear}.json`)
         }
         break
       case '1Y':
@@ -46,33 +31,31 @@ export default {
         const lastFullYear = new Date(aYearAgo).getFullYear()
 
         if (thisFullYear !== lastFullYear) {
-          if (prod) {
+          if (useV3Paths || region === 'wem') {
             urls.push(
-              `${prependString}${region}/energy/daily/${lastFullYear}.json`
+              `v3/stats/au${prepend}/${region.toUpperCase()}/energy/${lastFullYear}.json`
             )
           } else {
-            urls.push(
-              `v3/stats/au/${region.toUpperCase()}/energy/${lastFullYear}.json`
-            )
+            urls.push(`${region}/energy/daily/${lastFullYear}.json`)
           }
         }
 
-        if (prod) {
+        if (useV3Paths || region === 'wem') {
           urls.push(
-            `${prependString}${region}/energy/daily/${thisFullYear}.json`
+            `v3/stats/au${prepend}/${region.toUpperCase()}/energy/${thisFullYear}.json`
           )
         } else {
-          urls.push(
-            `v3/stats/au/${region.toUpperCase()}/energy/${thisFullYear}.json`
-          )
+          urls.push(`${region}/energy/daily/${thisFullYear}.json`)
         }
 
         break
       case 'ALL':
-        if (prod) {
-          urls.push(`${prependString}${region}/energy/monthly/all.json`)
+        if (useV3Paths || region === 'wem') {
+          urls.push(
+            `v3/stats/au${prepend}/${region.toUpperCase()}/energy/all.json`
+          )
         } else {
-          urls.push(`v3/stats/au/${region.toUpperCase()}/energy/all.json`)
+          urls.push(`${region}/energy/monthly/all.json`)
         }
         break
       default:

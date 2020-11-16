@@ -11,11 +11,18 @@
         Emissions Charts
       </label>
 
-      <label class="panel-block">
+      <!-- <label class="panel-block">
         <input
           v-model="featureRegionCompare"
           type="checkbox">
         Region Compare Charts
+      </label> -->
+
+      <label class="panel-block">
+        <input
+          v-model="featureV3Paths"
+          type="checkbox">
+        Use v3 paths
       </label>
 
       <div class="panel-block">
@@ -47,6 +54,15 @@ export default {
       },
       set: function(newValue) {
         this.$store.commit('feature/regionCompare', newValue)
+      }
+    },
+
+    featureV3Paths: {
+      get: function() {
+        return this.$store.getters['feature/v3Paths']
+      },
+      set: function(newValue) {
+        this.$store.commit('feature/v3Paths', newValue)
       }
     }
   },
