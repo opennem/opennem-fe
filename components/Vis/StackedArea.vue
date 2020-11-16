@@ -1445,25 +1445,47 @@ export default {
           const line = d3Line()
             .x(d => this.x(d[0]))
             .y(d => this.y(d[1]))
+          const distance = this.x(time2) - this.x(time1)
+          const limit = 180
 
-          this.$compareGroup
-            .append('path')
-            .attr('id', `${this.id}-compare-line`)
-            .attr('d', line([[time1, value1], [time2, value2]]))
-            .attr('marker-end', `url(#${this.id}-arrowhead)`)
-            .style('stroke', 'darkred')
-            .style('stroke-width', 2)
+          if (distance > limit) {
+            this.$compareGroup
+              .append('path')
+              .attr('id', `${this.id}-compare-line`)
+              .attr('d', line([[time1, value1], [time2, value2]]))
+              .attr('marker-end', `url(#${this.id}-arrowhead)`)
+              .style('stroke', 'darkred')
+              .style('stroke-width', 2)
 
-          this.$compareGroup
-            .append('text')
-            .attr('x', 10)
-            .attr('dy', -5)
-            .style('font-size', '12px')
-            .style('fill', 'darkred')
-            .style('text-shadow', '2px 2px 0 #D0D1CD')
-            .append('textPath')
-            .attr('href', `#${this.id}-compare-line`)
-            .text(compareString)
+            this.$compareGroup
+              .append('text')
+              .attr('x', 10)
+              .attr('dy', -5)
+              .style('font-size', '12px')
+              .style('fill', 'darkred')
+              .style('text-shadow', '2px 2px 0 #D0D1CD')
+              .append('textPath')
+              .attr('href', `#${this.id}-compare-line`)
+              .text(compareString)
+          } else {
+            const nearRightEdge = this.width - this.x(time2) < limit
+
+            this.$compareGroup
+              .append('path')
+              .attr('id', `${this.id}-compare-line`)
+              .attr('d', line([[time1, value1], [time2, value2]]))
+              .style('stroke', 'darkred')
+              .style('stroke-width', 2)
+            this.$compareGroup
+              .append('text')
+              .attr('x', this.x(time1))
+              .attr('y', change < 0 ? this.y(value1) : this.y(value2))
+              .style('font-size', '12px')
+              .style('fill', 'darkred')
+              .style('text-shadow', '2px 2px 0 #D0D1CD')
+              .style('text-anchor', nearRightEdge ? 'end' : 'start')
+              .text(compareString)
+          }
         }
 
         compareFocusGroup
