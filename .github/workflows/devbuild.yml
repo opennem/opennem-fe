@@ -5,12 +5,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
     steps:
       - uses: actions/checkout@main
-      - name: mapbox token
-          run: echo mapbox token $MAPBOX_TOKEN
-          env:
-            MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
+      - run: echo mapbox token $MAPBOX_TOKEN
       - uses: actions/setup-node@v2-beta
         with:
           node-version: '12'
