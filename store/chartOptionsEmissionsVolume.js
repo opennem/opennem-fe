@@ -9,7 +9,7 @@ export const state = () => ({
 
   chartUnit: 'tCO₂e',
   chartUnitPrefix: SI.BASE,
-  chartDisplayPrefix: SI.BASE
+  chartDisplayPrefix: SI.KILO
 })
 
 export const getters = {
