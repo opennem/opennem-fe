@@ -7,14 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main
-      - name: Get mapbox token
-        env:
-          MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
       - uses: actions/setup-node@v2-beta
         with:
           node-version: '12'
       - run: yarn install
       - run: yarn generate-dev
+        env:
+          MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
       - uses: shallwefootball/s3-upload-action@master
         with:
           aws_key_id: ${{ secrets.AWS_KEY_ID }}
