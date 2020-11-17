@@ -19,7 +19,9 @@
 
     <template v-slot:label-unit>
       <strong>Emissions Volume</strong>
-      <small>{{ displayUnit }}/{{ interval | intervalLabel }}</small>
+      <small 
+        class="display-unit" 
+        @click.stop="handleUnitClick">{{ displayUnit }}/{{ interval | intervalLabel }}</small>
     </template>
     <template 
       v-slot:average-value 
@@ -150,9 +152,29 @@ export default {
         'chartOptionsEmissionsVolume/chartDisplayPrefix',
         prefix
       )
-    }
+    },
 
-    // TODO: also handle when unit is clicked for toggle
+    togglePrefix(prefix) {
+      return options.si.find(p => p !== prefix)
+    },
+
+    handleUnitClick() {
+      const updatedPrefix = this.togglePrefix(this.chartDisplayPrefix)
+      this.handlePrefixClick(updatedPrefix)
+    }
   }
 }
 </script>
+
+
+<style lang="scss" scoped>
+.display-unit {
+  cursor: pointer;
+  padding: 2px 4px 1px;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+}
+</style>
