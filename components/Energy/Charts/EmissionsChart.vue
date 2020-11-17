@@ -7,13 +7,14 @@
     class="chart">
     <emissions-chart-options
       :read-only="readOnly"
-      :options="options"
       :chart-shown="chartShown"
       :chart-type="chartType"
       :chart-curve="chartCurve"
+      :chart-unit="chartUnit"
+      :chart-display-prefix="chartDisplayPrefix"
+      :display-unit="chartCurrentUnit"
       :interval="interval"
       :average-emissions-volume="averageEmissionsVolume"
-      :emissions-volume-unit="emissionsVolumeUnit"
       :hover-display-date="hoverDisplayDate"
       :hover-value="hoverValue"
       :hover-domain-colour="hoverDomainColour"
@@ -45,6 +46,10 @@
       :focus-on="focusOn"
       :incomplete-intervals="incompleteIntervals"
       :highlight-domain="highlightId"
+      :display-prefix="chartDisplayPrefix"
+      :should-convert-value="true"
+      :convert-value="convertValue"
+      :unit="` ${chartDisplayPrefix}${chartUnit}`"
       class="vis-chart"
       @dateOver="handleDateHover"
       @domainOver="handleDomainHover"
@@ -65,21 +70,11 @@ import addWeeks from 'date-fns/addWeeks'
 import addMonths from 'date-fns/addMonths'
 import addQuarters from 'date-fns/addQuarters'
 import addYears from 'date-fns/addYears'
+import * as SI from '@/constants/si.js'
 import { EMISSIONS } from '@/constants/data-types.js'
-import * as OPTIONS from '@/constants/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import StackedAreaVis from '@/components/Vis/StackedArea.vue'
 import EmissionsChartOptions from '@/components/Energy/Charts/EmissionsChartOptions'
-
-const options = {
-  type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_STACKED],
-  curve: [
-    OPTIONS.CHART_CURVE_SMOOTH,
-    OPTIONS.CHART_CURVE_STEP,
-    OPTIONS.CHART_CURVE_STRAIGHT
-  ],
-  yAxis: []
-}
 
 export default {
   components: {
@@ -106,12 +101,6 @@ export default {
     }
   },
 
-  data() {
-    return {
-      options
-    }
-  },
-
   computed: {
     ...mapGetters({
       range: 'range',
@@ -124,13 +113,18 @@ export default {
       focusDate: 'visInteract/focusDate',
       xGuides: 'visInteract/xGuides',
       highlightDomain: 'visInteract/highlightDomain',
+
       chartShown: 'chartOptionsEmissionsVolume/chartShown',
       chartType: 'chartOptionsEmissionsVolume/chartType',
       chartCurve: 'chartOptionsEmissionsVolume/chartCurve',
+      chartUnit: 'chartOptionsEmissionsVolume/chartUnit',
+      chartUnitPrefix: 'chartOptionsEmissionsVolume/chartUnitPrefix',
+      chartDisplayPrefix: 'chartOptionsEmissionsVolume/chartDisplayPrefix',
+      chartCurrentUnit: 'chartOptionsEmissionsVolume/chartCurrentUnit',
+
       currentDataset: 'regionEnergy/currentDataset',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
-      summary: 'regionEnergy/summary',
-      emissionsVolumeUnit: 'si/emissionsVolumeUnit'
+      summary: 'regionEnergy/summary'
     }),
     hoverEmissionsDomain() {
       const domain = this.hoverDomain
@@ -184,8 +178,11 @@ export default {
       const hidden = this.hiddenFuelTechs
       return domains.filter(d => !_includes(hidden, d[property]))
     },
+
     averageEmissionsVolume() {
-      return this.summary ? this.summary._averageEmissionsVolume : 0
+      return this.summary
+        ? this.convertValue(this.summary._averageEmissionsVolume)
+        : 0
     },
     hoverData() {
       if (!this.hoverDate) {
@@ -196,7 +193,9 @@ export default {
       return dataset.find(d => d.time === time)
     },
     hoverValue() {
-      return this.hoverData ? this.hoverData[this.hoverEmissionsDomain] : null
+      return this.hoverData
+        ? this.convertValue(this.hoverData[this.hoverEmissionsDomain])
+        : null
     },
     hoverDisplayDate() {
       let date = this.focusDate
@@ -230,7 +229,7 @@ export default {
           total += this.hoverData[d.id]
         })
       }
-      return total
+      return this.convertValue(total)
     },
     incompleteIntervals() {
       const incompletes = []
@@ -281,6 +280,13 @@ export default {
     ...mapMutations({
       setHoverDomain: 'visInteract/hoverDomain'
     }),
+    convertValue(value) {
+      return SI.convertValue(
+        this.chartUnitPrefix,
+        this.chartDisplayPrefix,
+        value
+      )
+    },
     handleDomainHover(domain) {
       this.setHoverDomain(domain)
     },

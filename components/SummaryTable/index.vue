@@ -80,7 +80,7 @@
             {{ summary._totalAverageValue | formatCurrency }}
           </span>
           <span v-if="isEmissionsVolumeColumn">
-            {{ summary._totalEmissionsVolume | formatValue }}
+            {{ summary._totalEmissionsVolume | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
           </span>
           <span v-if="isEmissionsIntensityColumn">
             {{ summary._averageEmissionsIntensity | formatValue }}
@@ -93,7 +93,7 @@
             {{ pointSummary._totalAverageValue | formatCurrency }}
           </span>
           <span v-if="isEmissionsVolumeColumn">
-            {{ pointSummary._totalEmissionsVolume | formatValue }}
+            {{ pointSummary._totalEmissionsVolume | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
           </span>
           <span v-if="isEmissionsIntensityColumn">
             {{ pointSummary._emissionsIntensity | formatValue }}
@@ -370,8 +370,6 @@ export default {
       regionTimezoneString: 'regionEnergy/regionTimezoneString',
       isEnergyType: 'regionEnergy/isEnergyType',
 
-      emissionsVolumeUnit: 'si/emissionsVolumeUnit',
-      emissionsVolumePrefix: 'si/emissionsVolumePrefix',
       chartEnergyRenewablesLine:
         'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
 
@@ -385,7 +383,12 @@ export default {
       chartPowerUnitPrefix: 'chartOptionsPowerEnergy/chartPowerUnitPrefix',
       chartPowerDisplayPrefix:
         'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
-      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit'
+      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
+
+      chartEmissionsVolumeUnitPrefix:
+        'chartOptionsEmissionsVolume/chartUnitPrefix',
+      chartEmissionsVolumeDisplayPrefix:
+        'chartOptionsEmissionsVolume/chartDisplayPrefix'
     }),
 
     chartUnit() {
@@ -603,9 +606,6 @@ export default {
     marketValueDomains(updated) {
       this.calculateSummary(this.dataset)
     },
-    emissionsDomains(updated) {
-      console.log(updated)
-    },
     hoverDate(date) {
       this.updatePointSummary(date)
     },
@@ -625,9 +625,6 @@ export default {
       this.calculateSummary(this.dataset)
     },
     percentContributionTo(updated) {
-      this.calculateSummary(this.dataset)
-    },
-    emissionsVolumePrefix() {
       this.calculateSummary(this.dataset)
     }
   },
@@ -818,7 +815,7 @@ export default {
           const category = ft.category
           const dataEVMinusHidden = data.map(d => {
             const emissionsVol = {}
-            if (!_includes(this.hiddenFuelTechs, ft[ft.fuelTech])) {
+            if (!_includes(this.hiddenFuelTechs, ft[this.propRef])) {
               if (
                 !isGeneration ||
                 (isGeneration &&
@@ -835,22 +832,13 @@ export default {
             return emissionsVol
           })
           const evSum = sumMap(ft, dataEVMinusHidden)
-          this.summary[ft.id] = Data.siCalculationFromBase(
-            this.emissionsVolumePrefix,
-            evSum
-          )
+          this.summary[ft.id] = evSum
           totalEVMinusHidden += evSum
 
           if (category === 'source') {
-            this.summarySources[ft.id] = Data.siCalculationFromBase(
-              this.emissionsVolumePrefix,
-              evSum
-            )
+            this.summarySources[ft.id] = evSum
           } else if (category === 'load') {
-            this.summaryLoads[ft.id] = Data.siCalculationFromBase(
-              this.emissionsVolumePrefix,
-              evSum
-            )
+            this.summaryLoads[ft.id] = evSum
           }
         })
 
@@ -993,14 +981,8 @@ export default {
 
         const average = avTotal / data.length
         this.summary._averageEnergy = average
-        this.summary._totalEmissionsVolume = Data.siCalculationFromBase(
-          this.emissionsVolumePrefix,
-          totalEVMinusHidden
-        )
-        this.summary._averageEmissionsVolume = Data.siCalculationFromBase(
-          this.emissionsVolumePrefix,
-          totalEVMinusHidden / data.length
-        )
+        this.summary._totalEmissionsVolume = totalEVMinusHidden
+        this.summary._averageEmissionsVolume = totalEVMinusHidden / data.length
         this.summary._averageEmissionsIntensity = totalEVMinusHidden / avTotal
         this.summary._averageTemperature =
           totalTemperatureWithoutNulls / temperatureWithoutNulls.length
@@ -1074,15 +1056,9 @@ export default {
           totalEmissionsVol += value
 
           if (category === 'source') {
-            this.pointSummarySources[domain.id] = Data.siCalculationFromBase(
-              this.emissionsVolumePrefix,
-              value
-            )
+            this.pointSummarySources[domain.id] = value
           } else if (category === 'load') {
-            this.pointSummaryLoads[domain.id] = Data.siCalculationFromBase(
-              this.emissionsVolumePrefix,
-              value
-            )
+            this.pointSummaryLoads[domain.id] = value
           }
         })
       }
@@ -1100,10 +1076,7 @@ export default {
       this.pointSummarySources._total = totalSources
       this.pointSummarySources._totalGeneration = totalGeneration
       this.pointSummaryLoads._total = totalLoads
-      this.pointSummary._totalEmissionsVolume = Data.siCalculationFromBase(
-        this.emissionsVolumePrefix,
-        totalEmissionsVol
-      )
+      this.pointSummary._totalEmissionsVolume = totalEmissionsVol
     },
 
     updatePointSummary(date) {

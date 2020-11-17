@@ -1,9 +1,11 @@
+export const BASE = ''
 export const KILO = 'k'
 export const MEGA = 'M'
 export const GIGA = 'G'
 export const TERA = 'T'
 
 export const EXPONENT = {}
+EXPONENT[BASE] = 0
 EXPONENT[KILO] = 3
 EXPONENT[MEGA] = 6
 EXPONENT[GIGA] = 9

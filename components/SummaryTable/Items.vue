@@ -70,7 +70,7 @@
       <div
         v-show="isEmissionsVolumeColumn"
         class="summary-col-ev">
-        {{ getEmissionsVolume(ft) | formatValue }}
+        {{ getEmissionsVolume(ft) | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
       </div>
 
       <div
@@ -163,7 +163,6 @@ export default {
   computed: {
     ...mapGetters({
       fuelTechGroupName: 'fuelTechGroupName',
-      emissionsVolumePrefix: 'si/emissionsVolumePrefix',
       percentContributionTo: 'percentContributionTo',
       chartEnergyRenewablesLine:
         'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
@@ -180,7 +179,12 @@ export default {
       chartPowerUnitPrefix: 'chartOptionsPowerEnergy/chartPowerUnitPrefix',
       chartPowerDisplayPrefix:
         'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
-      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit'
+      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
+
+      chartEmissionsVolumeUnitPrefix:
+        'chartOptionsEmissionsVolume/chartUnitPrefix',
+      chartEmissionsVolumeDisplayPrefix:
+        'chartOptionsEmissionsVolume/chartDisplayPrefix'
     }),
     chartUnitPrefix() {
       return this.isEnergyType
@@ -343,10 +347,7 @@ export default {
         let emissionsVolume = this.showPointSummary
           ? this.pointSummary[emissionObj.id] || ''
           : this.summary[emissionObj.id] || ''
-        emissionsVolume = Data.siCalculationToBase(
-          this.emissionsVolumePrefix,
-          emissionsVolume
-        )
+
         return emissionsVolume / energy
       }
       return '-'

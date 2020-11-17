@@ -294,7 +294,6 @@ export default {
       this.$store.commit('regionEnergy/filteredDates', [])
       this.selectedFilter = FILTER_NONE
       this.setFilterPeriod(FILTER_NONE)
-      this.$store.dispatch('si/emissionsVolumePrefix', '')
 
       const is5mOr30m =
         this.interval === INTERVAL_5MIN || this.interval === INTERVAL_30MIN
@@ -348,7 +347,6 @@ export default {
         }
       } else {
         this.hideAllFilters()
-        this.$store.dispatch('si/emissionsVolumePrefix', '')
         this.setInterval(interval)
         this.setFilterPeriod(FILTER_NONE)
         this.selectedFilter = FILTER_NONE

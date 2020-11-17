@@ -15,6 +15,7 @@
       :interval="interval"
       :average-emission-intensity="averageEmissionIntensity"
       :hover-display-date="hoverDisplayDate"
+      :hover-value="hoverValue"
     />
 
     <line-vis

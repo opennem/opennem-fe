@@ -8,15 +8,20 @@
         :chart-type="chartType"
         :chart-curve="chartCurve"
         :chart-shown="chartShown"
+        :chart-unit="chartUnit"
+        :chart-display-prefix="chartDisplayPrefix"
         :show="chartOptions" 
         @show-change="s => chartOptions = s"
         @type-click="handleTypeClick"
-        @curve-click="handleCurveClick"/>
+        @curve-click="handleCurveClick"
+        @prefix-click="handlePrefixClick"/>
     </template>
 
     <template v-slot:label-unit>
       <strong>Emissions Volume</strong>
-      <small>{{ emissionsVolumeUnit }}/{{ interval | intervalLabel }}</small>
+      <small 
+        class="display-unit" 
+        @click.stop="handleUnitClick">{{ displayUnit }}/{{ interval | intervalLabel }}</small>
     </template>
     <template 
       v-slot:average-value 
@@ -24,7 +29,7 @@
       Av.
       <strong>
         {{ averageEmissionsVolume | formatValue }}
-        {{ emissionsVolumeUnit }}/{{ interval | intervalLabel }}
+        {{ displayUnit }}/{{ interval | intervalLabel }}
       </strong>
     </template>
     <template v-slot:hover-date>
@@ -38,11 +43,11 @@
           :style="{ 'background-color': hoverDomainColour }"
           class="colour-square" />
         {{ hoverDomainLabel }}
-        <strong>{{ hoverValue | formatValue2 }} {{ emissionsVolumeUnit }}</strong>
+        <strong>{{ hoverValue | formatValue2 }} {{ displayUnit }}</strong>
       </span>
       <span>
         Total
-        <strong>{{ hoverTotal | formatValue2 }} {{ emissionsVolumeUnit }}</strong>
+        <strong>{{ hoverTotal | formatValue2 }} {{ displayUnit }}</strong>
       </span>
     </template>
   </chart-header>
@@ -52,6 +57,19 @@
 import { mapGetters } from 'vuex'
 import ChartHeader from '@/components/Vis/ChartHeader'
 import ChartOptions from '@/components/Vis/ChartOptions'
+import * as OPTIONS from '@/constants/chart-options.js'
+import * as SI from '@/constants/si'
+
+const options = {
+  type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_STACKED],
+  curve: [
+    OPTIONS.CHART_CURVE_SMOOTH,
+    OPTIONS.CHART_CURVE_STEP,
+    OPTIONS.CHART_CURVE_STRAIGHT
+  ],
+  yAxis: [],
+  si: [SI.BASE, SI.KILO]
+}
 
 export default {
   components: {
@@ -59,16 +77,6 @@ export default {
     ChartOptions
   },
   props: {
-    options: {
-      type: Object,
-      default: () => {
-        return {
-          type: [],
-          curve: [],
-          yAxis: []
-        }
-      }
-    },
     chartShown: {
       type: Boolean,
       default: false
@@ -81,6 +89,14 @@ export default {
       type: String,
       default: ''
     },
+    chartUnit: {
+      type: String,
+      default: ''
+    },
+    chartDisplayPrefix: {
+      type: String,
+      default: ''
+    },
     interval: {
       type: String,
       default: ''
@@ -89,7 +105,7 @@ export default {
       type: Number,
       default: 0
     },
-    emissionsVolumeUnit: {
+    displayUnit: {
       type: String,
       default: ''
     },
@@ -120,7 +136,8 @@ export default {
   },
   data() {
     return {
-      chartOptions: false
+      chartOptions: false,
+      options
     }
   },
   methods: {
@@ -129,7 +146,35 @@ export default {
     },
     handleCurveClick(curve) {
       this.$store.commit('chartOptionsEmissionsVolume/chartCurve', curve)
+    },
+    handlePrefixClick(prefix) {
+      this.$store.commit(
+        'chartOptionsEmissionsVolume/chartDisplayPrefix',
+        prefix
+      )
+    },
+
+    togglePrefix(prefix) {
+      return options.si.find(p => p !== prefix)
+    },
+
+    handleUnitClick() {
+      const updatedPrefix = this.togglePrefix(this.chartDisplayPrefix)
+      this.handlePrefixClick(updatedPrefix)
     }
   }
 }
 </script>
+
+
+<style lang="scss" scoped>
+.display-unit {
+  cursor: pointer;
+  padding: 2px 4px 1px;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+}
+</style>
