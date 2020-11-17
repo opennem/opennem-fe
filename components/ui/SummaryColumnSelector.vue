@@ -13,7 +13,7 @@
         Av.Value <small>$/MWh</small>
       </span>
       <span v-if="isEmissionsVolumeColumn">
-        Volume <small>{{ emissionsVolumeUnit }}</small>
+        Volume <small>{{ chartEmissionsVolumeCurrentUnit }}</small>
       </span>
       <span v-if="isEmissionsIntensityColumn">
         Intensity <small>kgCO₂e/MWh</small>
@@ -73,8 +73,9 @@ export default {
 
   computed: {
     ...mapGetters({
-      emissionsVolumeUnit: 'si/emissionsVolumeUnit',
-      featureEmissions: 'feature/emissions'
+      featureEmissions: 'feature/emissions',
+      chartEmissionsVolumeCurrentUnit:
+        'chartOptionsEmissionsVolume/chartCurrentUnit'
     }),
     showSummaryColumn() {
       return this.$store.getters.showSummaryColumn

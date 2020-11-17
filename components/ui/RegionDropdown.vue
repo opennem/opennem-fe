@@ -125,7 +125,6 @@ export default {
       this.dropdownActive = !this.dropdownActive
       this.$store.dispatch('export/title', '')
       this.$store.dispatch('export/description', '')
-      this.$store.dispatch('si/emissionsVolumePrefix', '')
     },
     handleClickAway() {
       this.dropdownActive = false

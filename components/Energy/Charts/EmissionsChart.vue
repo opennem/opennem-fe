@@ -124,9 +124,7 @@ export default {
 
       currentDataset: 'regionEnergy/currentDataset',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
-      summary: 'regionEnergy/summary',
-
-      emissionsVolumeUnit: 'si/emissionsVolumeUnit'
+      summary: 'regionEnergy/summary'
     }),
     hoverEmissionsDomain() {
       const domain = this.hoverDomain

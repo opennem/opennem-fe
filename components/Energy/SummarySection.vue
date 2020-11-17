@@ -1,17 +1,10 @@
 <template>
   <section>
-    <!--
-      :emissions-domains="emissionStackedAreaDomains"
-      :price-id="priceDomains.length > 0 ? priceDomains[0].id : null"
-      :hidden-fuel-techs="hiddenFuelTechs"
-      :market-value-domains="mvDomains"
-      :hidden-fuel-techs="hiddenFuelTechs"
-
-      -->
     <summary-table
       :energy-domains="powerEnergyDomains"
       :temperature-domains="domainTemperature"
       :market-value-domains="currentDomainMarketValue"
+      :emissions-domains="currentDomainEmissions"
       :price-id="domainPrice.length > 0 ? domainPrice[0].id : ''"
       :dataset="filteredCurrentDataset"
       :hover-date="hoverDate"
@@ -147,6 +140,7 @@ export default {
       domainPrice: 'regionEnergy/domainPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       currentDomainMarketValue: 'regionEnergy/currentDomainMarketValue',
+      currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
 
       chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
       chartEnergyDisplayPrefix:
