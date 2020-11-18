@@ -68,7 +68,7 @@ const options = {
     OPTIONS.CHART_CURVE_STRAIGHT
   ],
   yAxis: [],
-  si: [SI.BASE, SI.KILO]
+  si: [SI.BASE, SI.KILO, SI.MEGA]
 }
 
 export default {
