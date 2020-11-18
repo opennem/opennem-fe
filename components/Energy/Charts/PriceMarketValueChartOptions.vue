@@ -30,9 +30,7 @@
       {{ hoverDisplayDate }}
     </template>
     <template v-slot:hover-values>
-      <span
-        v-if="hoverValue"
-        class="ft-value">
+      <span class="ft-value">
         <strong>{{ hoverValue | formatCurrency }}</strong>
       </span>
     </template>
