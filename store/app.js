@@ -3,7 +3,8 @@ export const state = () => ({
   showError: false,
   errorHeader: '',
   errorMessage: '',
-  query: null
+  query: null,
+  showFeatureToggle: false
 })
 
 export const getters = {
@@ -13,7 +14,8 @@ export const getters = {
   showError: state => state.showError,
   errorHeader: state => state.errorHeader,
   errorMessage: state => state.errorMessage,
-  query: state => state.query
+  query: state => state.query,
+  showFeatureToggle: state => state.showFeatureToggle
 }
 
 export const mutations = {
@@ -31,6 +33,9 @@ export const mutations = {
   },
   query(state, query) {
     state.query = query
+  },
+  showFeatureToggle(state, showFeatureToggle) {
+    state.showFeatureToggle = showFeatureToggle
   }
 }
 

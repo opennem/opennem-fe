@@ -1,37 +1,35 @@
 <template>
-  <div class="container">
-    <div class="panel">
-      <div class="panel-heading">
-        Feature Toggle
-      </div>
-      <label class="panel-block">
-        <input
-          v-model="featureEmissions"
-          type="checkbox">
-        Emissions Charts
-      </label>
+  <div class="panel">
+    <div class="panel-heading">
+      Feature Toggle
+    </div>
+    <label class="panel-block">
+      <input
+        v-model="featureEmissions"
+        type="checkbox">
+      Emissions Charts
+    </label>
 
-      <!-- <label class="panel-block">
+    <!-- <label class="panel-block">
         <input
           v-model="featureRegionCompare"
           type="checkbox">
         Region Compare Charts
       </label> -->
 
-      <label class="panel-block">
-        <input
-          v-model="featureV3Paths"
-          type="checkbox">
-        Use v3 paths
-      </label>
+    <label class="panel-block">
+      <input
+        v-model="featureV3Paths"
+        type="checkbox">
+      Use v3 paths
+    </label>
 
-      <div class="panel-block">
-        <button
-          class="button is-primary is-outlined is-fullwidth"
-          @click="handleDoneClick">
-          Done
-        </button>
-      </div>
+    <div class="panel-block">
+      <button
+        class="button is-primary is-outlined is-fullwidth"
+        @click="handleDoneClick">
+        Done
+      </button>
     </div>
   </div>
 </template>
@@ -68,7 +66,7 @@ export default {
   },
   methods: {
     handleDoneClick() {
-      this.$router.go(-1)
+      this.$emit('done')
     }
   }
 }
@@ -76,10 +74,12 @@ export default {
 
 <style lang="scss" scoped>
 @import '~/assets/scss/variables.scss';
-@import '~/assets/scss/responsive-mixins.scss';
-.container {
-  margin-top: 1rem;
-  max-width: 300px;
+.panel {
+  background-color: #fff;
+
+  .panel-heading {
+    background-color: #f5f5f5;
+  }
 }
 .button.is-primary {
   border: 1px solid $opennem-link-color;

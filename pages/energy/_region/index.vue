@@ -121,7 +121,8 @@ export default {
       powerEnergyPrefix: 'regionEnergy/powerEnergyPrefix',
       currentDataset: 'regionEnergy/currentDataset',
       filteredDates: 'regionEnergy/filteredDates',
-      query: 'app/query'
+      query: 'app/query',
+      showFeatureToggle: 'app/showFeatureToggle'
     }),
     regionId() {
       return this.$route.params.region
@@ -134,6 +135,17 @@ export default {
   },
 
   watch: {
+    showFeatureToggle(show) {
+      if (!show) {
+        this.doGetRegionData({
+          region: this.regionId,
+          range: this.range,
+          interval: this.interval,
+          period: this.filterPeriod,
+          groupName: this.fuelTechGroupName
+        })
+      }
+    },
     range(curr, prev) {
       this.setCompareDifference(false)
       this.doUpdateTickFormats({ range: curr, interval: this.interval })

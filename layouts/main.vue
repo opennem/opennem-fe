@@ -16,22 +16,31 @@
           v-html="errorMessage" />
       </article>  
     </transition>
+
+    <transition name="slide-down-fade">
+      <FeatureToggle 
+        v-if="showFeatureToggle"
+        class="features"
+        @done="setShowFeatureToggle(false)" />
+    </transition>
     
     <app-header />
-    <nuxt/>
-    <app-footer />
+    <nuxt />
+    <app-footer @showFeatureToggle="setShowFeatureToggle(true)" />
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 import AppHeader from '~/components/layout/AppHeader'
 import AppFooter from '~/components/layout/AppFooter'
+import FeatureToggle from '@/components/FeatureToggle'
 
 export default {
   components: {
     AppHeader,
-    AppFooter
+    AppFooter,
+    FeatureToggle
   },
 
   data() {
@@ -44,13 +53,17 @@ export default {
     ...mapGetters({
       showError: 'app/showError',
       errorHeader: 'app/errorHeader',
-      errorMessage: 'app/errorMessage'
+      errorMessage: 'app/errorMessage',
+      showFeatureToggle: 'app/showFeatureToggle'
     })
   },
 
   methods: {
     ...mapActions({
       doClearError: 'app/doClearError'
+    }),
+    ...mapMutations({
+      setShowFeatureToggle: 'app/showFeatureToggle'
     })
   }
 }
@@ -64,6 +77,15 @@ export default {
   margin-bottom: 1rem;
   @include tablet {
     margin-bottom: 3rem;
+  }
+
+  .features {
+    position: fixed;
+    z-index: 99999;
+    width: 300px;
+    top: 1rem;
+    left: 50%;
+    margin-left: -150px;
   }
 
   .error-message {

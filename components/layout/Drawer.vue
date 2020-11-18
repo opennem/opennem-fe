@@ -67,12 +67,14 @@
         </div>
       </div>
 
-      <app-footer />
+      <app-footer @showFeatureToggle="setShowFeatureToggle(true)" />
     </div>
   </div>
 </template>
 
 <script>
+import { mapGetters, mapMutations, mapActions } from 'vuex'
+
 import VIEWS from '~/constants/views.js'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
 import Logo from '~/components/ui/Logo'
@@ -125,6 +127,9 @@ export default {
   },
 
   methods: {
+    ...mapMutations({
+      setShowFeatureToggle: 'app/showFeatureToggle'
+    }),
     getLinks() {
       // create links without 'all' since a divider is needed
       return this.regions

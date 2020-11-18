@@ -17,11 +17,18 @@
     </div>
 
     <div class="right">
-      <nuxt-link
+      <!-- <nuxt-link
         class="icon-link"
         to="/features/">
         <i class="fal fa-vial" />
-      </nuxt-link>
+      </nuxt-link> -->
+
+      <a
+        class="icon-link"
+        @click="handleFeatureToggleClick">
+        <i class="fal fa-vial" />
+      </a>
+
       <a
         class="icon-link"
         href="https://twitter.com/opennem">
@@ -44,6 +51,12 @@ export default {
   data() {
     return {
       version: this.$config.version
+    }
+  },
+
+  methods: {
+    handleFeatureToggleClick() {
+      this.$emit('showFeatureToggle')
     }
   }
 }
