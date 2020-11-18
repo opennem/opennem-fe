@@ -16,7 +16,7 @@
       :interval="interval"
       :average-emissions-volume="averageEmissionsVolume"
       :hover-display-date="hoverDisplayDate"
-      :hover-value="hoverValue"
+      :hover-value="domains.length > 1 ? hoverValue : null"
       :hover-domain-colour="hoverDomainColour"
       :hover-domain-label="hoverDomainLabel"
       :hover-total="hoverTotal"

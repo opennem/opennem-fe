@@ -23,7 +23,7 @@
       :is-renewable-line-only="isRenewableLineOnly"
       :average-energy="averageEnergy"
       :hover-display-date="hoverDisplayDate"
-      :hover-value="hoverValue"
+      :hover-value="domains.length > 1 ? hoverValue : null"
       :hover-domain-colour="hoverDomainColour"
       :hover-domain-label="hoverDomainLabel"
       :hover-renewables="hoverRenewables"
