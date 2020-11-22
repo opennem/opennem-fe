@@ -258,9 +258,15 @@ export const actions = {
 
         commit('jsonResponses', responses)
         commit('ready', true)
+
+        return {
+          currentDataset,
+          currentDomainPowerEnergy: domainPowerEnergyGrouped[groupName],
+          currentDomainEmissions: domainEmissionsGrouped[groupName]
+        }
       }
 
-      http(urls)
+      return http(urls)
         .then(res => {
           const check = res.length > 0 ? (res[0].data ? true : false) : false
           let responses = check
@@ -269,7 +275,7 @@ export const actions = {
               })
             : res
 
-          processResponses(responses)
+          return processResponses(responses)
         })
         .catch(e => {
           console.error('error', e)
