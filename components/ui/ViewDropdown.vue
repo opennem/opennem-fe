@@ -1,34 +1,36 @@
 <template>
-  <div
-    :class="{'is-active': dropdownActive}"
+  <div 
+    :class="{ 'is-active': dropdownActive }" 
     class="dropdown">
     <a
       v-on-clickaway="handleClickAway"
       class="dropdown-trigger"
-      @click="handleClick">
+      @click="handleClick"
+    >
       <span>
         <strong>{{ viewLabel }}</strong>
         <i class="fal fa-chevron-down" />
-      </span>          
+      </span>
     </a>
 
     <transition name="slide-down-fade">
-      <div
+      <div 
         v-if="dropdownActive" 
         class="dropdown-menu">
         <div class="dropdown-content">
           <nuxt-link
-            v-for="view in views" 
+            v-for="view in views"
             v-show="showLink(view.id)"
-            :key="view.id" 
+            :key="view.id"
             :to="`/${view.id}/${regionId}/`"
             class="dropdown-item"
-            @click.native="handleClick">
+            @click.native="handleViewClick(view.id)"
+          >
             {{ view.label }}
           </nuxt-link>
         </div>
       </div>
-    </transition> 
+    </transition>
   </div>
 </template>
 
@@ -62,6 +64,9 @@ export default {
   methods: {
     handleClick() {
       this.dropdownActive = !this.dropdownActive
+    },
+    handleViewClick(view) {
+      this.$store.dispatch('currentView', view)
     },
     handleClickAway() {
       this.dropdownActive = false

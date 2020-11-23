@@ -6,5 +6,9 @@ export default [
   {
     id: 'facilities',
     label: 'Facilities'
+  },
+  {
+    id: 'experiments/heatmap',
+    label: 'Heatmap'
   }
 ]

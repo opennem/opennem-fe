@@ -1,8 +1,6 @@
 <template>
   <div class="">
-    <AppLogo class="logo" />
-
-    <h5>Legend (0 - 1000)</h5>
+    <!-- <h5>Legend (0 - 1000)</h5>
     <HeatColumns
       :id="'legend'"
       :cell-width="20"
@@ -21,7 +19,7 @@
         { value: 1000 }
       ]"
       :value-prop="'value'"
-    />
+    /> -->
     <section 
       v-for="(d, i) in statesData" 
       :key="`state-${i}`">
@@ -42,17 +40,17 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
-import AppLogo from '~/components/ui/Logo'
 import HeatColumns from '@/components/Vis/_wip/HeatColumns'
 
 export default {
+  layout: 'main',
+
   components: {
-    AppLogo,
     HeatColumns
   },
 
   head: {
-    titleTemplate: 'OpenNEM Experiments'
+    titleTemplate: 'OpenNEM Experiments: Heatmap'
   },
 
   data() {
@@ -139,11 +137,4 @@ export default {
 <style lang="scss" scoped>
 @import '~/assets/scss/variables.scss';
 @import '~/assets/scss/responsive-mixins.scss';
-
-.container-fluid {
-  margin-top: 1rem;
-}
-::v-deep .logo img {
-  max-height: 50px;
-}
 </style>

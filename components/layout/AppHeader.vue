@@ -18,67 +18,73 @@
         class="selection" />
     </div>
 
-    <app-drawer 
-      v-if="widthBreak" 
-      :open="openDrawer" 
-      @close="closeDrawer" />
+    <div v-if="showMore">
+      <app-drawer 
+        v-if="widthBreak" 
+        :open="openDrawer" 
+        @close="closeDrawer" />
 
-    <div 
-      v-if="!isFacilitiesView" 
-      :class="{ 'hide': widthBreak }" 
-      class="more-buttons">
-      <consumption-generation-toggle />
-
-      <button
-        v-if="(focusOn || compareDifference) && isEnergy"
-        :class="{ 'is-selected': compareDifference }"
-        class="compare-button button is-rounded"
-        @click="handleCompareClick"
-      >Compare</button>
-    </div>
-
-    <div 
-      v-if="!widthBreak"
-      class="share-button-wrapper">
-      <button
-        v-on-clickaway="handleClickAway"
-        :class="{ 'is-loading is-primary': generating }"
-        class="share-button button is-rounded"
-        @click="handleShareButtonClicked"
+      <div
+        v-if="!isFacilitiesView"
+        :class="{ hide: widthBreak }"
+        class="more-buttons"
       >
-        <img 
-          src="~/assets/img/share-icon.svg" 
-          alt="Share icon" >
-        <span class="label-image">Export</span>
-      </button>
-      <transition name="slide-down-fade">
-        <div 
-          v-if="showShareMenu" 
-          class="share-menu dropdown-menu">
-          <div class="dropdown-content">
-            <a 
-              v-if="!isFacilitiesView" 
-              class="dropdown-item button" 
-              @click="handleExportImage">
-              <i class="fal fa-fw fa-chart-bar" />
-              <span class="label-image">PNG</span>
-            </a>
-            <a 
-              class="dropdown-item button" 
-              @click="handleExportDataClick">
-              <download-csv 
-                :data="exportData" 
-                :name="`${filename}.csv`">
-                <i class="fal fa-fw fa-table" />
-                <span class="label-csv">CSV</span>
-              </download-csv>
-            </a>
+        <consumption-generation-toggle />
+
+        <button
+          v-if="(focusOn || compareDifference) && isEnergy"
+          :class="{ 'is-selected': compareDifference }"
+          class="compare-button button is-rounded"
+          @click="handleCompareClick"
+        >
+          Compare
+        </button>
+      </div>
+
+      <div 
+        v-if="!widthBreak" 
+        class="share-button-wrapper">
+        <button
+          v-on-clickaway="handleClickAway"
+          :class="{ 'is-loading is-primary': generating }"
+          class="share-button button is-rounded"
+          @click="handleShareButtonClicked"
+        >
+          <img 
+            src="~/assets/img/share-icon.svg" 
+            alt="Share icon" >
+          <span class="label-image">Export</span>
+        </button>
+        <transition name="slide-down-fade">
+          <div 
+            v-if="showShareMenu" 
+            class="share-menu dropdown-menu">
+            <div class="dropdown-content">
+              <a
+                v-if="!isFacilitiesView"
+                class="dropdown-item button"
+                @click="handleExportImage"
+              >
+                <i class="fal fa-fw fa-chart-bar" />
+                <span class="label-image">PNG</span>
+              </a>
+              <a 
+                class="dropdown-item button" 
+                @click="handleExportDataClick">
+                <download-csv 
+                  :data="exportData" 
+                  :name="`${filename}.csv`">
+                  <i class="fal fa-fw fa-table" />
+                  <span class="label-csv">CSV</span>
+                </download-csv>
+              </a>
+            </div>
           </div>
-        </div>
-      </transition>
+        </transition>
+      </div>
     </div>
   </header>
-</template> 
+</template>
 
 <script>
 import { mapGetters } from 'vuex'
@@ -236,6 +242,10 @@ export default {
     },
     focusOn() {
       return this.$store.getters.focusOn
+    },
+    showMore() {
+      const view = this.$store.getters.currentView
+      return view === 'energy' || view === 'facilities'
     }
   },
 

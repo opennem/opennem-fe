@@ -3,7 +3,9 @@
     <AppLogo class="logo" />
     <ul>
       <li>
-        <nuxt-link to="/experiments/heatmap"> heat map </nuxt-link>
+        <nuxt-link :to="{ path: `/experiments/heatmap/all/` }">
+          heat map
+        </nuxt-link>
       </li>
     </ul>
   </div>
