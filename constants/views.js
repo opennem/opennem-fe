@@ -8,7 +8,7 @@ export default [
     label: 'Facilities'
   },
   {
-    id: 'experiments/heatmap',
-    label: 'Heatmap'
+    id: 'experiments/metrics',
+    label: 'Metrics'
   }
 ]

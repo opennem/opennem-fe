@@ -196,3 +196,23 @@ export function isNetFuelTech(fuelTech) {
     fuelTech === IMPORTS
   )
 }
+
+export function isCoal(fuelTech) {
+  return (
+    fuelTech === COAL_BROWN ||
+    fuelTech === COAL_BLACK ||
+    fuelTech === BROWN_COAL ||
+    fuelTech === BLACK_COAL
+  )
+}
+
+export function isGas(fuelTech) {
+  return (
+    fuelTech === GAS_STEAM ||
+    fuelTech === GAS_CCGT ||
+    fuelTech === GAS_OCGT ||
+    fuelTech === GAS_RECIP ||
+    fuelTech === GAS_LFG ||
+    fuelTech === GAS_WCMG
+  )
+}

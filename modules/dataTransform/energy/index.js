@@ -7,6 +7,33 @@ import summariseDataset from './summarise'
 import groupDataset from './group'
 import { filterDatasetByRange, filterDatasetByPeriod } from '../helpers/filter'
 
+export function simpleDataProcess(responses) {
+  const {
+    datasetFlat,
+    domainMarketValue,
+    domainPrice,
+    domainPowerEnergy,
+    domainEmissions,
+    type
+  } = process(responses)
+
+  const isEnergyType = type === 'energy'
+
+  summariseDataset({
+    isEnergyType,
+    currentDataset: datasetFlat,
+    domainPowerEnergy,
+    domainEmissions,
+    domainPrice: isEnergyType ? domainMarketValue : domainPrice
+  })
+
+  return {
+    dataset: datasetFlat,
+    domainPowerEnergy,
+    domainEmissions
+  }
+}
+
 export function dataProcess(responses, range, interval, period) {
   const {
     datasetFlat,

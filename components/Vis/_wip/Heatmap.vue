@@ -2,16 +2,14 @@
   <section>
     <svg 
       :id="id" 
-      :height="svgHeight"
+      :height="svgHeight" 
       width="2000" />
-
   </section>
 </template>
 
 <script>
 import { select } from 'd3-selection'
 import { scaleSequential, scaleLinear } from 'd3-scale'
-import { interpolateYlOrRd } from 'd3-scale-chromatic'
 import { interpolate, piecewise, interpolateRgb } from 'd3-interpolate'
 
 export default {
@@ -43,12 +41,27 @@ export default {
     radius: {
       type: Number,
       default: 0
+    },
+    divisor: {
+      type: Number,
+      default: 100
+    },
+    colourRange: {
+      type: Array,
+      default: () => []
+    },
+    colourDomain: {
+      type: Array,
+      default: () => []
     }
   },
 
   watch: {
     dataset(d) {
       this.update(d)
+    },
+    valueProp() {
+      this.update(this.dataset)
     }
   },
 
@@ -58,15 +71,16 @@ export default {
 
   methods: {
     update(data) {
+      console.log(data, this.divisor, this.id)
       const barWidth = this.cellWidth
       const barHeight = this.cellHeight || this.svgHeight
       const $svg = select(`#${this.id}`)
-      const colour = scaleSequential(interpolateYlOrRd)
-      const icolour = scaleLinear()
-        .domain([0, 0.25, 0.55, 1])
-        .range(['#2D9B14', '#ffe310', '#803D11', '#000000'])
+      const colourScale = scaleLinear()
+        .domain(this.colourDomain)
+        .range(this.colourRange)
         .interpolate(interpolateRgb.gamma(2.2))
 
+      $svg.selectAll('g.cell').remove()
       const g = $svg.selectAll('g.cell').data(data)
 
       const rect = g
@@ -79,7 +93,7 @@ export default {
         .attr('height', barHeight)
         .attr('rx', this.radius)
         // .style('stroke', '#eee')
-        .style('fill', d => icolour(d[this.valueProp] / 1000))
+        .style('fill', d => colourScale(d[this.valueProp] / this.divisor))
 
       rect.on('mouseenter', d => {
         console.log(d[this.valueProp], d, this.valueProp)

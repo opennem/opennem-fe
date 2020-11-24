@@ -34,7 +34,9 @@ export default function({
       highest = 0,
       totalEmissionsVol = 0,
       totalRenewables = 0,
-      totalMarketValue = 0
+      totalMarketValue = 0,
+      totalCoal = 0,
+      totalGas = 0
 
     domainPowerEnergy.forEach(domain => {
       const id = domain.id
@@ -117,6 +119,14 @@ export default function({
         totalRenewables += d[id] || 0
       }
 
+      if (FT.isCoal(ft)) {
+        totalCoal += d[id] || 0
+      }
+
+      if (FT.isGas(ft)) {
+        totalGas += d[id] || 0
+      }
+
       totalDemand += d[id] || 0
 
       if (d[id] < 0) {
@@ -158,6 +168,14 @@ export default function({
     if (isNaN(dataset[i]._totalGenerationRenewablesPercentage)) {
       dataset[i]._totalGenerationRenewablesPercentage = null
     }
+
+    dataset[i]._totalCoal = totalCoal
+    dataset[i]._totalDemandCoalProportion =
+      (totalCoal / totalEnergyForPercentageCalculation) * 100
+    dataset[i]._totalGas = totalGas
+    dataset[i]._totalDemandGasProportion =
+      (totalGas / totalEnergyForPercentageCalculation) * 100
+
     dataset[i]._totalSources = totalSources
     dataset[i]._totalGeneration = totalGeneration
     dataset[i]._totalNetGeneration = totalNetGeneration
@@ -170,13 +188,6 @@ export default function({
     dataset[i]._totalEmissionsVol = totalEmissionsVol
     dataset[i]._stackedTotalEmissionsMin = 0
     dataset[i]._stackedTotalEmissionsMax = totalEmissionsVol
-    // const emissionsIntensity =
-    //   interval === 'Year' || interval === 'Fin Year'
-    //     ? totalEmissionsVol / totalDemand / 1000
-    //     : totalEmissionsVol / totalDemand
-    // dataset[i]._emissionsIntensity = emissionsIntensity || 0
-    // dataset[i]._actualLastDate = actualLastDate
-    // dataset[i]._actualStartDate = actualStartDate
     dataset[i]._totalMarketValue = totalMarketValue
 
     dataset[i]._volWeightedPrice = isNaN(volWeightedPrice)

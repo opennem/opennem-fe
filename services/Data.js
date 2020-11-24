@@ -61,5 +61,13 @@ export default {
       default:
     }
     return urls
+  },
+
+  getYearDailyPath(region, year, useV3Paths) {
+    const prepend = region === 'wem' || region === 'nem' ? '' : '/NEM'
+    if (useV3Paths || region === 'wem') {
+      return `v3/stats/au${prepend}/${region.toUpperCase()}/energy/${year}.json`
+    }
+    return `${region}/energy/daily/${year}.json`
   }
 }

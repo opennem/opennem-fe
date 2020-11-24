@@ -3,8 +3,8 @@
     <AppLogo class="logo" />
     <ul>
       <li>
-        <nuxt-link :to="{ path: `/experiments/heatmap/all/` }">
-          heat map
+        <nuxt-link :to="{ path: `/experiments/metrics/all/` }">
+          Metrics
         </nuxt-link>
       </li>
     </ul>
@@ -13,7 +13,6 @@
 
 <script>
 import AppLogo from '~/components/ui/Logo'
-import HeatColumns from '@/components/Vis/_wip/HeatColumns'
 
 export default {
   components: {
