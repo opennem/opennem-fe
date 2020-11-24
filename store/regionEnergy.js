@@ -234,14 +234,14 @@ export const actions = {
 
             console.log(error)
           }
-          dispatch(
-            'app/doUpdateError',
-            {
-              header,
-              message
-            },
-            { root: true }
-          )
+          // dispatch(
+          //   'app/doUpdateError',
+          //   {
+          //     header,
+          //     message
+          //   },
+          //   { root: true }
+          // )
         })
     }
   },

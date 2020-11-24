@@ -3,7 +3,8 @@ import { lsGet, lsSet } from '~/services/LocalStorage'
 import {
   FEATURE_TOGGLE_EMISSIONS,
   FEATURE_TOGGLE_REGION_COMPARE,
-  FEATURE_TOGGLE_V3_PATHS
+  FEATURE_TOGGLE_V3_PATHS,
+  FEATURE_TOGGLE_METRICS
 } from '@/constants/mutation-types/features.js'
 
 let uuid = 0
@@ -18,6 +19,7 @@ export default {
       let emissions = lsGet(FEATURE_TOGGLE_EMISSIONS)
       let regionCompare = lsGet(FEATURE_TOGGLE_REGION_COMPARE)
       let v3Paths = lsGet(FEATURE_TOGGLE_V3_PATHS)
+      let metrics = lsGet(FEATURE_TOGGLE_METRICS)
 
       if (!emissions || emissions === 'null') {
         lsSet(FEATURE_TOGGLE_EMISSIONS, false)
@@ -28,9 +30,13 @@ export default {
       if (!v3Paths || v3Paths === 'null') {
         lsSet(FEATURE_TOGGLE_V3_PATHS, false)
       }
+      if (!metrics || metrics === 'null') {
+        lsSet(FEATURE_TOGGLE_METRICS, false)
+      }
       this.setEmissions(emissions)
       this.setRegionCompare(regionCompare)
       this.setV3Paths(v3Paths)
+      this.setMetrics(metrics)
 
       const exportAttribution = lsGet('exportAttribution') || '@name'
       this.setExportAttribution(exportAttribution)
@@ -42,6 +48,7 @@ export default {
       setEmissions: 'feature/emissions',
       setRegionCompare: 'feature/regionCompare',
       setV3Paths: 'feature/v3Paths',
+      setMetrics: 'feature/metrics',
 
       setExportAttribution: 'exportAttribution'
     })

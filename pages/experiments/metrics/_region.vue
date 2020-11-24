@@ -196,7 +196,7 @@ export default {
                   coalProportion: propData
                 })
               })
-            }, 1000 * yIndex)
+            }, 200 * yIndex)
           })
 
           this.statesData.push({
@@ -234,7 +234,7 @@ export default {
               coalProportion: propData
             })
           })
-        }, 1000 * i)
+        }, 500 * i)
       })
     },
 
@@ -317,13 +317,13 @@ export default {
   position: relative;
   h4 {
     font-family: $header-font-family;
-    font-size: 2em;
+    font-size: 1.6em;
     font-weight: 700;
   }
   h5 {
     font-family: $header-font-family;
     font-weight: 700;
-    font-size: 1.5em;
+    font-size: 1.2em;
     position: absolute;
     color: #fff;
     left: 5px;

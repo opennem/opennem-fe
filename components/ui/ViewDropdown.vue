@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
 import VIEWS from '~/constants/views.js'
 
@@ -44,11 +45,14 @@ export default {
   data() {
     return {
       dropdownActive: false,
-      views: VIEWS
+      views: VIEWS.filter(v => v.id !== 'experiments/metrics')
     }
   },
 
   computed: {
+    ...mapGetters({
+      featureMetrics: 'feature/metrics'
+    }),
     regionId() {
       return this.$route.params.region
     },
@@ -58,6 +62,22 @@ export default {
     viewLabel() {
       const view = this.views.find(d => d.id === this.currentView)
       return view ? view.label : ''
+    }
+  },
+
+  watch: {
+    featureMetrics() {
+      if (this.featureMetrics) {
+        this.views = VIEWS
+      } else {
+        this.views = VIEWS.filter(v => v.id !== 'experiments/metrics')
+      }
+    }
+  },
+
+  created() {
+    if (this.featureMetrics) {
+      this.views = VIEWS
     }
   },
 
