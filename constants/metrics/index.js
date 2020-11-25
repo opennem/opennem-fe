@@ -32,8 +32,8 @@ export const metrics = [
     label: 'Coal Proportion',
     value: 'coalProportion',
     divisor: 100,
-    domain: [0, 0.001, 0.5],
-    range: ['#52BCA3', '#fff', '#131313'],
+    domain: [0, 0.001, 0.9],
+    range: ['#52BCA3', '#ccc', '#131313'],
     unit: '%'
   },
   {
