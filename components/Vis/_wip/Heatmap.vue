@@ -10,14 +10,9 @@
 <script>
 import { select } from 'd3-selection'
 import { scaleSequential, scaleLinear } from 'd3-scale'
-import { interpolate, piecewise, interpolateRgb } from 'd3-interpolate'
 
 export default {
   props: {
-    id: {
-      type: String,
-      default: ''
-    },
     dataset: {
       type: Array,
       default: () => []
@@ -56,6 +51,12 @@ export default {
     }
   },
 
+  computed: {
+    id() {
+      return `heatmap-${this._uid}`
+    }
+  },
+
   watch: {
     dataset(d) {
       this.update(d)
@@ -72,13 +73,13 @@ export default {
   methods: {
     update(data) {
       console.log(data, this.divisor, this.id)
+
       const barWidth = this.cellWidth
       const barHeight = this.cellHeight || this.svgHeight
       const $svg = select(`#${this.id}`)
       const colourScale = scaleLinear()
         .domain(this.colourDomain)
         .range(this.colourRange)
-        .interpolate(interpolateRgb.gamma(2.2))
 
       $svg.selectAll('g.cell').remove()
       const g = $svg.selectAll('g.cell').data(data)

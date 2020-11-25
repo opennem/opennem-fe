@@ -28,6 +28,16 @@
       </div>
     </div>
 
+    <ColourLegend
+      v-if="statesData.length > 0"
+      :svg-height="30"
+      :unit="selectedMetricObject.unit"
+      :multiplier="selectedMetricObject.divisor"
+      :colour-range="selectedMetricObject.range"
+      :colour-domain="selectedMetricObject.domain"
+      class="colour-legend"
+    />
+
     <section
       v-for="(d, i) in statesData"
       :key="`state-${i}`"
@@ -46,7 +56,6 @@
             :cell-height="50"
             :svg-height="50"
             :radius="0"
-            :id="`yearly-${i}-${yIndex}`"
             :dataset="yData[selectedMetric]"
             :value-prop="selectedMetric"
             :divisor="selectedMetricObject.divisor"
@@ -61,7 +70,6 @@
           :cell-height="75"
           :svg-height="75"
           :radius="0"
-          :id="`state-${i}`"
           :dataset="d[selectedMetric]"
           :value-prop="selectedMetric"
           :divisor="selectedMetricObject.divisor"
@@ -76,14 +84,16 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
-import Heatmap from '@/components/Vis/_wip/Heatmap'
 import { periods, metrics, years } from '@/constants/metrics/'
+import Heatmap from '@/components/Vis/_wip/Heatmap'
+import ColourLegend from '@/components/Vis/ColourLegend'
 
 export default {
   layout: 'main',
 
   components: {
-    Heatmap
+    Heatmap,
+    ColourLegend
   },
 
   head: {
@@ -329,5 +339,8 @@ export default {
     left: 5px;
     text-shadow: 0 1px 1px #000;
   }
+}
+.colour-legend {
+  margin-top: 2rem;
 }
 </style>

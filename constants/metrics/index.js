@@ -22,21 +22,24 @@ export const metrics = [
     value: 'renewablesProportion',
     divisor: 100,
     domain: [0, 0.001, 0.5, 1],
-    range: ['#000', '#ddd', '#52BCA3', 'darkgreen']
+    range: ['#000', '#ddd', '#52BCA3', 'darkgreen'],
+    unit: '%'
   },
   {
     label: 'Coal Proportion',
     value: 'coalProportion',
     divisor: 100,
     domain: [0, 0.001, 0.5],
-    range: ['#52BCA3', '#fff', '#131313']
+    range: ['#52BCA3', '#fff', '#131313'],
+    unit: '%'
   },
   {
     label: 'Gas Proportion',
     value: 'gasProportion',
     divisor: 100,
     domain: [0, 0.001, 0.5],
-    range: ['#52BCA3', '#fff', '#F48E1B']
+    range: ['#52BCA3', '#fff', '#F48E1B'],
+    unit: '%'
   }
 ]
 
