@@ -327,13 +327,13 @@ export default {
   position: relative;
   h4 {
     font-family: $header-font-family;
-    font-size: 1.6em;
+    font-size: 1.4em;
     font-weight: 700;
   }
   h5 {
     font-family: $header-font-family;
     font-weight: 700;
-    font-size: 1.2em;
+    font-size: 1em;
     position: absolute;
     color: #fff;
     left: 5px;
