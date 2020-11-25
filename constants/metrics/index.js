@@ -1,11 +1,13 @@
 export const periods = [
   {
     label: 'Multi Year / day',
-    value: 'multiyear/day'
+    value: 'multiyear/day',
+    dateFormatString: 'd MMM'
   },
   {
     label: 'All / Month',
-    value: 'all/month'
+    value: 'all/month',
+    dateFormatString: 'd MMM y'
   }
 ]
 
@@ -15,7 +17,8 @@ export const metrics = [
     value: 'carbonIntensity',
     divisor: 1000,
     domain: [0, 0.25, 0.55, 1],
-    range: ['#2D9B14', '#ffe310', '#803D11', '#000000']
+    range: ['#2D9B14', '#ffe310', '#803D11', '#000000'],
+    unit: ' kgCO₂e/MWh'
   },
   {
     label: 'Renewables Proportion',

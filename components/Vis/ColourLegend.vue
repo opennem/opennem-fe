@@ -24,8 +24,6 @@ function rampHorizontal(x, color, height) {
       (canvas.height = 1),
       canvas).getContext('2d')
 
-    console.log(x0, x1)
-
     for (var i = x0; i <= x1; ++i) {
       context.fillStyle = color(x.invert(i))
       context.fillRect(i - x0, 0, 1, 1)

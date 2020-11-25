@@ -31,7 +31,11 @@
     <ColourLegend
       v-if="statesData.length > 0"
       :svg-height="30"
-      :unit="selectedMetricObject.unit"
+      :unit="
+        selectedMetricObject.value === 'carbonIntensity'
+          ? ''
+          : selectedMetricObject.unit
+      "
       :multiplier="selectedMetricObject.divisor"
       :colour-range="selectedMetricObject.range"
       :colour-domain="selectedMetricObject.domain"
@@ -58,9 +62,11 @@
             :radius="0"
             :dataset="yData[selectedMetric]"
             :value-prop="selectedMetric"
+            :unit="selectedMetricObject.unit"
             :divisor="selectedMetricObject.divisor"
             :colour-range="selectedMetricObject.range"
             :colour-domain="selectedMetricObject.domain"
+            :date-format-string="selectedPeriodObject.dateFormatString"
           />
         </section>
       </div>
@@ -72,9 +78,11 @@
           :radius="0"
           :dataset="d[selectedMetric]"
           :value-prop="selectedMetric"
+          :unit="selectedMetricObject.unit"
           :divisor="selectedMetricObject.divisor"
           :colour-range="selectedMetricObject.range"
           :colour-domain="selectedMetricObject.domain"
+          :date-format-string="selectedPeriodObject.dateFormatString"
         />
       </div>
     </section>
@@ -142,6 +150,10 @@ export default {
 
     selectedMetricObject() {
       return this.metrics.find(m => m.value === this.selectedMetric)
+    },
+
+    selectedPeriodObject() {
+      return this.periods.find(p => p.value === this.selectedPeriod)
     },
 
     regionId() {
@@ -253,10 +265,11 @@ export default {
         const obj = {
           date: d.date,
           time: d.time,
-          renewablesProportion:
-            d._totalDemandRenewablesPercentage > 100
-              ? 100
-              : d._totalDemandRenewablesPercentage,
+          // renewablesProportion:
+          //   d._totalDemandRenewablesPercentage > 100
+          //     ? 100
+          //     : d._totalDemandRenewablesPercentage,
+          renewablesProportion: d._totalDemandRenewablesPercentage,
           coalProportion:
             d._totalDemandCoalProportion < 0 ? 0 : d._totalDemandCoalProportion,
           coal: d._totalCoal,
@@ -335,6 +348,7 @@ export default {
     font-weight: 700;
     font-size: 1em;
     position: absolute;
+    z-index: 9;
     color: #fff;
     left: 5px;
     text-shadow: 0 1px 1px #000;
