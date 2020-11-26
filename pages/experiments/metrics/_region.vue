@@ -1,46 +1,53 @@
 <template>
   <div class="container-fluid">
-    <div class="options">
-      <label for="">Period</label>
-      <div class="select is-rounded">
-        <select v-model="selectedPeriod">
-          <option
-            v-for="(d, i) in periods"
-            :key="`period-${i}`"
-            :value="d.value"
-          >
-            {{ d.label }}
-          </option>
-        </select>
+    <div
+      style="max-width: 1024px; display: flex; justify-content: space-between"
+    >
+      <div class="options">
+        <!-- <label for="">Period</label> -->
+        <!-- <strong>
+          {{ selectedPeriodObject.label }}
+        </strong> -->
+        <!-- <div class="select is-rounded">
+          <select v-model="selectedPeriod">
+            <option
+              v-for="(d, i) in periods"
+              :key="`period-${i}`"
+              :value="d.value"
+            >
+              {{ d.label }}
+            </option>
+          </select>
+        </div> -->
+
+        <label for=""><strong>Metric</strong></label>
+        <div class="select is-rounded">
+          <select v-model="selectedMetric">
+            <option
+              v-for="(d, i) in metrics"
+              :key="`metric-${i}`"
+              :value="d.value"
+            >
+              {{ d.label }}
+            </option>
+          </select>
+        </div>
       </div>
 
-      <label for="">Metric</label>
-      <div class="select is-rounded">
-        <select v-model="selectedMetric">
-          <option
-            v-for="(d, i) in metrics"
-            :key="`metric-${i}`"
-            :value="d.value"
-          >
-            {{ d.label }}
-          </option>
-        </select>
-      </div>
+      <ColourLegend
+        v-if="statesData.length > 0"
+        :svg-height="30"
+        :unit="
+          selectedMetricObject.value === 'carbonIntensity'
+            ? ''
+            : selectedMetricObject.unit
+        "
+        :multiplier="selectedMetricObject.divisor"
+        :colour-range="selectedMetricObject.range"
+        :colour-domain="selectedMetricObject.domain"
+        class="colour-legend"
+      />
     </div>
-
-    <ColourLegend
-      v-if="statesData.length > 0"
-      :svg-height="30"
-      :unit="
-        selectedMetricObject.value === 'carbonIntensity'
-          ? ''
-          : selectedMetricObject.unit
-      "
-      :multiplier="selectedMetricObject.divisor"
-      :colour-range="selectedMetricObject.range"
-      :colour-domain="selectedMetricObject.domain"
-      class="colour-legend"
-    />
 
     <section
       v-for="(d, i) in statesData"
@@ -174,9 +181,6 @@ export default {
   watch: {
     regionId(id) {
       this.getData(id, this.selectedPeriod)
-    },
-    selectedPeriod(period) {
-      this.getData(this.regionId, period)
     }
   },
 
@@ -184,13 +188,13 @@ export default {
     this.$store.dispatch('currentView', 'experiments/metrics')
     this.getData(this.regionId, this.selectedPeriod)
 
-    this.width = this.$el.offsetWidth
+    this.width = this.$el.offsetWidth - 50
 
     window.addEventListener(
       'resize',
       debounce(() => {
         this.width =
-          this.$el.offsetWidth === 0 ? this.width : this.$el.offsetWidth - 100
+          this.$el.offsetWidth === 0 ? this.width : this.$el.offsetWidth - 50
       }),
       50
     )
@@ -207,6 +211,7 @@ export default {
       this.yearlyData = []
       this.statesData = []
 
+      const useAllPeriods = id === 'all' || id === 'nem' || id === 'wem'
       const filter =
         id === 'all'
           ? d => d.id !== 'all' && d.id !== 'nem'
@@ -215,9 +220,11 @@ export default {
             : d => d.id === id
       const regions = getEnergyRegions().filter(filter)
 
-      if (period === 'all/month') {
+      if (useAllPeriods) {
+        this.selectedPeriod = 'all/month'
         this.getRegionsData(regions)
-      } else if (period === 'multiyear/day') {
+      } else {
+        this.selectedPeriod = 'multiyear/day'
         regions.forEach((r, i) => {
           const yearlyData = []
           years.forEach((year, yIndex) => {
@@ -476,7 +483,7 @@ export default {
   }
 
   label {
-    margin: 0 0.5rem;
+    margin: 0 0.5rem 0 0;
   }
 }
 .vis-section {

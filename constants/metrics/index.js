@@ -13,7 +13,7 @@ export const periods = [
 
 export const metrics = [
   {
-    label: 'Carbon Intensity',
+    label: 'Carbon Intensity (kgCO₂e/MWh)',
     value: 'carbonIntensity',
     divisor: 1000,
     domain: [0, 0.25, 0.55, 1],
@@ -21,7 +21,7 @@ export const metrics = [
     unit: ' kgCO₂e/MWh'
   },
   {
-    label: 'Renewables Proportion',
+    label: 'Renewables Proportion (of demand)',
     value: 'renewablesProportion',
     divisor: 100,
     domain: [0, 0.001, 0.5, 1],
@@ -29,7 +29,7 @@ export const metrics = [
     unit: '%'
   },
   {
-    label: 'Coal Proportion',
+    label: 'Coal Proportion (of demand)',
     value: 'coalProportion',
     divisor: 100,
     domain: [0, 0.001, 0.9],
@@ -37,7 +37,7 @@ export const metrics = [
     unit: '%'
   },
   {
-    label: 'Gas Proportion',
+    label: 'Gas Proportion (of demand)',
     value: 'gasProportion',
     divisor: 100,
     domain: [0, 0.001, 0.5],
