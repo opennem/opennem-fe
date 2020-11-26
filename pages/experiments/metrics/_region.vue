@@ -211,7 +211,7 @@ export default {
       this.yearlyData = []
       this.statesData = []
 
-      const useAllPeriods = id === 'all' || id === 'nem' || id === 'wem'
+      const useAllPeriods = id === 'all' || id === 'nem'
       const filter =
         id === 'all'
           ? d => d.id !== 'all' && d.id !== 'nem'
