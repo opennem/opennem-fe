@@ -16,7 +16,6 @@ import format from 'date-fns/format'
 import { format as numFormat } from 'd3-format'
 import { select, mouse, event } from 'd3-selection'
 import { scaleSequential, scaleLinear } from 'd3-scale'
-import debounce from 'lodash.debounce'
 
 export default {
   props: {
@@ -28,13 +27,17 @@ export default {
       type: String,
       default: ''
     },
+    svgWidth: {
+      type: Number,
+      default: 500
+    },
     svgHeight: {
       type: Number,
       default: 50
     },
     cellWidth: {
       type: Number,
-      default: 4
+      default: 1
     },
     cellHeight: {
       type: Number,
@@ -88,42 +91,53 @@ export default {
     },
     valueProp() {
       this.update(this.dataset)
+    },
+    svgWidth() {
+      this.setupWidthHeight(this.dataset)
+      this.update(this.dataset)
     }
   },
 
   mounted() {
-    // window.addEventListener('resize', debounce(this.handleResize, 1000))
     this.setupWidthHeight(this.dataset)
+    this.setup()
     this.update(this.dataset)
   },
 
   methods: {
-    handleResize() {
-      this.setupWidthHeight(this.dataset)
-      this.update(this.dataset)
-    },
-
     setupWidthHeight(data) {
-      // const chartWidth = this.$el.offsetWidth
-      const width = data.length * this.cellWidth
+      const chartWidth = this.svgWidth
+      const bWidth = chartWidth / data.length
+
+      // this.cellWidth = bWidth
+      // if (this.cellWidth === 0) {
+      //   this.cellWidth = 1
+      // }
+
+      const width = chartWidth
       const height = this.cellHeight || this.height
 
       this.width = width < 0 ? 0 : width
       this.height = height < 0 ? 0 : height
     },
 
+    setup() {
+      this.$svg = select(`#${this.id}`)
+      this.$tooltip = select(`#${this.tooltipId}`)
+    },
+
     update(data) {
       const self = this
-      const barWidth = this.cellWidth
+      // const barWidth = this.cellWidth
+      const cellWidth = this.svgWidth / data.length
+      const barWidth = Math.floor(cellWidth)
       const barHeight = this.height
-      const $svg = select(`#${this.id}`)
-      const $tooltip = select(`#${this.tooltipId}`)
       const colourScale = scaleLinear()
         .domain(this.colourDomain)
         .range(this.colourRange)
 
-      $svg.selectAll('g.cell').remove()
-      const g = $svg.selectAll('g.cell').data(data)
+      this.$svg.selectAll('g.cell').remove()
+      const g = this.$svg.selectAll('g.cell').data(data)
 
       const rect = g
         .enter()
@@ -135,8 +149,13 @@ export default {
         .attr('height', barHeight)
         .attr('rx', this.radius)
         .style('fill', d => {
-          const value = d[this.valueProp] / this.divisor
-          return colourScale(value > 1 ? 1 : value)
+          const value =
+            d[this.valueProp] || d[this.valueProp] === 0
+              ? d[this.valueProp] / this.divisor
+              : null
+          return value || value === 0
+            ? colourScale(value > 1 ? 1 : value)
+            : 'rgba(255, 255, 255, 0.3)'
         })
 
       // rect.on('mouseenter', d => {
@@ -147,13 +166,17 @@ export default {
         .on('mousemove touchmove', function(d) {
           const m = mouse(this)
           const $this = select(this)
+          const value =
+            d[self.valueProp] || d[self.valueProp] === 0
+              ? numFormat(',.0f')(d[self.valueProp])
+              : '—'
           const text = `
           <b>${format(d.date, self.dateFormatString)}</b>:
-          ${numFormat(',.0f')(d[self.valueProp])}${self.unit}
+          ${value}${self.unit}
         `
           // $this.style('stroke', '#e34a33').style('stroke-width', '1px')
           $this.style('opacity', 0.75)
-          $tooltip
+          self.$tooltip
             .html(text)
             .style('left', m[0] + 4 + 'px')
             .style('top', m[1] - 14 + 'px')
@@ -164,7 +187,7 @@ export default {
           const $this = select(this)
           // $this.style('stroke-width', 0)
           $this.style('opacity', 1)
-          $tooltip.style('opacity', 0)
+          self.$tooltip.style('opacity', 0)
         })
     }
   }

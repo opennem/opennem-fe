@@ -55,7 +55,7 @@ export const metrics = [
   {
     label: 'Temperature',
     value: 'temperature',
-    divisor: 50,
+    divisor: 50, // -10 to 50, offset 10 (0 to 40)
     domain: [0, 0.3, 0.6, 1],
     range: ['#08306B', '#9ECAE1', '#FD9272', '#67000D'],
     unit: '°C'

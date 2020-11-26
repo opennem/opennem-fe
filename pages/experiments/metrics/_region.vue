@@ -53,11 +53,13 @@
         <section
           v-for="(yData, yIndex) in d.yearlyData"
           :key="`yearly-${i}-${yIndex}`"
+          style="width: 100%"
         >
           <h5>{{ yData.year }}</h5>
           <Heatmap
-            :cell-width="3"
+            :cell-width="2.5"
             :cell-height="50"
+            :svg-width="width"
             :svg-height="50"
             :radius="0"
             :dataset="yData[selectedMetric]"
@@ -70,10 +72,13 @@
           />
         </section>
       </div>
-      <div v-else>
+      <div 
+        v-else 
+        style="width: 100%">
         <Heatmap
-          :cell-width="5"
+          :cell-width="3"
           :cell-height="75"
+          :svg-width="width"
           :svg-height="75"
           :radius="0"
           :dataset="d[selectedMetric]"
@@ -92,6 +97,9 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { extent } from 'd3-array'
+import debounce from 'lodash.debounce'
+import addDays from 'date-fns/addDays'
+import differenceInDays from 'date-fns/differenceInDays'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
 import { periods, metrics, years } from '@/constants/metrics/'
 import Heatmap from '@/components/Vis/_wip/Heatmap'
@@ -111,6 +119,7 @@ export default {
 
   data() {
     return {
+      width: 0,
       periods,
       metrics,
       years,
@@ -174,6 +183,17 @@ export default {
   mounted() {
     this.$store.dispatch('currentView', 'experiments/metrics')
     this.getData(this.regionId, this.selectedPeriod)
+
+    this.width = this.$el.offsetWidth
+
+    window.addEventListener(
+      'resize',
+      debounce(() => {
+        this.width =
+          this.$el.offsetWidth === 0 ? this.width : this.$el.offsetWidth - 100
+      }),
+      50
+    )
   },
 
   methods: {
@@ -203,16 +223,22 @@ export default {
           years.forEach((year, yIndex) => {
             setTimeout(() => {
               this.doGetYearRegionData({ region: r.id, year }).then(d => {
+                const yearInt = parseInt(year)
+                const last = new Date(yearInt, 11, 31)
+                const start = new Date(yearInt, 0, 1)
+                console.log(start, last, differenceInDays(last, start))
                 const propData = this.getProportionsDataset(
                   d.dataset,
-                  d.domainPowerEnergy
+                  d.domainPowerEnergy,
+                  true
                 )
                 yearlyData.push({
                   year,
                   carbonIntensity: this.getEmissionIntensityDataset(
                     d.dataset,
                     d.domainPowerEnergy,
-                    d.domainEmissions
+                    d.domainEmissions,
+                    true
                   ),
                   renewablesProportion: propData,
                   gasProportion: propData,
@@ -223,7 +249,8 @@ export default {
                   ),
                   temperature: this.getTemperatureDataset(
                     d.dataset,
-                    d.domainTemperature
+                    d.domainTemperature,
+                    true
                   )
                 })
               })
@@ -250,7 +277,8 @@ export default {
           }).then(d => {
             const propData = this.getProportionsDataset(
               d.currentDataset,
-              d.currentDomainPowerEnergy
+              d.currentDomainPowerEnergy,
+              false
             )
 
             this.statesData.push({
@@ -258,7 +286,8 @@ export default {
               carbonIntensity: this.getEmissionIntensityDataset(
                 d.currentDataset,
                 d.currentDomainPowerEnergy,
-                d.currentDomainEmissions
+                d.currentDomainEmissions,
+                false
               ),
               renewablesProportion: propData,
               gasProportion: propData,
@@ -269,7 +298,8 @@ export default {
               ),
               temperature: this.getTemperatureDataset(
                 d.currentDataset,
-                d.domainTemperature
+                d.domainTemperature,
+                false
               )
             })
           })
@@ -277,8 +307,8 @@ export default {
       })
     },
 
-    getProportionsDataset(data, domains) {
-      return data.map(d => {
+    getProportionsDataset(dataset, domains, topUp) {
+      const data = dataset.map(d => {
         const obj = {
           date: d.date,
           time: d.time,
@@ -296,14 +326,36 @@ export default {
         }
         return obj
       })
+
+      if (topUp) {
+        const lastDataDate = data[data.length - 1].date
+        const last = new Date(lastDataDate.getFullYear(), 11, 31)
+        const fillUp = differenceInDays(last, addDays(lastDataDate, 1))
+        let cDate = lastDataDate
+        for (let i = 1; i <= fillUp + 1; i++) {
+          cDate = addDays(cDate, 1)
+          data.push({
+            date: cDate,
+            time: cDate.getTime(),
+            renewablesProportion: null,
+            coalProportion: null,
+            coal: null,
+            gasProportion: null,
+            gas: null
+          })
+        }
+      }
+
+      return data
     },
 
     getEmissionIntensityDataset(
       currentDataset,
       currentDomainPowerEnergy,
-      currentDomainEmissions
+      currentDomainEmissions,
+      topUp
     ) {
-      return currentDataset.map(d => {
+      const data = currentDataset.map(d => {
         const obj = {
           date: d.date,
           time: d.time,
@@ -326,12 +378,29 @@ export default {
         const isValidEI = Number.isFinite(ei)
 
         obj.carbonIntensity = isValidEI ? ei : null
+
         return obj
       })
+
+      if (topUp) {
+        const lastDataDate = data[data.length - 1].date
+        const last = new Date(lastDataDate.getFullYear(), 11, 31)
+        const fillUp = differenceInDays(last, addDays(lastDataDate, 1))
+        let cDate = lastDataDate
+        for (let i = 1; i <= fillUp + 1; i++) {
+          cDate = addDays(cDate, 1)
+          data.push({
+            date: cDate,
+            time: cDate.getTime(),
+            carbonIntensity: null
+          })
+        }
+      }
+
+      return data
     },
 
-    getTemperatureDataset(dataset, domainTemperature) {
-      console.log(dataset, domainTemperature)
+    getTemperatureDataset(dataset, domainTemperature, topUp) {
       const data = dataset.map(d => {
         const obj = {
           date: d.date,
@@ -349,11 +418,25 @@ export default {
         return obj
       })
 
+      if (topUp) {
+        const lastDataDate = data[data.length - 1].date
+        const last = new Date(lastDataDate.getFullYear(), 11, 31)
+        const fillUp = differenceInDays(last, addDays(lastDataDate, 1))
+        let cDate = lastDataDate
+        for (let i = 1; i <= fillUp + 1; i++) {
+          cDate = addDays(cDate, 1)
+          data.push({
+            date: cDate,
+            time: cDate.getTime(),
+            temperature: null
+          })
+        }
+      }
+
       return data
     },
 
     getImportsExportsDataset(dataset, domainPowerEnergy) {
-      console.log(dataset, domainPowerEnergy)
       const data = dataset.map(d => {
         const obj = {
           date: d.date,
@@ -370,7 +453,6 @@ export default {
         obj.importsExports = totalImportsExports
         return obj
       })
-      console.log(extent(data, d => d.importsExports))
 
       return data
     }
@@ -383,7 +465,7 @@ export default {
 @import '~/assets/scss/responsive-mixins.scss';
 
 .container-fluid {
-  padding: 1rem 4rem;
+  padding: 1rem 2rem;
 }
 .options {
   display: flex;
@@ -400,6 +482,7 @@ export default {
 .vis-section {
   margin-top: 1rem;
   position: relative;
+  width: 100%;
   h4 {
     font-family: $header-font-family;
     font-size: 1.4em;
