@@ -198,14 +198,20 @@ export const actions = {
         const {
           dataset,
           domainPowerEnergy,
-          domainEmissions
+          domainEmissions,
+          domainTemperature
         } = simpleDataProcess(responses)
 
         perf.timeEnd(
           `------ ${currentRegion} — (${dataCount} down to ${dataset.length})`
         )
 
-        return { dataset, domainPowerEnergy, domainEmissions }
+        return {
+          dataset,
+          domainPowerEnergy,
+          domainEmissions,
+          domainTemperature
+        }
       }
 
       return http([url])
@@ -332,7 +338,8 @@ export const actions = {
         return {
           currentDataset,
           currentDomainPowerEnergy: domainPowerEnergyGrouped[groupName],
-          currentDomainEmissions: domainEmissionsGrouped[groupName]
+          currentDomainEmissions: domainEmissionsGrouped[groupName],
+          domainTemperature: domainTemperature
         }
       }
 

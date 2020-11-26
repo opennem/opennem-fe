@@ -43,6 +43,22 @@ export const metrics = [
     domain: [0, 0.001, 0.5],
     range: ['#52BCA3', '#fff', '#F48E1B'],
     unit: '%'
+  },
+  // {
+  //   label: 'Imports/Exports',
+  //   value: 'importsExports',
+  //   divisor: 1,
+  //   domain: [0, 1],
+  //   range: ['#977AB1', '#44146F'],
+  //   unit: ''
+  // },
+  {
+    label: 'Temperature',
+    value: 'temperature',
+    divisor: 50,
+    domain: [0, 0.3, 0.6, 1],
+    range: ['#08306B', '#9ECAE1', '#FD9272', '#67000D'],
+    unit: '°C'
   }
 ]
 

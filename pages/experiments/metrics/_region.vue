@@ -91,6 +91,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import { extent } from 'd3-array'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
 import { periods, metrics, years } from '@/constants/metrics/'
 import Heatmap from '@/components/Vis/_wip/Heatmap'
@@ -215,7 +216,15 @@ export default {
                   ),
                   renewablesProportion: propData,
                   gasProportion: propData,
-                  coalProportion: propData
+                  coalProportion: propData,
+                  importsExports: this.getImportsExportsDataset(
+                    d.dataset,
+                    d.domainPowerEnergy
+                  ),
+                  temperature: this.getTemperatureDataset(
+                    d.dataset,
+                    d.domainTemperature
+                  )
                 })
               })
             }, 200 * yIndex)
@@ -253,7 +262,15 @@ export default {
               ),
               renewablesProportion: propData,
               gasProportion: propData,
-              coalProportion: propData
+              coalProportion: propData,
+              importsExports: this.getImportsExportsDataset(
+                d.currentDataset,
+                d.currentDomainPowerEnergy
+              ),
+              temperature: this.getTemperatureDataset(
+                d.currentDataset,
+                d.domainTemperature
+              )
             })
           })
         }, 500 * i)
@@ -311,6 +328,51 @@ export default {
         obj.carbonIntensity = isValidEI ? ei : null
         return obj
       })
+    },
+
+    getTemperatureDataset(dataset, domainTemperature) {
+      console.log(dataset, domainTemperature)
+      const data = dataset.map(d => {
+        const obj = {
+          date: d.date,
+          time: d.time
+        }
+
+        let temperature = null
+        domainTemperature.forEach(domain => {
+          if (domain.type === 'temperature_mean') {
+            temperature = d[domain.id]
+          }
+        })
+
+        obj.temperature = temperature
+        return obj
+      })
+
+      return data
+    },
+
+    getImportsExportsDataset(dataset, domainPowerEnergy) {
+      console.log(dataset, domainPowerEnergy)
+      const data = dataset.map(d => {
+        const obj = {
+          date: d.date,
+          time: d.time
+        }
+
+        let totalImportsExports = 0
+        domainPowerEnergy.forEach(domain => {
+          if (domain.fuelTech === 'imports' || domain.fuelTech === 'exports') {
+            totalImportsExports += d[domain.id]
+          }
+        })
+
+        obj.importsExports = totalImportsExports
+        return obj
+      })
+      console.log(extent(data, d => d.importsExports))
+
+      return data
     }
   }
 }

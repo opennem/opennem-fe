@@ -14,6 +14,7 @@ export function simpleDataProcess(responses) {
     domainPrice,
     domainPowerEnergy,
     domainEmissions,
+    domainTemperature,
     type
   } = process(responses)
 
@@ -30,7 +31,8 @@ export function simpleDataProcess(responses) {
   return {
     dataset: datasetFlat,
     domainPowerEnergy,
-    domainEmissions
+    domainEmissions,
+    domainTemperature
   }
 }
 
