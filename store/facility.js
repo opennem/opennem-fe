@@ -12,26 +12,47 @@ import {
 import { dataProcess, dataRollUp } from '@/modules/dataTransform/facility-power'
 
 let request = null
+
+const getApiBaseUrl = () => {
+  let apiBaseUrl = `https://api.opennem.org.au`
+  let host = undefined
+  if (typeof window !== 'undefined') {
+    host = window.location.host
+  }
+
+  if (
+    host &&
+    (host === 'localhost:3000' ||
+      host.startsWith('127') ||
+      host.startsWith('192'))
+  ) {
+    apiBaseUrl = `/api`
+  }
+
+  if (host && host.startsWith('dev')) {
+    apiBaseUrl = `https://api.dev.opennem.org.au`
+  }
+
+  if (process.env.API_BASE_URL !== undefined) {
+    apiBaseUrl = process.env.API_BASE_URL
+  }
+
+  console.info('apiBaseUrl', apiBaseUrl)
+
+  return apiBaseUrl
+}
+
 const http = axios.create({
-  baseURL: `/api`,
+  baseURL: getApiBaseUrl(),
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json'
   }
 })
 
-let useProxy = false
-
-if (typeof window !== 'undefined') {
-  const host = window.location.host
-  if (
-    host === 'localhost:3000' ||
-    host.startsWith('127') ||
-    host.startsWith('192')
-  ) {
-    useProxy = true
-  }
-}
+const stationPath = code => `/station/${code}`
+const statsPath = (type, networkRegion, code, query) =>
+  `/stats/${type}/station/${networkRegion}/${code}${query}`
 
 export const state = () => ({
   dataset: [],
@@ -167,9 +188,7 @@ export const actions = {
   doGetFacilityById({ commit }, { facilityId }) {
     console.log('fetching', facilityId)
     const encode = encodeURIComponent(facilityId)
-    const ref = useProxy
-      ? `/station/${encode}`
-      : `https://api.opennem.org.au/station/${encode}`
+    const ref = stationPath(encode)
 
     commit('fetchingFacility', true)
     commit('selectedFacility', null)
@@ -217,9 +236,7 @@ export const actions = {
 
     const type = isPowerRange(range) ? 'power' : 'energy'
     const query = isPowerRange(range) ? '?period=7d' : `?period=${period}`
-    const ref = useProxy
-      ? `/stats/${type}/station/${networkRegion}/${encode}${query}`
-      : `https://api.opennem.org.au/stats/${type}/station/${networkRegion}/${encode}${query}`
+    const ref = statsPath(type, networkRegion, encode, query)
 
     if (request) {
       request.cancel('Operation cancelled by the user.')
