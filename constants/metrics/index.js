@@ -44,7 +44,7 @@ export const metrics = [
     value: 'gasProportion',
     divisor: 100,
     domain: [0, 0.001, 0.5],
-    range: ['#52BCA3', '#fff', '#F48E1B'],
+    range: ['#52BCA3', '#ccc', '#F48E1B'],
     unit: '%',
     legendType: 'ramp'
   },
