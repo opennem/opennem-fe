@@ -70,6 +70,10 @@ export default {
     unit: {
       type: String,
       default: ''
+    },
+    expectedDataLength: {
+      type: Number,
+      default: 0
     }
   },
 
@@ -140,6 +144,10 @@ export default {
         .domain(this.colourDomain)
         .range(this.colourRange)
 
+      const dataLength = this.expectedDataLength || data.length
+
+      this.$emit('svg-width', barWidth * dataLength)
+
       this.$svg.selectAll('g.cell').remove()
       const g = this.$svg.selectAll('g.cell').data(data)
 
@@ -168,10 +176,6 @@ export default {
             : 'rgba(255, 255, 255, 0.3)'
         })
 
-      // rect.on('mouseenter', d => {
-      //   console.log(d[this.valueProp], d, this.valueProp)
-      // })
-
       rect
         .on('mousemove touchmove', function(d) {
           const m = mouse(this)
@@ -180,24 +184,29 @@ export default {
             d[self.tooltipValueProp] || d[self.tooltipValueProp] === 0
               ? numFormat(',.0f')(d[self.tooltipValueProp])
               : '—'
+          const date = format(d.date, self.dateFormatString)
+          const valueString = `${value}${self.unit}`
           const text = `
           <b>${format(d.date, self.dateFormatString)}</b>:
           ${value}${self.unit}
         `
+
+          self.$emit('rect-mousemove', { id: self._uid, date, valueString })
           // $this.style('stroke', '#e34a33').style('stroke-width', '1px')
-          $this.style('opacity', 0.75)
-          self.$tooltip
-            .html(text)
-            .style('left', m[0] + 4 + 'px')
-            .style('top', m[1] - 14 + 'px')
-            .style('pointer-events', 'none')
-            .style('opacity', 1)
+          $this.style('opacity', 0.9)
+          // self.$tooltip
+          //   .html(text)
+          //   .style('left', m[0] + 4 + 'px')
+          //   .style('top', m[1] - 14 + 'px')
+          //   .style('pointer-events', 'none')
+          //   .style('opacity', 1)
         })
         .on('mouseout', function() {
           const $this = select(this)
           // $this.style('stroke-width', 0)
           $this.style('opacity', 1)
-          self.$tooltip.style('opacity', 0)
+          // self.$tooltip.style('opacity', 0)
+          self.$emit('rect-mouseout')
         })
     }
   }

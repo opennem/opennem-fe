@@ -53,10 +53,21 @@
 
     <section
       v-for="(d, i) in statesData"
-      :key="`state-${i}`"
+      :key="`region-${i}`"
       class="vis-section"
     >
-      <h4>{{ d.region }}</h4>
+
+      <header
+        :id="`region-${d.regionId}`"
+        :style="{ width: `${chartHeaderWidth}px` }">
+        <h4>{{ d.region }}</h4>
+        <div
+          v-if="hoverDate && d.regionId === hoverRegion"
+          class="hover-date-value">
+          <span class="date">{{ hoverDate }}:</span>
+          <span class="value">{{ hoverValueString }}</span>
+        </div>
+      </header>
 
       <div v-if="d.yearlyData">
         <section
@@ -71,6 +82,7 @@
             :svg-width="width"
             :svg-height="50"
             :radius="0"
+            :expected-data-length="366"
             :dataset="yData[selectedMetric]"
             :value-prop="selectedMetric"
             :tooltip-value-prop="selectedMetricObject.valueProp ? selectedMetricObject.valueProp : selectedMetric"
@@ -79,6 +91,11 @@
             :colour-range="selectedMetricObject.range"
             :colour-domain="selectedMetricObject.domain"
             :date-format-string="selectedPeriodObject.dateFormatString"
+            @rect-mousemove="obj => {
+              handleMousemove(obj, d.regionId)
+            }"
+            @rect-mouseout="handleMouseout"
+            @svg-width="handleSvgWidthChange"
           />
         </section>
       </div>
@@ -99,6 +116,11 @@
           :colour-range="selectedMetricObject.range"
           :colour-domain="selectedMetricObject.domain"
           :date-format-string="selectedPeriodObject.dateFormatString"
+          @rect-mousemove="obj => {
+            handleMousemove(obj, d.regionId)
+          }"
+          @rect-mouseout="handleMouseout"
+          @svg-width="handleSvgWidthChange"
         />
       </div>
     </section>
@@ -131,13 +153,17 @@ export default {
   data() {
     return {
       width: 0,
+      chartHeaderWidth: 400,
       periods,
       metrics,
       years,
       statesData: [],
       regions: getEnergyRegions().filter(
         d => d.id !== 'all' && d.id !== 'nem' && d.id !== 'wem'
-      )
+      ),
+      hoverDate: null,
+      hoverValueString: '',
+      hoverRegion: ''
     }
   },
 
@@ -269,6 +295,7 @@ export default {
 
           this.statesData.push({
             region: r.label,
+            regionId: r.id,
             yearlyData
           })
         })
@@ -293,6 +320,7 @@ export default {
 
             this.statesData.push({
               region: r.label,
+              regionId: r.id,
               carbonIntensity: this.getEmissionIntensityDataset(
                 d.currentDataset,
                 d.currentDomainPowerEnergy,
@@ -478,6 +506,19 @@ export default {
       })
 
       return data
+    },
+
+    handleMousemove({ id, date, valueString }, regionId) {
+      this.hoverRegion = regionId
+      this.hoverDate = date
+      this.hoverValueString = valueString
+    },
+    handleMouseout() {
+      this.hoverDate = null
+      this.hoverValueString = ''
+    },
+    handleSvgWidthChange(width) {
+      this.chartHeaderWidth = width
     }
   }
 }
@@ -521,8 +562,32 @@ export default {
     left: 5px;
     text-shadow: 0 1px 1px #000;
   }
+  header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+  }
 }
 .colour-legend {
   margin-top: 2rem;
+}
+.hover-date-value {
+  font-size: 0.8em;
+  display: flex;
+  align-items: flex-end;
+  span {
+    padding: 3px 12px 2px;
+    white-space: nowrap;
+  }
+  .date {
+    background-color: rgba(199, 69, 35, 0.1);
+    color: #444;
+    font-weight: 600;
+    border-radius: 20px 0 0 20px;
+  }
+  .value {
+    border-radius: 0 20px 20px 0;
+    background-color: rgba(255, 255, 255, 0.5);
+  }
 }
 </style>

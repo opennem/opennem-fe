@@ -2,12 +2,12 @@ export const periods = [
   {
     label: 'Multi Year / day',
     value: 'multiyear/day',
-    dateFormatString: 'd MMM'
+    dateFormatString: 'd MMM y'
   },
   {
     label: 'All / Month',
     value: 'all/month',
-    dateFormatString: 'd MMM y'
+    dateFormatString: 'MMM y'
   }
 ]
 
