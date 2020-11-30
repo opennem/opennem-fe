@@ -281,7 +281,8 @@ export default {
                   coalProportion: propData,
                   importsExports: this.getImportsExportsDataset(
                     d.dataset,
-                    d.domainPowerEnergy
+                    d.domainPowerEnergy,
+                    true
                   ),
                   temperature: this.getTemperatureDataset(
                     d.dataset,
@@ -332,7 +333,8 @@ export default {
               coalProportion: propData,
               importsExports: this.getImportsExportsDataset(
                 d.currentDataset,
-                d.currentDomainPowerEnergy
+                d.currentDomainPowerEnergy,
+                false
               ),
               temperature: this.getTemperatureDataset(
                 d.currentDataset,
@@ -474,7 +476,7 @@ export default {
       return data
     },
 
-    getImportsExportsDataset(dataset, domainPowerEnergy) {
+    getImportsExportsDataset(dataset, domainPowerEnergy, topUp) {
       const data = dataset.map(d => {
         const obj = {
           date: d.date,
@@ -504,6 +506,23 @@ export default {
         obj.sumImportsExports = sumImportsExports
         return obj
       })
+
+      if (topUp) {
+        const lastDataDate = data[data.length - 1].date
+        const last = new Date(lastDataDate.getFullYear(), 11, 31)
+        const fillUp = differenceInDays(last, addDays(lastDataDate, 1))
+        let cDate = lastDataDate
+        for (let i = 1; i <= fillUp + 1; i++) {
+          cDate = addDays(cDate, 1)
+          data.push({
+            date: cDate,
+            time: cDate.getTime(),
+            importsExports: null,
+            obj.sumImportsExports = sumImportsExports
+          })
+        }
+      }
+
 
       return data
     },
