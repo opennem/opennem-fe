@@ -1,12 +1,12 @@
 <template>
   <section>
-    <div 
-      :id="tooltipId" 
+    <div
+      :id="tooltipId"
       class="tooltip">tooltip</div>
 
-    <svg 
-      :id="id" 
-      :height="height" 
+    <svg
+      :id="id"
+      :height="height"
       :width="width" />
   </section>
 </template>
@@ -24,6 +24,10 @@ export default {
       default: () => []
     },
     valueProp: {
+      type: String,
+      default: ''
+    },
+    tooltipValueProp: {
       type: String,
       default: ''
     },
@@ -48,7 +52,7 @@ export default {
       default: 0
     },
     divisor: {
-      type: Number,
+      type: [String, Number],
       default: 100
     },
     colourRange: {
@@ -149,10 +153,16 @@ export default {
         .attr('height', barHeight)
         .attr('rx', this.radius)
         .style('fill', d => {
-          const value =
+          const divisor =
+            typeof this.divisor === 'string' ? d[this.valueProp] : this.divisor
+          let value =
             d[this.valueProp] || d[this.valueProp] === 0
-              ? d[this.valueProp] / this.divisor
+              ? d[this.valueProp] / divisor
               : null
+
+          if (typeof this.divisor === 'string') {
+            value = d[this.valueProp]
+          }
           return value || value === 0
             ? colourScale(value > 1 ? 1 : value)
             : 'rgba(255, 255, 255, 0.3)'
@@ -167,8 +177,8 @@ export default {
           const m = mouse(this)
           const $this = select(this)
           const value =
-            d[self.valueProp] || d[self.valueProp] === 0
-              ? numFormat(',.0f')(d[self.valueProp])
+            d[self.tooltipValueProp] || d[self.tooltipValueProp] === 0
+              ? numFormat(',.0f')(d[self.tooltipValueProp])
               : '—'
           const text = `
           <b>${format(d.date, self.dateFormatString)}</b>:

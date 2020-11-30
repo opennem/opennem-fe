@@ -1,18 +1,18 @@
 <template>
-  <svg 
-    :id="id" 
-    :height="svgHeight" 
-    :width="svgWidth" 
+  <svg
+    :id="id"
+    :height="svgHeight"
+    :width="svgWidth"
     class="colour-legend" />
 </template>
 
 <script>
 import { select } from 'd3-selection'
 import { axisBottom } from 'd3-axis'
-import { scaleLinear } from 'd3-scale'
+import { scaleLinear, scaleOrdinal, scaleBand } from 'd3-scale'
 
 function rampHorizontal(x, color, height) {
-  var size = height
+  const size = height
 
   function ramp(g) {
     var image = g.selectAll('image').data([null]),
@@ -58,6 +58,10 @@ function rampHorizontal(x, color, height) {
 
 export default {
   props: {
+    type: {
+      type: String,
+      default: 'ramp' // swatch, ramp
+    },
     svgWidth: {
       type: Number,
       default: 300
@@ -71,7 +75,7 @@ export default {
       default: ''
     },
     multiplier: {
-      type: Number,
+      type: [String, Number],
       default: 100
     },
     colourRange: {
@@ -79,6 +83,10 @@ export default {
       default: () => []
     },
     colourDomain: {
+      type: Array,
+      default: () => []
+    },
+    colourDomainLabel: {
       type: Array,
       default: () => []
     }
@@ -104,6 +112,9 @@ export default {
   watch: {
     colourDomain() {
       this.update()
+    },
+    type() {
+      this.update()
     }
   },
 
@@ -115,18 +126,30 @@ export default {
     update() {
       const svg = select(`#${this.id}`)
 
-      var colour = scaleLinear()
+      const colour = scaleLinear()
         .domain(this.colourDomain)
         .range(this.colourRange)
 
-      var x = scaleLinear().range([
+      const x = scaleLinear().range([
         this.margin.left,
         this.svgWidth - this.margin.right
       ])
 
       svg.select('.zero-rect').remove()
       svg.select('.ramp-group').remove()
+      svg.select('.swatch-group').remove()
 
+      if (this.type === 'ramp') {
+        this.drawRamp(svg, colour, x)
+      } else if (this.type === 'swatch') {
+        this.drawSwatch(svg, colour)
+      }
+    },
+
+    drawRamp(svg, colour, x) {
+      const value = d => {
+        return typeof this.multiplier === 'string' ? d : d * this.multiplier
+      }
       svg
         .append('rect')
         .attr('class', 'zero-rect')
@@ -147,8 +170,44 @@ export default {
         .call(
           axisBottom(x)
             .ticks(4)
-            .tickFormat(d => `${d * this.multiplier}${this.unit}`)
+            .tickFormat(d => `${value(d)}${this.unit}`)
         )
+    },
+
+    drawSwatch(svg, colour) {
+      const width = this.svgWidth - this.margin.right - this.margin.left
+      const height = this.svgHeight - this.margin.bottom - this.margin.top
+      const length = this.colourDomain.length
+      const x = scaleBand()
+        .range([this.margin.left, this.svgWidth - this.margin.right])
+        .domain([0, 1])
+      const label = d => {
+        return this.colourDomainLabel ? this.colourDomainLabel[d] : d
+      }
+
+      const $swatchGroup = svg
+        .append('g')
+        .attr('class', 'swatch-group')
+        .selectAll('rect')
+        .data(this.colourDomain)
+
+      $swatchGroup
+        .enter()
+        .append('rect')
+        .attr('x', d => x(d))
+        .attr('y', 0)
+        .attr('width', width / length)
+        .attr('height', height)
+        .style('fill', d => colour(d))
+
+      $swatchGroup
+        .enter()
+        .append('text')
+        .attr('x', d => x(d) + width / length / 2)
+        .attr('y', height * 2)
+        .text(d => label(d))
+        .style('font-size', '10px')
+        .style('text-anchor', 'middle')
     }
   }
 }

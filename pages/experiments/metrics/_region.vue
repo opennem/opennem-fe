@@ -45,6 +45,8 @@
         :multiplier="selectedMetricObject.divisor"
         :colour-range="selectedMetricObject.range"
         :colour-domain="selectedMetricObject.domain"
+        :colour-domain-label="selectedMetricObject.domainLabel"
+        :type="selectedMetricObject.legendType"
         class="colour-legend"
       />
     </div>
@@ -71,6 +73,7 @@
             :radius="0"
             :dataset="yData[selectedMetric]"
             :value-prop="selectedMetric"
+            :tooltip-value-prop="selectedMetricObject.valueProp ? selectedMetricObject.valueProp : selectedMetric"
             :unit="selectedMetricObject.unit"
             :divisor="selectedMetricObject.divisor"
             :colour-range="selectedMetricObject.range"
@@ -79,8 +82,8 @@
           />
         </section>
       </div>
-      <div 
-        v-else 
+      <div
+        v-else
         style="width: 100%">
         <Heatmap
           :cell-width="3"
@@ -90,6 +93,7 @@
           :radius="0"
           :dataset="d[selectedMetric]"
           :value-prop="selectedMetric"
+          :tooltip-value-prop="selectedMetricObject.valueProp ? selectedMetricObject.valueProp : selectedMetric"
           :unit="selectedMetricObject.unit"
           :divisor="selectedMetricObject.divisor"
           :colour-range="selectedMetricObject.range"
@@ -233,7 +237,6 @@ export default {
                 const yearInt = parseInt(year)
                 const last = new Date(yearInt, 11, 31)
                 const start = new Date(yearInt, 0, 1)
-                console.log(start, last, differenceInDays(last, start))
                 const propData = this.getProportionsDataset(
                   d.dataset,
                   d.domainPowerEnergy,
@@ -450,14 +453,27 @@ export default {
           time: d.time
         }
 
-        let totalImportsExports = 0
+        let sumImportsExports = 0,
+          hasValue = false,
+          importsExports = null
+
         domainPowerEnergy.forEach(domain => {
           if (domain.fuelTech === 'imports' || domain.fuelTech === 'exports') {
-            totalImportsExports += d[domain.id]
+            if (d[domain.id] || d[domain.id] === 0) {
+              hasValue = true
+            }
+            sumImportsExports += d[domain.id]
           }
         })
 
-        obj.importsExports = totalImportsExports
+        // if no value
+        importsExports = hasValue ? (sumImportsExports > 0 ? 1 : 0) : null
+        if (!hasValue) {
+          sumImportsExports = null
+        }
+
+        obj.importsExports = importsExports
+        obj.sumImportsExports = sumImportsExports
         return obj
       })
 
