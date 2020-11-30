@@ -518,11 +518,10 @@ export default {
             date: cDate,
             time: cDate.getTime(),
             importsExports: null,
-            obj.sumImportsExports = sumImportsExports
+            sumImportsExports: null
           })
         }
       }
-
 
       return data
     },
