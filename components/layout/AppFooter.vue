@@ -1,7 +1,17 @@
 <template>
   <footer class="has-background-warning">
     <div class="left">
-      <span class="version">v{{ version }} beta</span>
+      <div class="version">
+        <span
+          v-if="isDev"
+          class="tag">DEV</span>
+        App: <strong>{{ version }} beta</strong>
+      </div>
+      <div
+        v-if="isDev && hasAPIversion"
+        class="version">
+        API: <strong>{{ apiVersion }}</strong>
+      </div>
       <div class="sources">
         Sources:
         <a
@@ -41,16 +51,32 @@
       </a>
       <nuxt-link
         to="/about/"
-        class="about-link">About OpenNEM</nuxt-link> 
+        class="about-link">About OpenNEM</nuxt-link>
     </div>
   </footer>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
       version: this.$config.version
+    }
+  },
+
+  computed: {
+    ...mapGetters({
+      hostEnv: 'hostEnv',
+      apiVersion: 'app/apiVersion'
+    }),
+
+    isDev() {
+      return this.hostEnv === 'dev'
+    },
+
+    hasAPIversion() {
+      return this.apiVersion
     }
   },
 
@@ -92,8 +118,15 @@ footer {
   }
 
   .version {
-    font-weight: bold;
     margin-right: 2rem;
+
+    .tag {
+      padding: 1px 4px;
+      font-size: 9px;
+      font-weight: 700;
+      height: auto;
+      margin-right: 5px;
+    }
   }
 
   @include tablet {

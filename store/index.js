@@ -2,19 +2,8 @@ import cloneDeep from 'lodash.clonedeep'
 import { lsSet } from '~/services/LocalStorage'
 import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 
-let hostEnv = 'dev'
-if (typeof window !== 'undefined') {
-  const host = window.location.host
-  if (host === 'opennem.org.au') {
-    hostEnv = 'prod'
-  }
-  if (host === 'dev.opennem.org.au') {
-    hostEnv = 'dev'
-  }
-}
-
 export const state = () => ({
-  hostEnv, // local, prod, dev
+  hostEnv: null, // local, prod, dev
   currentView: 'energy', // energy, facilities
   nem: [],
   fuelTechMeta: null,
@@ -206,7 +195,6 @@ export const getters = {
 
 export const actions = {
   hostEnv({ commit }, data) {
-    console.log(data)
     commit('hostEnv', data)
   },
   currentView({ commit }, data) {

@@ -1,4 +1,5 @@
 export const state = () => ({
+  apiVersion: null,
   windowWidth: 600,
   showError: false,
   errorHeader: '',
@@ -8,6 +9,7 @@ export const state = () => ({
 })
 
 export const getters = {
+  apiVersion: state => state.apiVersion,
   windowWidth: state => state.windowWidth,
   widthBreak: state => state.windowWidth < 1024,
   tabletBreak: state => state.windowWidth < 769,
@@ -19,6 +21,9 @@ export const getters = {
 }
 
 export const mutations = {
+  apiVersion(state, apiVersion) {
+    state.apiVersion = apiVersion
+  },
   windowWidth(state, windowWidth) {
     state.windowWidth = windowWidth
   },

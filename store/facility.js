@@ -271,6 +271,11 @@ export const actions = {
         commit('selectedFacilityUnits', units)
         perf.timeEnd(`------ facility data process (end)`)
         request = null
+
+        const version = response.data.version
+        commit('app/apiVersion', version && version !== '' ? version : null, {
+          root: true
+        })
         commit('fetchingStats', false)
       })
       .catch(e => {

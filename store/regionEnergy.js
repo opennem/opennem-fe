@@ -352,6 +352,11 @@ export const actions = {
               })
             : res
 
+          const version = res[0].version
+          commit('app/apiVersion', version && version !== '' ? version : null, {
+            root: true
+          })
+
           return processResponses(responses)
         })
         .catch(e => {

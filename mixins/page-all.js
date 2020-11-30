@@ -6,6 +6,7 @@ import {
   FEATURE_TOGGLE_V3_PATHS,
   FEATURE_TOGGLE_METRICS
 } from '@/constants/mutation-types/features.js'
+import hostEnv from '@/services/HostEnv.js'
 
 let uuid = 0
 
@@ -40,6 +41,8 @@ export default {
 
       const exportAttribution = lsGet('exportAttribution') || '@name'
       this.setExportAttribution(exportAttribution)
+
+      this.setHostEnv(hostEnv())
     }
   },
 
@@ -50,7 +53,9 @@ export default {
       setV3Paths: 'feature/v3Paths',
       setMetrics: 'feature/metrics',
 
-      setExportAttribution: 'exportAttribution'
+      setExportAttribution: 'exportAttribution',
+
+      setHostEnv: 'hostEnv'
     })
   }
 }
