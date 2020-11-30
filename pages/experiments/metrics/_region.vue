@@ -554,11 +554,11 @@ export default {
   align-items: center;
 
   & > * {
-    margin: 0 1rem;
+    margin: 0 0.5rem;
   }
 
   label {
-    margin: 0 0.5rem 0 0;
+    margin: 0;
   }
 }
 .vis-section {
