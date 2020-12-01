@@ -5,10 +5,10 @@
         <span
           v-if="isDev"
           class="tag">DEV</span>
-        App: <strong>{{ version }} beta</strong>
+        <strong>v{{ version }} beta</strong>
       </div>
       <div
-        v-if="isDev && hasAPIversion"
+        v-if="hasAPIversion"
         class="version">
         API: <strong>{{ apiVersion }}</strong>
       </div>
