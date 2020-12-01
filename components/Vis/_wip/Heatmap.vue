@@ -15,7 +15,7 @@
 import format from 'date-fns/format'
 import { format as numFormat } from 'd3-format'
 import { select, mouse, event } from 'd3-selection'
-import { scaleSequential, scaleLinear } from 'd3-scale'
+import { scaleSequential, scaleLinear, scaleBand } from 'd3-scale'
 
 export default {
   props: {
@@ -38,10 +38,6 @@ export default {
     svgHeight: {
       type: Number,
       default: 50
-    },
-    cellWidth: {
-      type: Number,
-      default: 1
     },
     cellHeight: {
       type: Number,
@@ -136,30 +132,30 @@ export default {
 
     update(data) {
       const self = this
-      // const barWidth = this.cellWidth
       const cellWidth = this.svgWidth / data.length
-      const barWidth = Math.floor(cellWidth)
+      // const barWidth = Math.floor(cellWidth)
+      const barWidth = cellWidth
+
       const barHeight = this.height
       const colourScale = scaleLinear()
         .domain(this.colourDomain)
         .range(this.colourRange)
 
-      const dataLength = this.expectedDataLength || data.length
+      // const dataLength = this.expectedDataLength || data.length
+      // this.$emit('svg-width', barWidth * dataLength)
 
-      this.$emit('svg-width', barWidth * dataLength)
-
-      this.$svg.selectAll('g.cell').remove()
-      const g = this.$svg.selectAll('g.cell').data(data)
+      this.$svg.selectAll('.cell').remove()
+      const g = this.$svg.selectAll('.cell').data(data)
 
       const rect = g
         .enter()
-        .append('g')
-        .attr('class', 'cell')
         .append('rect')
-        .attr('x', (d, i) => i * barWidth)
-        .attr('width', barWidth)
+        .attr('class', 'cell')
+        .attr('x', (d, i) => barWidth * i - 0.001)
+        .attr('width', barWidth + 0.001)
         .attr('height', barHeight)
         .attr('rx', this.radius)
+        .style('shape-rendering', 'crispEdges')
         .style('fill', d => {
           const divisor =
             typeof this.divisor === 'string' ? d[this.valueProp] : this.divisor

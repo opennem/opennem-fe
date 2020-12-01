@@ -64,7 +64,7 @@ export default {
     },
     svgWidth: {
       type: Number,
-      default: 300
+      default: 350
     },
     svgHeight: {
       type: Number,
@@ -96,7 +96,7 @@ export default {
     return {
       margin: {
         top: 0,
-        right: 20,
+        right: 0,
         bottom: 20,
         left: 20
       }
@@ -213,5 +213,14 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.colour-legend {
+  .ramp-group .tick {
+    &:last-child {
+      text {
+        text-anchor: end;
+      }
+    }
+  }
+}
 </style>
