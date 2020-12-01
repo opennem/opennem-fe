@@ -12,26 +12,26 @@
     />
 
     <transition name="fade">
-      <div 
-        v-if="!ready" 
+      <div
+        v-if="!ready"
         class="facility-list-map-container loading-containers">
         <div class="facility-list">
-          <div 
-            class="loader-block" 
+          <div
+            class="loader-block"
             style="height: 400px" />
         </div>
-        <div 
-          class="facility-map" 
+        <div
+          class="facility-map"
           style="margin-top: 127px;">
-          <div 
-            class="loader-block" 
+          <div
+            class="loader-block"
             style="height: 400px" />
         </div>
       </div>
     </transition>
 
-    <div 
-      v-if="ready" 
+    <div
+      v-if="ready"
       class="facility-list-map-container">
       <facility-list
         v-if="!widthBreak || (widthBreak && selectedView === 'list')"

@@ -1,8 +1,6 @@
 <template>
   <div class="container-fluid">
-    <div
-      style="max-width: 1024px; display: flex; justify-content: space-between"
-    >
+    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
       <div class="options">
         <!-- <label for="">Period</label> -->
         <!-- <strong>
@@ -20,7 +18,8 @@
           </select>
         </div> -->
 
-        <label for=""><strong>Metric</strong></label>
+
+        <!-- <label for=""><strong>Metric</strong></label> -->
         <div class="select is-rounded">
           <select v-model="selectedMetric">
             <option
@@ -36,6 +35,7 @@
 
       <ColourLegend
         v-if="statesData.length > 0"
+        :svg-width="310"
         :svg-height="30"
         :unit="
           selectedMetricObject.value === 'carbonIntensity'
@@ -51,39 +51,70 @@
       />
     </div>
 
-    <section
-      v-for="(d, i) in statesData"
-      :key="`region-${i}`"
-      class="vis-section"
-    >
+    <div class="vis-container">
 
-      <header
-        :id="`region-${d.regionId}`"
-        :style="{ width: `${chartHeaderWidth}px` }">
-        <h4>{{ d.region }}</h4>
+      <section
+        v-for="(d, i) in statesData"
+        :key="`region-${i}`"
+        :style="{ 'margin-top': d.yearlyData ? '0' : '15px'}"
+        class="vis-section"
+      >
+
+        <!-- <div id="hover-line" /> -->
+
+        <header
+          :id="`region-${d.regionId}`">
+          <h4 v-if="!d.yearlyData">
+            {{ d.region }}
+            <small>{{ getDateRange(d[selectedMetric]) }}</small>
+          </h4>
+        </header>
+
         <div
           v-if="hoverDate && d.regionId === hoverRegion"
+          :style="{ top: d.yearlyData ? '-20px' : '5px'}"
           class="hover-date-value">
-          <span class="date">{{ hoverDate }}:</span>
+          <span class="date">{{ hoverDate }}</span>
           <span class="value">{{ hoverValueString }}</span>
         </div>
-      </header>
 
-      <div v-if="d.yearlyData">
-        <section
-          v-for="(yData, yIndex) in d.yearlyData"
-          :key="`yearly-${i}-${yIndex}`"
-          style="width: 100%"
-        >
-          <h5>{{ yData.year }}</h5>
+        <div v-if="d.yearlyData">
+          <section
+            v-for="(yData, yIndex) in d.yearlyData"
+            :key="`yearly-${i}-${yIndex}`"
+            style="width: 100%"
+          >
+            <h5>{{ yData.year }}</h5>
+            <Heatmap
+              :cell-height="50"
+              :svg-width="width"
+              :svg-height="50"
+              :radius="0"
+              :expected-data-length="366"
+              :dataset="yData[selectedMetric]"
+              :value-prop="selectedMetric"
+              :tooltip-value-prop="selectedMetricObject.valueProp ? selectedMetricObject.valueProp : selectedMetric"
+              :unit="selectedMetricObject.unit"
+              :divisor="selectedMetricObject.divisor"
+              :colour-range="selectedMetricObject.range"
+              :colour-domain="selectedMetricObject.domain"
+              :date-format-string="selectedPeriodObject.dateFormatString"
+              @rect-mousemove="obj => {
+                handleMousemove(obj, d.regionId)
+              }"
+              @rect-mouseout="handleMouseout"
+            />
+          </section>
+        </div>
+        <div
+          v-else
+          style="width: 100%">
           <Heatmap
-            :cell-width="2.5"
-            :cell-height="50"
+            :cell-height="75"
             :svg-width="width"
-            :svg-height="50"
+            :svg-height="75"
             :radius="0"
-            :expected-data-length="366"
-            :dataset="yData[selectedMetric]"
+            :dataset="d[selectedMetric]"
             :value-prop="selectedMetric"
             :tooltip-value-prop="selectedMetricObject.valueProp ? selectedMetricObject.valueProp : selectedMetric"
             :unit="selectedMetricObject.unit"
@@ -95,44 +126,24 @@
               handleMousemove(obj, d.regionId)
             }"
             @rect-mouseout="handleMouseout"
-            @svg-width="handleSvgWidthChange"
           />
-        </section>
-      </div>
-      <div
-        v-else
-        style="width: 100%">
-        <Heatmap
-          :cell-width="3"
-          :cell-height="75"
-          :svg-width="width"
-          :svg-height="75"
-          :radius="0"
-          :dataset="d[selectedMetric]"
-          :value-prop="selectedMetric"
-          :tooltip-value-prop="selectedMetricObject.valueProp ? selectedMetricObject.valueProp : selectedMetric"
-          :unit="selectedMetricObject.unit"
-          :divisor="selectedMetricObject.divisor"
-          :colour-range="selectedMetricObject.range"
-          :colour-domain="selectedMetricObject.domain"
-          :date-format-string="selectedPeriodObject.dateFormatString"
-          @rect-mousemove="obj => {
-            handleMousemove(obj, d.regionId)
-          }"
-          @rect-mouseout="handleMouseout"
-          @svg-width="handleSvgWidthChange"
-        />
-      </div>
-    </section>
+        </div>
+      </section>
+    </div>
+
+
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { extent } from 'd3-array'
+import { select, mouse } from 'd3-selection'
 import debounce from 'lodash.debounce'
 import addDays from 'date-fns/addDays'
+import format from 'date-fns/format'
 import differenceInDays from 'date-fns/differenceInDays'
+import eachMonthOfInterval from 'date-fns/eachMonthOfInterval'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
 import { periods, metrics, years } from '@/constants/metrics/'
 import Heatmap from '@/components/Vis/_wip/Heatmap'
@@ -153,7 +164,6 @@ export default {
   data() {
     return {
       width: 0,
-      chartHeaderWidth: 400,
       periods,
       metrics,
       years,
@@ -218,16 +228,36 @@ export default {
     this.$store.dispatch('currentView', 'experiments/metrics')
     this.getData(this.regionId, this.selectedPeriod)
 
-    this.width = this.$el.offsetWidth - 50
+    this.width = this.$el.offsetWidth - 32
 
     window.addEventListener(
       'resize',
       debounce(() => {
         this.width =
-          this.$el.offsetWidth === 0 ? this.width : this.$el.offsetWidth - 50
+          this.$el.offsetWidth === 0 ? this.width : this.$el.offsetWidth - 32
+        console.log(this.width)
       }),
       50
     )
+
+    //     const $vis = select('.vis-container')
+    //     let mouseinside = false
+    //
+    //     $vis
+    //       .on('mousemove touchmove', function() {
+    //         const m = mouse(this)
+    //         const $hoverLine = select('#hover-line')
+    //         $hoverLine.style('left', `${m[0] - 1}px`)
+    //         if (!mouseinside) {
+    //           $hoverLine.style('opacity', 1)
+    //           mouseinside = true
+    //         }
+    //       })
+    //       .on('mouseout', () => {
+    //         const $hoverLine = select('#hover-line')
+    //         $hoverLine.style('opacity', 0)
+    //         mouseinside = false
+    //       })
   },
 
   methods: {
@@ -304,6 +334,12 @@ export default {
     },
 
     getRegionsData(regions) {
+      const arr = eachMonthOfInterval({
+        start: new Date(2005, 3, 1),
+        end: new Date()
+      })
+      console.log(arr)
+
       regions.forEach((r, i) => {
         setTimeout(() => {
           this.doGetRegionData({
@@ -535,8 +571,12 @@ export default {
       this.hoverDate = null
       this.hoverValueString = ''
     },
-    handleSvgWidthChange(width) {
-      this.chartHeaderWidth = width
+
+    getDateRange(data) {
+      const formatString = 'MMM yyyy'
+      const firstDate = format(data[0].date, formatString)
+      const lastDate = format(data[data.length - 1].date, formatString)
+      return `${firstDate} — ${lastDate}`
     }
   }
 }
@@ -547,7 +587,8 @@ export default {
 @import '~/assets/scss/responsive-mixins.scss';
 
 .container-fluid {
-  padding: 1rem 2rem;
+  padding: 1rem 16px;
+  height: 100%;
 }
 .options {
   display: flex;
@@ -561,10 +602,12 @@ export default {
     margin: 0;
   }
 }
+
+.vis-container {
+  margin-top: 1.8rem;
+}
 .vis-section {
-  margin-top: 1rem;
   position: relative;
-  width: 100%;
   h4 {
     font-family: $header-font-family;
     font-size: 1.4em;
@@ -584,15 +627,23 @@ export default {
     display: flex;
     justify-content: space-between;
     margin-bottom: 5px;
+
+    small {
+      font-family: $family-primary;
+      font-size: 0.7em;
+      font-weight: 300;
+    }
   }
 }
 .colour-legend {
-  margin-top: 2rem;
+  // margin-top: 2rem;
 }
 .hover-date-value {
   font-size: 0.8em;
   display: flex;
   align-items: flex-end;
+  position: absolute;
+  right: 0;
   span {
     padding: 3px 12px 2px;
     white-space: nowrap;
@@ -607,5 +658,15 @@ export default {
     border-radius: 0 20px 20px 0;
     background-color: rgba(255, 255, 255, 0.5);
   }
+}
+#hover-line {
+  background-color: red;
+  width: 1px;
+  height: 400px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 99;
+  opacity: 0;
 }
 </style>
