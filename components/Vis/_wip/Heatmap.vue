@@ -1,8 +1,12 @@
 <template>
   <section>
+    <!-- <div
+      :id="tooltipId"
+      class="tooltip">tooltip</div> -->
+
     <div
       :id="tooltipId"
-      class="tooltip">tooltip</div>
+      class="tooltip"/>
 
     <svg
       :id="id"
@@ -66,10 +70,6 @@ export default {
     unit: {
       type: String,
       default: ''
-    },
-    expectedDataLength: {
-      type: Number,
-      default: 0
     }
   },
 
@@ -132,17 +132,23 @@ export default {
 
     update(data) {
       const self = this
-      const cellWidth = this.svgWidth / data.length
+      const cellWidth = this.width / data.length
       // const barWidth = Math.floor(cellWidth)
       const barWidth = cellWidth
-
       const barHeight = this.height
       const colourScale = scaleLinear()
         .domain(this.colourDomain)
         .range(this.colourRange)
+      const bandScale = scaleBand()
+        .domain(data.map(d => d.time))
+        .range([0, this.width])
 
       // const dataLength = this.expectedDataLength || data.length
       // this.$emit('svg-width', barWidth * dataLength)
+
+      this.$tooltip
+        .style('width', `${barWidth}px`)
+        .style('height', `${barHeight}px`)
 
       this.$svg.selectAll('.cell').remove()
       const g = this.$svg.selectAll('.cell').data(data)
@@ -151,8 +157,8 @@ export default {
         .enter()
         .append('rect')
         .attr('class', 'cell')
-        .attr('x', (d, i) => barWidth * i - 0.001)
-        .attr('width', barWidth + 0.001)
+        .attr('x', (d, i) => bandScale(d.time))
+        .attr('width', bandScale.bandwidth())
         .attr('height', barHeight)
         .attr('rx', this.radius)
         .style('shape-rendering', 'crispEdges')
@@ -173,9 +179,9 @@ export default {
         })
 
       rect
-        .on('mousemove touchmove', function(d) {
-          const m = mouse(this)
-          const $this = select(this)
+        .on('mouseenter', function(d) {
+          // const m = mouse(this)
+          // const $this = select(this)
           const value =
             d[self.tooltipValueProp] || d[self.tooltipValueProp] === 0
               ? numFormat(',.0f')(d[self.tooltipValueProp])
@@ -188,8 +194,14 @@ export default {
         `
 
           self.$emit('rect-mousemove', { id: self._uid, date, valueString })
-          // $this.style('stroke', '#e34a33').style('stroke-width', '1px')
-          $this.style('opacity', 0.9)
+
+          self.$tooltip
+            .style('left', bandScale(d.time) + 'px')
+            .style('pointer-events', 'none')
+            .style('opacity', 1)
+
+          // $this.attr('stroke-width', 1).attr('stroke', 'red')
+          // $this.style('opacity', 0.9)
           // self.$tooltip
           //   .html(text)
           //   .style('left', m[0] + 4 + 'px')
@@ -198,10 +210,10 @@ export default {
           //   .style('opacity', 1)
         })
         .on('mouseout', function() {
-          const $this = select(this)
-          // $this.style('stroke-width', 0)
-          $this.style('opacity', 1)
-          // self.$tooltip.style('opacity', 0)
+          // const $this = select(this)
+          // $this.attr('stroke-width', 0)
+          // $this.style('opacity', 1)
+          self.$tooltip.style('opacity', 0)
           self.$emit('rect-mouseout')
         })
     }
@@ -213,12 +225,19 @@ export default {
 section {
   position: relative;
 }
+// .tooltip {
+//   background: white;
+//   position: absolute;
+//   top: 0;
+//   padding: 2px 4px;
+//   border-radius: 2px;
+//   opacity: 0;
+// }
 .tooltip {
-  background: white;
+  background: transparent;
   position: absolute;
   top: 0;
-  padding: 2px 4px;
-  border-radius: 2px;
   opacity: 0;
+  border: 1px solid #e34a33;
 }
 </style>
