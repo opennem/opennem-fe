@@ -52,27 +52,27 @@
     </div>
 
     <div class="vis-container">
+      <h3 v-if="useAllPeriods">{{ getDateRange(allBucket) }}</h3>
 
       <section
         v-for="(d, i) in regionData"
         :key="`region-${i}`"
-        :style="{ 'margin-top': d.yearlyData ? '0' : '15px'}"
+        :style="{ 'margin-top': d.yearlyData ? '35px' : '25px'}"
         class="vis-section"
       >
 
         <!-- <div id="hover-line" /> -->
 
-        <header
+        <!-- <header
           :id="`region-${d.regionId}`">
           <h4 v-if="!d.yearlyData">
             {{ d.region }}
-            <small>{{ getDateRange(d[selectedMetric]) }}</small>
           </h4>
-        </header>
+        </header> -->
 
         <div
           v-if="hoverDate && d.regionId === hoverRegion"
-          :style="{ top: d.yearlyData ? '-20px' : '5px'}"
+          :style="{ top: d.yearlyData ? '-25px' : '-25px'}"
           class="hover-date-value">
           <span class="date">{{ hoverDate }}</span>
           <span class="value">{{ hoverValueString }}</span>
@@ -90,7 +90,6 @@
               :svg-width="width"
               :svg-height="50"
               :radius="0"
-              :expected-data-length="366"
               :dataset="yData[selectedMetric]"
               :value-prop="selectedMetric"
               :tooltip-value-prop="selectedMetricObject.valueProp ? selectedMetricObject.valueProp : selectedMetric"
@@ -109,6 +108,7 @@
         <div
           v-else
           style="width: 100%">
+          <h5>{{ d.region }}</h5>
           <Heatmap
             :cell-height="75"
             :svg-width="width"
@@ -171,6 +171,7 @@ export default {
       periods,
       metrics,
       yearsBucket,
+      allBucket: allRangeBucket(),
       regionData: [],
       regions: getEnergyRegions().filter(
         d => d.id !== 'all' && d.id !== 'nem' && d.id !== 'wem'
@@ -219,6 +220,10 @@ export default {
 
     regionId() {
       return this.$route.params.region
+    },
+
+    useAllPeriods() {
+      return this.regionId === 'all' || this.regionId === 'nem'
     }
   },
 
@@ -273,7 +278,6 @@ export default {
       // reset
       this.regionData = []
 
-      const useAllPeriods = id === 'all' || id === 'nem'
       const filter =
         id === 'all'
           ? d => d.id !== 'all' && d.id !== 'nem'
@@ -282,7 +286,7 @@ export default {
             : d => d.id === id
       const regions = getEnergyRegions().filter(filter)
 
-      if (useAllPeriods) {
+      if (this.useAllPeriods) {
         this.selectedPeriod = 'all/month'
         this.getRegionsData(regions)
       } else {
@@ -312,7 +316,7 @@ export default {
                   temperature: propData
                 })
               })
-            }, 500 * yIndex)
+            }, 300 * yIndex)
           })
 
           this.regionData.push({
@@ -340,7 +344,7 @@ export default {
               d.currentDomainEmissions,
               d.domainTemperature,
               false,
-              allRangeBucket()
+              this.allBucket
             )
 
             this.regionData.push({
@@ -421,7 +425,7 @@ export default {
       const formatString = 'MMM yyyy'
       const firstDate = format(data[0].date, formatString)
       const lastDate = format(data[data.length - 1].date, formatString)
-      return `${firstDate} — ${lastDate}`
+      return `${firstDate} – ${lastDate}`
     },
 
     createEmptyObj(date, time) {
@@ -520,7 +524,7 @@ export default {
   align-items: center;
 
   & > * {
-    margin: 0 1rem;
+    // margin: 0 1rem;
   }
 
   label {
@@ -530,12 +534,19 @@ export default {
 
 .vis-container {
   margin-top: 1.8rem;
+
+  h3 {
+    font-family: $header-font-family;
+    font-size: 1.4em;
+    font-weight: 300;
+  }
 }
 .vis-section {
   position: relative;
+
   h4 {
     font-family: $header-font-family;
-    font-size: 1.4em;
+    font-size: 1.2em;
     font-weight: 700;
   }
   h5 {
@@ -545,8 +556,10 @@ export default {
     position: absolute;
     z-index: 9;
     color: #fff;
-    left: 5px;
-    text-shadow: 0 1px 1px #000;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 0 3px 1px;
+    border-radius: 0 0 1px 0;
   }
   header {
     display: flex;
