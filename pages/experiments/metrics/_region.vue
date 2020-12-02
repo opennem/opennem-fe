@@ -316,7 +316,7 @@ export default {
                   temperature: propData
                 })
               })
-            }, 300 * yIndex)
+            }, 500 * yIndex)
           })
 
           this.regionData.push({
