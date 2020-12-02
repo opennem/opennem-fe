@@ -173,7 +173,7 @@ export default {
         })
 
       rect
-        .on('mousemove touchmove', function(d) {
+        .on('mouseenter', function(d) {
           const m = mouse(this)
           const $this = select(this)
           const value =
