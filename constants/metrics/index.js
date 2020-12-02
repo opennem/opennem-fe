@@ -1,3 +1,6 @@
+import eachYearOfInterval from 'date-fns/eachYearOfInterval'
+import eachMonthOfInterval from 'date-fns/eachMonthOfInterval'
+
 export const periods = [
   {
     label: 'Multi Year / day',
@@ -70,20 +73,22 @@ export const metrics = [
   }
 ]
 
-export const years = [
-  '2006',
-  '2007',
-  '2008',
-  '2009',
-  '2010',
-  '2011',
-  '2012',
-  '2013',
-  '2014',
-  '2015',
-  '2016',
-  '2017',
-  '2018',
-  '2019',
-  '2020'
-]
+const dataStartYear = 2005
+const dataStartMonth = 3 // 0 - Jan, 11 - Dec
+
+export const yearsBucket = eachYearOfInterval({
+  start: new Date(dataStartYear, 0, 1),
+  end: new Date()
+}).map(d => d.getFullYear())
+
+export const allRangeBucket = () => {
+  return eachMonthOfInterval({
+    start: new Date(dataStartYear, dataStartMonth, 1),
+    end: new Date() // to Now
+  }).map(d => {
+    return {
+      date: d,
+      time: d.getTime()
+    }
+  })
+}

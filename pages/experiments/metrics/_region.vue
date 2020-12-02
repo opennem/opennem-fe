@@ -34,7 +34,7 @@
       </div>
 
       <ColourLegend
-        v-if="statesData.length > 0"
+        v-if="regionData.length > 0"
         :svg-width="310"
         :svg-height="30"
         :unit="
@@ -54,7 +54,7 @@
     <div class="vis-container">
 
       <section
-        v-for="(d, i) in statesData"
+        v-for="(d, i) in regionData"
         :key="`region-${i}`"
         :style="{ 'margin-top': d.yearlyData ? '0' : '15px'}"
         class="vis-section"
@@ -143,9 +143,13 @@ import debounce from 'lodash.debounce'
 import addDays from 'date-fns/addDays'
 import format from 'date-fns/format'
 import differenceInDays from 'date-fns/differenceInDays'
-import eachMonthOfInterval from 'date-fns/eachMonthOfInterval'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
-import { periods, metrics, years } from '@/constants/metrics/'
+import {
+  periods,
+  metrics,
+  yearsBucket,
+  allRangeBucket
+} from '@/constants/metrics/'
 import Heatmap from '@/components/Vis/_wip/Heatmap'
 import ColourLegend from '@/components/Vis/ColourLegend'
 
@@ -166,8 +170,8 @@ export default {
       width: 0,
       periods,
       metrics,
-      years,
-      statesData: [],
+      yearsBucket,
+      regionData: [],
       regions: getEnergyRegions().filter(
         d => d.id !== 'all' && d.id !== 'nem' && d.id !== 'wem'
       ),
@@ -235,7 +239,6 @@ export default {
       debounce(() => {
         this.width =
           this.$el.offsetWidth === 0 ? this.width : this.$el.offsetWidth - 32
-        console.log(this.width)
       }),
       50
     )
@@ -268,8 +271,7 @@ export default {
 
     getData(id, period) {
       // reset
-      this.yearlyData = []
-      this.statesData = []
+      this.regionData = []
 
       const useAllPeriods = id === 'all' || id === 'nem'
       const filter =
@@ -287,7 +289,7 @@ export default {
         this.selectedPeriod = 'multiyear/day'
         regions.forEach((r, i) => {
           const yearlyData = []
-          years.forEach((year, yIndex) => {
+          yearsBucket.forEach((year, yIndex) => {
             setTimeout(() => {
               this.doGetYearRegionData({ region: r.id, year }).then(d => {
                 const yearInt = parseInt(year)
@@ -296,35 +298,24 @@ export default {
                 const propData = this.getProportionsDataset(
                   d.dataset,
                   d.domainPowerEnergy,
+                  d.domainEmissions,
+                  d.domainTemperature,
                   true
                 )
                 yearlyData.push({
                   year,
-                  carbonIntensity: this.getEmissionIntensityDataset(
-                    d.dataset,
-                    d.domainPowerEnergy,
-                    d.domainEmissions,
-                    true
-                  ),
+                  carbonIntensity: propData,
                   renewablesProportion: propData,
                   gasProportion: propData,
                   coalProportion: propData,
-                  importsExports: this.getImportsExportsDataset(
-                    d.dataset,
-                    d.domainPowerEnergy,
-                    true
-                  ),
-                  temperature: this.getTemperatureDataset(
-                    d.dataset,
-                    d.domainTemperature,
-                    true
-                  )
+                  importsExports: propData,
+                  temperature: propData
                 })
               })
             }, 200 * yIndex)
           })
 
-          this.statesData.push({
+          this.regionData.push({
             region: r.label,
             regionId: r.id,
             yearlyData
@@ -334,12 +325,6 @@ export default {
     },
 
     getRegionsData(regions) {
-      const arr = eachMonthOfInterval({
-        start: new Date(2005, 3, 1),
-        end: new Date()
-      })
-      console.log(arr)
-
       regions.forEach((r, i) => {
         setTimeout(() => {
           this.doGetRegionData({
@@ -352,146 +337,60 @@ export default {
             const propData = this.getProportionsDataset(
               d.currentDataset,
               d.currentDomainPowerEnergy,
-              false
+              d.currentDomainEmissions,
+              d.domainTemperature,
+              false,
+              allRangeBucket()
             )
 
-            this.statesData.push({
+            this.regionData.push({
               region: r.label,
               regionId: r.id,
-              carbonIntensity: this.getEmissionIntensityDataset(
-                d.currentDataset,
-                d.currentDomainPowerEnergy,
-                d.currentDomainEmissions,
-                false
-              ),
+              carbonIntensity: propData,
               renewablesProportion: propData,
               gasProportion: propData,
               coalProportion: propData,
-              importsExports: this.getImportsExportsDataset(
-                d.currentDataset,
-                d.currentDomainPowerEnergy,
-                false
-              ),
-              temperature: this.getTemperatureDataset(
-                d.currentDataset,
-                d.domainTemperature,
-                false
-              )
+              importsExports: propData,
+              temperature: propData
             })
           })
         }, 500 * i)
       })
     },
 
-    getProportionsDataset(dataset, domains, topUp) {
-      const data = dataset.map(d => {
-        const obj = {
-          date: d.date,
-          time: d.time,
-          // renewablesProportion:
-          //   d._totalDemandRenewablesPercentage > 100
-          //     ? 100
-          //     : d._totalDemandRenewablesPercentage,
-          renewablesProportion: d._totalDemandRenewablesPercentage,
-          coalProportion:
-            d._totalDemandCoalProportion < 0 ? 0 : d._totalDemandCoalProportion,
-          coal: d._totalCoal,
-          gasProportion:
-            d._totalDemandGasProportion < 0 ? 0 : d._totalDemandGasProportion,
-          gas: d._totalGas
-        }
-        return obj
-      })
-
-      if (topUp) {
-        const lastDataDate = data[data.length - 1].date
-        const last = new Date(lastDataDate.getFullYear(), 11, 31)
-        const fillUp = differenceInDays(last, addDays(lastDataDate, 1))
-        let cDate = lastDataDate
-        for (let i = 1; i <= fillUp + 1; i++) {
-          cDate = addDays(cDate, 1)
-          data.push({
-            date: cDate,
-            time: cDate.getTime(),
-            renewablesProportion: null,
-            coalProportion: null,
-            coal: null,
-            gasProportion: null,
-            gas: null
-          })
-        }
-      }
-
-      return data
-    },
-
-    getEmissionIntensityDataset(
-      currentDataset,
-      currentDomainPowerEnergy,
-      currentDomainEmissions,
-      topUp
+    getProportionsDataset(
+      dataset,
+      domainPowerEnergy,
+      domainEmissions,
+      domainTemperature,
+      topUp,
+      bucket
     ) {
-      const data = currentDataset.map(d => {
-        const obj = {
-          date: d.date,
-          time: d.time,
-          _isIncompleteBucket: d._isIncompleteBucket
-        }
-        let totalEmissions = 0,
-          totalPowerEnergy = 0
-        currentDomainEmissions.forEach(domain => {
-          totalEmissions += d[domain.id] || 0
+      if (bucket) {
+        const data = bucket.map(d => {
+          const obj = this.createEmptyObj(d.date, d.time)
+          const find = dataset.find(x => x.time === d.time)
+          return this.calculateMetricData(
+            obj,
+            find,
+            domainPowerEnergy,
+            domainEmissions,
+            domainTemperature
+          )
         })
-        currentDomainPowerEnergy.forEach(domain => {
-          if (domain.category !== 'load' || domain.fuelTech === 'exports') {
-            totalPowerEnergy += d[domain.id] || 0
-          }
-        })
-        obj._totalEmissions = totalEmissions
-        obj._totalPowerEnergy = totalPowerEnergy
 
-        let ei = totalEmissions / totalPowerEnergy
-        const isValidEI = Number.isFinite(ei)
-
-        obj.carbonIntensity = isValidEI ? ei : null
-
-        return obj
-      })
-
-      if (topUp) {
-        const lastDataDate = data[data.length - 1].date
-        const last = new Date(lastDataDate.getFullYear(), 11, 31)
-        const fillUp = differenceInDays(last, addDays(lastDataDate, 1))
-        let cDate = lastDataDate
-        for (let i = 1; i <= fillUp + 1; i++) {
-          cDate = addDays(cDate, 1)
-          data.push({
-            date: cDate,
-            time: cDate.getTime(),
-            carbonIntensity: null
-          })
-        }
+        return data
       }
 
-      return data
-    },
-
-    getTemperatureDataset(dataset, domainTemperature, topUp) {
       const data = dataset.map(d => {
-        const obj = {
-          date: d.date,
-          time: d.time
-        }
-
-        let temperature = null
-        domainTemperature.forEach(domain => {
-          if (domain.type === 'temperature_mean') {
-            temperature = d[domain.id]
-          }
-        })
-
-        obj.temperature = temperature
-        return obj
+        const obj = this.createEmptyObj(d.date, d.time)
+        return this.calculateMetricData(
+          obj,
+          d,
+          domainPowerEnergy,
+          domainEmissions,
+          domainTemperature
+        )
       })
 
       if (topUp) {
@@ -501,61 +400,7 @@ export default {
         let cDate = lastDataDate
         for (let i = 1; i <= fillUp + 1; i++) {
           cDate = addDays(cDate, 1)
-          data.push({
-            date: cDate,
-            time: cDate.getTime(),
-            temperature: null
-          })
-        }
-      }
-
-      return data
-    },
-
-    getImportsExportsDataset(dataset, domainPowerEnergy, topUp) {
-      const data = dataset.map(d => {
-        const obj = {
-          date: d.date,
-          time: d.time
-        }
-
-        let sumImportsExports = 0,
-          hasValue = false,
-          importsExports = null
-
-        domainPowerEnergy.forEach(domain => {
-          if (domain.fuelTech === 'imports' || domain.fuelTech === 'exports') {
-            if (d[domain.id] || d[domain.id] === 0) {
-              hasValue = true
-            }
-            sumImportsExports += d[domain.id]
-          }
-        })
-
-        // if no value
-        importsExports = hasValue ? (sumImportsExports > 0 ? 1 : 0) : null
-        if (!hasValue) {
-          sumImportsExports = null
-        }
-
-        obj.importsExports = importsExports
-        obj.sumImportsExports = sumImportsExports
-        return obj
-      })
-
-      if (topUp) {
-        const lastDataDate = data[data.length - 1].date
-        const last = new Date(lastDataDate.getFullYear(), 11, 31)
-        const fillUp = differenceInDays(last, addDays(lastDataDate, 1))
-        let cDate = lastDataDate
-        for (let i = 1; i <= fillUp + 1; i++) {
-          cDate = addDays(cDate, 1)
-          data.push({
-            date: cDate,
-            time: cDate.getTime(),
-            importsExports: null,
-            sumImportsExports: null
-          })
+          data.push(this.createEmptyObj(cDate, cDate.getTime()))
         }
       }
 
@@ -577,6 +422,86 @@ export default {
       const firstDate = format(data[0].date, formatString)
       const lastDate = format(data[data.length - 1].date, formatString)
       return `${firstDate} — ${lastDate}`
+    },
+
+    createEmptyObj(date, time) {
+      return {
+        date,
+        time,
+        carbonIntensity: null,
+        renewablesProportion: null,
+        coalProportion: null,
+        coal: null,
+        gasProportion: null,
+        gas: null,
+        temperature: null,
+        importsExports: null,
+        sumImportsExports: null
+      }
+    },
+
+    calculateMetricData(
+      obj,
+      d,
+      domainPowerEnergy,
+      domainEmissions,
+      domainTemperature
+    ) {
+      if (d) {
+        let totalEmissions = 0,
+          totalPowerEnergy = 0,
+          temperature = null,
+          sumImportsExports = 0,
+          hasImportsExportsValue = false,
+          importsExports = null
+
+        domainEmissions.forEach(domain => {
+          totalEmissions += d[domain.id] || 0
+        })
+        domainPowerEnergy.forEach(domain => {
+          if (domain.category !== 'load' || domain.fuelTech === 'exports') {
+            totalPowerEnergy += d[domain.id] || 0
+          }
+          if (domain.fuelTech === 'imports' || domain.fuelTech === 'exports') {
+            if (d[domain.id] || d[domain.id] === 0) {
+              hasImportsExportsValue = true
+            }
+            sumImportsExports += d[domain.id]
+          }
+        })
+        domainTemperature.forEach(domain => {
+          if (domain.type === 'temperature_mean') {
+            temperature = d[domain.id]
+          }
+        })
+
+        const ei = totalEmissions / totalPowerEnergy
+        const isValidEI = Number.isFinite(ei)
+
+        // if no value
+        importsExports = hasImportsExportsValue
+          ? sumImportsExports > 0
+            ? 1
+            : 0
+          : null
+        if (!hasImportsExportsValue) {
+          sumImportsExports = null
+        }
+
+        obj.carbonIntensity = isValidEI ? ei : null
+        obj.renewablesProportion = d._totalDemandRenewablesPercentage
+        obj.coalProportion =
+          d._totalDemandCoalProportion < 0 ? 0 : d._totalDemandCoalProportion
+        obj.coal = d._totalCoal
+        obj.gasProportion =
+          d._totalDemandGasProportion < 0 ? 0 : d._totalDemandGasProportion
+        obj.gas = d._totalGas
+        obj.temperature = temperature
+        obj.importsExports = importsExports
+        obj.sumImportsExports = sumImportsExports
+      }
+
+      return obj
     }
   }
 }
