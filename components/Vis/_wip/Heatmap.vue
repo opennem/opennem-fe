@@ -55,6 +55,10 @@ export default {
       type: [String, Number],
       default: 100
     },
+    offset: {
+      type: Number,
+      default: 0
+    },
     colourRange: {
       type: Array,
       default: () => []
@@ -167,7 +171,7 @@ export default {
             typeof this.divisor === 'string' ? d[this.valueProp] : this.divisor
           let value =
             d[this.valueProp] || d[this.valueProp] === 0
-              ? d[this.valueProp] / divisor
+              ? (d[this.valueProp] + this.offset) / divisor
               : null
 
           if (typeof this.divisor === 'string') {

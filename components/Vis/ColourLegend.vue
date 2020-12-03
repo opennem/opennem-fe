@@ -78,6 +78,10 @@ export default {
       type: [String, Number],
       default: 100
     },
+    offset: {
+      type: Number,
+      default: 0
+    },
     colourRange: {
       type: Array,
       default: () => []
@@ -148,7 +152,9 @@ export default {
 
     drawRamp(svg, colour, x) {
       const value = d => {
-        return typeof this.multiplier === 'string' ? d : d * this.multiplier
+        return typeof this.multiplier === 'string'
+          ? d
+          : d * this.multiplier - this.offset
       }
       svg
         .append('rect')
@@ -169,7 +175,7 @@ export default {
         .call(rampHorizontal(x, colour, this.svgHeight))
         .call(
           axisBottom(x)
-            .ticks(4)
+            .ticks(2)
             .tickFormat(d => `${value(d)}${this.unit}`)
         )
     },

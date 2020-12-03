@@ -36,7 +36,8 @@ export default function({
       totalRenewables = 0,
       totalMarketValue = 0,
       totalCoal = 0,
-      totalGas = 0
+      totalGas = 0,
+      totalImportsExports = 0
 
     domainPowerEnergy.forEach(domain => {
       const id = domain.id
@@ -127,6 +128,10 @@ export default function({
         totalGas += d[id] || 0
       }
 
+      if (ft === FT.IMPORTS || ft === FT.EXPORTS) {
+        totalImportsExports += d[id] || 0
+      }
+
       totalDemand += d[id] || 0
 
       if (d[id] < 0) {
@@ -172,9 +177,14 @@ export default function({
     dataset[i]._totalCoal = totalCoal
     dataset[i]._totalDemandCoalProportion =
       (totalCoal / totalEnergyForPercentageCalculation) * 100
+
     dataset[i]._totalGas = totalGas
     dataset[i]._totalDemandGasProportion =
       (totalGas / totalEnergyForPercentageCalculation) * 100
+
+    dataset[i]._totalImportsExports = totalImportsExports
+    dataset[i]._totalDemandImportsExportsProportion =
+      (totalImportsExports / totalEnergyForPercentageCalculation) * 100
 
     dataset[i]._totalSources = totalSources
     dataset[i]._totalGeneration = totalGeneration

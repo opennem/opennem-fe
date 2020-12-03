@@ -63,9 +63,20 @@ export const metrics = [
     legendType: 'swatch'
   },
   {
+    label: 'Net Interconnector Flow (of demand)',
+    value: 'netInterconnectorFlow',
+    divisor: 50, // -25 to 25.
+    offset: 25,
+    domain: [0, 0.5, 1],
+    range: ['#2E69A3', '#F5EDE9', '#AC3837'],
+    unit: '%',
+    legendType: 'ramp'
+  },
+  {
     label: 'Temperature',
     value: 'temperature',
-    divisor: 50, // -10 to 50, offset 10 (0 to 40)
+    divisor: 60, // -10 to 50
+    offset: 10,
     domain: [0, 0.3, 0.6, 1],
     range: ['#08306B', '#9ECAE1', '#FD9272', '#67000D'],
     unit: '°C',

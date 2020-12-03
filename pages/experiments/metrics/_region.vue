@@ -43,6 +43,7 @@
             : selectedMetricObject.unit
         "
         :multiplier="selectedMetricObject.divisor"
+        :offset="selectedMetricObject.offset"
         :colour-range="selectedMetricObject.range"
         :colour-domain="selectedMetricObject.domain"
         :colour-domain-label="selectedMetricObject.domainLabel"
@@ -95,6 +96,7 @@
               :tooltip-value-prop="selectedMetricObject.valueProp ? selectedMetricObject.valueProp : selectedMetric"
               :unit="selectedMetricObject.unit"
               :divisor="selectedMetricObject.divisor"
+              :offset="selectedMetricObject.offset"
               :colour-range="selectedMetricObject.range"
               :colour-domain="selectedMetricObject.domain"
               :date-format-string="selectedPeriodObject.dateFormatString"
@@ -119,6 +121,7 @@
             :tooltip-value-prop="selectedMetricObject.valueProp ? selectedMetricObject.valueProp : selectedMetric"
             :unit="selectedMetricObject.unit"
             :divisor="selectedMetricObject.divisor"
+            :offset="selectedMetricObject.offset"
             :colour-range="selectedMetricObject.range"
             :colour-domain="selectedMetricObject.domain"
             :date-format-string="selectedPeriodObject.dateFormatString"
@@ -299,7 +302,7 @@ export default {
                 const yearInt = parseInt(year)
                 const last = new Date(yearInt, 11, 31)
                 const start = new Date(yearInt, 0, 1)
-                const propData = this.getProportionsDataset(
+                const propData = this.generateDataset(
                   d.dataset,
                   d.domainPowerEnergy,
                   d.domainEmissions,
@@ -313,7 +316,8 @@ export default {
                   gasProportion: propData,
                   coalProportion: propData,
                   importsExports: propData,
-                  temperature: propData
+                  temperature: propData,
+                  netInterconnectorFlow: propData
                 })
               })
             }, 500 * yIndex)
@@ -338,7 +342,7 @@ export default {
             period: 'All',
             groupName: this.fuelTechGroupName
           }).then(d => {
-            const propData = this.getProportionsDataset(
+            const propData = this.generateDataset(
               d.currentDataset,
               d.currentDomainPowerEnergy,
               d.currentDomainEmissions,
@@ -355,14 +359,15 @@ export default {
               gasProportion: propData,
               coalProportion: propData,
               importsExports: propData,
-              temperature: propData
+              temperature: propData,
+              netInterconnectorFlow: propData
             })
           })
         }, 500 * i)
       })
     },
 
-    getProportionsDataset(
+    generateDataset(
       dataset,
       domainPowerEnergy,
       domainEmissions,
@@ -440,7 +445,8 @@ export default {
         gas: null,
         temperature: null,
         importsExports: null,
-        sumImportsExports: null
+        sumImportsExports: null,
+        netInterconnectorFlow: null
       }
     },
 
@@ -503,6 +509,7 @@ export default {
         obj.temperature = temperature
         obj.importsExports = importsExports
         obj.sumImportsExports = sumImportsExports
+        obj.netInterconnectorFlow = d._totalDemandImportsExportsProportion
       }
 
       return obj
