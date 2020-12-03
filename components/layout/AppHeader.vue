@@ -1,27 +1,27 @@
 <template>
   <header :class="{ 'facilities-header': isFacilitiesView }">
     <div class="header-dropdowns">
-      <div 
-        class="logo-wrapper" 
+      <div
+        class="logo-wrapper"
         @click="toggleDrawer">
-        <i 
-          v-if="ready && widthBreak" 
+        <i
+          v-if="ready && widthBreak"
           class="fal fa-ellipsis-v" />
         <app-logo class="header-logo" />
         <h1 v-if="ready && widthBreak">{{ regionLabel }}</h1>
       </div>
-      <view-dropdown 
-        v-if="!widthBreak" 
+      <view-dropdown
+        v-if="!widthBreak"
         class="selection" />
-      <region-dropdown 
-        v-if="!widthBreak" 
+      <region-dropdown
+        v-if="!widthBreak"
         class="selection" />
     </div>
 
-    <div v-if="showMore">
-      <app-drawer 
-        v-if="widthBreak" 
-        :open="openDrawer" 
+    <div>
+      <app-drawer
+        v-if="widthBreak"
+        :open="openDrawer"
         @close="closeDrawer" />
 
       <div
@@ -41,8 +41,8 @@
         </button>
       </div>
 
-      <div 
-        v-if="!widthBreak" 
+      <div
+        v-if="!widthBreak"
         class="share-button-wrapper">
         <button
           v-on-clickaway="handleClickAway"
@@ -50,14 +50,14 @@
           class="share-button button is-rounded"
           @click="handleShareButtonClicked"
         >
-          <img 
-            src="~/assets/img/share-icon.svg" 
+          <img
+            src="~/assets/img/share-icon.svg"
             alt="Share icon" >
           <span class="label-image">Export</span>
         </button>
         <transition name="slide-down-fade">
-          <div 
-            v-if="showShareMenu" 
+          <div
+            v-if="showShareMenu"
             class="share-menu dropdown-menu">
             <div class="dropdown-content">
               <a
@@ -68,11 +68,11 @@
                 <i class="fal fa-fw fa-chart-bar" />
                 <span class="label-image">PNG</span>
               </a>
-              <a 
-                class="dropdown-item button" 
+              <a
+                class="dropdown-item button"
                 @click="handleExportDataClick">
-                <download-csv 
-                  :data="exportData" 
+                <download-csv
+                  :data="exportData"
                   :name="`${filename}.csv`">
                   <i class="fal fa-fw fa-table" />
                   <span class="label-csv">CSV</span>
@@ -242,10 +242,6 @@ export default {
     },
     focusOn() {
       return this.$store.getters.focusOn
-    },
-    showMore() {
-      const view = this.$store.getters.currentView
-      return view === 'energy' || view === 'facilities'
     }
   },
 
