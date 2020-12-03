@@ -23,9 +23,14 @@ module.exports = {
   },
 
   head: {
+    htmlAttrs: {
+      lang: 'en-AU',
+      translate: 'no'
+    },
     titleTemplate: 'OpenNEM%s',
     meta: [
       { charset: 'utf-8' },
+      { 'http-equiv': 'content-language', content: 'en-AU' },
       {
         name: 'viewport',
         content: 'width=device-width, initial-scale=1, user-scalable=no'
