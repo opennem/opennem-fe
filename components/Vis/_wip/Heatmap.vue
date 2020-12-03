@@ -78,6 +78,10 @@ export default {
     unit: {
       type: String,
       default: ''
+    },
+    hoverDate: {
+      type: Date,
+      default: null
     }
   },
 
@@ -107,7 +111,8 @@ export default {
     svgWidth() {
       this.setupWidthHeight(this.dataset)
       this.update(this.dataset)
-    }
+    },
+    hoverDate(date) {}
   },
 
   mounted() {
@@ -196,12 +201,12 @@ export default {
               : '—'
           const date = format(d.date, self.dateFormatString)
           const valueString = `${value}${self.unit}`
-          const text = `
-          <b>${format(d.date, self.dateFormatString)}</b>:
-          ${value}${self.unit}
-        `
 
-          self.$emit('rect-mousemove', { id: self._uid, date, valueString })
+          self.$emit('rect-mousemove', {
+            id: self._uid,
+            date: d.date,
+            value: d[self.tooltipValueProp]
+          })
 
           self.$tooltip
             .style('left', bandScale(d.time) + 'px')

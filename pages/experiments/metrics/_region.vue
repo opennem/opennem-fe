@@ -62,21 +62,18 @@
         class="vis-section"
       >
 
-        <!-- <div id="hover-line" /> -->
-
-        <!-- <header
-          :id="`region-${d.regionId}`">
-          <h4 v-if="!d.yearlyData">
-            {{ d.region }}
-          </h4>
-        </header> -->
+        <div
+          v-if="hoverDate && d.yearlyData"
+          class="hover-date-value">
+          <span class="date">{{ getHoverDate(hoverDate) }}</span>
+          <span class="value">{{ valueFormat(hoverValue) }}{{ selectedMetricObject.unit }}</span>
+        </div>
 
         <div
-          v-if="hoverDate && d.regionId === hoverRegion"
-          :style="{ top: d.yearlyData ? '-25px' : '-25px'}"
+          v-if="hoverDate && !d.yearlyData"
           class="hover-date-value">
-          <span class="date">{{ hoverDate }}</span>
-          <span class="value">{{ hoverValueString }}</span>
+          <span class="date">{{ getHoverDate(hoverDate) }}</span>
+          <span class="value">{{ getHoverValue(d[selectedMetric], hoverDate) }}</span>
         </div>
 
         <div v-if="d.yearlyData">
@@ -101,6 +98,7 @@
               :colour-domain="selectedMetricObject.domain"
               :date-format-string="selectedPeriodObject.dateFormatString"
               :number-format-string="selectedMetricObject.numberFormatString"
+              :hover-date="hoverDate"
               @rect-mousemove="obj => {
                 handleMousemove(obj, d.regionId)
               }"
@@ -127,6 +125,7 @@
             :colour-domain="selectedMetricObject.domain"
             :date-format-string="selectedPeriodObject.dateFormatString"
             :number-format-string="selectedMetricObject.numberFormatString"
+            :hover-date="hoverDate"
             @rect-mousemove="obj => {
               handleMousemove(obj, d.regionId)
             }"
@@ -144,6 +143,7 @@
 import { mapGetters, mapActions } from 'vuex'
 import { extent } from 'd3-array'
 import { select, mouse } from 'd3-selection'
+import { format as numFormat } from 'd3-format'
 import debounce from 'lodash.debounce'
 import addDays from 'date-fns/addDays'
 import format from 'date-fns/format'
@@ -182,7 +182,7 @@ export default {
         d => d.id !== 'all' && d.id !== 'nem' && d.id !== 'wem'
       ),
       hoverDate: null,
-      hoverValueString: '',
+      hoverValue: null,
       hoverRegion: ''
     }
   },
@@ -420,14 +420,14 @@ export default {
       return data
     },
 
-    handleMousemove({ id, date, valueString }, regionId) {
+    handleMousemove({ id, date, value }, regionId) {
       this.hoverRegion = regionId
       this.hoverDate = date
-      this.hoverValueString = valueString
+      this.hoverValue = value
     },
     handleMouseout() {
       this.hoverDate = null
-      this.hoverValueString = ''
+      this.hoverValue = null
     },
 
     getDateRange(data) {
@@ -435,6 +435,25 @@ export default {
       const firstDate = format(data[0].date, formatString)
       const lastDate = format(data[data.length - 1].date, formatString)
       return `${firstDate} – ${lastDate}`
+    },
+
+    getHoverDate(date) {
+      return format(date, this.selectedPeriodObject.dateFormatString)
+    },
+
+    getHoverValue(data, date) {
+      const find = data.find(d => d.time === date.getTime())
+      return find && find[this.selectedMetric]
+        ? `${this.valueFormat(find[this.selectedMetric])}${
+            this.selectedMetricObject.unit
+          }`
+        : '—'
+    },
+
+    valueFormat(value) {
+      const numberFormatString =
+        this.selectedMetricObject.numberFormatString || ',.0f'
+      return numFormat(numberFormatString)(value)
     },
 
     createEmptyObj(date, time) {
@@ -599,6 +618,7 @@ export default {
   align-items: flex-end;
   position: absolute;
   right: 0;
+  top: -25px;
   span {
     padding: 3px 12px 2px;
     white-space: nowrap;
@@ -614,14 +634,14 @@ export default {
     background-color: rgba(255, 255, 255, 0.5);
   }
 }
-#hover-line {
-  background-color: red;
-  width: 1px;
-  height: 400px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 99;
-  opacity: 0;
-}
+// #hover-line {
+//   background-color: red;
+//   width: 1px;
+//   height: 400px;
+//   position: absolute;
+//   top: 0;
+//   left: 0;
+//   z-index: 99;
+//   opacity: 0;
+// }
 </style>
