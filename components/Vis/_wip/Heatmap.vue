@@ -174,7 +174,9 @@ export default {
         .style('height', `${barHeight}px`)
 
       this.$svg.selectAll('.cell').remove()
-      const g = this.$svg.selectAll('.cell').data(data)
+
+      const $rectGroup = this.$svg.append('g').attr('class', 'rect-group')
+      const g = $rectGroup.selectAll('.cell').data(data)
 
       const rect = g
         .enter()
@@ -201,44 +203,52 @@ export default {
             : 'rgba(255, 255, 255, 0.3)'
         })
 
-      rect
-        .on('mouseenter', function(d) {
-          // const m = mouse(this)
-          // const $this = select(this)
-          // const value =
-          //   d[self.tooltipValueProp] || d[self.tooltipValueProp] === 0
-          //     ? numFormat(self.numberFormatString)(d[self.tooltipValueProp])
-          //     : '—'
-          // const date = format(d.date, self.dateFormatString)
-          // const valueString = `${value}${self.unit}`
+      const hoverLayer = this.$svg
+        .append('g')
+        .attr('class', 'hover-layer')
+        .append('rect')
+        .attr('width', this.width)
+        .attr('height', this.height)
+        .on('mousemove touchmove', function() {
+          const m = mouse(this)
+          const index = Math.round(m[0] / self.bandScale.step())
+          const time = self.bandScale.domain()[index]
+          // const date = self.bandScale.invert(m[0])
+
+          const point = data.find(d => d.time === time)
 
           self.$emit('rect-mousemove', {
             id: self._uid,
-            date: d.date,
-            value: d[self.tooltipValueProp]
+            date: new Date(time),
+            value: point[self.tooltipValueProp]
           })
-
           self.$tooltip
-            .style('left', self.bandScale(d.time) + 'px')
+            .style('left', self.bandScale(time) + 'px')
             .style('pointer-events', 'none')
             .style('opacity', 1)
-
-          // $this.attr('stroke-width', 1).attr('stroke', 'red')
-          // $this.style('opacity', 0.9)
-          // self.$tooltip
-          //   .html(text)
-          //   .style('left', m[0] + 4 + 'px')
-          //   .style('top', m[1] - 14 + 'px')
-          //   .style('pointer-events', 'none')
-          //   .style('opacity', 1)
         })
-        .on('mouseout', function() {
-          // const $this = select(this)
-          // $this.attr('stroke-width', 0)
-          // $this.style('opacity', 1)
+        .on('mouseleave', function() {
           self.$tooltip.style('opacity', 0)
           self.$emit('rect-mouseout')
         })
+
+      //       rect
+      //         .on('mouseenter', function(d) {
+      //           self.$emit('rect-mousemove', {
+      //             id: self._uid,
+      //             date: d.date,
+      //             value: d[self.tooltipValueProp]
+      //           })
+      //
+      //           self.$tooltip
+      //             .style('left', self.bandScale(d.time) + 'px')
+      //             .style('pointer-events', 'none')
+      //             .style('opacity', 1)
+      //         })
+      //         .on('mouseout', function() {
+      //           self.$tooltip.style('opacity', 0)
+      //           self.$emit('rect-mouseout')
+      //         })
     }
   }
 }
