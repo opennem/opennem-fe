@@ -1,6 +1,6 @@
 <template>
   <div class="container-fluid">
-    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+    <div class="options-legend-wrapper">
       <div class="options">
         <!-- <label for="">Period</label> -->
         <!-- <strong>
@@ -548,9 +548,23 @@ export default {
   padding: 1rem 16px;
   height: 100%;
 }
+
+.options-legend-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  @include mobile {
+    display: block;
+  }
+}
 .options {
   display: flex;
   align-items: center;
+
+  @include mobile {
+    margin-bottom: 1rem;
+  }
 
   & > * {
     // margin: 0 1rem;
