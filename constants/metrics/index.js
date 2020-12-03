@@ -73,8 +73,18 @@ export const metrics = [
     legendType: 'ramp'
   },
   {
-    label: 'Temperature',
+    label: 'Average Temperature',
     value: 'temperature',
+    divisor: 60, // -10 to 50
+    offset: 10,
+    domain: [0, 0.3, 0.6, 1],
+    range: ['#08306B', '#9ECAE1', '#FD9272', '#67000D'],
+    unit: '°C',
+    legendType: 'ramp'
+  },
+  {
+    label: 'Max Temperature',
+    value: 'maxTemperature',
     divisor: 60, // -10 to 50
     offset: 10,
     domain: [0, 0.3, 0.6, 1],

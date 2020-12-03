@@ -317,6 +317,7 @@ export default {
                   coalProportion: propData,
                   importsExports: propData,
                   temperature: propData,
+                  maxTemperature: propData,
                   netInterconnectorFlow: propData
                 })
               })
@@ -360,6 +361,7 @@ export default {
               coalProportion: propData,
               importsExports: propData,
               temperature: propData,
+              maxTemperature: propData,
               netInterconnectorFlow: propData
             })
           })
@@ -444,6 +446,7 @@ export default {
         gasProportion: null,
         gas: null,
         temperature: null,
+        maxTemperature: null,
         importsExports: null,
         sumImportsExports: null,
         netInterconnectorFlow: null
@@ -461,6 +464,7 @@ export default {
         let totalEmissions = 0,
           totalPowerEnergy = 0,
           temperature = null,
+          maxTemperature = null,
           sumImportsExports = 0,
           hasImportsExportsValue = false,
           importsExports = null
@@ -482,6 +486,9 @@ export default {
         domainTemperature.forEach(domain => {
           if (domain.type === 'temperature_mean') {
             temperature = d[domain.id]
+          }
+          if (domain.type === 'temperature_max') {
+            maxTemperature = d[domain.id]
           }
         })
 
@@ -507,6 +514,7 @@ export default {
           d._totalDemandGasProportion < 0 ? 0 : d._totalDemandGasProportion
         obj.gas = d._totalGas
         obj.temperature = temperature
+        obj.maxTemperature = maxTemperature
         obj.importsExports = importsExports
         obj.sumImportsExports = sumImportsExports
         obj.netInterconnectorFlow = d._totalDemandImportsExportsProportion
