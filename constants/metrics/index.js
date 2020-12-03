@@ -51,17 +51,17 @@ export const metrics = [
     unit: '%',
     legendType: 'ramp'
   },
-  {
-    label: 'Net Exports/Imports',
-    value: 'importsExports',
-    valueProp: 'sumImportsExports',
-    divisor: 'importsExports',
-    domain: [0, 1],
-    domainLabel: ['Net exports', 'Net imports'],
-    range: ['#977AB1', '#44146F'],
-    unit: ' GWh',
-    legendType: 'swatch'
-  },
+  // {
+  //   label: 'Net Exports/Imports',
+  //   value: 'importsExports',
+  //   valueProp: 'sumImportsExports',
+  //   divisor: 'importsExports',
+  //   domain: [0, 1],
+  //   domainLabel: ['Net exports', 'Net imports'],
+  //   range: ['#977AB1', '#44146F'],
+  //   unit: ' GWh',
+  //   legendType: 'swatch'
+  // },
   {
     label: 'Net Interconnector Flow (of demand)',
     value: 'netInterconnectorFlow',
