@@ -91,14 +91,10 @@
               :dataset="yData[selectedMetric]"
               :value-prop="selectedMetric"
               :tooltip-value-prop="selectedMetricObject.valueProp ? selectedMetricObject.valueProp : selectedMetric"
-              :unit="selectedMetricObject.unit"
               :divisor="selectedMetricObject.divisor"
               :offset="selectedMetricObject.offset"
               :colour-range="selectedMetricObject.range"
               :colour-domain="selectedMetricObject.domain"
-              :date-format-string="selectedPeriodObject.dateFormatString"
-              :number-format-string="selectedMetricObject.numberFormatString"
-              :hover-date="hoverDate"
               @rect-mousemove="obj => {
                 handleMousemove(obj, d.regionId)
               }"
@@ -118,13 +114,10 @@
             :dataset="d[selectedMetric]"
             :value-prop="selectedMetric"
             :tooltip-value-prop="selectedMetricObject.valueProp ? selectedMetricObject.valueProp : selectedMetric"
-            :unit="selectedMetricObject.unit"
             :divisor="selectedMetricObject.divisor"
             :offset="selectedMetricObject.offset"
             :colour-range="selectedMetricObject.range"
             :colour-domain="selectedMetricObject.domain"
-            :date-format-string="selectedPeriodObject.dateFormatString"
-            :number-format-string="selectedMetricObject.numberFormatString"
             :hover-date="hoverDate"
             @rect-mousemove="obj => {
               handleMousemove(obj, d.regionId)

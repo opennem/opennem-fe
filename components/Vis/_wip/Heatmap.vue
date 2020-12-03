@@ -67,18 +67,18 @@ export default {
       type: Array,
       default: () => []
     },
-    dateFormatString: {
-      type: String,
-      default: 'd MMM y'
-    },
-    numberFormatString: {
-      type: String,
-      default: ',.0f'
-    },
-    unit: {
-      type: String,
-      default: ''
-    },
+    // dateFormatString: {
+    //   type: String,
+    //   default: 'd MMM y'
+    // },
+    // numberFormatString: {
+    //   type: String,
+    //   default: ',.0f'
+    // },
+    // unit: {
+    //   type: String,
+    //   default: ''
+    // },
     hoverDate: {
       type: Date,
       default: null
@@ -88,7 +88,8 @@ export default {
   data() {
     return {
       width: null,
-      height: null
+      height: null,
+      bandScale: null
     }
   },
 
@@ -112,7 +113,16 @@ export default {
       this.setupWidthHeight(this.dataset)
       this.update(this.dataset)
     },
-    hoverDate(date) {}
+    hoverDate(date) {
+      if (date) {
+        this.$tooltip
+          .style('left', this.bandScale(date.getTime()) + 'px')
+          .style('pointer-events', 'none')
+          .style('opacity', 1)
+      } else {
+        this.$tooltip.style('opacity', 0)
+      }
+    }
   },
 
   mounted() {
@@ -152,7 +162,7 @@ export default {
       const colourScale = scaleLinear()
         .domain(this.colourDomain)
         .range(this.colourRange)
-      const bandScale = scaleBand()
+      this.bandScale = scaleBand()
         .domain(data.map(d => d.time))
         .range([0, this.width])
 
@@ -170,8 +180,8 @@ export default {
         .enter()
         .append('rect')
         .attr('class', 'cell')
-        .attr('x', (d, i) => bandScale(d.time))
-        .attr('width', bandScale.bandwidth())
+        .attr('x', (d, i) => this.bandScale(d.time))
+        .attr('width', this.bandScale.bandwidth())
         .attr('height', barHeight)
         .attr('rx', this.radius)
         .style('shape-rendering', 'crispEdges')
@@ -195,12 +205,12 @@ export default {
         .on('mouseenter', function(d) {
           // const m = mouse(this)
           // const $this = select(this)
-          const value =
-            d[self.tooltipValueProp] || d[self.tooltipValueProp] === 0
-              ? numFormat(self.numberFormatString)(d[self.tooltipValueProp])
-              : '—'
-          const date = format(d.date, self.dateFormatString)
-          const valueString = `${value}${self.unit}`
+          // const value =
+          //   d[self.tooltipValueProp] || d[self.tooltipValueProp] === 0
+          //     ? numFormat(self.numberFormatString)(d[self.tooltipValueProp])
+          //     : '—'
+          // const date = format(d.date, self.dateFormatString)
+          // const valueString = `${value}${self.unit}`
 
           self.$emit('rect-mousemove', {
             id: self._uid,
@@ -209,7 +219,7 @@ export default {
           })
 
           self.$tooltip
-            .style('left', bandScale(d.time) + 'px')
+            .style('left', self.bandScale(d.time) + 'px')
             .style('pointer-events', 'none')
             .style('opacity', 1)
 
