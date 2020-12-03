@@ -25,7 +25,7 @@
         @close="closeDrawer" />
 
       <div
-        v-if="!isFacilitiesView"
+        v-if="!isFacilitiesView && showButtons"
         :class="{ hide: widthBreak }"
         class="more-buttons"
       >
@@ -42,7 +42,7 @@
       </div>
 
       <div
-        v-if="!widthBreak"
+        v-if="!widthBreak && showButtons"
         class="share-button-wrapper">
         <button
           v-on-clickaway="handleClickAway"
@@ -242,6 +242,10 @@ export default {
     },
     focusOn() {
       return this.$store.getters.focusOn
+    },
+    showButtons() {
+      const view = this.$store.getters.currentView
+      return view === 'energy' || view === 'facilities'
     }
   },
 
@@ -371,9 +375,11 @@ header {
     .share-button-wrapper {
       position: absolute;
       left: 50%;
+      top: 12px;
       margin-left: -50px;
 
       @include desktop {
+        top: 12px;
         margin-left: -90px;
       }
 
