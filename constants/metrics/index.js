@@ -80,6 +80,7 @@ export const metrics = [
     domain: [0, 0.3, 0.6, 1],
     range: ['#08306B', '#9ECAE1', '#FD9272', '#67000D'],
     unit: '°C',
+    numberFormatString: ',.1f',
     legendType: 'ramp'
   },
   {
@@ -90,6 +91,7 @@ export const metrics = [
     domain: [0, 0.3, 0.6, 1],
     range: ['#08306B', '#9ECAE1', '#FD9272', '#67000D'],
     unit: '°C',
+    numberFormatString: ',.1f',
     legendType: 'ramp'
   }
 ]

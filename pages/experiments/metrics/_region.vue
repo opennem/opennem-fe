@@ -100,6 +100,7 @@
               :colour-range="selectedMetricObject.range"
               :colour-domain="selectedMetricObject.domain"
               :date-format-string="selectedPeriodObject.dateFormatString"
+              :number-format-string="selectedMetricObject.numberFormatString"
               @rect-mousemove="obj => {
                 handleMousemove(obj, d.regionId)
               }"
@@ -125,6 +126,7 @@
             :colour-range="selectedMetricObject.range"
             :colour-domain="selectedMetricObject.domain"
             :date-format-string="selectedPeriodObject.dateFormatString"
+            :number-format-string="selectedMetricObject.numberFormatString"
             @rect-mousemove="obj => {
               handleMousemove(obj, d.regionId)
             }"

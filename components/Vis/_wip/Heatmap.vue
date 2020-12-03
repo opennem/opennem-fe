@@ -71,6 +71,10 @@ export default {
       type: String,
       default: 'd MMM y'
     },
+    numberFormatString: {
+      type: String,
+      default: ',.0f'
+    },
     unit: {
       type: String,
       default: ''
@@ -188,7 +192,7 @@ export default {
           // const $this = select(this)
           const value =
             d[self.tooltipValueProp] || d[self.tooltipValueProp] === 0
-              ? numFormat(',.0f')(d[self.tooltipValueProp])
+              ? numFormat(self.numberFormatString)(d[self.tooltipValueProp])
               : '—'
           const date = format(d.date, self.dateFormatString)
           const valueString = `${value}${self.unit}`
