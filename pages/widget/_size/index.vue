@@ -4,8 +4,8 @@
       <div
         v-if="!ready"
         class="vis-table-container loading-containers">
-        <div 
-          class="vis-container" 
+        <div
+          class="vis-container"
           style="width: 100%">
           <div
             class="loader-block"
@@ -17,9 +17,9 @@
       </div>
     </transition>
 
-    <div 
-      v-if="ready" 
-      class="vis-legend-container" 
+    <div
+      v-if="ready"
+      class="vis-legend-container"
     >
       <div class="vis-table-container">
         <vis-section
@@ -28,9 +28,9 @@
           class="vis-container"
           @dateHover="handleDateHover"
           @isHovering="handleIsHovering" />
-        <summary-section 
+        <summary-section
           v-if="isLargeSize"
-          :show-records="false" 
+          :show-records="false"
           :show-donut-bar="false"
           :hover-date="hoverDate"
           :is-hovering="isHovering"
@@ -89,9 +89,6 @@ export default {
       ready: 'regionEnergy/ready',
       currentDataset: 'regionEnergy/currentDataset'
     }),
-    regionId() {
-      return 'nem'
-    },
     size() {
       return this.$route.params.size || 'small'
     },
@@ -118,9 +115,9 @@ export default {
   created() {
     this.$store.dispatch('currentView', 'energy')
     this.doGetRegionData({
-      region: this.regionId,
-      range: this.range,
-      interval: this.interval,
+      region: 'nem',
+      range: this.isLargeSize ? '7D' : '3D',
+      interval: '30m',
       period: this.filterPeriod,
       groupName: this.fuelTechGroupName
     })
