@@ -133,7 +133,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { extent } from 'd3-array'
 import { select, mouse } from 'd3-selection'
 import { format as numFormat } from 'd3-format'
@@ -236,10 +236,12 @@ export default {
     this.getData(this.regionId, this.selectedPeriod)
 
     this.width = this.$el.offsetWidth - 32
+    this.setWindowWidth(window.innerWidth)
 
     window.addEventListener(
       'resize',
       debounce(() => {
+        this.setWindowWidth(window.innerWidth)
         this.width =
           this.$el.offsetWidth === 0 ? this.width : this.$el.offsetWidth - 32
       }),
@@ -270,6 +272,10 @@ export default {
     ...mapActions({
       doGetRegionData: 'regionEnergy/doGetRegionData',
       doGetYearRegionData: 'regionEnergy/doGetYearRegionData'
+    }),
+
+    ...mapMutations({
+      setWindowWidth: 'app/windowWidth'
     }),
 
     getData(id, period) {
