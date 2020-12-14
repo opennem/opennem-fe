@@ -1,5 +1,6 @@
 import startOfWeek from 'date-fns/startOfWeek'
 import endOfWeek from 'date-fns/endOfWeek'
+import startOfDay from 'date-fns/startOfDay'
 import isAfter from 'date-fns/isAfter'
 import isBefore from 'date-fns/isBefore'
 
@@ -20,7 +21,7 @@ export default function(domains, data, rollUp) {
       }
     }
     if (i === data.length - 1) {
-      const end = endOfWeek(d.date, { weekStartsOn: 1 })
+      const end = startOfDay(endOfWeek(d.date, { weekStartsOn: 1 }))
       isIncompleteEnd = isBefore(d.date, end)
       if (isIncompleteEnd) {
         incompleteEndDate = d.date
