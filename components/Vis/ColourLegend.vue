@@ -100,7 +100,7 @@ export default {
     return {
       margin: {
         top: 0,
-        right: 0,
+        right: 1,
         bottom: 20,
         left: 20
       }
@@ -118,6 +118,9 @@ export default {
       this.update()
     },
     type() {
+      this.update()
+    },
+    svgWidth() {
       this.update()
     }
   },

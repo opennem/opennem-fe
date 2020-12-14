@@ -35,7 +35,7 @@
 
       <ColourLegend
         v-if="regionData.length > 0"
-        :svg-width="310"
+        :svg-width="widthBreak ? width : 310"
         :svg-height="30"
         :unit="
           selectedMetricObject.value === 'carbonIntensity'
@@ -185,7 +185,8 @@ export default {
       range: 'range',
       interval: 'interval',
       filterPeriod: 'filterPeriod',
-      fuelTechGroupName: 'fuelTechGroupName'
+      fuelTechGroupName: 'fuelTechGroupName',
+      widthBreak: 'app/widthBreak'
     }),
 
     selectedPeriod: {
