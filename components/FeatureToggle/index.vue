@@ -1,9 +1,15 @@
 <template>
   <div class="panel">
-    <div class="panel-heading">Feature Toggle</div>
-    <label class="panel-block">
-      <input 
-        v-model="featureEmissions" 
+    <button
+      class="delete close-btn is-small"
+      aria-label="delete"
+      @click="handleDoneClick" />
+    <div class="panel-heading">Features</div>
+    <label 
+      class="panel-block" 
+      @click.stop>
+      <input
+        v-model="featureEmissions"
         type="checkbox" >
       Emissions Charts
     </label>
@@ -15,28 +21,23 @@
         Region Compare Charts
       </label> -->
 
-    <label class="panel-block">
-      <input 
-        v-model="featureV3Paths" 
+    <label 
+      class="panel-block" 
+      @click.stop>
+      <input
+        v-model="featureV3Paths"
         type="checkbox" >
       Use v3 paths
     </label>
 
-    <label class="panel-block">
-      <input 
-        v-model="featureMetrics" 
+    <label 
+      class="panel-block" 
+      @click.stop>
+      <input
+        v-model="featureMetrics"
         type="checkbox" >
       Show Metrics view
     </label>
-
-    <div class="panel-block">
-      <button
-        class="button is-primary is-outlined is-fullwidth"
-        @click="handleDoneClick"
-      >
-        Done
-      </button>
-    </div>
   </div>
 </template>
 
@@ -91,9 +92,40 @@ export default {
 @import '~/assets/scss/variables.scss';
 .panel {
   background-color: #fff;
+  position: relative;
+  font-size: 0.9em;
+  max-width: 200px;
+  box-shadow: 1px 1px 2px rgba(10, 10, 10, 0.1);
+  border-radius: 4px;
+
+  &::after {
+    content: '';
+    transform: rotate(45deg);
+    background: #fff;
+    bottom: -5px;
+    right: 10px;
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    z-index: -1;
+  }
 
   .panel-heading {
     background-color: #f5f5f5;
+    font-size: 12px;
+    font-family: $header-font-family;
+  }
+
+  .close-btn {
+    position: absolute;
+    right: -8px;
+    top: -8px;
+    border: 4px solid #f5f5f5;
+    min-width: 22px;
+    max-width: 22px;
+    min-height: 22px;
+    max-height: 22px;
+    background-color: #999;
   }
 }
 .button.is-primary {

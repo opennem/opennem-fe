@@ -1,74 +1,90 @@
 <template>
-  <footer class="has-background-warning">
-    <div class="left">
-      <div class="version">
-        <span
-          v-if="isDev"
-          class="tag">DEV</span>
-        <strong>v{{ version }} beta</strong>
-      </div>
-      <div
-        v-if="hasAPIversion"
-        class="version">
-        API: <strong>{{ apiVersion }}</strong>
-      </div>
-      <div class="sources">
-        Sources:
-        <a
-          href="https://www.aemo.com.au/"
-          title="Link to AEMO">AEMO</a>,
-        <a
-          href="http://apvi.org.au/"
-          title="Link to APVI">APVI</a>,
-        <a
-          href="http://www.bom.gov.au/"
-          title="Link to BoM">BoM</a>
-      </div>
-    </div>
+  <div>
+    <transition name="slide-up-fade">
+      <FeatureToggle
+        v-if="showFeatureToggle"
+        :style="{ right: `${featureRightPos}px`, bottom: `${featrueBottomPos}px` }"
+        class="features"
+        @done="setShowFeatureToggle(false)" />
+    </transition>
 
-    <div class="right">
-      <!-- <nuxt-link
-        class="icon-link"
-        to="/features/">
-        <i class="fal fa-vial" />
-      </nuxt-link> -->
+    <footer class="has-background-warning">
+      <div class="left">
+        <div class="version">
+          <span
+            v-if="isDev"
+            class="tag">DEV</span>
+          <strong>v{{ version }} beta</strong>
+        </div>
+        <div
+          v-if="hasAPIversion"
+          class="version">
+          API: <strong>{{ apiVersion }}</strong>
+        </div>
+        <div class="sources">
+          Sources:
+          <a
+            href="https://www.aemo.com.au/"
+            title="Link to AEMO">AEMO</a>,
+          <a
+            href="http://apvi.org.au/"
+            title="Link to APVI">APVI</a>,
+          <a
+            href="http://www.bom.gov.au/"
+            title="Link to BoM">BoM</a>
+        </div>
+      </div>
 
-      <a
-        class="icon-link"
-        @click="handleFeatureToggleClick">
-        <i class="fal fa-vial" />
-      </a>
+      <div class="right">
+        <a
+          ref="featureElement"
+          class="icon-link"
+          @click.stop="handleFeatureToggleClick">
+          <i class="fal fa-vial" />
+        </a>
 
-      <a
-        class="icon-link"
-        href="https://twitter.com/opennem">
-        <i class="fab fa-twitter" />
-      </a>
-      <a
-        class="icon-link"
-        href="https://github.com/opennem">
-        <i class="fab fa-github" />
-      </a>
-      <nuxt-link
-        to="/about/"
-        class="about-link">About OpenNEM</nuxt-link>
-    </div>
-  </footer>
+        <a
+          class="icon-link"
+          href="https://twitter.com/opennem">
+          <i class="fab fa-twitter" />
+        </a>
+        <a
+          class="icon-link"
+          href="https://github.com/opennem">
+          <i class="fab fa-github" />
+        </a>
+        <nuxt-link
+          to="/about/"
+          class="about-link">About OpenNEM</nuxt-link>
+      </div>
+    </footer>
+  </div>
+
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
+import FeatureToggle from '@/components/FeatureToggle'
+
 export default {
+  components: {
+    FeatureToggle
+  },
+
   data() {
     return {
-      version: this.$config.version
+      version: this.$config.version,
+      featureRightPos: 0,
+      featrueBottomPos: 0
     }
   },
 
   computed: {
     ...mapGetters({
       hostEnv: 'hostEnv',
-      apiVersion: 'app/apiVersion'
+      apiVersion: 'app/apiVersion',
+      showFeatureToggle: 'app/showFeatureToggle',
+      widthBreak: 'app/widthBreak'
     }),
 
     isDev() {
@@ -81,8 +97,21 @@ export default {
   },
 
   methods: {
+    ...mapMutations({
+      setShowFeatureToggle: 'app/showFeatureToggle'
+    }),
     handleFeatureToggleClick() {
-      this.$emit('showFeatureToggle')
+      this.featrueBottomPos = this.widthBreak
+        ? window.innerHeight -
+          this.$refs.featureElement.getBoundingClientRect().top
+        : 9
+
+      this.featureRightPos =
+        window.innerWidth -
+        this.$refs.featureElement.getBoundingClientRect().left -
+        22
+
+      this.setShowFeatureToggle(true)
     }
   }
 }
@@ -91,6 +120,12 @@ export default {
 <style lang="scss" scoped>
 @import '~/assets/scss/responsive-mixins.scss';
 @import '~/assets/scss/variables.scss';
+
+.features {
+  position: fixed;
+  z-index: 99999;
+  width: 300px;
+}
 
 footer {
   padding: $app-padding / 4 $app-padding;

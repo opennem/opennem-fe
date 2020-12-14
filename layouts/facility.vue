@@ -1,35 +1,27 @@
 <template>
   <div class="container-fluid">
-    <transition name="slide-down-fade">
-      <FeatureToggle 
-        v-if="showFeatureToggle"
-        class="features"
-        @done="setShowFeatureToggle(false)" />
-    </transition>
     <app-header />
     <nuxt/>
-    <app-footer @showFeatureToggle="setShowFeatureToggle(true)" />
+    <app-footer v-if="!widthBreak" />
   </div>
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 import _debounce from 'lodash.debounce'
 
 import AppHeader from '~/components/layout/AppFacilityHeader'
 import AppFooter from '~/components/layout/AppFooter'
-import FeatureToggle from '@/components/FeatureToggle'
 
 export default {
   components: {
     AppHeader,
-    AppFooter,
-    FeatureToggle
+    AppFooter
   },
 
   computed: {
     ...mapGetters({
-      showFeatureToggle: 'app/showFeatureToggle'
+      widthBreak: 'app/widthBreak'
     })
   },
 
@@ -47,8 +39,7 @@ export default {
 
   methods: {
     ...mapMutations({
-      setWindowWidth: 'app/windowWidth',
-      setShowFeatureToggle: 'app/showFeatureToggle'
+      setWindowWidth: 'app/windowWidth'
     })
   }
 }
@@ -63,14 +54,6 @@ export default {
   margin: 0 auto 1rem;
   @include tablet {
     margin-bottom: 3rem;
-  }
-
-  .features {
-    position: fixed;
-    z-index: 99999;
-    width: 300px;
-    left: 50%;
-    margin-left: -150px;
   }
 }
 </style>

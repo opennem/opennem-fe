@@ -1,11 +1,11 @@
 <template>
-  <div 
-    :class="{ open: drawer }" 
-    class="drawer-wrapper" 
+  <div
+    :class="{ open: drawer }"
+    class="drawer-wrapper"
     @click="close">
     <div class="drawer">
-      <div 
-        class="drawer-header" 
+      <div
+        class="drawer-header"
         @click="close">
         <logo class="header-logo" />
         <span class="close-button">
@@ -31,16 +31,16 @@
       <div class="menu">
         <nuxt-link
           v-show="showRegionLink('all')"
-          :to="`/${currentView}/all/`" 
+          :to="`/${currentView}/all/`"
           class="menu-item">
           All Regions
           <span class="icon">
             <i class="fal fa-chevron-right" />
           </span>
         </nuxt-link>
-          
-        <hr 
-          v-show="showRegionLink('all')" 
+
+        <hr
+          v-show="showRegionLink('all')"
           class="dropdown-divider">
 
         <nuxt-link
@@ -67,13 +67,13 @@
         </div>
       </div>
 
-      <app-footer @showFeatureToggle="setShowFeatureToggle(true)" />
+      <app-footer />
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 
 import VIEWS from '~/constants/views.js'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
@@ -105,11 +105,12 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      currentView: 'currentView',
+      showFeatureToggle: 'app/showFeatureToggle'
+    }),
     regionId() {
       return this.$route.params.region
-    },
-    currentView() {
-      return this.$store.getters.currentView
     }
   },
 
@@ -119,6 +120,11 @@ export default {
     },
     currentView(view) {
       this.links = this.getLinks()
+    },
+    showFeatureToggle(show) {
+      if (!show) {
+        this.drawer = false
+      }
     }
   },
 
@@ -127,9 +133,6 @@ export default {
   },
 
   methods: {
-    ...mapMutations({
-      setShowFeatureToggle: 'app/showFeatureToggle'
-    }),
     getLinks() {
       // create links without 'all' since a divider is needed
       return this.regions
