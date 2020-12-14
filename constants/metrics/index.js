@@ -29,7 +29,25 @@ export const metrics = [
     value: 'renewablesProportion',
     divisor: 100,
     domain: [0, 0.001, 0.5, 1],
-    range: ['#000', '#ddd', '#52BCA3', 'darkgreen'],
+    range: ['#000', '#eee', '#52BCA3', 'darkgreen'],
+    unit: '%',
+    legendType: 'ramp'
+  },
+  {
+    label: 'Wind Proportion (of demand)',
+    value: 'windProportion',
+    divisor: 100,
+    domain: [0, 0.001, 0.5, 1],
+    range: ['#fff', '#E9F6DA', '#88B653', '#417505'],
+    unit: '%',
+    legendType: 'ramp'
+  },
+  {
+    label: 'Solar Proportion (of demand)',
+    value: 'solarProportion',
+    divisor: 100,
+    domain: [0, 0.001, 0.5, 1],
+    range: ['#fff', '#FFFBCD', '#FAEC4E', '#FFEB00'],
     unit: '%',
     legendType: 'ramp'
   },

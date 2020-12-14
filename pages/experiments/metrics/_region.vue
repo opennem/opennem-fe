@@ -308,6 +308,8 @@ export default {
                   year,
                   carbonIntensity: propData,
                   renewablesProportion: propData,
+                  windProportion: propData,
+                  solarProportion: propData,
                   gasProportion: propData,
                   coalProportion: propData,
                   importsExports: propData,
@@ -352,6 +354,8 @@ export default {
               regionId: r.id,
               carbonIntensity: propData,
               renewablesProportion: propData,
+              windProportion: propData,
+              solarProportion: propData,
               gasProportion: propData,
               coalProportion: propData,
               importsExports: propData,
@@ -455,6 +459,8 @@ export default {
         time,
         carbonIntensity: null,
         renewablesProportion: null,
+        windProportion: null,
+        solarProportion: null,
         coalProportion: null,
         coal: null,
         gasProportion: null,
@@ -521,6 +527,10 @@ export default {
 
         obj.carbonIntensity = isValidEI ? ei : null
         obj.renewablesProportion = d._totalDemandRenewablesPercentage
+        obj.windProportion =
+          d._totalDemandWindProportion < 0 ? 0 : d._totalDemandWindProportion
+        obj.solarProportion =
+          d._totalDemandSolarProportion < 0 ? 0 : d._totalDemandSolarProportion
         obj.coalProportion =
           d._totalDemandCoalProportion < 0 ? 0 : d._totalDemandCoalProportion
         obj.coal = d._totalCoal

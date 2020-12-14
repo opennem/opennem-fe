@@ -216,3 +216,16 @@ export function isGas(fuelTech) {
     fuelTech === GAS_WCMG
   )
 }
+
+export function isWind(fuelTech) {
+  return fuelTech === WIND
+}
+
+export function isSolar(fuelTech) {
+  return (
+    fuelTech === SOLAR_UTILITY ||
+    fuelTech === SOLAR_ROOFTOP ||
+    fuelTech === SOLAR ||
+    fuelTech === ROOFTOP_SOLAR
+  )
+}
