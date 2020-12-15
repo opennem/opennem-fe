@@ -272,5 +272,6 @@ section {
   top: 0;
   opacity: 0;
   border: 1px solid #e34a33;
+  z-index: 9;
 }
 </style>

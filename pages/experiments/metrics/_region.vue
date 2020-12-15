@@ -570,6 +570,12 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  position: sticky;
+  z-index: 99;
+  top: 0;
+  padding: 1rem 0;
+  background-color: $beige-lighter;
+  border-bottom: 1px solid #ddd;
 
   @include mobile {
     display: block;
@@ -596,7 +602,7 @@ h3 {
   font-family: $header-font-family;
   font-size: 1.4em;
   font-weight: 300;
-  margin: 0 0 1rem 2px;
+  margin-left: 2px;
   padding-bottom: 0.5rem;
   text-align: right;
   border-bottom: 1px solid #ddd;
