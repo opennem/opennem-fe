@@ -181,19 +181,10 @@ export default function({
     dataset[i]._totalDemandRenewablesPercentage = nanCheck(
       (totalRenewables / totalEnergyForPercentageCalculation) * 100
     )
-    // dataset[i]._totalDemandRenewablesPercentage =
-    //   (totalRenewables / totalEnergyForPercentageCalculation) * 100
 
     dataset[i]._totalGenerationRenewablesPercentage = nanCheck(
       (totalRenewables / totalGeneration) * 100
     )
-
-    // if (isNaN(dataset[i]._totalDemandRenewablesPercentage)) {
-    //   dataset[i]._totalDemandRenewablesPercentage = null
-    // }
-    // if (isNaN(dataset[i]._totalGenerationRenewablesPercentage)) {
-    //   dataset[i]._totalGenerationRenewablesPercentage = null
-    // }
 
     dataset[i]._totalCoal = totalCoal
     dataset[i]._totalDemandCoalProportion = nanCheck(
