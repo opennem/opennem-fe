@@ -690,4 +690,8 @@ h3 {
 //   z-index: 99;
 //   opacity: 0;
 // }
+
+::v-deep .heatmap {
+  border: 1px solid #ddd;
+}
 </style>

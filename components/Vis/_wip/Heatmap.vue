@@ -11,7 +11,8 @@
     <svg
       :id="id"
       :height="height"
-      :width="width" />
+      :width="width"
+      class="heatmap" />
   </section>
 </template>
 
