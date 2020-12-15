@@ -1,5 +1,7 @@
 <template>
   <div class="container-fluid">
+    <h3 v-if="useAllPeriods">{{ getDateRange(allBucket) }}</h3>
+
     <div class="options-legend-wrapper">
       <div class="options">
         <!-- <label for="">Period</label> -->
@@ -20,7 +22,7 @@
 
 
         <!-- <label for=""><strong>Metric</strong></label> -->
-        <div class="select is-rounded">
+        <div class="metric-selection select is-rounded">
           <select v-model="selectedMetric">
             <option
               v-for="(d, i) in metrics"
@@ -35,7 +37,7 @@
 
       <ColourLegend
         v-if="regionData.length > 0"
-        :svg-width="widthBreak ? width : 310"
+        :svg-width="tabletBreak ? width : 310"
         :svg-height="30"
         :unit="
           selectedMetricObject.value === 'carbonIntensity'
@@ -53,12 +55,10 @@
     </div>
 
     <div class="vis-container">
-      <h3 v-if="useAllPeriods">{{ getDateRange(allBucket) }}</h3>
-
       <section
         v-for="(d, i) in regionData"
         :key="`region-${i}`"
-        :style="{ 'margin-top': d.yearlyData ? '35px' : '25px'}"
+        :style="{ 'margin-top': d.yearlyData ? '35px' : '35px'}"
         class="vis-section"
       >
 
@@ -186,7 +186,7 @@ export default {
       interval: 'interval',
       filterPeriod: 'filterPeriod',
       fuelTechGroupName: 'fuelTechGroupName',
-      widthBreak: 'app/widthBreak'
+      tabletBreak: 'app/tabletBreak'
     }),
 
     selectedPeriod: {
@@ -592,14 +592,18 @@ export default {
   }
 }
 
+h3 {
+  font-family: $header-font-family;
+  font-size: 1.4em;
+  font-weight: 300;
+  margin: 0 0 1rem 2px;
+  padding-bottom: 0.5rem;
+  text-align: right;
+  border-bottom: 1px solid #ddd;
+}
+
 .vis-container {
   margin-top: 1.8rem;
-
-  h3 {
-    font-family: $header-font-family;
-    font-size: 1.4em;
-    font-weight: 300;
-  }
 }
 .vis-section {
   position: relative;
@@ -635,6 +639,12 @@ export default {
 }
 .colour-legend {
   // margin-top: 2rem;
+}
+.metric-selection {
+  width: 100%;
+  select {
+    width: 100%;
+  }
 }
 .hover-date-value {
   font-size: 0.8em;
