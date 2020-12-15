@@ -46,8 +46,8 @@ export const metrics = [
     label: 'Solar Proportion (of demand)',
     value: 'solarProportion',
     divisor: 100,
-    domain: [0, 0.001, 0.5, 1],
-    range: ['#fff', '#FFFBCD', '#FAEC4E', '#FFEB00'],
+    domain: [0, 0.5, 1],
+    range: ['#fff', '#F3E13E', '#F0D800'],
     unit: '%',
     legendType: 'ramp'
   },
