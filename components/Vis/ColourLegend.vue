@@ -93,6 +93,10 @@ export default {
     colourDomainLabel: {
       type: Array,
       default: () => []
+    },
+    zeroBlock: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -159,14 +163,22 @@ export default {
           ? d
           : d * this.multiplier - this.offset
       }
-      svg
-        .append('rect')
-        .attr('class', 'zero-rect')
-        .attr('x', 0)
-        .attr('y', 0)
-        .attr('width', this.margin.left)
-        .attr('height', this.svgHeight - this.margin.bottom)
-        .style('fill', colour(0))
+      const label = d => {
+        return this.colourDomainLabel.length > 0
+          ? this.colourDomainLabel[d]
+          : `${value(d)}${this.unit}`
+      }
+
+      if (this.zeroBlock) {
+        svg
+          .append('rect')
+          .attr('class', 'zero-rect')
+          .attr('x', 0)
+          .attr('y', 0)
+          .attr('width', this.margin.left)
+          .attr('height', this.svgHeight - this.margin.bottom)
+          .style('fill', colour(0))
+      }
 
       svg
         .append('g')
@@ -176,11 +188,14 @@ export default {
           `translate(0,${this.svgHeight - this.margin.bottom})`
         )
         .call(rampHorizontal(x, colour, this.svgHeight))
+        .append('g')
+        .attr('class', 'tick-group')
         .call(
           axisBottom(x)
             .ticks(2)
-            .tickFormat(d => `${value(d)}${this.unit}`)
+            .tickFormat(d => label(d))
         )
+      svg.select('path.domain').remove()
     },
 
     drawSwatch(svg, colour) {
@@ -224,7 +239,12 @@ export default {
 
 <style lang="scss">
 .colour-legend {
-  .ramp-group .tick {
+  .tick-group .tick {
+    &:first-child {
+      text {
+        text-anchor: start;
+      }
+    }
     &:last-child {
       text {
         text-anchor: end;

@@ -49,6 +49,7 @@
         :colour-range="selectedMetricObject.range"
         :colour-domain="selectedMetricObject.domain"
         :colour-domain-label="selectedMetricObject.domainLabel"
+        :zero-block="selectedMetricObject.showZeroBlock"
         :type="selectedMetricObject.legendType"
         class="colour-legend"
       />

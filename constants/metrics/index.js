@@ -58,7 +58,8 @@ export const metrics = [
     domain: [0, 0.001, 0.9],
     range: ['#52BCA3', '#ccc', '#131313'],
     unit: '%',
-    legendType: 'ramp'
+    legendType: 'ramp',
+    showZeroBlock: true
   },
   {
     label: 'Gas Proportion (of demand)',
@@ -67,7 +68,8 @@ export const metrics = [
     domain: [0, 0.001, 0.5],
     range: ['#52BCA3', '#ccc', '#F48E1B'],
     unit: '%',
-    legendType: 'ramp'
+    legendType: 'ramp',
+    showZeroBlock: true
   },
   // {
   //   label: 'Net Exports/Imports',
@@ -87,6 +89,7 @@ export const metrics = [
     offset: 25,
     domain: [0, 0.5, 1],
     range: ['#2E69A3', '#fff', '#AC3837'], // F5EDE9
+    domainLabel: ['Export', 'Import'],
     unit: '%',
     legendType: 'ramp'
   },
