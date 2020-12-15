@@ -66,7 +66,12 @@
           v-if="hoverDate && d.yearlyData"
           class="hover-date-value">
           <span class="date">{{ getHoverDate(hoverDate) }}</span>
-          <span class="value">{{ valueFormat(hoverValue) }}{{ selectedMetricObject.unit }}</span>
+          <span
+            v-if="hoverValue || hoverValue === 0"
+            class="value">{{ valueFormat(hoverValue) }}{{ selectedMetricObject.unit }}</span>
+          <span
+            v-else
+            class="value">—</span>
         </div>
 
         <div

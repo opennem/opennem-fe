@@ -168,41 +168,57 @@ export default function({
       ? null
       : totalMarketValue / totalDemand / 1000
 
+    const nanCheck = value => {
+      return isNaN(value) ? null : value
+    }
+
     dataset[i]._total = totalDemand
     dataset[
       i
     ]._totalEnergyForPercentageCalculation = totalEnergyForPercentageCalculation
     dataset[i]._totalRenewables = totalRenewables
-    dataset[i]._totalDemandRenewablesPercentage =
+
+    dataset[i]._totalDemandRenewablesPercentage = nanCheck(
       (totalRenewables / totalEnergyForPercentageCalculation) * 100
-    dataset[i]._totalGenerationRenewablesPercentage =
+    )
+    // dataset[i]._totalDemandRenewablesPercentage =
+    //   (totalRenewables / totalEnergyForPercentageCalculation) * 100
+
+    dataset[i]._totalGenerationRenewablesPercentage = nanCheck(
       (totalRenewables / totalGeneration) * 100
-    if (isNaN(dataset[i]._totalDemandRenewablesPercentage)) {
-      dataset[i]._totalDemandRenewablesPercentage = null
-    }
-    if (isNaN(dataset[i]._totalGenerationRenewablesPercentage)) {
-      dataset[i]._totalGenerationRenewablesPercentage = null
-    }
+    )
+
+    // if (isNaN(dataset[i]._totalDemandRenewablesPercentage)) {
+    //   dataset[i]._totalDemandRenewablesPercentage = null
+    // }
+    // if (isNaN(dataset[i]._totalGenerationRenewablesPercentage)) {
+    //   dataset[i]._totalGenerationRenewablesPercentage = null
+    // }
 
     dataset[i]._totalCoal = totalCoal
-    dataset[i]._totalDemandCoalProportion =
+    dataset[i]._totalDemandCoalProportion = nanCheck(
       (totalCoal / totalEnergyForPercentageCalculation) * 100
+    )
 
     dataset[i]._totalGas = totalGas
-    dataset[i]._totalDemandGasProportion =
+    dataset[i]._totalDemandGasProportion = nanCheck(
       (totalGas / totalEnergyForPercentageCalculation) * 100
+    )
 
     dataset[i]._totalWind = totalWind
-    dataset[i]._totalDemandWindProportion =
+    dataset[i]._totalDemandWindProportion = nanCheck(
       (totalWind / totalEnergyForPercentageCalculation) * 100
+    )
 
     dataset[i]._totalSolar = totalSolar
-    dataset[i]._totalDemandSolarProportion =
+    dataset[i]._totalDemandSolarProportion = nanCheck(
       (totalSolar / totalEnergyForPercentageCalculation) * 100
+    )
 
     dataset[i]._totalImportsExports = totalImportsExports
-    dataset[i]._totalDemandImportsExportsProportion =
+    dataset[i]._totalDemandImportsExportsProportion = nanCheck(
       (totalImportsExports / totalEnergyForPercentageCalculation) * 100
+    )
 
     dataset[i]._totalSources = totalSources
     dataset[i]._totalGeneration = totalGeneration
