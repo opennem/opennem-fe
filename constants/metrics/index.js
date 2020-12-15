@@ -37,8 +37,8 @@ export const metrics = [
     label: 'Wind Proportion (of demand)',
     value: 'windProportion',
     divisor: 100,
-    domain: [0, 0.001, 0.5, 1],
-    range: ['#fff', '#E9F6DA', '#88B653', '#417505'],
+    domain: [0, 0.5, 1],
+    range: ['#fff', '#88B653', '#417505'],
     unit: '%',
     legendType: 'ramp'
   },
