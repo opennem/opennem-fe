@@ -86,7 +86,7 @@ export const metrics = [
     divisor: 50, // -25 to 25.
     offset: 25,
     domain: [0, 0.5, 1],
-    range: ['#2E69A3', '#F5EDE9', '#AC3837'],
+    range: ['#2E69A3', '#fff', '#AC3837'], // F5EDE9
     unit: '%',
     legendType: 'ramp'
   },
