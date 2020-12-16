@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <div
     :class="{
       'is-hovered': hoverOn || focusOn,
       'has-border-bottom': !chartShown,
@@ -45,6 +45,7 @@
       :vis-height="100"
       :show-zoom-out="false"
       :x-guides="xGuides"
+      :y-axis-ticks="3"
       class="temperature-vis vis-chart"
       @dateOver="handleDateHover"
       @svgClick="handleSvgClick"

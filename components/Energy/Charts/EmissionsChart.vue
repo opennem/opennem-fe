@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <div
     :class="{
       'is-hovered': hoverOn || focusOn,
       'has-border-bottom': !chartShown
@@ -21,7 +21,7 @@
       :hover-domain-label="hoverDomainLabel"
       :hover-total="hoverTotal"
     />
-    
+
     <stacked-area-vis
       v-if="chartShown"
       :read-only="readOnly"
@@ -42,6 +42,7 @@
       :zoomed="zoomExtent.length > 0"
       :x-guides="xGuides"
       :x-axis-dy="tabletBreak ? 8 : 12"
+      :y-axis-ticks="4"
       :focus-date="focusDate"
       :focus-on="focusOn"
       :incomplete-intervals="incompleteIntervals"

@@ -21,7 +21,7 @@
         </clipPath>
       </defs>
 
-      <g 
+      <g
         :transform="gTransform"
         :class="{ 'hide-x-axis-labels': !showXAxis }"
         class="axis-line-group">
@@ -32,7 +32,7 @@
           v-show="hasYGuides"
           class="y-axis-guide-group" />
         <g
-          :transform="xAxisTransform" 
+          :transform="xAxisTransform"
           :class="xAxisClass" />
 
         <g
@@ -40,13 +40,13 @@
           :class="yAxisClass" />
 
         <!-- x axis layer to allow zoom in (brush) -->
-        <g 
+        <g
           v-if="showXAxis && !readOnly"
-          :transform="xAxisBrushTransform" 
+          :transform="xAxisBrushTransform"
           class="x-axis-brush-group" />
       </g>
 
-      <g 
+      <g
         :transform="gTransform">
         <!-- where the area path will show -->
         <g class="area-group" />
@@ -76,7 +76,7 @@
         :transform="gTransform"
         class="axis-text-group">
         <g :class="yAxisTickClass" />
-      </g>   
+      </g>
     </svg>
   </div>
 </template>
@@ -240,6 +240,10 @@ export default {
     xGuides: {
       type: Array,
       default: () => []
+    },
+    yAxisTicks: {
+      type: Number,
+      default: () => 5
     },
     connectZero: {
       type: Boolean,
@@ -464,7 +468,7 @@ export default {
         .tickFormat(d => axisTimeFormat(d))
       this.yAxis = axisRight(this.y)
         .tickSize(this.width)
-        .ticks(5)
+        .ticks(this.yAxisTicks)
         .tickFormat(d => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
 
       // Setup the 'brush' area and event handler

@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <div
     :class="{
       'is-hovered': hoverOn || focusOn,
       'has-border-bottom': !chartShown
@@ -31,7 +31,7 @@
       :display-unit="displayUnit"
       :display-title="displayTitle"
     />
-    
+
     <stacked-area-vis
       v-if="chartShown && (isTypeArea || isTypeProportion)"
       :read-only="readOnly"
@@ -49,6 +49,7 @@
       :zoomed="zoomExtent.length > 0"
       :x-guides="xGuides"
       :x-axis-dy="tabletBreak ? 8 : 12"
+      :y-axis-ticks="5"
       :compare-dates="compareDates"
       :focus-date="focusDate"
       :focus-on="focusOn"
@@ -113,7 +114,7 @@
     <date-brush
       v-if="chartShown && isTypeLine"
       :dataset="multiLineDataset"
-      :zoom-range="zoomExtent" 
+      :zoom-range="zoomExtent"
       :x-ticks="xTicks"
       :tick-format="tickFormat"
       :second-tick-format="secondTickFormat"
