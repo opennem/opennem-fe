@@ -178,7 +178,7 @@ export default {
       allBucket: allRangeBucket(),
       regionData: [],
       regions: getEnergyRegions().filter(
-        d => d.id !== 'all' && d.id !== 'nem' && d.id !== 'wem'
+        d => d.id !== 'au' && d.id !== 'nem' && d.id !== 'wem'
       ),
       hoverDate: null,
       hoverValue: null,
@@ -237,7 +237,7 @@ export default {
     },
 
     useAllPeriods() {
-      return this.regionId === 'all' || this.regionId === 'nem'
+      return this.regionId === 'au' || this.regionId === 'nem'
     }
   },
 
@@ -311,10 +311,10 @@ export default {
       this.regionData = []
 
       const filter =
-        id === 'all'
-          ? d => d.id !== 'all' && d.id !== 'nem'
+        id === 'au'
+          ? d => d.id !== 'au' && d.id !== 'nem'
           : id === 'nem'
-            ? d => d.id !== 'all' && d.id !== 'nem' && d.id !== 'wem'
+            ? d => d.id !== 'au' && d.id !== 'nem' && d.id !== 'wem'
             : d => d.id === id
       const regions = getEnergyRegions().filter(filter)
 

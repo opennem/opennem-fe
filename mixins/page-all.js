@@ -4,7 +4,8 @@ import {
   FEATURE_TOGGLE_EMISSIONS,
   FEATURE_TOGGLE_REGION_COMPARE,
   FEATURE_TOGGLE_V3_PATHS,
-  FEATURE_TOGGLE_METRICS
+  FEATURE_TOGGLE_METRICS,
+  FEATURE_TOGGLE_AU_ENERGY
 } from '@/constants/mutation-types/features.js'
 import hostEnv from '@/services/HostEnv.js'
 
@@ -17,27 +18,11 @@ export default {
   },
   mounted() {
     if (process.client) {
-      let emissions = lsGet(FEATURE_TOGGLE_EMISSIONS)
-      let regionCompare = lsGet(FEATURE_TOGGLE_REGION_COMPARE)
-      let v3Paths = lsGet(FEATURE_TOGGLE_V3_PATHS)
-      let metrics = lsGet(FEATURE_TOGGLE_METRICS)
-
-      if (!emissions || emissions === 'null') {
-        lsSet(FEATURE_TOGGLE_EMISSIONS, false)
-      }
-      if (!regionCompare || regionCompare === 'null') {
-        lsSet(FEATURE_TOGGLE_REGION_COMPARE, false)
-      }
-      if (!v3Paths || v3Paths === 'null') {
-        lsSet(FEATURE_TOGGLE_V3_PATHS, false)
-      }
-      if (!metrics || metrics === 'null') {
-        lsSet(FEATURE_TOGGLE_METRICS, false)
-      }
-      this.setEmissions(emissions)
-      this.setRegionCompare(regionCompare)
-      this.setV3Paths(v3Paths)
-      this.setMetrics(metrics)
+      this.getSetFeature(FEATURE_TOGGLE_EMISSIONS, this.setEmissions)
+      this.getSetFeature(FEATURE_TOGGLE_REGION_COMPARE, this.setRegionCompare)
+      this.getSetFeature(FEATURE_TOGGLE_V3_PATHS, this.setV3Paths)
+      this.getSetFeature(FEATURE_TOGGLE_METRICS, this.setMetrics)
+      this.getSetFeature(FEATURE_TOGGLE_AU_ENERGY, this.setAuEnergy)
 
       const exportAttribution = lsGet('exportAttribution') || '@name'
       this.setExportAttribution(exportAttribution)
@@ -52,10 +37,19 @@ export default {
       setRegionCompare: 'feature/regionCompare',
       setV3Paths: 'feature/v3Paths',
       setMetrics: 'feature/metrics',
+      setAuEnergy: 'feature/auEnergy',
 
       setExportAttribution: 'exportAttribution',
 
       setHostEnv: 'hostEnv'
-    })
+    }),
+
+    getSetFeature(feature, setter) {
+      let f = lsGet(feature)
+      if (!f || f === 'null') {
+        lsSet(feature, false)
+      }
+      setter(f)
+    }
   }
 }

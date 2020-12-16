@@ -187,7 +187,7 @@ export default {
       return this.$route.params.region === 'nem'
     },
     isAllRegion() {
-      return this.$route.params.region === 'all'
+      return this.$route.params.region === 'au'
     },
     widthBreak() {
       return this.windowWidth < 769
@@ -347,7 +347,7 @@ export default {
 
       const that = this
       let regionIds = [this.regionId]
-      if (this.regionId === 'all') {
+      if (this.regionId === 'au') {
         regionIds = []
       } else if (this.regionId === 'nem') {
         regionIds = getNEMRegionArray()

@@ -181,6 +181,7 @@ module.exports = {
 
   generate: {
     routes: [
+      '/energy/au/',
       '/energy/nem/',
       '/energy/nsw1/',
       '/energy/qld1/',
@@ -188,6 +189,7 @@ module.exports = {
       '/energy/tas1/',
       '/energy/vic1/',
       '/energy/wem/',
+      '/facilities/au/',
       '/facilities/nem/',
       '/facilities/nsw1/',
       '/facilities/qld1/',

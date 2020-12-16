@@ -25,7 +25,7 @@ export default {
         break
 
       case '#/all-regions/facilities':
-        this.$router.push({ path: 'facilities/all' })
+        this.$router.push({ path: 'facilities/au' })
         break
       case '#/region/nem/facilities':
         this.$router.push({ path: 'facilities/nem' })

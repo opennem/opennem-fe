@@ -1,6 +1,6 @@
 import _cloneDeep from 'lodash.clonedeep'
 
-export const ENERGY_ALL = 'all'
+export const ENERGY_AU = 'au'
 export const ENERGY_NEM = 'nem'
 export const ENERGY_NSW = 'nsw1'
 export const ENERGY_QLD = 'qld1'
@@ -11,7 +11,7 @@ export const ENERGY_WEM = 'wem'
 
 const EnergyRegions = [
   {
-    id: ENERGY_ALL,
+    id: ENERGY_AU,
     abbr: 'All',
     label: 'All Regions',
     colour: '#e34a33',
@@ -85,7 +85,7 @@ export function getEnergyRegionLabel(id) {
 }
 
 export function isValidRegion(id) {
-  // if (id === ENERGY_ALL) return false
+  // if (id === ENERGY_AU) return false
   const find = EnergyRegions.find(r => r.id === id)
   return find ? true : false
 }

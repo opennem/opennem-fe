@@ -5,8 +5,8 @@
       aria-label="delete"
       @click="handleDoneClick" />
     <div class="panel-heading">Features</div>
-    <label 
-      class="panel-block" 
+    <label
+      class="panel-block"
       @click.stop>
       <input
         v-model="featureEmissions"
@@ -21,8 +21,8 @@
         Region Compare Charts
       </label> -->
 
-    <label 
-      class="panel-block" 
+    <label
+      class="panel-block"
       @click.stop>
       <input
         v-model="featureV3Paths"
@@ -30,13 +30,22 @@
       Use v3 paths
     </label>
 
-    <label 
-      class="panel-block" 
+    <label
+      class="panel-block"
       @click.stop>
       <input
         v-model="featureMetrics"
         type="checkbox" >
-      Show Metrics view
+      Metrics view
+    </label>
+
+    <label
+      class="panel-block"
+      @click.stop>
+      <input
+        v-model="featureAuEnergy"
+        type="checkbox" >
+      All Region energy view
     </label>
   </div>
 </template>
@@ -77,6 +86,15 @@ export default {
       },
       set: function(newValue) {
         this.$store.commit('feature/metrics', newValue)
+      }
+    },
+
+    featureAuEnergy: {
+      get: function() {
+        return this.$store.getters['feature/auEnergy']
+      },
+      set: function(newValue) {
+        this.$store.commit('feature/auEnergy', newValue)
       }
     }
   },

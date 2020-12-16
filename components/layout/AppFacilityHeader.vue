@@ -1,7 +1,7 @@
 <template>
   <header>
-    <nuxt-link 
-      :to="path" 
+    <nuxt-link
+      :to="path"
       class="back-link">
       <i class="fal fa-chevron-left"/>
       <AppLogo class="logo" />
@@ -9,32 +9,32 @@
     </nuxt-link>
 
     <nav v-if="filteredFacilities.length > 1">
-      <nuxt-link 
-        v-tooltip="prevFacilityName" 
+      <nuxt-link
+        v-tooltip="prevFacilityName"
         v-if="prevFacilityPath"
         :to="prevFacilityPath">
         <i class="fal fa-fw fa-arrow-circle-left"/>
       </nuxt-link>
-      <span 
-        v-else 
+      <span
+        v-else
         class="is-disabled">
         <i class="fal fa-fw fa-arrow-circle-left"/>
       </span>
-      
-      <nuxt-link 
-        v-tooltip="nextFacilityName" 
-        v-if="nextFacilityPath" 
+
+      <nuxt-link
+        v-tooltip="nextFacilityName"
+        v-if="nextFacilityPath"
         :to="nextFacilityPath">
         <i class="fal fa-fw fa-arrow-circle-right"/>
       </nuxt-link>
-      <span 
-        v-else 
+      <span
+        v-else
         class="is-disabled">
         <i class="fal fa-fw fa-arrow-circle-right"/>
       </span>
     </nav>
   </header>
-</template> 
+</template>
 
 <script>
 import { mapGetters } from 'vuex'
@@ -63,7 +63,7 @@ export default {
       return this.$route.params.facilityId
     },
     path() {
-      return this.previousPath === '' ? '/facilities/all/' : this.previousPath
+      return this.previousPath === '' ? '/facilities/au/' : this.previousPath
     }
   },
 

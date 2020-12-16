@@ -6,7 +6,7 @@ import { getEnergyRegions } from '@/constants/energy-regions.js'
 import * as FUEL_TECHS from '@/constants/energy-fuel-techs/group-default.js'
 import PerfTime from '@/plugins/perfTime.js'
 
-const Regions = getEnergyRegions().filter(r => r.id !== 'all' && r.id !== 'nem')
+const Regions = getEnergyRegions().filter(r => r.id !== 'au' && r.id !== 'nem')
 
 let hostEnv = 'dev'
 if (typeof window !== 'undefined') {

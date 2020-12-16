@@ -3,21 +3,24 @@ import {
   FEATURE_TOGGLE_EMISSIONS,
   FEATURE_TOGGLE_REGION_COMPARE,
   FEATURE_TOGGLE_V3_PATHS,
-  FEATURE_TOGGLE_METRICS
+  FEATURE_TOGGLE_METRICS,
+  FEATURE_TOGGLE_AU_ENERGY
 } from '@/constants/mutation-types/features.js'
 
 export const state = () => ({
   emissions: false,
   regionCompare: false,
   v3Paths: false,
-  metrics: false
+  metrics: false,
+  auEnergy: false
 })
 
 export const getters = {
   emissions: state => state.emissions,
   regionCompare: state => state.regionCompare,
   v3Paths: state => state.v3Paths,
-  metrics: state => state.metrics
+  metrics: state => state.metrics,
+  auEnergy: state => state.auEnergy
 }
 
 export const mutations = {
@@ -36,6 +39,10 @@ export const mutations = {
   metrics(state, metrics) {
     lsSet(FEATURE_TOGGLE_METRICS, metrics)
     state.metrics = metrics
+  },
+  auEnergy(state, auEnergy) {
+    lsSet(FEATURE_TOGGLE_AU_ENERGY, auEnergy)
+    state.auEnergy = auEnergy
   }
 }
 

@@ -3,7 +3,7 @@
     <AppLogo class="logo" />
     <ul>
       <li>
-        <nuxt-link :to="{ path: `/experiments/metrics/all/` }">
+        <nuxt-link :to="{ path: `/experiments/metrics/au/` }">
           Metrics
         </nuxt-link>
       </li>

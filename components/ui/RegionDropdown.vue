@@ -9,24 +9,24 @@
       <span>
         <strong>{{ regionLabel }}</strong>
         <i class="fal fa-chevron-down" />
-      </span>          
+      </span>
     </a>
 
     <transition name="slide-down-fade">
       <div
-        v-show="dropdownActive" 
+        v-show="dropdownActive"
         class="dropdown-menu">
         <div class="dropdown-content">
           <nuxt-link
-            v-show="showRegionLink('all')"
-            :to="`/${currentView}/all/`" 
-            class="dropdown-item" 
+            v-show="showRegionLink('au')"
+            :to="`/${currentView}/au/`"
+            class="dropdown-item"
             @click.native="handleClick">All Regions</nuxt-link>
-          
-          <hr 
-            v-show="showRegionLink('all')" 
+
+          <hr
+            v-show="showRegionLink('au')"
             class="dropdown-divider">
-          
+
           <nuxt-link
             v-for="link in links"
             :key="link.id"
@@ -36,13 +36,13 @@
               'dropdown-item-first-child': link.isFirstChild,
               'dropdown-item-last-child': link.isLastChild
             }"
-            class="dropdown-item" 
+            class="dropdown-item"
             @click.native="handleClick">
             {{ link.label }}
           </nuxt-link>
         </div>
       </div>
-    </transition> 
+    </transition>
   </div>
 </template>
 
@@ -64,16 +64,15 @@ export default {
 
   computed: {
     ...mapGetters({
-      query: 'app/query'
+      currentView: 'currentView',
+      query: 'app/query',
+      featureAuEnergy: 'feature/auEnergy'
     }),
     regionId() {
       return this.$route.params.region
     },
     regionLabel() {
       return this.getRegionLabel(this.regionId)
-    },
-    currentView() {
-      return this.$store.getters.currentView
     }
   },
 
@@ -111,7 +110,7 @@ export default {
             isLastChild
           }
         })
-        .filter(r => r.id !== 'all')
+        .filter(r => r.id !== 'au')
     },
     getRegionLabel(regionId) {
       const region = this.regions.find(d => d.id === regionId)
@@ -130,7 +129,10 @@ export default {
       this.dropdownActive = false
     },
     showRegionLink(regionId) {
-      if (regionId === 'all' && this.currentView === 'energy') {
+      if (this.featureAuEnergy) {
+        return true
+      }
+      if (regionId === 'au' && this.currentView === 'energy') {
         return false
       }
       return true

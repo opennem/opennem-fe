@@ -1,6 +1,6 @@
 <template>
-  <div 
-    :class="{ 'is-active': dropdownActive }" 
+  <div
+    :class="{ 'is-active': dropdownActive }"
     class="dropdown">
     <a
       v-on-clickaway="handleClickAway"
@@ -14,8 +14,8 @@
     </a>
 
     <transition name="slide-down-fade">
-      <div 
-        v-if="dropdownActive" 
+      <div
+        v-if="dropdownActive"
         class="dropdown-menu">
         <div class="dropdown-content">
           <nuxt-link
@@ -51,7 +51,8 @@ export default {
 
   computed: {
     ...mapGetters({
-      featureMetrics: 'feature/metrics'
+      featureMetrics: 'feature/metrics',
+      featureAuEnergy: 'feature/auEnergy'
     }),
     regionId() {
       return this.$route.params.region
@@ -92,7 +93,10 @@ export default {
       this.dropdownActive = false
     },
     showLink(view) {
-      if (this.regionId === 'all' && view === 'energy') {
+      if (this.featureAuEnergy) {
+        return true
+      }
+      if (this.regionId === 'au' && view === 'energy') {
         return false
       }
       return true

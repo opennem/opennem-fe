@@ -1,7 +1,7 @@
 // Centre of AU states and territories provided by: https://www.ga.gov.au/scientific-topics/national-location-information/dimensions/centre-of-australia-states-territories
 export const FacilityRegions = [
   {
-    id: 'all',
+    id: 'au',
     abbr: 'All',
     label: 'All Regions',
     colour: '#e34a33',
@@ -59,7 +59,7 @@ export const FacilityRegions = [
 ]
 
 export function getNEMRegionArray() {
-  return FacilityRegions.filter(r => r.id !== 'all' && r.id !== 'wem').map(
+  return FacilityRegions.filter(r => r.id !== 'au' && r.id !== 'wem').map(
     r => r.id
   )
 }
