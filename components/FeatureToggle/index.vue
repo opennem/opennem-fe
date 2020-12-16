@@ -45,7 +45,7 @@
       <input
         v-model="featureAuEnergy"
         type="checkbox" >
-      All Region energy view
+      All Regions Energy view
     </label>
   </div>
 </template>
