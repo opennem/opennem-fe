@@ -211,6 +211,11 @@ export default {
       },
 
       set(val) {
+        this.$router.push({
+          query: {
+            metric: val
+          }
+        })
         this.$store.commit('metrics/selectedMetric', val)
       }
     },
@@ -227,6 +232,10 @@ export default {
       return this.$route.params.region
     },
 
+    queryMetric() {
+      return this.$route.query.metric
+    },
+
     useAllPeriods() {
       return this.regionId === 'all' || this.regionId === 'nem'
     }
@@ -235,6 +244,18 @@ export default {
   watch: {
     regionId(id) {
       this.getData(id, this.selectedPeriod)
+    }
+  },
+
+  created() {
+    if (this.queryMetric) {
+      this.selectedMetric = this.queryMetric
+    } else {
+      this.$router.push({
+        query: {
+          metric: this.selectedMetric
+        }
+      })
     }
   },
 
