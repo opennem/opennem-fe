@@ -111,7 +111,7 @@
         <div
           v-else
           style="width: 100%">
-          <h5>{{ d.region }}</h5>
+          <h5 :class="{ dark: shouldDarken(d[selectedMetric], selectedMetric) }">{{ d.region }}</h5>
           <Heatmap
             :cell-height="75"
             :svg-width="width"
@@ -474,7 +474,8 @@ export default {
 
     getHoverValue(data, date) {
       const find = data.find(d => d.time === date.getTime())
-      return find && find[this.selectedMetric]
+      return find &&
+        (find[this.selectedMetric] || find[this.selectedMetric] === 0)
         ? `${this.valueFormat(find[this.selectedMetric])}${
             this.selectedMetricObject.unit
           }`
@@ -579,6 +580,10 @@ export default {
       }
 
       return obj
+    },
+
+    shouldDarken(data, prop) {
+      const check = data.filter((d, i) => i < 20).map(d => d[prop])
     }
   }
 }
@@ -654,9 +659,11 @@ h3 {
     z-index: 9;
     color: #fff;
     text-shadow: 0 0 2px rgba(0, 0, 0, 0.4);
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.2);
     padding: 0 3px 1px;
     border-radius: 0 0 1px 0;
+    left: 1px;
+    margin-top: 1px;
   }
   header {
     display: flex;
