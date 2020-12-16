@@ -62,7 +62,10 @@ export default {
   },
 
   getYearDailyPath(region, year, useV3Paths) {
-    const prepend = region === 'wem' || region === 'nem' ? '' : '/NEM'
+    const prepend =
+      region === 'wem' || region === 'nem' || region === 'au' ? '' : '/NEM'
+    const regionId = region.toUpperCase()
+
     if (useV3Paths || region === 'wem') {
       return `v3/stats/au${prepend}/${regionId}/energy/${year}.json`
     }
