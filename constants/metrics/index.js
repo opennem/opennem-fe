@@ -28,8 +28,8 @@ export const metrics = [
     label: 'Renewables Proportion (of demand)',
     value: 'renewablesProportion',
     divisor: 100,
-    domain: [0, 0.001, 0.5, 1],
-    range: ['#000', '#eee', '#52BCA3', 'darkgreen'],
+    domain: [0, 0.5, 1],
+    range: ['#fff', '#52BCA3', 'darkgreen'],
     unit: '%',
     legendType: 'ramp'
   },
