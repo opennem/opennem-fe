@@ -3,19 +3,23 @@ const webpack = require('webpack')
 
 const timestamp = new Date().getTime()
 
+const useDev = process.env.FOR === 'dev'
+
 module.exports = {
   publicRuntimeConfig: {
     version: pkg.version,
-    useDev: process.env.FOR === 'dev',
-    url:
-      process.env.FOR === 'dev' // this is to get the right social media card images for prod and dev
-        ? 'https://dev.opennem.org.au'
-        : 'https://opennem.org.au'
+    useDev,
+    url: useDev // this is to get the right social media card images for prod and dev
+      ? 'https://dev.opennem.org.au'
+      : 'https://opennem.org.au'
   },
 
   env: {
     mapboxToken: process.env.MAPBOX_TOKEN || '',
-    DATA_BASE_URL: process.env.DATA_BASE_URL || ''
+    DATA_BASE_URL:
+      process.env.DATA_BASE_URL || useDev
+        ? 'https://data.dev.opennem.org.au/'
+        : 'https://data.opennem.org.au/'
   },
 
   server: {
