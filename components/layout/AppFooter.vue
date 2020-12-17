@@ -111,7 +111,7 @@ export default {
 @import '~/assets/scss/responsive-mixins.scss';
 @import '~/assets/scss/variables.scss';
 
-.features {
+.features.panel {
   position: absolute;
   z-index: 99999;
   width: 300px;
