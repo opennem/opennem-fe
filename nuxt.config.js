@@ -14,7 +14,8 @@ module.exports = {
   },
 
   env: {
-    mapboxToken: process.env.MAPBOX_TOKEN || ''
+    mapboxToken: process.env.MAPBOX_TOKEN || '',
+    DATA_BASE_URL: process.env.DATA_BASE_URL || ''
   },
 
   server: {
