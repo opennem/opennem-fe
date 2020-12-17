@@ -1,13 +1,5 @@
 <template>
   <div>
-    <transition name="slide-up-fade">
-      <FeatureToggle
-        v-if="showFeatureToggle"
-        :style="{ right: `${featureRightPos}px`, bottom: `${featrueBottomPos}px` }"
-        class="features"
-        @done="setShowFeatureToggle(false)" />
-    </transition>
-
     <footer class="has-background-warning">
       <div class="left">
         <div class="version">
@@ -36,6 +28,17 @@
       </div>
 
       <div class="right">
+
+        <!-- :style="{ right: `${featureRightPos}px`, bottom: `${featrueBottomPos}px` }" -->
+
+        <transition name="slide-up-fade">
+          <FeatureToggle
+            v-if="showFeatureToggle"
+
+            class="features"
+            @done="setShowFeatureToggle(false)" />
+        </transition>
+
         <a
           ref="featureElement"
           class="icon-link"
@@ -73,9 +76,7 @@ export default {
 
   data() {
     return {
-      version: this.$config.version,
-      featureRightPos: 0,
-      featrueBottomPos: 0
+      version: this.$config.version
     }
   },
 
@@ -83,8 +84,7 @@ export default {
     ...mapGetters({
       hostEnv: 'hostEnv',
       apiVersion: 'app/apiVersion',
-      showFeatureToggle: 'app/showFeatureToggle',
-      widthBreak: 'app/widthBreak'
+      showFeatureToggle: 'app/showFeatureToggle'
     }),
 
     isDev() {
@@ -101,16 +101,6 @@ export default {
       setShowFeatureToggle: 'app/showFeatureToggle'
     }),
     handleFeatureToggleClick() {
-      this.featrueBottomPos = this.widthBreak
-        ? window.innerHeight -
-          this.$refs.featureElement.getBoundingClientRect().top
-        : 9
-
-      this.featureRightPos =
-        window.innerWidth -
-        this.$refs.featureElement.getBoundingClientRect().left -
-        22
-
       this.setShowFeatureToggle(true)
     }
   }
@@ -122,9 +112,17 @@ export default {
 @import '~/assets/scss/variables.scss';
 
 .features {
-  position: fixed;
+  position: absolute;
   z-index: 99999;
   width: 300px;
+  right: 125px;
+  bottom: 6px;
+  font-size: 1.1em;
+
+  @include mobile {
+    right: 40px;
+    bottom: 25px;
+  }
 }
 
 footer {
@@ -137,6 +135,7 @@ footer {
   .right {
     display: flex;
     align-items: center;
+    position: relative;
   }
 
   a {
