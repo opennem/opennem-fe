@@ -70,5 +70,12 @@ export default {
       return `v3/stats/au${prepend}/${regionId}/energy/${year}.json`
     }
     return `${region}/energy/daily/${year}.json`
+  },
+
+  getRegionAllDailyPath(region) {
+    // const prepend =
+    //   region === 'wem' || region === 'nem' || region === 'au' ? '' : '/NEM'
+    const regionId = region.toUpperCase()
+    return `v3/stats/au/${regionId}/daily.json`
   }
 }

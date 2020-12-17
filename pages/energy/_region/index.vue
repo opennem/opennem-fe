@@ -23,13 +23,13 @@
         </div>
       </div>
     </transition>
-    <div 
-      v-if="ready" 
+    <div
+      v-if="ready"
       class="vis-table-container">
       <vis-section
         :date-hover="hoverDate"
         :on-hover="isHovering"
-        class="vis-container" 
+        class="vis-container"
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering" />
       <summary-section
@@ -137,7 +137,7 @@ export default {
   watch: {
     showFeatureToggle(show) {
       if (!show) {
-        this.doGetRegionData({
+        this.doGetRegionDataByRangeInterval({
           region: this.regionId,
           range: this.range,
           interval: this.interval,
@@ -155,7 +155,7 @@ export default {
           interval: this.interval
         })
       } else {
-        this.doGetRegionData({
+        this.doGetRegionDataByRangeInterval({
           region: this.regionId,
           range: curr,
           interval: this.interval,
@@ -207,7 +207,7 @@ export default {
       if (this.regionId === 'wem' && !this.isEnergyType) {
         this.setInterval('30m')
       }
-      this.doGetRegionData({
+      this.doGetRegionDataByRangeInterval({
         region: this.regionId,
         range: this.range,
         interval: this.interval,
@@ -237,7 +237,8 @@ export default {
 
   methods: {
     ...mapActions({
-      doGetRegionData: 'regionEnergy/doGetRegionData',
+      doGetRegionDataByRangeInterval:
+        'regionEnergy/doGetRegionDataByRangeInterval',
       doUpdateDatasetByInterval: 'regionEnergy/doUpdateDatasetByInterval',
       doUpdateDatasetByGroup: 'regionEnergy/doUpdateDatasetByGroup',
       doUpdateDatasetByFilterRange: 'regionEnergy/doUpdateDatasetByFilterRange',

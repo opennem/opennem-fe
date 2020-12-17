@@ -12,8 +12,8 @@
       <div
         v-if="!ready"
         class="vis-table-container loading-containers">
-        <div 
-          class="vis-container" 
+        <div
+          class="vis-container"
           style="width: 100%">
           <div
             class="loader-block"
@@ -26,17 +26,17 @@
     </transition>
 
     <div id="export-container">
-      <div 
-        v-if="ready" 
-        class="vis-legend-container" 
+      <div
+        v-if="ready"
+        class="vis-legend-container"
       >
         <export-image-header :exporting="exporting" />
 
         <div class="vis-table-container">
           <vis-section class="vis-container" />
-          <summary-legend-section 
-            :show-summary="summary" 
-            :show-legend="legend" 
+          <summary-legend-section
+            :show-summary="summary"
+            :show-legend="legend"
             class="table-container" />
         </div>
 
@@ -132,7 +132,7 @@ export default {
   created() {
     this.setFocusDate(null)
     this.$store.dispatch('currentView', 'energy')
-    this.doGetRegionData({
+    this.doGetRegionDataByRangeInterval({
       region: this.regionId,
       range: this.range,
       interval: this.interval,
@@ -144,7 +144,8 @@ export default {
 
   methods: {
     ...mapActions({
-      doGetRegionData: 'regionEnergy/doGetRegionData',
+      doGetRegionDataByRangeInterval:
+        'regionEnergy/doGetRegionDataByRangeInterval',
       doUpdateDatasetByGroup: 'regionEnergy/doUpdateDatasetByGroup',
       doUpdateDatasetByFilterPeriod:
         'regionEnergy/doUpdateDatasetByFilterPeriod',

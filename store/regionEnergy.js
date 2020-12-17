@@ -177,6 +177,73 @@ export const mutations = {
 }
 
 export const actions = {
+  doGetRegionData({ commit, dispatch, rootGetters }, { region }) {
+    dispatch('app/doClearError', null, { root: true })
+
+    if (isValidRegion(region)) {
+      const useV3Paths = rootGetters['feature/v3Paths']
+      const url = Data.getRegionAllDailyPath(region, useV3Paths)
+
+      currentRegion = region
+
+      commit('ready', false)
+      commit('isFetching', true)
+
+      function processResponses(responses) {
+        const dataCount = getDataCount(responses)
+        const perf = new PerfTime()
+        perf.time()
+        console.info(`------ ${currentRegion} (start)`)
+
+        const {
+          dataset,
+          domainPowerEnergy,
+          domainEmissions,
+          domainTemperature
+        } = simpleDataProcess(responses)
+
+        perf.timeEnd(
+          `------ ${currentRegion} — (${dataCount} down to ${dataset.length})`
+        )
+
+        return {
+          dataset,
+          domainPowerEnergy,
+          domainEmissions,
+          domainTemperature
+        }
+      }
+
+      return http([url])
+        .then(res => {
+          const check = res.length > 0 ? (res[0].data ? true : false) : false
+          let responses = check
+            ? res.map(d => {
+                return d.data
+              })
+            : res
+
+          return processResponses(responses)
+        })
+        .catch(e => {
+          console.error('error', e)
+          let header = 'Error'
+          let message = ''
+
+          if (!e) {
+            message =
+              'There is an issue processing the responses. Please check the developer console and contact OpenNEM.'
+          } else {
+            const error = e.toJSON()
+            header = `${error.message}`
+            message = `Trying to fetch <code>${error.config.url}</code>`
+
+            console.log(error)
+          }
+        })
+    }
+  },
+
   doGetYearRegionData({ commit, dispatch, rootGetters }, { region, year }) {
     dispatch('app/doClearError', null, { root: true })
 
@@ -252,7 +319,7 @@ export const actions = {
     }
   },
 
-  doGetRegionData(
+  doGetRegionDataByRangeInterval(
     { commit, dispatch, rootGetters },
     { region, range, interval, period, groupName }
   ) {

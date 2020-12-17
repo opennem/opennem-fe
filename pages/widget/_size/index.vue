@@ -114,7 +114,7 @@ export default {
 
   created() {
     this.$store.dispatch('currentView', 'energy')
-    this.doGetRegionData({
+    this.doGetRegionDataByRangeInterval({
       region: 'nem',
       range: this.isLargeSize ? '7D' : '3D',
       interval: '30m',
@@ -126,7 +126,8 @@ export default {
 
   methods: {
     ...mapActions({
-      doGetRegionData: 'regionEnergy/doGetRegionData',
+      doGetRegionDataByRangeInterval:
+        'regionEnergy/doGetRegionDataByRangeInterval',
       doUpdateDatasetByGroup: 'regionEnergy/doUpdateDatasetByGroup',
       doUpdateXGuides: 'visInteract/doUpdateXGuides',
       doUpdateTickFormats: 'visInteract/doUpdateTickFormats'

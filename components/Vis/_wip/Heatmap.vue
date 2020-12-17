@@ -220,8 +220,11 @@ export default {
 
           self.$emit('rect-mousemove', {
             id: self._uid,
-            date: new Date(time),
-            value: point[self.tooltipValueProp]
+            date: time ? new Date(time) : null,
+            value:
+              point && point[self.tooltipValueProp]
+                ? point[self.tooltipValueProp]
+                : null
           })
           self.$tooltip
             .style('left', self.bandScale(time) + 'px')
