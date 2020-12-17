@@ -1,5 +1,6 @@
 import eachYearOfInterval from 'date-fns/eachYearOfInterval'
 import eachMonthOfInterval from 'date-fns/eachMonthOfInterval'
+import eachDayOfInterval from 'date-fns/eachDayOfInterval'
 
 export const periods = [
   {
@@ -124,6 +125,18 @@ export const yearsBucket = eachYearOfInterval({
   start: new Date(dataStartYear, 0, 1),
   end: new Date()
 }).map(d => d.getFullYear())
+
+export const yearDailyRangeBucket = year => {
+  return eachDayOfInterval({
+    start: new Date(year, 0, 1),
+    end: new Date(year, 11, 31)
+  }).map(d => {
+    return {
+      date: d,
+      time: d.getTime()
+    }
+  })
+}
 
 export const allRangeBucket = () => {
   return eachMonthOfInterval({

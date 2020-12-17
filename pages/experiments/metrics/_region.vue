@@ -152,7 +152,8 @@ import {
   periods,
   metrics,
   yearsBucket,
-  allRangeBucket
+  allRangeBucket,
+  yearDailyRangeBucket
 } from '@/constants/metrics/'
 import Heatmap from '@/components/Vis/_wip/Heatmap'
 import ColourLegend from '@/components/Vis/ColourLegend'
@@ -343,7 +344,8 @@ export default {
                     d.domainPowerEnergy,
                     d.domainEmissions,
                     d.domainTemperature,
-                    true
+                    true,
+                    yearDailyRangeBucket(yearInt)
                   )
                   yearlyData.push({
                     year,
