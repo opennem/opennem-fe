@@ -122,6 +122,7 @@ export default {
   @include mobile {
     right: 40px;
     bottom: 25px;
+    text-align: left;
   }
 }
 
