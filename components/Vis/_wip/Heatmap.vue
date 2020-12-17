@@ -222,7 +222,9 @@ export default {
             id: self._uid,
             date: time ? new Date(time) : null,
             value:
-              point && point[self.tooltipValueProp]
+              point &&
+              (point[self.tooltipValueProp] ||
+                point[self.tooltipValueProp] === 0)
                 ? point[self.tooltipValueProp]
                 : null
           })

@@ -67,6 +67,7 @@
           v-if="hoverDate && d.yearlyData"
           class="hover-date-value">
           <span class="date">{{ getHoverDate(hoverDate) }}</span>
+          <span class="value">{{ hoverValue }}</span>
           <span
             v-if="hoverValue || hoverValue === 0"
             class="value">{{ valueFormat(hoverValue) }}{{ selectedMetricObject.unit }}</span>
@@ -601,7 +602,10 @@ export default {
         }
 
         obj.carbonIntensity = isValidEI ? ei : null
-        obj.renewablesProportion = d._totalDemandRenewablesPercentage
+        obj.renewablesProportion =
+          d._totalDemandRenewablesPercentage < 0
+            ? 0
+            : d._totalDemandRenewablesPercentage
         obj.windProportion =
           d._totalDemandWindProportion < 0 ? 0 : d._totalDemandWindProportion
         obj.solarProportion =
