@@ -8,7 +8,7 @@
   }
 
   @include desktop {
-    padding: $app-padding / 2 $app-padding;
+    padding: $app-padding / 2 0.1rem;
     display: flex;
     align-items: center;
   }
@@ -19,7 +19,7 @@
     position: relative;
 
     &.is-rounded {
-      min-width: 45px;
+      min-width: 40px;
     }
 
     @include desktop {
@@ -34,7 +34,7 @@
   .range-buttons {
     @include desktop {
       margin-bottom: 0;
-      margin-right: $app-padding;
+      margin-right: 0.4rem;
     }
   }
 
