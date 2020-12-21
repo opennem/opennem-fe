@@ -1,18 +1,18 @@
 <template>
-  <summary> 
+  <summary>
     <p>
       {{ description }}
 
-      <v-popover 
-        v-if="hasWikiLink" 
-        class="wiki-link-text" 
+      <v-popover
+        v-if="hasWikiLink"
+        class="wiki-link-text"
         placement="auto">
         <i class="fal fa-info-circle"/>
 
         <template slot="popover">
           Copied content from <a
             :href="wikiLink"
-            class="wiki-link" 
+            class="wiki-link"
             target="facility-wiki-link">
             Wikipedia
             <i class="fal fa-external-link"/>
@@ -21,7 +21,7 @@
       </v-popover>
     </p>
 
-    
+
 
   </summary>
 </template>
@@ -60,6 +60,10 @@ summary {
     padding: 0 $facility-mobile-padding;
     font-size: 0.9em;
     margin-bottom: 0;
+  }
+
+  @include tablet {
+    padding: 0;
   }
 
   p {

@@ -1,7 +1,7 @@
 <template>
   <section class="facility">
     <transition name="fade">
-      <div 
+      <div
         v-if="!fetchingFacility && !facility"
         class="not-found-card card"
         style="height: 60vh; margin: 0 auto;">
@@ -11,18 +11,18 @@
     </transition>
 
     <transition name="fade">
-      <div 
-        v-if="facility" 
+      <div
+        v-if="facility"
         class="main">
         <header>
           <h2>{{ facilityName }}</h2>
         </header>
-      
+
         <Summary
           v-if="hasDescriptionOrWikiLink"
-          :description="facilityDescription" 
+          :description="facilityDescription"
           :wiki-link="facilityWikiLink" />
-        
+
         <transition name="fade">
           <PhotoMap
             v-if="facility && widthBreak"
@@ -35,13 +35,13 @@
         </transition>
 
         <section class="facility-chart">
-          <RangeIntervalSelectors 
-            @rangeChange="handleRangeChange" 
+          <RangeIntervalSelectors
+            @rangeChange="handleRangeChange"
             @intervalChange="handleIntervalChange" />
 
           <transition name="fade">
-            <div 
-              v-if="!fetchingStats && stackedAreaDataset.length === 0" 
+            <div
+              v-if="!fetchingStats && stackedAreaDataset.length === 0"
               class="not-found-card card">
               <i class="fal fa-chart-area"/>
               <span>Power and energy data not available</span>
@@ -49,13 +49,13 @@
           </transition>
 
           <transition name="fade">
-            <Loader 
-              v-if="fetchingStats" 
+            <Loader
+              v-if="fetchingStats"
               class="facility-chart-loader" />
           </transition>
 
           <transition name="fade">
-            <PowerChart 
+            <PowerChart
               v-if="!fetchingStats && stackedAreaDataset.length > 0"
               :hover-on="isHovering"
               :hover-date="hoverDate"
@@ -97,12 +97,12 @@
             @codeHover="handleCodeHover" />
         </section>
 
-        <!-- <FacilityProperties 
-          :facility="facility" 
+        <!-- <FacilityProperties
+          :facility="facility"
           class="facility-props" /> -->
       </div>
     </transition>
-    
+
     <PhotoMap
       v-if="facility && !widthBreak"
       :facility-name="facilityName"
@@ -484,6 +484,9 @@ header {
     margin-bottom: 0.5rem;
     margin-top: 0.5rem;
   }
+  @include tablet {
+    padding: 0;
+  }
 
   h2 {
     font-family: $header-font-family;
@@ -510,8 +513,8 @@ header {
   padding: 0 12px 0 11px;
   position: relative;
 
-  @include mobile {
-    padding: 0 12px 0 0;
+  @include tablet {
+    padding: 0;
   }
 
   .not-found-card {
