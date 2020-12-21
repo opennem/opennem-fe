@@ -1,4 +1,5 @@
 import { mapMutations } from 'vuex'
+import _debounce from 'lodash.debounce'
 import { lsGet, lsSet } from '~/services/LocalStorage'
 import {
   FEATURE_TOGGLE_EMISSIONS,
@@ -16,6 +17,7 @@ export default {
     this.uuid = uuid.toString()
     uuid += 1
   },
+
   mounted() {
     if (process.client) {
       this.getSetFeature(FEATURE_TOGGLE_EMISSIONS, this.setEmissions)
@@ -28,11 +30,23 @@ export default {
       this.setExportAttribution(exportAttribution)
 
       this.setHostEnv(hostEnv())
+
+      this.setWindowWidth(window.innerWidth)
+      this.$nextTick(() => {
+        window.addEventListener(
+          'resize',
+          _debounce(() => {
+            this.setWindowWidth(window.innerWidth)
+          }, 200)
+        )
+      })
     }
   },
 
   methods: {
     ...mapMutations({
+      setWindowWidth: 'app/windowWidth',
+
       setEmissions: 'feature/emissions',
       setRegionCompare: 'feature/regionCompare',
       setV3Paths: 'feature/v3Paths',

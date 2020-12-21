@@ -44,7 +44,6 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import _debounce from 'lodash.debounce'
 import { isPowerRange } from '@/constants/ranges.js'
 import {
   isValidRegion,
@@ -223,18 +222,6 @@ export default {
     }
   },
 
-  mounted() {
-    this.setWindowWidth(window.innerWidth)
-    this.$nextTick(() => {
-      window.addEventListener(
-        'resize',
-        _debounce(() => {
-          this.setWindowWidth(window.innerWidth)
-        }, 200)
-      )
-    })
-  },
-
   methods: {
     ...mapActions({
       doGetRegionDataByRangeInterval:
@@ -251,7 +238,6 @@ export default {
         'chartOptionsPowerEnergy/doSetChartEnergyUnitPrefix'
     }),
     ...mapMutations({
-      setWindowWidth: 'app/windowWidth',
       setCompareDifference: 'compareDifference',
       setInterval: 'interval',
       setQuery: 'app/query'
