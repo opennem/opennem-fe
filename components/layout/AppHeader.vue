@@ -319,7 +319,7 @@ header {
   padding: $app-padding / 2;
   background-color: $background-alpha;
   position: relative;
-  z-index: 9999;
+  z-index: 998;
 
   @include desktop {
     margin-top: $app-padding;

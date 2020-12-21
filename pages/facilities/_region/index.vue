@@ -492,7 +492,7 @@ export default {
       position: fixed;
       right: 0;
       top: 0;
-      z-index: 9999;
+      z-index: 999;
       padding: 0 1rem 0 0;
     }
   }
