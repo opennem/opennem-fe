@@ -59,7 +59,6 @@
       <section
         v-for="(d, i) in regionData"
         :key="`region-${i}`"
-        :style="{ 'margin-top': d.yearlyData ? '35px' : '35px'}"
         class="vis-section"
       >
 
@@ -688,6 +687,7 @@ h3 {
 }
 .vis-section {
   position: relative;
+  margin-top: 35px;
 
   h4 {
     font-family: $header-font-family;
