@@ -555,9 +555,13 @@ export default {
           maxTemperature = null,
           sumImportsExports = 0,
           hasImportsExportsValue = false,
-          importsExports = null
+          importsExports = null,
+          hasEmissionsValue = false
 
         domainEmissions.forEach(domain => {
+          if (d[domain.id] || d[domain.id] === 0) {
+            hasEmissionsValue = true
+          }
           totalEmissions += d[domain.id] || 0
         })
         domainPowerEnergy.forEach(domain => {
@@ -580,7 +584,7 @@ export default {
           }
         })
 
-        const ei = totalEmissions / totalPowerEnergy
+        const ei = hasEmissionsValue ? totalEmissions / totalPowerEnergy : null
         const isValidEI = Number.isFinite(ei)
 
         // if no value
