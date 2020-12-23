@@ -45,7 +45,8 @@ export default function({
       hasGas = false,
       hasWind = false,
       hasSolar = false,
-      hasImportsExports = false
+      hasImportsExports = false,
+      hasValueForPercentageCalculation = false
 
     domainPowerEnergy.forEach(domain => {
       const id = domain.id
@@ -122,6 +123,12 @@ export default function({
 
       if (domain.category !== FT.LOAD || ft === FT.EXPORTS) {
         totalEnergyForPercentageCalculation += d[id] || 0
+      }
+
+      if (domain.category === FT.SOURCE && ft !== FT.IMPORTS) {
+        if (d[id] || d[id] === 0) {
+          hasValueForPercentageCalculation = true
+        }
       }
 
       if (domain.renewable) {
@@ -251,11 +258,12 @@ export default function({
       : null
 
     dataset[i]._totalImportsExports = totalImportsExports
-    dataset[i]._totalDemandImportsExportsProportion = hasImportsExports
-      ? nanCheck(
-          (totalImportsExports / totalEnergyForPercentageCalculation) * 100
-        )
-      : null
+    dataset[i]._totalDemandImportsExportsProportion =
+      hasImportsExports && hasValueForPercentageCalculation
+        ? nanCheck(
+            (totalImportsExports / totalEnergyForPercentageCalculation) * 100
+          )
+        : null
 
     dataset[i]._totalSources = totalSources
     dataset[i]._totalGeneration = totalGeneration
