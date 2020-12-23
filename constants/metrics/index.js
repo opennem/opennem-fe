@@ -118,8 +118,8 @@ export const metrics = [
   }
 ]
 
-const dataStartYear = 2005
-const dataStartMonth = 3 // 0 - Jan, 11 - Dec
+const dataStartYear = 2010
+const dataStartMonth = 10 // 0 - Jan, 11 - Dec
 
 export const yearsBucket = eachYearOfInterval({
   start: new Date(dataStartYear, 0, 1),
