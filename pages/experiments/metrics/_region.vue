@@ -2,58 +2,9 @@
   <div class="container-fluid">
     <h3 v-if="useAllPeriods">{{ getDateRange(allBucket) }}</h3>
 
-    <div class="options-legend-wrapper">
-      <div class="options">
-        <!-- <label for="">Period</label> -->
-        <!-- <strong>
-          {{ selectedPeriodObject.label }}
-        </strong> -->
-        <!-- <div class="select is-rounded">
-          <select v-model="selectedPeriod">
-            <option
-              v-for="(d, i) in periods"
-              :key="`period-${i}`"
-              :value="d.value"
-            >
-              {{ d.label }}
-            </option>
-          </select>
-        </div> -->
-
-
-        <!-- <label for=""><strong>Metric</strong></label> -->
-        <div class="metric-selection select is-rounded">
-          <select v-model="selectedMetric">
-            <option
-              v-for="(d, i) in metrics"
-              :key="`metric-${i}`"
-              :value="d.value"
-            >
-              {{ d.label }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <ColourLegend
-        v-if="regionData.length > 0"
-        :svg-width="tabletBreak ? width : 310"
-        :svg-height="30"
-        :unit="
-          selectedMetricObject.value === 'carbonIntensity'
-            ? ''
-            : selectedMetricObject.unit
-        "
-        :multiplier="selectedMetricObject.divisor"
-        :offset="selectedMetricObject.offset"
-        :colour-range="selectedMetricObject.range"
-        :colour-domain="selectedMetricObject.domain"
-        :colour-domain-label="selectedMetricObject.domainLabel"
-        :zero-block="selectedMetricObject.showZeroBlock"
-        :type="selectedMetricObject.legendType"
-        class="colour-legend"
-      />
-    </div>
+    <OptionsLegend
+      :legend-width="tabletBreak ? width : 310"
+      :show-legend="regionData.length > 0" />
 
     <div class="vis-container">
       <section
@@ -157,12 +108,17 @@ import {
 import Heatmap from '@/components/Vis/_wip/Heatmap'
 import ColourLegend from '@/components/Vis/ColourLegend'
 
+import VisSection from '@/components/Metrics/VisSection'
+import OptionsLegend from '@/components/Metrics/OptionsLegend'
+
 export default {
   layout: 'main',
 
   components: {
     Heatmap,
-    ColourLegend
+    ColourLegend,
+    VisSection,
+    OptionsLegend
   },
 
   head: {

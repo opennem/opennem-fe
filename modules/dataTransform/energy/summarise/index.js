@@ -39,7 +39,13 @@ export default function({
       totalGas = 0,
       totalWind = 0,
       totalSolar = 0,
-      totalImportsExports = 0
+      totalImportsExports = 0,
+      hasRenewables = false,
+      hasCoal = false,
+      hasGas = false,
+      hasWind = false,
+      hasSolar = false,
+      hasImportsExports = false
 
     domainPowerEnergy.forEach(domain => {
       const id = domain.id
@@ -119,26 +125,44 @@ export default function({
       }
 
       if (domain.renewable) {
+        if (d[id] || d[id] === 0) {
+          hasRenewables = true
+        }
         totalRenewables += d[id] || 0
       }
 
       if (FT.isCoal(ft)) {
+        if (d[id] || d[id] === 0) {
+          hasCoal = true
+        }
         totalCoal += d[id] || 0
       }
 
       if (FT.isGas(ft)) {
+        if (d[id] || d[id] === 0) {
+          hasGas = true
+        }
         totalGas += d[id] || 0
       }
 
       if (FT.isWind(ft)) {
+        if (d[id] || d[id] === 0) {
+          hasWind = true
+        }
         totalWind += d[id] || 0
       }
 
       if (FT.isSolar(ft)) {
+        if (d[id] || d[id] === 0) {
+          hasSolar = true
+        }
         totalSolar += d[id] || 0
       }
 
       if (ft === FT.IMPORTS || ft === FT.EXPORTS) {
+        if (d[id] || d[id] === 0) {
+          hasImportsExports = true
+        }
         totalImportsExports += d[id] || 0
       }
 
@@ -164,6 +188,26 @@ export default function({
       })
     }
 
+    // null checks
+    if (!hasRenewables) {
+      totalRenewables = null
+    }
+    if (!hasCoal) {
+      totalCoal = null
+    }
+    if (!hasGas) {
+      totalGas = null
+    }
+    if (!hasWind) {
+      totalWind = null
+    }
+    if (!hasSolar) {
+      totalSolar = null
+    }
+    if (!hasImportsExports) {
+      totalImportsExports = null
+    }
+
     const volWeightedPrice = allMarketValueNulls
       ? null
       : totalMarketValue / totalDemand / 1000
@@ -178,38 +222,40 @@ export default function({
     ]._totalEnergyForPercentageCalculation = totalEnergyForPercentageCalculation
     dataset[i]._totalRenewables = totalRenewables
 
-    dataset[i]._totalDemandRenewablesPercentage = nanCheck(
-      (totalRenewables / totalEnergyForPercentageCalculation) * 100
-    )
+    dataset[i]._totalDemandRenewablesPercentage = hasRenewables
+      ? nanCheck((totalRenewables / totalEnergyForPercentageCalculation) * 100)
+      : null
 
     dataset[i]._totalGenerationRenewablesPercentage = nanCheck(
       (totalRenewables / totalGeneration) * 100
     )
 
     dataset[i]._totalCoal = totalCoal
-    dataset[i]._totalDemandCoalProportion = nanCheck(
-      (totalCoal / totalEnergyForPercentageCalculation) * 100
-    )
+    dataset[i]._totalDemandCoalProportion = hasCoal
+      ? nanCheck((totalCoal / totalEnergyForPercentageCalculation) * 100)
+      : null
 
     dataset[i]._totalGas = totalGas
-    dataset[i]._totalDemandGasProportion = nanCheck(
-      (totalGas / totalEnergyForPercentageCalculation) * 100
-    )
+    dataset[i]._totalDemandGasProportion = hasGas
+      ? nanCheck((totalGas / totalEnergyForPercentageCalculation) * 100)
+      : null
 
     dataset[i]._totalWind = totalWind
-    dataset[i]._totalDemandWindProportion = nanCheck(
-      (totalWind / totalEnergyForPercentageCalculation) * 100
-    )
+    dataset[i]._totalDemandWindProportion = hasWind
+      ? nanCheck((totalWind / totalEnergyForPercentageCalculation) * 100)
+      : null
 
     dataset[i]._totalSolar = totalSolar
-    dataset[i]._totalDemandSolarProportion = nanCheck(
-      (totalSolar / totalEnergyForPercentageCalculation) * 100
-    )
+    dataset[i]._totalDemandSolarProportion = hasSolar
+      ? nanCheck((totalSolar / totalEnergyForPercentageCalculation) * 100)
+      : null
 
     dataset[i]._totalImportsExports = totalImportsExports
-    dataset[i]._totalDemandImportsExportsProportion = nanCheck(
-      (totalImportsExports / totalEnergyForPercentageCalculation) * 100
-    )
+    dataset[i]._totalDemandImportsExportsProportion = hasImportsExports
+      ? nanCheck(
+          (totalImportsExports / totalEnergyForPercentageCalculation) * 100
+        )
+      : null
 
     dataset[i]._totalSources = totalSources
     dataset[i]._totalGeneration = totalGeneration

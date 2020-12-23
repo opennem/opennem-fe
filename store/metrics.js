@@ -7,7 +7,9 @@ export const state = () => ({
 
 export const getters = {
   selectedPeriod: state => state.selectedPeriod,
-  selectedMetric: state => state.selectedMetric
+  selectedMetric: state => state.selectedMetric,
+  selectedMetricObj: state =>
+    metrics.find(m => m.value === state.selectedMetric)
 }
 
 export const mutations = {
