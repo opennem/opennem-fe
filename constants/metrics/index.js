@@ -20,7 +20,7 @@ export const metrics = [
     label: 'Carbon Intensity (kgCO₂e/MWh)',
     value: 'carbonIntensity',
     divisor: 1000,
-    domain: [0, 0.25, 0.55, 1],
+    domain: [0, 0.1, 0.55, 1],
     range: ['#2D9B14', '#ffe310', '#803D11', '#000000'],
     unit: ' kgCO₂e/MWh',
     legendType: 'ramp'
