@@ -32,7 +32,8 @@ export function simpleDataProcess(responses) {
     dataset: datasetFlat,
     domainPowerEnergy,
     domainEmissions,
-    domainTemperature
+    domainTemperature,
+    domainPrice
   }
 }
 

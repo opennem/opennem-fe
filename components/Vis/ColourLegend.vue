@@ -203,7 +203,7 @@ export default {
       const length = this.colourDomain.length
       const x = scaleBand()
         .range([this.margin.left, this.svgWidth - this.margin.right])
-        .domain([0, 1])
+        .domain(this.colourDomain)
       const label = d => {
         return this.colourDomainLabel ? this.colourDomainLabel[d] : d
       }
@@ -228,7 +228,7 @@ export default {
         .append('text')
         .attr('x', d => x(d) + width / length / 2)
         .attr('y', height * 2)
-        .text(d => label(d))
+        .text((d, i) => label(i))
         .style('font-size', '10px')
         .style('text-anchor', 'middle')
     }
