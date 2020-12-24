@@ -112,7 +112,7 @@ export const metrics = [
     //   '#5C0530'
     // ],
     range: [
-      '#133F71',
+      '#613C9E',
       '#28609A',
       '#76ACCE',
       '#F0BA9F',
