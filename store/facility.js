@@ -24,7 +24,8 @@ const getApiBaseUrl = () => {
     host &&
     (host === 'localhost:3000' ||
       host.startsWith('127') ||
-      host.startsWith('192'))
+      host.startsWith('192') ||
+      host.startsWith('localhost'))
   ) {
     apiBaseUrl = `/api`
   }
