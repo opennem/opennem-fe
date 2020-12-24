@@ -131,8 +131,8 @@ export const metrics = [
     //   '#BF3E1F',
     //   '#891F0D'
     // ],
-    unit: '$',
-    numberFormatString: ',.2f',
+    unit: '',
+    numberFormatString: '$,.2f',
     legendType: 'swatch'
   },
   {
