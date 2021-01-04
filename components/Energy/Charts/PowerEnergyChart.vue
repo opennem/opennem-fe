@@ -226,7 +226,10 @@ export default {
     },
 
     tickFormat() {
-      return AxisTimeFormats[this.visTickFormat]
+      if (typeof this.visTickFormat === 'string') {
+        return AxisTimeFormats[this.visTickFormat]
+      }
+      return this.visTickFormat
     },
     secondTickFormat() {
       return AxisTimeFormats[this.visSecondTickFormat]
