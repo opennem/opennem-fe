@@ -497,7 +497,7 @@ export default {
     averagePowerDataset() {
       return EnergyToAveragePower({
         data: this.currentDataset,
-        domains: this.powerEnergyDomains,
+        domains: this.domains,
         range: this.range,
         interval: this.interval,
         exponent: this.chartEnergyUnitPrefix
@@ -616,6 +616,7 @@ export default {
       }
       return this.convertValue(average)
     },
+
     hoverPowerEnergyDomain() {
       const domain = this.hoverDomain
       const type = this.isEnergyType ? 'energy' : 'power'
