@@ -293,6 +293,7 @@ export default {
                     d.domainPowerEnergy,
                     d.domainEmissions,
                     d.domainTemperature,
+                    d.domainPrice,
                     true,
                     yearDailyRangeBucket(yearInt)
                   )
@@ -307,7 +308,8 @@ export default {
                     importsExports: propData,
                     temperature: propData,
                     maxTemperature: propData,
-                    netInterconnectorFlow: propData
+                    netInterconnectorFlow: propData,
+                    price: propData
                   })
                 }
               })
@@ -324,6 +326,7 @@ export default {
                     d.domainPowerEnergy,
                     d.domainEmissions,
                     d.domainTemperature,
+                    d.domainPrice,
                     true
                   )
                   yearlyData.push({
@@ -337,7 +340,8 @@ export default {
                     importsExports: propData,
                     temperature: propData,
                     maxTemperature: propData,
-                    netInterconnectorFlow: propData
+                    netInterconnectorFlow: propData,
+                    price: propData
                   })
                 })
               }, 500 * yIndex)
@@ -368,6 +372,7 @@ export default {
               d.currentDomainPowerEnergy,
               d.currentDomainEmissions,
               d.domainTemperature,
+              d.domainPrice,
               false,
               this.allBucket
             )
@@ -384,7 +389,8 @@ export default {
               importsExports: propData,
               temperature: propData,
               maxTemperature: propData,
-              netInterconnectorFlow: propData
+              netInterconnectorFlow: propData,
+              price: propData
             })
           })
         }, 500 * i)
@@ -396,6 +402,7 @@ export default {
       domainPowerEnergy,
       domainEmissions,
       domainTemperature,
+      domainPrice,
       topUp,
       bucket
     ) {
@@ -408,7 +415,8 @@ export default {
             find,
             domainPowerEnergy,
             domainEmissions,
-            domainTemperature
+            domainTemperature,
+            domainPrice
           )
         })
 
@@ -422,7 +430,8 @@ export default {
           d,
           domainPowerEnergy,
           domainEmissions,
-          domainTemperature
+          domainTemperature,
+          domainPrice
         )
       })
 
@@ -493,7 +502,8 @@ export default {
         maxTemperature: null,
         importsExports: null,
         sumImportsExports: null,
-        netInterconnectorFlow: null
+        netInterconnectorFlow: null,
+        price: null
       }
     },
 
@@ -502,7 +512,8 @@ export default {
       d,
       domainPowerEnergy,
       domainEmissions,
-      domainTemperature
+      domainTemperature,
+      domainPrice
     ) {
       if (d) {
         let totalEmissions = 0,
@@ -573,6 +584,7 @@ export default {
         obj.importsExports = importsExports
         obj.sumImportsExports = sumImportsExports
         obj.netInterconnectorFlow = d._totalDemandImportsExportsProportion
+        obj.price = d._volWeightedPrice
       }
 
       return obj

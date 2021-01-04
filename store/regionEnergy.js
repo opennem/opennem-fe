@@ -198,7 +198,8 @@ export const actions = {
           dataset,
           domainPowerEnergy,
           domainEmissions,
-          domainTemperature
+          domainTemperature,
+          domainPrice
         } = simpleDataProcess(responses)
 
         perf.timeEnd(
@@ -209,7 +210,8 @@ export const actions = {
           dataset,
           domainPowerEnergy,
           domainEmissions,
-          domainTemperature
+          domainTemperature,
+          domainPrice
         }
       }
 
@@ -265,7 +267,8 @@ export const actions = {
           dataset,
           domainPowerEnergy,
           domainEmissions,
-          domainTemperature
+          domainTemperature,
+          domainPrice
         } = simpleDataProcess(responses)
 
         perf.timeEnd(
@@ -276,7 +279,8 @@ export const actions = {
           dataset,
           domainPowerEnergy,
           domainEmissions,
-          domainTemperature
+          domainTemperature,
+          domainPrice
         }
       }
 
@@ -404,7 +408,8 @@ export const actions = {
           currentDataset,
           currentDomainPowerEnergy: domainPowerEnergyGrouped[groupName],
           currentDomainEmissions: domainEmissionsGrouped[groupName],
-          domainTemperature: domainTemperature
+          domainTemperature,
+          domainPrice
         }
       }
 
