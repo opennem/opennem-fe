@@ -23,7 +23,7 @@
       :is-renewable-line-only="isRenewableLineOnly"
       :average-energy="averageEnergy"
       :hover-display-date="hoverDisplayDate"
-      :hover-value="domains.length > 1 ? hoverValue : null"
+      :hover-value="domains.length > 1 || (isTypeProportion || (isTypeLine && isYAxisPercentage)) ? hoverValue : null"
       :hover-domain-colour="hoverDomainColour"
       :hover-domain-label="hoverDomainLabel"
       :hover-renewables="hoverRenewables"
@@ -635,6 +635,7 @@ export default {
     },
     hoverValue() {
       let value = null
+
       if (this.hoverData) {
         value = this.hoverData[this.hoverPowerEnergyDomain]
       }
