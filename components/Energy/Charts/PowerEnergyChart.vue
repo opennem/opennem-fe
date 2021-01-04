@@ -62,7 +62,7 @@
       :should-convert-value="shouldConvertValue"
       :convert-value="convertValue"
       :unit="` ${chartDisplayPrefix}${chartUnit}`"
-      :null-check-prop="totalProp"
+      :null-check-prop="'_total'"
       class="vis-chart"
       @dateOver="handleDateHover"
       @domainOver="handleDomainHover"
@@ -304,14 +304,6 @@ export default {
 
     property() {
       return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
-    },
-
-    totalProp() {
-      return this.isEnergyType
-        ? this.isYAxisAveragePower
-          ? '_totalPower'
-          : '_total'
-        : '_total'
     },
 
     domains() {
@@ -620,7 +612,7 @@ export default {
               )
             : this.averagePowerDataset
 
-        const totalPower = dataset.reduce((a, b) => a + b._totalPower, 0)
+        const totalPower = dataset.reduce((a, b) => a + b._total, 0)
         average = totalPower / dataset.length
       }
       return this.convertValue(average)

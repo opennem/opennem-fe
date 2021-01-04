@@ -36,7 +36,7 @@ export default function({ data, domains, range, interval, exponent }) {
         obj[domain.id] = null
       }
     })
-    obj._totalPower = allNulls ? null : totalPower
+    obj._total = allNulls ? null : totalPower
     return obj
   })
 
