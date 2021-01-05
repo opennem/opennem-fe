@@ -31,7 +31,9 @@
           :dataset-percent="datasetPercent"
           :vis-height="visHeight"
           :display-prefix="chartDisplayPrefix"
-          :convert-value="convertValue" />
+          :convert-value="convertValue"
+          :highlight-domain="highlightId"
+        />
       </div>
     </div>
 
@@ -74,6 +76,8 @@ export default {
       hiddenFuelTechs: 'hiddenFuelTechs',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       isEnergyType: 'regionEnergy/isEnergyType',
+
+      highlightDomain: 'visInteract/highlightDomain',
 
       chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
       chartEnergyDisplayPrefix:
@@ -175,6 +179,14 @@ export default {
         })
       }
       return domains
+    },
+
+    highlightId() {
+      const domain = this.highlightDomain
+      const property =
+        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+      const find = this.domains.find(d => d[property] === domain)
+      return find ? find.id : ''
     }
   },
 
