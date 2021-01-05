@@ -50,6 +50,7 @@
         :hover-data="hoverData"
         :focus-on="focusOn"
         :focus-data="focusData"
+        :highlight-domain="highlightId"
       />
 
       <donut-vis
@@ -63,7 +64,8 @@
         :focus-on="focusOn"
         :focus-data="focusData"
         :convert-value="convertValue"
-        :highlight-domain="highlightId" />
+        :highlight-domain="highlightId"
+      />
     </section>
 
     <EnergyRecords
