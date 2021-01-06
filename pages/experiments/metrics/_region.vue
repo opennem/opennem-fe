@@ -3,34 +3,33 @@
     <h3 v-if="useAllPeriods">{{ getDateRange(allBucket) }}</h3>
 
     <OptionsLegend
-      :legend-width="tabletBreak ? width : 310"
-      :show-legend="regionData.length > 0" />
+      :legend-width="tabletBreak ? 200 : 310"
+      :show-legend="regionData.length > 0"
+      :hover-display="hoverDisplay"
+      :use-hover="!useAllPeriods"
+      :show-hover="hoverDate ? true : false"
+    />
 
     <div class="vis-container">
       <section
         v-for="(d, i) in regionData"
         :key="`region-${i}`"
+        :style="{ 'margin-top': useAllPeriods ? '35px' : '0' }"
         class="vis-section"
       >
 
-        <div
-          v-if="hoverDate && d.yearlyData"
-          class="hover-date-value">
-          <span class="date">{{ getHoverDate(hoverDate) }}</span>
-          <span
-            v-if="hoverValue || hoverValue === 0"
-            class="value">{{ valueFormat(hoverValue) }}{{ selectedMetricObject.unit }}</span>
-          <span
-            v-else
-            class="value">—</span>
-        </div>
-
-        <div
-          v-if="hoverDate && !d.yearlyData"
-          class="hover-date-value">
-          <span class="date">{{ getHoverDate(hoverDate) }}</span>
-          <span class="value">{{ getHoverValue(d[selectedMetric], hoverDate) }}</span>
-        </div>
+        <HoverMetric
+          v-if="hoverDate"
+          :is-yearly="d.yearlyData && d.yearlyData.length > 0 ? true : false"
+          :hover-date="hoverDate"
+          :data="d[selectedMetric]"
+          :hover-value="hoverValue"
+          :selected-metric="selectedMetric"
+          :selected-metric-object="selectedMetricObject"
+          :selected-period="selectedPeriodObject"
+          :style="{ display: useAllPeriods ? 'block' : 'none' }"
+          @hover-obj="d => hoverDisplay = d"
+        />
 
         <div v-if="d.yearlyData">
           <section
@@ -84,7 +83,6 @@
       </section>
     </div>
 
-
   </div>
 </template>
 
@@ -92,7 +90,6 @@
 import { mapGetters, mapActions } from 'vuex'
 import { extent } from 'd3-array'
 import { select, mouse } from 'd3-selection'
-import { format as numFormat } from 'd3-format'
 import debounce from 'lodash.debounce'
 import addDays from 'date-fns/addDays'
 import format from 'date-fns/format'
@@ -110,6 +107,7 @@ import ColourLegend from '@/components/Vis/ColourLegend'
 
 import VisSection from '@/components/Metrics/VisSection'
 import OptionsLegend from '@/components/Metrics/OptionsLegend'
+import HoverMetric from '@/components/Metrics/HoverMetric'
 
 export default {
   layout: 'main',
@@ -118,7 +116,8 @@ export default {
     Heatmap,
     ColourLegend,
     VisSection,
-    OptionsLegend
+    OptionsLegend,
+    HoverMetric
   },
 
   head: {
@@ -138,7 +137,8 @@ export default {
       ),
       hoverDate: null,
       hoverValue: null,
-      hoverRegion: ''
+      hoverRegion: '',
+      hoverDisplay: null
     }
   },
 
@@ -466,26 +466,6 @@ export default {
       return `${firstDate} – ${lastDate}`
     },
 
-    getHoverDate(date) {
-      return format(date, this.selectedPeriodObject.dateFormatString)
-    },
-
-    getHoverValue(data, date) {
-      const find = data.find(d => d.time === date.getTime())
-      return find &&
-        (find[this.selectedMetric] || find[this.selectedMetric] === 0)
-        ? `${this.valueFormat(find[this.selectedMetric])}${
-            this.selectedMetricObject.unit
-          }`
-        : '—'
-    },
-
-    valueFormat(value) {
-      const numberFormatString =
-        this.selectedMetricObject.numberFormatString || ',.0f'
-      return numFormat(numberFormatString)(value)
-    },
-
     createEmptyObj(date, time) {
       return {
         date,
@@ -604,37 +584,9 @@ export default {
 .container-fluid {
   padding: 1rem 16px;
   height: 100%;
-}
-
-.options-legend-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  position: sticky;
-  z-index: 99;
-  top: 0;
-  padding: 1rem 0;
-  background-color: $beige-lighter;
-  border-bottom: 1px solid #ddd;
 
   @include mobile {
-    display: block;
-  }
-}
-.options {
-  display: flex;
-  align-items: center;
-
-  @include mobile {
-    margin-bottom: 1rem;
-  }
-
-  & > * {
-    // margin: 0 1rem;
-  }
-
-  label {
-    margin: 0 0.5rem 0 0;
+    padding-top: 0;
   }
 }
 
@@ -653,7 +605,6 @@ h3 {
 }
 .vis-section {
   position: relative;
-  margin-top: 35px;
 
   h4 {
     font-family: $header-font-family;
@@ -686,47 +637,6 @@ h3 {
     }
   }
 }
-.colour-legend {
-  // margin-top: 2rem;
-}
-.metric-selection {
-  width: 100%;
-  select {
-    width: 100%;
-  }
-}
-.hover-date-value {
-  font-size: 0.8em;
-  display: flex;
-  align-items: flex-end;
-  position: absolute;
-  right: 0;
-  top: -25px;
-  span {
-    padding: 3px 12px 2px;
-    white-space: nowrap;
-  }
-  .date {
-    background-color: rgba(199, 69, 35, 0.1);
-    color: #444;
-    font-weight: 600;
-    border-radius: 20px 0 0 20px;
-  }
-  .value {
-    border-radius: 0 20px 20px 0;
-    background-color: rgba(255, 255, 255, 0.5);
-  }
-}
-// #hover-line {
-//   background-color: red;
-//   width: 1px;
-//   height: 400px;
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   z-index: 99;
-//   opacity: 0;
-// }
 
 ::v-deep .heatmap {
   border: 1px solid #ddd;
