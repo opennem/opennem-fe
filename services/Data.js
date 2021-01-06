@@ -93,5 +93,9 @@ export default {
     //   region === 'wem' || region === 'nem' || region === 'au' ? '' : '/NEM'
     const regionId = region.toUpperCase()
     return `v3/stats/au/${regionId}/daily.json`
+  },
+
+  getAllMonthlyPath() {
+    return 'v3/stats/au/all/monthly.json'
   }
 }

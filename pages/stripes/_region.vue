@@ -254,6 +254,7 @@ export default {
   methods: {
     ...mapActions({
       doGetRegionData: 'regionEnergy/doGetRegionData',
+      doGetAllData: 'regionEnergy/doGetAllData',
       doGetRegionDataByRangeInterval:
         'regionEnergy/doGetRegionDataByRangeInterval',
       doGetYearRegionData: 'regionEnergy/doGetYearRegionData'
@@ -273,106 +274,106 @@ export default {
 
       if (this.useAllPeriods) {
         this.selectedPeriod = 'all/month'
-        this.getRegionsData(regions)
+        this.getAllData(regions)
       } else {
         this.selectedPeriod = 'multiyear/day'
-        regions.forEach((r, i) => {
-          const yearlyData = []
-
-          if (this.v3Paths) {
-            this.doGetRegionData({ region: r.id }).then(d => {
-              yearsBucket.forEach((year, yIndex) => {
-                const yearInt = parseInt(year)
-                const dataset = d.dataset.filter(
-                  e => e.date.getFullYear() === yearInt
-                )
-
-                if (dataset.length > 0) {
-                  const propData = this.generateDataset(
-                    dataset,
-                    d.domainPowerEnergy,
-                    d.domainEmissions,
-                    d.domainTemperature,
-                    d.domainPrice,
-                    true,
-                    yearDailyRangeBucket(yearInt)
-                  )
-                  yearlyData.push({
-                    year,
-                    carbonIntensity: propData,
-                    renewablesProportion: propData,
-                    windProportion: propData,
-                    solarProportion: propData,
-                    gasProportion: propData,
-                    coalProportion: propData,
-                    importsExports: propData,
-                    temperature: propData,
-                    maxTemperature: propData,
-                    netInterconnectorFlow: propData,
-                    price: propData
-                  })
-                }
-              })
-            })
-          } else {
-            yearsBucket.forEach((year, yIndex) => {
-              setTimeout(() => {
-                this.doGetYearRegionData({ region: r.id, year }).then(d => {
-                  const yearInt = parseInt(year)
-                  const last = new Date(yearInt, 11, 31)
-                  const start = new Date(yearInt, 0, 1)
-                  const propData = this.generateDataset(
-                    d.dataset,
-                    d.domainPowerEnergy,
-                    d.domainEmissions,
-                    d.domainTemperature,
-                    d.domainPrice,
-                    true
-                  )
-                  yearlyData.push({
-                    year,
-                    carbonIntensity: propData,
-                    renewablesProportion: propData,
-                    windProportion: propData,
-                    solarProportion: propData,
-                    gasProportion: propData,
-                    coalProportion: propData,
-                    importsExports: propData,
-                    temperature: propData,
-                    maxTemperature: propData,
-                    netInterconnectorFlow: propData,
-                    price: propData
-                  })
-                })
-              }, 500 * yIndex)
-            })
-          }
-
-          this.regionData.push({
-            region: r.label,
-            regionId: r.id,
-            yearlyData
-          })
-        })
+        this.getRegionAllData(regions)
       }
     },
 
-    getRegionsData(regions) {
+    getRegionAllData(regions) {
       regions.forEach((r, i) => {
-        setTimeout(() => {
-          this.doGetRegionDataByRangeInterval({
-            region: r.id,
-            range: 'ALL',
-            interval: 'Month',
-            period: 'All',
-            groupName: this.fuelTechGroupName
-          }).then(d => {
+        const yearlyData = []
+
+        if (this.v3Paths) {
+          this.doGetRegionData({ region: r.id }).then(d => {
+            yearsBucket.forEach((year, yIndex) => {
+              const yearInt = parseInt(year)
+              const dataset = d.dataset.filter(
+                e => e.date.getFullYear() === yearInt
+              )
+
+              if (dataset.length > 0) {
+                const propData = this.generateDataset(
+                  dataset,
+                  d.domainPowerEnergy,
+                  d.domainEmissions,
+                  d.domainTemperature,
+                  d.domainPrice,
+                  true,
+                  yearDailyRangeBucket(yearInt)
+                )
+                yearlyData.push({
+                  year,
+                  carbonIntensity: propData,
+                  renewablesProportion: propData,
+                  windProportion: propData,
+                  solarProportion: propData,
+                  gasProportion: propData,
+                  coalProportion: propData,
+                  importsExports: propData,
+                  temperature: propData,
+                  maxTemperature: propData,
+                  netInterconnectorFlow: propData,
+                  price: propData
+                })
+              }
+            })
+          })
+        } else {
+          yearsBucket.forEach((year, yIndex) => {
+            setTimeout(() => {
+              this.doGetYearRegionData({ region: r.id, year }).then(d => {
+                const yearInt = parseInt(year)
+                const last = new Date(yearInt, 11, 31)
+                const start = new Date(yearInt, 0, 1)
+                const propData = this.generateDataset(
+                  d.dataset,
+                  d.domainPowerEnergy,
+                  d.domainEmissions,
+                  d.domainTemperature,
+                  d.domainPrice,
+                  true
+                )
+                yearlyData.push({
+                  year,
+                  carbonIntensity: propData,
+                  renewablesProportion: propData,
+                  windProportion: propData,
+                  solarProportion: propData,
+                  gasProportion: propData,
+                  coalProportion: propData,
+                  importsExports: propData,
+                  temperature: propData,
+                  maxTemperature: propData,
+                  netInterconnectorFlow: propData,
+                  price: propData
+                })
+              })
+            }, 500 * yIndex)
+          })
+        }
+
+        this.regionData.push({
+          region: r.label,
+          regionId: r.id,
+          yearlyData
+        })
+      })
+    },
+
+    getAllData(regions) {
+      if (this.v3Paths) {
+        this.doGetAllData({ regions }).then(d => {
+          regions.forEach(r => {
+            const rData = d[r.id]
+
             const propData = this.generateDataset(
-              d.currentDataset,
-              d.currentDomainPowerEnergy,
-              d.currentDomainEmissions,
-              d.domainTemperature,
-              d.domainPrice,
+              rData.dataset,
+              rData.domainPowerEnergy,
+              rData.domainEmissions,
+              rData.domainTemperature,
+              rData.domainPrice,
               false,
               this.allBucket
             )
@@ -393,8 +394,46 @@ export default {
               price: propData
             })
           })
-        }, 500 * i)
-      })
+        })
+      } else {
+        regions.forEach((r, i) => {
+          setTimeout(() => {
+            this.doGetRegionDataByRangeInterval({
+              region: r.id,
+              range: 'ALL',
+              interval: 'Month',
+              period: 'All',
+              groupName: this.fuelTechGroupName
+            }).then(d => {
+              const propData = this.generateDataset(
+                d.currentDataset,
+                d.currentDomainPowerEnergy,
+                d.currentDomainEmissions,
+                d.domainTemperature,
+                d.domainPrice,
+                false,
+                this.allBucket
+              )
+
+              this.regionData.push({
+                region: r.label,
+                regionId: r.id,
+                carbonIntensity: propData,
+                renewablesProportion: propData,
+                windProportion: propData,
+                solarProportion: propData,
+                gasProportion: propData,
+                coalProportion: propData,
+                importsExports: propData,
+                temperature: propData,
+                maxTemperature: propData,
+                netInterconnectorFlow: propData,
+                price: propData
+              })
+            })
+          }, 500 * i)
+        })
+      }
     },
 
     generateDataset(
