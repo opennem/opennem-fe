@@ -3,9 +3,9 @@
     <AppLogo class="logo" />
     <ul>
       <li>
-        <nuxt-link :to="{ path: `/experiments/metrics/au/` }">
+        <!-- <nuxt-link :to="{ path: `/experiments/metrics/au/` }">
           Metrics
-        </nuxt-link>
+        </nuxt-link> -->
       </li>
     </ul>
   </div>

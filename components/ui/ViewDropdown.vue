@@ -45,7 +45,7 @@ export default {
   data() {
     return {
       dropdownActive: false,
-      views: VIEWS.filter(v => v.id !== 'experiments/metrics')
+      views: VIEWS.filter(v => v.id !== 'stripes')
     }
   },
 
@@ -71,7 +71,7 @@ export default {
       if (this.featureMetrics) {
         this.views = VIEWS
       } else {
-        this.views = VIEWS.filter(v => v.id !== 'experiments/metrics')
+        this.views = VIEWS.filter(v => v.id !== 'stripes')
       }
     }
   },

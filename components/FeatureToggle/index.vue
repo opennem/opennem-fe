@@ -36,7 +36,7 @@
       <input
         v-model="featureMetrics"
         type="checkbox" >
-      Metrics view
+      Stripes view
     </label>
 
     <label

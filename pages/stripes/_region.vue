@@ -121,7 +121,7 @@ export default {
   },
 
   head: {
-    titleTemplate: 'OpenNEM Experiments: Metrics'
+    titleTemplate: 'OpenNEM: Stripes'
   },
 
   data() {
@@ -217,7 +217,7 @@ export default {
   },
 
   mounted() {
-    this.$store.dispatch('currentView', 'experiments/metrics')
+    this.$store.dispatch('currentView', 'stripes')
     this.getData(this.regionId, this.selectedPeriod)
 
     this.width = this.$el.offsetWidth - 32
