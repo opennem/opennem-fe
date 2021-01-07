@@ -6,6 +6,7 @@ import differenceInQuarters from 'date-fns/differenceInQuarters'
 import addMinutes from 'date-fns/addMinutes'
 import addDays from 'date-fns/addDays'
 import addMonths from 'date-fns/addMonths'
+import addQuarters from 'date-fns/addQuarters'
 import intervalParser from '@/plugins/intervalParser.js'
 import dateDisplay from '@/services/DateDisplay.js'
 
@@ -125,6 +126,8 @@ function getArrLength({
       return differenceInDays(last, start) / intervalValue + 1
     case 'M':
       return differenceInMonths(last, start) / intervalValue + 1
+    case 'Q':
+      return differenceInQuarters(last, start) / intervalValue + 1
     default:
       return 0
   }
@@ -169,6 +172,8 @@ export function incrementTime({ date, intervalKey, intervalValue }) {
       return addDays(date, intervalValue)
     case 'M':
       return addMonths(date, intervalValue)
+    case 'Q':
+      return addQuarters(date, intervalValue)
     default:
       return null
   }
