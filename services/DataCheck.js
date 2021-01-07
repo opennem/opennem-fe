@@ -2,6 +2,7 @@ import parseISO from 'date-fns/parseISO'
 import differenceInMinutes from 'date-fns/differenceInMinutes'
 import differenceInDays from 'date-fns/differenceInDays'
 import differenceInMonths from 'date-fns/differenceInMonths'
+import differenceInQuarters from 'date-fns/differenceInQuarters'
 import addMinutes from 'date-fns/addMinutes'
 import addDays from 'date-fns/addDays'
 import addMonths from 'date-fns/addMonths'
@@ -83,6 +84,9 @@ export function checkHistoryObject(d) {
           break
         case 'M':
           diff = differenceInMonths(lastDate, startDate)
+          break
+        case 'Q':
+          diff = differenceInQuarters(lastDate, startDate)
           break
         default:
           console.warn(`${interval} interval not support for ${id}`)
