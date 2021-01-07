@@ -12,7 +12,8 @@ export default function(response) {
     dataPowerEnergy = [],
     dataEmissions = [],
     dataPriceMarketValue = [],
-    dataTemperature = []
+    dataTemperature = [],
+    dataCpi = []
   // filter out each type to its own array
   data.forEach(d => {
     checkHistoryObject(d)
@@ -46,6 +47,9 @@ export default function(response) {
       case DT.TEMPERATURE_MEAN:
         dataTemperature.push(d)
         break
+      case DT.CPI:
+        dataCpi.push(d)
+        break
       default:
         console.warn(`Unknown type in JSON response - ${d.type}`, d)
     }
@@ -59,6 +63,7 @@ export default function(response) {
     dataEmissions,
     dataPriceMarketValue,
     dataTemperature,
+    dataCpi,
     isPowerData: dataPower.length > 0,
     hasPowerEnergyData: dataPowerEnergy.length > 0,
     fuelTechDataType: dataPower.length > 0 ? DT.POWER : DT.ENERGY,

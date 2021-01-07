@@ -1,3 +1,4 @@
+import startOfQuarter from 'date-fns/startOfQuarter'
 import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import PerfTime from '@/plugins/perfTime.js'
 const perfTime = new PerfTime()
@@ -9,9 +10,11 @@ const perfTime = new PerfTime()
 export default function({
   isEnergyType,
   currentDataset,
+  datasetCpi,
   domainPowerEnergy,
   domainEmissions,
-  domainPrice
+  domainPrice,
+  domainCpi
 }) {
   perfTime.time()
 
@@ -189,10 +192,31 @@ export default function({
     if (isEnergyType) {
       domainPrice.forEach(domain => {
         totalMarketValue += d[domain.id] || 0
+
         if (d[domain.id] || d[domain.id] === 0) {
           allMarketValueNulls = false
         }
       })
+
+      const hasCpi = domainCpi && datasetCpi.length > 0
+
+      if (hasCpi) {
+        const startQ = startOfQuarter(d.date)
+        const find = datasetCpi.find(dCpi => {
+          return dCpi.time === startQ.getTime()
+        })
+        const lastCpi = datasetCpi[datasetCpi.length - 1][domainCpi.id]
+        const cpi = find ? find[domainCpi.id] : null
+
+        if (cpi || cpi === 0) {
+          console.log(
+            lastCpi,
+            cpi,
+            totalMarketValue,
+            (lastCpi / cpi) * totalMarketValue
+          )
+        }
+      }
     }
 
     // null checks
