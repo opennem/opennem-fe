@@ -3,7 +3,6 @@ import { EMISSIONS, MARKET_VALUE } from '@/constants/data-types'
 import createEmptyDatasets from '@/modules/dataTransform/helpers/createEmptyDatasets.js'
 import parseAndCheckData from './parseAndCheckData.js'
 import flattenAndInterpolate from './flattenAndInterpolate.js'
-import combineMultipleResponses from './combineMultipleResponses.js'
 import {
   getFuelTechWithTypeDomains,
   getFuelTechInOrder,
@@ -15,10 +14,8 @@ import {
 
 const perfTime = new PerfTime()
 
-export default function(responses) {
+export default function(data) {
   perfTime.time()
-
-  const data = combineMultipleResponses(responses)
 
   const {
     dataAll,
