@@ -95,7 +95,7 @@ export function getVolWeightedPriceDomains() {
   ]
 }
 
-export function getCpiDomain(id) {
+export function getInflationDomain(id) {
   return {
     id,
     domain: id,

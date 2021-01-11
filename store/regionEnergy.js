@@ -268,7 +268,8 @@ export const actions = {
           domainPowerEnergy,
           domainEmissions,
           domainTemperature,
-          domainPrice
+          domainPrice,
+          inflation
         } = simpleDataProcess(responses)
 
         perf.timeEnd(
@@ -280,7 +281,8 @@ export const actions = {
           domainPowerEnergy,
           domainEmissions,
           domainTemperature,
-          domainPrice
+          domainPrice,
+          inflation
         }
       }
 

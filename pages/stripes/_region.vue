@@ -91,6 +91,7 @@ import { mapGetters, mapActions } from 'vuex'
 import { extent } from 'd3-array'
 import { select, mouse } from 'd3-selection'
 import debounce from 'lodash.debounce'
+import startOfQuarter from 'date-fns/startOfQuarter'
 import addDays from 'date-fns/addDays'
 import format from 'date-fns/format'
 import differenceInDays from 'date-fns/differenceInDays'
@@ -135,6 +136,8 @@ export default {
       regions: getEnergyRegions().filter(
         d => d.id !== 'au' && d.id !== 'nem' && d.id !== 'wem'
       ),
+      datasetInflation: null,
+      domainInflation: null,
       hoverDate: null,
       hoverValue: null,
       hoverRegion: '',
@@ -287,6 +290,9 @@ export default {
 
         if (this.v3Paths) {
           this.doGetRegionData({ region: r.id }).then(d => {
+            this.domainInflation = d.inflation.domain
+            this.datasetInflation = d.inflation.data
+
             yearsBucket.forEach((year, yIndex) => {
               const yearInt = parseInt(year)
               const dataset = d.dataset.filter(
@@ -315,7 +321,8 @@ export default {
                   temperature: propData,
                   maxTemperature: propData,
                   netInterconnectorFlow: propData,
-                  price: propData
+                  price: propData,
+                  inflatedPrice: propData
                 })
               }
             })
@@ -347,7 +354,8 @@ export default {
                   temperature: propData,
                   maxTemperature: propData,
                   netInterconnectorFlow: propData,
-                  price: propData
+                  price: propData,
+                  inflatedPrice: propData
                 })
               })
             }, 500 * yIndex)
@@ -391,7 +399,8 @@ export default {
               temperature: propData,
               maxTemperature: propData,
               netInterconnectorFlow: propData,
-              price: propData
+              price: propData,
+              inflatedPrice: propData
             })
           })
         })
@@ -428,7 +437,8 @@ export default {
                 temperature: propData,
                 maxTemperature: propData,
                 netInterconnectorFlow: propData,
-                price: propData
+                price: propData,
+                inflatedPrice: propData
               })
             })
           }, 500 * i)
@@ -522,7 +532,8 @@ export default {
         importsExports: null,
         sumImportsExports: null,
         netInterconnectorFlow: null,
-        price: null
+        price: null,
+        inflatedPrice: null
       }
     },
 
@@ -583,6 +594,30 @@ export default {
           sumImportsExports = null
         }
 
+        const hasInflation =
+          this.domainInflation && this.datasetInflation.length > 0
+        let inflatedPrice = null
+
+        if (hasInflation) {
+          const startQ = startOfQuarter(d.date)
+          const find = this.datasetInflation.find(dInflation => {
+            return dInflation.time === startQ.getTime()
+          })
+          const lastIndex = this.datasetInflation[
+            this.datasetInflation.length - 1
+          ][this.domainInflation.id]
+          const inflationIndex = find
+            ? find[this.domainInflation.id]
+            : lastIndex
+
+          if (inflationIndex || inflationIndex === 0) {
+            inflatedPrice =
+              d._volWeightedPrice || d._volWeightedPrice === 0
+                ? (lastIndex / inflationIndex) * d._volWeightedPrice
+                : null
+          }
+        }
+
         obj.carbonIntensity = isValidEI ? ei : null
         obj.renewablesProportion =
           d._totalDemandRenewablesPercentage < 0
@@ -604,6 +639,7 @@ export default {
         obj.sumImportsExports = sumImportsExports
         obj.netInterconnectorFlow = d._totalDemandImportsExportsProportion
         obj.price = d._volWeightedPrice
+        obj.inflatedPrice = inflatedPrice
       }
 
       return obj

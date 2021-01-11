@@ -13,13 +13,13 @@ export function simpleDataProcess(res) {
 
   const {
     datasetFlat,
-    datasetCpi,
+    datasetInflation,
     domainMarketValue,
     domainPrice,
     domainPowerEnergy,
     domainEmissions,
     domainTemperature,
-    domainCpi,
+    domainInflation,
     type
   } = process(responses)
 
@@ -28,11 +28,9 @@ export function simpleDataProcess(res) {
   summariseDataset({
     isEnergyType,
     currentDataset: datasetFlat,
-    datasetCpi,
     domainPowerEnergy,
     domainEmissions,
-    domainPrice: isEnergyType ? domainMarketValue : domainPrice,
-    domainCpi
+    domainPrice: isEnergyType ? domainMarketValue : domainPrice
   })
 
   return {
@@ -40,7 +38,11 @@ export function simpleDataProcess(res) {
     domainPowerEnergy,
     domainEmissions,
     domainTemperature,
-    domainPrice
+    domainPrice,
+    inflation: {
+      data: datasetInflation,
+      domain: domainInflation
+    }
   }
 }
 

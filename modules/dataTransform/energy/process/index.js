@@ -14,7 +14,7 @@ import {
   getTemperatureDomains,
   getPriceDomains,
   getVolWeightedPriceDomains,
-  getCpiDomain
+  getInflationDomain
 } from './getDomains.js'
 
 const perfTime = new PerfTime()
@@ -28,7 +28,7 @@ export default function(data) {
     dataEmissions,
     dataPriceMarketValue,
     dataTemperature,
-    dataCpi,
+    dataInflation,
     fuelTechDataType,
     isPowerData,
     hasPowerEnergyData,
@@ -83,37 +83,41 @@ export default function(data) {
 
   flattenAndInterpolate(isPowerData, dataInterval, dataAll, datasetFlat)
 
-  const hasCpi = dataCpi.length > 0
-  if (hasCpi) {
+  const hasInflation = dataInflation.length > 0
+  if (hasInflation) {
     // adjust the start date to july 1922, instead of june 1922 to match the quarter
-    dataCpi[0].history.start = addMonths(
-      parseISO(dataCpi[0].history.start),
+    dataInflation[0].history.start = addMonths(
+      parseISO(dataInflation[0].history.start),
       1
     ).toISOString()
 
-    dataCpi[0].history.last = addDays(
-      parseISO(dataCpi[0].history.last),
+    dataInflation[0].history.last = addDays(
+      parseISO(dataInflation[0].history.last),
       1
     ).toISOString()
   }
-  const datasetCpi = hasCpi ? createEmptyDatasets(dataCpi) : []
-  const domainCpi = hasCpi ? getCpiDomain(dataCpi[0].id) : null
+  const datasetInflation = hasInflation
+    ? createEmptyDatasets(dataInflation)
+    : []
+  const domainInflation = hasInflation
+    ? getInflationDomain(dataInflation[0].id)
+    : null
 
-  if (hasCpi) {
-    flatten(dataCpi, datasetCpi)
+  if (hasInflation) {
+    flatten(dataInflation, datasetInflation)
   }
 
   perfTime.timeEnd('--- data.process')
 
   return {
     datasetFlat,
-    datasetCpi,
+    datasetInflation,
     domainPowerEnergy,
     domainEmissions,
     domainMarketValue,
     domainPrice,
     domainTemperature,
-    domainCpi,
+    domainInflation,
     dataPowerEnergyInterval,
     type: isPowerData ? 'power' : 'energy',
     units

@@ -95,8 +95,29 @@ export const metrics = [
     legendType: 'ramp'
   },
   {
-    label: 'Volume Weighted Price',
+    label: 'Volume-weighted Price',
     value: 'price',
+    divisor: 16000, // -1000 to 15000
+    offset: 1000,
+    domain: [0, 0.0625, 0.0656, 0.0688, 0.0813, 0.125, 0.375, 1],
+    domainLabel: ['-$1k', '$0', '$50', '$100', '$300', '$1k', '$5k', '$15k'],
+    range: [
+      '#613C9E',
+      '#28609A',
+      '#76ACCE',
+      '#F0BA9F',
+      '#DF8E73',
+      '#C5594C',
+      '#99292F',
+      '#621020'
+    ],
+    unit: '',
+    numberFormatString: '$,.2f',
+    legendType: 'swatch'
+  },
+  {
+    label: 'Volume-weighted Price (inflation adjusted)',
+    value: 'inflatedPrice',
     divisor: 16000, // -1000 to 15000
     offset: 1000,
     domain: [0, 0.0625, 0.0656, 0.0688, 0.0813, 0.125, 0.375, 1],
