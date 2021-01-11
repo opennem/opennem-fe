@@ -1,5 +1,10 @@
 import * as FT from '@/constants/energy-fuel-techs/group-default.js'
-import { PRICE, PRICE_ABOVE_300, PRICE_BELOW_0 } from '@/constants/data-types'
+import {
+  PRICE,
+  PRICE_ABOVE_300,
+  PRICE_BELOW_0,
+  CPI
+} from '@/constants/data-types'
 
 const PRICE_COLOUR = '#e34a33'
 
@@ -88,4 +93,13 @@ export function getVolWeightedPriceDomains() {
       colour: PRICE_COLOUR
     }
   ]
+}
+
+export function getInflationDomain(id) {
+  return {
+    id,
+    domain: id,
+    type: CPI,
+    colour: '#e34a33'
+  }
 }

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div 
+    <div
       :class="{
-      'is-hovered': hoverOn || focusOn }" 
+      'is-hovered': hoverOn || focusOn }"
       class="chart">
       <power-chart-options
         :chart-title="chartTitle"
@@ -157,7 +157,8 @@ export default {
     return {
       hoverDomain: '',
       focusDomain: '',
-      filteredDataset: []
+      filteredDataset: [],
+      totalProp: '_total'
     }
   },
 
@@ -172,13 +173,6 @@ export default {
     }),
     isEnergyType() {
       return this.dataType === 'energy'
-    },
-    totalProp() {
-      return this.isEnergyType
-        ? this.isYAxisAveragePower
-          ? '_totalPower'
-          : '_total'
-        : '_total'
     },
     averageValue() {
       const filteredOutNulls = this.filteredDataset.filter(

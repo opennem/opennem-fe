@@ -189,6 +189,7 @@ export default function({
     if (isEnergyType) {
       domainPrice.forEach(domain => {
         totalMarketValue += d[domain.id] || 0
+
         if (d[domain.id] || d[domain.id] === 0) {
           allMarketValueNulls = false
         }

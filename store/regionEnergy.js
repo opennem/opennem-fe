@@ -176,6 +176,75 @@ export const mutations = {
 }
 
 export const actions = {
+  doGetAllData({ commit, dispatch, rootGetters }, { regions }) {
+    dispatch('app/doClearError', null, { root: true })
+
+    const url = Data.getAllMonthlyPath()
+
+    commit('ready', false)
+    commit('isFetching', true)
+
+    function processResponses(responses) {
+      const dataCount = getDataCount(responses)
+      const perf = new PerfTime()
+      perf.time()
+      console.info(`------ ${currentRegion} (start)`)
+
+      const {
+        dataset,
+        domainPowerEnergy,
+        domainEmissions,
+        domainTemperature,
+        domainPrice
+      } = simpleDataProcess(responses)
+
+      perf.timeEnd(
+        `------ ${currentRegion} — (${dataCount} down to ${dataset.length})`
+      )
+
+      return {
+        dataset,
+        domainPowerEnergy,
+        domainEmissions,
+        domainTemperature,
+        domainPrice
+      }
+    }
+
+    return http([url])
+      .then(res => {
+        const check = res.length > 0 ? (res[0].data ? true : false) : false
+        const responses = check ? res[0].data : []
+        const all = {}
+
+        regions.forEach((r, i) => {
+          const filtered = responses.filter(
+            d => d.region === r.id.toUpperCase()
+          )
+          currentRegion = r.id
+          all[r.id] = processResponses([filtered])
+        })
+
+        return all
+      })
+      .catch(e => {
+        console.error('error', e)
+        let header = 'Error'
+        let message = ''
+
+        if (!e) {
+          message =
+            'There is an issue processing the responses. Please check the developer console and contact OpenNEM.'
+        } else {
+          const error = e.toJSON()
+          header = `${error.message}`
+          message = `Trying to fetch <code>${error.config.url}</code>`
+
+          console.log(error)
+        }
+      })
+  },
+
   doGetRegionData({ commit, dispatch, rootGetters }, { region }) {
     dispatch('app/doClearError', null, { root: true })
 
@@ -199,7 +268,8 @@ export const actions = {
           domainPowerEnergy,
           domainEmissions,
           domainTemperature,
-          domainPrice
+          domainPrice,
+          inflation
         } = simpleDataProcess(responses)
 
         perf.timeEnd(
@@ -211,7 +281,8 @@ export const actions = {
           domainPowerEnergy,
           domainEmissions,
           domainTemperature,
-          domainPrice
+          domainPrice,
+          inflation
         }
       }
 

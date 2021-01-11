@@ -108,6 +108,7 @@ export default {
     ...mapGetters({
       currentView: 'currentView',
       showFeatureToggle: 'app/showFeatureToggle',
+      featureMetrics: 'feature/metrics',
       featureAuEnergy: 'feature/auEnergy'
     }),
     regionId() {
@@ -125,6 +126,13 @@ export default {
     showFeatureToggle(show) {
       if (!show) {
         this.drawer = false
+      }
+    },
+    featureMetrics() {
+      if (this.featureMetrics) {
+        this.views = VIEWS
+      } else {
+        this.views = VIEWS.filter(v => v.id !== 'stripes')
       }
     }
   },

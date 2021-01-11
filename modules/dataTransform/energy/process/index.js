@@ -1,48 +1,26 @@
-import _cloneDeep from 'lodash.clonedeep'
+import parseISO from 'date-fns/parseISO'
+import addDays from 'date-fns/addDays'
+import addMonths from 'date-fns/addMonths'
 import PerfTime from '@/plugins/perfTime.js'
 import { EMISSIONS, MARKET_VALUE } from '@/constants/data-types'
 import createEmptyDatasets from '@/modules/dataTransform/helpers/createEmptyDatasets.js'
 import parseAndCheckData from './parseAndCheckData.js'
 import flattenAndInterpolate from './flattenAndInterpolate.js'
+import flatten from './flatten.js'
 import {
   getFuelTechWithTypeDomains,
   getFuelTechInOrder,
   getFuelTechDomains,
   getTemperatureDomains,
   getPriceDomains,
-  getVolWeightedPriceDomains
+  getVolWeightedPriceDomains,
+  getInflationDomain
 } from './getDomains.js'
 
 const perfTime = new PerfTime()
 
-export default function(responses) {
+export default function(data) {
   perfTime.time()
-  // combine multiple periods
-  const firstResponse = responses[0]
-  const data = _cloneDeep(firstResponse)
-  responses.forEach((res, i) => {
-    if (i > 0) {
-      res.forEach(r => {
-        const find = data.find(d => d.id === r.id)
-        if (find) {
-          find.history.last = r.history.last
-          find.history.data = [...find.history.data, ...r.history.data]
-        } else {
-          // console.warn(`${r.id} is missing from other responses`)
-          // create missing obj
-          const missing = _cloneDeep(r)
-          const newStart = firstResponse[0].history.start
-          const newData = Array.from(
-            Array(firstResponse[0].history.data.length),
-            () => null
-          )
-          missing.history.start = newStart
-          missing.history.data = [...newData, ...r.history.data]
-          data.push(missing)
-        }
-      })
-    }
-  })
 
   const {
     dataAll,
@@ -50,6 +28,7 @@ export default function(responses) {
     dataEmissions,
     dataPriceMarketValue,
     dataTemperature,
+    dataInflation,
     fuelTechDataType,
     isPowerData,
     hasPowerEnergyData,
@@ -64,6 +43,7 @@ export default function(responses) {
       : null
 
   const hasPriceMarketValue = dataPriceMarketValue.length > 0
+
   const fuelTechIdTypes = getFuelTechInOrder(dataPowerEnergy)
 
   const domainPowerEnergy = getFuelTechDomains(
@@ -77,6 +57,7 @@ export default function(responses) {
 
   let domainMarketValue = [],
     domainPrice = []
+
   if (hasPriceMarketValue) {
     domainMarketValue = isPowerData
       ? getFuelTechWithTypeDomains(fuelTechIdTypes, MARKET_VALUE)
@@ -84,6 +65,7 @@ export default function(responses) {
           getFuelTechInOrder(dataPriceMarketValue),
           MARKET_VALUE
         )
+
     domainPrice = isPowerData
       ? getPriceDomains(dataPriceMarketValue)
       : getVolWeightedPriceDomains()
@@ -101,15 +83,41 @@ export default function(responses) {
 
   flattenAndInterpolate(isPowerData, dataInterval, dataAll, datasetFlat)
 
+  const hasInflation = dataInflation.length > 0
+  if (hasInflation) {
+    // adjust the start date to july 1922, instead of june 1922 to match the quarter
+    dataInflation[0].history.start = addMonths(
+      parseISO(dataInflation[0].history.start),
+      1
+    ).toISOString()
+
+    dataInflation[0].history.last = addDays(
+      parseISO(dataInflation[0].history.last),
+      1
+    ).toISOString()
+  }
+  const datasetInflation = hasInflation
+    ? createEmptyDatasets(dataInflation)
+    : []
+  const domainInflation = hasInflation
+    ? getInflationDomain(dataInflation[0].id)
+    : null
+
+  if (hasInflation) {
+    flatten(dataInflation, datasetInflation)
+  }
+
   perfTime.timeEnd('--- data.process')
 
   return {
     datasetFlat,
+    datasetInflation,
     domainPowerEnergy,
     domainEmissions,
     domainMarketValue,
     domainPrice,
     domainTemperature,
+    domainInflation,
     dataPowerEnergyInterval,
     type: isPowerData ? 'power' : 'energy',
     units

@@ -6,15 +6,20 @@ import rollUp from './rollUp'
 import summariseDataset from './summarise'
 import groupDataset from './group'
 import { filterDatasetByRange, filterDatasetByPeriod } from '../helpers/filter'
+import combineMultipleResponses from '../helpers/combineMultipleResponses.js'
 
-export function simpleDataProcess(responses) {
+export function simpleDataProcess(res) {
+  const responses = combineMultipleResponses(res)
+
   const {
     datasetFlat,
+    datasetInflation,
     domainMarketValue,
     domainPrice,
     domainPowerEnergy,
     domainEmissions,
     domainTemperature,
+    domainInflation,
     type
   } = process(responses)
 
@@ -33,11 +38,17 @@ export function simpleDataProcess(responses) {
     domainPowerEnergy,
     domainEmissions,
     domainTemperature,
-    domainPrice
+    domainPrice,
+    inflation: {
+      data: datasetInflation,
+      domain: domainInflation
+    }
   }
 }
 
-export function dataProcess(responses, range, interval, period) {
+export function dataProcess(res, range, interval, period) {
+  const responses = combineMultipleResponses(res)
+
   const {
     datasetFlat,
     domainMarketValue,

@@ -3,34 +3,33 @@
     <h3 v-if="useAllPeriods">{{ getDateRange(allBucket) }}</h3>
 
     <OptionsLegend
-      :legend-width="tabletBreak ? width : 310"
-      :show-legend="regionData.length > 0" />
+      :legend-width="tabletBreak ? 200 : 310"
+      :show-legend="regionData.length > 0"
+      :hover-display="hoverDisplay"
+      :use-hover="!useAllPeriods"
+      :show-hover="hoverDate ? true : false"
+    />
 
     <div class="vis-container">
       <section
         v-for="(d, i) in regionData"
         :key="`region-${i}`"
+        :style="{ 'margin-top': useAllPeriods ? '35px' : '0' }"
         class="vis-section"
       >
 
-        <div
-          v-if="hoverDate && d.yearlyData"
-          class="hover-date-value">
-          <span class="date">{{ getHoverDate(hoverDate) }}</span>
-          <span
-            v-if="hoverValue || hoverValue === 0"
-            class="value">{{ valueFormat(hoverValue) }}{{ selectedMetricObject.unit }}</span>
-          <span
-            v-else
-            class="value">—</span>
-        </div>
-
-        <div
-          v-if="hoverDate && !d.yearlyData"
-          class="hover-date-value">
-          <span class="date">{{ getHoverDate(hoverDate) }}</span>
-          <span class="value">{{ getHoverValue(d[selectedMetric], hoverDate) }}</span>
-        </div>
+        <HoverMetric
+          v-if="hoverDate"
+          :is-yearly="d.yearlyData && d.yearlyData.length > 0 ? true : false"
+          :hover-date="hoverDate"
+          :data="d[selectedMetric]"
+          :hover-value="hoverValue"
+          :selected-metric="selectedMetric"
+          :selected-metric-object="selectedMetricObject"
+          :selected-period="selectedPeriodObject"
+          :style="{ display: useAllPeriods ? 'block' : 'none' }"
+          @hover-obj="d => hoverDisplay = d"
+        />
 
         <div v-if="d.yearlyData">
           <section
@@ -84,7 +83,6 @@
       </section>
     </div>
 
-
   </div>
 </template>
 
@@ -92,8 +90,8 @@
 import { mapGetters, mapActions } from 'vuex'
 import { extent } from 'd3-array'
 import { select, mouse } from 'd3-selection'
-import { format as numFormat } from 'd3-format'
 import debounce from 'lodash.debounce'
+import startOfQuarter from 'date-fns/startOfQuarter'
 import addDays from 'date-fns/addDays'
 import format from 'date-fns/format'
 import differenceInDays from 'date-fns/differenceInDays'
@@ -110,6 +108,7 @@ import ColourLegend from '@/components/Vis/ColourLegend'
 
 import VisSection from '@/components/Metrics/VisSection'
 import OptionsLegend from '@/components/Metrics/OptionsLegend'
+import HoverMetric from '@/components/Metrics/HoverMetric'
 
 export default {
   layout: 'main',
@@ -118,11 +117,12 @@ export default {
     Heatmap,
     ColourLegend,
     VisSection,
-    OptionsLegend
+    OptionsLegend,
+    HoverMetric
   },
 
   head: {
-    titleTemplate: 'OpenNEM Experiments: Metrics'
+    titleTemplate: 'OpenNEM: Stripes'
   },
 
   data() {
@@ -136,9 +136,12 @@ export default {
       regions: getEnergyRegions().filter(
         d => d.id !== 'au' && d.id !== 'nem' && d.id !== 'wem'
       ),
+      datasetInflation: null,
+      domainInflation: null,
       hoverDate: null,
       hoverValue: null,
-      hoverRegion: ''
+      hoverRegion: '',
+      hoverDisplay: null
     }
   },
 
@@ -217,7 +220,7 @@ export default {
   },
 
   mounted() {
-    this.$store.dispatch('currentView', 'experiments/metrics')
+    this.$store.dispatch('currentView', 'stripes')
     this.getData(this.regionId, this.selectedPeriod)
 
     this.width = this.$el.offsetWidth - 32
@@ -254,6 +257,7 @@ export default {
   methods: {
     ...mapActions({
       doGetRegionData: 'regionEnergy/doGetRegionData',
+      doGetAllData: 'regionEnergy/doGetAllData',
       doGetRegionDataByRangeInterval:
         'regionEnergy/doGetRegionDataByRangeInterval',
       doGetYearRegionData: 'regionEnergy/doGetYearRegionData'
@@ -273,106 +277,111 @@ export default {
 
       if (this.useAllPeriods) {
         this.selectedPeriod = 'all/month'
-        this.getRegionsData(regions)
+        this.getAllData(regions)
       } else {
         this.selectedPeriod = 'multiyear/day'
-        regions.forEach((r, i) => {
-          const yearlyData = []
-
-          if (this.v3Paths) {
-            this.doGetRegionData({ region: r.id }).then(d => {
-              yearsBucket.forEach((year, yIndex) => {
-                const yearInt = parseInt(year)
-                const dataset = d.dataset.filter(
-                  e => e.date.getFullYear() === yearInt
-                )
-
-                if (dataset.length > 0) {
-                  const propData = this.generateDataset(
-                    dataset,
-                    d.domainPowerEnergy,
-                    d.domainEmissions,
-                    d.domainTemperature,
-                    d.domainPrice,
-                    true,
-                    yearDailyRangeBucket(yearInt)
-                  )
-                  yearlyData.push({
-                    year,
-                    carbonIntensity: propData,
-                    renewablesProportion: propData,
-                    windProportion: propData,
-                    solarProportion: propData,
-                    gasProportion: propData,
-                    coalProportion: propData,
-                    importsExports: propData,
-                    temperature: propData,
-                    maxTemperature: propData,
-                    netInterconnectorFlow: propData,
-                    price: propData
-                  })
-                }
-              })
-            })
-          } else {
-            yearsBucket.forEach((year, yIndex) => {
-              setTimeout(() => {
-                this.doGetYearRegionData({ region: r.id, year }).then(d => {
-                  const yearInt = parseInt(year)
-                  const last = new Date(yearInt, 11, 31)
-                  const start = new Date(yearInt, 0, 1)
-                  const propData = this.generateDataset(
-                    d.dataset,
-                    d.domainPowerEnergy,
-                    d.domainEmissions,
-                    d.domainTemperature,
-                    d.domainPrice,
-                    true
-                  )
-                  yearlyData.push({
-                    year,
-                    carbonIntensity: propData,
-                    renewablesProportion: propData,
-                    windProportion: propData,
-                    solarProportion: propData,
-                    gasProportion: propData,
-                    coalProportion: propData,
-                    importsExports: propData,
-                    temperature: propData,
-                    maxTemperature: propData,
-                    netInterconnectorFlow: propData,
-                    price: propData
-                  })
-                })
-              }, 500 * yIndex)
-            })
-          }
-
-          this.regionData.push({
-            region: r.label,
-            regionId: r.id,
-            yearlyData
-          })
-        })
+        this.getRegionAllData(regions)
       }
     },
 
-    getRegionsData(regions) {
+    getRegionAllData(regions) {
       regions.forEach((r, i) => {
-        setTimeout(() => {
-          this.doGetRegionDataByRangeInterval({
-            region: r.id,
-            range: 'ALL',
-            interval: 'Month',
-            period: 'All',
-            groupName: this.fuelTechGroupName
-          }).then(d => {
+        const yearlyData = []
+
+        if (this.v3Paths) {
+          this.doGetRegionData({ region: r.id }).then(d => {
+            this.domainInflation = d.inflation.domain
+            this.datasetInflation = d.inflation.data
+
+            yearsBucket.forEach((year, yIndex) => {
+              const yearInt = parseInt(year)
+              const dataset = d.dataset.filter(
+                e => e.date.getFullYear() === yearInt
+              )
+
+              if (dataset.length > 0) {
+                const propData = this.generateDataset(
+                  dataset,
+                  d.domainPowerEnergy,
+                  d.domainEmissions,
+                  d.domainTemperature,
+                  d.domainPrice,
+                  true,
+                  yearDailyRangeBucket(yearInt)
+                )
+                yearlyData.push({
+                  year,
+                  carbonIntensity: propData,
+                  renewablesProportion: propData,
+                  windProportion: propData,
+                  solarProportion: propData,
+                  gasProportion: propData,
+                  coalProportion: propData,
+                  importsExports: propData,
+                  temperature: propData,
+                  maxTemperature: propData,
+                  netInterconnectorFlow: propData,
+                  price: propData,
+                  inflatedPrice: propData
+                })
+              }
+            })
+          })
+        } else {
+          yearsBucket.forEach((year, yIndex) => {
+            setTimeout(() => {
+              this.doGetYearRegionData({ region: r.id, year }).then(d => {
+                const yearInt = parseInt(year)
+                const last = new Date(yearInt, 11, 31)
+                const start = new Date(yearInt, 0, 1)
+                const propData = this.generateDataset(
+                  d.dataset,
+                  d.domainPowerEnergy,
+                  d.domainEmissions,
+                  d.domainTemperature,
+                  d.domainPrice,
+                  true
+                )
+                yearlyData.push({
+                  year,
+                  carbonIntensity: propData,
+                  renewablesProportion: propData,
+                  windProportion: propData,
+                  solarProportion: propData,
+                  gasProportion: propData,
+                  coalProportion: propData,
+                  importsExports: propData,
+                  temperature: propData,
+                  maxTemperature: propData,
+                  netInterconnectorFlow: propData,
+                  price: propData,
+                  inflatedPrice: propData
+                })
+              })
+            }, 500 * yIndex)
+          })
+        }
+
+        this.regionData.push({
+          region: r.label,
+          regionId: r.id,
+          yearlyData
+        })
+      })
+    },
+
+    getAllData(regions) {
+      if (this.v3Paths) {
+        this.doGetAllData({ regions }).then(d => {
+          regions.forEach(r => {
+            const rData = d[r.id]
+
             const propData = this.generateDataset(
-              d.currentDataset,
-              d.currentDomainPowerEnergy,
-              d.currentDomainEmissions,
-              d.domainTemperature,
-              d.domainPrice,
+              rData.dataset,
+              rData.domainPowerEnergy,
+              rData.domainEmissions,
+              rData.domainTemperature,
+              rData.domainPrice,
               false,
               this.allBucket
             )
@@ -390,11 +399,51 @@ export default {
               temperature: propData,
               maxTemperature: propData,
               netInterconnectorFlow: propData,
-              price: propData
+              price: propData,
+              inflatedPrice: propData
             })
           })
-        }, 500 * i)
-      })
+        })
+      } else {
+        regions.forEach((r, i) => {
+          setTimeout(() => {
+            this.doGetRegionDataByRangeInterval({
+              region: r.id,
+              range: 'ALL',
+              interval: 'Month',
+              period: 'All',
+              groupName: this.fuelTechGroupName
+            }).then(d => {
+              const propData = this.generateDataset(
+                d.currentDataset,
+                d.currentDomainPowerEnergy,
+                d.currentDomainEmissions,
+                d.domainTemperature,
+                d.domainPrice,
+                false,
+                this.allBucket
+              )
+
+              this.regionData.push({
+                region: r.label,
+                regionId: r.id,
+                carbonIntensity: propData,
+                renewablesProportion: propData,
+                windProportion: propData,
+                solarProportion: propData,
+                gasProportion: propData,
+                coalProportion: propData,
+                importsExports: propData,
+                temperature: propData,
+                maxTemperature: propData,
+                netInterconnectorFlow: propData,
+                price: propData,
+                inflatedPrice: propData
+              })
+            })
+          }, 500 * i)
+        })
+      }
     },
 
     generateDataset(
@@ -466,26 +515,6 @@ export default {
       return `${firstDate} – ${lastDate}`
     },
 
-    getHoverDate(date) {
-      return format(date, this.selectedPeriodObject.dateFormatString)
-    },
-
-    getHoverValue(data, date) {
-      const find = data.find(d => d.time === date.getTime())
-      return find &&
-        (find[this.selectedMetric] || find[this.selectedMetric] === 0)
-        ? `${this.valueFormat(find[this.selectedMetric])}${
-            this.selectedMetricObject.unit
-          }`
-        : '—'
-    },
-
-    valueFormat(value) {
-      const numberFormatString =
-        this.selectedMetricObject.numberFormatString || ',.0f'
-      return numFormat(numberFormatString)(value)
-    },
-
     createEmptyObj(date, time) {
       return {
         date,
@@ -503,7 +532,8 @@ export default {
         importsExports: null,
         sumImportsExports: null,
         netInterconnectorFlow: null,
-        price: null
+        price: null,
+        inflatedPrice: null
       }
     },
 
@@ -564,6 +594,30 @@ export default {
           sumImportsExports = null
         }
 
+        const hasInflation =
+          this.domainInflation && this.datasetInflation.length > 0
+        let inflatedPrice = null
+
+        if (hasInflation) {
+          const startQ = startOfQuarter(d.date)
+          const find = this.datasetInflation.find(dInflation => {
+            return dInflation.time === startQ.getTime()
+          })
+          const lastIndex = this.datasetInflation[
+            this.datasetInflation.length - 1
+          ][this.domainInflation.id]
+          const inflationIndex = find
+            ? find[this.domainInflation.id]
+            : lastIndex
+
+          if (inflationIndex || inflationIndex === 0) {
+            inflatedPrice =
+              d._volWeightedPrice || d._volWeightedPrice === 0
+                ? (lastIndex / inflationIndex) * d._volWeightedPrice
+                : null
+          }
+        }
+
         obj.carbonIntensity = isValidEI ? ei : null
         obj.renewablesProportion =
           d._totalDemandRenewablesPercentage < 0
@@ -585,6 +639,7 @@ export default {
         obj.sumImportsExports = sumImportsExports
         obj.netInterconnectorFlow = d._totalDemandImportsExportsProportion
         obj.price = d._volWeightedPrice
+        obj.inflatedPrice = inflatedPrice
       }
 
       return obj
@@ -604,37 +659,9 @@ export default {
 .container-fluid {
   padding: 1rem 16px;
   height: 100%;
-}
-
-.options-legend-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  position: sticky;
-  z-index: 99;
-  top: 0;
-  padding: 1rem 0;
-  background-color: $beige-lighter;
-  border-bottom: 1px solid #ddd;
 
   @include mobile {
-    display: block;
-  }
-}
-.options {
-  display: flex;
-  align-items: center;
-
-  @include mobile {
-    margin-bottom: 1rem;
-  }
-
-  & > * {
-    // margin: 0 1rem;
-  }
-
-  label {
-    margin: 0 0.5rem 0 0;
+    padding-top: 0;
   }
 }
 
@@ -653,7 +680,6 @@ h3 {
 }
 .vis-section {
   position: relative;
-  margin-top: 35px;
 
   h4 {
     font-family: $header-font-family;
@@ -686,47 +712,6 @@ h3 {
     }
   }
 }
-.colour-legend {
-  // margin-top: 2rem;
-}
-.metric-selection {
-  width: 100%;
-  select {
-    width: 100%;
-  }
-}
-.hover-date-value {
-  font-size: 0.8em;
-  display: flex;
-  align-items: flex-end;
-  position: absolute;
-  right: 0;
-  top: -25px;
-  span {
-    padding: 3px 12px 2px;
-    white-space: nowrap;
-  }
-  .date {
-    background-color: rgba(199, 69, 35, 0.1);
-    color: #444;
-    font-weight: 600;
-    border-radius: 20px 0 0 20px;
-  }
-  .value {
-    border-radius: 0 20px 20px 0;
-    background-color: rgba(255, 255, 255, 0.5);
-  }
-}
-// #hover-line {
-//   background-color: red;
-//   width: 1px;
-//   height: 400px;
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   z-index: 99;
-//   opacity: 0;
-// }
 
 ::v-deep .heatmap {
   border: 1px solid #ddd;
