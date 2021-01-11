@@ -38,6 +38,7 @@ export default function({
       totalCoal = 0,
       totalGas = 0,
       totalWind = 0,
+      totalWindValue = 0,
       totalSolar = 0,
       totalImportsExports = 0,
       hasRenewables = false,

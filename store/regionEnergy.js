@@ -195,7 +195,8 @@ export const actions = {
         domainPowerEnergy,
         domainEmissions,
         domainTemperature,
-        domainPrice
+        domainPrice,
+        domainMarketValue
       } = simpleDataProcess(responses)
 
       perf.timeEnd(
@@ -207,7 +208,8 @@ export const actions = {
         domainPowerEnergy,
         domainEmissions,
         domainTemperature,
-        domainPrice
+        domainPrice,
+        domainMarketValue
       }
     }
 
@@ -269,6 +271,7 @@ export const actions = {
           domainEmissions,
           domainTemperature,
           domainPrice,
+          domainMarketValue,
           inflation
         } = simpleDataProcess(responses)
 
@@ -282,6 +285,7 @@ export const actions = {
           domainEmissions,
           domainTemperature,
           domainPrice,
+          domainMarketValue,
           inflation
         }
       }
@@ -454,6 +458,8 @@ export const actions = {
         commit('currentDomainPowerEnergy', domainPowerEnergyGrouped[groupName])
         commit('currentDomainEmissions', domainEmissionsGrouped[groupName])
         commit('currentDomainMarketValue', domainMarketValueGrouped[groupName])
+
+        console.log(currentDataset)
 
         // parse units
         let prefix = ''

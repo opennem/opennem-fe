@@ -95,6 +95,7 @@ import startOfQuarter from 'date-fns/startOfQuarter'
 import addDays from 'date-fns/addDays'
 import format from 'date-fns/format'
 import differenceInDays from 'date-fns/differenceInDays'
+import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
 import {
   periods,
@@ -306,6 +307,7 @@ export default {
                   d.domainEmissions,
                   d.domainTemperature,
                   d.domainPrice,
+                  d.domainMarketValue,
                   true,
                   yearDailyRangeBucket(yearInt)
                 )
@@ -322,7 +324,11 @@ export default {
                   maxTemperature: propData,
                   netInterconnectorFlow: propData,
                   price: propData,
-                  inflatedPrice: propData
+                  inflatedPrice: propData,
+                  windValue: propData,
+                  solarValue: propData,
+                  coalValue: propData,
+                  hydroValue: propData
                 })
               }
             })
@@ -340,6 +346,7 @@ export default {
                   d.domainEmissions,
                   d.domainTemperature,
                   d.domainPrice,
+                  d.domainMarketValue,
                   true
                 )
                 yearlyData.push({
@@ -355,7 +362,11 @@ export default {
                   maxTemperature: propData,
                   netInterconnectorFlow: propData,
                   price: propData,
-                  inflatedPrice: propData
+                  inflatedPrice: propData,
+                  windValue: propData,
+                  solarValue: propData,
+                  coalValue: propData,
+                  hydroValue: propData
                 })
               })
             }, 500 * yIndex)
@@ -382,6 +393,7 @@ export default {
               rData.domainEmissions,
               rData.domainTemperature,
               rData.domainPrice,
+              rData.domainMarketValue,
               false,
               this.allBucket
             )
@@ -400,7 +412,11 @@ export default {
               maxTemperature: propData,
               netInterconnectorFlow: propData,
               price: propData,
-              inflatedPrice: propData
+              inflatedPrice: propData,
+              windValue: propData,
+              solarValue: propData,
+              coalValue: propData,
+              hydroValue: propData
             })
           })
         })
@@ -420,6 +436,7 @@ export default {
                 d.currentDomainEmissions,
                 d.domainTemperature,
                 d.domainPrice,
+                d.domainMarketValue,
                 false,
                 this.allBucket
               )
@@ -438,7 +455,11 @@ export default {
                 maxTemperature: propData,
                 netInterconnectorFlow: propData,
                 price: propData,
-                inflatedPrice: propData
+                inflatedPrice: propData,
+                windValue: propData,
+                solarValue: propData,
+                coalValue: propData,
+                hydroValue: propData
               })
             })
           }, 500 * i)
@@ -452,6 +473,7 @@ export default {
       domainEmissions,
       domainTemperature,
       domainPrice,
+      domainMarketValue,
       topUp,
       bucket
     ) {
@@ -465,7 +487,8 @@ export default {
             domainPowerEnergy,
             domainEmissions,
             domainTemperature,
-            domainPrice
+            domainPrice,
+            domainMarketValue
           )
         })
 
@@ -480,7 +503,8 @@ export default {
           domainPowerEnergy,
           domainEmissions,
           domainTemperature,
-          domainPrice
+          domainPrice,
+          domainMarketValue
         )
       })
 
@@ -533,7 +557,11 @@ export default {
         sumImportsExports: null,
         netInterconnectorFlow: null,
         price: null,
-        inflatedPrice: null
+        inflatedPrice: null,
+        windValue: null,
+        solarValue: null,
+        coalValue: null,
+        hydroValue: null
       }
     },
 
@@ -543,8 +571,13 @@ export default {
       domainPowerEnergy,
       domainEmissions,
       domainTemperature,
-      domainPrice
+      domainPrice,
+      domainMarketValue
     ) {
+      function getMarketValue(obj, id, energyId) {
+        return obj[id] || obj[id] === 0 ? obj[id] / obj[energyId] / 1000 : null
+      }
+
       if (d) {
         let totalEmissions = 0,
           totalPowerEnergy = 0,
@@ -553,7 +586,15 @@ export default {
           sumImportsExports = 0,
           hasImportsExportsValue = false,
           importsExports = null,
-          hasEmissionsValue = false
+          hasEmissionsValue = false,
+          totalWindMarketValue = null,
+          totalWind = null,
+          hasWind = false,
+          hasWindMarketValue = false,
+          windValue = null,
+          solarValue = null,
+          coalValue = null,
+          hydroValue = null
 
         domainEmissions.forEach(domain => {
           if (d[domain.id] || d[domain.id] === 0) {
@@ -561,17 +602,7 @@ export default {
           }
           totalEmissions += d[domain.id] || 0
         })
-        domainPowerEnergy.forEach(domain => {
-          if (domain.category !== 'load' || domain.fuelTech === 'exports') {
-            totalPowerEnergy += d[domain.id] || 0
-          }
-          if (domain.fuelTech === 'imports' || domain.fuelTech === 'exports') {
-            if (d[domain.id] || d[domain.id] === 0) {
-              hasImportsExportsValue = true
-            }
-            sumImportsExports += d[domain.id]
-          }
-        })
+
         domainTemperature.forEach(domain => {
           if (domain.type === 'temperature_mean') {
             temperature = d[domain.id]
@@ -580,6 +611,47 @@ export default {
             maxTemperature = d[domain.id]
           }
         })
+
+        domainPowerEnergy.forEach(domain => {
+          const ft = domain.fuelTech
+          const id = domain.id
+
+          if (domain.category !== 'load' || ft === 'exports') {
+            totalPowerEnergy += d[id] || 0
+          }
+          if (ft === 'imports' || ft === 'exports') {
+            if (d[id] || d[id] === 0) {
+              hasImportsExportsValue = true
+            }
+            sumImportsExports += d[id]
+          }
+
+          if (FT.isWind(ft)) {
+            if (d[id] || d[id] === 0) {
+              hasWind = true
+            }
+            totalWind += d[id]
+          }
+        })
+
+        domainMarketValue.forEach(domain => {
+          const ft = domain.fuelTech
+          const id = domain.id
+          const energyDomain = domainPowerEnergy.find(
+            domainPE => domainPE.fuelTech === ft
+          )
+          if (FT.isWind(ft)) {
+            if (d[id] || d[id] === 0) {
+              hasWindMarketValue = true
+            }
+            totalWindMarketValue += d[id]
+          }
+        })
+
+        windValue =
+          hasWind && hasWindMarketValue
+            ? totalWindMarketValue / totalWind / 1000
+            : null
 
         const ei = hasEmissionsValue ? totalEmissions / totalPowerEnergy : null
         const isValidEI = Number.isFinite(ei)
@@ -640,6 +712,7 @@ export default {
         obj.netInterconnectorFlow = d._totalDemandImportsExportsProportion
         obj.price = d._volWeightedPrice
         obj.inflatedPrice = inflatedPrice
+        obj.windValue = windValue
       }
 
       return obj

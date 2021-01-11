@@ -39,6 +39,7 @@ export function simpleDataProcess(res) {
     domainEmissions,
     domainTemperature,
     domainPrice,
+    domainMarketValue,
     inflation: {
       data: datasetInflation,
       domain: domainInflation
