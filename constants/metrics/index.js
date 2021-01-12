@@ -119,30 +119,6 @@ export const metrics = [
     unit: '%',
     legendType: 'ramp'
   },
-  {
-    label: 'Volume-weighted Price',
-    value: 'price',
-    divisor: PRICE_DIVISOR,
-    offset: PRICE_OFFSET,
-    domain: PRICE_DOMAIN,
-    domainLabel: PRICE_DOMAIN_LABEL,
-    range: PRICE_RANGE,
-    unit: '',
-    numberFormatString: '$,.2f',
-    legendType: 'swatch'
-  },
-  {
-    label: 'Volume-weighted Price (inflation adjusted)',
-    value: 'inflatedPrice',
-    divisor: PRICE_DIVISOR,
-    offset: PRICE_OFFSET,
-    domain: PRICE_DOMAIN,
-    domainLabel: PRICE_DOMAIN_LABEL,
-    range: PRICE_RANGE,
-    unit: '',
-    numberFormatString: '$,.2f',
-    legendType: 'swatch'
-  },
 
   {
     label: 'Wind Value',
@@ -183,6 +159,31 @@ export const metrics = [
   {
     label: 'Hydro Value',
     value: 'hydroValue',
+    divisor: PRICE_DIVISOR,
+    offset: PRICE_OFFSET,
+    domain: PRICE_DOMAIN,
+    domainLabel: PRICE_DOMAIN_LABEL,
+    range: PRICE_RANGE,
+    unit: '',
+    numberFormatString: '$,.2f',
+    legendType: 'swatch'
+  },
+
+  {
+    label: 'Volume-weighted Price',
+    value: 'price',
+    divisor: PRICE_DIVISOR,
+    offset: PRICE_OFFSET,
+    domain: PRICE_DOMAIN,
+    domainLabel: PRICE_DOMAIN_LABEL,
+    range: PRICE_RANGE,
+    unit: '',
+    numberFormatString: '$,.2f',
+    legendType: 'swatch'
+  },
+  {
+    label: 'Volume-weighted Price (inflation adjusted)',
+    value: 'inflatedPrice',
     divisor: PRICE_DIVISOR,
     offset: PRICE_OFFSET,
     domain: PRICE_DOMAIN,

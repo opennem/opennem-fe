@@ -95,7 +95,6 @@ import startOfQuarter from 'date-fns/startOfQuarter'
 import addDays from 'date-fns/addDays'
 import format from 'date-fns/format'
 import differenceInDays from 'date-fns/differenceInDays'
-import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
 import {
   periods,
@@ -574,10 +573,6 @@ export default {
       domainPrice,
       domainMarketValue
     ) {
-      function getMarketValue(obj, id, energyId) {
-        return obj[id] || obj[id] === 0 ? obj[id] / obj[energyId] / 1000 : null
-      }
-
       if (d) {
         let totalEmissions = 0,
           totalPowerEnergy = 0,
@@ -586,15 +581,7 @@ export default {
           sumImportsExports = 0,
           hasImportsExportsValue = false,
           importsExports = null,
-          hasEmissionsValue = false,
-          totalWindMarketValue = null,
-          totalWind = null,
-          hasWind = false,
-          hasWindMarketValue = false,
-          windValue = null,
-          solarValue = null,
-          coalValue = null,
-          hydroValue = null
+          hasEmissionsValue = false
 
         domainEmissions.forEach(domain => {
           if (d[domain.id] || d[domain.id] === 0) {
@@ -625,33 +612,7 @@ export default {
             }
             sumImportsExports += d[id]
           }
-
-          if (FT.isWind(ft)) {
-            if (d[id] || d[id] === 0) {
-              hasWind = true
-            }
-            totalWind += d[id]
-          }
         })
-
-        domainMarketValue.forEach(domain => {
-          const ft = domain.fuelTech
-          const id = domain.id
-          const energyDomain = domainPowerEnergy.find(
-            domainPE => domainPE.fuelTech === ft
-          )
-          if (FT.isWind(ft)) {
-            if (d[id] || d[id] === 0) {
-              hasWindMarketValue = true
-            }
-            totalWindMarketValue += d[id]
-          }
-        })
-
-        windValue =
-          hasWind && hasWindMarketValue
-            ? totalWindMarketValue / totalWind / 1000
-            : null
 
         const ei = hasEmissionsValue ? totalEmissions / totalPowerEnergy : null
         const isValidEI = Number.isFinite(ei)
@@ -712,7 +673,10 @@ export default {
         obj.netInterconnectorFlow = d._totalDemandImportsExportsProportion
         obj.price = d._volWeightedPrice
         obj.inflatedPrice = inflatedPrice
-        obj.windValue = windValue
+        obj.coalValue = d._coalValue
+        obj.windValue = d._windValue
+        obj.solarValue = d._solarValue
+        obj.hydroValue = d._hydroValue
       }
 
       return obj

@@ -9,9 +9,11 @@ const perfTime = new PerfTime()
 export default function({
   isEnergyType,
   currentDataset,
+  datasetInflation,
   domainPowerEnergy,
   domainEmissions,
-  domainPrice
+  domainPrice,
+  domainInflation
 }) {
   perfTime.time()
 
@@ -36,16 +38,25 @@ export default function({
       totalRenewables = 0,
       totalMarketValue = 0,
       totalCoal = 0,
+      totalCoalValue = 0,
       totalGas = 0,
       totalWind = 0,
       totalWindValue = 0,
       totalSolar = 0,
+      totalSolarValue = 0,
+      totalHydro = 0,
+      totalHydroValue = 0,
       totalImportsExports = 0,
       hasRenewables = false,
       hasCoal = false,
+      hasCoalValue = false,
       hasGas = false,
       hasWind = false,
+      hasWindValue = false,
       hasSolar = false,
+      hasSolarValue = false,
+      hasHydro = false,
+      hasHydroValue = false,
       hasImportsExports = false,
       hasValueForPercentageCalculation = false
 
@@ -167,6 +178,13 @@ export default function({
         totalSolar += d[id] || 0
       }
 
+      if (FT.isHydro(ft)) {
+        if (d[id] || d[id] === 0) {
+          hasHydro = true
+        }
+        totalHydro += d[id] || 0
+      }
+
       if (ft === FT.IMPORTS || ft === FT.EXPORTS) {
         if (d[id] || d[id] === 0) {
           hasImportsExports = true
@@ -189,10 +207,41 @@ export default function({
     let allMarketValueNulls = true
     if (isEnergyType) {
       domainPrice.forEach(domain => {
-        totalMarketValue += d[domain.id] || 0
+        const id = domain.id
+        const ft = domain.fuelTech
 
-        if (d[domain.id] || d[domain.id] === 0) {
+        totalMarketValue += d[id] || 0
+
+        if (d[id] || d[id] === 0) {
           allMarketValueNulls = false
+        }
+
+        if (FT.isWind(ft)) {
+          if (d[id] || d[id] === 0) {
+            hasWindValue = true
+          }
+          totalWindValue += d[id]
+        }
+
+        if (FT.isCoal(ft)) {
+          if (d[id] || d[id] === 0) {
+            hasCoalValue = true
+          }
+          totalCoalValue += d[id]
+        }
+
+        if (FT.isSolar(ft)) {
+          if (d[id] || d[id] === 0) {
+            hasSolarValue = true
+          }
+          totalSolarValue += d[id]
+        }
+
+        if (FT.isHydro(ft)) {
+          if (d[id] || d[id] === 0) {
+            hasHydroValue = true
+          }
+          totalHydroValue += d[id]
         }
       })
     }
@@ -204,15 +253,35 @@ export default function({
     if (!hasCoal) {
       totalCoal = null
     }
+    if (!hasCoalValue) {
+      totalCoalValue = null
+    }
+
     if (!hasGas) {
       totalGas = null
     }
+
     if (!hasWind) {
       totalWind = null
     }
+    if (!hasWindValue) {
+      totalWindValue = null
+    }
+
     if (!hasSolar) {
       totalSolar = null
     }
+    if (!hasSolarValue) {
+      totalSolarValue = null
+    }
+
+    if (!hasHydro) {
+      totalHydro = null
+    }
+    if (!hasHydroValue) {
+      totalHydroValue = null
+    }
+
     if (!hasImportsExports) {
       totalImportsExports = null
     }
@@ -223,6 +292,14 @@ export default function({
 
     const nanCheck = value => {
       return isNaN(value) ? null : value
+    }
+    const validNumCheck = value => {
+      return value || value === 0
+    }
+    const getAvValue = (value, generation) => {
+      return validNumCheck(value) && validNumCheck(generation)
+        ? value / generation / 1000
+        : null
     }
 
     dataset[i]._total = totalDemand
@@ -243,6 +320,7 @@ export default function({
     dataset[i]._totalDemandCoalProportion = hasCoal
       ? nanCheck((totalCoal / totalEnergyForPercentageCalculation) * 100)
       : null
+    dataset[i]._coalValue = getAvValue(totalCoalValue, totalCoal)
 
     dataset[i]._totalGas = totalGas
     dataset[i]._totalDemandGasProportion = hasGas
@@ -253,11 +331,16 @@ export default function({
     dataset[i]._totalDemandWindProportion = hasWind
       ? nanCheck((totalWind / totalEnergyForPercentageCalculation) * 100)
       : null
+    dataset[i]._windValue = getAvValue(totalWindValue, totalWind)
 
     dataset[i]._totalSolar = totalSolar
     dataset[i]._totalDemandSolarProportion = hasSolar
       ? nanCheck((totalSolar / totalEnergyForPercentageCalculation) * 100)
       : null
+    dataset[i]._solarValue = getAvValue(totalSolarValue, totalSolar)
+
+    dataset[i]._totalHydro = totalHydro
+    dataset[i]._hydroValue = getAvValue(totalHydroValue, totalHydro)
 
     dataset[i]._totalImportsExports = totalImportsExports
     dataset[i]._totalDemandImportsExportsProportion =

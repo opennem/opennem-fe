@@ -28,9 +28,11 @@ export function simpleDataProcess(res) {
   summariseDataset({
     isEnergyType,
     currentDataset: datasetFlat,
+    datasetInflation,
     domainPowerEnergy,
     domainEmissions,
-    domainPrice: isEnergyType ? domainMarketValue : domainPrice
+    domainPrice: isEnergyType ? domainMarketValue : domainPrice,
+    domainInflation
   })
 
   return {
