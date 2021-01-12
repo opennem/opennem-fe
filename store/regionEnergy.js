@@ -195,7 +195,8 @@ export const actions = {
         domainPowerEnergy,
         domainEmissions,
         domainTemperature,
-        domainPrice
+        domainPrice,
+        inflation
       } = simpleDataProcess(responses)
 
       perf.timeEnd(
@@ -207,7 +208,8 @@ export const actions = {
         domainPowerEnergy,
         domainEmissions,
         domainTemperature,
-        domainPrice
+        domainPrice,
+        inflation
       }
     }
 
@@ -218,9 +220,11 @@ export const actions = {
         const all = {}
 
         regions.forEach((r, i) => {
+          const cpiData = responses.find(d => d.type === 'cpi')
           const filtered = responses.filter(
             d => d.region === r.id.toUpperCase()
           )
+          filtered.push(cpiData)
           currentRegion = r.id
           all[r.id] = processResponses([filtered])
         })
