@@ -386,6 +386,9 @@ export default {
           regions.forEach(r => {
             const rData = d[r.id]
 
+            this.domainInflation = rData.inflation.domain
+            this.datasetInflation = rData.inflation.data
+
             const propData = this.generateDataset(
               rData.dataset,
               rData.domainPowerEnergy,
