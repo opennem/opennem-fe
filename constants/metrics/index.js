@@ -157,6 +157,18 @@ export const metrics = [
     legendType: 'swatch'
   },
   {
+    label: 'Gas value',
+    value: 'gasValue',
+    divisor: PRICE_DIVISOR,
+    offset: PRICE_OFFSET,
+    domain: PRICE_DOMAIN,
+    domainLabel: PRICE_DOMAIN_LABEL,
+    range: PRICE_RANGE,
+    unit: '',
+    numberFormatString: '$,.2f',
+    legendType: 'swatch'
+  },
+  {
     label: 'Hydro value',
     value: 'hydroValue',
     divisor: PRICE_DIVISOR,

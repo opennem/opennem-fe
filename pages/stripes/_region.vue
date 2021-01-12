@@ -327,7 +327,8 @@ export default {
                   windValue: propData,
                   solarValue: propData,
                   coalValue: propData,
-                  hydroValue: propData
+                  hydroValue: propData,
+                  gasValue: propData
                 })
               }
             })
@@ -365,7 +366,8 @@ export default {
                   windValue: propData,
                   solarValue: propData,
                   coalValue: propData,
-                  hydroValue: propData
+                  hydroValue: propData,
+                  gasValue: propData
                 })
               })
             }, 500 * yIndex)
@@ -418,7 +420,8 @@ export default {
               windValue: propData,
               solarValue: propData,
               coalValue: propData,
-              hydroValue: propData
+              hydroValue: propData,
+              gasValue: propData
             })
           })
         })
@@ -461,7 +464,8 @@ export default {
                 windValue: propData,
                 solarValue: propData,
                 coalValue: propData,
-                hydroValue: propData
+                hydroValue: propData,
+                gasValue: propData
               })
             })
           }, 500 * i)
@@ -563,7 +567,8 @@ export default {
         windValue: null,
         solarValue: null,
         coalValue: null,
-        hydroValue: null
+        hydroValue: null,
+        gasValue: null
       }
     },
 
@@ -680,6 +685,7 @@ export default {
         obj.windValue = d._windValue
         obj.solarValue = d._solarValue
         obj.hydroValue = d._hydroValue
+        obj.gasValue = d._gasValue
       }
 
       return obj

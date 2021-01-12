@@ -40,6 +40,7 @@ export default function({
       totalCoal = 0,
       totalCoalValue = 0,
       totalGas = 0,
+      totalGasValue = 0,
       totalWind = 0,
       totalWindValue = 0,
       totalSolar = 0,
@@ -51,6 +52,7 @@ export default function({
       hasCoal = false,
       hasCoalValue = false,
       hasGas = false,
+      hasGasValue = false,
       hasWind = false,
       hasWindValue = false,
       hasSolar = false,
@@ -230,6 +232,13 @@ export default function({
           totalCoalValue += d[id]
         }
 
+        if (FT.isGas(ft)) {
+          if (d[id] || d[id] === 0) {
+            hasGasValue = true
+          }
+          totalGasValue += d[id]
+        }
+
         if (FT.isSolar(ft)) {
           if (d[id] || d[id] === 0) {
             hasSolarValue = true
@@ -259,6 +268,9 @@ export default function({
 
     if (!hasGas) {
       totalGas = null
+    }
+    if (!hasGasValue) {
+      totalGasValue = null
     }
 
     if (!hasWind) {
@@ -326,6 +338,7 @@ export default function({
     dataset[i]._totalDemandGasProportion = hasGas
       ? nanCheck((totalGas / totalEnergyForPercentageCalculation) * 100)
       : null
+    dataset[i]._gasValue = getAvValue(totalGasValue, totalGas)
 
     dataset[i]._totalWind = totalWind
     dataset[i]._totalDemandWindProportion = hasWind
