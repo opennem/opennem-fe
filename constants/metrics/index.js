@@ -41,7 +41,7 @@ export const periods = [
 
 export const metrics = [
   {
-    label: 'Carbon Intensity (kgCO₂e/MWh)',
+    label: 'Carbon intensity (kgCO₂e/MWh)',
     value: 'carbonIntensity',
     divisor: 1000,
     domain: [0, 0.1, 0.55, 1],
@@ -50,7 +50,7 @@ export const metrics = [
     legendType: 'ramp'
   },
   {
-    label: 'Renewables Proportion (of demand)',
+    label: 'Renewables proportion (of demand)',
     value: 'renewablesProportion',
     divisor: 100,
     domain: [0, 0.5, 1],
@@ -59,7 +59,7 @@ export const metrics = [
     legendType: 'ramp'
   },
   {
-    label: 'Wind Proportion (of demand)',
+    label: 'Wind proportion (of demand)',
     value: 'windProportion',
     divisor: 100,
     domain: [0, 0.5, 1],
@@ -69,7 +69,7 @@ export const metrics = [
   },
 
   {
-    label: 'Solar Proportion (of demand)',
+    label: 'Solar proportion (of demand)',
     value: 'solarProportion',
     divisor: 100,
     domain: [0, 0.5, 1],
@@ -78,7 +78,7 @@ export const metrics = [
     legendType: 'ramp'
   },
   {
-    label: 'Coal Proportion (of demand)',
+    label: 'Coal proportion (of demand)',
     value: 'coalProportion',
     divisor: 100,
     domain: [0, 0.001, 0.9],
@@ -88,7 +88,7 @@ export const metrics = [
     showZeroBlock: true
   },
   {
-    label: 'Gas Proportion (of demand)',
+    label: 'Gas proportion (of demand)',
     value: 'gasProportion',
     divisor: 100,
     domain: [0, 0.001, 0.5],
@@ -109,7 +109,7 @@ export const metrics = [
   //   legendType: 'swatch'
   // },
   {
-    label: 'Net Interconnector Flow (of demand)',
+    label: 'Net interconnector flow (of demand)',
     value: 'netInterconnectorFlow',
     divisor: 50, // -25 to 25.
     offset: 25,
@@ -121,7 +121,7 @@ export const metrics = [
   },
 
   {
-    label: 'Wind Value',
+    label: 'Wind value',
     value: 'windValue',
     divisor: PRICE_DIVISOR,
     offset: PRICE_OFFSET,
@@ -133,7 +133,7 @@ export const metrics = [
     legendType: 'swatch'
   },
   {
-    label: 'Solar Value',
+    label: 'Solar value',
     value: 'solarValue',
     divisor: PRICE_DIVISOR,
     offset: PRICE_OFFSET,
@@ -145,7 +145,7 @@ export const metrics = [
     legendType: 'swatch'
   },
   {
-    label: 'Coal Value',
+    label: 'Coal value',
     value: 'coalValue',
     divisor: PRICE_DIVISOR,
     offset: PRICE_OFFSET,
@@ -157,7 +157,7 @@ export const metrics = [
     legendType: 'swatch'
   },
   {
-    label: 'Hydro Value',
+    label: 'Hydro value',
     value: 'hydroValue',
     divisor: PRICE_DIVISOR,
     offset: PRICE_OFFSET,
@@ -170,7 +170,7 @@ export const metrics = [
   },
 
   {
-    label: 'Volume-weighted Price',
+    label: 'Volume-weighted price',
     value: 'price',
     divisor: PRICE_DIVISOR,
     offset: PRICE_OFFSET,
@@ -182,7 +182,7 @@ export const metrics = [
     legendType: 'swatch'
   },
   {
-    label: 'Volume-weighted Price (inflation adjusted)',
+    label: 'Volume-weighted price (inflation adjusted)',
     value: 'inflatedPrice',
     divisor: PRICE_DIVISOR,
     offset: PRICE_OFFSET,
@@ -195,7 +195,7 @@ export const metrics = [
   },
 
   {
-    label: 'Average Temperature',
+    label: 'Average temperature',
     value: 'temperature',
     divisor: 60, // -10 to 50
     offset: 10,
@@ -206,7 +206,7 @@ export const metrics = [
     legendType: 'ramp'
   },
   {
-    label: 'Max Temperature',
+    label: 'Max temperature',
     value: 'maxTemperature',
     divisor: 60, // -10 to 50
     offset: 10,
