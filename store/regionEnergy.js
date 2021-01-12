@@ -226,7 +226,9 @@ export const actions = {
           const filtered = responses.filter(
             d => d.region === r.id.toUpperCase()
           )
-          filtered.push(cpiData)
+          if (cpiData) {
+            filtered.push(cpiData)
+          }
           currentRegion = r.id
           all[r.id] = processResponses([filtered])
         })
