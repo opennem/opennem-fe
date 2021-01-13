@@ -4,6 +4,7 @@
 
     <OptionsLegend
       :legend-width="tabletBreak ? 200 : 310"
+      :legend-font-size="tabletBreak ? 9 : 10"
       :show-legend="regionData.length > 0"
       :hover-display="hoverDisplay"
       :use-hover="!useAllPeriods"

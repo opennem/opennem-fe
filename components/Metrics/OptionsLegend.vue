@@ -18,6 +18,7 @@
       <ColourLegend
         v-if="showLegend"
         :svg-width="legendWidth"
+        :font-size="legendFontSize"
         :svg-height="30"
         :unit="
           selectedMetricObj.value === 'carbonIntensity'
@@ -73,6 +74,10 @@ export default {
     legendWidth: {
       type: Number,
       default: 310
+    },
+    legendFontSize: {
+      type: Number,
+      default: 10
     },
     useHover: {
       type: Boolean,

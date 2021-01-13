@@ -70,6 +70,10 @@ export default {
       type: Number,
       default: 50
     },
+    fontSize: {
+      type: Number,
+      default: 10
+    },
     unit: {
       type: String,
       default: ''
@@ -198,11 +202,12 @@ export default {
     },
 
     drawSwatch(svg, colour) {
-      const width = this.svgWidth - this.margin.right - this.margin.left
+      const marginLeft = 1
+      const width = this.svgWidth - this.margin.right - marginLeft
       const height = this.svgHeight - this.margin.bottom - this.margin.top
       const length = this.colourDomain.length
       const x = scaleBand()
-        .range([this.margin.left, this.svgWidth - this.margin.right])
+        .range([marginLeft, this.svgWidth - this.margin.right])
         .domain(this.colourDomain)
       const label = d => {
         return this.colourDomainLabel ? this.colourDomainLabel[d] : d
@@ -229,7 +234,7 @@ export default {
         .attr('x', d => x(d) + width / length / 2)
         .attr('y', height * 2)
         .text((d, i) => label(i))
-        .style('font-size', '10px')
+        .style('font-size', `${this.fontSize}px`)
         .style('text-anchor', 'middle')
     }
   }
