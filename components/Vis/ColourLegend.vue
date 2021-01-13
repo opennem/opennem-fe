@@ -7,9 +7,10 @@
 </template>
 
 <script>
-import { select } from 'd3-selection'
+import { select, mouse } from 'd3-selection'
 import { axisBottom } from 'd3-axis'
 import { scaleLinear, scaleOrdinal, scaleBand } from 'd3-scale'
+import { format as numFormat } from 'd3-format'
 
 function rampHorizontal(x, color, height) {
   const size = height
@@ -161,6 +162,7 @@ export default {
     },
 
     drawRamp(svg, colour, x) {
+      const self = this
       const value = d => {
         return typeof this.multiplier === 'string'
           ? d
@@ -191,6 +193,26 @@ export default {
           `translate(0,${this.svgHeight - this.margin.bottom})`
         )
         .call(rampHorizontal(x, colour, this.svgHeight))
+        .on('mousemove touchmove', function() {
+          const m = mouse(this)
+          const xValue = x.invert(m[0])
+          const text = numFormat('.1f')(value(xValue))
+          const xTextPos = xValue < 0.5 ? m[0] + 10 : m[0] - 5
+
+          $tooltipText
+            .attr('x', xTextPos)
+            .style('text-anchor', xValue < 0.5 ? 'start' : 'end')
+            .text(text)
+
+          const textWidth = $tooltipText.node().getComputedTextLength()
+          const xRectPos = xValue < 0.5 ? m[0] + 5 : m[0] - textWidth - 10
+
+          $tooltipRect.attr('x', xRectPos).attr('width', textWidth + 10)
+          $tooltip.style('opacity', 1)
+        })
+        .on('mouseleave touchend', () => {
+          $tooltip.style('opacity', 0)
+        })
         .append('g')
         .attr('class', 'tick-group')
         .call(
@@ -199,6 +221,28 @@ export default {
             .tickFormat(d => label(d))
         )
       svg.select('path.domain').remove()
+
+      const $tooltip = svg
+        .append('g')
+        .attr('class', 'tooltip')
+        .attr(
+          'transform',
+          `translate(0,${this.svgHeight - this.margin.bottom})`
+        )
+      const $tooltipRect = $tooltip
+        .append('rect')
+        .attr('class', 'tooltip-rect')
+        .attr('x', 0)
+        .attr('y', 5)
+        .attr('rx', 3)
+        .attr('height', 14)
+        .style('fill', '#c74523')
+
+      const $tooltipText = $tooltip
+        .append('text')
+        .attr('class', 'tooltip-text')
+        .attr('x', 0)
+        .attr('y', 16)
     },
 
     drawSwatch(svg, colour) {
@@ -254,6 +298,11 @@ export default {
         text-anchor: end;
       }
     }
+  }
+
+  .tooltip-text {
+    font-size: 11px;
+    fill: #fff;
   }
 }
 </style>
