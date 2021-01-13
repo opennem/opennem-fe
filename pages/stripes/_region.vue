@@ -61,7 +61,15 @@
         <div
           v-else
           style="width: 100%">
-          <h5 :class="{ dark: shouldDarken(d[selectedMetric], selectedMetric) }">{{ d.region }}</h5>
+          <h5
+            :class="{
+              dark: shouldDarken(d[selectedMetric], selectedMetric)
+            }"
+            class="region-label"
+            @click="handleRegionClick(d.regionId)"
+          >
+            {{ d.region }}
+          </h5>
           <Heatmap
             :cell-height="75"
             :svg-width="width"
@@ -233,25 +241,6 @@ export default {
       }),
       50
     )
-
-    //     const $vis = select('.vis-container')
-    //     let mouseinside = false
-    //
-    //     $vis
-    //       .on('mousemove touchmove', function() {
-    //         const m = mouse(this)
-    //         const $hoverLine = select('#hover-line')
-    //         $hoverLine.style('left', `${m[0] - 1}px`)
-    //         if (!mouseinside) {
-    //           $hoverLine.style('opacity', 1)
-    //           mouseinside = true
-    //         }
-    //       })
-    //       .on('mouseout', () => {
-    //         const $hoverLine = select('#hover-line')
-    //         $hoverLine.style('opacity', 0)
-    //         mouseinside = false
-    //       })
   },
 
   methods: {
@@ -445,6 +434,13 @@ export default {
     handleMouseout() {
       this.hoverDate = null
       this.hoverValue = null
+    },
+
+    handleRegionClick(region) {
+      this.$router.push({
+        path: `/stripes/${region}`,
+        query: this.$route.query
+      })
     },
 
     getDateRange(data) {
@@ -665,6 +661,14 @@ h3 {
       font-size: 0.7em;
       font-weight: 300;
     }
+  }
+}
+
+.region-label {
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.6);
   }
 }
 
