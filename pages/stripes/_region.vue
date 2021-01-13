@@ -104,7 +104,10 @@ import startOfQuarter from 'date-fns/startOfQuarter'
 import addDays from 'date-fns/addDays'
 import format from 'date-fns/format'
 import differenceInDays from 'date-fns/differenceInDays'
-import { getEnergyRegions } from '@/constants/energy-regions.js'
+import {
+  getEnergyRegions,
+  getEnergyRegionLabel
+} from '@/constants/energy-regions.js'
 import {
   periods,
   metrics,
@@ -130,12 +133,47 @@ export default {
     HoverMetric
   },
 
-  head: {
-    titleTemplate: 'OpenNEM: Stripes'
+  head() {
+    return {
+      title: `: ${getEnergyRegionLabel(this.regionId)} Stripes`,
+      meta: [
+        {
+          hid: 'twitter:title',
+          name: 'twitter:title',
+          content: `OpenNEM: ${getEnergyRegionLabel(this.regionId)} Stripes`
+        },
+        {
+          hid: 'twitter:image:src',
+          name: 'twitter:image:src',
+          content: this.cardFilename
+        },
+        {
+          hid: 'og:title',
+          property: 'og:title',
+          content: `OpenNEM: ${getEnergyRegionLabel(this.regionId)} Stripes`
+        },
+        {
+          hid: 'og:image',
+          property: 'og:image',
+          content: this.cardFilename
+        },
+        {
+          hid: 'og:image:width',
+          property: 'og:image:width',
+          content: '1447'
+        },
+        {
+          hid: 'og:image:height',
+          property: 'og:image:height',
+          content: '932'
+        }
+      ]
+    }
   },
 
   data() {
     return {
+      baseUrl: `${this.$config.url}/images/screens/`,
       width: 0,
       periods,
       metrics,
@@ -206,6 +244,10 @@ export default {
 
     useAllPeriods() {
       return this.regionId === 'au' || this.regionId === 'nem'
+    },
+
+    cardFilename() {
+      return `${this.baseUrl}opennem-stripes-${this.regionId}.png`
     }
   },
 
