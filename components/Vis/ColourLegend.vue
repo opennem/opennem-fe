@@ -102,6 +102,10 @@ export default {
     zeroBlock: {
       type: Boolean,
       default: false
+    },
+    tooltipFormat: {
+      type: String,
+      default: '.0f'
     }
   },
 
@@ -196,7 +200,7 @@ export default {
         .on('mousemove touchmove', function() {
           const m = mouse(this)
           const xValue = x.invert(m[0])
-          const text = numFormat('.1f')(value(xValue))
+          const text = numFormat(self.tooltipFormat)(value(xValue))
           const xTextPos = xValue < 0.5 ? m[0] + 10 : m[0] - 5
 
           $tooltipText

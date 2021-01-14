@@ -32,6 +32,7 @@
         :colour-domain-label="selectedMetricObj.domainLabel"
         :zero-block="selectedMetricObj.showZeroBlock"
         :type="selectedMetricObj.legendType"
+        :tooltip-format="selectedMetricObj.numberFormatString"
         class="colour-legend"
       />
 
