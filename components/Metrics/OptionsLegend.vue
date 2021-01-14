@@ -18,18 +18,18 @@
 
           <optgroup label="Proportion">
             <option value="renewablesProportion">Renewables proportion (of demand)</option>
-            <option value="windProportion">Wind proportion (of demand)</option>
             <option value="solarProportion">Solar proportion (of demand)</option>
-            <option value="coalProportion">Coal proportion (of demand)</option>
+            <option value="windProportion">Wind proportion (of demand)</option>
             <option value="gasProportion">Gas proportion (of demand)</option>
+            <option value="coalProportion">Coal proportion (of demand)</option>
           </optgroup>
 
           <optgroup label="Average value">
-            <option value="windValue">Wind value</option>
             <option value="solarValue">Solar value</option>
-            <option value="coalValue">Coal value</option>
-            <option value="gasValue">Gas value</option>
+            <option value="windValue">Wind value</option>
             <option value="hydroValue">Hydro value</option>
+            <option value="gasValue">Gas value</option>
+            <option value="coalValue">Coal value</option>
             <option value="price">Volume-weighted price</option>
             <option value="inflatedPrice">Volume-weighted price (inflation adjusted)</option>
           </optgroup>
