@@ -64,7 +64,7 @@ export default {
         obj.date = this.getHoverDate(this.hoverDate)
         if (this.isYearly) {
           if (this.hoverValue || this.hoverValue === 0) {
-            obj.value = `${this.valueFormat(this.hoverValue)}${
+            obj.value = `${this.valueFormat(this.hoverValue)} ${
               this.selectedMetricObject.unit
             }`
           }

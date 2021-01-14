@@ -18,7 +18,7 @@ module.exports = {
     mapboxToken: process.env.MAPBOX_TOKEN || '',
     DATA_BASE_URL: useDev
       ? 'https://data.dev.opennem.org.au/'
-      : 'https://data.dev.opennem.org.au/'
+      : 'https://data.opennem.org.au/'
   },
 
   server: {
