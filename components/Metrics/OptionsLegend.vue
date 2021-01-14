@@ -190,12 +190,12 @@ export default {
   position: relative;
   top: 3px;
 
+  ::v-deep .hover-date-value {
+    position: static;
+  }
+
   @include mobile {
     width: 200px;
   }
-}
-
-::v-deep .hover-date-value {
-  position: static;
 }
 </style>
