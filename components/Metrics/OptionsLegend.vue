@@ -3,13 +3,41 @@
     <div class="options">
       <div class="metric-selection select is-rounded">
         <select v-model="selectedMetric">
-          <option
+          <!-- <option
             v-for="(d, i) in metrics"
             :key="`metric-${i}`"
             :value="d.value"
           >
             {{ d.label }}
-          </option>
+          </option> -->
+
+          <option
+            v-if="featureEmissions"
+            value="carbonIntensity">Carbon intensity</option>
+          <option value="netInterconnectorFlow">Net interconnector flow (of demand)</option>
+
+          <optgroup label="Proportion">
+            <option value="renewablesProportion">Renewables proportion (of demand)</option>
+            <option value="windProportion">Wind proportion (of demand)</option>
+            <option value="solarProportion">Solar proportion (of demand)</option>
+            <option value="coalProportion">Coal proportion (of demand)</option>
+            <option value="gasProportion">Gas proportion (of demand)</option>
+          </optgroup>
+
+          <optgroup label="Average value">
+            <option value="windValue">Wind value</option>
+            <option value="solarValue">Solar value</option>
+            <option value="coalValue">Coal value</option>
+            <option value="gasValue">Gas value</option>
+            <option value="hydroValue">Hydro value</option>
+            <option value="price">Volume-weighted price</option>
+            <option value="inflatedPrice">Volume-weighted price (inflation adjusted)</option>
+          </optgroup>
+
+          <optgroup label="Temperature">
+            <option value="temperature">Average temperature</option>
+            <option value="maxTemperature">Max temperature</option>
+          </optgroup>
         </select>
       </div>
     </div>
