@@ -2,7 +2,7 @@ import { periods, metrics } from '@/constants/metrics/'
 
 export const state = () => ({
   selectedPeriod: periods[0].value,
-  selectedMetric: metrics[0].value
+  selectedMetric: metrics[1].value
 })
 
 export const getters = {
