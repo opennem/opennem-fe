@@ -38,7 +38,7 @@
             :key="`yearly-${i}-${yIndex}`"
             style="width: 100%"
           >
-            <h5>{{ yData.year }}</h5>
+            <h5 class="heatmap-label">{{ yData.year }}</h5>
             <Heatmap
               :cell-height="50"
               :svg-width="width"
@@ -61,15 +61,9 @@
         <div
           v-else
           style="width: 100%">
-          <h5
-            :class="{
-              dark: shouldDarken(d[selectedMetric], selectedMetric)
-            }"
-            class="region-label"
-            @click="handleRegionClick(d.regionId)"
-          >
-            {{ d.region }}
-          </h5>
+          <nuxt-link
+            :to="`/stripes/${d.regionId}/?metric=${selectedMetric}`"
+            class="heatmap-label region-label">{{ d.region }}</nuxt-link>
           <Heatmap
             :cell-height="75"
             :svg-width="width"
@@ -96,7 +90,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { extent } from 'd3-array'
 import { select, mouse } from 'd3-selection'
 import debounce from 'lodash.debounce'
@@ -217,12 +211,12 @@ export default {
       },
 
       set(val) {
+        const query = { metric: val }
         this.$router.push({
-          query: {
-            metric: val
-          }
+          path: `?metric=${val}`
         })
         this.$store.commit('metrics/selectedMetric', val)
+        this.setQuery(query)
       }
     },
 
@@ -254,22 +248,26 @@ export default {
   watch: {
     regionId(id) {
       this.getData(id, this.selectedPeriod)
+    },
+    queryMetric(metric) {
+      if (metric) {
+        this.selectedMetric = metric
+      }
     }
   },
 
-  created() {
+  mounted() {
     if (this.queryMetric) {
       this.selectedMetric = this.queryMetric
     } else {
+      console.log('push', this.selectedMetric)
       this.$router.push({
         query: {
           metric: this.selectedMetric
         }
       })
     }
-  },
 
-  mounted() {
     this.$store.dispatch('currentView', 'stripes')
     this.getData(this.regionId, this.selectedPeriod)
 
@@ -289,6 +287,9 @@ export default {
     ...mapActions({
       doGetRegionData: 'regionEnergy/doGetRegionData',
       doGetAllData: 'regionEnergy/doGetAllData'
+    }),
+    ...mapMutations({
+      setQuery: 'app/query'
     }),
 
     getData(id, period) {
@@ -636,10 +637,6 @@ export default {
       }
 
       return obj
-    },
-
-    shouldDarken(data, prop) {
-      const check = data.filter((d, i) => i < 20).map(d => d[prop])
     }
   }
 }
@@ -679,7 +676,7 @@ h3 {
     font-size: 1.2em;
     font-weight: 700;
   }
-  h5 {
+  .heatmap-label {
     font-family: $header-font-family;
     font-weight: 700;
     font-size: 1em;
@@ -693,6 +690,14 @@ h3 {
     left: 1px;
     margin-top: 1px;
   }
+
+  .region-label {
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.6);
+    }
+  }
   header {
     display: flex;
     justify-content: space-between;
@@ -703,14 +708,6 @@ h3 {
       font-size: 0.7em;
       font-weight: 300;
     }
-  }
-}
-
-.region-label {
-  cursor: pointer;
-
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.6);
   }
 }
 
