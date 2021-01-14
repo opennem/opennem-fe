@@ -94,14 +94,9 @@ export default {
     }
   },
 
-  data() {
-    return {
-      metrics
-    }
-  },
-
   computed: {
     ...mapGetters({
+      featureEmissions: 'feature/emissions',
       selectedMetricObj: 'metrics/selectedMetricObj'
     }),
     selectedMetric: {
@@ -117,6 +112,13 @@ export default {
         })
         this.$store.commit('metrics/selectedMetric', val)
       }
+    },
+
+    metrics() {
+      if (this.featureEmissions) {
+        return metrics
+      }
+      return metrics.filter(d => d.value !== 'carbonIntensity')
     }
   }
 }
