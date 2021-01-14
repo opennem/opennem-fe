@@ -217,6 +217,7 @@ export default {
         })
         this.$store.commit('metrics/selectedMetric', val)
         this.setQuery(query)
+        this.hoverDisplay = null
       }
     },
 
