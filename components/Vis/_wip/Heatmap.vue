@@ -210,13 +210,16 @@ export default {
         .append('rect')
         .attr('width', this.width)
         .attr('height', this.height)
-        .on('mousemove touchmove', function() {
+        .on('touchenter mouseenter mousemove touchmove', function() {
           const m = mouse(this)
           const index = Math.round(m[0] / self.bandScale.step())
-          const time = self.bandScale.domain()[index]
-          // const date = self.bandScale.invert(m[0])
+          let time = self.bandScale.domain()[index]
+          let point = data.find(d => d.time === time)
 
-          const point = data.find(d => d.time === time)
+          if (index === data.length) {
+            point = data[index - 1]
+            time = data[index - 1].time
+          }
 
           self.$emit('rect-mousemove', {
             id: self._uid,
