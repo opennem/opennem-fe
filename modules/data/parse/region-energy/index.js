@@ -5,8 +5,11 @@ import process from './process'
 import rollUp from './rollUp'
 import summariseDataset from './summarise'
 import groupDataset from './group'
-import { filterDatasetByRange, filterDatasetByPeriod } from '../helpers/filter'
-import combineMultipleResponses from '../helpers/combineMultipleResponses.js'
+import {
+  filterDatasetByRange,
+  filterDatasetByPeriod
+} from '@/modules/data/helpers/filter'
+import combineMultipleResponses from '@/modules/data/helpers/combineMultipleResponses.js'
 
 export function simpleDataProcess(res) {
   const responses = combineMultipleResponses(res)

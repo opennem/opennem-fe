@@ -8,7 +8,7 @@ import {
   dataProcess,
   dataRollUp,
   dataFilterByPeriod
-} from '@/modules/dataTransform/energy'
+} from '@/modules/data/parse/region-energy'
 import { isValidRegion } from '@/constants/energy-regions.js'
 
 let currentRegion = ''

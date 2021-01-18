@@ -1,7 +1,7 @@
 import process from './process'
 import rollUp from './rollUp'
 import summarise from './summarise'
-import { filterDatasetByRange } from '../helpers/filter'
+import { filterDatasetByRange } from '@/modules/data/helpers/filter'
 
 export function dataProcess(data, range, interval) {
   const { domains, dataset, type } = process(data, range)

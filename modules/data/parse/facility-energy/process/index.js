@@ -1,5 +1,5 @@
 import { checkHistoryObject } from '@/services/DataCheck.js'
-import createEmptyDatasets from '@/modules/dataTransform/helpers/createEmptyDatasets.js'
+import createEmptyDatasets from '@/modules/data/helpers/createEmptyDatasets.js'
 
 export default function(data, range) {
   // check if units exists
