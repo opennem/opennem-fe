@@ -261,7 +261,6 @@ export default {
     if (this.queryMetric) {
       this.selectedMetric = this.queryMetric
     } else {
-      console.log('push', this.selectedMetric)
       this.$router.push({
         query: {
           metric: this.selectedMetric
