@@ -106,7 +106,7 @@ import {
 } from '@/constants/stripes/dates.js'
 import getStripesDataset from '@/modules/data/transform/energy-to-stripe-metrics.js'
 
-import Heatmap from '@/components/Vis/_wip/Heatmap'
+import Heatmap from '@/components/Vis/Heatmap'
 import ColourLegend from '@/components/Vis/ColourLegend'
 import OptionsLegend from '@/components/Stripes/OptionsLegend'
 import HoverMetric from '@/components/Stripes/HoverMetric'
