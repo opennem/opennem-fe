@@ -91,12 +91,9 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-import { extent } from 'd3-array'
-import { select, mouse } from 'd3-selection'
 import debounce from 'lodash.debounce'
 import format from 'date-fns/format'
 
-import getStripesDataset from '@/modules/data/transform/energy-to-stripe-metrics.js'
 import {
   getEnergyRegions,
   getEnergyRegionLabel
@@ -107,9 +104,10 @@ import {
   getEachMonthOfInterval,
   getEachDayOfInterval
 } from '@/constants/stripes/dates.js'
+import getStripesDataset from '@/modules/data/transform/energy-to-stripe-metrics.js'
+
 import Heatmap from '@/components/Vis/_wip/Heatmap'
 import ColourLegend from '@/components/Vis/ColourLegend'
-
 import OptionsLegend from '@/components/Stripes/OptionsLegend'
 import HoverMetric from '@/components/Stripes/HoverMetric'
 
