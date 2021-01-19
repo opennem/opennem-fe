@@ -23,7 +23,7 @@
           v-if="hoverDate"
           :is-yearly="d.yearlyData && d.yearlyData.length > 0 ? true : false"
           :hover-date="hoverDate"
-          :data="d[selectedMetric]"
+          :data="d.data"
           :hover-value="hoverValue"
           :selected-metric="selectedMetric"
           :selected-metric-object="selectedMetricObject"
@@ -85,7 +85,6 @@
         </div>
       </section>
     </div>
-
   </div>
 </template>
 
