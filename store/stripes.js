@@ -1,4 +1,4 @@
-import { periods, metrics } from '@/constants/metrics/'
+import { periods, metrics } from '@/constants/stripes/'
 
 export const state = () => ({
   selectedPeriod: periods[0].value,

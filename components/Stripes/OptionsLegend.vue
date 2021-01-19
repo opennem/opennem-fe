@@ -79,15 +79,9 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import {
-  periods,
-  metrics,
-  yearsBucket,
-  allRangeBucket,
-  yearDailyRangeBucket
-} from '@/constants/metrics/'
+import { metrics } from '@/constants/stripes/'
 import ColourLegend from '@/components/Vis/ColourLegend'
-import HoverMetric from '@/components/Metrics/HoverMetric'
+import HoverMetric from '@/components/Stripes/HoverMetric'
 
 export default {
   components: {
@@ -125,11 +119,11 @@ export default {
   computed: {
     ...mapGetters({
       featureEmissions: 'feature/emissions',
-      selectedMetricObj: 'metrics/selectedMetricObj'
+      selectedMetricObj: 'stripes/selectedMetricObj'
     }),
     selectedMetric: {
       get() {
-        return this.$store.getters['metrics/selectedMetric']
+        return this.$store.getters['stripes/selectedMetric']
       },
 
       set(val) {
@@ -138,7 +132,7 @@ export default {
             metric: val
           }
         })
-        this.$store.commit('metrics/selectedMetric', val)
+        this.$store.commit('stripes/selectedMetric', val)
       }
     },
 

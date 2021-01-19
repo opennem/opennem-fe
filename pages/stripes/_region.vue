@@ -44,7 +44,7 @@
               :svg-width="width"
               :svg-height="50"
               :radius="0"
-              :dataset="yData[selectedMetric]"
+              :dataset="yData.data"
               :value-prop="selectedMetric"
               :tooltip-value-prop="selectedMetricObject.valueProp ? selectedMetricObject.valueProp : selectedMetric"
               :divisor="selectedMetricObject.divisor"
@@ -69,7 +69,7 @@
             :svg-width="width"
             :svg-height="75"
             :radius="0"
-            :dataset="d[selectedMetric]"
+            :dataset="d.data"
             :value-prop="selectedMetric"
             :tooltip-value-prop="selectedMetricObject.valueProp ? selectedMetricObject.valueProp : selectedMetric"
             :divisor="selectedMetricObject.divisor"
@@ -102,19 +102,17 @@ import {
   getEnergyRegions,
   getEnergyRegionLabel
 } from '@/constants/energy-regions.js'
+import { periods, metrics } from '@/constants/stripes/'
 import {
-  periods,
-  metrics,
-  yearsBucket,
-  allRangeBucket,
-  yearDailyRangeBucket
-} from '@/constants/metrics/'
+  getEachYearOfInterval,
+  getEachMonthOfInterval,
+  getEachDayOfInterval
+} from '@/constants/stripes/dates.js'
 import Heatmap from '@/components/Vis/_wip/Heatmap'
 import ColourLegend from '@/components/Vis/ColourLegend'
 
-import VisSection from '@/components/Metrics/VisSection'
-import OptionsLegend from '@/components/Metrics/OptionsLegend'
-import HoverMetric from '@/components/Metrics/HoverMetric'
+import OptionsLegend from '@/components/Stripes/OptionsLegend'
+import HoverMetric from '@/components/Stripes/HoverMetric'
 
 export default {
   layout: 'main',
@@ -122,7 +120,6 @@ export default {
   components: {
     Heatmap,
     ColourLegend,
-    VisSection,
     OptionsLegend,
     HoverMetric
   },
@@ -171,8 +168,8 @@ export default {
       width: 0,
       periods,
       metrics,
-      yearsBucket,
-      allBucket: allRangeBucket(),
+      getEachYearOfInterval,
+      allBucket: getEachMonthOfInterval(),
       regionData: [],
       regions: getEnergyRegions().filter(
         d => d.id !== 'au' && d.id !== 'nem' && d.id !== 'wem'
@@ -197,17 +194,17 @@ export default {
 
     selectedPeriod: {
       get() {
-        return this.$store.getters['metrics/selectedPeriod']
+        return this.$store.getters['stripes/selectedPeriod']
       },
 
       set(val) {
-        this.$store.commit('metrics/selectedPeriod', val)
+        this.$store.commit('stripes/selectedPeriod', val)
       }
     },
 
     selectedMetric: {
       get() {
-        return this.$store.getters['metrics/selectedMetric']
+        return this.$store.getters['stripes/selectedMetric']
       },
 
       set(val) {
@@ -215,7 +212,7 @@ export default {
         this.$router.push({
           path: `?metric=${val}`
         })
-        this.$store.commit('metrics/selectedMetric', val)
+        this.$store.commit('stripes/selectedMetric', val)
         this.setQuery(query)
         this.hoverDisplay = null
       }
@@ -321,42 +318,25 @@ export default {
           this.domainInflation = d.inflation.domain
           this.datasetInflation = d.inflation.data
 
-          yearsBucket.forEach((year, yIndex) => {
+          getEachYearOfInterval.forEach((year, yIndex) => {
             const yearInt = parseInt(year)
             const dataset = d.dataset.filter(
               e => e.date.getFullYear() === yearInt
             )
 
             if (dataset.length > 0) {
-              const propData = this.generateDataset(
-                dataset,
-                d.domainPowerEnergy,
-                d.domainEmissions,
-                d.domainTemperature,
-                d.domainPrice,
-                d.domainMarketValue,
-                true,
-                yearDailyRangeBucket(yearInt)
-              )
               yearlyData.push({
                 year,
-                carbonIntensity: propData,
-                renewablesProportion: propData,
-                windProportion: propData,
-                solarProportion: propData,
-                gasProportion: propData,
-                coalProportion: propData,
-                importsExports: propData,
-                temperature: propData,
-                maxTemperature: propData,
-                netInterconnectorFlow: propData,
-                price: propData,
-                inflatedPrice: propData,
-                windValue: propData,
-                solarValue: propData,
-                coalValue: propData,
-                hydroValue: propData,
-                gasValue: propData
+                data: this.generateDataset(
+                  dataset,
+                  d.domainPowerEnergy,
+                  d.domainEmissions,
+                  d.domainTemperature,
+                  d.domainPrice,
+                  d.domainMarketValue,
+                  true,
+                  getEachDayOfInterval(yearInt)
+                )
               })
             }
           })
@@ -378,37 +358,19 @@ export default {
           this.domainInflation = rData.inflation.domain
           this.datasetInflation = rData.inflation.data
 
-          const propData = this.generateDataset(
-            rData.dataset,
-            rData.domainPowerEnergy,
-            rData.domainEmissions,
-            rData.domainTemperature,
-            rData.domainPrice,
-            rData.domainMarketValue,
-            false,
-            this.allBucket
-          )
-
           this.regionData.push({
             region: r.label,
             regionId: r.id,
-            carbonIntensity: propData,
-            renewablesProportion: propData,
-            windProportion: propData,
-            solarProportion: propData,
-            gasProportion: propData,
-            coalProportion: propData,
-            importsExports: propData,
-            temperature: propData,
-            maxTemperature: propData,
-            netInterconnectorFlow: propData,
-            price: propData,
-            inflatedPrice: propData,
-            windValue: propData,
-            solarValue: propData,
-            coalValue: propData,
-            hydroValue: propData,
-            gasValue: propData
+            data: this.generateDataset(
+              rData.dataset,
+              rData.domainPowerEnergy,
+              rData.domainEmissions,
+              rData.domainTemperature,
+              rData.domainPrice,
+              rData.domainMarketValue,
+              false,
+              this.allBucket
+            )
           })
         })
       })
@@ -477,13 +439,6 @@ export default {
     handleMouseout() {
       this.hoverDate = null
       this.hoverValue = null
-    },
-
-    handleRegionClick(region) {
-      this.$router.push({
-        path: `/stripes/${region}`,
-        query: this.$route.query
-      })
     },
 
     getDateRange(data) {

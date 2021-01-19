@@ -1,7 +1,3 @@
-import eachYearOfInterval from 'date-fns/eachYearOfInterval'
-import eachMonthOfInterval from 'date-fns/eachMonthOfInterval'
-import eachDayOfInterval from 'date-fns/eachDayOfInterval'
-
 const PRICE_DIVISOR = 16000 // -1000 to 15000
 const PRICE_OFFSET = 1000
 const PRICE_DOMAIN = [0, 0.0625, 0.0656, 0.0688, 0.0813, 0.125, 0.375, 1]
@@ -97,17 +93,7 @@ export const metrics = [
     legendType: 'ramp',
     showZeroBlock: true
   },
-  // {
-  //   label: 'Net Exports/Imports',
-  //   value: 'importsExports',
-  //   valueProp: 'sumImportsExports',
-  //   divisor: 'importsExports',
-  //   domain: [0, 1],
-  //   domainLabel: ['Net exports', 'Net imports'],
-  //   range: ['#977AB1', '#44146F'],
-  //   unit: ' GWh',
-  //   legendType: 'swatch'
-  // },
+
   {
     label: 'Net interconnector flow (of demand)',
     value: 'netInterconnectorFlow',
@@ -229,35 +215,3 @@ export const metrics = [
     legendType: 'ramp'
   }
 ]
-
-const dataStartYear = 2010
-const dataStartMonth = 10 // 0 - Jan, 11 - Dec
-
-export const yearsBucket = eachYearOfInterval({
-  start: new Date(dataStartYear, 0, 1),
-  end: new Date()
-}).map(d => d.getFullYear())
-
-export const yearDailyRangeBucket = year => {
-  return eachDayOfInterval({
-    start: new Date(year, 0, 1),
-    end: new Date(year, 11, 31)
-  }).map(d => {
-    return {
-      date: d,
-      time: d.getTime()
-    }
-  })
-}
-
-export const allRangeBucket = () => {
-  return eachMonthOfInterval({
-    start: new Date(dataStartYear, dataStartMonth, 1),
-    end: new Date() // to Now
-  }).map(d => {
-    return {
-      date: d,
-      time: d.getTime()
-    }
-  })
-}
