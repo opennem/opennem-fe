@@ -94,10 +94,9 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { extent } from 'd3-array'
 import { select, mouse } from 'd3-selection'
 import debounce from 'lodash.debounce'
-import startOfQuarter from 'date-fns/startOfQuarter'
-import addDays from 'date-fns/addDays'
 import format from 'date-fns/format'
-import differenceInDays from 'date-fns/differenceInDays'
+
+import getStripesDataset from '@/modules/data/transform/energy-to-stripe-metrics.js'
 import {
   getEnergyRegions,
   getEnergyRegionLabel
@@ -174,8 +173,6 @@ export default {
       regions: getEnergyRegions().filter(
         d => d.id !== 'au' && d.id !== 'nem' && d.id !== 'wem'
       ),
-      datasetInflation: null,
-      domainInflation: null,
       hoverDate: null,
       hoverValue: null,
       hoverRegion: '',
@@ -315,9 +312,6 @@ export default {
         const yearlyData = []
 
         this.doGetRegionData({ region: r.id }).then(d => {
-          this.domainInflation = d.inflation.domain
-          this.datasetInflation = d.inflation.data
-
           getEachYearOfInterval.forEach((year, yIndex) => {
             const yearInt = parseInt(year)
             const dataset = d.dataset.filter(
@@ -327,13 +321,15 @@ export default {
             if (dataset.length > 0) {
               yearlyData.push({
                 year,
-                data: this.generateDataset(
+                data: getStripesDataset(
                   dataset,
+                  d.inflation ? d.inflation.data : [],
                   d.domainPowerEnergy,
                   d.domainEmissions,
                   d.domainTemperature,
                   d.domainPrice,
                   d.domainMarketValue,
+                  d.inflation ? d.inflation.domain : null,
                   true,
                   getEachDayOfInterval(yearInt)
                 )
@@ -355,80 +351,24 @@ export default {
         regions.forEach(r => {
           const rData = d[r.id]
 
-          this.domainInflation = rData.inflation.domain
-          this.datasetInflation = rData.inflation.data
-
           this.regionData.push({
             region: r.label,
             regionId: r.id,
-            data: this.generateDataset(
+            data: getStripesDataset(
               rData.dataset,
+              rData.inflation ? rData.inflation.data : [],
               rData.domainPowerEnergy,
               rData.domainEmissions,
               rData.domainTemperature,
               rData.domainPrice,
               rData.domainMarketValue,
+              rData.inflation ? rData.inflation.domain : null,
               false,
               this.allBucket
             )
           })
         })
       })
-    },
-
-    generateDataset(
-      dataset,
-      domainPowerEnergy,
-      domainEmissions,
-      domainTemperature,
-      domainPrice,
-      domainMarketValue,
-      topUp,
-      bucket
-    ) {
-      if (bucket) {
-        const data = bucket.map(d => {
-          const obj = this.createEmptyObj(d.date, d.time)
-          const find = dataset.find(x => x.time === d.time)
-          return this.calculateMetricData(
-            obj,
-            find,
-            domainPowerEnergy,
-            domainEmissions,
-            domainTemperature,
-            domainPrice,
-            domainMarketValue
-          )
-        })
-
-        return data
-      }
-
-      const data = dataset.map(d => {
-        const obj = this.createEmptyObj(d.date, d.time)
-        return this.calculateMetricData(
-          obj,
-          d,
-          domainPowerEnergy,
-          domainEmissions,
-          domainTemperature,
-          domainPrice,
-          domainMarketValue
-        )
-      })
-
-      if (data.length > 0 && topUp) {
-        const lastDataDate = data[data.length - 1].date
-        const last = new Date(lastDataDate.getFullYear(), 11, 31)
-        const fillUp = differenceInDays(last, addDays(lastDataDate, 1))
-        let cDate = lastDataDate
-        for (let i = 1; i <= fillUp + 1; i++) {
-          cDate = addDays(cDate, 1)
-          data.push(this.createEmptyObj(cDate, cDate.getTime()))
-        }
-      }
-
-      return data
     },
 
     handleMousemove({ id, date, value }, regionId) {
@@ -446,152 +386,6 @@ export default {
       const firstDate = format(data[0].date, formatString)
       const lastDate = format(data[data.length - 1].date, formatString)
       return `${firstDate} – ${lastDate}`
-    },
-
-    createEmptyObj(date, time) {
-      return {
-        date,
-        time,
-        carbonIntensity: null,
-        renewablesProportion: null,
-        windProportion: null,
-        solarProportion: null,
-        coalProportion: null,
-        coal: null,
-        gasProportion: null,
-        gas: null,
-        temperature: null,
-        maxTemperature: null,
-        importsExports: null,
-        sumImportsExports: null,
-        netInterconnectorFlow: null,
-        price: null,
-        inflatedPrice: null,
-        windValue: null,
-        solarValue: null,
-        coalValue: null,
-        hydroValue: null,
-        gasValue: null
-      }
-    },
-
-    calculateMetricData(
-      obj,
-      d,
-      domainPowerEnergy,
-      domainEmissions,
-      domainTemperature,
-      domainPrice,
-      domainMarketValue
-    ) {
-      if (d) {
-        let totalEmissions = 0,
-          totalPowerEnergy = 0,
-          temperature = null,
-          maxTemperature = null,
-          sumImportsExports = 0,
-          hasImportsExportsValue = false,
-          importsExports = null,
-          hasEmissionsValue = false
-
-        domainEmissions.forEach(domain => {
-          if (d[domain.id] || d[domain.id] === 0) {
-            hasEmissionsValue = true
-          }
-          totalEmissions += d[domain.id] || 0
-        })
-
-        domainTemperature.forEach(domain => {
-          if (domain.type === 'temperature_mean') {
-            temperature = d[domain.id]
-          }
-          if (domain.type === 'temperature_max') {
-            maxTemperature = d[domain.id]
-          }
-        })
-
-        domainPowerEnergy.forEach(domain => {
-          const ft = domain.fuelTech
-          const id = domain.id
-
-          if (domain.category !== 'load' || ft === 'exports') {
-            totalPowerEnergy += d[id] || 0
-          }
-          if (ft === 'imports' || ft === 'exports') {
-            if (d[id] || d[id] === 0) {
-              hasImportsExportsValue = true
-            }
-            sumImportsExports += d[id]
-          }
-        })
-
-        const ei = hasEmissionsValue ? totalEmissions / totalPowerEnergy : null
-        const isValidEI = Number.isFinite(ei)
-
-        // if no value
-        importsExports = hasImportsExportsValue
-          ? sumImportsExports > 0
-            ? 1
-            : 0
-          : null
-        if (!hasImportsExportsValue) {
-          sumImportsExports = null
-        }
-
-        const hasInflation =
-          this.domainInflation && this.datasetInflation.length > 0
-        let inflatedPrice = null
-
-        if (hasInflation) {
-          const startQ = startOfQuarter(d.date)
-          const find = this.datasetInflation.find(dInflation => {
-            return dInflation.time === startQ.getTime()
-          })
-          const lastIndex = this.datasetInflation[
-            this.datasetInflation.length - 1
-          ][this.domainInflation.id]
-          const inflationIndex = find
-            ? find[this.domainInflation.id]
-            : lastIndex
-
-          if (inflationIndex || inflationIndex === 0) {
-            inflatedPrice =
-              d._volWeightedPrice || d._volWeightedPrice === 0
-                ? (lastIndex / inflationIndex) * d._volWeightedPrice
-                : null
-          }
-        }
-
-        obj.carbonIntensity = isValidEI ? ei : null
-        obj.renewablesProportion =
-          d._totalDemandRenewablesPercentage < 0
-            ? 0
-            : d._totalDemandRenewablesPercentage
-        obj.windProportion =
-          d._totalDemandWindProportion < 0 ? 0 : d._totalDemandWindProportion
-        obj.solarProportion =
-          d._totalDemandSolarProportion < 0 ? 0 : d._totalDemandSolarProportion
-        obj.coalProportion =
-          d._totalDemandCoalProportion < 0 ? 0 : d._totalDemandCoalProportion
-        obj.coal = d._totalCoal
-        obj.gasProportion =
-          d._totalDemandGasProportion < 0 ? 0 : d._totalDemandGasProportion
-        obj.gas = d._totalGas
-        obj.temperature = temperature
-        obj.maxTemperature = maxTemperature
-        obj.importsExports = importsExports
-        obj.sumImportsExports = sumImportsExports
-        obj.netInterconnectorFlow = d._totalDemandImportsExportsProportion
-        obj.price = d._volWeightedPrice
-        obj.inflatedPrice = inflatedPrice
-        obj.coalValue = d._coalValue
-        obj.windValue = d._windValue
-        obj.solarValue = d._solarValue
-        obj.hydroValue = d._hydroValue
-        obj.gasValue = d._gasValue
-      }
-
-      return obj
     }
   }
 }
