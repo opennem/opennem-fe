@@ -221,7 +221,8 @@ module.exports = {
     '~plugins/tooltip.js',
     '~plugins/sentry.js',
     { src: '~/plugins/leaflet', ssr: false },
-    { src: '~/plugins/mapbox', mode: 'client' }
+    { src: '~/plugins/mapbox', mode: 'client' },
+    { src: '~/plugins/vue-good-table', ssr: false }
   ],
 
   /*

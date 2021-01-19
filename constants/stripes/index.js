@@ -37,7 +37,7 @@ export const periods = [
 
 export const metrics = [
   {
-    label: 'Carbon intensity (kgCO₂e/MWh)',
+    label: 'Carbon intensity',
     value: 'carbonIntensity',
     divisor: 1000,
     domain: [0, 0.1, 0.55, 1],

@@ -85,6 +85,15 @@
         </div>
       </section>
     </div>
+
+    <!-- <hr>
+
+    <DataGrid
+      :data="regionData"
+      :single-region="!useAllPeriods"
+      :selected-column="selectedMetricObject"
+    /> -->
+
   </div>
 </template>
 
@@ -106,6 +115,7 @@ import {
 import getStripesDataset from '@/modules/data/transform/energy-to-stripe-metrics.js'
 
 import Heatmap from '@/components/Vis/Heatmap'
+import DataGrid from '@/components/Vis/DataGrid'
 import ColourLegend from '@/components/Vis/ColourLegend'
 import OptionsLegend from '@/components/Stripes/OptionsLegend'
 import HoverMetric from '@/components/Stripes/HoverMetric'
@@ -117,7 +127,8 @@ export default {
     Heatmap,
     ColourLegend,
     OptionsLegend,
-    HoverMetric
+    HoverMetric,
+    DataGrid
   },
 
   head() {
