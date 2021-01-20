@@ -86,7 +86,7 @@ import {
 } from '~/constants/facility-regions.js'
 
 import Http from '~/services/Http.js'
-import FacilityDataParse from '@/modules/data/parse/facility'
+import FacilityDataParse from '@/data/parse/facility'
 import FacilityFilters from '~/components/Facility/Filters.vue'
 import FacilityList from '~/components/Facility/List.vue'
 import FacilityMap from '~/components/Facility/Map.vue'

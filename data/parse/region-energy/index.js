@@ -8,8 +8,8 @@ import groupDataset from './group'
 import {
   filterDatasetByRange,
   filterDatasetByPeriod
-} from '@/modules/data/helpers/filter'
-import combineMultipleResponses from '@/modules/data/helpers/combineMultipleResponses.js'
+} from '@/data/helpers/filter'
+import combineMultipleResponses from '@/data/helpers/combineMultipleResponses.js'
 
 export function simpleDataProcess(res) {
   const responses = combineMultipleResponses(res)

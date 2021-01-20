@@ -62,7 +62,7 @@ import parseISO from 'date-fns/parseISO'
 import getTime from 'date-fns/getTime'
 import _cloneDeep from 'lodash.clonedeep'
 
-import EnergyToAveragePower from '@/modules/data/transform/energy-to-average-power.js'
+import EnergyToAveragePower from '@/data/transform/energy-to-average-power.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import * as OPTIONS from '@/constants/chart-options.js'
 import * as SI from '@/constants/si.js'

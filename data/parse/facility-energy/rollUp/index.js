@@ -1,4 +1,4 @@
-import timeGroups from '@/modules/data/helpers/time-groups'
+import timeGroups from '@/data/helpers/time-groups'
 import powerRollUp from './powerRollUp'
 import energyRollUp from './energyRollUp'
 

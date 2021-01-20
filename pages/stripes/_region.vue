@@ -112,7 +112,7 @@ import {
   getEachMonthOfInterval,
   getEachDayOfInterval
 } from '@/constants/stripes/dates.js'
-import getStripesDataset from '@/modules/data/transform/energy-to-stripe-metrics.js'
+import getStripesDataset from '@/data/transform/energy-to-stripe-metrics.js'
 
 import Heatmap from '@/components/Vis/Heatmap'
 import DataGrid from '@/components/Vis/DataGrid'
