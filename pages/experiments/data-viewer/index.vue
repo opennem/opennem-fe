@@ -29,7 +29,7 @@
     </nav>
 
     <section>
-      <DataGrid
+      <DataTable
         :columns="columns"
         :rows="rows"
       />
@@ -48,7 +48,7 @@ import {
 } from '@/data/pages/page-stripes.js'
 import { getTableData } from '@/data/pages/page-data-check.js'
 import Dropdown from '@/components/ui/Dropdown'
-import DataGrid from '@/components/vis/DataGrid'
+import DataTable from '@/components/vis/DataTable'
 
 export default {
   layout: 'no-container',
@@ -58,7 +58,7 @@ export default {
 
   components: {
     Dropdown,
-    DataGrid
+    DataTable
   },
 
   data() {
