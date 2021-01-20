@@ -48,7 +48,7 @@ import {
 } from '@/data/pages/page-stripes.js'
 import { getTableData } from '@/data/pages/page-data-check.js'
 import Dropdown from '@/components/ui/Dropdown'
-import DataTable from '@/components/vis/DataTable'
+import DataTable from '@/components/Vis/DataTable'
 
 export default {
   layout: 'no-container',
