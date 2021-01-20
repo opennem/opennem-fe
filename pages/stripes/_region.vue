@@ -86,13 +86,13 @@
       </section>
     </div>
 
-    <!-- <hr>
+    <hr>
 
     <DataGrid
       :data="regionData"
       :single-region="!useAllPeriods"
       :selected-column="selectedMetricObject"
-    /> -->
+    />
 
   </div>
 </template>

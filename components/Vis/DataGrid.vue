@@ -1,28 +1,6 @@
 <template>
   <div>
-    <vue-good-table
-      v-if="!singleRegion"
-      :columns="columns"
-      :rows="rows"
-      :fixed-header="true"
-      :sort-options="{
-        enabled: false
-      }"
-      max-height="600px"
-      theme="nocturnal"
-      style-class="vgt-table"
-    >
-      <template
-        slot="table-row"
-        slot-scope="props">
-        <span v-if="props.column.field == 'date'">
-          {{ props.row.date | formatDate }}
-        </span>
-        <span v-else>
-          {{ valueFormat(props.formattedRow[props.column.field]) }}
-        </span>
-      </template>
-    </vue-good-table>
+
   </div>
 </template>
 

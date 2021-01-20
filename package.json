@@ -53,7 +53,6 @@
     "nuxt": "^2.13.0",
     "v-tooltip": "^2.0.2",
     "vue-clickaway": "^2.2.2",
-    "vue-good-table": "^2.21.3",
     "vue-json-csv": "^1.2.4",
     "vue-mapbox": "^0.4.1",
     "vue2-leaflet": "^2.1.1",
