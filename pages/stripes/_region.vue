@@ -93,16 +93,14 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import debounce from 'lodash.debounce'
 
-import {
-  getEnergyRegions,
-  getEnergyRegionLabel
-} from '@/constants/energy-regions.js'
+import { getEnergyRegionLabel } from '@/constants/energy-regions.js'
 import { periods, metrics } from '@/constants/stripes/'
 
 import {
   getRegionStripesData,
   getYearlyStripesData,
-  getStripesDateRange
+  getStripesDateRange,
+  getStripesRegion
 } from '@/data/pages/page-stripes.js'
 
 import Heatmap from '@/components/Vis/Heatmap'
@@ -166,9 +164,6 @@ export default {
       metrics,
       dateRange: getStripesDateRange(),
       regionData: [],
-      regions: getEnergyRegions().filter(
-        d => d.id !== 'au' && d.id !== 'nem' && d.id !== 'wem'
-      ),
       hoverDate: null,
       hoverValue: null,
       hoverRegion: '',
@@ -286,13 +281,7 @@ export default {
       // reset
       this.regionData = []
 
-      const filter =
-        id === 'au'
-          ? d => d.id !== 'au' && d.id !== 'nem'
-          : id === 'nem'
-            ? d => d.id !== 'au' && d.id !== 'nem' && d.id !== 'wem'
-            : d => d.id === id
-      const regions = getEnergyRegions().filter(filter)
+      const regions = getStripesRegion(id)
 
       if (this.useAllPeriods) {
         this.selectedPeriod = 'all/month'

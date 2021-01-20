@@ -1,68 +1,72 @@
 <template>
-  <div>
+  <div class="">
+    <table
+      v-if="show"
+      class="table is-striped is-narrow is-fullwidth is-hoverable"
+    >
+      <thead>
+        <tr>
+          <th>Row</th>
+          <th
+            v-for="(col, colIndex) in columns"
+            :key="`column-header-${colIndex}`"
+          >
+            {{ col.label }}
+          </th>
+        </tr>
+      </thead>
 
+      <tbody>
+        <tr
+          v-for="(row, rowIndex) in rows"
+          :key="`row-${rowIndex}`"
+        >
+          <td>{{ rowIndex + 1 }}</td>
+          <td
+            v-for="(col, colIndex) in columns"
+            :key="`column-${rowIndex}-${colIndex}`"
+          >
+            <span v-if="col.type === 'date'">{{ dateFormat(row[col.field]) }}</span>
+            <span v-else>{{ valueFormat(row[col.field], col.formatString) }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
 <script>
 import { format as numFormat } from 'd3-format'
+import format from 'date-fns/format'
 
 export default {
   props: {
-    data: {
+    columns: {
       type: Array,
       default: () => null
     },
-    singleRegion: {
-      type: Boolean,
-      default: false
-    },
-    selectedColumn: {
-      type: Object,
-      default: () => {
-        return {
-          label: 'Coal Proportion',
-          field: 'coalProportion'
-        }
-      }
+    rows: {
+      type: Array,
+      default: () => null
     }
   },
 
   computed: {
-    firstRegion() {
-      return this.data && this.data.length > 0 ? this.data[0] : null
-    },
-    columns() {
-      const cols = [
-        {
-          label: 'Date',
-          field: 'date'
-        }
-      ]
-      const selected = {
-        label: this.selectedColumn.label,
-        field: this.selectedColumn.value
-      }
-      cols.push(selected)
-      return cols
-    },
-    rows() {
-      return this.firstRegion ? this.firstRegion.data : []
+    show() {
+      return this.columns && this.rows
     }
   },
 
   methods: {
-    valueFormat(value) {
-      const numberFormatString =
-        this.selectedColumn.numberFormatString || ',.0f'
-      return numFormat(numberFormatString)(value)
+    valueFormat(value, numberFormatString) {
+      return numFormat(numberFormatString || ',.0f')(value)
+    },
+    dateFormat(date) {
+      return format(date, 'dd/MM/YYY, h:mma')
     }
   }
 }
 </script>
 
-<style lang="scss">
-table.vgt-table {
-  font-size: 11px;
-}
+<style lang="scss" scoped>
 </style>

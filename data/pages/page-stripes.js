@@ -1,10 +1,12 @@
 import format from 'date-fns/format'
+
 import getStripesDataset from '@/data/transform/energy-to-stripe-metrics.js'
 import {
   getEachYearOfInterval,
   getEachMonthOfInterval,
   getEachDayOfInterval
 } from '@/constants/stripes/dates.js'
+import { getEnergyRegions } from '@/constants/energy-regions.js'
 
 const allBucket = getEachMonthOfInterval()
 
@@ -83,4 +85,14 @@ export function getStripesDateRange() {
   const firstDate = format(allBucket[0].date, formatString)
   const lastDate = format(allBucket[allBucket.length - 1].date, formatString)
   return `${firstDate} – ${lastDate}`
+}
+
+export function getStripesRegion(currentRegionId) {
+  const filter =
+    currentRegionId === 'au'
+      ? d => d.id !== 'au' && d.id !== 'nem'
+      : currentRegionId === 'nem'
+        ? d => d.id !== 'au' && d.id !== 'nem' && d.id !== 'wem'
+        : d => d.id === currentRegionId
+  return getEnergyRegions().filter(filter)
 }
