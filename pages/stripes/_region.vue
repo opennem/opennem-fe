@@ -1,6 +1,6 @@
 <template>
   <div class="container-fluid">
-    <h3 v-if="useAllPeriods">{{ getDateRange(allBucket) }}</h3>
+    <h3 v-if="useAllPeriods">{{ dateRange }}</h3>
 
     <OptionsLegend
       :legend-width="tabletBreak ? 200 : 310"
@@ -86,36 +86,26 @@
       </section>
     </div>
 
-    <hr>
-
-    <DataGrid
-      :data="regionData"
-      :single-region="!useAllPeriods"
-      :selected-column="selectedMetricObject"
-    />
-
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import debounce from 'lodash.debounce'
-import format from 'date-fns/format'
 
 import {
   getEnergyRegions,
   getEnergyRegionLabel
 } from '@/constants/energy-regions.js'
 import { periods, metrics } from '@/constants/stripes/'
+
 import {
-  getEachYearOfInterval,
-  getEachMonthOfInterval,
-  getEachDayOfInterval
-} from '@/constants/stripes/dates.js'
-import getStripesDataset from '@/data/transform/energy-to-stripe-metrics.js'
+  getRegionStripesData,
+  getYearlyStripesData,
+  getStripesDateRange
+} from '@/data/pages/page-stripes.js'
 
 import Heatmap from '@/components/Vis/Heatmap'
-import DataGrid from '@/components/Vis/DataGrid'
 import ColourLegend from '@/components/Vis/ColourLegend'
 import OptionsLegend from '@/components/Stripes/OptionsLegend'
 import HoverMetric from '@/components/Stripes/HoverMetric'
@@ -127,8 +117,7 @@ export default {
     Heatmap,
     ColourLegend,
     OptionsLegend,
-    HoverMetric,
-    DataGrid
+    HoverMetric
   },
 
   head() {
@@ -175,8 +164,7 @@ export default {
       width: 0,
       periods,
       metrics,
-      getEachYearOfInterval,
-      allBucket: getEachMonthOfInterval(),
+      dateRange: getStripesDateRange(),
       regionData: [],
       regions: getEnergyRegions().filter(
         d => d.id !== 'au' && d.id !== 'nem' && d.id !== 'wem'
@@ -308,75 +296,17 @@ export default {
 
       if (this.useAllPeriods) {
         this.selectedPeriod = 'all/month'
-        this.getAllData(regions)
+
+        getRegionStripesData(this.doGetAllData, regions).then(d => {
+          this.regionData = d
+        })
       } else {
         this.selectedPeriod = 'multiyear/day'
-        this.getRegionAllData(regions)
+
+        getYearlyStripesData(this.doGetRegionData, regions).then(d => {
+          this.regionData = d
+        })
       }
-    },
-
-    getRegionAllData(regions) {
-      regions.forEach((r, i) => {
-        const yearlyData = []
-
-        this.doGetRegionData({ region: r.id }).then(d => {
-          getEachYearOfInterval.forEach((year, yIndex) => {
-            const yearInt = parseInt(year)
-            const dataset = d.dataset.filter(
-              e => e.date.getFullYear() === yearInt
-            )
-
-            if (dataset.length > 0) {
-              yearlyData.push({
-                year,
-                data: getStripesDataset(
-                  dataset,
-                  d.inflation ? d.inflation.data : [],
-                  d.domainPowerEnergy,
-                  d.domainEmissions,
-                  d.domainTemperature,
-                  d.domainPrice,
-                  d.domainMarketValue,
-                  d.inflation ? d.inflation.domain : null,
-                  true,
-                  getEachDayOfInterval(yearInt)
-                )
-              })
-            }
-          })
-        })
-
-        this.regionData.push({
-          region: r.label,
-          regionId: r.id,
-          yearlyData
-        })
-      })
-    },
-
-    getAllData(regions) {
-      this.doGetAllData({ regions }).then(d => {
-        regions.forEach(r => {
-          const rData = d[r.id]
-
-          this.regionData.push({
-            region: r.label,
-            regionId: r.id,
-            data: getStripesDataset(
-              rData.dataset,
-              rData.inflation ? rData.inflation.data : [],
-              rData.domainPowerEnergy,
-              rData.domainEmissions,
-              rData.domainTemperature,
-              rData.domainPrice,
-              rData.domainMarketValue,
-              rData.inflation ? rData.inflation.domain : null,
-              false,
-              this.allBucket
-            )
-          })
-        })
-      })
     },
 
     handleMousemove({ id, date, value }, regionId) {
@@ -387,13 +317,6 @@ export default {
     handleMouseout() {
       this.hoverDate = null
       this.hoverValue = null
-    },
-
-    getDateRange(data) {
-      const formatString = 'MMM yyyy'
-      const firstDate = format(data[0].date, formatString)
-      const lastDate = format(data[data.length - 1].date, formatString)
-      return `${firstDate} – ${lastDate}`
     }
   }
 }
