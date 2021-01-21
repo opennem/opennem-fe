@@ -23,6 +23,9 @@
         <tr
           v-for="(row, rowIndex) in rows"
           :key="`row-${rowIndex}`"
+          :class="{
+            highlight: rowIndex === rowHighlightIndex
+          }"
         >
           <td
             v-if="showRowNum"
@@ -32,9 +35,11 @@
             v-for="(col, colIndex) in columns"
             :key="`column-${rowIndex}-${colIndex}`"
             :class="{
-              'has-text-left': col.textAlign === 'left'
+              'has-text-left': col.textAlign === 'left',
+              highlight: colIndex === colHighlightIndex,
+              focus: colIndex === colHighlightIndex && rowIndex === rowHighlightIndex
             }"
-            @click="handleCellClick(col, row)"
+            @click="handleCellClick(col, colIndex, row, rowIndex)"
           >
             <span v-if="col.type === 'date'">
               {{ dateFormat(row[col.field], col.formatString) }}
@@ -68,6 +73,14 @@ export default {
       type: Array,
       default: () => null
     },
+    colHighlightIndex: {
+      type: Number,
+      default: () => null
+    },
+    rowHighlightIndex: {
+      type: Number,
+      default: () => null
+    },
     showRowNum: {
       type: Boolean,
       default: false
@@ -89,8 +102,8 @@ export default {
       return format(date, formatString || 'dd/MM/YYY, h:mma')
     },
 
-    handleCellClick(col, row) {
-      this.$emit('cell-click', { col, row })
+    handleCellClick(col, colIndex, row, rowIndex) {
+      this.$emit('cell-click', { col, colIndex, row, rowIndex })
     }
   }
 }
@@ -102,6 +115,22 @@ export default {
   td {
     text-align: right;
     vertical-align: middle;
+
+    &.highlight {
+      background-color: #eee;
+    }
+
+    &.focus {
+      background-color: #e34a33 !important;
+      color: white;
+    }
+  }
+
+  .highlight {
+    td,
+    th {
+      background-color: #eee;
+    }
   }
 
   .num-col {

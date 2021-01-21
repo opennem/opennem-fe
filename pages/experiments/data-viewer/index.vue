@@ -31,10 +31,15 @@
     </nav>
 
     <section>
+      <header>
+        <h3>{{ tableTitle }}</h3>
+      </header>
       <DataTable
         :columns="columns"
         :rows="rows"
         :show-row-num="true"
+        :col-highlight-index="colHighlightIndex"
+        :row-highlight-index="rowHighlightIndex"
         class="is-size-7"
         @cell-click="handleCellClick"
       />
@@ -82,26 +87,35 @@ export default {
 
   data() {
     return {
+      metricOptions: metrics,
       dataset: null,
       selectedView: null,
       selectedRegion: null,
       selectedMetric: null,
+      tableTitle: '',
       columns: null,
       rows: null,
       headerDetailTitle: '',
       colsDetail: null,
-      rowsDetail: null
+      rowsDetail: null,
+      colHighlightIndex: null,
+      rowHighlightIndex: null
     }
   },
 
   computed: {
     isCombinedRegions() {
       return this.selectedRegion === 'au' || this.selectedRegion === 'nem'
+    },
+    selectedMetricLabel() {
+      const find = this.metricOptions.find(d => d.value === this.selectedMetric)
+      return find ? find.label : ''
     }
   },
 
   watch: {
     selectedMetric(val) {
+      this.tableTitle = this.selectedMetricLabel
       this.getCombinedRegionsData(this.dataset, val)
     }
   },
@@ -118,8 +132,6 @@ export default {
       d.value = d.id
       return d
     })
-
-    this.metricOptions = metrics
   },
 
   methods: {
@@ -141,7 +153,7 @@ export default {
     handleMetricChange(metric) {
       this.selectedMetric = this.getOptionId(this.metricOptions, metric)
     },
-    handleCellClick({ col, row }) {
+    handleCellClick({ col, colIndex, row, rowIndex }) {
       const title = `${col.label} — ${format(row.date, dateFormatString)}`
       const regionData = this.dataset.find(d => d.regionId === col.field)
       // const data = regionData
@@ -151,48 +163,55 @@ export default {
         ? regionData.originalDataset.find(d => d.time === row.time)
         : null
 
-      const cols = [
-        {
-          label: 'Key',
-          textAlign: 'left',
-          field: 'key',
-          type: 'string'
-        },
-        {
-          label: 'Value',
-          field: 'value'
-        }
-      ]
-      const rows = []
+      if (originalData) {
+        const cols = [
+          {
+            label: 'Key',
+            textAlign: 'left',
+            field: 'key',
+            type: 'string'
+          },
+          {
+            label: 'Value',
+            field: 'value'
+          }
+        ]
+        const rows = []
 
-      // Object.keys(data).forEach(key => {
-      //   rows.push({
-      //     key,
-      //     value: data[key]
-      //   })
-      // })
+        // Object.keys(data).forEach(key => {
+        //   rows.push({
+        //     key,
+        //     value: data[key]
+        //   })
+        // })
 
-      Object.keys(originalData).forEach(key => {
-        const type = key === 'date' ? 'date' : 'number'
-        rows.push({
-          key,
-          value: originalData[key],
-          type
+        Object.keys(originalData).forEach(key => {
+          const type = key === 'date' ? 'date' : 'number'
+          rows.push({
+            key,
+            value: originalData[key],
+            type
+          })
         })
-      })
 
-      this.headerDetailTitle = title
-      this.colsDetail = cols
-      this.rowsDetail = rows
+        this.headerDetailTitle = title
+        this.colsDetail = cols
+        this.rowsDetail = rows
+        this.colHighlightIndex = colIndex
+        this.rowHighlightIndex = rowIndex
+      }
     },
 
     handleResetClick() {
       this.dataset = null
+      this.tableTitle = ''
       this.columns = null
       this.rows = null
       this.headerDetailTitle = ''
       this.colsDetail = null
       this.rowsDetail = null
+      this.colHighlightIndex = null
+      this.rowHighlightIndex = null
     },
 
     handleFetchClick() {
@@ -201,6 +220,7 @@ export default {
       if (this.isCombinedRegions) {
         getRegionStripesData(this.doGetAllData, regions).then(dataset => {
           this.dataset = dataset
+          this.tableTitle = this.selectedMetricLabel
           this.getCombinedRegionsData(dataset, this.selectedMetric)
         })
       } else {
