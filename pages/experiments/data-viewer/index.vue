@@ -34,6 +34,20 @@
       <DataTable
         :columns="columns"
         :rows="rows"
+        :show-row-num="true"
+        class="is-size-7"
+        @cell-click="handleCellClick"
+      />
+    </section>
+
+    <section class="detail">
+      <header>
+        <h3>{{ headerDetailTitle }}</h3>
+      </header>
+      <DataTable
+        :columns="colsDetail"
+        :rows="rowsDetail"
+        class="is-size-7"
       />
     </section>
   </div>
@@ -41,6 +55,8 @@
 
 <script>
 import { mapActions } from 'vuex'
+import format from 'date-fns/format'
+
 import { getEnergyRegions } from '@/constants/energy-regions.js'
 import { metrics } from '@/constants/stripes/index.js'
 import {
@@ -71,7 +87,10 @@ export default {
       selectedRegion: null,
       selectedMetric: null,
       columns: null,
-      rows: null
+      rows: null,
+      headerDetailTitle: '',
+      colsDetail: null,
+      rowsDetail: null
     }
   },
 
@@ -122,11 +141,58 @@ export default {
     handleMetricChange(metric) {
       this.selectedMetric = this.getOptionId(this.metricOptions, metric)
     },
+    handleCellClick({ col, row }) {
+      const title = `${col.label} — ${format(row.date, dateFormatString)}`
+      const regionData = this.dataset.find(d => d.regionId === col.field)
+      // const data = regionData
+      //   ? regionData.data.find(d => d.time === row.time)
+      //   : null
+      const originalData = regionData
+        ? regionData.originalDataset.find(d => d.time === row.time)
+        : null
+
+      const cols = [
+        {
+          label: 'Key',
+          textAlign: 'left',
+          field: 'key',
+          type: 'string'
+        },
+        {
+          label: 'Value',
+          field: 'value'
+        }
+      ]
+      const rows = []
+
+      // Object.keys(data).forEach(key => {
+      //   rows.push({
+      //     key,
+      //     value: data[key]
+      //   })
+      // })
+
+      Object.keys(originalData).forEach(key => {
+        const type = key === 'date' ? 'date' : 'number'
+        rows.push({
+          key,
+          value: originalData[key],
+          type
+        })
+      })
+
+      this.headerDetailTitle = title
+      this.colsDetail = cols
+      this.rowsDetail = rows
+    },
 
     handleResetClick() {
       this.dataset = null
       this.columns = null
       this.rows = null
+      this.headerDetailTitle = ''
+      this.colsDetail = null
+      this.rowsDetail = null
     },
 
     handleFetchClick() {
@@ -179,8 +245,19 @@ export default {
   }
   & > section {
     // background: #eee;
-    // padding: 2rem;
+    padding: 2rem 1rem;
     width: calc(100% - 400px);
+    align-self: flex-start;
+
+    h3 {
+      font-size: 21px;
+      font-family: $header-font-family;
+      font-weight: 700;
+    }
+  }
+  & > section.detail {
+    width: 640px;
+    padding: 2rem 2rem 2rem 1rem;
     align-self: flex-start;
   }
 }

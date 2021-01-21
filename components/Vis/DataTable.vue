@@ -6,10 +6,13 @@
     >
       <thead>
         <tr>
-          <th>Row</th>
+          <th v-if="showRowNum" />
           <th
             v-for="(col, colIndex) in columns"
             :key="`column-header-${colIndex}`"
+            :class="{
+              'has-text-left': col.textAlign === 'left'
+            }"
           >
             {{ col.label }}
           </th>
@@ -21,13 +24,23 @@
           v-for="(row, rowIndex) in rows"
           :key="`row-${rowIndex}`"
         >
-          <td>{{ rowIndex + 1 }}</td>
+          <td
+            v-if="showRowNum"
+            class="num-col"
+          >{{ rowIndex + 1 }}</td>
           <td
             v-for="(col, colIndex) in columns"
             :key="`column-${rowIndex}-${colIndex}`"
+            :class="{
+              'has-text-left': col.textAlign === 'left'
+            }"
+            @click="handleCellClick(col, row)"
           >
             <span v-if="col.type === 'date'">
               {{ dateFormat(row[col.field], col.formatString) }}
+            </span>
+            <span v-else-if="col.type === 'string'">
+              {{ row[col.field] }}
             </span>
             <span v-else>
               {{ valueFormat(row[col.field], col.formatString) }}
@@ -42,6 +55,7 @@
 
 <script>
 import { format as numFormat } from 'd3-format'
+import parseISO from 'date-fns/parseISO'
 import format from 'date-fns/format'
 
 export default {
@@ -53,6 +67,10 @@ export default {
     rows: {
       type: Array,
       default: () => null
+    },
+    showRowNum: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -64,10 +82,15 @@ export default {
 
   methods: {
     valueFormat(value, formatString) {
-      return numFormat(formatString || ',.0f')(value)
+      return formatString ? numFormat(formatString)(value) : value
     },
-    dateFormat(date, formatString) {
+    dateFormat(dateValue, formatString) {
+      const date = typeof date === 'string' ? parseISO(dateValue) : dateValue
       return format(date, formatString || 'dd/MM/YYY, h:mma')
+    },
+
+    handleCellClick(col, row) {
+      this.$emit('cell-click', { col, row })
     }
   }
 }
@@ -75,11 +98,16 @@ export default {
 
 <style lang="scss" scoped>
 .data-table {
-  padding: 2rem 2rem 2rem 0;
-
   th,
   td {
     text-align: right;
+    vertical-align: middle;
+  }
+
+  .num-col {
+    font-size: 0.8em;
+    font-weight: 700;
+    color: #999;
   }
 }
 </style>
