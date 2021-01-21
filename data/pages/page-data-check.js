@@ -1,7 +1,16 @@
-export function getTableData({ dataset, selectedMetricObject }) {
+export function getTableData({
+  dataset,
+  selectedMetricObject,
+  dateFormatString
+}) {
   const selectedMetric = selectedMetricObject.value
   const columns = [
-    { label: 'Date', field: 'date', type: 'date' },
+    {
+      label: 'Date',
+      field: 'date',
+      type: 'date',
+      formatString: dateFormatString
+    },
     ...dataset.map(d => {
       return {
         label: d.region,

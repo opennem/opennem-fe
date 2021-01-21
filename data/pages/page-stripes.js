@@ -10,6 +10,8 @@ import { getEnergyRegions } from '@/constants/energy-regions.js'
 
 const allBucket = getEachMonthOfInterval()
 
+export const dateFormatString = 'MMM yyyy'
+
 export async function getRegionStripesData(fetchFunc, regions) {
   const regionData = []
 
@@ -81,9 +83,11 @@ export async function getYearlyStripesData(fetchFunc, regions) {
 }
 
 export function getStripesDateRange() {
-  const formatString = 'MMM yyyy'
-  const firstDate = format(allBucket[0].date, formatString)
-  const lastDate = format(allBucket[allBucket.length - 1].date, formatString)
+  const firstDate = format(allBucket[0].date, dateFormatString)
+  const lastDate = format(
+    allBucket[allBucket.length - 1].date,
+    dateFormatString
+  )
   return `${firstDate} – ${lastDate}`
 }
 

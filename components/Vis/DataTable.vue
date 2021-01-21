@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div class="data-table">
     <table
       v-if="show"
       class="table is-striped is-narrow is-fullwidth is-hoverable"
@@ -26,8 +26,13 @@
             v-for="(col, colIndex) in columns"
             :key="`column-${rowIndex}-${colIndex}`"
           >
-            <span v-if="col.type === 'date'">{{ dateFormat(row[col.field]) }}</span>
-            <span v-else>{{ valueFormat(row[col.field], col.formatString) }}</span>
+            <span v-if="col.type === 'date'">
+              {{ dateFormat(row[col.field], col.formatString) }}
+            </span>
+            <span v-else>
+              {{ valueFormat(row[col.field], col.formatString) }}
+              <!-- {{ (row[col.field]) }} -->
+            </span>
           </td>
         </tr>
       </tbody>
@@ -58,15 +63,23 @@ export default {
   },
 
   methods: {
-    valueFormat(value, numberFormatString) {
-      return numFormat(numberFormatString || ',.0f')(value)
+    valueFormat(value, formatString) {
+      return numFormat(formatString || ',.0f')(value)
     },
-    dateFormat(date) {
-      return format(date, 'dd/MM/YYY, h:mma')
+    dateFormat(date, formatString) {
+      return format(date, formatString || 'dd/MM/YYY, h:mma')
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.data-table {
+  padding: 2rem 2rem 2rem 0;
+
+  th,
+  td {
+    text-align: right;
+  }
+}
 </style>

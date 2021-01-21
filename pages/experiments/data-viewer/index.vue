@@ -16,7 +16,9 @@
         <button
           class="button is-primary is-rounded is-fullwidth"
           @click="handleFetchClick">Fetch</button>
-        <button class="button  is-outlined is-rounded is-fullwidth">Reset</button>
+        <button
+          class="button is-outlined is-rounded is-fullwidth"
+          @click="handleResetClick">Reset</button>
       </div>
 
       <hr>
@@ -44,7 +46,8 @@ import { metrics } from '@/constants/stripes/index.js'
 import {
   getRegionStripesData,
   getYearlyStripesData,
-  getStripesRegion
+  getStripesRegion,
+  dateFormatString
 } from '@/data/pages/page-stripes.js'
 import { getTableData } from '@/data/pages/page-data-check.js'
 import Dropdown from '@/components/ui/Dropdown'
@@ -75,6 +78,12 @@ export default {
   computed: {
     isCombinedRegions() {
       return this.selectedRegion === 'au' || this.selectedRegion === 'nem'
+    }
+  },
+
+  watch: {
+    selectedMetric(val) {
+      this.getCombinedRegionsData(this.dataset, val)
     }
   },
 
@@ -114,13 +123,19 @@ export default {
       this.selectedMetric = this.getOptionId(this.metricOptions, metric)
     },
 
+    handleResetClick() {
+      this.dataset = null
+      this.columns = null
+      this.rows = null
+    },
+
     handleFetchClick() {
       const regions = getStripesRegion(this.selectedRegion)
 
       if (this.isCombinedRegions) {
         getRegionStripesData(this.doGetAllData, regions).then(dataset => {
           this.dataset = dataset
-          this.getCombinedRegionsData(dataset)
+          this.getCombinedRegionsData(dataset, this.selectedMetric)
         })
       } else {
         getYearlyStripesData(this.doGetRegionData, regions).then(d => {
@@ -129,12 +144,13 @@ export default {
       }
     },
 
-    getCombinedRegionsData(dataset) {
-      if (dataset.length > 0) {
+    getCombinedRegionsData(dataset, selectedMetric) {
+      if (dataset && dataset.length > 0) {
         const { columns, rows } = getTableData({
           dataset,
+          dateFormatString,
           selectedMetricObject: this.metricOptions.find(
-            d => d.value === this.selectedMetric
+            d => d.value === selectedMetric
           )
         })
 
