@@ -43,6 +43,7 @@ export const metrics = [
     domain: [0, 0.1, 0.55, 1],
     range: ['#2D9B14', '#ffe310', '#803D11', '#000000'],
     unit: ' kgCO₂e/MWh',
+    numberFormatString: ',.0f',
     legendType: 'ramp'
   },
   {
@@ -52,6 +53,7 @@ export const metrics = [
     domain: [0, 0.5, 1],
     range: ['#fff', '#52BCA3', 'darkgreen'],
     unit: '%',
+    numberFormatString: ',.0f',
     legendType: 'ramp'
   },
   {
@@ -61,6 +63,7 @@ export const metrics = [
     domain: [0, 0.5, 1],
     range: ['#fff', '#88B653', '#417505'],
     unit: '%',
+    numberFormatString: ',.0f',
     legendType: 'ramp'
   },
 
@@ -71,6 +74,7 @@ export const metrics = [
     domain: [0, 0.5, 1],
     range: ['#fff', '#F3E13E', '#F0D800'],
     unit: '%',
+    numberFormatString: ',.0f',
     legendType: 'ramp'
   },
   {
@@ -80,6 +84,7 @@ export const metrics = [
     domain: [0, 0.001, 0.9],
     range: ['#52BCA3', '#ccc', '#131313'],
     unit: '%',
+    numberFormatString: ',.0f',
     legendType: 'ramp',
     showZeroBlock: true
   },
@@ -90,6 +95,7 @@ export const metrics = [
     domain: [0, 0.001, 0.5],
     range: ['#52BCA3', '#ccc', '#F48E1B'],
     unit: '%',
+    numberFormatString: ',.0f',
     legendType: 'ramp',
     showZeroBlock: true
   },
@@ -103,6 +109,7 @@ export const metrics = [
     range: ['#2E69A3', '#fff', '#AC3837'], // F5EDE9
     domainLabel: ['Export', 'Import'],
     unit: '%',
+    numberFormatString: ',.0f',
     legendType: 'ramp'
   },
 
