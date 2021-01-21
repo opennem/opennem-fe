@@ -22,6 +22,7 @@ export async function getRegionStripesData(fetchFunc, regions) {
       regionData.push({
         region: r.label,
         regionId: r.id,
+        originalDataset: rData.dataset,
         data: getStripesDataset(
           rData.dataset,
           rData.inflation ? rData.inflation.data : [],
