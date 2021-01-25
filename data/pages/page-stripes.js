@@ -42,45 +42,56 @@ export async function getRegionStripesData(fetchFunc, regions) {
   return regionData
 }
 
-export async function getYearlyStripesData(fetchFunc, regions) {
-  const regionData = []
+function transformStripesDataset(d) {
+  const data = []
+  getEachYearOfInterval.forEach((year, yIndex) => {
+    const yearInt = parseInt(year)
+    const dataset = d.dataset.filter(e => e.date.getFullYear() === yearInt)
+
+    if (dataset.length > 0) {
+      data.push({
+        year,
+        originalDataset: dataset,
+        data: getStripesDataset(
+          dataset,
+          d.inflation ? d.inflation.data : [],
+          d.domainPowerEnergy,
+          d.domainEmissions,
+          d.domainTemperature,
+          d.domainPrice,
+          d.domainMarketValue,
+          d.inflation ? d.inflation.domain : null,
+          true,
+          getEachDayOfInterval(yearInt)
+        )
+      })
+    }
+  })
+
+  return data
+}
+
+export function getYearlyStripesData(fetchFunc, regions) {
+  const promises = []
 
   regions.forEach((r, i) => {
     const yearlyData = []
-
-    fetchFunc({ region: r.id }).then(d => {
-      getEachYearOfInterval.forEach((year, yIndex) => {
-        const yearInt = parseInt(year)
-        const dataset = d.dataset.filter(e => e.date.getFullYear() === yearInt)
-
-        if (dataset.length > 0) {
-          yearlyData.push({
-            year,
-            data: getStripesDataset(
-              dataset,
-              d.inflation ? d.inflation.data : [],
-              d.domainPowerEnergy,
-              d.domainEmissions,
-              d.domainTemperature,
-              d.domainPrice,
-              d.domainMarketValue,
-              d.inflation ? d.inflation.domain : null,
-              true,
-              getEachDayOfInterval(yearInt)
-            )
+    promises.push(
+      new Promise((resolve, reject) => {
+        fetchFunc({ region: r.id }).then(d => {
+          resolve({
+            region: r.label,
+            regionId: r.id,
+            yearlyData: transformStripesDataset(d)
           })
-        }
+        })
       })
-    })
-
-    regionData.push({
-      region: r.label,
-      regionId: r.id,
-      yearlyData
-    })
+    )
   })
 
-  return regionData
+  return new Promise((resolve, reject) => {
+    Promise.all(promises).then(d => resolve(d))
+  })
 }
 
 export function getStripesDateRange() {
