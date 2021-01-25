@@ -37,3 +37,13 @@ export function getTableData({
     columns
   }
 }
+
+export function getOptionId(options, selectedLabel) {
+  const find = options.find(d => d.label === selectedLabel)
+  return find ? find.value : null
+}
+
+export function getOptionLabel(options, selectedValue) {
+  const find = options.find(d => d.value === selectedValue)
+  return find ? find.label : null
+}

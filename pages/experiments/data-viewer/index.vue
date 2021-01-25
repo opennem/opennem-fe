@@ -12,6 +12,21 @@
         @change="handleRegionChange"
       />
 
+
+
+      <hr>
+
+      <StripesFilter
+        v-if="selectedView === 'stripes'"
+        ref="stripesFilter"
+        :is-grouped-region="isGroupedRegion"
+        :region="selectedRegion"
+        @title="handleTitleChange"
+        @dataset="handleDataChange"
+      />
+
+      <hr>
+
       <div class="buttons">
         <button
           class="button is-primary is-rounded is-fullwidth"
@@ -21,23 +36,7 @@
           @click="handleResetClick">Reset</button>
       </div>
 
-      <hr>
-
-      <div v-if="selectedView === 'stripes'">
-        <Dropdown
-          :options="metricOptions"
-          class="dropdown"
-          @change="handleMetricChange"
-        />
-        <Dropdown
-          v-if="!isCombinedRegions"
-          :options="metricYearOptions"
-          class="dropdown"
-          @change="handleMetricYearChange"
-        />
-      </div>
-
-
+      <!-- <button class="button is-outlined is-rounded is-fullwidth">download as csv</button> -->
     </nav>
 
     <section>
@@ -65,23 +64,19 @@
         class="is-size-7"
       />
     </section>
+
+
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
 import format from 'date-fns/format'
 
 import { getEnergyRegions } from '@/constants/energy-regions.js'
-import { metrics } from '@/constants/stripes/index.js'
-import { getEachYearOfInterval } from '@/constants/stripes/dates.js'
-import {
-  getRegionStripesData,
-  getYearlyStripesData,
-  getStripesRegion,
-  dateFormatString
-} from '@/data/pages/page-stripes.js'
-import { getTableData } from '@/data/pages/page-data-check.js'
+import { dateFormatString } from '@/data/pages/page-stripes.js'
+import { getOptionId, getOptionLabel } from '@/data/pages/page-data-check.js'
+
+import StripesFilter from '@/components/Data/StripesFilters'
 import Dropdown from '@/components/ui/Dropdown'
 import DataTable from '@/components/Vis/DataTable'
 
@@ -92,6 +87,7 @@ export default {
   },
 
   components: {
+    StripesFilter,
     Dropdown,
     DataTable
   },
@@ -102,18 +98,9 @@ export default {
         d.value = d.id
         return d
       }),
-      metricOptions: metrics,
-      metricYearOptions: getEachYearOfInterval.map(d => {
-        return {
-          label: d + '',
-          value: d
-        }
-      }),
       dataset: null,
       selectedView: null,
       selectedRegion: null,
-      selectedMetric: null,
-      selectedYear: null,
       tableTitle: '',
       columns: null,
       rows: null,
@@ -126,26 +113,11 @@ export default {
   },
 
   computed: {
-    isCombinedRegions() {
+    isGroupedRegion() {
       return this.selectedRegion === 'au' || this.selectedRegion === 'nem'
-    }
-  },
-
-  watch: {
-    selectedMetric(val) {
-      this.setTableTitle(this.selectedRegion, val, this.selectedYear)
-      this.getCombinedRegionsData(this.dataset, val)
     },
-    selectedYear(val) {
-      this.setTableTitle(this.selectedRegion, this.selectedMetric, val)
-
-      if (this.dataset && this.dataset.length > 0) {
-        this.dataset[0].data = this.dataset[0].yearlyData.find(
-          d => d.year + '' === val
-        ).data
-      }
-
-      this.getCombinedRegionsData(this.dataset, this.selectedMetric)
+    selectedRegionLabel() {
+      return getOptionLabel(this.regionOptions, this.selectedRegion)
     }
   },
 
@@ -156,49 +128,32 @@ export default {
         value: 'stripes'
       }
     ]
-
-    this.regionOptions = getEnergyRegions().map(d => {
-      d.value = d.id
-      return d
-    })
   },
 
   methods: {
-    ...mapActions({
-      doGetRegionData: 'regionEnergy/doGetRegionData',
-      doGetAllData: 'regionEnergy/doGetAllData'
-    }),
-    getOptionId(options, selectedLabel) {
-      const find = options.find(d => d.label === selectedLabel)
-      return find ? find.value : null
-    },
-    getOptionLabel(options, selectedValue) {
-      const find = options.find(d => d.value === selectedValue)
-      return find ? find.label : null
-    },
-
     setTableTitle(region, metric, year) {
-      const regionLabel = this.getOptionLabel(this.regionOptions, region)
-      const metricLabel = this.getOptionLabel(this.metricOptions, metric)
-      this.tableTitle = `${regionLabel} — ${metricLabel}`
-
-      if (!this.isCombinedRegions) {
-        this.tableTitle += ` — ${year}`
-      }
+      const regionLabel = getOptionLabel(this.regionOptions, region)
+      this.tableTitle = `${regionLabel}`
     },
 
     handleViewChange(view) {
-      this.selectedView = this.getOptionId(this.viewOptions, view)
+      this.selectedView = getOptionId(this.viewOptions, view)
     },
     handleRegionChange(region) {
-      this.selectedRegion = this.getOptionId(this.regionOptions, region)
+      this.selectedRegion = getOptionId(this.regionOptions, region)
     },
-    handleMetricChange(metric) {
-      this.selectedMetric = this.getOptionId(this.metricOptions, metric)
+
+    handleDataChange(data) {
+      console.log(data)
+      this.dataset = data.dataset
+      this.columns = data.columns
+      this.rows = data.rows
     },
-    handleMetricYearChange(year) {
-      this.selectedYear = year
+    handleTitleChange(title) {
+      console.log(title)
+      this.tableTitle = `${this.selectedRegionLabel} ${title}`
     },
+
     handleCellClick({ col, colIndex, row, rowIndex }) {
       console.log(col, colIndex, row, rowIndex)
       const title = `${col.label} — ${format(row.date, dateFormatString)}`
@@ -206,6 +161,7 @@ export default {
       // const data = regionData
       //   ? regionData.data.find(d => d.time === row.time)
       //   : null
+
       const originalData = regionData
         ? regionData.originalDataset.find(d => d.time === row.time)
         : null
@@ -263,52 +219,13 @@ export default {
       this.rowsDetail = null
       this.colHighlightIndex = null
       this.rowHighlightIndex = null
+
+      this.$refs.stripesFilter.reset()
     },
 
     handleFetchClick() {
-      const regions = getStripesRegion(this.selectedRegion)
-
-      if (this.isCombinedRegions) {
-        getRegionStripesData(this.doGetAllData, regions).then(dataset => {
-          this.dataset = dataset
-          this.setTableTitle(this.selectedRegion, this.selectedMetric)
-          this.getCombinedRegionsData(dataset, this.selectedMetric)
-        })
-      } else {
-        getYearlyStripesData(this.doGetRegionData, regions).then(dataset => {
-          this.dataset = dataset
-
-          this.setTableTitle(
-            this.selectedRegion,
-            this.selectedMetric,
-            this.selectedYear
-          )
-
-          if (this.dataset && this.dataset.length > 0) {
-            const find = this.dataset[0].yearlyData.find(
-              d => d.year + '' === this.selectedYear
-            )
-            this.dataset[0].data = find.data
-            this.dataset[0].originalDataset = find.originalDataset
-          }
-
-          this.getCombinedRegionsData(this.dataset, this.selectedMetric)
-        })
-      }
-    },
-
-    getCombinedRegionsData(dataset, selectedMetric) {
-      if (dataset && dataset.length > 0) {
-        const { columns, rows } = getTableData({
-          dataset,
-          dateFormatString,
-          selectedMetricObject: this.metricOptions.find(
-            d => d.value === selectedMetric
-          )
-        })
-
-        this.columns = columns
-        this.rows = rows
+      if (this.selectedView === 'stripes') {
+        this.$refs.stripesFilter.fetch()
       }
     }
   }
