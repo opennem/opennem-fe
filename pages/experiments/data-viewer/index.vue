@@ -12,13 +12,20 @@
         @change="handleRegionChange"
       />
 
-
-
       <hr>
 
-      <StripesFilter
+      <EnergyFilters
         v-if="selectedView === 'stripes'"
-        ref="stripesFilter"
+        ref="energyFilters"
+        :is-grouped-region="isGroupedRegion"
+        :region="selectedRegion"
+        @title="handleTitleChange"
+        @dataset="handleDataChange"
+      />
+
+      <StripesFilters
+        v-if="selectedView === 'stripes'"
+        ref="stripesFilters"
         :is-grouped-region="isGroupedRegion"
         :region="selectedRegion"
         @title="handleTitleChange"
@@ -76,7 +83,8 @@ import { getEnergyRegions } from '@/constants/energy-regions.js'
 import { dateFormatString } from '@/data/pages/page-stripes.js'
 import { getOptionId, getOptionLabel } from '@/data/pages/page-data-check.js'
 
-import StripesFilter from '@/components/Data/StripesFilters'
+import StripesFilters from '@/components/Data/StripesFilters'
+import EnergyFilters from '@/components/Data/EnergyFilters'
 import Dropdown from '@/components/ui/Dropdown'
 import DataTable from '@/components/Vis/DataTable'
 
@@ -87,7 +95,8 @@ export default {
   },
 
   components: {
-    StripesFilter,
+    EnergyFilters,
+    StripesFilters,
     Dropdown,
     DataTable
   },
@@ -220,12 +229,12 @@ export default {
       this.colHighlightIndex = null
       this.rowHighlightIndex = null
 
-      this.$refs.stripesFilter.reset()
+      this.$refs.stripesFilters.reset()
     },
 
     handleFetchClick() {
       if (this.selectedView === 'stripes') {
-        this.$refs.stripesFilter.fetch()
+        this.$refs.stripesFilters.fetch()
       }
     }
   }
