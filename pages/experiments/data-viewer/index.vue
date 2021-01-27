@@ -15,7 +15,7 @@
       <hr>
 
       <EnergyFilters
-        v-if="selectedView === 'stripes'"
+        v-if="selectedView === 'energy'"
         ref="energyFilters"
         :is-grouped-region="isGroupedRegion"
         :region="selectedRegion"
@@ -133,6 +133,10 @@ export default {
   created() {
     this.viewOptions = [
       {
+        label: 'Energy',
+        value: 'energy'
+      },
+      {
         label: 'Stripes',
         value: 'stripes'
       }
@@ -143,6 +147,15 @@ export default {
     setTableTitle(region, metric, year) {
       const regionLabel = getOptionLabel(this.regionOptions, region)
       this.tableTitle = `${regionLabel}`
+    },
+
+    resetFilters() {
+      if (this.selectedView === 'energy') {
+        this.$refs.energyFilters.reset()
+      }
+      if (this.selectedView === 'stripes') {
+        this.$refs.stripesFilters.reset()
+      }
     },
 
     handleViewChange(view) {
@@ -229,10 +242,13 @@ export default {
       this.colHighlightIndex = null
       this.rowHighlightIndex = null
 
-      this.$refs.stripesFilters.reset()
+      this.resetFilters()
     },
 
     handleFetchClick() {
+      if (this.selectedView === 'energy') {
+        this.$refs.energyFilters.fetch()
+      }
       if (this.selectedView === 'stripes') {
         this.$refs.stripesFilters.fetch()
       }
