@@ -1,5 +1,4 @@
 import * as DT from '@/constants/data-types.js'
-import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import {
   checkHistoryObject,
   checkPowerEnergyExists
@@ -36,9 +35,7 @@ export default function(response) {
       case DT.DEMAND:
         break
       case DT.EMISSIONS:
-        if (FT.FUEL_TECH_CATEGORY[d.fuel_tech] === FT.SOURCE) {
-          dataEmissions.push(d)
-        }
+        dataEmissions.push(d)
         break
       case DT.MARKET_VALUE:
       case DT.PRICE:

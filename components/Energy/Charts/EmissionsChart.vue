@@ -72,6 +72,7 @@ import addMonths from 'date-fns/addMonths'
 import addQuarters from 'date-fns/addQuarters'
 import addYears from 'date-fns/addYears'
 import * as SI from '@/constants/si.js'
+import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import { EMISSIONS } from '@/constants/data-types.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import StackedAreaVis from '@/components/Vis/StackedArea.vue'
@@ -168,9 +169,11 @@ export default {
       return min(dataset, d => d._stackedTotalEmissionsMin)
     },
     emissionsDomains() {
-      return this.currentDomainEmissions
-        ? _cloneDeep(this.currentDomainEmissions).reverse()
-        : []
+      const excludeLoads = this.currentDomainEmissions.filter(
+        d => d.category !== FT.LOAD
+      )
+
+      return this.currentDomainEmissions ? excludeLoads.reverse() : []
     },
     domains() {
       const property =
