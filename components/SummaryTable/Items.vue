@@ -1,7 +1,7 @@
 <template>
   <!-- <draggable
     v-model="order"
-    :options="{ 
+    :options="{
       group: group,
       direction: 'horizontal',
       ghostClass: 'drag-placeholder',
@@ -348,7 +348,7 @@ export default {
           ? this.pointSummary[emissionObj.id] || ''
           : this.summary[emissionObj.id] || ''
 
-        return emissionsVolume / energy
+        return emissionsVolume / Math.abs(energy)
       }
       return '-'
     },
