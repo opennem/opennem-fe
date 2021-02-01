@@ -133,15 +133,21 @@ function getArrLength({
   }
 }
 
-export function getStartEndNumInterval(dataObj) {
+export function getStartEndNumInterval(dataObj, ignoreTime) {
   const region = dataObj.region
   const includeLastPoint = region === 'WEM' ? true : false
   const history = dataObj.history
   if (!history) {
     throw new Error('No history object found')
   }
-  const startDateTime = dateDisplay.getDateTimeWithoutTZ(history.start)
-  const lastDateTime = dateDisplay.getDateTimeWithoutTZ(history.last)
+  const startDateTime = dateDisplay.getDateTimeWithoutTZ(
+    history.start,
+    ignoreTime
+  )
+  const lastDateTime = dateDisplay.getDateTimeWithoutTZ(
+    history.last,
+    ignoreTime
+  )
   const interval = intervalParser(history.interval)
   const num = getArrLength({
     intervalKey: interval.key,

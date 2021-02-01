@@ -1,7 +1,9 @@
 import _cloneDeep from 'lodash.clonedeep'
+import _sortBy from 'lodash.sortby'
 import * as DT from '@/constants/data-types.js'
 import dateDisplay from '@/services/DateDisplay.js'
 import { checkIsSameInterval } from '@/services/DataCheck.js'
+import createPropertyDataset from '@/data/helpers/createPropertyDatasets.js'
 import interpolateDataset from './interpolateDataset.js'
 
 function createTemporaryDataset(time, date, value) {
@@ -9,6 +11,10 @@ function createTemporaryDataset(time, date, value) {
 }
 
 export default function(isPowerData, dataInterval, dataAll, datasetAll) {
+  const updatedDatasetAll = []
+  const propsDataAll = []
+  const propIds = dataAll.map(d => d.id)
+
   dataAll.forEach(d => {
     const isDifferentInterval = !checkIsSameInterval(
       dataInterval,
@@ -122,8 +128,17 @@ export default function(isPowerData, dataInterval, dataAll, datasetAll) {
         updateDataset()
       }
     } else {
-      // assume energy json datas have same history intervals for now
-      // TODO check start and end is the same.
+      const propData = createPropertyDataset(d)
+
+      propData.forEach((pData, pIndex) => {
+        pData[d.id] = d.history.data[pIndex]
+      })
+
+      propsDataAll.push({
+        id: d.id,
+        data: propData
+      })
+
       updateDataset()
     }
   })
@@ -141,5 +156,30 @@ export default function(isPowerData, dataInterval, dataAll, datasetAll) {
     }
 
     interpolateDataset(dataAll, datasetAll)
+  } else {
+    propsDataAll.forEach(nD => {
+      const dId = nD.id
+      const data = nD.data
+
+      data.forEach(d => {
+        const find = updatedDatasetAll.find(x => x.time === d.time)
+        if (find) {
+          find[dId] = d[dId]
+        } else {
+          const obj = {}
+          obj.date = d.date
+          obj.time = d.time
+          propIds.forEach(id => {
+            obj[id] = null
+          })
+
+          obj[dId] = d[dId]
+          updatedDatasetAll.push(obj)
+        }
+      })
+    })
+
+    const sorted = _sortBy(updatedDatasetAll, d => d.time)
+    datasetAll = sorted
   }
 }

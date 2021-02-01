@@ -541,8 +541,9 @@ export default {
     }
   },
 
-  getDateTimeWithoutTZ(date) {
-    const dateString = date.substring(0, 16)
+  getDateTimeWithoutTZ(date, ignoreTime) {
+    const end = ignoreTime ? 10 : 16
+    const dateString = date.substring(0, end)
     return parseISO(dateString)
   },
 
