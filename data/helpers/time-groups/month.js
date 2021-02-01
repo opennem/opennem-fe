@@ -1,3 +1,4 @@
+import startOfDay from 'date-fns/startOfDay'
 import startOfMonth from 'date-fns/startOfMonth'
 import endOfMonth from 'date-fns/endOfMonth'
 import isAfter from 'date-fns/isAfter'
@@ -19,7 +20,7 @@ export default function(domains, data, rollUp) {
       }
     }
     if (i === data.length - 1) {
-      const end = endOfMonth(d.date)
+      const end = startOfDay(endOfMonth(d.date))
       isIncompleteEnd = isBefore(d.date, end)
       if (isIncompleteEnd) {
         incompleteEndDate = d.date
