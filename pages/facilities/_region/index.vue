@@ -263,9 +263,7 @@ export default {
       if (this.hostEnv === 'prod') {
         urls.push('/facility/facility_registry.json')
       } else {
-        urls.push(
-          'https://s3-ap-southeast-2.amazonaws.com/data.opennem.org.au/v3/geo/au_facilities.json'
-        )
+        urls.push('/v3/geo/au_facilities.json')
       }
 
       if (urls.length > 0) {
