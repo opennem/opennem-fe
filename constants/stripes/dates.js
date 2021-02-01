@@ -23,9 +23,18 @@ export const getEachDayOfInterval = year => {
 }
 
 export const getEachMonthOfInterval = () => {
+  const now = new Date()
+  let year = now.getFullYear()
+  let month = now.getMonth() - 1
+
+  if (month < 0) {
+    month = 11
+    year = year - 1
+  }
+
   return eachMonthOfInterval({
     start: new Date(METRICS_START_YEAR, METRICS_START_MONTH, 1),
-    end: new Date() // to Now
+    end: new Date(year, month, 1)
   }).map(d => {
     return {
       date: d,
