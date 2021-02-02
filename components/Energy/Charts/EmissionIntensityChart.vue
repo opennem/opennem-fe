@@ -191,6 +191,13 @@ export default {
       return this.emissionIntensityDataset.find(d => d.time === time)
     },
     hoverValue() {
+      if (this.hoverData) {
+        console.log(
+          `emissions: ${this.hoverData._totalEmissions}, power/energy: ${
+            this.hoverData._totalPowerEnergy
+          }, intensity: ${this.hoverData._emissionIntensity}`
+        )
+      }
       return this.hoverData ? this.hoverData._emissionIntensity : null
     },
     hoverDisplayDate() {
