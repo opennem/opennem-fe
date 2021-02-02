@@ -991,6 +991,7 @@ export default {
     },
 
     calculatePointSummary(data) {
+      const isGeneration = this.percentContributionTo === 'generation'
       let totalSources = 0
       let totalGeneration = 0
       let totalLoads = 0
@@ -1055,7 +1056,10 @@ export default {
 
           if (category === 'source') {
             this.pointSummarySources[domain.id] = value
-            totalEmissionsVol += value
+
+            if (domain.fuelTech !== 'imports') {
+              totalEmissionsVol += value
+            }
           } else if (category === 'load') {
             this.pointSummaryLoads[domain.id] = value
           }
@@ -1076,6 +1080,10 @@ export default {
       this.pointSummarySources._totalGeneration = totalGeneration
       this.pointSummaryLoads._total = totalLoads
       this.pointSummary._totalEmissionsVolume = totalEmissionsVol
+      const eiTotalEnergy = isGeneration
+        ? totalGeneration
+        : this.pointSummary._total
+      this.pointSummary._emissionsIntensity = totalEmissionsVol / eiTotalEnergy
     },
 
     updatePointSummary(date) {
