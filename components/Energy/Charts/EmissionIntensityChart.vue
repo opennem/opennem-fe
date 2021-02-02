@@ -119,6 +119,7 @@ export default {
       currentDataset: 'regionEnergy/currentDataset',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
+      domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
 
       summary: 'regionEnergy/summary'
     }),
@@ -143,6 +144,23 @@ export default {
       return domains.filter(d => !_includes(hidden, d[this.property]))
     },
     emissionIntensityDataset() {
+      const addUp = (data, domain) => {
+        if (this.calculateByGeneration) {
+          if (domain.category === 'source' && domain.fuelTech !== 'imports') {
+            return data[domain.id] || 0
+          }
+        } else {
+          if (domain.category !== 'load' || domain.fuelTech === 'exports') {
+            return data[domain.id] || 0
+          }
+        }
+        return 0
+      }
+      const batteryDischarging = this.domainPowerEnergy.find(
+        d => d.fuelTech === FT.BATTERY_DISCHARGING
+      )
+      // console.log(batteryDischarging)
+
       const dataset = this.currentDataset.map(d => {
         const obj = {
           date: d.date,
@@ -150,28 +168,29 @@ export default {
           _isIncompleteBucket: d._isIncompleteBucket
         }
         let totalEmissions = 0,
-          totalPowerEnergy = 0
-        this.emissionsDomains.forEach(domain => {
-          totalEmissions += d[domain.id] || 0
-        })
-        this.powerEnergyDomains.forEach(domain => {
-          if (this.calculateByGeneration) {
-            if (domain.category === 'source' && domain.fuelTech !== 'imports') {
-              totalPowerEnergy += d[domain.id] || 0
-            }
-          } else {
-            if (domain.category !== 'load' || domain.fuelTech === 'exports') {
-              totalPowerEnergy += d[domain.id] || 0
-            }
-          }
-        })
-        obj._totalEmissions = totalEmissions
-        obj._totalPowerEnergy = totalPowerEnergy
+          totalPowerEnergy = 0,
+          totalBatteryDischarging = 0
 
-        let ei = totalEmissions / totalPowerEnergy
-        // if (this.interval === 'Year' || this.interval === 'Fin Year') {
-        //   ei = ei / 1000
-        // }
+        if (d[batteryDischarging.id]) {
+          totalBatteryDischarging += d[batteryDischarging.id]
+        }
+
+        this.emissionsDomains.forEach(domain => {
+          totalEmissions += addUp(d, domain)
+        })
+
+        this.powerEnergyDomains.forEach(domain => {
+          totalPowerEnergy += addUp(d, domain)
+        })
+
+        // const totalPowerEnergyMinusBatteryDischarging =
+        //   totalPowerEnergy - totalBatteryDischarging
+        const totalPowerEnergyMinusBatteryDischarging = totalPowerEnergy
+
+        obj._totalEmissions = totalEmissions
+        obj._totalPowerEnergyMinusBatteryDischarging = totalPowerEnergyMinusBatteryDischarging
+
+        let ei = totalEmissions / totalPowerEnergyMinusBatteryDischarging
         const isValidEI = Number.isFinite(ei)
 
         obj._emissionIntensity = isValidEI ? ei : null
@@ -194,7 +213,7 @@ export default {
       if (this.hoverData) {
         console.log(
           `emissions: ${this.hoverData._totalEmissions}, power/energy: ${
-            this.hoverData._totalPowerEnergy
+            this.hoverData._totalPowerEnergyMinusBatteryDischarging
           }, intensity: ${this.hoverData._emissionIntensity}`
         )
       }
