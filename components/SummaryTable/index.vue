@@ -833,10 +833,10 @@ export default {
           })
           const evSum = sumMap(ft, dataEVMinusHidden)
           this.summary[ft.id] = evSum
-          totalEVMinusHidden += evSum
 
           if (category === 'source') {
             this.summarySources[ft.id] = evSum
+            totalEVMinusHidden += evSum
           } else if (category === 'load') {
             this.summaryLoads[ft.id] = evSum
           }
@@ -1053,10 +1053,9 @@ export default {
           const category = domain.category
           const value = this.pointSummary[domain.id]
 
-          totalEmissionsVol += value
-
           if (category === 'source') {
             this.pointSummarySources[domain.id] = value
+            totalEmissionsVol += value
           } else if (category === 'load') {
             this.pointSummaryLoads[domain.id] = value
           }
