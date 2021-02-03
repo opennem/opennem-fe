@@ -148,13 +148,13 @@ export default {
     },
 
     yMax() {
-      let max = 1200
+      let max = 1000
       this.emissionIntensityData.forEach(d => {
         if (d._emissionIntensity > max) {
           max = d._emissionIntensity
         }
       })
-      return max
+      return max + 200 // pad upper limit
     },
 
     hoverData() {
