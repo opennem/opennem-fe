@@ -80,10 +80,10 @@
             {{ summary._totalAverageValue | formatCurrency }}
           </span>
           <span v-if="isEmissionsVolumeColumn">
-            {{ summary._totalEmissionsVolume | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
+            {{ sumEmissionsMinusLoads | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
           </span>
           <span v-if="isEmissionsIntensityColumn">
-            {{ summary._averageEmissionsIntensity | formatValue }}
+            {{ averageEmissionIntensity | formatValue }}
           </span>
         </div>
         <div
@@ -93,10 +93,10 @@
             {{ pointSummary._totalAverageValue | formatCurrency }}
           </span>
           <span v-if="isEmissionsVolumeColumn">
-            {{ pointSummary._totalEmissionsVolume | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
+            {{ emissionsHoverValue | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
           </span>
           <span v-if="isEmissionsIntensityColumn">
-            {{ pointSummary._emissionsIntensity | formatValue }}
+            {{ emissionIntensityHoverValue | formatValue }}
           </span>
         </div>
       </div>
@@ -388,7 +388,11 @@ export default {
       chartEmissionsVolumeUnitPrefix:
         'chartOptionsEmissionsVolume/chartUnitPrefix',
       chartEmissionsVolumeDisplayPrefix:
-        'chartOptionsEmissionsVolume/chartDisplayPrefix'
+        'chartOptionsEmissionsVolume/chartDisplayPrefix',
+
+      emissionIntensityData: 'energy/emissions/emissionIntensityData',
+      averageEmissionIntensity: 'energy/emissions/averageEmissionIntensity',
+      sumEmissionsMinusLoads: 'energy/emissions/sumEmissionsMinusLoads'
     }),
 
     chartUnit() {
@@ -436,6 +440,30 @@ export default {
 
     isEmissionsIntensityColumn() {
       return this.showSummaryColumn === 'emissions-intensity'
+    },
+
+    emissionHoverData() {
+      const date = this.hoverDate ? this.hoverDate : this.focusDate
+
+      if (date) {
+        const time = date.getTime()
+        const find = this.emissionIntensityData.find(d => d.time === time)
+        return find ? find : null
+      }
+
+      return null
+    },
+
+    emissionsHoverValue() {
+      return this.emissionHoverData
+        ? this.emissionHoverData._totalEmissionsMinusLoads
+        : null
+    },
+
+    emissionIntensityHoverValue() {
+      return this.emissionHoverData
+        ? this.emissionHoverData._emissionIntensity
+        : null
     },
 
     sourcesOrderLength() {
@@ -996,7 +1024,6 @@ export default {
       let totalGeneration = 0
       let totalLoads = 0
       let totalPriceMarketValue = 0
-      let totalEmissionsVol = 0
       this.pointSummary = data || {} // pointSummary._total is already calculated
       this.pointSummarySources = {}
       this.pointSummaryLoads = {}
@@ -1056,10 +1083,6 @@ export default {
 
           if (category === 'source') {
             this.pointSummarySources[domain.id] = value
-
-            if (domain.fuelTech !== 'imports') {
-              totalEmissionsVol += value
-            }
           } else if (category === 'load') {
             this.pointSummaryLoads[domain.id] = value
           }
@@ -1079,11 +1102,6 @@ export default {
       this.pointSummarySources._total = totalSources
       this.pointSummarySources._totalGeneration = totalGeneration
       this.pointSummaryLoads._total = totalLoads
-      this.pointSummary._totalEmissionsVolume = totalEmissionsVol
-      const eiTotalEnergy = isGeneration
-        ? totalGeneration
-        : this.pointSummary._total
-      this.pointSummary._emissionsIntensity = totalEmissionsVol / eiTotalEnergy
     },
 
     updatePointSummary(date) {

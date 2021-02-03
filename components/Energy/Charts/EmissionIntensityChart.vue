@@ -23,7 +23,7 @@
       :read-only="readOnly"
       :domain-id="'_emissionIntensity'"
       :domain-colour="lineColour"
-      :dataset="emissionIntensityDataset"
+      :dataset="emissionIntensityData"
       :dynamic-extent="zoomExtent"
       :hover-date="hoverDate"
       :hover-on="hoverOn"
@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import _includes from 'lodash.includes'
 import * as OPTIONS from '@/constants/chart-options.js'
 import * as FT from '@/constants/energy-fuel-techs/group-default.js'
@@ -121,7 +121,10 @@ export default {
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
 
-      summary: 'regionEnergy/summary'
+      summary: 'regionEnergy/summary',
+
+      emissionIntensityData: 'energy/emissions/emissionIntensityData',
+      averageEmissionIntensity: 'energy/emissions/averageEmissionIntensity'
     }),
     property() {
       return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
@@ -143,71 +146,13 @@ export default {
       const hidden = this.hiddenFuelTechs
       return domains.filter(d => !_includes(hidden, d[this.property]))
     },
-    emissionIntensityDataset() {
-      const addUp = (data, domain) => {
-        if (this.calculateByGeneration) {
-          if (domain.category === 'source' && domain.fuelTech !== 'imports') {
-            return data[domain.id] || 0
-          }
-        } else {
-          if (domain.category !== 'load' || domain.fuelTech === 'exports') {
-            return data[domain.id] || 0
-          }
-        }
-        return 0
-      }
-      const batteryDischarging = this.domainPowerEnergy.find(
-        d => d.fuelTech === FT.BATTERY_DISCHARGING
-      )
-      // console.log(batteryDischarging)
 
-      const dataset = this.currentDataset.map(d => {
-        const obj = {
-          date: d.date,
-          time: d.time,
-          _isIncompleteBucket: d._isIncompleteBucket
-        }
-        let totalEmissions = 0,
-          totalPowerEnergy = 0,
-          totalBatteryDischarging = 0
-
-        if (d[batteryDischarging.id]) {
-          totalBatteryDischarging += d[batteryDischarging.id]
-        }
-
-        this.emissionsDomains.forEach(domain => {
-          totalEmissions += addUp(d, domain)
-        })
-
-        this.powerEnergyDomains.forEach(domain => {
-          totalPowerEnergy += addUp(d, domain)
-        })
-
-        // const totalPowerEnergyMinusBatteryDischarging =
-        //   totalPowerEnergy - totalBatteryDischarging
-        const totalPowerEnergyMinusBatteryDischarging = totalPowerEnergy
-
-        obj._totalEmissions = totalEmissions
-        obj._totalPowerEnergyMinusBatteryDischarging = totalPowerEnergyMinusBatteryDischarging
-
-        let ei = totalEmissions / totalPowerEnergyMinusBatteryDischarging
-        const isValidEI = Number.isFinite(ei)
-
-        obj._emissionIntensity = isValidEI ? ei : null
-        return obj
-      })
-      return dataset
-    },
-
-    averageEmissionIntensity() {
-      return this.summary ? this.summary._averageEmissionsIntensity : 0
-    },
     hoverData() {
       if (!this.hoverDate) {
         return null
       }
       const time = this.hoverDate.getTime()
-      return this.emissionIntensityDataset.find(d => d.time === time)
+      return this.emissionIntensityData.find(d => d.time === time)
     },
     hoverValue() {
       if (this.hoverData) {
@@ -238,7 +183,42 @@ export default {
     }
   },
 
+  watch: {
+    currentDataset(val) {
+      this.doUpdateEmissionIntensityDataset({
+        datasetAll: val,
+        isCalculateByGeneration: this.calculateByGeneration,
+        emissionsDomains: this.emissionsDomains,
+        powerEnergyDomains: this.powerEnergyDomains,
+        domainPowerEnergy: this.domainPowerEnergy
+      })
+    },
+    calculateByGeneration(val) {
+      this.doUpdateEmissionIntensityDataset({
+        datasetAll: this.currentDataset,
+        isCalculateByGeneration: val,
+        emissionsDomains: this.emissionsDomains,
+        powerEnergyDomains: this.powerEnergyDomains,
+        domainPowerEnergy: this.domainPowerEnergy
+      })
+    }
+  },
+
+  mounted() {
+    this.doUpdateEmissionIntensityDataset({
+      datasetAll: this.currentDataset,
+      isCalculateByGeneration: this.calculateByGeneration,
+      emissionsDomains: this.emissionsDomains,
+      powerEnergyDomains: this.powerEnergyDomains,
+      domainPowerEnergy: this.domainPowerEnergy
+    })
+  },
+
   methods: {
+    ...mapActions({
+      doUpdateEmissionIntensityDataset:
+        'energy/emissions/doUpdateEmissionIntensityDataset'
+    }),
     handleDateHover(evt, date) {
       this.$emit('dateHover', date)
     },
