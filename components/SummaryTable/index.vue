@@ -706,7 +706,6 @@ export default {
         let totalGeneration = 0
         let totalLoads = 0
         let totalPriceMarketValue = 0
-        let totalEVMinusHidden = 0
         let totalEIMinusHidden = 0
         this.summary = {}
         this.summarySources = {}
@@ -864,7 +863,6 @@ export default {
 
           if (category === 'source') {
             this.summarySources[ft.id] = evSum
-            totalEVMinusHidden += evSum
           } else if (category === 'load') {
             this.summaryLoads[ft.id] = evSum
           }
@@ -1009,9 +1007,6 @@ export default {
 
         const average = avTotal / data.length
         this.summary._averageEnergy = average
-        this.summary._totalEmissionsVolume = totalEVMinusHidden
-        this.summary._averageEmissionsVolume = totalEVMinusHidden / data.length
-        this.summary._averageEmissionsIntensity = totalEVMinusHidden / avTotal
         this.summary._averageTemperature =
           totalTemperatureWithoutNulls / temperatureWithoutNulls.length
         this.$emit('summary-update', this.summary)

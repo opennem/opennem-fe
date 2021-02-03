@@ -14,7 +14,7 @@
       :chart-display-prefix="chartDisplayPrefix"
       :display-unit="chartCurrentUnit"
       :interval="interval"
-      :average-emissions-volume="averageEmissionsVolume"
+      :average-emissions-volume="convertValue(averageEmissions)"
       :hover-display-date="hoverDisplayDate"
       :hover-value="domains.length > 1 ? hoverValue : null"
       :hover-domain-colour="hoverDomainColour"
@@ -126,7 +126,9 @@ export default {
 
       currentDataset: 'regionEnergy/currentDataset',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
-      summary: 'regionEnergy/summary'
+      summary: 'regionEnergy/summary',
+
+      averageEmissions: 'energy/emissions/averageEmissions'
     }),
     hoverEmissionsDomain() {
       const domain = this.hoverDomain
@@ -183,11 +185,6 @@ export default {
       return domains.filter(d => !_includes(hidden, d[property]))
     },
 
-    averageEmissionsVolume() {
-      return this.summary
-        ? this.convertValue(this.summary._averageEmissionsVolume)
-        : 0
-    },
     hoverData() {
       if (!this.hoverDate) {
         return null

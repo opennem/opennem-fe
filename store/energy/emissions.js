@@ -3,6 +3,7 @@ import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 export const state = () => ({
   emissionIntensityData: [],
   averageEmissionIntensity: null,
+  averageEmissions: null,
   sumEmissionsMinusLoads: null
 })
 
@@ -13,6 +14,9 @@ export const mutations = {
   averageEmissionIntensity(state, averageEmissionIntensity) {
     state.averageEmissionIntensity = averageEmissionIntensity
   },
+  averageEmissions(state, averageEmissions) {
+    state.averageEmissions = averageEmissions
+  },
   sumEmissionsMinusLoads(state, sumEmissionsMinusLoads) {
     state.sumEmissionsMinusLoads = sumEmissionsMinusLoads
   }
@@ -21,6 +25,7 @@ export const mutations = {
 export const getters = {
   emissionIntensityData: state => state.emissionIntensityData,
   averageEmissionIntensity: state => state.averageEmissionIntensity,
+  averageEmissions: state => state.averageEmissions,
   sumEmissionsMinusLoads: state => state.sumEmissionsMinusLoads
 }
 
@@ -100,6 +105,7 @@ export const actions = {
 
     commit('emissionIntensityData', dataset)
     commit('averageEmissionIntensity', calAverage(dataset))
+    commit('averageEmissions', sumEmissionsMinusLoads / dataset.length)
     commit('sumEmissionsMinusLoads', sumEmissionsMinusLoads)
   }
 }

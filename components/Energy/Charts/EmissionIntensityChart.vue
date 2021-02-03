@@ -184,34 +184,19 @@ export default {
   },
 
   watch: {
-    currentDataset(val) {
-      this.doUpdateEmissionIntensityDataset({
-        datasetAll: val,
-        isCalculateByGeneration: this.calculateByGeneration,
-        emissionsDomains: this.emissionsDomains,
-        powerEnergyDomains: this.powerEnergyDomains,
-        domainPowerEnergy: this.domainPowerEnergy
-      })
+    currentDataset() {
+      this.updateEmissionsData()
     },
-    calculateByGeneration(val) {
-      this.doUpdateEmissionIntensityDataset({
-        datasetAll: this.currentDataset,
-        isCalculateByGeneration: val,
-        emissionsDomains: this.emissionsDomains,
-        powerEnergyDomains: this.powerEnergyDomains,
-        domainPowerEnergy: this.domainPowerEnergy
-      })
+    calculateByGeneration() {
+      this.updateEmissionsData()
+    },
+    hiddenFuelTechs() {
+      this.updateEmissionsData()
     }
   },
 
   mounted() {
-    this.doUpdateEmissionIntensityDataset({
-      datasetAll: this.currentDataset,
-      isCalculateByGeneration: this.calculateByGeneration,
-      emissionsDomains: this.emissionsDomains,
-      powerEnergyDomains: this.powerEnergyDomains,
-      domainPowerEnergy: this.domainPowerEnergy
-    })
+    this.updateEmissionsData()
   },
 
   methods: {
@@ -219,6 +204,15 @@ export default {
       doUpdateEmissionIntensityDataset:
         'energy/emissions/doUpdateEmissionIntensityDataset'
     }),
+    updateEmissionsData() {
+      this.doUpdateEmissionIntensityDataset({
+        datasetAll: this.currentDataset,
+        isCalculateByGeneration: this.calculateByGeneration,
+        emissionsDomains: this.emissionsDomains,
+        powerEnergyDomains: this.powerEnergyDomains,
+        domainPowerEnergy: this.domainPowerEnergy
+      })
+    },
     handleDateHover(evt, date) {
       this.$emit('dateHover', date)
     },
