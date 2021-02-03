@@ -150,10 +150,14 @@ export default {
       return this.summary ? this.summary._averageTemperature : 0
     },
     hoverData() {
-      if (!this.hoverDate) {
+      let date = this.focusDate
+      if (this.hoverOn) {
+        date = this.hoverDate
+      }
+      if (!date) {
         return null
       }
-      const time = this.hoverDate.getTime()
+      const time = date.getTime()
       return this.currentDataset.find(d => d.time === time)
     },
     hoverMeanTemperature() {

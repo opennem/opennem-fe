@@ -148,12 +148,17 @@ export default {
     },
 
     hoverData() {
-      if (!this.hoverDate) {
+      let date = this.focusDate
+      if (this.hoverOn) {
+        date = this.hoverDate
+      }
+      if (!date) {
         return null
       }
-      const time = this.hoverDate.getTime()
+      const time = date.getTime()
       return this.emissionIntensityData.find(d => d.time === time)
     },
+
     hoverValue() {
       if (this.hoverData) {
         console.log(

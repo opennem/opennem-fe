@@ -16,7 +16,7 @@
       :hover-display-date="hoverDisplayDate"
       :hover-value="hoverValue"
     />
-    
+
     <line-vis
       v-if="chartShown"
       :read-only="readOnly"
@@ -194,10 +194,14 @@ export default {
       return this.summary ? this.summary._totalAverageValue : 0
     },
     hoverData() {
-      if (!this.hoverDate) {
+      let date = this.focusDate
+      if (this.hoverOn) {
+        date = this.hoverDate
+      }
+      if (!date) {
         return null
       }
-      const time = this.hoverDate.getTime()
+      const time = date.getTime()
       return this.currentDataset.find(d => d.time === time)
     },
     hoverValue() {

@@ -629,10 +629,14 @@ export default {
       return ''
     },
     hoverData() {
-      if (!this.hoverDate) {
+      let date = this.focusDate
+      if (this.hoverOn) {
+        date = this.hoverDate
+      }
+      if (!date) {
         return null
       }
-      const time = this.hoverDate.getTime()
+      const time = date.getTime()
       return this.dataset.find(d => d.time === time)
     },
     hoverValue() {
