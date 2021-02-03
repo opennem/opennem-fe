@@ -42,10 +42,12 @@ export const actions = {
   ) {
     const addUp = (data, domain) => {
       if (isCalculateByGeneration) {
+        // only if it's a source AND it's not imports
         if (domain.category === 'source' && domain.fuelTech !== 'imports') {
           return data[domain.id] || 0
         }
       } else {
+        // it's not a load OR it's exports
         if (domain.category !== 'load' || domain.fuelTech === 'exports') {
           return data[domain.id] || 0
         }
@@ -83,9 +85,8 @@ export const actions = {
         totalPowerEnergy += addUp(d, domain)
       })
 
-      // const totalPowerEnergyMinusBatteryDischarging =
-      //   totalPowerEnergy - totalBatteryDischarging
-      const totalPowerEnergyMinusBatteryDischarging = totalPowerEnergy
+      const totalPowerEnergyMinusBatteryDischarging =
+        totalPowerEnergy - totalBatteryDischarging
 
       obj._totalEmissions = totalEmissions
       obj._totalEmissionsMinusLoads = totalEmissionsMinusLoads

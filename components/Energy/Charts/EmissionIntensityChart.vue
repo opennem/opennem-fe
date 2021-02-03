@@ -157,7 +157,9 @@ export default {
     hoverValue() {
       if (this.hoverData) {
         console.log(
-          `emissions: ${this.hoverData._totalEmissions}, power/energy: ${
+          `emissions: ${
+            this.hoverData._totalEmissions
+          }, power/energy (w/o battery_discharging): ${
             this.hoverData._totalPowerEnergyMinusBatteryDischarging
           }, intensity: ${this.hoverData._emissionIntensity}`
         )
