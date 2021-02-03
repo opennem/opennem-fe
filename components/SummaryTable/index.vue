@@ -443,7 +443,10 @@ export default {
     },
 
     emissionHoverData() {
-      const date = this.hoverDate ? this.hoverDate : this.focusDate
+      let date = this.focusDate
+      if (this.hoverOn) {
+        date = this.hoverDate
+      }
 
       if (date) {
         const time = date.getTime()
