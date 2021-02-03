@@ -34,7 +34,7 @@
       :curve="chartCurve"
       :y-axis-log="false"
       :y-min="-50"
-      :y-max="1200"
+      :y-max="yMax"
       :show-x-axis="false"
       :show-tooltip="false"
       :show-point-on-hover="true"
@@ -145,6 +145,16 @@ export default {
       const domains = this.currentDomainPowerEnergy
       const hidden = this.hiddenFuelTechs
       return domains.filter(d => !_includes(hidden, d[this.property]))
+    },
+
+    yMax() {
+      let max = 1200
+      this.emissionIntensityData.forEach(d => {
+        if (d._emissionIntensity > max) {
+          max = d._emissionIntensity
+        }
+      })
+      return max
     },
 
     hoverData() {
