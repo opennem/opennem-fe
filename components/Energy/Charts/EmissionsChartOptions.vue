@@ -1,16 +1,16 @@
 <template>
   <chart-header>
-    <template 
-      v-slot:options 
+    <template
+      v-slot:options
       v-if="!readOnly">
-      <chart-options 
+      <chart-options
         :options="options"
         :chart-type="chartType"
         :chart-curve="chartCurve"
         :chart-shown="chartShown"
         :chart-unit="chartUnit"
         :chart-display-prefix="chartDisplayPrefix"
-        :show="chartOptions" 
+        :show="chartOptions"
         @show-change="s => chartOptions = s"
         @type-click="handleTypeClick"
         @curve-click="handleCurveClick"
@@ -19,13 +19,17 @@
 
     <template v-slot:label-unit>
       <strong>Emissions Volume</strong>
-      <small 
-        class="display-unit" 
+      <small
+        v-if="isTypeProportion">
+        {{ displayUnit }}</small>
+      <small
+        v-else
+        class="display-unit"
         @click.stop="handleUnitClick">{{ displayUnit }}/{{ interval | intervalLabel }}</small>
     </template>
-    <template 
-      v-slot:average-value 
-      v-if="!readOnly">
+    <template
+      v-slot:average-value
+      v-if="!readOnly && !isTypeProportion">
       Av.
       <strong>
         {{ averageEmissionsVolume | formatValue }}
@@ -43,9 +47,10 @@
           :style="{ 'background-color': hoverDomainColour }"
           class="colour-square" />
         {{ hoverDomainLabel }}
-        <strong>{{ hoverValue | formatValue2 }} {{ displayUnit }}</strong>
+        <strong v-if="isTypeProportion">{{ hoverValue | formatValue2 }}%</strong>
+        <strong v-else>{{ hoverValue | formatValue2 }} {{ displayUnit }}</strong>
       </span>
-      <span>
+      <span v-if="!isTypeProportion">
         Total
         <strong>{{ hoverTotal | formatValue2 }} {{ displayUnit }}</strong>
       </span>
@@ -55,20 +60,26 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import _cloneDeep from 'lodash.clonedeep'
 import ChartHeader from '@/components/Vis/ChartHeader'
 import ChartOptions from '@/components/Vis/ChartOptions'
 import * as OPTIONS from '@/constants/chart-options.js'
 import * as SI from '@/constants/si'
 
-const options = {
-  type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_STACKED],
+const emissionsSI = [SI.BASE, SI.KILO, SI.MEGA]
+const emissionsOptions = {
+  type: [
+    OPTIONS.CHART_HIDDEN,
+    OPTIONS.CHART_STACKED,
+    OPTIONS.CHART_PROPORTION,
+    OPTIONS.CHART_LINE
+  ],
   curve: [
     OPTIONS.CHART_CURVE_SMOOTH,
     OPTIONS.CHART_CURVE_STEP,
     OPTIONS.CHART_CURVE_STRAIGHT
   ],
-  yAxis: [],
-  si: [SI.BASE, SI.KILO, SI.MEGA]
+  yAxis: []
 }
 
 export default {
@@ -132,12 +143,27 @@ export default {
     readOnly: {
       type: Boolean,
       default: false
+    },
+    isTypeProportion: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
-      chartOptions: false,
-      options
+      chartOptions: false
+    }
+  },
+  computed: {
+    options() {
+      let options = []
+      if (this.isTypeProportion) {
+        options = _cloneDeep(emissionsOptions)
+      } else {
+        options = _cloneDeep(emissionsOptions)
+        options.si = emissionsSI
+      }
+      return options
     }
   },
   methods: {
@@ -155,7 +181,7 @@ export default {
     },
 
     togglePrefix(prefix) {
-      return options.si.find(p => p !== prefix)
+      return this.options.si.find(p => p !== prefix)
     },
 
     handleUnitClick() {

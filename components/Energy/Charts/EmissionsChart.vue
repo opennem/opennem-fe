@@ -12,7 +12,8 @@
       :chart-curve="chartCurve"
       :chart-unit="chartUnit"
       :chart-display-prefix="chartDisplayPrefix"
-      :display-unit="chartCurrentUnit"
+      :display-unit="displayUnit"
+      :is-type-proportion="isTypeProportion"
       :interval="interval"
       :average-emissions-volume="convertValue(averageEmissions)"
       :hover-display-date="hoverDisplayDate"
@@ -23,15 +24,15 @@
     />
 
     <stacked-area-vis
-      v-if="chartShown"
+      v-if="chartShown && (isTypeArea || isTypeProportion)"
       :read-only="readOnly"
       :domains="domains"
-      :dataset="currentDataset"
+      :dataset="dataset"
       :range="range"
       :interval="interval"
       :curve="chartCurve"
-      :y-min="yMin"
-      :y-max="yMax"
+      :y-min="isTypeArea ? yMin : 0"
+      :y-max="isTypeArea ? yMax : 100"
       :vis-height="200"
       :show-x-axis="false"
       :show-tooltip="false"
@@ -48,7 +49,7 @@
       :incomplete-intervals="incompleteIntervals"
       :highlight-domain="highlightId"
       :display-prefix="chartDisplayPrefix"
-      :should-convert-value="true"
+      :should-convert-value="shouldConvertValue"
       :convert-value="convertValue"
       :unit="` ${chartDisplayPrefix}${chartUnit}`"
       class="vis-chart"
@@ -59,6 +60,30 @@
       @leave="handleVisLeave"
       @zoomExtent="handleZoomExtent"
     />
+
+    <multi-line
+      v-if="chartShown && isTypeLine"
+      :svg-height="200"
+      :domains1="domains"
+      :dataset1="currentDataset"
+      :y1-max="yLineMax"
+      :y1-min="yLineMin"
+      :x-ticks="xTicks"
+      :curve="chartCurve"
+      :date-hovered="hoverDate"
+      :zoom-range="zoomExtent"
+      :draw-incomplete-bucket="true"
+      :x-shades="xGuides"
+      :highlight-domain="highlightId"
+      :display-prefix="chartDisplayPrefix"
+      :should-convert-value="shouldConvertValue"
+      :convert-value="convertValue"
+      class="vis-chart"
+      @date-hover="handleDateHover"
+      @domain-hover="handleDomainHover"
+      @enter="handleVisEnter"
+      @leave="handleVisLeave" />
+
   </div>
 </template>
 
@@ -71,17 +96,21 @@ import addWeeks from 'date-fns/addWeeks'
 import addMonths from 'date-fns/addMonths'
 import addQuarters from 'date-fns/addQuarters'
 import addYears from 'date-fns/addYears'
+import AxisTimeFormats from '@/services/axisTimeFormats.js'
+import * as OPTIONS from '@/constants/chart-options.js'
 import * as SI from '@/constants/si.js'
 import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import { EMISSIONS } from '@/constants/data-types.js'
 import DateDisplay from '@/services/DateDisplay.js'
+import MultiLine from '@/components/Vis/MultiLine'
 import StackedAreaVis from '@/components/Vis/StackedArea.vue'
 import EmissionsChartOptions from '@/components/Energy/Charts/EmissionsChartOptions'
 
 export default {
   components: {
     EmissionsChartOptions,
-    StackedAreaVis
+    StackedAreaVis,
+    MultiLine
   },
 
   props: {
@@ -115,6 +144,9 @@ export default {
       focusDate: 'visInteract/focusDate',
       xGuides: 'visInteract/xGuides',
       highlightDomain: 'visInteract/highlightDomain',
+      xTicks: 'visInteract/xTicks',
+      visTickFormat: 'visInteract/tickFormat',
+      visSecondTickFormat: 'visInteract/secondTickFormat',
 
       chartShown: 'chartOptionsEmissionsVolume/chartShown',
       chartType: 'chartOptionsEmissionsVolume/chartType',
@@ -130,6 +162,39 @@ export default {
 
       averageEmissions: 'energy/emissions/averageEmissions'
     }),
+
+    shouldConvertValue() {
+      return this.isTypeArea || this.isTypeLine
+    },
+
+    isTypeArea() {
+      return this.chartType === OPTIONS.CHART_STACKED
+    },
+    isTypeProportion() {
+      return this.chartType === OPTIONS.CHART_PROPORTION
+    },
+    isTypeLine() {
+      return this.chartType === OPTIONS.CHART_LINE
+    },
+
+    tickFormat() {
+      if (typeof this.visTickFormat === 'string') {
+        return AxisTimeFormats[this.visTickFormat]
+      }
+      return this.visTickFormat
+    },
+    secondTickFormat() {
+      return AxisTimeFormats[this.visSecondTickFormat]
+    },
+
+    displayUnit() {
+      let unit = this.chartCurrentUnit
+      if (this.isTypeProportion) {
+        unit = '%'
+      }
+      return unit
+    },
+
     hoverEmissionsDomain() {
       const domain = this.hoverDomain
       if (domain) {
@@ -147,7 +212,7 @@ export default {
       return find ? find.id : ''
     },
     yMax() {
-      const dataset = _cloneDeep(this.currentDataset)
+      const dataset = _cloneDeep(this.dataset)
       dataset.forEach(d => {
         let stackedMax = 0
         this.domains.forEach(domain => {
@@ -158,7 +223,7 @@ export default {
       return max(dataset, d => d._stackedTotalEmissionsMax)
     },
     yMin() {
-      const dataset = _cloneDeep(this.currentDataset)
+      const dataset = _cloneDeep(this.dataset)
       dataset.forEach(d => {
         let emissionsMin = 0
         this.domains.forEach(domain => {
@@ -170,6 +235,37 @@ export default {
       })
       return min(dataset, d => d._stackedTotalEmissionsMin)
     },
+
+    yLineMin() {
+      let min = 0
+
+      this.dataset.forEach(d => {
+        this.domains.forEach(domain => {
+          const val = d[domain.id]
+          if (val < min) {
+            min = val
+          }
+        })
+      })
+
+      return min
+    },
+
+    yLineMax() {
+      let max = 0
+
+      this.dataset.forEach(d => {
+        this.domains.forEach(domain => {
+          const val = d[domain.id]
+          if (val > max) {
+            max = val
+          }
+        })
+      })
+
+      return max
+    },
+
     emissionsDomains() {
       const excludeLoads = this.currentDomainEmissions.filter(
         d => d.category !== FT.LOAD
@@ -185,6 +281,32 @@ export default {
       return domains.filter(d => !_includes(hidden, d[property]))
     },
 
+    dataset() {
+      return this.isTypeProportion
+        ? this.proportionDataset
+        : this.currentDataset
+    },
+
+    proportionDataset() {
+      const dataset = _cloneDeep(this.currentDataset)
+      dataset.forEach(d => {
+        let total = 0,
+          min = 0,
+          max = 0
+
+        this.emissionsDomains.forEach(e => {
+          total += d[e.id]
+        })
+
+        this.emissionsDomains.forEach(e => {
+          const value = d[e.id]
+          d[e.id] = (value / total) * 100
+        })
+      })
+
+      return dataset
+    },
+
     hoverData() {
       let date = this.focusDate
       if (this.hoverOn) {
@@ -194,11 +316,13 @@ export default {
         return null
       }
       const time = date.getTime()
-      return this.currentDataset.find(d => d.time === time)
+      return this.dataset.find(d => d.time === time)
     },
     hoverValue() {
       return this.hoverData
-        ? this.convertValue(this.hoverData[this.hoverEmissionsDomain])
+        ? this.shouldConvertValue
+          ? this.convertValue(this.hoverData[this.hoverEmissionsDomain])
+          : this.hoverData[this.hoverEmissionsDomain]
         : null
     },
     hoverDisplayDate() {
