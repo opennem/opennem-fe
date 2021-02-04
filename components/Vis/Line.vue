@@ -547,7 +547,6 @@ export default {
 
       // How to draw the area path
       this.area = d3Area()
-        .defined(this.line.defined())
         .x(d => this.x(d.date))
         .y0(d => this.y(d[this.minDomainId]))
         .y1(d => this.y(d[this.maxDomainId]))
