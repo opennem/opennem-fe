@@ -97,6 +97,7 @@ import addMonths from 'date-fns/addMonths'
 import addQuarters from 'date-fns/addQuarters'
 import addYears from 'date-fns/addYears'
 import AxisTimeFormats from '@/services/axisTimeFormats.js'
+import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import * as OPTIONS from '@/constants/chart-options.js'
 import * as SI from '@/constants/si.js'
 import { EMISSIONS } from '@/constants/data-types.js'
@@ -278,14 +279,38 @@ export default {
       return domains.filter(d => !_includes(hidden, d[property]))
     },
 
+    stackedDataset() {
+      const dataset = _cloneDeep(this.currentDataset)
+      dataset.forEach(d => {
+        this.emissionsDomains.forEach(e => {
+          if (e.category === FT.LOAD) {
+            const negValue = -d[e.id]
+            d[e.id] = negValue
+          }
+        })
+      })
+
+      return dataset
+    },
+
+    lineDataset() {
+      return this.currentDataset
+    },
+
     dataset() {
-      return this.isTypeProportion
-        ? this.proportionDataset
-        : this.currentDataset
+      if (this.isTypeArea) {
+        return this.stackedDataset
+      }
+      if (this.isTypeProportion) {
+        return this.proportionDataset
+      }
+      if (this.isTypeLine) {
+        return this.lineDataset
+      }
     },
 
     proportionDataset() {
-      const dataset = _cloneDeep(this.currentDataset)
+      const dataset = _cloneDeep(this.stackedDataset)
       dataset.forEach(d => {
         let total = 0,
           min = 0,
