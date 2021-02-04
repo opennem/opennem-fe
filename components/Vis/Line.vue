@@ -546,10 +546,23 @@ export default {
       this.line.defined(d => d[this.domainId] || d[this.domainId] === 0)
 
       // How to draw the area path
+      const validCheck = value => {
+        return value || value === 0
+      }
       this.area = d3Area()
         .x(d => this.x(d.date))
-        .y0(d => this.y(d[this.minDomainId]))
-        .y1(d => this.y(d[this.maxDomainId]))
+        .y0(d => {
+          return validCheck(d[this.minDomainId]) &&
+            validCheck(d[this.maxDomainId])
+            ? this.y(d[this.minDomainId])
+            : null
+        })
+        .y1(d => {
+          return validCheck(d[this.minDomainId]) &&
+            validCheck(d[this.maxDomainId])
+            ? this.y(d[this.maxDomainId])
+            : null
+        })
         .curve(this.curveType)
 
       // Event handling
