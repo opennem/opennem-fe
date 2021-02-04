@@ -181,7 +181,15 @@ export default {
     },
 
     togglePrefix(prefix) {
-      return this.options.si.find(p => p !== prefix)
+      const length = this.options.si.length
+      const index = this.options.si.findIndex(p => p === prefix)
+      let nextIndex = index + 1
+
+      if (nextIndex === length) {
+        nextIndex = 0
+      }
+
+      return this.options.si[nextIndex]
     },
 
     handleUnitClick() {
