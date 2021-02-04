@@ -224,7 +224,7 @@ export const actions = {
         regions.forEach((r, i) => {
           const cpiData = responses.find(d => d.type === 'cpi')
           const filtered = responses.filter(
-            d => d.region === r.id.toUpperCase()
+            d => d.region && d.region.toLowerCase() === r.id
           )
           if (cpiData) {
             filtered.push(cpiData)
