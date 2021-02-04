@@ -99,7 +99,6 @@ import addYears from 'date-fns/addYears'
 import AxisTimeFormats from '@/services/axisTimeFormats.js'
 import * as OPTIONS from '@/constants/chart-options.js'
 import * as SI from '@/constants/si.js'
-import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import { EMISSIONS } from '@/constants/data-types.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
@@ -267,11 +266,9 @@ export default {
     },
 
     emissionsDomains() {
-      const excludeLoads = this.currentDomainEmissions.filter(
-        d => d.category !== FT.LOAD
-      )
-
-      return this.currentDomainEmissions ? excludeLoads.reverse() : []
+      return this.currentDomainEmissions
+        ? _cloneDeep(this.currentDomainEmissions).reverse()
+        : []
     },
     domains() {
       const property =

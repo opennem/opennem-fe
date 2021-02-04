@@ -202,6 +202,10 @@ export default function({
     })
 
     domainEmissions.forEach(domain => {
+      if (domain.category === FT.LOAD) {
+        const negValue = -d[domain.id]
+        d[domain.id] = negValue
+      }
       totalEmissionsVol += d[domain.id] || 0
     })
 
