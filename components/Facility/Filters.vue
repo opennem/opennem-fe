@@ -421,6 +421,10 @@ export default {
     width: 200px;
 
     @include tablet {
+      width: 170px;
+      margin-right: 10px;
+    }
+    @include desktop {
       width: 230px;
       margin-right: 10px;
     }

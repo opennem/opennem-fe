@@ -19,7 +19,7 @@
 
     <app-header />
     <nuxt />
-    <app-footer v-if="!widthBreak" />
+    <app-footer v-if="!tabletBreak" />
   </div>
 </template>
 
@@ -45,7 +45,7 @@ export default {
       showError: 'app/showError',
       errorHeader: 'app/errorHeader',
       errorMessage: 'app/errorMessage',
-      widthBreak: 'app/widthBreak'
+      tabletBreak: 'app/tabletBreak'
     })
   },
 
