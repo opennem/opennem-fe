@@ -1,15 +1,15 @@
 <template>
-  <chart-header>
-    <template 
-      v-slot:options 
+  <chart-header :chart-shown="chartShown">
+    <template
+      v-slot:options
       v-if="!readOnly">
-      <chart-options 
+      <chart-options
         :options="options"
         :chart-type="chartType"
         :chart-curve="chartCurve"
         :chart-shown="chartShown"
         :chart-y-axis="chartYAxis"
-        :show="chartOptions" 
+        :show="chartOptions"
         @show-change="s => chartOptions = s"
         @type-click="handleTypeClick"
         @curve-click="handleCurveClick"

@@ -1,14 +1,14 @@
 <template>
-  <chart-header>
-    <template 
-      v-slot:options 
+  <chart-header :chart-shown="chartShown">
+    <template
+      v-slot:options
       v-if="!readOnly">
-      <chart-options 
+      <chart-options
         :options="options"
         :chart-type="chartType"
         :chart-curve="chartCurve"
         :chart-shown="chartShown"
-        :show="showChartOptions" 
+        :show="showChartOptions"
         @show-change="s => showChartOptions = s"
         @type-click="handleTypeClick"
         @curve-click="handleCurveClick"/>
@@ -18,8 +18,8 @@
       <strong>Price</strong>
       <small>$/MWh</small>
     </template>
-    <template 
-      v-slot:average-value 
+    <template
+      v-slot:average-value
       v-if="!readOnly">
       Av.
       <strong>

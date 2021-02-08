@@ -1,5 +1,5 @@
 <template>
-  <chart-header>
+  <chart-header :chart-shown="chartShown">
     <template
       v-slot:options
       v-if="!readOnly">
