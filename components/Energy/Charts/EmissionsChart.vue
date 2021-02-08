@@ -10,10 +10,13 @@
       :chart-shown="chartShown"
       :chart-type="chartType"
       :chart-curve="chartCurve"
+      :chart-y-axis="chartYAxis"
       :chart-unit="chartUnit"
       :chart-display-prefix="chartDisplayPrefix"
       :display-unit="displayUnit"
+      :is-type-area="isTypeArea"
       :is-type-proportion="isTypeProportion"
+      :is-type-line="isTypeLine"
       :interval="interval"
       :average-emissions-volume="convertValue(averageEmissions)"
       :hover-display-date="hoverDisplayDate"
@@ -65,7 +68,7 @@
       v-if="chartShown && isTypeLine"
       :svg-height="200"
       :domains1="domains"
-      :dataset1="currentDataset"
+      :dataset1="dataset"
       :y1-max="yLineMax"
       :y1-min="yLineMin"
       :x-ticks="xTicks"
@@ -152,6 +155,7 @@ export default {
       chartType: 'chartOptionsEmissionsVolume/chartType',
       chartCurve: 'chartOptionsEmissionsVolume/chartCurve',
       chartUnit: 'chartOptionsEmissionsVolume/chartUnit',
+      chartYAxis: 'chartOptionsEmissionsVolume/chartYAxis',
       chartUnitPrefix: 'chartOptionsEmissionsVolume/chartUnitPrefix',
       chartDisplayPrefix: 'chartOptionsEmissionsVolume/chartDisplayPrefix',
       chartCurrentUnit: 'chartOptionsEmissionsVolume/chartCurrentUnit',
@@ -164,7 +168,11 @@ export default {
     }),
 
     shouldConvertValue() {
-      return this.isTypeArea || this.isTypeLine
+      return (
+        this.isTypeArea ||
+        (this.isTypeLine &&
+          this.chartYAxis === OPTIONS.CHART_YAXIS_EMISSIONS_VOL)
+      )
     },
 
     isTypeArea() {
@@ -183,13 +191,17 @@ export default {
       }
       return this.visTickFormat
     },
+
     secondTickFormat() {
       return AxisTimeFormats[this.visSecondTickFormat]
     },
 
     displayUnit() {
       let unit = this.chartCurrentUnit
-      if (this.isTypeProportion) {
+      if (
+        this.isTypeProportion ||
+        (this.isTypeLine && this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE)
+      ) {
         unit = '%'
       }
       return unit
@@ -305,16 +317,37 @@ export default {
         return this.proportionDataset
       }
       if (this.isTypeLine) {
-        return this.lineDataset
+        if (this.chartYAxis === OPTIONS.CHART_YAXIS_EMISSIONS_VOL) {
+          return this.lineDataset
+        }
+        return this.linePercentageDataset
       }
     },
 
-    proportionDataset() {
-      const dataset = _cloneDeep(this.stackedDataset)
+    linePercentageDataset() {
+      const dataset = _cloneDeep(this.lineDataset)
       dataset.forEach(d => {
-        let total = 0,
-          min = 0,
-          max = 0
+        let total = 0
+
+        this.emissionsDomains.forEach(e => {
+          total += d[e.id]
+        })
+
+        this.emissionsDomains.forEach(e => {
+          const value = d[e.id]
+          d[e.id] = (value / total) * 100
+        })
+      })
+
+      console.log(dataset)
+
+      return dataset
+    },
+
+    proportionDataset() {
+      const dataset = _cloneDeep(this.currentDataset)
+      dataset.forEach(d => {
+        let total = 0
 
         this.emissionsDomains.forEach(e => {
           total += d[e.id]

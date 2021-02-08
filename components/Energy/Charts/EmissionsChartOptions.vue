@@ -9,18 +9,21 @@
         :chart-curve="chartCurve"
         :chart-shown="chartShown"
         :chart-unit="chartUnit"
+        :chart-y-axis="chartYAxis"
         :chart-display-prefix="chartDisplayPrefix"
         :show="chartOptions"
         @show-change="s => chartOptions = s"
         @type-click="handleTypeClick"
         @curve-click="handleCurveClick"
-        @prefix-click="handlePrefixClick"/>
+        @prefix-click="handlePrefixClick"
+        @y-axis-click="handleYAxisClick"
+      />
     </template>
 
     <template v-slot:label-unit>
       <strong>Emissions Volume</strong>
       <small
-        v-if="isTypeProportion">
+        v-if="isPercentage">
         {{ displayUnit }}</small>
       <small
         v-else
@@ -29,7 +32,7 @@
     </template>
     <template
       v-slot:average-value
-      v-if="!readOnly && !isTypeProportion">
+      v-if="!readOnly && !isPercentage">
       Av.
       <strong>
         {{ averageEmissionsVolume | formatValue }}
@@ -47,10 +50,10 @@
           :style="{ 'background-color': hoverDomainColour }"
           class="colour-square" />
         {{ hoverDomainLabel }}
-        <strong v-if="isTypeProportion">{{ hoverValue | formatValue2 }}%</strong>
+        <strong v-if="isPercentage">{{ hoverValue | formatValue2 }}%</strong>
         <strong v-else>{{ hoverValue | formatValue2 }} {{ displayUnit }}</strong>
       </span>
-      <span v-if="!isTypeProportion">
+      <span v-if="!isPercentage">
         Total
         <strong>{{ hoverTotal | formatValue2 }} {{ displayUnit }}</strong>
       </span>
@@ -67,6 +70,10 @@ import * as OPTIONS from '@/constants/chart-options.js'
 import * as SI from '@/constants/si'
 
 const emissionsSI = [SI.BASE, SI.KILO, SI.MEGA]
+const emissionsYAxis = [
+  OPTIONS.CHART_YAXIS_EMISSIONS_VOL,
+  OPTIONS.CHART_YAXIS_PERCENTAGE
+]
 const emissionsOptions = {
   type: [
     OPTIONS.CHART_HIDDEN,
@@ -101,6 +108,10 @@ export default {
       default: ''
     },
     chartUnit: {
+      type: String,
+      default: ''
+    },
+    chartYAxis: {
       type: String,
       default: ''
     },
@@ -147,6 +158,14 @@ export default {
     isTypeProportion: {
       type: Boolean,
       default: false
+    },
+    isTypeLine: {
+      type: Boolean,
+      default: false
+    },
+    isTypeArea: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -156,14 +175,21 @@ export default {
   },
   computed: {
     options() {
-      let options = []
-      if (this.isTypeProportion) {
-        options = _cloneDeep(emissionsOptions)
-      } else {
-        options = _cloneDeep(emissionsOptions)
+      let options = _cloneDeep(emissionsOptions)
+      if (this.isTypeArea) {
         options.si = emissionsSI
       }
+      if (this.isTypeLine) {
+        options.yAxis = emissionsYAxis
+      }
       return options
+    },
+
+    isPercentage() {
+      return (
+        this.isTypeProportion ||
+        (this.isTypeLine && this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE)
+      )
     }
   },
   methods: {
@@ -178,6 +204,9 @@ export default {
         'chartOptionsEmissionsVolume/chartDisplayPrefix',
         prefix
       )
+    },
+    handleYAxisClick(yAxis) {
+      this.$store.commit('chartOptionsEmissionsVolume/chartYAxis', yAxis)
     },
 
     togglePrefix(prefix) {
