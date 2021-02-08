@@ -339,8 +339,6 @@ export default {
         })
       })
 
-      console.log(dataset)
-
       return dataset
     },
 
@@ -371,7 +369,7 @@ export default {
         return null
       }
       const time = date.getTime()
-      return this.dataset.find(d => d.time === time)
+      return this.dataset ? this.dataset.find(d => d.time === time) : null
     },
     hoverValue() {
       return this.hoverData
