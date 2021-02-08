@@ -317,18 +317,26 @@ export default {
 
   computed: {
     updatedDataset() {
-      if (this.dataset.length <= 0) {
-        return []
-      }
+      if (this.dataset.length > 0) {
+        const isEnergyType =
+          this.range !== '1D' && this.range !== '3D' && this.range !== '7D'
+        if (isEnergyType) {
+          const updated = _cloneDeep(this.dataset)
+          const lastSecondItem = _cloneDeep(updated[updated.length - 2])
+          const lastItem = _cloneDeep(updated[updated.length - 1])
+          const intervalTime =
+            this.dataset.length > 1
+              ? lastItem.time - lastSecondItem.time
+              : millisecondsByInterval[this.interval]
 
-      const updated = _cloneDeep(this.dataset)
-      const lastSecondItem = _cloneDeep(updated[updated.length - 2])
-      const lastItem = _cloneDeep(updated[updated.length - 1])
-      const intervalTime = lastItem.time - lastSecondItem.time
-      lastItem.time = lastItem.time + intervalTime
-      lastItem.date = new Date(lastItem.time)
-      updated.push(lastItem)
-      return updated
+          lastItem.time = lastItem.time + intervalTime
+          lastItem.date = new Date(lastItem.time)
+          updated.push(lastItem)
+          return updated
+        }
+        return this.dataset
+      }
+      return []
     },
     filterPeriod() {
       return this.$store.getters.filterPeriod
