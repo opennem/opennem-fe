@@ -59,8 +59,8 @@ export default {
       previousPath: 'facility/previousPath',
       filteredFacilities: 'facility/filteredFacilities'
     }),
-    facilityId() {
-      return this.$route.params.facilityId
+    facilityCode() {
+      return this.$route.params.facilityCode
     },
     path() {
       return this.previousPath === '' ? '/facilities/au/' : this.previousPath
@@ -68,7 +68,7 @@ export default {
   },
 
   watch: {
-    facilityId() {
+    facilityCode() {
       this.updatePaths()
     }
   },
@@ -100,10 +100,10 @@ export default {
     updatePaths() {
       const facilitiesLength = this.filteredFacilities.length
       const currentIndex = this.filteredFacilities.findIndex(
-        f => f.facilityId === this.facilityId
+        f => f.facilityCode === this.facilityCode
       )
       const currentFacility = this.filteredFacilities.find(
-        f => f.facilityId === this.facilityId
+        f => f.facilityCode === this.facilityCode
       )
 
       if (currentIndex !== -1) {
@@ -117,10 +117,10 @@ export default {
           ? null
           : this.filteredFacilities[currentIndex - 1]
 
-        const nextFacilityId = nextFacility ? nextFacility.facilityId : null
+        const nextFacilityId = nextFacility ? nextFacility.facilityCode : null
         const nextFacilityName = nextFacility ? nextFacility.displayName : null
         const nextFacilityNetwork = nextFacility ? nextFacility.network : null
-        const prevFacilityId = prevFacility ? prevFacility.facilityId : null
+        const prevFacilityId = prevFacility ? prevFacility.facilityCode : null
         const prevFacilityName = prevFacility ? prevFacility.displayName : null
         const prevFacilityNetwork = prevFacility ? prevFacility.network : null
 

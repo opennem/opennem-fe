@@ -185,9 +185,9 @@ export const actions = {
     commit('selectedView', data)
   },
 
-  doGetFacilityById({ commit }, { facilityId }) {
-    console.log('fetching', facilityId)
-    const encode = encodeURIComponent(facilityId)
+  doGetFacilityByCode({ commit }, { facilityCode }) {
+    console.log('fetching', facilityCode)
+    const encode = encodeURIComponent(facilityCode)
     const ref = stationPath(encode)
 
     commit('fetchingFacility', true)
@@ -214,8 +214,8 @@ export const actions = {
       })
   },
 
-  doGetStationStats({ commit, getters }, { networkRegion, facilityId }) {
-    const encode = encodeURIComponent(facilityId)
+  doGetStationStats({ commit, getters }, { networkRegion, facilityCode }) {
+    const encode = encodeURIComponent(facilityCode)
     const range = getters.range
     const interval = getters.interval
 

@@ -184,8 +184,8 @@ export default {
     },
     highlightId() {
       const domain = this.highlightDomain
-      const find = this.domains.find(d => d.code === domain)
-      return find ? find.code : ''
+      const find = this.domains.find(d => d.id === domain)
+      return find ? find.id : ''
     },
     yMin() {
       let lowest = 0
@@ -340,7 +340,7 @@ export default {
       let allNulls = true
       if (data) {
         this.domains.forEach(d => {
-          const value = data[d.code]
+          const value = data[d.id]
           total += value || 0
           if (value || value === 0) {
             allNulls = false
@@ -351,12 +351,12 @@ export default {
     },
 
     getDomain(domain) {
-      return this.domains.find(d => d.code === domain)
+      return this.domains.find(d => d.id === domain)
     },
 
     getDomainLabel(domain) {
       const find = this.getDomain(domain)
-      return find ? find.code : '—'
+      return find ? find.id : '—'
     },
 
     getDomainColour(domain) {

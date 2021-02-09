@@ -64,7 +64,7 @@
               :dataset="stackedAreaDataset"
               :domains="operatingDomains"
               :zoom-extent="zoomExtent"
-              :facility-id="facilityId"
+              :facility-id="facilityCode"
               :y-max="facilityRegisteredCapacity"
               :chart-title="chartTitle"
               :chart-shown="chartShown"
@@ -186,8 +186,8 @@ export default {
     isEnergyType() {
       return this.dataType === 'energy'
     },
-    facilityId() {
-      return this.$route.params.facilityId
+    facilityCode() {
+      return this.$route.params.facilityCode
     },
     facilityName() {
       return this.facility && this.facility.name ? this.facility.name : ''
@@ -289,10 +289,16 @@ export default {
     },
     unitsSummary() {
       return this.facilityUnits.map((d, i) => {
+        const id = this.getUnitId(
+          d.network.code.toLowerCase(),
+          d.code.toLowerCase(),
+          this.dataType
+        )
+
         return {
           colour: this.facilityFuelTechsColours[d.code],
-          domain: d.code,
-          id: d.code,
+          domain: id,
+          id,
           code: d.code,
           registeredCapacity: d.capacity_registered,
           status: d.status ? d.status.label : '',
@@ -373,8 +379,8 @@ export default {
     facility(update) {
       if (update) {
         const networkRegion = update.network ? update.network.code : ''
-        const facilityId = update.code
-        this.doGetStationStats({ networkRegion, facilityId })
+        const facilityCode = update.code
+        this.doGetStationStats({ networkRegion, facilityCode })
       }
     },
     selectedFacilityUnitsDataset() {
@@ -384,8 +390,8 @@ export default {
   },
 
   created() {
-    this.doGetFacilityById({
-      facilityId: this.facilityId
+    this.doGetFacilityByCode({
+      facilityCode: this.facilityCode
     })
     this.doSetChartEnergyPrefixes(SI.MEGA)
   },
@@ -396,7 +402,7 @@ export default {
       setFocusDate: 'visInteract/focusDate'
     }),
     ...mapActions({
-      doGetFacilityById: 'facility/doGetFacilityById',
+      doGetFacilityByCode: 'facility/doGetFacilityByCode',
       doGetStationStats: 'facility/doGetStationStats',
       doUpdateDatasetByInterval: 'facility/doUpdateDatasetByInterval',
       doSetChartEnergyPrefixes:
@@ -416,6 +422,9 @@ export default {
       }
       return unknownColour
     },
+    getUnitId(region, code, type) {
+      return `${region}.${code}.${type}`
+    },
     handleZoomExtent(dateRange) {
       this.zoomExtent = dateRange
     },
@@ -431,14 +440,14 @@ export default {
     },
     handleRangeChange() {
       const networkRegion = this.facilityNetworkRegion
-      const facilityId = this.facilityId
-      this.doGetStationStats({ networkRegion, facilityId })
+      const facilityCode = this.facilityCode
+      this.doGetStationStats({ networkRegion, facilityCode })
     },
     handleIntervalChange() {
       if (this.range === '30D') {
         const networkRegion = this.facilityNetworkRegion
-        const facilityId = this.facilityId
-        this.doGetStationStats({ networkRegion, facilityId })
+        const facilityCode = this.facilityCode
+        this.doGetStationStats({ networkRegion, facilityCode })
       } else {
         this.doUpdateDatasetByInterval()
       }

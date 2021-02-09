@@ -15,7 +15,7 @@ export default function(data, range) {
       const history = d.history || null
 
       return {
-        id: d.code,
+        id: d.id,
         code: d.code,
         type,
         units,
@@ -33,12 +33,14 @@ export default function(data, range) {
     const updateDataset = () => {
       const historyData = [...u.history.data]
       dataset.forEach((h, i) => {
-        h[u.code] = historyData[i]
+        h[u.id] = historyData[i]
       })
     }
 
     updateDataset()
   })
+
+  console.log(type)
 
   return {
     domains: units,

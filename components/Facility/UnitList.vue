@@ -27,7 +27,7 @@
             Energy
             <small>MWh</small>
           </span>
-          
+
           <span v-if="isEnergyType && isYAxisAveragePower">
             Av. Power
             <small>MW</small>
@@ -49,13 +49,13 @@
         v-for="(d, i) in units"
         :key="i"
         :class="{ 'is-inactive': !isActive(d.status) }"
-        @mouseenter="handleMouseEnter(d.code, d.status)"
+        @mouseenter="handleMouseEnter(d.id, d.status)"
         @mouseleave="handleMouseLeave">
-        <td 
+        <td
           v-tooltip.left="isActive(d.status) ? '' : d.status"
         >
-          <div 
-            :style="{ backgroundColor: d.colour}" 
+          <div
+            :style="{ backgroundColor: d.colour}"
             class="colour-square" />
           <span>{{ d.code }}</span>
           <span v-if="!areAllUnitsOfSameFuelTech">— {{ d.fuelTechLabel }}</span>
@@ -63,27 +63,27 @@
         <td class="align-right">{{ d.registeredCapacity }}</td>
         <td class="align-right hover-cell">
           <span v-if="hoverOn">
-            {{ getHoverValue(d.code) | formatValue }}
+            {{ getHoverValue(d.id) | formatValue }}
           </span>
           <span v-if="!hoverOn && focusOn">
-            {{ getFocusValue(d.code) | formatValue }}
+            {{ getFocusValue(d.id) | formatValue }}
           </span>
           <span v-if="!hoverOn && !focusOn && !isYAxisAveragePower">
-            {{ summary[d.code].energy | formatValue }}
+            {{ summary[d.id].energy | formatValue }}
           </span>
           <span v-if="!hoverOn && !focusOn && isYAxisAveragePower">
-            {{ summary[d.code].avPower | formatValue }}
+            {{ summary[d.id].avPower | formatValue }}
           </span>
         </td>
         <td class="align-right hover-cell">
           <span v-if="hoverOn">
-            {{ calculateCapacityFactor(getHoverPowerValue(d.code), d.registeredCapacity) | percentageFormatNumber }}
+            {{ calculateCapacityFactor(getHoverPowerValue(d.id), d.registeredCapacity) | percentageFormatNumber }}
           </span>
           <span v-if="!hoverOn && focusOn">
-            {{ calculateCapacityFactor(getFocusPowerValue(d.code), d.registeredCapacity) | percentageFormatNumber }}
+            {{ calculateCapacityFactor(getFocusPowerValue(d.id), d.registeredCapacity) | percentageFormatNumber }}
           </span>
           <span v-if="!hoverOn && !focusOn">
-            {{ summary[d.code].capFactor | percentageFormatNumber }}
+            {{ summary[d.id].capFactor | percentageFormatNumber }}
           </span>
         </td>
       </tr>
@@ -108,7 +108,7 @@
           </span>
         </th>
         <th class="align-right hover-cell cell-value">
-          Av. 
+          Av.
           <span v-if="hoverOn">
             {{ calculateCapacityFactor(isEnergyType ? hoverAveragePowerTotal : hoverTotal, operatingUnitsTotalCapacity) | percentageFormatNumber }}
           </span>
@@ -121,7 +121,7 @@
         </th>
       </tr>
     </tfoot>
-    
+
   </table>
 </template>
 
@@ -355,7 +355,7 @@ export default {
       }
       let total = null
       this.operatingUnits.forEach(u => {
-        const value = data[u.code]
+        const value = data[u.id]
         if (value || value === 0) {
           total += value
         }

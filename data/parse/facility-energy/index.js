@@ -13,16 +13,19 @@ export function dataProcess(data, range, interval) {
     interval,
     isEnergyType: type === 'energy'
   })
+  const powerEnergyDomains = domains.filter(
+    d => d.type === 'power' || d.type === 'energy'
+  )
 
   summarise({
     currentDataset,
-    domains
+    domains: powerEnergyDomains
   })
 
   return {
     dataset: currentDataset,
     datasetFlat,
-    units: domains
+    units: powerEnergyDomains
   }
 }
 
