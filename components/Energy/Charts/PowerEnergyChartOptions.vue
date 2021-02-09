@@ -75,6 +75,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
+import EventBus from '@/plugins/eventBus'
 import ChartHeader from '@/components/Vis/ChartHeader'
 import ChartOptions from '@/components/Vis/ChartOptions'
 import * as OPTIONS from '@/constants/chart-options.js'
@@ -292,6 +293,13 @@ export default {
       }
       return options
     }
+  },
+
+  created() {
+    EventBus.$on('energy.chart.unit-toggle', this.handleUnitClick)
+  },
+  beforeDestroy() {
+    EventBus.$off('energy.chart.unit-toggle')
   },
 
   methods: {

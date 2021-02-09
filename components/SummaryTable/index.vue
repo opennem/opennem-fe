@@ -22,7 +22,8 @@
 
         <div
           v-if="isEnergy"
-          class="summary-col-energy">
+          class="summary-col-energy cell-toggle"
+          @click="handleUnitCellClicked">
           <span>
             Energy <small>{{ chartCurrentUnit }}</small>
           </span>
@@ -39,7 +40,7 @@
         </div>
 
         <div
-          class="summary-col-contribution contribution-toggle"
+          class="summary-col-contribution cell-toggle"
           @click="handlePercentContributionToClick">
           Contribution <small>to {{ percentContributionTo }}</small>
         </div>
@@ -263,6 +264,7 @@ import { format as d3Format } from 'd3-format'
 import differenceInMinutes from 'date-fns/differenceInMinutes'
 import { energy_sum } from '@opennem/energy-tools'
 
+import EventBus from '@/plugins/eventBus'
 import Data from '~/services/Data.js'
 import Domain from '~/services/Domain.js'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
@@ -1245,6 +1247,10 @@ export default {
     },
     handleMouseLeave() {
       this.$emit('mouse-leave')
+    },
+
+    handleUnitCellClicked() {
+      EventBus.$emit('energy.chart.unit-toggle')
     }
   }
 }
@@ -1263,7 +1269,7 @@ export default {
   }
 }
 
-.contribution-toggle {
+.cell-toggle {
   cursor: pointer;
   &:hover {
     background-color: rgba(255, 255, 255, 0.7);
