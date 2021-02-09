@@ -356,7 +356,7 @@ export default {
 
     getDomainLabel(domain) {
       const find = this.getDomain(domain)
-      return find ? find.id : '—'
+      return find ? find.code : '—'
     },
 
     getDomainColour(domain) {
