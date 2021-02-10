@@ -184,7 +184,7 @@ export default {
     },
     highlightId() {
       const domain = this.highlightDomain
-      const find = this.domains.find(d => d.id === domain)
+      const find = this.domains.find(d => d.code === domain)
       return find ? find.id : ''
     },
     yMin() {

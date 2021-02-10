@@ -49,7 +49,7 @@
         v-for="(d, i) in units"
         :key="i"
         :class="{ 'is-inactive': !isActive(d.status) }"
-        @mouseenter="handleMouseEnter(d.id, d.status)"
+        @mouseenter="handleMouseEnter(d.code, d.status)"
         @mouseleave="handleMouseLeave">
         <td
           v-tooltip.left="isActive(d.status) ? '' : d.status"
