@@ -82,6 +82,22 @@
           </transition>
         </section>
 
+        <emissions-chart
+          v-if="!fetchingStats && domainEmissions.length > 0"
+          :emissions-dataset="selectedFacilityUnitsDataset"
+          :domain-emissions="domainEmissions"
+          :range="range"
+          :interval="interval"
+          :hover-on="isHovering"
+          :hover-date="hoverDate"
+          :zoom-extent="zoomExtent"
+          :prop-name="'code'"
+          @dateHover="handleDateHover"
+          @isHovering="handleIsHovering"
+          @zoomExtent="handleZoomExtent"
+          @svgClick="handleSvgClick"
+        />
+
         <section class="facility-units">
           <UnitList
             :is-energy-type="isEnergyType"
@@ -133,6 +149,7 @@ import PhotoMap from '@/components/Facility/PhotoMap.vue'
 import FacilityProperties from '@/components/Facility/Properties.vue'
 import Summary from '@/components/Facility/Summary.vue'
 import Loader from '@/components/ui/Loader'
+import EmissionsChart from '@/components/Charts/EmissionsChart'
 
 export default {
   layout: 'facility',
@@ -151,7 +168,9 @@ export default {
 
     FacilityProperties,
     Summary,
-    Loader
+    Loader,
+
+    EmissionsChart
   },
 
   data() {
@@ -172,6 +191,7 @@ export default {
       dataType: 'facility/dataType',
       range: 'facility/range',
       interval: 'facility/interval',
+      domainEmissions: 'facility/domainEmissions',
 
       chartShown: 'chartOptionsPowerEnergy/chartShown',
       chartType: 'chartOptionsPowerEnergy/chartType',
@@ -379,22 +399,44 @@ export default {
   watch: {
     facility(update) {
       if (update) {
+        console.log('facility-watch')
         console.log(this.range, this.interval)
         // const networkRegion = update.network ? update.network.code : ''
         // const facilityCode = update.code
         // console.log('facility-watch')
         // this.doGetStationStats({ networkRegion, facilityCode })
+        const networkRegion = this.facilityNetworkRegion
+        const facilityCode = this.facilityCode
+        const facilityFuelTechsColours = this.facilityFuelTechsColours
+        console.log('facility-watch')
+        this.doGetStationStats({
+          networkRegion,
+          facilityCode,
+          facilityFuelTechsColours
+        })
       }
     },
-    selectedFacilityUnitsDataset() {
+    selectedFacilityUnitsDataset(dataset) {
+      if (dataset.length > 0) {
+        this.doUpdateXGuides({
+          interval: this.interval,
+          start: dataset[0].time,
+          end: dataset[dataset.length - 1].time
+        })
+      }
       // clear dates
       this.setFocusDate(null)
     },
     range() {
       const networkRegion = this.facilityNetworkRegion
       const facilityCode = this.facilityCode
+      const facilityFuelTechsColours = this.facilityFuelTechsColours
       console.log('range-watch')
-      this.doGetStationStats({ networkRegion, facilityCode })
+      this.doGetStationStats({
+        networkRegion,
+        facilityCode,
+        facilityFuelTechsColours
+      })
     }
   },
 
@@ -412,6 +454,7 @@ export default {
       setQuery: 'app/query'
     }),
     ...mapActions({
+      doUpdateXGuides: 'visInteract/doUpdateXGuides',
       doGetFacilityByCode: 'facility/doGetFacilityByCode',
       doGetStationStats: 'facility/doGetStationStats',
       doUpdateDatasetByInterval: 'facility/doUpdateDatasetByInterval',
@@ -451,15 +494,25 @@ export default {
     handleRangeChange() {
       const networkRegion = this.facilityNetworkRegion
       const facilityCode = this.facilityCode
+      const facilityFuelTechsColours = this.facilityFuelTechsColours
       console.log('range-change')
-      this.doGetStationStats({ networkRegion, facilityCode })
+      this.doGetStationStats({
+        networkRegion,
+        facilityCode,
+        facilityFuelTechsColours
+      })
     },
     handleIntervalChange() {
       if (this.range === '30D') {
         const networkRegion = this.facilityNetworkRegion
         const facilityCode = this.facilityCode
+        const facilityFuelTechsColours = this.facilityFuelTechsColours
         console.log('interval-change')
-        this.doGetStationStats({ networkRegion, facilityCode })
+        this.doGetStationStats({
+          networkRegion,
+          facilityCode,
+          facilityFuelTechsColours
+        })
       } else {
         this.doUpdateDatasetByInterval()
       }

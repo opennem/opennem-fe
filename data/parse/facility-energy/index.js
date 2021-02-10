@@ -13,9 +13,14 @@ export function dataProcess(data, range, interval) {
   } = process(data)
 
   const filtered = filterDatasetByRange(dataset, range)
+  const domains = [
+    ...domainPowerEnergy,
+    ...domainEmissions,
+    ...domainMarketValue
+  ]
 
   const currentDataset = rollUp({
-    domains: domainPowerEnergy,
+    domains,
     datasetFlat: filtered,
     interval,
     isEnergyType
@@ -23,7 +28,7 @@ export function dataProcess(data, range, interval) {
 
   summarise({
     currentDataset,
-    domains: domainPowerEnergy
+    domains
   })
 
   return {

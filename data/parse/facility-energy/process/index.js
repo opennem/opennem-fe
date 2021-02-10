@@ -33,9 +33,6 @@ export default function(data) {
   const domainEmissions = dataEmissions.map(mapper)
   const domainMarketValue = dataPriceMarketValue.map(mapper)
 
-  const isEnergyType =
-    domainPowerEnergy.length > 0 ? domainPowerEnergy[0].type : ''
-
   const dataset = createEmptyDatasets(domainPowerEnergy)
 
   dataAll.forEach(u => {
@@ -57,6 +54,6 @@ export default function(data) {
     domainEmissions,
     domainMarketValue,
     dataset,
-    isEnergyType
+    isEnergyType: !isPowerData
   }
 }

@@ -234,7 +234,10 @@ export const actions = {
       })
   },
 
-  doGetStationStats({ commit, getters }, { networkRegion, facilityCode }) {
+  doGetStationStats(
+    { commit, getters },
+    { networkRegion, facilityCode, facilityFuelTechsColours }
+  ) {
     const encode = encodeURIComponent(facilityCode)
     const range = getters.range
     const interval = getters.interval
@@ -291,11 +294,32 @@ export const actions = {
           domainMarketValue
         } = dataProcess(response.data.data, range, interval)
 
+        const mapColours = d => {
+          const find = domainEmissions.find(e => e.code === d)
+          if (find) {
+            return {
+              colour: facilityFuelTechsColours[d],
+              domain: find.id,
+              id: find.id,
+              code: d
+            }
+          }
+        }
+
+        const emissionProps = Object.keys(facilityFuelTechsColours)
+
+        console.log(dataset)
+
         commit('selectedFacilityUnitsDataset', dataset)
         commit('selectedFacilityUnitsDatasetFlat', datasetFlat)
         commit('selectedFacilityUnits', domainPowerEnergy)
         commit('domainPowerEnergy', domainPowerEnergy)
-        commit('domainEmissions', domainEmissions)
+        commit(
+          'domainEmissions',
+          domainEmissions.length > 0
+            ? emissionProps.map(mapColours).reverse()
+            : []
+        )
         commit('domainMarketValue', domainMarketValue)
 
         perf.timeEnd(`------ facility data process (end)`)
