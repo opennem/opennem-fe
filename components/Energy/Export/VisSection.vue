@@ -7,24 +7,24 @@
     />
 
     <emissions-chart
-      v-if="ready && domainEmissions.length > 0 && showChartEmissionsVolume && featureEmissions" 
+      v-if="ready && domainEmissions.length > 0 && showChartEmissionsVolume && featureEmissions"
       :read-only="true"
       :zoom-extent="filteredDates"
     />
 
-    <emission-intensity-chart 
+    <emission-intensity-chart
       v-if="ready && domainEmissions.length > 0 && showChartEmissionIntensity && featureEmissions"
       :read-only="true"
       :zoom-extent="filteredDates"
     />
 
-    <price-market-value-chart 
-      v-if="ready && domainPrice.length > 0 && showChartPrice" 
+    <price-market-value-chart
+      v-if="ready && domainPrice.length > 0 && showChartPrice"
       :read-only="true"
       :zoom-extent="filteredDates"
     />
-    
-    <temperature-chart 
+
+    <temperature-chart
       v-if="ready && domainTemperature.length > 0 && showChartTemperature"
       :read-only="true"
       :zoom-extent="filteredDates"
@@ -38,7 +38,7 @@ import { mapGetters } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 
 import PowerEnergyChart from '@/components/Energy/Charts/PowerEnergyChart'
-import EmissionsChart from '@/components/Energy/Charts/EmissionsChart'
+import EmissionsChart from '@/components/Charts/EmissionsChart'
 import EmissionIntensityChart from '@/components/Energy/Charts/EmissionIntensityChart'
 import PriceMarketValueChart from '@/components/Energy/Charts/PriceMarketValueChart'
 import TemperatureChart from '@/components/Energy/Charts/TemperatureChart'

@@ -107,7 +107,7 @@ import { EMISSIONS } from '@/constants/data-types.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import StackedAreaVis from '@/components/Vis/StackedArea.vue'
-import EmissionsChartOptions from '@/components/Energy/Charts/EmissionsChartOptions'
+import EmissionsChartOptions from './EmissionsChartOptions'
 
 export default {
   components: {
