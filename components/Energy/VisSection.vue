@@ -22,9 +22,16 @@
 
     <emissions-chart
       v-if="ready && domainEmissions.length > 0 && featureEmissions"
+      :emissions-dataset="currentDataset"
+      :domain-emissions="currentDomainEmissions"
+      :range="range"
+      :interval="interval"
       :hover-on="isHovering"
       :hover-date="hoverDate"
       :zoom-extent="zoomExtent"
+      :average-emissions="averageEmissions"
+      :hidden-domains="hiddenFuelTechs"
+      :prop-name="fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'"
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
@@ -126,6 +133,9 @@ export default {
       compareDifference: 'compareDifference',
       compareDates: 'compareDates',
       filterPeriod: 'filterPeriod',
+      fuelTechGroupName: 'fuelTechGroupName',
+      hiddenFuelTechs: 'hiddenFuelTechs',
+
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
       ready: 'regionEnergy/ready',
@@ -134,6 +144,9 @@ export default {
       domainTemperature: 'regionEnergy/domainTemperature',
       domainPrice: 'regionEnergy/domainPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
+      currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
+
+      averageEmissions: 'energy/emissions/averageEmissions',
 
       featureEmissions: 'feature/emissions'
     }),

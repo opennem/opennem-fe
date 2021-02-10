@@ -117,6 +117,18 @@ export default {
   },
 
   props: {
+    emissionsDataset: {
+      type: Array,
+      default: () => []
+    },
+    domainEmissions: {
+      type: Array,
+      default: () => []
+    },
+    averageEmissions: {
+      type: Number,
+      default: 0
+    },
     hoverOn: {
       type: Boolean,
       default: false
@@ -132,15 +144,27 @@ export default {
     readOnly: {
       type: Boolean,
       default: false
+    },
+    propName: {
+      type: String,
+      default: ''
+    },
+    range: {
+      type: String,
+      default: ''
+    },
+    interval: {
+      type: String,
+      default: ''
+    },
+    hiddenDomains: {
+      type: Array,
+      default: () => []
     }
   },
 
   computed: {
     ...mapGetters({
-      range: 'range',
-      interval: 'interval',
-      fuelTechGroupName: 'fuelTechGroupName',
-      hiddenFuelTechs: 'hiddenFuelTechs',
       tabletBreak: 'app/tabletBreak',
       hoverDomain: 'visInteract/hoverDomain',
       focusOn: 'visInteract/isFocusing',
@@ -158,13 +182,7 @@ export default {
       chartYAxis: 'chartOptionsEmissionsVolume/chartYAxis',
       chartUnitPrefix: 'chartOptionsEmissionsVolume/chartUnitPrefix',
       chartDisplayPrefix: 'chartOptionsEmissionsVolume/chartDisplayPrefix',
-      chartCurrentUnit: 'chartOptionsEmissionsVolume/chartCurrentUnit',
-
-      currentDataset: 'regionEnergy/currentDataset',
-      currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
-      summary: 'regionEnergy/summary',
-
-      averageEmissions: 'energy/emissions/averageEmissions'
+      chartCurrentUnit: 'chartOptionsEmissionsVolume/chartCurrentUnit'
     }),
 
     shouldConvertValue() {
@@ -218,9 +236,7 @@ export default {
     },
     highlightId() {
       const domain = this.highlightDomain
-      const property =
-        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
-      const find = this.domains.find(d => d[property] === domain)
+      const find = this.domains.find(d => d[this.propName] === domain)
       return find ? find.id : ''
     },
     yMax() {
@@ -279,20 +295,18 @@ export default {
     },
 
     emissionsDomains() {
-      return this.currentDomainEmissions
-        ? _cloneDeep(this.currentDomainEmissions).reverse()
+      return this.domainEmissions
+        ? _cloneDeep(this.domainEmissions).reverse()
         : []
     },
     domains() {
-      const property =
-        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
       const domains = this.emissionsDomains
-      const hidden = this.hiddenFuelTechs
-      return domains.filter(d => !_includes(hidden, d[property]))
+      const hidden = this.hiddenDomains
+      return domains.filter(d => !_includes(hidden, d[this.propName]))
     },
 
     stackedDataset() {
-      const dataset = _cloneDeep(this.currentDataset)
+      const dataset = _cloneDeep(this.emissionsDataset)
       dataset.forEach(d => {
         this.emissionsDomains.forEach(e => {
           if (e.category === FT.LOAD) {
@@ -306,7 +320,7 @@ export default {
     },
 
     lineDataset() {
-      return this.currentDataset
+      return this.emissionsDataset
     },
 
     dataset() {
@@ -343,7 +357,7 @@ export default {
     },
 
     proportionDataset() {
-      const dataset = _cloneDeep(this.currentDataset)
+      const dataset = _cloneDeep(this.emissionsDataset)
       dataset.forEach(d => {
         let total = 0
 
@@ -414,7 +428,7 @@ export default {
     },
     incompleteIntervals() {
       const incompletes = []
-      const filtered = this.currentDataset.filter(d => d._isIncompleteBucket)
+      const filtered = this.emissionsDataset.filter(d => d._isIncompleteBucket)
       filtered.forEach(f => {
         if (this.interval === 'Week') {
           incompletes.push({
