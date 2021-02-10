@@ -41,6 +41,16 @@ import {
   INTERVAL_DAY,
   INTERVAL_WEEK
 } from '@/constants/interval-filters.js'
+import {
+  isValidRangeQuery,
+  getRangeQueryByRange,
+  getRangeByRangeQuery
+} from '@/constants/range-queries.js'
+import {
+  isValidIntervalQuery,
+  getIntervalQueryByInterval,
+  getIntervalByIntervalQuery
+} from '@/constants/interval-queries.js'
 
 export default {
   data() {
@@ -55,15 +65,30 @@ export default {
       selectedInterval: 'facility/interval',
       selectedFacilityNetworkRegion: 'facility/selectedFacilityNetworkRegion'
     }),
+    isWemRegion() {
+      return this.selectedFacilityNetworkRegion === 'WEM'
+    },
+
     selectedRangeIntervals() {
       const range = this.ranges.find(r => r.range === this.selectedRange)
       const intervals = range ? range.intervals : null
       return intervals
+    },
+
+    queryRange() {
+      return this.$route.query.range
+    },
+    queryInterval() {
+      return this.$route.query.interval
     }
   },
 
+  watch: {
+    '$route.query': 'checkQueries'
+  },
+
   created() {
-    if (this.selectedFacilityNetworkRegion === 'WEM') {
+    if (this.isWemRegion) {
       this.ranges.forEach(r => {
         if (
           r.range === RANGE_1D ||
@@ -80,28 +105,76 @@ export default {
     }
   },
 
+  mounted() {
+    this.checkQueries()
+  },
+
   methods: {
     ...mapMutations({
       setRange: 'facility/range',
       setInterval: 'facility/interval'
     }),
+
+    checkQueries() {
+      const validRangeQuery = isValidRangeQuery(this.queryRange)
+      const validIntervalQuery = isValidIntervalQuery(this.queryInterval)
+
+      let range = this.selectedRange
+      let interval = this.selectedInterval
+
+      if (validRangeQuery && validIntervalQuery) {
+        range = getRangeByRangeQuery(this.queryRange)
+        interval = getIntervalByIntervalQuery(this.queryInterval)
+
+        if (this.isWemRegion && interval === INTERVAL_5MIN) {
+          interval = INTERVAL_30MIN
+          this.updateQuery(range, interval)
+        }
+      } else if (!validRangeQuery && !validIntervalQuery) {
+        this.updateQuery(range, interval)
+      } else if (validRangeQuery && !validIntervalQuery) {
+      } else if (!validRangeQuery && validIntervalQuery) {
+      }
+
+      this.setRangeInterval(range, interval)
+    },
+
+    setRangeInterval(range, interval) {
+      console.log('setting', range, interval)
+      this.setRange(range)
+      this.setInterval(interval)
+    },
+
+    updateQuery(range, interval) {
+      const query = {
+        range: getRangeQueryByRange(range),
+        interval: getIntervalQueryByInterval(interval)
+      }
+      this.$emit('queryChange', query)
+    },
+
     handleRangeChange(range) {
       const find = this.ranges.find(r => r.range === range)
       const intervals = find ? find.intervals : null
-      this.setRange(range)
+
+      let interval = ''
       if (range === RANGE_1D || range === RANGE_3D || range === RANGE_7D) {
-        this.setInterval(INTERVAL_30MIN)
+        interval = INTERVAL_30MIN
       } else if (range === RANGE_30D) {
-        this.setInterval(INTERVAL_DAY)
+        interval = INTERVAL_DAY
       } else if (range === RANGE_1Y) {
-        this.setInterval(INTERVAL_WEEK)
+        interval = INTERVAL_WEEK
       } else {
-        this.setInterval(intervals[0])
+        interval = intervals[0]
       }
+
+      this.setRangeInterval(range, interval)
+      this.updateQuery(range, interval)
       this.$emit('rangeChange')
     },
     handleIntervalChange(interval) {
       this.setInterval(interval)
+      this.updateQuery(this.selectedRange, interval)
       this.$emit('intervalChange')
     }
   }

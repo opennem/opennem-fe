@@ -37,7 +37,8 @@
         <section class="facility-chart">
           <RangeIntervalSelectors
             @rangeChange="handleRangeChange"
-            @intervalChange="handleIntervalChange" />
+            @intervalChange="handleIntervalChange"
+            @queryChange="handleQueryChange" />
 
           <transition name="fade">
             <div
@@ -378,14 +379,22 @@ export default {
   watch: {
     facility(update) {
       if (update) {
-        const networkRegion = update.network ? update.network.code : ''
-        const facilityCode = update.code
-        this.doGetStationStats({ networkRegion, facilityCode })
+        console.log(this.range, this.interval)
+        // const networkRegion = update.network ? update.network.code : ''
+        // const facilityCode = update.code
+        // console.log('facility-watch')
+        // this.doGetStationStats({ networkRegion, facilityCode })
       }
     },
     selectedFacilityUnitsDataset() {
       // clear dates
       this.setFocusDate(null)
+    },
+    range() {
+      const networkRegion = this.facilityNetworkRegion
+      const facilityCode = this.facilityCode
+      console.log('range-watch')
+      this.doGetStationStats({ networkRegion, facilityCode })
     }
   },
 
@@ -399,7 +408,8 @@ export default {
   methods: {
     ...mapMutations({
       setHighlightDomain: 'visInteract/highlightDomain',
-      setFocusDate: 'visInteract/focusDate'
+      setFocusDate: 'visInteract/focusDate',
+      setQuery: 'app/query'
     }),
     ...mapActions({
       doGetFacilityByCode: 'facility/doGetFacilityByCode',
@@ -441,12 +451,14 @@ export default {
     handleRangeChange() {
       const networkRegion = this.facilityNetworkRegion
       const facilityCode = this.facilityCode
+      console.log('range-change')
       this.doGetStationStats({ networkRegion, facilityCode })
     },
     handleIntervalChange() {
       if (this.range === '30D') {
         const networkRegion = this.facilityNetworkRegion
         const facilityCode = this.facilityCode
+        console.log('interval-change')
         this.doGetStationStats({ networkRegion, facilityCode })
       } else {
         this.doUpdateDatasetByInterval()
@@ -461,6 +473,13 @@ export default {
       } else {
         this.setFocusDate(this.hoverDate)
       }
+    },
+    handleQueryChange(query) {
+      this.$router.push({
+        query
+      })
+
+      this.setQuery(query)
     }
   }
 }

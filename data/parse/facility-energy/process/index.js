@@ -40,8 +40,6 @@ export default function(data, range) {
     updateDataset()
   })
 
-  console.log(type)
-
   return {
     domains: units,
     dataset,
