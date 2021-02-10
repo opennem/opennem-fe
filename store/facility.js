@@ -73,6 +73,10 @@ export const state = () => ({
   selectedFacilityUnitsDataset: [],
   selectedFacilityUnitsDatasetFlat: [], // as returned transform
 
+  domainPowerEnergy: [],
+  domainEmissions: [],
+  domainMarketValue: [],
+
   dataType: 'power', // power, energy
   range: RANGE_7D,
   interval: INTERVAL_30MIN
@@ -128,6 +132,17 @@ export const mutations = {
   selectedFacilityUnitsDatasetFlat(state, data) {
     state.selectedFacilityUnitsDatasetFlat = data
   },
+
+  domainPowerEnergy(state, data) {
+    state.domainPowerEnergy = data
+  },
+  domainEmissions(state, data) {
+    state.domainEmissions = data
+  },
+  domainMarketValue(state, data) {
+    state.domainMarketValue = data
+  },
+
   dataType(state, data) {
     state.dataType = data
   },
@@ -160,6 +175,11 @@ export const getters = {
     _cloneDeep(state.selectedFacilityUnitsDataset),
   selectedFacilityUnitsDatasetFlat: state =>
     _cloneDeep(state.selectedFacilityUnitsDatasetFlat),
+
+  domainPowerEnergy: state => _cloneDeep(state.domainPowerEnergy),
+  domainEmissions: state => _cloneDeep(state.domainEmissions),
+  domainMarketValue: state => _cloneDeep(state.domainMarketValue),
+
   dataType: state => state.dataType,
   range: state => state.range,
   interval: state => state.interval
@@ -248,6 +268,9 @@ export const actions = {
     commit('selectedFacilityUnitsDataset', [])
     commit('selectedFacilityUnitsDatasetFlat', [])
     commit('selectedFacilityUnits', [])
+    commit('domainPowerEnergy', [])
+    commit('domainEmissions', [])
+    commit('domainMarketValue', [])
     commit('dataType', type)
 
     http
@@ -260,15 +283,21 @@ export const actions = {
         const perf = new PerfTime()
         perf.time()
         console.info(`------ facility data process (start)`)
-        const { dataset, datasetFlat, units } = dataProcess(
-          response.data.data,
-          range,
-          interval
-        )
+        const {
+          dataset,
+          datasetFlat,
+          domainPowerEnergy,
+          domainEmissions,
+          domainMarketValue
+        } = dataProcess(response.data.data, range, interval)
 
         commit('selectedFacilityUnitsDataset', dataset)
         commit('selectedFacilityUnitsDatasetFlat', datasetFlat)
-        commit('selectedFacilityUnits', units)
+        commit('selectedFacilityUnits', domainPowerEnergy)
+        commit('domainPowerEnergy', domainPowerEnergy)
+        commit('domainEmissions', domainEmissions)
+        commit('domainMarketValue', domainMarketValue)
+
         perf.timeEnd(`------ facility data process (end)`)
         request = null
 
@@ -280,7 +309,7 @@ export const actions = {
       })
       .catch(e => {
         if (axios.isCancel(e)) {
-          console.log('Request canceled', e.message)
+          console.log('Request cancelled', e.message)
         } else {
           const error = e
           // const message = `fetch ${error.config.url} error: ${error.message}`

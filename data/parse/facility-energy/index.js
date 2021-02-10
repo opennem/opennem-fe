@@ -4,28 +4,34 @@ import summarise from './summarise'
 import { filterDatasetByRange } from '@/data/helpers/filter'
 
 export function dataProcess(data, range, interval) {
-  const { domains, dataset, type } = process(data, range)
+  const {
+    dataset,
+    domainPowerEnergy,
+    domainEmissions,
+    domainMarketValue,
+    isEnergyType
+  } = process(data)
 
-  const datasetFlat = filterDatasetByRange(dataset, range)
+  const filtered = filterDatasetByRange(dataset, range)
+
   const currentDataset = rollUp({
-    domains,
-    datasetFlat,
+    domains: domainPowerEnergy,
+    datasetFlat: filtered,
     interval,
-    isEnergyType: type === 'energy'
+    isEnergyType
   })
-  const powerEnergyDomains = domains.filter(
-    d => d.type === 'power' || d.type === 'energy'
-  )
 
   summarise({
     currentDataset,
-    domains: powerEnergyDomains
+    domains: domainPowerEnergy
   })
 
   return {
     dataset: currentDataset,
-    datasetFlat,
-    units: powerEnergyDomains
+    datasetFlat: filtered,
+    domainPowerEnergy,
+    domainEmissions,
+    domainMarketValue
   }
 }
 

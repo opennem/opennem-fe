@@ -1,33 +1,44 @@
 import { checkHistoryObject } from '@/services/DataCheck.js'
 import createEmptyDatasets from '@/data/helpers/createEmptyDatasets.js'
+import parseAndCheckData from '@/data/parse/region-energy/process/parseAndCheckData.js'
 
-export default function(data, range) {
-  // check if units exists
-  if (data.length === 0) {
-    console.warn('There are no units for this facility.', data)
+export default function(data) {
+  const {
+    dataAll,
+    dataPowerEnergy,
+    dataEmissions,
+    dataPriceMarketValue,
+    dataTemperature,
+    dataInflation,
+    fuelTechDataType,
+    isPowerData,
+    hasPowerEnergyData
+  } = parseAndCheckData(data)
+
+  const mapper = d => {
+    const type = d.data_type || ''
+    const units = d.units || ''
+    const history = d.history || null
+
+    return {
+      id: d.id,
+      code: d.code,
+      type,
+      units,
+      history
+    }
   }
 
-  // map to existing structure and filter out null histories
-  const units = data
-    .map(d => {
-      const type = d.data_type || ''
-      const units = d.units || ''
-      const history = d.history || null
+  const domainPowerEnergy = dataPowerEnergy.map(mapper)
+  const domainEmissions = dataEmissions.map(mapper)
+  const domainMarketValue = dataPriceMarketValue.map(mapper)
 
-      return {
-        id: d.id,
-        code: d.code,
-        type,
-        units,
-        history
-      }
-    })
-    .filter(d => d.history)
+  const isEnergyType =
+    domainPowerEnergy.length > 0 ? domainPowerEnergy[0].type : ''
 
-  const dataset = createEmptyDatasets(units)
-  const type = units.length > 0 ? units[0].type : ''
+  const dataset = createEmptyDatasets(domainPowerEnergy)
 
-  units.forEach(u => {
+  dataAll.forEach(u => {
     checkHistoryObject(u)
 
     const updateDataset = () => {
@@ -41,8 +52,11 @@ export default function(data, range) {
   })
 
   return {
-    domains: units,
+    domains: domainPowerEnergy,
+    domainPowerEnergy,
+    domainEmissions,
+    domainMarketValue,
     dataset,
-    type
+    isEnergyType
   }
 }
