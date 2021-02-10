@@ -10,6 +10,13 @@
       v-if="ready && domainEmissions.length > 0 && showChartEmissionsVolume && featureEmissions"
       :read-only="true"
       :zoom-extent="filteredDates"
+      :emissions-dataset="currentDataset"
+      :domain-emissions="currentDomainEmissions"
+      :average-emissions="averageEmissions"
+      :range="range"
+      :interval="interval"
+      :hidden-domains="hiddenFuelTechs"
+      :prop-name="fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'"
     />
 
     <emission-intensity-chart
@@ -54,17 +61,27 @@ export default {
 
   computed: {
     ...mapGetters({
+      range: 'range',
+      interval: 'interval',
+      fuelTechGroupName: 'fuelTechGroupName',
+      hiddenFuelTechs: 'hiddenFuelTechs',
+
       ready: 'regionEnergy/ready',
       filteredDates: 'regionEnergy/filteredDates',
+      currentDataset: 'regionEnergy/currentDataset',
       domainEmissions: 'regionEnergy/domainEmissions',
       domainTemperature: 'regionEnergy/domainTemperature',
       domainPrice: 'regionEnergy/domainPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
+      currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
+
       showChartPowerEnergy: 'chartOptionsPowerEnergy/chartShown',
       showChartEmissionsVolume: 'chartOptionsEmissionsVolume/chartShown',
       showChartEmissionIntensity: 'chartOptionsEmissionIntensity/chartShown',
       showChartPrice: 'chartOptionsPrice/chartShown',
       showChartTemperature: 'chartOptionsTemperature/chartShown',
+
+      averageEmissions: 'energy/emissions/averageEmissions',
 
       featureEmissions: 'feature/emissions'
     }),
