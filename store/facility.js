@@ -301,14 +301,14 @@ export const actions = {
               colour: facilityFuelTechsColours[d],
               domain: find.id,
               id: find.id,
-              code: d
+              code: d,
+              type: find.type,
+              units: find.units
             }
           }
         }
 
         const emissionProps = Object.keys(facilityFuelTechsColours)
-
-        console.log(dataset)
 
         commit('selectedFacilityUnitsDataset', dataset)
         commit('selectedFacilityUnitsDatasetFlat', datasetFlat)
@@ -349,7 +349,18 @@ export const actions = {
     const interval = getters.interval
     const units = getters.selectedFacilityUnits
     const datasetFlat = getters.selectedFacilityUnitsDatasetFlat
-    const dataset = dataRollUp(datasetFlat, units, interval, type === 'energy')
+    const domainPowerEnergy = getters.domainPowerEnergy
+    const domainEmissions = getters.domainEmissions
+    const domainMarketValue = getters.domainMarketValue
+    const dataset = dataRollUp({
+      datasetFlat,
+      domainPowerEnergy,
+      domainEmissions,
+      domainMarketValue,
+      interval,
+      isEnergyType: type === 'energy'
+    })
+
     commit('selectedFacilityUnitsDataset', dataset)
   }
 }

@@ -9,7 +9,6 @@ const perfTime = new PerfTime()
 export default function({
   isEnergyType,
   currentDataset,
-  datasetInflation,
   domainPowerEnergy,
   domainEmissions,
   domainPrice,
