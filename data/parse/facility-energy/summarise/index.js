@@ -1,16 +1,57 @@
-export default function({ currentDataset, domains }) {
+import PerfTime from '@/plugins/perfTime.js'
+const perfTime = new PerfTime()
+
+export default function({
+  isEnergyType,
+  currentDataset,
+  domainPowerEnergy,
+  domainEmissions,
+  domainMarketValue
+}) {
+  perfTime.time()
+
   currentDataset.forEach(d => {
-    let total = 0
-    let allNulls = true
-    domains.forEach(domain => {
+    let totalPowerEnergy = 0,
+      totalMarketValue = 0,
+      allPowerEnergyNulls = true,
+      allMarketValueNulls = true
+
+    domainPowerEnergy.forEach(domain => {
       const id = domain.id
       const value = d[id]
       if (value || value === 0) {
-        allNulls = false
+        allPowerEnergyNulls = false
       }
-      total += value || 0
+      totalPowerEnergy += value || 0
     })
 
-    d._total = allNulls ? null : total
+    domainMarketValue.forEach(domain => {
+      const id = domain.id
+      const value = d[id]
+      if (value || value === 0) {
+        allMarketValueNulls = false
+      }
+      totalMarketValue += value || 0
+    })
+
+    // volume weight price
+    const volWeightedPrice = allMarketValueNulls
+      ? null
+      : totalMarketValue / totalPowerEnergy
+
+    // update summarised values
+    d._total = allPowerEnergyNulls ? null : totalPowerEnergy
+
+    d._volWeightedPrice = isNaN(volWeightedPrice) ? null : volWeightedPrice
+    d._volWeightedPriceAbove300 =
+      !isNaN(volWeightedPrice) && volWeightedPrice > 300
+        ? volWeightedPrice
+        : 0.01
+    d._volWeightedPriceBelow0 =
+      !isNaN(volWeightedPrice) && volWeightedPrice < 0
+        ? volWeightedPrice
+        : -0.01
   })
+
+  perfTime.timeEnd('--- data.summarise')
 }

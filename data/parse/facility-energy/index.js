@@ -27,8 +27,11 @@ export function dataProcess(data, range, interval) {
   })
 
   summarise({
+    isEnergyType,
     currentDataset,
-    domains
+    domainPowerEnergy,
+    domainEmissions,
+    domainMarketValue
   })
 
   return {
@@ -40,7 +43,20 @@ export function dataProcess(data, range, interval) {
   }
 }
 
-export function dataRollUp(datasetFlat, domains, interval, isEnergyType) {
+export function dataRollUp({
+  datasetFlat,
+  domainPowerEnergy,
+  domainEmissions,
+  domainMarketValue,
+  interval,
+  isEnergyType
+}) {
+  const domains = [
+    ...domainPowerEnergy,
+    ...domainEmissions,
+    ...domainMarketValue
+  ]
+
   const currentDataset = rollUp({
     domains,
     datasetFlat,
@@ -49,8 +65,11 @@ export function dataRollUp(datasetFlat, domains, interval, isEnergyType) {
   })
 
   summarise({
+    isEnergyType,
     currentDataset,
-    domains
+    domainPowerEnergy,
+    domainEmissions,
+    domainMarketValue
   })
   return currentDataset
 }
