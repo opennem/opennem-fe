@@ -119,7 +119,7 @@ import { mapGetters } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import * as OPTIONS from '@/constants/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
-import PriceMarketValueChartOptions from '@/components/Energy/Charts/PriceMarketValueChartOptions'
+import PriceMarketValueChartOptions from './PriceMarketValueChartOptions'
 import LineVis from '@/components/Vis/Line.vue'
 
 const options = {
@@ -139,6 +139,14 @@ export default {
   },
 
   props: {
+    priceDataset: {
+      type: Array,
+      default: () => []
+    },
+    domainPrice: {
+      type: Array,
+      default: () => []
+    },
     hoverOn: {
       type: Boolean,
       default: false
@@ -154,6 +162,14 @@ export default {
     readOnly: {
       type: Boolean,
       default: false
+    },
+    range: {
+      type: String,
+      default: ''
+    },
+    interval: {
+      type: String,
+      default: ''
     }
   },
 
@@ -172,23 +188,17 @@ export default {
       chartShown: 'chartOptionsPrice/chartShown',
       chartType: 'chartOptionsPrice/chartType',
       chartCurve: 'chartOptionsPrice/chartCurve',
-      range: 'range',
-      interval: 'interval',
-      currentDataset: 'regionEnergy/currentDataset',
-      priceDomains: 'regionEnergy/domainPrice',
+
       summary: 'regionEnergy/summary'
     }),
-    priceDataset() {
-      return this.currentDataset
-    },
     priceAbove300Domain() {
-      return this.priceDomains.length > 0 ? this.priceDomains[1].domain : ''
+      return this.domainPrice.length > 0 ? this.domainPrice[1].domain : ''
     },
     priceDomain() {
-      return this.priceDomains.length > 0 ? this.priceDomains[0].domain : ''
+      return this.domainPrice.length > 0 ? this.domainPrice[0].domain : ''
     },
     priceBelow0Domain() {
-      return this.priceDomains.length > 0 ? this.priceDomains[2].domain : ''
+      return this.domainPrice.length > 0 ? this.domainPrice[2].domain : ''
     },
     totalAverageValue() {
       return this.summary ? this.summary._totalAverageValue : 0
@@ -202,7 +212,7 @@ export default {
         return null
       }
       const time = date.getTime()
-      return this.currentDataset.find(d => d.time === time)
+      return this.priceDataset.find(d => d.time === time)
     },
     hoverValue() {
       return this.hoverData ? this.hoverData[this.priceDomain] : null

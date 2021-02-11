@@ -47,7 +47,7 @@ import _cloneDeep from 'lodash.clonedeep'
 import PowerEnergyChart from '@/components/Energy/Charts/PowerEnergyChart'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
 import EmissionIntensityChart from '@/components/Energy/Charts/EmissionIntensityChart'
-import PriceMarketValueChart from '@/components/Energy/Charts/PriceMarketValueChart'
+import PriceMarketValueChart from '@/components/Charts/PriceMarketValueChart'
 import TemperatureChart from '@/components/Energy/Charts/TemperatureChart'
 
 export default {

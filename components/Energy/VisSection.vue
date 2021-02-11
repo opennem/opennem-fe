@@ -50,6 +50,10 @@
 
     <price-market-value-chart
       v-if="ready && domainPrice.length > 0"
+      :price-dataset="currentDataset"
+      :domain-price="domainPrice"
+      :range="range"
+      :interval="interval"
       :hover-on="isHovering"
       :hover-date="hoverDate"
       :zoom-extent="zoomExtent"
@@ -91,7 +95,7 @@ import PowerEnergyChart from '@/components/Energy/Charts/PowerEnergyChart'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
 import EmissionIntensityChart from '@/components/Energy/Charts/EmissionIntensityChart'
 import EnergyCompare from '@/components/Energy/Charts/CompareChart'
-import PriceMarketValueChart from '@/components/Energy/Charts/PriceMarketValueChart'
+import PriceMarketValueChart from '@/components/Charts/PriceMarketValueChart'
 import TemperatureChart from '@/components/Energy/Charts/TemperatureChart'
 
 export default {
