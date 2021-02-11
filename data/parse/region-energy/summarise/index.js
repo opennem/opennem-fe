@@ -12,7 +12,8 @@ export default function({
   domainPowerEnergy,
   domainEmissions,
   domainPrice,
-  domainInflation
+  domainInflation,
+  isGigaPrefix = true
 }) {
   perfTime.time()
 
@@ -299,7 +300,9 @@ export default function({
 
     const volWeightedPrice = allMarketValueNulls
       ? null
-      : totalMarketValue / totalDemand / 1000
+      : isGigaPrefix
+        ? totalMarketValue / totalDemand / 1000
+        : totalMarketValue / totalDemand
 
     const nanCheck = value => {
       return isNaN(value) ? null : value
@@ -309,7 +312,9 @@ export default function({
     }
     const getAvValue = (value, generation) => {
       return validNumCheck(value) && validNumCheck(generation)
-        ? value / generation / 1000
+        ? isGigaPrefix
+          ? value / generation / 1000
+          : value / generation
         : null
     }
 
