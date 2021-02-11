@@ -98,6 +98,21 @@
           @svgClick="handleSvgClick"
         />
 
+        <price-market-value-chart
+          v-if="!fetchingStats && domainMarketValue.length > 0"
+          :price-dataset="selectedFacilityUnitsDataset"
+          :domain-price="domainVolWeightedPrices"
+          :range="range"
+          :interval="interval"
+          :hover-on="isHovering"
+          :hover-date="hoverDate"
+          :zoom-extent="zoomExtent"
+          @dateHover="handleDateHover"
+          @isHovering="handleIsHovering"
+          @zoomExtent="handleZoomExtent"
+          @svgClick="handleSvgClick"
+        />
+
         <section class="facility-units">
           <UnitList
             :is-energy-type="isEnergyType"
@@ -150,6 +165,7 @@ import FacilityProperties from '@/components/Facility/Properties.vue'
 import Summary from '@/components/Facility/Summary.vue'
 import Loader from '@/components/ui/Loader'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
+import PriceMarketValueChart from '@/components/Charts/PriceMarketValueChart'
 
 export default {
   layout: 'facility',
@@ -170,7 +186,8 @@ export default {
     Summary,
     Loader,
 
-    EmissionsChart
+    EmissionsChart,
+    PriceMarketValueChart
   },
 
   data() {
@@ -192,6 +209,8 @@ export default {
       range: 'facility/range',
       interval: 'facility/interval',
       domainEmissions: 'facility/domainEmissions',
+      domainMarketValue: 'facility/domainMarketValue',
+      domainVolWeightedPrices: 'facility/domainVolWeightedPrices',
 
       chartShown: 'chartOptionsPowerEnergy/chartShown',
       chartType: 'chartOptionsPowerEnergy/chartType',

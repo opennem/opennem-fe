@@ -10,6 +10,7 @@ import {
   INTERVAL_DAY
 } from '@/constants/interval-filters.js'
 import { dataProcess, dataRollUp } from '@/data/parse/facility-energy'
+import { getVolWeightedPriceDomains } from '@/data/parse/region-energy/process/getDomains.js'
 
 let request = null
 
@@ -76,6 +77,7 @@ export const state = () => ({
   domainPowerEnergy: [],
   domainEmissions: [],
   domainMarketValue: [],
+  domainVolWeightedPrices: [],
 
   dataType: 'power', // power, energy
   range: RANGE_7D,
@@ -142,6 +144,9 @@ export const mutations = {
   domainMarketValue(state, data) {
     state.domainMarketValue = data
   },
+  domainVolWeightedPrices(state, data) {
+    state.domainVolWeightedPrices = data
+  },
 
   dataType(state, data) {
     state.dataType = data
@@ -179,6 +184,7 @@ export const getters = {
   domainPowerEnergy: state => _cloneDeep(state.domainPowerEnergy),
   domainEmissions: state => _cloneDeep(state.domainEmissions),
   domainMarketValue: state => _cloneDeep(state.domainMarketValue),
+  domainVolWeightedPrices: state => _cloneDeep(state.domainVolWeightedPrices),
 
   dataType: state => state.dataType,
   range: state => state.range,
@@ -274,6 +280,7 @@ export const actions = {
     commit('domainPowerEnergy', [])
     commit('domainEmissions', [])
     commit('domainMarketValue', [])
+    commit('domainVolWeightedPrices', [])
     commit('dataType', type)
 
     http
@@ -309,6 +316,7 @@ export const actions = {
         }
 
         const emissionProps = Object.keys(facilityFuelTechsColours)
+        console.log(dataset, getVolWeightedPriceDomains())
 
         commit('selectedFacilityUnitsDataset', dataset)
         commit('selectedFacilityUnitsDatasetFlat', datasetFlat)
@@ -321,6 +329,10 @@ export const actions = {
             : []
         )
         commit('domainMarketValue', domainMarketValue)
+        commit(
+          'domainVolWeightedPrices',
+          domainMarketValue.length > 0 ? getVolWeightedPriceDomains() : []
+        )
 
         perf.timeEnd(`------ facility data process (end)`)
         request = null
