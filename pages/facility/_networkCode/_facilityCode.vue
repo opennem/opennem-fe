@@ -98,6 +98,20 @@
           @svgClick="handleSvgClick"
         />
 
+        <emission-intensity-chart
+          v-if="!fetchingStats && domainEmissions.length > 0"
+          :emission-intensity-dataset="emissionIntensityData"
+          :range="range"
+          :interval="interval"
+          :hover-on="isHovering"
+          :hover-date="hoverDate"
+          :zoom-extent="zoomExtent"
+          :average-emission-intensity="averageEmissionIntensity"
+          @dateHover="handleDateHover"
+          @isHovering="handleIsHovering"
+          @zoomExtent="handleZoomExtent"
+          @svgClick="handleSvgClick" />
+
         <price-market-value-chart
           v-if="!fetchingStats && domainMarketValue.length > 0"
           :price-dataset="selectedFacilityUnitsDataset"
@@ -166,6 +180,7 @@ import Summary from '@/components/Facility/Summary.vue'
 import Loader from '@/components/ui/Loader'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
 import PriceMarketValueChart from '@/components/Charts/PriceMarketValueChart'
+import EmissionIntensityChart from '@/components/Charts/EmissionIntensityChart'
 
 export default {
   layout: 'facility',
@@ -187,6 +202,7 @@ export default {
     Loader,
 
     EmissionsChart,
+    EmissionIntensityChart,
     PriceMarketValueChart
   },
 
@@ -208,6 +224,7 @@ export default {
       dataType: 'facility/dataType',
       range: 'facility/range',
       interval: 'facility/interval',
+      domainPowerEnergy: 'facility/domainPowerEnergy',
       domainEmissions: 'facility/domainEmissions',
       domainMarketValue: 'facility/domainMarketValue',
       domainVolWeightedPrices: 'facility/domainVolWeightedPrices',
@@ -378,6 +395,47 @@ export default {
         exponent: SI.MEGA
       })
     },
+    emissionIntensityData() {
+      const dataset = this.selectedFacilityUnitsDataset.map(d => {
+        const obj = {
+          date: d.date,
+          time: d.time,
+          _isIncompleteBucket: d._isIncompleteBucket
+        }
+        let totalEmissions = 0,
+          totalPowerEnergy = 0
+
+        this.domainEmissions.forEach(domain => {
+          totalEmissions += d[domain.id] || 0
+        })
+        this.domainPowerEnergy.forEach(domain => {
+          totalPowerEnergy += d[domain.id] || 0
+        })
+        let ei = (totalEmissions / totalPowerEnergy) * 1000 // convert to kgCo2/MWh
+        const isValidEI = Number.isFinite(ei)
+
+        obj._totalEmissions = totalEmissions
+        obj._totalPowerEnergy = totalPowerEnergy
+        obj._emissionIntensity = isValidEI ? ei : null
+
+        return obj
+      })
+      return dataset
+    },
+
+    averageEmissionIntensity() {
+      const totalEmissions = this.emissionIntensityData.reduce(
+        (prev, cur) => prev + cur._totalEmissions,
+        0
+      )
+      const totalPowerEnergy = this.emissionIntensityData.reduce(
+        (prev, cur) => prev + cur._totalPowerEnergy,
+        0
+      )
+
+      return (totalEmissions / totalPowerEnergy) * 1000
+    },
+
     chartTitle() {
       if (this.isEnergyType) {
         if (this.isYAxisAveragePower) {
