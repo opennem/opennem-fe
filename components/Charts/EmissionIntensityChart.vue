@@ -55,7 +55,7 @@
 import { mapGetters } from 'vuex'
 import * as OPTIONS from '@/constants/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
-import EmissionIntensityChartOptions from '@/components/Energy/Charts/EmissionIntensityChartOptions'
+import EmissionIntensityChartOptions from '@/components/Charts/EmissionIntensityChartOptions'
 import LineVis from '@/components/Vis/Line.vue'
 
 const options = {

@@ -97,7 +97,7 @@ import {
 import DateDisplay from '@/services/DateDisplay.js'
 import PowerEnergyChart from '@/components/Energy/Charts/PowerEnergyChart'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
-import EmissionIntensityChart from '@/components/Energy/Charts/EmissionIntensityChart'
+import EmissionIntensityChart from '@/components/Charts/EmissionIntensityChart'
 import EnergyCompare from '@/components/Energy/Charts/CompareChart'
 import PriceMarketValueChart from '@/components/Charts/PriceMarketValueChart'
 import TemperatureChart from '@/components/Energy/Charts/TemperatureChart'
