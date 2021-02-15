@@ -23,7 +23,7 @@
       :read-only="readOnly"
       :domain-id="'_emissionIntensity'"
       :domain-colour="lineColour"
-      :dataset="emissionIntensityData"
+      :dataset="emissionIntensityDataset"
       :dynamic-extent="zoomExtent"
       :hover-date="hoverDate"
       :hover-on="hoverOn"
@@ -52,10 +52,8 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
-import _includes from 'lodash.includes'
+import { mapGetters } from 'vuex'
 import * as OPTIONS from '@/constants/chart-options.js'
-import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import EmissionIntensityChartOptions from '@/components/Energy/Charts/EmissionIntensityChartOptions'
 import LineVis from '@/components/Vis/Line.vue'
@@ -77,6 +75,14 @@ export default {
   },
 
   props: {
+    emissionIntensityDataset: {
+      type: Array,
+      default: () => []
+    },
+    domainEmissionIntensity: {
+      type: Array,
+      default: () => []
+    },
     hoverOn: {
       type: Boolean,
       default: false
@@ -92,6 +98,18 @@ export default {
     readOnly: {
       type: Boolean,
       default: false
+    },
+    range: {
+      type: String,
+      default: ''
+    },
+    interval: {
+      type: String,
+      default: ''
+    },
+    averageEmissionIntensity: {
+      type: Number,
+      default: 0
     }
   },
 
@@ -109,47 +127,12 @@ export default {
       xGuides: 'visInteract/xGuides',
       chartShown: 'chartOptionsEmissionIntensity/chartShown',
       chartType: 'chartOptionsEmissionIntensity/chartType',
-      chartCurve: 'chartOptionsEmissionIntensity/chartCurve',
-
-      range: 'range',
-      interval: 'interval',
-      fuelTechGroupName: 'fuelTechGroupName',
-      hiddenFuelTechs: 'hiddenFuelTechs',
-      percentContributionTo: 'percentContributionTo',
-      currentDataset: 'regionEnergy/currentDataset',
-      currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
-      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
-      domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
-
-      summary: 'regionEnergy/summary',
-
-      emissionIntensityData: 'energy/emissions/emissionIntensityData',
-      averageEmissionIntensity: 'energy/emissions/averageEmissionIntensity'
+      chartCurve: 'chartOptionsEmissionIntensity/chartCurve'
     }),
-    property() {
-      return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
-    },
-    calculateByGeneration() {
-      return this.percentContributionTo === 'generation'
-    },
-    emissionsDomains() {
-      const domains = this.currentDomainEmissions.filter(
-        d => d.category !== FT.LOAD
-      )
-      const hidden = this.hiddenFuelTechs
-      return domains
-        ? domains.filter(d => !_includes(hidden, d[this.property]))
-        : []
-    },
-    powerEnergyDomains() {
-      const domains = this.currentDomainPowerEnergy
-      const hidden = this.hiddenFuelTechs
-      return domains.filter(d => !_includes(hidden, d[this.property]))
-    },
 
     yMax() {
       let max = 1000
-      this.emissionIntensityData.forEach(d => {
+      this.emissionIntensityDataset.forEach(d => {
         if (d._emissionIntensity > max) {
           max = d._emissionIntensity
         }
@@ -166,7 +149,7 @@ export default {
         return null
       }
       const time = date.getTime()
-      return this.emissionIntensityData.find(d => d.time === time)
+      return this.emissionIntensityDataset.find(d => d.time === time)
     },
 
     hoverValue() {
@@ -200,36 +183,7 @@ export default {
     }
   },
 
-  watch: {
-    currentDataset() {
-      this.updateEmissionsData()
-    },
-    calculateByGeneration() {
-      this.updateEmissionsData()
-    },
-    hiddenFuelTechs() {
-      this.updateEmissionsData()
-    }
-  },
-
-  mounted() {
-    this.updateEmissionsData()
-  },
-
   methods: {
-    ...mapActions({
-      doUpdateEmissionIntensityDataset:
-        'energy/emissions/doUpdateEmissionIntensityDataset'
-    }),
-    updateEmissionsData() {
-      this.doUpdateEmissionIntensityDataset({
-        datasetAll: this.currentDataset,
-        isCalculateByGeneration: this.calculateByGeneration,
-        emissionsDomains: this.emissionsDomains,
-        powerEnergyDomains: this.powerEnergyDomains,
-        domainPowerEnergy: this.domainPowerEnergy
-      })
-    },
     handleDateHover(evt, date) {
       this.$emit('dateHover', date)
     },

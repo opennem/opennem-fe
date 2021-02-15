@@ -40,9 +40,13 @@
 
     <emission-intensity-chart
       v-if="ready && domainEmissions.length > 0 && featureEmissions"
+      :emission-intensity-dataset="emissionIntensityData"
+      :range="range"
+      :interval="interval"
       :hover-on="isHovering"
       :hover-date="hoverDate"
       :zoom-extent="zoomExtent"
+      :average-emission-intensity="averageEmissionIntensity"
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
@@ -151,6 +155,8 @@ export default {
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
 
       averageEmissions: 'energy/emissions/averageEmissions',
+      emissionIntensityData: 'energy/emissions/emissionIntensityData',
+      averageEmissionIntensity: 'energy/emissions/averageEmissionIntensity',
 
       featureEmissions: 'feature/emissions'
     }),

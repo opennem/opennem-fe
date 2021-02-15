@@ -44,11 +44,13 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import _includes from 'lodash.includes'
 import { isPowerRange } from '@/constants/ranges.js'
 import {
   isValidRegion,
   getEnergyRegionLabel
 } from '@/constants/energy-regions.js'
+import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import VisSection from '@/components/Energy/VisSection.vue'
 import SummarySection from '@/components/Energy/SummarySection.vue'
@@ -115,11 +117,18 @@ export default {
       interval: 'interval',
       filterPeriod: 'filterPeriod',
       fuelTechGroupName: 'fuelTechGroupName',
+      hiddenFuelTechs: 'hiddenFuelTechs',
+      percentContributionTo: 'percentContributionTo',
+
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
       powerEnergyPrefix: 'regionEnergy/powerEnergyPrefix',
       currentDataset: 'regionEnergy/currentDataset',
       filteredDates: 'regionEnergy/filteredDates',
+      currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
+      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
+      domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
+
       query: 'app/query',
       showFeatureToggle: 'app/showFeatureToggle'
     }),
@@ -130,6 +139,28 @@ export default {
       return this.useDev
         ? `${this.baseUrl}opennem-dev.png`
         : `${this.baseUrl}opennem-${this.regionId}.png`
+    },
+
+    property() {
+      return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+    },
+    calculateByGeneration() {
+      return this.percentContributionTo === 'generation'
+    },
+
+    emissionsDomains() {
+      const domains = this.currentDomainEmissions.filter(
+        d => d.category !== FT.LOAD
+      )
+      const hidden = this.hiddenFuelTechs
+      return domains
+        ? domains.filter(d => !_includes(hidden, d[this.property]))
+        : []
+    },
+    powerEnergyDomains() {
+      const domains = this.currentDomainPowerEnergy
+      const hidden = this.hiddenFuelTechs
+      return domains.filter(d => !_includes(hidden, d[this.property]))
     }
   },
 
@@ -193,10 +224,17 @@ export default {
           start: dataset[0].time,
           end: dataset[dataset.length - 1].time
         })
+        this.updateEmissionsData()
       }
     },
     powerEnergyPrefix(prefix) {
       this.doSetChartEnergyUnitPrefix(prefix)
+    },
+    calculateByGeneration() {
+      this.updateEmissionsData()
+    },
+    hiddenFuelTechs() {
+      this.updateEmissionsData()
     }
   },
 
@@ -231,6 +269,8 @@ export default {
       doUpdateDatasetByFilterRange: 'regionEnergy/doUpdateDatasetByFilterRange',
       doUpdateDatasetByFilterPeriod:
         'regionEnergy/doUpdateDatasetByFilterPeriod',
+      doUpdateEmissionIntensityDataset:
+        'energy/emissions/doUpdateEmissionIntensityDataset',
       doUpdateXGuides: 'visInteract/doUpdateXGuides',
       doUpdateTickFormats: 'visInteract/doUpdateTickFormats',
       doUpdateXTicks: 'visInteract/doUpdateXTicks',
@@ -242,6 +282,17 @@ export default {
       setInterval: 'interval',
       setQuery: 'app/query'
     }),
+
+    updateEmissionsData() {
+      this.doUpdateEmissionIntensityDataset({
+        datasetAll: this.currentDataset,
+        isCalculateByGeneration: this.calculateByGeneration,
+        emissionsDomains: this.emissionsDomains,
+        powerEnergyDomains: this.powerEnergyDomains,
+        domainPowerEnergy: this.domainPowerEnergy
+      })
+    },
+
     handleDateHover(date) {
       this.hoverDate = date
     },
