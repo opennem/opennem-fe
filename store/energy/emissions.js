@@ -1,3 +1,4 @@
+import _cloneDeep from 'lodash.clonedeep'
 import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 
 export const state = () => ({
@@ -9,7 +10,7 @@ export const state = () => ({
 
 export const mutations = {
   emissionIntensityData(state, emissionIntensityData) {
-    state.emissionIntensityData = emissionIntensityData
+    state.emissionIntensityData = _cloneDeep(emissionIntensityData)
   },
   averageEmissionIntensity(state, averageEmissionIntensity) {
     state.averageEmissionIntensity = averageEmissionIntensity

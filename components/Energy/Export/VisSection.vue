@@ -23,12 +23,19 @@
       v-if="ready && domainEmissions.length > 0 && showChartEmissionIntensity && featureEmissions"
       :read-only="true"
       :zoom-extent="filteredDates"
+      :emission-intensity-dataset="emissionIntensityData"
+      :range="range"
+      :interval="interval"
     />
 
     <price-market-value-chart
       v-if="ready && domainPrice.length > 0 && showChartPrice"
       :read-only="true"
       :zoom-extent="filteredDates"
+      :price-dataset="currentDataset"
+      :domain-price="domainPrice"
+      :range="range"
+      :interval="interval"
     />
 
     <temperature-chart
@@ -82,6 +89,7 @@ export default {
       showChartTemperature: 'chartOptionsTemperature/chartShown',
 
       averageEmissions: 'energy/emissions/averageEmissions',
+      emissionIntensityData: 'energy/emissions/emissionIntensityData',
 
       featureEmissions: 'feature/emissions'
     }),
