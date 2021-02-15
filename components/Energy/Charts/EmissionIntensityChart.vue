@@ -131,7 +131,6 @@ export default {
     }),
 
     yMax() {
-      console.log(this.emissionIntensityDataset)
       let max = 1000
       this.emissionIntensityDataset.forEach(d => {
         if (d._emissionIntensity > max) {
