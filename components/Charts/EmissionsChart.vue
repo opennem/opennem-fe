@@ -37,9 +37,9 @@
       :y-min="isTypeArea ? yMin : 0"
       :y-max="isTypeArea ? yMax : 100"
       :vis-height="200"
-      :show-x-axis="false"
+      :show-x-axis="showXAxis"
       :show-tooltip="false"
-      :show-zoom-out="false"
+      :show-zoom-out="showXAxis"
       :hover-on="hoverOn"
       :hover-date="hoverDate"
       :dynamic-extent="zoomExtent"
@@ -160,6 +160,10 @@ export default {
     hiddenDomains: {
       type: Array,
       default: () => []
+    },
+    showXAxis: {
+      type: Boolean,
+      default: false
     }
   },
 

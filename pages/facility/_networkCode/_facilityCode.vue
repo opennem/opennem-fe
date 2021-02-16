@@ -40,6 +40,13 @@
             @intervalChange="handleIntervalChange"
             @queryChange="handleQueryChange" />
 
+          <Dropdown
+            v-if="isEnergyType"
+            :options="chartTypeOptions"
+            class="dropdown chart-type-options"
+            @change="handleChartDisplayChange"
+          />
+
           <transition name="fade">
             <div
               v-if="!fetchingStats && stackedAreaDataset.length === 0"
@@ -55,77 +62,76 @@
               class="facility-chart-loader" />
           </transition>
 
-          <transition name="fade">
-            <PowerChart
-              v-if="!fetchingStats && stackedAreaDataset.length > 0"
-              :hover-on="isHovering"
-              :hover-date="hoverDate"
-              :focus-on="isFocusing"
-              :focus-date="focusDate"
-              :dataset="stackedAreaDataset"
-              :domains="operatingDomains"
-              :zoom-extent="zoomExtent"
-              :facility-id="facilityCode"
-              :y-max="facilityRegisteredCapacity"
-              :chart-title="chartTitle"
-              :chart-shown="chartShown"
-              :chart-type="chartType"
-              :chart-y-axis="chartYAxis"
-              :chart-curve="chartCurve"
-              :is-y-axis-average-power="isYAxisAveragePower"
-              :display-unit="displayUnit"
-              @dateHover="handleDateHover"
-              @isHovering="handleIsHovering"
-              @zoomExtent="handleZoomExtent"
-              @svgClick="handleSvgClick"
-            />
-          </transition>
+          <PowerChart
+            v-if="!fetchingStats && stackedAreaDataset.length > 0 && isEnergyChartShown"
+            :hover-on="isHovering"
+            :hover-date="hoverDate"
+            :focus-on="isFocusing"
+            :focus-date="focusDate"
+            :dataset="stackedAreaDataset"
+            :domains="operatingDomains"
+            :zoom-extent="zoomExtent"
+            :facility-id="facilityCode"
+            :y-max="facilityRegisteredCapacity"
+            :chart-title="chartTitle"
+            :chart-shown="chartShown"
+            :chart-type="chartType"
+            :chart-y-axis="chartYAxis"
+            :chart-curve="chartCurve"
+            :is-y-axis-average-power="isYAxisAveragePower"
+            :display-unit="displayUnit"
+            @dateHover="handleDateHover"
+            @isHovering="handleIsHovering"
+            @zoomExtent="handleZoomExtent"
+            @svgClick="handleSvgClick"
+          />
+
+          <emissions-chart
+            v-if="!fetchingStats && domainEmissions.length > 0 && !isEnergyChartShown"
+            :emissions-dataset="selectedFacilityUnitsDataset"
+            :domain-emissions="domainEmissions"
+            :range="range"
+            :interval="interval"
+            :hover-on="isHovering"
+            :hover-date="hoverDate"
+            :zoom-extent="zoomExtent"
+            :prop-name="'code'"
+            :show-x-axis="true"
+            @dateHover="handleDateHover"
+            @isHovering="handleIsHovering"
+            @zoomExtent="handleZoomExtent"
+            @svgClick="handleSvgClick"
+          />
+
+          <!-- <emission-intensity-chart
+            v-if="!fetchingStats && domainEmissions.length > 0 && !isEnergyChartShown"
+            :emission-intensity-dataset="emissionIntensityData"
+            :range="range"
+            :interval="interval"
+            :hover-on="isHovering"
+            :hover-date="hoverDate"
+            :zoom-extent="zoomExtent"
+            :average-emission-intensity="averageEmissionIntensity"
+            @dateHover="handleDateHover"
+            @isHovering="handleIsHovering"
+            @zoomExtent="handleZoomExtent"
+            @svgClick="handleSvgClick" /> -->
+
+          <price-market-value-chart
+            v-if="!fetchingStats && domainMarketValue.length > 0"
+            :price-dataset="selectedFacilityUnitsDataset"
+            :domain-price="domainVolWeightedPrices"
+            :range="range"
+            :interval="interval"
+            :hover-on="isHovering"
+            :hover-date="hoverDate"
+            :zoom-extent="zoomExtent"
+            @dateHover="handleDateHover"
+            @isHovering="handleIsHovering"
+            @zoomExtent="handleZoomExtent"
+            @svgClick="handleSvgClick"
+          />
         </section>
-
-        <emissions-chart
-          v-if="!fetchingStats && domainEmissions.length > 0"
-          :emissions-dataset="selectedFacilityUnitsDataset"
-          :domain-emissions="domainEmissions"
-          :range="range"
-          :interval="interval"
-          :hover-on="isHovering"
-          :hover-date="hoverDate"
-          :zoom-extent="zoomExtent"
-          :prop-name="'code'"
-          @dateHover="handleDateHover"
-          @isHovering="handleIsHovering"
-          @zoomExtent="handleZoomExtent"
-          @svgClick="handleSvgClick"
-        />
-
-        <emission-intensity-chart
-          v-if="!fetchingStats && domainEmissions.length > 0"
-          :emission-intensity-dataset="emissionIntensityData"
-          :range="range"
-          :interval="interval"
-          :hover-on="isHovering"
-          :hover-date="hoverDate"
-          :zoom-extent="zoomExtent"
-          :average-emission-intensity="averageEmissionIntensity"
-          @dateHover="handleDateHover"
-          @isHovering="handleIsHovering"
-          @zoomExtent="handleZoomExtent"
-          @svgClick="handleSvgClick" />
-
-        <price-market-value-chart
-          v-if="!fetchingStats && domainMarketValue.length > 0"
-          :price-dataset="selectedFacilityUnitsDataset"
-          :domain-price="domainVolWeightedPrices"
-          :range="range"
-          :interval="interval"
-          :hover-on="isHovering"
-          :hover-date="hoverDate"
-          :zoom-extent="zoomExtent"
-          @dateHover="handleDateHover"
-          @isHovering="handleIsHovering"
-          @zoomExtent="handleZoomExtent"
-          @svgClick="handleSvgClick"
-        />
 
         <section class="facility-units">
           <UnitList
@@ -181,6 +187,18 @@ import Loader from '@/components/ui/Loader'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
 import PriceMarketValueChart from '@/components/Charts/PriceMarketValueChart'
 import EmissionIntensityChart from '@/components/Charts/EmissionIntensityChart'
+import Dropdown from '@/components/ui/Dropdown'
+
+const chartTypeOptions = [
+  {
+    label: 'Energy',
+    value: 'energy'
+  },
+  {
+    label: 'Emissions',
+    value: 'emissions'
+  }
+]
 
 export default {
   layout: 'facility',
@@ -200,6 +218,7 @@ export default {
     FacilityProperties,
     Summary,
     Loader,
+    Dropdown,
 
     EmissionsChart,
     EmissionIntensityChart,
@@ -210,7 +229,9 @@ export default {
     return {
       zoomExtent: [],
       isHovering: false,
-      hoverDate: null
+      hoverDate: null,
+      showChartType: chartTypeOptions[0].label,
+      chartTypeOptions
     }
   },
 
@@ -242,6 +263,9 @@ export default {
     }),
     isEnergyType() {
       return this.dataType === 'energy'
+    },
+    isEnergyChartShown() {
+      return this.showChartType === chartTypeOptions[0].label
     },
     facilityCode() {
       return this.$route.params.facilityCode
@@ -514,6 +538,13 @@ export default {
         facilityCode,
         facilityFuelTechsColours
       })
+    },
+    isEnergyType(curr, prev) {
+      if (curr !== prev) {
+        if (!curr) {
+          this.showChartType = chartTypeOptions[0].label
+        }
+      }
     }
   },
 
@@ -610,6 +641,10 @@ export default {
       })
 
       this.setQuery(query)
+    },
+
+    handleChartDisplayChange(type) {
+      this.showChartType = type
     }
   }
 }
@@ -721,5 +756,17 @@ header {
 
 .facility-props {
   margin-top: 3rem;
+}
+
+.chart-type-options {
+  width: 150px;
+  font-size: 12px;
+
+  @include desktop {
+    margin-left: 1rem;
+    position: absolute;
+    right: 1rem;
+    top: 5px;
+  }
 }
 </style>
