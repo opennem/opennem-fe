@@ -1,24 +1,27 @@
 <template>
-  <section 
-    :style="{ height: `${height}px`}" 
+  <section
+    :style="{ height: `${height}px`}"
     class="mapbox">
     <client-only>
       <transition name="fade">
         <MglMap
           v-if="hasCoordinates"
-          :access-token="accessToken" 
+          :access-token="accessToken"
           :map-style="mapStyle"
+          :center="coordinates"
+          :zoom="zoom"
           @load="onMapLoaded" >
-          <MglMarker 
-            :coordinates="coordinates" 
+          <MglMarker
+            v-if="showMarker"
+            :coordinates="coordinates"
             color="#e34a33" />
         </MglMap>
       </transition>
     </client-only>
 
     <transition name="fade">
-      <div 
-        v-if="!hasLocation" 
+      <div
+        v-if="!hasLocation"
         class="not-found-card card">
         <i class="fal fa-map-marker-alt"/>
         <span>Location not available</span>
@@ -47,12 +50,27 @@ export default {
     lng: {
       type: Number,
       default: null
+    },
+    zoom: {
+      type: Number,
+      default: 4
+    },
+    mapStyle: {
+      type: String,
+      default: 'mapbox://styles/mapbox/light-v10'
+    },
+    showMarker: {
+      type: Boolean,
+      default: true
     }
   },
+
+  // map styles
+  // mapbox://styles/mapbox/light-v10
+  // mapbox://styles/mapbox/satellite-v9
   data() {
     return {
-      accessToken: ACCESS_TOKEN,
-      mapStyle: 'mapbox://styles/mapbox/light-v10'
+      accessToken: ACCESS_TOKEN
     }
   },
 
@@ -69,10 +87,7 @@ export default {
     async onMapLoaded(event) {
       const asyncActions = event.component.actions
       const map = event.map
-      const newParams = await asyncActions.jumpTo({
-        center: this.coordinates,
-        zoom: 4
-      })
+
       // disable all interactions
       map.boxZoom.disable()
       map.scrollZoom.disable()
