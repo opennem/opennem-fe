@@ -302,7 +302,10 @@ export default {
       summary.totalAvPower = totalPower / ds.length
       summary.totalEnergy = totalEnergy
       summary.avPower = totalPower / ds.length
-      summary.capFactor = (summary.avPower / totalOperatingRegCap) * 100
+      summary.capFactor =
+        summary.avPower === 0
+          ? 0
+          : (summary.avPower / totalOperatingRegCap) * 100
 
       return summary
     },
@@ -390,7 +393,7 @@ export default {
       return focus ? focus[code] : ''
     },
     calculateCapacityFactor(value, capacity) {
-      return value || value === 0 ? (value / capacity) * 100 : null
+      return value ? (value / capacity) * 100 : 0
     },
     calculateTotalRegisteredCapacity(units) {
       let total = null
