@@ -180,3 +180,13 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+@import '~/assets/scss/responsive-mixins.scss';
+
+.range-interval-selectors {
+  @include tablet {
+    padding: 0.5rem 0;
+  }
+}
+</style>
