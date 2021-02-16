@@ -1,18 +1,28 @@
 <template>
   <div :class="layout">
-    <Photos 
-      :has-photos="facilityPhotos.length > 0" 
-      :photos="facilityPhotos" 
+    <Photos
+      :has-photos="facilityPhotos.length > 0"
+      :photos="facilityPhotos"
       :name="facilityName"
       :height="layout === 'aside' ? 'auto' : '200px'"/>
-      
+
     <MiniMap
       :has-location="hasFacilityLocation"
       :lat="facilityLocation.lat"
       :lng="facilityLocation.lng"
       class="map" />
-      
-      <!-- <MetaInfo 
+
+    <MiniMap
+      :has-location="hasFacilityLocation"
+      :lat="facilityLocation.lat"
+      :lng="facilityLocation.lng"
+      :zoom="13"
+      :map-style="'mapbox://styles/mapbox/satellite-v9'"
+      :show-marker="false"
+      :height="250"
+      class="map" />
+
+      <!-- <MetaInfo
           :facility-id="facilityId"
           :facility-state="facilityState"
           :units-num="facilityUnits.length"
