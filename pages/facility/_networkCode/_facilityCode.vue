@@ -181,6 +181,7 @@
       />
 
       <DonutVis
+        v-if="!fetchingStats"
         :unit="` ${isEnergyType ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
         :domains="operatingDomains"
         :dataset="datasetFilteredByZoomExtent"
