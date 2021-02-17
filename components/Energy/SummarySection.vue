@@ -60,9 +60,9 @@
         :dataset="filteredCurrentDataset"
         :dynamic-extent="filteredDates"
         :hover-on="isHovering"
-        :hover-data="hoverData"
+        :hover-date="hoverDate"
         :focus-on="focusOn"
-        :focus-data="focusData"
+        :focus-date="focusDate"
         :convert-value="convertValue"
         :highlight-domain="highlightId"
       />
