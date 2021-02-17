@@ -45,17 +45,17 @@ export default {
       type: Array,
       default: () => []
     },
-    hoverData: {
-      type: Object,
-      default: () => null
+    hoverDate: {
+      type: Date,
+      default: null
     },
     hoverOn: {
       type: Boolean,
       default: () => false
     },
-    focusData: {
-      type: Object,
-      default: () => null
+    focusDate: {
+      type: Date,
+      default: null
     },
     focusOn: {
       type: Boolean,
@@ -108,6 +108,20 @@ export default {
 
     total() {
       return this.barDataset.reduce((a, b) => a + b.value, 0)
+    },
+
+    hoverData() {
+      if (this.hoverDate && this.dataset.length > 0) {
+        return this.dataset.find(d => d.time === this.hoverDate.getTime())
+      }
+      return null
+    },
+
+    focusData() {
+      if (this.focusDate && this.dataset.length > 0) {
+        return this.dataset.find(d => d.time === this.focusDate.getTime())
+      }
+      return null
     }
   },
 

@@ -47,9 +47,9 @@
         :domains="donutDomains"
         :dataset="filteredCurrentDataset"
         :hover-on="isHovering"
-        :hover-data="hoverData"
+        :hover-date="hoverDate"
         :focus-on="focusOn"
-        :focus-data="focusData"
+        :focus-date="focusDate"
         :highlight-domain="highlightId"
       />
 
@@ -194,20 +194,6 @@ export default {
         t => t.type === TEMPERATURE || t.type === TEMPERATURE_MEAN
       )
       return find ? find.domain : ''
-    },
-    hoverData() {
-      if (!this.hoverDate) {
-        return null
-      }
-      const time = this.hoverDate.getTime()
-      return this.filteredCurrentDataset.find(d => d.time === time)
-    },
-    focusData() {
-      if (!this.focusDate) {
-        return null
-      }
-      const time = this.focusDate.getTime()
-      return this.filteredCurrentDataset.find(d => d.time === time)
     },
 
     highlightId() {
