@@ -150,6 +150,17 @@
             class="unit-list"
             @codeHover="handleCodeHover" />
 
+          <EnergyBar
+            :bar-width="400"
+            :domains="operatingDomains"
+            :dataset="datasetFilteredByZoomExtent"
+            :hover-on="isHovering"
+            :hover-date="hoverDate"
+            :focus-on="isFocusing"
+            :focus-date="focusDate"
+            :highlight-domain="highlightDomain"
+          />
+
         </section>
 
         <!-- :convert-value="convertValue" -->
@@ -179,7 +190,6 @@
         :focus-on="isFocusing"
         :focus-date="focusDate"
         :highlight-domain="highlightDomain"
-        class="donut-bar-vis"
       />
     </section>
   </section>
@@ -208,7 +218,8 @@ import EmissionsChart from '@/components/Charts/EmissionsChart'
 import PriceMarketValueChart from '@/components/Charts/PriceMarketValueChart'
 import EmissionIntensityChart from '@/components/Charts/EmissionIntensityChart'
 import Dropdown from '@/components/ui/Dropdown'
-import DonutVis from '~/components/Vis/Donut.vue'
+import DonutVis from '~/components/Vis/Donut'
+import EnergyBar from '~/components/Energy/Charts/EnergyBarChart'
 
 const chartTypeOptions = [
   {
@@ -244,7 +255,8 @@ export default {
     EmissionsChart,
     EmissionIntensityChart,
     PriceMarketValueChart,
-    DonutVis
+    DonutVis,
+    EnergyBar
   },
 
   data() {
@@ -769,7 +781,6 @@ header {
 
 .facility-units {
   margin: 0.5rem;
-  display: flex;
 
   // .unit-list {
   //   width: calc(100% - 300px);
