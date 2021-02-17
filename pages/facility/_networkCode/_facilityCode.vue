@@ -134,18 +134,6 @@
         </section>
 
         <section class="facility-units">
-          <donut-vis
-            :unit="` ${isEnergyType ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
-            :domains="operatingDomains"
-            :dataset="datasetFilteredByZoomExtent"
-            :dynamic-extent="zoomExtent"
-            :hover-on="isHovering"
-            :hover-date="hoverDate"
-            :focus-on="isFocusing"
-            :focus-date="focusDate"
-            :highlight-domain="highlightDomain"
-            class="donut-bar-vis"
-          />
 
           <UnitList
             :is-energy-type="isEnergyType"
@@ -161,6 +149,7 @@
             :interval="interval"
             class="unit-list"
             @codeHover="handleCodeHover" />
+
         </section>
 
         <!-- :convert-value="convertValue" -->
@@ -171,13 +160,28 @@
       </div>
     </transition>
 
-    <PhotoMap
-      v-if="facility && !widthBreak"
-      :facility-name="facilityName"
-      :facility-photos="facilityPhotos"
-      :has-facility-location="hasFacilityLocation"
-      :facility-location="facilityLocation"
-    />
+    <section style="width: 30%">
+      <PhotoMap
+        v-if="facility && !widthBreak"
+        :facility-name="facilityName"
+        :facility-photos="facilityPhotos"
+        :has-facility-location="hasFacilityLocation"
+        :facility-location="facilityLocation"
+      />
+
+      <DonutVis
+        :unit="` ${isEnergyType ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
+        :domains="operatingDomains"
+        :dataset="datasetFilteredByZoomExtent"
+        :dynamic-extent="zoomExtent"
+        :hover-on="isHovering"
+        :hover-date="hoverDate"
+        :focus-on="isFocusing"
+        :focus-date="focusDate"
+        :highlight-domain="highlightDomain"
+        class="donut-bar-vis"
+      />
+    </section>
   </section>
 </template>
 
@@ -764,16 +768,16 @@ header {
 }
 
 .facility-units {
-  margin: 0.5rem 1rem 0.5rem 1rem;
+  margin: 0.5rem;
   display: flex;
 
-  .unit-list,
-  .donut-bar-vis {
-    width: 50%;
-  }
+  // .unit-list {
+  //   width: calc(100% - 300px);
+  //   margin-right: 1rem;
+  // }
 
   @include desktop {
-    margin: 0.5rem 1rem 0.5rem 1.25rem;
+    //margin: 0.5rem 1rem 0.5rem 1.25rem;
   }
 }
 

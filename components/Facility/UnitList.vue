@@ -10,6 +10,7 @@
         :end-date="endTime"
         :range="range"
         :interval="interval"
+        class="date-display"
       />
     </caption>
     <thead class="unit-header-row">
@@ -443,6 +444,10 @@ export default {
   @include mobile {
     font-size: 0.8em;
   }
+}
+
+.date-display {
+  text-align: left;
 }
 
 table {
