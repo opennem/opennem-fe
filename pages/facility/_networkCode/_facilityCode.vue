@@ -134,6 +134,19 @@
         </section>
 
         <section class="facility-units">
+          <donut-vis
+            :unit="` ${isEnergyType ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
+            :domains="operatingDomains"
+            :dataset="datasetFilteredByZoomExtent"
+            :dynamic-extent="zoomExtent"
+            :hover-on="isHovering"
+            :hover-date="hoverDate"
+            :focus-on="isFocusing"
+            :focus-date="focusDate"
+            :highlight-domain="highlightDomain"
+            class="donut-bar-vis"
+          />
+
           <UnitList
             :is-energy-type="isEnergyType"
             :is-y-axis-average-power="isYAxisAveragePower"
@@ -146,8 +159,11 @@
             :average-power-dataset="averagePowerDataset"
             :range="range"
             :interval="interval"
+            class="unit-list"
             @codeHover="handleCodeHover" />
         </section>
+
+        <!-- :convert-value="convertValue" -->
 
         <!-- <FacilityProperties
           :facility="facility"
@@ -188,6 +204,7 @@ import EmissionsChart from '@/components/Charts/EmissionsChart'
 import PriceMarketValueChart from '@/components/Charts/PriceMarketValueChart'
 import EmissionIntensityChart from '@/components/Charts/EmissionIntensityChart'
 import Dropdown from '@/components/ui/Dropdown'
+import DonutVis from '~/components/Vis/Donut.vue'
 
 const chartTypeOptions = [
   {
@@ -222,7 +239,8 @@ export default {
 
     EmissionsChart,
     EmissionIntensityChart,
-    PriceMarketValueChart
+    PriceMarketValueChart,
+    DonutVis
   },
 
   data() {
@@ -259,7 +277,8 @@ export default {
       chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
 
       isFocusing: 'visInteract/isFocusing',
-      focusDate: 'visInteract/focusDate'
+      focusDate: 'visInteract/focusDate',
+      highlightDomain: 'visInteract/highlightDomain'
     }),
     isEnergyType() {
       return this.dataType === 'energy'
@@ -340,10 +359,7 @@ export default {
         colours[ft] =
           count > 1
             ? quantize(
-                interpolateRgb(
-                  colour,
-                  colour.copy({ opacity: 1 / count + 0.3 })
-                ),
+                interpolateRgb(colour, colour.copy({ opacity: 1 / count })),
                 count
               ).reverse()
             : [colour.formatRgb()]
@@ -381,6 +397,7 @@ export default {
           domain: id,
           id,
           code: d.code,
+          label: d.code,
           registeredCapacity: d.capacity_registered,
           status: d.status ? d.status.label : '',
           fuelTechLabel: d.fueltech ? d.fueltech.label : ''
@@ -748,6 +765,12 @@ header {
 
 .facility-units {
   margin: 0.5rem 1rem 0.5rem 1rem;
+  display: flex;
+
+  .unit-list,
+  .donut-bar-vis {
+    width: 50%;
+  }
 
   @include desktop {
     margin: 0.5rem 1rem 0.5rem 1.25rem;
@@ -765,7 +788,7 @@ header {
   @include desktop {
     margin-left: 1rem;
     position: absolute;
-    right: 1rem;
+    right: 0;
     top: 5px;
   }
 }
