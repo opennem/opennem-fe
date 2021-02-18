@@ -170,6 +170,10 @@ export default {
     interval: {
       type: String,
       default: ''
+    },
+    averageValue: {
+      type: Number,
+      default: 0
     }
   },
 
@@ -201,7 +205,7 @@ export default {
       return this.domainPrice.length > 0 ? this.domainPrice[2].domain : ''
     },
     totalAverageValue() {
-      return this.summary ? this.summary._totalAverageValue : 0
+      return this.summary ? this.summary._totalAverageValue : this.averageValue
     },
     hoverData() {
       let date = this.focusDate

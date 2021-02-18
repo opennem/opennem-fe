@@ -41,6 +41,7 @@ export default function({
 
     // update summarised values
     d._total = allPowerEnergyNulls ? null : totalPowerEnergy
+    d._totalMarketValue = allMarketValueNulls ? null : totalMarketValue
 
     d._volWeightedPrice = isNaN(volWeightedPrice) ? null : volWeightedPrice
     d._volWeightedPriceAbove300 =

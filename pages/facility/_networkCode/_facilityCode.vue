@@ -86,7 +86,7 @@
             @svgClick="handleSvgClick"
           />
 
-          <emissions-chart
+          <EmissionsChart
             v-if="!fetchingStats && domainEmissions.length > 0 && !isEnergyChartShown"
             :emissions-dataset="selectedFacilityUnitsDataset"
             :domain-emissions="domainEmissions"
@@ -117,7 +117,7 @@
             @zoomExtent="handleZoomExtent"
             @svgClick="handleSvgClick" /> -->
 
-          <price-market-value-chart
+          <PriceMarketValueChart
             v-if="!fetchingStats && domainMarketValue.length > 0"
             :price-dataset="selectedFacilityUnitsDataset"
             :domain-price="domainVolWeightedPrices"
@@ -126,6 +126,7 @@
             :hover-on="isHovering"
             :hover-date="hoverDate"
             :zoom-extent="zoomExtent"
+            :average-value="averageVolWeightedPrice"
             @dateHover="handleDateHover"
             @isHovering="handleIsHovering"
             @zoomExtent="handleZoomExtent"
@@ -492,6 +493,18 @@ export default {
       )
 
       return (totalEmissions / totalPowerEnergy) * 1000
+    },
+
+    averageVolWeightedPrice() {
+      const totalPowerEnergy = this.selectedFacilityUnitsDataset.reduce(
+        (a, b) => a + b._total,
+        0
+      )
+      const totalMarketValue = this.selectedFacilityUnitsDataset.reduce(
+        (a, b) => a + b._totalMarketValue,
+        0
+      )
+      return totalMarketValue / totalPowerEnergy
     },
 
     chartTitle() {
