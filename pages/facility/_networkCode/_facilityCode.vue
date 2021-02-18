@@ -104,21 +104,7 @@
             @svgClick="handleSvgClick"
           />
 
-          <MarketValueChart
-            v-if="!fetchingStats && domainMarketValue.length > 0"
-            :market-value-dataset="selectedFacilityUnitsDataset"
-            :domain-market-value="marketValueDomains"
-            :range="range"
-            :interval="interval"
-            :hover-on="isHovering"
-            :hover-date="hoverDate"
-            :zoom-extent="zoomExtent"
-            :prop-name="'code'"
-            @dateHover="handleDateHover"
-            @isHovering="handleIsHovering"
-            @zoomExtent="handleZoomExtent"
-            @svgClick="handleSvgClick"
-          />
+
 
           <!-- <emission-intensity-chart
             v-if="!fetchingStats && domainEmissions.length > 0 && !isEnergyChartShown"
@@ -149,6 +135,22 @@
             @zoomExtent="handleZoomExtent"
             @svgClick="handleSvgClick"
           />
+
+          <MarketValueChart
+            v-if="!fetchingStats && domainMarketValue.length > 0"
+            :market-value-dataset="selectedFacilityUnitsDataset"
+            :domain-market-value="marketValueDomains"
+            :range="range"
+            :interval="interval"
+            :hover-on="isHovering"
+            :hover-date="hoverDate"
+            :zoom-extent="zoomExtent"
+            :prop-name="'code'"
+            @dateHover="handleDateHover"
+            @isHovering="handleIsHovering"
+            @zoomExtent="handleZoomExtent"
+            @svgClick="handleSvgClick"
+          />
         </section>
 
         <section class="facility-units">
@@ -169,19 +171,18 @@
             class="unit-list"
             @codeHover="handleCodeHover"
             @codeClick="handleCodeClick" />
-
-          <EnergyBar
-            :bar-width="400"
-            :domains="powerEnergyDomains"
-            :dataset="datasetFilteredByZoomExtent"
-            :hover-on="isHovering"
-            :hover-date="hoverDate"
-            :focus-on="isFocusing"
-            :focus-date="focusDate"
-            :highlight-domain="highlightDomain"
-          />
-
         </section>
+
+        <!-- <EnergyBar
+          :bar-width="400"
+          :domains="powerEnergyDomains"
+          :dataset="datasetFilteredByZoomExtent"
+          :hover-on="isHovering"
+          :hover-date="hoverDate"
+          :focus-on="isFocusing"
+          :focus-date="focusDate"
+          :highlight-domain="highlightDomain"
+        /> -->
 
         <!-- :convert-value="convertValue" -->
 

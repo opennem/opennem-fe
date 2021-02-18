@@ -15,7 +15,7 @@
     </template>
 
     <template v-slot:label-unit>
-      <strong>Market Value</strong>
+      <strong>Market Turnover</strong>
       <small>$</small>
     </template>
 
@@ -33,12 +33,19 @@
     </template>
 
     <template v-slot:hover-values>
-      <span class="ft-value">
+      <span
+        v-if="hoverValue && showHover"
+        class="ft-value">
         <em
           :style="{ 'background-color': hoverDomainColour }"
           class="colour-square" />
         {{ hoverDomainLabel }}
         <strong>{{ hoverValue | formatCurrency }}</strong>
+      </span>
+
+      <span>
+        <span v-if="showHover">Total</span>
+        <strong>{{ hoverTotal | formatCurrency }}</strong>
       </span>
     </template>
   </chart-header>
@@ -91,6 +98,10 @@ export default {
       type: Number,
       default: 0
     },
+    hoverTotal: {
+      type: Number,
+      default: 0
+    },
     hoverDomainColour: {
       type: String,
       default: ''
@@ -106,6 +117,10 @@ export default {
     readOnly: {
       type: Boolean,
       default: false
+    },
+    showHover: {
+      type: Boolean,
+      default: true
     }
   },
 
