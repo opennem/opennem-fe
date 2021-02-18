@@ -13,8 +13,10 @@ export default function({
   currentDataset.forEach(d => {
     let totalPowerEnergy = 0,
       totalMarketValue = 0,
+      totalEmissions = 0,
       allPowerEnergyNulls = true,
-      allMarketValueNulls = true
+      allMarketValueNulls = true,
+      allEmissionsNulls = true
 
     domainPowerEnergy.forEach(domain => {
       const id = domain.id
@@ -34,6 +36,15 @@ export default function({
       totalMarketValue += value || 0
     })
 
+    domainEmissions.forEach(domain => {
+      const id = domain.id
+      const value = d[id]
+      if (value || value === 0) {
+        allEmissionsNulls = false
+      }
+      totalEmissions += value || 0
+    })
+
     // volume weight price
     const volWeightedPrice = allMarketValueNulls
       ? null
@@ -42,6 +53,7 @@ export default function({
     // update summarised values
     d._total = allPowerEnergyNulls ? null : totalPowerEnergy
     d._totalMarketValue = allMarketValueNulls ? null : totalMarketValue
+    d._totalEmissions = allEmissionsNulls ? null : totalEmissions
 
     d._volWeightedPrice = isNaN(volWeightedPrice) ? null : volWeightedPrice
     d._volWeightedPriceAbove300 =

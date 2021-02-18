@@ -97,6 +97,7 @@
             :zoom-extent="zoomExtent"
             :prop-name="'code'"
             :show-x-axis="true"
+            :average-emissions="averageEmissions"
             @dateHover="handleDateHover"
             @isHovering="handleIsHovering"
             @zoomExtent="handleZoomExtent"
@@ -296,7 +297,9 @@ export default {
 
       isFocusing: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
-      highlightDomain: 'visInteract/highlightDomain'
+      highlightDomain: 'visInteract/highlightDomain',
+
+      averageEmissions: 'energy/emissions/averageEmissions'
     }),
     isEnergyType() {
       return this.dataType === 'energy'
@@ -480,6 +483,15 @@ export default {
         return obj
       })
       return dataset
+    },
+
+    averageEmissions() {
+      const totalEmissions = this.selectedFacilityUnitsDataset.reduce(
+        (prev, cur) => prev + cur._totalEmissions,
+        0
+      )
+
+      return totalEmissions / this.selectedFacilityUnitsDataset.length
     },
 
     averageEmissionIntensity() {
