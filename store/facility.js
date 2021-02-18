@@ -301,22 +301,22 @@ export const actions = {
           domainMarketValue
         } = dataProcess(response.data.data, range, interval)
 
-        const mapColours = d => {
-          const find = domainEmissions.find(e => e.code === d)
+        const mapColours = (domains, d) => {
+          const find = domains.find(e => e.code === d)
           if (find) {
             return {
               colour: facilityFuelTechsColours[d],
               domain: find.id,
               id: find.id,
               code: d,
+              label: d,
               type: find.type,
               units: find.units
             }
           }
         }
 
-        const emissionProps = Object.keys(facilityFuelTechsColours)
-        console.log(dataset, getVolWeightedPriceDomains())
+        const codes = Object.keys(facilityFuelTechsColours)
 
         commit('selectedFacilityUnitsDataset', dataset)
         commit('selectedFacilityUnitsDatasetFlat', datasetFlat)
@@ -325,10 +325,15 @@ export const actions = {
         commit(
           'domainEmissions',
           domainEmissions.length > 0
-            ? emissionProps.map(mapColours).reverse()
+            ? codes.map(d => mapColours(domainEmissions, d)).reverse()
             : []
         )
-        commit('domainMarketValue', domainMarketValue)
+        commit(
+          'domainMarketValue',
+          domainMarketValue.length > 0
+            ? codes.map(d => mapColours(domainMarketValue, d)).reverse()
+            : []
+        )
         commit(
           'domainVolWeightedPrices',
           domainMarketValue.length > 0 ? getVolWeightedPriceDomains() : []
