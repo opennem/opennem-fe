@@ -69,7 +69,7 @@
             :focus-on="isFocusing"
             :focus-date="focusDate"
             :dataset="stackedAreaDataset"
-            :domains="operatingDomains"
+            :domains="powerEnergyDomains"
             :zoom-extent="zoomExtent"
             :facility-id="facilityCode"
             :y-max="facilityRegisteredCapacity"
@@ -89,7 +89,7 @@
           <EmissionsChart
             v-if="!fetchingStats && domainEmissions.length > 0 && !isEnergyChartShown"
             :emissions-dataset="selectedFacilityUnitsDataset"
-            :domain-emissions="domainEmissions"
+            :domain-emissions="emissionsDomains"
             :range="range"
             :interval="interval"
             :hover-on="isHovering"
@@ -107,7 +107,7 @@
           <MarketValueChart
             v-if="!fetchingStats && domainMarketValue.length > 0"
             :market-value-dataset="selectedFacilityUnitsDataset"
-            :domain-market-value="domainMarketValue"
+            :domain-market-value="marketValueDomains"
             :range="range"
             :interval="interval"
             :hover-on="isHovering"
@@ -163,14 +163,16 @@
             :focus-date="focusDate"
             :dataset="datasetFilteredByZoomExtent"
             :average-power-dataset="averagePowerDataset"
+            :hidden-codes="hiddenCodes"
             :range="range"
             :interval="interval"
             class="unit-list"
-            @codeHover="handleCodeHover" />
+            @codeHover="handleCodeHover"
+            @codeClick="handleCodeClick" />
 
           <EnergyBar
             :bar-width="400"
-            :domains="operatingDomains"
+            :domains="powerEnergyDomains"
             :dataset="datasetFilteredByZoomExtent"
             :hover-on="isHovering"
             :hover-date="hoverDate"
@@ -201,7 +203,7 @@
       <DonutVis
         v-if="!fetchingStats"
         :unit="` ${isEnergyType ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
-        :domains="operatingDomains"
+        :domains="powerEnergyDomains"
         :dataset="datasetFilteredByZoomExtent"
         :dynamic-extent="zoomExtent"
         :hover-on="isHovering"
@@ -218,6 +220,7 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import _uniq from 'lodash.uniq'
 import _sortBy from 'lodash.sortby'
+import _includes from 'lodash.includes'
 import { interpolateRgb, quantize } from 'd3-interpolate'
 import { color } from 'd3-color'
 
@@ -286,7 +289,8 @@ export default {
       isHovering: false,
       hoverDate: null,
       showChartType: chartTypeOptions[0].label,
-      chartTypeOptions
+      chartTypeOptions,
+      hiddenCodes: []
     }
   },
 
@@ -338,7 +342,7 @@ export default {
     },
     facilityNetworkRegion() {
       return this.facility && this.facility.network
-        ? this.facility.network.code
+        ? this.facility.network.code || this.facility.network
         : ''
     },
     facilityWikiLink() {
@@ -379,7 +383,7 @@ export default {
     },
     facilityFuelTechsColours() {
       const fuelTechs = this.facilityUnits.map(d => {
-        return d.fueltech ? d.fueltech.code : ''
+        return d.fueltech ? d.fueltech.code || d.fueltech : ''
       })
 
       // get only unique fuel techs
@@ -407,9 +411,10 @@ export default {
       // apply each colour variation to facility unit
       const obj = {}
       uniqFuelTechs.forEach(ft => {
-        const filter = this.facilityUnits.filter(
-          d => d.fueltech && d.fueltech.code === ft
-        )
+        const filter = this.facilityUnits.filter(d => {
+          const fuelTechCode = d.fueltech.code || d.fueltech
+          return d.fueltech && fuelTechCode === ft
+        })
         filter.forEach((f, i) => {
           obj[f.code] = colours[ft][i]
         })
@@ -425,8 +430,9 @@ export default {
     },
     unitsSummary() {
       return this.facilityUnits.map((d, i) => {
+        const networkCode = d.network.code || d.network
         const id = this.getUnitId(
-          d.network.code.toLowerCase(),
+          networkCode.toLowerCase(),
           d.code.toLowerCase(),
           this.dataType
         )
@@ -438,13 +444,28 @@ export default {
           code: d.code,
           label: d.code,
           registeredCapacity: d.capacity_registered,
-          status: d.status ? d.status.label : '',
-          fuelTechLabel: d.fueltech ? d.fueltech.label : ''
+          status: d.status ? d.status.label || d.status : '',
+          fuelTechLabel: d.fueltech ? d.fueltech.label || d.fueltech : ''
         }
       })
     },
     operatingDomains() {
       return this.unitsSummary.filter(d => d.status === 'Operating')
+    },
+    powerEnergyDomains() {
+      return this.operatingDomains.filter(
+        d => !_includes(this.hiddenCodes, d.code)
+      )
+    },
+    emissionsDomains() {
+      return this.domainEmissions.filter(
+        d => !_includes(this.hiddenCodes, d.code)
+      )
+    },
+    marketValueDomains() {
+      return this.domainMarketValue.filter(
+        d => !_includes(this.hiddenCodes, d.code)
+      )
     },
 
     datasetFilteredByZoomExtent() {
@@ -579,7 +600,7 @@ export default {
       if (update) {
         console.log('facility-watch')
         console.log(this.range, this.interval)
-        // const networkRegion = update.network ? update.network.code : ''
+        // const networkRegion = update.network ? update.network : ''
         // const facilityCode = update.code
         // console.log('facility-watch')
         // this.doGetStationStats({ networkRegion, facilityCode })
@@ -666,9 +687,26 @@ export default {
     handleZoomExtent(dateRange) {
       this.zoomExtent = dateRange
     },
+
     handleCodeHover(code) {
       this.setHighlightDomain(code)
     },
+    handleCodeClick(code) {
+      const index = this.hiddenCodes.indexOf(code)
+
+      if (index === -1) {
+        this.hiddenCodes.push(code)
+      } else {
+        this.hiddenCodes.splice(index, 1)
+      }
+
+      if (this.hiddenCodes.length === this.operatingDomains.length) {
+        this.hiddenCodes = []
+      }
+
+      console.log(this.hiddenCodes)
+    },
+
     handleDateHover(date) {
       const closestDate = DateDisplay.snapToClosestInterval(this.interval, date)
       this.hoverDate = closestDate

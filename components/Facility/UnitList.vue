@@ -13,6 +13,7 @@
         class="date-display"
       />
     </caption>
+
     <thead class="unit-header-row">
       <tr>
         <th>
@@ -47,13 +48,18 @@
     </thead>
     <tbody>
       <tr
-        v-for="(d, i) in units"
+        v-for="(d, i) in filteredUnits"
         :key="i"
-        :class="{ 'is-inactive': !isActive(d.status) }"
+        :class="{
+          'is-inactive': !isActive(d.status),
+          'is-hidden-unit': d.isHidden
+        }"
+        @click="handleRowClick(d.code)"
         @mouseenter="handleMouseEnter(d.code, d.status)"
         @mouseleave="handleMouseLeave">
         <td
           v-tooltip.left="isActive(d.status) ? '' : d.status"
+          class="unit-name"
         >
           <div
             :style="{ backgroundColor: d.colour}"
@@ -127,6 +133,8 @@
 </template>
 
 <script>
+import _cloneDeep from 'lodash.clonedeep'
+
 import DateDisplay from '@/services/DateDisplay.js'
 import DatesDisplay from '@/components/SummaryTable/DatesDisplay'
 
@@ -152,6 +160,10 @@ export default {
       default: () => []
     },
     averagePowerDataset: {
+      type: Array,
+      default: () => []
+    },
+    hiddenCodes: {
       type: Array,
       default: () => []
     },
@@ -182,8 +194,16 @@ export default {
   },
 
   computed: {
+    filteredUnits() {
+      const units = _cloneDeep(this.units)
+      units.forEach(u => {
+        const isHidden = this.hiddenCodes.find(d => d === u.code)
+        u.isHidden = isHidden ? true : false
+      })
+      return units
+    },
     operatingUnits() {
-      return this.units.filter(u => u.status === 'Operating')
+      return this.filteredUnits.filter(u => u.status === 'Operating')
     },
     operatingUnitsTotalCapacity() {
       return this.calculateTotalRegisteredCapacity(this.operatingUnits)
@@ -342,6 +362,10 @@ export default {
     isActive(status) {
       return status === 'Operating'
     },
+    isHidden(code) {
+      console.log(code)
+      return false
+    },
 
     getData(date) {
       return date && this.dataset.length > 0
@@ -375,6 +399,10 @@ export default {
     handleMouseLeave() {
       this.$emit('codeHover', '')
     },
+    handleRowClick(code) {
+      this.$emit('codeClick', code)
+    },
+
     getHoverValue(code) {
       return this.hoverData ? this.hoverData[code] : ''
     },
@@ -420,6 +448,15 @@ export default {
   }
 }
 
+.is-hidden-unit {
+  .colour-square {
+    background-color: white !important;
+  }
+  .unit-name {
+    color: #aaa;
+  }
+}
+
 .colour-square {
   width: 18px;
   height: 18px;
@@ -458,6 +495,10 @@ table {
     font-family: $family-primary;
   }
 
+  tr:hover td {
+    background-color: #eee;
+  }
+
   td,
   th {
     padding: 3px 6px;
@@ -482,6 +523,7 @@ table {
 
   td {
     border-bottom: 1px solid #ddd;
+    cursor: pointer;
   }
 
   tfoot {

@@ -225,7 +225,7 @@ export const actions = {
       .then(response => {
         console.log('fetched', response.data)
         const networkCode = response.data.network
-          ? response.data.network.code
+          ? response.data.network.code || response.data.network
           : ''
         commit('selectedFacility', response.data)
         commit('selectedFacilityNetworkRegion', networkCode)
