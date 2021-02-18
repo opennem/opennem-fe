@@ -104,6 +104,22 @@
             @svgClick="handleSvgClick"
           />
 
+          <MarketValueChart
+            v-if="!fetchingStats && domainMarketValue.length > 0"
+            :market-value-dataset="selectedFacilityUnitsDataset"
+            :domain-market-value="domainMarketValue"
+            :range="range"
+            :interval="interval"
+            :hover-on="isHovering"
+            :hover-date="hoverDate"
+            :zoom-extent="zoomExtent"
+            :prop-name="'code'"
+            @dateHover="handleDateHover"
+            @isHovering="handleIsHovering"
+            @zoomExtent="handleZoomExtent"
+            @svgClick="handleSvgClick"
+          />
+
           <!-- <emission-intensity-chart
             v-if="!fetchingStats && domainEmissions.length > 0 && !isEnergyChartShown"
             :emission-intensity-dataset="emissionIntensityData"
@@ -218,6 +234,7 @@ import FacilityProperties from '@/components/Facility/Properties.vue'
 import Summary from '@/components/Facility/Summary.vue'
 import Loader from '@/components/ui/Loader'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
+import MarketValueChart from '@/components/Charts/MarketValueChart'
 import PriceMarketValueChart from '@/components/Charts/PriceMarketValueChart'
 import EmissionIntensityChart from '@/components/Charts/EmissionIntensityChart'
 import Dropdown from '@/components/ui/Dropdown'
@@ -257,6 +274,7 @@ export default {
 
     EmissionsChart,
     EmissionIntensityChart,
+    MarketValueChart,
     PriceMarketValueChart,
     DonutVis,
     EnergyBar

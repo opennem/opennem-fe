@@ -29,10 +29,26 @@ export default function({
 
     domainMarketValue.forEach(domain => {
       const id = domain.id
+      const code = domain.code
       const value = d[id]
+
+      const findPowerEnergy = domainPowerEnergy.find(e => e.code === code)
+      let price = 0
+
+      if (findPowerEnergy) {
+        price = value / d[findPowerEnergy.id]
+        d[id] = price
+      } else {
+        console.error(
+          'No corresponding energy found for this market value',
+          domain
+        )
+      }
+
       if (value || value === 0) {
         allMarketValueNulls = false
       }
+
       totalMarketValue += value || 0
     })
 

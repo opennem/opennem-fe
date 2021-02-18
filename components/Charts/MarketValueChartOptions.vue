@@ -8,25 +8,25 @@
         :chart-type="chartType"
         :chart-curve="chartCurve"
         :chart-shown="chartShown"
-        :show="showChartOptions"
-        @show-change="s => showChartOptions = s"
+        :show="chartOptions"
+        @show-change="s => chartOptions = s"
         @type-click="handleTypeClick"
         @curve-click="handleCurveClick"/>
     </template>
 
     <template v-slot:label-unit>
-      <strong>Price</strong>
-      <small>$/MWh</small>
+      <strong>Market Value</strong>
+      <small>$</small>
     </template>
 
-    <template
+    <!-- <template
       v-slot:average-value
       v-if="!readOnly">
       Av.
       <strong>
-        {{ totalAverageValue | formatCurrency }}
+        {{ averageMarketValue | formatCurrency }}
       </strong>
-    </template>
+    </template> -->
 
     <template v-slot:hover-date>
       {{ hoverDisplayDate }}
@@ -34,6 +34,10 @@
 
     <template v-slot:hover-values>
       <span class="ft-value">
+        <em
+          :style="{ 'background-color': hoverDomainColour }"
+          class="colour-square" />
+        {{ hoverDomainLabel }}
         <strong>{{ hoverValue | formatCurrency }}</strong>
       </span>
     </template>
@@ -42,8 +46,20 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import _cloneDeep from 'lodash.clonedeep'
 import ChartHeader from '@/components/Vis/ChartHeader'
 import ChartOptions from '@/components/Vis/ChartOptions'
+import * as OPTIONS from '@/constants/chart-options.js'
+
+const options = {
+  type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_STACKED],
+  curve: [
+    OPTIONS.CHART_CURVE_SMOOTH,
+    OPTIONS.CHART_CURVE_STEP,
+    OPTIONS.CHART_CURVE_STRAIGHT
+  ],
+  yAxis: []
+}
 
 export default {
   components: {
@@ -51,16 +67,6 @@ export default {
     ChartOptions
   },
   props: {
-    options: {
-      type: Object,
-      default: () => {
-        return {
-          type: [],
-          curve: [],
-          yAxis: []
-        }
-      }
-    },
     chartShown: {
       type: Boolean,
       default: false
@@ -77,10 +83,6 @@ export default {
       type: String,
       default: ''
     },
-    totalAverageValue: {
-      type: Number,
-      default: 0
-    },
     hoverDisplayDate: {
       type: String,
       default: ''
@@ -89,22 +91,37 @@ export default {
       type: Number,
       default: 0
     },
+    hoverDomainColour: {
+      type: String,
+      default: ''
+    },
+    hoverDomainLabel: {
+      type: String,
+      default: ''
+    },
+    averageMarketValue: {
+      type: Number,
+      default: 0
+    },
     readOnly: {
       type: Boolean,
       default: false
     }
   },
+
   data() {
     return {
-      showChartOptions: false
+      chartOptions: false,
+      options: _cloneDeep(options)
     }
   },
+
   methods: {
     handleTypeClick(type) {
-      this.$store.commit('chartOptionsPrice/chartType', type)
+      this.$store.commit('chartOptionsMarketValue/chartType', type)
     },
     handleCurveClick(curve) {
-      this.$store.commit('chartOptionsPrice/chartCurve', curve)
+      this.$store.commit('chartOptionsMarketValue/chartCurve', curve)
     }
   }
 }
