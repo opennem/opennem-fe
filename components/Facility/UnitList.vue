@@ -136,6 +136,7 @@
 import _cloneDeep from 'lodash.clonedeep'
 
 import DateDisplay from '@/services/DateDisplay.js'
+import { FACILITY_OPERATING } from '@/constants/facility-status.js'
 import DatesDisplay from '@/components/SummaryTable/DatesDisplay'
 
 export default {
@@ -203,7 +204,7 @@ export default {
       return units
     },
     operatingUnits() {
-      return this.filteredUnits.filter(u => u.status === 'Operating')
+      return this.filteredUnits.filter(u => u.status === FACILITY_OPERATING)
     },
     operatingUnitsTotalCapacity() {
       return this.calculateTotalRegisteredCapacity(this.operatingUnits)
@@ -264,7 +265,7 @@ export default {
           capFactor: null
         }
         unitNonNullLength[id] = 0
-        if (u.status === 'Operating') {
+        if (u.status === FACILITY_OPERATING) {
           totalOperatingRegCap += u.registeredCapacity
         }
       })
@@ -360,7 +361,7 @@ export default {
 
   methods: {
     isActive(status) {
-      return status === 'Operating'
+      return status === FACILITY_OPERATING
     },
     isHidden(code) {
       console.log(code)

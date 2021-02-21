@@ -228,6 +228,7 @@ import { color } from 'd3-color'
 import * as FT from '~/constants/energy-fuel-techs/group-default.js'
 import * as SI from '@/constants/si'
 import * as OPTIONS from '@/constants/chart-options.js'
+import { FACILITY_OPERATING } from '@/constants/facility-status.js'
 import EnergyToAveragePower from '@/data/transform/energy-to-average-power.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import RangeIntervalSelectors from '@/components/Facility/RangeIntervalSelectors.vue'
@@ -451,7 +452,7 @@ export default {
       })
     },
     operatingDomains() {
-      return this.unitsSummary.filter(d => d.status === 'Operating')
+      return this.unitsSummary.filter(d => d.status === FACILITY_OPERATING)
     },
     powerEnergyDomains() {
       return this.operatingDomains.filter(
