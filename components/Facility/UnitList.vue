@@ -2,6 +2,7 @@
   <table class="summary-list">
     <caption>
       <dates-display
+        v-if="ready"
         :is-hovering="hoverOn"
         :focus-on="focusOn"
         :hovered-date="hoverDate ? hoverDate.getTime() : null"
@@ -145,6 +146,10 @@ export default {
     DatesDisplay
   },
   props: {
+    ready: {
+      type: Boolean,
+      default: false
+    },
     isEnergyType: {
       type: Boolean,
       default: false

@@ -156,6 +156,7 @@
         <section class="facility-units">
 
           <UnitList
+            :ready="!fetchingStats"
             :is-energy-type="isEnergyType"
             :is-y-axis-average-power="isYAxisAveragePower"
             :units="unitsSummary"
