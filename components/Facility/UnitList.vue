@@ -136,6 +136,7 @@
 import _cloneDeep from 'lodash.clonedeep'
 
 import DateDisplay from '@/services/DateDisplay.js'
+import * as FT from '~/constants/energy-fuel-techs/group-default.js'
 import { FACILITY_OPERATING } from '@/constants/facility-status.js'
 import DatesDisplay from '@/components/SummaryTable/DatesDisplay'
 
@@ -222,7 +223,9 @@ export default {
       return same
     },
     getFirstUnitFuelTech() {
-      return this.units.length > 0 ? this.units[0].fuelTechLabel : null
+      return this.units.length > 0
+        ? FT.FUEL_TECH_LABEL[this.units[0].fuelTechLabel]
+        : null
     },
     startTime() {
       if (this.dataset.length > 0) {
