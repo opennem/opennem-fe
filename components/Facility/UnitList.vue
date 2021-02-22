@@ -55,7 +55,8 @@
           'is-inactive': !isActive(d.status),
           'is-hidden-unit': d.isHidden
         }"
-        @click="handleRowClick(d.code)"
+        @click.exact="handleRowClick(d.code)"
+        @click.shift.exact="handleRowShiftClick(d.code)"
         @mouseenter="handleMouseEnter(d.code, d.status)"
         @mouseleave="handleMouseLeave">
         <td
@@ -411,6 +412,9 @@ export default {
     handleRowClick(code) {
       this.$emit('codeClick', code)
     },
+    handleRowShiftClick(code) {
+      this.$emit('codeShiftClick', code)
+    },
 
     getHoverValue(code) {
       return this.hoverData ? this.hoverData[code] : ''
@@ -512,6 +516,10 @@ table {
   th {
     padding: 3px 6px;
     border-bottom: 1px solid #ddd;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
   th {
     font-family: $family-secondary;

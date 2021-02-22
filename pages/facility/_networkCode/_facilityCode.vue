@@ -187,7 +187,8 @@
             :interval="interval"
             class="unit-list"
             @codeHover="handleCodeHover"
-            @codeClick="handleCodeClick" />
+            @codeClick="handleCodeClick"
+            @codeShiftClick="handleCodeShiftClick" />
         </section>
 
         <!-- <EnergyBar
@@ -720,6 +721,11 @@ export default {
       }
 
       console.log(this.hiddenCodes)
+    },
+    handleCodeShiftClick(code) {
+      const toBeHidden = this.operatingDomains.filter(d => d.code !== code)
+      const hiddenCodes = toBeHidden.map(d => d.code)
+      this.hiddenCodes = hiddenCodes
     },
 
     handleDateHover(date) {
