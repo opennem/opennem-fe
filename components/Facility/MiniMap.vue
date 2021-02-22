@@ -108,5 +108,10 @@ export default {
     border-radius: 10px;
     outline: none;
   }
+  ::v-deep .mapboxgl-ctrl-logo {
+    transform: scale(0.75);
+    position: relative;
+    left: -10px;
+  }
 }
 </style>
