@@ -6,7 +6,15 @@
         class="not-found-card card"
         style="height: 60vh; margin: 0 auto;">
         <i class="fal fa-industry-alt"/>
-        <span>Facility not available</span>
+        <div>
+          <span>Facility not available</span>
+          <button
+            v-tooltip="'Try loading facility again'"
+            class="button is-rounded try-again-button"
+            @click="getFacility">
+            <i class="fal fa-redo" />
+          </button>
+        </div>
       </div>
     </transition>
 
@@ -52,7 +60,15 @@
               v-if="!fetchingStats && stackedAreaDataset.length === 0"
               class="not-found-card card">
               <i class="fal fa-chart-area"/>
-              <span>Power and energy data not available</span>
+              <div>
+                <span>Facility statistics data not available</span>
+                <button
+                  v-tooltip="'Try loading facility statistics again'"
+                  class="button is-rounded try-again-button"
+                  @click="getFacilityStats">
+                  <i class="fal fa-redo" />
+                </button>
+              </div>
             </div>
           </transition>
 
@@ -602,20 +618,7 @@ export default {
     facility(update) {
       if (update) {
         console.log('facility-watch')
-        console.log(this.range, this.interval)
-        // const networkRegion = update.network ? update.network : ''
-        // const facilityCode = update.code
-        // console.log('facility-watch')
-        // this.doGetStationStats({ networkRegion, facilityCode })
-        const networkRegion = this.facilityNetworkRegion
-        const facilityCode = this.facilityCode
-        const facilityFuelTechsColours = this.facilityFuelTechsColours
-        console.log('facility-watch')
-        this.doGetStationStats({
-          networkRegion,
-          facilityCode,
-          facilityFuelTechsColours
-        })
+        this.getFacilityStats()
       }
     },
     selectedFacilityUnitsDataset(dataset) {
@@ -630,15 +633,8 @@ export default {
       this.setFocusDate(null)
     },
     range() {
-      const networkRegion = this.facilityNetworkRegion
-      const facilityCode = this.facilityCode
-      const facilityFuelTechsColours = this.facilityFuelTechsColours
       console.log('range-watch')
-      this.doGetStationStats({
-        networkRegion,
-        facilityCode,
-        facilityFuelTechsColours
-      })
+      this.getFacilityStats()
     },
     isEnergyType(curr, prev) {
       if (curr !== prev) {
@@ -650,9 +646,7 @@ export default {
   },
 
   created() {
-    this.doGetFacilityByCode({
-      facilityCode: this.facilityCode
-    })
+    this.getFacility()
     this.doSetChartEnergyPrefixes(SI.MEGA)
   },
 
@@ -670,6 +664,24 @@ export default {
       doSetChartEnergyPrefixes:
         'chartOptionsPowerEnergy/doSetChartEnergyPrefixes'
     }),
+
+    getFacility() {
+      this.doGetFacilityByCode({
+        facilityCode: this.facilityCode
+      })
+    },
+
+    getFacilityStats() {
+      const networkRegion = this.facilityNetworkRegion
+      const facilityCode = this.facilityCode
+      const facilityFuelTechsColours = this.facilityFuelTechsColours
+      this.doGetStationStats({
+        networkRegion,
+        facilityCode,
+        facilityFuelTechsColours
+      })
+    },
+
     getIntervalLabel(interval) {
       if (interval === 'Fin Year') {
         return 'year'
@@ -718,27 +730,13 @@ export default {
       this.isHovering = hovering
     },
     handleRangeChange() {
-      const networkRegion = this.facilityNetworkRegion
-      const facilityCode = this.facilityCode
-      const facilityFuelTechsColours = this.facilityFuelTechsColours
       console.log('range-change')
-      this.doGetStationStats({
-        networkRegion,
-        facilityCode,
-        facilityFuelTechsColours
-      })
+      this.getFacilityStats()
     },
     handleIntervalChange() {
       if (this.range === '30D') {
-        const networkRegion = this.facilityNetworkRegion
-        const facilityCode = this.facilityCode
-        const facilityFuelTechsColours = this.facilityFuelTechsColours
         console.log('interval-change')
-        this.doGetStationStats({
-          networkRegion,
-          facilityCode,
-          facilityFuelTechsColours
-        })
+        this.getFacilityStats()
       } else {
         this.doUpdateDatasetByInterval()
       }
@@ -890,6 +888,18 @@ header {
     position: absolute;
     right: 0;
     top: 5px;
+  }
+}
+
+.try-again-button {
+  display: block;
+  margin: 1rem auto 0;
+  padding: 0;
+  min-width: 36px;
+
+  i {
+    font-size: 1em;
+    width: 20px;
   }
 }
 </style>
