@@ -451,11 +451,10 @@ export default {
     unitsSummary() {
       return this.facilityUnits.map((d, i) => {
         const networkCode = d.network.code || d.network
-        const id = this.getUnitId(
-          networkCode.toLowerCase(),
-          d.code.toLowerCase(),
-          this.dataType
+        const find = this.domainPowerEnergy.find(
+          domain => domain.code === d.code
         )
+        const id = find ? find.id : null
 
         return {
           colour: this.facilityFuelTechsColours[d.code],
@@ -696,9 +695,6 @@ export default {
         return colour || unknownColour
       }
       return unknownColour
-    },
-    getUnitId(region, code, type) {
-      return `${region}.${code}.${type}`
     },
     handleZoomExtent(dateRange) {
       this.zoomExtent = dateRange
