@@ -100,11 +100,13 @@ export default {
     updatePaths() {
       const facilitiesLength = this.filteredFacilities.length
       const currentIndex = this.filteredFacilities.findIndex(
-        f => f.facilityCode === this.facilityCode
+        f => f.facilityId === this.facilityCode
       )
       const currentFacility = this.filteredFacilities.find(
-        f => f.facilityCode === this.facilityCode
+        f => f.facilityId === this.facilityCode
       )
+
+      console.log(this.filteredFacilities, this.facilityCode)
 
       if (currentIndex !== -1) {
         const isFirstItem = currentIndex === 0
@@ -117,10 +119,10 @@ export default {
           ? null
           : this.filteredFacilities[currentIndex - 1]
 
-        const nextFacilityId = nextFacility ? nextFacility.facilityCode : null
+        const nextFacilityId = nextFacility ? nextFacility.facilityId : null
         const nextFacilityName = nextFacility ? nextFacility.displayName : null
         const nextFacilityNetwork = nextFacility ? nextFacility.network : null
-        const prevFacilityId = prevFacility ? prevFacility.facilityCode : null
+        const prevFacilityId = prevFacility ? prevFacility.facilityId : null
         const prevFacilityName = prevFacility ? prevFacility.displayName : null
         const prevFacilityNetwork = prevFacility ? prevFacility.network : null
 
