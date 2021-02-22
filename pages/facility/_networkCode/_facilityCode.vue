@@ -219,7 +219,7 @@
       />
 
       <DonutVis
-        v-if="!fetchingStats"
+        v-if="!fetchingStats && powerEnergyDomains.length > 1"
         :unit="` ${isEnergyType ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
         :domains="powerEnergyDomains"
         :dataset="datasetFilteredByZoomExtent"
