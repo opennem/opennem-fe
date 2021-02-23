@@ -45,6 +45,11 @@
           Capacity factor
           <small>%</small>
         </th>
+
+        <th class="data-col align-right hover-cell">
+          Market value
+          <small>$</small>
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -69,7 +74,9 @@
           <span>{{ d.code }}</span>
           <span v-if="!areAllUnitsOfSameFuelTech">— {{ d.fuelTechLabel }}</span>
         </td>
+
         <td class="align-right">{{ d.registeredCapacity }}</td>
+
         <td class="align-right hover-cell">
           <span v-if="hoverOn">
             {{ getHoverValue(d.id) | formatValue }}
@@ -84,6 +91,7 @@
             {{ summary[d.id].avPower | formatValue }}
           </span>
         </td>
+
         <td class="align-right hover-cell">
           <span v-if="hoverOn">
             {{ calculateCapacityFactor(getHoverPowerValue(d.id), d.registeredCapacity) | percentageFormatNumber }}
@@ -95,13 +103,27 @@
             {{ summary[d.id].capFactor | percentageFormatNumber }}
           </span>
         </td>
+
+        <td class="align-right hover-cell">
+          <span v-if="hoverOn">
+            {{ getHoverValue(d.marketValueId) | formatCurrency(',.0f') }}
+          </span>
+          <span v-if="!hoverOn && focusOn">
+            {{ getFocusValue(d.marketValueId) | formatCurrency(',.0f') }}
+          </span>
+          <span v-if="!hoverOn && !focusOn">
+            {{ summary[d.id].marketValue | formatCurrency(',.0f') }}
+          </span>
+        </td>
       </tr>
     </tbody>
 
     <tfoot v-if="units.length > 1">
       <tr>
         <th>Total</th>
+
         <th class="align-right cell-value">{{ operatingUnitsTotalCapacity }}</th>
+
         <th class="align-right hover-cell cell-value">
           <span v-if="hoverOn">
             {{ hoverTotal | formatValue }}
@@ -116,6 +138,7 @@
             {{ summary.totalAvPower | formatValue }}
           </span>
         </th>
+
         <th class="align-right hover-cell cell-value">
           Av.
           <span v-if="hoverOn">
@@ -126,6 +149,18 @@
           </span>
           <span v-if="!hoverOn && !focusOn">
             {{ summary.capFactor | percentageFormatNumber }}
+          </span>
+        </th>
+
+        <th class="align-right hover-cell cell-value">
+          <span v-if="hoverOn">
+            {{ hoverTotalMarketValue | formatCurrency(',.0f') }}
+          </span>
+          <span v-if="!hoverOn && focusOn">
+            {{ focusTotalMarketValue | formatCurrency(',.0f') }}
+          </span>
+          <span v-if="!hoverOn && !focusOn">
+            {{ summary.totalMarketValue | formatCurrency(',.0f') }}
           </span>
         </th>
       </tr>
@@ -262,7 +297,8 @@ export default {
       const unitNonNullLength = {}
       let totalOperatingRegCap = 0,
         totalPower = null,
-        totalEnergy = null
+        totalEnergy = null,
+        totalMarketValue = null
 
       // setup and calculate total Registered capacity
       this.units.forEach(u => {
@@ -271,7 +307,8 @@ export default {
           power: null,
           avPower: null,
           energy: null,
-          capFactor: null
+          capFactor: null,
+          marketValue: null
         }
         unitNonNullLength[id] = 0
         if (u.status === FACILITY_OPERATING) {
@@ -303,9 +340,12 @@ export default {
       ds.forEach(d => {
         this.units.forEach(u => {
           const id = u.id
+          const marketValueId = u.marketValueId
+
           if (d[id] || d[id] === 0) {
             summary[id].power += getPower(d, id)
             summary[id].energy += getEnergy(d[id])
+            summary[id].marketValue += d[marketValueId]
             unitNonNullLength[id]++
           }
         })
@@ -313,6 +353,7 @@ export default {
 
       this.units.forEach(u => {
         const id = u.id
+        const marketValueId = u.marketValueId
 
         // calculate capacity factor - av power / registered capacity
         // - average power is calculated using non null length
@@ -325,8 +366,13 @@ export default {
           ? summary[id].power / unitNonNullLength[id]
           : null
 
+        summary[id].avMarketValue = unitNonNullLength[id]
+          ? summary[id].marketValue / unitNonNullLength[id]
+          : null
+
         totalPower += summary[id].power
         totalEnergy += summary[id].energy
+        totalMarketValue += summary[id].marketValue
       })
 
       summary.totalPower = totalPower
@@ -337,6 +383,8 @@ export default {
         summary.avPower === 0
           ? 0
           : (summary.avPower / totalOperatingRegCap) * 100
+      summary.totalMarketValue = totalMarketValue
+      summary.totalAvMarketValue = totalMarketValue / ds.length
 
       return summary
     },
@@ -348,10 +396,13 @@ export default {
       return this.getAveragePowerData(this.hoverDate)
     },
     hoverTotal() {
-      return this.getTotal(this.hoverData)
+      return this.getTotal('id', this.hoverData)
     },
     hoverAveragePowerTotal() {
-      return this.getTotal(this.hoverAveragePowerData)
+      return this.getTotal('id', this.hoverAveragePowerData)
+    },
+    hoverTotalMarketValue() {
+      return this.getTotal('marketValueId', this.hoverData)
     },
 
     focusData() {
@@ -361,20 +412,19 @@ export default {
       return this.getAveragePowerData(this.focusDate)
     },
     focusTotal() {
-      return this.getTotal(this.focusData)
+      return this.getTotal('id', this.focusData)
     },
     focusAveragePowerTotal() {
-      return this.getTotal(this.focusAveragePowerData)
+      return this.getTotal('id', this.focusAveragePowerData)
+    },
+    focusTotalMarketValue() {
+      return this.getTotal('marketValueId', this.focusData)
     }
   },
 
   methods: {
     isActive(status) {
       return status === FACILITY_OPERATING
-    },
-    isHidden(code) {
-      console.log(code)
-      return false
     },
 
     getData(date) {
@@ -387,13 +437,13 @@ export default {
         ? this.averagePowerDataset.find(d => d.time === date.getTime())
         : null
     },
-    getTotal(data) {
+    getTotal(prop, data) {
       if (!data) {
         return null
       }
       let total = null
       this.operatingUnits.forEach(u => {
-        const value = data[u.id]
+        const value = data[u[prop]]
         if (value || value === 0) {
           total += value
         }
@@ -416,23 +466,23 @@ export default {
       this.$emit('codeShiftClick', code)
     },
 
-    getHoverValue(code) {
-      return this.hoverData ? this.hoverData[code] : ''
+    getHoverValue(id) {
+      return this.hoverData ? this.hoverData[id] : ''
     },
-    getFocusValue(code) {
-      return this.focusData ? this.focusData[code] : ''
+    getFocusValue(id) {
+      return this.focusData ? this.focusData[id] : ''
     },
-    getHoverPowerValue(code) {
+    getHoverPowerValue(id) {
       const hover = this.isEnergyType
         ? this.hoverAveragePowerData
         : this.hoverData
-      return hover ? hover[code] : ''
+      return hover ? hover[id] : ''
     },
-    getFocusPowerValue(code) {
+    getFocusPowerValue(id) {
       const focus = this.isEnergyType
         ? this.focusAveragePowerData
         : this.focusData
-      return focus ? focus[code] : ''
+      return focus ? focus[id] : ''
     },
     calculateCapacityFactor(value, capacity) {
       return value ? (value / capacity) * 100 : 0

@@ -454,12 +454,17 @@ export default {
         const find = this.domainPowerEnergy.find(
           domain => domain.code === d.code
         )
+        const findMarketValue = this.domainMarketValue.find(
+          domain => domain.code === d.code
+        )
         const id = find ? find.id : null
+        const marketValueId = findMarketValue ? findMarketValue.id : null
 
         return {
           colour: this.facilityFuelTechsColours[d.code],
           domain: id,
           id,
+          marketValueId,
           code: d.code,
           label: d.code,
           registeredCapacity: d.capacity_registered,
