@@ -40,12 +40,12 @@
           :style="{ 'background-color': hoverDomainColour }"
           class="colour-square" />
         {{ hoverDomainLabel }}
-        <strong>{{ hoverValue | formatCurrency }}</strong>
+        <strong>{{ hoverValue | formatCurrency(',.0f') }}</strong>
       </span>
 
       <span>
         <span v-if="showHover">Total</span>
-        <strong>{{ hoverTotal | formatCurrency }}</strong>
+        <strong>{{ hoverTotal | formatCurrency(',.0f') }}</strong>
       </span>
     </template>
   </chart-header>

@@ -290,7 +290,6 @@ export default {
       return this.dataset ? this.dataset.find(d => d.time === time) : null
     },
     hoverValue() {
-      console.log(this.hoverData, this.hoverMarketValueDomain)
       return this.hoverData
         ? this.convertValue(this.hoverData[this.hoverMarketValueDomain])
         : null
