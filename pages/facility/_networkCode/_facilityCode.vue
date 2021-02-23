@@ -185,6 +185,7 @@
             :hidden-codes="hiddenCodes"
             :range="range"
             :interval="interval"
+            :has-market-value="domainMarketValue.length > 0"
             class="unit-list"
             @codeHover="handleCodeHover"
             @codeClick="handleCodeClick"

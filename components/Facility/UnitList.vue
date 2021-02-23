@@ -46,7 +46,9 @@
           <small>%</small>
         </th>
 
-        <th class="data-col align-right hover-cell">
+        <th
+          v-if="hasMarketValue"
+          class="data-col align-right hover-cell">
           Market value
           <small>$</small>
         </th>
@@ -104,7 +106,9 @@
           </span>
         </td>
 
-        <td class="align-right hover-cell">
+        <td
+          v-if="hasMarketValue"
+          class="align-right hover-cell">
           <span v-if="hoverOn">
             {{ getHoverValue(d.marketValueId) | formatCurrency(',.0f') }}
           </span>
@@ -152,7 +156,9 @@
           </span>
         </th>
 
-        <th class="align-right hover-cell cell-value">
+        <th
+          v-if="hasMarketValue"
+          class="align-right hover-cell cell-value">
           <span v-if="hoverOn">
             {{ hoverTotalMarketValue | formatCurrency(',.0f') }}
           </span>
@@ -233,6 +239,10 @@ export default {
     interval: {
       type: String,
       default: null
+    },
+    hasMarketValue: {
+      type: Boolean,
+      default: false
     }
   },
 
