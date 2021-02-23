@@ -468,12 +468,14 @@ export default {
         )
         const id = find ? find.id : null
         const marketValueId = findMarketValue ? findMarketValue.id : null
+        const emissionIntensity = d.emissions_factor_co2 * 1000 // kgCO₂e/MWh
 
         return {
           colour: this.facilityFuelTechsColours[d.code],
           domain: id,
           id,
           marketValueId,
+          emissionIntensity,
           code: d.code,
           label: d.code,
           registeredCapacity: d.capacity_registered,
@@ -507,7 +509,7 @@ export default {
         const end = this.zoomExtent[1]
 
         return this.stackedAreaDataset.filter(
-          d => d.date >= start && d.date <= end
+          d => d.date >= start && d.date < end
         )
       }
       return this.stackedAreaDataset
