@@ -19,6 +19,12 @@
     </transition>
 
     <transition name="fade">
+      <Loader
+        v-if="fetchingFacility && !facility"
+        class="facility-chart-loader" />
+    </transition>
+
+    <transition name="fade">
       <div
         v-if="facility"
         class="main">
@@ -211,7 +217,9 @@
       </div>
     </transition>
 
-    <section style="width: 30%">
+    <section
+      v-if="facility"
+      style="width: 30%">
       <PhotoMap
         v-if="facility && !widthBreak"
         :facility-name="facilityName"
