@@ -112,8 +112,8 @@ Vue.filter('percentageFormatNumber2', value => {
   return isFinite(value) && !isNaN(value) && value ? fValue : '0%'
 })
 
-Vue.filter('formatCurrency', value => {
-  const f = d3Format('$,.2f')
+Vue.filter('formatCurrency', (value, formatString = ',.2f') => {
+  const f = d3Format(`$${formatString}`)
   const fValue = f(value)
   return isFinite(value) && !isNaN(value) && value !== null && value !== ''
     ? fValue
