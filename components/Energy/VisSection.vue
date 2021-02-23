@@ -85,15 +85,6 @@ import { min, max } from 'd3-array'
 import _cloneDeep from 'lodash.clonedeep'
 import addYears from 'date-fns/addYears'
 
-import {
-  FILTER_NONE,
-  INTERVAL_MONTH,
-  INTERVAL_SEASON,
-  INTERVAL_QUARTER,
-  INTERVAL_HALFYEAR,
-  hasIntervalFilters
-} from '@/constants/interval-filters.js'
-
 import DateDisplay from '@/services/DateDisplay.js'
 import PowerEnergyChart from '@/components/Energy/Charts/PowerEnergyChart'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
@@ -223,59 +214,12 @@ export default {
       this.setFilteredDates(filteredDates)
     },
     handleDateHover(date) {
-      let hoverDate = date
-      const isFilter = !this.filterPeriod || this.filterPeriod !== FILTER_NONE
-      if (hoverDate && this.interval === 'Fin Year') {
-        if (hoverDate.getMonth() >= 6) {
-          hoverDate.setFullYear(hoverDate.getFullYear() + 1)
-        }
-      }
-      if (isFilter && hoverDate && hasIntervalFilters(this.interval)) {
-        const periodMonth = DateDisplay.getPeriodMonth(
-          this.interval,
-          this.filterPeriod
-        )
-        const month = hoverDate.getMonth()
-
-        if (this.interval === INTERVAL_MONTH) {
-          hoverDate = DateDisplay.mutateMonthDate(
-            hoverDate,
-            month,
-            this.filterPeriod
-          )
-        } else if (this.interval === INTERVAL_SEASON) {
-          hoverDate = DateDisplay.mutateSeasonDate(
-            hoverDate,
-            month,
-            this.filterPeriod
-          )
-        } else if (this.interval === INTERVAL_QUARTER) {
-          hoverDate = DateDisplay.mutateQuarterDate(
-            hoverDate,
-            month,
-            this.filterPeriod
-          )
-        } else if (this.interval === INTERVAL_HALFYEAR) {
-          hoverDate = DateDisplay.mutateHalfYearDate(
-            hoverDate,
-            month,
-            this.filterPeriod
-          )
-        }
-
-        if (this.interval === INTERVAL_MONTH) {
-          hoverDate.setMonth(periodMonth)
-        } else {
-          hoverDate.setMonth(periodMonth + 1)
-        }
-      }
-
-      const closestDate = DateDisplay.snapToClosestInterval(
+      this.hoverDate = DateDisplay.getClosestDateByInterval(
+        date,
         this.interval,
-        hoverDate
+        this.filterPeriod
       )
-      this.hoverDate = closestDate
-      this.$emit('dateHover', closestDate)
+      this.$emit('dateHover', this.hoverDate)
     },
     handleIsHovering(hover) {
       this.isHovering = hover

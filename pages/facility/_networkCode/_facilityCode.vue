@@ -333,6 +333,7 @@ export default {
       dataType: 'facility/dataType',
       range: 'facility/range',
       interval: 'facility/interval',
+      filterPeriod: 'facility/filterPeriod',
       domainPowerEnergy: 'facility/domainPowerEnergy',
       domainEmissions: 'facility/domainEmissions',
       domainMarketValue: 'facility/domainMarketValue',
@@ -741,8 +742,11 @@ export default {
     },
 
     handleDateHover(date) {
-      const closestDate = DateDisplay.snapToClosestInterval(this.interval, date)
-      this.hoverDate = closestDate
+      this.hoverDate = DateDisplay.getClosestDateByInterval(
+        date,
+        this.interval,
+        this.filterPeriod
+      )
     },
     handleIsHovering(hovering) {
       this.isHovering = hovering

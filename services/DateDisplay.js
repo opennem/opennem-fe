@@ -13,6 +13,14 @@ import {
   timeMonth as d3TimeMonth,
   timeYear as d3TimeYear
 } from 'd3-time'
+import {
+  FILTER_NONE,
+  INTERVAL_MONTH,
+  INTERVAL_SEASON,
+  INTERVAL_QUARTER,
+  INTERVAL_HALFYEAR,
+  hasIntervalFilters
+} from '@/constants/interval-filters.js'
 
 function getFormatStringDay(showYear) {
   return showYear ? '%a, %-d %b %Y' : '%a, %-d %b'
@@ -283,6 +291,38 @@ export default {
     }
 
     return display
+  },
+
+  getClosestDateByInterval(date, interval, filterPeriod) {
+    let hoverDate = date
+    const isFilter = !filterPeriod || filterPeriod !== FILTER_NONE
+    if (hoverDate && interval === 'Fin Year') {
+      if (hoverDate.getMonth() >= 6) {
+        hoverDate.setFullYear(hoverDate.getFullYear() + 1)
+      }
+    }
+    if (isFilter && hoverDate && hasIntervalFilters(interval)) {
+      const periodMonth = this.getPeriodMonth(interval, filterPeriod)
+      const month = hoverDate.getMonth()
+
+      if (interval === INTERVAL_MONTH) {
+        hoverDate = this.mutateMonthDate(hoverDate, month, filterPeriod)
+      } else if (interval === INTERVAL_SEASON) {
+        hoverDate = this.mutateSeasonDate(hoverDate, month, filterPeriod)
+      } else if (interval === INTERVAL_QUARTER) {
+        hoverDate = this.mutateQuarterDate(hoverDate, month, filterPeriod)
+      } else if (interval === INTERVAL_HALFYEAR) {
+        hoverDate = this.mutateHalfYearDate(hoverDate, month, filterPeriod)
+      }
+
+      if (interval === INTERVAL_MONTH) {
+        hoverDate.setMonth(periodMonth)
+      } else {
+        hoverDate.setMonth(periodMonth + 1)
+      }
+    }
+
+    return this.snapToClosestInterval(interval, hoverDate)
   },
 
   defaultDisplayDate(time) {

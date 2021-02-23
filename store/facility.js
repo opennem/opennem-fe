@@ -82,7 +82,8 @@ export const state = () => ({
 
   dataType: 'power', // power, energy
   range: RANGE_7D,
-  interval: INTERVAL_30MIN
+  interval: INTERVAL_30MIN,
+  filterPeriod: 'All'
 })
 
 export const mutations = {
@@ -157,6 +158,9 @@ export const mutations = {
   },
   interval(state, data) {
     state.interval = data
+  },
+  filterPeriod(state, data) {
+    state.filterPeriod = data
   }
 }
 
@@ -189,7 +193,8 @@ export const getters = {
 
   dataType: state => state.dataType,
   range: state => state.range,
-  interval: state => state.interval
+  interval: state => state.interval,
+  filterPeriod: state => state.filterPeriod
 }
 
 export const actions = {
