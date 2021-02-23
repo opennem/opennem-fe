@@ -17,6 +17,7 @@
       :hover-domain-colour="hoverDomainColour"
       :hover-domain-label="hoverDomainLabel"
       :hover-total="hoverTotal"
+      :total="datasetTotal"
       :show-hover="domains.length > 1"
     />
 
@@ -276,6 +277,25 @@ export default {
 
     dataset() {
       return this.stackedDataset
+    },
+
+    filteredDataset() {
+      if (this.zoomExtent.length === 2) {
+        const start = this.zoomExtent[0].getTime()
+        const end = this.zoomExtent[1].getTime()
+        return this.dataset.filter(d => d.time >= start && d.time < end)
+      } else {
+        return this.dataset
+      }
+    },
+
+    datasetTotal() {
+      let total = 0
+      console.log(this.filteredDataset)
+      this.filteredDataset.forEach(d => {
+        total += d._totalMarketValue
+      })
+      return total
     },
 
     hoverData() {

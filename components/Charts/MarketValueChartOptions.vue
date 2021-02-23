@@ -19,14 +19,14 @@
       <small>$</small>
     </template>
 
-    <!-- <template
+    <template
       v-slot:average-value
-      v-if="!readOnly">
-      Av.
+      v-if="!readOnly || !hoverValue">
+      Total
       <strong>
-        {{ averageMarketValue | formatCurrency }}
+        {{ total | formatCurrency(',.0f') }}
       </strong>
-    </template> -->
+    </template>
 
     <template v-slot:hover-date>
       {{ hoverDisplayDate }}
@@ -121,6 +121,10 @@ export default {
     showHover: {
       type: Boolean,
       default: true
+    },
+    total: {
+      type: Number,
+      default: 0
     }
   },
 
