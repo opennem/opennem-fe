@@ -385,16 +385,19 @@ export default {
         totalMarketValue += summary[id].marketValue
       })
 
-      summary.totalPower = totalPower
-      summary.totalAvPower = totalPower / ds.length
-      summary.totalEnergy = totalEnergy
-      summary.avPower = totalPower / ds.length
-      summary.capFactor =
-        summary.avPower === 0
+      const hasData = ds.length > 0
+
+      summary.totalPower = hasData ? totalPower : null
+      summary.totalAvPower = hasData ? totalPower / ds.length : null
+      summary.totalEnergy = hasData ? totalEnergy : null
+      summary.avPower = hasData ? totalPower / ds.length : null
+      summary.capFactor = hasData
+        ? summary.avPower === 0
           ? 0
           : (summary.avPower / totalOperatingRegCap) * 100
-      summary.totalMarketValue = totalMarketValue
-      summary.totalAvMarketValue = totalMarketValue / ds.length
+        : null
+      summary.totalMarketValue = hasData ? totalMarketValue : null
+      summary.totalAvMarketValue = hasData ? totalMarketValue / ds.length : null
 
       return summary
     },
