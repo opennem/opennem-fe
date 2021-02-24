@@ -17,7 +17,7 @@
 
     <thead class="unit-header-row">
       <tr>
-        <th style="width: 150px;">
+        <th style="width: 100px;">
           Unit
           <small v-if="areAllUnitsOfSameFuelTech">
             {{ getFirstUnitFuelTech }}
@@ -26,7 +26,7 @@
 
         <th
           class="data-col date-col align-right hover-cell"
-          style="width: 150px;">
+          style="width: 100px;">
           <span v-if="(isEnergyType && !isYAxisAveragePower) || (!isEnergyType && !(hoverOn || focusOn))">
             Energy
             <small>MWh</small>
@@ -50,7 +50,7 @@
         <th
           v-if="hasMarketValue"
           class="data-col align-right hover-cell"
-          style="width: 150px;">
+          style="width: 100px;">
           Market value
           <small>$</small>
         </th>
