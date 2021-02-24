@@ -1,9 +1,11 @@
 <template>
   <div class="row-bar-wrapper">
     <div
+      v-if="isValidContribution"
       :style="{
         'width': `${width}px`,
-        'background-color': colour
+        'background-color': colour,
+        opacity: 0.4
       }"
       class="row-bar" />
 
@@ -50,6 +52,7 @@ export default {
 
   computed: {
     width() {
+      this.x.domain([0, this.total])
       return this.x(this.value)
     },
     isValidContribution() {
