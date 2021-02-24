@@ -17,15 +17,16 @@
 
     <thead class="unit-header-row">
       <tr>
-        <th>
+        <th style="width: 150px;">
           Unit
-          <small v-if="areAllUnitsOfSameFuelTech">{{ getFirstUnitFuelTech }}</small>
+          <small v-if="areAllUnitsOfSameFuelTech">
+            {{ getFirstUnitFuelTech }}
+          </small>
         </th>
-        <th class="align-right">
-          Registered capacity
-          <small>MW</small>
-        </th>
-        <th class="data-col date-col align-right hover-cell">
+
+        <th
+          class="data-col date-col align-right hover-cell"
+          style="width: 150px;">
           <span v-if="(isEnergyType && !isYAxisAveragePower) || (!isEnergyType && !(hoverOn || focusOn))">
             Energy
             <small>MWh</small>
@@ -41,17 +42,33 @@
             <small>MW</small>
           </span>
         </th>
-        <th class="data-col align-right hover-cell">
-          Capacity factor
-          <small>%</small>
-        </th>
+
+        <th
+          v-if="units.length > 1"
+          style="width: 150px;" />
 
         <th
           v-if="hasMarketValue"
-          class="data-col align-right hover-cell">
+          class="data-col align-right hover-cell"
+          style="width: 150px;">
           Market value
           <small>$</small>
         </th>
+
+        <th
+          class="align-right"
+          style="width: 150px;">
+          Registered cap.
+          <small>MW</small>
+        </th>
+
+        <th
+          class="data-col align-right hover-cell"
+          style="width: 80px;">
+          Cap. factor
+          <small>%</small>
+        </th>
+
       </tr>
     </thead>
     <tbody>
@@ -77,8 +94,6 @@
           <span v-if="!areAllUnitsOfSameFuelTech">— {{ d.fuelTechLabel }}</span>
         </td>
 
-        <td class="align-right">{{ d.registeredCapacity }}</td>
-
         <td class="align-right hover-cell">
           <span v-if="hoverOn">
             {{ getHoverValue(d.id) | formatValue }}
@@ -94,16 +109,14 @@
           </span>
         </td>
 
-        <td class="align-right hover-cell">
-          <span v-if="hoverOn">
-            {{ calculateCapacityFactor(getHoverPowerValue(d.id), d.registeredCapacity) | percentageFormatNumber }}
-          </span>
-          <span v-if="!hoverOn && focusOn">
-            {{ calculateCapacityFactor(getFocusPowerValue(d.id), d.registeredCapacity) | percentageFormatNumber }}
-          </span>
-          <span v-if="!hoverOn && !focusOn">
-            {{ summary[d.id].capFactor | percentageFormatNumber }}
-          </span>
+        <td v-if="units.length > 1">
+          <UnitListBar
+            v-if="ready"
+            :bar-width="150"
+            :colour="d.colour"
+            :value="getCellValue(d)"
+            :total="getCellTotalValue(d)"
+          />
         </td>
 
         <td
@@ -119,14 +132,26 @@
             {{ summary[d.id].marketValue | formatCurrency(',.0f') }}
           </span>
         </td>
+
+        <td class="align-right">{{ d.registeredCapacity }}</td>
+
+        <td class="align-right hover-cell">
+          <span v-if="hoverOn">
+            {{ calculateCapacityFactor(getHoverPowerValue(d.id), d.registeredCapacity) | percentageFormatNumber }}
+          </span>
+          <span v-if="!hoverOn && focusOn">
+            {{ calculateCapacityFactor(getFocusPowerValue(d.id), d.registeredCapacity) | percentageFormatNumber }}
+          </span>
+          <span v-if="!hoverOn && !focusOn">
+            {{ summary[d.id].capFactor | percentageFormatNumber }}
+          </span>
+        </td>
       </tr>
     </tbody>
 
     <tfoot v-if="units.length > 1">
       <tr>
         <th>Total</th>
-
-        <th class="align-right cell-value">{{ operatingUnitsTotalCapacity }}</th>
 
         <th class="align-right hover-cell cell-value">
           <span v-if="hoverOn">
@@ -143,18 +168,7 @@
           </span>
         </th>
 
-        <th class="align-right hover-cell cell-value">
-          Av.
-          <span v-if="hoverOn">
-            {{ calculateCapacityFactor(isEnergyType ? hoverAveragePowerTotal : hoverTotal, operatingUnitsTotalCapacity) | percentageFormatNumber }}
-          </span>
-          <span v-if="!hoverOn && focusOn">
-            {{ calculateCapacityFactor(isEnergyType ? focusAveragePowerTotal : focusTotal, operatingUnitsTotalCapacity) | percentageFormatNumber }}
-          </span>
-          <span v-if="!hoverOn && !focusOn">
-            {{ summary.capFactor | percentageFormatNumber }}
-          </span>
-        </th>
+        <th v-if="units.length > 1" />
 
         <th
           v-if="hasMarketValue"
@@ -167,6 +181,21 @@
           </span>
           <span v-if="!hoverOn && !focusOn">
             {{ summary.totalMarketValue | formatCurrency(',.0f') }}
+          </span>
+        </th>
+
+        <th class="align-right cell-value">{{ operatingUnitsTotalCapacity }}</th>
+
+        <th class="align-right hover-cell cell-value">
+          Av.
+          <span v-if="hoverOn">
+            {{ calculateCapacityFactor(isEnergyType ? hoverAveragePowerTotal : hoverTotal, operatingUnitsTotalCapacity) | percentageFormatNumber }}
+          </span>
+          <span v-if="!hoverOn && focusOn">
+            {{ calculateCapacityFactor(isEnergyType ? focusAveragePowerTotal : focusTotal, operatingUnitsTotalCapacity) | percentageFormatNumber }}
+          </span>
+          <span v-if="!hoverOn && !focusOn">
+            {{ summary.capFactor | percentageFormatNumber }}
           </span>
         </th>
       </tr>
@@ -182,10 +211,12 @@ import DateDisplay from '@/services/DateDisplay.js'
 import * as FT from '~/constants/energy-fuel-techs/group-default.js'
 import { FACILITY_OPERATING } from '@/constants/facility-status.js'
 import DatesDisplay from '@/components/SummaryTable/DatesDisplay'
+import UnitListBar from './UnitListBar'
 
 export default {
   components: {
-    DatesDisplay
+    DatesDisplay,
+    UnitListBar
   },
   props: {
     ready: {
@@ -277,6 +308,9 @@ export default {
       return this.units.length > 0
         ? FT.FUEL_TECH_LABEL[this.units[0].fuelTechLabel]
         : null
+    },
+    getFirstUnitEmission() {
+      return this.units.length > 0 ? this.units[0].emissionIntensity : null
     },
     startTime() {
       if (this.dataset.length > 0) {
@@ -479,23 +513,46 @@ export default {
       this.$emit('codeShiftClick', code)
     },
 
+    getCellValue(d) {
+      if (this.hoverOn) {
+        return this.getHoverValue(d.id)
+      }
+      if (!this.hoverOn && this.focusOn) {
+        return this.getFocusValue(d.id)
+      }
+      if (!this.hoverOn && !this.focusOn) {
+        return this.summary[d.id].energy
+      }
+    },
+    getCellTotalValue(d) {
+      if (this.hoverOn) {
+        return this.hoverTotal
+      }
+      if (!this.hoverOn && this.focusOn) {
+        return this.focusTotal
+      }
+      if (!this.hoverOn && !this.focusOn) {
+        return this.summary.totalEnergy
+      }
+    },
+
     getHoverValue(id) {
-      return this.hoverData ? this.hoverData[id] : ''
+      return this.hoverData ? this.hoverData[id] : null
     },
     getFocusValue(id) {
-      return this.focusData ? this.focusData[id] : ''
+      return this.focusData ? this.focusData[id] : null
     },
     getHoverPowerValue(id) {
       const hover = this.isEnergyType
         ? this.hoverAveragePowerData
         : this.hoverData
-      return hover ? hover[id] : ''
+      return hover ? hover[id] : null
     },
     getFocusPowerValue(id) {
       const focus = this.isEnergyType
         ? this.focusAveragePowerData
         : this.focusData
-      return focus ? focus[id] : ''
+      return focus ? focus[id] : null
     },
     calculateCapacityFactor(value, capacity) {
       return value ? (value / capacity) * 100 : 0
@@ -538,6 +595,8 @@ export default {
   height: 18px;
   float: left;
   margin-right: 5px;
+  border-radius: 4px;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 
   @include mobile {
     display: inline;
@@ -566,6 +625,7 @@ export default {
 table {
   font-size: 12px;
   width: 100%;
+  table-layout: fixed;
 
   .cell-value {
     font-family: $family-primary;
