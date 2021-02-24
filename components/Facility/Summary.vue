@@ -21,8 +21,6 @@
       </v-popover>
     </p>
 
-
-
   </summary>
 </template>
 
@@ -68,6 +66,9 @@ summary {
 
   p {
     margin-bottom: 1rem;
+    font-size: 16px;
+    line-height: 25px;
+    padding: 2px;
 
     &:last-child {
       margin-bottom: 0;

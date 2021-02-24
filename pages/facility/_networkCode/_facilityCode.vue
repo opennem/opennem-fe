@@ -48,7 +48,7 @@
           />
         </transition>
 
-        <section class="facility-chart">
+        <div style="position: relative; margin: 2rem 0 1rem; padding-top: 1rem;">
           <RangeIntervalSelectors
             @rangeChange="handleRangeChange"
             @intervalChange="handleIntervalChange"
@@ -60,7 +60,9 @@
             class="dropdown chart-type-options"
             @change="handleChartDisplayChange"
           />
+        </div>
 
+        <section class="facility-chart">
           <transition name="fade">
             <div
               v-if="!fetchingStats && stackedAreaDataset.length === 0"
@@ -125,8 +127,6 @@
             @zoomExtent="handleZoomExtent"
             @svgClick="handleSvgClick"
           />
-
-
 
           <!-- <emission-intensity-chart
             v-if="!fetchingStats && domainEmissions.length > 0 && !isEnergyChartShown"
@@ -219,7 +219,7 @@
 
     <section
       v-if="facility"
-      style="width: 30%">
+      style="width: 30%; margin-top: 51px;">
       <PhotoMap
         v-if="facility && !widthBreak"
         :facility-name="facilityName"
@@ -239,6 +239,7 @@
         :focus-on="isFocusing"
         :focus-date="focusDate"
         :highlight-domain="highlightDomain"
+        style="margin-top: 2rem; padding-top: 2rem;"
       />
     </section>
   </section>
@@ -804,7 +805,7 @@ $radius: 0.5rem;
 
     .main {
       width: 70%;
-      padding: 1rem;
+      padding: 1rem 2rem 1rem 1rem;
     }
   }
 }
@@ -877,6 +878,7 @@ header {
   box-shadow: none;
   color: #888;
   background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
   i {
     font-size: 1.3em;
     width: 100%;
@@ -912,7 +914,7 @@ header {
     margin-left: 1rem;
     position: absolute;
     right: 0;
-    top: 5px;
+    top: 1.4rem;
   }
 }
 

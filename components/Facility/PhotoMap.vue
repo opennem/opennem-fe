@@ -72,7 +72,7 @@ export default {
 
   section,
   .aside-section {
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
   }
 
   figcaption {
