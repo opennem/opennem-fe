@@ -58,11 +58,13 @@ Vue.filter('formatDate', time => {
   return f(time)
 })
 
-Vue.filter('formatValue', value => {
+Vue.filter('formatValue', (value, prepend = '') => {
   const fString = smartFormatString(value)
   const f = d3Format(fString)
   const fValue = f(value)
-  return isFinite(value) && !isNaN(value) && value !== null ? fValue : '–'
+  return isFinite(value) && !isNaN(value) && value !== null
+    ? `${prepend}${fValue}`
+    : '–'
 })
 Vue.filter('formatValue2', value => {
   const fString = smartFormatString(value)

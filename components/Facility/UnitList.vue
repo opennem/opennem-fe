@@ -52,7 +52,7 @@
           class="data-col align-right hover-cell"
           style="width: 100px;">
           Market value
-          <small>$</small>
+          <small>$m</small>
         </th>
 
         <th
@@ -113,7 +113,7 @@
           <UnitListBar
             v-if="ready"
             :bar-width="150"
-            :colour="d.colour"
+            :colour="areAllUnitsOfSameFuelTech ? getFirstUnitFuelTechColour : d.colour"
             :value="getCellValue(d)"
             :total="getCellTotalValue(d)"
           />
@@ -123,13 +123,13 @@
           v-if="hasMarketValue"
           class="align-right hover-cell">
           <span v-if="hoverOn">
-            {{ getHoverValue(d.marketValueId) | formatCurrency(',.0f') }}m
+            {{ getHoverValue(d.marketValueId) | formatValue('$') }}
           </span>
           <span v-if="!hoverOn && focusOn">
-            {{ getFocusValue(d.marketValueId) | formatCurrency(',.0f') }}m
+            {{ getFocusValue(d.marketValueId) | formatValue('$') }}
           </span>
           <span v-if="!hoverOn && !focusOn">
-            {{ summary[d.id].marketValue | formatCurrency(',.0f') }}m
+            {{ summary[d.id].marketValue | formatValue('$') }}
           </span>
         </td>
 
@@ -174,13 +174,13 @@
           v-if="hasMarketValue"
           class="align-right hover-cell cell-value">
           <span v-if="hoverOn">
-            {{ hoverTotalMarketValue | formatCurrency(',.0f') }}
+            {{ hoverTotalMarketValue | formatValue('$') }}
           </span>
           <span v-if="!hoverOn && focusOn">
-            {{ focusTotalMarketValue | formatCurrency(',.0f') }}
+            {{ focusTotalMarketValue | formatValue('$') }}
           </span>
           <span v-if="!hoverOn && !focusOn">
-            {{ summary.totalMarketValue | formatCurrency(',.0f') }}
+            {{ summary.totalMarketValue | formatValue('$') }}
           </span>
         </th>
 
@@ -309,9 +309,12 @@ export default {
         ? FT.FUEL_TECH_LABEL[this.units[0].fuelTechLabel]
         : null
     },
-    getFirstUnitEmission() {
-      return this.units.length > 0 ? this.units[0].emissionIntensity : null
+    getFirstUnitFuelTechColour() {
+      return this.units.length > 0
+        ? FT.DEFAULT_FUEL_TECH_COLOUR[this.units[0].fuelTechLabel]
+        : null
     },
+
     startTime() {
       if (this.dataset.length > 0) {
         return this.dataset[0].time
@@ -664,6 +667,10 @@ table {
   td {
     border-bottom: 1px solid #ddd;
     cursor: pointer;
+  }
+
+  .unit-name {
+    white-space: nowrap;
   }
 
   tfoot {
