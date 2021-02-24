@@ -16,7 +16,7 @@
 
     <template v-slot:label-unit>
       <strong>Market Turnover</strong>
-      <small>$</small>
+      <small>$m</small>
     </template>
 
     <template
@@ -24,7 +24,7 @@
       v-if="!readOnly || !hoverValue">
       Total
       <strong>
-        {{ total | formatCurrency(',.0f') }}
+        {{ total | formatCurrency(',.0f') }}m
       </strong>
     </template>
 
@@ -40,12 +40,12 @@
           :style="{ 'background-color': hoverDomainColour }"
           class="colour-square" />
         {{ hoverDomainLabel }}
-        <strong>{{ hoverValue | formatCurrency(',.0f') }}</strong>
+        <strong>{{ hoverValue | formatCurrency(',.0f') }}m</strong>
       </span>
 
       <span>
         <span v-if="showHover">Total</span>
-        <strong>{{ hoverTotal | formatCurrency(',.0f') }}</strong>
+        <strong>{{ hoverTotal | formatCurrency(',.0f') }}m</strong>
       </span>
     </template>
   </chart-header>

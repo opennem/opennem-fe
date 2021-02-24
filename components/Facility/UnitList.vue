@@ -123,13 +123,13 @@
           v-if="hasMarketValue"
           class="align-right hover-cell">
           <span v-if="hoverOn">
-            {{ getHoverValue(d.marketValueId) | formatCurrency(',.0f') }}
+            {{ getHoverValue(d.marketValueId) | formatCurrency(',.0f') }}m
           </span>
           <span v-if="!hoverOn && focusOn">
-            {{ getFocusValue(d.marketValueId) | formatCurrency(',.0f') }}
+            {{ getFocusValue(d.marketValueId) | formatCurrency(',.0f') }}m
           </span>
           <span v-if="!hoverOn && !focusOn">
-            {{ summary[d.id].marketValue | formatCurrency(',.0f') }}
+            {{ summary[d.id].marketValue | formatCurrency(',.0f') }}m
           </span>
         </td>
 
