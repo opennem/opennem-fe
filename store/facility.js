@@ -28,6 +28,7 @@ const getApiBaseUrl = () => {
       host.startsWith('192'))
   ) {
     apiBaseUrl = `/api`
+    // apiBaseUrl = `/`
   }
 
   if (host && host.startsWith('dev')) {
@@ -221,6 +222,7 @@ export const actions = {
     console.log('fetching', facilityCode)
     const encode = encodeURIComponent(facilityCode)
     const ref = stationPath(encode)
+    // const ref = '/test-data/BAYSW.json'
 
     commit('fetchingFacility', true)
     commit('selectedFacility', null)
@@ -272,6 +274,7 @@ export const actions = {
     const type = isPowerRange(range) ? 'power' : 'energy'
     const query = isPowerRange(range) ? '?period=7d' : `?period=${period}`
     const ref = statsPath(type, networkRegion, encode, query)
+    // const ref = '/test-data/BAYSW_All_1M.json'
 
     if (request) {
       request.cancel('Operation cancelled by the user.')
@@ -307,39 +310,38 @@ export const actions = {
           domainMarketValue
         } = dataProcess(response.data.data, range, interval)
 
-        const mapColours = (domains, d) => {
-          const find = domains.find(e => e.code === d)
-          if (find) {
-            return {
-              colour: facilityFuelTechsColours[d],
-              domain: find.id,
-              id: find.id,
-              code: d,
-              label: d,
-              type: find.type,
-              units: find.units
-            }
+        const domainObj = d => {
+          return {
+            colour: facilityFuelTechsColours[d.code],
+            domain: d.id,
+            id: d.id,
+            code: d.code,
+            label: d.code,
+            type: d.type,
+            units: d.units
           }
         }
-
         const codes = Object.keys(facilityFuelTechsColours)
+        const mappedDomainEmissions = [],
+          mappedDomainMarketValue = []
+
+        codes.forEach(c => {
+          const findEmissions = domainEmissions.find(d => d.code === c)
+          const findMarketValue = domainMarketValue.find(d => d.code === c)
+          if (findEmissions) {
+            mappedDomainEmissions.push(domainObj(findEmissions))
+          }
+          if (findMarketValue) {
+            mappedDomainMarketValue.push(domainObj(findMarketValue))
+          }
+        })
 
         commit('selectedFacilityUnitsDataset', dataset)
         commit('selectedFacilityUnitsDatasetFlat', datasetFlat)
         commit('selectedFacilityUnits', domainPowerEnergy)
         commit('domainPowerEnergy', domainPowerEnergy)
-        commit(
-          'domainEmissions',
-          domainEmissions.length > 0
-            ? codes.map(d => mapColours(domainEmissions, d)).reverse()
-            : []
-        )
-        commit(
-          'domainMarketValue',
-          domainMarketValue.length > 0
-            ? codes.map(d => mapColours(domainMarketValue, d)).reverse()
-            : []
-        )
+        commit('domainEmissions', mappedDomainEmissions.reverse())
+        commit('domainMarketValue', mappedDomainMarketValue.reverse())
         commit(
           'domainVolWeightedPrices',
           domainMarketValue.length > 0 ? getVolWeightedPriceDomains() : []
