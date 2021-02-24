@@ -122,6 +122,7 @@
             :prop-name="'code'"
             :show-x-axis="true"
             :average-emissions="averageEmissions"
+            :vis-height="250"
             @dateHover="handleDateHover"
             @isHovering="handleIsHovering"
             @zoomExtent="handleZoomExtent"

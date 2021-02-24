@@ -36,7 +36,7 @@
       :curve="chartCurve"
       :y-min="isTypeArea ? yMin : 0"
       :y-max="isTypeArea ? yMax : 100"
-      :vis-height="200"
+      :vis-height="visHeight"
       :show-x-axis="showXAxis"
       :show-tooltip="false"
       :show-zoom-out="showXAxis"
@@ -66,7 +66,7 @@
 
     <multi-line
       v-if="chartShown && isTypeLine"
-      :svg-height="200"
+      :svg-height="visHeight"
       :domains1="domains"
       :dataset1="dataset"
       :y1-max="yLineMax"
@@ -164,6 +164,10 @@ export default {
     showXAxis: {
       type: Boolean,
       default: false
+    },
+    visHeight: {
+      type: Number,
+      default: 200
     }
   },
 
