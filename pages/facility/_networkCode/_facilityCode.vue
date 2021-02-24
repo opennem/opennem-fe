@@ -33,7 +33,7 @@
         </header>
 
         <Summary
-          v-if="hasDescriptionOrWikiLink"
+          v-if="hasDescription"
           :description="facilityDescription"
           :wiki-link="facilityWikiLink" />
 
@@ -48,7 +48,7 @@
           />
         </transition>
 
-        <div style="position: relative; margin: 2rem 0 1rem; padding-top: 1rem;">
+        <div style="position: relative; margin-bottom: 1rem;">
           <RangeIntervalSelectors
             @rangeChange="handleRangeChange"
             @intervalChange="handleIntervalChange"
@@ -381,8 +381,8 @@ export default {
         ? this.facility.wikipedia_link
         : ''
     },
-    hasDescriptionOrWikiLink() {
-      return this.facilityDescription !== '' || this.facilityWikiLink !== ''
+    hasDescription() {
+      return this.facilityDescription !== ''
     },
     facilityUnits() {
       return this.facility
@@ -914,7 +914,7 @@ header {
     margin-left: 1rem;
     position: absolute;
     right: 0;
-    top: 1.4rem;
+    top: 5px;
   }
 }
 

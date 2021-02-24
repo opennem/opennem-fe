@@ -31,7 +31,7 @@
         :y-max="computedYMax"
         :y-axis-ticks="3"
         :x-ticks="xTicks"
-        :vis-height="200"
+        :vis-height="250"
         :curve="chartCurve"
         :dynamic-extent="zoomExtent"
         :zoomed="zoomExtent.length > 0"
