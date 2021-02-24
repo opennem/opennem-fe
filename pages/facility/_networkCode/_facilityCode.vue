@@ -432,7 +432,10 @@ export default {
         colours[ft] =
           count > 1
             ? quantize(
-                interpolateRgb(colour, colour.copy({ opacity: 1 / count })),
+                interpolateRgb(
+                  colour,
+                  colour.copy({ opacity: 1 / count + 0.3 })
+                ),
                 count
               ).reverse()
             : [colour.formatRgb()]
