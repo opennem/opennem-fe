@@ -345,17 +345,15 @@ export default {
       }
     },
     togglePrefix(prefix) {
-      let updatedPrefix = prefix
-      if (this.isEnergyType) {
-        if (this.isYAxisAveragePower) {
-          updatedPrefix = powerSi.find(p => p !== prefix)
-        } else {
-          updatedPrefix = energySi.find(p => p !== prefix)
-        }
-      } else {
-        updatedPrefix = powerSi.find(p => p !== prefix)
+      const length = this.options.si.length
+      const index = this.options.si.findIndex(p => p === prefix)
+      let nextIndex = index + 1
+
+      if (nextIndex === length) {
+        nextIndex = 0
       }
-      return updatedPrefix
+
+      return this.options.si[nextIndex]
     },
     handleUnitClick() {
       if (!this.isRenewableLineOnly) {
