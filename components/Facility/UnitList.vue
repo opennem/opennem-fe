@@ -29,17 +29,17 @@
           style="width: 100px;">
           <span v-if="(isEnergyType && !isYAxisAveragePower) || (!isEnergyType && !(hoverOn || focusOn))">
             Energy
-            <small>MWh</small>
+            <small>{{ powerEnergyUnit }}</small>
           </span>
 
           <span v-if="isEnergyType && isYAxisAveragePower">
             Av. Power
-            <small>MW</small>
+            <small>{{ powerEnergyUnit }}</small>
           </span>
 
           <span v-if="!isEnergyType && (hoverOn || focusOn)">
             Power
-            <small>MW</small>
+            <small>{{ powerEnergyUnit }}</small>
           </span>
         </th>
 
@@ -96,16 +96,16 @@
 
         <td class="align-right hover-cell">
           <span v-if="hoverOn">
-            {{ getHoverValue(d.id) | formatValue }}
+            {{ convertValue(getHoverValue(d.id)) | formatValue }}
           </span>
           <span v-if="!hoverOn && focusOn">
-            {{ getFocusValue(d.id) | formatValue }}
+            {{ convertValue(getFocusValue(d.id)) | formatValue }}
           </span>
           <span v-if="!hoverOn && !focusOn && !isYAxisAveragePower">
-            {{ summary[d.id].energy | formatValue }}
+            {{ convertValue(summary[d.id].energy) | formatValue }}
           </span>
           <span v-if="!hoverOn && !focusOn && isYAxisAveragePower">
-            {{ summary[d.id].avPower | formatValue }}
+            {{ convertValue(summary[d.id].avPower) | formatValue }}
           </span>
         </td>
 
@@ -155,16 +155,16 @@
 
         <th class="align-right hover-cell cell-value">
           <span v-if="hoverOn">
-            {{ hoverTotal | formatValue }}
+            {{ convertValue(hoverTotal) | formatValue }}
           </span>
           <span v-if="!hoverOn && focusOn">
-            {{ focusTotal | formatValue }}
+            {{ convertValue(focusTotal) | formatValue }}
           </span>
           <span v-if="!hoverOn && !focusOn && !isYAxisAveragePower">
-            {{ summary.totalEnergy | formatValue }}
+            {{ convertValue(summary.totalEnergy) | formatValue }}
           </span>
           <span v-if="!hoverOn && !focusOn && isYAxisAveragePower">
-            {{ summary.totalAvPower | formatValue }}
+            {{ convertValue(summary.totalAvPower) | formatValue }}
           </span>
         </th>
 
@@ -235,6 +235,10 @@ export default {
       type: Array,
       default: () => []
     },
+    powerEnergyUnit: {
+      type: String,
+      default: () => ''
+    },
     dataset: {
       type: Array,
       default: () => []
@@ -274,6 +278,10 @@ export default {
     hasMarketValue: {
       type: Boolean,
       default: false
+    },
+    convertValue: {
+      type: Function,
+      default: d => d
     }
   },
 

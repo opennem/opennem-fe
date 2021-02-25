@@ -204,6 +204,7 @@
           <UnitList
             :ready="!fetchingStats"
             :is-energy-type="isEnergyType"
+            :power-energy-unit="` ${isEnergyType && !isYAxisAveragePower ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
             :is-y-axis-average-power="isYAxisAveragePower"
             :units="unitsSummary"
             :hover-on="isHovering"
@@ -216,6 +217,7 @@
             :range="range"
             :interval="interval"
             :has-market-value="domainMarketValue.length > 0"
+            :convert-value="convertValue"
             class="unit-list"
             @codeHover="handleCodeHover"
             @codeClick="handleCodeClick"
