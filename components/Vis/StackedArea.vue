@@ -159,7 +159,6 @@ import { brushX } from 'd3-brush'
 import { timeFormat as d3Timeformat } from 'd3-time-format'
 import debounce from 'lodash.debounce'
 
-import millisecondsByInterval from '~/constants/millisecondsByInterval.js'
 import {
   INTERVAL_5MIN,
   INTERVAL_30MIN,
@@ -178,6 +177,7 @@ import * as CONFIG from './shared/config.js'
 import axisTimeFormat from './shared/timeFormat.js'
 import axisSecondaryTimeFormat from './shared/secondaryTimeFormat.js'
 import DateDisplay from '~/services/DateDisplay.js'
+import { getNextDateByInterval } from '@/services/datetime-helpers.js'
 import AxisTimeFormats from '~/services/axisTimeFormats.js'
 
 export default {
@@ -427,15 +427,16 @@ export default {
           this.range !== '1D' && this.range !== '3D' && this.range !== '7D'
         if (isEnergyType) {
           const updated = _cloneDeep(this.dataset)
-          const lastSecondItem = _cloneDeep(updated[updated.length - 2])
           const lastItem = _cloneDeep(updated[updated.length - 1])
-          const intervalTime =
-            this.dataset.length > 1
-              ? lastItem.time - lastSecondItem.time
-              : millisecondsByInterval[this.interval]
 
-          lastItem.time = lastItem.time + intervalTime
-          lastItem.date = new Date(lastItem.time)
+          const nextDate = getNextDateByInterval(
+            lastItem.date,
+            this.interval,
+            this.filterPeriod !== 'All'
+          )
+          lastItem.date = nextDate
+          lastItem.time = nextDate.getTime()
+
           updated.push(lastItem)
           return updated
         }
