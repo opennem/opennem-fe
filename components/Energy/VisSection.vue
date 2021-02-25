@@ -2,9 +2,22 @@
   <section>
     <power-energy-chart
       v-if="ready"
+      :power-energy-dataset="currentDataset"
+      :domain-power-energy="currentDomainPowerEnergy"
+      :hidden-domains="hiddenFuelTechs"
+      :range="range"
+      :interval="interval"
+      :by-generation="byGeneration"
+      :compare-dates="compareDates"
       :hover-on="isHovering"
       :hover-date="hoverDate"
       :zoom-extent="zoomExtent"
+      :renewables-line-colour="renewablesLineColour"
+      :prop-name="propName"
+      :chart-height="chartHeight"
+      :filter-period="filterPeriod"
+      :incomplete-intervals="incompleteIntervals"
+      :is-energy-type="isEnergyType"
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
@@ -31,7 +44,8 @@
       :zoom-extent="zoomExtent"
       :average-emissions="averageEmissions"
       :hidden-domains="hiddenFuelTechs"
-      :prop-name="fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'"
+      :prop-name="propName"
+      :incomplete-intervals="incompleteIntervals"
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
@@ -86,6 +100,7 @@ import _cloneDeep from 'lodash.clonedeep'
 import addYears from 'date-fns/addYears'
 
 import DateDisplay from '@/services/DateDisplay.js'
+import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
 import PowerEnergyChart from '@/components/Energy/Charts/PowerEnergyChart'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
 import EmissionIntensityChart from '@/components/Charts/EmissionIntensityChart'
@@ -127,6 +142,8 @@ export default {
 
   computed: {
     ...mapGetters({
+      tabletBreak: 'app/tabletBreak',
+
       range: 'range',
       interval: 'interval',
       compareDifference: 'compareDifference',
@@ -134,10 +151,13 @@ export default {
       filterPeriod: 'filterPeriod',
       fuelTechGroupName: 'fuelTechGroupName',
       hiddenFuelTechs: 'hiddenFuelTechs',
+      percentContributionTo: 'percentContributionTo',
 
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
+
       ready: 'regionEnergy/ready',
+      isEnergyType: 'regionEnergy/isEnergyType',
       currentDataset: 'regionEnergy/currentDataset',
       domainEmissions: 'regionEnergy/domainEmissions',
       domainTemperature: 'regionEnergy/domainTemperature',
@@ -151,10 +171,47 @@ export default {
 
       featureEmissions: 'feature/emissions'
     }),
+
+    regionId() {
+      return this.$route.params.region
+    },
+
     domains() {
       return this.currentDomainPowerEnergy
         ? _cloneDeep(this.currentDomainPowerEnergy).reverse()
         : []
+    },
+
+    byGeneration() {
+      return this.percentContributionTo === 'generation'
+    },
+
+    renewablesLineColour() {
+      return this.fuelTechGroupName === 'Renewable/Fossil' ||
+        this.fuelTechGroupName === 'Flexibility'
+        ? '#e34a33'
+        : '#52BCA3'
+    },
+
+    propName() {
+      return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+    },
+
+    chartHeight() {
+      let height = 330
+      if (this.regionId === 'nem' && !this.tabletBreak) {
+        height = 520
+      }
+      return height
+    },
+
+    incompleteIntervals() {
+      return GetIncompleteIntervals({
+        dataset: this.currentDataset,
+        range: this.range,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod
+      })
     }
   },
 

@@ -95,10 +95,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import { min, max } from 'd3-array'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
-import addWeeks from 'date-fns/addWeeks'
-import addMonths from 'date-fns/addMonths'
-import addQuarters from 'date-fns/addQuarters'
-import addYears from 'date-fns/addYears'
+
 import AxisTimeFormats from '@/services/axisTimeFormats.js'
 import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import * as OPTIONS from '@/constants/chart-options.js'
@@ -168,6 +165,10 @@ export default {
     visHeight: {
       type: Number,
       default: 200
+    },
+    incompleteIntervals: {
+      type: Array,
+      default: () => []
     }
   },
 
@@ -433,49 +434,6 @@ export default {
         })
       }
       return this.convertValue(total)
-    },
-    incompleteIntervals() {
-      const incompletes = []
-      const filtered = this.emissionsDataset.filter(d => d._isIncompleteBucket)
-      filtered.forEach(f => {
-        if (this.interval === 'Week') {
-          incompletes.push({
-            start: f.date,
-            end: addWeeks(f.date, 1)
-          })
-        }
-        if (this.range === '1Y' && this.interval === 'Month') {
-          incompletes.push({
-            start: f.date,
-            end: addMonths(f.date, 1)
-          })
-        }
-        if (this.interval === 'Season') {
-          incompletes.push({
-            start: f.date,
-            end: addMonths(f.date, 3)
-          })
-        }
-        if (this.interval === 'Quarter') {
-          incompletes.push({
-            start: f.date,
-            end: addQuarters(f.date, 1)
-          })
-        }
-        if (this.interval === 'Half Year') {
-          incompletes.push({
-            start: f.date,
-            end: addMonths(f.date, 6)
-          })
-        }
-        if (this.interval === 'Year' || this.interval === 'Fin Year') {
-          incompletes.push({
-            start: f.date,
-            end: addYears(f.date, 1)
-          })
-        }
-      })
-      return incompletes
     }
   },
 

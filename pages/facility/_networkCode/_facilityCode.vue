@@ -123,6 +123,7 @@
             :show-x-axis="true"
             :average-emissions="averageEmissions"
             :vis-height="250"
+            :incomplete-intervals="incompleteIntervals"
             @dateHover="handleDateHover"
             @isHovering="handleIsHovering"
             @zoomExtent="handleZoomExtent"
@@ -260,6 +261,7 @@ import * as OPTIONS from '@/constants/chart-options.js'
 import { FACILITY_OPERATING } from '@/constants/facility-status.js'
 import EnergyToAveragePower from '@/data/transform/energy-to-average-power.js'
 import DateDisplay from '@/services/DateDisplay.js'
+import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
 import RangeIntervalSelectors from '@/components/Facility/RangeIntervalSelectors.vue'
 import PowerChart from '@/components/Facility/Charts/PowerChart.vue'
 import UnitList from '@/components/Facility/UnitList.vue'
@@ -633,6 +635,15 @@ export default {
 
       // this.$emit('displayUnit', unit)
       return unit
+    },
+
+    incompleteIntervals() {
+      return GetIncompleteIntervals({
+        dataset: this.selectedFacilityUnitsDataset,
+        range: this.range,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod
+      })
     }
   },
 

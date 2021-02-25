@@ -133,10 +133,6 @@ import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { min, max } from 'd3-array'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
-import addWeeks from 'date-fns/addWeeks'
-import addMonths from 'date-fns/addMonths'
-import addQuarters from 'date-fns/addQuarters'
-import addYears from 'date-fns/addYears'
 
 import AxisTimeFormats from '@/services/axisTimeFormats.js'
 
@@ -159,6 +155,18 @@ export default {
   },
 
   props: {
+    powerEnergyDataset: {
+      type: Array,
+      default: () => []
+    },
+    domainPowerEnergy: {
+      type: Array,
+      default: () => []
+    },
+    hiddenDomains: {
+      type: Array,
+      default: () => []
+    },
     hoverOn: {
       type: Boolean,
       default: false
@@ -174,12 +182,53 @@ export default {
     readOnly: {
       type: Boolean,
       default: false
+    },
+    range: {
+      type: String,
+      default: ''
+    },
+    interval: {
+      type: String,
+      default: ''
+    },
+    byGeneration: {
+      type: Boolean,
+      default: true
+    },
+    compareDates: {
+      type: Array,
+      default: () => []
+    },
+    renewablesLineColour: {
+      type: String,
+      default: '#52BCA3'
+    },
+    propName: {
+      type: String,
+      default: ''
+    },
+    chartHeight: {
+      type: Number,
+      default: 300
+    },
+    filterPeriod: {
+      type: String,
+      default: 'All'
+    },
+    incompleteIntervals: {
+      type: Array,
+      default: () => []
+    },
+    isEnergyType: {
+      type: Boolean,
+      default: false
     }
   },
 
   computed: {
     ...mapGetters({
       tabletBreak: 'app/tabletBreak',
+
       hoverDomain: 'visInteract/hoverDomain',
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
@@ -188,9 +237,9 @@ export default {
       visTickFormat: 'visInteract/tickFormat',
       visSecondTickFormat: 'visInteract/secondTickFormat',
       highlightDomain: 'visInteract/highlightDomain',
+
       chartShown: 'chartOptionsPowerEnergy/chartShown',
       chartType: 'chartOptionsPowerEnergy/chartType',
-
       chartEnergyYAxis: 'chartOptionsPowerEnergy/chartEnergyYAxis',
       chartEnergyCurve: 'chartOptionsPowerEnergy/chartEnergyCurve',
       chartEnergyUnit: 'chartOptionsPowerEnergy/chartEnergyUnit',
@@ -198,7 +247,6 @@ export default {
       chartEnergyDisplayPrefix:
         'chartOptionsPowerEnergy/chartEnergyDisplayPrefix',
       chartEnergyCurrentUnit: 'chartOptionsPowerEnergy/chartEnergyCurrentUnit',
-
       chartPowerCurve: 'chartOptionsPowerEnergy/chartPowerCurve',
       chartPowerYAxis: 'chartOptionsPowerEnergy/chartPowerYAxis',
       chartPowerUnit: 'chartOptionsPowerEnergy/chartPowerUnit',
@@ -206,25 +254,9 @@ export default {
       chartPowerDisplayPrefix:
         'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
       chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
-
       chartEnergyRenewablesLine:
-        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
-      range: 'range',
-      interval: 'interval',
-      compareDates: 'compareDates',
-      percentContributionTo: 'percentContributionTo',
-      fuelTechGroupName: 'fuelTechGroupName',
-      filterPeriod: 'filterPeriod',
-      hiddenFuelTechs: 'hiddenFuelTechs',
-      isEnergyType: 'regionEnergy/isEnergyType',
-      currentDataset: 'regionEnergy/currentDataset',
-      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
-      summary: 'regionEnergy/summary',
-      filteredDates: 'regionEnergy/filteredDates'
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine'
     }),
-    regionId() {
-      return this.$route.params.region
-    },
 
     tickFormat() {
       if (typeof this.visTickFormat === 'string') {
@@ -234,14 +266,6 @@ export default {
     },
     secondTickFormat() {
       return AxisTimeFormats[this.visSecondTickFormat]
-    },
-
-    chartHeight() {
-      let height = 330
-      if (this.regionId === 'nem' && !this.tabletBreak) {
-        height = 520
-      }
-      return height
     },
 
     chartYAxis() {
@@ -298,24 +322,17 @@ export default {
       return this.chartYAxis === OPTIONS.CHART_YAXIS_AVERAGE_POWER
     },
 
-    calculateByGeneration() {
-      return this.percentContributionTo === 'generation'
-    },
-
-    property() {
-      return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
-    },
-
     domains() {
       const domains = this.isTypeArea
         ? this.powerEnergyDomains
         : this.energyPercentDomains
-      const hidden = this.hiddenFuelTechs
-      return domains.filter(d => !_includes(hidden, d[this.property]))
+      return domains.filter(
+        d => !_includes(this.hiddenDomains, d[this.propName])
+      )
     },
     powerEnergyDomains() {
-      return this.currentDomainPowerEnergy
-        ? _cloneDeep(this.currentDomainPowerEnergy).reverse()
+      return this.domainPowerEnergy
+        ? _cloneDeep(this.domainPowerEnergy).reverse()
         : []
     },
     energyPercentDomains() {
@@ -324,9 +341,7 @@ export default {
 
     highlightId() {
       const domain = this.highlightDomain
-      const property =
-        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
-      const find = this.domains.find(d => d[property] === domain)
+      const find = this.domains.find(d => d[this.propName] === domain)
       return find ? find.id : ''
     },
 
@@ -374,7 +389,7 @@ export default {
     },
 
     energyPercentDataset() {
-      const dataset = _cloneDeep(this.currentDataset)
+      const dataset = _cloneDeep(this.powerEnergyDataset)
       dataset.forEach((d, i) => {
         let totalNetGeneration = 0,
           min = 0,
@@ -425,7 +440,7 @@ export default {
       return dataset
     },
     energyGrossPercentDataset() {
-      const dataset = this.currentDataset.map(d => {
+      const dataset = this.powerEnergyDataset.map(d => {
         const obj = {
           date: d.date,
           time: d.time,
@@ -460,7 +475,7 @@ export default {
       return dataset
     },
     multiLineEnergyDataset() {
-      const dataset = this.currentDataset.map(d => {
+      const dataset = this.powerEnergyDataset.map(d => {
         const obj = {
           date: d.date,
           time: d.time,
@@ -497,7 +512,7 @@ export default {
     },
     averagePowerDataset() {
       return EnergyToAveragePower({
-        data: this.currentDataset,
+        data: this.powerEnergyDataset,
         domains: this.domains,
         range: this.range,
         interval: this.interval,
@@ -515,7 +530,7 @@ export default {
     stackedAreaDataset() {
       if (this.isTypeArea) {
         if (this.isYAxisAbsolute) {
-          return this.currentDataset
+          return this.powerEnergyDataset
         }
         // else return average power
         return this.averagePowerDataset
@@ -573,25 +588,20 @@ export default {
       return this.getMaxValue(dataset)
     },
 
-    renewablesLineColour() {
-      return this.fuelTechGroupName === 'Renewable/Fossil' ||
-        this.fuelTechGroupName === 'Flexibility'
-        ? '#e34a33'
-        : '#52BCA3'
-    },
     renewablesPercentageDataset() {
-      const d = this.currentDataset.map(d => {
+      const d = this.powerEnergyDataset.map(d => {
         return {
           date: d.date,
           time: d.time,
           renewables: d._totalRenewables,
-          value: this.calculateByGeneration
+          value: this.byGeneration
             ? d._totalGenerationRenewablesPercentage
             : d._totalDemandRenewablesPercentage
         }
       })
       return d
     },
+
     renewablesMax() {
       let m = max(this.renewablesPercentageDataset, d => d.value)
       return m < 100 ? 100 : m
@@ -601,20 +611,20 @@ export default {
     },
 
     averageEnergy() {
-      let average = this.summary ? this.summary._averageEnergy : 0
-      if (this.isYAxisAveragePower) {
-        const dataset =
-          this.filteredDates.length > 0
-            ? this.averagePowerDataset.filter(
-                d =>
-                  d.time >= this.filteredDates[0].getTime() &&
-                  d.time <= this.filteredDates[1].getTime() - 1
-              )
-            : this.averagePowerDataset
+      const dataset = this.isYAxisAveragePower
+        ? this.averagePowerDataset
+        : this.stackedAreaDataset
+      const filteredDataset =
+        this.zoomExtent.length > 0
+          ? dataset.filter(
+              d =>
+                d.time >= this.zoomExtent[0].getTime() &&
+                d.time <= this.zoomExtent[1].getTime() - 1
+            )
+          : dataset
 
-        const totalPower = dataset.reduce((a, b) => a + b._total, 0)
-        average = totalPower / dataset.length
-      }
+      const total = filteredDataset.reduce((a, b) => a + b._total, 0)
+      const average = total / filteredDataset.length
       return this.convertValue(average)
     },
 
@@ -668,16 +678,14 @@ export default {
         : ''
     },
     hoverDomainLabel() {
-      const find = this.currentDomainPowerEnergy.find(
+      const find = this.domainPowerEnergy.find(
         d => d.id === this.hoverPowerEnergyDomain
       )
       return find ? find.label : '—'
     },
     hoverDomainColour() {
-      const find = this.currentDomainPowerEnergy
-        ? this.currentDomainPowerEnergy.find(
-            d => d.id === this.hoverPowerEnergyDomain
-          )
+      const find = this.domainPowerEnergy
+        ? this.domainPowerEnergy.find(d => d.id === this.hoverPowerEnergyDomain)
         : null
       return find ? find.colour : '—'
     },
@@ -704,62 +712,9 @@ export default {
       if (!this.hoverData) {
         return 0
       }
-      return this.calculateByGeneration
+      return this.byGeneration
         ? this.hoverData._totalGenerationRenewablesPercentage
         : this.hoverData._totalDemandRenewablesPercentage
-    },
-
-    incompleteIntervals() {
-      const incompletes = []
-      const filtered = this.dataset.filter(d => d._isIncompleteBucket)
-      filtered.forEach(f => {
-        if (this.interval === 'Week') {
-          incompletes.push({
-            start: f.date,
-            end: addWeeks(f.date, 1)
-          })
-        }
-        if (this.range === '1Y' && this.interval === 'Month') {
-          incompletes.push({
-            start: f.date,
-            end: addMonths(f.date, 1)
-          })
-        }
-        if (this.interval === 'Season') {
-          incompletes.push({
-            start: f.date,
-            end:
-              this.filterPeriod === 'All'
-                ? addMonths(f.date, 3)
-                : addYears(f.date, 1)
-          })
-        }
-        if (this.interval === 'Quarter') {
-          incompletes.push({
-            start: f.date,
-            end:
-              this.filterPeriod === 'All'
-                ? addQuarters(f.date, 1)
-                : addYears(f.date, 1)
-          })
-        }
-        if (this.interval === 'Half Year') {
-          incompletes.push({
-            start: f.date,
-            end:
-              this.filterPeriod === 'All'
-                ? addMonths(f.date, 6)
-                : addYears(f.date, 1)
-          })
-        }
-        if (this.interval === 'Year' || this.interval === 'Fin Year') {
-          incompletes.push({
-            start: f.date,
-            end: addYears(f.date, 1)
-          })
-        }
-      })
-      return incompletes
     }
   },
 
