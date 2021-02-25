@@ -110,6 +110,28 @@
             @svgClick="handleSvgClick"
           />
 
+          <PowerEnergyChart
+            v-if="!fetchingStats && selectedFacilityUnitsDataset.length > 0 && isEnergyChartShown"
+            :power-energy-dataset="selectedFacilityUnitsDataset"
+            :domain-power-energy="powerEnergyDomains"
+            :range="range"
+            :interval="interval"
+            :hover-on="isHovering"
+            :hover-date="hoverDate"
+            :zoom-extent="zoomExtent"
+            :prop-name="'code'"
+            :chart-height="250"
+            :y-max="facilityRegisteredCapacity"
+            :incomplete-intervals="incompleteIntervals"
+            :is-energy-type="isEnergyType"
+            :power-options="powerOptions"
+            :energy-options="energyOptions"
+            @dateHover="handleDateHover"
+            @isHovering="handleIsHovering"
+            @zoomExtent="handleZoomExtent"
+            @svgClick="handleSvgClick"
+          />
+
           <EmissionsChart
             v-if="!fetchingStats && domainEmissions.length > 0 && !isEnergyChartShown"
             :emissions-dataset="selectedFacilityUnitsDataset"
@@ -232,7 +254,7 @@
 
       <DonutVis
         v-if="!fetchingStats && powerEnergyDomains.length > 1"
-        :unit="` ${isEnergyType ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
+        :unit="` ${isEnergyType && !isYAxisAveragePower ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
         :domains="powerEnergyDomains"
         :dataset="datasetFilteredByZoomExtent"
         :dynamic-extent="zoomExtent"
@@ -241,6 +263,8 @@
         :focus-on="isFocusing"
         :focus-date="focusDate"
         :highlight-domain="highlightDomain"
+        :convert-value="convertValue"
+        :is-power-type="!isEnergyType || (isEnergyType && isYAxisAveragePower)"
         style="margin-top: 2rem; padding-top: 2rem;"
       />
     </section>
@@ -264,6 +288,7 @@ import DateDisplay from '@/services/DateDisplay.js'
 import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
 import RangeIntervalSelectors from '@/components/Facility/RangeIntervalSelectors.vue'
 import PowerChart from '@/components/Facility/Charts/PowerChart.vue'
+import PowerEnergyChart from '@/components/Energy/Charts/PowerEnergyChart'
 import UnitList from '@/components/Facility/UnitList.vue'
 import PhotoMap from '@/components/Facility/PhotoMap.vue'
 import FacilityProperties from '@/components/Facility/Properties.vue'
@@ -288,6 +313,29 @@ const chartTypeOptions = [
   }
 ]
 
+const powerOptions = {
+  type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_STACKED],
+  curve: [
+    OPTIONS.CHART_CURVE_SMOOTH,
+    OPTIONS.CHART_CURVE_STEP,
+    OPTIONS.CHART_CURVE_STRAIGHT
+  ],
+  yAxis: [OPTIONS.CHART_YAXIS_ABSOLUTE, OPTIONS.CHART_YAXIS_PERCENTAGE]
+}
+const energyOptions = {
+  type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_STACKED],
+  curve: [
+    OPTIONS.CHART_CURVE_SMOOTH,
+    OPTIONS.CHART_CURVE_STEP,
+    OPTIONS.CHART_CURVE_STRAIGHT
+  ],
+  yAxis: [
+    OPTIONS.CHART_YAXIS_ENERGY,
+    OPTIONS.CHART_YAXIS_AVERAGE_POWER,
+    OPTIONS.CHART_YAXIS_PERCENTAGE
+  ]
+}
+
 export default {
   layout: 'facility',
 
@@ -308,6 +356,7 @@ export default {
     Loader,
     Dropdown,
 
+    PowerEnergyChart,
     EmissionsChart,
     EmissionIntensityChart,
     MarketValueChart,
@@ -323,7 +372,9 @@ export default {
       hoverDate: null,
       showChartType: chartTypeOptions[0].label,
       chartTypeOptions,
-      hiddenCodes: []
+      hiddenCodes: [],
+      powerOptions,
+      energyOptions
     }
   },
 
@@ -350,6 +401,13 @@ export default {
       chartPowerCurve: 'chartOptionsPowerEnergy/chartPowerCurve',
       chartEnergyCurrentUnit: 'chartOptionsPowerEnergy/chartEnergyCurrentUnit',
       chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
+      chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
+      chartEnergyDisplayPrefix:
+        'chartOptionsPowerEnergy/chartEnergyDisplayPrefix',
+      chartEnergyCurrentUnit: 'chartOptionsPowerEnergy/chartEnergyCurrentUnit',
+      chartPowerUnitPrefix: 'chartOptionsPowerEnergy/chartPowerUnitPrefix',
+      chartPowerDisplayPrefix:
+        'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
 
       isFocusing: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
@@ -362,6 +420,16 @@ export default {
     },
     isEnergyChartShown() {
       return this.showChartType === chartTypeOptions[0].label
+    },
+    chartUnitPrefix() {
+      return this.isEnergyType && !this.isYAxisAveragePower
+        ? this.chartEnergyUnitPrefix
+        : this.chartPowerUnitPrefix
+    },
+    chartDisplayPrefix() {
+      return this.isEnergyType && !this.isYAxisAveragePower
+        ? this.chartEnergyDisplayPrefix
+        : this.chartPowerDisplayPrefix
     },
     facilityCode() {
       return this.$route.params.facilityCode
@@ -496,9 +564,9 @@ export default {
       return this.unitsSummary.filter(d => d.status === FACILITY_OPERATING)
     },
     powerEnergyDomains() {
-      return this.operatingDomains.filter(
-        d => !_includes(this.hiddenCodes, d.code)
-      )
+      return this.operatingDomains
+        .filter(d => !_includes(this.hiddenCodes, d.code))
+        .reverse()
     },
     emissionsDomains() {
       return this.domainEmissions.filter(
@@ -661,6 +729,19 @@ export default {
           start: dataset[0].time,
           end: dataset[dataset.length - 1].time
         })
+
+        const yGuides =
+          this.dataType === 'power' ||
+          (this.dataType === 'energy' && this.isYAxisAveragePower)
+            ? [
+                {
+                  value: this.facilityRegisteredCapacity,
+                  text: 'Registered Capacity'
+                }
+              ]
+            : []
+
+        this.setYGuides(yGuides)
       }
       // clear dates
       this.setFocusDate(null)
@@ -687,6 +768,7 @@ export default {
     ...mapMutations({
       setHighlightDomain: 'visInteract/highlightDomain',
       setFocusDate: 'visInteract/focusDate',
+      setYGuides: 'visInteract/yGuides',
       setQuery: 'app/query'
     }),
     ...mapActions({
@@ -697,6 +779,14 @@ export default {
       doSetChartEnergyPrefixes:
         'chartOptionsPowerEnergy/doSetChartEnergyPrefixes'
     }),
+
+    convertValue(value) {
+      return SI.convertValue(
+        this.chartUnitPrefix,
+        this.chartDisplayPrefix,
+        value
+      )
+    },
 
     getFacility() {
       this.doGetFacilityByCode({

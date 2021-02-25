@@ -10,6 +10,7 @@ export const state = () => ({
   focusDate: null,
   xTicks: null,
   xGuides: null,
+  yGuides: [],
   tickFormat: '',
   secondTickFormat: '',
 
@@ -25,6 +26,7 @@ export const getters = {
   focusDate: state => state.focusDate,
   xTicks: state => state.xTicks,
   xGuides: state => state.xGuides,
+  yGuides: state => state.yGuides,
   tickFormat: state => state.tickFormat,
   secondTickFormat: state => state.secondTickFormat,
 
@@ -52,6 +54,9 @@ export const mutations = {
   },
   xGuides(state, xGuides) {
     state.xGuides = xGuides
+  },
+  yGuides(state, yGuides) {
+    state.yGuides = yGuides
   },
   tickFormat(state, tickFormat) {
     state.tickFormat = tickFormat

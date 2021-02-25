@@ -30,6 +30,8 @@
       :hover-total="hoverTotal"
       :display-unit="displayUnit"
       :display-title="displayTitle"
+      :power-options="powerOptions"
+      :energy-options="energyOptions"
     />
 
     <stacked-area-vis
@@ -41,13 +43,14 @@
       :interval="interval"
       :curve="chartCurve"
       :y-min="isTypeArea ? yMin : 0"
-      :y-max="isTypeArea ? yMax : 100"
+      :y-max="isTypeArea ? computedYMax : 100"
       :vis-height="chartHeight"
       :hover-on="hoverOn"
       :hover-date="hoverDate"
       :dynamic-extent="zoomExtent"
       :zoomed="zoomExtent.length > 0"
       :x-guides="xGuides"
+      :y-guides="yGuides"
       :x-axis-dy="tabletBreak ? 8 : 12"
       :y-axis-ticks="5"
       :compare-dates="compareDates"
@@ -146,6 +149,39 @@ import DateBrush from '@/components/Vis/DateBrush'
 import StackedAreaVis from '@/components/Vis/StackedArea'
 import PowerEnergyChartOptions from '@/components/Energy/Charts/PowerEnergyChartOptions'
 
+const powerOptions = {
+  type: [
+    OPTIONS.CHART_HIDDEN,
+    OPTIONS.CHART_STACKED,
+    OPTIONS.CHART_PROPORTION,
+    OPTIONS.CHART_LINE
+  ],
+  curve: [
+    OPTIONS.CHART_CURVE_SMOOTH,
+    OPTIONS.CHART_CURVE_STEP,
+    OPTIONS.CHART_CURVE_STRAIGHT
+  ],
+  yAxis: [OPTIONS.CHART_YAXIS_ABSOLUTE, OPTIONS.CHART_YAXIS_PERCENTAGE]
+}
+const energyOptions = {
+  type: [
+    OPTIONS.CHART_HIDDEN,
+    OPTIONS.CHART_STACKED,
+    OPTIONS.CHART_PROPORTION,
+    OPTIONS.CHART_LINE
+  ],
+  curve: [
+    OPTIONS.CHART_CURVE_SMOOTH,
+    OPTIONS.CHART_CURVE_STEP,
+    OPTIONS.CHART_CURVE_STRAIGHT
+  ],
+  yAxis: [
+    OPTIONS.CHART_YAXIS_ENERGY,
+    OPTIONS.CHART_YAXIS_AVERAGE_POWER,
+    OPTIONS.CHART_YAXIS_PERCENTAGE
+  ]
+}
+
 export default {
   components: {
     PowerEnergyChartOptions,
@@ -222,6 +258,22 @@ export default {
     isEnergyType: {
       type: Boolean,
       default: false
+    },
+    powerOptions: {
+      type: Object,
+      default: () => {
+        return _cloneDeep(powerOptions)
+      }
+    },
+    energyOptions: {
+      type: Object,
+      default: () => {
+        return _cloneDeep(energyOptions)
+      }
+    },
+    yMax: {
+      type: Number,
+      default: 0
     }
   },
 
@@ -234,6 +286,7 @@ export default {
       focusDate: 'visInteract/focusDate',
       xTicks: 'visInteract/xTicks',
       xGuides: 'visInteract/xGuides',
+      yGuides: 'visInteract/yGuides',
       visTickFormat: 'visInteract/tickFormat',
       visSecondTickFormat: 'visInteract/secondTickFormat',
       highlightDomain: 'visInteract/highlightDomain',
@@ -567,16 +620,36 @@ export default {
         return min(dataset, d => d._stackedTotalMin)
       }
     },
-    yMax() {
-      const dataset = _cloneDeep(this.stackedAreaDataset)
-      dataset.forEach(d => {
-        let stackedMax = 0
+    // yMax() {
+    //   const dataset = _cloneDeep(this.stackedAreaDataset)
+    //   dataset.forEach(d => {
+    //     let stackedMax = 0
+    //     this.domains.forEach(domain => {
+    //       stackedMax += d[domain.id]
+    //     })
+    //     d._stackedTotalMax = stackedMax
+    //   })
+    //   return max(dataset, d => d._stackedTotalMax)
+    // },
+    computedYMax() {
+      let highest = 0
+
+      this.stackedAreaDataset.forEach(d => {
+        let total = 0
         this.domains.forEach(domain => {
-          stackedMax += d[domain.id]
+          total += d[domain.id] || 0
         })
-        d._stackedTotalMax = stackedMax
+
+        if (total > highest) {
+          highest = total
+        }
       })
-      return max(dataset, d => d._stackedTotalMax)
+
+      if (highest <= this.yMax) {
+        highest = this.yMax
+      }
+
+      return highest + (highest * 10) / 100
     },
     energyLineYMin() {
       const dataset = this.multiLineDataset

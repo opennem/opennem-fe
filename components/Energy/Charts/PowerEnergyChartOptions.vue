@@ -74,7 +74,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import _cloneDeep from 'lodash.clonedeep'
 import EventBus from '@/plugins/eventBus'
 import ChartHeader from '@/components/Vis/ChartHeader'
 import ChartOptions from '@/components/Vis/ChartOptions'
@@ -82,40 +81,7 @@ import * as OPTIONS from '@/constants/chart-options.js'
 import * as SI from '@/constants/si'
 
 const powerSi = [SI.MEGA, SI.GIGA]
-const energySi = [SI.GIGA, SI.TERA]
-
-const powerOptions = {
-  type: [
-    OPTIONS.CHART_HIDDEN,
-    OPTIONS.CHART_STACKED,
-    OPTIONS.CHART_PROPORTION,
-    OPTIONS.CHART_LINE
-  ],
-  curve: [
-    OPTIONS.CHART_CURVE_SMOOTH,
-    OPTIONS.CHART_CURVE_STEP,
-    OPTIONS.CHART_CURVE_STRAIGHT
-  ],
-  yAxis: [OPTIONS.CHART_YAXIS_ABSOLUTE, OPTIONS.CHART_YAXIS_PERCENTAGE]
-}
-const energyOptions = {
-  type: [
-    OPTIONS.CHART_HIDDEN,
-    OPTIONS.CHART_STACKED,
-    OPTIONS.CHART_PROPORTION,
-    OPTIONS.CHART_LINE
-  ],
-  curve: [
-    OPTIONS.CHART_CURVE_SMOOTH,
-    OPTIONS.CHART_CURVE_STEP,
-    OPTIONS.CHART_CURVE_STRAIGHT
-  ],
-  yAxis: [
-    OPTIONS.CHART_YAXIS_ENERGY,
-    OPTIONS.CHART_YAXIS_AVERAGE_POWER,
-    OPTIONS.CHART_YAXIS_PERCENTAGE
-  ]
-}
+const energySi = [SI.MEGA, SI.GIGA, SI.TERA]
 
 export default {
   components: {
@@ -218,6 +184,18 @@ export default {
     readOnly: {
       type: Boolean,
       default: false
+    },
+    powerOptions: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
+    energyOptions: {
+      type: Object,
+      default: () => {
+        return {}
+      }
     }
   },
   data() {
@@ -260,7 +238,7 @@ export default {
     options() {
       let options = []
       if (this.isEnergyType) {
-        options = _cloneDeep(energyOptions)
+        options = this.energyOptions
         if (this.isTypeLine) {
           options.yAxis = [
             OPTIONS.CHART_YAXIS_ENERGY,
@@ -286,7 +264,7 @@ export default {
           options.yAxis = []
         }
       } else {
-        options = _cloneDeep(powerOptions)
+        options = this.powerOptions
         if (this.isTypeArea || (this.isTypeLine && this.isYAxisAbsolute)) {
           options.si = powerSi
         }

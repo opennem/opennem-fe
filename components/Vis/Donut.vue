@@ -81,6 +81,10 @@ export default {
     highlightDomain: {
       type: String,
       default: null
+    },
+    isPowerType: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -164,7 +168,7 @@ export default {
     },
 
     isTotalPower() {
-      return this.unit === ' MW' && (!this.hoverOn && !this.focusOn)
+      return this.isPowerType && (!this.hoverOn && !this.focusOn)
     },
 
     total() {
