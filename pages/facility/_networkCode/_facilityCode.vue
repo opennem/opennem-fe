@@ -86,30 +86,6 @@
               class="facility-chart-loader" />
           </transition>
 
-          <PowerChart
-            v-if="!fetchingStats && stackedAreaDataset.length > 0 && isEnergyChartShown"
-            :hover-on="isHovering"
-            :hover-date="hoverDate"
-            :focus-on="isFocusing"
-            :focus-date="focusDate"
-            :dataset="stackedAreaDataset"
-            :domains="powerEnergyDomains"
-            :zoom-extent="zoomExtent"
-            :facility-id="facilityCode"
-            :y-max="facilityRegisteredCapacity"
-            :chart-title="chartTitle"
-            :chart-shown="chartShown"
-            :chart-type="chartType"
-            :chart-y-axis="chartYAxis"
-            :chart-curve="chartCurve"
-            :is-y-axis-average-power="isYAxisAveragePower"
-            :display-unit="displayUnit"
-            @dateHover="handleDateHover"
-            @isHovering="handleIsHovering"
-            @zoomExtent="handleZoomExtent"
-            @svgClick="handleSvgClick"
-          />
-
           <PowerEnergyChart
             v-if="!fetchingStats && selectedFacilityUnitsDataset.length > 0 && isEnergyChartShown"
             :power-energy-dataset="selectedFacilityUnitsDataset"
@@ -289,7 +265,6 @@ import EnergyToAveragePower from '@/data/transform/energy-to-average-power.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
 import RangeIntervalSelectors from '@/components/Facility/RangeIntervalSelectors.vue'
-import PowerChart from '@/components/Facility/Charts/PowerChart.vue'
 import PowerEnergyChart from '@/components/Energy/Charts/PowerEnergyChart'
 import UnitList from '@/components/Facility/UnitList.vue'
 import PhotoMap from '@/components/Facility/PhotoMap.vue'
@@ -349,7 +324,6 @@ export default {
 
   components: {
     RangeIntervalSelectors,
-    PowerChart,
     UnitList,
     PhotoMap,
 
