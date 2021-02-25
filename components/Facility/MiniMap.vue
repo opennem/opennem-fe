@@ -1,6 +1,6 @@
 <template>
   <section
-    :style="{ height: `${height}px`}"
+    :style="{ height: hasLocation ? `${height}px` : '' }"
     class="mapbox">
     <client-only>
       <transition name="fade">
