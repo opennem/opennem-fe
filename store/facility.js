@@ -322,12 +322,17 @@ export const actions = {
           }
         }
         const codes = Object.keys(facilityFuelTechsColours)
-        const mappedDomainEmissions = [],
+        const mappedDomainPowerEnergy = [],
+          mappedDomainEmissions = [],
           mappedDomainMarketValue = []
 
         codes.forEach(c => {
+          const findPowerEnergy = domainPowerEnergy.find(d => d.code === c)
           const findEmissions = domainEmissions.find(d => d.code === c)
           const findMarketValue = domainMarketValue.find(d => d.code === c)
+          if (findPowerEnergy) {
+            mappedDomainPowerEnergy.push(domainObj(findPowerEnergy))
+          }
           if (findEmissions) {
             mappedDomainEmissions.push(domainObj(findEmissions))
           }
@@ -339,7 +344,7 @@ export const actions = {
         commit('selectedFacilityUnitsDataset', dataset)
         commit('selectedFacilityUnitsDatasetFlat', datasetFlat)
         commit('selectedFacilityUnits', domainPowerEnergy)
-        commit('domainPowerEnergy', domainPowerEnergy)
+        commit('domainPowerEnergy', mappedDomainPowerEnergy.reverse())
         commit('domainEmissions', mappedDomainEmissions.reverse())
         commit('domainMarketValue', mappedDomainMarketValue.reverse())
         commit(
