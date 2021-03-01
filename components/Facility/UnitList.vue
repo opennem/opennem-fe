@@ -69,6 +69,14 @@
           <small>$m</small>
         </th>
 
+        <th
+          v-if="hasMarketValue"
+          class="data-col align-right hover-cell"
+          style="width: 100px;">
+          Av. Value
+          <small>$</small>
+        </th>
+
       </tr>
     </thead>
     <tbody>
@@ -147,6 +155,20 @@
           </span>
         </td>
 
+        <td
+          v-if="hasMarketValue"
+          class="align-right hover-cell">
+          <span v-if="hoverOn">
+            {{ getHoverValue(d.marketValueId) / getHoverValue(d.id) * 1000000 | formatCurrency }}
+          </span>
+          <span v-if="!hoverOn && focusOn">
+            {{ getFocusValue(d.marketValueId) / getFocusValue(d.id) * 1000000 | formatCurrency }}
+          </span>
+          <span v-if="!hoverOn && !focusOn">
+            {{ summary[d.id].marketValue / summary[d.id].energy * 1000000 | formatCurrency }}
+          </span>
+        </td>
+
       </tr>
     </tbody>
 
@@ -197,6 +219,20 @@
           </span>
           <span v-if="!hoverOn && !focusOn">
             {{ summary.totalMarketValue | formatValue('$') }}
+          </span>
+        </th>
+
+        <th
+          v-if="hasMarketValue"
+          class="align-right hover-cell cell-value">
+          <span v-if="hoverOn">
+            {{ hoverTotalVolWeightedPrice | formatCurrency }}
+          </span>
+          <span v-if="!hoverOn && focusOn">
+            {{ focusTotalVolWeightedPrice | formatCurrency }}
+          </span>
+          <span v-if="!hoverOn && !focusOn">
+            {{ summary.volWeightedPrice | formatCurrency }}
           </span>
         </th>
       </tr>
@@ -444,6 +480,11 @@ export default {
         : null
       summary.totalMarketValue = hasData ? totalMarketValue : null
       summary.totalAvMarketValue = hasData ? totalMarketValue / ds.length : null
+      summary.volWeightedPrice = hasData
+        ? this.isEnergyType
+          ? (totalMarketValue / totalEnergy) * 1000000
+          : totalMarketValue / totalPower
+        : null
 
       return summary
     },
@@ -463,6 +504,9 @@ export default {
     hoverTotalMarketValue() {
       return this.getTotal('marketValueId', this.hoverData)
     },
+    hoverTotalVolWeightedPrice() {
+      return this.hoverData ? this.hoverData._volWeightedPrice : null
+    },
 
     focusData() {
       return this.getData(this.focusDate)
@@ -478,6 +522,9 @@ export default {
     },
     focusTotalMarketValue() {
       return this.getTotal('marketValueId', this.focusData)
+    },
+    focusTotalVolWeightedPrice() {
+      return this.focusData ? this.focusData._volWeightedPrice : null
     }
   },
 
