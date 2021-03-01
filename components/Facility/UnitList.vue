@@ -48,14 +48,6 @@
           style="width: 150px;" />
 
         <th
-          v-if="hasMarketValue"
-          class="data-col align-right hover-cell"
-          style="width: 100px;">
-          Market value
-          <small>$m</small>
-        </th>
-
-        <th
           class="align-right"
           style="width: 150px;">
           Registered cap.
@@ -67,6 +59,14 @@
           style="width: 80px;">
           Cap. factor
           <small>%</small>
+        </th>
+
+        <th
+          v-if="hasMarketValue"
+          class="data-col align-right hover-cell"
+          style="width: 100px;">
+          Market value
+          <small>$m</small>
         </th>
 
       </tr>
@@ -119,6 +119,20 @@
           />
         </td>
 
+        <td class="align-right">{{ d.registeredCapacity }}</td>
+
+        <td class="align-right hover-cell">
+          <span v-if="hoverOn">
+            {{ calculateCapacityFactor(getHoverPowerValue(d.id), d.registeredCapacity) | percentageFormatNumber }}
+          </span>
+          <span v-if="!hoverOn && focusOn">
+            {{ calculateCapacityFactor(getFocusPowerValue(d.id), d.registeredCapacity) | percentageFormatNumber }}
+          </span>
+          <span v-if="!hoverOn && !focusOn">
+            {{ summary[d.id].capFactor | percentageFormatNumber }}
+          </span>
+        </td>
+
         <td
           v-if="hasMarketValue"
           class="align-right hover-cell">
@@ -133,19 +147,6 @@
           </span>
         </td>
 
-        <td class="align-right">{{ d.registeredCapacity }}</td>
-
-        <td class="align-right hover-cell">
-          <span v-if="hoverOn">
-            {{ calculateCapacityFactor(getHoverPowerValue(d.id), d.registeredCapacity) | percentageFormatNumber }}
-          </span>
-          <span v-if="!hoverOn && focusOn">
-            {{ calculateCapacityFactor(getFocusPowerValue(d.id), d.registeredCapacity) | percentageFormatNumber }}
-          </span>
-          <span v-if="!hoverOn && !focusOn">
-            {{ summary[d.id].capFactor | percentageFormatNumber }}
-          </span>
-        </td>
       </tr>
     </tbody>
 
@@ -170,20 +171,6 @@
 
         <th v-if="units.length > 1" />
 
-        <th
-          v-if="hasMarketValue"
-          class="align-right hover-cell cell-value">
-          <span v-if="hoverOn">
-            {{ hoverTotalMarketValue | formatValue('$') }}
-          </span>
-          <span v-if="!hoverOn && focusOn">
-            {{ focusTotalMarketValue | formatValue('$') }}
-          </span>
-          <span v-if="!hoverOn && !focusOn">
-            {{ summary.totalMarketValue | formatValue('$') }}
-          </span>
-        </th>
-
         <th class="align-right cell-value">{{ operatingUnitsTotalCapacity }}</th>
 
         <th class="align-right hover-cell cell-value">
@@ -196,6 +183,20 @@
           </span>
           <span v-if="!hoverOn && !focusOn">
             {{ summary.capFactor | percentageFormatNumber }}
+          </span>
+        </th>
+
+        <th
+          v-if="hasMarketValue"
+          class="align-right hover-cell cell-value">
+          <span v-if="hoverOn">
+            {{ hoverTotalMarketValue | formatValue('$') }}
+          </span>
+          <span v-if="!hoverOn && focusOn">
+            {{ focusTotalMarketValue | formatValue('$') }}
+          </span>
+          <span v-if="!hoverOn && !focusOn">
+            {{ summary.totalMarketValue | formatValue('$') }}
           </span>
         </th>
       </tr>
