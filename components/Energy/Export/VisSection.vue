@@ -2,6 +2,17 @@
   <section>
     <power-energy-chart
       v-if="ready && showChartPowerEnergy"
+      :power-energy-dataset="currentDataset"
+      :domain-power-energy="currentDomainPowerEnergy"
+      :hidden-domains="hiddenFuelTechs"
+      :range="range"
+      :interval="interval"
+      :renewables-line-colour="renewablesLineColour"
+      :by-generation="byGeneration"
+      :is-energy-type="isEnergyType"
+      :prop-name="propName"
+      :filter-period="filterPeriod"
+      :incomplete-intervals="incompleteIntervals"
       :read-only="true"
       :zoom-extent="filteredDates"
     />
@@ -16,7 +27,8 @@
       :range="range"
       :interval="interval"
       :hidden-domains="hiddenFuelTechs"
-      :prop-name="fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'"
+      :prop-name="propName"
+      :incomplete-intervals="incompleteIntervals"
     />
 
     <emission-intensity-chart
@@ -51,6 +63,8 @@
 import { mapGetters } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 
+import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
+
 import PowerEnergyChart from '@/components/Energy/Charts/PowerEnergyChart'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
 import EmissionIntensityChart from '@/components/Charts/EmissionIntensityChart'
@@ -72,8 +86,11 @@ export default {
       interval: 'interval',
       fuelTechGroupName: 'fuelTechGroupName',
       hiddenFuelTechs: 'hiddenFuelTechs',
+      filterPeriod: 'filterPeriod',
+      percentContributionTo: 'percentContributionTo',
 
       ready: 'regionEnergy/ready',
+      isEnergyType: 'regionEnergy/isEnergyType',
       filteredDates: 'regionEnergy/filteredDates',
       currentDataset: 'regionEnergy/currentDataset',
       domainEmissions: 'regionEnergy/domainEmissions',
@@ -97,6 +114,26 @@ export default {
       return this.currentDomainPowerEnergy
         ? _cloneDeep(this.currentDomainPowerEnergy).reverse()
         : []
+    },
+    renewablesLineColour() {
+      return this.fuelTechGroupName === 'Renewable/Fossil' ||
+        this.fuelTechGroupName === 'Flexibility'
+        ? '#e34a33'
+        : '#52BCA3'
+    },
+    byGeneration() {
+      return this.percentContributionTo === 'generation'
+    },
+    propName() {
+      return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+    },
+    incompleteIntervals() {
+      return GetIncompleteIntervals({
+        dataset: this.currentDataset,
+        range: this.range,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod
+      })
     }
   }
 }
