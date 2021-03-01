@@ -1,9 +1,11 @@
+import addDays from 'date-fns/addDays'
 import addWeeks from 'date-fns/addWeeks'
 import addMonths from 'date-fns/addMonths'
 import addQuarters from 'date-fns/addQuarters'
 import addYears from 'date-fns/addYears'
 
 import {
+  INTERVAL_DAY,
   INTERVAL_WEEK,
   INTERVAL_MONTH,
   INTERVAL_SEASON,
@@ -15,6 +17,8 @@ import {
 
 export const getNextDateByInterval = (date, interval, isFiltered) => {
   switch (interval) {
+    case INTERVAL_DAY:
+      return addDays(date, 1)
     case INTERVAL_WEEK:
       return addWeeks(date, 1)
     case INTERVAL_MONTH:
