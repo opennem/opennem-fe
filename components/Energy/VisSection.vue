@@ -101,7 +101,7 @@ import addYears from 'date-fns/addYears'
 
 import DateDisplay from '@/services/DateDisplay.js'
 import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
-import PowerEnergyChart from '@/components/Energy/Charts/PowerEnergyChart'
+import PowerEnergyChart from '@/components/Charts/PowerEnergyChart'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
 import EmissionIntensityChart from '@/components/Charts/EmissionIntensityChart'
 import EnergyCompare from '@/components/Energy/Charts/CompareChart'

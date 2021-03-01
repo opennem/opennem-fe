@@ -147,7 +147,7 @@ import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
 import StackedAreaVis from '@/components/Vis/StackedArea'
-import PowerEnergyChartOptions from '@/components/Energy/Charts/PowerEnergyChartOptions'
+import PowerEnergyChartOptions from './PowerEnergyChartOptions'
 
 const powerOptions = {
   type: [

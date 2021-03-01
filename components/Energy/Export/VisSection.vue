@@ -65,7 +65,7 @@ import _cloneDeep from 'lodash.clonedeep'
 
 import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
 
-import PowerEnergyChart from '@/components/Energy/Charts/PowerEnergyChart'
+import PowerEnergyChart from '@/components/Charts/PowerEnergyChart'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
 import EmissionIntensityChart from '@/components/Charts/EmissionIntensityChart'
 import PriceMarketValueChart from '@/components/Charts/PriceMarketValueChart'
