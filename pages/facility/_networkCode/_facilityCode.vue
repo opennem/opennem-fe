@@ -300,7 +300,12 @@ const powerOptions = {
   yAxis: [OPTIONS.CHART_YAXIS_ABSOLUTE, OPTIONS.CHART_YAXIS_PERCENTAGE]
 }
 const energyOptions = {
-  type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_STACKED],
+  type: [
+    OPTIONS.CHART_HIDDEN,
+    OPTIONS.CHART_STACKED,
+    OPTIONS.CHART_PROPORTION,
+    OPTIONS.CHART_LINE
+  ],
   curve: [
     OPTIONS.CHART_CURVE_SMOOTH,
     OPTIONS.CHART_CURVE_STEP,
@@ -460,9 +465,7 @@ export default {
         : ''
     },
     facilityFuelTechsColours() {
-      const fuelTechs = this.facilityUnits.map(d => {
-        return d.fueltech ? d.fueltech.code || d.fueltech : ''
-      })
+      const fuelTechs = this.facilityUnits.map(d => d.fueltech)
 
       // get only unique fuel techs
       const uniqFuelTechs = _uniq(fuelTechs.filter(d => d !== '')).sort()
@@ -532,7 +535,8 @@ export default {
           label: d.code,
           registeredCapacity: d.capacity_registered,
           status: d.status ? d.status.label || d.status : '',
-          fuelTechLabel: d.fueltech ? d.fueltech.label || d.fueltech : ''
+          fuelTechLabel: d.fueltech,
+          category: FT.FUEL_TECH_CATEGORY[d.fueltech]
         }
       })
     },
