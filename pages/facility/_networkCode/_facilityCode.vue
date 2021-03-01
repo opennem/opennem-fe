@@ -646,7 +646,8 @@ export default {
         (a, b) => a + b._totalMarketValue,
         0
       )
-      return totalMarketValue / totalPowerEnergy
+
+      return (totalMarketValue / totalPowerEnergy) * 1000000
     },
 
     chartTitle() {
