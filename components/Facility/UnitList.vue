@@ -25,6 +25,13 @@
         </th>
 
         <th
+          class="align-right"
+          style="width: 150px;">
+          Registered cap.
+          <small>MW</small>
+        </th>
+
+        <th
           class="data-col date-col align-right hover-cell"
           style="width: 100px;">
           <span v-if="(isEnergyType && !isYAxisAveragePower) || (!isEnergyType && !(hoverOn || focusOn))">
@@ -46,13 +53,6 @@
         <th
           v-if="units.length > 1"
           style="width: 150px;" />
-
-        <th
-          class="align-right"
-          style="width: 150px;">
-          Registered cap.
-          <small>MW</small>
-        </th>
 
         <th
           class="data-col align-right hover-cell"
@@ -102,6 +102,8 @@
           <span v-if="!areAllUnitsOfSameFuelTech">— {{ d.fuelTechLabel }}</span>
         </td>
 
+        <td class="align-right">{{ d.registeredCapacity }}</td>
+
         <td class="align-right hover-cell">
           <span v-if="hoverOn">
             {{ convertValue(getHoverValue(d.id)) | formatValue }}
@@ -126,8 +128,6 @@
             :total="getCellTotalValue(d)"
           />
         </td>
-
-        <td class="align-right">{{ d.registeredCapacity }}</td>
 
         <td class="align-right hover-cell">
           <span v-if="hoverOn">
@@ -176,6 +176,8 @@
       <tr>
         <th>Total</th>
 
+        <th class="align-right cell-value">{{ operatingUnitsTotalCapacity }}</th>
+
         <th class="align-right hover-cell cell-value">
           <span v-if="hoverOn">
             {{ convertValue(hoverTotal) | formatValue }}
@@ -192,8 +194,6 @@
         </th>
 
         <th v-if="units.length > 1" />
-
-        <th class="align-right cell-value">{{ operatingUnitsTotalCapacity }}</th>
 
         <th class="align-right hover-cell cell-value">
           Av.
