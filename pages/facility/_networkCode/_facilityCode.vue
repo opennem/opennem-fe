@@ -194,6 +194,8 @@
             :interval="interval"
             :has-market-value="domainMarketValue.length > 0"
             :convert-value="convertValue"
+            :convert-market-value="convertMarketValue"
+            :market-value-display-unit="marketValueDisplayPrefix"
             class="unit-list"
             @codeHover="handleCodeHover"
             @codeClick="handleCodeClick"
@@ -389,6 +391,9 @@ export default {
       chartPowerUnitPrefix: 'chartOptionsPowerEnergy/chartPowerUnitPrefix',
       chartPowerDisplayPrefix:
         'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
+
+      marketValueUnitPrefix: 'chartOptionsMarketValue/chartUnitPrefix',
+      marketValueDisplayPrefix: 'chartOptionsMarketValue/chartDisplayPrefix',
 
       isFocusing: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
@@ -647,7 +652,7 @@ export default {
         0
       )
 
-      return (totalMarketValue / totalPowerEnergy) * 1000000
+      return totalMarketValue / totalPowerEnergy
     },
 
     chartTitle() {
@@ -766,6 +771,14 @@ export default {
         this.chartUnitPrefix,
         this.chartDisplayPrefix,
         value
+      )
+    },
+
+    convertMarketValue(marketValue) {
+      return SI.convertValue(
+        this.marketValueUnitPrefix,
+        this.marketValueDisplayPrefix,
+        marketValue
       )
     },
 

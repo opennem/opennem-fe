@@ -66,7 +66,7 @@
           class="data-col align-right hover-cell"
           style="width: 100px;">
           Market value
-          <small>$m</small>
+          <small>${{ marketValueDisplayUnit }}</small>
         </th>
 
         <th
@@ -145,13 +145,13 @@
           v-if="hasMarketValue"
           class="align-right hover-cell">
           <span v-if="hoverOn">
-            {{ getHoverValue(d.marketValueId) | formatValue('$') }}
+            {{ convertMarketValue(getHoverValue(d.marketValueId)) | formatValue('$') }}{{ marketValueUnit }}
           </span>
           <span v-if="!hoverOn && focusOn">
-            {{ getFocusValue(d.marketValueId) | formatValue('$') }}
+            {{ convertMarketValue(getFocusValue(d.marketValueId)) | formatValue('$') }}{{ marketValueUnit }}
           </span>
           <span v-if="!hoverOn && !focusOn">
-            {{ summary[d.id].marketValue | formatValue('$') }}
+            {{ convertMarketValue(summary[d.id].marketValue) | formatValue('$') }}{{ marketValueUnit }}
           </span>
         </td>
 
@@ -159,13 +159,13 @@
           v-if="hasMarketValue"
           class="align-right hover-cell">
           <span v-if="hoverOn">
-            {{ getHoverValue(d.marketValueId) / getHoverValue(d.id) * 1000000 | formatCurrency }}
+            {{ getHoverValue(d.marketValueId) / getHoverValue(d.id) | formatCurrency }}
           </span>
           <span v-if="!hoverOn && focusOn">
-            {{ getFocusValue(d.marketValueId) / getFocusValue(d.id) * 1000000 | formatCurrency }}
+            {{ getFocusValue(d.marketValueId) / getFocusValue(d.id) | formatCurrency }}
           </span>
           <span v-if="!hoverOn && !focusOn">
-            {{ summary[d.id].marketValue / summary[d.id].energy * 1000000 | formatCurrency }}
+            {{ summary[d.id].marketValue / summary[d.id].energy | formatCurrency }}
           </span>
         </td>
 
@@ -212,13 +212,13 @@
           v-if="hasMarketValue"
           class="align-right hover-cell cell-value">
           <span v-if="hoverOn">
-            {{ hoverTotalMarketValue | formatValue('$') }}
+            {{ convertMarketValue(hoverTotalMarketValue) | formatValue('$') }}{{ marketValueUnit }}
           </span>
           <span v-if="!hoverOn && focusOn">
-            {{ focusTotalMarketValue | formatValue('$') }}
+            {{ convertMarketValue(focusTotalMarketValue) | formatValue('$') }}{{ marketValueUnit }}
           </span>
           <span v-if="!hoverOn && !focusOn">
-            {{ summary.totalMarketValue | formatValue('$') }}
+            {{ convertMarketValue(summary.totalMarketValue) | formatValue('$') }}{{ marketValueUnit }}
           </span>
         </th>
 
@@ -246,6 +246,7 @@ import _cloneDeep from 'lodash.clonedeep'
 
 import DateDisplay from '@/services/DateDisplay.js'
 import * as FT from '~/constants/energy-fuel-techs/group-default.js'
+import * as SI from '@/constants/si'
 import { FACILITY_OPERATING } from '@/constants/facility-status.js'
 import DatesDisplay from '@/components/SummaryTable/DatesDisplay'
 import UnitListBar from './UnitListBar'
@@ -319,6 +320,14 @@ export default {
     convertValue: {
       type: Function,
       default: d => d
+    },
+    convertMarketValue: {
+      type: Function,
+      default: d => d
+    },
+    marketValueDisplayUnit: {
+      type: String,
+      default: ''
     }
   },
 
@@ -482,7 +491,7 @@ export default {
       summary.totalAvMarketValue = hasData ? totalMarketValue / ds.length : null
       summary.volWeightedPrice = hasData
         ? this.isEnergyType
-          ? (totalMarketValue / totalEnergy) * 1000000
+          ? totalMarketValue / totalEnergy
           : totalMarketValue / totalPower
         : null
 
@@ -525,6 +534,12 @@ export default {
     },
     focusTotalVolWeightedPrice() {
       return this.focusData ? this.focusData._volWeightedPrice : null
+    },
+
+    marketValueUnit() {
+      return this.marketValueDisplayUnit === SI.THOUSAND
+        ? ''
+        : this.marketValueDisplayUnit
     }
   },
 

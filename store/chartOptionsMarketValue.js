@@ -5,7 +5,10 @@ export const state = () => ({
   chartDefaultType: OPTIONS.CHART_STACKED,
   chartType: OPTIONS.CHART_STACKED,
   chartYAxis: OPTIONS.CHART_YAXIS_ABSOLUTE,
-  chartCurve: OPTIONS.CHART_CURVE_STEP
+  chartCurve: OPTIONS.CHART_CURVE_STEP,
+
+  chartUnitPrefix: SI.BASE,
+  chartDisplayPrefix: SI.THOUSAND
 })
 
 export const getters = {
@@ -13,7 +16,11 @@ export const getters = {
   chartDefaultType: state => state.chartDefaultType,
   chartType: state => state.chartType,
   chartYAxis: state => state.chartYAxis,
-  chartCurve: state => state.chartCurve
+  chartCurve: state => state.chartCurve,
+
+  chartUnitPrefix: state => state.chartUnitPrefix,
+  chartDisplayPrefix: state => state.chartDisplayPrefix,
+  chartCurrentUnit: state => state.chartDisplayPrefix
 }
 
 export const mutations = {
@@ -25,6 +32,13 @@ export const mutations = {
   },
   chartCurve(state, data) {
     state.chartCurve = data
+  },
+
+  chartUnitPrefix(state, data) {
+    state.chartUnitPrefix = data
+  },
+  chartDisplayPrefix(state, data) {
+    state.chartDisplayPrefix = data
   }
 }
 

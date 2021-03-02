@@ -29,7 +29,6 @@ export default function({
 
     domainMarketValue.forEach(domain => {
       const id = domain.id
-      d[id] = d[id] / 1000000
       const value = d[id]
 
       if (value || value === 0) {
@@ -51,7 +50,7 @@ export default function({
     // volume weight price
     const volWeightedPrice = allMarketValueNulls
       ? null
-      : (totalMarketValue / totalPowerEnergy) * 1000000
+      : totalMarketValue / totalPowerEnergy
 
     // update summarised values
     d._total = allPowerEnergyNulls ? null : totalPowerEnergy

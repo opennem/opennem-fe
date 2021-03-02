@@ -9,14 +9,19 @@
         :chart-curve="chartCurve"
         :chart-shown="chartShown"
         :show="chartOptions"
+        :chart-display-prefix="chartDisplayPrefix"
+        :unit-prefix="'$'"
         @show-change="s => chartOptions = s"
         @type-click="handleTypeClick"
+        @prefix-click="handlePrefixClick"
         @curve-click="handleCurveClick"/>
     </template>
 
     <template v-slot:label-unit>
       <strong>Market Turnover</strong>
-      <small>$m</small>
+      <small
+        class="display-unit"
+        @click.stop="handleUnitClick">${{ displayUnit }}</small>
     </template>
 
     <template
@@ -24,7 +29,7 @@
       v-if="!readOnly || !hoverValue">
       Total
       <strong>
-        {{ total | formatCurrency(',.0f') }}m
+        {{ total | formatCurrency(',.0f') }}{{ computedDisplayUnit }}
       </strong>
     </template>
 
@@ -40,12 +45,12 @@
           :style="{ 'background-color': hoverDomainColour }"
           class="colour-square" />
         {{ hoverDomainLabel }}
-        <strong>{{ hoverValue | formatCurrency(',.0f') }}m</strong>
+        <strong>{{ hoverValue | formatCurrency(',.0f') }}{{ computedDisplayUnit }}</strong>
       </span>
 
       <span>
         <span v-if="showHover">Total</span>
-        <strong>{{ hoverTotal | formatCurrency(',.0f') }}m</strong>
+        <strong>{{ hoverTotal | formatCurrency(',.0f') }}{{ computedDisplayUnit }}</strong>
       </span>
     </template>
   </chart-header>
@@ -57,6 +62,7 @@ import _cloneDeep from 'lodash.clonedeep'
 import ChartHeader from '@/components/Vis/ChartHeader'
 import ChartOptions from '@/components/Vis/ChartOptions'
 import * as OPTIONS from '@/constants/chart-options.js'
+import * as SI from '@/constants/si'
 
 const options = {
   type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_STACKED],
@@ -65,7 +71,8 @@ const options = {
     OPTIONS.CHART_CURVE_STEP,
     OPTIONS.CHART_CURVE_STRAIGHT
   ],
-  yAxis: []
+  yAxis: [],
+  si: [SI.BASE, SI.THOUSAND, SI.MILLION]
 }
 
 export default {
@@ -83,6 +90,14 @@ export default {
       default: ''
     },
     chartCurve: {
+      type: String,
+      default: ''
+    },
+    chartDisplayPrefix: {
+      type: String,
+      default: ''
+    },
+    displayUnit: {
       type: String,
       default: ''
     },
@@ -135,13 +150,50 @@ export default {
     }
   },
 
+  computed: {
+    computedDisplayUnit() {
+      return this.displayUnit === SI.THOUSAND ? '' : this.displayUnit
+    }
+  },
+
   methods: {
     handleTypeClick(type) {
       this.$store.commit('chartOptionsMarketValue/chartType', type)
     },
     handleCurveClick(curve) {
       this.$store.commit('chartOptionsMarketValue/chartCurve', curve)
+    },
+    handlePrefixClick(prefix) {
+      this.$store.commit('chartOptionsMarketValue/chartDisplayPrefix', prefix)
+    },
+
+    togglePrefix(prefix) {
+      const length = this.options.si.length
+      const index = this.options.si.findIndex(p => p === prefix)
+      let nextIndex = index + 1
+
+      if (nextIndex === length) {
+        nextIndex = 0
+      }
+
+      return this.options.si[nextIndex]
+    },
+    handleUnitClick() {
+      const updatedPrefix = this.togglePrefix(this.chartDisplayPrefix)
+      this.handlePrefixClick(updatedPrefix)
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.display-unit {
+  cursor: pointer;
+  padding: 2px 4px 1px;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+}
+</style>

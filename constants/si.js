@@ -4,7 +4,7 @@ export const MEGA = 'M'
 export const GIGA = 'G'
 export const TERA = 'T'
 
-export const THOUSAND = ',000'
+export const THOUSAND = `'000`
 export const MILLION = 'm'
 
 export const EXPONENT = {}

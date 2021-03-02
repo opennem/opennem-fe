@@ -1,6 +1,6 @@
 <template>
   <div class="chart-options-wrapper">
-    <div 
+    <div
       class="chart-options-icon"
       @click.stop="handleMenuClick">
       <i class="fal fa-bars fa-fw"/>
@@ -12,15 +12,15 @@
         v-if="show"
         class="dropdown-menu">
         <div class="dropdown-content">
-          <button 
-            class="delete close-btn is-small" 
+          <button
+            class="delete close-btn is-small"
             aria-label="delete"
             @click.stop="emitShow(false)" />
 
           <fieldset>
             <label>Chart</label>
-            <div 
-              :class="{'is-chart-hidden': !chartShown}" 
+            <div
+              :class="{'is-chart-hidden': !chartShown}"
               class="chart-options-buttons buttons has-addons">
               <button
                 v-for="type in types"
@@ -30,7 +30,7 @@
                 @click.stop="handleTypeClick(type)">{{ chartLabel[type] }}</button>
             </div>
           </fieldset>
-          
+
           <fieldset v-if="chartShown">
             <label>Style</label>
             <div class="chart-options-buttons buttons has-addons">
@@ -45,8 +45,8 @@
 
           <fieldset v-if="chartShown && showYAxisOptions && yAxes.length > 0">
             <label>Measurement</label>
-            <div 
-              class="chart-options-buttons buttons has-addons" 
+            <div
+              class="chart-options-buttons buttons has-addons"
               style="margin-right: 1rem;">
               <button
                 v-for="yAxis in yAxes"
@@ -59,15 +59,15 @@
 
           <fieldset v-if="chartShown && prefixes.length > 0">
             <label>Units</label>
-            <div 
-              class="chart-options-buttons buttons has-addons" 
+            <div
+              class="chart-options-buttons buttons has-addons"
               style="margin-right: 1rem;">
               <button
                 v-for="prefix in prefixes"
                 :key="prefix"
                 :class="{'is-selected': chartDisplayPrefix === prefix}"
                 class="button is-small"
-                @click.stop="handlePrefixClick(prefix)">{{ `${prefix}${chartUnit}` }}</button>
+                @click.stop="handlePrefixClick(prefix)">{{ `${unitPrefix}${prefix}${chartUnit}` }}</button>
             </div>
           </fieldset>
         </div>
@@ -124,6 +124,10 @@ export default {
       default: ''
     },
     chartDisplayPrefix: {
+      type: String,
+      default: ''
+    },
+    unitPrefix: {
       type: String,
       default: ''
     },

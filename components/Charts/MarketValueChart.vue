@@ -10,8 +10,10 @@
       :chart-shown="chartShown"
       :chart-type="chartType"
       :chart-curve="chartCurve"
+      :chart-display-prefix="chartDisplayPrefix"
+      :display-unit="chartCurrentUnit"
       :interval="interval"
-      :average-market-value="averageMarketValue"
+      :average-market-value="convertValue(averageMarketValue)"
       :hover-display-date="hoverDisplayDate"
       :hover-value="domains.length > 1 ? hoverValue : null"
       :hover-domain-colour="hoverDomainColour"
@@ -46,6 +48,7 @@
       :focus-on="focusOn"
       :incomplete-intervals="incompleteIntervals"
       :highlight-domain="highlightId"
+      :display-prefix="chartDisplayPrefix"
       :should-convert-value="true"
       :convert-value="convertValue"
       class="vis-chart"
@@ -173,7 +176,10 @@ export default {
 
       chartShown: 'chartOptionsMarketValue/chartShown',
       chartType: 'chartOptionsMarketValue/chartType',
-      chartCurve: 'chartOptionsMarketValue/chartCurve'
+      chartCurve: 'chartOptionsMarketValue/chartCurve',
+      chartUnitPrefix: 'chartOptionsMarketValue/chartUnitPrefix',
+      chartDisplayPrefix: 'chartOptionsMarketValue/chartDisplayPrefix',
+      chartCurrentUnit: 'chartOptionsMarketValue/chartCurrentUnit'
     }),
 
     tickFormat() {
@@ -291,11 +297,10 @@ export default {
 
     datasetTotal() {
       let total = 0
-      console.log(this.filteredDataset)
       this.filteredDataset.forEach(d => {
         total += d._totalMarketValue
       })
-      return total
+      return this.convertValue(total)
     },
 
     hoverData() {
@@ -400,7 +405,11 @@ export default {
       setHoverDomain: 'visInteract/hoverDomain'
     }),
     convertValue(value) {
-      return value && value !== 0 ? value : 0
+      return SI.convertValue(
+        this.chartUnitPrefix,
+        this.chartDisplayPrefix,
+        value
+      )
     },
     handleDomainHover(domain) {
       this.setHoverDomain(domain)
