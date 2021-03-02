@@ -4,12 +4,18 @@ export const MEGA = 'M'
 export const GIGA = 'G'
 export const TERA = 'T'
 
+export const THOUSAND = ',000'
+export const MILLION = 'm'
+
 export const EXPONENT = {}
 EXPONENT[BASE] = 0
 EXPONENT[KILO] = 3
 EXPONENT[MEGA] = 6
 EXPONENT[GIGA] = 9
 EXPONENT[TERA] = 12
+
+EXPONENT[THOUSAND] = 3
+EXPONENT[MILLION] = 6
 
 export function convertValue(fromPrefix, toPrefix, value) {
   const fromExponent = EXPONENT[fromPrefix]
