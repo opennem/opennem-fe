@@ -40,7 +40,7 @@
       :interval="interval"
     />
 
-    <price-market-value-chart
+    <price-chart
       v-if="ready && domainPrice.length > 0 && showChartPrice"
       :read-only="true"
       :zoom-extent="filteredDates"
@@ -68,7 +68,7 @@ import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
 import PowerEnergyChart from '@/components/Charts/PowerEnergyChart'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
 import EmissionIntensityChart from '@/components/Charts/EmissionIntensityChart'
-import PriceMarketValueChart from '@/components/Charts/PriceMarketValueChart'
+import PriceChart from '@/components/Charts/PriceChart'
 import TemperatureChart from '@/components/Energy/Charts/TemperatureChart'
 
 export default {
@@ -76,7 +76,7 @@ export default {
     PowerEnergyChart,
     EmissionsChart,
     EmissionIntensityChart,
-    PriceMarketValueChart,
+    PriceChart,
     TemperatureChart
   },
 

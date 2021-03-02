@@ -142,7 +142,7 @@
             @zoomExtent="handleZoomExtent"
             @svgClick="handleSvgClick" /> -->
 
-          <PriceMarketValueChart
+          <PriceChart
             v-if="!fetchingStats && domainMarketValue.length > 0"
             :price-dataset="selectedFacilityUnitsDataset"
             :domain-price="domainVolWeightedPrices"
@@ -273,7 +273,7 @@ import Summary from '@/components/Facility/Summary.vue'
 import Loader from '@/components/ui/Loader'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
 import MarketValueChart from '@/components/Charts/MarketValueChart'
-import PriceMarketValueChart from '@/components/Charts/PriceMarketValueChart'
+import PriceChart from '@/components/Charts/PriceChart'
 import EmissionIntensityChart from '@/components/Charts/EmissionIntensityChart'
 import Dropdown from '@/components/ui/Dropdown'
 import DonutVis from '~/components/Vis/Donut'
@@ -341,7 +341,7 @@ export default {
     EmissionsChart,
     EmissionIntensityChart,
     MarketValueChart,
-    PriceMarketValueChart,
+    PriceChart,
     DonutVis,
     EnergyBar
   },

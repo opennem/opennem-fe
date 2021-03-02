@@ -5,7 +5,7 @@
       'has-border-bottom': !chartShown
     }"
     class="chart">
-    <price-market-value-chart-options
+    <price-chart-options
       :read-only="readOnly"
       :options="options"
       :chart-shown="chartShown"
@@ -119,7 +119,7 @@ import { mapGetters } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import * as OPTIONS from '@/constants/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
-import PriceMarketValueChartOptions from './PriceMarketValueChartOptions'
+import PriceChartOptions from './PriceChartOptions'
 import LineVis from '@/components/Vis/Line.vue'
 
 const options = {
@@ -134,7 +134,7 @@ const options = {
 
 export default {
   components: {
-    PriceMarketValueChartOptions,
+    PriceChartOptions,
     LineVis
   },
 

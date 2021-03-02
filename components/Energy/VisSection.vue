@@ -66,7 +66,7 @@
       @zoomExtent="handleZoomExtent"
       @svgClick="handleSvgClick" />
 
-    <price-market-value-chart
+    <price-chart
       v-if="ready && domainPrice.length > 0"
       :price-dataset="currentDataset"
       :domain-price="domainPrice"
@@ -105,7 +105,7 @@ import PowerEnergyChart from '@/components/Charts/PowerEnergyChart'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
 import EmissionIntensityChart from '@/components/Charts/EmissionIntensityChart'
 import EnergyCompare from '@/components/Energy/Charts/CompareChart'
-import PriceMarketValueChart from '@/components/Charts/PriceMarketValueChart'
+import PriceChart from '@/components/Charts/PriceChart'
 import TemperatureChart from '@/components/Energy/Charts/TemperatureChart'
 
 export default {
@@ -114,7 +114,7 @@ export default {
     EmissionsChart,
     EmissionIntensityChart,
     EnergyCompare,
-    PriceMarketValueChart,
+    PriceChart,
     TemperatureChart
   },
 
