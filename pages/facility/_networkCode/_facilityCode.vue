@@ -401,6 +401,9 @@ export default {
 
       averageEmissions: 'energy/emissions/averageEmissions'
     }),
+    regionId() {
+      return this.$route.params.networkCode
+    },
     isEnergyType() {
       return this.dataType === 'energy'
     },
@@ -784,6 +787,7 @@ export default {
 
     getFacility() {
       this.doGetFacilityByCode({
+        regionId: this.regionId,
         facilityCode: this.facilityCode
       })
     },
