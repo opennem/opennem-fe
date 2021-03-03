@@ -732,6 +732,13 @@ export default {
           end: dataset[dataset.length - 1].time
         })
 
+        this.doUpdateXTicks({
+          range: this.range,
+          interval: this.interval,
+          isZoomed: this.zoomExtent.length > 0,
+          filterPeriod: this.filterPeriod
+        })
+
         const yGuides =
           this.dataType === 'power' ||
           (this.dataType === 'energy' && this.isYAxisAveragePower)

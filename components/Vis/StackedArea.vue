@@ -334,6 +334,10 @@ export default {
     unit: {
       type: String,
       default: ''
+    },
+    filterPeriod: {
+      type: String,
+      default: ''
     }
   },
 
@@ -412,9 +416,6 @@ export default {
   },
 
   computed: {
-    filterPeriod() {
-      return this.$store.getters.filterPeriod
-    },
     compareDifference() {
       return this.$store.getters.compareDifference
     },
