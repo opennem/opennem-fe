@@ -1,6 +1,15 @@
 <template>
   <div class="energy-region">
-    <data-options-bar @queryChange="handleQueryChange"/>
+    <data-options-bar
+      :ranges="ranges"
+      :range="range"
+      :interval="interval"
+      :filter-period="filterPeriod"
+      @queryChange="handleQueryChange"
+      @rangeChange="handleRangeChange"
+      @intervalChange="handleIntervalChange"
+      @filterPeriodChange="handleFilterPeriodChange"
+    />
     <transition name="fade">
       <div
         v-if="!ready"
@@ -45,7 +54,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import _includes from 'lodash.includes'
-import { isPowerRange } from '@/constants/ranges.js'
+import { isPowerRange, FuelTechRanges } from '@/constants/ranges.js'
 import {
   isValidRegion,
   getEnergyRegionLabel
@@ -107,7 +116,8 @@ export default {
       isHovering: false,
       hoverDate: null,
       baseUrl: `${this.$config.url}/images/screens/`,
-      useDev: this.$config.useDev
+      useDev: this.$config.useDev,
+      ranges: FuelTechRanges
     }
   },
 
@@ -279,7 +289,9 @@ export default {
     }),
     ...mapMutations({
       setCompareDifference: 'compareDifference',
+      setRange: 'range',
       setInterval: 'interval',
+      setFilterPeriod: 'filterPeriod',
       setQuery: 'app/query'
     }),
 
@@ -306,6 +318,15 @@ export default {
       })
 
       this.setQuery(query)
+    },
+    handleRangeChange(range) {
+      this.setRange(range)
+    },
+    handleIntervalChange(interval) {
+      this.setInterval(interval)
+    },
+    handleFilterPeriodChange(period) {
+      this.setFilterPeriod(period)
     }
   }
 }

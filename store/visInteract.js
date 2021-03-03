@@ -71,8 +71,8 @@ export const mutations = {
 }
 
 export const actions = {
-  doUpdateXTicks({ commit }, { range, interval, isZoomed, fitlerPeriod }) {
-    commit('xTicks', AxisTicks(range, interval, isZoomed, fitlerPeriod))
+  doUpdateXTicks({ commit }, { range, interval, isZoomed, filterPeriod }) {
+    commit('xTicks', AxisTicks(range, interval, isZoomed, filterPeriod))
   },
 
   doUpdateXGuides({ commit }, { interval, start, end }) {

@@ -9,7 +9,11 @@ import {
   INTERVAL_30MIN,
   INTERVAL_DAY
 } from '@/constants/interval-filters.js'
-import { dataProcess, dataRollUp } from '@/data/parse/facility-energy'
+import {
+  dataProcess,
+  dataRollUp,
+  dataFilterByPeriod
+} from '@/data/parse/facility-energy'
 import { getVolWeightedPriceDomains } from '@/data/parse/region-energy/process/getDomains.js'
 
 let request = null
@@ -378,9 +382,8 @@ export const actions = {
       })
   },
 
-  doUpdateDatasetByInterval({ commit, getters }) {
+  doUpdateDatasetByInterval({ commit, getters }, interval) {
     const type = getters.dataType
-    const interval = getters.interval
     const units = getters.selectedFacilityUnits
     const datasetFlat = getters.selectedFacilityUnitsDatasetFlat
     const domainPowerEnergy = getters.domainPowerEnergy
@@ -396,5 +399,36 @@ export const actions = {
     })
 
     commit('selectedFacilityUnitsDataset', dataset)
+  },
+
+  doUpdateDatasetByFilterPeriod(
+    { getters, commit },
+    { range, interval, period }
+  ) {
+    // console.log('****** doUpdateDatasetByFilterPeriod', range, interval, period)
+
+    const type = getters.dataType
+    const units = getters.selectedFacilityUnits
+    const datasetFlat = getters.selectedFacilityUnitsDatasetFlat
+    const domainPowerEnergy = getters.domainPowerEnergy
+    const domainEmissions = getters.domainEmissions
+    const domainMarketValue = getters.domainMarketValue
+
+    const dataset = dataRollUp({
+      datasetFlat,
+      domainPowerEnergy,
+      domainEmissions,
+      domainMarketValue,
+      interval,
+      isEnergyType: type === 'energy'
+    })
+
+    const filtered = dataFilterByPeriod({
+      dataset,
+      interval,
+      period
+    })
+
+    commit('selectedFacilityUnitsDataset', filtered)
   }
 }

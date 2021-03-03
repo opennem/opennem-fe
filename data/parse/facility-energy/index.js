@@ -1,7 +1,10 @@
 import process from './process'
 import rollUp from './rollUp'
 import summarise from './summarise'
-import { filterDatasetByRange } from '@/data/helpers/filter'
+import {
+  filterDatasetByRange,
+  filterDatasetByPeriod
+} from '@/data/helpers/filter'
 
 export function dataProcess(data, range, interval) {
   const {
@@ -72,4 +75,8 @@ export function dataRollUp({
     domainMarketValue
   })
   return currentDataset
+}
+
+export function dataFilterByPeriod({ dataset, interval, period }) {
+  return filterDatasetByPeriod(dataset, interval, period)
 }

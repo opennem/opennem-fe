@@ -49,15 +49,20 @@
         </transition>
 
         <div style="position: relative; margin-bottom: 1rem;">
-          <!-- <DataOptionsBar
+          <DataOptionsBar
             :ranges="ranges"
+            :range="range"
+            :interval="interval"
+            :filter-period="filterPeriod"
+            @rangeChange="handleRangeChange"
+            @intervalChange="handleIntervalChange"
+            @queryChange="handleQueryChange"
+            @filterPeriodChange="handleFilterPeriodChange" />
+
+          <!-- <RangeIntervalSelectors
             @rangeChange="handleRangeChange"
             @intervalChange="handleIntervalChange"
             @queryChange="handleQueryChange" /> -->
-          <RangeIntervalSelectors
-            @rangeChange="handleRangeChange"
-            @intervalChange="handleIntervalChange"
-            @queryChange="handleQueryChange" />
 
           <Dropdown
             v-if="isEnergyType"
@@ -750,16 +755,45 @@ export default {
       // clear dates
       this.setFocusDate(null)
     },
-    range() {
+
+    range(curr, prev) {
       console.log('range-watch')
       this.getFacilityStats()
     },
+
+    interval(val) {
+      console.log('interval-watch')
+
+      if (this.range === '30D') {
+        this.getFacilityStats()
+      } else {
+        this.doUpdateDatasetByInterval(val)
+      }
+    },
+
+    filterPeriod(period) {
+      this.doUpdateDatasetByFilterPeriod({
+        range: this.range,
+        interval: this.interval,
+        period
+      })
+    },
+
     isEnergyType(curr, prev) {
       if (curr !== prev) {
         if (!curr) {
           this.showChartType = chartTypeOptions[0].label
         }
       }
+    },
+
+    zoomExtent(dates) {
+      this.doUpdateXTicks({
+        range: this.range,
+        interval: this.interval,
+        isZoomed: dates.length > 0,
+        filterPeriod: this.filterPeriod
+      })
     }
   },
 
@@ -773,13 +807,18 @@ export default {
       setHighlightDomain: 'visInteract/highlightDomain',
       setFocusDate: 'visInteract/focusDate',
       setYGuides: 'visInteract/yGuides',
+      setRange: 'facility/range',
+      setInterval: 'facility/interval',
+      setFilterPeriod: 'facility/filterPeriod',
       setQuery: 'app/query'
     }),
     ...mapActions({
       doUpdateXGuides: 'visInteract/doUpdateXGuides',
+      doUpdateXTicks: 'visInteract/doUpdateXTicks',
       doGetFacilityByCode: 'facility/doGetFacilityByCode',
       doGetStationStats: 'facility/doGetStationStats',
       doUpdateDatasetByInterval: 'facility/doUpdateDatasetByInterval',
+      doUpdateDatasetByFilterPeriod: 'facility/doUpdateDatasetByFilterPeriod',
       doSetChartEnergyPrefixes:
         'chartOptionsPowerEnergy/doSetChartEnergyPrefixes'
     }),
@@ -871,17 +910,14 @@ export default {
     handleIsHovering(hovering) {
       this.isHovering = hovering
     },
-    handleRangeChange() {
-      console.log('range-change')
-      this.getFacilityStats()
+    handleRangeChange(range) {
+      this.setRange(range)
     },
-    handleIntervalChange() {
-      if (this.range === '30D') {
-        console.log('interval-change')
-        this.getFacilityStats()
-      } else {
-        this.doUpdateDatasetByInterval()
-      }
+    handleIntervalChange(interval) {
+      this.setInterval(interval)
+    },
+    handleFilterPeriodChange(period) {
+      this.setFilterPeriod(period)
     },
     handleSvgClick() {
       if (
@@ -1003,6 +1039,10 @@ header {
   span {
     font-size: 0.9em;
   }
+}
+
+::v-deep .range-interval-selectors {
+  padding-left: 0;
 }
 
 .facility-units {

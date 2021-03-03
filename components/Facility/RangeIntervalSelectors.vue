@@ -100,7 +100,7 @@ export default {
       })
 
       if (this.selectedInterval === INTERVAL_5MIN) {
-        this.setInterval(INTERVAL_30MIN)
+        this.$emit('intervalChange', INTERVAL_30MIN)
       }
     }
   },
@@ -110,10 +110,10 @@ export default {
   },
 
   methods: {
-    ...mapMutations({
-      setRange: 'facility/range',
-      setInterval: 'facility/interval'
-    }),
+    // ...mapMutations({
+    //   setRange: 'facility/range',
+    //   setInterval: 'facility/interval'
+    // }),
 
     checkQueries() {
       const validRangeQuery = isValidRangeQuery(this.queryRange)
@@ -141,8 +141,11 @@ export default {
 
     setRangeInterval(range, interval) {
       console.log('setting', range, interval)
-      this.setRange(range)
-      this.setInterval(interval)
+
+      this.$emit('rangeChange', range)
+      this.$emit('intervalChange', interval)
+      // this.setRange(range)
+      // this.setInterval(interval)
     },
 
     updateQuery(range, interval) {
@@ -170,12 +173,11 @@ export default {
 
       this.setRangeInterval(range, interval)
       this.updateQuery(range, interval)
-      this.$emit('rangeChange')
     },
     handleIntervalChange(interval) {
-      this.setInterval(interval)
+      // this.setInterval(interval)
       this.updateQuery(this.selectedRange, interval)
-      this.$emit('intervalChange')
+      this.$emit('intervalChange', interval)
     }
   }
 }

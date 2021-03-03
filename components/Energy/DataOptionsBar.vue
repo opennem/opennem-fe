@@ -25,7 +25,6 @@
         <i
           v-if="hasFilter(interval)"
           class="filter-caret fal fa-chevron-down" />
-        
         <div
           v-show="showFilter(interval)"
           class="filter-menu dropdown-menu">
@@ -46,10 +45,9 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
 import {
-  FuelTechRanges,
   RANGE_1D,
   RANGE_3D,
   RANGE_7D,
@@ -88,9 +86,24 @@ import {
 
 export default {
   mixins: [clickaway],
+
+  props: {
+    ranges: {
+      type: Array,
+      default: () => []
+    },
+    range: {
+      type: String,
+      default: null
+    },
+    interval: {
+      type: String,
+      default: null
+    }
+  },
+
   data() {
     return {
-      ranges: FuelTechRanges,
       selectedRange: '',
       selectedInterval: '',
       selectedFilter: '',
@@ -109,9 +122,6 @@ export default {
 
   computed: {
     ...mapGetters({
-      range: 'range',
-      interval: 'interval',
-      filterPeriod: 'filterPeriod',
       tabletBreak: 'app/tabletBreak'
     }),
     regionId() {
@@ -144,12 +154,6 @@ export default {
   },
 
   methods: {
-    ...mapMutations({
-      setRange: 'range',
-      setInterval: 'interval',
-      setFilterPeriod: 'filterPeriod'
-    }),
-
     checkQueries() {
       const validRangeQuery = isValidRangeQuery(this.queryRange)
       const validIntervalQuery = isValidIntervalQuery(this.queryInterval)
@@ -205,20 +209,22 @@ export default {
         this.updateQuery(range, interval, filter)
       }
 
-      this.setRangeInterval(range, interval, filter)
+      this.updateSelections(range, interval, filter)
     },
 
-    setRangeInterval(range, interval, filter) {
-      this.setRange(range)
-      this.setInterval(interval)
+    updateSelections(range, interval, filter) {
       this.selectedRange = range
       this.selectedInterval = interval
       this.setSelectedRangeIntervals(range)
       this.setFilters(interval)
 
+      this.$emit('rangeChange', range)
+      this.$emit('intervalChange', interval)
+
       if (filter) {
-        this.setFilterPeriod(filter)
         this.selectedFilter = filter
+
+        this.$emit('filterPeriodChange', filter)
       }
     },
 
@@ -293,7 +299,6 @@ export default {
     handleRangeChange(range) {
       this.$store.commit('regionEnergy/filteredDates', [])
       this.selectedFilter = FILTER_NONE
-      this.setFilterPeriod(FILTER_NONE)
 
       const is5mOr30m =
         this.interval === INTERVAL_5MIN || this.interval === INTERVAL_30MIN
@@ -324,7 +329,10 @@ export default {
         interval = '30m'
       }
 
-      this.setRangeInterval(range, interval)
+      this.updateSelections(range, interval)
+      this.$emit('rangeChange', range)
+      this.$emit('intervalChange', interval)
+      this.$emit('filterPeriodChange', FILTER_NONE)
       this.updateQuery(range, interval, this.selectedFilter)
     },
 
@@ -347,22 +355,23 @@ export default {
         }
       } else {
         this.hideAllFilters()
-        this.setInterval(interval)
-        this.setFilterPeriod(FILTER_NONE)
+        this.$emit('filterPeriodChange', FILTER_NONE)
         this.selectedFilter = FILTER_NONE
 
         this.updateQuery(this.range, interval, this.selectedFilter)
       }
+
       this.setFilters(interval)
+      this.$emit('intervalChange', interval)
     },
 
     handleFilterPeriodClick(filter) {
       this.selectedFilter = filter
-      this.setFilterPeriod(filter)
       this.hideAllFilters()
       this.$store.dispatch('compareDifference', false)
       this.$store.dispatch('compareDates', [])
 
+      this.$emit('filterPeriodChange', filter)
       this.updateQuery(this.range, this.interval, filter)
     },
 
