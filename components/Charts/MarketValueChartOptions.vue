@@ -29,7 +29,7 @@
       v-if="!readOnly || !hoverValue">
       Total
       <strong>
-        {{ total | formatCurrency(',.0f') }}{{ computedDisplayUnit }}
+        {{ total | formatCurrency(',.0f') }}{{ displayUnit }}
       </strong>
     </template>
 
@@ -45,12 +45,12 @@
           :style="{ 'background-color': hoverDomainColour }"
           class="colour-square" />
         {{ hoverDomainLabel }}
-        <strong>{{ hoverValue | formatCurrency(',.0f') }}{{ computedDisplayUnit }}</strong>
+        <strong>{{ hoverValue | formatCurrency(',.0f') }}{{ displayUnit }}</strong>
       </span>
 
       <span>
         <span v-if="showHover">Total</span>
-        <strong>{{ hoverTotal | formatCurrency(',.0f') }}{{ computedDisplayUnit }}</strong>
+        <strong>{{ hoverTotal | formatCurrency(',.0f') }}{{ displayUnit }}</strong>
       </span>
     </template>
   </chart-header>
@@ -147,12 +147,6 @@ export default {
     return {
       chartOptions: false,
       options: _cloneDeep(options)
-    }
-  },
-
-  computed: {
-    computedDisplayUnit() {
-      return this.displayUnit === SI.THOUSAND ? '' : this.displayUnit
     }
   },
 
