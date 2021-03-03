@@ -59,11 +59,6 @@
             @queryChange="handleQueryChange"
             @filterPeriodChange="handleFilterPeriodChange" />
 
-          <!-- <RangeIntervalSelectors
-            @rangeChange="handleRangeChange"
-            @intervalChange="handleIntervalChange"
-            @queryChange="handleQueryChange" /> -->
-
           <Dropdown
             v-if="isEnergyType"
             :options="chartTypeOptions"
@@ -279,7 +274,6 @@ import { FACILITY_OPERATING } from '@/constants/facility-status.js'
 import EnergyToAveragePower from '@/data/transform/energy-to-average-power.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
-import RangeIntervalSelectors from '@/components/Facility/RangeIntervalSelectors.vue'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 
 import PowerEnergyChart from '@/components/Charts/PowerEnergyChart'
@@ -346,7 +340,6 @@ export default {
 
   components: {
     DataOptionsBar,
-    RangeIntervalSelectors,
     UnitList,
     PhotoMap,
 
