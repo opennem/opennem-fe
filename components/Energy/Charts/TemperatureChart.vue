@@ -46,6 +46,7 @@
       :show-zoom-out="false"
       :x-guides="xGuides"
       :y-axis-ticks="3"
+      :filter-period="filterPeriod"
       class="temperature-vis vis-chart"
       @dateOver="handleDateHover"
       @svgClick="handleSvgClick"
@@ -100,6 +101,10 @@ export default {
     readOnly: {
       type: Boolean,
       default: false
+    },
+    filterPeriod: {
+      type: String,
+      default: ''
     }
   },
 

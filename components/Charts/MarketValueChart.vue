@@ -51,6 +51,7 @@
       :display-prefix="chartDisplayPrefix"
       :should-convert-value="true"
       :convert-value="convertValue"
+      :filter-period="filterPeriod"
       class="vis-chart"
       @dateOver="handleDateHover"
       @domainOver="handleDomainHover"
@@ -159,6 +160,10 @@ export default {
     showXAxis: {
       type: Boolean,
       default: false
+    },
+    filterPeriod: {
+      type: String,
+      default: 'All'
     }
   },
 

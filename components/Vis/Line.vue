@@ -253,6 +253,10 @@ export default {
     readOnly: {
       type: Boolean,
       default: false
+    },
+    filterPeriod: {
+      type: String,
+      default: ''
     }
   },
 
@@ -340,9 +344,6 @@ export default {
         return this.dataset
       }
       return []
-    },
-    filterPeriod() {
-      return this.$store.getters.filterPeriod
     },
     datasetDateExtent() {
       return extent(this.updatedDataset, d => new Date(d.date))

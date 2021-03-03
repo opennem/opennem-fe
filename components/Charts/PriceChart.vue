@@ -42,6 +42,7 @@
       :connect-zero="false"
       :x-guides="xGuides"
       :y-guides="[300, 2000, 6000, 10000, 14000]"
+      :filter-period="filterPeriod"
       class="price-pos-vis vis-chart"
       @dateOver="handleDateHover"
       @svgClick="handleSvgClick"
@@ -73,6 +74,7 @@
       :connect-zero="false"
       :x-guides="xGuides"
       :y-guides="[0, 100, 200, 300]"
+      :filter-period="filterPeriod"
       class="price-vis vis-chart"
       @dateOver="handleDateHover"
       @svgClick="handleSvgClick"
@@ -105,6 +107,7 @@
       :connect-zero="false"
       :x-guides="xGuides"
       :y-guides="[-60, -400]"
+      :filter-period="filterPeriod"
       class="price-neg-vis vis-chart"
       @dateOver="handleDateHover"
       @svgClick="handleSvgClick"
@@ -168,6 +171,10 @@ export default {
       default: ''
     },
     interval: {
+      type: String,
+      default: ''
+    },
+    filterPeriod: {
       type: String,
       default: ''
     },

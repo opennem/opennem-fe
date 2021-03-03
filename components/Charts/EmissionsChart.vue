@@ -55,6 +55,7 @@
       :should-convert-value="shouldConvertValue"
       :convert-value="convertValue"
       :unit="` ${chartDisplayPrefix}${chartUnit}`"
+      :filter-period="filterPeriod"
       class="vis-chart"
       @dateOver="handleDateHover"
       @domainOver="handleDomainHover"
@@ -169,6 +170,10 @@ export default {
     incompleteIntervals: {
       type: Array,
       default: () => []
+    },
+    filterPeriod: {
+      type: String,
+      default: 'All'
     }
   },
 

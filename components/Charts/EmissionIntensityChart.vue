@@ -42,6 +42,7 @@
       :show-zoom-out="false"
       :x-guides="xGuides"
       :y-axis-ticks="3"
+      :filter-period="filterPeriod"
       class="emission-intensity-vis vis-chart"
       @dateOver="handleDateHover"
       @svgClick="handleSvgClick"
@@ -104,6 +105,10 @@ export default {
       default: ''
     },
     interval: {
+      type: String,
+      default: ''
+    },
+    filterPeriod: {
       type: String,
       default: ''
     },
