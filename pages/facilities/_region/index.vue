@@ -428,10 +428,11 @@ export default {
 
       const id = facility.facilityId
       const network = facility.network
+      const country = facility.country
       this.$router.push({
-        path: `/facility/${encodeURIComponent(network)}/${encodeURIComponent(
-          id
-        )}/`
+        path: `/facility/${encodeURIComponent(country)}/${encodeURIComponent(
+          network
+        )}/${encodeURIComponent(id)}/`
       })
     }
   }

@@ -49,6 +49,11 @@
         </transition>
 
         <div style="position: relative; margin-bottom: 1rem;">
+          <!-- <DataOptionsBar
+            :ranges="ranges"
+            @rangeChange="handleRangeChange"
+            @intervalChange="handleIntervalChange"
+            @queryChange="handleQueryChange" /> -->
           <RangeIntervalSelectors
             @rangeChange="handleRangeChange"
             @intervalChange="handleIntervalChange"
@@ -102,6 +107,7 @@
             :is-energy-type="isEnergyType"
             :power-options="powerOptions"
             :energy-options="energyOptions"
+            :filter-period="filterPeriod"
             @dateHover="handleDateHover"
             @isHovering="handleIsHovering"
             @zoomExtent="handleZoomExtent"
@@ -262,11 +268,15 @@ import { color } from 'd3-color'
 import * as FT from '~/constants/energy-fuel-techs/group-default.js'
 import * as SI from '@/constants/si'
 import * as OPTIONS from '@/constants/chart-options.js'
+import { FacilityPowerEnergyRanges } from '@/constants/ranges.js'
+
 import { FACILITY_OPERATING } from '@/constants/facility-status.js'
 import EnergyToAveragePower from '@/data/transform/energy-to-average-power.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
 import RangeIntervalSelectors from '@/components/Facility/RangeIntervalSelectors.vue'
+import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
+
 import PowerEnergyChart from '@/components/Charts/PowerEnergyChart'
 import UnitList from '@/components/Facility/UnitList.vue'
 import PhotoMap from '@/components/Facility/PhotoMap.vue'
@@ -330,6 +340,7 @@ export default {
   },
 
   components: {
+    DataOptionsBar,
     RangeIntervalSelectors,
     UnitList,
     PhotoMap,
@@ -357,7 +368,8 @@ export default {
       chartTypeOptions,
       hiddenCodes: [],
       powerOptions,
-      energyOptions
+      energyOptions,
+      ranges: FacilityPowerEnergyRanges
     }
   },
 
@@ -401,7 +413,10 @@ export default {
 
       averageEmissions: 'energy/emissions/averageEmissions'
     }),
-    regionId() {
+    countryCode() {
+      return this.$route.params.networkCountry
+    },
+    networkCode() {
       return this.$route.params.networkCode
     },
     isEnergyType() {
@@ -787,7 +802,8 @@ export default {
 
     getFacility() {
       this.doGetFacilityByCode({
-        regionId: this.regionId,
+        countryCode: this.countryCode,
+        networkCode: this.networkCode,
         facilityCode: this.facilityCode
       })
     },

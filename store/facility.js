@@ -53,8 +53,8 @@ const http = axios.create({
   }
 })
 
-// const stationPath = (networkRegion, code) => `/station/${networkRegion}/${code}`
-const stationPath = (networkRegion, code) => `/station/${code}`
+const stationPath = (country, network, facility) =>
+  `/station/${country}/${network}/${facility}`
 const statsPath = (type, networkRegion, code, query) =>
   `/stats/${type}/station/${networkRegion}/${code}${query}`
 
@@ -219,10 +219,13 @@ export const actions = {
     commit('selectedView', data)
   },
 
-  doGetFacilityByCode({ commit }, { regionId, facilityCode }) {
-    console.log('fetching', regionId, facilityCode)
-    const encode = encodeURIComponent(facilityCode)
-    const ref = stationPath(regionId, encode)
+  doGetFacilityByCode({ commit }, { countryCode, networkCode, facilityCode }) {
+    console.log('fetching', countryCode, networkCode, facilityCode)
+    const ref = stationPath(
+      encodeURIComponent(countryCode),
+      encodeURIComponent(networkCode),
+      encodeURIComponent(facilityCode)
+    )
     // const ref = '/test-data/BAYSW.json'
 
     commit('fetchingFacility', true)

@@ -133,6 +133,7 @@ function transformV3FacilityData(data) {
     const displayName = props.name || '-'
     const state = props.state || ''
     const network = props.network || ''
+    const country = props.network_country || ''
     const units = []
     const dispatchUnits = props.duid_data || []
     const location = geo
@@ -223,7 +224,6 @@ function transformV3FacilityData(data) {
 
     const regions = _uniq(unitNetworkRegions).filter(r => r && r !== 'SNOWY1')
     const regionId = regions[0] ? regions[0].toLowerCase() : ''
-
     return {
       stationId,
       facilityId,
@@ -233,6 +233,7 @@ function transformV3FacilityData(data) {
       regionId,
       location,
       network,
+      country,
       hasLocation,
       units,
       unitStatuses: _uniq(unitStatuses).sort(),
