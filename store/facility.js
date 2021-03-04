@@ -263,6 +263,7 @@ export const actions = {
     const encode = encodeURIComponent(facilityCode)
     const range = getters.range
     const interval = getters.interval
+    const filterPeriod = getters.filterPeriod
 
     let period = range
     if (range === '30D') {
@@ -349,7 +350,13 @@ export const actions = {
           }
         })
 
-        commit('selectedFacilityUnitsDataset', dataset)
+        const filtered = dataFilterByPeriod({
+          dataset,
+          interval,
+          period: filterPeriod
+        })
+
+        commit('selectedFacilityUnitsDataset', filtered)
         commit('selectedFacilityUnitsDatasetFlat', datasetFlat)
         commit('selectedFacilityUnits', domainPowerEnergy)
         commit('domainPowerEnergy', mappedDomainPowerEnergy.reverse())
