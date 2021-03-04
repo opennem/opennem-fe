@@ -2,8 +2,9 @@
   <section>
     <transition name="fade">
       <figure v-if="hasPhotos">
-        <v-popover 
-          class="wiki-link-text" 
+        <v-popover
+          v-if="hasPhotoAuthor(photo.author)"
+          class="wiki-link-text"
           placement="auto">
           <i class="fal fa-info-circle"/>
           <template slot="popover">
@@ -11,8 +12,8 @@
           </template>
         </v-popover>
 
-        <img 
-          :src="photo.photo_url" 
+        <img
+          :src="photo.photo_url"
           :alt="`${name} facility`"
           :style="{ 'height': ratio > 2 ? '180px' : height }"
         >
@@ -20,8 +21,8 @@
     </transition>
 
     <transition name="fade">
-      <div 
-        v-if="!hasPhotos" 
+      <div
+        v-if="!hasPhotos"
         class="not-found-card card">
         <i class="fal fa-image"/>
         <span>Image not available</span>
@@ -66,6 +67,12 @@ export default {
     },
     ratio() {
       return this.photo.width / this.photo.height
+    }
+  },
+
+  methods: {
+    hasPhotoAuthor(author) {
+      return author && author !== ''
     }
   }
 }

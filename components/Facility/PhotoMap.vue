@@ -17,7 +17,6 @@
       :lat="facilityLocation.lat"
       :lng="facilityLocation.lng"
       :zoom="13"
-      :map-style="'mapbox://styles/mapbox/satellite-v9'"
       :show-marker="false"
       :height="250"
       class="map" />
