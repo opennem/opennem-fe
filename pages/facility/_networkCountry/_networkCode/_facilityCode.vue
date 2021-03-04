@@ -466,8 +466,8 @@ export default {
         : []
     },
     facilityRegisteredCapacity() {
-      return this.operatingDomains.length > 0
-        ? this.operatingDomains.reduce(
+      return this.powerEnergyDomains.length > 0
+        ? this.powerEnergyDomains.reduce(
             (acc, cur) => acc + (cur.registeredCapacity || 0),
             0
           )
@@ -752,6 +752,10 @@ export default {
       this.updateYGuides()
     },
 
+    facilityRegisteredCapacity() {
+      this.updateYGuides()
+    },
+
     range(curr, prev) {
       console.log('range-watch')
       this.getFacilityStats()
@@ -836,13 +840,16 @@ export default {
     },
 
     updateYGuides() {
+      const hasHidden = this.hiddenCodes.length > 0
+      const regCapText = 'Registered Capacity'
+      const partialText = hasHidden ? ' (partial)' : ''
       const yGuides =
         this.dataType === 'power' ||
         (this.dataType === 'energy' && this.isYAxisAveragePower)
           ? [
               {
                 value: this.facilityRegisteredCapacity,
-                text: 'Registered Capacity'
+                text: `${regCapText}${partialText}`
               }
             ]
           : []
@@ -902,8 +909,6 @@ export default {
       if (this.hiddenCodes.length === this.operatingDomains.length) {
         this.hiddenCodes = []
       }
-
-      console.log(this.hiddenCodes)
     },
     handleCodeShiftClick(code) {
       const toBeHidden = this.operatingDomains.filter(d => d.code !== code)
