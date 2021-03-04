@@ -145,13 +145,13 @@
           v-if="hasMarketValue"
           class="align-right hover-cell">
           <span v-if="hoverOn">
-            {{ convertMarketValue(getHoverValue(d.marketValueId)) | formatValue('$') }}{{ marketValueUnit }}
+            {{ convertMarketValue(getHoverValue(d.marketValueId)) | formatValue('$') }}{{ marketValueDisplayUnit }}
           </span>
           <span v-if="!hoverOn && focusOn">
-            {{ convertMarketValue(getFocusValue(d.marketValueId)) | formatValue('$') }}{{ marketValueUnit }}
+            {{ convertMarketValue(getFocusValue(d.marketValueId)) | formatValue('$') }}{{ marketValueDisplayUnit }}
           </span>
           <span v-if="!hoverOn && !focusOn">
-            {{ convertMarketValue(summary[d.id].marketValue) | formatValue('$') }}{{ marketValueUnit }}
+            {{ convertMarketValue(summary[d.id].marketValue) | formatValue('$') }}{{ marketValueDisplayUnit }}
           </span>
         </td>
 
@@ -212,13 +212,13 @@
           v-if="hasMarketValue"
           class="align-right hover-cell cell-value">
           <span v-if="hoverOn">
-            {{ convertMarketValue(hoverTotalMarketValue) | formatValue('$') }}{{ marketValueUnit }}
+            {{ convertMarketValue(hoverTotalMarketValue) | formatValue('$') }}{{ marketValueDisplayUnit }}
           </span>
           <span v-if="!hoverOn && focusOn">
-            {{ convertMarketValue(focusTotalMarketValue) | formatValue('$') }}{{ marketValueUnit }}
+            {{ convertMarketValue(focusTotalMarketValue) | formatValue('$') }}{{ marketValueDisplayUnit }}
           </span>
           <span v-if="!hoverOn && !focusOn">
-            {{ convertMarketValue(summary.totalMarketValue) | formatValue('$') }}{{ marketValueUnit }}
+            {{ convertMarketValue(summary.totalMarketValue) | formatValue('$') }}{{ marketValueDisplayUnit }}
           </span>
         </th>
 
@@ -534,12 +534,6 @@ export default {
     },
     focusTotalVolWeightedPrice() {
       return this.focusData ? this.focusData._volWeightedPrice : null
-    },
-
-    marketValueUnit() {
-      return this.marketValueDisplayUnit === SI.THOUSAND
-        ? ''
-        : this.marketValueDisplayUnit
     }
   },
 
