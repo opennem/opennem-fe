@@ -52,7 +52,12 @@
 
         <th
           v-if="units.length > 1"
-          style="width: 150px;" />
+          style="width: 150px;">
+          <span>
+            Proportion
+            <small>%</small>
+          </span>
+        </th>
 
         <th
           class="data-col align-right hover-cell"
