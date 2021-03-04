@@ -742,21 +742,14 @@ export default {
           filterPeriod: this.filterPeriod
         })
 
-        const yGuides =
-          this.dataType === 'power' ||
-          (this.dataType === 'energy' && this.isYAxisAveragePower)
-            ? [
-                {
-                  value: this.facilityRegisteredCapacity,
-                  text: 'Registered Capacity'
-                }
-              ]
-            : []
-
-        this.setYGuides(yGuides)
+        this.updateYGuides()
       }
       // clear dates
       this.setFocusDate(null)
+    },
+
+    chartEnergyYAxis() {
+      this.updateYGuides()
     },
 
     range(curr, prev) {
@@ -840,6 +833,21 @@ export default {
         this.marketValueDisplayPrefix,
         marketValue
       )
+    },
+
+    updateYGuides() {
+      const yGuides =
+        this.dataType === 'power' ||
+        (this.dataType === 'energy' && this.isYAxisAveragePower)
+          ? [
+              {
+                value: this.facilityRegisteredCapacity,
+                text: 'Registered Capacity'
+              }
+            ]
+          : []
+
+      this.setYGuides(yGuides)
     },
 
     getFacility() {
