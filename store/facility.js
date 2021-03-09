@@ -261,9 +261,8 @@ export const actions = {
     { networkRegion, facilityCode, facilityFuelTechsColours }
   ) {
     const encode = encodeURIComponent(facilityCode)
-    const range = getters.range
-    const interval = getters.interval
-    const filterPeriod = getters.filterPeriod
+    let range = getters.range
+    let interval = getters.interval
 
     let period = range
     if (range === '30D') {
@@ -307,6 +306,10 @@ export const actions = {
       })
       .then(response => {
         console.log('fetched stats', response.data)
+
+        range = getters.range
+        interval = getters.interval
+        let filterPeriod = getters.filterPeriod
 
         const perf = new PerfTime()
         perf.time()
