@@ -1,6 +1,7 @@
 <template>
   <section
     :style="{ height: hasLocation ? `${height}px` : '' }"
+    :class="{ 'full-screen': isFullScreen}"
     class="mapbox">
     <client-only>
       <transition name="fade">
@@ -10,13 +11,31 @@
           :map-style="mapStyle"
           :center="coordinates"
           :zoom="zoom"
-          @load="onMapLoaded" >
+          @load="onMapLoaded">
+
           <MglMarker
             v-if="showMarker"
             :coordinates="coordinates"
             color="#e34a33" />
+
+          <MglNavigationControl
+            v-if="isFullScreen"
+            position="bottom-right"
+          />
+
         </MglMap>
       </transition>
+      <button
+        v-tooltip="isFullScreen ? 'Exit full screen' : 'Full screen'"
+        class="expand-button"
+        @click="handleExpandClick">
+        <i
+          v-if="isFullScreen"
+          class="fal fa-compress" />
+        <i
+          v-else
+          class="fal fa-expand" />
+      </button>
     </client-only>
 
     <transition name="fade">
@@ -57,7 +76,7 @@ export default {
     },
     mapStyle: {
       type: String,
-      default: 'mapbox://styles/mapbox/light-v10'
+      default: 'mapbox://styles/mapbox/light-v10?optimize=true'
     },
     showMarker: {
       type: Boolean,
@@ -68,9 +87,12 @@ export default {
   // map styles
   // mapbox://styles/mapbox/light-v10
   // mapbox://styles/mapbox/satellite-v9
+  // streets-v11
   data() {
     return {
-      accessToken: ACCESS_TOKEN
+      accessToken: ACCESS_TOKEN,
+      isFullScreen: false,
+      map: null
     }
   },
 
@@ -86,24 +108,94 @@ export default {
   methods: {
     async onMapLoaded(event) {
       const asyncActions = event.component.actions
-      const map = event.map
+      this.map = event.map
 
-      // disable all interactions
-      map.boxZoom.disable()
-      map.scrollZoom.disable()
-      map.dragPan.disable()
-      map.dragRotate.disable()
-      map.keyboard.disable()
-      map.doubleClickZoom.disable()
-      map.touchZoomRotate.disable()
-      map.touchPitch.disable()
+      this.disableMapInteractions()
+    },
+
+    disableMapInteractions() {
+      this.map.boxZoom.disable()
+      this.map.scrollZoom.disable()
+      this.map.dragPan.disable()
+      this.map.dragRotate.disable()
+      this.map.keyboard.disable()
+      this.map.doubleClickZoom.disable()
+      this.map.touchZoomRotate.disable()
+      this.map.touchPitch.disable()
+    },
+
+    enableMapInteractions() {
+      this.map.boxZoom.enable()
+      this.map.scrollZoom.enable()
+      this.map.dragPan.enable()
+      this.map.dragRotate.enable()
+      this.map.keyboard.enable()
+      this.map.doubleClickZoom.enable()
+      this.map.touchZoomRotate.enable()
+      this.map.touchPitch.enable()
+    },
+
+    backToPoint() {
+      this.map.snapToNorth()
+      this.map.flyTo({ center: this.coordinates, zoom: this.zoom, bearing: 0 })
+    },
+
+    handleExpandClick() {
+      this.isFullScreen = !this.isFullScreen
+
+      if (this.isFullScreen) {
+        this.enableMapInteractions()
+      } else {
+        this.disableMapInteractions()
+      }
+
+      setTimeout(() => {
+        // window.dispatchEvent(new Event('resize'))
+        this.map.resize()
+        setTimeout(() => {
+          this.backToPoint()
+        }, 10)
+      }, 10)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.expand-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 2;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  &:active,
+  &:focus {
+    border: none;
+    outline: none;
+  }
+
+  i {
+    color: #fff;
+    font-size: 18px;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+  }
+}
 .mapbox {
+  position: relative;
+
+  &.full-screen {
+    position: fixed;
+    z-index: 9999;
+    left: 1px;
+    right: 1px;
+    top: 1px;
+    bottom: 1px;
+    height: auto !important;
+  }
+
   ::v-deep .mapboxgl-canvas {
     border-radius: 10px;
     outline: none;
