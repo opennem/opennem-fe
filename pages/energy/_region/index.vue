@@ -249,6 +249,9 @@ export default {
   },
 
   created() {
+    this.setXGuides([])
+    this.setYGuides([])
+
     if (isValidRegion(this.regionId)) {
       this.$store.dispatch('currentView', 'energy')
       if (this.regionId === 'wem' && !this.isEnergyType) {
@@ -292,7 +295,10 @@ export default {
       setRange: 'range',
       setInterval: 'interval',
       setFilterPeriod: 'filterPeriod',
-      setQuery: 'app/query'
+      setQuery: 'app/query',
+
+      setXGuides: 'visInteract/xGuides',
+      setYGuides: 'visInteract/yGuides'
     }),
 
     updateEmissionsData() {
