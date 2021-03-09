@@ -214,7 +214,7 @@
         <!-- <EnergyBar
           :bar-width="400"
           :domains="powerEnergyDomains"
-          :dataset="datasetFilteredByZoomExtent"
+          :dataset="stackedAreaDatasetFilteredByZoomExtent"
           :hover-on="isHovering"
           :hover-date="hoverDate"
           :focus-on="isFocusing"
@@ -245,7 +245,7 @@
         v-if="!fetchingStats && powerEnergyDomains.length > 1"
         :unit="` ${isEnergyType && !isYAxisAveragePower ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
         :domains="powerEnergyDomains"
-        :dataset="datasetFilteredByZoomExtent"
+        :dataset="stackedAreaDatasetFilteredByZoomExtent"
         :dynamic-extent="zoomExtent"
         :hover-on="isHovering"
         :hover-date="hoverDate"
@@ -584,6 +584,18 @@ export default {
     },
 
     datasetFilteredByZoomExtent() {
+      if (this.zoomExtent.length === 2) {
+        const start = this.zoomExtent[0]
+        const end = this.zoomExtent[1]
+
+        return this.selectedFacilityUnitsDataset.filter(
+          d => d.date >= start && d.date < end
+        )
+      }
+      return this.selectedFacilityUnitsDataset
+    },
+
+    stackedAreaDatasetFilteredByZoomExtent() {
       if (this.zoomExtent.length === 2) {
         const start = this.zoomExtent[0]
         const end = this.zoomExtent[1]

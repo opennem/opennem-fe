@@ -109,18 +109,31 @@
 
         <td class="align-right">{{ d.registeredCapacity }}</td>
 
-        <td class="align-right hover-cell">
+        <td
+          v-if="isAveragePower"
+          class="align-right hover-cell">
+          <span v-if="hoverOn">
+            {{ convertValue(getAvPowerHoverValue(d.id)) | formatValue }}
+          </span>
+          <span v-if="!hoverOn && focusOn">
+            {{ convertValue(getAvPowerFocusValue(d.id)) | formatValue }}
+          </span>
+          <span v-if="!hoverOn && !focusOn">
+            {{ convertValue(summary[d.id].avPower) | formatValue }}
+          </span>
+        </td>
+
+        <td
+          v-else
+          class="align-right hover-cell">
           <span v-if="hoverOn">
             {{ convertValue(getHoverValue(d.id)) | formatValue }}
           </span>
           <span v-if="!hoverOn && focusOn">
             {{ convertValue(getFocusValue(d.id)) | formatValue }}
           </span>
-          <span v-if="!hoverOn && !focusOn && !isYAxisAveragePower">
+          <span v-if="!hoverOn && !focusOn">
             {{ convertValue(summary[d.id].energy) | formatValue }}
-          </span>
-          <span v-if="!hoverOn && !focusOn && isYAxisAveragePower">
-            {{ convertValue(summary[d.id].avPower) | formatValue }}
           </span>
         </td>
 
@@ -337,6 +350,9 @@ export default {
   },
 
   computed: {
+    isAveragePower() {
+      return this.isEnergyType && this.isYAxisAveragePower
+    },
     filteredUnits() {
       const units = _cloneDeep(this.units)
       units.forEach(u => {
@@ -612,8 +628,14 @@ export default {
     getHoverValue(id) {
       return this.hoverData ? this.hoverData[id] : null
     },
+    getAvPowerHoverValue(id) {
+      return this.hoverAveragePowerData ? this.hoverAveragePowerData[id] : null
+    },
     getFocusValue(id) {
       return this.focusData ? this.focusData[id] : null
+    },
+    getAvPowerFocusValue(id) {
+      return this.focusAveragePowerData ? this.focusAveragePowerData[id] : null
     },
     getHoverPowerValue(id) {
       const hover = this.isEnergyType

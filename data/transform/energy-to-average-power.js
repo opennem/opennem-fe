@@ -3,10 +3,10 @@ import * as SI from '@/constants/si.js'
 
 // assume average power is MW
 export default function({ data, domains, range, interval, exponent }) {
-  const datasetLength = data.length - 1
+  const dataLastIndex = data.length - 1
   const dataset = data.map((d, i) => {
     const isStart = i === 0
-    const isEnd = i === datasetLength
+    const isEnd = i === dataLastIndex
     const obj = {
       date: d.date,
       time: d.time,
