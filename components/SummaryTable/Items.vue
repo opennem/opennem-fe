@@ -168,6 +168,7 @@ export default {
         'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
 
       isEnergyType: 'regionEnergy/isEnergyType',
+      domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
 
       chartEnergyUnit: 'chartOptionsPowerEnergy/chartEnergyUnit',
       chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
@@ -241,7 +242,7 @@ export default {
         let list = ''
         domainIds.sort()
         domainIds.forEach(id => {
-          const find = this.energyDomains.find(eDomain => eDomain.id === id)
+          const find = this.domainPowerEnergy.find(eDomain => eDomain.id === id)
           if (find) {
             list += `${find.label}<br>`
           }
