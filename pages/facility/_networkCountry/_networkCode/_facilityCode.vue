@@ -979,10 +979,13 @@ export default {
 $radius: 0.5rem;
 
 .facility {
+  @include tablet {
+    margin: 1rem 1.5rem;
+  }
+
   @include desktop {
     display: flex;
     margin: 1rem;
-
     .main {
       width: 70%;
       padding: 1rem 2rem 1rem 1rem;
@@ -1076,13 +1079,11 @@ header {
 .facility-units {
   margin: 0.5rem;
 
-  // .unit-list {
-  //   width: calc(100% - 300px);
-  //   margin-right: 1rem;
-  // }
-
-  @include desktop {
-    //margin: 0.5rem 1rem 0.5rem 1.25rem;
+  @include tablet {
+    margin: 0;
+  }
+  @include mobile {
+    margin: 1rem;
   }
 }
 
@@ -1093,8 +1094,10 @@ header {
 .chart-type-options {
   width: 150px;
   font-size: 12px;
+  margin-top: 0.5rem;
 
-  @include desktop {
+  @media screen and (min-width: 1286px) {
+    margin-top: 0;
     margin-left: 1rem;
     position: absolute;
     right: 0;

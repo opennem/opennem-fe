@@ -733,7 +733,11 @@ export default {
 table {
   font-size: 12px;
   width: 100%;
-  table-layout: fixed;
+  table-layout: auto;
+
+  @include desktop {
+    table-layout: auto;
+  }
 
   .cell-value {
     font-family: $family-primary;

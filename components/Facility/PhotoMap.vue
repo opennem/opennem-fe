@@ -19,7 +19,6 @@
       :zoom="13"
       :map-style="'mapbox://styles/mapbox/satellite-streets-v11'"
       :show-marker="false"
-      :height="250"
       class="map" />
 
       <!-- <MetaInfo
@@ -66,6 +65,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~/assets/scss/responsive-mixins.scss';
+
 .aside {
   width: 100%;
   margin-top: 1rem;
@@ -84,13 +85,24 @@ export default {
 .normal {
   display: flex;
   padding: 0.75rem;
+  margin-bottom: 2rem;
 
   & > section,
   & > .aside-section {
     width: 100%;
+    margin-right: 0.75rem;
 
-    &:first-child {
-      margin-right: 0.75rem;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  @include mobile {
+    display: block;
+
+    & > section,
+    & > .aside-section {
+      margin-bottom: 0.75rem;
     }
   }
 }

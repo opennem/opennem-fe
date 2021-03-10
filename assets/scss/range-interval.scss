@@ -2,12 +2,12 @@
   .buttons {
     background-color: rgba(255, 255, 255, 0.5);
 
-    @include desktop {
+    @media screen and (min-width: 1083px) {
       background-color: transparent;
     }
   }
 
-  @include desktop {
+  @media screen and (min-width: 1083px) {
     padding: $app-padding / 2 1rem;
     display: flex;
     align-items: center;
@@ -22,7 +22,7 @@
       min-width: 40px;
     }
 
-    @include desktop {
+    @media screen and (min-width: 1083px) {
       border-radius: 290486px;
     }
 
@@ -32,14 +32,14 @@
   }
 
   .range-buttons {
-    @include desktop {
+    @media screen and (min-width: 1083px) {
       margin-bottom: 0;
       margin-right: 0.4rem;
     }
   }
 
   .filter-period-buttons {
-    @include desktop {
+    @media screen and (min-width: 1083px) {
       margin-left: 1rem;
     }
   }
