@@ -104,7 +104,7 @@
             :style="{ backgroundColor: d.colour}"
             class="colour-square" />
           <span>{{ d.code }}</span>
-          <span v-if="!areAllUnitsOfSameFuelTech">— {{ d.fuelTechLabel }}</span>
+          <span v-if="!areAllUnitsOfSameFuelTech">— {{ getFuelTechLabel(d.fuelTechLabel) }}</span>
         </td>
 
         <td class="align-right">{{ d.registeredCapacity }}</td>
@@ -613,6 +613,10 @@ export default {
     },
     handleRowShiftClick(code) {
       this.$emit('codeShiftClick', code)
+    },
+
+    getFuelTechLabel(code) {
+      return FT.FUEL_TECH_LABEL[code]
     },
 
     getCellValue(d) {
