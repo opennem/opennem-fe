@@ -78,7 +78,7 @@ export default {
     },
     mapStyle: {
       type: String,
-      default: 'mapbox://styles/mapbox/light-v10?optimize=true'
+      default: 'mapbox://styles/mapbox/streets-v11?optimize=true'
     },
     showMarker: {
       type: Boolean,
@@ -188,7 +188,7 @@ export default {
   i {
     color: #fff;
     font-size: 18px;
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.6);
   }
 }
 .mapbox {
