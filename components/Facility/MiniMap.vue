@@ -2,7 +2,8 @@
   <section
     :style="{ height: hasLocation ? `${height}px` : '' }"
     :class="{ 'full-screen': isFullScreen}"
-    class="mapbox">
+    class="mapbox"
+    @click.self="handleExpandClick">
     <client-only>
       <transition name="fade">
         <MglMap
@@ -11,6 +12,7 @@
           :map-style="mapStyle"
           :center="coordinates"
           :zoom="zoom"
+          class="map-container"
           @load="onMapLoaded">
 
           <MglMarker
@@ -26,7 +28,7 @@
         </MglMap>
       </transition>
       <button
-        v-tooltip="isFullScreen ? 'Exit full screen' : 'Full screen'"
+        v-tooltip.left-start="isFullScreen ? 'Exit full screen' : 'Full screen'"
         class="expand-button"
         @click="handleExpandClick">
         <i
@@ -138,7 +140,6 @@ export default {
     },
 
     backToPoint() {
-      this.map.snapToNorth()
       this.map.flyTo({ center: this.coordinates, zoom: this.zoom, bearing: 0 })
     },
 
@@ -154,7 +155,11 @@ export default {
       setTimeout(() => {
         this.map.resize()
         setTimeout(() => {
-          this.backToPoint()
+          if (this.isFullScreen) {
+            this.map.zoomIn()
+          } else {
+            this.backToPoint()
+          }
         }, 10)
       }, 10)
     }
@@ -163,6 +168,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~/assets/scss/responsive-mixins.scss';
+
 .expand-button {
   position: absolute;
   top: 5px;
@@ -190,11 +197,37 @@ export default {
   &.full-screen {
     position: fixed;
     z-index: 9999;
-    left: 1px;
-    right: 1px;
-    top: 1px;
-    bottom: 1px;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: -2px;
+    padding: 6rem;
+    background: rgb(7, 0, 0);
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.85) 0%,
+      rgba(0, 0, 0, 0.65) 100%
+    );
+
     height: auto !important;
+
+    @include mobile {
+      padding: 4rem 1rem 1rem;
+    }
+
+    .map-container {
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .expand-button {
+      top: 2.5rem;
+      right: 6rem;
+
+      @include mobile {
+        top: 20px;
+        right: 15px;
+      }
+    }
   }
 
   ::v-deep .mapboxgl-canvas {
@@ -227,6 +260,9 @@ export default {
   }
   ::v-deep .mapboxgl-ctrl-attrib-button[aria-pressed='true'] {
     background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='20' height='20' viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='black' d='M256 40c118.621 0 216 96.075 216 216 0 119.291-96.61 216-216 216-119.244 0-216-96.562-216-216 0-119.203 96.602-216 216-216m0-32C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm-36 344h12V232h-12c-6.627 0-12-5.373-12-12v-8c0-6.627 5.373-12 12-12h48c6.627 0 12 5.373 12 12v140h12c6.627 0 12 5.373 12 12v8c0 6.627-5.373 12-12 12h-72c-6.627 0-12-5.373-12-12v-8c0-6.627 5.373-12 12-12zm36-240c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32z'/%3E%3C/svg%3E");
+  }
+  ::v-deep .mapboxgl-ctrl.mapboxgl-ctrl-attrib {
+    border-radius: 10px;
   }
 }
 </style>
