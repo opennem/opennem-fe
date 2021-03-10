@@ -91,8 +91,7 @@ export default {
   data() {
     return {
       accessToken: ACCESS_TOKEN,
-      isFullScreen: false,
-      map: null
+      isFullScreen: false
     }
   },
 
@@ -105,9 +104,12 @@ export default {
     }
   },
 
+  created() {
+    this.map = null
+  },
+
   methods: {
-    async onMapLoaded(event) {
-      const asyncActions = event.component.actions
+    onMapLoaded(event) {
       this.map = event.map
 
       this.disableMapInteractions()
@@ -150,7 +152,6 @@ export default {
       }
 
       setTimeout(() => {
-        // window.dispatchEvent(new Event('resize'))
         this.map.resize()
         setTimeout(() => {
           this.backToPoint()
