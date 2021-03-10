@@ -172,7 +172,7 @@ export default {
 
 .expand-button {
   position: absolute;
-  top: 5px;
+  top: 10px;
   right: 5px;
   z-index: 2;
   background: transparent;
