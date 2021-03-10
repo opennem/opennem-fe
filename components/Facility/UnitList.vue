@@ -196,18 +196,31 @@
 
         <th class="align-right cell-value">{{ operatingUnitsTotalCapacity }}</th>
 
-        <th class="align-right hover-cell cell-value">
+        <th
+          v-if="isAveragePower"
+          class="align-right hover-cell cell-value">
+          <span v-if="hoverOn">
+            {{ convertValue(hoverAveragePowerTotal) | formatValue }}
+          </span>
+          <span v-if="!hoverOn && focusOn">
+            {{ convertValue(focusAveragePowerTotal) | formatValue }}
+          </span>
+          <span v-if="!hoverOn && !focusOn">
+            {{ convertValue(summary.totalAvPower) | formatValue }}
+          </span>
+        </th>
+
+        <th
+          v-else
+          class="align-right hover-cell cell-value">
           <span v-if="hoverOn">
             {{ convertValue(hoverTotal) | formatValue }}
           </span>
           <span v-if="!hoverOn && focusOn">
             {{ convertValue(focusTotal) | formatValue }}
           </span>
-          <span v-if="!hoverOn && !focusOn && !isYAxisAveragePower">
+          <span v-if="!hoverOn && !focusOn">
             {{ convertValue(summary.totalEnergy) | formatValue }}
-          </span>
-          <span v-if="!hoverOn && !focusOn && isYAxisAveragePower">
-            {{ convertValue(summary.totalAvPower) | formatValue }}
           </span>
         </th>
 
