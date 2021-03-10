@@ -46,4 +46,11 @@ export const mutations = {
   }
 }
 
-export const actions = {}
+export const actions = {
+  doShowChart({ commit }) {
+    commit('chartType', OPTIONS.CHART_STACKED)
+  },
+  doHideChart({ commit }) {
+    commit('chartType', OPTIONS.CHART_HIDDEN)
+  }
+}

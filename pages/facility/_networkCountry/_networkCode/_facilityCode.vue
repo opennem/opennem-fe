@@ -59,12 +59,12 @@
             @queryChange="handleQueryChange"
             @filterPeriodChange="handleFilterPeriodChange" />
 
-          <Dropdown
-            v-if="isEnergyType"
-            :options="chartTypeOptions"
-            class="dropdown chart-type-options"
-            @change="handleChartDisplayChange"
-          />
+        <!-- <Dropdown
+          v-if="isEnergyType"
+          :options="chartTypeOptions"
+          class="dropdown chart-type-options"
+          @change="handleChartDisplayChange"
+        /> -->
         </div>
 
         <section class="facility-chart">
@@ -92,7 +92,7 @@
           </transition>
 
           <PowerEnergyChart
-            v-if="!fetchingStats && selectedFacilityUnitsDataset.length > 0 && isEnergyChartShown"
+            v-if="!fetchingStats && selectedFacilityUnitsDataset.length > 0"
             :power-energy-dataset="selectedFacilityUnitsDataset"
             :domain-power-energy="powerEnergyDomains"
             :range="range"
@@ -115,7 +115,7 @@
           />
 
           <EmissionsChart
-            v-if="!fetchingStats && domainEmissions.length > 0 && !isEnergyChartShown"
+            v-if="!fetchingStats && domainEmissions.length > 0"
             :emissions-dataset="selectedFacilityUnitsDataset"
             :domain-emissions="emissionsDomains"
             :range="range"
@@ -812,6 +812,11 @@ export default {
   created() {
     this.getFacility()
     this.doSetChartEnergyPrefixes(SI.MEGA)
+    this.doHideEmissionsChart()
+  },
+
+  beforeDestroy() {
+    this.doShowEmissionsChart()
   },
 
   methods: {
@@ -832,7 +837,9 @@ export default {
       doUpdateDatasetByInterval: 'facility/doUpdateDatasetByInterval',
       doUpdateDatasetByFilterPeriod: 'facility/doUpdateDatasetByFilterPeriod',
       doSetChartEnergyPrefixes:
-        'chartOptionsPowerEnergy/doSetChartEnergyPrefixes'
+        'chartOptionsPowerEnergy/doSetChartEnergyPrefixes',
+      doHideEmissionsChart: 'chartOptionsEmissionsVolume/doHideChart',
+      doShowEmissionsChart: 'chartOptionsEmissionsVolume/doShowChart'
     }),
 
     convertValue(value) {
@@ -1094,11 +1101,10 @@ header {
 .chart-type-options {
   width: 150px;
   font-size: 12px;
-  margin-top: 0.5rem;
+  margin: 0.5rem 1rem;
 
   @media screen and (min-width: 1286px) {
-    margin-top: 0;
-    margin-left: 1rem;
+    margin: 0;
     position: absolute;
     right: 0;
     top: 5px;
