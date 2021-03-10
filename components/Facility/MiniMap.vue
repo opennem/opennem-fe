@@ -202,11 +202,11 @@ export default {
     top: 0;
     bottom: -2px;
     padding: 6rem;
-    background: rgb(7, 0, 0);
+    background: rgb(0, 0, 0);
     background: linear-gradient(
       180deg,
-      rgba(0, 0, 0, 0.85) 0%,
-      rgba(0, 0, 0, 0.65) 100%
+      rgba(0, 0, 0, 0.8) 0%,
+      rgba(0, 0, 0, 0.6) 100%
     );
 
     height: auto !important;
