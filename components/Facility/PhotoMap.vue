@@ -4,7 +4,7 @@
       :has-photos="facilityPhotos.length > 0"
       :photos="facilityPhotos"
       :name="facilityName"
-      :height="layout === 'aside' ? 'auto' : '200px'"/>
+      :height="layout === 'aside' ? '250px' : '200px'"/>
 
     <MiniMap
       :has-location="hasLocation"

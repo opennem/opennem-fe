@@ -10679,6 +10679,11 @@ vuedraggable@^2.17.0:
   dependencies:
     sortablejs "^1.10.1"
 
+vueperslides@^2.13.0:
+  version "2.13.0"
+  resolved "https://registry.yarnpkg.com/vueperslides/-/vueperslides-2.13.0.tgz#530889be76ada1554be4342ec41624efa641f455"
+  integrity sha512-AZFGr9/gi7DWpxs04ANWHppHbTL2YueraFwhvJY4rOCNxwBHdubccVHUUpBinzbM3mtE21LZLsz7WdkgEImIBg==
+
 vuex@^3.5.1:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.5.1.tgz#f1b8dcea649bc25254cf4f4358081dbf5da18b3d"

@@ -1,24 +1,87 @@
 <template>
-  <section>
-    <transition name="fade">
+  <section
+    :class="{ 'full-screen': isFullScreen }"
+    class="photobox"
+    @click.self="handleExpandClick">
+    <!-- <transition name="fade">
       <figure v-if="hasPhotos">
         <v-popover
-          v-if="hasPhotoAuthor(photo.author)"
+          v-if="hasPhotoAuthor(primaryPhoto.author)"
           class="wiki-link-text"
           placement="auto">
           <i class="fal fa-info-circle"/>
           <template slot="popover">
-            Photo by <a :href="photo.author_link">{{ photo.author }}</a>
+            Photo by <a :href="primaryPhoto.author_link">{{ primaryPhoto.author }}</a>
           </template>
         </v-popover>
 
         <img
-          :src="photo.photo_url"
+          :src="primaryPhoto.photo_url"
           :alt="`${name} facility`"
           :style="{ 'height': ratio > 2 ? '180px' : height }"
         >
       </figure>
+    </transition> -->
+
+    <transition name="fade">
+      <VueperSlides
+        v-if="hasPhotos"
+        :dragging-distance="20"
+        :fixed-height="isFullScreen ? '100%' : height"
+        @slide="handleSlide">
+        <VueperSlide
+          v-for="(photo, index) in photos"
+          :key="`photo${index}`"
+          :image="photo.photo_url" />
+      </VueperSlides>
     </transition>
+
+    <button
+      v-tooltip.left-start="isFullScreen ? 'Exit full screen' : 'Full screen'"
+      class="expand-button"
+      @click="handleExpandClick">
+      <i
+        v-if="isFullScreen"
+        class="fal fa-compress" />
+      <i
+        v-else
+        class="fal fa-expand" />
+    </button>
+
+    <v-popover
+      v-if="hasPhotos && hasPhotoAuthor(currentPhoto.author)"
+      class="wiki-link-text"
+      placement="auto">
+      <i class="fal fa-info-circle"/>
+      <template slot="popover">
+        Photo by <a :href="currentPhoto.author_link">{{ currentPhoto.author }}</a>
+      </template>
+    </v-popover>
+
+    <!-- <template v-slot:content>
+      <figure>
+        <img
+          :src="photo.photo_url"
+          :alt="`${name} facility`"
+          :style="{ 'height': getRatio(photo) > 2 ? '180px' : height }"
+        >
+      </figure>
+    </template> -->
+
+    <!-- <figure>
+      <img
+        :src="currentPhoto.photo_url"
+        :alt="`${name} facility`"
+        :style="{ 'height': getRatio(currentPhoto) > 2 ? '180px' : height }"
+      >
+    </figure> -->
+
+    <!-- <nav
+      v-if="hasPhotos && photos.length > 1"
+      class="photo-nav">
+      <button @click="handlePrevClick">prev</button>
+      <button @click="handleNextClick">next</button>
+    </nav> -->
 
     <transition name="fade">
       <div
@@ -33,7 +96,15 @@
 </template>
 
 <script>
+import { VueperSlides, VueperSlide } from 'vueperslides'
+import 'vueperslides/dist/vueperslides.css'
+
 export default {
+  components: {
+    VueperSlides,
+    VueperSlide
+  },
+
   props: {
     hasPhotos: {
       type: Boolean,
@@ -53,55 +124,166 @@ export default {
     }
   },
 
-  computed: {
-    photo() {
-      let width = this.photos[0].width
-      let photoIndex = 0
-      this.photos.forEach((d, i) => {
-        if (d.width > width) {
-          width = d.width
-          photoIndex = i
-        }
-      })
-      return this.photos[photoIndex]
-    },
-    ratio() {
-      return this.photo.width / this.photo.height
+  data() {
+    return {
+      isFullScreen: false,
+      currentPhoto: null
     }
+  },
+
+  //   computed: {
+  //     primaryPhoto() {
+  //       let index = 0
+  //       this.photos.every((d, i) => {
+  //         if (d.is_primary) {
+  //           index = i
+  //           return false
+  //         }
+  //       })
+  //       return this.photos[index]
+  //     },
+  //
+  //     ratio() {
+  //       return this.primaryPhoto.width / this.primaryPhoto.height
+  //     }
+  //   },
+
+  created() {
+    this.currentPhoto = this.photos[0]
   },
 
   methods: {
     hasPhotoAuthor(author) {
       return author && author !== ''
+    },
+
+    handleExpandClick() {
+      this.isFullScreen = !this.isFullScreen
+    },
+
+    handleSlide(slide) {
+      this.currentPhoto = this.photos[slide.currentSlide.index]
+    },
+
+    getRatio(photo) {
+      return photo.width / photo.height
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@import '~/assets/scss/responsive-mixins.scss';
+
 $radius: 0.5rem;
 
-figure {
-  position: relative;
-  img {
-    border-radius: $radius;
-    margin: 0 auto;
-    display: block;
-    object-fit: cover;
-    width: 100%;
+.expand-button {
+  position: absolute;
+  top: 10px;
+  right: 5px;
+  z-index: 2;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  &:active,
+  &:focus {
+    border: none;
+    outline: none;
   }
 
-  .wiki-link-text {
-    position: absolute;
-    bottom: 8px;
-    right: 12px;
+  i {
     color: #fff;
-    font-size: 1.2em;
+    font-size: 18px;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.6);
+  }
+}
 
-    i {
-      position: relative;
-      top: 2px;
-      text-shadow: 1px 1px 1px #999;
+.photobox {
+  position: relative;
+
+  &.full-screen {
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: -2px;
+    padding: 6rem;
+    background: rgb(0, 0, 0);
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.8) 0%,
+      rgba(0, 0, 0, 0.6) 100%
+    );
+
+    height: auto !important;
+
+    @include mobile {
+      padding: 4rem 1rem 1rem;
+    }
+
+    .expand-button {
+      top: 2.5rem;
+      right: 6rem;
+
+      @include mobile {
+        top: 20px;
+        right: 15px;
+      }
+    }
+  }
+}
+
+// figure {
+//   position: relative;
+//   img {
+//     border-radius: $radius;
+//     margin: 0 auto;
+//     display: block;
+//     object-fit: cover;
+//     width: 100%;
+//   }
+//
+//
+// }
+
+.wiki-link-text {
+  position: absolute;
+  bottom: 8px;
+  z-index: 99;
+  right: 12px;
+  color: #fff;
+  font-size: 20px;
+
+  i {
+    position: relative;
+    top: 2px;
+    text-shadow: 1px 1px 1px #999;
+  }
+}
+
+::v-deep .vueperslides__track,
+::v-deep .vueperslides__parallax-wrapper,
+::v-deep .vueperslides__inner,
+::v-deep .vueperslides,
+::v-deep .vueperslides__track-inner,
+::v-deep .vueperslide,
+::v-deep .vueperslide__content-wrapper {
+  border-radius: 10px;
+}
+::v-deep
+  .vueperslides:not(.no-shadow):not(.vueperslides--3d)
+  .vueperslides__parallax-wrapper:after {
+  box-shadow: none;
+}
+::v-deep .vueperslides__arrows {
+  opacity: 0;
+}
+.vueperslides {
+  &:hover {
+    ::v-deep .vueperslides__arrows {
+      opacity: 1;
     }
   }
 }
