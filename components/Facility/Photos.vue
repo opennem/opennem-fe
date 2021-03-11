@@ -38,6 +38,7 @@
 
     <button
       v-tooltip.left-start="isFullScreen ? 'Exit full screen' : 'Full screen'"
+      v-if="hasPhotos"
       class="expand-button"
       @click="handleExpandClick">
       <i
