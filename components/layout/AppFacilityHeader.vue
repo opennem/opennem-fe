@@ -122,19 +122,28 @@ export default {
         const nextFacilityId = nextFacility ? nextFacility.facilityId : null
         const nextFacilityName = nextFacility ? nextFacility.displayName : null
         const nextFacilityNetwork = nextFacility ? nextFacility.network : null
+        const nextFacilityCountry = nextFacility ? nextFacility.country : null
+
         const prevFacilityId = prevFacility ? prevFacility.facilityId : null
         const prevFacilityName = prevFacility ? prevFacility.displayName : null
         const prevFacilityNetwork = prevFacility ? prevFacility.network : null
+        const prevFacilityCountry = prevFacility ? prevFacility.country : null
+
+        console.log(prevFacilityCountry, nextFacilityCountry)
 
         this.nextFacilityPath = nextFacilityId
           ? `/facility/${encodeURIComponent(
-              nextFacilityNetwork
-            )}/${encodeURIComponent(nextFacilityId)}`
+              nextFacilityCountry
+            )}/${encodeURIComponent(nextFacilityNetwork)}/${encodeURIComponent(
+              nextFacilityId
+            )}`
           : null
         this.prevFacilityPath = prevFacilityId
           ? `/facility/${encodeURIComponent(
-              prevFacilityNetwork
-            )}/${encodeURIComponent(prevFacilityId)}`
+              prevFacilityCountry
+            )}/${encodeURIComponent(prevFacilityNetwork)}/${encodeURIComponent(
+              prevFacilityId
+            )}`
           : null
         this.nextFacilityName = nextFacilityName
         this.prevFacilityName = prevFacilityName
