@@ -1,22 +1,22 @@
 <template>
   <section
-    :style="{ height: hasLocation ? `${height}px` : '' }"
+    :style="{ height: coordinates ? `${height}px` : '' }"
     :class="{ 'full-screen': isFullScreen}"
     class="mapbox"
     @click.self="handleExpandClick">
     <client-only>
       <transition name="fade">
         <MglMap
-          v-if="hasCoordinates"
+          v-if="coordinates"
           :access-token="accessToken"
-          :map-style="mapStyle"
-          :center="coordinates"
+          :map-style.sync="mapStyle"
           :zoom="zoom"
+          :center="coordinates"
           class="map-container"
           @load="onMapLoaded">
 
           <MglMarker
-            v-if="showMarker"
+            v-if="showMarker || isFullScreen"
             :coordinates="coordinates"
             color="#e34a33" />
 
@@ -42,7 +42,7 @@
 
     <transition name="fade">
       <div
-        v-if="!hasLocation"
+        v-if="!coordinates"
         class="not-found-card card">
         <i class="fal fa-map-marker-alt"/>
         <span>Location not available</span>
@@ -56,21 +56,17 @@ const ACCESS_TOKEN = process.env.mapboxToken
 
 export default {
   props: {
-    hasLocation: {
-      type: Boolean,
-      default: false
-    },
     height: {
       type: Number,
       default: 200
     },
-    lat: {
-      type: Number,
-      default: null
+    point: {
+      type: Object,
+      default: () => null
     },
-    lng: {
-      type: Number,
-      default: null
+    boundary: {
+      type: Object,
+      default: () => null
     },
     zoom: {
       type: Number,
@@ -81,6 +77,10 @@ export default {
       default: 'mapbox://styles/mapbox/streets-v11?optimize=true'
     },
     showMarker: {
+      type: Boolean,
+      default: true
+    },
+    fitBounds: {
       type: Boolean,
       default: true
     }
@@ -98,11 +98,33 @@ export default {
   },
 
   computed: {
-    hasCoordinates() {
-      return this.lat && this.lng
-    },
     coordinates() {
-      return [this.lng, this.lat]
+      return this.point ? this.point.coordinates : null
+    },
+
+    bounds() {
+      if (!this.boundary) return null
+
+      const coordinates = this.boundary.coordinates[0]
+      return coordinates.reduce((bounds, coord) => {
+        return bounds.extend(coord)
+      }, new this.$mapbox.LngLatBounds(coordinates[0], coordinates[0]))
+    },
+
+    collection() {
+      const collection = {
+        type: 'FeatureCollection',
+        features: []
+      }
+
+      if (this.boundary) {
+        collection.features.push({
+          type: 'Feature',
+          geometry: this.boundary
+        })
+      }
+
+      return collection
     }
   },
 
@@ -113,6 +135,36 @@ export default {
   methods: {
     onMapLoaded(event) {
       this.map = event.map
+
+      if (this.bounds && this.fitBounds) {
+        this.map.fitBounds(this.bounds, this.getBBoxOptions())
+      }
+
+      this.map.addSource('features', {
+        type: 'geojson',
+        data: this.collection
+      })
+
+      this.map.addLayer({
+        id: 'polygon-fill',
+        type: 'fill',
+        source: 'features',
+        layout: {},
+        paint: {
+          'fill-color': '#e34a33',
+          'fill-opacity': 0.2
+        }
+      })
+      this.map.addLayer({
+        id: 'polygon-line',
+        type: 'line',
+        source: 'features',
+        layout: {},
+        paint: {
+          'line-color': '#e34a33',
+          'line-width': 1
+        }
+      })
 
       this.disableMapInteractions()
     },
@@ -140,7 +192,19 @@ export default {
     },
 
     backToPoint() {
-      this.map.flyTo({ center: this.coordinates, zoom: this.zoom, bearing: 0 })
+      if (this.bounds && this.fitBounds) {
+        this.map.fitBounds(this.bounds, this.getBBoxOptions(false))
+      } else {
+        this.map.flyTo({
+          center: this.coordinates,
+          zoom: this.zoom,
+          bearing: 0
+        })
+      }
+    },
+
+    getBBoxOptions(linear = true) {
+      return { padding: 5, linear }
     },
 
     handleExpandClick() {

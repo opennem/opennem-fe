@@ -7,16 +7,15 @@
       :height="layout === 'aside' ? 'auto' : '200px'"/>
 
     <MiniMap
-      :has-location="hasFacilityLocation"
-      :lat="facilityLocation.lat"
-      :lng="facilityLocation.lng"
+      :boundary="facilityLocation.boundary"
+      :point="facilityLocation.geom"
+      :fit-bounds="false"
       class="map" />
 
     <MiniMap
-      :has-location="hasFacilityLocation"
-      :lat="facilityLocation.lat"
-      :lng="facilityLocation.lng"
       :zoom="13"
+      :boundary="facilityLocation.boundary"
+      :point="facilityLocation.geom"
       :map-style="'mapbox://styles/mapbox/satellite-streets-v11'"
       :show-marker="false"
       class="map" />
@@ -58,7 +57,7 @@ export default {
     },
     facilityLocation: {
       type: Object,
-      default: () => ({ lat: 0, lng: 0 })
+      default: () => null
     }
   }
 }
