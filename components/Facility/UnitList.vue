@@ -278,10 +278,7 @@ import _cloneDeep from 'lodash.clonedeep'
 import DateDisplay from '@/services/DateDisplay.js'
 import * as FT from '~/constants/energy-fuel-techs/group-default.js'
 import * as SI from '@/constants/si'
-import {
-  FACILITY_OPERATING,
-  FACILITY_COMMITTED
-} from '@/constants/facility-status.js'
+import { FACILITY_OPERATING } from '@/constants/facility-status.js'
 import DatesDisplay from '@/components/SummaryTable/DatesDisplay'
 import UnitListBar from './UnitListBar'
 
@@ -378,9 +375,7 @@ export default {
       return units
     },
     operatingUnits() {
-      return this.filteredUnits.filter(
-        u => u.status === FACILITY_OPERATING || u.status === FACILITY_COMMITTED
-      )
+      return this.filteredUnits.filter(u => u.status === FACILITY_OPERATING)
     },
     operatingUnitsTotalCapacity() {
       return this.calculateTotalRegisteredCapacity(this.operatingUnits)
@@ -451,10 +446,7 @@ export default {
           marketValue: null
         }
         unitNonNullLength[id] = 0
-        if (
-          u.status === FACILITY_OPERATING ||
-          u.status === FACILITY_COMMITTED
-        ) {
+        if (u.status === FACILITY_OPERATING) {
           totalOperatingRegCap += u.registeredCapacity
         }
       })
@@ -581,7 +573,7 @@ export default {
 
   methods: {
     isActive(status) {
-      return status === FACILITY_OPERATING || status === FACILITY_COMMITTED
+      return status === FACILITY_OPERATING
     },
 
     getData(date) {
