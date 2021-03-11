@@ -42,7 +42,6 @@
             v-if="facility && widthBreak"
             :facility-name="facilityName"
             :facility-photos="facilityPhotos"
-            :has-facility-location="hasFacilityLocation"
             :facility-location="facilityLocation"
             :layout="'normal'"
           />
@@ -237,7 +236,6 @@
         v-if="facility && !widthBreak"
         :facility-name="facilityName"
         :facility-photos="facilityPhotos"
-        :has-facility-location="hasFacilityLocation"
         :facility-location="facilityLocation"
       />
 
@@ -475,13 +473,6 @@ export default {
     },
     facilityLocation() {
       return this.facility ? this.facility.location : null
-    },
-    hasFacilityLocation() {
-      return this.facilityLocation &&
-        this.facilityLocation.lat &&
-        this.facilityLocation.lng
-        ? true
-        : false
     },
     facilityState() {
       return this.facility && this.facility.location

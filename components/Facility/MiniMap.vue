@@ -7,7 +7,7 @@
     <client-only>
       <transition name="fade">
         <MglMap
-          v-if="coordinates"
+          v-if="hasLocation"
           :access-token="accessToken"
           :map-style.sync="mapStyle"
           :zoom="zoom"
@@ -42,7 +42,7 @@
 
     <transition name="fade">
       <div
-        v-if="!coordinates"
+        v-if="!hasLocation"
         class="not-found-card card">
         <i class="fal fa-map-marker-alt"/>
         <span>Location not available</span>
@@ -56,6 +56,10 @@ const ACCESS_TOKEN = process.env.mapboxToken
 
 export default {
   props: {
+    hasLocation: {
+      type: Boolean,
+      default: false
+    },
     height: {
       type: Number,
       default: 200
