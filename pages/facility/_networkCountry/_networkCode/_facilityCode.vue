@@ -271,7 +271,10 @@ import * as SI from '@/constants/si'
 import * as OPTIONS from '@/constants/chart-options.js'
 import { FacilityPowerEnergyRanges } from '@/constants/ranges.js'
 
-import { FACILITY_OPERATING } from '@/constants/facility-status.js'
+import {
+  FACILITY_OPERATING,
+  FACILITY_COMMITTED
+} from '@/constants/facility-status.js'
 import EnergyToAveragePower from '@/data/transform/energy-to-average-power.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
@@ -556,7 +559,9 @@ export default {
       })
     },
     operatingDomains() {
-      return this.unitsSummary.filter(d => d.status === FACILITY_OPERATING)
+      return this.unitsSummary.filter(
+        d => d.status === FACILITY_OPERATING || d.status === FACILITY_COMMITTED
+      )
     },
     powerEnergyDomains() {
       return this.operatingDomains
