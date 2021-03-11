@@ -61,7 +61,10 @@ export default {
 
   computed: {
     hasLocation() {
-      return this.facilityLocation ? true : false
+      return this.facilityLocation &&
+        (this.facilityLocation.geom || this.facilityLocation.boundary)
+        ? true
+        : false
     }
   }
 }
