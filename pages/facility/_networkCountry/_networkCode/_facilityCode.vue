@@ -854,7 +854,9 @@ export default {
       const regCapText = 'Registered Capacity'
       const partialText = hasHidden ? ' (partial)' : ''
       const yGuides =
-        this.dataType === 'power' ||
+        (this.facilityRegisteredCapacity &&
+          this.facilityRegisteredCapacity > 0 &&
+          this.dataType === 'power') ||
         (this.dataType === 'energy' && this.isYAxisAveragePower)
           ? [
               {
