@@ -13,7 +13,8 @@
           :zoom="zoom"
           :center="coordinates"
           class="map-container"
-          @load="onMapLoaded">
+          @load="onMapLoaded"
+          @click.self="isFullScreen ? () => {} : handleExpandClick()">
 
           <MglMarker
             v-if="showMarker || isFullScreen"
