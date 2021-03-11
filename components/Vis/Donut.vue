@@ -145,8 +145,9 @@ export default {
       return dataset.map(d => {
         let total = null
         domains.forEach(domain => {
-          total += d[domain.id]
+          total += d[domain.id] || 0
         })
+
         return {
           _totalSources: total
         }
@@ -176,7 +177,7 @@ export default {
       if (this.isTotalPower) {
         total = d3Mean(this.updatedDataset, d => d._totalSources)
       } else {
-        total = this.donutDataset.reduce((a, b) => a + b.value, 0)
+        total = this.donutDataset.reduce((a, b) => a + (b.value || 0), 0)
       }
       return this.convertValue(total)
     },
