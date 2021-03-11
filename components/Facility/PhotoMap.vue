@@ -7,14 +7,14 @@
       :height="layout === 'aside' ? 'auto' : '200px'"/>
 
     <MiniMap
-      :has-location="facilityLocation"
+      :has-location="hasLocation"
       :boundary="facilityLocation.boundary"
       :point="facilityLocation.geom"
       :fit-bounds="false"
       class="map" />
 
     <MiniMap
-      :has-location="facilityLocation"
+      :has-location="hasLocation"
       :zoom="13"
       :boundary="facilityLocation.boundary"
       :point="facilityLocation.geom"
@@ -56,6 +56,12 @@ export default {
     facilityLocation: {
       type: Object,
       default: () => null
+    }
+  },
+
+  computed: {
+    hasLocation() {
+      return this.facilityLocation ? true : false
     }
   }
 }
