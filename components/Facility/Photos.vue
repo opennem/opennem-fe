@@ -278,14 +278,4 @@ $radius: 0.5rem;
   .vueperslides__parallax-wrapper:after {
   box-shadow: none;
 }
-::v-deep .vueperslides__arrows {
-  opacity: 0;
-}
-.vueperslides {
-  &:hover {
-    ::v-deep .vueperslides__arrows {
-      opacity: 1;
-    }
-  }
-}
 </style>
