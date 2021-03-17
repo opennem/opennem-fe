@@ -25,15 +25,6 @@
       class="panel-block"
       @click.stop>
       <input
-        v-model="featureV3Paths"
-        type="checkbox" >
-      Use v3 paths
-    </label>
-
-    <label
-      class="panel-block"
-      @click.stop>
-      <input
         v-model="featureAuEnergy"
         type="checkbox" >
       All Regions Energy view
@@ -59,15 +50,6 @@ export default {
       },
       set: function(newValue) {
         this.$store.commit('feature/regionCompare', newValue)
-      }
-    },
-
-    featureV3Paths: {
-      get: function() {
-        return this.$store.getters['feature/v3Paths']
-      },
-      set: function(newValue) {
-        this.$store.commit('feature/v3Paths', newValue)
       }
     },
 

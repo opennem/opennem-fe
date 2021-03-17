@@ -257,8 +257,7 @@ export const actions = {
     dispatch('app/doClearError', null, { root: true })
 
     if (isValidRegion(region)) {
-      const useV3Paths = rootGetters['feature/v3Paths']
-      const url = Data.getRegionAllDailyPath(region, useV3Paths)
+      const url = Data.getRegionAllDailyPath(region, true)
 
       currentRegion = region
 
@@ -333,8 +332,7 @@ export const actions = {
     dispatch('app/doClearError', null, { root: true })
 
     if (isValidRegion(region) && range !== '' && interval !== '') {
-      const useV3Paths = rootGetters['feature/v3Paths']
-      const urls = Data.getEnergyUrls(region, range, useV3Paths)
+      const urls = Data.getEnergyUrls(region, range, true)
       currentRegion = region
       commit('ready', false)
       commit('isFetching', true)
