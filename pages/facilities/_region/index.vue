@@ -260,11 +260,7 @@ export default {
     fetchData() {
       const urls = []
 
-      if (this.hostEnv === 'prod') {
-        urls.push('/facility/facility_registry.json')
-      } else {
-        urls.push('/v3/geo/au_facilities.json')
-      }
+      urls.push('/v3/geo/au_facilities.json')
 
       if (urls.length > 0) {
         Http(urls)
