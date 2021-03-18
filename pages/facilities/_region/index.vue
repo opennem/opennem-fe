@@ -276,22 +276,14 @@ export default {
     },
 
     handleResponses(responses) {
-      if (this.hostEnv === 'prod') {
-        FacilityDataParse.flatten(responses[0]).then(res => {
+      if (responses.length > 0 && responses[0].features) {
+        FacilityDataParse.flattenV3(responses[0].features).then(res => {
           this.facilityData = res
           this.ready = true
           this.$store.dispatch('facility/dataset', res)
         })
       } else {
-        if (responses.length > 0 && responses[0].features) {
-          FacilityDataParse.flattenV3(responses[0].features).then(res => {
-            this.facilityData = res
-            this.ready = true
-            this.$store.dispatch('facility/dataset', res)
-          })
-        } else {
-          console.warn('There is an issue parsing the response.')
-        }
+        console.warn('There is an issue parsing the response.')
       }
     },
 
