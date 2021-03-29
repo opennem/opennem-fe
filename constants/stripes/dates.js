@@ -2,7 +2,7 @@ import eachYearOfInterval from 'date-fns/eachYearOfInterval'
 import eachMonthOfInterval from 'date-fns/eachMonthOfInterval'
 import eachDayOfInterval from 'date-fns/eachDayOfInterval'
 
-const METRICS_START_YEAR = 2010
+const METRICS_START_YEAR = 1998
 const METRICS_START_MONTH = 10 // 0 - Jan, 11 - Dec
 
 export const getEachYearOfInterval = eachYearOfInterval({
