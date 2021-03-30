@@ -51,10 +51,11 @@ function findInterpolateSeriesTypes(data) {
 
 export default function(dataAll, datasetAll) {
   const forInterpolate = findInterpolateSeriesTypes(dataAll)
+
   if (forInterpolate.length > 0) {
     datasetAll.forEach((d, i) => {
       forInterpolate.forEach(type => {
-        if (d[type.key] !== null) {
+        if (d[type.key] !== null && typeof d[type.key] !== 'undefined') {
           if (type.interpolation === 'linear') {
             if (type.startIndex === -1) {
               type.startIndex = i
@@ -69,7 +70,7 @@ export default function(dataAll, datasetAll) {
             }
           }
           type.currentValue = d[type.key]
-        } else if (d[type.key] === null) {
+        } else if (d[type.key] === null || typeof d[type.key] === 'undefined') {
           if (type.interpolation === 'step') {
             d[type.key] = type.currentValue
           }

@@ -79,9 +79,7 @@ export default function(data) {
     ? dataPowerEnergy[0].history.interval
     : null
 
-  const datasetFlat = createEmptyDatasets(dataPowerEnergy)
-
-  flattenAndInterpolate(isPowerData, dataInterval, dataAll, datasetFlat)
+  const datasetFlat = flattenAndInterpolate(isPowerData, dataInterval, dataAll)
 
   const hasInflation = dataInflation.length > 0
   if (hasInflation) {
