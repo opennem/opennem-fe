@@ -1066,10 +1066,6 @@ export default {
 
             if (category === 'source') {
               this.pointSummarySources[ft.id] = avValue
-
-              if (findEnergyEq.fuelTech === 'imports') {
-                this.pointSummarySources[ft.id] = -avValue
-              }
             } else if (category === 'load') {
               this.pointSummaryLoads[ft.id] = -avValue
             }

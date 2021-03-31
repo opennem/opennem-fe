@@ -4,7 +4,7 @@ const perfTime = new PerfTime()
 
 /*
   - Mutate and summarise each data point
-  - Reverse value for imports and load types
+  - Reverse value for load types
 */
 export default function({
   isEnergyType,
@@ -89,7 +89,7 @@ export default function({
     dataset[i]._netBattery =
       (d[batteryDischargingId] || 0) - (d[batteryChargingId] || 0)
     dataset[i]._netHydro = (d[hydroId] || 0) - (d[pumpsId] || 0)
-    dataset[i]._netImports = -(d[importsId] || 0) - (d[exportsId] || 0) // imports comes in as negative
+    dataset[i]._netImports = (Math.abs(d[importsId]) || 0) - (d[exportsId] || 0)
 
     if (isNaN(dataset[i]._netBattery) || dataset[i]._netBattery < 0) {
       dataset[i]._netBattery = 0
@@ -122,9 +122,13 @@ export default function({
       const id = domain.id
       const ft = domain.fuelTech
 
-      if (domain.category === FT.LOAD || ft === FT.IMPORTS) {
+      if (domain.category === FT.LOAD) {
         const negValue = -d[id]
         d[id] = negValue
+      }
+
+      if (ft === FT.IMPORTS) {
+        d[id] = Math.abs(d[id])
       }
 
       if (domain.category === FT.SOURCE) {
