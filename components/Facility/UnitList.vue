@@ -163,13 +163,13 @@
           v-if="hasMarketValue"
           class="align-right hover-cell">
           <span v-if="hoverOn">
-            {{ convertMarketValue(getHoverValue(d.marketValueId)) | formatValue('$') }}{{ marketValueDisplayUnit }}
+            {{ convertMarketValue(getHoverValue(d.marketValueId)) | formatValue('$') }}<template v-if="getHoverValue(d.marketValueId)">{{ marketValueDisplayUnit }}</template>
           </span>
           <span v-if="!hoverOn && focusOn">
-            {{ convertMarketValue(getFocusValue(d.marketValueId)) | formatValue('$') }}{{ marketValueDisplayUnit }}
+            {{ convertMarketValue(getFocusValue(d.marketValueId)) | formatValue('$') }}<template v-if="getFocusValue(d.marketValueId)">{{ marketValueDisplayUnit }}</template>
           </span>
           <span v-if="!hoverOn && !focusOn">
-            {{ convertMarketValue(summary[d.id].marketValue) | formatValue('$') }}{{ marketValueDisplayUnit }}
+            {{ convertMarketValue(summary[d.id].marketValue) | formatValue('$') }}<template v-if="summary[d.id].marketValue">{{ marketValueDisplayUnit }}</template>  
           </span>
         </td>
 
@@ -177,13 +177,13 @@
           v-if="hasMarketValue"
           class="align-right hover-cell">
           <span v-if="hoverOn">
-            {{ getHoverValue(d.marketValueId) / getHoverValue(d.id) | formatCurrency }}
+            {{ calculateAveragePrice(getHoverValue(d.marketValueId), getHoverValue(d.id)) | formatCurrency }}
           </span>
           <span v-if="!hoverOn && focusOn">
-            {{ getFocusValue(d.marketValueId) / getFocusValue(d.id) | formatCurrency }}
+            {{ calculateAveragePrice(getFocusValue(d.marketValueId), getFocusValue(d.id)) | formatCurrency }}
           </span>
           <span v-if="!hoverOn && !focusOn">
-            {{ summary[d.id].marketValue / summary[d.id].energy | formatCurrency }}
+            {{ calculateAveragePrice(summary[d.id].marketValue, summary[d.id].energy) | formatCurrency }}
           </span>
         </td>
 
@@ -243,13 +243,13 @@
           v-if="hasMarketValue"
           class="align-right hover-cell cell-value">
           <span v-if="hoverOn">
-            {{ convertMarketValue(hoverTotalMarketValue) | formatValue('$') }}{{ marketValueDisplayUnit }}
+            {{ convertMarketValue(hoverTotalMarketValue) | formatValue('$') }}<template v-if="hoverTotalMarketValue">{{ marketValueDisplayUnit }}</template> 
           </span>
           <span v-if="!hoverOn && focusOn">
-            {{ convertMarketValue(focusTotalMarketValue) | formatValue('$') }}{{ marketValueDisplayUnit }}
+            {{ convertMarketValue(focusTotalMarketValue) | formatValue('$') }}<template v-if="focusTotalMarketValue">{{ marketValueDisplayUnit }}</template>
           </span>
           <span v-if="!hoverOn && !focusOn">
-            {{ convertMarketValue(summary.totalMarketValue) | formatValue('$') }}{{ marketValueDisplayUnit }}
+            {{ convertMarketValue(summary.totalMarketValue) | formatValue('$') }}<template v-if="summary.totalMarketValue">{{ marketValueDisplayUnit }}</template> 
           </span>
         </th>
 
@@ -678,6 +678,9 @@ export default {
         }
       })
       return total
+    },
+    calculateAveragePrice(marketValue, energy) {
+      return marketValue && energy ? marketValue / energy : null
     }
   }
 }
