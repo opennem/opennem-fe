@@ -6,7 +6,8 @@ export default function(data) {
   }
 
   const { start, num, intervalKey, intervalValue } = getStartEndNumInterval(
-    data[0]
+    data[0],
+    true // ignoreTime
   )
   const datasetFlat = []
   let currentDate = start
