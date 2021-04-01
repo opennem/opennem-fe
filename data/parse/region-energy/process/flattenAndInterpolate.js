@@ -152,8 +152,19 @@ export default function(isPowerData, dataInterval, dataAll) {
   // convert to array
   const allArr = Object.keys(allObj).map(o => allObj[o])
 
+  // add the rest of the properties to the array
+  allArr.forEach(d => {
+    propIds.forEach(id => {
+      if (typeof d[id] === 'undefined') {
+        d[id] = null
+      }
+    })
+  })
+
   // interpolate and create pos/neg price props
   if (isPowerData) {
+    interpolateDataset(dataAll, allArr)
+
     const priceObj = dataAll.find(d => d.type === 'price')
     if (priceObj) {
       const priceId = priceObj.id
@@ -164,18 +175,7 @@ export default function(isPowerData, dataInterval, dataAll) {
         d[DT.PRICE_BELOW_0] = priceValue < 0 ? priceValue : -0.001
       })
     }
-
-    interpolateDataset(dataAll, allArr)
   }
-
-  // add the rest of the properties to the array
-  allArr.forEach(d => {
-    propIds.forEach(id => {
-      if (typeof d[id] === 'undefined') {
-        d[id] = null
-      }
-    })
-  })
 
   perfTime.timeEnd('--- data.process.flatten')
 

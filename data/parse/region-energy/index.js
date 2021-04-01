@@ -103,7 +103,7 @@ export function dataProcess(res, range, interval, period) {
     domainMarketValueGrouped
   })
 
-  // summarise and group original dataset
+  // summarise and group original dataset for power data
   if (!isEnergyType && dataPowerEnergyInterval !== interval) {
     summariseDataset({
       isEnergyType,
