@@ -133,8 +133,8 @@ export function getStartEndNumInterval(dataObj) {
   if (!history) {
     throw new Error('No history object found')
   }
-  const startDateTime = dateDisplay.getDateTimeWithoutTZ(history.start)
-  const lastDateTime = dateDisplay.getDateTimeWithoutTZ(history.last)
+  const startDateTime = parseISO(history.start)
+  const lastDateTime = parseISO(history.last)
   const interval = intervalParser(history.interval)
   const num = getArrLength({
     intervalKey: interval.key,

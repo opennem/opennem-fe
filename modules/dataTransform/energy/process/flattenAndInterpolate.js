@@ -1,4 +1,6 @@
 import _cloneDeep from 'lodash.clonedeep'
+import parseISO from 'date-fns/parseISO'
+
 import * as DT from '@/constants/data-types.js'
 import dateDisplay from '@/services/DateDisplay.js'
 import { checkIsSameInterval } from '@/services/DataCheck.js'
@@ -89,7 +91,7 @@ export default function(isPowerData, dataInterval, dataAll, datasetAll) {
 
     // Extend when we have more mixed intervals in the dataset
     const update30mInto5mDataset = () => {
-      let date = dateDisplay.getDateTimeWithoutTZ(d.history.start)
+      let date = parseISO(d.history.start)
       let datasetForecast30m = []
 
       const dataset30m = d.history.data.map(value => {
@@ -100,7 +102,7 @@ export default function(isPowerData, dataInterval, dataAll, datasetAll) {
       })
 
       if (d.forecast) {
-        let dateForecast = dateDisplay.getDateTimeWithoutTZ(d.forecast.start)
+        let dateForecast = parseISO(d.forecast.start)
 
         datasetForecast30m = d.forecast.data.map(value => {
           const currentTime = dateForecast.getTime()
