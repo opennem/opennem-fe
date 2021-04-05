@@ -584,7 +584,7 @@ export default {
   getDateTimeWithoutTZ(date, ignoreTime) {
     const end = ignoreTime ? 10 : 16
     const dateString = date.substring(0, end)
-    return parseISO(dateString)
+    return parseISO(date)
   },
 
   getSecondsByInterval(range, interval, date, incompleteDate, isStart, isEnd) {
