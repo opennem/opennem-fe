@@ -97,7 +97,7 @@ export default function(responses) {
     ? dataPowerEnergy[0].history.interval
     : null
 
-  const datasetFlat = createEmptyDatasets(dataPowerEnergy)
+  const datasetFlat = createEmptyDatasets(dataPowerEnergy, isPowerData)
 
   flattenAndInterpolate(isPowerData, dataInterval, dataAll, datasetFlat)
 

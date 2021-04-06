@@ -126,15 +126,19 @@ function getArrLength({
   }
 }
 
-export function getStartEndNumInterval(dataObj) {
+export function getStartEndNumInterval(dataObj, isPowerData) {
   const region = dataObj.region
   const includeLastPoint = region === 'WEM' ? true : false
   const history = dataObj.history
   if (!history) {
     throw new Error('No history object found')
   }
-  const startDateTime = parseISO(history.start)
-  const lastDateTime = parseISO(history.last)
+  const startDateTime = isPowerData
+    ? parseISO(history.start)
+    : dateDisplay.getDateTimeWithoutTZ(history.start)
+  const lastDateTime = isPowerData
+    ? parseISO(history.last)
+    : dateDisplay.getDateTimeWithoutTZ(history.last)
   const interval = intervalParser(history.interval)
   const num = getArrLength({
     intervalKey: interval.key,
