@@ -1,4 +1,5 @@
 import cloneDeep from 'lodash.clonedeep'
+import { getTimezoneOffset } from 'date-fns-tz'
 import { lsSet } from '~/services/LocalStorage'
 import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 
@@ -29,7 +30,10 @@ export const state = () => ({
   compareDifference: false,
   focusOn: false,
   compareDates: [],
-  drawer: false
+  drawer: false,
+
+  timeZone: 'system', // region
+  displayTimeZone: getTimezoneOffset('+10:00')
 })
 
 export const mutations = {
@@ -114,6 +118,12 @@ export const mutations = {
   },
   drawer(state, data) {
     state.drawer = data
+  },
+  timeZone(state, data) {
+    state.timeZone = data
+  },
+  displayTimeZone(state, data) {
+    state.displayTimeZone = data
   }
 }
 
@@ -190,7 +200,12 @@ export const getters = {
   percentContributionTo: state => state.percentContributionTo,
   isContributionDemand: state => state.percentContributionTo === 'demand',
   isContributionGeneration: state =>
-    state.percentContributionTo === 'generation'
+    state.percentContributionTo === 'generation',
+
+  timeZone: state => state.timeZone,
+  isTimezoneSystem: state => state.timeZone === 'system',
+  isTimezoneRegion: state => state.timeZone === 'region',
+  displayTimeZone: state => state.displayTimeZone
 }
 
 export const actions = {
