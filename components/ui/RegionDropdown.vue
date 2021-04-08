@@ -50,6 +50,7 @@
 import { mapGetters, mapMutations } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
+import regionDisplayTzs from '@/constants/region-display-timezones.js'
 
 export default {
   mixins: [clickaway],
@@ -78,6 +79,7 @@ export default {
 
   watch: {
     regionId(val) {
+      this.setDisplayTimeZone(regionDisplayTzs[val])
       this.setRegionTimezoneString(this.getRegionTimezoneString(val))
     },
     currentView(view) {
@@ -86,13 +88,15 @@ export default {
   },
 
   created() {
+    this.setDisplayTimeZone(regionDisplayTzs[this.regionId])
     this.setRegionTimezoneString(this.getRegionTimezoneString(this.regionId))
     this.links = this.getLinks()
   },
 
   methods: {
     ...mapMutations({
-      setRegionTimezoneString: 'regionEnergy/regionTimezoneString'
+      setRegionTimezoneString: 'regionEnergy/regionTimezoneString',
+      setDisplayTimeZone: 'displayTimeZone'
     }),
     getLinks() {
       // create links without 'all' since a divider is needed
