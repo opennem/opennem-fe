@@ -19,7 +19,7 @@ import {
 
 const perfTime = new PerfTime()
 
-export default function(data) {
+export default function(data, displayTz) {
   perfTime.time()
 
   const {
@@ -79,7 +79,12 @@ export default function(data) {
     ? dataPowerEnergy[0].history.interval
     : null
 
-  const datasetFlat = flattenAndInterpolate(isPowerData, dataInterval, dataAll)
+  const datasetFlat = flattenAndInterpolate(
+    isPowerData,
+    dataInterval,
+    dataAll,
+    displayTz
+  )
 
   const hasInflation = dataInflation.length > 0
   if (hasInflation) {
@@ -95,7 +100,7 @@ export default function(data) {
     ).toISOString()
   }
   const datasetInflation = hasInflation
-    ? createEmptyDatasets(dataInflation)
+    ? createEmptyDatasets(dataInflation, displayTz)
     : []
   const domainInflation = hasInflation
     ? getInflationDomain(dataInflation[0].id)

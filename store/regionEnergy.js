@@ -179,6 +179,7 @@ export const actions = {
   doGetAllData({ commit, dispatch, rootGetters }, { regions }) {
     dispatch('app/doClearError', null, { root: true })
 
+    const displayTz = rootGetters.displayTimeZone
     const url = Data.getAllMonthlyPath()
 
     commit('ready', false)
@@ -198,7 +199,7 @@ export const actions = {
         domainPrice,
         domainMarketValue,
         inflation
-      } = simpleDataProcess(responses)
+      } = simpleDataProcess(responses, displayTz)
 
       perf.timeEnd(
         `------ ${currentRegion} — (${dataCount} down to ${dataset.length})`
@@ -257,6 +258,7 @@ export const actions = {
     dispatch('app/doClearError', null, { root: true })
 
     if (isValidRegion(region)) {
+      const displayTz = rootGetters.displayTimeZone
       const url = Data.getRegionAllDailyPath(region, true)
 
       currentRegion = region
@@ -278,7 +280,7 @@ export const actions = {
           domainPrice,
           domainMarketValue,
           inflation
-        } = simpleDataProcess(responses)
+        } = simpleDataProcess(responses, displayTz)
 
         perf.timeEnd(
           `------ ${currentRegion} — (${dataCount} down to ${dataset.length})`
@@ -332,6 +334,7 @@ export const actions = {
     dispatch('app/doClearError', null, { root: true })
 
     if (isValidRegion(region) && range !== '' && interval !== '') {
+      const displayTz = rootGetters.displayTimeZone
       const urls = Data.getEnergyUrls(region, range, true)
       currentRegion = region
       commit('ready', false)
@@ -358,7 +361,7 @@ export const actions = {
           domainTemperature,
           dataType,
           units
-        } = dataProcess(responses, range, interval, period)
+        } = dataProcess(responses, range, interval, period, displayTz)
 
         perf.timeEnd(
           `------ ${currentRegion} — ${range}/${interval} (${dataCount} down to ${

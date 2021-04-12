@@ -3,20 +3,23 @@ import isAfter from 'date-fns/isAfter'
 import eachDayOfInterval from 'date-fns/eachDayOfInterval'
 import eachMonthOfInterval from 'date-fns/eachMonthOfInterval'
 import addMinutes from 'date-fns/addMinutes'
-
 import dateDisplay from '@/services/DateDisplay.js'
-import interpolateDataset from './interpolateDataset.js'
+import { mutateDate } from '@/services/datetime-helpers.js'
 import * as DT from '@/constants/data-types.js'
+import interpolateDataset from './interpolateDataset.js'
 
 import PerfTime from '@/plugins/perfTime.js'
 
 const perfTime = new PerfTime()
 
-const getStartLastDates = data => {
+const getStartLastDates = (data, displayTz) => {
   let start, last
   data.forEach(d => {
-    const dStartDate = dateDisplay.getDateTimeWithoutTZ(d.history.start)
-    const dLastDate = dateDisplay.getDateTimeWithoutTZ(d.history.last)
+    // const dStartDate = dateDisplay.getDateTimeWithoutTZ(d.history.start)
+    // const dLastDate = dateDisplay.getDateTimeWithoutTZ(d.history.last)
+
+    const dStartDate = mutateDate(d.history.start, displayTz)
+    const dLastDate = mutateDate(d.history.last, displayTz)
 
     if (start) {
       if (isBefore(dStartDate, start)) {
@@ -73,15 +76,13 @@ const getTimeIndices = (start, end, intervalFunc) => {
   return obj
 }
 
-export default function(isPowerData, dataInterval, dataAll) {
+export default function(isPowerData, dataInterval, dataAll, displayTz) {
   perfTime.time()
 
   const propIds = dataAll.map(d => d.id)
   let allObj = null
 
-  const { start, last } = getStartLastDates(dataAll)
-
-  console.log(dataInterval)
+  const { start, last } = getStartLastDates(dataAll, displayTz)
 
   if (dataInterval === '5m') {
     allObj = getMinuteTimeIndices(start, last, 5)
@@ -100,8 +101,11 @@ export default function(isPowerData, dataInterval, dataAll) {
   }
 
   dataAll.forEach(d => {
-    const dStartDate = dateDisplay.getDateTimeWithoutTZ(d.history.start)
-    const dLastDate = dateDisplay.getDateTimeWithoutTZ(d.history.last)
+    // const dStartDate = dateDisplay.getDateTimeWithoutTZ(d.history.start)
+    // const dLastDate = dateDisplay.getDateTimeWithoutTZ(d.history.last)
+    const dStartDate = mutateDate(d.history.start, displayTz)
+    const dLastDate = mutateDate(d.history.last, displayTz)
+
     const dInterval = d.history.interval
     const dHistoryData = d.history.data
 

@@ -11,7 +11,7 @@ import {
 } from '@/data/helpers/filter'
 import combineMultipleResponses from '@/data/helpers/combineMultipleResponses.js'
 
-export function simpleDataProcess(res) {
+export function simpleDataProcess(res, displayTz) {
   const responses = combineMultipleResponses(res)
 
   const {
@@ -24,7 +24,7 @@ export function simpleDataProcess(res) {
     domainTemperature,
     domainInflation,
     type
-  } = process(responses)
+  } = process(responses, displayTz)
 
   const isEnergyType = type === 'energy'
 
@@ -52,7 +52,7 @@ export function simpleDataProcess(res) {
   }
 }
 
-export function dataProcess(res, range, interval, period) {
+export function dataProcess(res, range, interval, period, displayTz) {
   const responses = combineMultipleResponses(res)
 
   const {
@@ -65,7 +65,7 @@ export function dataProcess(res, range, interval, period) {
     dataPowerEnergyInterval,
     type,
     units
-  } = process(responses)
+  } = process(responses, displayTz)
 
   const isEnergyType = type === 'energy'
   const datasetFull = _cloneDeep(datasetFlat)

@@ -9,6 +9,7 @@ import addMonths from 'date-fns/addMonths'
 import addQuarters from 'date-fns/addQuarters'
 import intervalParser from '@/plugins/intervalParser.js'
 import dateDisplay from '@/services/DateDisplay.js'
+import { mutateDate } from '@/services/datetime-helpers.js'
 
 export function checkPowerEnergyExists({ dataPower, dataEnergy }) {
   // check that data should not have both power and energy
@@ -133,21 +134,15 @@ function getArrLength({
   }
 }
 
-export function getStartEndNumInterval(dataObj, ignoreTime) {
+export function getStartEndNumInterval(dataObj, displayTz, ignoreTime) {
   const region = dataObj.region
   const includeLastPoint = region === 'WEM' ? true : false
   const history = dataObj.history
   if (!history) {
     throw new Error('No history object found')
   }
-  const startDateTime = dateDisplay.getDateTimeWithoutTZ(
-    history.start,
-    ignoreTime
-  )
-  const lastDateTime = dateDisplay.getDateTimeWithoutTZ(
-    history.last,
-    ignoreTime
-  )
+  const startDateTime = mutateDate(history.start, displayTz, ignoreTime)
+  const lastDateTime = mutateDate(history.last, displayTz, ignoreTime)
   const interval = intervalParser(history.interval)
   const num = getArrLength({
     intervalKey: interval.key,
