@@ -50,7 +50,7 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { timeFormat as d3TimeFormat } from 'd3-time-format'
+import { timeFormat as d3TimeFormat, utcFormat } from 'd3-time-format'
 import _includes from 'lodash.includes'
 
 import { getEnergyRegions } from '@/constants/energy-regions.js'
@@ -209,7 +209,7 @@ export default {
       let date = ''
       let region = this.regions.find(r => r.id === this.regionId).label
       if (this.filteredCurrentDataset.length > 0) {
-        date = d3TimeFormat('%Y%m%d')(this.filteredCurrentDataset[0].date)
+        date = utcFormat('%Y%m%d')(this.filteredCurrentDataset[0].date)
       }
       if (this.regionId === 'nem') {
         region = 'OpenNEM'

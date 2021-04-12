@@ -2,7 +2,7 @@ import { checkHistoryObject } from '@/services/DataCheck.js'
 import createEmptyDatasets from '@/data/helpers/createEmptyDatasets.js'
 import parseAndCheckData from '@/data/parse/region-energy/process/parseAndCheckData.js'
 
-export default function(data) {
+export default function(data, displayTz) {
   const {
     dataAll,
     dataPowerEnergy,
@@ -33,7 +33,7 @@ export default function(data) {
   const domainEmissions = dataEmissions.map(mapper)
   const domainMarketValue = dataPriceMarketValue.map(mapper)
 
-  const dataset = createEmptyDatasets(domainPowerEnergy)
+  const dataset = createEmptyDatasets(domainPowerEnergy, displayTz)
 
   dataAll.forEach(u => {
     checkHistoryObject(u)

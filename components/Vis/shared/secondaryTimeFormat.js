@@ -1,38 +1,38 @@
-import { timeFormat } from 'd3-time-format'
+import { timeFormat, utcFormat } from 'd3-time-format'
 import {
-  timeSecond,
-  timeMinute,
-  timeHour,
-  timeDay,
-  timeWeek,
-  timeMonth,
-  timeYear
+  utcSecond,
+  utcMinute,
+  utcHour,
+  utcDay,
+  utcWeek,
+  utcMonth,
+  utcYear
 } from 'd3-time'
 
-const formatMillisecond = timeFormat('.%L'),
-  formatSecond = timeFormat(':%S'),
-  formatMinute = timeFormat('%I:%M'),
-  formatHour = timeFormat('%H:%M'),
-  formatDay = timeFormat('%e %b'),
-  formatWeek = timeFormat('%e %b'),
-  formatMonth = timeFormat('%B %Y'),
-  formatYear = timeFormat('%Y'),
+const formatMillisecond = utcFormat('.%L'),
+  formatSecond = utcFormat(':%S'),
+  formatMinute = utcFormat('%I:%M'),
+  formatHour = utcFormat('%H:%M'),
+  formatDay = utcFormat('%e %b'),
+  formatWeek = utcFormat('%e %b'),
+  formatMonth = utcFormat('%B %Y'),
+  formatYear = utcFormat('%Y'),
   emptyTime = () => ''
 
 export default function(date) {
-  return (timeSecond(date) < date
+  return (utcSecond(date) < date
     ? emptyTime
-    : timeMinute(date) < date
+    : utcMinute(date) < date
       ? emptyTime
-      : timeHour(date) < date
+      : utcHour(date) < date
         ? emptyTime
-        : timeDay(date) < date
+        : utcDay(date) < date
           ? emptyTime
-          : timeMonth(date) < date
-            ? timeWeek(date) < date
+          : utcMonth(date) < date
+            ? utcWeek(date) < date
               ? formatDay
               : formatWeek
-            : timeYear(date) < date
+            : utcYear(date) < date
               ? emptyTime
               : emptyTime)(date)
 }

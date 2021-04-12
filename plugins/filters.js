@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { timeFormat as d3TimeFormat } from 'd3-time-format'
+import { timeFormat as d3TimeFormat, utcFormat } from 'd3-time-format'
 import { format as d3Format } from 'd3-format'
 import DateDisplay from '~/services/DateDisplay.js'
 import * as SI from '@/constants/si.js'
@@ -54,7 +54,7 @@ Vue.filter('intervalLabel', interval => {
 })
 
 Vue.filter('formatDate', time => {
-  const f = d3TimeFormat('%d/%m/%Y, %-I:%M %p')
+  const f = utcFormat('%d/%m/%Y, %-I:%M %p')
   return f(time)
 })
 

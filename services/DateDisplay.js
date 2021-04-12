@@ -5,13 +5,19 @@ import addMonths from 'date-fns/addMonths'
 import endOfDay from 'date-fns/endOfDay'
 import endOfMonth from 'date-fns/endOfMonth'
 import differenceInSeconds from 'date-fns/differenceInSeconds'
-import { timeFormat as d3TimeFormat } from 'd3-time-format'
+import { getTimezoneOffset } from 'date-fns-tz'
+import { timeFormat as d3TimeFormat, utcFormat } from 'd3-time-format'
 import {
   timeMinute as d3TimeMinute,
   timeDay as d3TimeDay,
   timeMonday as d3TimeMonday,
   timeMonth as d3TimeMonth,
-  timeYear as d3TimeYear
+  timeYear as d3TimeYear,
+  utcMinute,
+  utcDay,
+  utcMonday,
+  utcMonth,
+  utcYear
 } from 'd3-time'
 import {
   FILTER_NONE,
@@ -184,10 +190,10 @@ export default {
     showIntervalRange
   ) {
     const now = Date.now()
-    const today = d3TimeFormat('%d/%m/%Y')(now)
-    const fDate = d3TimeFormat('%d/%m/%Y')(time)
-    const thisYear = d3TimeFormat('%Y')(now)
-    const fYear = d3TimeFormat('%Y')(time)
+    const today = utcFormat('%d/%m/%Y')(now)
+    const fDate = utcFormat('%d/%m/%Y')(time)
+    const thisYear = utcFormat('%Y')(now)
+    const fYear = utcFormat('%Y')(time)
     const sYear = showYear || thisYear !== fYear
 
     let display = ''
@@ -216,8 +222,8 @@ export default {
             const sixDayslater = newTime + 518400000
 
             // check year
-            const startYear = new Date(time).getFullYear()
-            const endYear = new Date(sixDayslater).getFullYear()
+            const startYear = new Date(time).getUTCFullYear()
+            const endYear = new Date(sixDayslater).getUTCFullYear()
 
             const sDate =
               startYear === endYear
@@ -242,7 +248,7 @@ export default {
           display = d3TimeFormat('%b %Y')(time)
         } else if (interval === 'Season') {
           let seasonLabel = getSeasonLabel(d3TimeFormat('%-m')(time))
-          let year = new Date(time).getFullYear()
+          let year = new Date(time).getUTCFullYear()
           let nextYearStr = ''
           if (seasonLabel === 'Summer') {
             const nextyear = year + 1 + ''
@@ -287,7 +293,7 @@ export default {
         } else {
           formatString = '%-d %b %Y, %-I:%M %p'
         }
-        display = d3TimeFormat(formatString)(time)
+        display = utcFormat(formatString)(time)
     }
 
     return display
@@ -297,13 +303,13 @@ export default {
     let hoverDate = date
     const isFilter = !filterPeriod || filterPeriod !== FILTER_NONE
     if (hoverDate && interval === 'Fin Year') {
-      if (hoverDate.getMonth() >= 6) {
-        hoverDate.setFullYear(hoverDate.getFullYear() + 1)
+      if (hoverDate.getUTCMonth() >= 6) {
+        hoverDate.setUTCFullYear(hoverDate.getUTCFullYear() + 1)
       }
     }
     if (isFilter && hoverDate && hasIntervalFilters(interval)) {
       const periodMonth = this.getPeriodMonth(interval, filterPeriod)
-      const month = hoverDate.getMonth()
+      const month = hoverDate.getUTCMonth()
 
       if (interval === INTERVAL_MONTH) {
         hoverDate = this.mutateMonthDate(hoverDate, month, filterPeriod)
@@ -316,9 +322,9 @@ export default {
       }
 
       if (interval === INTERVAL_MONTH) {
-        hoverDate.setMonth(periodMonth)
+        hoverDate.setUTCMonth(periodMonth)
       } else {
-        hoverDate.setMonth(periodMonth + 1)
+        hoverDate.setUTCMonth(periodMonth + 1)
       }
     }
 
@@ -327,10 +333,10 @@ export default {
 
   defaultDisplayDate(time) {
     const now = Date.now()
-    const today = d3TimeFormat('%d/%m/%Y')(now)
-    const fDate = d3TimeFormat('%d/%m/%Y')(time)
-    const thisYear = d3TimeFormat('%Y')(now)
-    const fYear = d3TimeFormat('%Y')(time)
+    const today = utcFormat('%d/%m/%Y')(now)
+    const fDate = utcFormat('%d/%m/%Y')(time)
+    const thisYear = utcFormat('%Y')(now)
+    const fYear = utcFormat('%Y')(time)
     let formatString = ''
 
     if (today === fDate) {
@@ -340,7 +346,7 @@ export default {
     } else {
       formatString = '%-d %b %Y, %-I:%M %p'
     }
-    return d3TimeFormat(formatString)(time)
+    return utcFormat(formatString)(time)
   },
 
   snapToClosestInterval(interval, date, isLinear) {
@@ -427,11 +433,12 @@ export default {
       if (checkWeekend(dStart) === 'Sat') {
         guides.push({
           start: dStart,
-          end: dStart + 86400000 + 86400000
+          end: addDays(new Date(dStart), 2).getTime()
         })
       }
-      dStart = dStart + 86400000
+      dStart = addDays(new Date(dStart), 1).getTime()
     }
+
     return guides
   },
 
@@ -442,8 +449,8 @@ export default {
 
     while (dStart <= dEnd) {
       const startTime = new Date(dStart)
-      startTime.setHours(22)
-      startTime.setMinutes(0)
+      startTime.setUTCHours(22)
+      startTime.setUTCMinutes(0)
       const endTime = new Date(startTime.getTime() + 32400000)
       guides.push({
         start: startTime,
@@ -451,66 +458,67 @@ export default {
       })
       dStart = dStart + 86400000
     }
+
     return guides
   },
 
   mutateMonthDate(date, month, filterPeriod) {
     if (filterPeriod === 'January' && month === 0) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     } else if (filterPeriod === 'February' && month >= 0 && month <= 1) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     } else if (filterPeriod === 'March' && month >= 0 && month <= 2) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     } else if (filterPeriod === 'April' && month >= 0 && month <= 3) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     } else if (filterPeriod === 'May' && month >= 0 && month <= 4) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     } else if (filterPeriod === 'June' && month >= 0 && month <= 5) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     } else if (filterPeriod === 'July' && month >= 0 && month <= 6) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     } else if (filterPeriod === 'August' && month >= 0 && month <= 7) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     } else if (filterPeriod === 'September' && month >= 0 && month <= 8) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     } else if (filterPeriod === 'October' && month >= 0 && month <= 9) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     } else if (filterPeriod === 'November' && month >= 0 && month <= 10) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     } else if (filterPeriod === 'December' && month >= 0 && month <= 11) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     }
-    date.setDate(1)
+    date.setUTCDate(1)
     return date
   },
 
   mutateSeasonDate(date, month, filterPeriod) {
     if (filterPeriod === 'Summer' && month !== 11) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     } else if (filterPeriod === 'Autumn' && month >= 0 && month <= 1) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     } else if (filterPeriod === 'Winter' && month >= 0 && month <= 5) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     } else if (filterPeriod === 'Spring' && month >= 0 && month <= 8) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     }
     return date
   },
 
   mutateQuarterDate(date, month, filterPeriod) {
     if (filterPeriod === 'Q2' && month >= 0 && month <= 2) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     } else if (filterPeriod === 'Q3' && month >= 0 && month <= 6) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     } else if (filterPeriod === 'Q4' && month >= 0 && month <= 9) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     }
     return date
   },
 
   mutateHalfYearDate(date, month, filterPeriod) {
     if (filterPeriod === '2nd Half' && month >= 0 && month <= 6) {
-      date.setFullYear(date.getFullYear() - 1)
+      date.setUTCFullYear(date.getUTCFullYear() - 1)
     }
     return date
   },
@@ -583,8 +591,8 @@ export default {
 
   getDateTimeWithoutTZ(date, ignoreTime) {
     const end = ignoreTime ? 10 : 16
-    const dateString = date.substring(0, end)
-    return parseISO(date)
+    const dateString = date.substring(0, end) + '+00:00'
+    return parseISO(dateString)
   },
 
   getSecondsByInterval(range, interval, date, incompleteDate, isStart, isEnd) {

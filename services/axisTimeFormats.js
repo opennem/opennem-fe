@@ -1,4 +1,4 @@
-import { timeFormat } from 'd3-time-format'
+import { timeFormat, utcFormat } from 'd3-time-format'
 import {
   timeSecond,
   timeMinute,
@@ -6,7 +6,14 @@ import {
   timeDay,
   timeWeek,
   timeMonth,
-  timeYear
+  timeYear,
+  utcSecond,
+  utcMinute,
+  utcHour,
+  utcDay,
+  utcWeek,
+  utcMonth,
+  utcYear
 } from 'd3-time'
 
 const formatMillisecond = timeFormat('.%L'),
@@ -17,46 +24,46 @@ const formatMillisecond = timeFormat('.%L'),
   formatWeek = timeFormat('%a'),
   formatMonth = timeFormat('%b %y'),
   formatYear = timeFormat('%Y'),
-  emptyTime = () => ''
+  empty = () => ''
 
 export default {
   defaultFormat(date) {
-    return (timeSecond(date) < date
+    return (utcSecond(date) < date
       ? formatMillisecond
-      : timeMinute(date) < date
+      : utcMinute(date) < date
         ? formatSecond
-        : timeHour(date) < date
+        : utcHour(date) < date
           ? formatMinute
-          : timeDay(date) < date
+          : utcDay(date) < date
             ? formatHour
-            : timeMonth(date) < date
-              ? timeWeek(date) < date
+            : utcMonth(date) < date
+              ? utcWeek(date) < date
                 ? formatDay
                 : formatWeek
-              : timeYear(date) < date
+              : utcYear(date) < date
                 ? formatMonth
                 : formatYear)(date)
   },
 
   secondaryFormat(date) {
-    const formatDay = timeFormat('%e %b')
-    const formatWeek = timeFormat('%e %b')
+    const formatDay = utcFormat('%e %b')
+    const formatWeek = utcFormat('%e %b')
 
-    return (timeSecond(date) < date
-      ? emptyTime
-      : timeMinute(date) < date
-        ? emptyTime
-        : timeHour(date) < date
-          ? emptyTime
-          : timeDay(date) < date
-            ? emptyTime
-            : timeMonth(date) < date
-              ? timeWeek(date) < date
+    return (utcSecond(date) < date
+      ? empty
+      : utcMinute(date) < date
+        ? empty
+        : utcHour(date) < date
+          ? empty
+          : utcDay(date) < date
+            ? empty
+            : utcMonth(date) < date
+              ? utcWeek(date) < date
                 ? formatDay
                 : formatWeek
-              : timeYear(date) < date
-                ? emptyTime
-                : emptyTime)(date)
+              : utcYear(date) < date
+                ? empty
+                : empty)(date)
   },
 
   intervalDayTimeFormat(date) {
@@ -84,7 +91,7 @@ export default {
         : timeFormat('%e %b')
       : timeYear(date) < date
         ? timeFormat('%e %b')
-        : emptyTime)(date)
+        : empty)(date)
   },
 
   intervalWeekTimeFormat(date) {
@@ -106,7 +113,7 @@ export default {
   },
 
   intervalWeekSecondaryTimeFormat(date) {
-    return emptyTime(date)
+    return empty(date)
   },
 
   intervalMonthTimeFormat(date, showYear) {

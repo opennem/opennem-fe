@@ -100,7 +100,8 @@ import {
   timeWeek,
   timeMonth,
   timeMonday,
-  timeYear
+  timeYear,
+  utcDay
 } from 'd3-time'
 import { extent, min, max } from 'd3-array'
 import { format as d3Format } from 'd3-format'
@@ -117,6 +118,20 @@ import axisTimeTicks from './shared/timeTicks.js'
 import DateDisplay from '~/services/DateDisplay.js'
 import { getNextDateByInterval } from '@/services/datetime-helpers.js'
 import millisecondsByInterval from '~/constants/millisecondsByInterval.js'
+import AxisTimeFormats from '~/services/axisTimeFormats.js'
+import {
+  INTERVAL_5MIN,
+  INTERVAL_30MIN,
+  INTERVAL_DAY,
+  INTERVAL_WEEK,
+  INTERVAL_MONTH,
+  INTERVAL_SEASON,
+  INTERVAL_QUARTER,
+  INTERVAL_HALFYEAR,
+  INTERVAL_FINYEAR,
+  INTERVAL_YEAR,
+  hasIntervalFilters
+} from '@/constants/interval-filters.js'
 
 export default {
   props: {
@@ -379,6 +394,25 @@ export default {
         default:
           return curveLinear
       }
+    },
+    timeFormats() {
+      switch (this.interval) {
+        case INTERVAL_DAY:
+          return AxisTimeFormats.intervalDayTimeFormat
+        case INTERVAL_WEEK:
+          return AxisTimeFormats.intervalWeekTimeFormat
+        case INTERVAL_MONTH:
+          return this.range === 'ALL'
+            ? AxisTimeFormats.rangeAllIntervalMonthTimeFormat
+            : AxisTimeFormats.intervalMonthTimeFormat
+        case INTERVAL_SEASON:
+        case INTERVAL_QUARTER:
+        case INTERVAL_HALFYEAR:
+        case INTERVAL_YEAR:
+          return AxisTimeFormats.rangeAllIntervalMonthTimeFormat
+        default:
+          return axisTimeFormat
+      }
     }
   },
 
@@ -477,7 +511,7 @@ export default {
       // Set up where x, y axis appears
       this.xAxis = axisBottom(this.x)
         .tickSize(-this.height)
-        .tickFormat(d => axisTimeFormat(d))
+        .tickFormat((d, i) => this.timeFormats(d, i === 0))
       this.yAxis = axisRight(this.y)
         .tickSize(this.width)
         .ticks(this.yAxisTicks)
@@ -993,10 +1027,10 @@ export default {
         if (this.range === '1D') {
           className = 'interval-5m'
         } else if (this.range === '3D') {
-          tickLength = timeDay.every(0.5)
+          tickLength = utcDay.every(0.5)
           className = 'range-3d'
         } else if (this.range === '7D') {
-          tickLength = timeDay.every(1)
+          tickLength = utcDay.every(1)
         } else if (this.range === '30D') {
           const every = this.mobileScreen ? 1 : 0.5
           tickLength = timeMonday.every(every)
@@ -1055,7 +1089,9 @@ export default {
           }
         }
       } else {
-        if (this.range === '1Y') {
+        if (this.range === '1D' || this.range === '3D' || this.range === '7D') {
+          tickLength = utcDay.every(1)
+        } else if (this.range === '1Y') {
           if (this.interval === 'Week') {
             tickLength = 7
           } else if (this.interval === 'Month') {
@@ -1093,12 +1129,10 @@ export default {
           return d.getMonth() === 6
         })
       } else {
-        this.xAxis.tickFormat(d => axisTimeFormat(d))
+        this.xAxis.tickFormat((d, i) => this.timeFormats(d, i === 0))
       }
 
       this.xAxis.ticks(tickLength)
-      // const ticks = axisTimeTicks(this.dynamicExtent[1] - this.dynamicExtent[0])
-      // this.xAxis.ticks(ticks)
 
       // add secondary x axis tick label here
       const insertSecondaryAxisTick = function(d) {

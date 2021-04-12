@@ -6,14 +6,14 @@ import {
   filterDatasetByPeriod
 } from '@/data/helpers/filter'
 
-export function dataProcess(data, range, interval) {
+export function dataProcess(data, range, interval, displayTz) {
   const {
     dataset,
     domainPowerEnergy,
     domainEmissions,
     domainMarketValue,
     isEnergyType
-  } = process(data)
+  } = process(data, displayTz)
 
   const filtered = filterDatasetByRange(dataset, range)
   const domains = [

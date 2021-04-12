@@ -257,9 +257,10 @@ export const actions = {
   },
 
   doGetStationStats(
-    { commit, getters },
+    { commit, getters, rootGetters },
     { networkRegion, facilityCode, facilityFuelTechsColours }
   ) {
+    const displayTz = rootGetters.displayTimeZone
     const encode = encodeURIComponent(facilityCode)
     let range = getters.range
     let interval = getters.interval
@@ -320,7 +321,7 @@ export const actions = {
           domainPowerEnergy,
           domainEmissions,
           domainMarketValue
-        } = dataProcess(response.data.data, range, interval)
+        } = dataProcess(response.data.data, range, interval, displayTz)
 
         const domainObj = d => {
           return {
