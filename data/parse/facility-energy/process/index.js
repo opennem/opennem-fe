@@ -1,6 +1,7 @@
 import { checkHistoryObject } from '@/services/DataCheck.js'
 import createEmptyDatasets from '@/data/helpers/createEmptyDatasets.js'
 import parseAndCheckData from '@/data/parse/region-energy/process/parseAndCheckData.js'
+import flattenAndInterpolate from '@/data/parse/region-energy/process/flattenAndInterpolate.js'
 
 export default function(data, displayTz) {
   const {
@@ -33,20 +34,15 @@ export default function(data, displayTz) {
   const domainEmissions = dataEmissions.map(mapper)
   const domainMarketValue = dataPriceMarketValue.map(mapper)
 
-  const dataset = createEmptyDatasets(domainPowerEnergy, displayTz)
-
-  dataAll.forEach(u => {
-    checkHistoryObject(u)
-
-    const updateDataset = () => {
-      const historyData = [...u.history.data]
-      dataset.forEach((h, i) => {
-        h[u.id] = historyData[i]
-      })
-    }
-
-    updateDataset()
-  })
+  const dataInterval = hasPowerEnergyData
+    ? dataPowerEnergy[0].history.interval
+    : null
+  const dataset = flattenAndInterpolate(
+    isPowerData,
+    dataInterval,
+    dataAll,
+    displayTz
+  )
 
   return {
     domains: domainPowerEnergy,
