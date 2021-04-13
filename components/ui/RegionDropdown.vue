@@ -49,7 +49,11 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
-import { getEnergyRegions } from '@/constants/energy-regions.js'
+import {
+  getEnergyRegions,
+  ENERGY_NEM,
+  ENERGY_WEM
+} from '@/constants/energy-regions.js'
 import regionDisplayTzs from '@/constants/region-display-timezones.js'
 
 export default {
@@ -79,7 +83,12 @@ export default {
 
   watch: {
     regionId(val) {
-      this.setDisplayTimeZone(regionDisplayTzs[val])
+      const selectedTz =
+        val === ENERGY_WEM
+          ? regionDisplayTzs[ENERGY_WEM]
+          : regionDisplayTzs[ENERGY_NEM]
+
+      this.setDisplayTimeZone(selectedTz)
       this.setRegionTimezoneString(this.getRegionTimezoneString(val))
     },
     currentView(view) {
@@ -88,7 +97,11 @@ export default {
   },
 
   created() {
-    this.setDisplayTimeZone(regionDisplayTzs[this.regionId])
+    const selectedTz =
+      this.regionId === ENERGY_WEM
+        ? regionDisplayTzs[ENERGY_WEM]
+        : regionDisplayTzs[ENERGY_NEM]
+    this.setDisplayTimeZone(selectedTz)
     this.setRegionTimezoneString(this.getRegionTimezoneString(this.regionId))
     this.links = this.getLinks()
   },

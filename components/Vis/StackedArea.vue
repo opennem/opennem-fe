@@ -963,8 +963,6 @@ export default {
       this.area.curve(this.curveType)
       this.nullArea.curve(curveStepAfter)
 
-      console.log(this.updatedDataset)
-
       // Remove Area
       this.$stackedAreaGroup.selectAll('path').remove()
       this.$stackedAreaNullGroup.selectAll('path').remove()
