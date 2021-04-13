@@ -1,4 +1,5 @@
 import _cloneDeep from 'lodash.clonedeep'
+import axisTimeFormat from '@/components/Vis/shared/timeFormat.js'
 import AxisTicks from '@/services/axisTicks.js'
 import DateDisplay from '@/services/DateDisplay.js'
 
@@ -110,7 +111,9 @@ export const actions = {
         }
         break
       default:
+        tickFormat = axisTimeFormat
     }
+
     commit('tickFormat', tickFormat)
     commit('secondTickFormat', secondTickFormat)
   }

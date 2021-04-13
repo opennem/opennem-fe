@@ -32,6 +32,7 @@
       :display-title="displayTitle"
       :power-options="powerOptions"
       :energy-options="energyOptions"
+      @type-click="handleTypeClick"
     />
 
     <stacked-area-vis
@@ -133,7 +134,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { min, max } from 'd3-array'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
@@ -797,6 +798,10 @@ export default {
       setHoverDomain: 'visInteract/hoverDomain'
     }),
 
+    ...mapActions({
+      doUpdateXTicks: 'visInteract/doUpdateXTicks'
+    }),
+
     convertValue(value) {
       return SI.convertValue(
         this.chartUnitPrefix,
@@ -850,6 +855,15 @@ export default {
     },
     handleZoomReset() {
       this.$emit('zoomExtent', [])
+    },
+
+    handleTypeClick() {
+      this.doUpdateXTicks({
+        range: this.range,
+        interval: this.interval,
+        isZoomed: this.zoomExtent.length > 0,
+        filterPeriod: this.filterPeriod
+      })
     }
   }
 }

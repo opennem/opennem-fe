@@ -309,6 +309,7 @@ export default {
         }
       }
       this.$store.commit('chartOptionsPowerEnergy/chartType', type)
+      this.$emit('type-click', type)
     },
     handleCurveClick(curve) {
       if (this.isEnergyType) {
