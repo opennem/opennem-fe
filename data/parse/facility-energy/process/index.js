@@ -1,5 +1,3 @@
-import { checkHistoryObject } from '@/services/DataCheck.js'
-import createEmptyDatasets from '@/data/helpers/createEmptyDatasets.js'
 import parseAndCheckData from '@/data/parse/region-energy/process/parseAndCheckData.js'
 import flattenAndInterpolate from '@/data/parse/region-energy/process/flattenAndInterpolate.js'
 
