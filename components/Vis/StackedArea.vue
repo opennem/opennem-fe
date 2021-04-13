@@ -1681,7 +1681,7 @@ export default {
         if (this.range === '1D') {
           className = 'interval-5m'
         } else if (this.range === '3D') {
-          tickLength = utcDay.every(0.5)
+          tickLength = utcDay.every(1)
           className = 'range-3d'
         } else if (this.range === '7D') {
           tickLength = utcDay.every(1)
