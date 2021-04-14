@@ -22,7 +22,8 @@
 
         <div
           v-if="isEnergy"
-          class="summary-col-energy">
+          class="summary-col-energy cell-toggle"
+          @click="handleUnitCellClicked">
           <span>
             Energy <small>{{ chartCurrentUnit }}</small>
           </span>
@@ -39,7 +40,7 @@
         </div>
 
         <div
-          class="summary-col-contribution contribution-toggle"
+          class="summary-col-contribution cell-toggle"
           @click="handlePercentContributionToClick">
           Contribution <small>to {{ percentContributionTo }}</small>
         </div>
@@ -47,7 +48,7 @@
           <column-selector />
         </div>
       </div>
-      
+
       <div class="summary-row">
         <div class="summary-col-label">Sources</div>
 
@@ -80,10 +81,10 @@
             {{ summary._totalAverageValue | formatCurrency }}
           </span>
           <span v-if="isEmissionsVolumeColumn">
-            {{ summary._totalEmissionsVolume | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
+            {{ sumEmissionsMinusLoads | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
           </span>
           <span v-if="isEmissionsIntensityColumn">
-            {{ summary._averageEmissionsIntensity | formatValue }}
+            {{ averageEmissionIntensity | formatValue }}
           </span>
         </div>
         <div
@@ -93,10 +94,10 @@
             {{ pointSummary._totalAverageValue | formatCurrency }}
           </span>
           <span v-if="isEmissionsVolumeColumn">
-            {{ pointSummary._totalEmissionsVolume | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
+            {{ emissionsHoverValue | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
           </span>
           <span v-if="isEmissionsIntensityColumn">
-            {{ pointSummary._emissionsIntensity | formatValue }}
+            {{ emissionIntensityHoverValue | formatValue }}
           </span>
         </div>
       </div>
@@ -122,12 +123,12 @@
       @mouse-leave="handleMouseLeave"
     />
 
-    <div 
-      v-if="loadsOrder.length > 0" 
+    <div
+      v-if="loadsOrder.length > 0"
       class="summary-column-headers">
       <div class="summary-row">
         <div class="summary-col-label">Loads</div>
-   
+
         <div
           v-if="isEnergy"
           class="summary-col-energy cell-value">
@@ -173,8 +174,8 @@
       @mouse-leave="handleMouseLeave"
     />
 
-    <div 
-      v-if="loadsOrder.length > 0" 
+    <div
+      v-if="loadsOrder.length > 0"
       class="summary-column-headers" >
       <div class="summary-row last-row">
         <div class="summary-col-label">Net</div>
@@ -263,6 +264,7 @@ import { format as d3Format } from 'd3-format'
 import differenceInMinutes from 'date-fns/differenceInMinutes'
 import { energy_sum } from '@opennem/energy-tools'
 
+import EventBus from '@/plugins/eventBus'
 import Data from '~/services/Data.js'
 import Domain from '~/services/Domain.js'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
@@ -388,7 +390,11 @@ export default {
       chartEmissionsVolumeUnitPrefix:
         'chartOptionsEmissionsVolume/chartUnitPrefix',
       chartEmissionsVolumeDisplayPrefix:
-        'chartOptionsEmissionsVolume/chartDisplayPrefix'
+        'chartOptionsEmissionsVolume/chartDisplayPrefix',
+
+      emissionIntensityData: 'energy/emissions/emissionIntensityData',
+      averageEmissionIntensity: 'energy/emissions/averageEmissionIntensity',
+      sumEmissionsMinusLoads: 'energy/emissions/sumEmissionsMinusLoads'
     }),
 
     chartUnit() {
@@ -436,6 +442,33 @@ export default {
 
     isEmissionsIntensityColumn() {
       return this.showSummaryColumn === 'emissions-intensity'
+    },
+
+    emissionHoverData() {
+      let date = this.focusDate
+      if (this.hoverOn) {
+        date = this.hoverDate
+      }
+
+      if (date) {
+        const time = date.getTime()
+        const find = this.emissionIntensityData.find(d => d.time === time)
+        return find ? find : null
+      }
+
+      return null
+    },
+
+    emissionsHoverValue() {
+      return this.emissionHoverData
+        ? this.emissionHoverData._totalEmissionsMinusLoads
+        : null
+    },
+
+    emissionIntensityHoverValue() {
+      return this.emissionHoverData
+        ? this.emissionHoverData._emissionIntensity
+        : null
     },
 
     sourcesOrderLength() {
@@ -678,7 +711,6 @@ export default {
         let totalGeneration = 0
         let totalLoads = 0
         let totalPriceMarketValue = 0
-        let totalEVMinusHidden = 0
         let totalEIMinusHidden = 0
         this.summary = {}
         this.summarySources = {}
@@ -833,7 +865,6 @@ export default {
           })
           const evSum = sumMap(ft, dataEVMinusHidden)
           this.summary[ft.id] = evSum
-          totalEVMinusHidden += evSum
 
           if (category === 'source') {
             this.summarySources[ft.id] = evSum
@@ -981,9 +1012,6 @@ export default {
 
         const average = avTotal / data.length
         this.summary._averageEnergy = average
-        this.summary._totalEmissionsVolume = totalEVMinusHidden
-        this.summary._averageEmissionsVolume = totalEVMinusHidden / data.length
-        this.summary._averageEmissionsIntensity = totalEVMinusHidden / avTotal
         this.summary._averageTemperature =
           totalTemperatureWithoutNulls / temperatureWithoutNulls.length
         this.$emit('summary-update', this.summary)
@@ -991,11 +1019,11 @@ export default {
     },
 
     calculatePointSummary(data) {
+      const isGeneration = this.percentContributionTo === 'generation'
       let totalSources = 0
       let totalGeneration = 0
       let totalLoads = 0
       let totalPriceMarketValue = 0
-      let totalEmissionsVol = 0
       this.pointSummary = data || {} // pointSummary._total is already calculated
       this.pointSummarySources = {}
       this.pointSummaryLoads = {}
@@ -1038,10 +1066,6 @@ export default {
 
             if (category === 'source') {
               this.pointSummarySources[ft.id] = avValue
-
-              if (findEnergyEq.fuelTech === 'imports') {
-                this.pointSummarySources[ft.id] = -avValue
-              }
             } else if (category === 'load') {
               this.pointSummaryLoads[ft.id] = -avValue
             }
@@ -1052,8 +1076,6 @@ export default {
         this.emissionsDomains.forEach(domain => {
           const category = domain.category
           const value = this.pointSummary[domain.id]
-
-          totalEmissionsVol += value
 
           if (category === 'source') {
             this.pointSummarySources[domain.id] = value
@@ -1076,7 +1098,6 @@ export default {
       this.pointSummarySources._total = totalSources
       this.pointSummarySources._totalGeneration = totalGeneration
       this.pointSummaryLoads._total = totalLoads
-      this.pointSummary._totalEmissionsVolume = totalEmissionsVol
     },
 
     updatePointSummary(date) {
@@ -1222,6 +1243,10 @@ export default {
     },
     handleMouseLeave() {
       this.$emit('mouse-leave')
+    },
+
+    handleUnitCellClicked() {
+      EventBus.$emit('energy.chart.unit-toggle')
     }
   }
 }
@@ -1240,7 +1265,7 @@ export default {
   }
 }
 
-.contribution-toggle {
+.cell-toggle {
   cursor: pointer;
   &:hover {
     background-color: rgba(255, 255, 255, 0.7);

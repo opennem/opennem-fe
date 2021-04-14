@@ -1,7 +1,7 @@
 <template>
   <!-- <draggable
     v-model="order"
-    :options="{ 
+    :options="{
       group: group,
       direction: 'horizontal',
       ghostClass: 'drag-placeholder',
@@ -168,6 +168,7 @@ export default {
         'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
 
       isEnergyType: 'regionEnergy/isEnergyType',
+      domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
 
       chartEnergyUnit: 'chartOptionsPowerEnergy/chartEnergyUnit',
       chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
@@ -241,7 +242,7 @@ export default {
         let list = ''
         domainIds.sort()
         domainIds.forEach(id => {
-          const find = this.energyDomains.find(eDomain => eDomain.id === id)
+          const find = this.domainPowerEnergy.find(eDomain => eDomain.id === id)
           if (find) {
             list += `${find.label}<br>`
           }
@@ -348,7 +349,7 @@ export default {
           ? this.pointSummary[emissionObj.id] || ''
           : this.summary[emissionObj.id] || ''
 
-        return emissionsVolume / energy
+        return emissionsVolume / Math.abs(energy)
       }
       return '-'
     },

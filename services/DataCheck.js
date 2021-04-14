@@ -2,11 +2,14 @@ import parseISO from 'date-fns/parseISO'
 import differenceInMinutes from 'date-fns/differenceInMinutes'
 import differenceInDays from 'date-fns/differenceInDays'
 import differenceInMonths from 'date-fns/differenceInMonths'
+import differenceInQuarters from 'date-fns/differenceInQuarters'
 import addMinutes from 'date-fns/addMinutes'
 import addDays from 'date-fns/addDays'
 import addMonths from 'date-fns/addMonths'
+import addQuarters from 'date-fns/addQuarters'
 import intervalParser from '@/plugins/intervalParser.js'
 import dateDisplay from '@/services/DateDisplay.js'
+import { mutateDate } from '@/services/datetime-helpers.js'
 
 export function checkPowerEnergyExists({ dataPower, dataEnergy }) {
   // check that data should not have both power and energy
@@ -84,6 +87,9 @@ export function checkHistoryObject(d) {
         case 'M':
           diff = differenceInMonths(lastDate, startDate)
           break
+        case 'Q':
+          diff = differenceInQuarters(lastDate, startDate)
+          break
         default:
           console.warn(`${interval} interval not support for ${id}`)
       }
@@ -121,24 +127,22 @@ function getArrLength({
       return differenceInDays(last, start) / intervalValue + 1
     case 'M':
       return differenceInMonths(last, start) / intervalValue + 1
+    case 'Q':
+      return differenceInQuarters(last, start) / intervalValue + 1
     default:
       return 0
   }
 }
 
-export function getStartEndNumInterval(dataObj, isPowerData) {
+export function getStartEndNumInterval(dataObj, displayTz, ignoreTime) {
   const region = dataObj.region
   const includeLastPoint = region === 'WEM' ? true : false
   const history = dataObj.history
   if (!history) {
     throw new Error('No history object found')
   }
-  const startDateTime = isPowerData
-    ? parseISO(history.start)
-    : dateDisplay.getDateTimeWithoutTZ(history.start)
-  const lastDateTime = isPowerData
-    ? parseISO(history.last)
-    : dateDisplay.getDateTimeWithoutTZ(history.last)
+  const startDateTime = mutateDate(history.start, displayTz, ignoreTime)
+  const lastDateTime = mutateDate(history.last, displayTz, ignoreTime)
   const interval = intervalParser(history.interval)
   const num = getArrLength({
     intervalKey: interval.key,
@@ -169,6 +173,8 @@ export function incrementTime({ date, intervalKey, intervalValue }) {
       return addDays(date, intervalValue)
     case 'M':
       return addMonths(date, intervalValue)
+    case 'Q':
+      return addQuarters(date, intervalValue)
     default:
       return null
   }

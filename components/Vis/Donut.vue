@@ -58,17 +58,17 @@ export default {
       type: Array,
       default: () => []
     },
-    hoverData: {
-      type: Object,
-      default: () => null
+    hoverDate: {
+      type: Date,
+      default: null
     },
     hoverOn: {
       type: Boolean,
       default: () => false
     },
-    focusData: {
-      type: Object,
-      default: () => null
+    focusDate: {
+      type: Date,
+      default: null
     },
     focusOn: {
       type: Boolean,
@@ -76,11 +76,15 @@ export default {
     },
     convertValue: {
       type: Function,
-      default: () => function() {}
+      default: d => d
     },
     highlightDomain: {
       type: String,
       default: null
+    },
+    isPowerType: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -141,16 +145,31 @@ export default {
       return dataset.map(d => {
         let total = null
         domains.forEach(domain => {
-          total += d[domain.id]
+          total += d[domain.id] || 0
         })
+
         return {
           _totalSources: total
         }
       })
     },
 
+    hoverData() {
+      if (this.hoverDate && this.dataset.length > 0) {
+        return this.dataset.find(d => d.time === this.hoverDate.getTime())
+      }
+      return null
+    },
+
+    focusData() {
+      if (this.focusDate && this.dataset.length > 0) {
+        return this.dataset.find(d => d.time === this.focusDate.getTime())
+      }
+      return null
+    },
+
     isTotalPower() {
-      return this.unit === ' MW' && (!this.hoverOn && !this.focusOn)
+      return this.isPowerType && (!this.hoverOn && !this.focusOn)
     },
 
     total() {
@@ -158,7 +177,7 @@ export default {
       if (this.isTotalPower) {
         total = d3Mean(this.updatedDataset, d => d._totalSources)
       } else {
-        total = this.donutDataset.reduce((a, b) => a + b.value, 0)
+        total = this.donutDataset.reduce((a, b) => a + (b.value || 0), 0)
       }
       return this.convertValue(total)
     },

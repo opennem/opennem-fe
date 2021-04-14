@@ -14,6 +14,9 @@ export const CHART_YAXIS_PERCENTAGE = 'percentage'
 export const CHART_YAXIS_ENERGY = 'energy'
 export const CHART_YAXIS_AVERAGE_POWER = 'averagePower'
 
+// Emissions specific yAxis
+export const CHART_YAXIS_EMISSIONS_VOL = 'emissionsVol'
+
 export const CHART_LABEL = {}
 CHART_LABEL[CHART_HIDDEN] = 'Hidden'
 CHART_LABEL[CHART_STACKED] = 'Stacked'
@@ -28,3 +31,6 @@ CHART_LABEL[CHART_YAXIS_PERCENTAGE] = 'Percentage'
 // Energy specific yAxis
 CHART_LABEL[CHART_YAXIS_ENERGY] = 'Energy'
 CHART_LABEL[CHART_YAXIS_AVERAGE_POWER] = 'Av. Power'
+
+// Emissions specific yAxis
+CHART_LABEL[CHART_YAXIS_EMISSIONS_VOL] = 'Volume'

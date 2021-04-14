@@ -1,6 +1,6 @@
 {
   "name": "opennem",
-  "version": "3.5.48",
+  "version": "3.8.0",
   "description": "An Open Platform for National Electricity Market Data",
   "author": "Steven Tan",
   "private": true,
@@ -19,7 +19,7 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.0.0",
     "@nuxtjs/proxy": "^2.0.1",
-    "@opennem/energy-tools": "^1.4.1",
+    "@opennem/energy-tools": "^1.5.1",
     "@sentry/browser": "^5.18.0",
     "@sentry/integrations": "^5.18.0",
     "cross-env": "^5.2.0",
@@ -37,6 +37,7 @@
     "d3-time-format": "^2.1.3",
     "d3-zoom": "^1.7.3",
     "date-fns": "^2.14.0",
+    "date-fns-tz": "^1.1.3",
     "file-saver": "^2.0.2",
     "leaflet": "^1.5.1",
     "lodash.clonedeep": "^4.5.0",
@@ -48,15 +49,15 @@
     "lodash.sortby": "^4.7.0",
     "lodash.uniq": "^4.5.0",
     "lodash.uniqby": "^4.7.0",
-    "mapbox-gl": "^1.12.0",
-    "moment": "^2.23.0",
+    "mapbox-gl": "^2.1.1",
     "nuxt": "^2.13.0",
     "v-tooltip": "^2.0.2",
     "vue-clickaway": "^2.2.2",
     "vue-json-csv": "^1.2.4",
     "vue-mapbox": "^0.4.1",
     "vue2-leaflet": "^2.1.1",
-    "vuedraggable": "^2.17.0"
+    "vuedraggable": "^2.17.0",
+    "vueperslides": "^2.13.0"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.1",

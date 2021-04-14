@@ -1,12 +1,12 @@
 <template>
   <div>
-    <footer class="has-background-warning">
+    <footer class="">
       <div class="left">
         <div class="version">
           <span
             v-if="isDev"
             class="tag">DEV</span>
-          <strong>v{{ version }} beta</strong>
+          <strong>v{{ version }}</strong>
         </div>
         <div
           v-if="hasAPIversion"
@@ -131,6 +131,12 @@ footer {
   justify-content: space-between;
   font-size: 11px;
   display: none;
+  background-color: $opennem-link-color-dark;
+  color: #fff;
+
+  strong {
+    color: #fff;
+  }
 
   .left,
   .right {
@@ -140,7 +146,8 @@ footer {
   }
 
   a {
-    border-bottom: 1px dashed $opennem-link-color;
+    color: #fff;
+    border-bottom: 1px dashed #fff;
     &:hover {
       border-bottom-style: solid;
     }

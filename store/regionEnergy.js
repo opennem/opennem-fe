@@ -8,7 +8,7 @@ import {
   dataProcess,
   dataRollUp,
   dataFilterByPeriod
-} from '@/modules/dataTransform/energy'
+} from '@/data/parse/region-energy'
 import { isValidRegion } from '@/constants/energy-regions.js'
 
 let currentRegion = ''
@@ -179,6 +179,7 @@ export const actions = {
   doGetAllData({ commit, dispatch, rootGetters }, { regions }) {
     dispatch('app/doClearError', null, { root: true })
 
+    const displayTz = rootGetters.displayTimeZone
     const url = Data.getAllMonthlyPath()
 
     commit('ready', false)
@@ -195,8 +196,10 @@ export const actions = {
         domainPowerEnergy,
         domainEmissions,
         domainTemperature,
-        domainPrice
-      } = simpleDataProcess(responses)
+        domainPrice,
+        domainMarketValue,
+        inflation
+      } = simpleDataProcess(responses, displayTz)
 
       perf.timeEnd(
         `------ ${currentRegion} — (${dataCount} down to ${dataset.length})`
@@ -207,7 +210,9 @@ export const actions = {
         domainPowerEnergy,
         domainEmissions,
         domainTemperature,
-        domainPrice
+        domainPrice,
+        domainMarketValue,
+        inflation
       }
     }
 
@@ -218,9 +223,13 @@ export const actions = {
         const all = {}
 
         regions.forEach((r, i) => {
+          const cpiData = responses.find(d => d.type === 'cpi')
           const filtered = responses.filter(
-            d => d.region === r.id.toUpperCase()
+            d => d.region && d.region.toLowerCase() === r.id
           )
+          if (cpiData) {
+            filtered.push(cpiData)
+          }
           currentRegion = r.id
           all[r.id] = processResponses([filtered])
         })
@@ -249,8 +258,8 @@ export const actions = {
     dispatch('app/doClearError', null, { root: true })
 
     if (isValidRegion(region)) {
-      const useV3Paths = rootGetters['feature/v3Paths']
-      const url = Data.getRegionAllDailyPath(region, useV3Paths)
+      const displayTz = rootGetters.displayTimeZone
+      const url = Data.getRegionAllDailyPath(region, true)
 
       currentRegion = region
 
@@ -268,8 +277,10 @@ export const actions = {
           domainPowerEnergy,
           domainEmissions,
           domainTemperature,
-          domainPrice
-        } = simpleDataProcess(responses)
+          domainPrice,
+          domainMarketValue,
+          inflation
+        } = simpleDataProcess(responses, displayTz)
 
         perf.timeEnd(
           `------ ${currentRegion} — (${dataCount} down to ${dataset.length})`
@@ -280,7 +291,9 @@ export const actions = {
           domainPowerEnergy,
           domainEmissions,
           domainTemperature,
-          domainPrice
+          domainPrice,
+          domainMarketValue,
+          inflation
         }
       }
 
@@ -310,96 +323,19 @@ export const actions = {
 
             console.log(error)
           }
-        })
-    }
-  },
-
-  doGetYearRegionData({ commit, dispatch, rootGetters }, { region, year }) {
-    dispatch('app/doClearError', null, { root: true })
-
-    if (isValidRegion(region) && year !== '') {
-      const useV3Paths = rootGetters['feature/v3Paths']
-      const url = Data.getYearDailyPath(region, year, useV3Paths)
-
-      currentRegion = region
-
-      commit('ready', false)
-      commit('isFetching', true)
-
-      function processResponses(responses) {
-        const dataCount = getDataCount(responses)
-        const perf = new PerfTime()
-        perf.time()
-        console.info(`------ ${currentRegion} (start)`)
-
-        const {
-          dataset,
-          domainPowerEnergy,
-          domainEmissions,
-          domainTemperature,
-          domainPrice
-        } = simpleDataProcess(responses)
-
-        perf.timeEnd(
-          `------ ${currentRegion} — (${dataCount} down to ${dataset.length})`
-        )
-
-        return {
-          dataset,
-          domainPowerEnergy,
-          domainEmissions,
-          domainTemperature,
-          domainPrice
-        }
-      }
-
-      return http([url])
-        .then(res => {
-          const check = res.length > 0 ? (res[0].data ? true : false) : false
-          let responses = check
-            ? res.map(d => {
-                return d.data
-              })
-            : res
-
-          return processResponses(responses)
-        })
-        .catch(e => {
-          console.error('error', e)
-          let header = 'Error'
-          let message = ''
-
-          if (!e) {
-            message =
-              'There is an issue processing the responses. Please check the developer console and contact OpenNEM.'
-          } else {
-            const error = e.toJSON()
-            header = `${error.message}`
-            message = `Trying to fetch <code>${error.config.url}</code>`
-
-            console.log(error)
-          }
-          // dispatch(
-          //   'app/doUpdateError',
-          //   {
-          //     header,
-          //     message
-          //   },
-          //   { root: true }
-          // )
         })
     }
   },
 
   doGetRegionDataByRangeInterval(
     { commit, dispatch, rootGetters },
-    { region, range, interval, period, groupName }
+    { region, range, interval, period, groupName, useV3 }
   ) {
     dispatch('app/doClearError', null, { root: true })
 
     if (isValidRegion(region) && range !== '' && interval !== '') {
-      const useV3Paths = rootGetters['feature/v3Paths']
-      const urls = Data.getEnergyUrls(region, range, useV3Paths)
+      const displayTz = rootGetters.displayTimeZone
+      const urls = Data.getEnergyUrls(region, range, useV3)
       currentRegion = region
       commit('ready', false)
       commit('isFetching', true)
@@ -425,7 +361,7 @@ export const actions = {
           domainTemperature,
           dataType,
           units
-        } = dataProcess(responses, range, interval, period)
+        } = dataProcess(responses, range, interval, period, displayTz)
 
         perf.timeEnd(
           `------ ${currentRegion} — ${range}/${interval} (${dataCount} down to ${
@@ -452,6 +388,8 @@ export const actions = {
         commit('currentDomainPowerEnergy', domainPowerEnergyGrouped[groupName])
         commit('currentDomainEmissions', domainEmissionsGrouped[groupName])
         commit('currentDomainMarketValue', domainMarketValueGrouped[groupName])
+
+        console.log(currentDataset)
 
         // parse units
         let prefix = ''

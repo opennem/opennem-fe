@@ -1,5 +1,7 @@
 <template>
   <div class="container-fluid">
+    <h1 v-if="useV3">You are viewing data and features that are still in <strong>development</strong>.</h1>
+
     <app-header />
     <nuxt/>
     <app-footer v-if="!widthBreak" />
@@ -21,7 +23,8 @@ export default {
 
   computed: {
     ...mapGetters({
-      widthBreak: 'app/widthBreak'
+      widthBreak: 'app/widthBreak',
+      useV3: 'feature/v3Data'
     })
   },
 
@@ -54,6 +57,18 @@ export default {
   margin: 0 auto 1rem;
   @include tablet {
     margin-bottom: 3rem;
+  }
+
+  h1 {
+    background-color: #ffdd57;
+    width: 100%;
+    font-size: 12px;
+    padding: 3px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 9999;
   }
 }
 </style>

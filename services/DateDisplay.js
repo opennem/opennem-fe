@@ -1,18 +1,25 @@
-import parseISO from 'date-fns/parseISO'
 import addDays from 'date-fns/addDays'
 import subDays from 'date-fns/subDays'
 import addMonths from 'date-fns/addMonths'
 import endOfDay from 'date-fns/endOfDay'
 import endOfMonth from 'date-fns/endOfMonth'
 import differenceInSeconds from 'date-fns/differenceInSeconds'
-import { timeFormat as d3TimeFormat } from 'd3-time-format'
+import { timeFormat, utcFormat } from 'd3-time-format'
 import {
-  timeMinute as d3TimeMinute,
   timeDay as d3TimeDay,
   timeMonday as d3TimeMonday,
   timeMonth as d3TimeMonth,
-  timeYear as d3TimeYear
+  timeYear as d3TimeYear,
+  utcMinute
 } from 'd3-time'
+import {
+  FILTER_NONE,
+  INTERVAL_MONTH,
+  INTERVAL_SEASON,
+  INTERVAL_QUARTER,
+  INTERVAL_HALFYEAR,
+  hasIntervalFilters
+} from '@/constants/interval-filters.js'
 
 function getFormatStringDay(showYear) {
   return showYear ? '%a, %-d %b %Y' : '%a, %-d %b'
@@ -176,10 +183,10 @@ export default {
     showIntervalRange
   ) {
     const now = Date.now()
-    const today = d3TimeFormat('%d/%m/%Y')(now)
-    const fDate = d3TimeFormat('%d/%m/%Y')(time)
-    const thisYear = d3TimeFormat('%Y')(now)
-    const fYear = d3TimeFormat('%Y')(time)
+    const today = utcFormat('%d/%m/%Y')(now)
+    const fDate = utcFormat('%d/%m/%Y')(time)
+    const thisYear = utcFormat('%Y')(now)
+    const fYear = utcFormat('%Y')(time)
     const sYear = showYear || thisYear !== fYear
 
     let display = ''
@@ -192,12 +199,12 @@ export default {
     switch (range) {
       case '30D':
         formatString = getFormatStringDay(sYear)
-        display = d3TimeFormat(formatString)(time)
+        display = timeFormat(formatString)(time)
         break
       case '1Y':
         if (interval === 'Day') {
           formatString = getFormatStringDay(sYear)
-          display = d3TimeFormat(formatString)(time)
+          display = timeFormat(formatString)(time)
         } else if (interval === 'Week') {
           formatString = '%-d %b %Y'
           const newTime = d3TimeMonday
@@ -206,26 +213,34 @@ export default {
             .getTime()
           if (showIntervalRange) {
             const sixDayslater = newTime + 518400000
-            const sDate = d3TimeFormat('%-d')(newTime)
-            const eDate = d3TimeFormat(formatString)(sixDayslater)
+
+            // check year
+            const startYear = new Date(time).getFullYear()
+            const endYear = new Date(sixDayslater).getFullYear()
+
+            const sDate =
+              startYear === endYear
+                ? timeFormat('%-d')(newTime)
+                : timeFormat(formatString)(newTime)
+            const eDate = timeFormat(formatString)(sixDayslater)
             display = `${sDate} – ${eDate}`
           } else {
             if (isStart) {
-              display = d3TimeFormat(formatString)(newTime)
+              display = timeFormat(formatString)(newTime)
             } else {
               const sixDayslater = time + 518400000
-              display = d3TimeFormat(formatString)(sixDayslater)
+              display = timeFormat(formatString)(sixDayslater)
             }
           }
         } else {
-          display = d3TimeFormat('%b %Y')(time)
+          display = timeFormat('%b %Y')(time)
         }
         break
       case 'ALL':
         if (interval === 'Month') {
-          display = d3TimeFormat('%b %Y')(time)
+          display = timeFormat('%b %Y')(time)
         } else if (interval === 'Season') {
-          let seasonLabel = getSeasonLabel(d3TimeFormat('%-m')(time))
+          let seasonLabel = getSeasonLabel(timeFormat('%-m')(time))
           let year = new Date(time).getFullYear()
           let nextYearStr = ''
           if (seasonLabel === 'Summer') {
@@ -234,33 +249,33 @@ export default {
           }
           display = `${seasonLabel} ${year}${nextYearStr}` // eslint-disable-line
         } else if (interval === 'Quarter') {
-          display = `${getQuarterLabel(
-            d3TimeFormat('%-m')(time)
-          )} ${d3TimeFormat('%Y')(time)}` // eslint-disable-line
+          display = `${getQuarterLabel(timeFormat('%-m')(time))} ${timeFormat(
+            '%Y'
+          )(time)}` // eslint-disable-line
         } else if (interval === 'Fin Year') {
-          let finYearMonth = d3TimeFormat('%-m')(time)
-          let finYear = d3TimeFormat('%y')(time)
+          let finYearMonth = timeFormat('%-m')(time)
+          let finYear = timeFormat('%y')(time)
           if (finYearMonth > 6) {
-            finYear = d3TimeFormat('%y')(time + 31557600000)
+            finYear = timeFormat('%y')(time + 31557600000)
           }
           display = `FY${finYear}`
         } else if (interval === 'Half Year') {
           const sixMonthsLater = time + 15552000000
           if (showIntervalRange) {
-            display = `${d3TimeFormat('%b')(time)} – ${d3TimeFormat('%b %Y')(
+            display = `${timeFormat('%b')(time)} – ${timeFormat('%b %Y')(
               sixMonthsLater
             )}` // eslint-disable-line
           } else {
             if (isStart) {
-              display = `${d3TimeFormat('%b %Y')(time)}` // eslint-disable-line
+              display = `${timeFormat('%b %Y')(time)}` // eslint-disable-line
             } else {
-              display = `${d3TimeFormat('%b %Y')(sixMonthsLater)}` // eslint-disable-line
+              display = `${timeFormat('%b %Y')(sixMonthsLater)}` // eslint-disable-line
             }
           }
         } else if (interval === 'Year') {
-          display = d3TimeFormat('%Y')(time)
+          display = timeFormat('%Y')(time)
         } else {
-          display = d3TimeFormat('%b %Y')(time)
+          display = timeFormat('%b %Y')(time)
         }
         break
       default:
@@ -271,18 +286,49 @@ export default {
         } else {
           formatString = '%-d %b %Y, %-I:%M %p'
         }
-        display = d3TimeFormat(formatString)(time)
+        display = utcFormat(formatString)(time)
     }
 
     return display
   },
 
+  getClosestDateByInterval(date, interval, filterPeriod) {
+    let hoverDate = date
+    const isFilter = !filterPeriod || filterPeriod !== FILTER_NONE
+    if (hoverDate && interval === 'Fin Year') {
+      if (hoverDate.getMonth() >= 6) {
+        hoverDate.setFullYear(hoverDate.getFullYear() + 1)
+      }
+    }
+    if (isFilter && hoverDate && hasIntervalFilters(interval)) {
+      const periodMonth = this.getPeriodMonth(interval, filterPeriod)
+      const month = hoverDate.getMonth()
+      if (interval === INTERVAL_MONTH) {
+        hoverDate = this.mutateMonthDate(hoverDate, month, filterPeriod)
+      } else if (interval === INTERVAL_SEASON) {
+        hoverDate = this.mutateSeasonDate(hoverDate, month, filterPeriod)
+      } else if (interval === INTERVAL_QUARTER) {
+        hoverDate = this.mutateQuarterDate(hoverDate, month, filterPeriod)
+      } else if (interval === INTERVAL_HALFYEAR) {
+        hoverDate = this.mutateHalfYearDate(hoverDate, month, filterPeriod)
+      }
+
+      if (interval === INTERVAL_MONTH) {
+        hoverDate.setMonth(periodMonth)
+      } else {
+        hoverDate.setMonth(periodMonth + 1)
+      }
+    }
+
+    return this.snapToClosestInterval(interval, hoverDate)
+  },
+
   defaultDisplayDate(time) {
     const now = Date.now()
-    const today = d3TimeFormat('%d/%m/%Y')(now)
-    const fDate = d3TimeFormat('%d/%m/%Y')(time)
-    const thisYear = d3TimeFormat('%Y')(now)
-    const fYear = d3TimeFormat('%Y')(time)
+    const today = utcFormat('%d/%m/%Y')(now)
+    const fDate = utcFormat('%d/%m/%Y')(time)
+    const thisYear = utcFormat('%Y')(now)
+    const fYear = utcFormat('%Y')(time)
     let formatString = ''
 
     if (today === fDate) {
@@ -292,15 +338,15 @@ export default {
     } else {
       formatString = '%-d %b %Y, %-I:%M %p'
     }
-    return d3TimeFormat(formatString)(time)
+    return utcFormat(formatString)(time)
   },
 
   snapToClosestInterval(interval, date, isLinear) {
     switch (interval) {
       case '5m':
-        return d3TimeMinute.every(5).round(date)
+        return utcMinute.every(5).round(date)
       case '30m':
-        return d3TimeMinute.every(30).round(date)
+        return utcMinute.every(30).round(date)
       case 'Day':
         return d3TimeDay.every(1).floor(date)
       case 'Week':
@@ -336,9 +382,9 @@ export default {
     const isFloor = roundType === 'floor'
     switch (interval) {
       case '5m':
-        return d3TimeMinute.every(5).round(date)
+        return utcMinute.every(5).round(date)
       case '30m':
-        return d3TimeMinute.every(30).round(date)
+        return utcMinute.every(30).round(date)
       case 'Day':
         return isFloor
           ? d3TimeDay.every(1).floor(date)
@@ -373,17 +419,18 @@ export default {
     const guides = []
     let dStart = datasetStart
     const dEnd = datasetEnd
-    const checkWeekend = d3TimeFormat('%a')
+    const checkWeekend = timeFormat('%a')
 
     while (dStart <= dEnd) {
       if (checkWeekend(dStart) === 'Sat') {
         guides.push({
           start: dStart,
-          end: dStart + 86400000 + 86400000
+          end: addDays(new Date(dStart), 2).getTime()
         })
       }
-      dStart = dStart + 86400000
+      dStart = addDays(new Date(dStart), 1).getTime()
     }
+
     return guides
   },
 
@@ -394,8 +441,8 @@ export default {
 
     while (dStart <= dEnd) {
       const startTime = new Date(dStart)
-      startTime.setHours(22)
-      startTime.setMinutes(0)
+      startTime.setUTCHours(22)
+      startTime.setUTCMinutes(0)
       const endTime = new Date(startTime.getTime() + 32400000)
       guides.push({
         start: startTime,
@@ -403,6 +450,7 @@ export default {
       })
       dStart = dStart + 86400000
     }
+
     return guides
   },
 
@@ -533,10 +581,11 @@ export default {
     }
   },
 
-  getDateTimeWithoutTZ(date) {
-    const dateString = date.substring(0, 16)
-    return parseISO(dateString)
-  },
+  // getDateTimeWithoutTZ(date, ignoreTime) {
+  //   const end = ignoreTime ? 10 : 16
+  //   const dateString = date.substring(0, end) + '+00:00'
+  //   return parseISO(dateString)
+  // },
 
   getSecondsByInterval(range, interval, date, incompleteDate, isStart, isEnd) {
     let start, end

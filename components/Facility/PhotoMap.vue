@@ -1,18 +1,28 @@
 <template>
   <div :class="layout">
-    <Photos 
-      :has-photos="facilityPhotos.length > 0" 
-      :photos="facilityPhotos" 
+    <Photos
+      :has-photos="facilityPhotos.length > 0"
+      :photos="facilityPhotos"
       :name="facilityName"
-      :height="layout === 'aside' ? 'auto' : '200px'"/>
-      
+      :height="layout === 'aside' ? '250px' : '200px'"/>
+
     <MiniMap
-      :has-location="hasFacilityLocation"
-      :lat="facilityLocation.lat"
-      :lng="facilityLocation.lng"
+      :has-location="hasLocation"
+      :boundary="facilityLocation.boundary"
+      :point="facilityLocation.geom"
+      :fit-bounds="false"
       class="map" />
-      
-      <!-- <MetaInfo 
+
+    <MiniMap
+      :has-location="hasLocation"
+      :zoom="13"
+      :boundary="facilityLocation.boundary"
+      :point="facilityLocation.geom"
+      :map-style="'mapbox://styles/mapbox/satellite-streets-v11'"
+      :show-marker="false"
+      class="map" />
+
+      <!-- <MetaInfo
           :facility-id="facilityId"
           :facility-state="facilityState"
           :units-num="facilityUnits.length"
@@ -43,26 +53,33 @@ export default {
       type: Array,
       default: () => []
     },
-    hasFacilityLocation: {
-      type: Boolean,
-      default: false
-    },
     facilityLocation: {
       type: Object,
-      default: () => ({ lat: 0, lng: 0 })
+      default: () => null
+    }
+  },
+
+  computed: {
+    hasLocation() {
+      return this.facilityLocation &&
+        (this.facilityLocation.geom || this.facilityLocation.boundary)
+        ? true
+        : false
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@import '~/assets/scss/responsive-mixins.scss';
+
 .aside {
-  width: 30%;
+  width: 100%;
   margin-top: 1rem;
 
   section,
   .aside-section {
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
   }
 
   figcaption {
@@ -74,13 +91,24 @@ export default {
 .normal {
   display: flex;
   padding: 0.75rem;
+  margin-bottom: 2rem;
 
   & > section,
   & > .aside-section {
     width: 100%;
+    margin-right: 0.75rem;
 
-    &:first-child {
-      margin-right: 0.75rem;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  @include mobile {
+    display: block;
+
+    & > section,
+    & > .aside-section {
+      margin-bottom: 0.75rem;
     }
   }
 }

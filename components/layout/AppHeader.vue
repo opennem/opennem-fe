@@ -88,7 +88,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { timeFormat as d3TimeFormat } from 'd3-time-format'
+import { timeFormat as d3TimeFormat, utcFormat } from 'd3-time-format'
 import { format as d3Format } from 'd3-format'
 import _debounce from 'lodash.debounce'
 import DownloadCsv from 'vue-json-csv'
@@ -153,7 +153,9 @@ export default {
       return this.$store.getters.chartUnit
     },
     exportData() {
-      const timeFormat = d3TimeFormat('%Y-%m-%d %H:%M')
+      const timeFormat = this.isEnergy
+        ? d3TimeFormat('%Y-%m-%d')
+        : utcFormat('%Y-%m-%d %H:%M')
       const format = d3Format('.2f')
       if (this.isFacilitiesView) {
         return this.$store.getters.facilityExportData

@@ -4,7 +4,7 @@ import * as SI from '@/constants/si'
 export const state = () => ({
   chartDefaultType: OPTIONS.CHART_STACKED,
   chartType: OPTIONS.CHART_STACKED,
-  chartYAxis: OPTIONS.CHART_YAXIS_ABSOLUTE,
+  chartYAxis: OPTIONS.CHART_YAXIS_EMISSIONS_VOL,
   chartCurve: OPTIONS.CHART_CURVE_STEP,
 
   chartUnit: 'tCO₂e',
@@ -46,4 +46,11 @@ export const mutations = {
   }
 }
 
-export const actions = {}
+export const actions = {
+  doShowChart({ commit }) {
+    commit('chartType', OPTIONS.CHART_STACKED)
+  },
+  doHideChart({ commit }) {
+    commit('chartType', OPTIONS.CHART_HIDDEN)
+  }
+}

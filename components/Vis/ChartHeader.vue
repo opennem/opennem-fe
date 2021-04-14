@@ -4,8 +4,10 @@
       <slot name="options" />
       <slot name="label-unit"/>
     </div>
-    
-    <div class="hover-date-value">
+
+    <div
+      v-if="chartShown"
+      class="hover-date-value">
       <div class="average-value">
         <slot name="average-value" />
       </div>
@@ -20,3 +22,14 @@
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  props: {
+    chartShown: {
+      type: Boolean,
+      default: false
+    }
+  }
+}
+</script>

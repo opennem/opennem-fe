@@ -59,8 +59,8 @@ export default {
       previousPath: 'facility/previousPath',
       filteredFacilities: 'facility/filteredFacilities'
     }),
-    facilityId() {
-      return this.$route.params.facilityId
+    facilityCode() {
+      return this.$route.params.facilityCode
     },
     path() {
       return this.previousPath === '' ? '/facilities/au/' : this.previousPath
@@ -68,7 +68,7 @@ export default {
   },
 
   watch: {
-    facilityId() {
+    facilityCode() {
       this.updatePaths()
     }
   },
@@ -100,11 +100,13 @@ export default {
     updatePaths() {
       const facilitiesLength = this.filteredFacilities.length
       const currentIndex = this.filteredFacilities.findIndex(
-        f => f.facilityId === this.facilityId
+        f => f.facilityId === this.facilityCode
       )
       const currentFacility = this.filteredFacilities.find(
-        f => f.facilityId === this.facilityId
+        f => f.facilityId === this.facilityCode
       )
+
+      console.log(this.filteredFacilities, this.facilityCode)
 
       if (currentIndex !== -1) {
         const isFirstItem = currentIndex === 0
@@ -120,19 +122,28 @@ export default {
         const nextFacilityId = nextFacility ? nextFacility.facilityId : null
         const nextFacilityName = nextFacility ? nextFacility.displayName : null
         const nextFacilityNetwork = nextFacility ? nextFacility.network : null
+        const nextFacilityCountry = nextFacility ? nextFacility.country : null
+
         const prevFacilityId = prevFacility ? prevFacility.facilityId : null
         const prevFacilityName = prevFacility ? prevFacility.displayName : null
         const prevFacilityNetwork = prevFacility ? prevFacility.network : null
+        const prevFacilityCountry = prevFacility ? prevFacility.country : null
+
+        console.log(prevFacilityCountry, nextFacilityCountry)
 
         this.nextFacilityPath = nextFacilityId
           ? `/facility/${encodeURIComponent(
-              nextFacilityNetwork
-            )}/${encodeURIComponent(nextFacilityId)}`
+              nextFacilityCountry
+            )}/${encodeURIComponent(nextFacilityNetwork)}/${encodeURIComponent(
+              nextFacilityId
+            )}`
           : null
         this.prevFacilityPath = prevFacilityId
           ? `/facility/${encodeURIComponent(
-              prevFacilityNetwork
-            )}/${encodeURIComponent(prevFacilityId)}`
+              prevFacilityCountry
+            )}/${encodeURIComponent(prevFacilityNetwork)}/${encodeURIComponent(
+              prevFacilityId
+            )}`
           : null
         this.nextFacilityName = nextFacilityName
         this.prevFacilityName = prevFacilityName

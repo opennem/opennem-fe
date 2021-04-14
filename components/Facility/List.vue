@@ -255,7 +255,8 @@ export default {
   computed: {
     ...mapGetters({
       windowWidth: 'app/windowWidth',
-      tabletBreak: 'app/tabletBreak'
+      tabletBreak: 'app/tabletBreak',
+      useV3: 'feature/v3Data'
     }),
     queryFacilityId() {
       return this.$route.query.selected
@@ -414,8 +415,10 @@ export default {
       return colHeaderId === 'generatorCap'
     },
     handleRowDoubleClick(facility) {
-      this.waitForDblClickCB = true
-      this.$emit('openFacilityView', facility)
+      if (this.useV3) {
+        this.waitForDblClickCB = true
+        this.$emit('openFacilityView', facility)
+      }
     },
     getColumnIcon(colHeaderId) {
       if (colHeaderId === this.sortBy) {

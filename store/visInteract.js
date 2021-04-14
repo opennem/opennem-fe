@@ -1,4 +1,5 @@
 import _cloneDeep from 'lodash.clonedeep'
+import axisTimeFormat from '@/components/Vis/shared/timeFormat.js'
 import AxisTicks from '@/services/axisTicks.js'
 import DateDisplay from '@/services/DateDisplay.js'
 
@@ -10,6 +11,7 @@ export const state = () => ({
   focusDate: null,
   xTicks: null,
   xGuides: null,
+  yGuides: [],
   tickFormat: '',
   secondTickFormat: '',
 
@@ -25,6 +27,7 @@ export const getters = {
   focusDate: state => state.focusDate,
   xTicks: state => state.xTicks,
   xGuides: state => state.xGuides,
+  yGuides: state => state.yGuides,
   tickFormat: state => state.tickFormat,
   secondTickFormat: state => state.secondTickFormat,
 
@@ -53,6 +56,9 @@ export const mutations = {
   xGuides(state, xGuides) {
     state.xGuides = xGuides
   },
+  yGuides(state, yGuides) {
+    state.yGuides = yGuides
+  },
   tickFormat(state, tickFormat) {
     state.tickFormat = tickFormat
   },
@@ -66,8 +72,8 @@ export const mutations = {
 }
 
 export const actions = {
-  doUpdateXTicks({ commit }, { range, interval, isZoomed, fitlerPeriod }) {
-    commit('xTicks', AxisTicks(range, interval, isZoomed, fitlerPeriod))
+  doUpdateXTicks({ commit }, { range, interval, isZoomed, filterPeriod }) {
+    commit('xTicks', AxisTicks(range, interval, isZoomed, filterPeriod))
   },
 
   doUpdateXGuides({ commit }, { interval, start, end }) {
@@ -105,7 +111,9 @@ export const actions = {
         }
         break
       default:
+        tickFormat = axisTimeFormat
     }
+
     commit('tickFormat', tickFormat)
     commit('secondTickFormat', secondTickFormat)
   }

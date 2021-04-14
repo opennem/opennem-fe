@@ -45,14 +45,14 @@ export default {
   data() {
     return {
       dropdownActive: false,
-      views: VIEWS.filter(v => v.id !== 'stripes')
+      views: VIEWS
     }
   },
 
   computed: {
     ...mapGetters({
-      featureMetrics: 'feature/metrics',
-      featureAuEnergy: 'feature/auEnergy'
+      featureAuEnergy: 'feature/auEnergy',
+      useV3: 'feature/v3Data'
     }),
     regionId() {
       return this.$route.params.region
@@ -63,16 +63,6 @@ export default {
     viewLabel() {
       const view = this.views.find(d => d.id === this.currentView)
       return view ? view.label : ''
-    }
-  },
-
-  watch: {
-    featureMetrics() {
-      if (this.featureMetrics) {
-        this.views = VIEWS
-      } else {
-        this.views = VIEWS.filter(v => v.id !== 'stripes')
-      }
     }
   },
 
@@ -99,6 +89,10 @@ export default {
       if (this.regionId === 'au' && view === 'energy') {
         return false
       }
+      if (!this.useV3 && view === 'stripes') {
+        return false
+      }
+
       return true
     }
   }

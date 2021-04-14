@@ -86,7 +86,7 @@ import {
 } from '~/constants/facility-regions.js'
 
 import Http from '~/services/Http.js'
-import FacilityDataTransformService from '~/services/dataTransform/Facility.js'
+import FacilityDataParse from '@/data/parse/facility'
 import FacilityFilters from '~/components/Facility/Filters.vue'
 import FacilityList from '~/components/Facility/List.vue'
 import FacilityMap from '~/components/Facility/Map.vue'
@@ -170,7 +170,8 @@ export default {
     ...mapGetters({
       hostEnv: 'hostEnv',
       windowWidth: 'app/windowWidth',
-      tabletBreak: 'app/tabletBreak'
+      tabletBreak: 'app/tabletBreak',
+      useV3: 'feature/v3Data'
     }),
     filteredFacilities: {
       get() {
@@ -260,12 +261,10 @@ export default {
     fetchData() {
       const urls = []
 
-      if (this.hostEnv === 'prod') {
-        urls.push('/facility/facility_registry.json')
+      if (this.useV3) {
+        urls.push('/v3/geo/au_facilities.json')
       } else {
-        urls.push(
-          'https://s3-ap-southeast-2.amazonaws.com/data.opennem.org.au/v3/geo/au_facilities.json'
-        )
+        urls.push('/facility/facility_registry.json')
       }
 
       if (urls.length > 0) {
@@ -282,21 +281,23 @@ export default {
     },
 
     handleResponses(responses) {
-      if (this.hostEnv === 'prod') {
-        FacilityDataTransformService.flatten(responses[0]).then(res => {
-          this.facilityData = res
-          this.ready = true
-          this.$store.dispatch('facility/dataset', res)
-        })
-      } else {
+      if (this.useV3) {
         if (responses.length > 0 && responses[0].features) {
-          FacilityDataTransformService.flattenV3(responses[0].features).then(
-            res => {
-              this.facilityData = res
-              this.ready = true
-              this.$store.dispatch('facility/dataset', res)
-            }
-          )
+          FacilityDataParse.flattenV3(responses[0].features).then(res => {
+            this.facilityData = res
+            this.ready = true
+            this.$store.dispatch('facility/dataset', res)
+          })
+        } else {
+          console.warn('There is an issue parsing the response.')
+        }
+      } else {
+        if (responses.length > 0 && responses[0]) {
+          FacilityDataParse.flatten(responses[0]).then(res => {
+            this.facilityData = res
+            this.ready = true
+            this.$store.dispatch('facility/dataset', res)
+          })
         } else {
           console.warn('There is an issue parsing the response.')
         }
@@ -432,10 +433,11 @@ export default {
 
       const id = facility.facilityId
       const network = facility.network
+      const country = facility.country
       this.$router.push({
-        path: `/facility/${encodeURIComponent(network)}/${encodeURIComponent(
-          id
-        )}/`
+        path: `/facility/${encodeURIComponent(country)}/${encodeURIComponent(
+          network
+        )}/${encodeURIComponent(id)}/`
       })
     }
   }
