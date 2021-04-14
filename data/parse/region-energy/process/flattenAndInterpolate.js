@@ -12,14 +12,14 @@ import PerfTime from '@/plugins/perfTime.js'
 
 const perfTime = new PerfTime()
 
-const getStartLastDates = (data, displayTz) => {
+const getStartLastDates = (data, displayTz, ignoreTime) => {
   let start, last
   data.forEach(d => {
     // const dStartDate = dateDisplay.getDateTimeWithoutTZ(d.history.start)
     // const dLastDate = dateDisplay.getDateTimeWithoutTZ(d.history.last)
 
-    const dStartDate = mutateDate(d.history.start, displayTz)
-    const dLastDate = mutateDate(d.history.last, displayTz)
+    const dStartDate = mutateDate(d.history.start, displayTz, ignoreTime)
+    const dLastDate = mutateDate(d.history.last, displayTz, ignoreTime)
 
     if (start) {
       if (isBefore(dStartDate, start)) {
@@ -80,9 +80,10 @@ export default function(isPowerData, dataInterval, dataAll, displayTz) {
   perfTime.time()
 
   const propIds = dataAll.map(d => d.id)
+  const ignoreTime = !isPowerData
   let allObj = null
 
-  const { start, last } = getStartLastDates(dataAll, displayTz)
+  const { start, last } = getStartLastDates(dataAll, displayTz, ignoreTime)
 
   if (dataInterval === '5m') {
     allObj = getMinuteTimeIndices(start, last, 5)
@@ -103,8 +104,8 @@ export default function(isPowerData, dataInterval, dataAll, displayTz) {
   dataAll.forEach(d => {
     // const dStartDate = dateDisplay.getDateTimeWithoutTZ(d.history.start)
     // const dLastDate = dateDisplay.getDateTimeWithoutTZ(d.history.last)
-    const dStartDate = mutateDate(d.history.start, displayTz)
-    const dLastDate = mutateDate(d.history.last, displayTz)
+    const dStartDate = mutateDate(d.history.start, displayTz, ignoreTime)
+    const dLastDate = mutateDate(d.history.last, displayTz, ignoreTime)
 
     const dInterval = d.history.interval
     const dHistoryData = d.history.data

@@ -42,6 +42,7 @@ export const getNextDateByInterval = (date, interval, isFiltered) => {
 export const mutateDate = (dateString, displayTzOffset, ignoreTime) => {
   // whether to strip out the time in dateString
   const end = ignoreTime ? 10 : 16
+  const append = ignoreTime ? '' : '+00:00'
 
   // get original offset in milliseconds from the datestring (i.e., +10:00 in milliseconds)
   const dataTzOffset = getTimezoneOffset(
@@ -49,7 +50,8 @@ export const mutateDate = (dateString, displayTzOffset, ignoreTime) => {
   )
 
   // modify datestring so the datetime is parsed as utc
-  const stripped = dateString.substring(0, end) + '+00:00'
+  const stripped = dateString.substring(0, end) + append
+
   const date = parseISO(stripped)
 
   // change the time to match the timezone you want to display on the app
