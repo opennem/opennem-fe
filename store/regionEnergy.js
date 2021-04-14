@@ -329,13 +329,13 @@ export const actions = {
 
   doGetRegionDataByRangeInterval(
     { commit, dispatch, rootGetters },
-    { region, range, interval, period, groupName }
+    { region, range, interval, period, groupName, useV3 }
   ) {
     dispatch('app/doClearError', null, { root: true })
 
     if (isValidRegion(region) && range !== '' && interval !== '') {
       const displayTz = rootGetters.displayTimeZone
-      const urls = Data.getEnergyUrls(region, range, true)
+      const urls = Data.getEnergyUrls(region, range, useV3)
       currentRegion = region
       commit('ready', false)
       commit('isFetching', true)

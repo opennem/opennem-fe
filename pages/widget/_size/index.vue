@@ -119,7 +119,8 @@ export default {
       range: this.isLargeSize ? '7D' : '3D',
       interval: '30m',
       period: this.filterPeriod,
-      groupName: this.fuelTechGroupName
+      groupName: this.fuelTechGroupName,
+      useV3: false
     })
     this.doUpdateTickFormats({ range: this.range, interval: this.interval })
   },

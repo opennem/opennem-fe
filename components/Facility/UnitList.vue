@@ -788,8 +788,5 @@ table {
   .unit-name {
     white-space: nowrap;
   }
-
-  tfoot {
-  }
 }
 </style>
