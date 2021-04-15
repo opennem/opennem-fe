@@ -3,25 +3,6 @@
     :class="{ 'full-screen': isFullScreen }"
     class="photobox"
     @click.self="handleExpandClick">
-    <!-- <transition name="fade">
-      <figure v-if="hasPhotos">
-        <v-popover
-          v-if="hasPhotoAuthor(primaryPhoto.author)"
-          class="wiki-link-text"
-          placement="auto">
-          <i class="fal fa-info-circle"/>
-          <template slot="popover">
-            Photo by <a :href="primaryPhoto.author_link">{{ primaryPhoto.author }}</a>
-          </template>
-        </v-popover>
-
-        <img
-          :src="primaryPhoto.photo_url"
-          :alt="`${name} facility`"
-          :style="{ 'height': ratio > 2 ? '180px' : height }"
-        >
-      </figure>
-    </transition> -->
 
     <transition name="fade">
       <VueperSlides
@@ -58,31 +39,6 @@
         Photo by <a :href="currentPhoto.author_link">{{ currentPhoto.author }}</a>
       </template>
     </v-popover>
-
-    <!-- <template v-slot:content>
-      <figure>
-        <img
-          :src="photo.photo_url"
-          :alt="`${name} facility`"
-          :style="{ 'height': getRatio(photo) > 2 ? '180px' : height }"
-        >
-      </figure>
-    </template> -->
-
-    <!-- <figure>
-      <img
-        :src="currentPhoto.photo_url"
-        :alt="`${name} facility`"
-        :style="{ 'height': getRatio(currentPhoto) > 2 ? '180px' : height }"
-      >
-    </figure> -->
-
-    <!-- <nav
-      v-if="hasPhotos && photos.length > 1"
-      class="photo-nav">
-      <button @click="handlePrevClick">prev</button>
-      <button @click="handleNextClick">next</button>
-    </nav> -->
 
     <transition name="fade">
       <div
@@ -131,23 +87,6 @@ export default {
       currentPhoto: null
     }
   },
-
-  //   computed: {
-  //     primaryPhoto() {
-  //       let index = 0
-  //       this.photos.every((d, i) => {
-  //         if (d.is_primary) {
-  //           index = i
-  //           return false
-  //         }
-  //       })
-  //       return this.photos[index]
-  //     },
-  //
-  //     ratio() {
-  //       return this.primaryPhoto.width / this.primaryPhoto.height
-  //     }
-  //   },
 
   created() {
     this.currentPhoto = this.photos[0]
@@ -235,19 +174,6 @@ $radius: 0.5rem;
     }
   }
 }
-
-// figure {
-//   position: relative;
-//   img {
-//     border-radius: $radius;
-//     margin: 0 auto;
-//     display: block;
-//     object-fit: cover;
-//     width: 100%;
-//   }
-//
-//
-// }
 
 .wiki-link-text {
   position: absolute;
