@@ -36,7 +36,9 @@
       placement="auto">
       <i class="fal fa-info-circle"/>
       <template slot="popover">
-        Photo by <a :href="currentPhoto.author_link">{{ currentPhoto.author }}</a>
+        Photo by <a 
+          :href="currentPhoto.author_link" 
+          target="_blank">{{ currentPhoto.author }}</a>
       </template>
     </v-popover>
 
