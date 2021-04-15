@@ -36,9 +36,13 @@
       placement="auto">
       <i class="fal fa-info-circle"/>
       <template slot="popover">
-        Photo by <a 
+        <i class="fal fa-fw fa-camera" />
+        <strong><a 
           :href="currentPhoto.author_link" 
-          target="_blank">{{ currentPhoto.author }}</a>
+          target="_blank">{{ currentPhoto.author }}</a></strong>
+        (<small><a 
+          :href="currentPhoto.license_link" 
+          target="_blank">{{ currentPhoto.license_type }}</a></small>)
       </template>
     </v-popover>
 
