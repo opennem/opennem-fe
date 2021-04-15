@@ -346,6 +346,18 @@ export const actions = {
         perf.time()
         console.info(`------ ${currentRegion} — ${range}/${interval} (start)`)
 
+        // Workaround to flip imports market_value data
+        if (!useV3) {
+          responses.forEach(r => {
+            r.forEach(rD => {
+              if (rD.fuel_tech === 'imports' && rD.type === 'market_value') {
+                const newData = rD.history.data.map(hD => -hD)
+                rD.history.data = newData
+              }
+            })
+          })
+        }
+
         const {
           datasetFull,
           datasetFlat,
