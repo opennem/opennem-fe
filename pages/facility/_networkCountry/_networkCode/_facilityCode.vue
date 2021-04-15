@@ -271,13 +271,15 @@ import * as FT from '~/constants/energy-fuel-techs/group-default.js'
 import * as SI from '@/constants/si'
 import * as OPTIONS from '@/constants/chart-options.js'
 import { FacilityPowerEnergyRanges } from '@/constants/ranges.js'
-
 import { FACILITY_OPERATING } from '@/constants/facility-status.js'
+import regionDisplayTzs from '@/constants/region-display-timezones.js'
+
 import EnergyToAveragePower from '@/data/transform/energy-to-average-power.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
-import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
+import { mutateDate } from '@/services/datetime-helpers.js'
 
+import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import PowerEnergyChart from '@/components/Charts/PowerEnergyChart'
 import UnitList from '@/components/Facility/UnitList.vue'
 import PhotoMap from '@/components/Facility/PhotoMap.vue'
@@ -540,6 +542,13 @@ export default {
         const id = find ? find.id : null
         const marketValueId = findMarketValue ? findMarketValue.id : null
         const emissionIntensity = d.emissions_factor_co2 * 1000 // kgCO₂e/MWh
+        const displayTz = regionDisplayTzs[this.networkCode.toLowerCase()]
+        const dateFirstSeen = d.data_first_seen
+          ? mutateDate(d.data_first_seen, displayTz)
+          : null
+        const dateLastSeen = d.data_last_seen
+          ? mutateDate(d.data_last_seen, displayTz)
+          : null
 
         return {
           colour: this.facilityFuelTechsColours[d.code],
@@ -553,7 +562,9 @@ export default {
           status: d.status ? d.status.label || d.status : '',
           fuelTechLabel: d.fueltech,
           category: FT.FUEL_TECH_CATEGORY[d.fueltech],
-          hasEmissionsFactor: d.emissions_factor_co2
+          hasEmissionsFactor: d.emissions_factor_co2,
+          dateFirstSeen,
+          dateLastSeen
         }
       })
     },

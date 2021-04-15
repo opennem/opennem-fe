@@ -105,7 +105,7 @@
         @mouseenter="handleMouseEnter(d.code, d.status)"
         @mouseleave="handleMouseLeave">
         <td
-          v-tooltip.left="isActive(d.status) ? '' : d.status"
+          v-tooltip.left="getTooltip(d)"
           class="unit-name"
         >
           <div
@@ -293,7 +293,11 @@
 <script>
 import _cloneDeep from 'lodash.clonedeep'
 import * as FT from '~/constants/energy-fuel-techs/group-default.js'
-import { FACILITY_OPERATING } from '@/constants/facility-status.js'
+import {
+  FACILITY_OPERATING,
+  FACILITY_RETIRED,
+  getFacilityStatusLabelById
+} from '@/constants/facility-status.js'
 import DatesDisplay from '@/components/SummaryTable/DatesDisplay'
 import UnitListBar from './UnitListBar'
 
@@ -591,8 +595,34 @@ export default {
   },
 
   methods: {
+    formatDate(d) {
+      return this.$options.filters.formatDate(d)
+    },
+
+    getStatusLabel(status) {
+      return getFacilityStatusLabelById(status)
+    },
+
     isActive(status) {
       return status === FACILITY_OPERATING
+    },
+
+    isRetired(status) {
+      return status === FACILITY_RETIRED
+    },
+
+    getTooltip(d) {
+      if (this.isActive(d.status)) {
+        return `First seen ${this.formatDate(d.dateFirstSeen)}`
+      }
+      if (this.isRetired(d.status)) {
+        return `${this.getStatusLabel(d.status)} on ${this.formatDate(
+          d.dateLastSeen
+        )}`
+      }
+      return `${this.getStatusLabel(d.status)} on ${this.formatDate(
+        d.dateFirstSeen
+      )}`
     },
 
     getData(date) {
