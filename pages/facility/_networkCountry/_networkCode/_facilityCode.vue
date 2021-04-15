@@ -204,6 +204,7 @@
             :convert-value="convertValue"
             :convert-market-value="convertMarketValue"
             :market-value-display-unit="marketValueDisplayPrefix"
+            :has-emissions="facilityHasEmissions"
             class="unit-list"
             @codeHover="handleCodeHover"
             @codeClick="handleCodeClick"
@@ -551,7 +552,8 @@ export default {
           registeredCapacity: d.capacity_registered,
           status: d.status ? d.status.label || d.status : '',
           fuelTechLabel: d.fueltech,
-          category: FT.FUEL_TECH_CATEGORY[d.fueltech]
+          category: FT.FUEL_TECH_CATEGORY[d.fueltech],
+          hasEmissionsFactor: d.emissions_factor_co2
         }
       })
     },
@@ -720,6 +722,17 @@ export default {
         interval: this.interval,
         filterPeriod: this.filterPeriod
       })
+    },
+
+    facilityHasEmissions() {
+      let hasEmissionsFactor = false
+      this.unitsSummary.forEach(d => {
+        if (!hasEmissionsFactor && d.hasEmissionsFactor) {
+          hasEmissionsFactor = true
+        }
+      })
+
+      return hasEmissionsFactor
     }
   },
 
