@@ -32,6 +32,14 @@
         </th>
 
         <th
+          v-if="hasEmissions"
+          class="align-right"
+          style="width: 150px;">
+          Emission Intensity
+          <small>kgCO₂e/MWh</small>
+        </th>
+
+        <th
           class="data-col date-col align-right hover-cell"
           style="width: 100px;">
           <span v-if="(isEnergyType && !isYAxisAveragePower) || (!isEnergyType && !(hoverOn || focusOn))">
@@ -97,7 +105,7 @@
         @mouseenter="handleMouseEnter(d.code, d.status)"
         @mouseleave="handleMouseLeave">
         <td
-          v-tooltip.left="isActive(d.status) ? '' : d.status"
+          v-tooltip.left="getTooltip(d)"
           class="unit-name"
         >
           <div
@@ -108,6 +116,12 @@
         </td>
 
         <td class="align-right">{{ d.registeredCapacity }}</td>
+
+        <td
+          v-if="hasEmissions"
+          class="align-right">
+          {{ d.emissionIntensity | formatValue }}
+        </td>
 
         <td
           v-if="isAveragePower"
@@ -197,6 +211,10 @@
         <th class="align-right cell-value">{{ operatingUnitsTotalCapacity }}</th>
 
         <th
+          v-if="hasEmissions"
+          class="align-right cell-value"/>
+
+        <th
           v-if="isAveragePower"
           class="align-right hover-cell cell-value">
           <span v-if="hoverOn">
@@ -274,11 +292,12 @@
 
 <script>
 import _cloneDeep from 'lodash.clonedeep'
-
-import DateDisplay from '@/services/DateDisplay.js'
 import * as FT from '~/constants/energy-fuel-techs/group-default.js'
-import * as SI from '@/constants/si'
-import { FACILITY_OPERATING } from '@/constants/facility-status.js'
+import {
+  FACILITY_OPERATING,
+  FACILITY_RETIRED,
+  getFacilityStatusLabelById
+} from '@/constants/facility-status.js'
 import DatesDisplay from '@/components/SummaryTable/DatesDisplay'
 import UnitListBar from './UnitListBar'
 
@@ -359,6 +378,10 @@ export default {
     marketValueDisplayUnit: {
       type: String,
       default: ''
+    },
+    hasEmissions: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -572,8 +595,34 @@ export default {
   },
 
   methods: {
+    formatDate(d) {
+      return this.$options.filters.formatDate(d)
+    },
+
+    getStatusLabel(status) {
+      return getFacilityStatusLabelById(status)
+    },
+
     isActive(status) {
       return status === FACILITY_OPERATING
+    },
+
+    isRetired(status) {
+      return status === FACILITY_RETIRED
+    },
+
+    getTooltip(d) {
+      if (this.isActive(d.status)) {
+        return `First seen ${this.formatDate(d.dateFirstSeen)}`
+      }
+      if (this.isRetired(d.status)) {
+        return `${this.getStatusLabel(d.status)} on ${this.formatDate(
+          d.dateLastSeen
+        )}`
+      }
+      return `${this.getStatusLabel(d.status)} on ${this.formatDate(
+        d.dateFirstSeen
+      )}`
     },
 
     getData(date) {

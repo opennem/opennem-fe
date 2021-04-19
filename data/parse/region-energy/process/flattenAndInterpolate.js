@@ -3,7 +3,6 @@ import isAfter from 'date-fns/isAfter'
 import eachDayOfInterval from 'date-fns/eachDayOfInterval'
 import eachMonthOfInterval from 'date-fns/eachMonthOfInterval'
 import addMinutes from 'date-fns/addMinutes'
-import dateDisplay from '@/services/DateDisplay.js'
 import { mutateDate } from '@/services/datetime-helpers.js'
 import * as DT from '@/constants/data-types.js'
 import interpolateDataset from './interpolateDataset.js'
@@ -12,29 +11,29 @@ import PerfTime from '@/plugins/perfTime.js'
 
 const perfTime = new PerfTime()
 
-const getStartLastDates = (data, displayTz, ignoreTime) => {
+const getStartLastDates = (data, prop, displayTz, ignoreTime) => {
   let start, last
+
   data.forEach(d => {
-    // const dStartDate = dateDisplay.getDateTimeWithoutTZ(d.history.start)
-    // const dLastDate = dateDisplay.getDateTimeWithoutTZ(d.history.last)
+    if (d[prop]) {
+      const startDate = mutateDate(d[prop].start, displayTz, ignoreTime)
+      const lastDate = mutateDate(d[prop].last, displayTz, ignoreTime)
 
-    const dStartDate = mutateDate(d.history.start, displayTz, ignoreTime)
-    const dLastDate = mutateDate(d.history.last, displayTz, ignoreTime)
-
-    if (start) {
-      if (isBefore(dStartDate, start)) {
-        start = dStartDate
+      if (start) {
+        if (isBefore(startDate, start)) {
+          start = startDate
+        }
+      } else {
+        start = startDate
       }
-    } else {
-      start = dStartDate
-    }
 
-    if (last) {
-      if (isAfter(dLastDate, last)) {
-        last = dLastDate
+      if (last) {
+        if (isAfter(lastDate, last)) {
+          last = lastDate
+        }
+      } else {
+        last = lastDate
       }
-    } else {
-      last = dLastDate
     }
   })
 
@@ -54,11 +53,11 @@ const getMinuteTimeIndices = (start, last, mins) => {
     }
   }
 
-  const lastTime = last.getTime()
-  obj[lastTime] = {
-    time: lastTime,
-    date: last
-  }
+  // const lastTime = last.getTime()
+  // obj[lastTime] = {
+  //   time: lastTime,
+  //   date: last
+  // }
 
   return obj
 }
@@ -76,86 +75,124 @@ const getTimeIndices = (start, end, intervalFunc) => {
   return obj
 }
 
+const getAllObj = (dataAll, dataInterval, displayTz, ignoreTime, prop) => {
+  let allObj = null
+  const { start, last } = getStartLastDates(
+    dataAll,
+    prop,
+    displayTz,
+    ignoreTime
+  )
+
+  if (start && last) {
+    if (dataInterval === '5m') {
+      allObj = getMinuteTimeIndices(start, last, 5)
+    }
+
+    if (dataInterval === '30m') {
+      allObj = getMinuteTimeIndices(start, last, 30)
+    }
+
+    if (dataInterval === '1d') {
+      allObj = getTimeIndices(start, last, eachDayOfInterval)
+    }
+
+    if (dataInterval === '1M') {
+      allObj = getTimeIndices(start, last, eachMonthOfInterval)
+    }
+  }
+
+  dataAll.forEach(d => {
+    if (d[prop]) {
+      const dStartDate = mutateDate(d[prop].start, displayTz, ignoreTime)
+      const dLastDate = mutateDate(d[prop].last, displayTz, ignoreTime)
+
+      const dInterval = d[prop].interval
+      const dData = d[prop].data
+
+      const updateAllObj = arr => {
+        let curr = null
+        arr.forEach((time, timeIndex) => {
+          allObj[time][d.id] = dData[timeIndex]
+          curr = dData[timeIndex]
+        })
+      }
+
+      if (dInterval === '5m') {
+        const dMinsObj = getMinuteTimeIndices(dStartDate, dLastDate, 5)
+        const dMinsArr = Object.keys(dMinsObj)
+
+        updateAllObj(dMinsArr)
+      }
+
+      if (dInterval === '30m') {
+        const dMinsObj = getMinuteTimeIndices(dStartDate, dLastDate, 30)
+        const dMinsArr = Object.keys(dMinsObj)
+
+        updateAllObj(dMinsArr)
+      }
+
+      if (dInterval === '1d') {
+        const dDaysArr = eachDayOfInterval({
+          start: dStartDate,
+          end: dLastDate
+        }).map(t => t.getTime())
+
+        updateAllObj(dDaysArr)
+      }
+
+      if (dInterval === '1M') {
+        const dMonthsArr = eachMonthOfInterval({
+          start: dStartDate,
+          end: dLastDate
+        }).map(t => t.getTime())
+
+        updateAllObj(dMonthsArr)
+      }
+    }
+  })
+
+  return allObj
+}
+
 export default function(isPowerData, dataInterval, dataAll, displayTz) {
   perfTime.time()
 
   const propIds = dataAll.map(d => d.id)
-  const ignoreTime = !isPowerData
-  let allObj = null
+  const idsWithForecast = dataAll.filter(d => d.forecast).map(d => d.id)
 
-  const { start, last } = getStartLastDates(dataAll, displayTz, ignoreTime)
+  const allHistory = getAllObj(
+    dataAll,
+    dataInterval,
+    displayTz,
+    !isPowerData,
+    'history'
+  )
 
-  if (dataInterval === '5m') {
-    allObj = getMinuteTimeIndices(start, last, 5)
+  const allForecast = getAllObj(
+    dataAll,
+    dataInterval,
+    displayTz,
+    !isPowerData,
+    'forecast'
+  )
+
+  // combine forecast into history
+  if (idsWithForecast.length > 0) {
+    Object.keys(allForecast).forEach(fKey => {
+      if (allHistory[fKey]) {
+        idsWithForecast.forEach(id => {
+          if (!allHistory[fKey][id]) {
+            // only replace if the value is not available
+            allHistory[fKey][id] = allForecast[fKey][id]
+          }
+        })
+      }
+    })
   }
-
-  if (dataInterval === '30m') {
-    allObj = getMinuteTimeIndices(start, last, 30)
-  }
-
-  if (dataInterval === '1d') {
-    allObj = getTimeIndices(start, last, eachDayOfInterval)
-  }
-
-  if (dataInterval === '1M') {
-    allObj = getTimeIndices(start, last, eachMonthOfInterval)
-  }
-
-  dataAll.forEach(d => {
-    // const dStartDate = dateDisplay.getDateTimeWithoutTZ(d.history.start)
-    // const dLastDate = dateDisplay.getDateTimeWithoutTZ(d.history.last)
-    const dStartDate = mutateDate(d.history.start, displayTz, ignoreTime)
-    const dLastDate = mutateDate(d.history.last, displayTz, ignoreTime)
-
-    const dInterval = d.history.interval
-    const dHistoryData = d.history.data
-
-    const updateAllObj = arr => {
-      // if (arr.length !== dHistoryData.length) {
-      //   console.log(arr.length, dHistoryData.length)
-      //   console.warn('!-- length does not match')
-      // }
-
-      arr.forEach((time, timeIndex) => {
-        allObj[time][d.id] = dHistoryData[timeIndex]
-      })
-    }
-
-    if (dInterval === '5m') {
-      const dMinsObj = getMinuteTimeIndices(dStartDate, dLastDate, 5)
-      const dMinsArr = Object.keys(dMinsObj)
-
-      updateAllObj(dMinsArr)
-    }
-
-    if (dInterval === '30m') {
-      const dMinsObj = getMinuteTimeIndices(dStartDate, dLastDate, 30)
-      const dMinsArr = Object.keys(dMinsObj)
-
-      updateAllObj(dMinsArr)
-    }
-
-    if (dInterval === '1d') {
-      const dDaysArr = eachDayOfInterval({
-        start: dStartDate,
-        end: dLastDate
-      }).map(t => t.getTime())
-
-      updateAllObj(dDaysArr)
-    }
-
-    if (dInterval === '1M') {
-      const dMonthsArr = eachMonthOfInterval({
-        start: dStartDate,
-        end: dLastDate
-      }).map(t => t.getTime())
-
-      updateAllObj(dMonthsArr)
-    }
-  })
 
   // convert to array
-  const allArr = Object.keys(allObj).map(o => allObj[o])
+  const allArr = Object.keys(allHistory).map(o => allHistory[o])
 
   // add the rest of the properties to the array
   allArr.forEach(d => {
