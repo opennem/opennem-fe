@@ -783,14 +783,13 @@ export default {
       this.updateYGuides()
     },
 
-    range(curr, prev) {
-      console.log('range-watch')
+    range(curr) {
+      this.doUpdateTickFormats({ range: curr, interval: this.interval })
       this.getFacilityStats()
     },
 
     interval(val) {
-      console.log('interval-watch')
-
+      this.doUpdateTickFormats({ range: this.range, interval: val })
       if (this.range === '30D') {
         this.getFacilityStats()
       } else {
@@ -826,6 +825,8 @@ export default {
 
   created() {
     this.getFacility()
+
+    this.doUpdateTickFormats({ range: this.range, interval: this.interval })
     this.doSetChartEnergyPrefixes(SI.MEGA)
     this.doHideEmissionsChart()
   },
@@ -847,6 +848,7 @@ export default {
     ...mapActions({
       doUpdateXGuides: 'visInteract/doUpdateXGuides',
       doUpdateXTicks: 'visInteract/doUpdateXTicks',
+      doUpdateTickFormats: 'visInteract/doUpdateTickFormats',
       doGetFacilityByCode: 'facility/doGetFacilityByCode',
       doGetStationStats: 'facility/doGetStationStats',
       doUpdateDatasetByInterval: 'facility/doUpdateDatasetByInterval',
