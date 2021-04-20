@@ -3,9 +3,11 @@
     <export-header
       :summary="summary"
       :legend="legend"
+      :percent-display="percentDisplay"
       @exportClick="handleExportClick"
       @exportCancel="handleCancelClick"
       @tableToggle="handleTableToggle"
+      @percentDisplayToggle="handlePercentDisplayToggle"
     />
 
     <transition name="fade">
@@ -37,6 +39,7 @@
           <summary-legend-section
             :show-summary="summary"
             :show-legend="legend"
+            :show-percent="percentDisplay"
             class="table-container" />
         </div>
 
@@ -76,6 +79,7 @@ export default {
     return {
       summary: false,
       legend: true,
+      percentDisplay: false,
       exporting: false,
       regions: getEnergyRegions()
     }
@@ -204,9 +208,15 @@ export default {
       })
     },
 
-    handleTableToggle(widgetName) {
-      this[widgetName] = !this[widgetName]
+    handleTableToggle() {
+      this.summary = !this.summary
+      this.legend = !this.legend
     },
+
+    handlePercentDisplayToggle() {
+      this.percentDisplay = !this.percentDisplay
+    },
+
     handleExportClick() {
       this.exporting = true
       let date = ''

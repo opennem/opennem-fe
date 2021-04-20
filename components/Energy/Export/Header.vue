@@ -26,14 +26,23 @@
           {{ chart.name === 'chartShownPowerEnergy' ? getPowerEnergyChartLabel(chart.label) : chart.label }}
         </a>
         <hr>
+
+        <span class="tag-group">
+          <a
+            v-for="table in tables"
+            :key="table.name"
+            :class="{ 'is-primary': isEnabled(table.name) }"
+            class="tag is-rounded is-white"
+            @click="handleTableToggle(table.name)">
+            {{ table.label }}
+          </a>
+        </span>
+        
         <a
-          v-for="table in tables"
-          :key="table.name"
-          :class="{ 'is-primary': isEnabled(table.name) }"
+          v-if="legend"
+          :class="{ 'is-primary': percentDisplay }"
           class="tag is-rounded is-white"
-          @click="handleTableToggle(table.name)">
-          {{ table.label }}
-        </a>
+          @click="handlePercentDisplay()">Show %</a>
       </div>
     </section>
   </header>
@@ -97,6 +106,10 @@ export default {
       default: () => false
     },
     legend: {
+      type: Boolean,
+      default: () => false
+    },
+    percentDisplay: {
       type: Boolean,
       default: () => false
     }
@@ -210,6 +223,10 @@ export default {
       this.$emit('tableToggle', table)
     },
 
+    handlePercentDisplay() {
+      this.$emit('percentDisplayToggle')
+    },
+
     getPowerEnergyChartLabel(chartLabel) {
       return this.isEnergyType ? chartLabel : 'Generation'
     }
@@ -259,6 +276,20 @@ header {
     text-decoration: none;
     user-select: none;
     margin-right: 0.5rem;
+  }
+
+  .tag-group {
+    margin-right: 0.5rem;
+    .tag {
+      border-radius: 0;
+      margin-right: 0;
+    }
+    .tag:first-child {
+      border-radius: 10px 0 0 10px;
+    }
+    .tag:last-child {
+      border-radius: 0 10px 10px 0;
+    }
   }
 }
 </style>
