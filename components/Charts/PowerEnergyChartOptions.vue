@@ -29,7 +29,7 @@
 
     <template
       v-slot:average-value
-      v-if="showAverageValue">
+      v-if="showAverageValue && !readOnly">
       Av.
       <strong>
         {{ averageEnergy | formatValue }}
