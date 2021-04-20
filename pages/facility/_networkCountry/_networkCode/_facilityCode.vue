@@ -572,7 +572,7 @@ export default {
       return this.unitsSummary.filter(d => d.status === FACILITY_OPERATING)
     },
     powerEnergyDomains() {
-      return this.operatingDomains
+      return this.unitsSummary
         .filter(d => !_includes(this.hiddenCodes, d.code))
         .reverse()
     },
@@ -621,7 +621,7 @@ export default {
     averagePowerDataset() {
       return EnergyToAveragePower({
         data: this.selectedFacilityUnitsDataset,
-        domains: this.operatingDomains,
+        domains: this.powerEnergyDomains,
         range: this.range,
         interval: this.interval,
         exponent: SI.MEGA
@@ -942,12 +942,12 @@ export default {
         this.hiddenCodes.splice(index, 1)
       }
 
-      if (this.hiddenCodes.length === this.operatingDomains.length) {
+      if (this.hiddenCodes.length === this.unitsSummary.length) {
         this.hiddenCodes = []
       }
     },
     handleCodeShiftClick(code) {
-      const toBeHidden = this.operatingDomains.filter(d => d.code !== code)
+      const toBeHidden = this.unitsSummary.filter(d => d.code !== code)
       const hiddenCodes = toBeHidden.map(d => d.code)
       this.hiddenCodes = hiddenCodes
     },
