@@ -596,7 +596,7 @@ export default {
 
   methods: {
     formatDate(d) {
-      return this.$options.filters.formatDate(d)
+      return this.$options.filters.formatLocalDate(d)
     },
 
     getStatusLabel(status) {

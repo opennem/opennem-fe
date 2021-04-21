@@ -49,19 +49,21 @@ export default {
 @import '~/assets/scss/variables.scss';
 
 summary {
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
   line-height: 1.45em;
-  font-size: 1.05em;
-  padding: 0 $facility-tablet-padding;
+  font-size: 1em;
+  padding: 1rem $facility-tablet-padding;
+  // background: #fdfdfd;
+  border-radius: 6px;
 
   @include mobile {
-    padding: 0 $facility-mobile-padding;
+    padding: 1rem $facility-mobile-padding;
     font-size: 0.9em;
     margin-bottom: 0;
   }
 
   @include tablet {
-    padding: 0;
+    padding: 0 0 1rem;
   }
 
   p {

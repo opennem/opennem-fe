@@ -53,8 +53,12 @@ Vue.filter('intervalLabel', interval => {
   return interval.toLowerCase()
 })
 
-Vue.filter('formatDate', time => {
-  const f = utcFormat('%d/%m/%Y, %-I:%M %p')
+Vue.filter('formatDate', (time, format = '%d/%m/%Y, %-I:%M %p') => {
+  const f = utcFormat(format)
+  return f(time)
+})
+Vue.filter('formatLocalDate', (time, format = '%d/%m/%Y, %-I:%M %p') => {
+  const f = d3TimeFormat(format)
   return f(time)
 })
 

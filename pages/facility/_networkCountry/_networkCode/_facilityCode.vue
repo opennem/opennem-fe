@@ -30,6 +30,31 @@
         class="main">
         <header>
           <h2>{{ facilityName }}</h2>
+
+          <div class="facility-details">
+            <div class="facility-fuel-techs">
+              <div
+                v-for="(ft, index) in facilityFuelTechs"
+                :key="`ft-${index}`"
+                class="facility-fuel-tech">
+                <span
+                  :style="{
+                    'background-color': ft.colour
+                  }"
+                  class="colour-square" />
+                {{ ft.label }}
+              </div>
+            </div>
+          
+            <span
+              v-if="facilityStatus"
+              class="tag facility-status">
+              <strong>{{ getFacilityStatusLabel(facilityStatus) }}</strong>
+              <em>{{ facilitySinceDate | formatLocalDate('%d %b %Y') }}</em>
+            </span>
+          </div>
+
+          
         </header>
 
         <Summary
@@ -266,12 +291,18 @@ import _sortBy from 'lodash.sortby'
 import _includes from 'lodash.includes'
 import { interpolateRgb, quantize } from 'd3-interpolate'
 import { color } from 'd3-color'
+import isBefore from 'date-fns/isBefore'
+import isAfter from 'date-fns/isAfter'
 
 import * as FT from '~/constants/energy-fuel-techs/group-default.js'
 import * as SI from '@/constants/si'
 import * as OPTIONS from '@/constants/chart-options.js'
 import { FacilityPowerEnergyRanges } from '@/constants/ranges.js'
-import { FACILITY_OPERATING } from '@/constants/facility-status.js'
+import {
+  FACILITY_OPERATING,
+  FACILITY_RETIRED,
+  getFacilityStatusLabelById
+} from '@/constants/facility-status.js'
 import regionDisplayTzs from '@/constants/region-display-timezones.js'
 
 import EnergyToAveragePower from '@/data/transform/energy-to-average-power.js'
@@ -576,6 +607,73 @@ export default {
         .filter(d => !_includes(this.hiddenCodes, d.code))
         .reverse()
     },
+
+    facilityFuelTechs() {
+      const fuelTechs = _uniq(
+        this.unitsSummary.map(d => d.fuelTechLabel)
+      ).sort()
+
+      const data = fuelTechs.map(ft => {
+        return {
+          id: ft,
+          colour: FT.DEFAULT_FUEL_TECH_COLOUR[ft],
+          label: FT.FUEL_TECH_LABEL[ft]
+        }
+      })
+
+      return data
+    },
+
+    facilityStatus() {
+      const unitStatus = _uniq(this.unitsSummary.map(d => d.status))
+      if (_includes(unitStatus, FACILITY_OPERATING)) {
+        // if at least one unit is operating, the facility is in operation
+        return FACILITY_OPERATING
+      } else if (_includes(unitStatus, FACILITY_RETIRED)) {
+        return FACILITY_RETIRED
+      }
+      return null
+    },
+
+    facilityOperatingDataFirstSeen() {
+      let date = null
+      // earliest operating data first seen
+
+      this.operatingDomains.forEach(d => {
+        if (!date) {
+          date = d.dataFirstSeen
+        } else if (isBefore(d.dataFirstSeen, date)) {
+          date = d.dataFirstSeen
+        }
+      })
+
+      return date
+    },
+
+    facilityDataLastSeen() {
+      let date = null
+      // most recent data last seen
+
+      this.unitsSummary.forEach(d => {
+        if (!date) {
+          date = d.dataLastSeen
+        } else if (isAfter(d.dataLastSeen, date)) {
+          date = d.dataLastSeen
+        }
+      })
+
+      return date
+    },
+
+    facilitySinceDate() {
+      if (this.facilityStatus === FACILITY_OPERATING) {
+        return this.facilityOperatingDataFirstSeen
+      } else if (this.facilityStatus === FACILITY_RETIRED) {
+        return this.facilityDataLastSeen
+      }
+      return null
+    },
+
     emissionsDomains() {
       return this.domainEmissions.filter(
         d => !_includes(this.hiddenCodes, d.code)
@@ -914,6 +1012,10 @@ export default {
       })
     },
 
+    getFacilityStatusLabel(id) {
+      return getFacilityStatusLabelById(id)
+    },
+
     getIntervalLabel(interval) {
       if (interval === 'Fin Year') {
         return 'year'
@@ -1139,6 +1241,43 @@ header {
   i {
     font-size: 1em;
     width: 20px;
+  }
+}
+
+.facility-details {
+  display: flex;
+  margin-top: 1rem;
+  justify-content: space-between;
+}
+
+.facility-fuel-techs {
+  display: flex;
+
+  .facility-fuel-tech {
+    display: flex;
+    align-items: center;
+    padding: 0.1rem;
+    margin-left: 1rem;
+
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+  .colour-square {
+    display: inline-block;
+    border: 1px solid transparent;
+    width: 15px;
+    height: 15px;
+    margin-right: 0.5rem;
+  }
+}
+
+.facility-status {
+  strong {
+    margin-right: 4px;
+  }
+  em {
+    font-style: normal;
   }
 }
 </style>
