@@ -613,15 +613,15 @@ export default {
 
     getTooltip(d) {
       if (this.isActive(d.status)) {
-        return `First seen ${this.formatDate(d.dateFirstSeen)}`
+        return `First seen ${this.formatDate(d.dataFirstSeen)}`
       }
       if (this.isRetired(d.status)) {
         return `${this.getStatusLabel(d.status)} on ${this.formatDate(
-          d.dateLastSeen
+          d.dataLastSeen
         )}`
       }
       return `${this.getStatusLabel(d.status)} on ${this.formatDate(
-        d.dateFirstSeen
+        d.dataFirstSeen
       )}`
     },
 

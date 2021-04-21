@@ -543,10 +543,10 @@ export default {
         const marketValueId = findMarketValue ? findMarketValue.id : null
         const emissionIntensity = d.emissions_factor_co2 * 1000 // kgCO₂e/MWh
         const displayTz = regionDisplayTzs[this.networkCode.toLowerCase()]
-        const dateFirstSeen = d.data_first_seen
+        const dataFirstSeen = d.data_first_seen
           ? mutateDate(d.data_first_seen, displayTz)
           : null
-        const dateLastSeen = d.data_last_seen
+        const dataLastSeen = d.data_last_seen
           ? mutateDate(d.data_last_seen, displayTz)
           : null
 
@@ -563,8 +563,8 @@ export default {
           fuelTechLabel: d.fueltech,
           category: FT.FUEL_TECH_CATEGORY[d.fueltech],
           hasEmissionsFactor: d.emissions_factor_co2,
-          dateFirstSeen,
-          dateLastSeen
+          dataFirstSeen,
+          dataLastSeen
         }
       })
     },
