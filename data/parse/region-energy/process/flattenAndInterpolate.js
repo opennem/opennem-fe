@@ -179,12 +179,30 @@ export default function(isPowerData, dataInterval, dataAll, displayTz) {
 
   // combine forecast into history
   if (idsWithForecast.length > 0) {
-    Object.keys(allForecast).forEach(fKey => {
+    // interpolate forecast data as well
+    const forecastObj = {}
+    const allForecastArr = Object.keys(allForecast).map(o => allForecast[o])
+    const allForecastData = dataAll.filter(d => d.forecast)
+    allForecastArr.forEach(d => {
+      idsWithForecast.forEach(id => {
+        if (typeof d[id] === 'undefined') {
+          d[id] = null
+        }
+      })
+    })
+
+    interpolateDataset(allForecastData, allForecastArr)
+
+    allForecastArr.forEach(d => {
+      forecastObj[d.time] = d
+    })
+
+    Object.keys(forecastObj).forEach(fKey => {
       if (allHistory[fKey]) {
         idsWithForecast.forEach(id => {
           if (!allHistory[fKey][id]) {
             // only replace if the value is not available
-            allHistory[fKey][id] = allForecast[fKey][id]
+            allHistory[fKey][id] = forecastObj[fKey][id]
           }
         })
       }
