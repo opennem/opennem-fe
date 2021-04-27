@@ -75,6 +75,7 @@
         <div style="position: relative; margin-bottom: 1rem;">
           <DataOptionsBar
             :ranges="ranges"
+            :intervals="intervals"
             :range="range"
             :interval="interval"
             :filter-period="filterPeriod"
@@ -297,7 +298,10 @@ import isAfter from 'date-fns/isAfter'
 import * as FT from '~/constants/energy-fuel-techs/group-default.js'
 import * as SI from '@/constants/si'
 import * as OPTIONS from '@/constants/chart-options.js'
-import { FacilityPowerEnergyRanges } from '@/constants/ranges.js'
+import {
+  FACILITY_RANGES,
+  FACILITY_RANGE_INTERVALS
+} from '@/constants/ranges.js'
 import {
   FACILITY_OPERATING,
   FACILITY_RETIRED,
@@ -402,7 +406,8 @@ export default {
       hiddenCodes: [],
       powerOptions,
       energyOptions,
-      ranges: FacilityPowerEnergyRanges
+      ranges: FACILITY_RANGES,
+      intervals: FACILITY_RANGE_INTERVALS
     }
   },
 

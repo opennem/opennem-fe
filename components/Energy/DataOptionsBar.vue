@@ -4,10 +4,12 @@
       <button
         v-for="(r, i) in ranges"
         :key="i"
-        :class="{ 'is-selected': r.range === selectedRange }"
+        :class="{ 'is-selected': isRangeSelected(r) }"
         class="button is-rounded"
-        @click="handleRangeChange(r.range)">
-        {{ r.range }}
+        @click="handleRangeClick(r)">
+
+        <div v-if="isString(r)">{{ r }}</div>
+        <div v-if="!isString(r)">{{ r[0] }}</div>
       </button>
     </div>
 
@@ -68,13 +70,11 @@ import {
 } from '@/constants/interval-filters.js'
 import {
   isValidRangeQuery,
-  getDefaultRange,
   getRangeQueryByRange,
   getRangeByRangeQuery
 } from '@/constants/range-queries.js'
 import {
   isValidIntervalQuery,
-  getDefaultInterval,
   getIntervalQueryByInterval,
   getIntervalByIntervalQuery
 } from '@/constants/interval-queries.js'
@@ -91,6 +91,10 @@ export default {
     ranges: {
       type: Array,
       default: () => []
+    },
+    intervals: {
+      type: Object,
+      default: () => null
     },
     range: {
       type: String,
@@ -230,8 +234,7 @@ export default {
 
     setSelectedRangeIntervals(selected) {
       if (selected !== '') {
-        const range = this.ranges.find(r => r.range === selected)
-        let intervals = range ? range.intervals : null
+        let intervals = this.intervals[selected]
         if (this.regionId === 'wem' && this.isPowerRange) {
           intervals = ['30m']
         }
@@ -294,6 +297,11 @@ export default {
       } else {
         return this.selectedFilter
       }
+    },
+
+    handleRangeClick(r) {
+      const range = this.isString(r) ? r : r[0]
+      this.handleRangeChange(range)
     },
 
     handleRangeChange(range) {
@@ -390,6 +398,15 @@ export default {
       }
 
       this.$emit('queryChange', query)
+    },
+
+    isString(v) {
+      return typeof v === 'string'
+    },
+
+    isRangeSelected(r) {
+      const range = this.isString(r) ? r : r[0]
+      return range === this.selectedRange
     }
   }
 }

@@ -2,6 +2,7 @@
   <div class="energy-region">
     <data-options-bar
       :ranges="ranges"
+      :intervals="intervals"
       :range="range"
       :interval="interval"
       :filter-period="filterPeriod"
@@ -54,7 +55,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import _includes from 'lodash.includes'
-import { isPowerRange, FuelTechRanges } from '@/constants/ranges.js'
+import { isPowerRange, RANGES, RANGE_INTERVALS } from '@/constants/ranges.js'
 import {
   isValidRegion,
   getEnergyRegionLabel
@@ -117,7 +118,8 @@ export default {
       hoverDate: null,
       baseUrl: `${this.$config.url}/images/screens/`,
       useDev: this.$config.useDev,
-      ranges: FuelTechRanges
+      ranges: RANGES,
+      intervals: RANGE_INTERVALS
     }
   },
 
