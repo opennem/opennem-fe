@@ -161,7 +161,12 @@ function updateMetricObject(
     if (hasInflation) {
       const startQ = startOfQuarter(d.date)
       const find = datasetInflation.find(dInflation => {
-        return dInflation.time === startQ.getTime()
+        const startQMonth = startQ.getMonth()
+        const startQYear = startQ.getFullYear()
+        const inflationQMonth = dInflation.date.getMonth()
+        const inflationQYear = dInflation.date.getFullYear()
+
+        return startQMonth === inflationQMonth && startQYear === inflationQYear
       })
       const lastIndex =
         datasetInflation[datasetInflation.length - 1][domainInflation.id]
