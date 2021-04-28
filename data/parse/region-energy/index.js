@@ -1,10 +1,12 @@
 import _cloneDeep from 'lodash.clonedeep'
 import { getAllGroups } from '@/constants/energy-fuel-techs'
 import { EMISSIONS, MARKET_VALUE } from '@/constants/data-types'
+import { RANGE_ALL_12MTH_ROLLING } from '@/constants/ranges.js'
 import process from './process'
 import rollUp from './rollUp'
 import summariseDataset from './summarise'
 import groupDataset from './group'
+import transformTo12MthRollingSum from '../../transform/energy-12-month-rolling-sum'
 import {
   filterDatasetByRange,
   filterDatasetByPeriod
@@ -68,6 +70,11 @@ export function dataProcess(res, range, interval, period, displayTz) {
   } = process(responses, displayTz)
 
   const isEnergyType = type === 'energy'
+
+  if (range === RANGE_ALL_12MTH_ROLLING) {
+    transformTo12MthRollingSum(datasetFlat, domainPowerEnergy)
+  }
+
   const datasetFull = _cloneDeep(datasetFlat)
   const dataset = filterDatasetByRange(datasetFlat, range)
 
