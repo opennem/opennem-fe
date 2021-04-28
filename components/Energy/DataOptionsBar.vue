@@ -404,6 +404,8 @@ export default {
       this.hideAllPopups()
       this.$store.dispatch('compareDifference', false)
       this.$store.dispatch('compareDates', [])
+
+      this.updateQuery(range, this.selectedInterval, this.selectedFilter)
     },
 
     handleIntervalChange(interval) {
