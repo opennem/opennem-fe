@@ -6,6 +6,7 @@ export const RANGE_3D = '3D'
 export const RANGE_7D = '7D'
 export const RANGE_30D = '30D'
 export const RANGE_1Y = '1Y'
+export const RANGE_1Y_12MTH_ROLLING = '1Y — 12 month rolling'
 export const RANGE_ALL = 'ALL'
 export const RANGE_ALL_12MTH_ROLLING = 'ALL — 12 month rolling'
 
@@ -14,7 +15,7 @@ export const RANGES = [
   RANGE_3D,
   RANGE_7D,
   RANGE_30D,
-  RANGE_1Y,
+  [RANGE_1Y, RANGE_1Y_12MTH_ROLLING],
   [RANGE_ALL, RANGE_ALL_12MTH_ROLLING]
 ]
 
@@ -48,50 +49,6 @@ RANGE_DEFAULT_INTERVAL[RANGE_ALL] = INTERVALS.INTERVAL_MONTH
 export function isPowerRange(range) {
   return range === RANGE_1D || range === RANGE_3D || range === RANGE_7D
 }
-
-export const FuelTechRanges = [
-  {
-    range: RANGE_1D,
-    intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN],
-    defaultInterval: INTERVALS.INTERVAL_30MIN
-  },
-  {
-    range: RANGE_3D,
-    intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN],
-    defaultInterval: INTERVALS.INTERVAL_30MIN
-  },
-  {
-    range: RANGE_7D,
-    intervals: [INTERVALS.INTERVAL_5MIN, INTERVALS.INTERVAL_30MIN],
-    defaultInterval: INTERVALS.INTERVAL_30MIN
-  },
-  {
-    range: RANGE_30D,
-    intervals: [INTERVALS.INTERVAL_DAY],
-    defaultInterval: INTERVALS.INTERVAL_DAY
-  },
-  {
-    range: RANGE_1Y,
-    intervals: [
-      INTERVALS.INTERVAL_DAY,
-      INTERVALS.INTERVAL_WEEK,
-      INTERVALS.INTERVAL_MONTH
-    ],
-    defaultInterval: INTERVALS.INTERVAL_WEEK
-  },
-  {
-    range: RANGE_ALL,
-    intervals: [
-      INTERVALS.INTERVAL_MONTH,
-      INTERVALS.INTERVAL_SEASON,
-      INTERVALS.INTERVAL_QUARTER,
-      INTERVALS.INTERVAL_HALFYEAR,
-      INTERVALS.INTERVAL_FINYEAR,
-      INTERVALS.INTERVAL_YEAR
-    ],
-    defaultInterval: INTERVALS.INTERVAL_MONTH
-  }
-]
 
 export function getDefaultIntervalByRange(range) {
   return RANGE_DEFAULT_INTERVAL[range] || null
