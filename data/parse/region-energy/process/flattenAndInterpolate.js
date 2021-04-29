@@ -113,8 +113,10 @@ const getAllObj = (dataAll, dataInterval, displayTz, ignoreTime, prop) => {
       const updateAllObj = arr => {
         let curr = null
         arr.forEach((time, timeIndex) => {
-          allObj[time][d.id] = dData[timeIndex]
-          curr = dData[timeIndex]
+          if (allObj[time]) {
+            allObj[time][d.id] = dData[timeIndex]
+            curr = dData[timeIndex]
+          }
         })
       }
 
