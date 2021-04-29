@@ -1,8 +1,8 @@
 <template>
   <summary>
-    <p>
-      {{ description }}
-
+    <div class="summary-wrapper">
+      <div v-html="description"/>
+      
       <v-popover
         v-if="hasWikiLink"
         class="wiki-link-text"
@@ -19,7 +19,7 @@
           </a>; see that page's history for attribution.
         </template>
       </v-popover>
-    </p>
+    </div>
 
   </summary>
 </template>
@@ -66,7 +66,7 @@ summary {
     padding: 0 0 1rem;
   }
 
-  p {
+  .summary-wrapper {
     margin-bottom: 1rem;
     font-size: 16px;
     line-height: 25px;

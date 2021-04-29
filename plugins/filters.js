@@ -55,11 +55,11 @@ Vue.filter('intervalLabel', interval => {
 
 Vue.filter('formatDate', (time, format = '%d/%m/%Y, %-I:%M %p') => {
   const f = utcFormat(format)
-  return f(time)
+  return time ? f(time) : '—'
 })
 Vue.filter('formatLocalDate', (time, format = '%d/%m/%Y, %-I:%M %p') => {
   const f = d3TimeFormat(format)
-  return f(time)
+  return time ? f(time) : '—'
 })
 
 Vue.filter('formatValue', (value, prepend = '') => {
