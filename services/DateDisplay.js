@@ -13,6 +13,13 @@ import {
   utcMinute
 } from 'd3-time'
 import {
+  RANGE_30D,
+  RANGE_1Y,
+  RANGE_1Y_12MTH_ROLLING,
+  RANGE_ALL,
+  RANGE_ALL_12MTH_ROLLING
+} from '~/constants/ranges.js'
+import {
   FILTER_NONE,
   INTERVAL_MONTH,
   INTERVAL_SEASON,
@@ -197,11 +204,12 @@ export default {
     }
 
     switch (range) {
-      case '30D':
+      case RANGE_30D:
         formatString = getFormatStringDay(sYear)
         display = timeFormat(formatString)(time)
         break
-      case '1Y':
+      case RANGE_1Y:
+      case RANGE_1Y_12MTH_ROLLING:
         if (interval === 'Day') {
           formatString = getFormatStringDay(sYear)
           display = timeFormat(formatString)(time)
@@ -236,7 +244,8 @@ export default {
           display = timeFormat('%b %Y')(time)
         }
         break
-      case 'ALL':
+      case RANGE_ALL:
+      case RANGE_ALL_12MTH_ROLLING:
         if (interval === 'Month') {
           display = timeFormat('%b %Y')(time)
         } else if (interval === 'Season') {
