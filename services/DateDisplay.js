@@ -31,7 +31,7 @@ import {
   INTERVAL_HALFYEAR,
   INTERVAL_FINYEAR,
   INTERVAL_YEAR,
-  FILTER_VALUES,
+  FILTER_MONTH_NUM,
   FILTER_MONTH_1,
   FILTER_MONTH_2,
   FILTER_MONTH_3,
@@ -100,15 +100,15 @@ function getQuarterLabel(month) {
 }
 
 function getQuarterOffset(quarter) {
-  return FILTER_VALUES[quarter]
+  return FILTER_MONTH_NUM[quarter]
 }
 
 function getHalfYearOffset(period) {
-  return FILTER_VALUES[period]
+  return FILTER_MONTH_NUM[period]
 }
 
 function getMonthOffset(period) {
-  return FILTER_VALUES[period]
+  return FILTER_MONTH_NUM[period]
 }
 
 function getSeasonClosestDate(date, isFloor, filterPeriod) {
@@ -526,7 +526,7 @@ export default {
   },
 
   getPeriodMonth(period) {
-    return FILTER_VALUES[period]
+    return FILTER_MONTH_NUM[period]
   },
 
   getSecondsByInterval(range, interval, date, incompleteDate, isStart, isEnd) {
