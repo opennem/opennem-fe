@@ -1,8 +1,12 @@
 import subMonths from 'date-fns/subMonths'
 import isAfter from 'date-fns/isAfter'
 import _cloneDeep from 'lodash.clonedeep'
+import PerfTime from '@/plugins/perfTime.js'
+
+const perfTime = new PerfTime()
 
 export default function(data, keys) {
+  perfTime.time()
   for (let x = data.length - 1; x >= 0; x--) {
     const d = data[x]
     const last = subMonths(data[x].date, 12)
@@ -25,4 +29,5 @@ export default function(data, keys) {
       }
     })
   }
+  perfTime.timeEnd('--- data.12month-rolling-sum')
 }
