@@ -804,10 +804,7 @@ export default {
 
         const isFilter = !self.filterPeriod || self.filterPeriod !== 'All'
         if (isFilter && hasIntervalFilters(self.interval)) {
-          const periodMonth = DateDisplay.getPeriodMonth(
-            self.interval,
-            self.filterPeriod
-          )
+          const periodMonth = DateDisplay.getPeriodMonth(self.filterPeriod)
           const startXMonth = startX.getMonth()
           const endXMonth = endX.getMonth()
 
@@ -1537,10 +1534,7 @@ export default {
 
       const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
       if (isFilter && hasIntervalFilters(this.interval)) {
-        const periodMonth = DateDisplay.getPeriodMonth(
-          this.interval,
-          this.filterPeriod
-        )
+        const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
         const startXMonth = startX.getMonth()
         const endXMonth = endX.getMonth()
 
@@ -1708,28 +1702,19 @@ export default {
 
           if (this.interval === INTERVAL_SEASON) {
             className = 'interval-season'
-            const periodMonth = DateDisplay.getPeriodMonth(
-              this.interval,
-              this.filterPeriod
-            )
+            const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
             if (isFilter && periodMonth) {
               tickLength = d3TimeMonth.filter(d => d.getMonth() === periodMonth)
             }
           } else if (this.interval === INTERVAL_QUARTER) {
             className = 'interval-quarter'
-            const periodMonth = DateDisplay.getPeriodMonth(
-              this.interval,
-              this.filterPeriod
-            )
+            const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
             if (isFilter && periodMonth) {
               tickLength = d3TimeMonth.filter(d => d.getMonth() === periodMonth)
             }
           } else if (this.interval === INTERVAL_HALFYEAR) {
             className = 'interval-half-year'
-            const periodMonth = DateDisplay.getPeriodMonth(
-              this.interval,
-              this.filterPeriod
-            )
+            const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
             if (isFilter && periodMonth) {
               tickLength = d3TimeMonth.filter(d => d.getMonth() === periodMonth)
             }
@@ -1770,10 +1755,7 @@ export default {
               : year
           return `${yearStr}`
         })
-        const periodMonth = DateDisplay.getPeriodMonth(
-          this.interval,
-          this.filterPeriod
-        )
+        const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
         if (isFilter && periodMonth) {
           tickLength = d3TimeMonth.filter(d => d.getMonth() === periodMonth)
         }

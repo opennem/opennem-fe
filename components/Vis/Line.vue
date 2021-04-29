@@ -1054,28 +1054,19 @@ export default {
 
           if (this.interval === 'Season') {
             className = 'interval-season'
-            const periodMonth = DateDisplay.getPeriodMonth(
-              this.interval,
-              this.filterPeriod
-            )
+            const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
             if (isFilter && periodMonth) {
               tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
             }
           } else if (this.interval === 'Quarter') {
             className = 'interval-quarter'
-            const periodMonth = DateDisplay.getPeriodMonth(
-              this.interval,
-              this.filterPeriod
-            )
+            const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
             if (isFilter && periodMonth) {
               tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
             }
           } else if (this.interval === 'Half Year') {
             className = 'interval-half-year'
-            const periodMonth = DateDisplay.getPeriodMonth(
-              this.interval,
-              this.filterPeriod
-            )
+            const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
             if (isFilter && periodMonth) {
               tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
             }
@@ -1113,10 +1104,7 @@ export default {
               : year
           return `${yearStr}`
         })
-        const periodMonth = DateDisplay.getPeriodMonth(
-          this.interval,
-          this.filterPeriod
-        )
+        const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
         if (isFilter && periodMonth) {
           tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
         }

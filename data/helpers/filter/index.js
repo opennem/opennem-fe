@@ -32,7 +32,7 @@ export function filterDatasetByPeriod(dataset, interval, period) {
   if (period === 'All') {
     return dataset
   }
-  const month = DateDisplay.getPeriodMonth(interval, period)
+  const month = DateDisplay.getPeriodMonth(period)
   return dataset.filter(d => {
     const dMonth = d.date.getMonth()
     return dMonth === month
