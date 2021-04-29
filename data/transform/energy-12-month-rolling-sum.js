@@ -6,6 +6,7 @@ import PerfTime from '@/plugins/perfTime.js'
 const perfTime = new PerfTime()
 
 export default function(data, keys) {
+  console.log(data.slice(0))
   perfTime.time()
   for (let x = data.length - 1; x >= 0; x--) {
     const d = data[x]
