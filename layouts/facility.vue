@@ -23,8 +23,7 @@ export default {
 
   computed: {
     ...mapGetters({
-      widthBreak: 'app/widthBreak',
-      useV3: 'feature/v3Data'
+      widthBreak: 'app/widthBreak'
     })
   },
 
