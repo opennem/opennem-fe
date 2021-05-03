@@ -124,7 +124,8 @@ export default {
 
     mapHeight() {
       const offset = this.tabletBreak ? 49 : 50
-      return `${this.windowHeight - offset}px`
+      // return `${this.windowHeight - offset}px`
+      return '500px'
     },
 
     facilitySelectedTechs() {

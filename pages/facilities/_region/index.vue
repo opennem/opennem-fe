@@ -60,6 +60,8 @@
         @facilitySelect="handleFacilitySelect"
       />
 
+      <FacilityMap2 class="facility-map2"/>
+
       <transition name="slide-up-fade">
         <facility-card
           v-if="selectedFacility && tabletBreak"
@@ -90,6 +92,7 @@ import FacilityDataParse from '@/data/parse/facility'
 import FacilityFilters from '~/components/Facility/Filters.vue'
 import FacilityList from '~/components/Facility/List.vue'
 import FacilityMap from '~/components/Facility/Map.vue'
+import FacilityMap2 from '~/components/Facility/Map2.vue'
 import FacilityCard from '~/components/Facility/Card.vue'
 
 const ASCENDING = 'asc'
@@ -144,6 +147,7 @@ export default {
     FacilityFilters,
     FacilityList,
     FacilityMap,
+    FacilityMap2,
     FacilityCard
   },
 
@@ -475,6 +479,17 @@ export default {
       position: fixed;
       right: 0;
       top: 0;
+      z-index: 999;
+      padding: 0 1rem 0 0;
+    }
+  }
+
+  .facility-map2 {
+    @include tablet {
+      width: 50%;
+      position: fixed;
+      right: 0;
+      top: 50vh;
       z-index: 999;
       padding: 0 1rem 0 0;
     }
