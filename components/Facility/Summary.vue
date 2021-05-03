@@ -1,22 +1,36 @@
 <template>
   <summary>
     <div class="summary-wrapper">
-      <div v-html="description"/>
+      <div 
+        class="description" 
+        v-html="description"/>
       
       <v-popover
-        v-if="hasWikiLink"
+        v-if="hasLink"
         class="wiki-link-text"
         placement="auto">
         <i class="fal fa-info-circle"/>
 
         <template slot="popover">
-          Copied content from <a
-            :href="wikiLink"
-            class="wiki-link"
-            target="facility-wiki-link">
-            Wikipedia
-            <i class="fal fa-external-link"/>
-          </a>; see that page's history for attribution.
+          <span v-if="hasWikiLink">
+            Copied content from <a
+              :href="link"
+              class="wiki-link"
+              target="facility-wiki-link">
+              Wikipedia
+              <i class="fal fa-external-link"/>
+            </a>; see that page's history for attribution.
+          </span>
+          <span v-if="hasWebsiteLink">
+            Copied content from <a
+              :href="link"
+              class="wiki-link"
+              target="facility-wiki-link">
+              website
+              <i class="fal fa-external-link"/>
+            </a>; see that page for attribution.
+          </span>
+          
         </template>
       </v-popover>
     </div>
@@ -31,14 +45,23 @@ export default {
       type: String,
       default: ''
     },
-    wikiLink: {
-      type: String,
-      default: ''
+    linkObject: {
+      type: Object,
+      default: null
     }
   },
   computed: {
+    hasLink() {
+      return this.linkObject
+    },
+    link() {
+      return this.hasLink ? this.linkObject.url : ''
+    },
     hasWikiLink() {
-      return this.wikiLink && this.wikiLink !== ''
+      return this.hasLink && this.linkObject.type === 'wikipedia'
+    },
+    hasWebsiteLink() {
+      return this.hasLink && this.linkObject.type === 'website'
     }
   }
 }
@@ -64,6 +87,10 @@ summary {
 
   @include tablet {
     padding: 0 0 1rem;
+  }
+
+  .description {
+    display: inline;
   }
 
   .summary-wrapper {

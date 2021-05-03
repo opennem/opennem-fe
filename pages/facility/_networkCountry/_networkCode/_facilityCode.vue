@@ -60,7 +60,7 @@
         <Summary
           v-if="hasDescription"
           :description="facilityDescription"
-          :wiki-link="facilityWikiLink" />
+          :link-object="facilityWikiLink" />
 
         <transition name="fade">
           <PhotoMap
@@ -490,9 +490,22 @@ export default {
         : ''
     },
     facilityWikiLink() {
-      return this.facility && this.facility.wikipedia_link
-        ? this.facility.wikipedia_link
-        : ''
+      let link = null
+
+      if (this.facility) {
+        if (this.facility.website_url) {
+          link = {
+            type: 'website',
+            url: this.facility.website_url
+          }
+        } else if (this.facility.wikipedia_link) {
+          link = {
+            type: 'wikipedia',
+            url: this.facility.wikipedia_link
+          }
+        }
+      }
+      return link
     },
     hasDescription() {
       return this.facilityDescription !== ''
