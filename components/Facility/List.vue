@@ -659,14 +659,13 @@ export default {
   position: relative;
   top: -1px;
   left: 2px;
-  font-size: 0.8em;
-  opacity: 0.75;
+  font-size: 0.75em;
+  color: #aaa;
   .fa-map-marker-alt {
     font-size: 1.3em;
-    color: #000;
   }
   .fa-ban {
-    color: $opennem-link-color;
+    color: #ccc;
   }
 }
 .max-capcity {
