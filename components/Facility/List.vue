@@ -424,10 +424,8 @@ export default {
       return colHeaderId === 'generatorCap'
     },
     handleRowDoubleClick(facility) {
-      if (this.useV3) {
-        this.waitForDblClickCB = true
-        this.$emit('openFacilityView', facility)
-      }
+      this.waitForDblClickCB = true
+      this.$emit('openFacilityView', facility)
     },
     getColumnIcon(colHeaderId) {
       if (colHeaderId === this.sortBy) {
