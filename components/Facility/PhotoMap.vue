@@ -1,6 +1,7 @@
 <template>
   <div :class="layout">
     <Photos
+      v-if="facilityPhotos.length > 0"
       :has-photos="facilityPhotos.length > 0"
       :photos="facilityPhotos"
       :name="facilityName"
