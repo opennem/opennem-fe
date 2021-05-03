@@ -1,7 +1,9 @@
 <template>
   <summary>
     <div class="summary-wrapper">
-      <div v-html="description"/>
+      <div 
+        class="description" 
+        v-html="description"/>
       
       <v-popover
         v-if="hasLink"
@@ -85,6 +87,10 @@ summary {
 
   @include tablet {
     padding: 0 0 1rem;
+  }
+
+  .description {
+    display: inline;
   }
 
   .summary-wrapper {
