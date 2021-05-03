@@ -16,7 +16,7 @@
 
     <template v-slot:label-unit>
       <strong>Temperature</strong>
-      <small>°C</small>
+      <small v-if="chartShown">°C</small>
     </template>
     <template
       v-slot:average-value

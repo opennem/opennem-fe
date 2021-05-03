@@ -23,6 +23,7 @@
     <template v-slot:label-unit>
       <strong>{{ displayTitle }}</strong>
       <small
+        v-if="chartShown"
         :class="{ 'display-unit': allowDisplayHover }"
         @click.stop="handleUnitClick">{{ displayUnit }}</small>
     </template>

@@ -16,7 +16,7 @@
 
     <template v-slot:label-unit>
       <strong>Price</strong>
-      <small>$/MWh</small>
+      <small v-if="chartShown">$/MWh</small>
     </template>
 
     <template

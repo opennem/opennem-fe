@@ -20,6 +20,7 @@
     <template v-slot:label-unit>
       <strong>Market Turnover</strong>
       <small
+        v-if="chartShown"
         class="display-unit"
         @click.stop="handleUnitClick">${{ displayUnit }}</small>
     </template>
