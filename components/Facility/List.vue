@@ -156,6 +156,15 @@
             –
           </div>
         </div>
+
+        <div class="info-button-col">
+          <a
+            v-tooltip="'View facility info'"
+            class="button is-small"
+            @click="handleRowDoubleClick(facility)">
+            <i class="fal fa-chevron-right"/>
+          </a>
+        </div>
       </div>
     </div>
 
@@ -597,7 +606,7 @@ export default {
     opacity: 1;
     transform: scale(1.02);
     z-index: 10;
-    border: 2px solid $opennem-link-color;
+    border: 1px solid $opennem-link-color;
   }
 
   .card-content {
@@ -767,6 +776,27 @@ export default {
 
     @include tablet {
       font-size: 10px;
+    }
+  }
+}
+
+.info-button-col {
+  padding: 2px 0;
+  .button.is-small {
+    min-width: auto;
+    font-size: 0.65rem;
+    background-color: #eee;
+    border-radius: 0;
+  }
+}
+.card.is-selected {
+  .info-button-col {
+    .button.is-small {
+      border-radius: 0;
+      background-color: $opennem-primary-rgb;
+      i {
+        color: #fff;
+      }
     }
   }
 }
