@@ -476,22 +476,12 @@ export default {
   }
   .facility-map {
     padding-top: 1rem;
+    border-radius: 10px;
     @include tablet {
       width: 50%;
       position: fixed;
       right: 0;
-      top: 3rem;
-      z-index: 999;
-      padding: 0 1rem 0 0;
-    }
-  }
-
-  .facility-map2 {
-    @include tablet {
-      width: 50%;
-      position: fixed;
-      right: 0;
-      top: 50vh;
+      top: 25px;
       z-index: 999;
       padding: 0 1rem 0 0;
     }
