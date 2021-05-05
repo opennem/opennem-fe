@@ -89,7 +89,7 @@ export default {
       tabletBreak: 'app/tabletBreak'
     }),
     mapHeight() {
-      const offset = this.tabletBreak ? 49 : 100
+      const offset = this.tabletBreak ? 49 : 75
       return `${this.windowHeight - offset}px`
     },
     updatedData() {
@@ -155,7 +155,7 @@ export default {
   methods: {
     onMapLoaded(event) {
       this.map = event.map
-      this.popup = new AnimatedPopup(popupOptions(100))
+      this.popup = new AnimatedPopup(popupOptions(10))
       this.selectedPopup = new AnimatedPopup(popupOptions(0, 'selected'))
 
       this.updateMap()
@@ -224,7 +224,7 @@ export default {
               ['linear'],
               ['zoom'],
               5,
-              ['/', ['-', ['get', 'radius']], 700],
+              ['/', ['-', ['get', 'radius']], 500],
               10,
               ['/', ['-', ['get', 'radius']], 100]
             ],
