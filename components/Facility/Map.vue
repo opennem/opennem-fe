@@ -261,8 +261,9 @@ export default {
         if (flyTo) {
           this.map.flyTo({
             center: coordinates,
-            zoom: 10,
-            speed: 2
+            zoom: 8,
+            speed: 1.8,
+            curve: 1.8
           })
         }
       }
