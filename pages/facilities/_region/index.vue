@@ -64,7 +64,8 @@
         :data="filteredFacilities"
         :hovered="hoveredFacility"
         :selected="selectedFacility"
-        class="facility-map"/>
+        class="facility-map"
+        @facilitySelect="handleMapFacilitySelect" />
 
       <transition name="slide-up-fade">
         <facility-card
@@ -401,6 +402,10 @@ export default {
 
       this.$store.dispatch('facility/sortBy', this.sortBy)
       this.$store.dispatch('facility/orderBy', this.orderBy)
+    },
+    handleMapFacilitySelect(facilityId) {
+      const find = this.facilityData.find(f => f.facilityId === facilityId)
+      this.handleFacilitySelect(find, false)
     },
     handleFacilitySelect(facility, shouldZoom) {
       if (facility) {

@@ -3,14 +3,11 @@
     :style="{ height: mapHeight }"
     class="mapbox">
     <client-only>
-      <!-- <div 
-        ref="mapboxContainer" 
-        style="height: 300px;" /> -->
       <MglMap
         :access-token="accessToken"
         :map-style="mapStyle"
         :center="mapCentre"
-        :zoom="4"
+        :zoom="3"
         class="map-container"
         @load="onMapLoaded">
 
@@ -18,7 +15,6 @@
         <MglNavigationControl
           position="bottom-right"
         />
-
       </MglMap>
     </client-only>
   </section>
@@ -95,21 +91,12 @@ export default {
         properties.generatorCap = d.generatorCap
         properties.colour = this.getColour(d)
         properties.radius = this.radiusScale(Math.sqrt(d.generatorCap))
-        if (d.displayName === 'Berwick') {
-          console.log(properties.radius)
-        }
-        if (d.displayName === 'Bayswater') {
-          console.log(properties.radius)
-        }
       })
       return _orderBy(data, ['generatorCap'], ['desc'])
     }
   },
 
   watch: {
-    data() {
-      // this.updateMap()
-    },
     hovered(val) {
       if (
         val ||
@@ -161,6 +148,8 @@ export default {
 
         const coordinates = e.features[0].geometry.coordinates.slice()
         const name = e.features[0].properties.name
+        const id = e.features[0].properties.facility_id
+        console.log(e.features[0])
 
         // Ensure that if the map is zoomed out such that multiple
         // copies of the feature are visible, the popup appears
@@ -170,10 +159,25 @@ export default {
         }
 
         if (coordinates) {
-          this.popup
-            .setLngLat(coordinates)
-            .setHTML(name)
-            .addTo(this.map)
+          if (
+            !this.selected ||
+            (this.selected && this.selected.facilityId !== id)
+          ) {
+            this.popup
+              .setLngLat(coordinates)
+              .setHTML(name)
+              .addTo(this.map)
+          }
+        }
+      })
+
+      this.map.on('click', 'facilitiesLayer', e => {
+        const id = e.features[0].properties.facility_id
+
+        if (this.selected && this.selected.facilityId === id) {
+          this.$emit('facilitySelect', null)
+        } else {
+          this.$emit('facilitySelect', id)
         }
       })
 
@@ -181,6 +185,10 @@ export default {
         this.map.getCanvas().style.cursor = ''
         this.popup.remove()
       })
+
+      if (this.selected) {
+        this.displayPopup(this.selected, this.selectedPopup, true)
+      }
     },
 
     getColour(facility) {
