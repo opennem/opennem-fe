@@ -50,7 +50,7 @@
         @openFacilityView="handleOpenFacilityView"
       />
 
-      <facility-map
+      <!-- <facility-map
         v-if="!tabletBreak || (tabletBreak && selectedView === 'map')"
         :data="filteredFacilities"
         :selected-facility="selectedFacility"
@@ -58,9 +58,13 @@
         :show-zoom-when-selected="shouldZoomWhenSelected"
         class="facility-map"
         @facilitySelect="handleFacilitySelect"
-      />
+      /> -->
 
-      <FacilityMap2 class="facility-map2"/>
+      <FacilityMap
+        :data="filteredFacilities"
+        :hovered="hoveredFacility"
+        :selected="selectedFacility"
+        class="facility-map"/>
 
       <transition name="slide-up-fade">
         <facility-card
@@ -92,7 +96,6 @@ import FacilityDataParse from '@/data/parse/facility'
 import FacilityFilters from '~/components/Facility/Filters.vue'
 import FacilityList from '~/components/Facility/List.vue'
 import FacilityMap from '~/components/Facility/Map.vue'
-import FacilityMap2 from '~/components/Facility/Map2.vue'
 import FacilityCard from '~/components/Facility/Card.vue'
 
 const ASCENDING = 'asc'
@@ -147,7 +150,6 @@ export default {
     FacilityFilters,
     FacilityList,
     FacilityMap,
-    FacilityMap2,
     FacilityCard
   },
 
@@ -478,7 +480,7 @@ export default {
       width: 50%;
       position: fixed;
       right: 0;
-      top: 0;
+      top: 3rem;
       z-index: 999;
       padding: 0 1rem 0 0;
     }
