@@ -149,7 +149,6 @@ export default {
         const coordinates = e.features[0].geometry.coordinates.slice()
         const name = e.features[0].properties.name
         const id = e.features[0].properties.facility_id
-        console.log(e.features[0])
 
         // Ensure that if the map is zoomed out such that multiple
         // copies of the feature are visible, the popup appears
