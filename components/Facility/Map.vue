@@ -35,11 +35,6 @@ import AnimatedPopup from 'mapbox-gl-animated-popup'
 import { DEFAULT_FUEL_TECH_COLOUR } from '~/constants/energy-fuel-techs/group-default.js'
 
 const ACCESS_TOKEN = process.env.mapboxToken
-
-// mapbox://styles/mapbox/light-v10
-// mapbox://styles/mapbox/dark-v10
-// mapbox://styles/mapbox/streets-v11
-
 const popupOptions = (openingDuration = 0, className = '') => {
   return {
     className,
@@ -128,7 +123,7 @@ export default {
         this.displayPopup(val, this.selectedPopup, true)
       } else {
         this.selectedPopup.remove()
-        this.map.zoomTo(5)
+        this.fitBounds()
       }
     }
   },
@@ -137,6 +132,7 @@ export default {
     this.map = null
     this.selectedPopup = null
     this.popup = null
+    this.bounds = new this.$mapbox.LngLatBounds()
     this.radiusScale = d3ScaleLinear([0, Math.sqrt(3000)], [1000, 10000])
   },
 
@@ -206,6 +202,12 @@ export default {
       if (this.map && this.updatedData.length > 0) {
         const features = this.updatedData.map(d => d.jsonData)
 
+        features.forEach(f => {
+          if (f.geometry && f.geometry.coordinates) {
+            this.bounds.extend(f.geometry.coordinates)
+          }
+        })
+
         this.map.addSource('facilities', {
           type: 'geojson',
           data: {
@@ -234,6 +236,8 @@ export default {
             'circle-stroke-width': 2
           }
         })
+
+        this.fitBounds()
       }
     },
 
@@ -267,6 +271,10 @@ export default {
           })
         }
       }
+    },
+
+    fitBounds() {
+      this.map.fitBounds(this.bounds, { padding: 50 })
     }
   }
 }
