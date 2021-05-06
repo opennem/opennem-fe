@@ -46,6 +46,7 @@ const popupOptions = (openingDuration = 0, className = '') => {
     }
   }
 }
+const radiusScale = d3ScaleLinear([0, Math.sqrt(3000)], [1000, 10000])
 
 export default {
   props: {
@@ -90,19 +91,24 @@ export default {
         const properties = d.jsonData.properties
         properties.generatorCap = d.generatorCap
         properties.colour = this.getColour(d)
-        properties.radius = this.radiusScale(Math.sqrt(d.generatorCap))
+        properties.radius = this.getRadius(d.generatorCap)
       })
       return _orderBy(data, ['generatorCap'], ['desc'])
     }
   },
 
   watch: {
+    updatedData() {
+      this.updateMapSource()
+    },
     hovered(val) {
       if (
         val ||
         (this.selected && val && this.selected.facilityId !== val.facilityId)
       ) {
         this.displayPopup(val, this.popup, false)
+      } else {
+        this.popup.remove()
       }
     },
     selected(val) {
@@ -120,7 +126,6 @@ export default {
     this.selectedPopup = null
     this.popup = null
     this.bounds = new this.$mapbox.LngLatBounds()
-    this.radiusScale = d3ScaleLinear([0, Math.sqrt(3000)], [1000, 10000])
   },
 
   mounted() {
@@ -141,7 +146,7 @@ export default {
       this.popup = new AnimatedPopup(popupOptions(10))
       this.selectedPopup = new AnimatedPopup(popupOptions(0, 'selected'))
 
-      this.updateMap()
+      this.addMapSourceAndLayer()
 
       this.map.on('mouseenter', 'facilitiesLayer', e => {
         this.map.getCanvas().style.cursor = 'pointer'
@@ -190,6 +195,10 @@ export default {
       }
     },
 
+    getRadius(cap) {
+      return radiusScale(Math.sqrt(cap))
+    },
+
     getColour(facility) {
       const ftCaps = facility.fuelTechRegisteredCap
       let highest = 0
@@ -205,15 +214,38 @@ export default {
       return ftColour || 'lightgrey'
     },
 
-    updateMap() {
-      if (this.map && this.updatedData.length > 0) {
-        const features = this.updatedData.map(d => d.jsonData)
+    setMapBounds(features) {
+      features.forEach(f => {
+        if (f.geometry && f.geometry.coordinates) {
+          this.bounds.extend(f.geometry.coordinates)
+        }
+      })
+    },
 
-        features.forEach(f => {
-          if (f.geometry && f.geometry.coordinates) {
-            this.bounds.extend(f.geometry.coordinates)
-          }
+    getFeaturesFromData() {
+      return this.updatedData.map(d => d.jsonData)
+    },
+
+    updateMapSource() {
+      if (this.map) {
+        const features = this.getFeaturesFromData()
+        this.setMapBounds(features)
+
+        this.map.getSource('facilities').setData({
+          type: 'FeatureCollection',
+          features
         })
+
+        console.log('update')
+
+        this.fitBounds()
+      }
+    },
+
+    addMapSourceAndLayer() {
+      if (this.map && this.updatedData.length > 0) {
+        const features = this.getFeaturesFromData()
+        this.setMapBounds(features)
 
         this.map.addSource('facilities', {
           type: 'geojson',
