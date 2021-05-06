@@ -81,10 +81,6 @@ module.exports = {
     link: [
       {
         rel: 'stylesheet',
-        href: 'https://unpkg.com/leaflet@1.2.0/dist/leaflet.css'
-      },
-      {
-        rel: 'stylesheet',
         href: '/css/fontawesome.min.css'
       },
       {
@@ -220,7 +216,6 @@ module.exports = {
     '~plugins/filters.js',
     '~plugins/tooltip.js',
     '~plugins/sentry.js',
-    { src: '~/plugins/leaflet', ssr: false },
     { src: '~/plugins/mapbox', mode: 'client' }
   ],
 

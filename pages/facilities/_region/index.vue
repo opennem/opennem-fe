@@ -50,7 +50,7 @@
         @openFacilityView="handleOpenFacilityView"
       />
 
-      <facility-map
+      <!-- <facility-map
         v-if="!tabletBreak || (tabletBreak && selectedView === 'map')"
         :data="filteredFacilities"
         :selected-facility="selectedFacility"
@@ -58,7 +58,14 @@
         :show-zoom-when-selected="shouldZoomWhenSelected"
         class="facility-map"
         @facilitySelect="handleFacilitySelect"
-      />
+      /> -->
+
+      <FacilityMap
+        :data="filteredFacilities"
+        :hovered="hoveredFacility"
+        :selected="selectedFacility"
+        class="facility-map"
+        @facilitySelect="handleMapFacilitySelect" />
 
       <transition name="slide-up-fade">
         <facility-card
@@ -396,6 +403,10 @@ export default {
       this.$store.dispatch('facility/sortBy', this.sortBy)
       this.$store.dispatch('facility/orderBy', this.orderBy)
     },
+    handleMapFacilitySelect(facilityId) {
+      const find = this.facilityData.find(f => f.facilityId === facilityId)
+      this.handleFacilitySelect(find, false)
+    },
     handleFacilitySelect(facility, shouldZoom) {
       if (facility) {
         this.$router.push({ query: { selected: facility.facilityId } })
@@ -470,11 +481,12 @@ export default {
   }
   .facility-map {
     padding-top: 1rem;
+    border-radius: 10px;
     @include tablet {
       width: 50%;
       position: fixed;
       right: 0;
-      top: 0;
+      top: 25px;
       z-index: 999;
       padding: 0 1rem 0 0;
     }

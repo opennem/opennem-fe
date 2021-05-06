@@ -74,12 +74,11 @@ export default {
 
   watch: {
     selectedStatuses(selected) {
-      this.selectedStatus = selected
+      this.selected = _cloneDeep(selected)
     }
   },
 
   mounted() {
-    this.selectedStatus = this.status
     this.selected = _cloneDeep(this.selectedStatuses)
   },
 
