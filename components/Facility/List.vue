@@ -48,6 +48,8 @@
           :class="getColumnIcon('generatorCap')"
           class="fal" />
       </div>
+
+      <div class="info-button-col col-header" />
     </div>
 
     <div
@@ -780,6 +782,9 @@ export default {
 
 .info-button-col {
   padding: 2px 0;
+  &.col-header {
+    width: 30px;
+  }
   .button.is-small {
     min-width: auto;
     font-size: 0.65rem;
