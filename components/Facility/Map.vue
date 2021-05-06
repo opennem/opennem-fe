@@ -80,7 +80,7 @@ export default {
       tabletBreak: 'app/tabletBreak'
     }),
     mapHeight() {
-      const offset = this.tabletBreak ? 49 : 75
+      const offset = this.tabletBreak ? 49 : 50
       return `${this.windowHeight - offset}px`
     },
     updatedData() {
