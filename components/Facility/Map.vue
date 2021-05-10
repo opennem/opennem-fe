@@ -1,16 +1,29 @@
 <template>
   <section
     :style="{ height: mapHeight }"
+    :class="{ dark: isDarkMap }"
     class="mapbox">
     <client-only>
       <MglMap
         :access-token="accessToken"
-        :map-style="mapStyle"
+        :map-style.sync="mapStyleUrl"
         :center="mapCentre"
         :zoom="3"
         class="map-container"
-        @load="onMapLoaded">
+        @load="onMapLoaded"
+        @styledata="onMapStyleDataChanged">
 
+        <div class="map-style-selection">
+          <span><i class="fal fa-layer-group"/></span>
+          <div class="select is-rounded is-small">
+            <select v-model="selectedMapStyle">
+              <option 
+                v-for="(d, i) in mapStyleSelections" 
+                :key="i" 
+                :value="d.value">{{ d.label }}</option>
+            </select>
+          </div>
+        </div>
 
         <MglNavigationControl
           position="bottom-right"
@@ -25,10 +38,16 @@ import { mapGetters } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import _orderBy from 'lodash.orderby'
 import _debounce from 'lodash.debounce'
-
 import { scaleLinear as d3ScaleLinear } from 'd3-scale'
 import AnimatedPopup from 'mapbox-gl-animated-popup'
+
 import { DEFAULT_FUEL_TECH_COLOUR } from '~/constants/energy-fuel-techs/group-default.js'
+import {
+  mapStyleSelections,
+  MAP_STYLE_URLS,
+  MAP_STYLE_LIGHT,
+  MAP_STYLE_SATELLITE
+} from '~/constants/facilities/map-styles.js'
 
 const ACCESS_TOKEN = process.env.mapboxToken
 const popupOptions = (openingDuration = 0, className = '') => {
@@ -61,10 +80,6 @@ export default {
     selected: {
       type: Object,
       default: () => null
-    },
-    mapStyle: {
-      type: String,
-      default: 'mapbox://styles/mapbox/light-v10?optimize=true'
     }
   },
 
@@ -72,7 +87,9 @@ export default {
     return {
       accessToken: ACCESS_TOKEN,
       mapCentre: [143.633537, -29.186936],
-      windowHeight: 800
+      windowHeight: 800,
+      selectedMapStyle: MAP_STYLE_LIGHT,
+      mapStyleSelections
     }
   },
 
@@ -84,6 +101,9 @@ export default {
       const offset = this.tabletBreak ? 49 : 50
       return `${this.windowHeight - offset}px`
     },
+    mapStyleUrl() {
+      return MAP_STYLE_URLS[this.selectedMapStyle]
+    },
     updatedData() {
       // @TODO: move this out of component
       const data = _cloneDeep(this.data)
@@ -94,6 +114,9 @@ export default {
         properties.radius = this.getRadius(d.generatorCap)
       })
       return _orderBy(data, ['generatorCap'], ['desc'])
+    },
+    isDarkMap() {
+      return this.selectedMapStyle === MAP_STYLE_SATELLITE
     }
   },
 
@@ -125,6 +148,8 @@ export default {
     this.map = null
     this.selectedPopup = null
     this.popup = null
+    this.source = null
+    this.layer = null
     this.bounds = new this.$mapbox.LngLatBounds()
     this.scale = new this.$mapbox.ScaleControl()
   },
@@ -142,7 +167,13 @@ export default {
   },
 
   methods: {
+    onMapStyleDataChanged() {
+      if (!this.map.getSource('facilities')) {
+        this.addMapSourceAndLayer()
+      }
+    },
     onMapLoaded(event) {
+      console.log('load')
       this.map = event.map
       this.popup = new AnimatedPopup(popupOptions(10))
       this.selectedPopup = new AnimatedPopup(popupOptions(0, 'selected'))
@@ -232,13 +263,13 @@ export default {
     updateMapSource() {
       if (this.map) {
         const features = this.getFeaturesFromData()
-        this.setMapBounds(features)
-
-        this.map.getSource('facilities').setData({
+        this.source.data = {
           type: 'FeatureCollection',
           features
-        })
+        }
 
+        this.setMapBounds(features)
+        this.map.getSource('facilities').setData(this.source.data)
         this.fitBounds()
       }
     },
@@ -246,17 +277,16 @@ export default {
     addMapSourceAndLayer() {
       if (this.map && this.updatedData.length > 0) {
         const features = this.getFeaturesFromData()
-        this.setMapBounds(features)
 
-        this.map.addSource('facilities', {
+        this.source = {
           type: 'geojson',
           data: {
             type: 'FeatureCollection',
             features
           }
-        })
+        }
 
-        this.map.addLayer({
+        this.layer = {
           id: 'facilitiesLayer',
           type: 'circle',
           source: 'facilities',
@@ -275,7 +305,11 @@ export default {
             'circle-stroke-color': ['get', 'colour'],
             'circle-stroke-width': 2
           }
-        })
+        }
+
+        this.setMapBounds(features)
+        this.map.addSource('facilities', this.source)
+        this.map.addLayer(this.layer)
 
         this.fitBounds()
       }
@@ -324,5 +358,33 @@ export default {
 .mapbox {
   position: relative;
   height: 400px;
+
+  .map-style-selection {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    span {
+      position: relative;
+      top: 4px;
+      right: 4px;
+    }
+
+    select {
+      background-color: rgba(255, 255, 255, 0.75);
+    }
+  }
+
+  &.dark {
+    .map-style-selection span,
+    select {
+      color: #ccc;
+    }
+    select {
+      background-color: rgba(0, 0, 0, 0.75);
+    }
+    .select:not(.is-multiple):not(.is-loading)::after {
+      border-color: #ccc;
+    }
+  }
 }
 </style>
