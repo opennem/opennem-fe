@@ -126,6 +126,7 @@ export default {
     this.selectedPopup = null
     this.popup = null
     this.bounds = new this.$mapbox.LngLatBounds()
+    this.scale = new this.$mapbox.ScaleControl()
   },
 
   mounted() {
@@ -145,6 +146,8 @@ export default {
       this.map = event.map
       this.popup = new AnimatedPopup(popupOptions(10))
       this.selectedPopup = new AnimatedPopup(popupOptions(0, 'selected'))
+
+      this.map.addControl(this.scale)
 
       this.addMapSourceAndLayer()
 
@@ -235,8 +238,6 @@ export default {
           type: 'FeatureCollection',
           features
         })
-
-        console.log('update')
 
         this.fitBounds()
       }
