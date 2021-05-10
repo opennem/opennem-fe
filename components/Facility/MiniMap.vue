@@ -135,11 +135,13 @@ export default {
 
   created() {
     this.map = null
+    this.scale = new this.$mapbox.ScaleControl()
   },
 
   methods: {
     onMapLoaded(event) {
       this.map = event.map
+      this.map.addControl(this.scale)
 
       if (this.bounds && this.fitBounds) {
         this.map.fitBounds(this.bounds, this.getBBoxOptions())
