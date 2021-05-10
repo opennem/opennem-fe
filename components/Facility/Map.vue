@@ -180,7 +180,7 @@ export default {
 
       this.map.addControl(this.scale)
 
-      this.addMapSourceAndLayer()
+      this.addMapSourceAndLayer(true)
 
       this.map.on('mouseenter', 'facilitiesLayer', e => {
         this.map.getCanvas().style.cursor = 'pointer'
@@ -274,7 +274,7 @@ export default {
       }
     },
 
-    addMapSourceAndLayer() {
+    addMapSourceAndLayer(shouldFit) {
       if (this.map && this.updatedData.length > 0) {
         const features = this.getFeaturesFromData()
 
@@ -311,7 +311,9 @@ export default {
         this.map.addSource('facilities', this.source)
         this.map.addLayer(this.layer)
 
-        this.fitBounds()
+        if (shouldFit) {
+          this.fitBounds()
+        }
       }
     },
 
