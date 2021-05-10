@@ -50,7 +50,7 @@
               v-if="facilityStatus"
               class="tag facility-status">
               <strong>{{ getFacilityStatusLabel(facilityStatus) }}</strong>
-              <em>{{ facilitySinceDate | formatLocalDate('%d %b %Y') }}</em>
+              <em>{{ facilitySinceDate | formatLocalDate('%_d %b %Y') }}</em>
             </span>
           </div>
 
