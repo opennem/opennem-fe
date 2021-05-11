@@ -65,7 +65,7 @@ const popupOptions = (openingDuration = 0, className = '') => {
     }
   }
 }
-const radiusScale = d3ScaleLinear([0, Math.sqrt(3000)], [1000, 10000])
+const radiusScale = d3ScaleLinear([0, Math.sqrt(3000)], [3000, 10000])
 
 export default {
   components: {
@@ -301,9 +301,9 @@ export default {
               ['linear'],
               ['zoom'],
               5,
-              ['/', ['-', ['get', 'radius']], 500],
+              ['/', ['-', ['get', 'radius']], 700],
               10,
-              ['/', ['-', ['get', 'radius']], 100]
+              ['/', ['-', ['get', 'radius']], 250]
             ],
             'circle-opacity': 0.75,
             'circle-color': ['get', 'colour'],
