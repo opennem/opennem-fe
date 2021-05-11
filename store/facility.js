@@ -3,12 +3,10 @@ import axios from 'axios'
 
 import PerfTime from '@/plugins/perfTime.js'
 import { FACILITY_OPERATING } from '@/constants/facility-status.js'
-import { isPowerRange, RANGE_7D, RANGE_30D } from '@/constants/ranges.js'
-import {
-  INTERVAL_5MIN,
-  INTERVAL_30MIN,
-  INTERVAL_DAY
-} from '@/constants/interval-filters.js'
+import { isPowerRange, RANGE_7D } from '@/constants/ranges.js'
+import { INTERVAL_30MIN } from '@/constants/interval-filters.js'
+import { MAP_STYLE_LIGHT } from '@/constants/facilities/map-styles.js'
+
 import {
   dataProcess,
   dataRollUp,
@@ -70,6 +68,7 @@ export const state = () => ({
   selectedTechGroups: [],
   selectedTechs: [],
   selectedView: 'list',
+  selectedMapStyle: MAP_STYLE_LIGHT,
   filteredFacilities: [],
 
   previousPath: '',
@@ -110,6 +109,9 @@ export const mutations = {
   },
   selectedTechs(state, data) {
     state.selectedTechs = data
+  },
+  selectedMapStyle(state, data) {
+    state.selectedMapStyle = data
   },
   filteredFacilities(state, data) {
     state.filteredFacilities = data
@@ -178,6 +180,7 @@ export const getters = {
   selectedTechGroups: state => _cloneDeep(state.selectedTechGroups),
   selectedTechs: state => _cloneDeep(state.selectedTechs),
   selectedView: state => state.selectedView,
+  selectedMapStyle: state => state.selectedMapStyle,
   filteredFacilities: state => state.filteredFacilities,
 
   previousPath: state => state.previousPath,

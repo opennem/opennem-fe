@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import _orderBy from 'lodash.orderby'
 import _debounce from 'lodash.debounce'
@@ -88,7 +88,6 @@ export default {
       accessToken: ACCESS_TOKEN,
       mapCentre: [143.633537, -29.186936],
       windowHeight: 800,
-      selectedMapStyle: MAP_STYLE_LIGHT,
       mapStyleSelections
     }
   },
@@ -97,6 +96,14 @@ export default {
     ...mapGetters({
       tabletBreak: 'app/tabletBreak'
     }),
+    selectedMapStyle: {
+      get() {
+        return this.$store.getters['facility/selectedMapStyle']
+      },
+      set(val) {
+        this.setSelectedMapStyle(val)
+      }
+    },
     mapHeight() {
       const offset = this.tabletBreak ? 49 : 50
       return `${this.windowHeight - offset}px`
@@ -131,14 +138,14 @@ export default {
       ) {
         this.displayPopup(val, this.popup, false)
       } else {
-        this.popup.remove()
+        this.removePopup(this.popup)
       }
     },
     selected(val) {
       if (val) {
         this.displayPopup(val, this.selectedPopup, true)
       } else {
-        this.selectedPopup.remove()
+        this.removePopup(this.selectedPopup)
         this.fitBounds()
       }
     }
@@ -167,6 +174,9 @@ export default {
   },
 
   methods: {
+    ...mapMutations({
+      setSelectedMapStyle: 'facility/selectedMapStyle'
+    }),
     onMapStyleDataChanged() {
       if (!this.map.getSource('facilities')) {
         this.addMapSourceAndLayer()
@@ -221,7 +231,7 @@ export default {
 
       this.map.on('mouseleave', 'facilitiesLayer', () => {
         this.map.getCanvas().style.cursor = ''
-        this.popup.remove()
+        this.removePopup(this.popup)
       })
 
       if (this.selected) {
@@ -351,6 +361,12 @@ export default {
 
     fitBounds() {
       this.map.fitBounds(this.bounds, { padding: 50 })
+    },
+
+    removePopup(popup) {
+      if (popup) {
+        popup.remove()
+      }
     }
   }
 }
