@@ -13,17 +13,18 @@
         @load="onMapLoaded"
         @styledata="onMapStyleDataChanged">
 
-        <div class="map-style-selection">
-          <span><i class="fal fa-layer-group"/></span>
-          <div class="select is-rounded is-small">
-            <select v-model="selectedMapStyle">
-              <option 
-                v-for="(d, i) in mapStyleSelections" 
-                :key="i" 
-                :value="d.value">{{ d.label }}</option>
-            </select>
-          </div>
-        </div>
+        <button
+          class="button is-small button-map-style" 
+          @click="showMapStyleSelector = true">
+          <i class="fal fa-map"/>
+        </button>
+
+        <transition name="slide-down-fade">
+          <MapStyleSelector 
+            v-if="showMapStyleSelector" 
+            class="map-style-selection"
+            @done="showMapStyleSelector = false" />
+        </transition>
 
         <MglNavigationControl
           position="bottom-right"
@@ -43,11 +44,10 @@ import AnimatedPopup from 'mapbox-gl-animated-popup'
 
 import { DEFAULT_FUEL_TECH_COLOUR } from '~/constants/energy-fuel-techs/group-default.js'
 import {
-  mapStyleSelections,
   MAP_STYLE_URLS,
-  MAP_STYLE_LIGHT,
   MAP_STYLE_SATELLITE
 } from '~/constants/facilities/map-styles.js'
+import MapStyleSelector from './MapStyleSelector'
 
 const ACCESS_TOKEN = process.env.mapboxToken
 const popupOptions = (openingDuration = 0, className = '') => {
@@ -68,6 +68,10 @@ const popupOptions = (openingDuration = 0, className = '') => {
 const radiusScale = d3ScaleLinear([0, Math.sqrt(3000)], [1000, 10000])
 
 export default {
+  components: {
+    MapStyleSelector
+  },
+
   props: {
     data: {
       type: Array,
@@ -88,22 +92,16 @@ export default {
       accessToken: ACCESS_TOKEN,
       mapCentre: [143.633537, -29.186936],
       windowHeight: 800,
-      mapStyleSelections
+      showMapStyleSelector: false
     }
   },
 
   computed: {
     ...mapGetters({
-      tabletBreak: 'app/tabletBreak'
+      tabletBreak: 'app/tabletBreak',
+      selectedMapStyle: 'facility/selectedMapStyle'
     }),
-    selectedMapStyle: {
-      get() {
-        return this.$store.getters['facility/selectedMapStyle']
-      },
-      set(val) {
-        this.setSelectedMapStyle(val)
-      }
-    },
+
     mapHeight() {
       const offset = this.tabletBreak ? 49 : 50
       return `${this.windowHeight - offset}px`
@@ -174,9 +172,6 @@ export default {
   },
 
   methods: {
-    ...mapMutations({
-      setSelectedMapStyle: 'facility/selectedMapStyle'
-    }),
     onMapStyleDataChanged() {
       if (!this.map.getSource('facilities')) {
         this.addMapSourceAndLayer()
@@ -377,31 +372,38 @@ export default {
   position: relative;
   height: 400px;
 
-  .map-style-selection {
+  .button-map-style {
     position: absolute;
     right: 1rem;
     top: 1rem;
-    span {
-      position: relative;
-      top: 4px;
-      right: 4px;
-    }
+    min-width: auto;
+  }
 
-    select {
-      background-color: rgba(255, 255, 255, 0.75);
+  .map-style-selection {
+    position: absolute;
+    right: 1rem;
+    top: 3.2rem;
+
+    &::after {
+      content: '';
+      transform: rotate(45deg);
+      background: #fff;
+      top: -4px;
+      right: 11px;
+      width: 10px;
+      height: 10px;
+      position: absolute;
+      z-index: 0;
     }
   }
 
   &.dark {
-    .map-style-selection span,
-    select {
-      color: #ccc;
-    }
-    select {
-      background-color: rgba(0, 0, 0, 0.75);
-    }
-    .select:not(.is-multiple):not(.is-loading)::after {
-      border-color: #ccc;
+    .button-map-style {
+      color: #fff;
+
+      &:hover {
+        color: #333;
+      }
     }
   }
 }
