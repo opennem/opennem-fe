@@ -177,6 +177,8 @@ export default {
     },
 
     disableMapInteractions() {
+      this.map.removeControl(this.scale)
+
       this.map.boxZoom.disable()
       this.map.scrollZoom.disable()
       this.map.dragPan.disable()
@@ -188,6 +190,8 @@ export default {
     },
 
     enableMapInteractions() {
+      this.map.addControl(this.scale)
+
       this.map.boxZoom.enable()
       this.map.scrollZoom.enable()
       this.map.dragPan.enable()
