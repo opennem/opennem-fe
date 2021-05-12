@@ -79,6 +79,8 @@ export const state = () => ({
   selectedFacilityUnits: [],
   selectedFacilityUnitsDataset: [],
   selectedFacilityUnitsDatasetFlat: [], // as returned transform
+  selectedFacilityError: false,
+  selectedFacilityErrorMessage: false,
 
   domainPowerEnergy: [],
   domainEmissions: [],
@@ -144,6 +146,12 @@ export const mutations = {
   selectedFacilityUnitsDatasetFlat(state, data) {
     state.selectedFacilityUnitsDatasetFlat = data
   },
+  selectedFacilityError(state, data) {
+    state.selectedFacilityError = data
+  },
+  selectedFacilityErrorMessage(state, data) {
+    state.selectedFacilityErrorMessage = data
+  },
 
   domainPowerEnergy(state, data) {
     state.domainPowerEnergy = data
@@ -194,6 +202,8 @@ export const getters = {
     _cloneDeep(state.selectedFacilityUnitsDataset),
   selectedFacilityUnitsDatasetFlat: state =>
     _cloneDeep(state.selectedFacilityUnitsDatasetFlat),
+  selectedFacilityError: state => state.selectedFacilityError,
+  selectedFacilityErrorMessage: state => state.selectedFacilityErrorMessage,
 
   domainPowerEnergy: state => _cloneDeep(state.domainPowerEnergy),
   domainEmissions: state => _cloneDeep(state.domainEmissions),
@@ -238,6 +248,8 @@ export const actions = {
     commit('fetchingFacility', true)
     commit('selectedFacility', null)
     commit('selectedFacilityNetworkRegion', '')
+    commit('selectedFacilityError', false)
+    commit('selectedFacilityErrorMessage', '')
 
     http
       .get(ref)
@@ -248,6 +260,12 @@ export const actions = {
           : ''
         commit('selectedFacility', response.data)
         commit('selectedFacilityNetworkRegion', networkCode)
+
+        // Error handling
+        if (response.response_status === 'ERROR') {
+          commit('selectedFacilityError', true)
+          commit('selectedFacilityErrorMessage', response.detail)
+        }
       })
       .catch(e => {
         const error = e.toJSON()

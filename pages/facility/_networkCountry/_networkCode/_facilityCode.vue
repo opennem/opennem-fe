@@ -7,7 +7,8 @@
         style="height: 60vh; margin: 0 auto;">
         <i class="fal fa-industry-alt"/>
         <div>
-          <span>Facility not available</span>
+          <span v-if="selectedFacilityError">{{ selectedFacilityErrorMessage }}</span>
+          <span v-else>Facility not available</span>
           <button
             v-tooltip="'Try loading facility again'"
             class="button is-rounded try-again-button"
@@ -99,7 +100,8 @@
               class="not-found-card card">
               <i class="fal fa-chart-area"/>
               <div>
-                <span>Facility statistics data not available</span>
+                <span v-if="selectedFacilityError">{{ selectedFacilityErrorMessage }}</span>
+                <span v-else>Facility statistics data not available</span>
                 <button
                   v-tooltip="'Try loading facility statistics again'"
                   class="button is-rounded try-again-button"
@@ -426,6 +428,8 @@ export default {
       domainEmissions: 'facility/domainEmissions',
       domainMarketValue: 'facility/domainMarketValue',
       domainVolWeightedPrices: 'facility/domainVolWeightedPrices',
+      selectedFacilityError: 'facility/selectedFacilityError',
+      selectedFacilityErrorMessage: 'facility/selectedFacilityErrorMessage',
 
       chartShown: 'chartOptionsPowerEnergy/chartShown',
       chartType: 'chartOptionsPowerEnergy/chartType',
