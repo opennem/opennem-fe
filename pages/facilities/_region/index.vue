@@ -440,7 +440,7 @@ export default {
     },
     handleOpenFacilityView(facility) {
       this.handleFacilitySelect(facility, true)
-      this.previousPath(this.$route.fullPath)
+      this.previousPath(this.$route.path)
 
       const id = facility.facilityId
       const network = facility.network
