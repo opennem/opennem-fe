@@ -21,6 +21,7 @@
       :point="facilityLocation.geom"
       :map-style="'mapbox://styles/mapbox/satellite-streets-v11'"
       :show-marker="false"
+      :is-dark="true"
       class="map" />
 
       <!-- <MetaInfo

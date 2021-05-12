@@ -49,3 +49,18 @@
 .mapboxgl-ctrl-attrib.mapboxgl-compact {
   min-height: 25px;
 }
+.mapboxgl-ctrl-scale {
+  border-width: 1px;
+  border-color: #333;
+  background-color: rgba(0, 0, 0, 0.1);
+  font-family: $family-primary;
+  color: #333;
+  padding-top: 2px;
+}
+.dark {
+  .mapboxgl-ctrl-scale {
+    border-color: #ddd;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ddd;
+  }
+}

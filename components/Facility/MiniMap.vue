@@ -1,7 +1,10 @@
 <template>
   <section
     :style="{ height: coordinates ? `${height}px` : '' }"
-    :class="{ 'full-screen': isFullScreen }"
+    :class="{
+      'full-screen': isFullScreen,
+      'dark': isDark
+    }"
     class="mapbox"
     @click.self="handleExpandClick">
     <client-only>
@@ -104,6 +107,10 @@ export default {
     fitBounds: {
       type: Boolean,
       default: true
+    },
+    isDark: {
+      type: Boolean,
+      default: false
     }
   },
 
