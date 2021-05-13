@@ -301,14 +301,12 @@ export default {
               ['linear'],
               ['zoom'],
               5,
-              ['/', ['-', ['get', 'radius']], 700],
+              ['/', ['-', ['get', 'radius']], 1000],
               10,
               ['/', ['-', ['get', 'radius']], 250]
             ],
             'circle-opacity': 0.75,
-            'circle-color': ['get', 'colour'],
-            'circle-stroke-color': ['get', 'colour'],
-            'circle-stroke-width': 2
+            'circle-color': ['get', 'colour']
           }
         }
 
