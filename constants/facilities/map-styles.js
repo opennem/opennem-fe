@@ -1,18 +1,12 @@
 export const MAP_STYLE_DEFAULT = 'default'
-export const MAP_STYLE_LIGHT = 'light-v10'
-export const MAP_STYLE_SATELLITE = 'satellite-v9'
+export const MAP_STYLE_LIGHT = 'light'
+export const MAP_STYLE_SATELLITE = 'satellite'
 
-// mapbox://styles/steventan/ckoji70651l9j18p5uefuskvt
-// mapbox://styles/steventan/ckojdsmsh0p7d18mdebjrdsvx
-
-// mapbox://styles/steventan/cjqq0t7w7tuaw2rqesn99vmfp
-
-const getMapUrl = name => `mapbox://styles/mapbox/${name}?optimize=true`
 export const MAP_STYLE_URLS = {}
-MAP_STYLE_URLS[MAP_STYLE_DEFAULT] =
+MAP_STYLE_URLS[MAP_STYLE_LIGHT] =
   'mapbox://styles/steventan/ckoji70651l9j18p5uefuskvt'
-MAP_STYLE_URLS[MAP_STYLE_LIGHT] = MAP_STYLE_URLS[MAP_STYLE_DEFAULT]
-MAP_STYLE_URLS[MAP_STYLE_SATELLITE] = getMapUrl(MAP_STYLE_SATELLITE)
+MAP_STYLE_URLS[MAP_STYLE_SATELLITE] =
+  'mapbox://styles/steventan/ckomkdzo11qcw17qljpcd1wki'
 
 export const mapStyleSelections = [
   {
