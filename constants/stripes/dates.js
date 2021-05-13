@@ -1,12 +1,10 @@
 import eachYearOfInterval from 'date-fns/eachYearOfInterval'
 import eachMonthOfInterval from 'date-fns/eachMonthOfInterval'
 import eachDayOfInterval from 'date-fns/eachDayOfInterval'
-
-const METRICS_START_YEAR = 1998
-const METRICS_START_MONTH = 11 // 0 - Jan, 11 - Dec
+import { NEM_START_YEAR, NEM_START_MONTH } from '../nem-start-date'
 
 export const getEachYearOfInterval = eachYearOfInterval({
-  start: new Date(METRICS_START_YEAR, 0, 1),
+  start: new Date(NEM_START_YEAR, 0, 1),
   end: new Date()
 }).map(d => d.getFullYear())
 
@@ -33,7 +31,7 @@ export const getEachMonthOfInterval = () => {
   }
 
   return eachMonthOfInterval({
-    start: new Date(METRICS_START_YEAR, METRICS_START_MONTH, 1),
+    start: new Date(NEM_START_YEAR, NEM_START_MONTH, 1),
     end: new Date(year, month, 1)
   }).map(d => {
     return {

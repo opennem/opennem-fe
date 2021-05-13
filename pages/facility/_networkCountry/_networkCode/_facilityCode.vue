@@ -51,7 +51,7 @@
               v-if="facilityStatus"
               class="tag facility-status">
               <strong>{{ getFacilityStatusLabel(facilityStatus) }}</strong>
-              <em>{{ facilitySinceDate | formatLocalDate('%_d %b %Y') }}</em>
+              <em>{{ facilityDates }}</em>
             </span>
           </div>
 
@@ -297,6 +297,11 @@ import { color } from 'd3-color'
 import isBefore from 'date-fns/isBefore'
 import isAfter from 'date-fns/isAfter'
 
+import {
+  NEM_START_YEAR,
+  NEM_START_MONTH,
+  NEM_START_DAY
+} from '@/constants/nem-start-date'
 import * as FT from '~/constants/energy-fuel-techs/group-default.js'
 import * as SI from '@/constants/si'
 import * as OPTIONS from '@/constants/chart-options.js'
@@ -662,6 +667,14 @@ export default {
       return null
     },
 
+    isFacilityRetired() {
+      return this.facilityStatus === FACILITY_RETIRED
+    },
+
+    isFacilityOperating() {
+      return this.facilityStatus === FACILITY_OPERATING
+    },
+
     facilityOperatingDataFirstSeen() {
       let date = null
       // earliest operating data first seen
@@ -692,10 +705,43 @@ export default {
       return date
     },
 
+    facilityDates() {
+      const formatLocalDate = t =>
+        this.$options.filters.formatLocalDate(t, '%_d %b %Y')
+
+      if (this.isFacilityOperating) {
+        if (this.facilityOperatingDataFirstSeen) {
+          const firstSeenYear = this.facilityOperatingDataFirstSeen.getFullYear()
+          const firstSeenMonth = this.facilityOperatingDataFirstSeen.getMonth()
+          const firstSeenDay = this.facilityOperatingDataFirstSeen.getDate()
+
+          if (
+            firstSeenYear === NEM_START_YEAR &&
+            firstSeenMonth === NEM_START_MONTH &&
+            firstSeenDay === NEM_START_DAY
+          ) {
+            return `since ${formatLocalDate(
+              this.facilityOperatingDataFirstSeen
+            )}`
+          } else {
+            return `from ${formatLocalDate(
+              this.facilityOperatingDataFirstSeen
+            )} to ${formatLocalDate(this.facilityDataLastSeen)}`
+          }
+        }
+      } else if (this.isFacilityRetired) {
+        return formatLocalDate(this.facilityDataLastSeen)
+      } else if (this.facilityOperatingDataFirstSeen) {
+        return `since ${formatLocalDate(this.facilityOperatingDataFirstSeen)}`
+      }
+
+      return ''
+    },
+
     facilitySinceDate() {
-      if (this.facilityStatus === FACILITY_OPERATING) {
+      if (this.isFacilityOperating) {
         return this.facilityOperatingDataFirstSeen
-      } else if (this.facilityStatus === FACILITY_RETIRED) {
+      } else if (this.isFacilityRetired) {
         return this.facilityDataLastSeen
       }
       return null
@@ -876,7 +922,7 @@ export default {
     facility(update) {
       if (update) {
         console.log('facility-watch')
-        if (!this.queryRange && this.facilityStatus === FACILITY_RETIRED) {
+        if (!this.queryRange && this.isFacilityRetired) {
           this.setRange(RANGE_ALL)
           this.setInterval(INTERVAL_MONTH)
         }
