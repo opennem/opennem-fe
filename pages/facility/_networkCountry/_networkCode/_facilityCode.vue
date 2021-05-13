@@ -302,8 +302,10 @@ import * as SI from '@/constants/si'
 import * as OPTIONS from '@/constants/chart-options.js'
 import {
   FACILITY_RANGES,
-  FACILITY_RANGE_INTERVALS
+  FACILITY_RANGE_INTERVALS,
+  RANGE_ALL
 } from '@/constants/ranges.js'
+import { INTERVAL_MONTH } from '@/constants/interval-filters.js'
 import {
   FACILITY_OPERATING,
   FACILITY_RETIRED,
@@ -460,6 +462,9 @@ export default {
     },
     networkCode() {
       return this.$route.params.networkCode
+    },
+    queryRange() {
+      return this.$route.query.range
     },
     isEnergyType() {
       return this.dataType === 'energy'
@@ -871,6 +876,10 @@ export default {
     facility(update) {
       if (update) {
         console.log('facility-watch')
+        if (!this.queryRange && this.facilityStatus === FACILITY_RETIRED) {
+          this.setRange(RANGE_ALL)
+          this.setInterval(INTERVAL_MONTH)
+        }
         this.getFacilityStats()
       }
     },
