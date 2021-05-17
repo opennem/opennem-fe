@@ -419,7 +419,15 @@ export default {
       }
     },
 
+    isRollingSumRange() {
+      return (
+        this.range === RANGE_ALL_12MTH_ROLLING ||
+        this.range === RANGE_1Y_12MTH_ROLLING
+      )
+    },
+
     displayUnit() {
+      console.log(this.range)
       let unit = ''
       if (this.isEnergyType) {
         if (this.isTypeProportion || this.isYAxisPercentage) {
@@ -427,9 +435,10 @@ export default {
         } else if (this.isYAxisAveragePower) {
           unit = this.chartPowerCurrentUnit
         } else {
-          unit = `${this.chartEnergyCurrentUnit}/${this.intervalLabel(
-            this.interval
-          )}`
+          const interval = this.isRollingSumRange
+            ? 'year'
+            : this.intervalLabel(this.interval)
+          unit = `${this.chartEnergyCurrentUnit}/${interval}`
         }
       } else {
         // power
@@ -576,9 +585,7 @@ export default {
         range: this.range,
         interval: this.interval,
         exponent: this.chartEnergyUnitPrefix,
-        isRollingSum:
-          this.range === RANGE_ALL_12MTH_ROLLING ||
-          this.range === RANGE_1Y_12MTH_ROLLING
+        isRollingSum: this.isRollingSumRange
       })
     },
     multiLineDataset() {
