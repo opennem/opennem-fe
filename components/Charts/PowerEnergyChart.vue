@@ -143,6 +143,10 @@ import AxisTimeFormats from '@/services/axisTimeFormats.js'
 
 import * as OPTIONS from '@/constants/chart-options.js'
 import * as SI from '@/constants/si.js'
+import {
+  RANGE_ALL_12MTH_ROLLING,
+  RANGE_1Y_12MTH_ROLLING
+} from '@/constants/ranges.js'
 import { LOAD } from '@/constants/energy-fuel-techs/group-default.js'
 import EnergyToAveragePower from '@/data/transform/energy-to-average-power.js'
 import DateDisplay from '@/services/DateDisplay.js'
@@ -571,7 +575,10 @@ export default {
         domains: this.domains,
         range: this.range,
         interval: this.interval,
-        exponent: this.chartEnergyUnitPrefix
+        exponent: this.chartEnergyUnitPrefix,
+        isRollingSum:
+          this.range === RANGE_ALL_12MTH_ROLLING ||
+          this.range === RANGE_1Y_12MTH_ROLLING
       })
     },
     multiLineDataset() {
