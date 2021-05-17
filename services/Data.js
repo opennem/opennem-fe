@@ -1,7 +1,7 @@
 import subDays from 'date-fns/subDays'
 
 export default {
-  getEnergyUrls(region, range, useV3Paths) {
+  getEnergyUrls(region, range) {
     const prepend =
       region === 'wem' || region === 'nem' || region === 'au' ? '' : '/NEM'
     const regionId = region.toUpperCase()
@@ -13,33 +13,21 @@ export default {
       case '1D':
       case '3D':
       case '7D':
-        if (useV3Paths || region === 'wem') {
-          urls.push(`v3/stats/au${prepend}/${regionId}/power/7d.json`)
-        } else {
-          urls.push(`power/${region}.json`)
-        }
+        urls.push(`v3/stats/au${prepend}/${regionId}/power/7d.json`)
         break
       case '30D':
         const thirtyDaysAgo = subDays(new Date(), 30)
         lastFullYear = thirtyDaysAgo.getFullYear()
 
         if (thisFullYear !== lastFullYear) {
-          if (useV3Paths || region === 'wem') {
-            urls.push(
-              `v3/stats/au${prepend}/${regionId}/energy/${lastFullYear}.json`
-            )
-          } else {
-            urls.push(`${region}/energy/daily/${lastFullYear}.json`)
-          }
+          urls.push(
+            `v3/stats/au${prepend}/${regionId}/energy/${lastFullYear}.json`
+          )
         }
 
-        if (useV3Paths || region === 'wem') {
-          urls.push(
-            `v3/stats/au${prepend}/${regionId}/energy/${thisFullYear}.json`
-          )
-        } else {
-          urls.push(`${region}/energy/daily/${thisFullYear}.json`)
-        }
+        urls.push(
+          `v3/stats/au${prepend}/${regionId}/energy/${thisFullYear}.json`
+        )
         break
       case '1Y':
         const now = new Date().getTime()
@@ -47,30 +35,17 @@ export default {
         lastFullYear = new Date(aYearAgo).getFullYear()
 
         if (thisFullYear !== lastFullYear) {
-          if (useV3Paths || region === 'wem') {
-            urls.push(
-              `v3/stats/au${prepend}/${regionId}/energy/${lastFullYear}.json`
-            )
-          } else {
-            urls.push(`${region}/energy/daily/${lastFullYear}.json`)
-          }
-        }
-
-        if (useV3Paths || region === 'wem') {
           urls.push(
-            `v3/stats/au${prepend}/${regionId}/energy/${thisFullYear}.json`
+            `v3/stats/au${prepend}/${regionId}/energy/${lastFullYear}.json`
           )
-        } else {
-          urls.push(`${region}/energy/daily/${thisFullYear}.json`)
         }
 
+        urls.push(
+          `v3/stats/au${prepend}/${regionId}/energy/${thisFullYear}.json`
+        )
         break
       case 'ALL':
-        if (useV3Paths || region === 'wem') {
-          urls.push(`v3/stats/au${prepend}/${regionId}/energy/all.json`)
-        } else {
-          urls.push(`${region}/energy/monthly/all.json`)
-        }
+        urls.push(`v3/stats/au${prepend}/${regionId}/energy/all.json`)
         break
       default:
     }
@@ -82,10 +57,7 @@ export default {
       region === 'wem' || region === 'nem' || region === 'au' ? '' : '/NEM'
     const regionId = region.toUpperCase()
 
-    if (useV3Paths || region === 'wem') {
-      return `v3/stats/au${prepend}/${regionId}/energy/${year}.json`
-    }
-    return `${region}/energy/daily/${year}.json`
+    return `v3/stats/au${prepend}/${regionId}/energy/${year}.json`
   },
 
   getRegionAllDailyPath(region) {

@@ -266,8 +266,7 @@ export default {
   computed: {
     ...mapGetters({
       windowWidth: 'app/windowWidth',
-      tabletBreak: 'app/tabletBreak',
-      useV3: 'feature/v3Data'
+      tabletBreak: 'app/tabletBreak'
     }),
     queryFacilityId() {
       return this.$route.query.selected

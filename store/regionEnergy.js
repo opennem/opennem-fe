@@ -329,13 +329,13 @@ export const actions = {
 
   doGetRegionDataByRangeInterval(
     { commit, dispatch, rootGetters },
-    { region, range, interval, period, groupName, useV3 }
+    { region, range, interval, period, groupName }
   ) {
     dispatch('app/doClearError', null, { root: true })
 
     if (isValidRegion(region) && range !== '' && interval !== '') {
       const displayTz = rootGetters.displayTimeZone
-      const urls = Data.getEnergyUrls(region, range, useV3)
+      const urls = Data.getEnergyUrls(region, range)
       currentRegion = region
       commit('ready', false)
       commit('isFetching', true)
@@ -345,18 +345,6 @@ export const actions = {
         const perf = new PerfTime()
         perf.time()
         console.info(`------ ${currentRegion} — ${range}/${interval} (start)`)
-
-        // Workaround to flip imports market_value data
-        if (!useV3) {
-          responses.forEach(r => {
-            r.forEach(rD => {
-              if (rD.fuel_tech === 'imports' && rD.type === 'market_value') {
-                const newData = rD.history.data.map(hD => -hD)
-                rD.history.data = newData
-              }
-            })
-          })
-        }
 
         const {
           datasetFull,
