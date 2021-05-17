@@ -711,23 +711,7 @@ export default {
 
       if (this.isFacilityOperating) {
         if (this.facilityOperatingDataFirstSeen) {
-          const firstSeenYear = this.facilityOperatingDataFirstSeen.getFullYear()
-          const firstSeenMonth = this.facilityOperatingDataFirstSeen.getMonth()
-          const firstSeenDay = this.facilityOperatingDataFirstSeen.getDate()
-
-          if (
-            firstSeenYear === NEM_START_YEAR &&
-            firstSeenMonth === NEM_START_MONTH &&
-            firstSeenDay === NEM_START_DAY
-          ) {
-            return `since ${formatLocalDate(
-              this.facilityOperatingDataFirstSeen
-            )}`
-          } else {
-            return `from ${formatLocalDate(
-              this.facilityOperatingDataFirstSeen
-            )} to ${formatLocalDate(this.facilityDataLastSeen)}`
-          }
+          return `since ${formatLocalDate(this.facilityOperatingDataFirstSeen)}`
         }
       } else if (this.isFacilityRetired) {
         return formatLocalDate(this.facilityDataLastSeen)
