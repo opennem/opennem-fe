@@ -1,12 +1,12 @@
 import subMonths from 'date-fns/subMonths'
+import addMonths from 'date-fns/addMonths'
 import isAfter from 'date-fns/isAfter'
 import _cloneDeep from 'lodash.clonedeep'
 import PerfTime from '@/plugins/perfTime.js'
 
 const perfTime = new PerfTime()
 
-export default function(data, keys) {
-  console.log(data.slice(0))
+export default function(data, keys, filter) {
   perfTime.time()
   for (let x = data.length - 1; x >= 0; x--) {
     const d = data[x]
@@ -25,10 +25,19 @@ export default function(data, keys) {
             break
           }
         }
-
         data[x][id] = sum
       }
     })
   }
+
+  // filter out incomplete rolling sums
+  const firstDate = data[0].date
+  const firstAvailable = addMonths(firstDate, 11)
+  const updated = filter
+    ? data.filter(d => isAfter(d.date, firstAvailable))
+    : data
+
   perfTime.timeEnd('--- data.12month-rolling-sum')
+
+  return updated
 }

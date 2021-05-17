@@ -74,12 +74,19 @@ export function dataProcess(res, range, interval, period, displayTz) {
 
   const isEnergyType = type === 'energy'
 
+  let datasetFull
+
   if (range === RANGE_ALL_12MTH_ROLLING || range === RANGE_1Y_12MTH_ROLLING) {
-    transformTo12MthRollingSum(datasetFlat, domainPowerEnergy)
+    datasetFull = transformTo12MthRollingSum(
+      datasetFlat,
+      domainPowerEnergy,
+      range === RANGE_ALL_12MTH_ROLLING
+    )
+  } else {
+    datasetFull = _cloneDeep(datasetFlat)
   }
 
-  const datasetFull = _cloneDeep(datasetFlat)
-  const dataset = filterDatasetByRange(datasetFlat, range)
+  const dataset = filterDatasetByRange(datasetFull, range)
 
   const currentDataset =
     dataPowerEnergyInterval === interval
