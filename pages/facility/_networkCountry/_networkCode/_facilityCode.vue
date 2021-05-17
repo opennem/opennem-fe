@@ -7,7 +7,8 @@
         style="height: 60vh; margin: 0 auto;">
         <i class="fal fa-industry-alt"/>
         <div>
-          <span>Facility not available</span>
+          <span v-if="selectedFacilityError">{{ selectedFacilityErrorMessage }}</span>
+          <span v-else>Facility not available</span>
           <button
             v-tooltip="'Try loading facility again'"
             class="button is-rounded try-again-button"
@@ -50,7 +51,7 @@
               v-if="facilityStatus"
               class="tag facility-status">
               <strong>{{ getFacilityStatusLabel(facilityStatus) }}</strong>
-              <em>{{ facilitySinceDate | formatLocalDate('%d %b %Y') }}</em>
+              <em>{{ facilityDates }}</em>
             </span>
           </div>
 
@@ -99,7 +100,8 @@
               class="not-found-card card">
               <i class="fal fa-chart-area"/>
               <div>
-                <span>Facility statistics data not available</span>
+                <span v-if="selectedFacilityError">{{ selectedFacilityErrorMessage }}</span>
+                <span v-else>Facility statistics data not available</span>
                 <button
                   v-tooltip="'Try loading facility statistics again'"
                   class="button is-rounded try-again-button"
@@ -295,13 +297,20 @@ import { color } from 'd3-color'
 import isBefore from 'date-fns/isBefore'
 import isAfter from 'date-fns/isAfter'
 
+import {
+  NEM_START_YEAR,
+  NEM_START_MONTH,
+  NEM_START_DAY
+} from '@/constants/nem-start-date'
 import * as FT from '~/constants/energy-fuel-techs/group-default.js'
 import * as SI from '@/constants/si'
 import * as OPTIONS from '@/constants/chart-options.js'
 import {
   FACILITY_RANGES,
-  FACILITY_RANGE_INTERVALS
+  FACILITY_RANGE_INTERVALS,
+  RANGE_ALL
 } from '@/constants/ranges.js'
+import { INTERVAL_MONTH } from '@/constants/interval-filters.js'
 import {
   FACILITY_OPERATING,
   FACILITY_RETIRED,
@@ -426,6 +435,8 @@ export default {
       domainEmissions: 'facility/domainEmissions',
       domainMarketValue: 'facility/domainMarketValue',
       domainVolWeightedPrices: 'facility/domainVolWeightedPrices',
+      selectedFacilityError: 'facility/selectedFacilityError',
+      selectedFacilityErrorMessage: 'facility/selectedFacilityErrorMessage',
 
       chartShown: 'chartOptionsPowerEnergy/chartShown',
       chartType: 'chartOptionsPowerEnergy/chartType',
@@ -456,6 +467,9 @@ export default {
     },
     networkCode() {
       return this.$route.params.networkCode
+    },
+    queryRange() {
+      return this.$route.query.range
     },
     isEnergyType() {
       return this.dataType === 'energy'
@@ -653,6 +667,14 @@ export default {
       return null
     },
 
+    isFacilityRetired() {
+      return this.facilityStatus === FACILITY_RETIRED
+    },
+
+    isFacilityOperating() {
+      return this.facilityStatus === FACILITY_OPERATING
+    },
+
     facilityOperatingDataFirstSeen() {
       let date = null
       // earliest operating data first seen
@@ -683,10 +705,27 @@ export default {
       return date
     },
 
+    facilityDates() {
+      const formatLocalDate = t =>
+        this.$options.filters.formatLocalDate(t, '%_d %b %Y')
+
+      if (this.isFacilityOperating) {
+        if (this.facilityOperatingDataFirstSeen) {
+          return `since ${formatLocalDate(this.facilityOperatingDataFirstSeen)}`
+        }
+      } else if (this.isFacilityRetired) {
+        return formatLocalDate(this.facilityDataLastSeen)
+      } else if (this.facilityOperatingDataFirstSeen) {
+        return `since ${formatLocalDate(this.facilityOperatingDataFirstSeen)}`
+      }
+
+      return ''
+    },
+
     facilitySinceDate() {
-      if (this.facilityStatus === FACILITY_OPERATING) {
+      if (this.isFacilityOperating) {
         return this.facilityOperatingDataFirstSeen
-      } else if (this.facilityStatus === FACILITY_RETIRED) {
+      } else if (this.isFacilityRetired) {
         return this.facilityDataLastSeen
       }
       return null
@@ -867,6 +906,10 @@ export default {
     facility(update) {
       if (update) {
         console.log('facility-watch')
+        if (!this.queryRange && this.isFacilityRetired) {
+          this.setRange(RANGE_ALL)
+          this.setInterval(INTERVAL_MONTH)
+        }
         this.getFacilityStats()
       }
     },

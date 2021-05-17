@@ -3,12 +3,10 @@ import axios from 'axios'
 
 import PerfTime from '@/plugins/perfTime.js'
 import { FACILITY_OPERATING } from '@/constants/facility-status.js'
-import { isPowerRange, RANGE_7D, RANGE_30D } from '@/constants/ranges.js'
-import {
-  INTERVAL_5MIN,
-  INTERVAL_30MIN,
-  INTERVAL_DAY
-} from '@/constants/interval-filters.js'
+import { isPowerRange, RANGE_7D } from '@/constants/ranges.js'
+import { INTERVAL_30MIN } from '@/constants/interval-filters.js'
+import { MAP_STYLE_LIGHT } from '@/constants/facilities/map-styles.js'
+
 import {
   dataProcess,
   dataRollUp,
@@ -70,6 +68,7 @@ export const state = () => ({
   selectedTechGroups: [],
   selectedTechs: [],
   selectedView: 'list',
+  selectedMapStyle: MAP_STYLE_LIGHT,
   filteredFacilities: [],
 
   previousPath: '',
@@ -80,6 +79,8 @@ export const state = () => ({
   selectedFacilityUnits: [],
   selectedFacilityUnitsDataset: [],
   selectedFacilityUnitsDatasetFlat: [], // as returned transform
+  selectedFacilityError: false,
+  selectedFacilityErrorMessage: false,
 
   domainPowerEnergy: [],
   domainEmissions: [],
@@ -111,6 +112,9 @@ export const mutations = {
   selectedTechs(state, data) {
     state.selectedTechs = data
   },
+  selectedMapStyle(state, data) {
+    state.selectedMapStyle = data
+  },
   filteredFacilities(state, data) {
     state.filteredFacilities = data
   },
@@ -141,6 +145,12 @@ export const mutations = {
   },
   selectedFacilityUnitsDatasetFlat(state, data) {
     state.selectedFacilityUnitsDatasetFlat = data
+  },
+  selectedFacilityError(state, data) {
+    state.selectedFacilityError = data
+  },
+  selectedFacilityErrorMessage(state, data) {
+    state.selectedFacilityErrorMessage = data
   },
 
   domainPowerEnergy(state, data) {
@@ -178,6 +188,7 @@ export const getters = {
   selectedTechGroups: state => _cloneDeep(state.selectedTechGroups),
   selectedTechs: state => _cloneDeep(state.selectedTechs),
   selectedView: state => state.selectedView,
+  selectedMapStyle: state => state.selectedMapStyle,
   filteredFacilities: state => state.filteredFacilities,
 
   previousPath: state => state.previousPath,
@@ -191,6 +202,8 @@ export const getters = {
     _cloneDeep(state.selectedFacilityUnitsDataset),
   selectedFacilityUnitsDatasetFlat: state =>
     _cloneDeep(state.selectedFacilityUnitsDatasetFlat),
+  selectedFacilityError: state => state.selectedFacilityError,
+  selectedFacilityErrorMessage: state => state.selectedFacilityErrorMessage,
 
   domainPowerEnergy: state => _cloneDeep(state.domainPowerEnergy),
   domainEmissions: state => _cloneDeep(state.domainEmissions),
@@ -235,6 +248,8 @@ export const actions = {
     commit('fetchingFacility', true)
     commit('selectedFacility', null)
     commit('selectedFacilityNetworkRegion', '')
+    commit('selectedFacilityError', false)
+    commit('selectedFacilityErrorMessage', '')
 
     http
       .get(ref)
@@ -245,6 +260,12 @@ export const actions = {
           : ''
         commit('selectedFacility', response.data)
         commit('selectedFacilityNetworkRegion', networkCode)
+
+        // Error handling
+        if (response.response_status === 'ERROR') {
+          commit('selectedFacilityError', true)
+          commit('selectedFacilityErrorMessage', response.detail)
+        }
       })
       .catch(e => {
         const error = e.toJSON()

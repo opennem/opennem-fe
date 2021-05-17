@@ -344,40 +344,7 @@ export default {
         }, 200)
       )
 
-      window.addEventListener('keydown', e => {
-        const isUp = e.keyCode === 38
-        const isDown = e.keyCode === 40
-        const selectedId = this.selectedFacility
-          ? this.selectedFacility.stationId
-          : null
-        const length = this.filteredFacilities.length
-        const index = this.filteredFacilities.findIndex(
-          f => f.stationId === selectedId
-        )
-        if (index !== -1) {
-          if (isUp) {
-            e.preventDefault()
-            if (index <= 0) {
-            } else {
-              this.$emit(
-                'facilitySelect',
-                this.filteredFacilities[index - 1],
-                true
-              )
-            }
-          } else if (isDown) {
-            e.preventDefault()
-            if (index >= length - 1) {
-            } else {
-              this.$emit(
-                'facilitySelect',
-                this.filteredFacilities[index + 1],
-                true
-              )
-            }
-          }
-        }
-      })
+      window.addEventListener('keydown', this.listenToNavKeys)
     }
   },
 
@@ -387,7 +354,49 @@ export default {
     })
   },
 
+  beforeDestroy() {
+    window.removeEventListener('keydown', this.listenToNavKeys)
+  },
+
   methods: {
+    listenToNavKeys(e) {
+      const isUp = e.keyCode === 38
+      const isRight = e.keyCode === 39
+      const isDown = e.keyCode === 40
+      const selectedId = this.selectedFacility
+        ? this.selectedFacility.stationId
+        : null
+      const length = this.filteredFacilities.length
+      const index = this.filteredFacilities.findIndex(
+        f => f.stationId === selectedId
+      )
+      if (index !== -1) {
+        if (isUp) {
+          e.preventDefault()
+          if (index <= 0) {
+          } else {
+            this.$emit(
+              'facilitySelect',
+              this.filteredFacilities[index - 1],
+              true
+            )
+          }
+        } else if (isDown) {
+          e.preventDefault()
+          if (index >= length - 1) {
+          } else {
+            this.$emit(
+              'facilitySelect',
+              this.filteredFacilities[index + 1],
+              true
+            )
+          }
+        } else if (isRight) {
+          e.preventDefault()
+          this.$emit('openFacilityView', this.selectedFacility)
+        }
+      }
+    },
     calculateDivWidth() {
       if (this.tabletBreak) {
         return this.windowWidth
