@@ -135,6 +135,12 @@
         @selectedStatuses="handleStatusesSelected"
       />
 
+      <size-filter
+        v-if="!searchOn"
+        class="filter-status"
+        @selected="handleSizeSelected"
+      />
+
       <facility-view-toggle
         v-if="tabletBreak"
         :view="selectedView"
@@ -159,11 +165,13 @@ import {
   FACILITY_GROUP_SOLAR
 } from '~/constants/facility-fuel-tech.js'
 import StatusFilter from '~/components/Facility/StatusFilter'
+import SizeFilter from '~/components/Facility/SizeFilter'
 import FacilityViewToggle from '~/components/Facility/ViewToggle'
 
 export default {
   components: {
     StatusFilter,
+    SizeFilter,
     FacilityViewToggle
   },
 
@@ -349,6 +357,10 @@ export default {
     },
     handleStatusesSelected(selectedStatuses) {
       this.$emit('selectedStatuses', selectedStatuses)
+    },
+
+    handleSizeSelected(size) {
+      this.$emit('selectedSize', size)
     },
 
     handleViewSelect(view) {

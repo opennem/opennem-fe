@@ -297,11 +297,6 @@ import { color } from 'd3-color'
 import isBefore from 'date-fns/isBefore'
 import isAfter from 'date-fns/isAfter'
 
-import {
-  NEM_START_YEAR,
-  NEM_START_MONTH,
-  NEM_START_DAY
-} from '@/constants/nem-start-date'
 import * as FT from '~/constants/energy-fuel-techs/group-default.js'
 import * as SI from '@/constants/si'
 import * as OPTIONS from '@/constants/chart-options.js'
