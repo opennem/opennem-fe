@@ -232,6 +232,10 @@ export default {
         } else {
           display = timeFormat('%b %Y')(time)
         }
+
+        if (range === RANGE_1Y_12MTH_ROLLING && !isStart && !isEnd) {
+          display = 'Year to ' + display
+        }
         break
       case RANGE_ALL:
       case RANGE_ALL_12MTH_ROLLING:
@@ -274,6 +278,10 @@ export default {
           display = timeFormat('%Y')(time)
         } else {
           display = timeFormat('%b %Y')(time)
+        }
+
+        if (range === RANGE_ALL_12MTH_ROLLING && !isStart && !isEnd) {
+          display = 'Year to ' + display
         }
         break
       default:
