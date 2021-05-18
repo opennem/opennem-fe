@@ -67,6 +67,7 @@ export const state = () => ({
   selectedStatuses: [FACILITY_OPERATING],
   selectedTechGroups: [],
   selectedTechs: [],
+  selectedSize: '',
   selectedView: 'list',
   selectedMapStyle: MAP_STYLE_LIGHT,
   filteredFacilities: [],
@@ -105,6 +106,9 @@ export const mutations = {
   },
   selectedStatuses(state, data) {
     state.selectedStatuses = data
+  },
+  selectedSize(state, data) {
+    state.selectedSize = data
   },
   selectedTechGroups(state, data) {
     state.selectedTechGroups = data
@@ -187,6 +191,7 @@ export const getters = {
   selectedStatuses: state => _cloneDeep(state.selectedStatuses),
   selectedTechGroups: state => _cloneDeep(state.selectedTechGroups),
   selectedTechs: state => _cloneDeep(state.selectedTechs),
+  selectedSize: state => state.selectedSize,
   selectedView: state => state.selectedView,
   selectedMapStyle: state => state.selectedMapStyle,
   filteredFacilities: state => state.filteredFacilities,

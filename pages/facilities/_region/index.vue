@@ -4,9 +4,11 @@
       :selected-view="selectedView"
       :selected-techs="selectedTechs"
       :selected-statuses="selectedStatuses"
+      :selected-size="selectedSize"
       class="facility-filters"
       @techsSelect="handleTechsSelected"
       @selectedStatuses="handleStatusesSelected"
+      @selectedSize="handleSizeSelected"
       @facilityNameFilter="handleFacilityNameFilter"
       @viewSelect="handleViewSelect"
     />
@@ -87,6 +89,13 @@ import _orderBy from 'lodash.orderby'
 import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 import { FACILITY_OPERATING } from '~/constants/facility-status.js'
 import {
+  FACILITY_LESS_THAN_1_MW,
+  FACILITY_1_TO_5_MW,
+  FACILITY_5_TO_30_MW,
+  FACILITY_MORE_THAN_30_MW
+} from '~/constants/facility-size.js'
+
+import {
   FacilityRegions,
   getNEMRegionArray,
   getFacilityRegionLabel
@@ -163,6 +172,7 @@ export default {
       hoveredFacility: null,
       selectedStatuses: [FACILITY_OPERATING],
       selectedTechs: [],
+      selectedSize: '',
       selectedView: 'list',
       sortBy: 'displayName',
       orderBy: ASCENDING,
@@ -233,6 +243,9 @@ export default {
     selectedStatuses() {
       this.updateFacilitiesData()
     },
+    selectedSize() {
+      this.updateFacilitiesData()
+    },
     sortBy() {
       this.updateFacilitiesData()
     },
@@ -263,7 +276,8 @@ export default {
   methods: {
     ...mapMutations({
       previousPath: 'facility/previousPath',
-      setFilteredFacilities: 'facility/filteredFacilities'
+      setFilteredFacilities: 'facility/filteredFacilities',
+      setSelectedSize: 'facility/selectedSize'
     }),
     fetchData() {
       const urls = []
@@ -332,7 +346,20 @@ export default {
         [this.orderBy]
       )
 
-      const filtered = sortedData
+      const filtered = sortedData.filter(d => {
+        switch (this.selectedSize) {
+          case FACILITY_LESS_THAN_1_MW:
+            return d.generatorCap < 1
+          case FACILITY_1_TO_5_MW:
+            return d.generatorCap >= 1 && d.generatorCap <= 5
+          case FACILITY_5_TO_30_MW:
+            return d.generatorCap > 5 && d.generatorCap <= 30
+          case FACILITY_MORE_THAN_30_MW:
+            return d.generatorCap > 30
+          default:
+            return true
+        }
+      })
 
       const that = this
       let regionIds = [this.regionId]
@@ -430,6 +457,10 @@ export default {
     handleStatusesSelected(statuses) {
       this.selectedStatuses = statuses
       this.$store.dispatch('facility/selectedStatuses', this.selectedStatuses)
+    },
+    handleSizeSelected(size) {
+      this.selectedSize = size
+      this.setSelectedSize(size)
     },
     handleViewSelect(view) {
       this.selectedView = view
