@@ -86,15 +86,11 @@ import { mapGetters, mapMutations } from 'vuex'
 import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
 import _orderBy from 'lodash.orderby'
+import _cloneDeep from 'lodash.clonedeep'
+
 import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 import { FACILITY_OPERATING } from '~/constants/facility-status.js'
-import {
-  FACILITY_SIZE,
-  FACILITY_LESS_THAN_1_MW,
-  FACILITY_1_TO_5_MW,
-  FACILITY_5_TO_30_MW,
-  FACILITY_MORE_THAN_30_MW
-} from '~/constants/facility-size.js'
+import { FACILITY_SIZE } from '~/constants/facility-size.js'
 
 import {
   FacilityRegions,
@@ -325,6 +321,35 @@ export default {
       }
     },
 
+    getColour(facility) {
+      let selectedFt = null,
+        count = 0
+
+      this.selectedTechs.forEach(tech => {
+        if (_includes(facility.fuelTechs, tech)) {
+          selectedFt = tech
+          count += 1
+        }
+      })
+
+      if (
+        this.selectedTechs.length === 0 ||
+        facility.fuelTechs.length === count
+      ) {
+        const ftCaps = facility.fuelTechRegisteredCap
+        let highest = 0
+        Object.keys(ftCaps).forEach(d => {
+          if (ftCaps[d] >= highest) {
+            selectedFt = d
+            highest = ftCaps[d]
+          }
+        })
+      }
+
+      const ftColour = FUEL_TECHS.DEFAULT_FUEL_TECH_COLOUR[selectedFt]
+      return ftColour || 'lightgrey'
+    },
+
     updateFacilitiesData() {
       const sortedData = _orderBy(
         this.facilityData,
@@ -386,8 +411,11 @@ export default {
       }
 
       updateFilter().then(facilities => {
-        that.filteredFacilities = facilities
+        that.filteredFacilities = _cloneDeep(facilities)
         that.totalFacilities = facilities.length
+        that.filteredFacilities.forEach(f => {
+          f.colour = that.getColour(f)
+        })
 
         const exportData = facilities.map(d => {
           // eslint-disable-line

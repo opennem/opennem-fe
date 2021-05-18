@@ -35,14 +35,13 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import _orderBy from 'lodash.orderby'
 import _debounce from 'lodash.debounce'
 import { scaleLinear as d3ScaleLinear } from 'd3-scale'
 import AnimatedPopup from 'mapbox-gl-animated-popup'
 
-import { DEFAULT_FUEL_TECH_COLOUR } from '~/constants/energy-fuel-techs/group-default.js'
 import {
   MAP_STYLE_URLS,
   MAP_STYLE_SATELLITE
@@ -115,7 +114,7 @@ export default {
       data.forEach(d => {
         const properties = d.jsonData.properties
         properties.generatorCap = d.generatorCap
-        properties.colour = this.getColour(d)
+        properties.colour = d.colour
         properties.radius = this.getRadius(d.generatorCap)
       })
       return _orderBy(data, ['generatorCap'], ['desc'])
@@ -129,6 +128,7 @@ export default {
     updatedData() {
       this.updateMapSource()
     },
+
     hovered(val) {
       if (
         val ||
@@ -236,21 +236,6 @@ export default {
 
     getRadius(cap) {
       return radiusScale(Math.sqrt(cap))
-    },
-
-    getColour(facility) {
-      const ftCaps = facility.fuelTechRegisteredCap
-      let highest = 0
-      let highestFt = null
-      Object.keys(ftCaps).forEach(d => {
-        if (ftCaps[d] >= highest) {
-          highestFt = d
-          highest = ftCaps[d]
-        }
-      })
-
-      const ftColour = DEFAULT_FUEL_TECH_COLOUR[highestFt]
-      return ftColour || 'lightgrey'
     },
 
     setMapBounds(features) {
