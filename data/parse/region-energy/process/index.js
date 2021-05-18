@@ -1,6 +1,7 @@
 import parseISO from 'date-fns/parseISO'
 import addDays from 'date-fns/addDays'
 import addMonths from 'date-fns/addMonths'
+import isBefore from 'date-fns/isBefore'
 import PerfTime from '@/plugins/perfTime.js'
 import { EMISSIONS, MARKET_VALUE } from '@/constants/data-types'
 import createEmptyDatasets from '@/data/helpers/createEmptyDatasets.js'
@@ -54,6 +55,23 @@ export default function(data, displayTz) {
     getFuelTechInOrder(dataEmissions),
     EMISSIONS
   )
+
+  // find earliest energy start date
+  let earliestEnergyStartDate = null
+  domainPowerEnergy.forEach(domain => {
+    const id = domain.id
+    const find = dataAll.find(d => d.id === id)
+    const start = new Date(find.history.start)
+
+    if (find) {
+      if (
+        !earliestEnergyStartDate ||
+        (earliestEnergyStartDate && isBefore(start, earliestEnergyStartDate))
+      ) {
+        earliestEnergyStartDate = start
+      }
+    }
+  })
 
   let domainMarketValue = [],
     domainPrice = []
@@ -113,7 +131,7 @@ export default function(data, displayTz) {
   perfTime.timeEnd('--- data.process')
 
   return {
-    datasetFlat,
+    datasetFlat: datasetFlat.filter(d => d.date >= earliestEnergyStartDate),
     datasetInflation,
     domainPowerEnergy,
     domainEmissions,
