@@ -4,7 +4,7 @@
     :class="{ 'is-active': dropdownActive }"
     class="dropdown">
     <button
-      :class="{ 'is-inverted': !selected }"
+      :class="{ 'is-inverted': selected.length === 0 }"
       class="dropdown-trigger button is-small is-rounded is-primary"
       @click="dropdownActive = !dropdownActive"
     >
@@ -23,10 +23,14 @@
           <a
             v-for="(d, index) in sizes"
             :key="index"
-            :class=" { 'is-selected': selected === d.id }"
             class="dropdown-item"
             @click="handleClick(d.id)"
           >
+            <span class="status-checkbox">
+              <i
+                v-if="isSelected(d.id)"
+                class="checkmark-icon fal fa-check" />
+            </span>
             {{ d.label }}
           </a>
 
@@ -66,7 +70,7 @@ export default {
   data() {
     return {
       sizes: _cloneDeep(FacilitySize),
-      selected: null,
+      selected: [],
       dropdownActive: false
     }
   },
@@ -85,19 +89,25 @@ export default {
     onClickAway() {
       this.dropdownActive = false
     },
+
     isSelected(val) {
-      return this.selected === val
+      return _includes(this.selected, val)
     },
     handleClick(val) {
-      this.selected = val
-      this.$emit('selected', this.selected)
+      const isIncluded = _includes(this.selected, val)
+      if (isIncluded) {
+        this.selected = this.selected.filter(d => d !== val)
+      } else {
+        this.selected.push(val)
+      }
+      this.$emit('selected', _cloneDeep(this.selected))
     },
     clearSelected() {
-      this.selected = null
-      this.$emit('selected', this.selected)
+      this.selected = []
+      this.$emit('selected', _cloneDeep(this.selected))
     },
     getLabel(selected) {
-      return getFacilitySizeLabelById(selected)
+      return selected.length > 0 ? `Size (${selected.length})` : 'Size'
     }
   }
 }
@@ -128,6 +138,26 @@ export default {
       background-color: $opennem-link-color;
       color: white;
     }
+  }
+}
+
+.status-checkbox {
+  width: 15px;
+  height: 15px;
+  background-color: #fff;
+  display: inline-block;
+  vertical-align: text-bottom;
+  margin-right: 0.4rem;
+  position: relative;
+  top: 1px;
+  border: 1px solid #000;
+  border-radius: 1px;
+
+  .checkmark-icon {
+    position: relative;
+    left: 2px;
+    bottom: 1px;
+    color: #000;
   }
 }
 

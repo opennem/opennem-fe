@@ -3,6 +3,12 @@ export const FACILITY_1_TO_5_MW = 'FACILITY_1_TO_5_MW'
 export const FACILITY_5_TO_30_MW = 'FACILITY_5_TO_30_MW'
 export const FACILITY_MORE_THAN_30_MW = 'FACILITY_MORE_THAN_30_MW'
 
+export const FACILITY_SIZE = {}
+FACILITY_SIZE[FACILITY_LESS_THAN_1_MW] = val => val < 1
+FACILITY_SIZE[FACILITY_1_TO_5_MW] = val => val >= 1 && val <= 5
+FACILITY_SIZE[FACILITY_5_TO_30_MW] = val => val > 5 && val <= 30
+FACILITY_SIZE[FACILITY_MORE_THAN_30_MW] = val => val > 30
+
 export const FacilitySize = [
   {
     id: FACILITY_LESS_THAN_1_MW,

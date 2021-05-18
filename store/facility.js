@@ -67,7 +67,7 @@ export const state = () => ({
   selectedStatuses: [FACILITY_OPERATING],
   selectedTechGroups: [],
   selectedTechs: [],
-  selectedSize: '',
+  selectedSize: [],
   selectedView: 'list',
   selectedMapStyle: MAP_STYLE_LIGHT,
   filteredFacilities: [],
@@ -191,7 +191,7 @@ export const getters = {
   selectedStatuses: state => _cloneDeep(state.selectedStatuses),
   selectedTechGroups: state => _cloneDeep(state.selectedTechGroups),
   selectedTechs: state => _cloneDeep(state.selectedTechs),
-  selectedSize: state => state.selectedSize,
+  selectedSize: state => _cloneDeep(state.selectedSize),
   selectedView: state => state.selectedView,
   selectedMapStyle: state => state.selectedMapStyle,
   filteredFacilities: state => state.filteredFacilities,
@@ -236,6 +236,9 @@ export const actions = {
   },
   selectedTechs({ commit }, data) {
     commit('selectedTechs', data)
+  },
+  selectedSize({ commit }, data) {
+    commit('selectedSize', data)
   },
   selectedView({ commit }, data) {
     commit('selectedView', data)

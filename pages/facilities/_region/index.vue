@@ -89,6 +89,7 @@ import _orderBy from 'lodash.orderby'
 import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 import { FACILITY_OPERATING } from '~/constants/facility-status.js'
 import {
+  FACILITY_SIZE,
   FACILITY_LESS_THAN_1_MW,
   FACILITY_1_TO_5_MW,
   FACILITY_5_TO_30_MW,
@@ -276,8 +277,7 @@ export default {
   methods: {
     ...mapMutations({
       previousPath: 'facility/previousPath',
-      setFilteredFacilities: 'facility/filteredFacilities',
-      setSelectedSize: 'facility/selectedSize'
+      setFilteredFacilities: 'facility/filteredFacilities'
     }),
     fetchData() {
       const urls = []
@@ -347,18 +347,18 @@ export default {
       )
 
       const filtered = sortedData.filter(d => {
-        switch (this.selectedSize) {
-          case FACILITY_LESS_THAN_1_MW:
-            return d.generatorCap < 1
-          case FACILITY_1_TO_5_MW:
-            return d.generatorCap >= 1 && d.generatorCap <= 5
-          case FACILITY_5_TO_30_MW:
-            return d.generatorCap > 5 && d.generatorCap <= 30
-          case FACILITY_MORE_THAN_30_MW:
-            return d.generatorCap > 30
-          default:
-            return true
+        if (this.selectedSize.length === 0) {
+          return true
         }
+
+        let check = false
+        this.selectedSize.forEach(s => {
+          if (FACILITY_SIZE[s](d.generatorCap)) {
+            check = true
+          }
+        })
+
+        return check
       })
 
       const that = this
@@ -460,7 +460,7 @@ export default {
     },
     handleSizeSelected(size) {
       this.selectedSize = size
-      this.setSelectedSize(size)
+      this.$store.dispatch('facility/selectedSize', this.selectedView)
     },
     handleViewSelect(view) {
       this.selectedView = view
