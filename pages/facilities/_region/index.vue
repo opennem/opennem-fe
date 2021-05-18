@@ -4,9 +4,11 @@
       :selected-view="selectedView"
       :selected-techs="selectedTechs"
       :selected-statuses="selectedStatuses"
+      :selected-size="selectedSize"
       class="facility-filters"
       @techsSelect="handleTechsSelected"
       @selectedStatuses="handleStatusesSelected"
+      @selectedSize="handleSizeSelected"
       @facilityNameFilter="handleFacilityNameFilter"
       @viewSelect="handleViewSelect"
     />
@@ -87,6 +89,14 @@ import _orderBy from 'lodash.orderby'
 import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 import { FACILITY_OPERATING } from '~/constants/facility-status.js'
 import {
+  FACILITY_SIZE,
+  FACILITY_LESS_THAN_1_MW,
+  FACILITY_1_TO_5_MW,
+  FACILITY_5_TO_30_MW,
+  FACILITY_MORE_THAN_30_MW
+} from '~/constants/facility-size.js'
+
+import {
   FacilityRegions,
   getNEMRegionArray,
   getFacilityRegionLabel
@@ -163,6 +173,7 @@ export default {
       hoveredFacility: null,
       selectedStatuses: [FACILITY_OPERATING],
       selectedTechs: [],
+      selectedSize: '',
       selectedView: 'list',
       sortBy: 'displayName',
       orderBy: ASCENDING,
@@ -231,6 +242,9 @@ export default {
       this.updateFacilitiesData()
     },
     selectedStatuses() {
+      this.updateFacilitiesData()
+    },
+    selectedSize() {
       this.updateFacilitiesData()
     },
     sortBy() {
@@ -332,7 +346,20 @@ export default {
         [this.orderBy]
       )
 
-      const filtered = sortedData
+      const filtered = sortedData.filter(d => {
+        if (this.selectedSize.length === 0) {
+          return true
+        }
+
+        let check = false
+        this.selectedSize.forEach(s => {
+          if (FACILITY_SIZE[s](d.generatorCap)) {
+            check = true
+          }
+        })
+
+        return check
+      })
 
       const that = this
       let regionIds = [this.regionId]
@@ -430,6 +457,10 @@ export default {
     handleStatusesSelected(statuses) {
       this.selectedStatuses = statuses
       this.$store.dispatch('facility/selectedStatuses', this.selectedStatuses)
+    },
+    handleSizeSelected(size) {
+      this.selectedSize = size
+      this.$store.dispatch('facility/selectedSize', this.selectedView)
     },
     handleViewSelect(view) {
       this.selectedView = view
