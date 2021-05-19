@@ -6,7 +6,6 @@ import {
   RANGE_7D,
   RANGE_30D,
   RANGE_1Y,
-  RANGE_1Y_12MTH_ROLLING,
   RANGE_ALL,
   RANGE_ALL_12MTH_ROLLING
 } from '@/constants/ranges.js'
@@ -33,7 +32,7 @@ export function filterDatasetByRange(dataset, range) {
       newStartDate = subDays(latestDate, 3)
     } else if (range === RANGE_30D) {
       newStartDate = subDays(latestDate, 29)
-    } else if (range === RANGE_1Y || range === RANGE_1Y_12MTH_ROLLING) {
+    } else if (range === RANGE_1Y) {
       newStartDate = subMonths(latestDate, 12)
     }
     return dataset.filter(d => d.date >= newStartDate && d.date <= latestDate)

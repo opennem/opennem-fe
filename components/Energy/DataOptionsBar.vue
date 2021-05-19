@@ -76,9 +76,7 @@ import {
   RANGE_3D,
   RANGE_7D,
   RANGE_1Y,
-  RANGE_1Y_12MTH_ROLLING,
   RANGE_ALL,
-  RANGE_ALL_12MTH_ROLLING,
   getDefaultIntervalByRange,
   isValidRangeInterval
 } from '~/constants/ranges.js'

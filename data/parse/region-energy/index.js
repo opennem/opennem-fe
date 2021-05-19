@@ -1,10 +1,7 @@
 import _cloneDeep from 'lodash.clonedeep'
 import { getAllGroups } from '@/constants/energy-fuel-techs'
 import { EMISSIONS, MARKET_VALUE } from '@/constants/data-types'
-import {
-  RANGE_1Y_12MTH_ROLLING,
-  RANGE_ALL_12MTH_ROLLING
-} from '@/constants/ranges.js'
+import { RANGE_ALL_12MTH_ROLLING } from '@/constants/ranges.js'
 import process from './process'
 import rollUp from './rollUp'
 import summariseDataset from './summarise'
@@ -76,7 +73,7 @@ export function dataProcess(res, range, interval, period, displayTz) {
 
   let datasetFull
 
-  if (range === RANGE_ALL_12MTH_ROLLING || range === RANGE_1Y_12MTH_ROLLING) {
+  if (range === RANGE_ALL_12MTH_ROLLING) {
     datasetFull = transformTo12MthRollingSum(
       datasetFlat,
       [...domainPowerEnergy, ...domainEmissions, ...domainMarketValue],

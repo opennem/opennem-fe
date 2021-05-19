@@ -15,7 +15,6 @@ import {
 import {
   RANGE_30D,
   RANGE_1Y,
-  RANGE_1Y_12MTH_ROLLING,
   RANGE_ALL,
   RANGE_ALL_12MTH_ROLLING
 } from '~/constants/ranges.js'
@@ -198,7 +197,6 @@ export default {
         display = timeFormat(formatString)(time)
         break
       case RANGE_1Y:
-      case RANGE_1Y_12MTH_ROLLING:
         if (interval === INTERVAL_DAY) {
           formatString = getFormatStringDay(sYear)
           display = timeFormat(formatString)(time)
@@ -231,10 +229,6 @@ export default {
           }
         } else {
           display = timeFormat('%b %Y')(time)
-        }
-
-        if (range === RANGE_1Y_12MTH_ROLLING && !isStart && !isEnd) {
-          display = 'Year to ' + display
         }
         break
       case RANGE_ALL:

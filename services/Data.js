@@ -7,7 +7,6 @@ import {
   RANGE_7D,
   RANGE_30D,
   RANGE_1Y,
-  RANGE_1Y_12MTH_ROLLING,
   RANGE_ALL,
   RANGE_ALL_12MTH_ROLLING
 } from '~/constants/ranges.js'
@@ -75,27 +74,7 @@ export default {
         }
 
         break
-      case RANGE_1Y_12MTH_ROLLING:
-        oneYearAgo = subYears(new Date(), 1).getFullYear()
-        const twoYearsAgo = subYears(new Date(), 2).getFullYear()
 
-        if (useV3Paths || region === 'wem') {
-          urls.push(
-            `v3/stats/au${prepend}/${regionId}/energy/${twoYearsAgo}.json`
-          )
-          urls.push(
-            `v3/stats/au${prepend}/${regionId}/energy/${oneYearAgo}.json`
-          )
-          urls.push(
-            `v3/stats/au${prepend}/${regionId}/energy/${thisFullYear}.json`
-          )
-        } else {
-          urls.push(`${region}/energy/daily/${twoYearsAgo}.json`)
-          urls.push(`${region}/energy/daily/${oneYearAgo}.json`)
-          urls.push(`${region}/energy/daily/${thisFullYear}.json`)
-        }
-
-        break
       case RANGE_ALL:
       case RANGE_ALL_12MTH_ROLLING:
         if (useV3Paths || region === 'wem') {
