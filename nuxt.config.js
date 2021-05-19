@@ -165,6 +165,7 @@ module.exports = {
     ],
     script: [
       { src: '/scripts/ga.js' },
+      { src: '/scripts/marker.js' },
       { src: 'https://cdn.polyfill.io/v2/polyfill.min.js?features=default' }
     ]
   },
