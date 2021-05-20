@@ -128,16 +128,20 @@
         </transition>
       </div>
 
-      <status-filter
+      <DropdownSelection
         v-if="!searchOn"
-        :selected-statuses="selectedStatuses"
+        :name="'Status'"
+        :initial-selections="selectedStatuses"
+        :selections="statuses"
         class="filter-status"
-        @selectedStatuses="handleStatusesSelected"
+        @selected="handleStatusesSelected"
       />
 
-      <size-filter
+      <DropdownSelection
         v-if="!searchOn"
-        class="filter-status"
+        :name="'Size'"
+        :selections="sizes"
+        class="filter-size"
         @selected="handleSizeSelected"
       />
 
@@ -164,14 +168,14 @@ import {
   FACILITY_GROUP_BATTERY,
   FACILITY_GROUP_SOLAR
 } from '~/constants/facility-fuel-tech.js'
-import StatusFilter from '~/components/Facility/StatusFilter'
-import SizeFilter from '~/components/Facility/SizeFilter'
+import { FacilitySize } from '~/constants/facility-size.js'
+import { FacilityStatus } from '~/constants/facility-status.js'
+import DropdownSelection from '~/components/ui/DropdownSelection'
 import FacilityViewToggle from '~/components/Facility/ViewToggle'
 
 export default {
   components: {
-    StatusFilter,
-    SizeFilter,
+    DropdownSelection,
     FacilityViewToggle
   },
 
@@ -198,6 +202,8 @@ export default {
       techDropdownActive: false,
       allTechs: [],
       groupExpanded: [],
+      sizes: _cloneDeep(FacilitySize),
+      statuses: _cloneDeep(FacilityStatus),
       simplifiedGroup: _cloneDeep(FacilityGroups),
       searchOn: false
     }
@@ -444,6 +450,7 @@ export default {
 
   .filter-tech,
   .filter-status,
+  .filter-size,
   .search-button {
     margin: 0 3px;
   }

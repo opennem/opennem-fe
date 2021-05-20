@@ -9,8 +9,7 @@
       @click="dropdownActive = !dropdownActive"
     >
       <div class="dropdown-label">
-        <strong v-if="selected">{{ getLabel(selected) }}</strong>
-        <strong v-else>Size</strong>
+        <strong>{{ getLabel(selected) }}</strong>
       </div>
       <i class="fal fa-chevron-down" />
     </button>
@@ -21,12 +20,12 @@
         class="dropdown-menu">
         <div class="dropdown-content">
           <a
-            v-for="(d, index) in sizes"
+            v-for="(d, index) in selections"
             :key="index"
             class="dropdown-item"
             @click="handleClick(d.id)"
           >
-            <span class="status-checkbox">
+            <span class="selection-checkbox">
               <i
                 v-if="isSelected(d.id)"
                 class="checkmark-icon fal fa-check" />
@@ -52,16 +51,20 @@
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 import { mixin as clickaway } from 'vue-clickaway'
-import {
-  FacilitySize,
-  getFacilitySizeLabelById
-} from '~/constants/facility-size.js'
 
 export default {
   mixins: [clickaway],
 
   props: {
-    select: {
+    name: {
+      type: String,
+      default: ''
+    },
+    initialSelections: {
+      type: Array,
+      default: () => []
+    },
+    selections: {
       type: Array,
       default: () => []
     }
@@ -69,20 +72,13 @@ export default {
 
   data() {
     return {
-      sizes: _cloneDeep(FacilitySize),
       selected: [],
       dropdownActive: false
     }
   },
 
-  // watch: {
-  //   selectedStatuses(selected) {
-  //     this.selected = _cloneDeep(selected)
-  //   }
-  // },
-
-  mounted() {
-    // this.selected = _cloneDeep(this.selectedStatuses)
+  created() {
+    this.selected = this.initialSelections
   },
 
   methods: {
@@ -107,7 +103,14 @@ export default {
       this.$emit('selected', _cloneDeep(this.selected))
     },
     getLabel(selected) {
-      return selected.length > 0 ? `Size (${selected.length})` : 'Size'
+      const name = this.name
+      if (selected.length === 1) {
+        return this.selections.find(s => s.id === selected[0]).label
+      } else if (selected.length > 0) {
+        return `${name} (${selected.length})`
+      } else {
+        return name
+      }
     }
   }
 }
@@ -141,7 +144,7 @@ export default {
   }
 }
 
-.status-checkbox {
+.selection-checkbox {
   width: 15px;
   height: 15px;
   background-color: #fff;
