@@ -48,8 +48,7 @@
           class="dropdown-trigger button is-rounded is-small is-primary"
           @click="techDropdownActive = !techDropdownActive">
           <div class="dropdown-label">
-            <strong>Technology</strong>
-            <strong v-if="selectedTechGroups.length > 0">({{ selectedTechGroups.length }})</strong>
+            <strong>{{ techLabel }}</strong>
           </div>
           <i class="fal fa-chevron-down" />
         </button>
@@ -128,16 +127,20 @@
         </transition>
       </div>
 
-      <status-filter
+      <DropdownSelection
         v-if="!searchOn"
-        :selected-statuses="selectedStatuses"
+        :name="'Status'"
+        :initial-selections="selectedStatuses"
+        :selections="statuses"
         class="filter-status"
-        @selectedStatuses="handleStatusesSelected"
+        @selected="handleStatusesSelected"
       />
 
-      <size-filter
+      <DropdownSelection
         v-if="!searchOn"
-        class="filter-status"
+        :name="'Size'"
+        :selections="sizes"
+        class="filter-size"
         @selected="handleSizeSelected"
       />
 
@@ -164,14 +167,14 @@ import {
   FACILITY_GROUP_BATTERY,
   FACILITY_GROUP_SOLAR
 } from '~/constants/facility-fuel-tech.js'
-import StatusFilter from '~/components/Facility/StatusFilter'
-import SizeFilter from '~/components/Facility/SizeFilter'
+import { FacilitySize } from '~/constants/facility-size.js'
+import { FacilityStatus } from '~/constants/facility-status.js'
+import DropdownSelection from '~/components/ui/DropdownSelection'
 import FacilityViewToggle from '~/components/Facility/ViewToggle'
 
 export default {
   components: {
-    StatusFilter,
-    SizeFilter,
+    DropdownSelection,
     FacilityViewToggle
   },
 
@@ -198,6 +201,8 @@ export default {
       techDropdownActive: false,
       allTechs: [],
       groupExpanded: [],
+      sizes: _cloneDeep(FacilitySize),
+      statuses: _cloneDeep(FacilityStatus),
       simplifiedGroup: _cloneDeep(FacilityGroups),
       searchOn: false
     }
@@ -215,6 +220,26 @@ export default {
       set(value) {
         this.setSelectedTechGroups(value)
       }
+    },
+
+    techLabel() {
+      const techGroupLength = this.selectedTechGroups.length
+      const techLength = this.selectedTechs.length
+      if (techGroupLength === 1) {
+        const find = this.simplifiedGroup.find(
+          g => g.id === this.selectedTechGroups[0]
+        )
+        const fieldsLength = find.fields.length
+        if (fieldsLength === techLength) {
+          return find.label
+        } else if (techLength === 1) {
+          return FT.FUEL_TECH_LABEL[this.selectedTechs[0]]
+        }
+        return `${find.label} (${techLength})`
+      } else if (techGroupLength > 1) {
+        return `Technology (${techGroupLength})`
+      }
+      return 'Technology'
     }
   },
 
@@ -444,6 +469,7 @@ export default {
 
   .filter-tech,
   .filter-status,
+  .filter-size,
   .search-button {
     margin: 0 3px;
   }
