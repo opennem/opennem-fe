@@ -1,4 +1,15 @@
 import subDays from 'date-fns/subDays'
+import subYears from 'date-fns/subYears'
+
+import {
+  RANGE_1D,
+  RANGE_3D,
+  RANGE_7D,
+  RANGE_30D,
+  RANGE_1Y,
+  RANGE_ALL,
+  RANGE_ALL_12MTH_ROLLING
+} from '~/constants/ranges.js'
 
 export default {
   getEnergyUrls(region, range) {
@@ -6,22 +17,22 @@ export default {
       region === 'wem' || region === 'nem' || region === 'au' ? '' : '/NEM'
     const regionId = region.toUpperCase()
     const thisFullYear = new Date().getFullYear()
-    let lastFullYear = null
+    let oneYearAgo = null
     const urls = []
 
     switch (range) {
-      case '1D':
-      case '3D':
-      case '7D':
+      case RANGE_1D:
+      case RANGE_3D:
+      case RANGE_7D:
         urls.push(`v3/stats/au${prepend}/${regionId}/power/7d.json`)
         break
-      case '30D':
+      case RANGE_30D:
         const thirtyDaysAgo = subDays(new Date(), 30)
-        lastFullYear = thirtyDaysAgo.getFullYear()
+        oneYearAgo = thirtyDaysAgo.getFullYear()
 
-        if (thisFullYear !== lastFullYear) {
+        if (thisFullYear !== oneYearAgo) {
           urls.push(
-            `v3/stats/au${prepend}/${regionId}/energy/${lastFullYear}.json`
+            `v3/stats/au${prepend}/${regionId}/energy/${oneYearAgo}.json`
           )
         }
 
@@ -29,14 +40,12 @@ export default {
           `v3/stats/au${prepend}/${regionId}/energy/${thisFullYear}.json`
         )
         break
-      case '1Y':
-        const now = new Date().getTime()
-        const aYearAgo = now - 31557600000
-        lastFullYear = new Date(aYearAgo).getFullYear()
+      case RANGE_1Y:
+        oneYearAgo = subYears(new Date(), 1).getFullYear()
 
-        if (thisFullYear !== lastFullYear) {
+        if (thisFullYear !== oneYearAgo) {
           urls.push(
-            `v3/stats/au${prepend}/${regionId}/energy/${lastFullYear}.json`
+            `v3/stats/au${prepend}/${regionId}/energy/${oneYearAgo}.json`
           )
         }
 
@@ -44,7 +53,9 @@ export default {
           `v3/stats/au${prepend}/${regionId}/energy/${thisFullYear}.json`
         )
         break
-      case 'ALL':
+
+      case RANGE_ALL:
+      case RANGE_ALL_12MTH_ROLLING:
         urls.push(`v3/stats/au${prepend}/${regionId}/energy/all.json`)
         break
       default:

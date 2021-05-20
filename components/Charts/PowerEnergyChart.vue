@@ -143,6 +143,7 @@ import AxisTimeFormats from '@/services/axisTimeFormats.js'
 
 import * as OPTIONS from '@/constants/chart-options.js'
 import * as SI from '@/constants/si.js'
+import { RANGE_ALL_12MTH_ROLLING } from '@/constants/ranges.js'
 import { LOAD } from '@/constants/energy-fuel-techs/group-default.js'
 import EnergyToAveragePower from '@/data/transform/energy-to-average-power.js'
 import DateDisplay from '@/services/DateDisplay.js'
@@ -415,7 +416,12 @@ export default {
       }
     },
 
+    isRollingSumRange() {
+      return this.range === RANGE_ALL_12MTH_ROLLING
+    },
+
     displayUnit() {
+      console.log(this.range)
       let unit = ''
       if (this.isEnergyType) {
         if (this.isTypeProportion || this.isYAxisPercentage) {
@@ -423,9 +429,10 @@ export default {
         } else if (this.isYAxisAveragePower) {
           unit = this.chartPowerCurrentUnit
         } else {
-          unit = `${this.chartEnergyCurrentUnit}/${this.intervalLabel(
-            this.interval
-          )}`
+          const interval = this.isRollingSumRange
+            ? 'year'
+            : this.intervalLabel(this.interval)
+          unit = `${this.chartEnergyCurrentUnit}/${interval}`
         }
       } else {
         // power
@@ -571,7 +578,8 @@ export default {
         domains: this.domains,
         range: this.range,
         interval: this.interval,
-        exponent: this.chartEnergyUnitPrefix
+        exponent: this.chartEnergyUnitPrefix,
+        isRollingSum: this.isRollingSumRange
       })
     },
     multiLineDataset() {
