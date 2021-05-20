@@ -48,8 +48,7 @@
           class="dropdown-trigger button is-rounded is-small is-primary"
           @click="techDropdownActive = !techDropdownActive">
           <div class="dropdown-label">
-            <strong>Technology</strong>
-            <strong v-if="selectedTechGroups.length > 0">({{ selectedTechGroups.length }})</strong>
+            <strong>{{ techLabel }}</strong>
           </div>
           <i class="fal fa-chevron-down" />
         </button>
@@ -221,6 +220,26 @@ export default {
       set(value) {
         this.setSelectedTechGroups(value)
       }
+    },
+
+    techLabel() {
+      const techGroupLength = this.selectedTechGroups.length
+      const techLength = this.selectedTechs.length
+      if (techGroupLength === 1) {
+        const find = this.simplifiedGroup.find(
+          g => g.id === this.selectedTechGroups[0]
+        )
+        const fieldsLength = find.fields.length
+        if (fieldsLength === techLength) {
+          return find.label
+        } else if (techLength === 1) {
+          return FT.FUEL_TECH_LABEL[this.selectedTechs[0]]
+        }
+        return `${find.label} (${techLength})`
+      } else if (techGroupLength > 1) {
+        return `Technology (${techGroupLength})`
+      }
+      return 'Technology'
     }
   },
 
