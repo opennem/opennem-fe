@@ -394,6 +394,11 @@ export default {
   font-family: $family-primary;
   margin-right: 0.5rem;
   font-size: 11px;
+  max-width: 80px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
   strong {
     font-weight: 600;
   }
