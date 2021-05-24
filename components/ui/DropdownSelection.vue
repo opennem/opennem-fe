@@ -8,7 +8,9 @@
       class="dropdown-trigger button is-small is-rounded is-primary"
       @click="dropdownActive = !dropdownActive"
     >
-      <div class="dropdown-label">
+      <div
+        :class="{ 'truncate': tabletBreak }"
+        class="dropdown-label">
         <strong>{{ getLabel(selected) }}</strong>
       </div>
       <i class="fal fa-chevron-down" />
@@ -49,6 +51,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 import { mixin as clickaway } from 'vue-clickaway'
@@ -80,6 +83,12 @@ export default {
       selected: [],
       dropdownActive: false
     }
+  },
+
+  computed: {
+    ...mapGetters({
+      tabletBreak: 'app/tabletBreak'
+    })
   },
 
   created() {
@@ -128,10 +137,13 @@ export default {
   font-family: $family-primary;
   margin-right: 0.5rem;
   font-size: 11px;
-  max-width: 55px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
+  &.truncate {
+    max-width: 55px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   strong {
     font-weight: 600;

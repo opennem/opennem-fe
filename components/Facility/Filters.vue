@@ -47,7 +47,12 @@
           :class="{ 'is-inverted': selectedTechGroups.length === 0 }"
           class="dropdown-trigger button is-rounded is-small is-primary"
           @click="techDropdownActive = !techDropdownActive">
-          <strong class="dropdown-label">{{ techLabel }}</strong>
+          <div
+            :class="{ 'truncate': tabletBreak }"
+            class="dropdown-label"
+          >
+            <strong>{{ techLabel }}</strong>
+          </div>
           <i class="fal fa-chevron-down" />
         </button>
 
@@ -394,10 +399,13 @@ export default {
   font-family: $family-primary;
   margin-right: 0.5rem;
   font-size: 11px;
-  max-width: 80px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
+  &.truncate {
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   strong {
     font-weight: 600;
