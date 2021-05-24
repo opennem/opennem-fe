@@ -82,6 +82,12 @@
           </div>
         </transition>
       </div>
+
+      <FacilityViewToggle
+        v-if="tabletBreak"
+        :view="selectedView"
+        @viewSelect="(v) => selectedView = v"
+      />
     </div>
   </header>
 </template>
@@ -99,6 +105,7 @@ import ViewDropdown from '~/components/ui/ViewDropdown'
 import ConsumptionGenerationToggle from '~/components/ui/ConsumptionGenerationToggle'
 import RegionDropdown from '~/components/ui/RegionDropdown'
 import AppDrawer from '~/components/layout/Drawer'
+import FacilityViewToggle from '~/components/Facility/ViewToggle'
 
 export default {
   components: {
@@ -107,7 +114,8 @@ export default {
     ViewDropdown,
     RegionDropdown,
     ConsumptionGenerationToggle,
-    AppDrawer
+    AppDrawer,
+    FacilityViewToggle
   },
   mixins: [clickaway],
 
@@ -125,6 +133,8 @@ export default {
     ...mapGetters({
       tabletBreak: 'app/tabletBreak',
 
+      facilitySelectedView: 'facility/selectedView',
+
       chartEnergyRenewablesLine:
         'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
       energyExportData: 'regionEnergy/filteredCurrentDataset',
@@ -134,6 +144,16 @@ export default {
       temperatureDomains: 'regionEnergy/domainTemperature',
       marketValueDomains: 'regionEnergy/currentDomainMarketValue'
     }),
+
+    selectedView: {
+      get() {
+        return this.facilitySelectedView
+      },
+      set(val) {
+        this.$store.dispatch('facility/selectedView', val)
+      }
+    },
+
     range() {
       return this.$store.getters.range
     },

@@ -142,12 +142,6 @@
         @selected="handleSizeSelected"
       />
 
-      <facility-view-toggle
-        v-if="tabletBreak"
-        :view="selectedView"
-        class="facility-view-toggle"
-        @viewSelect="handleViewSelect"
-      />
     </div>
   </div>
 </template>
@@ -168,21 +162,15 @@ import {
 import { FacilitySize } from '~/constants/facility-size.js'
 import { FacilityStatus } from '~/constants/facility-status.js'
 import DropdownSelection from '~/components/ui/DropdownSelection'
-import FacilityViewToggle from '~/components/Facility/ViewToggle'
 
 export default {
   components: {
-    DropdownSelection,
-    FacilityViewToggle
+    DropdownSelection
   },
 
   mixins: [clickaway],
 
   props: {
-    selectedView: {
-      type: String,
-      default: () => 'list'
-    },
     selectedTechs: {
       type: Array,
       default: () => []
@@ -547,11 +535,5 @@ export default {
       font-size: 12px;
     }
   }
-}
-
-.facility-view-toggle {
-  position: absolute;
-  right: 1rem;
-  top: 0px;
 }
 </style>
