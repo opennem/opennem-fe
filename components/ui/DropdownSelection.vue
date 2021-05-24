@@ -17,6 +17,7 @@
     <transition name="slide-down-fade">
       <div
         v-if="dropdownActive"
+        :class="{ 'align-right': alignRightMenu }"
         class="dropdown-menu">
         <div class="dropdown-content">
           <a
@@ -67,6 +68,10 @@ export default {
     selections: {
       type: Array,
       default: () => []
+    },
+    alignRightMenu: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -130,6 +135,11 @@ export default {
 }
 .dropdown-menu {
   min-width: 150px;
+
+  &.align-right {
+    right: 0;
+    left: auto;
+  }
 }
 .dropdown-content {
   font-family: $family-primary;

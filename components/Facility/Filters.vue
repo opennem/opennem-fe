@@ -138,6 +138,7 @@
         v-if="!searchOn"
         :name="'Size'"
         :selections="sizes"
+        :align-right-menu="true"
         class="filter-size"
         @selected="handleSizeSelected"
       />
