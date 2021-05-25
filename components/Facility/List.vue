@@ -611,6 +611,10 @@ export default {
     box-shadow: 0 0 5px rgba(100, 100, 100, 0.2);
     opacity: 1;
     z-index: 10;
+
+    .facility-info-link {
+      visibility: visible;
+    }
   }
 
   &.is-selected {
