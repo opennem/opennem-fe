@@ -1,6 +1,8 @@
 <template>
   <div class="card-wrapper">
     <div class="column-headers">
+      <div class="info-button-col col-header" />
+
       <div
         :style="{ width: hideRegionColumn ? '60%' : '50%'}"
         class="name-col col-header"
@@ -49,7 +51,7 @@
           class="fal" />
       </div>
 
-      <div class="info-button-col col-header" />
+      
     </div>
 
     <div
@@ -82,9 +84,19 @@
       </div>
 
       <div class="facility-detail">
+        <div class="info-button-col">
+          <a
+            v-tooltip="'View facility info'"
+            class="facility-info-link"
+            @click="handleRowDoubleClick(facility)">
+            <i class="fal fa-external-link-square"/>
+          </a>
+        </div>
+
         <div
           :style="{ width: hideRegionColumn ? '60%' : '50%'}"
           class="name-col">
+
           <h2 class="station-name">
             {{ facility.displayName }}
           </h2>
@@ -93,7 +105,7 @@
             class="has-location-icon fa-stack fa-1x">
             <i class="fal fa-map-marker-alt fa-stack-1x"/>
             <i class="fal fa-ban fa-stack-2x" />
-          </span>
+          </span>          
         </div>
 
         <div
@@ -157,15 +169,6 @@
             class="stat-value has-text-right">
             –
           </div>
-        </div>
-
-        <div class="info-button-col">
-          <a
-            v-tooltip="'View facility info'"
-            class="button is-small"
-            @click="handleRowDoubleClick(facility)">
-            <i class="fal fa-chevron-right"/>
-          </a>
         </div>
       </div>
     </div>
@@ -616,6 +619,10 @@ export default {
     transform: scale(1.02);
     z-index: 10;
     border: 1px solid $opennem-link-color;
+
+    .facility-info-link {
+      visibility: visible;
+    }
   }
 
   .card-content {
@@ -729,11 +736,6 @@ export default {
 }
 
 .name-col {
-  margin-left: 1rem;
-
-  @include tablet {
-    margin-left: 2rem;
-  }
 }
 .region-col {
   width: 11%;
@@ -790,15 +792,16 @@ export default {
 }
 
 .info-button-col {
-  padding: 2px 0;
+  margin-left: 1rem;
+  margin-right: 0.5rem;
+
   &.col-header {
-    width: 30px;
+    width: 14px;
   }
-  .button.is-small {
+  .facility-info-link {
+    visibility: hidden;
     min-width: auto;
-    font-size: 0.65rem;
-    background-color: #eee;
-    border-radius: 0;
+    font-size: 12px;
   }
 }
 .card.is-selected {
