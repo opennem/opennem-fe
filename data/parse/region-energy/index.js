@@ -87,7 +87,7 @@ export function dataProcess(res, range, interval, period, displayTz) {
 
   const currentDataset =
     dataPowerEnergyInterval === interval
-      ? dataset
+      ? _cloneDeep(dataset)
       : rollUp({
           domains: [
             ...domainPowerEnergy,
