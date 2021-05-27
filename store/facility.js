@@ -1,4 +1,5 @@
 import _cloneDeep from 'lodash.clonedeep'
+import _includes from 'lodash.includes'
 import axios from 'axios'
 
 import PerfTime from '@/plugins/perfTime.js'
@@ -91,7 +92,10 @@ export const state = () => ({
   dataType: 'power', // power, energy
   range: RANGE_7D,
   interval: INTERVAL_30MIN,
-  filterPeriod: 'All'
+  filterPeriod: 'All',
+
+  showFields: false,
+  selectedFields: []
 })
 
 export const mutations = {
@@ -181,6 +185,13 @@ export const mutations = {
   },
   filterPeriod(state, data) {
     state.filterPeriod = data
+  },
+
+  showFields(state, data) {
+    state.showFields = data
+  },
+  selectedFields(state, data) {
+    state.selectedFields = data
   }
 }
 
@@ -218,7 +229,10 @@ export const getters = {
   dataType: state => state.dataType,
   range: state => state.range,
   interval: state => state.interval,
-  filterPeriod: state => state.filterPeriod
+  filterPeriod: state => state.filterPeriod,
+
+  showFields: state => state.showFields,
+  selectedFields: state => _cloneDeep(state.selectedFields)
 }
 
 export const actions = {
@@ -242,6 +256,24 @@ export const actions = {
   },
   selectedView({ commit }, data) {
     commit('selectedView', data)
+  },
+
+  addField({ commit, state }, field) {
+    const fields = _cloneDeep(state.selectedFields)
+    const find = fields.find(f => f.key === field.key)
+    if (!find) {
+      fields.push(field)
+      commit('selectedFields', fields)
+    }
+  },
+
+  removeIssueField({ commit, state }, field) {
+    const fields = state.selectedFields.filter(f => f.key !== field.key)
+    commit('selectedFields', fields)
+  },
+
+  clearIssueFields({ commit }) {
+    commit('selectedFields', [])
   },
 
   doGetFacilityByCode({ commit }, { countryCode, networkCode, facilityCode }) {
