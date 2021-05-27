@@ -1,6 +1,12 @@
 <template>
   <section class="facility">
     <transition name="fade">
+      <ReportIssue
+        v-if="showFields"
+        :path="fullPath" />
+    </transition>
+
+    <transition name="fade">
       <div
         v-if="!fetchingFacility && !facility"
         class="not-found-card card"
@@ -30,14 +36,22 @@
         v-if="facility"
         class="main">
         <header>
-          <h2>{{ facilityName }}</h2>
+          <h2
+            v-highlight="showFields"
+            @click="() => handleFieldClick('Facility name', facilityName)"
+          >{{ facilityName }}</h2>
 
           <div class="facility-details">
-            <div class="facility-fuel-techs">
+            <div
+              v-highlight="showFields"
+              class="facility-fuel-techs"
+              @click="() => handleFieldClick('Facility fuel tech', facilityFuelTechs)"
+            >
               <div
                 v-for="(ft, index) in facilityFuelTechs"
                 :key="`ft-${index}`"
-                class="facility-fuel-tech">
+                class="facility-fuel-tech"
+              >
                 <span
                   :style="{
                     'background-color': ft.colour
@@ -48,14 +62,15 @@
             </div>
           
             <span
+              v-highlight="showFields"
               v-if="facilityStatus"
-              class="tag facility-status">
+              class="tag facility-status"
+              @click="() => handleFieldClick('Facility status and dates', `${facilityStatus} ${facilityDates}`)"
+            >
               <strong>{{ getFacilityStatusLabel(facilityStatus) }}</strong>
               <em>{{ facilityDates }}</em>
             </span>
           </div>
-
-          
         </header>
 
         <Summary
@@ -212,7 +227,6 @@
         </section>
 
         <section class="facility-units">
-
           <UnitList
             :ready="!fetchingStats"
             :is-energy-type="isEnergyType"
@@ -260,7 +274,15 @@
 
     <section
       v-if="facility"
-      style="width: 30%; margin-top: 51px;">
+      style="width: 30%; text-align: right">
+
+      <button 
+        class="report-issue-btn button is-rounded" 
+        @click="handleReportIssueClick">
+        <i class="fal fa-fw fa-comment-alt-exclamation"/>
+        Report an Issue
+      </button>
+
       <PhotoMap
         v-if="facility && !widthBreak"
         :facility-name="facilityName"
@@ -332,6 +354,7 @@ import EmissionIntensityChart from '@/components/Charts/EmissionIntensityChart'
 import Dropdown from '@/components/ui/Dropdown'
 import DonutVis from '~/components/Vis/Donut'
 import EnergyBar from '~/components/Energy/Charts/EnergyBarChart'
+import ReportIssue from '~/components/ui/ReportIssue'
 
 const chartTypeOptions = [
   {
@@ -397,7 +420,9 @@ export default {
     MarketValueChart,
     PriceChart,
     DonutVis,
-    EnergyBar
+    EnergyBar,
+
+    ReportIssue
   },
 
   data() {
@@ -432,6 +457,7 @@ export default {
       domainVolWeightedPrices: 'facility/domainVolWeightedPrices',
       selectedFacilityError: 'facility/selectedFacilityError',
       selectedFacilityErrorMessage: 'facility/selectedFacilityErrorMessage',
+      showFields: 'facility/showFields',
 
       chartShown: 'chartOptionsPowerEnergy/chartShown',
       chartType: 'chartOptionsPowerEnergy/chartType',
@@ -465,6 +491,9 @@ export default {
     },
     queryRange() {
       return this.$route.query.range
+    },
+    fullPath() {
+      return this.$route.fullPath
     },
     isEnergyType() {
       return this.dataType === 'energy'
@@ -997,6 +1026,7 @@ export default {
       setRange: 'facility/range',
       setInterval: 'facility/interval',
       setFilterPeriod: 'facility/filterPeriod',
+      setShowFields: 'facility/showFields',
       setQuery: 'app/query'
     }),
     ...mapActions({
@@ -1007,11 +1037,16 @@ export default {
       doGetStationStats: 'facility/doGetStationStats',
       doUpdateDatasetByInterval: 'facility/doUpdateDatasetByInterval',
       doUpdateDatasetByFilterPeriod: 'facility/doUpdateDatasetByFilterPeriod',
+      addField: 'facility/addField',
       doSetChartEnergyPrefixes:
         'chartOptionsPowerEnergy/doSetChartEnergyPrefixes',
       doHideEmissionsChart: 'chartOptionsEmissionsVolume/doHideChart',
       doShowEmissionsChart: 'chartOptionsEmissionsVolume/doShowChart'
     }),
+
+    handleFieldClick(key, value) {
+      this.addField({ key, value })
+    },
 
     convertValue(value) {
       return SI.convertValue(
@@ -1151,6 +1186,10 @@ export default {
 
     handleChartDisplayChange(type) {
       this.showChartType = type
+    },
+
+    handleReportIssueClick() {
+      this.setShowFields(!this.showFields)
     }
   }
 }
@@ -1334,6 +1373,17 @@ header {
   }
   em {
     font-style: normal;
+  }
+}
+
+.report-issue-btn {
+  font-size: 12px;
+
+  i.fal {
+    font-size: 14px;
+    margin-right: 5px;
+    position: relative;
+    top: 1px;
   }
 }
 </style>

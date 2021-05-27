@@ -26,7 +26,7 @@
 
         <th
           class="align-right"
-          style="width: 150px;">
+          style="width: 80px;">
           Registered cap.
           <small>MW</small>
         </th>
@@ -34,7 +34,7 @@
         <th
           v-if="hasEmissions"
           class="align-right"
-          style="width: 150px;">
+          style="width: 80px;">
           Emission Intensity
           <small>kgCO₂e/MWh</small>
         </th>
@@ -106,7 +106,9 @@
         @mouseleave="handleMouseLeave">
         <td
           v-tooltip.left="getTooltip(d)"
+          v-highlight="showFields"
           class="unit-name"
+          @click.stop.self="() => handleFieldClick(`${d.code} label`, d.code)"
         >
           <div
             :style="{ backgroundColor: d.colour}"
@@ -115,11 +117,18 @@
           <span v-if="!areAllUnitsOfSameFuelTech">— {{ getFuelTechLabel(d.fuelTechLabel) }}</span>
         </td>
 
-        <td class="align-right">{{ d.registeredCapacity }}</td>
+        <td
+          v-highlight="showFields"
+          class="align-right"
+          @click.stop.self="() => handleFieldClick(`${d.code} reg cap`, d.registeredCapacity)">
+          {{ d.registeredCapacity }}
+        </td>
 
         <td
+          v-highlight="showFields"
           v-if="hasEmissions"
-          class="align-right">
+          class="align-right"
+          @click.stop.self="() => handleFieldClick(`${d.code} intensity`, d.emissionIntensity)">
           {{ d.emissionIntensity | formatValue }}
         </td>
 
@@ -291,6 +300,7 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import * as FT from '~/constants/energy-fuel-techs/group-default.js'
 import {
@@ -386,6 +396,9 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      showFields: 'facility/showFields'
+    }),
     isAveragePower() {
       return this.isEnergyType && this.isYAxisAveragePower
     },
@@ -595,6 +608,12 @@ export default {
   },
 
   methods: {
+    ...mapActions({
+      addField: 'facility/addField'
+    }),
+    handleFieldClick(key, value) {
+      this.addField({ key, value })
+    },
     formatDate(d) {
       return this.$options.filters.formatLocalDate(d)
     },
@@ -658,10 +677,14 @@ export default {
       this.$emit('codeHover', '')
     },
     handleRowClick(code) {
-      this.$emit('codeClick', code)
+      if (!this.showFields) {
+        this.$emit('codeClick', code)
+      }
     },
     handleRowShiftClick(code) {
-      this.$emit('codeShiftClick', code)
+      if (!this.showFields) {
+        this.$emit('codeShiftClick', code)
+      }
     },
 
     getFuelTechLabel(code) {
