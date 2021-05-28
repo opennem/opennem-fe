@@ -1,15 +1,7 @@
 import subDays from 'date-fns/subDays'
 import subYears from 'date-fns/subYears'
 
-import {
-  RANGE_1D,
-  RANGE_3D,
-  RANGE_7D,
-  RANGE_30D,
-  RANGE_1Y,
-  RANGE_ALL,
-  RANGE_ALL_12MTH_ROLLING
-} from '~/constants/ranges.js'
+import * as rangesJs from '~/constants/ranges.js'
 
 export default {
   getEnergyUrls(region, range, useV3Paths) {
@@ -21,16 +13,16 @@ export default {
     const urls = []
 
     switch (range) {
-      case RANGE_1D:
-      case RANGE_3D:
-      case RANGE_7D:
+      case rangesJs.RANGE_1D:
+      case rangesJs.RANGE_3D:
+      case rangesJs.RANGE_7D:
         if (useV3Paths || region === 'wem') {
           urls.push(`v3/stats/au${prepend}/${regionId}/power/7d.json`)
         } else {
           urls.push(`power/${region}.json`)
         }
         break
-      case RANGE_30D:
+      case rangesJs.RANGE_30D:
         const thirtyDaysAgo = subDays(new Date(), 30)
         oneYearAgo = thirtyDaysAgo.getFullYear()
 
@@ -52,7 +44,7 @@ export default {
           urls.push(`${region}/energy/daily/${thisFullYear}.json`)
         }
         break
-      case RANGE_1Y:
+      case rangesJs.RANGE_1Y:
         oneYearAgo = subYears(new Date(), 1).getFullYear()
 
         if (thisFullYear !== oneYearAgo) {
@@ -75,8 +67,8 @@ export default {
 
         break
 
-      case RANGE_ALL:
-      case RANGE_ALL_12MTH_ROLLING:
+      case rangesJs.RANGE_ALL:
+      case rangesJs.RANGE_ALL_12MTH_ROLLING:
         if (useV3Paths || region === 'wem') {
           urls.push(`v3/stats/au${prepend}/${regionId}/energy/all.json`)
         } else {
