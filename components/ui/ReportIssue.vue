@@ -7,7 +7,10 @@
       </header>
     </template>
     <template slot="main">
-      <main>
+      <main v-if="submitted">
+        <h5>Your report has been submitted. <br> Thank you.</h5>
+      </main>
+      <main v-else>
         <label>Affected fields <em>(optional)</em></label>
         <p
           v-if="selectedFields.length === 0"
@@ -57,10 +60,18 @@
       </main>
     </template>
     <template slot="footer">
-      <footer>
+      <footer v-if="submitted">
         <button
           class="button is-light"
-          @click="handleReportIssueCancel">
+          @click="handleDone">
+          Done
+        </button>
+      </footer>
+      
+      <footer v-else>
+        <button
+          class="button is-light"
+          @click="handleDone">
           Cancel
         </button>
         <button
@@ -100,7 +111,8 @@ export default {
       sources: '',
       description: '',
       email: '',
-      triedSubmitting: false
+      triedSubmitting: false,
+      submitted: false
     }
   },
 
@@ -120,6 +132,7 @@ export default {
   },
 
   mounted() {
+    this.submitted = false
     this.email = lsGet('feedbackEmail') || ''
   },
 
@@ -135,7 +148,7 @@ export default {
     handleRemoveField(field) {
       this.removeIssueField(field)
     },
-    handleReportIssueCancel() {
+    handleDone() {
       this.clearIssueFields()
       this.setShowFields(false)
     },
@@ -150,8 +163,7 @@ export default {
         }
 
         this.submitFeedback(payload)
-        this.clearIssueFields()
-        this.setShowFields(false)
+        this.submitted = true
         lsSet('feedbackEmail', this.email)
       } else {
         console.log('invalid')
@@ -204,12 +216,18 @@ ${this.description}
   main {
     padding: 10px;
   }
+  h5 {
+    font-size: 1.2em;
+    font-weight: 700;
+    text-align: center;
+    padding: 3rem 0;
+  }
   footer {
     display: flex;
     padding: 10px;
     gap: 5px;
     button {
-      width: 50%;
+      width: 100%;
     }
   }
   label {
