@@ -1,5 +1,4 @@
 import _cloneDeep from 'lodash.clonedeep'
-import axios from 'axios'
 import http from '@/services/Api.js'
 
 export const state = () => ({

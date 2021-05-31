@@ -76,6 +76,7 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
+import { lsGet, lsSet } from '@/services/LocalStorage'
 import DraggableDiv from './DraggableContainer'
 
 export default {
@@ -118,6 +119,10 @@ export default {
     }
   },
 
+  mounted() {
+    this.email = lsGet('feedbackEmail') || ''
+  },
+
   methods: {
     ...mapActions({
       removeIssueField: 'feedback/removeIssueField',
@@ -147,6 +152,7 @@ export default {
         this.submitFeedback(payload)
         this.clearIssueFields()
         this.setShowFields(false)
+        lsSet('feedbackEmail', this.email)
       } else {
         console.log('invalid')
       }
