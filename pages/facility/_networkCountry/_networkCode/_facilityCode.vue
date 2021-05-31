@@ -3,6 +3,7 @@
     <transition name="fade">
       <ReportIssue
         v-if="showFields"
+        :name="facilityName"
         :path="fullPath" />
     </transition>
 

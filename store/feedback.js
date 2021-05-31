@@ -1,4 +1,6 @@
 import _cloneDeep from 'lodash.clonedeep'
+import axios from 'axios'
+import http from '@/services/Api.js'
 
 export const state = () => ({
   showFields: false,
@@ -36,5 +38,10 @@ export const actions = {
 
   clearIssueFields({ commit }) {
     commit('selectedFields', [])
+  },
+
+  async submit({}, payload) {
+    const res = await http.post('/feedback', payload)
+    return res
   }
 }

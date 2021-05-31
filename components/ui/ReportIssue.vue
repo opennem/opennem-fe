@@ -28,15 +28,23 @@
           </span>
         </div>
 
-        <label>Sources (Web address or report name)</label>
+        <label>
+          Sources
+          <em v-if="triedSubmitting && !validSources">* (required)</em>
+        </label>
         <textarea 
           v-model="sources"
+          :class="{ 'has-error': triedSubmitting && !validSources }"
           class="textarea source-input" 
           placeholder="One source per line"/>
         
-        <label>Describe</label>
+        <label>
+          Describe
+          <em v-if="triedSubmitting && !validDescription">* (required)</em>
+        </label>
         <textarea 
-          v-model="description" 
+          v-model="description"
+          :class="{ 'has-error': triedSubmitting && !validDescription }"
           class="textarea" />
 
         <label>Your email <em>(optional)</em>)</label>
@@ -56,7 +64,8 @@
           Cancel
         </button>
         <button
-          class="button is-dark"
+          :disabled="!validSubmission"
+          class="button is-dark is-disabled"
           @click="handleReportIssueSubmit">
           Report
         </button>
@@ -75,6 +84,10 @@ export default {
   },
 
   props: {
+    name: {
+      type: String,
+      default: ''
+    },
     path: {
       type: String,
       default: ''
@@ -85,20 +98,31 @@ export default {
     return {
       sources: '',
       description: '',
-      email: ''
+      email: '',
+      triedSubmitting: false
     }
   },
 
   computed: {
     ...mapGetters({
       selectedFields: 'feedback/selectedFields'
-    })
+    }),
+    validSources() {
+      return this.sources.trim() !== ''
+    },
+    validDescription() {
+      return this.description.trim() !== ''
+    },
+    validSubmission() {
+      return this.validSources && this.validDescription
+    }
   },
 
   methods: {
     ...mapActions({
       removeIssueField: 'feedback/removeIssueField',
-      clearIssueFields: 'feedback/clearIssueFields'
+      clearIssueFields: 'feedback/clearIssueFields',
+      submitFeedback: 'feedback/submit'
     }),
     ...mapMutations({
       setShowFields: 'feedback/showFields'
@@ -111,30 +135,37 @@ export default {
       this.setShowFields(false)
     },
     handleReportIssueSubmit() {
-      const description = `
-Path:
+      this.triedSubmitting = true
+      if (this.validSubmission) {
+        const description = this.getDescription()
+        const payload = {
+          subject: `${this.name} facility feedback`,
+          description: description,
+          email: this.email
+        }
+
+        this.submitFeedback(payload)
+        this.clearIssueFields()
+        this.setShowFields(false)
+      } else {
+        console.log('invalid')
+      }
+    },
+
+    getDescription() {
+      return `
+**Path:**
 ${this.path}
 
-Sources:
+**Sources:**
 ${this.sources}
 
-Fields:
-${this.selectedFields}
+**Fields:**
+${JSON.stringify(this.selectedFields, null, 1)}
 
-Description:
+**Description:**
 ${this.description}
-      `
-
-      const payload = {
-        subject: '',
-        description: description,
-        email: this.email
-      }
-
-      console.log(payload)
-
-      this.clearIssueFields()
-      this.setShowFields(false)
+`
     }
   }
 }
@@ -204,6 +235,9 @@ ${this.description}
     &.source-input {
       min-height: 5em;
     }
+  }
+  .has-error {
+    border-color: #e34a33 !important;
   }
 }
 </style>
