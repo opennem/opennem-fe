@@ -91,17 +91,17 @@ export default {
 
   computed: {
     ...mapGetters({
-      selectedFields: 'facility/selectedFields'
+      selectedFields: 'feedback/selectedFields'
     })
   },
 
   methods: {
     ...mapActions({
-      removeIssueField: 'facility/removeIssueField',
-      clearIssueFields: 'facility/clearIssueFields'
+      removeIssueField: 'feedback/removeIssueField',
+      clearIssueFields: 'feedback/clearIssueFields'
     }),
     ...mapMutations({
-      setShowFields: 'facility/showFields'
+      setShowFields: 'feedback/showFields'
     }),
     handleRemoveField(field) {
       this.removeIssueField(field)

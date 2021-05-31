@@ -78,7 +78,7 @@ export default {
 
   computed: {
     ...mapGetters({
-      showFields: 'facility/showFields'
+      showFields: 'feedback/showFields'
     }),
     hasLocation() {
       return this.facilityLocation &&
@@ -90,7 +90,7 @@ export default {
 
   methods: {
     ...mapActions({
-      addField: 'facility/addField'
+      addField: 'feedback/addField'
     }),
     handleFieldClick(key, value) {
       this.addField({ key, value })

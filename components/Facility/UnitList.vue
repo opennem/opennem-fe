@@ -397,7 +397,7 @@ export default {
 
   computed: {
     ...mapGetters({
-      showFields: 'facility/showFields'
+      showFields: 'feedback/showFields'
     }),
     isAveragePower() {
       return this.isEnergyType && this.isYAxisAveragePower
@@ -609,7 +609,7 @@ export default {
 
   methods: {
     ...mapActions({
-      addField: 'facility/addField'
+      addField: 'feedback/addField'
     }),
     handleFieldClick(key, value) {
       this.addField({ key, value })

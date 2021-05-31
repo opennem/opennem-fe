@@ -457,7 +457,7 @@ export default {
       domainVolWeightedPrices: 'facility/domainVolWeightedPrices',
       selectedFacilityError: 'facility/selectedFacilityError',
       selectedFacilityErrorMessage: 'facility/selectedFacilityErrorMessage',
-      showFields: 'facility/showFields',
+      showFields: 'feedback/showFields',
 
       chartShown: 'chartOptionsPowerEnergy/chartShown',
       chartType: 'chartOptionsPowerEnergy/chartType',
@@ -1026,7 +1026,7 @@ export default {
       setRange: 'facility/range',
       setInterval: 'facility/interval',
       setFilterPeriod: 'facility/filterPeriod',
-      setShowFields: 'facility/showFields',
+      setShowFields: 'feedback/showFields',
       setQuery: 'app/query'
     }),
     ...mapActions({
@@ -1037,7 +1037,7 @@ export default {
       doGetStationStats: 'facility/doGetStationStats',
       doUpdateDatasetByInterval: 'facility/doUpdateDatasetByInterval',
       doUpdateDatasetByFilterPeriod: 'facility/doUpdateDatasetByFilterPeriod',
-      addField: 'facility/addField',
+      addField: 'feedback/addField',
       doSetChartEnergyPrefixes:
         'chartOptionsPowerEnergy/doSetChartEnergyPrefixes',
       doHideEmissionsChart: 'chartOptionsEmissionsVolume/doHideChart',
