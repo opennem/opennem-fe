@@ -2,9 +2,9 @@
   <div :class="layout">
     <div 
       v-highlight="showFields"
+      v-if="facilityPhotos.length > 0"
       @click.stop.self="() => handleFieldClick('Facility photos', facilityPhotos)">
       <Photos
-        v-if="facilityPhotos.length > 0"
         :has-photos="facilityPhotos.length > 0"
         :photos="facilityPhotos"
         :name="facilityName"
@@ -121,6 +121,7 @@ export default {
   display: flex;
   padding: 0.75rem;
   margin-bottom: 2rem;
+  gap: 10px;
 
   & > section,
   & > .aside-section {
@@ -130,6 +131,10 @@ export default {
     &:last-child {
       margin-right: 0;
     }
+  }
+
+  & > div {
+    width: 100%;
   }
 
   @include mobile {
