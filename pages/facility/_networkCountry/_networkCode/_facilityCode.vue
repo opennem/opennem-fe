@@ -620,7 +620,6 @@ export default {
     },
     unitsSummary() {
       return this.facilityUnits.map((d, i) => {
-        const networkCode = d.network.code || d.network
         const find = this.domainPowerEnergy.find(
           domain => domain.code === d.code
         )

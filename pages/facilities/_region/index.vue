@@ -333,7 +333,10 @@ export default {
         const ftCaps = facility.fuelTechRegisteredCap
         let highest = 0
         Object.keys(ftCaps).forEach(d => {
-          if (ftCaps[d] >= highest) {
+          if (
+            FUEL_TECHS.FUEL_TECH_CATEGORY[d] === FUEL_TECHS.SOURCE &&
+            ftCaps[d] >= highest
+          ) {
             selectedFt = d
             highest = ftCaps[d]
           }
