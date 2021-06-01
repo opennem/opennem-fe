@@ -1,10 +1,10 @@
 import parseISO from 'date-fns/parseISO'
 import addDays from 'date-fns/addDays'
 import addMonths from 'date-fns/addMonths'
-import isBefore from 'date-fns/isBefore'
 import PerfTime from '@/plugins/perfTime.js'
 import { EMISSIONS, MARKET_VALUE } from '@/constants/data-types'
 import createEmptyDatasets from '@/data/helpers/createEmptyDatasets.js'
+import { getEarliestLatestDates } from '@/data/helpers/ftStartLast.js'
 import parseAndCheckData from './parseAndCheckData.js'
 import flattenAndInterpolate from './flattenAndInterpolate.js'
 import flatten from './flatten.js'
@@ -56,22 +56,10 @@ export default function(data, displayTz) {
     EMISSIONS
   )
 
-  // find earliest energy start date
-  let earliestEnergyStartDate = null
-  domainPowerEnergy.forEach(domain => {
-    const id = domain.id
-    const find = dataAll.find(d => d.id === id)
-    const start = new Date(find.history.start)
-
-    if (find) {
-      if (
-        !earliestEnergyStartDate ||
-        (earliestEnergyStartDate && isBefore(start, earliestEnergyStartDate))
-      ) {
-        earliestEnergyStartDate = start
-      }
-    }
-  })
+  const {
+    earliestEnergyStartDate,
+    latestEnergyLastDate
+  } = getEarliestLatestDates(domainPowerEnergy, dataAll)
 
   let domainMarketValue = [],
     domainPrice = []
@@ -131,7 +119,9 @@ export default function(data, displayTz) {
   perfTime.timeEnd('--- data.process')
 
   return {
-    datasetFlat: datasetFlat.filter(d => d.date >= earliestEnergyStartDate),
+    datasetFlat: datasetFlat.filter(
+      d => d.date >= earliestEnergyStartDate && d.date <= latestEnergyLastDate
+    ),
     datasetInflation,
     domainPowerEnergy,
     domainEmissions,
