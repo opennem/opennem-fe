@@ -47,7 +47,12 @@
           :class="{ 'is-inverted': selectedTechGroups.length === 0 }"
           class="dropdown-trigger button is-rounded is-small is-primary"
           @click="techDropdownActive = !techDropdownActive">
-          <strong class="dropdown-label">{{ techLabel }}</strong>
+          <div
+            :class="{ 'truncate': tabletBreak }"
+            class="dropdown-label"
+          >
+            <strong>{{ techLabel }}</strong>
+          </div>
           <i class="fal fa-chevron-down" />
         </button>
 
@@ -138,16 +143,11 @@
         v-if="!searchOn"
         :name="'Size'"
         :selections="sizes"
+        :align-right-menu="true"
         class="filter-size"
         @selected="handleSizeSelected"
       />
 
-      <facility-view-toggle
-        v-if="tabletBreak"
-        :view="selectedView"
-        class="facility-view-toggle"
-        @viewSelect="handleViewSelect"
-      />
     </div>
   </div>
 </template>
@@ -168,21 +168,15 @@ import {
 import { FacilitySize } from '~/constants/facility-size.js'
 import { FacilityStatus } from '~/constants/facility-status.js'
 import DropdownSelection from '~/components/ui/DropdownSelection'
-import FacilityViewToggle from '~/components/Facility/ViewToggle'
 
 export default {
   components: {
-    DropdownSelection,
-    FacilityViewToggle
+    DropdownSelection
   },
 
   mixins: [clickaway],
 
   props: {
-    selectedView: {
-      type: String,
-      default: () => 'list'
-    },
     selectedTechs: {
       type: Array,
       default: () => []
@@ -405,6 +399,14 @@ export default {
   font-family: $family-primary;
   margin-right: 0.5rem;
   font-size: 11px;
+
+  &.truncate {
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   strong {
     font-weight: 600;
   }
@@ -547,11 +549,5 @@ export default {
       font-size: 12px;
     }
   }
-}
-
-.facility-view-toggle {
-  position: absolute;
-  right: 1rem;
-  top: 0px;
 }
 </style>

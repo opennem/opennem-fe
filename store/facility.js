@@ -1,6 +1,8 @@
 import _cloneDeep from 'lodash.clonedeep'
+import _includes from 'lodash.includes'
 import axios from 'axios'
 
+import http from '@/services/Api.js'
 import PerfTime from '@/plugins/perfTime.js'
 import { FACILITY_OPERATING } from '@/constants/facility-status.js'
 import { isPowerRange, RANGE_7D } from '@/constants/ranges.js'
@@ -15,45 +17,6 @@ import {
 import { getVolWeightedPriceDomains } from '@/data/parse/region-energy/process/getDomains.js'
 
 let request = null
-
-const getApiBaseUrl = () => {
-  let apiBaseUrl = `https://api.opennem.org.au`
-  let host = undefined
-  if (typeof window !== 'undefined') {
-    host = window.location.host
-  }
-
-  if (
-    host &&
-    (host === 'localhost:3000' ||
-      host.startsWith('127') ||
-      host.startsWith('192'))
-  ) {
-    apiBaseUrl = `/api`
-    // apiBaseUrl = `/`
-  }
-
-  if (host && host.startsWith('dev')) {
-    apiBaseUrl = `https://api.dev.opennem.org.au`
-  }
-
-  if (process.env.API_BASE_URL !== undefined) {
-    apiBaseUrl = process.env.API_BASE_URL
-  }
-
-  console.info('apiBaseUrl', apiBaseUrl)
-
-  return apiBaseUrl
-}
-
-const http = axios.create({
-  baseURL: getApiBaseUrl(),
-  timeout: 60000,
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json'
-  }
-})
 
 const stationPath = (country, network, facility) =>
   `/station/${country}/${network}/${facility}`

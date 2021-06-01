@@ -8,7 +8,9 @@
       class="dropdown-trigger button is-small is-rounded is-primary"
       @click="dropdownActive = !dropdownActive"
     >
-      <div class="dropdown-label">
+      <div
+        :class="{ 'truncate': tabletBreak }"
+        class="dropdown-label">
         <strong>{{ getLabel(selected) }}</strong>
       </div>
       <i class="fal fa-chevron-down" />
@@ -17,6 +19,7 @@
     <transition name="slide-down-fade">
       <div
         v-if="dropdownActive"
+        :class="{ 'align-right': alignRightMenu }"
         class="dropdown-menu">
         <div class="dropdown-content">
           <a
@@ -48,6 +51,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 import { mixin as clickaway } from 'vue-clickaway'
@@ -67,6 +71,10 @@ export default {
     selections: {
       type: Array,
       default: () => []
+    },
+    alignRightMenu: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -75,6 +83,12 @@ export default {
       selected: [],
       dropdownActive: false
     }
+  },
+
+  computed: {
+    ...mapGetters({
+      tabletBreak: 'app/tabletBreak'
+    })
   },
 
   created() {
@@ -124,12 +138,24 @@ export default {
   margin-right: 0.5rem;
   font-size: 11px;
 
+  &.truncate {
+    max-width: 55px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   strong {
     font-weight: 600;
   }
 }
 .dropdown-menu {
   min-width: 150px;
+
+  &.align-right {
+    right: 0;
+    left: auto;
+  }
 }
 .dropdown-content {
   font-family: $family-primary;

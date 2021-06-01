@@ -1,16 +1,13 @@
 <template>
   <div>
     <facility-filters
-      :selected-view="selectedView"
       :selected-techs="selectedTechs"
       :selected-statuses="selectedStatuses"
-      :selected-size="selectedSize"
       class="facility-filters"
       @techsSelect="handleTechsSelected"
       @selectedStatuses="handleStatusesSelected"
       @selectedSize="handleSizeSelected"
       @facilityNameFilter="handleFacilityNameFilter"
-      @viewSelect="handleViewSelect"
     />
 
     <transition name="fade">
@@ -52,17 +49,8 @@
         @openFacilityView="handleOpenFacilityView"
       />
 
-      <!-- <facility-map
-        v-if="!tabletBreak || (tabletBreak && selectedView === 'map')"
-        :data="filteredFacilities"
-        :selected-facility="selectedFacility"
-        :hovered-facility="hoveredFacility"
-        :show-zoom-when-selected="shouldZoomWhenSelected"
-        class="facility-map"
-        @facilitySelect="handleFacilitySelect"
-      /> -->
-
       <FacilityMap
+        v-if="!tabletBreak || (tabletBreak && selectedView === 'map')"
         :data="filteredFacilities"
         :hovered="hoveredFacility"
         :selected="selectedFacility"
@@ -170,7 +158,6 @@ export default {
       selectedStatuses: [FACILITY_OPERATING],
       selectedTechs: [],
       selectedSize: '',
-      selectedView: 'list',
       sortBy: 'displayName',
       orderBy: ASCENDING,
       totalFacilities: 0,
@@ -192,6 +179,14 @@ export default {
       },
       set(facilities) {
         this.setFilteredFacilities(facilities)
+      }
+    },
+    selectedView: {
+      get() {
+        return this.facilitySelectedView
+      },
+      set(val) {
+        this.$store.dispatch('facility/selectedView', val)
       }
     },
     facilityDataset() {
@@ -259,7 +254,6 @@ export default {
     this.orderBy = this.facilityOrderBy
     this.selectedStatuses = this.facilitySelectedStatuses
     this.selectedTechs = this.facilitySelectedTechs
-    this.selectedView = this.facilitySelectedView
 
     if (this.facilityDataset.length > 0) {
       this.facilityData = this.facilityDataset
@@ -321,7 +315,10 @@ export default {
         const ftCaps = facility.fuelTechRegisteredCap
         let highest = 0
         Object.keys(ftCaps).forEach(d => {
-          if (ftCaps[d] >= highest) {
+          if (
+            FUEL_TECHS.FUEL_TECH_CATEGORY[d] === FUEL_TECHS.SOURCE &&
+            ftCaps[d] >= highest
+          ) {
             selectedFt = d
             highest = ftCaps[d]
           }
@@ -470,11 +467,7 @@ export default {
     },
     handleSizeSelected(size) {
       this.selectedSize = size
-      this.$store.dispatch('facility/selectedSize', this.selectedView)
-    },
-    handleViewSelect(view) {
-      this.selectedView = view
-      this.$store.dispatch('facility/selectedView', this.selectedView)
+      this.$store.dispatch('facility/selectedSize', this.selectedSize)
     },
     handleCloseDetail() {
       this.selectedFacility = null

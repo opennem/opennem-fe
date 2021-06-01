@@ -214,6 +214,8 @@
 
       <div
         class="summary-column-headers renewable-row"
+        @touchstart="handleTouchstart"
+        @touchend="handleTouchend"
         @click.exact="handleRenewableRowClicked"
         @click.shift.exact="handleRenewableRowShiftClicked">
         <div class="summary-row last-row">
@@ -380,7 +382,9 @@ export default {
       pointSummaryLoads: {},
       hiddenSources: [],
       hiddenLoads: [],
-      hoveredTemperature: 0
+      hoveredTemperature: 0,
+      mousedownDelay: null,
+      longPress: 500
     }
   },
 
@@ -1232,6 +1236,19 @@ export default {
       } else {
         this.$store.dispatch('percentContributionTo', 'demand')
       }
+    },
+
+    handleTouchstart() {
+      this.mousedownDelay = setTimeout(() => {
+        this.handleRenewableRowShiftClicked()
+      }, this.longPress)
+    },
+    handleTouchend() {
+      this.clearTimeout()
+    },
+    clearTimeout() {
+      clearTimeout(this.mousedownDelay)
+      this.mousedownDelay = null
     },
 
     handleRenewableRowClicked() {

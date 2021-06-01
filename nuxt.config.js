@@ -214,6 +214,7 @@ module.exports = {
   plugins: [
     '~plugins/mixins.js',
     '~plugins/filters.js',
+    '~plugins/directives.js',
     '~plugins/tooltip.js',
     '~plugins/sentry.js',
     { src: '~/plugins/mapbox', mode: 'client' }

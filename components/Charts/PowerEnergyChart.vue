@@ -32,6 +32,8 @@
       :display-title="displayTitle"
       :power-options="powerOptions"
       :energy-options="energyOptions"
+      :single-domain-colour="singleDomainColour"
+      :single-domain-label="singleDomainLabel"
       @type-click="handleTypeClick"
     />
 
@@ -393,6 +395,16 @@ export default {
     },
     energyPercentDomains() {
       return this.powerEnergyDomains.filter(d => d.category === 'source')
+    },
+
+    singleDomain() {
+      return this.domains.length === 1 ? this.domains[0] : null
+    },
+    singleDomainColour() {
+      return this.singleDomain ? this.singleDomain.colour : null
+    },
+    singleDomainLabel() {
+      return this.singleDomain ? this.singleDomain.label : null
     },
 
     highlightId() {

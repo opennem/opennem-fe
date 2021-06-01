@@ -1,30 +1,43 @@
 <template>
   <div :class="layout">
-    <Photos
+    <div 
+      v-highlight="showFields"
       v-if="facilityPhotos.length > 0"
-      :has-photos="facilityPhotos.length > 0"
-      :photos="facilityPhotos"
-      :name="facilityName"
-      :height="layout === 'aside' ? '250px' : '200px'"/>
+      @click.stop.self="() => handleFieldClick('Facility photos', facilityPhotos)">
+      <Photos
+        :has-photos="facilityPhotos.length > 0"
+        :photos="facilityPhotos"
+        :name="facilityName"
+        :height="layout === 'aside' ? '250px' : '200px'"/>
+    </div>
+    
 
-    <MiniMap
-      :has-location="hasLocation"
-      :boundary="facilityLocation.boundary"
-      :point="facilityLocation.geom"
-      :fit-bounds="false"
-      class="map" />
+    <div 
+      v-highlight="showFields"
+      @click.stop.self="() => handleFieldClick('Facility default map', facilityLocation.geom)">
+      <MiniMap
+        :has-location="hasLocation"
+        :boundary="facilityLocation.boundary"
+        :point="facilityLocation.geom"
+        :fit-bounds="false"
+        class="map" />
+    </div>
 
-    <MiniMap
-      :has-location="hasLocation"
-      :zoom="13"
-      :boundary="facilityLocation.boundary"
-      :point="facilityLocation.geom"
-      :map-style="'mapbox://styles/mapbox/satellite-streets-v11'"
-      :show-marker="false"
-      :is-dark="true"
-      class="map" />
+    <div 
+      v-highlight="showFields"
+      @click.stop.self="() => handleFieldClick('Facility satellite map', facilityLocation.geom)">
+      <MiniMap
+        :has-location="hasLocation"
+        :zoom="13"
+        :boundary="facilityLocation.boundary"
+        :point="facilityLocation.geom"
+        :map-style="'mapbox://styles/mapbox/satellite-streets-v11'"
+        :show-marker="false"
+        :is-dark="true"
+        class="map" />
+    </div>
 
-      <!-- <MetaInfo
+    <!-- <MetaInfo
           :facility-id="facilityId"
           :facility-state="facilityState"
           :units-num="facilityUnits.length"
@@ -35,8 +48,10 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import Photos from '@/components/Facility/Photos.vue'
 import MiniMap from '@/components/Facility/MiniMap.vue'
+
 export default {
   components: {
     Photos,
@@ -62,11 +77,23 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      showFields: 'feedback/showFields'
+    }),
     hasLocation() {
       return this.facilityLocation &&
         (this.facilityLocation.geom || this.facilityLocation.boundary)
         ? true
         : false
+    }
+  },
+
+  methods: {
+    ...mapActions({
+      addField: 'feedback/addField'
+    }),
+    handleFieldClick(key, value) {
+      this.addField({ key, value })
     }
   }
 }
@@ -94,6 +121,7 @@ export default {
   display: flex;
   padding: 0.75rem;
   margin-bottom: 2rem;
+  gap: 10px;
 
   & > section,
   & > .aside-section {
@@ -103,6 +131,10 @@ export default {
     &:last-child {
       margin-right: 0;
     }
+  }
+
+  & > div {
+    width: 100%;
   }
 
   @include mobile {
