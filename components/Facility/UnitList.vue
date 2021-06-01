@@ -2,7 +2,7 @@
   <table class="summary-list">
     <caption>
       <dates-display
-        v-if="ready"
+        v-if="ready && hasDatetime"
         :is-hovering="hoverOn"
         :focus-on="focusOn"
         :hovered-date="hoverDate ? hoverDate.getTime() : null"
@@ -451,6 +451,13 @@ export default {
       }
       return null
     },
+
+    hasDatetime() {
+      return (
+        (this.startTime && this.endTime) || this.hoverDate || this.focusDate
+      )
+    },
+
     summary() {
       // dataset length not including undefined or null values
       const ds = this.dataset.filter(d => {
