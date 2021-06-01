@@ -144,6 +144,10 @@ export default {
     & > .aside-section {
       margin-bottom: 0.75rem;
     }
+
+    & > div {
+      margin-bottom: 0.75rem;
+    }
   }
 }
 </style>
