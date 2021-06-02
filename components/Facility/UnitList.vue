@@ -108,7 +108,7 @@
           v-tooltip.left="getTooltip(d)"
           v-highlight="showFields"
           class="unit-name"
-          @click.stop.self="() => handleFieldClick(`${d.code} label`, d.code)"
+          @click.self="() => handleFieldClick(`${d.code} label`, d.code)"
         >
           <div
             :style="{ backgroundColor: d.colour}"
@@ -120,7 +120,7 @@
         <td
           v-highlight="showFields"
           class="align-right"
-          @click.stop.self="() => handleFieldClick(`${d.code} reg cap`, d.registeredCapacity)">
+          @click.self="() => handleFieldClick(`${d.code} reg cap`, d.registeredCapacity)">
           {{ d.registeredCapacity }}
         </td>
 
@@ -128,7 +128,7 @@
           v-highlight="showFields"
           v-if="hasEmissions"
           class="align-right"
-          @click.stop.self="() => handleFieldClick(`${d.code} intensity`, d.emissionIntensity)">
+          @click.self="() => handleFieldClick(`${d.code} intensity`, d.emissionIntensity)">
           {{ d.emissionIntensity | formatValue }}
         </td>
 
