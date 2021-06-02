@@ -473,13 +473,20 @@ export default {
   }
   .distance {
     position: absolute;
-    bottom: 1rem;
-    left: 50%;
-    background-color: rgba(0, 0, 0, 0.5);
+    top: 3rem;
+    left: calc(50% - 1rem);
+    background-color: rgba(0, 0, 0, 0.75);
     color: #fff;
     padding: 0.2rem 0.5rem;
-    font-size: 12px;
+    font-size: 16px;
     border-radius: 4px;
+  }
+
+  &.dark {
+    .distance {
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #000;
+    }
   }
 
   ::v-deep .mapboxgl-canvas {
