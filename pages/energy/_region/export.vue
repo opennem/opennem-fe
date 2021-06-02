@@ -53,12 +53,13 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { timeFormat as d3TimeFormat, utcFormat } from 'd3-time-format'
+import { utcFormat } from 'd3-time-format'
 import _includes from 'lodash.includes'
 
 import { getEnergyRegions } from '@/constants/energy-regions.js'
 import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import domToImage from '~/services/DomToImage.js'
+import { lsGet, lsSet } from '@/services/LocalStorage'
 import VisSection from '@/components/Energy/Export/VisSection.vue'
 import SummaryLegendSection from '@/components/Energy/Export/SummaryLegendSection.vue'
 import ExportHeader from '~/components/Energy/Export/Header.vue'
@@ -167,6 +168,8 @@ export default {
   },
 
   created() {
+    this.setupSummaryLegendStates()
+
     this.setFocusDate(null)
     this.$store.dispatch('currentView', 'energy')
     this.doGetRegionDataByRangeInterval({
@@ -198,6 +201,15 @@ export default {
       setFocusDate: 'visInteract/focusDate'
     }),
 
+    setupSummaryLegendStates() {
+      const exportTable = lsGet('exportTable')
+      const percentDisplay = lsGet('percentDisplay')
+      const isSummary = exportTable === 'summary'
+      this.summary = isSummary
+      this.legend = !isSummary
+      this.percentDisplay = percentDisplay
+    },
+
     updateEmissionsData() {
       this.doUpdateEmissionIntensityDataset({
         datasetAll: this.currentDataset,
@@ -211,10 +223,14 @@ export default {
     handleTableToggle() {
       this.summary = !this.summary
       this.legend = !this.legend
+
+      const exportTable = this.summary ? 'summary' : 'legend'
+      lsSet('exportTable', exportTable)
     },
 
     handlePercentDisplayToggle() {
       this.percentDisplay = !this.percentDisplay
+      lsSet('percentDisplay', this.percentDisplay)
     },
 
     handleExportClick() {

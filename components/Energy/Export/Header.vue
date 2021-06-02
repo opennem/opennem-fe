@@ -50,6 +50,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { lsGet, lsSet } from '@/services/LocalStorage'
 import { CHART_HIDDEN } from '@/constants/chart-options'
 
 const charts = [
@@ -119,7 +120,8 @@ export default {
     return {
       charts,
       tables,
-      previousChartStates: {}
+      previousChartStates: {},
+      chartStates: {}
     }
   },
 
@@ -175,11 +177,26 @@ export default {
     this.charts.forEach(c => {
       this.previousChartStates[c.name] = this[c.currentType]
     })
+
+    let lsChartStates = lsGet('exportChartStates')
+    if (!lsChartStates) {
+      lsChartStates = JSON.stringify(this.previousChartStates)
+      lsSet('exportChartStates', lsChartStates)
+    }
+    this.chartStates = JSON.parse(lsChartStates)
+
+    this.setupChartStates()
   },
 
   methods: {
     isEnabled(widgetName) {
       return this[widgetName]
+    },
+
+    setupChartStates() {
+      this.charts.forEach(c => {
+        this.$store.commit(`${c.commit}/chartType`, this.chartStates[c.name])
+      })
     },
 
     restorePreviousChartStates() {
@@ -191,32 +208,36 @@ export default {
       })
     },
 
+    saveChartStates() {
+      lsSet('exportChartStates', JSON.stringify(this.chartStates))
+    },
+
     handleCancelClick() {
       this.$emit('exportCancel')
+      this.saveChartStates()
       this.restorePreviousChartStates()
     },
 
     handleExportClick() {
+      this.saveChartStates()
       this.$emit('exportClick')
     },
 
     handleChartToggle(chart) {
+      let state = null
       if (this[chart.name]) {
-        this.$store.commit(`${chart.commit}/chartType`, CHART_HIDDEN)
+        state = CHART_HIDDEN
       } else {
-        if (this.previousChartStates[chart.name] === CHART_HIDDEN) {
+        if (this.chartStates[chart.name] === CHART_HIDDEN) {
           // if previous state is hidden, use default chart type
-          this.$store.commit(
-            `${chart.commit}/chartType`,
-            this[chart.defaultType]
-          )
+          state = this[chart.defaultType]
         } else {
-          this.$store.commit(
-            `${chart.commit}/chartType`,
-            this.previousChartStates[chart.name]
-          )
+          state = this.chartStates[chart.name]
         }
       }
+
+      this.chartStates[chart.name] = state
+      this.$store.commit(`${chart.commit}/chartType`, state)
     },
 
     handleTableToggle(table) {
