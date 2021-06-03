@@ -40,7 +40,11 @@ export const actions = {
   },
 
   async submit({}, payload) {
-    const res = await http.post('/feedback', payload)
+    const res = await http.request({
+      url: '/feedback',
+      method: 'post',
+      data: payload
+    })
     return res
   }
 }
