@@ -3,7 +3,6 @@ import addDays from 'date-fns/addDays'
 import addMonths from 'date-fns/addMonths'
 import PerfTime from '@/plugins/perfTime.js'
 import { EMISSIONS, MARKET_VALUE } from '@/constants/data-types'
-import { getEarliestLatestDates } from '@/data/helpers/ftStartLast.js'
 import createEmptyDatasets from '@/data/helpers/createEmptyDatasets.js'
 import parseAndCheckData from './parseAndCheckData.js'
 import flattenAndInterpolate from './flattenAndInterpolate.js'
@@ -55,11 +54,6 @@ export default function(data, displayTz) {
     getFuelTechInOrder(dataEmissions),
     EMISSIONS
   )
-
-  const {
-    earliestEnergyStartDate,
-    latestEnergyLastDate
-  } = getEarliestLatestDates(domainPowerEnergy, dataAll)
 
   let domainMarketValue = [],
     domainPrice = []
@@ -119,9 +113,7 @@ export default function(data, displayTz) {
   perfTime.timeEnd('--- data.process')
 
   return {
-    datasetFlat: datasetFlat.filter(
-      d => d.date >= earliestEnergyStartDate && d.date <= latestEnergyLastDate
-    ),
+    datasetFlat,
     datasetInflation,
     domainPowerEnergy,
     domainEmissions,

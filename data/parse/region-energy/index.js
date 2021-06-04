@@ -10,6 +10,7 @@ import {
   filterDatasetByPeriod
 } from '@/data/helpers/filter'
 import combineMultipleResponses from '@/data/helpers/combineMultipleResponses.js'
+import { getEarliestLatestDates } from '@/data/helpers/ftStartLast.js'
 
 export function simpleDataProcess(res, displayTz) {
   const responses = combineMultipleResponses(res)
@@ -56,7 +57,7 @@ export function dataProcess(res, range, interval, period, displayTz) {
   const responses = combineMultipleResponses(res)
 
   const {
-    datasetFlat,
+    datasetFlat: dFlat,
     domainMarketValue,
     domainPrice,
     domainPowerEnergy,
@@ -68,6 +69,19 @@ export function dataProcess(res, range, interval, period, displayTz) {
   } = process(responses, displayTz)
 
   const isEnergyType = type === 'energy'
+  const {
+    earliestEnergyStartDate,
+    latestEnergyLastDate
+  } = getEarliestLatestDates(
+    domainPowerEnergy,
+    responses,
+    displayTz,
+    isEnergyType
+  )
+
+  const datasetFlat = dFlat.filter(
+    d => d.date >= earliestEnergyStartDate && d.date <= latestEnergyLastDate
+  )
   const datasetFull = _cloneDeep(datasetFlat)
   const dataset = filterDatasetByRange(datasetFlat, range)
 
