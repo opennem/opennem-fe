@@ -179,7 +179,10 @@ ${this.path}
 ${this.sources}
 
 **Fields:**
+
+\`\`\`
 ${JSON.stringify(this.selectedFields, null, 1)}
+\`\`\`
 
 **Description:**
 ${this.description}
