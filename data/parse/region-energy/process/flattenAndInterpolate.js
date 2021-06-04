@@ -53,11 +53,12 @@ const getMinuteTimeIndices = (start, last, mins) => {
     }
   }
 
-  // const lastTime = last.getTime()
-  // obj[lastTime] = {
-  //   time: lastTime,
-  //   date: last
-  // }
+  // for instantaneous data
+  const lastTime = last.getTime()
+  obj[lastTime] = {
+    time: lastTime,
+    date: last
+  }
 
   return obj
 }
