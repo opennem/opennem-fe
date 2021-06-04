@@ -31,7 +31,7 @@ export function checkPowerEnergyExists({ dataPower, dataEnergy }) {
   }
 }
 
-export function checkHistoryObject(d) {
+export function checkHistoryObject(d, displayTz, ignoreTime) {
   const id = d.id
   const history = d.history
 
@@ -73,22 +73,23 @@ export function checkHistoryObject(d) {
     } else {
       const intervalKey = intervalObj.key
       const intervalValue = intervalObj.value
-      const startDate = parseISO(start)
-      const lastDate = parseISO(last)
+      const startDateTime = mutateDate(history.start, displayTz, ignoreTime)
+      const lastDateTime = mutateDate(history.last, displayTz, ignoreTime)
+
       let diff = 0
 
       switch (intervalKey) {
         case 'm':
-          diff = differenceInMinutes(lastDate, startDate)
+          diff = differenceInMinutes(lastDateTime, startDateTime)
           break
         case 'd':
-          diff = differenceInDays(lastDate, startDate)
+          diff = differenceInDays(lastDateTime, startDateTime)
           break
         case 'M':
-          diff = differenceInMonths(lastDate, startDate)
+          diff = differenceInMonths(lastDateTime, startDateTime)
           break
         case 'Q':
-          diff = differenceInQuarters(lastDate, startDate)
+          diff = differenceInQuarters(lastDateTime, startDateTime)
           break
         default:
           console.warn(`${interval} interval not support for ${id}`)
@@ -96,8 +97,7 @@ export function checkHistoryObject(d) {
 
       // check if start, last, interval matches data length
       const dataLength = data.length
-      const expectedLength =
-        intervalValue === 5 ? diff / intervalValue : diff / intervalValue + 1
+      const expectedLength = diff / intervalValue + 1
       if (dataLength !== expectedLength) {
         console.warn(`--${id}`)
         console.warn(
