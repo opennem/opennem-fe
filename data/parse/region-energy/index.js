@@ -152,7 +152,7 @@ export function dataProcess(res, range, interval, period, displayTz) {
   return {
     dataType: type,
     datasetFull,
-    datasetFlat: dataset,
+    datasetFlat,
     dataPowerEnergyInterval,
     domainPowerEnergy,
     domainPowerEnergyGrouped,
