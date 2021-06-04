@@ -471,7 +471,7 @@ export const actions = {
       console.info(`------ ${currentRegion} — ${range}/${interval} (start)`)
       const { currentDataset } = dataRollUp({
         isEnergyType: state.isEnergyType,
-        datasetFlat: _cloneDeep(state.datasetFull),
+        datasetFlat: _cloneDeep(state.datasetFlat),
         domainPowerEnergy: state.domainPowerEnergy,
         domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
         domainEmissions: state.domainEmissions,
@@ -507,7 +507,7 @@ export const actions = {
     // console.log('****** doUpdateDatasetByFilterPeriod')
     const { currentDataset } = dataRollUp({
       isEnergyType: state.isEnergyType,
-      datasetFlat: _cloneDeep(state.datasetFull),
+      datasetFlat: _cloneDeep(state.datasetFlat),
       domainPowerEnergy: state.domainPowerEnergy,
       domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
       domainEmissions: state.domainEmissions,
@@ -530,7 +530,7 @@ export const actions = {
   doUpdateDatasetByFilterRange({ state, commit }, { range, interval }) {
     const { currentDataset } = dataRollUp({
       isEnergyType: state.isEnergyType,
-      datasetFlat: _cloneDeep(state.datasetFull),
+      datasetFlat: _cloneDeep(state.datasetFlat),
       domainPowerEnergy: state.domainPowerEnergy,
       domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
       domainEmissions: state.domainEmissions,

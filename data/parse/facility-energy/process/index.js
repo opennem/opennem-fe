@@ -12,7 +12,7 @@ export default function(data, displayTz) {
     fuelTechDataType,
     isPowerData,
     hasPowerEnergyData
-  } = parseAndCheckData(data)
+  } = parseAndCheckData(data, displayTz)
 
   const mapper = d => {
     const type = d.data_type || ''
