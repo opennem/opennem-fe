@@ -1,6 +1,8 @@
 import cloneDeep from 'lodash.clonedeep'
 import { lsSet } from '~/services/LocalStorage'
 import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
+import { ENERGY_NEM } from '@/constants/energy-regions.js'
+import regionDisplayTzs from '@/constants/region-display-timezones.js'
 
 export const state = () => ({
   hostEnv: null, // local, prod, dev
@@ -29,7 +31,9 @@ export const state = () => ({
   compareDifference: false,
   focusOn: false,
   compareDates: [],
-  drawer: false
+  drawer: false,
+
+  displayTimeZone: regionDisplayTzs[ENERGY_NEM]
 })
 
 export const mutations = {
@@ -114,6 +118,9 @@ export const mutations = {
   },
   drawer(state, data) {
     state.drawer = data
+  },
+  displayTimeZone(state, data) {
+    state.displayTimeZone = data
   }
 }
 
@@ -190,7 +197,9 @@ export const getters = {
   percentContributionTo: state => state.percentContributionTo,
   isContributionDemand: state => state.percentContributionTo === 'demand',
   isContributionGeneration: state =>
-    state.percentContributionTo === 'generation'
+    state.percentContributionTo === 'generation',
+
+  displayTimeZone: state => state.displayTimeZone
 }
 
 export const actions = {

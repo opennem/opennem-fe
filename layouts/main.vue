@@ -1,5 +1,6 @@
 <template>
   <div class="container-fluid">
+    <h1 v-if="useV3">You are viewing data and features that are still in <strong>development</strong>.</h1>
     <transition name="slide-down-fade">
       <article
         v-if="showError"
@@ -19,7 +20,7 @@
 
     <app-header />
     <nuxt />
-    <app-footer v-if="!widthBreak" />
+    <app-footer v-if="!tabletBreak" />
   </div>
 </template>
 
@@ -45,7 +46,8 @@ export default {
       showError: 'app/showError',
       errorHeader: 'app/errorHeader',
       errorMessage: 'app/errorMessage',
-      widthBreak: 'app/widthBreak'
+      tabletBreak: 'app/tabletBreak',
+      useV3: 'feature/v3Data'
     })
   },
 
@@ -65,6 +67,18 @@ export default {
   margin-bottom: 1rem;
   @include tablet {
     margin-bottom: 3rem;
+  }
+
+  h1 {
+    background-color: #ffdd57;
+    width: 100%;
+    font-size: 12px;
+    padding: 3px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 9999;
   }
 
   .error-message {

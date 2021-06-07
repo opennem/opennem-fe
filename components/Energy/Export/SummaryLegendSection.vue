@@ -1,7 +1,8 @@
 <template>
   <section>
     <summary-table
-      v-if="showSummary"
+      :display-as-legend="showLegend"
+      :show-percent-in-legend="showPercent"
       :energy-domains="powerEnergyDomains"
       :temperature-domains="domainTemperature"
       :market-value-domains="currentDomainMarketValue"
@@ -16,10 +17,6 @@
       style="margin-bottom: 1rem;"
     />
 
-    <export-legend
-      v-if="showLegend"
-      :domains="domains"
-    />
   </section>
 </template>
 
@@ -29,11 +26,9 @@ import _cloneDeep from 'lodash.clonedeep'
 import _includes from 'lodash.includes'
 
 import SummaryTable from '@/components/SummaryTable'
-import ExportLegend from '@/components/Energy/Export/Legend'
 export default {
   components: {
-    SummaryTable,
-    ExportLegend
+    SummaryTable
   },
 
   props: {
@@ -44,6 +39,10 @@ export default {
     showLegend: {
       type: Boolean,
       default: true
+    },
+    showPercent: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -67,11 +66,6 @@ export default {
     },
     property() {
       return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
-    },
-    domains() {
-      const domains = this.powerEnergyDomains
-      const hidden = this.hiddenFuelTechs
-      return domains.filter(d => !_includes(hidden, d[this.property]))
     }
   }
 }

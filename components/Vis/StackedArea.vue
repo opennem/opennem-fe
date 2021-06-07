@@ -131,7 +131,7 @@
 
 <script>
 import _cloneDeep from 'lodash.clonedeep'
-import { scaleOrdinal, scaleLinear, scaleTime } from 'd3-scale'
+import { scaleOrdinal, scaleLinear, scaleTime, scaleUtc } from 'd3-scale'
 import { axisBottom, axisRight, axisLeft } from 'd3-axis'
 import {
   area as d3Area,
@@ -142,14 +142,14 @@ import {
   curveMonotoneX
 } from 'd3-shape'
 import {
-  timeSecond,
-  timeMinute,
-  timeHour,
-  timeDay,
-  timeWeek,
-  timeMonth,
-  timeMonday,
-  timeYear
+  timeDay as d3TimeDay,
+  timeMonday as d3TimeMonday,
+  timeMonth as d3TimeMonth,
+  timeYear as d3TimeYear,
+  utcDay,
+  utcMonth,
+  utcYear,
+  utcMonday
 } from 'd3-time'
 import { extent, min, max } from 'd3-array'
 import { format as d3Format } from 'd3-format'
@@ -159,7 +159,6 @@ import { brushX } from 'd3-brush'
 import { timeFormat as d3Timeformat } from 'd3-time-format'
 import debounce from 'lodash.debounce'
 
-import millisecondsByInterval from '~/constants/millisecondsByInterval.js'
 import {
   INTERVAL_5MIN,
   INTERVAL_30MIN,
@@ -178,6 +177,7 @@ import * as CONFIG from './shared/config.js'
 import axisTimeFormat from './shared/timeFormat.js'
 import axisSecondaryTimeFormat from './shared/secondaryTimeFormat.js'
 import DateDisplay from '~/services/DateDisplay.js'
+import { getNextDateByInterval } from '@/services/datetime-helpers.js'
 import AxisTimeFormats from '~/services/axisTimeFormats.js'
 
 export default {
@@ -334,6 +334,10 @@ export default {
     unit: {
       type: String,
       default: ''
+    },
+    filterPeriod: {
+      type: String,
+      default: ''
     }
   },
 
@@ -412,9 +416,6 @@ export default {
   },
 
   computed: {
-    filterPeriod() {
-      return this.$store.getters.filterPeriod
-    },
     compareDifference() {
       return this.$store.getters.compareDifference
     },
@@ -427,15 +428,16 @@ export default {
           this.range !== '1D' && this.range !== '3D' && this.range !== '7D'
         if (isEnergyType) {
           const updated = _cloneDeep(this.dataset)
-          const lastSecondItem = _cloneDeep(updated[updated.length - 2])
           const lastItem = _cloneDeep(updated[updated.length - 1])
-          const intervalTime =
-            this.dataset.length > 1
-              ? lastItem.time - lastSecondItem.time
-              : millisecondsByInterval[this.interval]
 
-          lastItem.time = lastItem.time + intervalTime
-          lastItem.date = new Date(lastItem.time)
+          const nextDate = getNextDateByInterval(
+            lastItem.date,
+            this.interval,
+            this.filterPeriod !== 'All'
+          )
+          lastItem.date = nextDate
+          lastItem.time = nextDate.getTime()
+
           updated.push(lastItem)
           return updated
         }
@@ -509,6 +511,11 @@ export default {
           return this.range === 'ALL'
             ? AxisTimeFormats.rangeAllIntervalMonthTimeFormat
             : AxisTimeFormats.intervalMonthTimeFormat
+        case INTERVAL_SEASON:
+        case INTERVAL_QUARTER:
+        case INTERVAL_HALFYEAR:
+        case INTERVAL_YEAR:
+          return AxisTimeFormats.rangeAllIntervalMonthTimeFormat
         default:
           return axisTimeFormat
       }
@@ -797,10 +804,7 @@ export default {
 
         const isFilter = !self.filterPeriod || self.filterPeriod !== 'All'
         if (isFilter && hasIntervalFilters(self.interval)) {
-          const periodMonth = DateDisplay.getPeriodMonth(
-            self.interval,
-            self.filterPeriod
-          )
+          const periodMonth = DateDisplay.getPeriodMonth(self.filterPeriod)
           const startXMonth = startX.getMonth()
           const endXMonth = endX.getMonth()
 
@@ -1109,7 +1113,6 @@ export default {
     },
 
     updateCursorLineTooltip(date) {
-      const valueFormat = d3Format(',.1f')
       const time = new Date(date).getTime()
       const nextDatePeriod = this.findNextDatePeriod(time)
 
@@ -1531,10 +1534,7 @@ export default {
 
       const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
       if (isFilter && hasIntervalFilters(this.interval)) {
-        const periodMonth = DateDisplay.getPeriodMonth(
-          this.interval,
-          this.filterPeriod
-        )
+        const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
         const startXMonth = startX.getMonth()
         const endXMonth = endX.getMonth()
 
@@ -1675,62 +1675,53 @@ export default {
         if (this.range === '1D') {
           className = 'interval-5m'
         } else if (this.range === '3D') {
-          tickLength = timeDay.every(0.5)
+          tickLength = utcDay.every(1)
           className = 'range-3d'
         } else if (this.range === '7D') {
-          tickLength = timeDay.every(1)
+          tickLength = utcDay.every(1)
         } else if (this.range === '30D') {
           const every = this.mobileScreen ? 1 : 0.5
-          tickLength = timeMonday.every(every)
+          tickLength = d3TimeMonday.every(every)
           if (!this.mobileScreen) {
             className = 'interval-day'
           }
         } else if (this.range === '1Y') {
           if (this.interval === INTERVAL_DAY) {
             const every = this.mobileScreen ? 8 : 4
-            tickLength = timeMonday.every(every)
+            tickLength = d3TimeMonday.every(every)
           } else if (this.interval === INTERVAL_WEEK) {
             const every = this.mobileScreen ? 8 : 4
-            tickLength = timeMonday.every(every)
+            tickLength = d3TimeMonday.every(every)
           } else if (this.interval === INTERVAL_MONTH) {
             const every = this.mobileScreen ? 2 : 1
-            tickLength = timeMonth.every(every)
+            tickLength = d3TimeMonth.every(every)
           }
         } else if (this.range === 'ALL') {
           const every = this.mobileScreen ? 2 : 1
-          tickLength = timeYear.every(every)
+          tickLength = d3TimeYear.every(every)
 
           if (this.interval === INTERVAL_SEASON) {
             className = 'interval-season'
-            const periodMonth = DateDisplay.getPeriodMonth(
-              this.interval,
-              this.filterPeriod
-            )
+            const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
             if (isFilter && periodMonth) {
-              tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+              tickLength = d3TimeMonth.filter(d => d.getMonth() === periodMonth)
             }
           } else if (this.interval === INTERVAL_QUARTER) {
             className = 'interval-quarter'
-            const periodMonth = DateDisplay.getPeriodMonth(
-              this.interval,
-              this.filterPeriod
-            )
+            const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
             if (isFilter && periodMonth) {
-              tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+              tickLength = d3TimeMonth.filter(d => d.getMonth() === periodMonth)
             }
           } else if (this.interval === INTERVAL_HALFYEAR) {
             className = 'interval-half-year'
-            const periodMonth = DateDisplay.getPeriodMonth(
-              this.interval,
-              this.filterPeriod
-            )
+            const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
             if (isFilter && periodMonth) {
-              tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+              tickLength = d3TimeMonth.filter(d => d.getMonth() === periodMonth)
             }
           } else if (this.interval === INTERVAL_YEAR) {
             className = 'interval-year'
           } else if (this.interval === INTERVAL_FINYEAR) {
-            tickLength = timeMonth.filter(d => {
+            tickLength = d3TimeMonth.filter(d => {
               return d.getMonth() === 6
             })
             className = 'interval-fin-year'
@@ -1738,20 +1729,18 @@ export default {
         }
       } else {
         if (this.range === '30D') {
-          tickLength = timeDay.every(1)
-        }
-        if (this.range === '1Y') {
+          tickLength = d3TimeMonday.every(0.5)
+        } else if (this.range === '1Y') {
           if (this.interval === INTERVAL_DAY) {
-            const zoomDates = this.x.domain()
-            if (zoomDates[1].getTime() - zoomDates[0].getTime() < 2592000000) {
-              tickLength = timeDay.every(1)
-            } else {
-              tickLength = 7
-            }
+            tickLength = d3TimeMonday.every(1)
           } else if (this.interval === INTERVAL_WEEK) {
-            tickLength = 7
+            tickLength = d3TimeMonday.every(1)
           } else if (this.interval === INTERVAL_MONTH) {
-            tickLength = timeMonth.every(1)
+            tickLength = d3TimeMonth.every(1)
+          }
+        } else if (this.range === 'ALL') {
+          if (this.interval === INTERVAL_YEAR) {
+            tickLength = d3TimeYear.every(1)
           }
         }
       }
@@ -1766,19 +1755,16 @@ export default {
               : year
           return `${yearStr}`
         })
-        const periodMonth = DateDisplay.getPeriodMonth(
-          this.interval,
-          this.filterPeriod
-        )
+        const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
         if (isFilter && periodMonth) {
-          tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+          tickLength = d3TimeMonth.filter(d => d.getMonth() === periodMonth)
         }
       } else if (this.interval === INTERVAL_FINYEAR) {
         this.xAxis.tickFormat(d => {
           const year = d.getFullYear() + 1 + ''
           return `FY${year.substr(2, 2)}`
         })
-        tickLength = timeMonth.filter(d => {
+        tickLength = d3TimeMonth.filter(d => {
           return d.getMonth() === 6
         })
       } else {
@@ -1790,8 +1776,6 @@ export default {
       // add secondary x axis tick label here
       const insertSecondaryAxisTick = function(d, i) {
         const el = select(this)
-        // const secondaryText =
-        //   isFilter && i === 0 ? that.filterPeriod : axisSecondaryTimeFormat(d)
         const secondaryText = that.secondaryTimeFormats(d)
         if (secondaryText !== '') {
           el.append('tspan')

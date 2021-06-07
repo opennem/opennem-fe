@@ -1,27 +1,54 @@
 <template>
-  <section>
-    <transition name="fade">
-      <figure v-if="hasPhotos">
-        <v-popover 
-          class="wiki-link-text" 
-          placement="auto">
-          <i class="fal fa-info-circle"/>
-          <template slot="popover">
-            Photo by <a :href="photo.author_link">{{ photo.author }}</a>
-          </template>
-        </v-popover>
+  <section
+    :class="{ 'full-screen': isFullScreen }"
+    class="photobox"
+    @click.self="handleExpandClick">
 
-        <img 
-          :src="photo.photo_url" 
-          :alt="`${name} facility`"
-          :style="{ 'height': ratio > 2 ? '180px' : height }"
-        >
-      </figure>
+    <transition name="fade">
+      <VueperSlides
+        v-if="hasPhotos"
+        :dragging-distance="20"
+        :fixed-height="isFullScreen ? '100%' : height"
+        @slide="handleSlide">
+        <VueperSlide
+          v-for="(photo, index) in photos"
+          :key="`photo${index}`"
+          :image="photo.photo_url" />
+      </VueperSlides>
     </transition>
 
+    <button
+      v-tooltip.left-start="isFullScreen ? 'Exit full screen' : 'Full screen'"
+      v-if="hasPhotos"
+      class="expand-button"
+      @click="handleExpandClick">
+      <i
+        v-if="isFullScreen"
+        class="fal fa-compress" />
+      <i
+        v-else
+        class="fal fa-expand" />
+    </button>
+
+    <v-popover
+      v-if="hasPhotos && hasPhotoAuthor(currentPhoto.author)"
+      class="wiki-link-text"
+      placement="auto">
+      <i class="fal fa-info-circle"/>
+      <template slot="popover">
+        <i class="fal fa-fw fa-camera" />
+        <strong><a 
+          :href="currentPhoto.author_link" 
+          target="_blank">{{ currentPhoto.author }}</a></strong>
+        (<small><a 
+          :href="currentPhoto.license_link" 
+          target="_blank">{{ currentPhoto.license_type }}</a></small>)
+      </template>
+    </v-popover>
+
     <transition name="fade">
-      <div 
-        v-if="!hasPhotos" 
+      <div
+        v-if="!hasPhotos"
         class="not-found-card card">
         <i class="fal fa-image"/>
         <span>Image not available</span>
@@ -32,7 +59,15 @@
 </template>
 
 <script>
+import { VueperSlides, VueperSlide } from 'vueperslides'
+import 'vueperslides/dist/vueperslides.css'
+
 export default {
+  components: {
+    VueperSlides,
+    VueperSlide
+  },
+
   props: {
     hasPhotos: {
       type: Boolean,
@@ -52,50 +87,127 @@ export default {
     }
   },
 
-  computed: {
-    photo() {
-      let width = this.photos[0].width
-      let photoIndex = 0
-      this.photos.forEach((d, i) => {
-        if (d.width > width) {
-          width = d.width
-          photoIndex = i
-        }
-      })
-      return this.photos[photoIndex]
+  data() {
+    return {
+      isFullScreen: false,
+      currentPhoto: null
+    }
+  },
+
+  created() {
+    this.currentPhoto = this.photos[0]
+  },
+
+  methods: {
+    hasPhotoAuthor(author) {
+      return author && author !== ''
     },
-    ratio() {
-      return this.photo.width / this.photo.height
+
+    handleExpandClick() {
+      this.isFullScreen = !this.isFullScreen
+    },
+
+    handleSlide(slide) {
+      this.currentPhoto = this.photos[slide.currentSlide.index]
+    },
+
+    getRatio(photo) {
+      return photo.width / photo.height
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@import '~/assets/scss/responsive-mixins.scss';
+
 $radius: 0.5rem;
 
-figure {
-  position: relative;
-  img {
-    border-radius: $radius;
-    margin: 0 auto;
-    display: block;
-    object-fit: cover;
-    width: 100%;
+.expand-button {
+  position: absolute;
+  top: 10px;
+  right: 5px;
+  z-index: 2;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  &:active,
+  &:focus {
+    border: none;
+    outline: none;
   }
 
-  .wiki-link-text {
-    position: absolute;
-    bottom: 8px;
-    right: 12px;
+  i {
     color: #fff;
-    font-size: 1.2em;
+    font-size: 18px;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.6);
+  }
+}
 
-    i {
-      position: relative;
-      top: 2px;
-      text-shadow: 1px 1px 1px #999;
+.photobox {
+  position: relative;
+
+  &.full-screen {
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: -2px;
+    padding: 6rem;
+    background: rgb(0, 0, 0);
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.8) 0%,
+      rgba(0, 0, 0, 0.6) 100%
+    );
+
+    height: auto !important;
+
+    @include mobile {
+      padding: 4rem 1rem 1rem;
+    }
+
+    .expand-button {
+      top: 2.5rem;
+      right: 6rem;
+
+      @include mobile {
+        top: 20px;
+        right: 15px;
+      }
     }
   }
+}
+
+.wiki-link-text {
+  position: absolute;
+  bottom: 8px;
+  z-index: 99;
+  right: 12px;
+  color: #fff;
+  font-size: 20px;
+
+  i {
+    position: relative;
+    top: 2px;
+    text-shadow: 1px 1px 1px #999;
+  }
+}
+
+::v-deep .vueperslides__track,
+::v-deep .vueperslides__parallax-wrapper,
+::v-deep .vueperslides__inner,
+::v-deep .vueperslides,
+::v-deep .vueperslides__track-inner,
+::v-deep .vueperslide,
+::v-deep .vueperslide__content-wrapper {
+  border-radius: 10px;
+}
+::v-deep
+  .vueperslides:not(.no-shadow):not(.vueperslides--3d)
+  .vueperslides__parallax-wrapper:after {
+  box-shadow: none;
 }
 </style>

@@ -1,9 +1,10 @@
 <template>
   <div class="container-fluid">
-    <h3 v-if="useAllPeriods">{{ getDateRange(allBucket) }}</h3>
+    <h3 v-if="useAllPeriods">{{ dateRange }}</h3>
 
     <OptionsLegend
       :legend-width="tabletBreak ? 200 : 310"
+      :legend-font-size="tabletBreak ? 9 : 10"
       :show-legend="regionData.length > 0"
       :hover-display="hoverDisplay"
       :use-hover="!useAllPeriods"
@@ -22,7 +23,7 @@
           v-if="hoverDate"
           :is-yearly="d.yearlyData && d.yearlyData.length > 0 ? true : false"
           :hover-date="hoverDate"
-          :data="d[selectedMetric]"
+          :data="d.data"
           :hover-value="hoverValue"
           :selected-metric="selectedMetric"
           :selected-metric-object="selectedMetricObject"
@@ -37,13 +38,13 @@
             :key="`yearly-${i}-${yIndex}`"
             style="width: 100%"
           >
-            <h5>{{ yData.year }}</h5>
+            <h5 class="heatmap-label">{{ yData.year }}</h5>
             <Heatmap
               :cell-height="50"
               :svg-width="width"
               :svg-height="50"
               :radius="0"
-              :dataset="yData[selectedMetric]"
+              :dataset="yData.data"
               :value-prop="selectedMetric"
               :tooltip-value-prop="selectedMetricObject.valueProp ? selectedMetricObject.valueProp : selectedMetric"
               :divisor="selectedMetricObject.divisor"
@@ -60,13 +61,15 @@
         <div
           v-else
           style="width: 100%">
-          <h5 :class="{ dark: shouldDarken(d[selectedMetric], selectedMetric) }">{{ d.region }}</h5>
+          <nuxt-link
+            :to="`/stripes/${d.regionId}/?metric=${selectedMetric}`"
+            class="heatmap-label region-label">{{ d.region }}</nuxt-link>
           <Heatmap
             :cell-height="75"
             :svg-width="width"
             :svg-height="75"
             :radius="0"
-            :dataset="d[selectedMetric]"
+            :dataset="d.data"
             :value-prop="selectedMetric"
             :tooltip-value-prop="selectedMetricObject.valueProp ? selectedMetricObject.valueProp : selectedMetric"
             :divisor="selectedMetricObject.divisor"
@@ -87,28 +90,23 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
-import { extent } from 'd3-array'
-import { select, mouse } from 'd3-selection'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 import debounce from 'lodash.debounce'
-import startOfQuarter from 'date-fns/startOfQuarter'
-import addDays from 'date-fns/addDays'
-import format from 'date-fns/format'
-import differenceInDays from 'date-fns/differenceInDays'
-import { getEnergyRegions } from '@/constants/energy-regions.js'
-import {
-  periods,
-  metrics,
-  yearsBucket,
-  allRangeBucket,
-  yearDailyRangeBucket
-} from '@/constants/metrics/'
-import Heatmap from '@/components/Vis/_wip/Heatmap'
-import ColourLegend from '@/components/Vis/ColourLegend'
 
-import VisSection from '@/components/Metrics/VisSection'
-import OptionsLegend from '@/components/Metrics/OptionsLegend'
-import HoverMetric from '@/components/Metrics/HoverMetric'
+import { getEnergyRegionLabel } from '@/constants/energy-regions.js'
+import { periods, metrics } from '@/constants/stripes/'
+
+import {
+  getRegionStripesData,
+  getYearlyStripesData,
+  getStripesDateRange,
+  getStripesRegion
+} from '@/data/pages/page-stripes.js'
+
+import Heatmap from '@/components/Vis/Heatmap'
+import ColourLegend from '@/components/Vis/ColourLegend'
+import OptionsLegend from '@/components/Stripes/OptionsLegend'
+import HoverMetric from '@/components/Stripes/HoverMetric'
 
 export default {
   layout: 'main',
@@ -116,28 +114,56 @@ export default {
   components: {
     Heatmap,
     ColourLegend,
-    VisSection,
     OptionsLegend,
     HoverMetric
   },
 
-  head: {
-    titleTemplate: 'OpenNEM: Stripes'
+  head() {
+    return {
+      title: `: ${getEnergyRegionLabel(this.regionId)} Stripes`,
+      meta: [
+        {
+          hid: 'twitter:title',
+          name: 'twitter:title',
+          content: `OpenNEM: ${getEnergyRegionLabel(this.regionId)} Stripes`
+        },
+        {
+          hid: 'twitter:image:src',
+          name: 'twitter:image:src',
+          content: this.cardFilename
+        },
+        {
+          hid: 'og:title',
+          property: 'og:title',
+          content: `OpenNEM: ${getEnergyRegionLabel(this.regionId)} Stripes`
+        },
+        {
+          hid: 'og:image',
+          property: 'og:image',
+          content: this.cardFilename
+        },
+        {
+          hid: 'og:image:width',
+          property: 'og:image:width',
+          content: '1447'
+        },
+        {
+          hid: 'og:image:height',
+          property: 'og:image:height',
+          content: '932'
+        }
+      ]
+    }
   },
 
   data() {
     return {
+      baseUrl: `${this.$config.url}/images/screens/`,
       width: 0,
       periods,
       metrics,
-      yearsBucket,
-      allBucket: allRangeBucket(),
+      dateRange: getStripesDateRange(),
       regionData: [],
-      regions: getEnergyRegions().filter(
-        d => d.id !== 'au' && d.id !== 'nem' && d.id !== 'wem'
-      ),
-      datasetInflation: null,
-      domainInflation: null,
       hoverDate: null,
       hoverValue: null,
       hoverRegion: '',
@@ -151,32 +177,32 @@ export default {
       interval: 'interval',
       filterPeriod: 'filterPeriod',
       fuelTechGroupName: 'fuelTechGroupName',
-      tabletBreak: 'app/tabletBreak',
-      v3Paths: 'feature/v3Paths'
+      tabletBreak: 'app/tabletBreak'
     }),
 
     selectedPeriod: {
       get() {
-        return this.$store.getters['metrics/selectedPeriod']
+        return this.$store.getters['stripes/selectedPeriod']
       },
 
       set(val) {
-        this.$store.commit('metrics/selectedPeriod', val)
+        this.$store.commit('stripes/selectedPeriod', val)
       }
     },
 
     selectedMetric: {
       get() {
-        return this.$store.getters['metrics/selectedMetric']
+        return this.$store.getters['stripes/selectedMetric']
       },
 
       set(val) {
+        const query = { metric: val }
         this.$router.push({
-          query: {
-            metric: val
-          }
+          path: `?metric=${val}`
         })
-        this.$store.commit('metrics/selectedMetric', val)
+        this.$store.commit('stripes/selectedMetric', val)
+        this.setQuery(query)
+        this.hoverDisplay = null
       }
     },
 
@@ -198,16 +224,25 @@ export default {
 
     useAllPeriods() {
       return this.regionId === 'au' || this.regionId === 'nem'
+    },
+
+    cardFilename() {
+      return `${this.baseUrl}opennem-stripes-${this.regionId}.png`
     }
   },
 
   watch: {
     regionId(id) {
       this.getData(id, this.selectedPeriod)
+    },
+    queryMetric(metric) {
+      if (metric) {
+        this.selectedMetric = metric
+      }
     }
   },
 
-  created() {
+  mounted() {
     if (this.queryMetric) {
       this.selectedMetric = this.queryMetric
     } else {
@@ -217,9 +252,7 @@ export default {
         }
       })
     }
-  },
 
-  mounted() {
     this.$store.dispatch('currentView', 'stripes')
     this.getData(this.regionId, this.selectedPeriod)
 
@@ -233,269 +266,36 @@ export default {
       }),
       50
     )
-
-    //     const $vis = select('.vis-container')
-    //     let mouseinside = false
-    //
-    //     $vis
-    //       .on('mousemove touchmove', function() {
-    //         const m = mouse(this)
-    //         const $hoverLine = select('#hover-line')
-    //         $hoverLine.style('left', `${m[0] - 1}px`)
-    //         if (!mouseinside) {
-    //           $hoverLine.style('opacity', 1)
-    //           mouseinside = true
-    //         }
-    //       })
-    //       .on('mouseout', () => {
-    //         const $hoverLine = select('#hover-line')
-    //         $hoverLine.style('opacity', 0)
-    //         mouseinside = false
-    //       })
   },
 
   methods: {
     ...mapActions({
       doGetRegionData: 'regionEnergy/doGetRegionData',
-      doGetAllData: 'regionEnergy/doGetAllData',
-      doGetRegionDataByRangeInterval:
-        'regionEnergy/doGetRegionDataByRangeInterval',
-      doGetYearRegionData: 'regionEnergy/doGetYearRegionData'
+      doGetAllData: 'regionEnergy/doGetAllData'
+    }),
+    ...mapMutations({
+      setQuery: 'app/query'
     }),
 
     getData(id, period) {
       // reset
       this.regionData = []
 
-      const filter =
-        id === 'au'
-          ? d => d.id !== 'au' && d.id !== 'nem'
-          : id === 'nem'
-            ? d => d.id !== 'au' && d.id !== 'nem' && d.id !== 'wem'
-            : d => d.id === id
-      const regions = getEnergyRegions().filter(filter)
+      const regions = getStripesRegion(id)
 
       if (this.useAllPeriods) {
         this.selectedPeriod = 'all/month'
-        this.getAllData(regions)
+
+        getRegionStripesData(this.doGetAllData, regions).then(d => {
+          this.regionData = d
+        })
       } else {
         this.selectedPeriod = 'multiyear/day'
-        this.getRegionAllData(regions)
-      }
-    },
 
-    getRegionAllData(regions) {
-      regions.forEach((r, i) => {
-        const yearlyData = []
-
-        if (this.v3Paths) {
-          this.doGetRegionData({ region: r.id }).then(d => {
-            this.domainInflation = d.inflation.domain
-            this.datasetInflation = d.inflation.data
-
-            yearsBucket.forEach((year, yIndex) => {
-              const yearInt = parseInt(year)
-              const dataset = d.dataset.filter(
-                e => e.date.getFullYear() === yearInt
-              )
-
-              if (dataset.length > 0) {
-                const propData = this.generateDataset(
-                  dataset,
-                  d.domainPowerEnergy,
-                  d.domainEmissions,
-                  d.domainTemperature,
-                  d.domainPrice,
-                  true,
-                  yearDailyRangeBucket(yearInt)
-                )
-                yearlyData.push({
-                  year,
-                  carbonIntensity: propData,
-                  renewablesProportion: propData,
-                  windProportion: propData,
-                  solarProportion: propData,
-                  gasProportion: propData,
-                  coalProportion: propData,
-                  importsExports: propData,
-                  temperature: propData,
-                  maxTemperature: propData,
-                  netInterconnectorFlow: propData,
-                  price: propData,
-                  inflatedPrice: propData
-                })
-              }
-            })
-          })
-        } else {
-          yearsBucket.forEach((year, yIndex) => {
-            setTimeout(() => {
-              this.doGetYearRegionData({ region: r.id, year }).then(d => {
-                const yearInt = parseInt(year)
-                const last = new Date(yearInt, 11, 31)
-                const start = new Date(yearInt, 0, 1)
-                const propData = this.generateDataset(
-                  d.dataset,
-                  d.domainPowerEnergy,
-                  d.domainEmissions,
-                  d.domainTemperature,
-                  d.domainPrice,
-                  true
-                )
-                yearlyData.push({
-                  year,
-                  carbonIntensity: propData,
-                  renewablesProportion: propData,
-                  windProportion: propData,
-                  solarProportion: propData,
-                  gasProportion: propData,
-                  coalProportion: propData,
-                  importsExports: propData,
-                  temperature: propData,
-                  maxTemperature: propData,
-                  netInterconnectorFlow: propData,
-                  price: propData,
-                  inflatedPrice: propData
-                })
-              })
-            }, 500 * yIndex)
-          })
-        }
-
-        this.regionData.push({
-          region: r.label,
-          regionId: r.id,
-          yearlyData
-        })
-      })
-    },
-
-    getAllData(regions) {
-      if (this.v3Paths) {
-        this.doGetAllData({ regions }).then(d => {
-          regions.forEach(r => {
-            const rData = d[r.id]
-
-            const propData = this.generateDataset(
-              rData.dataset,
-              rData.domainPowerEnergy,
-              rData.domainEmissions,
-              rData.domainTemperature,
-              rData.domainPrice,
-              false,
-              this.allBucket
-            )
-
-            this.regionData.push({
-              region: r.label,
-              regionId: r.id,
-              carbonIntensity: propData,
-              renewablesProportion: propData,
-              windProportion: propData,
-              solarProportion: propData,
-              gasProportion: propData,
-              coalProportion: propData,
-              importsExports: propData,
-              temperature: propData,
-              maxTemperature: propData,
-              netInterconnectorFlow: propData,
-              price: propData,
-              inflatedPrice: propData
-            })
-          })
-        })
-      } else {
-        regions.forEach((r, i) => {
-          setTimeout(() => {
-            this.doGetRegionDataByRangeInterval({
-              region: r.id,
-              range: 'ALL',
-              interval: 'Month',
-              period: 'All',
-              groupName: this.fuelTechGroupName
-            }).then(d => {
-              const propData = this.generateDataset(
-                d.currentDataset,
-                d.currentDomainPowerEnergy,
-                d.currentDomainEmissions,
-                d.domainTemperature,
-                d.domainPrice,
-                false,
-                this.allBucket
-              )
-
-              this.regionData.push({
-                region: r.label,
-                regionId: r.id,
-                carbonIntensity: propData,
-                renewablesProportion: propData,
-                windProportion: propData,
-                solarProportion: propData,
-                gasProportion: propData,
-                coalProportion: propData,
-                importsExports: propData,
-                temperature: propData,
-                maxTemperature: propData,
-                netInterconnectorFlow: propData,
-                price: propData,
-                inflatedPrice: propData
-              })
-            })
-          }, 500 * i)
+        getYearlyStripesData(this.doGetRegionData, regions).then(d => {
+          this.regionData = d
         })
       }
-    },
-
-    generateDataset(
-      dataset,
-      domainPowerEnergy,
-      domainEmissions,
-      domainTemperature,
-      domainPrice,
-      topUp,
-      bucket
-    ) {
-      if (bucket) {
-        const data = bucket.map(d => {
-          const obj = this.createEmptyObj(d.date, d.time)
-          const find = dataset.find(x => x.time === d.time)
-          return this.calculateMetricData(
-            obj,
-            find,
-            domainPowerEnergy,
-            domainEmissions,
-            domainTemperature,
-            domainPrice
-          )
-        })
-
-        return data
-      }
-
-      const data = dataset.map(d => {
-        const obj = this.createEmptyObj(d.date, d.time)
-        return this.calculateMetricData(
-          obj,
-          d,
-          domainPowerEnergy,
-          domainEmissions,
-          domainTemperature,
-          domainPrice
-        )
-      })
-
-      if (data.length > 0 && topUp) {
-        const lastDataDate = data[data.length - 1].date
-        const last = new Date(lastDataDate.getFullYear(), 11, 31)
-        const fillUp = differenceInDays(last, addDays(lastDataDate, 1))
-        let cDate = lastDataDate
-        for (let i = 1; i <= fillUp + 1; i++) {
-          cDate = addDays(cDate, 1)
-          data.push(this.createEmptyObj(cDate, cDate.getTime()))
-        }
-      }
-
-      return data
     },
 
     handleMousemove({ id, date, value }, regionId) {
@@ -506,147 +306,6 @@ export default {
     handleMouseout() {
       this.hoverDate = null
       this.hoverValue = null
-    },
-
-    getDateRange(data) {
-      const formatString = 'MMM yyyy'
-      const firstDate = format(data[0].date, formatString)
-      const lastDate = format(data[data.length - 1].date, formatString)
-      return `${firstDate} – ${lastDate}`
-    },
-
-    createEmptyObj(date, time) {
-      return {
-        date,
-        time,
-        carbonIntensity: null,
-        renewablesProportion: null,
-        windProportion: null,
-        solarProportion: null,
-        coalProportion: null,
-        coal: null,
-        gasProportion: null,
-        gas: null,
-        temperature: null,
-        maxTemperature: null,
-        importsExports: null,
-        sumImportsExports: null,
-        netInterconnectorFlow: null,
-        price: null,
-        inflatedPrice: null
-      }
-    },
-
-    calculateMetricData(
-      obj,
-      d,
-      domainPowerEnergy,
-      domainEmissions,
-      domainTemperature,
-      domainPrice
-    ) {
-      if (d) {
-        let totalEmissions = 0,
-          totalPowerEnergy = 0,
-          temperature = null,
-          maxTemperature = null,
-          sumImportsExports = 0,
-          hasImportsExportsValue = false,
-          importsExports = null,
-          hasEmissionsValue = false
-
-        domainEmissions.forEach(domain => {
-          if (d[domain.id] || d[domain.id] === 0) {
-            hasEmissionsValue = true
-          }
-          totalEmissions += d[domain.id] || 0
-        })
-        domainPowerEnergy.forEach(domain => {
-          if (domain.category !== 'load' || domain.fuelTech === 'exports') {
-            totalPowerEnergy += d[domain.id] || 0
-          }
-          if (domain.fuelTech === 'imports' || domain.fuelTech === 'exports') {
-            if (d[domain.id] || d[domain.id] === 0) {
-              hasImportsExportsValue = true
-            }
-            sumImportsExports += d[domain.id]
-          }
-        })
-        domainTemperature.forEach(domain => {
-          if (domain.type === 'temperature_mean') {
-            temperature = d[domain.id]
-          }
-          if (domain.type === 'temperature_max') {
-            maxTemperature = d[domain.id]
-          }
-        })
-
-        const ei = hasEmissionsValue ? totalEmissions / totalPowerEnergy : null
-        const isValidEI = Number.isFinite(ei)
-
-        // if no value
-        importsExports = hasImportsExportsValue
-          ? sumImportsExports > 0
-            ? 1
-            : 0
-          : null
-        if (!hasImportsExportsValue) {
-          sumImportsExports = null
-        }
-
-        const hasInflation =
-          this.domainInflation && this.datasetInflation.length > 0
-        let inflatedPrice = null
-
-        if (hasInflation) {
-          const startQ = startOfQuarter(d.date)
-          const find = this.datasetInflation.find(dInflation => {
-            return dInflation.time === startQ.getTime()
-          })
-          const lastIndex = this.datasetInflation[
-            this.datasetInflation.length - 1
-          ][this.domainInflation.id]
-          const inflationIndex = find
-            ? find[this.domainInflation.id]
-            : lastIndex
-
-          if (inflationIndex || inflationIndex === 0) {
-            inflatedPrice =
-              d._volWeightedPrice || d._volWeightedPrice === 0
-                ? (lastIndex / inflationIndex) * d._volWeightedPrice
-                : null
-          }
-        }
-
-        obj.carbonIntensity = isValidEI ? ei : null
-        obj.renewablesProportion =
-          d._totalDemandRenewablesPercentage < 0
-            ? 0
-            : d._totalDemandRenewablesPercentage
-        obj.windProportion =
-          d._totalDemandWindProportion < 0 ? 0 : d._totalDemandWindProportion
-        obj.solarProportion =
-          d._totalDemandSolarProportion < 0 ? 0 : d._totalDemandSolarProportion
-        obj.coalProportion =
-          d._totalDemandCoalProportion < 0 ? 0 : d._totalDemandCoalProportion
-        obj.coal = d._totalCoal
-        obj.gasProportion =
-          d._totalDemandGasProportion < 0 ? 0 : d._totalDemandGasProportion
-        obj.gas = d._totalGas
-        obj.temperature = temperature
-        obj.maxTemperature = maxTemperature
-        obj.importsExports = importsExports
-        obj.sumImportsExports = sumImportsExports
-        obj.netInterconnectorFlow = d._totalDemandImportsExportsProportion
-        obj.price = d._volWeightedPrice
-        obj.inflatedPrice = inflatedPrice
-      }
-
-      return obj
-    },
-
-    shouldDarken(data, prop) {
-      const check = data.filter((d, i) => i < 20).map(d => d[prop])
     }
   }
 }
@@ -686,7 +345,7 @@ h3 {
     font-size: 1.2em;
     font-weight: 700;
   }
-  h5 {
+  .heatmap-label {
     font-family: $header-font-family;
     font-weight: 700;
     font-size: 1em;
@@ -699,6 +358,14 @@ h3 {
     border-radius: 0 0 1px 0;
     left: 1px;
     margin-top: 1px;
+  }
+
+  .region-label {
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.6);
+    }
   }
   header {
     display: flex;

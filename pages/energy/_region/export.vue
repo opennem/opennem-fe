@@ -3,9 +3,11 @@
     <export-header
       :summary="summary"
       :legend="legend"
+      :percent-display="percentDisplay"
       @exportClick="handleExportClick"
       @exportCancel="handleCancelClick"
       @tableToggle="handleTableToggle"
+      @percentDisplayToggle="handlePercentDisplayToggle"
     />
 
     <transition name="fade">
@@ -37,6 +39,7 @@
           <summary-legend-section
             :show-summary="summary"
             :show-legend="legend"
+            :show-percent="percentDisplay"
             class="table-container" />
         </div>
 
@@ -50,9 +53,13 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { timeFormat as d3TimeFormat } from 'd3-time-format'
+import { utcFormat } from 'd3-time-format'
+import _includes from 'lodash.includes'
+
 import { getEnergyRegions } from '@/constants/energy-regions.js'
+import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import domToImage from '~/services/DomToImage.js'
+import { lsGet, lsSet } from '@/services/LocalStorage'
 import VisSection from '@/components/Energy/Export/VisSection.vue'
 import SummaryLegendSection from '@/components/Energy/Export/SummaryLegendSection.vue'
 import ExportHeader from '~/components/Energy/Export/Header.vue'
@@ -73,6 +80,7 @@ export default {
     return {
       summary: false,
       legend: true,
+      percentDisplay: false,
       exporting: false,
       regions: getEnergyRegions()
     }
@@ -84,18 +92,47 @@ export default {
       interval: 'interval',
       filterPeriod: 'filterPeriod',
       fuelTechGroupName: 'fuelTechGroupName',
+      hiddenFuelTechs: 'hiddenFuelTechs',
+      percentContributionTo: 'percentContributionTo',
+
       ready: 'regionEnergy/ready',
       currentDataset: 'regionEnergy/currentDataset',
       filteredCurrentDataset: 'regionEnergy/filteredCurrentDataset',
       filteredDates: 'regionEnergy/filteredDates',
       domainTemperature: 'regionEnergy/domainTemperature',
-      showChartTemperature: 'chartOptionsTemperature/chartShown'
+      currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
+      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
+      domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
+      showChartTemperature: 'chartOptionsTemperature/chartShown',
+
+      useV3: 'feature/v3Data'
     }),
     showBomSource() {
       return this.domainTemperature.length > 0 && this.showChartTemperature
     },
     regionId() {
       return this.$route.params.region
+    },
+    property() {
+      return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+    },
+    calculateByGeneration() {
+      return this.percentContributionTo === 'generation'
+    },
+
+    emissionsDomains() {
+      const domains = this.currentDomainEmissions.filter(
+        d => d.category !== FT.LOAD
+      )
+      const hidden = this.hiddenFuelTechs
+      return domains
+        ? domains.filter(d => !_includes(hidden, d[this.property]))
+        : []
+    },
+    powerEnergyDomains() {
+      const domains = this.currentDomainPowerEnergy
+      const hidden = this.hiddenFuelTechs
+      return domains.filter(d => !_includes(hidden, d[this.property]))
     }
   },
 
@@ -125,11 +162,14 @@ export default {
           start: dataset[0].time,
           end: dataset[dataset.length - 1].time
         })
+        this.updateEmissionsData()
       }
     }
   },
 
   created() {
+    this.setupSummaryLegendStates()
+
     this.setFocusDate(null)
     this.$store.dispatch('currentView', 'energy')
     this.doGetRegionDataByRangeInterval({
@@ -137,7 +177,8 @@ export default {
       range: this.range,
       interval: this.interval,
       period: this.filterPeriod,
-      groupName: this.fuelTechGroupName
+      groupName: this.fuelTechGroupName,
+      useV3: this.useV3
     })
     this.doUpdateTickFormats({ range: this.range, interval: this.interval })
   },
@@ -149,6 +190,8 @@ export default {
       doUpdateDatasetByGroup: 'regionEnergy/doUpdateDatasetByGroup',
       doUpdateDatasetByFilterPeriod:
         'regionEnergy/doUpdateDatasetByFilterPeriod',
+      doUpdateEmissionIntensityDataset:
+        'energy/emissions/doUpdateEmissionIntensityDataset',
       doUpdateXGuides: 'visInteract/doUpdateXGuides',
       doUpdateTickFormats: 'visInteract/doUpdateTickFormats',
       doUpdateXTicks: 'visInteract/doUpdateXTicks'
@@ -158,15 +201,44 @@ export default {
       setFocusDate: 'visInteract/focusDate'
     }),
 
-    handleTableToggle(widgetName) {
-      this[widgetName] = !this[widgetName]
+    setupSummaryLegendStates() {
+      const exportTable = lsGet('exportTable')
+      const percentDisplay = lsGet('percentDisplay')
+      const isSummary = exportTable === 'summary'
+      this.summary = isSummary
+      this.legend = !isSummary
+      this.percentDisplay = percentDisplay
     },
+
+    updateEmissionsData() {
+      this.doUpdateEmissionIntensityDataset({
+        datasetAll: this.currentDataset,
+        isCalculateByGeneration: this.calculateByGeneration,
+        emissionsDomains: this.emissionsDomains,
+        powerEnergyDomains: this.powerEnergyDomains,
+        domainPowerEnergy: this.domainPowerEnergy
+      })
+    },
+
+    handleTableToggle() {
+      this.summary = !this.summary
+      this.legend = !this.legend
+
+      const exportTable = this.summary ? 'summary' : 'legend'
+      lsSet('exportTable', exportTable)
+    },
+
+    handlePercentDisplayToggle() {
+      this.percentDisplay = !this.percentDisplay
+      lsSet('percentDisplay', this.percentDisplay)
+    },
+
     handleExportClick() {
       this.exporting = true
       let date = ''
       let region = this.regions.find(r => r.id === this.regionId).label
       if (this.filteredCurrentDataset.length > 0) {
-        date = d3TimeFormat('%Y%m%d')(this.filteredCurrentDataset[0].date)
+        date = utcFormat('%Y%m%d')(this.filteredCurrentDataset[0].date)
       }
       if (this.regionId === 'nem') {
         region = 'OpenNEM'

@@ -18,7 +18,7 @@ module.exports = {
     mapboxToken: process.env.MAPBOX_TOKEN || '',
     DATA_BASE_URL: useDev
       ? 'https://data.dev.opennem.org.au/'
-      : 'https://data.opennem.org.au/'
+      : process.env.DATA_BASE_URL
   },
 
   server: {
@@ -79,10 +79,6 @@ module.exports = {
     ],
 
     link: [
-      {
-        rel: 'stylesheet',
-        href: 'https://unpkg.com/leaflet@1.2.0/dist/leaflet.css'
-      },
       {
         rel: 'stylesheet',
         href: '/css/fontawesome.min.css'
@@ -218,9 +214,9 @@ module.exports = {
   plugins: [
     '~plugins/mixins.js',
     '~plugins/filters.js',
+    '~plugins/directives.js',
     '~plugins/tooltip.js',
     '~plugins/sentry.js',
-    { src: '~/plugins/leaflet', ssr: false },
     { src: '~/plugins/mapbox', mode: 'client' }
   ],
 

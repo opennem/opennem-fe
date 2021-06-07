@@ -2,9 +2,22 @@
   <section>
     <power-energy-chart
       v-if="ready"
+      :power-energy-dataset="currentDataset"
+      :domain-power-energy="currentDomainPowerEnergy"
+      :hidden-domains="hiddenFuelTechs"
+      :range="range"
+      :interval="interval"
+      :by-generation="byGeneration"
+      :compare-dates="compareDates"
       :hover-on="isHovering"
       :hover-date="hoverDate"
       :zoom-extent="zoomExtent"
+      :renewables-line-colour="renewablesLineColour"
+      :prop-name="propName"
+      :chart-height="chartHeight"
+      :filter-period="filterPeriod"
+      :incomplete-intervals="incompleteIntervals"
+      :is-energy-type="isEnergyType"
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
@@ -21,41 +34,61 @@
     />
 
     <emissions-chart
-      v-if="ready && domainEmissions.length > 0 && featureEmissions" 
+      v-if="ready && domainEmissions.length > 0 && featureEmissions"
+      :emissions-dataset="currentDataset"
+      :domain-emissions="currentDomainEmissions"
+      :range="range"
+      :interval="interval"
       :hover-on="isHovering"
       :hover-date="hoverDate"
       :zoom-extent="zoomExtent"
+      :average-emissions="averageEmissions"
+      :hidden-domains="hiddenFuelTechs"
+      :prop-name="propName"
+      :incomplete-intervals="incompleteIntervals"
+      :filter-period="filterPeriod"
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
       @svgClick="handleSvgClick"
     />
 
-    <emission-intensity-chart 
+    <emission-intensity-chart
       v-if="ready && domainEmissions.length > 0 && featureEmissions"
+      :emission-intensity-dataset="emissionIntensityData"
+      :range="range"
+      :interval="interval"
       :hover-on="isHovering"
       :hover-date="hoverDate"
       :zoom-extent="zoomExtent"
+      :average-emission-intensity="averageEmissionIntensity"
+      :filter-period="filterPeriod"
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
       @svgClick="handleSvgClick" />
 
-    <price-market-value-chart 
-      v-if="ready && domainPrice.length > 0" 
+    <price-chart
+      v-if="ready && domainPrice.length > 0"
+      :price-dataset="currentDataset"
+      :domain-price="domainPrice"
+      :range="range"
+      :interval="interval"
       :hover-on="isHovering"
       :hover-date="hoverDate"
       :zoom-extent="zoomExtent"
+      :filter-period="filterPeriod"
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
       @svgClick="handleSvgClick" />
-    
-    <temperature-chart 
+
+    <temperature-chart
       v-if="ready && domainTemperature.length > 0"
       :hover-on="isHovering"
       :hover-date="hoverDate"
       :zoom-extent="zoomExtent"
+      :filter-period="filterPeriod"
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
@@ -70,21 +103,13 @@ import { min, max } from 'd3-array'
 import _cloneDeep from 'lodash.clonedeep'
 import addYears from 'date-fns/addYears'
 
-import {
-  FILTER_NONE,
-  INTERVAL_MONTH,
-  INTERVAL_SEASON,
-  INTERVAL_QUARTER,
-  INTERVAL_HALFYEAR,
-  hasIntervalFilters
-} from '@/constants/interval-filters.js'
-
 import DateDisplay from '@/services/DateDisplay.js'
-import PowerEnergyChart from '@/components/Energy/Charts/PowerEnergyChart'
-import EmissionsChart from '@/components/Energy/Charts/EmissionsChart'
-import EmissionIntensityChart from '@/components/Energy/Charts/EmissionIntensityChart'
+import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
+import PowerEnergyChart from '@/components/Charts/PowerEnergyChart'
+import EmissionsChart from '@/components/Charts/EmissionsChart'
+import EmissionIntensityChart from '@/components/Charts/EmissionIntensityChart'
 import EnergyCompare from '@/components/Energy/Charts/CompareChart'
-import PriceMarketValueChart from '@/components/Energy/Charts/PriceMarketValueChart'
+import PriceChart from '@/components/Charts/PriceChart'
 import TemperatureChart from '@/components/Energy/Charts/TemperatureChart'
 
 export default {
@@ -93,7 +118,7 @@ export default {
     EmissionsChart,
     EmissionIntensityChart,
     EnergyCompare,
-    PriceMarketValueChart,
+    PriceChart,
     TemperatureChart
   },
 
@@ -121,26 +146,76 @@ export default {
 
   computed: {
     ...mapGetters({
+      tabletBreak: 'app/tabletBreak',
+
       range: 'range',
       interval: 'interval',
       compareDifference: 'compareDifference',
       compareDates: 'compareDates',
       filterPeriod: 'filterPeriod',
+      fuelTechGroupName: 'fuelTechGroupName',
+      hiddenFuelTechs: 'hiddenFuelTechs',
+      percentContributionTo: 'percentContributionTo',
+
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
+
       ready: 'regionEnergy/ready',
+      isEnergyType: 'regionEnergy/isEnergyType',
       currentDataset: 'regionEnergy/currentDataset',
       domainEmissions: 'regionEnergy/domainEmissions',
       domainTemperature: 'regionEnergy/domainTemperature',
       domainPrice: 'regionEnergy/domainPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
+      currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
+
+      averageEmissions: 'energy/emissions/averageEmissions',
+      emissionIntensityData: 'energy/emissions/emissionIntensityData',
+      averageEmissionIntensity: 'energy/emissions/averageEmissionIntensity',
 
       featureEmissions: 'feature/emissions'
     }),
+
+    regionId() {
+      return this.$route.params.region
+    },
+
     domains() {
       return this.currentDomainPowerEnergy
         ? _cloneDeep(this.currentDomainPowerEnergy).reverse()
         : []
+    },
+
+    byGeneration() {
+      return this.percentContributionTo === 'generation'
+    },
+
+    renewablesLineColour() {
+      return this.fuelTechGroupName === 'Renewable/Fossil' ||
+        this.fuelTechGroupName === 'Flexibility'
+        ? '#e34a33'
+        : '#52BCA3'
+    },
+
+    propName() {
+      return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+    },
+
+    chartHeight() {
+      let height = 330
+      if (this.regionId === 'nem' && !this.tabletBreak) {
+        height = 520
+      }
+      return height
+    },
+
+    incompleteIntervals() {
+      return GetIncompleteIntervals({
+        dataset: this.currentDataset,
+        range: this.range,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod
+      })
     }
   },
 
@@ -200,59 +275,12 @@ export default {
       this.setFilteredDates(filteredDates)
     },
     handleDateHover(date) {
-      let hoverDate = date
-      const isFilter = !this.filterPeriod || this.filterPeriod !== FILTER_NONE
-      if (hoverDate && this.interval === 'Fin Year') {
-        if (hoverDate.getMonth() >= 6) {
-          hoverDate.setFullYear(hoverDate.getFullYear() + 1)
-        }
-      }
-      if (isFilter && hoverDate && hasIntervalFilters(this.interval)) {
-        const periodMonth = DateDisplay.getPeriodMonth(
-          this.interval,
-          this.filterPeriod
-        )
-        const month = hoverDate.getMonth()
-
-        if (this.interval === INTERVAL_MONTH) {
-          hoverDate = DateDisplay.mutateMonthDate(
-            hoverDate,
-            month,
-            this.filterPeriod
-          )
-        } else if (this.interval === INTERVAL_SEASON) {
-          hoverDate = DateDisplay.mutateSeasonDate(
-            hoverDate,
-            month,
-            this.filterPeriod
-          )
-        } else if (this.interval === INTERVAL_QUARTER) {
-          hoverDate = DateDisplay.mutateQuarterDate(
-            hoverDate,
-            month,
-            this.filterPeriod
-          )
-        } else if (this.interval === INTERVAL_HALFYEAR) {
-          hoverDate = DateDisplay.mutateHalfYearDate(
-            hoverDate,
-            month,
-            this.filterPeriod
-          )
-        }
-
-        if (this.interval === INTERVAL_MONTH) {
-          hoverDate.setMonth(periodMonth)
-        } else {
-          hoverDate.setMonth(periodMonth + 1)
-        }
-      }
-
-      const closestDate = DateDisplay.snapToClosestInterval(
+      this.hoverDate = DateDisplay.getClosestDateByInterval(
+        date,
         this.interval,
-        hoverDate
+        this.filterPeriod
       )
-      this.hoverDate = closestDate
-      this.$emit('dateHover', closestDate)
+      this.$emit('dateHover', this.hoverDate)
     },
     handleIsHovering(hover) {
       this.isHovering = hover

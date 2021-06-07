@@ -2,12 +2,34 @@
   <div class="range-interval-selectors">
     <div class="range-buttons buttons has-addons">
       <button
+        v-on-clickaway="handleClickAway"
         v-for="(r, i) in ranges"
         :key="i"
-        :class="{ 'is-selected': r.range === selectedRange }"
+        :class="{ 'is-selected': isRangeSelected(r) }"
         class="button is-rounded"
-        @click="handleRangeChange(r.range)">
-        {{ r.range }}
+        @click.stop="handleRangeClick(r)">
+
+        <div v-if="isString(r)">{{ r }}</div>
+        <div v-if="!isString(r)">
+          {{ getSelectedRangeLabel(r) }}
+        </div>
+        <i
+          v-if="hasRangeFilter(r)"
+          class="filter-caret fal fa-chevron-down" />
+        <div
+          v-show="showRangeOptions(r)"
+          class="filter-menu dropdown-menu">
+          <div class="dropdown-content">
+            <a
+              v-for="(range, rIndex) in r"
+              :key="`rangeOption${rIndex}`"
+              :class="{ 'is-selected': range === selectedRange }"
+              class="dropdown-item"
+              @click.stop="handleRangeOptionClick(range)">
+              {{ range }}           
+            </a>
+          </div>
+        </div>
       </button>
     </div>
 
@@ -25,7 +47,6 @@
         <i
           v-if="hasFilter(interval)"
           class="filter-caret fal fa-chevron-down" />
-        
         <div
           v-show="showFilter(interval)"
           class="filter-menu dropdown-menu">
@@ -46,13 +67,16 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
+import _includes from 'lodash.includes'
+
 import {
-  FuelTechRanges,
   RANGE_1D,
   RANGE_3D,
   RANGE_7D,
+  RANGE_1Y,
+  RANGE_ALL,
   getDefaultIntervalByRange,
   isValidRangeInterval
 } from '~/constants/ranges.js'
@@ -70,13 +94,11 @@ import {
 } from '@/constants/interval-filters.js'
 import {
   isValidRangeQuery,
-  getDefaultRange,
   getRangeQueryByRange,
   getRangeByRangeQuery
 } from '@/constants/range-queries.js'
 import {
   isValidIntervalQuery,
-  getDefaultInterval,
   getIntervalQueryByInterval,
   getIntervalByIntervalQuery
 } from '@/constants/interval-queries.js'
@@ -88,9 +110,28 @@ import {
 
 export default {
   mixins: [clickaway],
+
+  props: {
+    ranges: {
+      type: Array,
+      default: () => []
+    },
+    intervals: {
+      type: Object,
+      default: () => null
+    },
+    range: {
+      type: String,
+      default: null
+    },
+    interval: {
+      type: String,
+      default: null
+    }
+  },
+
   data() {
     return {
-      ranges: FuelTechRanges,
       selectedRange: '',
       selectedInterval: '',
       selectedFilter: '',
@@ -103,15 +144,14 @@ export default {
       monthFilters: INTERVAL_FILTERS[INTERVAL_MONTH],
       seasonFilters: INTERVAL_FILTERS[INTERVAL_SEASON],
       quarterFilters: INTERVAL_FILTERS[INTERVAL_QUARTER],
-      halfYearFilters: INTERVAL_FILTERS[INTERVAL_HALFYEAR]
+      halfYearFilters: INTERVAL_FILTERS[INTERVAL_HALFYEAR],
+      showAllRangeOptions: false,
+      show1YRangeOptions: false
     }
   },
 
   computed: {
     ...mapGetters({
-      range: 'range',
-      interval: 'interval',
-      filterPeriod: 'filterPeriod',
       tabletBreak: 'app/tabletBreak'
     }),
     regionId() {
@@ -144,12 +184,6 @@ export default {
   },
 
   methods: {
-    ...mapMutations({
-      setRange: 'range',
-      setInterval: 'interval',
-      setFilterPeriod: 'filterPeriod'
-    }),
-
     checkQueries() {
       const validRangeQuery = isValidRangeQuery(this.queryRange)
       const validIntervalQuery = isValidIntervalQuery(this.queryInterval)
@@ -205,27 +239,28 @@ export default {
         this.updateQuery(range, interval, filter)
       }
 
-      this.setRangeInterval(range, interval, filter)
+      this.updateSelections(range, interval, filter)
     },
 
-    setRangeInterval(range, interval, filter) {
-      this.setRange(range)
-      this.setInterval(interval)
+    updateSelections(range, interval, filter) {
       this.selectedRange = range
       this.selectedInterval = interval
       this.setSelectedRangeIntervals(range)
       this.setFilters(interval)
 
+      this.$emit('rangeChange', range)
+      this.$emit('intervalChange', interval)
+
       if (filter) {
-        this.setFilterPeriod(filter)
         this.selectedFilter = filter
+
+        this.$emit('filterPeriodChange', filter)
       }
     },
 
     setSelectedRangeIntervals(selected) {
       if (selected !== '') {
-        const range = this.ranges.find(r => r.range === selected)
-        let intervals = range ? range.intervals : null
+        let intervals = this.intervals[selected]
         if (this.regionId === 'wem' && this.isPowerRange) {
           intervals = ['30m']
         }
@@ -263,17 +298,24 @@ export default {
       )
     },
 
-    hideAllFilters() {
+    hideAllPopups() {
       this.showMonthFilter = false
       this.showSeasonFilter = false
       this.showQuarterFilter = false
       this.showHalfYearFilter = false
+
+      this.show1YRangeOptions = false
+      this.showAllRangeOptions = false
     },
 
     hasFilter(interval) {
       return (
         this.interval === interval && hasIntervalFilters(interval, this.range)
       )
+    },
+
+    hasRangeFilter(range) {
+      return _includes(range, this.range) && !this.isString(range)
     },
 
     getIntervalLabel(interval) {
@@ -290,10 +332,38 @@ export default {
       }
     },
 
+    showRangeOptions(r) {
+      const hasOptions = !this.isString(r)
+      return hasOptions
+        ? (_includes(r, RANGE_ALL) && this.showAllRangeOptions) ||
+            (_includes(r, RANGE_1Y) && this.show1YRangeOptions)
+        : false
+    },
+
+    handleRangeClick(r) {
+      this.hideAllPopups()
+
+      if (this.isString(r)) {
+        this.handleRangeChange(r)
+      } else {
+        const range = r[0]
+
+        if (this.selectedRange !== range && !_includes(r, this.selectedRange)) {
+          this.handleRangeChange(range)
+        } else {
+          if (range === RANGE_ALL) {
+            this.showAllRangeOptions = true
+          }
+          if (range === RANGE_1Y) {
+            this.show1YRangeOptions = true
+          }
+        }
+      }
+    },
+
     handleRangeChange(range) {
       this.$store.commit('regionEnergy/filteredDates', [])
       this.selectedFilter = FILTER_NONE
-      this.setFilterPeriod(FILTER_NONE)
 
       const is5mOr30m =
         this.interval === INTERVAL_5MIN || this.interval === INTERVAL_30MIN
@@ -324,8 +394,20 @@ export default {
         interval = '30m'
       }
 
-      this.setRangeInterval(range, interval)
+      this.updateSelections(range, interval)
+      this.$emit('rangeChange', range)
+      this.$emit('intervalChange', interval)
+      this.$emit('filterPeriodChange', FILTER_NONE)
       this.updateQuery(range, interval, this.selectedFilter)
+    },
+
+    handleRangeOptionClick(range) {
+      this.selectedRange = range
+      this.hideAllPopups()
+      this.$store.dispatch('compareDifference', false)
+      this.$store.dispatch('compareDates', [])
+
+      this.updateQuery(range, this.selectedInterval, this.selectedFilter)
     },
 
     handleIntervalChange(interval) {
@@ -346,28 +428,29 @@ export default {
           this.showHalfYearFilter = true
         }
       } else {
-        this.hideAllFilters()
-        this.setInterval(interval)
-        this.setFilterPeriod(FILTER_NONE)
+        this.hideAllPopups()
+        this.$emit('filterPeriodChange', FILTER_NONE)
         this.selectedFilter = FILTER_NONE
 
         this.updateQuery(this.range, interval, this.selectedFilter)
       }
+
       this.setFilters(interval)
+      this.$emit('intervalChange', interval)
     },
 
     handleFilterPeriodClick(filter) {
       this.selectedFilter = filter
-      this.setFilterPeriod(filter)
-      this.hideAllFilters()
+      this.hideAllPopups()
       this.$store.dispatch('compareDifference', false)
       this.$store.dispatch('compareDates', [])
 
+      this.$emit('filterPeriodChange', filter)
       this.updateQuery(this.range, this.interval, filter)
     },
 
     handleClickAway() {
-      this.hideAllFilters()
+      this.hideAllPopups()
     },
 
     updateQuery(range, interval, filter) {
@@ -381,6 +464,30 @@ export default {
       }
 
       this.$emit('queryChange', query)
+    },
+
+    isString(v) {
+      return typeof v === 'string'
+    },
+
+    isRangeSelected(r) {
+      if (this.isString(r)) {
+        return r === this.selectedRange
+      }
+
+      return _includes(r, this.selectedRange)
+    },
+
+    getSelectedRangeLabel(r) {
+      let label = null
+
+      r.forEach(d => {
+        if (d === this.selectedRange) {
+          label = d
+        }
+      })
+
+      return label || r[0]
     }
   }
 }

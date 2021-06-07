@@ -1,6 +1,8 @@
 <template>
   <div class="card-wrapper">
     <div class="column-headers">
+      <div class="info-button-col col-header" />
+
       <div
         :style="{ width: hideRegionColumn ? '60%' : '50%'}"
         class="name-col col-header"
@@ -48,6 +50,8 @@
           :class="getColumnIcon('generatorCap')"
           class="fal" />
       </div>
+
+      
     </div>
 
     <div
@@ -80,9 +84,19 @@
       </div>
 
       <div class="facility-detail">
+        <div class="info-button-col">
+          <a
+            v-tooltip="'View facility info'"
+            class="facility-info-link"
+            @click="handleRowDoubleClick(facility)">
+            <i class="fal fa-external-link-square"/>
+          </a>
+        </div>
+
         <div
           :style="{ width: hideRegionColumn ? '60%' : '50%'}"
           class="name-col">
+
           <h2 class="station-name">
             {{ facility.displayName }}
           </h2>
@@ -91,7 +105,7 @@
             class="has-location-icon fa-stack fa-1x">
             <i class="fal fa-map-marker-alt fa-stack-1x"/>
             <i class="fal fa-ban fa-stack-2x" />
-          </span>
+          </span>          
         </div>
 
         <div
@@ -255,7 +269,8 @@ export default {
   computed: {
     ...mapGetters({
       windowWidth: 'app/windowWidth',
-      tabletBreak: 'app/tabletBreak'
+      tabletBreak: 'app/tabletBreak',
+      useV3: 'feature/v3Data'
     }),
     queryFacilityId() {
       return this.$route.query.selected
@@ -332,40 +347,7 @@ export default {
         }, 200)
       )
 
-      window.addEventListener('keydown', e => {
-        const isUp = e.keyCode === 38
-        const isDown = e.keyCode === 40
-        const selectedId = this.selectedFacility
-          ? this.selectedFacility.stationId
-          : null
-        const length = this.filteredFacilities.length
-        const index = this.filteredFacilities.findIndex(
-          f => f.stationId === selectedId
-        )
-        if (index !== -1) {
-          if (isUp) {
-            e.preventDefault()
-            if (index <= 0) {
-            } else {
-              this.$emit(
-                'facilitySelect',
-                this.filteredFacilities[index - 1],
-                true
-              )
-            }
-          } else if (isDown) {
-            e.preventDefault()
-            if (index >= length - 1) {
-            } else {
-              this.$emit(
-                'facilitySelect',
-                this.filteredFacilities[index + 1],
-                true
-              )
-            }
-          }
-        }
-      })
+      window.addEventListener('keydown', this.listenToNavKeys)
     }
   },
 
@@ -375,7 +357,49 @@ export default {
     })
   },
 
+  beforeDestroy() {
+    window.removeEventListener('keydown', this.listenToNavKeys)
+  },
+
   methods: {
+    listenToNavKeys(e) {
+      const isUp = e.keyCode === 38
+      const isRight = e.keyCode === 39
+      const isDown = e.keyCode === 40
+      const selectedId = this.selectedFacility
+        ? this.selectedFacility.stationId
+        : null
+      const length = this.filteredFacilities.length
+      const index = this.filteredFacilities.findIndex(
+        f => f.stationId === selectedId
+      )
+      if (index !== -1) {
+        if (isUp) {
+          e.preventDefault()
+          if (index <= 0) {
+          } else {
+            this.$emit(
+              'facilitySelect',
+              this.filteredFacilities[index - 1],
+              true
+            )
+          }
+        } else if (isDown) {
+          e.preventDefault()
+          if (index >= length - 1) {
+          } else {
+            this.$emit(
+              'facilitySelect',
+              this.filteredFacilities[index + 1],
+              true
+            )
+          }
+        } else if (isRight) {
+          e.preventDefault()
+          this.$emit('openFacilityView', this.selectedFacility)
+        }
+      }
+    },
     calculateDivWidth() {
       if (this.tabletBreak) {
         return this.windowWidth
@@ -587,6 +611,10 @@ export default {
     box-shadow: 0 0 5px rgba(100, 100, 100, 0.2);
     opacity: 1;
     z-index: 10;
+
+    .facility-info-link {
+      visibility: visible;
+    }
   }
 
   &.is-selected {
@@ -594,7 +622,11 @@ export default {
     opacity: 1;
     transform: scale(1.02);
     z-index: 10;
-    border: 2px solid $opennem-link-color;
+    border: 1px solid $opennem-link-color;
+
+    .facility-info-link {
+      visibility: visible;
+    }
   }
 
   .card-content {
@@ -656,14 +688,13 @@ export default {
   position: relative;
   top: -1px;
   left: 2px;
-  font-size: 0.8em;
-  opacity: 0.75;
+  font-size: 0.75em;
+  color: #aaa;
   .fa-map-marker-alt {
     font-size: 1.3em;
-    color: #000;
   }
   .fa-ban {
-    color: $opennem-link-color;
+    color: #ccc;
   }
 }
 .max-capcity {
@@ -709,11 +740,6 @@ export default {
 }
 
 .name-col {
-  margin-left: 1rem;
-
-  @include tablet {
-    margin-left: 2rem;
-  }
 }
 .region-col {
   width: 11%;
@@ -765,6 +791,31 @@ export default {
 
     @include tablet {
       font-size: 10px;
+    }
+  }
+}
+
+.info-button-col {
+  margin-left: 1rem;
+  margin-right: 0.5rem;
+
+  &.col-header {
+    width: 14px;
+  }
+  .facility-info-link {
+    visibility: hidden;
+    min-width: auto;
+    font-size: 12px;
+  }
+}
+.card.is-selected {
+  .info-button-col {
+    .button.is-small {
+      border-radius: 0;
+      background-color: $opennem-primary-rgb;
+      i {
+        color: #fff;
+      }
     }
   }
 }

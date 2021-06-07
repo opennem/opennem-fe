@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { timeFormat as d3TimeFormat } from 'd3-time-format'
+import { timeFormat as d3TimeFormat, utcFormat } from 'd3-time-format'
 import { format as d3Format } from 'd3-format'
 import DateDisplay from '~/services/DateDisplay.js'
 import * as SI from '@/constants/si.js'
@@ -53,16 +53,22 @@ Vue.filter('intervalLabel', interval => {
   return interval.toLowerCase()
 })
 
-Vue.filter('formatDate', time => {
-  const f = d3TimeFormat('%d/%m/%Y, %-I:%M %p')
-  return f(time)
+Vue.filter('formatDate', (time, format = '%d/%m/%Y, %-I:%M %p') => {
+  const f = utcFormat(format)
+  return time ? f(time) : '—'
+})
+Vue.filter('formatLocalDate', (time, format = '%d/%m/%Y, %-I:%M %p') => {
+  const f = d3TimeFormat(format)
+  return time ? f(time) : '—'
 })
 
-Vue.filter('formatValue', value => {
+Vue.filter('formatValue', (value, prepend = '') => {
   const fString = smartFormatString(value)
   const f = d3Format(fString)
   const fValue = f(value)
-  return isFinite(value) && !isNaN(value) && value !== null ? fValue : '–'
+  return isFinite(value) && !isNaN(value) && value !== null
+    ? `${prepend}${fValue}`
+    : '–'
 })
 Vue.filter('formatValue2', value => {
   const fString = smartFormatString(value)
@@ -112,8 +118,8 @@ Vue.filter('percentageFormatNumber2', value => {
   return isFinite(value) && !isNaN(value) && value ? fValue : '0%'
 })
 
-Vue.filter('formatCurrency', value => {
-  const f = d3Format('$,.2f')
+Vue.filter('formatCurrency', (value, formatString = ',.2f') => {
+  const f = d3Format(`$${formatString}`)
   const fValue = f(value)
   return isFinite(value) && !isNaN(value) && value !== null && value !== ''
     ? fValue

@@ -1,6 +1,6 @@
 <template>
   <div class="vis brush-vis">
-    <svg 
+    <svg
       :width="svgWidth"
       :height="svgHeight"
       :id="id">
@@ -12,12 +12,12 @@
             :height="height"/>
         </clipPath>
       </defs>
-      <g 
-        :transform="axisTransform" 
+      <g
+        :transform="axisTransform"
         class="x-axis" />
-      <g 
+      <g
         v-if="!readOnly"
-        :transform="brushTransform" 
+        :transform="brushTransform"
         class="brush-group" />
     </svg>
   </div>
@@ -231,7 +231,7 @@ export default {
         el.attr('x', 2)
         if (text2 !== '') {
           el.append('tspan')
-            .text(text2.trim())
+            .text(typeof text2 === 'string' ? text2.trim() : text2)
             .attr('x', 2)
             .attr('dy', 12)
         }

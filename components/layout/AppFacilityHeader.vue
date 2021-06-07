@@ -59,52 +59,63 @@ export default {
       previousPath: 'facility/previousPath',
       filteredFacilities: 'facility/filteredFacilities'
     }),
-    facilityId() {
-      return this.$route.params.facilityId
+    facilityCode() {
+      return this.$route.params.facilityCode
     },
     path() {
-      return this.previousPath === '' ? '/facilities/au/' : this.previousPath
+      const selected = `?selected=${this.facilityCode}`
+      return this.previousPath === ''
+        ? '/facilities/au/'
+        : this.previousPath + selected
     }
   },
 
   watch: {
-    facilityId() {
+    facilityCode() {
       this.updatePaths()
     }
   },
 
   mounted() {
     this.updatePaths()
-    this.listenToNavKeys()
+    window.addEventListener('keydown', this.listenToNavKeys)
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('keydown', this.listenToNavKeys)
   },
 
   methods: {
-    listenToNavKeys() {
-      window.addEventListener('keydown', e => {
-        const isLeft = e.keyCode === 37
-        const isRight = e.keyCode === 39
+    listenToNavKeys(e) {
+      const isLeft = e.keyCode === 37
+      const isUp = e.keyCode === 38
+      const isDown = e.keyCode === 40
 
-        if (isLeft) {
-          e.preventDefault()
-          if (this.prevFacilityPath) {
-            this.$router.push({ path: this.prevFacilityPath })
-          }
-        } else if (isRight) {
-          e.preventDefault()
-          if (this.nextFacilityPath) {
-            this.$router.push({ path: this.nextFacilityPath })
-          }
+      if (isUp) {
+        e.preventDefault()
+        if (this.prevFacilityPath) {
+          this.$router.push({ path: this.prevFacilityPath })
         }
-      })
+      } else if (isDown) {
+        e.preventDefault()
+        if (this.nextFacilityPath) {
+          this.$router.push({ path: this.nextFacilityPath })
+        }
+      } else if (isLeft) {
+        e.preventDefault()
+        this.$router.push({ path: this.path })
+      }
     },
     updatePaths() {
       const facilitiesLength = this.filteredFacilities.length
       const currentIndex = this.filteredFacilities.findIndex(
-        f => f.facilityId === this.facilityId
+        f => f.facilityId === this.facilityCode
       )
       const currentFacility = this.filteredFacilities.find(
-        f => f.facilityId === this.facilityId
+        f => f.facilityId === this.facilityCode
       )
+
+      console.log(this.filteredFacilities, this.facilityCode)
 
       if (currentIndex !== -1) {
         const isFirstItem = currentIndex === 0
@@ -120,19 +131,28 @@ export default {
         const nextFacilityId = nextFacility ? nextFacility.facilityId : null
         const nextFacilityName = nextFacility ? nextFacility.displayName : null
         const nextFacilityNetwork = nextFacility ? nextFacility.network : null
+        const nextFacilityCountry = nextFacility ? nextFacility.country : null
+
         const prevFacilityId = prevFacility ? prevFacility.facilityId : null
         const prevFacilityName = prevFacility ? prevFacility.displayName : null
         const prevFacilityNetwork = prevFacility ? prevFacility.network : null
+        const prevFacilityCountry = prevFacility ? prevFacility.country : null
+
+        console.log(prevFacilityCountry, nextFacilityCountry)
 
         this.nextFacilityPath = nextFacilityId
           ? `/facility/${encodeURIComponent(
-              nextFacilityNetwork
-            )}/${encodeURIComponent(nextFacilityId)}`
+              nextFacilityCountry
+            )}/${encodeURIComponent(nextFacilityNetwork)}/${encodeURIComponent(
+              nextFacilityId
+            )}`
           : null
         this.prevFacilityPath = prevFacilityId
           ? `/facility/${encodeURIComponent(
-              prevFacilityNetwork
-            )}/${encodeURIComponent(prevFacilityId)}`
+              prevFacilityCountry
+            )}/${encodeURIComponent(prevFacilityNetwork)}/${encodeURIComponent(
+              prevFacilityId
+            )}`
           : null
         this.nextFacilityName = nextFacilityName
         this.prevFacilityName = prevFacilityName

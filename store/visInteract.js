@@ -1,6 +1,17 @@
 import _cloneDeep from 'lodash.clonedeep'
+import axisTimeFormat from '@/components/Vis/shared/timeFormat.js'
 import AxisTicks from '@/services/axisTicks.js'
 import DateDisplay from '@/services/DateDisplay.js'
+import {
+  INTERVAL_DAY,
+  INTERVAL_WEEK,
+  INTERVAL_MONTH,
+  INTERVAL_SEASON,
+  INTERVAL_QUARTER,
+  INTERVAL_HALFYEAR,
+  INTERVAL_FINYEAR,
+  INTERVAL_YEAR
+} from '@/constants/interval-filters.js'
 
 export const state = () => ({
   isHovering: false,
@@ -10,6 +21,7 @@ export const state = () => ({
   focusDate: null,
   xTicks: null,
   xGuides: null,
+  yGuides: [],
   tickFormat: '',
   secondTickFormat: '',
 
@@ -25,6 +37,7 @@ export const getters = {
   focusDate: state => state.focusDate,
   xTicks: state => state.xTicks,
   xGuides: state => state.xGuides,
+  yGuides: state => state.yGuides,
   tickFormat: state => state.tickFormat,
   secondTickFormat: state => state.secondTickFormat,
 
@@ -53,6 +66,9 @@ export const mutations = {
   xGuides(state, xGuides) {
     state.xGuides = xGuides
   },
+  yGuides(state, yGuides) {
+    state.yGuides = yGuides
+  },
   tickFormat(state, tickFormat) {
     state.tickFormat = tickFormat
   },
@@ -66,8 +82,8 @@ export const mutations = {
 }
 
 export const actions = {
-  doUpdateXTicks({ commit }, { range, interval, isZoomed, fitlerPeriod }) {
-    commit('xTicks', AxisTicks(range, interval, isZoomed, fitlerPeriod))
+  doUpdateXTicks({ commit }, { range, interval, isZoomed, filterPeriod }) {
+    commit('xTicks', AxisTicks(range, interval, isZoomed, filterPeriod))
   },
 
   doUpdateXGuides({ commit }, { interval, start, end }) {
@@ -85,27 +101,35 @@ export const actions = {
     let tickFormat = 'defaultFormat',
       secondTickFormat = 'secondaryFormat'
     switch (interval) {
-      case 'Day':
+      case INTERVAL_DAY:
         tickFormat = 'intervalDayTimeFormat'
         secondTickFormat = 'intervalDaySecondaryTimeFormat'
         break
-      case 'Week':
+      case INTERVAL_WEEK:
         tickFormat = 'intervalWeekTimeFormat'
         secondTickFormat = 'intervalWeekSecondaryTimeFormat'
         break
-      case 'Month':
+      case INTERVAL_MONTH:
         range === 'ALL'
           ? (tickFormat = 'rangeAllIntervalMonthTimeFormat')
           : (tickFormat = 'intervalMonthTimeFormat')
         break
-      case 'Fin Year':
+      case INTERVAL_FINYEAR:
         tickFormat = d => {
           const year = d.getFullYear() + 1 + ''
           return `FY${year.substr(2, 2)}`
         }
         break
+      case INTERVAL_SEASON:
+      case INTERVAL_QUARTER:
+      case INTERVAL_HALFYEAR:
+      case INTERVAL_YEAR:
+        tickFormat = 'rangeAllIntervalMonthTimeFormat'
+        break
       default:
+        tickFormat = axisTimeFormat
     }
+
     commit('tickFormat', tickFormat)
     commit('secondTickFormat', secondTickFormat)
   }

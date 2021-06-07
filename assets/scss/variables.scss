@@ -1,21 +1,14 @@
 // Set your brand colors
-$beige-light: #D0D1CD;
+$beige-light: #d0d1cd;
 $beige-lighter: #ece9e6;
 $opennem-primary: #e34a33;
 $opennem-link-color: #c74523;
+$opennem-link-color-dark: #963f29;
 $opennem-primary-rgb: rgb(199, 69, 35);
 
 // Update Bulma's global variables
-$font-stack: 'IBM Plex Serif',
-Georgia,
-'Times New Roman',
-Times,
-serif;
-$font-stack-2: 'Playfair Display',
-Georgia,
-'Times New Roman',
-Times,
-serif;
+$font-stack: 'IBM Plex Serif', Georgia, 'Times New Roman', Times, serif;
+$font-stack-2: 'Playfair Display', Georgia, 'Times New Roman', Times, serif;
 $family-serif: $font-stack;
 $family-primary: $font-stack;
 $family-secondary: $font-stack-2;
@@ -40,7 +33,7 @@ $app-padding: 1rem;
 $facility-tablet-padding: 1.5rem;
 $facility-mobile-padding: 1.2rem;
 
-$row-hover: hsla(0, 0%, 100%, .55);
+$row-hover: hsla(0, 0%, 100%, 0.55);
 $background-alpha: rgba(236, 233, 230, 1);
 
 $header-hover-radius: 4px;

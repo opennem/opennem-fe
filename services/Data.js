@@ -1,4 +1,7 @@
 import subDays from 'date-fns/subDays'
+import subYears from 'date-fns/subYears'
+
+import * as rangesJs from '~/constants/ranges.js'
 
 export default {
   getEnergyUrls(region, range, useV3Paths) {
@@ -6,30 +9,30 @@ export default {
       region === 'wem' || region === 'nem' || region === 'au' ? '' : '/NEM'
     const regionId = region.toUpperCase()
     const thisFullYear = new Date().getFullYear()
-    let lastFullYear = null
+    let oneYearAgo = null
     const urls = []
 
     switch (range) {
-      case '1D':
-      case '3D':
-      case '7D':
+      case rangesJs.RANGE_1D:
+      case rangesJs.RANGE_3D:
+      case rangesJs.RANGE_7D:
         if (useV3Paths || region === 'wem') {
           urls.push(`v3/stats/au${prepend}/${regionId}/power/7d.json`)
         } else {
           urls.push(`power/${region}.json`)
         }
         break
-      case '30D':
+      case rangesJs.RANGE_30D:
         const thirtyDaysAgo = subDays(new Date(), 30)
-        lastFullYear = thirtyDaysAgo.getFullYear()
+        oneYearAgo = thirtyDaysAgo.getFullYear()
 
-        if (thisFullYear !== lastFullYear) {
+        if (thisFullYear !== oneYearAgo) {
           if (useV3Paths || region === 'wem') {
             urls.push(
-              `v3/stats/au${prepend}/${regionId}/energy/${lastFullYear}.json`
+              `v3/stats/au${prepend}/${regionId}/energy/${oneYearAgo}.json`
             )
           } else {
-            urls.push(`${region}/energy/daily/${lastFullYear}.json`)
+            urls.push(`${region}/energy/daily/${oneYearAgo}.json`)
           }
         }
 
@@ -41,18 +44,16 @@ export default {
           urls.push(`${region}/energy/daily/${thisFullYear}.json`)
         }
         break
-      case '1Y':
-        const now = new Date().getTime()
-        const aYearAgo = now - 31557600000
-        lastFullYear = new Date(aYearAgo).getFullYear()
+      case rangesJs.RANGE_1Y:
+        oneYearAgo = subYears(new Date(), 1).getFullYear()
 
-        if (thisFullYear !== lastFullYear) {
+        if (thisFullYear !== oneYearAgo) {
           if (useV3Paths || region === 'wem') {
             urls.push(
-              `v3/stats/au${prepend}/${regionId}/energy/${lastFullYear}.json`
+              `v3/stats/au${prepend}/${regionId}/energy/${oneYearAgo}.json`
             )
           } else {
-            urls.push(`${region}/energy/daily/${lastFullYear}.json`)
+            urls.push(`${region}/energy/daily/${oneYearAgo}.json`)
           }
         }
 
@@ -65,7 +66,9 @@ export default {
         }
 
         break
-      case 'ALL':
+
+      case rangesJs.RANGE_ALL:
+      case rangesJs.RANGE_ALL_12MTH_ROLLING:
         if (useV3Paths || region === 'wem') {
           urls.push(`v3/stats/au${prepend}/${regionId}/energy/all.json`)
         } else {

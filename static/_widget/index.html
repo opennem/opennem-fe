@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>OpenNEM Widget</title>
+
+    <link
+      rel="icon"
+      type="image/png"
+      href="img/icons/favicon-196x196.png"
+      sizes="196x196"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="img/icons/favicon-128x128.png"
+      sizes="128x128"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="img/icons/favicon-96x96.png"
+      sizes="96x96"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="img/icons/favicon-32x32.png"
+      sizes="32x32"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="img/icons/favicon-16x16.png"
+      sizes="16x16"
+    />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-113446419-3"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-113446419-3");
+    </script>
+  <link href="opennem-widget-styles.css" rel="stylesheet"></head>
+
+  <body style="padding: 0; margin: 0; overflow: hidden;">
+    <div class="opennem-widget">
+      <div id="opennem-widget-chart"></div>
+
+      <footer>
+        <div class="logo-links">
+          <img
+            class="opennem-logo"
+            src="img/opennem-logo.svg"
+            alt="OpenNEM logo"
+          />
+          <span>
+            <a href="https://opennem.org.au/energy/nem" target="widget-window"
+              >OpenNEM</a
+            >
+            is a project of the
+            <a
+              href="https://www.energy-transition-hub.org/"
+              target="widget-window"
+              >Energy Transition Hub</a
+            ></span
+          >
+        </div>
+        <div>
+          <a
+            href="https://reneweconomy.com.au/opennem-widget"
+            target="widget-window"
+            title="Expand this widget"
+          >
+            <img src="img/expand-icon.svg" alt="Expand" />
+          </a>
+        </div>
+      </footer>
+    </div>
+  <script src="opennem-widget-polyfills.bundle.js"></script><script src="opennem-widget.bundle.js"></script></body>
+</html>

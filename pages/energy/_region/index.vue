@@ -1,6 +1,16 @@
 <template>
   <div class="energy-region">
-    <data-options-bar @queryChange="handleQueryChange"/>
+    <data-options-bar
+      :ranges="ranges"
+      :intervals="intervals"
+      :range="range"
+      :interval="interval"
+      :filter-period="filterPeriod"
+      @queryChange="handleQueryChange"
+      @rangeChange="handleRangeChange"
+      @intervalChange="handleIntervalChange"
+      @filterPeriodChange="handleFilterPeriodChange"
+    />
     <transition name="fade">
       <div
         v-if="!ready"
@@ -44,11 +54,13 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { isPowerRange } from '@/constants/ranges.js'
+import _includes from 'lodash.includes'
+import { isPowerRange, RANGES, RANGE_INTERVALS } from '@/constants/ranges.js'
 import {
   isValidRegion,
   getEnergyRegionLabel
 } from '@/constants/energy-regions.js'
+import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import VisSection from '@/components/Energy/VisSection.vue'
 import SummarySection from '@/components/Energy/SummarySection.vue'
@@ -105,7 +117,9 @@ export default {
       isHovering: false,
       hoverDate: null,
       baseUrl: `${this.$config.url}/images/screens/`,
-      useDev: this.$config.useDev
+      useDev: this.$config.useDev,
+      ranges: RANGES,
+      intervals: RANGE_INTERVALS
     }
   },
 
@@ -115,13 +129,22 @@ export default {
       interval: 'interval',
       filterPeriod: 'filterPeriod',
       fuelTechGroupName: 'fuelTechGroupName',
+      hiddenFuelTechs: 'hiddenFuelTechs',
+      percentContributionTo: 'percentContributionTo',
+
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
       powerEnergyPrefix: 'regionEnergy/powerEnergyPrefix',
       currentDataset: 'regionEnergy/currentDataset',
       filteredDates: 'regionEnergy/filteredDates',
+      currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
+      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
+      domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
+
       query: 'app/query',
-      showFeatureToggle: 'app/showFeatureToggle'
+      showFeatureToggle: 'app/showFeatureToggle',
+
+      useV3: 'feature/v3Data'
     }),
     regionId() {
       return this.$route.params.region
@@ -130,6 +153,28 @@ export default {
       return this.useDev
         ? `${this.baseUrl}opennem-dev.png`
         : `${this.baseUrl}opennem-${this.regionId}.png`
+    },
+
+    property() {
+      return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+    },
+    calculateByGeneration() {
+      return this.percentContributionTo === 'generation'
+    },
+
+    emissionsDomains() {
+      const domains = this.currentDomainEmissions.filter(
+        d => d.category !== FT.LOAD
+      )
+      const hidden = this.hiddenFuelTechs
+      return domains
+        ? domains.filter(d => !_includes(hidden, d[this.property]))
+        : []
+    },
+    powerEnergyDomains() {
+      const domains = this.currentDomainPowerEnergy
+      const hidden = this.hiddenFuelTechs
+      return domains.filter(d => !_includes(hidden, d[this.property]))
     }
   },
 
@@ -141,7 +186,8 @@ export default {
           range: this.range,
           interval: this.interval,
           period: this.filterPeriod,
-          groupName: this.fuelTechGroupName
+          groupName: this.fuelTechGroupName,
+          useV3: this.useV3
         })
       }
     },
@@ -159,7 +205,8 @@ export default {
           range: curr,
           interval: this.interval,
           period: this.filterPeriod,
-          groupName: this.fuelTechGroupName
+          groupName: this.fuelTechGroupName,
+          useV3: this.useV3
         })
       }
     },
@@ -193,14 +240,24 @@ export default {
           start: dataset[0].time,
           end: dataset[dataset.length - 1].time
         })
+        this.updateEmissionsData()
       }
     },
     powerEnergyPrefix(prefix) {
       this.doSetChartEnergyUnitPrefix(prefix)
+    },
+    calculateByGeneration() {
+      this.updateEmissionsData()
+    },
+    hiddenFuelTechs() {
+      this.updateEmissionsData()
     }
   },
 
   created() {
+    this.setXGuides([])
+    this.setYGuides([])
+
     if (isValidRegion(this.regionId)) {
       this.$store.dispatch('currentView', 'energy')
       if (this.regionId === 'wem' && !this.isEnergyType) {
@@ -211,7 +268,8 @@ export default {
         range: this.range,
         interval: this.interval,
         period: this.filterPeriod,
-        groupName: this.fuelTechGroupName
+        groupName: this.fuelTechGroupName,
+        useV3: this.useV3
       })
       this.doUpdateTickFormats({ range: this.range, interval: this.interval })
     } else {
@@ -231,6 +289,8 @@ export default {
       doUpdateDatasetByFilterRange: 'regionEnergy/doUpdateDatasetByFilterRange',
       doUpdateDatasetByFilterPeriod:
         'regionEnergy/doUpdateDatasetByFilterPeriod',
+      doUpdateEmissionIntensityDataset:
+        'energy/emissions/doUpdateEmissionIntensityDataset',
       doUpdateXGuides: 'visInteract/doUpdateXGuides',
       doUpdateTickFormats: 'visInteract/doUpdateTickFormats',
       doUpdateXTicks: 'visInteract/doUpdateXTicks',
@@ -239,9 +299,25 @@ export default {
     }),
     ...mapMutations({
       setCompareDifference: 'compareDifference',
+      setRange: 'range',
       setInterval: 'interval',
-      setQuery: 'app/query'
+      setFilterPeriod: 'filterPeriod',
+      setQuery: 'app/query',
+
+      setXGuides: 'visInteract/xGuides',
+      setYGuides: 'visInteract/yGuides'
     }),
+
+    updateEmissionsData() {
+      this.doUpdateEmissionIntensityDataset({
+        datasetAll: this.currentDataset,
+        isCalculateByGeneration: this.calculateByGeneration,
+        emissionsDomains: this.emissionsDomains,
+        powerEnergyDomains: this.powerEnergyDomains,
+        domainPowerEnergy: this.domainPowerEnergy
+      })
+    },
+
     handleDateHover(date) {
       this.hoverDate = date
     },
@@ -255,6 +331,15 @@ export default {
       })
 
       this.setQuery(query)
+    },
+    handleRangeChange(range) {
+      this.setRange(range)
+    },
+    handleIntervalChange(interval) {
+      this.setInterval(interval)
+    },
+    handleFilterPeriodChange(period) {
+      this.setFilterPeriod(period)
     }
   }
 }

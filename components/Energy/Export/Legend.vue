@@ -10,6 +10,9 @@
         }"
         class="colour-square" />
       {{ domain.label }}
+      <strong v-if="showPercent && (domain.contribution || domain.contribution === 0)">
+        {{ domain.contribution | percentageFormatNumber }}
+      </strong>
     </div>
     <div
       v-if="chartEnergyRenewablesLine"
@@ -32,6 +35,10 @@ export default {
     domains: {
       type: Array,
       default: () => []
+    },
+    showPercent: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -64,6 +71,11 @@ export default {
     display: flex;
     align-items: center;
     padding: 0.1rem;
+
+    strong {
+      margin-left: 6px;
+      position: relative;
+    }
   }
 }
 .colour-square {

@@ -1,14 +1,13 @@
 <template>
   <div>
     <facility-filters
-      :selected-view="selectedView"
       :selected-techs="selectedTechs"
       :selected-statuses="selectedStatuses"
       class="facility-filters"
       @techsSelect="handleTechsSelected"
       @selectedStatuses="handleStatusesSelected"
+      @selectedSize="handleSizeSelected"
       @facilityNameFilter="handleFacilityNameFilter"
-      @viewSelect="handleViewSelect"
     />
 
     <transition name="fade">
@@ -50,15 +49,13 @@
         @openFacilityView="handleOpenFacilityView"
       />
 
-      <facility-map
+      <FacilityMap
         v-if="!tabletBreak || (tabletBreak && selectedView === 'map')"
         :data="filteredFacilities"
-        :selected-facility="selectedFacility"
-        :hovered-facility="hoveredFacility"
-        :show-zoom-when-selected="shouldZoomWhenSelected"
+        :hovered="hoveredFacility"
+        :selected="selectedFacility"
         class="facility-map"
-        @facilitySelect="handleFacilitySelect"
-      />
+        @facilitySelect="handleMapFacilitySelect" />
 
       <transition name="slide-up-fade">
         <facility-card
@@ -77,8 +74,12 @@ import { mapGetters, mapMutations } from 'vuex'
 import _debounce from 'lodash.debounce'
 import _includes from 'lodash.includes'
 import _orderBy from 'lodash.orderby'
+import _cloneDeep from 'lodash.clonedeep'
+
 import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 import { FACILITY_OPERATING } from '~/constants/facility-status.js'
+import { FACILITY_SIZE } from '~/constants/facility-size.js'
+
 import {
   FacilityRegions,
   getNEMRegionArray,
@@ -86,7 +87,7 @@ import {
 } from '~/constants/facility-regions.js'
 
 import Http from '~/services/Http.js'
-import FacilityDataTransformService from '~/services/dataTransform/Facility.js'
+import FacilityDataParse from '@/data/parse/facility'
 import FacilityFilters from '~/components/Facility/Filters.vue'
 import FacilityList from '~/components/Facility/List.vue'
 import FacilityMap from '~/components/Facility/Map.vue'
@@ -156,7 +157,7 @@ export default {
       hoveredFacility: null,
       selectedStatuses: [FACILITY_OPERATING],
       selectedTechs: [],
-      selectedView: 'list',
+      selectedSize: '',
       sortBy: 'displayName',
       orderBy: ASCENDING,
       totalFacilities: 0,
@@ -170,7 +171,8 @@ export default {
     ...mapGetters({
       hostEnv: 'hostEnv',
       windowWidth: 'app/windowWidth',
-      tabletBreak: 'app/tabletBreak'
+      tabletBreak: 'app/tabletBreak',
+      useV3: 'feature/v3Data'
     }),
     filteredFacilities: {
       get() {
@@ -178,6 +180,14 @@ export default {
       },
       set(facilities) {
         this.setFilteredFacilities(facilities)
+      }
+    },
+    selectedView: {
+      get() {
+        return this.facilitySelectedView
+      },
+      set(val) {
+        this.$store.dispatch('facility/selectedView', val)
       }
     },
     facilityDataset() {
@@ -225,6 +235,9 @@ export default {
     selectedStatuses() {
       this.updateFacilitiesData()
     },
+    selectedSize() {
+      this.updateFacilitiesData()
+    },
     sortBy() {
       this.updateFacilitiesData()
     },
@@ -242,7 +255,6 @@ export default {
     this.orderBy = this.facilityOrderBy
     this.selectedStatuses = this.facilitySelectedStatuses
     this.selectedTechs = this.facilitySelectedTechs
-    this.selectedView = this.facilitySelectedView
 
     if (this.facilityDataset.length > 0) {
       this.facilityData = this.facilityDataset
@@ -260,12 +272,10 @@ export default {
     fetchData() {
       const urls = []
 
-      if (this.hostEnv === 'prod') {
-        urls.push('/facility/facility_registry.json')
+      if (this.useV3) {
+        urls.push('/v3/geo/au_facilities.json')
       } else {
-        urls.push(
-          'https://s3-ap-southeast-2.amazonaws.com/data.opennem.org.au/v3/geo/au_facilities.json'
-        )
+        urls.push('/facility/facility_registry.json')
       }
 
       if (urls.length > 0) {
@@ -282,25 +292,59 @@ export default {
     },
 
     handleResponses(responses) {
-      if (this.hostEnv === 'prod') {
-        FacilityDataTransformService.flatten(responses[0]).then(res => {
-          this.facilityData = res
-          this.ready = true
-          this.$store.dispatch('facility/dataset', res)
-        })
-      } else {
+      if (this.useV3) {
         if (responses.length > 0 && responses[0].features) {
-          FacilityDataTransformService.flattenV3(responses[0].features).then(
-            res => {
-              this.facilityData = res
-              this.ready = true
-              this.$store.dispatch('facility/dataset', res)
-            }
-          )
+          FacilityDataParse.flattenV3(responses[0].features).then(res => {
+            this.facilityData = res
+            this.ready = true
+            this.$store.dispatch('facility/dataset', res)
+          })
+        } else {
+          console.warn('There is an issue parsing the response.')
+        }
+      } else {
+        if (responses.length > 0 && responses[0]) {
+          FacilityDataParse.flatten(responses[0]).then(res => {
+            this.facilityData = res
+            this.ready = true
+            this.$store.dispatch('facility/dataset', res)
+          })
         } else {
           console.warn('There is an issue parsing the response.')
         }
       }
+    },
+
+    getColour(facility) {
+      let selectedFt = null,
+        count = 0
+
+      this.selectedTechs.forEach(tech => {
+        if (_includes(facility.fuelTechs, tech)) {
+          selectedFt = tech
+          count += 1
+        }
+      })
+
+      if (
+        this.selectedTechs.length === 0 ||
+        facility.fuelTechs.length === count
+      ) {
+        const ftCaps = facility.fuelTechRegisteredCap
+        let highest = 0
+        Object.keys(ftCaps).forEach(d => {
+          if (
+            FUEL_TECHS.FUEL_TECH_CATEGORY[d] === FUEL_TECHS.SOURCE &&
+            ftCaps[d] >= highest
+          ) {
+            selectedFt = d
+            highest = ftCaps[d]
+          }
+        })
+      }
+
+      const ftColour = FUEL_TECHS.DEFAULT_FUEL_TECH_COLOUR[selectedFt]
+      return ftColour || 'lightgrey'
     },
 
     updateFacilitiesData() {
@@ -324,7 +368,20 @@ export default {
         [this.orderBy]
       )
 
-      const filtered = sortedData
+      const filtered = sortedData.filter(d => {
+        if (this.selectedSize.length === 0) {
+          return true
+        }
+
+        let check = false
+        this.selectedSize.forEach(s => {
+          if (FACILITY_SIZE[s](d.generatorCap)) {
+            check = true
+          }
+        })
+
+        return check
+      })
 
       const that = this
       let regionIds = [this.regionId]
@@ -351,8 +408,11 @@ export default {
       }
 
       updateFilter().then(facilities => {
-        that.filteredFacilities = facilities
+        that.filteredFacilities = _cloneDeep(facilities)
         that.totalFacilities = facilities.length
+        that.filteredFacilities.forEach(f => {
+          f.colour = that.getColour(f)
+        })
 
         const exportData = facilities.map(d => {
           // eslint-disable-line
@@ -395,6 +455,10 @@ export default {
       this.$store.dispatch('facility/sortBy', this.sortBy)
       this.$store.dispatch('facility/orderBy', this.orderBy)
     },
+    handleMapFacilitySelect(facilityId) {
+      const find = this.facilityData.find(f => f.facilityId === facilityId)
+      this.handleFacilitySelect(find, false)
+    },
     handleFacilitySelect(facility, shouldZoom) {
       if (facility) {
         this.$router.push({ query: { selected: facility.facilityId } })
@@ -419,23 +483,24 @@ export default {
       this.selectedStatuses = statuses
       this.$store.dispatch('facility/selectedStatuses', this.selectedStatuses)
     },
-    handleViewSelect(view) {
-      this.selectedView = view
-      this.$store.dispatch('facility/selectedView', this.selectedView)
+    handleSizeSelected(size) {
+      this.selectedSize = size
+      this.$store.dispatch('facility/selectedSize', this.selectedSize)
     },
     handleCloseDetail() {
       this.selectedFacility = null
     },
     handleOpenFacilityView(facility) {
       this.handleFacilitySelect(facility, true)
-      this.previousPath(this.$route.fullPath)
+      this.previousPath(this.$route.path)
 
       const id = facility.facilityId
       const network = facility.network
+      const country = facility.country
       this.$router.push({
-        path: `/facility/${encodeURIComponent(network)}/${encodeURIComponent(
-          id
-        )}/`
+        path: `/facility/${encodeURIComponent(country)}/${encodeURIComponent(
+          network
+        )}/${encodeURIComponent(id)}/`
       })
     }
   }
@@ -468,11 +533,12 @@ export default {
   }
   .facility-map {
     padding-top: 1rem;
+    border-radius: 10px;
     @include tablet {
       width: 50%;
       position: fixed;
       right: 0;
-      top: 0;
+      top: 25px;
       z-index: 999;
       padding: 0 1rem 0 0;
     }

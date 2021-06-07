@@ -1,256 +1,268 @@
 <template>
   <div class="summary-table">
-    <dates-display
-      :is-hovering="hoverOn"
-      :hovered-date="hoveredDate"
-      :focus-on="focusOn"
-      :focus-date="focusDate ? focusDate.getTime() : null"
-      :start-date="startDate"
-      :end-date="endDate"
-      :range="range"
-      :interval="interval"
-      :timezone-string="isEnergyType ? '' : regionTimezoneString"
-    />
+    <export-legend
+      v-if="displayAsLegend"
+      :domains="legendDomains"
+      :show-percent="showPercentInLegend"/>
 
-    <div class="summary-column-headers">
-      <div class="summary-row">
-        <div
-          class="summary-col-label"
-          style="padding-top: 3px;">
-          <group-selector v-if="groupSelection" />
-        </div>
+    <div v-else>
+      <dates-display
+        :is-hovering="hoverOn"
+        :hovered-date="hoveredDate"
+        :focus-on="focusOn"
+        :focus-date="focusDate ? focusDate.getTime() : null"
+        :start-date="startDate"
+        :end-date="endDate"
+        :range="range"
+        :interval="interval"
+        :timezone-string="isEnergyType ? '' : regionTimezoneString"
+      />
 
-        <div
-          v-if="isEnergy"
-          class="summary-col-energy">
-          <span>
-            Energy <small>{{ chartCurrentUnit }}</small>
-          </span>
-        </div>
-        <div
-          v-else
-          class="summary-col-energy">
-          <span v-if="hoverOn || focusOn">
-            Power <small>{{ chartCurrentUnit }}</small>
-          </span>
-          <span v-else>
-            Energy <small>GWh</small>
-          </span>
-        </div>
-
-        <div
-          class="summary-col-contribution contribution-toggle"
-          @click="handlePercentContributionToClick">
-          Contribution <small>to {{ percentContributionTo }}</small>
-        </div>
-        <div class="summary-col-av-value">
-          <column-selector />
-        </div>
-      </div>
-      
-      <div class="summary-row">
-        <div class="summary-col-label">Sources</div>
-
-        <div
-          v-if="isEnergy"
-          class="summary-col-energy cell-value">
-          <span v-if="hoverOn || focusOn">
-            {{ pointSummarySources._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
-          </span>
-          <span v-else>
-            {{ summarySources._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
-          </span>
-        </div>
-        <div
-          v-else
-          class="summary-col-energy cell-value">
-          <span v-if="hoverOn || focusOn">
-            {{ pointSummarySources._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
-          </span>
-          <span v-else>
-            {{ summarySources._totalEnergy | formatValue }}
-          </span>
-        </div>
-
-        <div class="summary-col-contribution cell-value" />
-        <div
-          v-if="!hoverOn && !focusOn"
-          class="summary-col-av-value cell-value">
-          <span v-if="isAvValueColumn">
-            {{ summary._totalAverageValue | formatCurrency }}
-          </span>
-          <span v-if="isEmissionsVolumeColumn">
-            {{ summary._totalEmissionsVolume | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
-          </span>
-          <span v-if="isEmissionsIntensityColumn">
-            {{ summary._averageEmissionsIntensity | formatValue }}
-          </span>
-        </div>
-        <div
-          v-if="hoverOn || focusOn"
-          class="summary-col-av-value cell-value">
-          <span v-if="isAvValueColumn">
-            {{ pointSummary._totalAverageValue | formatCurrency }}
-          </span>
-          <span v-if="isEmissionsVolumeColumn">
-            {{ pointSummary._totalEmissionsVolume | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
-          </span>
-          <span v-if="isEmissionsIntensityColumn">
-            {{ pointSummary._emissionsIntensity | formatValue }}
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <items
-      :group="'ft-sources'"
-      :hidden-fuel-techs="hiddenSources"
-      :original-order="sourcesOrder"
-      :market-value-order="sourcesMarketValueOrder"
-      :show-point-summary="hoverOn || focusOn"
-      :point-summary="pointSummarySources"
-      :point-summary-total="pointSummarySourcesTotal"
-      :summary="summarySources"
-      :summary-total="summarySourcesTotal"
-      :domain-toggleable="domainToggleable"
-      :energy-domains="energyDomains"
-      :emissions-domains="emissionsDomains"
-      :is-year-interval="isYearInterval"
-      @update="handleSourcesOrderUpdate"
-      @fuelTechsHidden="handleSourceFuelTechsHidden"
-      @mouse-enter="handleMouseEnter"
-      @mouse-leave="handleMouseLeave"
-    />
-
-    <div 
-      v-if="loadsOrder.length > 0" 
-      class="summary-column-headers">
-      <div class="summary-row">
-        <div class="summary-col-label">Loads</div>
-   
-        <div
-          v-if="isEnergy"
-          class="summary-col-energy cell-value">
-          <span v-if="hoverOn || focusOn">
-            {{ pointSummaryLoads._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
-          </span>
-          <span v-else>
-            {{ summaryLoads._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
-          </span>
-        </div>
-        <div
-          v-else
-          class="summary-col-energy cell-value">
-          <span v-if="hoverOn || focusOn">
-            {{ pointSummaryLoads._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
-          </span>
-          <span v-else>
-            {{ summaryLoads._totalEnergy | formatValue }}
-          </span>
-        </div>
-
-        <div class="summary-col-contribution cell-value" />
-        <div class="summary-col-av-value cell-value" />
-      </div>
-    </div>
-
-    <items
-      :group="'ft-loads'"
-      :hidden-fuel-techs="hiddenLoads"
-      :original-order="loadsOrder"
-      :market-value-order="loadsMarketValueOrder"
-      :show-point-summary="hoverOn || focusOn"
-      :point-summary="pointSummaryLoads"
-      :point-summary-total="pointSummary._totalEnergyForPercentageCalculation"
-      :summary="summaryLoads"
-      :summary-total="summary._totalEnergyForPercentageCalculation"
-      :is-year-interval="isYearInterval"
-      :energy-domains="energyDomains"
-      :emissions-domains="emissionsDomains"
-      @update="handleLoadsOrderUpdate"
-      @fuelTechsHidden="handleLoadFuelTechsHidden"
-      @mouse-enter="handleMouseEnter"
-      @mouse-leave="handleMouseLeave"
-    />
-
-    <div 
-      v-if="loadsOrder.length > 0" 
-      class="summary-column-headers" >
-      <div class="summary-row last-row">
-        <div class="summary-col-label">Net</div>
-
-        <div
-          v-if="isEnergy"
-          class="summary-col-energy cell-value">
-          <span v-if="hoverOn || focusOn">
-            {{ pointSummary._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
-          </span>
-          <span v-else>
-            {{ summary._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
-          </span>
-        </div>
-        <div
-          v-else
-          class="summary-col-energy cell-value">
-          <span v-if="hoverOn || focusOn">
-            {{ pointSummary._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
-          </span>
-          <span v-else>
-            {{ summary._totalEnergy | formatValue }}
-          </span>
-        </div>
-
-        <div class="summary-col-contribution cell-value" />
-        <div class="summary-col-av-value cell-value" />
-      </div>
-    </div>
-
-    <div
-      class="summary-column-headers renewable-row"
-      @click.exact="handleRenewableRowClicked"
-      @click.shift.exact="handleRenewableRowShiftClicked">
-      <div class="summary-row last-row">
-        <div class="summary-col-label">
+      <div class="summary-column-headers">
+        <div class="summary-row">
           <div
-            :class="{
-              on: chartEnergyRenewablesLine,
-              'alt-colour': useAltRenewablesLineColour
-            }"
-            class="renewable-line" />
-          Renewables
+            class="summary-col-label"
+            style="padding-top: 3px;">
+            <group-selector v-if="groupSelection" />
+          </div>
+
+          <div
+            v-if="isEnergy"
+            class="summary-col-energy cell-toggle"
+            @click="handleUnitCellClicked">
+            <span>
+              Energy <small>{{ chartCurrentUnit }}</small>
+            </span>
+          </div>
+          <div
+            v-else
+            class="summary-col-energy">
+            <span v-if="hoverOn || focusOn">
+              Power <small>{{ chartCurrentUnit }}</small>
+            </span>
+            <span v-else>
+              Energy <small>GWh</small>
+            </span>
+          </div>
+
+          <div
+            class="summary-col-contribution cell-toggle"
+            @click="handlePercentContributionToClick">
+            Contribution <small>to {{ percentContributionTo }}</small>
+          </div>
+          <div class="summary-col-av-value">
+            <column-selector />
+          </div>
         </div>
 
-        <div
-          v-if="isEnergy"
-          class="summary-col-energy cell-value">
-          <span>
-            {{ renewablesValue | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
-          </span>
-        </div>
-        <div
-          v-else
-          class="summary-col-energy cell-value">
-          <span v-if="hoverOn || focusOn">
-            {{ renewablesValue | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
-          </span>
-          <span v-else>
-            {{ renewablesValue | formatValue }}
-          </span>
-        </div>
+        <div class="summary-row">
+          <div class="summary-col-label">Sources</div>
 
-        <div
-          v-if="!hoverOn && !focusOn"
-          class="summary-col-contribution cell-value">
-          {{ renewablesPercentage | percentageFormatNumber }}
+          <div
+            v-if="isEnergy"
+            class="summary-col-energy cell-value">
+            <span v-if="hoverOn || focusOn">
+              {{ pointSummarySources._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+            </span>
+            <span v-else>
+              {{ summarySources._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+            </span>
+          </div>
+          <div
+            v-else
+            class="summary-col-energy cell-value">
+            <span v-if="hoverOn || focusOn">
+              {{ pointSummarySources._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+            </span>
+            <span v-else>
+              {{ summarySources._totalEnergy | formatValue }}
+            </span>
+          </div>
+
+          <div class="summary-col-contribution cell-value" />
+          <div
+            v-if="!hoverOn && !focusOn"
+            class="summary-col-av-value cell-value">
+            <span v-if="isAvValueColumn">
+              {{ summary._totalAverageValue | formatCurrency }}
+            </span>
+            <span v-if="isEmissionsVolumeColumn">
+              {{ sumEmissionsMinusLoads | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
+            </span>
+            <span v-if="isEmissionsIntensityColumn">
+              {{ averageEmissionIntensity | formatValue }}
+            </span>
+          </div>
+          <div
+            v-if="hoverOn || focusOn"
+            class="summary-col-av-value cell-value">
+            <span v-if="isAvValueColumn">
+              {{ pointSummary._totalAverageValue | formatCurrency }}
+            </span>
+            <span v-if="isEmissionsVolumeColumn">
+              {{ emissionsHoverValue | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
+            </span>
+            <span v-if="isEmissionsIntensityColumn">
+              {{ emissionIntensityHoverValue | formatValue }}
+            </span>
+          </div>
         </div>
-        <div
-          v-if="hoverOn || focusOn"
-          class="summary-col-contribution cell-value">
-          {{ pointRenewablesPercentage | percentageFormatNumber }}
+      </div>
+
+      <items
+        :group="'ft-sources'"
+        :hidden-fuel-techs="hiddenSources"
+        :original-order="sourcesOrder"
+        :market-value-order="sourcesMarketValueOrder"
+        :show-point-summary="hoverOn || focusOn"
+        :point-summary="pointSummarySources"
+        :point-summary-total="pointSummarySourcesTotal"
+        :summary="summarySources"
+        :summary-total="summarySourcesTotal"
+        :domain-toggleable="domainToggleable"
+        :energy-domains="energyDomains"
+        :emissions-domains="emissionsDomains"
+        :is-year-interval="isYearInterval"
+        @update="handleSourcesOrderUpdate"
+        @fuelTechsHidden="handleSourceFuelTechsHidden"
+        @mouse-enter="handleMouseEnter"
+        @mouse-leave="handleMouseLeave"
+      />
+
+      <div
+        v-if="loadsOrder.length > 0"
+        class="summary-column-headers">
+        <div class="summary-row">
+          <div class="summary-col-label">Loads</div>
+
+          <div
+            v-if="isEnergy"
+            class="summary-col-energy cell-value">
+            <span v-if="hoverOn || focusOn">
+              {{ pointSummaryLoads._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+            </span>
+            <span v-else>
+              {{ summaryLoads._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+            </span>
+          </div>
+          <div
+            v-else
+            class="summary-col-energy cell-value">
+            <span v-if="hoverOn || focusOn">
+              {{ pointSummaryLoads._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+            </span>
+            <span v-else>
+              {{ summaryLoads._totalEnergy | formatValue }}
+            </span>
+          </div>
+
+          <div class="summary-col-contribution cell-value" />
+          <div class="summary-col-av-value cell-value" />
         </div>
-        <div class="summary-col-av-value cell-value" />
+      </div>
+
+      <items
+        :group="'ft-loads'"
+        :hidden-fuel-techs="hiddenLoads"
+        :original-order="loadsOrder"
+        :market-value-order="loadsMarketValueOrder"
+        :show-point-summary="hoverOn || focusOn"
+        :point-summary="pointSummaryLoads"
+        :point-summary-total="pointSummary._totalEnergyForPercentageCalculation"
+        :summary="summaryLoads"
+        :summary-total="summary._totalEnergyForPercentageCalculation"
+        :is-year-interval="isYearInterval"
+        :energy-domains="energyDomains"
+        :emissions-domains="emissionsDomains"
+        @update="handleLoadsOrderUpdate"
+        @fuelTechsHidden="handleLoadFuelTechsHidden"
+        @mouse-enter="handleMouseEnter"
+        @mouse-leave="handleMouseLeave"
+      />
+
+      <div
+        v-if="loadsOrder.length > 0"
+        class="summary-column-headers" >
+        <div class="summary-row last-row">
+          <div class="summary-col-label">Net</div>
+
+          <div
+            v-if="isEnergy"
+            class="summary-col-energy cell-value">
+            <span v-if="hoverOn || focusOn">
+              {{ pointSummary._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+            </span>
+            <span v-else>
+              {{ summary._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+            </span>
+          </div>
+          <div
+            v-else
+            class="summary-col-energy cell-value">
+            <span v-if="hoverOn || focusOn">
+              {{ pointSummary._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+            </span>
+            <span v-else>
+              {{ summary._totalEnergy | formatValue }}
+            </span>
+          </div>
+
+          <div class="summary-col-contribution cell-value" />
+          <div class="summary-col-av-value cell-value" />
+        </div>
+      </div>
+
+      <div
+        class="summary-column-headers renewable-row"
+        @touchstart="handleTouchstart"
+        @touchend="handleTouchend"
+        @click.exact="handleRenewableRowClicked"
+        @click.shift.exact="handleRenewableRowShiftClicked">
+        <div class="summary-row last-row">
+          <div class="summary-col-label">
+            <div
+              :class="{
+                on: chartEnergyRenewablesLine,
+                'alt-colour': useAltRenewablesLineColour
+              }"
+              class="renewable-line" />
+            Renewables
+          </div>
+
+          <div
+            v-if="isEnergy"
+            class="summary-col-energy cell-value">
+            <span>
+              {{ renewablesValue | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+            </span>
+          </div>
+          <div
+            v-else
+            class="summary-col-energy cell-value">
+            <span v-if="hoverOn || focusOn">
+              {{ renewablesValue | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+            </span>
+            <span v-else>
+              {{ renewablesValue | formatValue }}
+            </span>
+          </div>
+
+          <div
+            v-if="!hoverOn && !focusOn"
+            class="summary-col-contribution cell-value">
+            {{ renewablesPercentage | percentageFormatNumber }}
+          </div>
+          <div
+            v-if="hoverOn || focusOn"
+            class="summary-col-contribution cell-value">
+            {{ pointRenewablesPercentage | percentageFormatNumber }}
+          </div>
+          <div class="summary-col-av-value cell-value" />
+        </div>
       </div>
     </div>
+
+    
   </div>
 </template>
 
@@ -263,10 +275,12 @@ import { format as d3Format } from 'd3-format'
 import differenceInMinutes from 'date-fns/differenceInMinutes'
 import { energy_sum } from '@opennem/energy-tools'
 
+import EventBus from '@/plugins/eventBus'
 import Data from '~/services/Data.js'
 import Domain from '~/services/Domain.js'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
 import ColumnSelector from '~/components/ui/SummaryColumnSelector'
+import ExportLegend from '@/components/Energy/Export/Legend'
 import Items from './Items'
 import DatesDisplay from './DatesDisplay'
 
@@ -275,10 +289,19 @@ export default {
     GroupSelector,
     ColumnSelector,
     Items,
-    DatesDisplay
+    DatesDisplay,
+    ExportLegend
   },
 
   props: {
+    displayAsLegend: {
+      type: Boolean,
+      default: () => false
+    },
+    showPercentInLegend: {
+      type: Boolean,
+      default: () => false
+    },
     energyDomains: {
       type: Array,
       default: () => []
@@ -359,13 +382,15 @@ export default {
       pointSummaryLoads: {},
       hiddenSources: [],
       hiddenLoads: [],
-      hoveredTemperature: 0
+      hoveredTemperature: 0,
+      mousedownDelay: null,
+      longPress: 500
     }
   },
 
   computed: {
     ...mapGetters({
-      datasetFlat: 'regionEnergy/datasetFlat',
+      datasetFull: 'regionEnergy/datasetFull',
       domainPowerEnergyGrouped: 'regionEnergy/domainPowerEnergyGrouped',
       regionTimezoneString: 'regionEnergy/regionTimezoneString',
       isEnergyType: 'regionEnergy/isEnergyType',
@@ -388,7 +413,11 @@ export default {
       chartEmissionsVolumeUnitPrefix:
         'chartOptionsEmissionsVolume/chartUnitPrefix',
       chartEmissionsVolumeDisplayPrefix:
-        'chartOptionsEmissionsVolume/chartDisplayPrefix'
+        'chartOptionsEmissionsVolume/chartDisplayPrefix',
+
+      emissionIntensityData: 'energy/emissions/emissionIntensityData',
+      averageEmissionIntensity: 'energy/emissions/averageEmissionIntensity',
+      sumEmissionsMinusLoads: 'energy/emissions/sumEmissionsMinusLoads'
     }),
 
     chartUnit() {
@@ -438,6 +467,33 @@ export default {
       return this.showSummaryColumn === 'emissions-intensity'
     },
 
+    emissionHoverData() {
+      let date = this.focusDate
+      if (this.hoverOn) {
+        date = this.hoverDate
+      }
+
+      if (date) {
+        const time = date.getTime()
+        const find = this.emissionIntensityData.find(d => d.time === time)
+        return find ? find : null
+      }
+
+      return null
+    },
+
+    emissionsHoverValue() {
+      return this.emissionHoverData
+        ? this.emissionHoverData._totalEmissionsMinusLoads
+        : null
+    },
+
+    emissionIntensityHoverValue() {
+      return this.emissionHoverData
+        ? this.emissionHoverData._emissionIntensity
+        : null
+    },
+
     sourcesOrderLength() {
       return this.energyDomains.filter(
         d => d.category === 'source' || d.category === 'load'
@@ -458,6 +514,17 @@ export default {
 
     loadsMarketValueOrder() {
       return this.marketValueDomains.filter(d => d.category === 'load')
+    },
+
+    legendDomains() {
+      const hidden = this.hiddenFuelTechs
+      const domains = this.energyDomains.filter(
+        d => !_includes(hidden, d[this.propRef])
+      )
+      domains.forEach(d => {
+        d.contribution = this.getContribution(d.id)
+      })
+      return domains
     },
 
     renewablesValue() {
@@ -678,7 +745,6 @@ export default {
         let totalGeneration = 0
         let totalLoads = 0
         let totalPriceMarketValue = 0
-        let totalEVMinusHidden = 0
         let totalEIMinusHidden = 0
         this.summary = {}
         this.summarySources = {}
@@ -755,7 +821,7 @@ export default {
         const end = data[data.length - 1]
         const startDate = start.date
         const endDate = end.date
-        const fullDatasetFiltered = this.datasetFlat.filter(
+        const fullDatasetFiltered = this.datasetFull.filter(
           df => df.time >= start.time && df.time <= end.time
         )
         const bucketSizeMins = differenceInMinutes(endDate, startDate) + 1
@@ -833,7 +899,6 @@ export default {
           })
           const evSum = sumMap(ft, dataEVMinusHidden)
           this.summary[ft.id] = evSum
-          totalEVMinusHidden += evSum
 
           if (category === 'source') {
             this.summarySources[ft.id] = evSum
@@ -981,9 +1046,6 @@ export default {
 
         const average = avTotal / data.length
         this.summary._averageEnergy = average
-        this.summary._totalEmissionsVolume = totalEVMinusHidden
-        this.summary._averageEmissionsVolume = totalEVMinusHidden / data.length
-        this.summary._averageEmissionsIntensity = totalEVMinusHidden / avTotal
         this.summary._averageTemperature =
           totalTemperatureWithoutNulls / temperatureWithoutNulls.length
         this.$emit('summary-update', this.summary)
@@ -991,11 +1053,11 @@ export default {
     },
 
     calculatePointSummary(data) {
+      const isGeneration = this.percentContributionTo === 'generation'
       let totalSources = 0
       let totalGeneration = 0
       let totalLoads = 0
       let totalPriceMarketValue = 0
-      let totalEmissionsVol = 0
       this.pointSummary = data || {} // pointSummary._total is already calculated
       this.pointSummarySources = {}
       this.pointSummaryLoads = {}
@@ -1038,10 +1100,6 @@ export default {
 
             if (category === 'source') {
               this.pointSummarySources[ft.id] = avValue
-
-              if (findEnergyEq.fuelTech === 'imports') {
-                this.pointSummarySources[ft.id] = -avValue
-              }
             } else if (category === 'load') {
               this.pointSummaryLoads[ft.id] = -avValue
             }
@@ -1052,8 +1110,6 @@ export default {
         this.emissionsDomains.forEach(domain => {
           const category = domain.category
           const value = this.pointSummary[domain.id]
-
-          totalEmissionsVol += value
 
           if (category === 'source') {
             this.pointSummarySources[domain.id] = value
@@ -1076,7 +1132,6 @@ export default {
       this.pointSummarySources._total = totalSources
       this.pointSummarySources._totalGeneration = totalGeneration
       this.pointSummaryLoads._total = totalLoads
-      this.pointSummary._totalEmissionsVolume = totalEmissionsVol
     },
 
     updatePointSummary(date) {
@@ -1183,6 +1238,19 @@ export default {
       }
     },
 
+    handleTouchstart() {
+      this.mousedownDelay = setTimeout(() => {
+        this.handleRenewableRowShiftClicked()
+      }, this.longPress)
+    },
+    handleTouchend() {
+      this.clearTimeout()
+    },
+    clearTimeout() {
+      clearTimeout(this.mousedownDelay)
+      this.mousedownDelay = null
+    },
+
     handleRenewableRowClicked() {
       const rowToggle = !this.chartEnergyRenewablesLine
       this.$store.commit(
@@ -1222,6 +1290,17 @@ export default {
     },
     handleMouseLeave() {
       this.$emit('mouse-leave')
+    },
+
+    handleUnitCellClicked() {
+      EventBus.$emit('energy.chart.unit-toggle')
+    },
+
+    getContribution(key) {
+      const rowValue = this.summary[key] || 0
+      const total = this.summary._totalEnergyForPercentageCalculation
+
+      return (rowValue / total) * 100
     }
   }
 }
@@ -1240,7 +1319,7 @@ export default {
   }
 }
 
-.contribution-toggle {
+.cell-toggle {
   cursor: pointer;
   &:hover {
     background-color: rgba(255, 255, 255, 0.7);

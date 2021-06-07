@@ -1,283 +1,170 @@
 <template>
-  <div>
-    <!-- <tile-selector
-      class="tile-selector"
-      :tile="selectedTile"
-      @tileSelect="handleTileSelect"
-    /> -->
-    <div
-      id="map"
-      :style="{ height: mapHeight }" />
-    <div class="attribution">
-      Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.
-    </div>
+  <section
+    :style="{ height: mapHeight }"
+    :class="{ dark: isDarkMap }"
+    class="mapbox">
+    <client-only>
+      <MglMap
+        :access-token="accessToken"
+        :map-style.sync="mapStyleUrl"
+        :center="mapCentre"
+        :zoom="3"
+        class="map-container"
+        @load="onMapLoaded"
+        @styledata="onMapStyleDataChanged">
 
-    <!-- <div
-      id="map"
-      style="height: 400px">
-      <no-ssr>
-        <l-map
-          :zoom="13"
-          :center="mapCentre">
-          <l-tile-layer :url="tileLayer" />
-          <l-marker :lat-lng="[47.413220, -1.219482]" />
-        </l-map>
-      </no-ssr>
-    </div> -->
+        <button
+          class="button is-small button-map-style" 
+          @click="showMapStyleSelector = true">
+          <i class="fal fa-map"/>
+        </button>
 
-    <totals
-      v-if="tabletBreak"
-      :position="'fixed'"
-      :div-width="divWidth"
-      :total-facilities="totalFacilities"
-      :total-cap="totalCap"
-    />
-  </div>
+        <transition name="slide-down-fade">
+          <MapStyleSelector 
+            v-if="showMapStyleSelector" 
+            class="map-style-selection"
+            @done="showMapStyleSelector = false" />
+        </transition>
+
+        <MglNavigationControl
+          position="bottom-right"
+        />
+      </MglMap>
+    </client-only>
+  </section>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import _debounce from 'lodash.debounce'
-import _includes from 'lodash.includes'
-import _isEmpty from 'lodash.isempty'
+import _cloneDeep from 'lodash.clonedeep'
 import _orderBy from 'lodash.orderby'
-// import L from 'leaflet'
+import _debounce from 'lodash.debounce'
 import { scaleLinear as d3ScaleLinear } from 'd3-scale'
-import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
-import { getRegionLocationById } from '~/constants/facility-regions.js'
-// import * as L from 'vue2-leaflet'
+import AnimatedPopup from 'mapbox-gl-animated-popup'
 
-// import TileSelector from './MapTileSelector';
-import Totals from './Totals'
+import {
+  MAP_STYLE_URLS,
+  MAP_STYLE_SATELLITE
+} from '~/constants/facilities/map-styles.js'
+import MapStyleSelector from './MapStyleSelector'
+
+const ACCESS_TOKEN = process.env.mapboxToken
+const popupOptions = (openingDuration = 0, className = '') => {
+  return {
+    className,
+    closeButton: false,
+    closeOnClick: false,
+    openingAnimation: {
+      duration: openingDuration,
+      easing: 'easeInBack'
+    },
+    closingAnimation: {
+      duration: 0,
+      easing: 'easeInBack'
+    }
+  }
+}
+const radiusScale = d3ScaleLinear([0, Math.sqrt(3000)], [3000, 10000])
 
 export default {
   components: {
-    // TileSelector,
-    Totals
+    MapStyleSelector
   },
+
   props: {
     data: {
       type: Array,
       default: () => []
     },
-    selectedFacility: {
+    hovered: {
       type: Object,
       default: () => null
     },
-    hoveredFacility: {
+    selected: {
       type: Object,
       default: () => null
-    },
-    shouldZoomWhenSelected: {
-      type: Boolean,
-      default: () => false
     }
   },
 
   data() {
     return {
-      facilitiesData: [],
-      tileLayer:
-        '//stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png',
-      tileLayers: {
-        // 'toner-lite': L.tileLayer(
-        //   '//stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}',
-        //   {
-        //     minZoom: 0,
-        //     maxZoom: 18,
-        //     ext: 'png'
-        //   }
-        // ),
-        // terrain: L.tileLayer(
-        //   '//stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}',
-        //   {
-        //     minZoom: 0,
-        //     maxZoom: 18,
-        //     ext: 'png'
-        //   }
-        // )
-      },
-      selectedTile: 'toner-lite',
-      marker: null,
-      // marker: L.icon({
-      //   iconUrl: '/images/marker.png',
-      //   shadowUrl: '/images/marker-shadow.png',
-      //   iconSize: [25, 41],
-      //   iconAnchor: [12, 41],
-      //   shadowSize: [41, 41]
-      // }),
-      map: null,
-      selectedMarker: null,
-      hoveredMarker: null,
-      facilitiesFeature: null,
-      emissionsFeature: null,
+      accessToken: ACCESS_TOKEN,
+      mapCentre: [143.633537, -29.186936],
       windowHeight: 800,
-      divWidth: 0,
-      mapCentre: [-29.186936, 143.633537]
+      showMapStyleSelector: false
     }
   },
 
   computed: {
     ...mapGetters({
-      tabletBreak: 'app/tabletBreak'
+      tabletBreak: 'app/tabletBreak',
+      selectedMapStyle: 'facility/selectedMapStyle'
     }),
 
     mapHeight() {
       const offset = this.tabletBreak ? 49 : 50
       return `${this.windowHeight - offset}px`
     },
-
-    facilitySelectedTechs() {
-      // return this.$store.getters.facilitySelectedTechs
-      return []
+    mapStyleUrl() {
+      return MAP_STYLE_URLS[this.selectedMapStyle]
     },
-
-    totalFacilities() {
-      return this.facilitiesData.length
-    },
-
-    totalCap() {
-      let total = 0
-      this.facilitiesData.forEach(facility => {
-        if (this.facilitySelectedTechs.length === 0) {
-          total += facility.generatorCap
-        } else {
-          this.facilitySelectedTechs.forEach(ft => {
-            if (facility.fuelTechRegisteredCap[ft]) {
-              total += facility.fuelTechRegisteredCap[ft]
-            }
-          })
-        }
+    updatedData() {
+      // @TODO: move this out of component
+      const data = _cloneDeep(this.data)
+      data.forEach(d => {
+        const properties = d.jsonData.properties
+        properties.generatorCap = d.generatorCap
+        properties.colour = d.colour
+        properties.radius = this.getRadius(d.generatorCap)
       })
-      return total
+      return _orderBy(data, ['generatorCap'], ['desc'])
+    },
+    isDarkMap() {
+      return this.selectedMapStyle === MAP_STYLE_SATELLITE
     }
   },
 
   watch: {
-    selectedTile(tile) {
-      Object.keys(this.tileLayers).forEach(layer => {
-        this.tileLayers[layer].remove()
-      })
-      this.tileLayers[tile].addTo(this.map)
+    updatedData() {
+      this.updateMapSource()
     },
-    data(newData) {
-      const sorted = _orderBy(newData, [this.getGeneratorCap], ['desc'])
-      this.facilitiesData = sorted
-      this.updateMap(sorted)
-    },
-    hoveredFacility(facility) {
-      if (facility) {
-        const selected = this.selectedFacility
-        const selectedId = selected ? selected.stationId : ''
-        const hasLocation = facility.location
 
-        if (selectedId !== facility.stationId) {
-          if (this.hoveredMarker) {
-            this.hoveredMarker.remove()
-          }
-
-          if (hasLocation.latitude && hasLocation.longitude) {
-            const lat = hasLocation.latitude
-            const lng = hasLocation.longitude
-
-            this.hoveredMarker = L.popup({
-              autoClose: false,
-              autoPan: false,
-              className: 'map-popup'
-            })
-              .setLatLng([lat, lng])
-              .setContent(facility.displayName)
-
-            this.hoveredMarker.openOn(this.map)
-          }
-        }
-      } else if (this.hoveredMarker) {
-        this.hoveredMarker.remove()
+    hovered(val) {
+      if (
+        val ||
+        (this.selected && val && this.selected.facilityId !== val.facilityId)
+      ) {
+        this.displayPopup(val, this.popup, false)
+      } else {
+        this.removePopup(this.popup)
       }
     },
-    selectedFacility(facility) {
-      if (facility) {
-        const hasLocation = facility.location
-
-        if (this.selectedMarker) {
-          this.selectedMarker.remove()
-        }
-
-        if (hasLocation.latitude && hasLocation.longitude) {
-          const lat = hasLocation.latitude
-          const lng = hasLocation.longitude
-          // const loc = new L.LatLng(lat, lng)
-
-          this.selectedMarker = L.popup({
-            autoClose: false,
-            autoPan: false,
-            closeOnClick: false,
-            className: 'map-popup selected'
-          })
-            .setLatLng([lat, lng])
-            .setContent(facility.displayName)
-          this.selectedMarker.openOn(this.map)
-          this.map.setView([lat, lng], 7)
-        } else {
-          // no lat/lng, so use region or state
-          const location = getRegionLocationById(facility.regionId)
-          if (location) {
-            this.map.setView([location[0], location[1]], 6)
-          }
-        }
-      } else if (this.selectedMarker) {
-        this.selectedMarker.remove()
-        const bounds = this.facilitiesFeature.getBounds()
-        if (!_isEmpty(bounds)) {
-          this.map.fitBounds(this.facilitiesFeature.getBounds())
-        }
+    selected(val) {
+      if (val) {
+        this.displayPopup(val, this.selectedPopup, true)
+      } else {
+        this.removePopup(this.selectedPopup)
+        this.fitBounds()
       }
     }
   },
 
+  created() {
+    this.map = null
+    this.selectedPopup = null
+    this.popup = null
+    this.source = null
+    this.layer = null
+    this.bounds = new this.$mapbox.LngLatBounds()
+    this.scale = new this.$mapbox.ScaleControl()
+  },
+
   mounted() {
-    const sorted = _orderBy(this.data, [this.getGeneratorCap], ['desc'])
-    this.facilitiesData = sorted
-
-    this.tileLayers = {
-      'toner-lite': L.tileLayer(
-        '//stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}',
-        {
-          minZoom: 0,
-          maxZoom: 18,
-          ext: 'png'
-        }
-      ),
-      terrain: L.tileLayer(
-        '//stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}',
-        {
-          minZoom: 0,
-          maxZoom: 18,
-          ext: 'png'
-        }
-      )
-    }
-
-    this.marker = L.icon({
-      iconUrl: '/images/marker.png',
-      shadowUrl: '/images/marker-shadow.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      shadowSize: [41, 41]
-    })
-
-    this.$nextTick(() => {
-      this.setup()
-      this.updateMap(this.facilitiesData)
-    })
-
     if (process.client) {
-      this.divWidth = this.$el.offsetWidth
       this.windowHeight = window.innerHeight
       window.addEventListener(
         'resize',
         _debounce(() => {
-          this.divWidth = this.$el.offsetWidth
           this.windowHeight = window.innerHeight
         }, 200)
       )
@@ -285,148 +172,178 @@ export default {
   },
 
   methods: {
-    setup() {
-      this.map = L.map('map', {
-        attributionControl: false,
-        maxZoom: 10,
-        minZoom: 4,
-        zoomAnimation: true,
-        zoomControl: false
-      }).setView([-29.186936, 143.633537], 4)
-      this.facilitiesFeature = L.featureGroup()
-      this.emissionsFeature = L.featureGroup()
-      this.tileLayers[this.selectedTile].addTo(this.map)
-
-      const attr = L.control.attribution({
-        position: 'bottomleft',
-        prefix: false
-      })
-      const zoom = L.control.zoom({
-        position: 'topright'
-      })
-
-      this.map.addControl(attr)
-      this.map.addControl(zoom)
-    },
-
-    handleMapCircleClicked(facility) {
-      this.$emit('facilitySelect', facility, false)
-    },
-
-    getColour(fuelTechs, facility) {
-      const ftCaps = facility.fuelTechRegisteredCap
-      let highest = 0
-      let highestFt = null
-      Object.keys(ftCaps).forEach(d => {
-        if (this.facilitySelectedTechs.length) {
-          const included = _includes(this.facilitySelectedTechs, d)
-          if (included) {
-            if (ftCaps[d] >= highest) {
-              highestFt = d
-              highest = ftCaps[d]
-            }
-          }
-        } else if (ftCaps[d] >= highest) {
-          highestFt = d
-          highest = ftCaps[d]
-        }
-      })
-
-      const ftColour = FUEL_TECHS.DEFAULT_FUEL_TECH_COLOUR[highestFt]
-      return ftColour || 'lightgrey'
-    },
-
-    getGeneratorCap(facility) {
-      if (this.facilitySelectedTechs.length === 0) {
-        return facility.generatorCap
+    onMapStyleDataChanged() {
+      if (!this.map.getSource('facilities')) {
+        this.addMapSourceAndLayer()
       }
+    },
+    onMapLoaded(event) {
+      console.log('load')
+      this.map = event.map
+      this.popup = new AnimatedPopup(popupOptions(10))
+      this.selectedPopup = new AnimatedPopup(popupOptions(0, 'selected'))
 
-      let cap = 0
-      this.facilitySelectedTechs.forEach(d => {
-        if (
-          FUEL_TECHS.FUEL_TECH_CATEGORY[d] !== 'load' &&
-          facility.fuelTechRegisteredCap[d]
-        ) {
-          cap += facility.fuelTechRegisteredCap[d]
+      this.map.addControl(this.scale)
+
+      this.addMapSourceAndLayer(true)
+
+      this.map.on('mouseenter', 'facilitiesLayer', e => {
+        this.map.getCanvas().style.cursor = 'pointer'
+
+        const coordinates = e.features[0].geometry.coordinates.slice()
+        const name = e.features[0].properties.name
+        const id = e.features[0].properties.facility_id
+
+        // Ensure that if the map is zoomed out such that multiple
+        // copies of the feature are visible, the popup appears
+        // over the copy being pointed to.
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360
         }
-      })
-      return cap
-    },
 
-    selectedFacilityBounds() {
-      const lat = this.selectedMarker._latlng.lat // eslint-disable-line
-      const lng = this.selectedMarker._latlng.lng // eslint-disable-line
-      const loc = new L.LatLng(lat, lng)
-      this.map.panTo(loc)
-    },
-
-    handleTileSelect(tile) {
-      this.selectedTile = tile
-    },
-
-    updateMap(data) {
-      this.map.removeLayer(this.facilitiesFeature)
-      this.facilitiesFeature = L.featureGroup()
-      const self = this
-      data.forEach(d => {
-        const location = d.location
-        if (location.latitude && location.longitude) {
-          const lat = location.latitude
-          const lng = location.longitude
-          const radiusScale = d3ScaleLinear([0, Math.sqrt(3000)], [2000, 50000])
-          const radius = radiusScale(Math.sqrt(this.getGeneratorCap(d)))
-          const colour = this.getColour(d.fuelTechs, d)
-          const circle = L.circle([lat, lng], {
-            color: colour,
-            fillColor: colour,
-            fillOpacity: 0.55,
-            opacity: 0.95,
-            weight: 1,
-            radius
-          })
-
-          circle.on({
-            click() {
-              self.handleMapCircleClicked(d)
-            },
-            mouseover() {
-              const selected = self.selectedFacility
-              const selectedId = selected ? selected.stationId : ''
-              const circleBounds = circle.getBounds()
-              const options = {
-                _id: d.stationId,
-                autoClose: false,
-                autoPan: false,
-                className: 'map-popup'
-              }
-
-              if (selectedId !== d.stationId) {
-                if (self.hoveredMarker) {
-                  self.hoveredMarker.remove()
-                }
-
-                self.hoveredMarker = L.popup(options)
-                  .setLatLng([circleBounds._northEast.lat, lng]) // eslint-disable-line
-                  .setContent(d.displayName)
-
-                self.hoveredMarker.openOn(self.map)
-              }
-            },
-            mouseout() {
-              if (self.hoveredMarker) {
-                self.hoveredMarker.remove()
-              }
-            }
-          })
-          circle.addTo(this.facilitiesFeature)
+        if (coordinates) {
+          if (
+            !this.selected ||
+            (this.selected && this.selected.facilityId !== id)
+          ) {
+            this.popup
+              .setLngLat(coordinates)
+              .setHTML(name)
+              .addTo(this.map)
+          }
         }
       })
 
-      this.map.addLayer(this.facilitiesFeature)
+      this.map.on('click', 'facilitiesLayer', e => {
+        const id = e.features[0].properties.facility_id
 
-      const bounds = this.facilitiesFeature.getBounds()
-      if (!_isEmpty(bounds)) {
-        this.map.fitBounds(this.facilitiesFeature.getBounds())
+        if (this.selected && this.selected.facilityId === id) {
+          this.$emit('facilitySelect', null)
+        } else {
+          this.$emit('facilitySelect', id)
+        }
+      })
+
+      this.map.on('mouseleave', 'facilitiesLayer', () => {
+        this.map.getCanvas().style.cursor = ''
+        this.removePopup(this.popup)
+      })
+
+      if (this.selected) {
+        this.displayPopup(this.selected, this.selectedPopup, true)
+      }
+    },
+
+    getRadius(cap) {
+      return radiusScale(Math.sqrt(cap))
+    },
+
+    setMapBounds(features) {
+      features.forEach(f => {
+        if (f.geometry && f.geometry.coordinates) {
+          this.bounds.extend(f.geometry.coordinates)
+        }
+      })
+    },
+
+    getFeaturesFromData() {
+      return this.updatedData.map(d => d.jsonData)
+    },
+
+    updateMapSource() {
+      if (this.map) {
+        const features = this.getFeaturesFromData()
+        this.source.data = {
+          type: 'FeatureCollection',
+          features
+        }
+
+        this.setMapBounds(features)
+        this.map.getSource('facilities').setData(this.source.data)
+        this.fitBounds()
+      }
+    },
+
+    addMapSourceAndLayer(shouldFit) {
+      if (this.map && this.updatedData.length > 0) {
+        const features = this.getFeaturesFromData()
+
+        this.source = {
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features
+          }
+        }
+
+        this.layer = {
+          id: 'facilitiesLayer',
+          type: 'circle',
+          source: 'facilities',
+          paint: {
+            'circle-radius': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              5,
+              ['/', ['-', ['get', 'radius']], 1000],
+              10,
+              ['/', ['-', ['get', 'radius']], 250]
+            ],
+            'circle-opacity': 0.75,
+            'circle-color': ['get', 'colour']
+          }
+        }
+
+        this.setMapBounds(features)
+        this.map.addSource('facilities', this.source)
+        this.map.addLayer(this.layer)
+
+        if (shouldFit) {
+          this.fitBounds()
+        }
+      }
+    },
+
+    findPoint(point) {
+      return this.updatedData.find(
+        d =>
+          d.facilityId === point.facilityId &&
+          d.displayName === point.displayName
+      )
+    },
+
+    displayPopup(val, ctx, flyTo) {
+      const find = this.findPoint(val)
+      const coordinates = find.jsonData.geometry
+        ? find.jsonData.geometry.coordinates.slice()
+        : null
+      const name = find.displayName
+
+      if (ctx && coordinates) {
+        ctx
+          .setLngLat(coordinates)
+          .setHTML(name)
+          .addTo(this.map)
+
+        if (flyTo) {
+          this.map.flyTo({
+            center: coordinates,
+            zoom: 8,
+            speed: 1.8,
+            curve: 1.8
+          })
+        }
+      }
+    },
+
+    fitBounds() {
+      this.map.fitBounds(this.bounds, { padding: 50 })
+    },
+
+    removePopup(popup) {
+      if (popup) {
+        popup.remove()
       }
     }
   }
@@ -434,28 +351,43 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~/assets/scss/responsive-mixins.scss';
+.mapbox {
+  position: relative;
+  height: 400px;
 
-#map {
-  width: 100%;
-  height: 200px;
-  z-index: 1;
-  border-radius: 2px;
-  // box-shadow: 0 0 20px rgba(0,0,0,.05);
-  opacity: 0.95;
-}
+  .button-map-style {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    min-width: auto;
+  }
 
-.tile-selector {
-  position: absolute;
-  right: 10px;
-  bottom: 25px;
-  z-index: 9;
-}
+  .map-style-selection {
+    position: absolute;
+    right: 1rem;
+    top: 3.2rem;
 
-.attribution {
-  font-size: 9px;
-  text-align: center;
-  opacity: 0.75;
-  padding-top: 5px;
+    &::after {
+      content: '';
+      transform: rotate(45deg);
+      background: #fff;
+      top: -4px;
+      right: 11px;
+      width: 10px;
+      height: 10px;
+      position: absolute;
+      z-index: 0;
+    }
+  }
+
+  &.dark {
+    .button-map-style {
+      color: #fff;
+
+      &:hover {
+        color: #333;
+      }
+    }
+  }
 }
 </style>
