@@ -1,5 +1,5 @@
 <template>
-  <DraggableDiv class="floating-palette">
+  <Draggable class="floating-palette">
     <template slot="header">
       <header>
         <i class="fal fa-fw fa-comment-alt-exclamation"/>
@@ -82,17 +82,17 @@
         </button>
       </footer>
     </template>
-  </DraggableDiv>
+  </Draggable>
 </template>
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { lsGet, lsSet } from '@/services/LocalStorage'
-import DraggableDiv from './DraggableContainer'
+import Draggable from './DraggableContainer'
 
 export default {
   components: {
-    DraggableDiv
+    Draggable
   },
 
   props: {

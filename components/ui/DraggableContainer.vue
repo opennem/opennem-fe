@@ -3,8 +3,13 @@
     ref="draggableContainer" 
     class="draggable-container">
     <div 
-      class="draggable-header" 
-      @mousedown="dragMouseDown">
+      class="draggable-header"
+      @touchstart="dragStart"
+      @touchend="dragEnd"
+      @touchmove="drag"
+      @mousedown="dragStart"
+      @mouseup="dragEnd"
+      @mousemove="drag">
       <slot name="header"/>
     </div>
     <slot name="main"/>
@@ -14,45 +19,59 @@
 
 <script>
 export default {
-  name: 'DraggableDiv',
-  data: function() {
-    return {
-      positions: {
-        clientX: undefined,
-        clientY: undefined,
-        movementX: 0,
-        movementY: 0
-      }
-    }
+  name: 'Draggable',
+
+  created() {
+    this.active = false
+    this.currentX = null
+    this.currentY = null
+    this.initialX = null
+    this.initialY = null
+    this.xOffset = 0
+    this.yOffset = 0
   },
+
   methods: {
-    dragMouseDown: function(event) {
-      event.preventDefault()
-      // get the mouse cursor position at startup:
-      this.positions.clientX = event.clientX
-      this.positions.clientY = event.clientY
-      document.onmousemove = this.elementDrag
-      document.onmouseup = this.closeDragElement
+    dragStart(e) {
+      e.preventDefault()
+
+      if (e.type === 'touchstart') {
+        this.initialX = e.touches[0].clientX - this.xOffset
+        this.initialY = e.touches[0].clientY - this.yOffset
+      } else {
+        this.initialX = e.clientX - this.xOffset
+        this.initialY = e.clientY - this.yOffset
+      }
+
+      this.active = true
     },
-    elementDrag: function(event) {
-      event.preventDefault()
-      this.positions.movementX = this.positions.clientX - event.clientX
-      this.positions.movementY = this.positions.clientY - event.clientY
-      this.positions.clientX = event.clientX
-      this.positions.clientY = event.clientY
-      // set the element's new position:
-      this.$refs.draggableContainer.style.top =
-        this.$refs.draggableContainer.offsetTop -
-        this.positions.movementY +
-        'px'
-      this.$refs.draggableContainer.style.left =
-        this.$refs.draggableContainer.offsetLeft -
-        this.positions.movementX +
-        'px'
+    dragEnd(e) {
+      this.initialX = this.currentX
+      this.initialY = this.currentY
+
+      this.active = false
     },
-    closeDragElement() {
-      document.onmouseup = null
-      document.onmousemove = null
+    drag(e) {
+      if (this.active) {
+        e.preventDefault()
+
+        if (e.type === 'touchmove') {
+          this.currentX = e.touches[0].clientX - this.initialX
+          this.currentY = e.touches[0].clientY - this.initialY
+        } else {
+          this.currentX = e.clientX - this.initialX
+          this.currentY = e.clientY - this.initialY
+        }
+
+        this.xOffset = this.currentX
+        this.yOffset = this.currentY
+
+        this.setTranslate(this.currentX, this.currentY)
+      }
+    },
+    setTranslate(xPos, yPos) {
+      this.$refs.draggableContainer.style.transform =
+        'translate3d(' + xPos + 'px, ' + yPos + 'px, 0)'
     }
   }
 }
