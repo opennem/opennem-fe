@@ -171,8 +171,7 @@ export default {
     ...mapGetters({
       hostEnv: 'hostEnv',
       windowWidth: 'app/windowWidth',
-      tabletBreak: 'app/tabletBreak',
-      useV3: 'feature/v3Data'
+      tabletBreak: 'app/tabletBreak'
     }),
     filteredFacilities: {
       get() {
@@ -271,12 +270,7 @@ export default {
     }),
     fetchData() {
       const urls = []
-
-      if (this.useV3) {
-        urls.push('/v3/geo/au_facilities.json')
-      } else {
-        urls.push('/facility/facility_registry.json')
-      }
+      urls.push('/v3/geo/au_facilities.json')
 
       if (urls.length > 0) {
         Http(urls)
@@ -292,26 +286,14 @@ export default {
     },
 
     handleResponses(responses) {
-      if (this.useV3) {
-        if (responses.length > 0 && responses[0].features) {
-          FacilityDataParse.flattenV3(responses[0].features).then(res => {
-            this.facilityData = res
-            this.ready = true
-            this.$store.dispatch('facility/dataset', res)
-          })
-        } else {
-          console.warn('There is an issue parsing the response.')
-        }
+      if (responses.length > 0 && responses[0].features) {
+        FacilityDataParse.flattenV3(responses[0].features).then(res => {
+          this.facilityData = res
+          this.ready = true
+          this.$store.dispatch('facility/dataset', res)
+        })
       } else {
-        if (responses.length > 0 && responses[0]) {
-          FacilityDataParse.flatten(responses[0]).then(res => {
-            this.facilityData = res
-            this.ready = true
-            this.$store.dispatch('facility/dataset', res)
-          })
-        } else {
-          console.warn('There is an issue parsing the response.')
-        }
+        console.warn('There is an issue parsing the response.')
       }
     },
 

@@ -103,9 +103,7 @@ export default {
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
-      showChartTemperature: 'chartOptionsTemperature/chartShown',
-
-      useV3: 'feature/v3Data'
+      showChartTemperature: 'chartOptionsTemperature/chartShown'
     }),
     showBomSource() {
       return this.domainTemperature.length > 0 && this.showChartTemperature
@@ -177,8 +175,7 @@ export default {
       range: this.range,
       interval: this.interval,
       period: this.filterPeriod,
-      groupName: this.fuelTechGroupName,
-      useV3: this.useV3
+      groupName: this.fuelTechGroupName
     })
     this.doUpdateTickFormats({ range: this.range, interval: this.interval })
   },

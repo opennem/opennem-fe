@@ -51,8 +51,7 @@ export default {
 
   computed: {
     ...mapGetters({
-      featureAuEnergy: 'feature/auEnergy',
-      useV3: 'feature/v3Data'
+      featureAuEnergy: 'feature/auEnergy'
     }),
     regionId() {
       return this.$route.params.region
@@ -87,9 +86,6 @@ export default {
         return true
       }
       if (this.regionId === 'au' && view === 'energy') {
-        return false
-      }
-      if (!this.useV3 && view === 'stripes') {
         return false
       }
 

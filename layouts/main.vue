@@ -1,6 +1,5 @@
 <template>
   <div class="container-fluid">
-    <h1 v-if="useV3">You are viewing data and features that are still in <strong>development</strong>.</h1>
     <transition name="slide-down-fade">
       <article
         v-if="showError"
@@ -46,8 +45,7 @@ export default {
       showError: 'app/showError',
       errorHeader: 'app/errorHeader',
       errorMessage: 'app/errorMessage',
-      tabletBreak: 'app/tabletBreak',
-      useV3: 'feature/v3Data'
+      tabletBreak: 'app/tabletBreak'
     })
   },
 
