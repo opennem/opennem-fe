@@ -104,7 +104,7 @@ export default {
 
 .aside {
   width: 100%;
-  margin-top: 1rem;
+  margin-top: 4rem;
 
   section,
   .aside-section {

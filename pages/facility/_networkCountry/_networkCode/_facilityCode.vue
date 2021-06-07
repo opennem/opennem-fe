@@ -7,6 +7,14 @@
         :path="fullPath" />
     </transition>
 
+    <button 
+      class="report-issue-btn button is-rounded" 
+      @click="handleReportIssueClick">
+      <i class="fal fa-fw fa-comment-alt-exclamation"/>
+      Report an Issue
+    </button>
+
+
     <transition name="fade">
       <div
         v-if="!fetchingFacility && !facility"
@@ -276,13 +284,6 @@
     <section
       v-if="facility"
       style="width: 30%; text-align: right">
-
-      <button 
-        class="report-issue-btn button is-rounded" 
-        @click="handleReportIssueClick">
-        <i class="fal fa-fw fa-comment-alt-exclamation"/>
-        Report an Issue
-      </button>
 
       <PhotoMap
         v-if="facility && !widthBreak"
@@ -1202,6 +1203,8 @@ export default {
 $radius: 0.5rem;
 
 .facility {
+  position: relative;
+
   @include tablet {
     margin: 1rem 1.5rem;
   }
@@ -1378,6 +1381,8 @@ header {
 
 .report-issue-btn {
   font-size: 12px;
+  position: absolute;
+  right: 0;
 
   i.fal {
     font-size: 14px;
