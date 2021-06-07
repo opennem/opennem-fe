@@ -1,5 +1,7 @@
 <template>
-  <div :class="layout">
+  <div 
+    :class="layout" 
+    class="photo-map">
     <div 
       v-highlight="showFields"
       v-if="facilityPhotos.length > 0"
@@ -102,14 +104,15 @@ export default {
 <style lang="scss" scoped>
 @import '~/assets/scss/responsive-mixins.scss';
 
-.aside {
-  width: 100%;
-  margin-top: 1rem;
-
-  section,
-  .aside-section {
+.photo-map {
+  & > div {
     margin-bottom: 2rem;
   }
+}
+
+.aside {
+  width: 100%;
+  margin-top: 4rem;
 
   figcaption {
     text-align: center;

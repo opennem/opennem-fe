@@ -390,7 +390,7 @@ export default {
 
   computed: {
     ...mapGetters({
-      datasetFlat: 'regionEnergy/datasetFlat',
+      datasetFull: 'regionEnergy/datasetFull',
       domainPowerEnergyGrouped: 'regionEnergy/domainPowerEnergyGrouped',
       regionTimezoneString: 'regionEnergy/regionTimezoneString',
       isEnergyType: 'regionEnergy/isEnergyType',
@@ -821,7 +821,7 @@ export default {
         const end = data[data.length - 1]
         const startDate = start.date
         const endDate = end.date
-        const fullDatasetFiltered = this.datasetFlat.filter(
+        const fullDatasetFiltered = this.datasetFull.filter(
           df => df.time >= start.time && df.time <= end.time
         )
         const bucketSizeMins = differenceInMinutes(endDate, startDate) + 1

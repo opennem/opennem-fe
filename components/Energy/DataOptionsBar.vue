@@ -14,7 +14,7 @@
           {{ getSelectedRangeLabel(r) }}
         </div>
         <i
-          v-if="!isString(r)"
+          v-if="hasRangeFilter(r)"
           class="filter-caret fal fa-chevron-down" />
         <div
           v-show="showRangeOptions(r)"
@@ -312,6 +312,10 @@ export default {
       return (
         this.interval === interval && hasIntervalFilters(interval, this.range)
       )
+    },
+
+    hasRangeFilter(range) {
+      return _includes(range, this.range) && !this.isString(range)
     },
 
     getIntervalLabel(interval) {

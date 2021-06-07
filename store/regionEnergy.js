@@ -60,6 +60,7 @@ export const getters = {
   isFetching: state => state.isFetching,
   isEnergyType: state => state.isEnergyType,
   datasetFlat: state => state.datasetFlat,
+  datasetFull: state => state.datasetFull,
   currentDataset: state => state.currentDataset,
   domainPowerEnergy: state => state.domainPowerEnergy,
   domainPowerEnergyGrouped: state => state.domainPowerEnergyGrouped,

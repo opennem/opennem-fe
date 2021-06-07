@@ -1,5 +1,4 @@
 .highlight {
-  border: 1px solid #e34a33;
   position: relative;
 
   &::after {
@@ -8,15 +7,16 @@
     height: 100%;
     display: block;
     background-color: #e34a33;
-    opacity: 0.5;
+    opacity: 0.3;
     cursor: pointer;
     position: absolute;
     top: 0;
     left: 0;
     z-index: 9;
+    border-radius: 2px;
   }
 
   &:hover::after {
-    opacity: 0.8;
+    opacity: 0.5;
   }
 }
