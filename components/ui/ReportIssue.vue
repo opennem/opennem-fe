@@ -199,8 +199,8 @@ ${this.description}
   z-index: 9999;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   border-radius: 6px;
-  top: 30vh;
-  left: calc(50vw - 150px);
+  top: 15vh;
+  right: 50px;
 
   header {
     background-color: #eee;

@@ -1,192 +1,197 @@
 <template>
-  <section class="facility">
+  <div class="facility-wrapper">
     <transition name="fade">
       <ReportIssue
         v-if="showFields"
         :name="facilityName"
         :path="fullPath" />
     </transition>
+    
+    <section
+      :class="{ 'report-view': showFields }"
+      class="facility">
 
-    <button 
-      class="report-issue-btn button is-rounded" 
-      @click="handleReportIssueClick">
-      <i class="fal fa-fw fa-comment-alt-exclamation"/>
-      Report an Issue
-    </button>
+      <button 
+        v-if="!showFields"
+        class="report-issue-btn button is-rounded" 
+        @click="handleReportIssueClick">
+        <i class="fal fa-fw fa-comment-alt-exclamation"/>
+        Report an Issue
+      </button>
+      
 
-
-    <transition name="fade">
-      <div
-        v-if="!fetchingFacility && !facility"
-        class="not-found-card card"
-        style="height: 60vh; margin: 0 auto;">
-        <i class="fal fa-industry-alt"/>
-        <div>
-          <span v-if="selectedFacilityError">{{ selectedFacilityErrorMessage }}</span>
-          <span v-else>Facility not available</span>
-          <button
-            v-tooltip="'Try loading facility again'"
-            class="button is-rounded try-again-button"
-            @click="getFacility">
-            <i class="fal fa-redo" />
-          </button>
-        </div>
-      </div>
-    </transition>
-
-    <transition name="fade">
-      <Loader
-        v-if="fetchingFacility && !facility"
-        class="facility-chart-loader" />
-    </transition>
-
-    <transition name="fade">
-      <div
-        v-if="facility"
-        class="main">
-        <header>
-          <h2
-            v-highlight="showFields"
-            @click="() => handleFieldClick('Facility name', facilityName)"
-          >{{ facilityName }}</h2>
-
-          <div class="facility-details">
-            <div
-              v-highlight="showFields"
-              class="facility-fuel-techs"
-              @click="() => handleFieldClick('Facility fuel tech', facilityFuelTechs)"
-            >
-              <div
-                v-for="(ft, index) in facilityFuelTechs"
-                :key="`ft-${index}`"
-                class="facility-fuel-tech"
-              >
-                <span
-                  :style="{
-                    'background-color': ft.colour
-                  }"
-                  class="colour-square" />
-                {{ ft.label }}
-              </div>
-            </div>
-          
-            <span
-              v-highlight="showFields"
-              v-if="facilityStatus"
-              class="tag facility-status"
-              @click="() => handleFieldClick('Facility status and dates', `${facilityStatus} ${facilityDates}`)"
-            >
-              <strong>{{ getFacilityStatusLabel(facilityStatus) }}</strong>
-              <em>{{ facilityDates }}</em>
-            </span>
+      <transition name="fade">
+        <div
+          v-if="!fetchingFacility && !facility"
+          class="not-found-card card"
+          style="height: 60vh; margin: 0 auto;">
+          <i class="fal fa-industry-alt"/>
+          <div>
+            <span v-if="selectedFacilityError">{{ selectedFacilityErrorMessage }}</span>
+            <span v-else>Facility not available</span>
+            <button
+              v-tooltip="'Try loading facility again'"
+              class="button is-rounded try-again-button"
+              @click="getFacility">
+              <i class="fal fa-redo" />
+            </button>
           </div>
-        </header>
+        </div>
+      </transition>
 
-        <Summary
-          v-if="hasDescription"
-          :description="facilityDescription"
-          :link-object="facilityWikiLink" />
+      <transition name="fade">
+        <Loader
+          v-if="fetchingFacility && !facility"
+          class="facility-chart-loader" />
+      </transition>
 
-        <transition name="fade">
-          <PhotoMap
-            v-if="facility && widthBreak"
-            :facility-name="facilityName"
-            :facility-photos="facilityPhotos"
-            :facility-location="facilityLocation"
-            :layout="'normal'"
-          />
-        </transition>
+      <transition name="fade">
+        <div
+          v-if="facility"
+          class="main">
+          <header>
+            <h2
+              v-highlight="showFields"
+              @click="() => handleFieldClick('Facility name', facilityName)"
+            >{{ facilityName }}</h2>
 
-        <div style="position: relative; margin-bottom: 1rem;">
-          <DataOptionsBar
-            :ranges="ranges"
-            :intervals="intervals"
-            :range="range"
-            :interval="interval"
-            :filter-period="filterPeriod"
-            @rangeChange="handleRangeChange"
-            @intervalChange="handleIntervalChange"
-            @queryChange="handleQueryChange"
-            @filterPeriodChange="handleFilterPeriodChange" />
+            <div class="facility-details">
+              <div
+                v-highlight="showFields"
+                class="facility-fuel-techs"
+                @click="() => handleFieldClick('Facility fuel tech', facilityFuelTechs)"
+              >
+                <div
+                  v-for="(ft, index) in facilityFuelTechs"
+                  :key="`ft-${index}`"
+                  class="facility-fuel-tech"
+                >
+                  <span
+                    :style="{
+                      'background-color': ft.colour
+                    }"
+                    class="colour-square" />
+                  {{ ft.label }}
+                </div>
+              </div>
+          
+              <span
+                v-highlight="showFields"
+                v-if="facilityStatus"
+                class="tag facility-status"
+                @click="() => handleFieldClick('Facility status and dates', `${facilityStatus} ${facilityDates}`)"
+              >
+                <strong>{{ getFacilityStatusLabel(facilityStatus) }}</strong>
+                <em>{{ facilityDates }}</em>
+              </span>
+            </div>
+          </header>
 
-        <!-- <Dropdown
+          <Summary
+            v-if="hasDescription"
+            :description="facilityDescription"
+            :link-object="facilityWikiLink" />
+
+          <transition name="fade">
+            <PhotoMap
+              v-if="facility && widthBreak"
+              :facility-name="facilityName"
+              :facility-photos="facilityPhotos"
+              :facility-location="facilityLocation"
+              :layout="'normal'"
+            />
+          </transition>
+
+          <div style="position: relative; margin-bottom: 1rem;">
+            <DataOptionsBar
+              :ranges="ranges"
+              :intervals="intervals"
+              :range="range"
+              :interval="interval"
+              :filter-period="filterPeriod"
+              @rangeChange="handleRangeChange"
+              @intervalChange="handleIntervalChange"
+              @queryChange="handleQueryChange"
+              @filterPeriodChange="handleFilterPeriodChange" />
+
+              <!-- <Dropdown
           v-if="isEnergyType"
           :options="chartTypeOptions"
           class="dropdown chart-type-options"
           @change="handleChartDisplayChange"
         /> -->
-        </div>
+          </div>
 
-        <section class="facility-chart">
-          <transition name="fade">
-            <div
-              v-if="!fetchingStats && stackedAreaDataset.length === 0"
-              class="not-found-card card">
-              <i class="fal fa-chart-area"/>
-              <div>
-                <span v-if="selectedFacilityError">{{ selectedFacilityErrorMessage }}</span>
-                <span v-else>Facility statistics data not available</span>
-                <button
-                  v-tooltip="'Try loading facility statistics again'"
-                  class="button is-rounded try-again-button"
-                  @click="getFacilityStats">
-                  <i class="fal fa-redo" />
-                </button>
+          <section class="facility-chart">
+            <transition name="fade">
+              <div
+                v-if="!fetchingStats && stackedAreaDataset.length === 0"
+                class="not-found-card card">
+                <i class="fal fa-chart-area"/>
+                <div>
+                  <span v-if="selectedFacilityError">{{ selectedFacilityErrorMessage }}</span>
+                  <span v-else>Facility statistics data not available</span>
+                  <button
+                    v-tooltip="'Try loading facility statistics again'"
+                    class="button is-rounded try-again-button"
+                    @click="getFacilityStats">
+                    <i class="fal fa-redo" />
+                  </button>
+                </div>
               </div>
-            </div>
-          </transition>
+            </transition>
 
-          <transition name="fade">
-            <Loader
-              v-if="fetchingStats"
-              class="facility-chart-loader" />
-          </transition>
+            <transition name="fade">
+              <Loader
+                v-if="fetchingStats"
+                class="facility-chart-loader" />
+            </transition>
 
-          <PowerEnergyChart
-            v-if="!fetchingStats && selectedFacilityUnitsDataset.length > 0"
-            :power-energy-dataset="selectedFacilityUnitsDataset"
-            :domain-power-energy="powerEnergyDomains"
-            :range="range"
-            :interval="interval"
-            :hover-on="isHovering"
-            :hover-date="hoverDate"
-            :zoom-extent="zoomExtent"
-            :prop-name="'code'"
-            :chart-height="250"
-            :y-max="facilityRegisteredCapacity"
-            :incomplete-intervals="incompleteIntervals"
-            :is-energy-type="isEnergyType"
-            :power-options="powerOptions"
-            :energy-options="energyOptions"
-            :filter-period="filterPeriod"
-            @dateHover="handleDateHover"
-            @isHovering="handleIsHovering"
-            @zoomExtent="handleZoomExtent"
-            @svgClick="handleSvgClick"
-          />
+            <PowerEnergyChart
+              v-if="!fetchingStats && selectedFacilityUnitsDataset.length > 0"
+              :power-energy-dataset="selectedFacilityUnitsDataset"
+              :domain-power-energy="powerEnergyDomains"
+              :range="range"
+              :interval="interval"
+              :hover-on="isHovering"
+              :hover-date="hoverDate"
+              :zoom-extent="zoomExtent"
+              :prop-name="'code'"
+              :chart-height="250"
+              :y-max="facilityRegisteredCapacity"
+              :incomplete-intervals="incompleteIntervals"
+              :is-energy-type="isEnergyType"
+              :power-options="powerOptions"
+              :energy-options="energyOptions"
+              :filter-period="filterPeriod"
+              @dateHover="handleDateHover"
+              @isHovering="handleIsHovering"
+              @zoomExtent="handleZoomExtent"
+              @svgClick="handleSvgClick"
+            />
 
-          <EmissionsChart
-            v-if="!fetchingStats && domainEmissions.length > 0"
-            :emissions-dataset="selectedFacilityUnitsDataset"
-            :domain-emissions="emissionsDomains"
-            :range="range"
-            :interval="interval"
-            :hover-on="isHovering"
-            :hover-date="hoverDate"
-            :zoom-extent="zoomExtent"
-            :prop-name="'code'"
-            :show-x-axis="true"
-            :average-emissions="averageEmissions"
-            :vis-height="250"
-            :incomplete-intervals="incompleteIntervals"
-            :filter-period="filterPeriod"
-            @dateHover="handleDateHover"
-            @isHovering="handleIsHovering"
-            @zoomExtent="handleZoomExtent"
-            @svgClick="handleSvgClick"
-          />
+            <EmissionsChart
+              v-if="!fetchingStats && domainEmissions.length > 0"
+              :emissions-dataset="selectedFacilityUnitsDataset"
+              :domain-emissions="emissionsDomains"
+              :range="range"
+              :interval="interval"
+              :hover-on="isHovering"
+              :hover-date="hoverDate"
+              :zoom-extent="zoomExtent"
+              :prop-name="'code'"
+              :show-x-axis="true"
+              :average-emissions="averageEmissions"
+              :vis-height="250"
+              :incomplete-intervals="incompleteIntervals"
+              :filter-period="filterPeriod"
+              @dateHover="handleDateHover"
+              @isHovering="handleIsHovering"
+              @zoomExtent="handleZoomExtent"
+              @svgClick="handleSvgClick"
+            />
 
-          <!-- <emission-intensity-chart
+            <!-- <emission-intensity-chart
             v-if="!fetchingStats && domainEmissions.length > 0 && !isEnergyChartShown"
             :emission-intensity-dataset="emissionIntensityData"
             :range="range"
@@ -200,67 +205,67 @@
             @zoomExtent="handleZoomExtent"
             @svgClick="handleSvgClick" /> -->
 
-          <PriceChart
-            v-if="!fetchingStats && domainMarketValue.length > 0"
-            :price-dataset="selectedFacilityUnitsDataset"
-            :domain-price="domainVolWeightedPrices"
-            :range="range"
-            :interval="interval"
-            :hover-on="isHovering"
-            :hover-date="hoverDate"
-            :zoom-extent="zoomExtent"
-            :average-value="averageVolWeightedPrice"
-            :filter-period="filterPeriod"
-            @dateHover="handleDateHover"
-            @isHovering="handleIsHovering"
-            @zoomExtent="handleZoomExtent"
-            @svgClick="handleSvgClick"
-          />
+            <PriceChart
+              v-if="!fetchingStats && domainMarketValue.length > 0"
+              :price-dataset="selectedFacilityUnitsDataset"
+              :domain-price="domainVolWeightedPrices"
+              :range="range"
+              :interval="interval"
+              :hover-on="isHovering"
+              :hover-date="hoverDate"
+              :zoom-extent="zoomExtent"
+              :average-value="averageVolWeightedPrice"
+              :filter-period="filterPeriod"
+              @dateHover="handleDateHover"
+              @isHovering="handleIsHovering"
+              @zoomExtent="handleZoomExtent"
+              @svgClick="handleSvgClick"
+            />
 
-          <MarketValueChart
-            v-if="!fetchingStats && domainMarketValue.length > 0"
-            :market-value-dataset="selectedFacilityUnitsDataset"
-            :domain-market-value="marketValueDomains"
-            :range="range"
-            :interval="interval"
-            :hover-on="isHovering"
-            :hover-date="hoverDate"
-            :zoom-extent="zoomExtent"
-            :prop-name="'code'"
-            :filter-period="filterPeriod"
-            @dateHover="handleDateHover"
-            @isHovering="handleIsHovering"
-            @zoomExtent="handleZoomExtent"
-            @svgClick="handleSvgClick"
-          />
-        </section>
+            <MarketValueChart
+              v-if="!fetchingStats && domainMarketValue.length > 0"
+              :market-value-dataset="selectedFacilityUnitsDataset"
+              :domain-market-value="marketValueDomains"
+              :range="range"
+              :interval="interval"
+              :hover-on="isHovering"
+              :hover-date="hoverDate"
+              :zoom-extent="zoomExtent"
+              :prop-name="'code'"
+              :filter-period="filterPeriod"
+              @dateHover="handleDateHover"
+              @isHovering="handleIsHovering"
+              @zoomExtent="handleZoomExtent"
+              @svgClick="handleSvgClick"
+            />
+          </section>
 
-        <section class="facility-units">
-          <UnitList
-            :ready="!fetchingStats"
-            :is-energy-type="isEnergyType"
-            :power-energy-unit="` ${isEnergyType && !isYAxisAveragePower ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
-            :is-y-axis-average-power="isYAxisAveragePower"
-            :units="unitsSummary"
-            :hover-on="isHovering"
-            :hover-date="hoverDate"
-            :focus-on="isFocusing"
-            :focus-date="focusDate"
-            :dataset="datasetFilteredByZoomExtent"
-            :average-power-dataset="averagePowerDataset"
-            :hidden-codes="hiddenCodes"
-            :range="range"
-            :interval="interval"
-            :has-market-value="domainMarketValue.length > 0"
-            :convert-value="convertValue"
-            :convert-market-value="convertMarketValue"
-            :market-value-display-unit="marketValueDisplayPrefix"
-            :has-emissions="facilityHasEmissions"
-            class="unit-list"
-            @codeHover="handleCodeHover"
-            @codeClick="handleCodeClick"
-            @codeShiftClick="handleCodeShiftClick" />
-        </section>
+          <section class="facility-units">
+            <UnitList
+              :ready="!fetchingStats"
+              :is-energy-type="isEnergyType"
+              :power-energy-unit="` ${isEnergyType && !isYAxisAveragePower ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
+              :is-y-axis-average-power="isYAxisAveragePower"
+              :units="unitsSummary"
+              :hover-on="isHovering"
+              :hover-date="hoverDate"
+              :focus-on="isFocusing"
+              :focus-date="focusDate"
+              :dataset="datasetFilteredByZoomExtent"
+              :average-power-dataset="averagePowerDataset"
+              :hidden-codes="hiddenCodes"
+              :range="range"
+              :interval="interval"
+              :has-market-value="domainMarketValue.length > 0"
+              :convert-value="convertValue"
+              :convert-market-value="convertMarketValue"
+              :market-value-display-unit="marketValueDisplayPrefix"
+              :has-emissions="facilityHasEmissions"
+              class="unit-list"
+              @codeHover="handleCodeHover"
+              @codeClick="handleCodeClick"
+              @codeShiftClick="handleCodeShiftClick" />
+          </section>
 
         <!-- <EnergyBar
           :bar-width="400"
@@ -278,37 +283,39 @@
         <!-- <FacilityProperties
           :facility="facility"
           class="facility-props" /> -->
-      </div>
-    </transition>
+        </div>
+      </transition>
 
-    <section
-      v-if="facility"
-      style="width: 30%; text-align: right">
+      <section
+        v-if="facility"
+        style="width: 30%; text-align: right">
 
-      <PhotoMap
-        v-if="facility && !widthBreak"
-        :facility-name="facilityName"
-        :facility-photos="facilityPhotos"
-        :facility-location="facilityLocation"
-      />
+        <PhotoMap
+          v-if="facility && !widthBreak"
+          :facility-name="facilityName"
+          :facility-photos="facilityPhotos"
+          :facility-location="facilityLocation"
+        />
 
-      <DonutVis
-        v-if="!fetchingStats && powerEnergyDomains.length > 1"
-        :unit="` ${isEnergyType && !isYAxisAveragePower ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
-        :domains="powerEnergyDomains"
-        :dataset="stackedAreaDatasetFilteredByZoomExtent"
-        :dynamic-extent="zoomExtent"
-        :hover-on="isHovering"
-        :hover-date="hoverDate"
-        :focus-on="isFocusing"
-        :focus-date="focusDate"
-        :highlight-domain="highlightDomain"
-        :convert-value="convertValue"
-        :is-power-type="!isEnergyType || (isEnergyType && isYAxisAveragePower)"
-        style="margin-top: 2rem; padding-top: 2rem;"
-      />
+        <DonutVis
+          v-if="!fetchingStats && powerEnergyDomains.length > 1"
+          :unit="` ${isEnergyType && !isYAxisAveragePower ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
+          :domains="powerEnergyDomains"
+          :dataset="stackedAreaDatasetFilteredByZoomExtent"
+          :dynamic-extent="zoomExtent"
+          :hover-on="isHovering"
+          :hover-date="hoverDate"
+          :focus-on="isFocusing"
+          :focus-date="focusDate"
+          :highlight-domain="highlightDomain"
+          :convert-value="convertValue"
+          :is-power-type="!isEnergyType || (isEnergyType && isYAxisAveragePower)"
+          style="margin-top: 2rem; padding-top: 2rem;"
+        />
+      </section>
     </section>
-  </section>
+  </div>
+  
 </template>
 
 <script>
@@ -1204,6 +1211,15 @@ $radius: 0.5rem;
 
 .facility {
   position: relative;
+  transition: all 0.1s linear;
+
+  &.report-view {
+    transform-origin: top left;
+    transform: scale(0.85);
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.55);
+    border-radius: 10px;
+  }
 
   @include tablet {
     margin: 1rem 1.5rem;
