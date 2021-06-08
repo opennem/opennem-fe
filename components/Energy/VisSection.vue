@@ -203,7 +203,8 @@ export default {
 
     chartHeight() {
       let height = 330
-      if (this.regionId === 'nem' && !this.tabletBreak) {
+      const isNemOrAu = this.regionId === 'nem' || this.regionId === 'au'
+      if (isNemOrAu && !this.tabletBreak) {
         height = 520
       }
       return height
