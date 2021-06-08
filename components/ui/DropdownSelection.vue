@@ -8,9 +8,10 @@
       class="dropdown-trigger button is-small is-rounded is-primary"
       @click="dropdownActive = !dropdownActive"
     >
-      <div class="dropdown-label">
-        <strong v-if="selected.length === 0">Status</strong>
-        <strong v-if="selected.length > 0">{{ getStatusLabel(selected) }}</strong>
+      <div
+        :class="{ 'truncate': tabletBreak }"
+        class="dropdown-label">
+        <strong>{{ getLabel(selected) }}</strong>
       </div>
       <i class="fal fa-chevron-down" />
     </button>
@@ -18,15 +19,16 @@
     <transition name="slide-down-fade">
       <div
         v-if="dropdownActive"
+        :class="{ 'align-right': alignRightMenu }"
         class="dropdown-menu">
         <div class="dropdown-content">
           <a
-            v-for="(d, index) in statuses"
+            v-for="(d, index) in selections"
             :key="index"
             class="dropdown-item"
             @click="handleClick(d.id)"
           >
-            <span class="status-checkbox">
+            <span class="selection-checkbox">
               <i
                 v-if="isSelected(d.id)"
                 class="checkmark-icon fal fa-check" />
@@ -49,65 +51,80 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 import { mixin as clickaway } from 'vue-clickaway'
-import { FacilityStatus } from '~/constants/facility-status.js'
 
 export default {
   mixins: [clickaway],
 
   props: {
-    selectedStatuses: {
+    name: {
+      type: String,
+      default: ''
+    },
+    initialSelections: {
       type: Array,
       default: () => []
+    },
+    selections: {
+      type: Array,
+      default: () => []
+    },
+    alignRightMenu: {
+      type: Boolean,
+      default: false
     }
   },
 
   data() {
     return {
-      statuses: _cloneDeep(FacilityStatus),
       selected: [],
       dropdownActive: false
     }
   },
 
-  watch: {
-    selectedStatuses(selected) {
-      this.selectedStatus = selected
-    }
+  computed: {
+    ...mapGetters({
+      tabletBreak: 'app/tabletBreak'
+    })
   },
 
-  mounted() {
-    this.selectedStatus = this.status
-    this.selected = _cloneDeep(this.selectedStatuses)
+  created() {
+    this.selected = this.initialSelections
   },
 
   methods: {
     onClickAway() {
       this.dropdownActive = false
     },
-    isSelected(status) {
-      return _includes(this.selected, status)
-    },
-    handleClick(status) {
-      const isIncluded = _includes(this.selected, status)
-      if (isIncluded) {
-        this.selected = this.selected.filter(d => d !== status)
-      } else {
-        this.selected.push(status)
-      }
 
-      this.$emit('selectedStatuses', _cloneDeep(this.selected))
+    isSelected(val) {
+      return _includes(this.selected, val)
+    },
+    handleClick(val) {
+      const isIncluded = _includes(this.selected, val)
+      if (isIncluded) {
+        this.selected = this.selected.filter(d => d !== val)
+      } else {
+        this.selected.push(val)
+      }
+      this.$emit('selected', _cloneDeep(this.selected))
     },
     clearSelected() {
       this.selected = []
-      this.$emit('selectedStatuses', _cloneDeep(this.selected))
+      this.$emit('selected', _cloneDeep(this.selected))
     },
-    getStatusLabel(selected) {
-      return selected.length > 1
-        ? `Status (${selected.length})`
-        : this.statuses.find(s => s.id === selected[0]).label
+    getLabel(selected) {
+      const name = this.name
+      if (selected.length === 1) {
+        return this.selections.find(s => s.id === selected[0]).label
+      } else if (selected.length > 0) {
+        return `${name} (${selected.length})`
+      } else {
+        return name
+      }
     }
   }
 }
@@ -121,21 +138,39 @@ export default {
   margin-right: 0.5rem;
   font-size: 11px;
 
+  &.truncate {
+    max-width: 55px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   strong {
     font-weight: 600;
   }
 }
 .dropdown-menu {
   min-width: 150px;
+
+  &.align-right {
+    right: 0;
+    left: auto;
+  }
 }
 .dropdown-content {
   font-family: $family-primary;
 
   .dropdown-item {
     font-size: 12px;
+
+    &.is-selected {
+      background-color: $opennem-link-color;
+      color: white;
+    }
   }
 }
-.status-checkbox {
+
+.selection-checkbox {
   width: 15px;
   height: 15px;
   background-color: #fff;

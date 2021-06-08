@@ -47,9 +47,11 @@
           :class="{ 'is-inverted': selectedTechGroups.length === 0 }"
           class="dropdown-trigger button is-rounded is-small is-primary"
           @click="techDropdownActive = !techDropdownActive">
-          <div class="dropdown-label">
-            <strong>Technology</strong>
-            <strong v-if="selectedTechGroups.length > 0">({{ selectedTechGroups.length }})</strong>
+          <div
+            :class="{ 'truncate': tabletBreak }"
+            class="dropdown-label"
+          >
+            <strong>{{ techLabel }}</strong>
           </div>
           <i class="fal fa-chevron-down" />
         </button>
@@ -128,19 +130,24 @@
         </transition>
       </div>
 
-      <status-filter
+      <DropdownSelection
         v-if="!searchOn"
-        :selected-statuses="selectedStatuses"
+        :name="'Status'"
+        :initial-selections="selectedStatuses"
+        :selections="statuses"
         class="filter-status"
-        @selectedStatuses="handleStatusesSelected"
+        @selected="handleStatusesSelected"
       />
 
-      <facility-view-toggle
-        v-if="tabletBreak"
-        :view="selectedView"
-        class="facility-view-toggle"
-        @viewSelect="handleViewSelect"
+      <DropdownSelection
+        v-if="!searchOn"
+        :name="'Size'"
+        :selections="sizes"
+        :align-right-menu="true"
+        class="filter-size"
+        @selected="handleSizeSelected"
       />
+
     </div>
   </div>
 </template>
@@ -158,22 +165,18 @@ import {
   FACILITY_GROUP_BATTERY,
   FACILITY_GROUP_SOLAR
 } from '~/constants/facility-fuel-tech.js'
-import StatusFilter from '~/components/Facility/StatusFilter'
-import FacilityViewToggle from '~/components/Facility/ViewToggle'
+import { FacilitySize } from '~/constants/facility-size.js'
+import { FacilityStatus } from '~/constants/facility-status.js'
+import DropdownSelection from '~/components/ui/DropdownSelection'
 
 export default {
   components: {
-    StatusFilter,
-    FacilityViewToggle
+    DropdownSelection
   },
 
   mixins: [clickaway],
 
   props: {
-    selectedView: {
-      type: String,
-      default: () => 'list'
-    },
     selectedTechs: {
       type: Array,
       default: () => []
@@ -190,6 +193,8 @@ export default {
       techDropdownActive: false,
       allTechs: [],
       groupExpanded: [],
+      sizes: _cloneDeep(FacilitySize),
+      statuses: _cloneDeep(FacilityStatus),
       simplifiedGroup: _cloneDeep(FacilityGroups),
       searchOn: false
     }
@@ -207,6 +212,26 @@ export default {
       set(value) {
         this.setSelectedTechGroups(value)
       }
+    },
+
+    techLabel() {
+      const techGroupLength = this.selectedTechGroups.length
+      const techLength = this.selectedTechs.length
+      if (techGroupLength === 1) {
+        const find = this.simplifiedGroup.find(
+          g => g.id === this.selectedTechGroups[0]
+        )
+        const fieldsLength = find.fields.length
+        if (fieldsLength === techLength) {
+          return find.label
+        } else if (techLength === 1) {
+          return FT.FUEL_TECH_LABEL[this.selectedTechs[0]]
+        }
+        return `${find.label} (${techLength})`
+      } else if (techGroupLength > 1) {
+        return `Technology (${techGroupLength})`
+      }
+      return 'Technology'
     }
   },
 
@@ -351,6 +376,10 @@ export default {
       this.$emit('selectedStatuses', selectedStatuses)
     },
 
+    handleSizeSelected(size) {
+      this.$emit('selectedSize', size)
+    },
+
     handleViewSelect(view) {
       this.$emit('viewSelect', view)
     }
@@ -370,6 +399,14 @@ export default {
   font-family: $family-primary;
   margin-right: 0.5rem;
   font-size: 11px;
+
+  &.truncate {
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   strong {
     font-weight: 600;
   }
@@ -432,6 +469,7 @@ export default {
 
   .filter-tech,
   .filter-status,
+  .filter-size,
   .search-button {
     margin: 0 3px;
   }
@@ -511,11 +549,5 @@ export default {
       font-size: 12px;
     }
   }
-}
-
-.facility-view-toggle {
-  position: absolute;
-  right: 1rem;
-  top: 0px;
 }
 </style>

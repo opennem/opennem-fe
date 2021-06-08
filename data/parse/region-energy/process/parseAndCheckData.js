@@ -4,7 +4,7 @@ import {
   checkPowerEnergyExists
 } from '@/services/DataCheck.js'
 
-export default function(response) {
+export default function(response, displayTz) {
   const data = response.data || response
   const dataAll = [],
     dataPower = [],
@@ -16,8 +16,6 @@ export default function(response) {
     dataInflation = []
   // filter out each type to its own array
   data.forEach(d => {
-    checkHistoryObject(d)
-
     const typeProp = typeof d.data_type === 'undefined' ? 'type' : 'data_type'
     if (DT.isValidDataType(d[typeProp])) {
       dataAll.push(d)
@@ -56,6 +54,10 @@ export default function(response) {
   })
 
   checkPowerEnergyExists({ dataPower, dataEnergy })
+  const isPowerData = dataPower.length > 0
+  data.forEach(d => {
+    checkHistoryObject(d, displayTz, !isPowerData)
+  })
 
   return {
     dataAll,
@@ -64,9 +66,9 @@ export default function(response) {
     dataPriceMarketValue,
     dataTemperature,
     dataInflation,
-    isPowerData: dataPower.length > 0,
+    isPowerData,
     hasPowerEnergyData: dataPowerEnergy.length > 0,
-    fuelTechDataType: dataPower.length > 0 ? DT.POWER : DT.ENERGY,
+    fuelTechDataType: isPowerData ? DT.POWER : DT.ENERGY,
     units: dataPowerEnergy.length > 0 ? dataPowerEnergy[0].units : ''
   }
 }

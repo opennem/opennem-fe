@@ -142,9 +142,7 @@ export default {
       domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
 
       query: 'app/query',
-      showFeatureToggle: 'app/showFeatureToggle',
-
-      useV3: 'feature/v3Data'
+      showFeatureToggle: 'app/showFeatureToggle'
     }),
     regionId() {
       return this.$route.params.region
@@ -186,8 +184,7 @@ export default {
           range: this.range,
           interval: this.interval,
           period: this.filterPeriod,
-          groupName: this.fuelTechGroupName,
-          useV3: this.useV3
+          groupName: this.fuelTechGroupName
         })
       }
     },
@@ -205,8 +202,7 @@ export default {
           range: curr,
           interval: this.interval,
           period: this.filterPeriod,
-          groupName: this.fuelTechGroupName,
-          useV3: this.useV3
+          groupName: this.fuelTechGroupName
         })
       }
     },
@@ -268,8 +264,7 @@ export default {
         range: this.range,
         interval: this.interval,
         period: this.filterPeriod,
-        groupName: this.fuelTechGroupName,
-        useV3: this.useV3
+        groupName: this.fuelTechGroupName
       })
       this.doUpdateTickFormats({ range: this.range, interval: this.interval })
     } else {

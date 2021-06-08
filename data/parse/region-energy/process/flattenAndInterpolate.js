@@ -53,11 +53,12 @@ const getMinuteTimeIndices = (start, last, mins) => {
     }
   }
 
-  // const lastTime = last.getTime()
-  // obj[lastTime] = {
-  //   time: lastTime,
-  //   date: last
-  // }
+  // for instantaneous data
+  const lastTime = last.getTime()
+  obj[lastTime] = {
+    time: lastTime,
+    date: last
+  }
 
   return obj
 }
@@ -113,8 +114,10 @@ const getAllObj = (dataAll, dataInterval, displayTz, ignoreTime, prop) => {
       const updateAllObj = arr => {
         let curr = null
         arr.forEach((time, timeIndex) => {
-          allObj[time][d.id] = dData[timeIndex]
-          curr = dData[timeIndex]
+          if (allObj[time]) {
+            allObj[time][d.id] = dData[timeIndex]
+            curr = dData[timeIndex]
+          }
         })
       }
 

@@ -1,6 +1,6 @@
 <template>
   <div class="container-fluid">
-    <h1 v-if="useV3">You are viewing data and features that are still in <strong>development</strong>.</h1>
+    <h1>You are viewing data and features that are still in <strong>development</strong>.</h1>
 
     <app-header />
     <nuxt/>
@@ -23,8 +23,7 @@ export default {
 
   computed: {
     ...mapGetters({
-      widthBreak: 'app/widthBreak',
-      useV3: 'feature/v3Data'
+      widthBreak: 'app/widthBreak'
     })
   },
 

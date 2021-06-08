@@ -1,15 +1,4 @@
 <template>
-  <!-- <draggable
-    v-model="order"
-    :options="{
-      group: group,
-      direction: 'horizontal',
-      ghostClass: 'drag-placeholder',
-      animation: 150
-    }"
-    class="summary-list"
-    @start="drag=true"
-    @end="drag=false"> -->
   <div
     :class="{ 'click-disable': !domainToggleable }"
     class="summary-list">
@@ -80,7 +69,6 @@
       </div>
     </div>
   </div>
-  <!-- </draggable> -->
 </template>
 
 <script>
@@ -89,14 +77,9 @@ import _isEmpty from 'lodash.isempty'
 import _includes from 'lodash.includes'
 import _remove from 'lodash.remove'
 import _cloneDeep from 'lodash.clonedeep'
-// import Draggable from 'vuedraggable'
 import Data from '~/services/Data.js'
 
 export default {
-  // components: {
-  //   Draggable
-  // },
-
   props: {
     energyDomains: {
       type: Array,

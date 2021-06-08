@@ -4,8 +4,8 @@
       'is-hovered': hoverOn || focusOn,
       'has-border-bottom': !chartShown
     }"
-    class="emission-intensity-chart chart">
-
+    class="emission-intensity-chart chart"
+  >
     <emission-intensity-chart-options
       :read-only="readOnly"
       :options="options"

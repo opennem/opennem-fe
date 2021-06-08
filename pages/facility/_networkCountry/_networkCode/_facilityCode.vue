@@ -1,166 +1,197 @@
 <template>
-  <section class="facility">
+  <div class="facility-wrapper">
     <transition name="fade">
-      <div
-        v-if="!fetchingFacility && !facility"
-        class="not-found-card card"
-        style="height: 60vh; margin: 0 auto;">
-        <i class="fal fa-industry-alt"/>
-        <div>
-          <span>Facility not available</span>
-          <button
-            v-tooltip="'Try loading facility again'"
-            class="button is-rounded try-again-button"
-            @click="getFacility">
-            <i class="fal fa-redo" />
-          </button>
-        </div>
-      </div>
+      <ReportIssue
+        v-if="showFields"
+        :name="facilityName"
+        :path="fullPath" />
     </transition>
+    
+    <section
+      :class="{ 'report-view': showFields }"
+      class="facility">
 
-    <transition name="fade">
-      <Loader
-        v-if="fetchingFacility && !facility"
-        class="facility-chart-loader" />
-    </transition>
+      <button 
+        v-if="!showFields"
+        class="report-issue-btn button is-rounded" 
+        @click="handleReportIssueClick">
+        <i class="fal fa-fw fa-comment-alt-exclamation"/>
+        Report an Issue
+      </button>
+      
 
-    <transition name="fade">
-      <div
-        v-if="facility"
-        class="main">
-        <header>
-          <h2>{{ facilityName }}</h2>
-
-          <div class="facility-details">
-            <div class="facility-fuel-techs">
-              <div
-                v-for="(ft, index) in facilityFuelTechs"
-                :key="`ft-${index}`"
-                class="facility-fuel-tech">
-                <span
-                  :style="{
-                    'background-color': ft.colour
-                  }"
-                  class="colour-square" />
-                {{ ft.label }}
-              </div>
-            </div>
-          
-            <span
-              v-if="facilityStatus"
-              class="tag facility-status">
-              <strong>{{ getFacilityStatusLabel(facilityStatus) }}</strong>
-              <em>{{ facilitySinceDate | formatLocalDate('%d %b %Y') }}</em>
-            </span>
+      <transition name="fade">
+        <div
+          v-if="!fetchingFacility && !facility"
+          class="not-found-card card"
+          style="height: 60vh; margin: 0 auto;">
+          <i class="fal fa-industry-alt"/>
+          <div>
+            <span v-if="selectedFacilityError">{{ selectedFacilityErrorMessage }}</span>
+            <span v-else>Facility not available</span>
+            <button
+              v-tooltip="'Try loading facility again'"
+              class="button is-rounded try-again-button"
+              @click="getFacility">
+              <i class="fal fa-redo" />
+            </button>
           </div>
+        </div>
+      </transition>
 
+      <transition name="fade">
+        <Loader
+          v-if="fetchingFacility && !facility"
+          class="facility-chart-loader" />
+      </transition>
+
+      <transition name="fade">
+        <div
+          v-if="facility"
+          class="main">
+          <header>
+            <h2
+              v-highlight="showFields"
+              @click="() => handleFieldClick('Facility name', facilityName)"
+            >{{ facilityName }}</h2>
+
+            <div class="facility-details">
+              <div
+                v-highlight="showFields"
+                class="facility-fuel-techs"
+                @click="() => handleFieldClick('Facility fuel tech', facilityFuelTechs)"
+              >
+                <div
+                  v-for="(ft, index) in facilityFuelTechs"
+                  :key="`ft-${index}`"
+                  class="facility-fuel-tech"
+                >
+                  <span
+                    :style="{
+                      'background-color': ft.colour
+                    }"
+                    class="colour-square" />
+                  {{ ft.label }}
+                </div>
+              </div>
           
-        </header>
+              <span
+                v-highlight="showFields"
+                v-if="facilityStatus"
+                class="tag facility-status"
+                @click="() => handleFieldClick('Facility status and dates', `${facilityStatus} ${facilityDates}`)"
+              >
+                <strong>{{ getFacilityStatusLabel(facilityStatus) }}</strong>
+                <em>{{ facilityDates }}</em>
+              </span>
+            </div>
+          </header>
 
-        <Summary
-          v-if="hasDescription"
-          :description="facilityDescription"
-          :wiki-link="facilityWikiLink" />
+          <Summary
+            v-if="hasDescription"
+            :description="facilityDescription"
+            :link-object="facilityWikiLink" />
 
-        <transition name="fade">
-          <PhotoMap
-            v-if="facility && widthBreak"
-            :facility-name="facilityName"
-            :facility-photos="facilityPhotos"
-            :facility-location="facilityLocation"
-            :layout="'normal'"
-          />
-        </transition>
+          <transition name="fade">
+            <PhotoMap
+              v-if="facility && widthBreak"
+              :facility-name="facilityName"
+              :facility-photos="facilityPhotos"
+              :facility-location="facilityLocation"
+              :layout="'normal'"
+            />
+          </transition>
 
-        <div style="position: relative; margin-bottom: 1rem;">
-          <DataOptionsBar
-            :ranges="ranges"
-            :intervals="intervals"
-            :range="range"
-            :interval="interval"
-            :filter-period="filterPeriod"
-            @rangeChange="handleRangeChange"
-            @intervalChange="handleIntervalChange"
-            @queryChange="handleQueryChange"
-            @filterPeriodChange="handleFilterPeriodChange" />
+          <div style="position: relative; margin-bottom: 1rem;">
+            <DataOptionsBar
+              :ranges="ranges"
+              :intervals="intervals"
+              :range="range"
+              :interval="interval"
+              :filter-period="filterPeriod"
+              @rangeChange="handleRangeChange"
+              @intervalChange="handleIntervalChange"
+              @queryChange="handleQueryChange"
+              @filterPeriodChange="handleFilterPeriodChange" />
 
-        <!-- <Dropdown
+              <!-- <Dropdown
           v-if="isEnergyType"
           :options="chartTypeOptions"
           class="dropdown chart-type-options"
           @change="handleChartDisplayChange"
         /> -->
-        </div>
+          </div>
 
-        <section class="facility-chart">
-          <transition name="fade">
-            <div
-              v-if="!fetchingStats && stackedAreaDataset.length === 0"
-              class="not-found-card card">
-              <i class="fal fa-chart-area"/>
-              <div>
-                <span>Facility statistics data not available</span>
-                <button
-                  v-tooltip="'Try loading facility statistics again'"
-                  class="button is-rounded try-again-button"
-                  @click="getFacilityStats">
-                  <i class="fal fa-redo" />
-                </button>
+          <section class="facility-chart">
+            <transition name="fade">
+              <div
+                v-if="!fetchingStats && stackedAreaDataset.length === 0"
+                class="not-found-card card">
+                <i class="fal fa-chart-area"/>
+                <div>
+                  <span v-if="selectedFacilityError">{{ selectedFacilityErrorMessage }}</span>
+                  <span v-else>Facility statistics data not available</span>
+                  <button
+                    v-tooltip="'Try loading facility statistics again'"
+                    class="button is-rounded try-again-button"
+                    @click="getFacilityStats">
+                    <i class="fal fa-redo" />
+                  </button>
+                </div>
               </div>
-            </div>
-          </transition>
+            </transition>
 
-          <transition name="fade">
-            <Loader
-              v-if="fetchingStats"
-              class="facility-chart-loader" />
-          </transition>
+            <transition name="fade">
+              <Loader
+                v-if="fetchingStats"
+                class="facility-chart-loader" />
+            </transition>
 
-          <PowerEnergyChart
-            v-if="!fetchingStats && selectedFacilityUnitsDataset.length > 0"
-            :power-energy-dataset="selectedFacilityUnitsDataset"
-            :domain-power-energy="powerEnergyDomains"
-            :range="range"
-            :interval="interval"
-            :hover-on="isHovering"
-            :hover-date="hoverDate"
-            :zoom-extent="zoomExtent"
-            :prop-name="'code'"
-            :chart-height="250"
-            :y-max="facilityRegisteredCapacity"
-            :incomplete-intervals="incompleteIntervals"
-            :is-energy-type="isEnergyType"
-            :power-options="powerOptions"
-            :energy-options="energyOptions"
-            :filter-period="filterPeriod"
-            @dateHover="handleDateHover"
-            @isHovering="handleIsHovering"
-            @zoomExtent="handleZoomExtent"
-            @svgClick="handleSvgClick"
-          />
+            <PowerEnergyChart
+              v-if="!fetchingStats && selectedFacilityUnitsDataset.length > 0"
+              :power-energy-dataset="selectedFacilityUnitsDataset"
+              :domain-power-energy="powerEnergyDomains"
+              :range="range"
+              :interval="interval"
+              :hover-on="isHovering"
+              :hover-date="hoverDate"
+              :zoom-extent="zoomExtent"
+              :prop-name="'code'"
+              :chart-height="250"
+              :y-max="facilityRegisteredCapacity"
+              :incomplete-intervals="incompleteIntervals"
+              :is-energy-type="isEnergyType"
+              :power-options="powerOptions"
+              :energy-options="energyOptions"
+              :filter-period="filterPeriod"
+              @dateHover="handleDateHover"
+              @isHovering="handleIsHovering"
+              @zoomExtent="handleZoomExtent"
+              @svgClick="handleSvgClick"
+            />
 
-          <EmissionsChart
-            v-if="!fetchingStats && domainEmissions.length > 0"
-            :emissions-dataset="selectedFacilityUnitsDataset"
-            :domain-emissions="emissionsDomains"
-            :range="range"
-            :interval="interval"
-            :hover-on="isHovering"
-            :hover-date="hoverDate"
-            :zoom-extent="zoomExtent"
-            :prop-name="'code'"
-            :show-x-axis="true"
-            :average-emissions="averageEmissions"
-            :vis-height="250"
-            :incomplete-intervals="incompleteIntervals"
-            :filter-period="filterPeriod"
-            @dateHover="handleDateHover"
-            @isHovering="handleIsHovering"
-            @zoomExtent="handleZoomExtent"
-            @svgClick="handleSvgClick"
-          />
+            <EmissionsChart
+              v-if="!fetchingStats && domainEmissions.length > 0"
+              :emissions-dataset="selectedFacilityUnitsDataset"
+              :domain-emissions="emissionsDomains"
+              :range="range"
+              :interval="interval"
+              :hover-on="isHovering"
+              :hover-date="hoverDate"
+              :zoom-extent="zoomExtent"
+              :prop-name="'code'"
+              :show-x-axis="true"
+              :average-emissions="averageEmissions"
+              :vis-height="250"
+              :incomplete-intervals="incompleteIntervals"
+              :filter-period="filterPeriod"
+              @dateHover="handleDateHover"
+              @isHovering="handleIsHovering"
+              @zoomExtent="handleZoomExtent"
+              @svgClick="handleSvgClick"
+            />
 
-          <!-- <emission-intensity-chart
+            <!-- <emission-intensity-chart
             v-if="!fetchingStats && domainEmissions.length > 0 && !isEnergyChartShown"
             :emission-intensity-dataset="emissionIntensityData"
             :range="range"
@@ -174,68 +205,67 @@
             @zoomExtent="handleZoomExtent"
             @svgClick="handleSvgClick" /> -->
 
-          <PriceChart
-            v-if="!fetchingStats && domainMarketValue.length > 0"
-            :price-dataset="selectedFacilityUnitsDataset"
-            :domain-price="domainVolWeightedPrices"
-            :range="range"
-            :interval="interval"
-            :hover-on="isHovering"
-            :hover-date="hoverDate"
-            :zoom-extent="zoomExtent"
-            :average-value="averageVolWeightedPrice"
-            :filter-period="filterPeriod"
-            @dateHover="handleDateHover"
-            @isHovering="handleIsHovering"
-            @zoomExtent="handleZoomExtent"
-            @svgClick="handleSvgClick"
-          />
+            <PriceChart
+              v-if="!fetchingStats && domainMarketValue.length > 0"
+              :price-dataset="selectedFacilityUnitsDataset"
+              :domain-price="domainVolWeightedPrices"
+              :range="range"
+              :interval="interval"
+              :hover-on="isHovering"
+              :hover-date="hoverDate"
+              :zoom-extent="zoomExtent"
+              :average-value="averageVolWeightedPrice"
+              :filter-period="filterPeriod"
+              @dateHover="handleDateHover"
+              @isHovering="handleIsHovering"
+              @zoomExtent="handleZoomExtent"
+              @svgClick="handleSvgClick"
+            />
 
-          <MarketValueChart
-            v-if="!fetchingStats && domainMarketValue.length > 0"
-            :market-value-dataset="selectedFacilityUnitsDataset"
-            :domain-market-value="marketValueDomains"
-            :range="range"
-            :interval="interval"
-            :hover-on="isHovering"
-            :hover-date="hoverDate"
-            :zoom-extent="zoomExtent"
-            :prop-name="'code'"
-            :filter-period="filterPeriod"
-            @dateHover="handleDateHover"
-            @isHovering="handleIsHovering"
-            @zoomExtent="handleZoomExtent"
-            @svgClick="handleSvgClick"
-          />
-        </section>
+            <MarketValueChart
+              v-if="!fetchingStats && domainMarketValue.length > 0"
+              :market-value-dataset="selectedFacilityUnitsDataset"
+              :domain-market-value="marketValueDomains"
+              :range="range"
+              :interval="interval"
+              :hover-on="isHovering"
+              :hover-date="hoverDate"
+              :zoom-extent="zoomExtent"
+              :prop-name="'code'"
+              :filter-period="filterPeriod"
+              @dateHover="handleDateHover"
+              @isHovering="handleIsHovering"
+              @zoomExtent="handleZoomExtent"
+              @svgClick="handleSvgClick"
+            />
+          </section>
 
-        <section class="facility-units">
-
-          <UnitList
-            :ready="!fetchingStats"
-            :is-energy-type="isEnergyType"
-            :power-energy-unit="` ${isEnergyType && !isYAxisAveragePower ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
-            :is-y-axis-average-power="isYAxisAveragePower"
-            :units="unitsSummary"
-            :hover-on="isHovering"
-            :hover-date="hoverDate"
-            :focus-on="isFocusing"
-            :focus-date="focusDate"
-            :dataset="datasetFilteredByZoomExtent"
-            :average-power-dataset="averagePowerDataset"
-            :hidden-codes="hiddenCodes"
-            :range="range"
-            :interval="interval"
-            :has-market-value="domainMarketValue.length > 0"
-            :convert-value="convertValue"
-            :convert-market-value="convertMarketValue"
-            :market-value-display-unit="marketValueDisplayPrefix"
-            :has-emissions="facilityHasEmissions"
-            class="unit-list"
-            @codeHover="handleCodeHover"
-            @codeClick="handleCodeClick"
-            @codeShiftClick="handleCodeShiftClick" />
-        </section>
+          <section class="facility-units">
+            <UnitList
+              :ready="!fetchingStats"
+              :is-energy-type="isEnergyType"
+              :power-energy-unit="` ${isEnergyType && !isYAxisAveragePower ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
+              :is-y-axis-average-power="isYAxisAveragePower"
+              :units="unitsSummary"
+              :hover-on="isHovering"
+              :hover-date="hoverDate"
+              :focus-on="isFocusing"
+              :focus-date="focusDate"
+              :dataset="datasetFilteredByZoomExtent"
+              :average-power-dataset="averagePowerDataset"
+              :hidden-codes="hiddenCodes"
+              :range="range"
+              :interval="interval"
+              :has-market-value="domainMarketValue.length > 0"
+              :convert-value="convertValue"
+              :convert-market-value="convertMarketValue"
+              :market-value-display-unit="marketValueDisplayPrefix"
+              :has-emissions="facilityHasEmissions"
+              class="unit-list"
+              @codeHover="handleCodeHover"
+              @codeClick="handleCodeClick"
+              @codeShiftClick="handleCodeShiftClick" />
+          </section>
 
         <!-- <EnergyBar
           :bar-width="400"
@@ -253,36 +283,39 @@
         <!-- <FacilityProperties
           :facility="facility"
           class="facility-props" /> -->
-      </div>
-    </transition>
+        </div>
+      </transition>
 
-    <section
-      v-if="facility"
-      style="width: 30%; margin-top: 51px;">
-      <PhotoMap
-        v-if="facility && !widthBreak"
-        :facility-name="facilityName"
-        :facility-photos="facilityPhotos"
-        :facility-location="facilityLocation"
-      />
+      <section
+        v-if="facility"
+        style="width: 30%; text-align: right">
 
-      <DonutVis
-        v-if="!fetchingStats && powerEnergyDomains.length > 1"
-        :unit="` ${isEnergyType && !isYAxisAveragePower ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
-        :domains="powerEnergyDomains"
-        :dataset="stackedAreaDatasetFilteredByZoomExtent"
-        :dynamic-extent="zoomExtent"
-        :hover-on="isHovering"
-        :hover-date="hoverDate"
-        :focus-on="isFocusing"
-        :focus-date="focusDate"
-        :highlight-domain="highlightDomain"
-        :convert-value="convertValue"
-        :is-power-type="!isEnergyType || (isEnergyType && isYAxisAveragePower)"
-        style="margin-top: 2rem; padding-top: 2rem;"
-      />
+        <PhotoMap
+          v-if="facility && !widthBreak"
+          :facility-name="facilityName"
+          :facility-photos="facilityPhotos"
+          :facility-location="facilityLocation"
+        />
+
+        <DonutVis
+          v-if="!fetchingStats && powerEnergyDomains.length > 1"
+          :unit="` ${isEnergyType && !isYAxisAveragePower ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
+          :domains="powerEnergyDomains"
+          :dataset="stackedAreaDatasetFilteredByZoomExtent"
+          :dynamic-extent="zoomExtent"
+          :hover-on="isHovering"
+          :hover-date="hoverDate"
+          :focus-on="isFocusing"
+          :focus-date="focusDate"
+          :highlight-domain="highlightDomain"
+          :convert-value="convertValue"
+          :is-power-type="!isEnergyType || (isEnergyType && isYAxisAveragePower)"
+          style="margin-top: 2rem; padding-top: 2rem;"
+        />
+      </section>
     </section>
-  </section>
+  </div>
+  
 </template>
 
 <script>
@@ -300,8 +333,10 @@ import * as SI from '@/constants/si'
 import * as OPTIONS from '@/constants/chart-options.js'
 import {
   FACILITY_RANGES,
-  FACILITY_RANGE_INTERVALS
+  FACILITY_RANGE_INTERVALS,
+  RANGE_ALL
 } from '@/constants/ranges.js'
+import { INTERVAL_MONTH } from '@/constants/interval-filters.js'
 import {
   FACILITY_OPERATING,
   FACILITY_RETIRED,
@@ -328,6 +363,7 @@ import EmissionIntensityChart from '@/components/Charts/EmissionIntensityChart'
 import Dropdown from '@/components/ui/Dropdown'
 import DonutVis from '~/components/Vis/Donut'
 import EnergyBar from '~/components/Energy/Charts/EnergyBarChart'
+import ReportIssue from '~/components/ui/ReportIssue'
 
 const chartTypeOptions = [
   {
@@ -393,7 +429,9 @@ export default {
     MarketValueChart,
     PriceChart,
     DonutVis,
-    EnergyBar
+    EnergyBar,
+
+    ReportIssue
   },
 
   data() {
@@ -426,6 +464,9 @@ export default {
       domainEmissions: 'facility/domainEmissions',
       domainMarketValue: 'facility/domainMarketValue',
       domainVolWeightedPrices: 'facility/domainVolWeightedPrices',
+      selectedFacilityError: 'facility/selectedFacilityError',
+      selectedFacilityErrorMessage: 'facility/selectedFacilityErrorMessage',
+      showFields: 'feedback/showFields',
 
       chartShown: 'chartOptionsPowerEnergy/chartShown',
       chartType: 'chartOptionsPowerEnergy/chartType',
@@ -456,6 +497,12 @@ export default {
     },
     networkCode() {
       return this.$route.params.networkCode
+    },
+    queryRange() {
+      return this.$route.query.range
+    },
+    fullPath() {
+      return this.$route.fullPath
     },
     isEnergyType() {
       return this.dataType === 'energy'
@@ -490,9 +537,22 @@ export default {
         : ''
     },
     facilityWikiLink() {
-      return this.facility && this.facility.wikipedia_link
-        ? this.facility.wikipedia_link
-        : ''
+      let link = null
+
+      if (this.facility) {
+        if (this.facility.website_url) {
+          link = {
+            type: 'website',
+            url: this.facility.website_url
+          }
+        } else if (this.facility.wikipedia_link) {
+          link = {
+            type: 'wikipedia',
+            url: this.facility.wikipedia_link
+          }
+        }
+      }
+      return link
     },
     hasDescription() {
       return this.facilityDescription !== ''
@@ -568,7 +628,6 @@ export default {
     },
     unitsSummary() {
       return this.facilityUnits.map((d, i) => {
-        const networkCode = d.network.code || d.network
         const find = this.domainPowerEnergy.find(
           domain => domain.code === d.code
         )
@@ -640,6 +699,14 @@ export default {
       return null
     },
 
+    isFacilityRetired() {
+      return this.facilityStatus === FACILITY_RETIRED
+    },
+
+    isFacilityOperating() {
+      return this.facilityStatus === FACILITY_OPERATING
+    },
+
     facilityOperatingDataFirstSeen() {
       let date = null
       // earliest operating data first seen
@@ -670,10 +737,27 @@ export default {
       return date
     },
 
+    facilityDates() {
+      const formatLocalDate = t =>
+        this.$options.filters.formatLocalDate(t, '%_d %b %Y')
+
+      if (this.isFacilityOperating) {
+        if (this.facilityOperatingDataFirstSeen) {
+          return `since ${formatLocalDate(this.facilityOperatingDataFirstSeen)}`
+        }
+      } else if (this.isFacilityRetired) {
+        return formatLocalDate(this.facilityDataLastSeen)
+      } else if (this.facilityOperatingDataFirstSeen) {
+        return `since ${formatLocalDate(this.facilityOperatingDataFirstSeen)}`
+      }
+
+      return ''
+    },
+
     facilitySinceDate() {
-      if (this.facilityStatus === FACILITY_OPERATING) {
+      if (this.isFacilityOperating) {
         return this.facilityOperatingDataFirstSeen
-      } else if (this.facilityStatus === FACILITY_RETIRED) {
+      } else if (this.isFacilityRetired) {
         return this.facilityDataLastSeen
       }
       return null
@@ -854,6 +938,10 @@ export default {
     facility(update) {
       if (update) {
         console.log('facility-watch')
+        if (!this.queryRange && this.isFacilityRetired) {
+          this.setRange(RANGE_ALL)
+          this.setInterval(INTERVAL_MONTH)
+        }
         this.getFacilityStats()
       }
     },
@@ -946,6 +1034,7 @@ export default {
       setRange: 'facility/range',
       setInterval: 'facility/interval',
       setFilterPeriod: 'facility/filterPeriod',
+      setShowFields: 'feedback/showFields',
       setQuery: 'app/query'
     }),
     ...mapActions({
@@ -956,11 +1045,16 @@ export default {
       doGetStationStats: 'facility/doGetStationStats',
       doUpdateDatasetByInterval: 'facility/doUpdateDatasetByInterval',
       doUpdateDatasetByFilterPeriod: 'facility/doUpdateDatasetByFilterPeriod',
+      addField: 'feedback/addField',
       doSetChartEnergyPrefixes:
         'chartOptionsPowerEnergy/doSetChartEnergyPrefixes',
       doHideEmissionsChart: 'chartOptionsEmissionsVolume/doHideChart',
       doShowEmissionsChart: 'chartOptionsEmissionsVolume/doShowChart'
     }),
+
+    handleFieldClick(key, value) {
+      this.addField({ key, value })
+    },
 
     convertValue(value) {
       return SI.convertValue(
@@ -1100,6 +1194,10 @@ export default {
 
     handleChartDisplayChange(type) {
       this.showChartType = type
+    },
+
+    handleReportIssueClick() {
+      this.setShowFields(!this.showFields)
     }
   }
 }
@@ -1112,6 +1210,17 @@ export default {
 $radius: 0.5rem;
 
 .facility {
+  position: relative;
+  transition: all 0.1s linear;
+
+  &.report-view {
+    transform-origin: top left;
+    transform: scale(0.85);
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.55);
+    border-radius: 10px;
+  }
+
   @include tablet {
     margin: 1rem 1.5rem;
   }
@@ -1283,6 +1392,19 @@ header {
   }
   em {
     font-style: normal;
+  }
+}
+
+.report-issue-btn {
+  font-size: 12px;
+  position: absolute;
+  right: 0;
+
+  i.fal {
+    font-size: 14px;
+    margin-right: 5px;
+    position: relative;
+    top: 1px;
   }
 }
 </style>

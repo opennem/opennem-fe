@@ -23,10 +23,10 @@
     <template v-slot:label-unit>
       <strong>Emissions Volume</strong>
       <small
-        v-if="isPercentage">
+        v-if="chartShown && isPercentage">
         {{ displayUnit }}</small>
       <small
-        v-else
+        v-if="chartShown && !isPercentage"
         class="display-unit"
         @click.stop="handleUnitClick">{{ displayUnit }}/{{ interval | intervalLabel }}</small>
     </template>

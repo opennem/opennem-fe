@@ -21,23 +21,6 @@
         Region Compare Charts
       </label> -->
 
-    <label
-      class="panel-block"
-      @click.stop>
-      <input
-        v-model="featureAuEnergy"
-        type="checkbox" >
-      All Regions Energy view
-    </label>
-
-    <label
-      class="panel-block"
-      @click.stop>
-      <input
-        v-model="featureV3Data"
-        type="checkbox" >
-      V3 data and Stripes
-    </label>
   </div>
 </template>
 
@@ -59,24 +42,6 @@ export default {
       },
       set: function(newValue) {
         this.$store.commit('feature/regionCompare', newValue)
-      }
-    },
-
-    featureAuEnergy: {
-      get: function() {
-        return this.$store.getters['feature/auEnergy']
-      },
-      set: function(newValue) {
-        this.$store.commit('feature/auEnergy', newValue)
-      }
-    },
-
-    featureV3Data: {
-      get: function() {
-        return this.$store.getters['feature/v3Data']
-      },
-      set: function(newValue) {
-        this.$store.commit('feature/v3Data', newValue)
       }
     }
   },

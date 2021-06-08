@@ -18,14 +18,11 @@
         class="dropdown-menu">
         <div class="dropdown-content">
           <nuxt-link
-            v-show="showRegionLink('au')"
             :to="`/${currentView}/au/`"
             class="dropdown-item"
             @click.native="handleClick">All Regions</nuxt-link>
 
-          <hr
-            v-show="showRegionLink('au')"
-            class="dropdown-divider">
+          <hr class="dropdown-divider">
 
           <nuxt-link
             v-for="link in links"
@@ -70,8 +67,7 @@ export default {
   computed: {
     ...mapGetters({
       currentView: 'currentView',
-      query: 'app/query',
-      featureAuEnergy: 'feature/auEnergy'
+      query: 'app/query'
     }),
     regionId() {
       return this.$route.params.region
@@ -144,15 +140,6 @@ export default {
     },
     handleClickAway() {
       this.dropdownActive = false
-    },
-    showRegionLink(regionId) {
-      if (this.featureAuEnergy) {
-        return true
-      }
-      if (regionId === 'au' && this.currentView === 'energy') {
-        return false
-      }
-      return true
     }
   }
 }

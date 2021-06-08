@@ -23,6 +23,7 @@
     <template v-slot:label-unit>
       <strong>{{ displayTitle }}</strong>
       <small
+        v-if="chartShown"
         :class="{ 'display-unit': allowDisplayHover }"
         @click.stop="handleUnitClick">{{ displayUnit }}</small>
     </template>
@@ -62,7 +63,16 @@
       <span
         v-else-if="!isTypeProportion && !(isTypeLine && isYAxisPercentage)"
         class="total-value">
-        Total
+        <span v-if="singleDomainLabel">
+          <em
+            :style="{ 'background-color': singleDomainColour }"
+            class="colour-square" />
+          {{ singleDomainLabel }}
+        </span>
+        <span v-else>
+          Total
+        </span>
+        
         <strong>
           {{ hoverTotal | formatValue }}
           <span>{{ displayUnit }}</span>
@@ -196,6 +206,14 @@ export default {
       default: () => {
         return {}
       }
+    },
+    singleDomainColour: {
+      type: String,
+      default: null
+    },
+    singleDomainLabel: {
+      type: String,
+      default: null
     }
   },
   data() {

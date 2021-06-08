@@ -1,14 +1,14 @@
 import _cloneDeep from 'lodash.clonedeep'
+import _includes from 'lodash.includes'
 import axios from 'axios'
 
+import http from '@/services/Api.js'
 import PerfTime from '@/plugins/perfTime.js'
 import { FACILITY_OPERATING } from '@/constants/facility-status.js'
-import { isPowerRange, RANGE_7D, RANGE_30D } from '@/constants/ranges.js'
-import {
-  INTERVAL_5MIN,
-  INTERVAL_30MIN,
-  INTERVAL_DAY
-} from '@/constants/interval-filters.js'
+import { isPowerRange, RANGE_7D } from '@/constants/ranges.js'
+import { INTERVAL_30MIN } from '@/constants/interval-filters.js'
+import { MAP_STYLE_LIGHT } from '@/constants/facilities/map-styles.js'
+
 import {
   dataProcess,
   dataRollUp,
@@ -17,45 +17,6 @@ import {
 import { getVolWeightedPriceDomains } from '@/data/parse/region-energy/process/getDomains.js'
 
 let request = null
-
-const getApiBaseUrl = () => {
-  let apiBaseUrl = `https://api.opennem.org.au`
-  let host = undefined
-  if (typeof window !== 'undefined') {
-    host = window.location.host
-  }
-
-  if (
-    host &&
-    (host === 'localhost:3000' ||
-      host.startsWith('127') ||
-      host.startsWith('192'))
-  ) {
-    apiBaseUrl = `/api`
-    // apiBaseUrl = `/`
-  }
-
-  if (host && host.startsWith('dev')) {
-    apiBaseUrl = `https://api.dev.opennem.org.au`
-  }
-
-  if (process.env.API_BASE_URL !== undefined) {
-    apiBaseUrl = process.env.API_BASE_URL
-  }
-
-  console.info('apiBaseUrl', apiBaseUrl)
-
-  return apiBaseUrl
-}
-
-const http = axios.create({
-  baseURL: getApiBaseUrl(),
-  timeout: 60000,
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json'
-  }
-})
 
 const stationPath = (country, network, facility) =>
   `/station/${country}/${network}/${facility}`
@@ -69,7 +30,9 @@ export const state = () => ({
   selectedStatuses: [FACILITY_OPERATING],
   selectedTechGroups: [],
   selectedTechs: [],
+  selectedSize: [],
   selectedView: 'list',
+  selectedMapStyle: MAP_STYLE_LIGHT,
   filteredFacilities: [],
 
   previousPath: '',
@@ -80,6 +43,8 @@ export const state = () => ({
   selectedFacilityUnits: [],
   selectedFacilityUnitsDataset: [],
   selectedFacilityUnitsDatasetFlat: [], // as returned transform
+  selectedFacilityError: false,
+  selectedFacilityErrorMessage: false,
 
   domainPowerEnergy: [],
   domainEmissions: [],
@@ -105,11 +70,17 @@ export const mutations = {
   selectedStatuses(state, data) {
     state.selectedStatuses = data
   },
+  selectedSize(state, data) {
+    state.selectedSize = data
+  },
   selectedTechGroups(state, data) {
     state.selectedTechGroups = data
   },
   selectedTechs(state, data) {
     state.selectedTechs = data
+  },
+  selectedMapStyle(state, data) {
+    state.selectedMapStyle = data
   },
   filteredFacilities(state, data) {
     state.filteredFacilities = data
@@ -141,6 +112,12 @@ export const mutations = {
   },
   selectedFacilityUnitsDatasetFlat(state, data) {
     state.selectedFacilityUnitsDatasetFlat = data
+  },
+  selectedFacilityError(state, data) {
+    state.selectedFacilityError = data
+  },
+  selectedFacilityErrorMessage(state, data) {
+    state.selectedFacilityErrorMessage = data
   },
 
   domainPowerEnergy(state, data) {
@@ -177,7 +154,9 @@ export const getters = {
   selectedStatuses: state => _cloneDeep(state.selectedStatuses),
   selectedTechGroups: state => _cloneDeep(state.selectedTechGroups),
   selectedTechs: state => _cloneDeep(state.selectedTechs),
+  selectedSize: state => _cloneDeep(state.selectedSize),
   selectedView: state => state.selectedView,
+  selectedMapStyle: state => state.selectedMapStyle,
   filteredFacilities: state => state.filteredFacilities,
 
   previousPath: state => state.previousPath,
@@ -191,6 +170,8 @@ export const getters = {
     _cloneDeep(state.selectedFacilityUnitsDataset),
   selectedFacilityUnitsDatasetFlat: state =>
     _cloneDeep(state.selectedFacilityUnitsDatasetFlat),
+  selectedFacilityError: state => state.selectedFacilityError,
+  selectedFacilityErrorMessage: state => state.selectedFacilityErrorMessage,
 
   domainPowerEnergy: state => _cloneDeep(state.domainPowerEnergy),
   domainEmissions: state => _cloneDeep(state.domainEmissions),
@@ -219,6 +200,9 @@ export const actions = {
   selectedTechs({ commit }, data) {
     commit('selectedTechs', data)
   },
+  selectedSize({ commit }, data) {
+    commit('selectedSize', data)
+  },
   selectedView({ commit }, data) {
     commit('selectedView', data)
   },
@@ -235,6 +219,8 @@ export const actions = {
     commit('fetchingFacility', true)
     commit('selectedFacility', null)
     commit('selectedFacilityNetworkRegion', '')
+    commit('selectedFacilityError', false)
+    commit('selectedFacilityErrorMessage', '')
 
     http
       .get(ref)
@@ -245,6 +231,12 @@ export const actions = {
           : ''
         commit('selectedFacility', response.data)
         commit('selectedFacilityNetworkRegion', networkCode)
+
+        // Error handling
+        if (response.response_status === 'ERROR') {
+          commit('selectedFacilityError', true)
+          commit('selectedFacilityErrorMessage', response.detail)
+        }
       })
       .catch(e => {
         const error = e.toJSON()

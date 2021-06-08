@@ -1,7 +1,10 @@
 <template>
   <section
     :style="{ height: coordinates ? `${height}px` : '' }"
-    :class="{ 'full-screen': isFullScreen }"
+    :class="{
+      'full-screen': isFullScreen,
+      'dark': isDark
+    }"
     class="mapbox"
     @click.self="handleExpandClick">
     <client-only>
@@ -15,6 +18,20 @@
           class="map-container"
           @load="onMapLoaded"
           @click.self="isFullScreen ? () => {} : handleExpandClick()">
+
+          <div 
+            v-if="enableMeasure && distance > 0" 
+            class="distance">
+            {{ distance | formatValue }}km
+          </div>
+
+          <button
+            v-if="isFullScreen"
+            :class="{ 'is-primary': enableMeasure }"
+            class="button is-small button-measure"
+            @click="enableMeasure = !enableMeasure">
+            <i class="fal fa-ruler-combined"/>
+          </button>
 
           <MglMarker
             v-if="showMarker || isFullScreen"
@@ -53,6 +70,8 @@
 </template>
 
 <script>
+import turfLength from '@turf/length'
+
 const ACCESS_TOKEN = process.env.mapboxToken
 
 export default {
@@ -88,6 +107,10 @@ export default {
     fitBounds: {
       type: Boolean,
       default: true
+    },
+    isDark: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -98,7 +121,9 @@ export default {
   data() {
     return {
       accessToken: ACCESS_TOKEN,
-      isFullScreen: false
+      isFullScreen: false,
+      enableMeasure: false,
+      distance: 0
     }
   },
 
@@ -133,18 +158,141 @@ export default {
     }
   },
 
+  watch: {
+    enableMeasure(val) {
+      if (!val) {
+        this.resetMeasurements()
+      }
+    }
+  },
+
   created() {
     this.map = null
+    this.scale = new this.$mapbox.ScaleControl()
+    this.measurements = null
+    this.lineString = null
+
+    this.setupMeasurementsAndLineString()
   },
 
   methods: {
     onMapLoaded(event) {
       this.map = event.map
+      this.map.addControl(this.scale)
+      this.addFeaturesSourceLayer()
+      this.addMeasurementSourceLayer()
+      this.disableMapInteractions()
+      this.setupMapEvents()
 
       if (this.bounds && this.fitBounds) {
         this.map.fitBounds(this.bounds, this.getBBoxOptions())
       }
+    },
 
+    resetMeasurements() {
+      this.map.getCanvas().style.cursor = 'pointer'
+      this.setupMeasurementsAndLineString()
+      this.map.getSource('measurements').setData(this.measurements)
+    },
+
+    setupMapEvents() {
+      this.map.on('click', e => {
+        if (this.enableMeasure) {
+          const features = this.map.queryRenderedFeatures(e.point, {
+            layers: ['measure-points']
+          })
+
+          if (this.measurements.features.length > 1) {
+            this.measurements.features.pop()
+          }
+
+          if (features.length) {
+            var id = features[0].properties.id
+            this.measurements.features = this.measurements.features.filter(
+              function(point) {
+                return point.properties.id !== id
+              }
+            )
+          } else {
+            var point = {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [e.lngLat.lng, e.lngLat.lat]
+              },
+              properties: {
+                id: String(new Date().getTime())
+              }
+            }
+
+            this.measurements.features.push(point)
+          }
+
+          if (this.measurements.features.length > 1) {
+            this.lineString.geometry.coordinates = this.measurements.features.map(
+              function(point) {
+                return point.geometry.coordinates
+              }
+            )
+
+            this.measurements.features.push(this.lineString)
+          } else {
+            this.lineString.geometry.coordinates = []
+          }
+
+          this.map.getSource('measurements').setData(this.measurements)
+
+          const dist = turfLength(this.lineString).toLocaleString() + 'km'
+          this.distance = turfLength(this.lineString)
+          console.log(dist, turfLength(this.lineString))
+        }
+      })
+
+      this.map.on('mousemove', e => {
+        if (this.enableMeasure) {
+          var features = this.map.queryRenderedFeatures(e.point, {
+            layers: ['measure-points']
+          })
+          // UI indicator for clicking/hovering a point on the map
+          this.map.getCanvas().style.cursor = features.length
+            ? 'pointer'
+            : 'crosshair'
+        }
+      })
+    },
+
+    addMeasurementSourceLayer() {
+      this.map.addSource('measurements', {
+        type: 'geojson',
+        data: this.measurements
+      })
+      this.map.addLayer({
+        id: 'measure-points',
+        type: 'circle',
+        source: 'measurements',
+        paint: {
+          'circle-radius': 5,
+          'circle-color': '#c74523'
+        },
+        filter: ['in', '$type', 'Point']
+      })
+      this.map.addLayer({
+        id: 'measure-lines',
+        type: 'line',
+        source: 'measurements',
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round'
+        },
+        paint: {
+          'line-color': '#c74523',
+          'line-width': 1.5
+        },
+        filter: ['in', '$type', 'LineString']
+      })
+    },
+
+    addFeaturesSourceLayer() {
       this.map.addSource('features', {
         type: 'geojson',
         data: this.collection
@@ -170,11 +318,26 @@ export default {
           'line-width': 1
         }
       })
+    },
 
-      this.disableMapInteractions()
+    setupMeasurementsAndLineString() {
+      this.distance = 0
+      this.measurements = {
+        type: 'FeatureCollection',
+        features: []
+      }
+      this.lineString = {
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: []
+        }
+      }
     },
 
     disableMapInteractions() {
+      this.map.removeControl(this.scale)
+
       this.map.boxZoom.disable()
       this.map.scrollZoom.disable()
       this.map.dragPan.disable()
@@ -186,6 +349,8 @@ export default {
     },
 
     enableMapInteractions() {
+      this.map.addControl(this.scale)
+
       this.map.boxZoom.enable()
       this.map.scrollZoom.enable()
       this.map.dragPan.enable()
@@ -214,6 +379,7 @@ export default {
 
     handleExpandClick() {
       this.isFullScreen = !this.isFullScreen
+      this.enableMeasure = false
 
       if (this.isFullScreen) {
         this.enableMapInteractions()
@@ -299,6 +465,30 @@ export default {
     }
   }
 
+  .button-measure {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    min-width: auto;
+  }
+  .distance {
+    position: absolute;
+    top: 3rem;
+    left: calc(50% - 1rem);
+    background-color: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    padding: 0.2rem 0.5rem;
+    font-size: 16px;
+    border-radius: 4px;
+  }
+
+  &.dark {
+    .distance {
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #000;
+    }
+  }
+
   ::v-deep .mapboxgl-canvas {
     border-radius: 10px;
     outline: none;
@@ -327,6 +517,9 @@ export default {
 
     width: 20px;
     height: 20px;
+    bottom: 0;
+    right: 0;
+    top: auto;
   }
   ::v-deep .mapboxgl-ctrl-attrib-button[aria-pressed='true'] {
     background-repeat: no-repeat;
@@ -334,6 +527,7 @@ export default {
   }
   ::v-deep .mapboxgl-ctrl.mapboxgl-ctrl-attrib {
     border-radius: 10px;
+    min-height: auto;
   }
 }
 </style>

@@ -2,14 +2,34 @@
   <div class="range-interval-selectors">
     <div class="range-buttons buttons has-addons">
       <button
+        v-on-clickaway="handleClickAway"
         v-for="(r, i) in ranges"
         :key="i"
         :class="{ 'is-selected': isRangeSelected(r) }"
         class="button is-rounded"
-        @click="handleRangeClick(r)">
+        @click.stop="handleRangeClick(r)">
 
         <div v-if="isString(r)">{{ r }}</div>
-        <div v-if="!isString(r)">{{ r[0] }}</div>
+        <div v-if="!isString(r)">
+          {{ getSelectedRangeLabel(r) }}
+        </div>
+        <i
+          v-if="hasRangeFilter(r)"
+          class="filter-caret fal fa-chevron-down" />
+        <div
+          v-show="showRangeOptions(r)"
+          class="filter-menu dropdown-menu">
+          <div class="dropdown-content">
+            <a
+              v-for="(range, rIndex) in r"
+              :key="`rangeOption${rIndex}`"
+              :class="{ 'is-selected': range === selectedRange }"
+              class="dropdown-item"
+              @click.stop="handleRangeOptionClick(range)">
+              {{ range }}           
+            </a>
+          </div>
+        </div>
       </button>
     </div>
 
@@ -49,10 +69,14 @@
 <script>
 import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
+import _includes from 'lodash.includes'
+
 import {
   RANGE_1D,
   RANGE_3D,
   RANGE_7D,
+  RANGE_1Y,
+  RANGE_ALL,
   getDefaultIntervalByRange,
   isValidRangeInterval
 } from '~/constants/ranges.js'
@@ -120,7 +144,9 @@ export default {
       monthFilters: INTERVAL_FILTERS[INTERVAL_MONTH],
       seasonFilters: INTERVAL_FILTERS[INTERVAL_SEASON],
       quarterFilters: INTERVAL_FILTERS[INTERVAL_QUARTER],
-      halfYearFilters: INTERVAL_FILTERS[INTERVAL_HALFYEAR]
+      halfYearFilters: INTERVAL_FILTERS[INTERVAL_HALFYEAR],
+      showAllRangeOptions: false,
+      show1YRangeOptions: false
     }
   },
 
@@ -272,17 +298,24 @@ export default {
       )
     },
 
-    hideAllFilters() {
+    hideAllPopups() {
       this.showMonthFilter = false
       this.showSeasonFilter = false
       this.showQuarterFilter = false
       this.showHalfYearFilter = false
+
+      this.show1YRangeOptions = false
+      this.showAllRangeOptions = false
     },
 
     hasFilter(interval) {
       return (
         this.interval === interval && hasIntervalFilters(interval, this.range)
       )
+    },
+
+    hasRangeFilter(range) {
+      return _includes(range, this.range) && !this.isString(range)
     },
 
     getIntervalLabel(interval) {
@@ -299,9 +332,33 @@ export default {
       }
     },
 
+    showRangeOptions(r) {
+      const hasOptions = !this.isString(r)
+      return hasOptions
+        ? (_includes(r, RANGE_ALL) && this.showAllRangeOptions) ||
+            (_includes(r, RANGE_1Y) && this.show1YRangeOptions)
+        : false
+    },
+
     handleRangeClick(r) {
-      const range = this.isString(r) ? r : r[0]
-      this.handleRangeChange(range)
+      this.hideAllPopups()
+
+      if (this.isString(r)) {
+        this.handleRangeChange(r)
+      } else {
+        const range = r[0]
+
+        if (this.selectedRange !== range && !_includes(r, this.selectedRange)) {
+          this.handleRangeChange(range)
+        } else {
+          if (range === RANGE_ALL) {
+            this.showAllRangeOptions = true
+          }
+          if (range === RANGE_1Y) {
+            this.show1YRangeOptions = true
+          }
+        }
+      }
     },
 
     handleRangeChange(range) {
@@ -344,6 +401,15 @@ export default {
       this.updateQuery(range, interval, this.selectedFilter)
     },
 
+    handleRangeOptionClick(range) {
+      this.selectedRange = range
+      this.hideAllPopups()
+      this.$store.dispatch('compareDifference', false)
+      this.$store.dispatch('compareDates', [])
+
+      this.updateQuery(range, this.selectedInterval, this.selectedFilter)
+    },
+
     handleIntervalChange(interval) {
       this.selectedInterval = interval
 
@@ -362,7 +428,7 @@ export default {
           this.showHalfYearFilter = true
         }
       } else {
-        this.hideAllFilters()
+        this.hideAllPopups()
         this.$emit('filterPeriodChange', FILTER_NONE)
         this.selectedFilter = FILTER_NONE
 
@@ -375,7 +441,7 @@ export default {
 
     handleFilterPeriodClick(filter) {
       this.selectedFilter = filter
-      this.hideAllFilters()
+      this.hideAllPopups()
       this.$store.dispatch('compareDifference', false)
       this.$store.dispatch('compareDates', [])
 
@@ -384,7 +450,7 @@ export default {
     },
 
     handleClickAway() {
-      this.hideAllFilters()
+      this.hideAllPopups()
     },
 
     updateQuery(range, interval, filter) {
@@ -405,8 +471,23 @@ export default {
     },
 
     isRangeSelected(r) {
-      const range = this.isString(r) ? r : r[0]
-      return range === this.selectedRange
+      if (this.isString(r)) {
+        return r === this.selectedRange
+      }
+
+      return _includes(r, this.selectedRange)
+    },
+
+    getSelectedRangeLabel(r) {
+      let label = null
+
+      r.forEach(d => {
+        if (d === this.selectedRange) {
+          label = d
+        }
+      })
+
+      return label || r[0]
     }
   }
 }

@@ -33,7 +33,7 @@ export default function(data, displayTz) {
     isPowerData,
     hasPowerEnergyData,
     units
-  } = parseAndCheckData(data)
+  } = parseAndCheckData(data, displayTz)
 
   const dataPowerEnergyInterval =
     dataPowerEnergy.length > 0

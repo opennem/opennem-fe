@@ -16,7 +16,7 @@
 
     <template v-slot:label-unit>
       <strong>Emission Intensity</strong>
-      <small>kgCO₂e/MWh</small>
+      <small v-if="chartShown">kgCO₂e/MWh</small>
     </template>
     <template
       v-slot:average-value

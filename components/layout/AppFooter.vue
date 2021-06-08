@@ -11,7 +11,11 @@
         <div
           v-if="hasAPIversion"
           class="version">
-          API: <strong>{{ apiVersion }}</strong>
+          <a
+            v-tooltip="'Open developer documentation'"
+            href="https://developers.opennem.org.au/">
+            API docs
+          </a>: <strong>{{ apiVersion }}</strong>
         </div>
         <div class="sources">
           Sources:
