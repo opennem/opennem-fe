@@ -84,7 +84,7 @@
       </div>
 
       <FacilityViewToggle
-        v-if="tabletBreak"
+        v-if="tabletBreak && !openDrawer && isFacilitiesView"
         :view="selectedView"
         @viewSelect="(v) => selectedView = v"
       />
