@@ -20,7 +20,6 @@
         <div class="dropdown-content">
           <nuxt-link
             v-for="view in views"
-            v-show="showLink(view.id)"
             :key="view.id"
             :to="`/${view.id}/${regionId}/`"
             class="dropdown-item"
@@ -35,7 +34,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
 import VIEWS from '~/constants/views.js'
 
@@ -50,9 +48,6 @@ export default {
   },
 
   computed: {
-    ...mapGetters({
-      featureAuEnergy: 'feature/auEnergy'
-    }),
     regionId() {
       return this.$route.params.region
     },
@@ -80,16 +75,6 @@ export default {
     },
     handleClickAway() {
       this.dropdownActive = false
-    },
-    showLink(view) {
-      if (this.featureAuEnergy) {
-        return true
-      }
-      if (this.regionId === 'au' && view === 'energy') {
-        return false
-      }
-
-      return true
     }
   }
 }

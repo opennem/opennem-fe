@@ -21,15 +21,6 @@
         Region Compare Charts
       </label> -->
 
-    <label
-      class="panel-block"
-      @click.stop>
-      <input
-        v-model="featureAuEnergy"
-        type="checkbox" >
-      All Regions Energy view
-    </label>
-
   </div>
 </template>
 
@@ -51,15 +42,6 @@ export default {
       },
       set: function(newValue) {
         this.$store.commit('feature/regionCompare', newValue)
-      }
-    },
-
-    featureAuEnergy: {
-      get: function() {
-        return this.$store.getters['feature/auEnergy']
-      },
-      set: function(newValue) {
-        this.$store.commit('feature/auEnergy', newValue)
       }
     }
   },

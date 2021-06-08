@@ -16,7 +16,6 @@
       <div class="menu">
         <nuxt-link
           v-for="view in views"
-          v-show="showViewLink(view.id)"
           :key="view.id"
           :to="`/${view.id}/${regionId}/`"
           class="menu-item"
@@ -30,7 +29,6 @@
 
       <div class="menu">
         <nuxt-link
-          v-show="showRegionLink('au')"
           :to="`/${currentView}/au/`"
           class="menu-item">
           All Regions
@@ -39,9 +37,7 @@
           </span>
         </nuxt-link>
 
-        <hr
-          v-show="showRegionLink('au')"
-          class="dropdown-divider">
+        <hr class="dropdown-divider">
 
         <nuxt-link
           v-for="link in links"
@@ -107,8 +103,7 @@ export default {
   computed: {
     ...mapGetters({
       currentView: 'currentView',
-      showFeatureToggle: 'app/showFeatureToggle',
-      featureAuEnergy: 'feature/auEnergy'
+      showFeatureToggle: 'app/showFeatureToggle'
     }),
     regionId() {
       return this.$route.params.region
@@ -156,26 +151,6 @@ export default {
     close() {
       window.scrollTo(0, 0)
       this.$emit('close')
-    },
-
-    showViewLink(view) {
-      if (this.featureAuEnergy) {
-        return true
-      }
-      if (this.regionId === 'au' && view === 'energy') {
-        return false
-      }
-      return true
-    },
-
-    showRegionLink(regionId) {
-      if (this.featureAuEnergy) {
-        return true
-      }
-      if (regionId === 'au' && this.currentView === 'energy') {
-        return false
-      }
-      return true
     }
   }
 }
