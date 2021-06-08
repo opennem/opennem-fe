@@ -315,7 +315,6 @@ export default {
           )
         }
       } else {
-        console.log('power', this.chartYAxis)
         if (
           this.chartType === OPTIONS.CHART_LINE &&
           this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE

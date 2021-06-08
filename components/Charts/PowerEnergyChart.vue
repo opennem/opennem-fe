@@ -433,7 +433,6 @@ export default {
     },
 
     displayUnit() {
-      console.log(this.range)
       let unit = ''
       if (this.isEnergyType) {
         if (this.isTypeProportion || this.isYAxisPercentage) {

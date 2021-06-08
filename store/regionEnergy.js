@@ -389,8 +389,6 @@ export const actions = {
         commit('currentDomainEmissions', domainEmissionsGrouped[groupName])
         commit('currentDomainMarketValue', domainMarketValueGrouped[groupName])
 
-        console.log(currentDataset)
-
         // parse units
         let prefix = ''
         const isWattsPerHour =
