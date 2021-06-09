@@ -409,7 +409,39 @@ export default {
 
   head() {
     return {
-      title: ` Facility: ${this.facilityName}`
+      title: ` Facility: ${this.facilityName}`,
+      meta: [
+        {
+          hid: 'twitter:title',
+          name: 'twitter:title',
+          content: `OpenNEM Facility: ${this.facilityName}`
+        },
+        {
+          hid: 'twitter:image:src',
+          name: 'twitter:image:src',
+          content: this.cardFilename
+        },
+        {
+          hid: 'og:title',
+          property: 'og:title',
+          content: `OpenNEM Facility: ${this.facilityName}`
+        },
+        {
+          hid: 'og:image',
+          property: 'og:image',
+          content: this.cardFilename
+        },
+        {
+          hid: 'og:image:width',
+          property: 'og:image:width',
+          content: '1447'
+        },
+        {
+          hid: 'og:image:height',
+          property: 'og:image:height',
+          content: '932'
+        }
+      ]
     }
   },
 
@@ -445,7 +477,9 @@ export default {
       powerOptions,
       energyOptions,
       ranges: FACILITY_RANGES,
-      intervals: FACILITY_RANGE_INTERVALS
+      intervals: FACILITY_RANGE_INTERVALS,
+      baseUrl: `${this.$config.url}/images/screens/`,
+      useDev: this.$config.useDev
     }
   },
 
@@ -504,6 +538,13 @@ export default {
     fullPath() {
       return this.$route.fullPath
     },
+
+    cardFilename() {
+      return this.useDev
+        ? `${this.baseUrl}opennem-facilities-dev.png`
+        : `${this.baseUrl}opennem-facility-info.png`
+    },
+
     isEnergyType() {
       return this.dataType === 'energy'
     },
