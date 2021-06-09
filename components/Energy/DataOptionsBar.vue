@@ -166,6 +166,9 @@ export default {
     queryFilter() {
       return this.$route.query.filter
     },
+    isWemOrAu() {
+      return this.regionId === 'wem' || this.regionId === 'au'
+    },
     isPowerRange() {
       return (
         this.selectedRange === RANGE_1D ||
@@ -202,7 +205,7 @@ export default {
         range = getRangeByRangeQuery(this.queryRange)
         interval = getIntervalByIntervalQuery(this.queryInterval)
 
-        if (this.regionId === 'wem' && interval === INTERVAL_5MIN) {
+        if (this.isWemOrAu && interval === INTERVAL_5MIN) {
           interval = INTERVAL_30MIN
           this.updateQuery(range, interval, filter)
         }
@@ -261,7 +264,7 @@ export default {
     setSelectedRangeIntervals(selected) {
       if (selected !== '') {
         let intervals = this.intervals[selected]
-        if (this.regionId === 'wem' && this.isPowerRange) {
+        if (this.isWemOrAu && this.isPowerRange) {
           intervals = ['30m']
         }
         this.selectedRangeIntervals = intervals
@@ -390,7 +393,7 @@ export default {
           console.log('nothing yet')
       }
 
-      if (this.regionId === 'wem' && isPower) {
+      if (this.isWemOrAu && isPower) {
         interval = '30m'
       }
 

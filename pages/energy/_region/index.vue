@@ -256,7 +256,9 @@ export default {
 
     if (isValidRegion(this.regionId)) {
       this.$store.dispatch('currentView', 'energy')
-      if (this.regionId === 'wem' && !this.isEnergyType) {
+
+      const isWemOrAu = this.regionId === 'wem' || this.regionId === 'au'
+      if (isWemOrAu && !this.isEnergyType) {
         this.setInterval('30m')
       }
       this.doGetRegionDataByRangeInterval({
