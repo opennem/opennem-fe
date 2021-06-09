@@ -71,5 +71,13 @@
     "prettier": "1.14.3",
     "release-it": "^14.0.2",
     "sass-loader": "^10.0.5"
+  },
+  "release-it": {
+    "github": {
+      "release": true
+    },
+    "npm": {
+      "publish": false
+    }
   }
 }
