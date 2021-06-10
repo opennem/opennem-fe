@@ -31,6 +31,20 @@ import { axisBottom } from 'd3-axis'
 import { extent } from 'd3-array'
 import { brushX } from 'd3-brush'
 
+import {
+  INTERVAL_5MIN,
+  INTERVAL_30MIN,
+  INTERVAL_DAY,
+  INTERVAL_WEEK,
+  INTERVAL_MONTH,
+  INTERVAL_SEASON,
+  INTERVAL_QUARTER,
+  INTERVAL_HALFYEAR,
+  INTERVAL_FINYEAR,
+  INTERVAL_YEAR,
+  hasIntervalFilters
+} from '@/constants/interval-filters.js'
+
 export default {
   props: {
     readOnly: {
@@ -56,6 +70,15 @@ export default {
     xTicks: {
       type: Function,
       default: () => null
+    },
+
+    interval: {
+      type: String,
+      default: ''
+    },
+    filterPeriod: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -181,6 +204,7 @@ export default {
       this.brushX = brushX()
         .extent([[0, 0], [this.width, this.svgHeight]])
         .on('end', this.brushEnded)
+
       this.$brushGroup = $svg.select('.brush-group')
       this.$brushGroup.call(this.brushX)
 
@@ -194,6 +218,22 @@ export default {
       })
       $svg.on('mouseleave', () => {
         this.handleSvgLeave()
+      })
+
+      this.brushX.on('brush', function() {
+        // if (!event.selection) return
+        // if (event.sourceEvent.type === 'brush') return
+        // const s = event.selection
+        // let startX = self.x.invert(s[0])
+        // let endX = self.x.invert(s[1])
+        // if (self.interval === INTERVAL_FINYEAR) {
+        //   if (startX.getMonth() >= 6) {
+        //     startX.setFullYear(startX.getFullYear() + 1)
+        //   }
+        //   if (endX.getMonth() >= 6) {
+        //     endX.setFullYear(endX.getFullYear() + 1)
+        //   }
+        // }
       })
     },
 

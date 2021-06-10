@@ -119,6 +119,7 @@
       @domain-hover="handleDomainHover"
       @enter="handleVisEnter"
       @leave="handleVisLeave" />
+    
     <date-brush
       v-if="chartShown && isTypeLine"
       :dataset="multiLineDataset"
@@ -127,6 +128,8 @@
       :tick-format="tickFormat"
       :second-tick-format="secondTickFormat"
       :read-only="readOnly"
+      :interval="interval"
+      :filter-period="filterPeriod"
       class="date-brush vis-chart"
       @date-hover="handleDateHover"
       @date-filter="handleZoomExtent"
@@ -593,14 +596,16 @@ export default {
         isRollingSum: this.isRollingSumRange
       })
     },
+
     multiLineDataset() {
       if (this.isYAxisAbsolute) {
-        return this.multiLineEnergyDataset
+        return this.getChangeSinceDataset(this.multiLineEnergyDataset)
       } else if (this.isYAxisPercentage) {
-        return this.energyGrossPercentDataset
+        return this.getChangeSinceDataset(this.energyGrossPercentDataset)
       }
-      return this.averagePowerDataset
+      return this.getChangeSinceDataset(this.averagePowerDataset)
     },
+
     stackedAreaDataset() {
       if (this.isTypeArea) {
         if (this.isYAxisAbsolute) {
@@ -674,13 +679,23 @@ export default {
     },
     energyLineYMin() {
       const dataset = this.multiLineDataset
-      const lowest = this.getMinValue(dataset)
-      return lowest < 0 ? 0 : lowest
+      const lowest = this.getMinValueByLowest(dataset)
+      // return lowest < 0 ? 0 : lowest
+      return lowest
     },
     energyLineYMax() {
       const dataset = this.multiLineDataset
-      return this.getMaxValue(dataset)
+      return this.getMaxValueByHighest(dataset)
     },
+
+    // changeSinceYMin() {
+    //   const dataset = this.changeSinceDataset
+    //   return this.getMinValueByLowest(dataset)
+    // },
+    // changeSinceYMax() {
+    //   const dataset = this.changeSinceDataset
+    //   return this.getMaxValueByHighest(dataset)
+    // },
 
     renewablesPercentageDataset() {
       const d = this.powerEnergyDataset.map(d => {
@@ -828,7 +843,7 @@ export default {
         value
       )
     },
-    getMinValue(dataset) {
+    getMinValueByLowest(dataset) {
       let min = 0
       dataset.forEach(d => {
         if (d._lowest < min) {
@@ -836,6 +851,15 @@ export default {
         }
       })
       return min
+    },
+    getMaxValueByHighest(dataset) {
+      let max = 0
+      dataset.forEach(d => {
+        if (d._highest > max) {
+          max = d._highest
+        }
+      })
+      return max
     },
     getMaxValue(dataset) {
       let max = 0
@@ -854,6 +878,42 @@ export default {
       }
       return interval.toLowerCase()
     },
+
+    getChangeSinceDataset(dataset) {
+      const filtered =
+        this.zoomExtent.length > 0
+          ? dataset.filter(
+              d => d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
+            )
+          : dataset
+
+      const change = filtered[0]
+      const newDataset = filtered.map(d => {
+        let min = 0,
+          max = 0
+        const obj = {
+          date: d.date,
+          time: d.time
+        }
+        this.domainPowerEnergy.forEach(domain => {
+          const id = domain.id
+          obj[id] = d[id] - change[id]
+
+          if (obj[id] < min) {
+            min = obj[id]
+          }
+          if (obj[id] > max) {
+            max = obj[id]
+          }
+          obj._lowest = min
+          obj._highest = max
+        })
+        return obj
+      })
+
+      return newDataset
+    },
+
     handleDomainHover(domain) {
       this.setHoverDomain(domain)
     },

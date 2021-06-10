@@ -176,7 +176,7 @@ export default {
     },
     pathStrokeWidth: {
       type: Number,
-      default: () => 1.5
+      default: () => 2
     },
     showCursorDots: {
       type: Boolean,
@@ -354,9 +354,17 @@ export default {
       if (domain) {
         this.$vis1Group
           .selectAll('path')
-          .attr('opacity', d => (d === domain ? 1 : 0.2))
+          .style('opacity', d => (d === domain ? 1 : 0.1))
+          .style(
+            'stroke-width',
+            d =>
+              d === domain ? this.pathStrokeWidth + 1 : this.pathStrokeWidth
+          )
       } else {
-        this.$vis1Group.selectAll('path').attr('opacity', 1)
+        this.$vis1Group
+          .selectAll('path')
+          .style('opacity', 0.9)
+          .style('stroke-width', this.pathStrokeWidth)
       }
     },
     curveType(type) {
@@ -592,8 +600,9 @@ export default {
           .attr('class', key => `${key}-path`)
           .style('stroke', key => this.colours1[key])
           .style('stroke-width', this.pathStrokeWidth)
-          .style('filter', 'url(#shadow)')
+          // .style('filter', 'url(#shadow)')
           .style('fill', 'transparent')
+          .style('opacity', 0.9)
           .style('clip-path', this.clipPathUrl)
           .style('-webkit-clip-path', this.clipPathUrl)
           .attr('d', this.drawVis1Path)
@@ -646,8 +655,8 @@ export default {
         .append('path')
         .attr('class', key => `${key}-path`)
         .style('stroke', key => this.colours2[key])
-        .style('stroke-width', 2)
-        .style('filter', 'url(#shadow)')
+        .style('stroke-width', 3)
+        // .style('filter', 'url(#shadow)')
         .style('fill', 'transparent')
         .style('clip-path', this.clipPathUrl)
         .style('-webkit-clip-path', this.clipPathUrl)
@@ -759,7 +768,7 @@ export default {
             .merge(dots)
             .attr('cx', this.x(dataPoint.date))
             .attr('cy', key => this.y1(dataPoint[key]))
-            .attr('r', 2)
+            .attr('r', 4)
             .attr('fill', key => this.colours1[key])
             .exit()
             .remove()
