@@ -42,9 +42,14 @@
         <th
           class="data-col date-col align-right hover-cell"
           style="width: 100px;">
-          <span v-if="(isEnergyType && !isYAxisAveragePower) || (!isEnergyType && !(hoverOn || focusOn))">
+          <span v-if="isEnergyType && !isYAxisAveragePower">
             Energy
             <small>{{ powerEnergyUnit }}</small>
+          </span>
+
+          <span v-if="!isEnergyType && !(hoverOn || focusOn)">
+            Energy
+            <small>{{ powerEnergyUnit }}h</small>
           </span>
 
           <span v-if="isEnergyType && isYAxisAveragePower">
