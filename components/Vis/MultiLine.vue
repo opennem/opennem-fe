@@ -66,7 +66,10 @@ import {
   curveLinear,
   curveMonotoneX
 } from 'd3-shape'
+import { format as d3Format } from 'd3-format'
 import { extent } from 'd3-array'
+
+import * as CONFIG from './shared/config.js'
 
 export default {
   props: {
@@ -684,7 +687,9 @@ export default {
       g.selectAll('.y-axis-left-text .tick text')
         .text(t => {
           const tickText = this.shouldConvertValue ? this.convertValue(t) : t
-          return `${tickText}${this.y1AxisUnit}`
+          return `${d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(tickText)}${
+            this.y1AxisUnit
+          }`
         })
         .attr('dx', 5)
         .attr('dy', -2)
