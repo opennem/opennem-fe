@@ -22,13 +22,15 @@
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
       @svgClick="handleSvgClick"
-      @selectedDataset="ds => selectedDataset = ds"
+      @selectedDataset="ds => {
+        selectedDataset = ds
+        updateCompareData()
+      }"
       @displayUnit="unit => selectedUnit = unit"
     />
 
     <energy-compare
       v-if="compareDifference"
-      :domains="domains"
       :unit="selectedUnit"
       :compare-data="compareData"
     />
@@ -238,19 +240,6 @@ export default {
         this.compareData = []
         this.$store.dispatch('compareDates', [])
       }
-    },
-    selectedDataset(ds) {
-      if (this.compareDates.length === 2) {
-        const firstData = this.getDataByTime(
-          this.selectedDataset,
-          this.compareDates[0]
-        )
-        const secondData = this.getDataByTime(
-          this.selectedDataset,
-          this.compareDates[1]
-        )
-        this.compareData = [firstData, secondData]
-      }
     }
   },
 
@@ -261,7 +250,8 @@ export default {
   methods: {
     ...mapMutations({
       setFocusDate: 'visInteract/focusDate',
-      setFilteredDates: 'regionEnergy/filteredDates'
+      setFilteredDates: 'regionEnergy/filteredDates',
+      setCompareDifference: 'compareDifference'
     }),
     clearHoverFocus() {
       this.isHovering = false
@@ -274,6 +264,19 @@ export default {
     updateFilteredDates(filteredDates) {
       this.zoomExtent = filteredDates
       this.setFilteredDates(filteredDates)
+    },
+    updateCompareData() {
+      if (this.compareDates.length === 2) {
+        const firstData = this.getDataByTime(
+          this.selectedDataset,
+          this.compareDates[0]
+        )
+        const secondData = this.getDataByTime(
+          this.selectedDataset,
+          this.compareDates[1]
+        )
+        this.compareData = [firstData, secondData]
+      }
     },
     handleDateHover(date) {
       this.hoverDate = DateDisplay.getClosestDateByInterval(
