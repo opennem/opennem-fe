@@ -812,6 +812,18 @@ export default {
     }
   },
 
+  watch: {
+    chartUnit() {
+      this.$emit('selectedDataset', this.dataset)
+    },
+    chartType() {
+      this.$emit('selectedDataset', this.dataset)
+    },
+    chartUnitPrefix() {
+      this.$emit('selectedDataset', this.dataset)
+    }
+  },
+
   methods: {
     ...mapMutations({
       setHoverDomain: 'visInteract/hoverDomain'
