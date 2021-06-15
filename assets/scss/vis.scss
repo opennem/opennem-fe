@@ -92,7 +92,7 @@ path.line-path {
 
 .x-axis .tick line {
   stroke-dasharray: 4.8;
-  stroke: rgba(0, 0, 0, 0.1);
+  stroke: rgba(0, 0, 0, 0.15);
 }
 
 .x-axis-tick .tick line {
@@ -120,7 +120,7 @@ path.line-path {
 
 .y-axis-tick .tick line,
 .y-axis .tick line {
-  stroke: rgba(0, 0, 0, 0.05);
+  stroke: rgba(0, 0, 0, 0.1);
   stroke-dasharray: 4.8;
 }
 
