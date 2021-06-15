@@ -214,6 +214,11 @@ export default {
         }
       })
 
+      this.map.on('dblclick', 'facilitiesLayer', e => {
+        const id = e.features[0].properties.facility_id
+        this.$emit('facilityOpen', id)
+      })
+
       this.map.on('click', 'facilitiesLayer', e => {
         const id = e.features[0].properties.facility_id
 
