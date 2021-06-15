@@ -80,17 +80,17 @@
     />
 
     <button
-      v-if="chartShown && isTypeLine && zoomExtent.length > 0 && !readOnly"
+      v-if="chartShown && (isTypeLine || isTypeChangeSinceLine) && zoomExtent.length > 0 && !readOnly"
       class="button is-rounded is-small reset-btn"
       @click.stop="handleZoomReset"
     >
       Zoom Out
     </button>
     <multi-line
-      v-if="chartShown && isTypeLine"
+      v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
       :svg-height="chartHeight - 30"
       :domains1="domains"
-      :dataset1="multiLineDataset"
+      :dataset1="dataset"
       :domains2="[{
         label: 'Renewables',
         domain: 'value',
@@ -121,8 +121,8 @@
       @leave="handleVisLeave" />
     
     <date-brush
-      v-if="chartShown && isTypeLine"
-      :dataset="multiLineDataset"
+      v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
+      :dataset="dataset"
       :zoom-range="zoomExtent"
       :x-ticks="xTicks"
       :tick-format="tickFormat"
@@ -176,7 +176,8 @@ const energyOptions = {
     OPTIONS.CHART_HIDDEN,
     OPTIONS.CHART_STACKED,
     OPTIONS.CHART_PROPORTION,
-    OPTIONS.CHART_LINE
+    OPTIONS.CHART_LINE,
+    OPTIONS.CHART_CHANGE_SINCE_LINE
   ],
   curve: [
     OPTIONS.CHART_CURVE_SMOOTH,
@@ -369,6 +370,9 @@ export default {
     },
     isTypeLine() {
       return this.chartType === OPTIONS.CHART_LINE
+    },
+    isTypeChangeSinceLine() {
+      return this.chartType === OPTIONS.CHART_CHANGE_SINCE_LINE
     },
     isYAxisPercentage() {
       return this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE
@@ -599,11 +603,11 @@ export default {
 
     multiLineDataset() {
       if (this.isYAxisAbsolute) {
-        return this.getChangeSinceDataset(this.multiLineEnergyDataset)
+        return this.multiLineEnergyDataset
       } else if (this.isYAxisPercentage) {
-        return this.getChangeSinceDataset(this.energyGrossPercentDataset)
+        return this.energyGrossPercentDataset
       }
-      return this.getChangeSinceDataset(this.averagePowerDataset)
+      return this.averagePowerDataset
     },
 
     stackedAreaDataset() {
@@ -618,10 +622,13 @@ export default {
         return this.energyPercentDataset
       }
     },
+
     dataset() {
       let ds = null
       if (this.isTypeLine) {
         ds = this.multiLineDataset
+      } else if (this.isTypeChangeSinceLine) {
+        ds = this.getChangeSinceDataset(this.multiLineDataset)
       } else {
         ds = this.stackedAreaDataset
       }
@@ -678,13 +685,13 @@ export default {
       return highest + (highest * 10) / 100
     },
     energyLineYMin() {
-      const dataset = this.multiLineDataset
+      const dataset = this.dataset
       const lowest = this.getMinValueByLowest(dataset)
       // return lowest < 0 ? 0 : lowest
       return lowest
     },
     energyLineYMax() {
-      const dataset = this.multiLineDataset
+      const dataset = this.dataset
       return this.getMaxValueByHighest(dataset)
     },
 
