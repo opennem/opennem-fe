@@ -359,7 +359,11 @@ export default {
     },
 
     shouldConvertValue() {
-      return this.isTypeArea || (this.isTypeLine && !this.isYAxisPercentage)
+      return (
+        this.isTypeArea ||
+        ((this.isTypeLine || this.isTypeChangeSinceLine) &&
+          !this.isYAxisPercentage)
+      )
     },
 
     isTypeArea() {
