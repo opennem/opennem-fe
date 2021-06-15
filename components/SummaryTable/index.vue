@@ -1053,11 +1053,12 @@ export default {
     },
 
     calculatePointSummary(data) {
-      const isGeneration = this.percentContributionTo === 'generation'
       let totalSources = 0
       let totalGeneration = 0
       let totalLoads = 0
       let totalPriceMarketValue = 0
+      let hasLoadValue = false,
+        hasSourceValue = false
       this.pointSummary = data || {} // pointSummary._total is already calculated
       this.pointSummarySources = {}
       this.pointSummaryLoads = {}
@@ -1068,16 +1069,29 @@ export default {
           const value = this.pointSummary[ft.id]
 
           if (category === 'source') {
+            if (value || value === 0) {
+              hasSourceValue = true
+            }
             this.pointSummarySources[ft.id] = value
             totalSources += value
             if (!_includes(ft.id, 'imports')) {
               totalGeneration += value
             }
           } else if (category === 'load') {
+            if (value || value === 0) {
+              hasLoadValue = true
+            }
             this.pointSummaryLoads[ft.id] = value
             totalLoads += value
           }
         })
+
+        if (!hasSourceValue) {
+          totalSources = null
+        }
+        if (!hasLoadValue) {
+          totalLoads = null
+        }
 
         // Calculate Market Value
         if (this.isEnergy) {

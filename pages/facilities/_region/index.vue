@@ -55,7 +55,8 @@
         :hovered="hoveredFacility"
         :selected="selectedFacility"
         class="facility-map"
-        @facilitySelect="handleMapFacilitySelect" />
+        @facilitySelect="handleMapFacilitySelect"
+        @facilityOpen="handleMapFacilityOpen"/>
 
       <transition name="slide-up-fade">
         <facility-card
@@ -471,6 +472,10 @@ export default {
     },
     handleCloseDetail() {
       this.selectedFacility = null
+    },
+    handleMapFacilityOpen(facilityId) {
+      const find = this.facilityData.find(f => f.facilityId === facilityId)
+      this.handleOpenFacilityView(find)
     },
     handleOpenFacilityView(facility) {
       this.handleFacilitySelect(facility, true)

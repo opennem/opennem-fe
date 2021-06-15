@@ -58,6 +58,10 @@ export default {
       type: String,
       default: () => ''
     },
+    unit: {
+      type: String,
+      default: () => ''
+    },
     convertValue: {
       type: Function,
       default: () => function() {}
@@ -70,6 +74,7 @@ export default {
 
   data() {
     return {
+      columnData: [],
       svgWidth: 0,
       svgHeight: 0,
       width: 0,
@@ -105,26 +110,23 @@ export default {
     },
     xAxisTransform() {
       return `translate(0, ${this.height})`
-    },
-    columnData() {
-      return this.domains.map(domain => {
-        const id = domain.id
-        return {
-          name: id,
-          label: domain.label,
-          value: this.dataset[id]
-        }
-      })
     }
   },
 
   watch: {
     dataset(updated) {
       if (updated) {
+        this.updateColumnData()
         this.update()
       }
     },
     domains() {
+      this.updateColumnData()
+      this.setup()
+      this.update()
+    },
+    unit() {
+      this.updateColumnData()
       this.setup()
       this.update()
     },
@@ -154,6 +156,7 @@ export default {
     this.setupWidthHeight()
     this.setup()
     if (this.dataset) {
+      this.updateColumnData()
       this.update()
     }
   },
@@ -163,6 +166,16 @@ export default {
   },
 
   methods: {
+    updateColumnData() {
+      this.columnData = this.domains.map(domain => {
+        const id = domain.id
+        return {
+          name: id,
+          label: domain.label,
+          value: this.dataset[id]
+        }
+      })
+    },
     setupWidthHeight() {
       const chartWidth = this.$el.offsetWidth
       const width = chartWidth - this.margin.left - this.margin.right
@@ -174,7 +187,6 @@ export default {
 
     setup() {
       // Select the svg groups for this vis instance
-      const self = this
       const $svg = d3Select(`#${this.id}`)
 
       // Axis
@@ -197,7 +209,6 @@ export default {
     },
 
     update() {
-      const self = this
       this.$columnGroup = d3Select(`#${this.id} .${this.columnGroupClass}`)
       this.$columnLabelGroup = d3Select(
         `#${this.id} .${this.columnLabelGroupClass}`
@@ -217,7 +228,7 @@ export default {
       }
 
       this.x.domain(xDomains)
-      this.y.domain(yExtent).nice()
+      this.y.domain(yExtent)
       this.z.range(zColours).domain(xDomains)
 
       // this.$xAxisGroup.call(this.xAxis)
@@ -229,7 +240,7 @@ export default {
     customYAxis(g) {
       g.call(this.yAxis)
       g.selectAll('.tick text')
-        .text(t => this.convertValue(t))
+        .text(t => this.formatValue(this.convertValue(t)))
         .attr('x', 4)
         .attr('dy', -4)
       g.selectAll('.tick line').attr('class', d => (d === 0 ? 'base' : ''))
@@ -262,10 +273,7 @@ export default {
         // .attr('transform', 'rotate(-1)')
         // .text(d => d.label)
         .text(d => {
-          const percent = this.datasetPercent[d.name]
-          const value = this.$options.filters.formatValue(
-            this.convertValue(d.value)
-          )
+          const value = this.formatValue(this.convertValue(d.value))
           let string = value
 
           return string
@@ -282,7 +290,7 @@ export default {
           const percent = this.datasetPercent[d.name]
           let string = ''
           if (percent && bandwidth > 60) {
-            string += ` (${this.$options.filters.formatValue(percent)}%)`
+            string += ` (${this.formatValue(percent)}%)`
           }
           return string
         })
@@ -301,6 +309,10 @@ export default {
     handleResize() {
       this.setupWidthHeight()
       this.resizeRedraw()
+    },
+
+    formatValue(val) {
+      return this.$options.filters.formatValue(val)
     }
   }
 }
