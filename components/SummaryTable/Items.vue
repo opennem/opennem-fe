@@ -281,9 +281,7 @@ export default {
     },
 
     getValue(key) {
-      return this.showPointSummary
-        ? this.pointSummary[key] || ''
-        : this.summary[key] || ''
+      return this.showPointSummary ? this.pointSummary[key] : this.summary[key]
     },
 
     getContribution(key) {
@@ -302,9 +300,7 @@ export default {
         this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
       const find = this.marketValueOrder.find(d => d[property] === ft[property])
       const id = find ? find.id : null
-      return this.showPointSummary
-        ? this.pointSummary[id] || ''
-        : this.summary[id] || ''
+      return this.showPointSummary ? this.pointSummary[id] : this.summary[id]
     },
 
     getEmissionsVolume(ft) {
@@ -313,8 +309,8 @@ export default {
       const emissionObj = this.emissionsDomains.find(d => d.id === emissionId)
       if (emissionObj) {
         return this.showPointSummary
-          ? this.pointSummary[emissionObj.id] || ''
-          : this.summary[emissionObj.id] || ''
+          ? this.pointSummary[emissionObj.id]
+          : this.summary[emissionObj.id]
       }
       return '-'
     },
@@ -329,8 +325,8 @@ export default {
 
       if (energy && emissionObj) {
         let emissionsVolume = this.showPointSummary
-          ? this.pointSummary[emissionObj.id] || ''
-          : this.summary[emissionObj.id] || ''
+          ? this.pointSummary[emissionObj.id]
+          : this.summary[emissionObj.id]
 
         return emissionsVolume / Math.abs(energy)
       }
