@@ -17,7 +17,9 @@ export const state = () => ({
   chartPowerUnitPrefix: SI.MEGA,
   chartPowerDisplayPrefix: SI.MEGA,
 
-  chartEnergyRenewablesLine: false
+  chartEnergyRenewablesLine: false,
+
+  displayUnit: ''
 })
 
 export const getters = {
@@ -41,7 +43,15 @@ export const getters = {
   chartPowerCurrentUnit: state =>
     `${state.chartPowerDisplayPrefix}${state.chartPowerUnit}`,
 
-  chartEnergyRenewablesLine: state => state.chartEnergyRenewablesLine
+  chartEnergyRenewablesLine: state => state.chartEnergyRenewablesLine,
+
+  displayUnit: state => state.displayUnit,
+
+  isTypeArea: state => state.chartType === OPTIONS.CHART_STACKED,
+  isTypeProportion: state => state.chartType === OPTIONS.CHART_PROPORTION,
+  isTypeLine: state => state.chartType === OPTIONS.CHART_LINE,
+  isTypeChangeSinceLine: state =>
+    state.chartType === OPTIONS.CHART_CHANGE_SINCE_LINE
 }
 
 export const mutations = {
@@ -83,6 +93,9 @@ export const mutations = {
 
   chartEnergyRenewablesLine(state, data) {
     state.chartEnergyRenewablesLine = data
+  },
+  displayUnit(state, data) {
+    state.displayUnit = data
   }
 }
 

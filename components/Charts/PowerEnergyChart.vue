@@ -317,7 +317,12 @@ export default {
         'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
       chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
       chartEnergyRenewablesLine:
-        'chartOptionsPowerEnergy/chartEnergyRenewablesLine'
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+
+      isTypeArea: 'chartOptionsPowerEnergy/isTypeArea',
+      isTypeProportion: 'chartOptionsPowerEnergy/isTypeProportion',
+      isTypeLine: 'chartOptionsPowerEnergy/isTypeLine',
+      isTypeChangeSinceLine: 'chartOptionsPowerEnergy/isTypeChangeSinceLine'
     }),
 
     tickFormat() {
@@ -366,18 +371,6 @@ export default {
       )
     },
 
-    isTypeArea() {
-      return this.chartType === OPTIONS.CHART_STACKED
-    },
-    isTypeProportion() {
-      return this.chartType === OPTIONS.CHART_PROPORTION
-    },
-    isTypeLine() {
-      return this.chartType === OPTIONS.CHART_LINE
-    },
-    isTypeChangeSinceLine() {
-      return this.chartType === OPTIONS.CHART_CHANGE_SINCE_LINE
-    },
     isYAxisPercentage() {
       return this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE
     },

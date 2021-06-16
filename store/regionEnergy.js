@@ -37,6 +37,7 @@ export const state = () => ({
   datasetFull: [],
   datasetFlat: [],
   currentDataset: [],
+  changeSinceDataset: [],
   domainPowerEnergy: [],
   domainPowerEnergyGrouped: [],
   domainEmissions: [],
@@ -62,6 +63,7 @@ export const getters = {
   datasetFlat: state => state.datasetFlat,
   datasetFull: state => state.datasetFull,
   currentDataset: state => state.currentDataset,
+  changeSinceDataset: state => state.changeSinceDataset,
   domainPowerEnergy: state => state.domainPowerEnergy,
   domainPowerEnergyGrouped: state => state.domainPowerEnergyGrouped,
   domainEmissions: state => state.domainEmissions,
@@ -120,6 +122,9 @@ export const mutations = {
   },
   currentDataset(state, currentDataset) {
     state.currentDataset = _cloneDeep(currentDataset)
+  },
+  changeSinceDataset(state, changeSinceDataset) {
+    state.changeSinceDataset = _cloneDeep(changeSinceDataset)
   },
   domainPowerEnergy(state, domainPowerEnergy) {
     state.domainPowerEnergy = _cloneDeep(domainPowerEnergy)

@@ -30,7 +30,10 @@
             v-if="isEnergy"
             class="summary-col-energy cell-toggle"
             @click="handleUnitCellClicked">
-            <span>
+            <span v-if="isTypeChangeSinceLine">
+              Change since <small>{{ displayUnit }}</small>
+            </span>
+            <span v-else>
               Energy <small>{{ chartCurrentUnit }}</small>
             </span>
           </div>
@@ -61,12 +64,17 @@
           <div
             v-if="isEnergy"
             class="summary-col-energy cell-value">
-            <span v-if="hoverOn || focusOn">
-              {{ pointSummarySources._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
-            </span>
-            <span v-else>
-              {{ summarySources._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
-            </span>
+            <div v-if="isTypeChangeSinceLine">
+              –
+            </div>
+            <div v-else>
+              <span v-if="hoverOn || focusOn">
+                {{ pointSummarySources._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+              </span>
+              <span v-else>
+                {{ summarySources._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+              </span> 
+            </div>
           </div>
           <div
             v-else
@@ -138,12 +146,17 @@
           <div
             v-if="isEnergy"
             class="summary-col-energy cell-value">
-            <span v-if="hoverOn || focusOn">
-              {{ pointSummaryLoads._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
-            </span>
-            <span v-else>
-              {{ summaryLoads._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
-            </span>
+            <div v-if="isTypeChangeSinceLine">
+              –
+            </div>
+            <div v-else>
+              <span v-if="hoverOn || focusOn">
+                {{ pointSummaryLoads._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+              </span>
+              <span v-else>
+                {{ summaryLoads._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+              </span>
+            </div>            
           </div>
           <div
             v-else
@@ -276,7 +289,6 @@ import differenceInMinutes from 'date-fns/differenceInMinutes'
 import { energy_sum } from '@opennem/energy-tools'
 
 import EventBus from '@/plugins/eventBus'
-import Data from '~/services/Data.js'
 import Domain from '~/services/Domain.js'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
 import ColumnSelector from '~/components/ui/SummaryColumnSelector'
@@ -391,6 +403,7 @@ export default {
   computed: {
     ...mapGetters({
       datasetFull: 'regionEnergy/datasetFull',
+      changeSinceDataset: 'regionEnergy/changeSinceDataset',
       domainPowerEnergyGrouped: 'regionEnergy/domainPowerEnergyGrouped',
       regionTimezoneString: 'regionEnergy/regionTimezoneString',
       isEnergyType: 'regionEnergy/isEnergyType',
@@ -398,6 +411,7 @@ export default {
       chartEnergyRenewablesLine:
         'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
 
+      chartType: 'chartOptionsPowerEnergy/chartType',
       chartEnergyUnit: 'chartOptionsPowerEnergy/chartEnergyUnit',
       chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
       chartEnergyDisplayPrefix:
@@ -409,6 +423,9 @@ export default {
       chartPowerDisplayPrefix:
         'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
       chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
+
+      isTypeChangeSinceLine: 'chartOptionsPowerEnergy/isTypeChangeSinceLine',
+      displayUnit: 'chartOptionsPowerEnergy/displayUnit',
 
       chartEmissionsVolumeUnitPrefix:
         'chartOptionsEmissionsVolume/chartUnitPrefix',
@@ -1150,13 +1167,22 @@ export default {
 
     updatePointSummary(date) {
       if (!date) return
+
       const dataFound = this.dataset.find(d => d.time === date.getTime())
+      const changeSinceData = this.changeSinceDataset.find(
+        d => d.time === date.getTime()
+      )
 
       this.hoveredTemperature =
         dataFound && dataFound[this.temperatureId]
           ? dataFound[this.temperatureId]
           : ''
-      this.calculatePointSummary(_cloneDeep(dataFound))
+
+      const point = _cloneDeep(
+        this.isTypeChangeSinceLine ? changeSinceData : dataFound
+      )
+
+      this.calculatePointSummary(point)
     },
 
     handleSourcesOrderUpdate(newSourceOrder) {
