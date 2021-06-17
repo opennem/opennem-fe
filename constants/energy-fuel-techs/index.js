@@ -21,6 +21,8 @@ Groups[GROUP_FLEXIBILITY] = FlexibilityGroup
 Groups[GROUP_RENEWABLE_FOSSIL] = RenewableFossilGroup
 Groups[GROUP_SOLAR_RESIDUAL] = SolarResidualGroup
 
+export const ftGroups = Object.keys(Groups)
+
 export function getAllGroups(powerEnergyDomains, type) {
   const parsed = {}
   Object.keys(Groups).forEach(key => {

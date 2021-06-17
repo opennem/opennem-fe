@@ -19,21 +19,13 @@
 
 <script>
 import { mapGetters } from 'vuex'
-
-const groups = [
-  'Default',
-  'Simplified',
-  'Coal/Gas/Renewables',
-  'Flexibility',
-  'Renewable/Fossil',
-  'Solar/Residual'
-]
+import { ftGroups, GROUP_DEFAULT } from '@/constants/energy-fuel-techs/'
 
 export default {
   data() {
     return {
-      groups,
-      selected: groups[0]
+      groups: ftGroups,
+      selected: ftGroups[0]
     }
   },
 
@@ -73,8 +65,8 @@ export default {
   mounted() {
     if (this.fuelTechGroupName === 'regions') {
       if (this.regionId !== 'nem') {
-        this.$store.dispatch('fuelTechGroupName', 'Default')
-        this.selected = 'Default'
+        this.$store.dispatch('fuelTechGroupName', GROUP_DEFAULT)
+        this.selected = GROUP_DEFAULT
         this.$router.push({ path: `/energy/${this.regionId}` })
       } else {
         this.selected = this.fuelTechGroupName
