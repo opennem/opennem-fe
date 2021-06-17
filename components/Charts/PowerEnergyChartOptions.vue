@@ -230,7 +230,9 @@ export default {
     allowDisplayHover() {
       return (
         !this.isRenewableLineOnly &&
-        (this.isTypeArea || (this.isTypeLine && !this.isYAxisPercentage))
+        (this.isTypeArea ||
+          ((this.isTypeLine || this.isTypeChangeSinceLine) &&
+            !this.isYAxisPercentage))
       )
     },
     showAverageValue() {
@@ -382,7 +384,11 @@ export default {
     },
     handleUnitClick() {
       if (!this.isRenewableLineOnly) {
-        if (this.isTypeArea || (this.isTypeLine && !this.isYAxisPercentage)) {
+        if (
+          this.isTypeArea ||
+          ((this.isTypeLine || this.isTypeChangeSinceLine) &&
+            !this.isYAxisPercentage)
+        ) {
           const updatedPrefix = this.togglePrefix(this.chartDisplayPrefix)
           this.handlePrefixClick(updatedPrefix)
         }
