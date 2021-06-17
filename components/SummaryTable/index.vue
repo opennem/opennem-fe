@@ -64,7 +64,7 @@
           <div
             v-if="isEnergy"
             class="summary-col-energy cell-value">
-            <div v-if="isTypeChangeSinceLine">
+            <div v-if="isTypeChangeSinceLine && !isYAxisAbsolute">
               –
             </div>
             <div v-else>
@@ -146,7 +146,7 @@
           <div
             v-if="isEnergy"
             class="summary-col-energy cell-value">
-            <div v-if="isTypeChangeSinceLine">
+            <div v-if="isTypeChangeSinceLine && !isYAxisAbsolute">
               –
             </div>
             <div v-else>
@@ -156,7 +156,7 @@
               <span v-else>
                 {{ summaryLoads._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
               </span>
-            </div>            
+            </div>
           </div>
           <div
             v-else
@@ -288,6 +288,7 @@ import { format as d3Format } from 'd3-format'
 import differenceInMinutes from 'date-fns/differenceInMinutes'
 import { energy_sum } from '@opennem/energy-tools'
 
+import * as OPTIONS from '@/constants/chart-options.js'
 import EventBus from '@/plugins/eventBus'
 import Domain from '~/services/Domain.js'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
@@ -412,6 +413,7 @@ export default {
         'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
 
       chartType: 'chartOptionsPowerEnergy/chartType',
+      chartEnergyYAxis: 'chartOptionsPowerEnergy/chartEnergyYAxis',
       chartEnergyUnit: 'chartOptionsPowerEnergy/chartEnergyUnit',
       chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
       chartEnergyDisplayPrefix:
@@ -419,6 +421,7 @@ export default {
       chartEnergyCurrentUnit: 'chartOptionsPowerEnergy/chartEnergyCurrentUnit',
 
       chartPowerUnit: 'chartOptionsPowerEnergy/chartPowerUnit',
+      chartPowerYAxis: 'chartOptionsPowerEnergy/chartPowerYAxis',
       chartPowerUnitPrefix: 'chartOptionsPowerEnergy/chartPowerUnitPrefix',
       chartPowerDisplayPrefix:
         'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
@@ -454,6 +457,17 @@ export default {
       return this.isEnergy
         ? this.chartEnergyCurrentUnit
         : this.chartPowerCurrentUnit
+    },
+
+    chartYAxis() {
+      return this.isEnergyType ? this.chartEnergyYAxis : this.chartPowerYAxis
+    },
+
+    isYAxisAbsolute() {
+      return (
+        this.chartYAxis === OPTIONS.CHART_YAXIS_ENERGY ||
+        this.chartYAxis === OPTIONS.CHART_YAXIS_ABSOLUTE
+      )
     },
 
     fuelTechGroupName() {
@@ -1169,18 +1183,27 @@ export default {
       if (!date) return
 
       const dataFound = this.dataset.find(d => d.time === date.getTime())
-      const changeSinceData = this.changeSinceDataset.find(
-        d => d.time === date.getTime()
-      )
 
       this.hoveredTemperature =
         dataFound && dataFound[this.temperatureId]
           ? dataFound[this.temperatureId]
           : ''
 
-      const point = _cloneDeep(
-        this.isTypeChangeSinceLine ? changeSinceData : dataFound
-      )
+      let point = _cloneDeep(dataFound)
+
+      if (this.isTypeChangeSinceLine) {
+        const changeSinceData = this.changeSinceDataset.find(
+          d => d.time === date.getTime()
+        )
+
+        point = _cloneDeep(changeSinceData)
+
+        // if (changeSinceData) {
+        //   Object.keys(changeSinceData).forEach(k => {
+        //     point[k] = changeSinceData[k]
+        //   })
+        // }
+      }
 
       this.calculatePointSummary(point)
     },

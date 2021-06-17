@@ -17,6 +17,7 @@
       :is-type-area="isTypeArea"
       :is-type-proportion="isTypeProportion"
       :is-type-line="isTypeLine"
+      :is-type-change-since-line="isTypeChangeSinceLine"
       :is-y-axis-absolute="isYAxisAbsolute"
       :is-y-axis-percentage="isYAxisPercentage"
       :is-y-axis-average-power="isYAxisAveragePower"
@@ -385,9 +386,10 @@ export default {
     },
 
     domains() {
-      const domains = this.isTypeArea
-        ? this.powerEnergyDomains
-        : this.energyPercentDomains
+      const domains =
+        this.isTypeArea || this.isTypeChangeSinceLine
+          ? this.powerEnergyDomains
+          : this.energyPercentDomains
       return domains.filter(
         d => !_includes(this.hiddenDomains, d[this.propName])
       )
@@ -588,6 +590,7 @@ export default {
       return dataset
     },
     averagePowerDataset() {
+      console.log(this.domains)
       return EnergyToAveragePower({
         data: this.powerEnergyDataset,
         domains: this.domains,
@@ -605,6 +608,15 @@ export default {
         return this.energyGrossPercentDataset
       }
       return this.averagePowerDataset
+    },
+
+    changeSinceDataset() {
+      if (this.isYAxisAbsolute) {
+        return this.getChangeSinceDataset(this.multiLineEnergyDataset)
+      } else if (this.isYAxisPercentage) {
+        return this.getChangeSinceDataset(this.multiLineEnergyDataset, true)
+      }
+      return this.getChangeSinceDataset(this.averagePowerDataset)
     },
 
     stackedAreaDataset() {
@@ -625,7 +637,7 @@ export default {
       if (this.isTypeLine) {
         ds = this.multiLineDataset
       } else if (this.isTypeChangeSinceLine) {
-        ds = this.getChangeSinceDataset(this.multiLineDataset)
+        ds = this.changeSinceDataset
       } else {
         ds = this.stackedAreaDataset
       }
@@ -895,7 +907,7 @@ export default {
       return interval.toLowerCase()
     },
 
-    getChangeSinceDataset(dataset) {
+    getChangeSinceDataset(dataset, calculateProportion) {
       const filtered =
         this.zoomExtent.length > 0
           ? dataset.filter(
@@ -904,7 +916,7 @@ export default {
           : dataset
 
       const change = filtered[0]
-      const newDataset = filtered.map(d => {
+      const newDataset = filtered.map((d, i) => {
         let min = 0,
           max = 0
         const obj = {
@@ -913,7 +925,13 @@ export default {
         }
         this.domainPowerEnergy.forEach(domain => {
           const id = domain.id
-          obj[id] = d[id] - change[id]
+          const cValue = change[id] || 0
+          obj[id] = d[id] - cValue
+
+          if (calculateProportion && i > 0) {
+            const proportion = (obj[id] / cValue) * 100
+            obj[id] = isFinite(proportion) ? proportion : 0
+          }
 
           if (obj[id] < min) {
             min = obj[id]

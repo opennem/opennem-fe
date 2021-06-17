@@ -5,6 +5,7 @@
       v-if="!readOnly">
       <chart-options
         :options="options"
+        :si="options.si"
         :chart-type="chartType"
         :chart-curve="chartCurve"
         :chart-shown="chartShown"
@@ -139,6 +140,10 @@ export default {
       type: Boolean,
       default: false
     },
+    isTypeChangeSinceLine: {
+      type: Boolean,
+      default: false
+    },
     isYAxisAbsolute: {
       type: Boolean,
       default: false
@@ -257,7 +262,7 @@ export default {
       let options = []
       if (this.isEnergyType) {
         options = this.energyOptions
-        if (this.isTypeLine) {
+        if (this.isTypeLine || this.isTypeChangeSinceLine) {
           options.yAxis = [
             OPTIONS.CHART_YAXIS_ENERGY,
             OPTIONS.CHART_YAXIS_AVERAGE_POWER,
@@ -267,6 +272,8 @@ export default {
             options.si = energySi
           } else if (this.isYAxisAveragePower) {
             options.si = powerSi
+          } else {
+            options.si = []
           }
         } else if (this.isTypeArea) {
           options.yAxis = [
