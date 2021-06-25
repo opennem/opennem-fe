@@ -590,7 +590,6 @@ export default {
       return dataset
     },
     averagePowerDataset() {
-      console.log(this.domains)
       return EnergyToAveragePower({
         data: this.powerEnergyDataset,
         domains: this.domains,
@@ -694,24 +693,11 @@ export default {
       return highest + (highest * 10) / 100
     },
     energyLineYMin() {
-      const dataset = this.dataset
-      const lowest = this.getMinValueByLowest(dataset)
-      // return lowest < 0 ? 0 : lowest
-      return lowest
+      return this.getMinValueByLowest(this.dataset)
     },
     energyLineYMax() {
-      const dataset = this.dataset
-      return this.getMaxValueByHighest(dataset)
+      return this.getMaxValueByHighest(this.dataset)
     },
-
-    // changeSinceYMin() {
-    //   const dataset = this.changeSinceDataset
-    //   return this.getMinValueByLowest(dataset)
-    // },
-    // changeSinceYMax() {
-    //   const dataset = this.changeSinceDataset
-    //   return this.getMaxValueByHighest(dataset)
-    // },
 
     renewablesPercentageDataset() {
       const d = this.powerEnergyDataset.map(d => {
@@ -923,7 +909,7 @@ export default {
           date: d.date,
           time: d.time
         }
-        this.domainPowerEnergy.forEach(domain => {
+        this.domains.forEach(domain => {
           const id = domain.id
           const cValue = change[id] || 0
           obj[id] = d[id] - cValue
