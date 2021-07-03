@@ -51,11 +51,14 @@
           class="textarea" />
 
         <label>Your email <em>(optional)</em>)</label>
+        <p 
+          v-if="!validEmail && email.length > 5" 
+          class="help is-danger">Please enter a valid email address</p>
         <input
           v-model="email"
           type="email" 
           class="input">
-
+        
         <p class="help">* for following up purposes</p>
       </main>
     </template>
@@ -126,8 +129,11 @@ export default {
     validDescription() {
       return this.description.trim() !== ''
     },
+    validEmail() {
+      return this.email.trim() === '' || this.checkEmail(this.email.trim())
+    },
     validSubmission() {
-      return this.validSources && this.validDescription
+      return this.validSources && this.validDescription && this.validEmail
     }
   },
 
@@ -158,8 +164,11 @@ export default {
         const description = this.getDescription()
         const payload = {
           subject: `${this.name} facility feedback`,
-          description: description,
-          email: this.email
+          description: description
+        }
+
+        if (this.email && this.email !== '') {
+          payload.email = this.email
         }
 
         this.submitFeedback(payload)
@@ -170,8 +179,27 @@ export default {
       }
     },
 
-    getDescription() {
+    checkEmail(email) {
+      var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      return re.test(email)
+    },
+
+    getEmail() {
+      if (this.email && this.email !== '') {
+        return `
+**Email:**
+${this.email}     
+   
+`
+      }
       return `
+**No email provided.**
+   
+`
+    },
+
+    getDescription() {
+      let desc = `
 **Path:**
 ${this.path}
 
@@ -187,6 +215,10 @@ ${JSON.stringify(this.selectedFields, null, 1)}
 **Description:**
 ${this.description}
 `
+
+      desc = this.getEmail() + desc
+
+      return desc
     }
   }
 }
@@ -265,6 +297,9 @@ ${this.description}
   }
   .has-error {
     border-color: #e34a33 !important;
+  }
+  .help.is-danger {
+    font-weight: 700;
   }
 }
 </style>
