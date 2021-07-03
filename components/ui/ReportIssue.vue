@@ -10,7 +10,21 @@
       <main v-if="submitted">
         <h5>Your report has been submitted. <br> Thank you.</h5>
       </main>
-      <main v-else>
+
+      <main 
+        v-if="isSubmitting" 
+        style="margin: 75px 0;">
+        <Loader class="submission-loader" />
+      </main> 
+
+      <main v-if="!isSubmitting && !submitted">
+        <div
+          v-if="hasSubmitError"
+          class="notification is-danger">
+          <p>There is an issue submitting the report.</p>
+          <code>{{ submitErrorMsg }}</code>
+        </div>
+
         <label>Affected fields <em>(optional)</em></label>
         <p
           v-if="selectedFields.length === 0"
@@ -51,16 +65,19 @@
           class="textarea" />
 
         <label>Your email <em>(optional)</em>)</label>
+        <p 
+          v-if="!validEmail && email.length > 5" 
+          class="help is-danger">Please enter a valid email address</p>
         <input
           v-model="email"
           type="email" 
           class="input">
-
+        
         <p class="help">* for following up purposes</p>
       </main>
     </template>
     <template slot="footer">
-      <footer v-if="submitted">
+      <footer v-if="submitted && !isSubmitting">
         <button
           class="button is-light"
           @click="handleDone">
@@ -68,7 +85,7 @@
         </button>
       </footer>
       
-      <footer v-else>
+      <footer v-if="!submitted && !isSubmitting">
         <button
           class="button is-light"
           @click="handleDone">
@@ -89,10 +106,12 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { lsGet, lsSet } from '@/services/LocalStorage'
 import Draggable from './DraggableContainer'
+import Loader from '@/components/ui/Loader'
 
 export default {
   components: {
-    Draggable
+    Draggable,
+    Loader
   },
 
   props: {
@@ -112,7 +131,10 @@ export default {
       description: '',
       email: '',
       triedSubmitting: false,
-      submitted: false
+      submitted: false,
+      hasSubmitError: false,
+      submitErrorMsg: '',
+      isSubmitting: false
     }
   },
 
@@ -126,8 +148,11 @@ export default {
     validDescription() {
       return this.description.trim() !== ''
     },
+    validEmail() {
+      return this.email.trim() === '' || this.checkEmail(this.email.trim())
+    },
     validSubmission() {
-      return this.validSources && this.validDescription
+      return this.validSources && this.validDescription && this.validEmail
     }
   },
 
@@ -154,24 +179,73 @@ export default {
     },
     handleReportIssueSubmit() {
       this.triedSubmitting = true
+      this.hasSubmitError = false
       if (this.validSubmission) {
         const description = this.getDescription()
         const payload = {
           subject: `${this.name} facility feedback`,
-          description: description,
-          email: this.email
+          description: description
         }
 
+        if (this.email && this.email !== '') {
+          payload.email = this.email
+        }
+
+        this.isSubmitting = true
+
         this.submitFeedback(payload)
-        this.submitted = true
-        lsSet('feedbackEmail', this.email)
+          .then(r => {
+            this.submitted = true
+            this.isSubmitting = false
+            lsSet('feedbackEmail', this.email)
+          })
+          .catch(error => {
+            this.hasSubmitError = true
+            this.isSubmitting = false
+            if (error.response) {
+              // Request made and server responded
+              console.log(error.response.data)
+              console.log(error.response.status)
+              console.log(error.response.headers)
+              const msg = error.response.data.detail
+                ? error.response.data.detail[0].msg
+                : JSON.stringify(error.response.data)
+              this.submitErrorMsg = msg
+            } else if (error.request) {
+              // The request was made but no response was received
+              console.log(error.request)
+            } else {
+              // Something happened in setting up the request that triggered an Error
+              console.log('Error', error.message)
+              this.submitErrorMsg = error.message
+            }
+          })
       } else {
         console.log('invalid')
       }
     },
 
-    getDescription() {
+    checkEmail(email) {
+      var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      return re.test(email)
+    },
+
+    getEmail() {
+      if (this.email && this.email !== '') {
+        return `
+**Email:**
+${this.email}     
+   
+`
+      }
       return `
+**No email provided.**
+   
+`
+    },
+
+    getDescription() {
+      let desc = `
 **Path:**
 ${this.path}
 
@@ -187,6 +261,10 @@ ${JSON.stringify(this.selectedFields, null, 1)}
 **Description:**
 ${this.description}
 `
+
+      desc = this.getEmail() + desc
+
+      return desc
     }
   }
 }
@@ -265,6 +343,14 @@ ${this.description}
   }
   .has-error {
     border-color: #e34a33 !important;
+  }
+  .help.is-danger {
+    font-weight: 700;
+  }
+  .notification.is-danger {
+    background: #c74523;
+    font-size: 0.9em;
+    padding: 1rem;
   }
 }
 </style>
