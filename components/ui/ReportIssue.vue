@@ -11,6 +11,13 @@
         <h5>Your report has been submitted. <br> Thank you.</h5>
       </main>
       <main v-else>
+        <div
+          v-if="hasSubmitError"
+          class="notification is-danger">
+          <p>There is an issue submitting the report.</p>
+          <code>{{ submitErrorMsg }}</code>
+        </div>
+
         <label>Affected fields <em>(optional)</em></label>
         <p
           v-if="selectedFields.length === 0"
@@ -115,7 +122,9 @@ export default {
       description: '',
       email: '',
       triedSubmitting: false,
-      submitted: false
+      submitted: false,
+      hasSubmitError: false,
+      submitErrorMsg: ''
     }
   },
 
@@ -160,6 +169,7 @@ export default {
     },
     handleReportIssueSubmit() {
       this.triedSubmitting = true
+      this.hasSubmitError = false
       if (this.validSubmission) {
         const description = this.getDescription()
         const payload = {
@@ -172,8 +182,30 @@ export default {
         }
 
         this.submitFeedback(payload)
-        this.submitted = true
-        lsSet('feedbackEmail', this.email)
+          .then(r => {
+            this.submitted = true
+            lsSet('feedbackEmail', this.email)
+          })
+          .catch(error => {
+            this.hasSubmitError = true
+            if (error.response) {
+              // Request made and server responded
+              console.log(error.response.data)
+              console.log(error.response.status)
+              console.log(error.response.headers)
+              const msg = error.response.data.detail
+                ? error.response.data.detail[0].msg
+                : JSON.stringify(error.response.data)
+              this.submitErrorMsg = msg
+            } else if (error.request) {
+              // The request was made but no response was received
+              console.log(error.request)
+            } else {
+              // Something happened in setting up the request that triggered an Error
+              console.log('Error', error.message)
+              this.submitErrorMsg = error.message
+            }
+          })
       } else {
         console.log('invalid')
       }
@@ -300,6 +332,11 @@ ${this.description}
   }
   .help.is-danger {
     font-weight: 700;
+  }
+  .notification.is-danger {
+    background: #c74523;
+    font-size: 0.9em;
+    padding: 1rem;
   }
 }
 </style>
