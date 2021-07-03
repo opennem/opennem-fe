@@ -10,7 +10,14 @@
       <main v-if="submitted">
         <h5>Your report has been submitted. <br> Thank you.</h5>
       </main>
-      <main v-else>
+
+      <main 
+        v-if="isSubmitting" 
+        style="margin: 75px 0;">
+        <Loader class="submission-loader" />
+      </main> 
+
+      <main v-if="!isSubmitting && !submitted">
         <div
           v-if="hasSubmitError"
           class="notification is-danger">
@@ -70,7 +77,7 @@
       </main>
     </template>
     <template slot="footer">
-      <footer v-if="submitted">
+      <footer v-if="submitted && !isSubmitting">
         <button
           class="button is-light"
           @click="handleDone">
@@ -78,7 +85,7 @@
         </button>
       </footer>
       
-      <footer v-else>
+      <footer v-if="!submitted && !isSubmitting">
         <button
           class="button is-light"
           @click="handleDone">
@@ -99,10 +106,12 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { lsGet, lsSet } from '@/services/LocalStorage'
 import Draggable from './DraggableContainer'
+import Loader from '@/components/ui/Loader'
 
 export default {
   components: {
-    Draggable
+    Draggable,
+    Loader
   },
 
   props: {
@@ -124,7 +133,8 @@ export default {
       triedSubmitting: false,
       submitted: false,
       hasSubmitError: false,
-      submitErrorMsg: ''
+      submitErrorMsg: '',
+      isSubmitting: false
     }
   },
 
@@ -181,13 +191,17 @@ export default {
           payload.email = this.email
         }
 
+        this.isSubmitting = true
+
         this.submitFeedback(payload)
           .then(r => {
             this.submitted = true
+            this.isSubmitting = false
             lsSet('feedbackEmail', this.email)
           })
           .catch(error => {
             this.hasSubmitError = true
+            this.isSubmitting = false
             if (error.response) {
               // Request made and server responded
               console.log(error.response.data)
