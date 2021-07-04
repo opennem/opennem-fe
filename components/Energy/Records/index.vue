@@ -1,7 +1,25 @@
 <template>
   <section>
     <table class="table is-fullwidth">
-      <caption>Records</caption>
+      <caption>
+        Stats
+
+        <div>
+          <span>
+            <time>
+              {{ startDate | customFormatDate({ range, interval, isStart: true }) }}
+            </time>
+            –
+            <time>
+              {{ endDate | customFormatDate({ range, interval, showYear: true, isEnd: true }) }}
+            </time>
+          </span>
+          <small>
+            {{ timezoneString }}
+          </small>
+        </div>
+        
+      </caption>
       <thead>
         <tr>
           <th />
@@ -136,8 +154,8 @@ import { mapGetters } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 
 import * as SI from '@/constants/si.js'
-import EnergyRecord from '~/components/Energy/Records/Record.vue'
-import { minTime } from 'date-fns/fp'
+import EnergyRecord from '@/components/Energy/Records/Record.vue'
+
 export default {
   components: {
     EnergyRecord
@@ -220,6 +238,7 @@ export default {
   computed: {
     ...mapGetters({
       isEnergyType: 'regionEnergy/isEnergyType',
+      regionTimezoneString: 'regionEnergy/regionTimezoneString',
 
       chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
       chartEnergyDisplayPrefix:
@@ -254,11 +273,25 @@ export default {
       return this.$store.getters.chartUnit
     },
 
+    timezoneString() {
+      return this.isEnergyType ? '' : this.regionTimezoneString
+    },
+
     showSelectedRow() {
       return (
         this.selectedPowerEnergyDomains.length !==
         this.powerEnergyDomains.length
       )
+    },
+
+    startDate() {
+      const dataLength = this.dataset.length
+      return dataLength > 0 ? this.dataset[0].time : null
+    },
+
+    endDate() {
+      const dataLength = this.dataset.length
+      return dataLength > 0 ? this.dataset[dataLength - 1].time : null
     }
   },
 
@@ -563,6 +596,17 @@ export default {
     font-weight: 600;
     text-transform: uppercase;
     font-size: 1.2em;
+
+    & > div {
+      font-size: 0.9em;
+      font-family: $family-primary;
+      float: right;
+      position: relative;
+      top: 3px;
+      text-transform: none;
+      color: #444;
+      font-weight: 500;
+    }
   }
 }
 </style>

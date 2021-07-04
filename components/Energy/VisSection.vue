@@ -367,12 +367,13 @@ export default {
           this.interval,
           dateRange[0]
         )
-        const endTime = DateDisplay.snapToClosestInterval(
+        let endTime = DateDisplay.snapToClosestInterval(
           this.interval,
           dateRange[1]
         )
         if (this.interval === 'Fin Year') {
-          startTime = addYears(startTime, 1)
+          startTime = addYears(startTime, 2)
+          endTime = addYears(endTime, 1)
         }
 
         filteredDates = [startTime, endTime]
