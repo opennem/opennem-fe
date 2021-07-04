@@ -276,7 +276,6 @@ import differenceInMinutes from 'date-fns/differenceInMinutes'
 import { energy_sum } from '@opennem/energy-tools'
 
 import EventBus from '@/plugins/eventBus'
-import Data from '~/services/Data.js'
 import Domain from '~/services/Domain.js'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
 import ColumnSelector from '~/components/ui/SummaryColumnSelector'
@@ -608,31 +607,18 @@ export default {
 
     startDate() {
       const dataLength = this.dataset.length
-      const startDate = dataLength > 0 ? this.dataset[0].time : null
-      return startDate
+      return dataLength > 0 ? this.dataset[0].time : null
+    },
+
+    endDate() {
+      const dataLength = this.dataset.length
+      return dataLength > 0 ? this.dataset[dataLength - 1].time : null
     },
 
     startDateTime() {
       // const dataLength = this.dataset.length
       // const startDate = dataLength > 0 ? this.dataset[0].date : null
       return this.startDate ? new Date(this.startDate).toISOString() : ''
-    },
-
-    endDate() {
-      const dataLength = this.dataset.length
-      let whichIndex = 1
-      // if (this.range === '30D' || this.range === '1Y' || this.range === 'ALL') {
-      //   whichIndex = 2
-      // }
-      if (dataLength > 0) {
-        const time = this.dataset[dataLength - whichIndex]
-          ? this.dataset[dataLength - whichIndex].time
-          : this.dataset[dataLength - 1].time
-        const endDate = time
-        return endDate
-      } else {
-        return null
-      }
     },
 
     endDateTime() {
