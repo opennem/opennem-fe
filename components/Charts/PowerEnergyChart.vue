@@ -838,6 +838,9 @@ export default {
     },
     chartUnitPrefix() {
       this.$emit('selectedDataset', this.dataset)
+    },
+    interval() {
+      this.handleTypeClick()
     }
   },
 
