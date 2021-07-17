@@ -327,6 +327,7 @@ import { interpolateRgb, quantize } from 'd3-interpolate'
 import { color } from 'd3-color'
 import isBefore from 'date-fns/isBefore'
 import isAfter from 'date-fns/isAfter'
+import addYears from 'date-fns/addYears'
 
 import * as FT from '~/constants/energy-fuel-techs/group-default.js'
 import * as SI from '@/constants/si'
@@ -1171,7 +1172,27 @@ export default {
       return unknownColour
     },
     handleZoomExtent(dateRange) {
-      this.zoomExtent = dateRange
+      let filteredDates = []
+      if (dateRange && dateRange.length > 0) {
+        let startTime = DateDisplay.snapToClosestInterval(
+          this.interval,
+          dateRange[0]
+        )
+        let endTime = DateDisplay.snapToClosestInterval(
+          this.interval,
+          dateRange[1]
+        )
+        if (this.interval === 'Fin Year') {
+          startTime = addYears(startTime, 2)
+          endTime = addYears(endTime, 1)
+        }
+
+        filteredDates = [startTime, endTime]
+      } else {
+        filteredDates = []
+      }
+
+      this.zoomExtent = filteredDates
     },
 
     handleCodeHover(code) {
