@@ -18,16 +18,15 @@
       <g
         v-else
         class="total">
-        <text
-          v-if="isTotalPower"
-          class="total-label"
-          dy="-10">Average</text>
-        <text
-          v-if="unit === ' TWh'"
-          dy="10">{{ total | customFormatValue }}{{ unit }}</text>
-        <text
-          v-else
-          dy="10">{{ total | formatValue }}{{ unit }}</text>
+        <g v-if="!isTotalPower">
+          <text
+            v-if="unit === ' TWh'"
+            dy="10">{{ total | customFormatValue }}{{ unit }}</text>
+          <text
+            v-else
+            dy="10">{{ total | formatValue }}{{ unit }}</text>
+        </g>
+        
       </g>
     </svg>
   </div>
