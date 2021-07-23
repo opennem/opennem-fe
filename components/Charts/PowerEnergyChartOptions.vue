@@ -264,11 +264,18 @@ export default {
       if (this.isEnergyType) {
         options = this.energyOptions
         if (this.isTypeLine || this.isTypeChangeSinceLine) {
-          options.yAxis = [
-            OPTIONS.CHART_YAXIS_ENERGY,
-            OPTIONS.CHART_YAXIS_AVERAGE_POWER,
-            OPTIONS.CHART_YAXIS_PERCENTAGE
-          ]
+          if (this.isTypeChangeSinceLine) {
+            options.yAxis = [
+              OPTIONS.CHART_YAXIS_ENERGY,
+              OPTIONS.CHART_YAXIS_AVERAGE_POWER
+            ]
+          } else {
+            options.yAxis = [
+              OPTIONS.CHART_YAXIS_ENERGY,
+              OPTIONS.CHART_YAXIS_AVERAGE_POWER,
+              OPTIONS.CHART_YAXIS_PERCENTAGE
+            ]
+          }
           if (this.isYAxisAbsolute) {
             options.si = energySi
           } else if (this.isYAxisAveragePower) {
@@ -315,6 +322,7 @@ export default {
           this.chartType === OPTIONS.CHART_CHANGE_SINCE_LINE
         const changeToProportionType = type === OPTIONS.CHART_PROPORTION
         const changeToStackedType = type === OPTIONS.CHART_STACKED
+        const changeToChangeSinceType = type === OPTIONS.CHART_CHANGE_SINCE_LINE
         const changeToHiddenType = type === OPTIONS.CHART_HIDDEN
         const isPercentageYAxis =
           this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE
@@ -323,7 +331,10 @@ export default {
 
         if (
           isPercentageYAxis &&
-          (changeToHiddenType || changeToStackedType || changeToProportionType)
+          (changeToHiddenType ||
+            changeToStackedType ||
+            changeToProportionType ||
+            changeToChangeSinceType)
         ) {
           this.$store.commit(
             'chartOptionsPowerEnergy/chartEnergyYAxis',
