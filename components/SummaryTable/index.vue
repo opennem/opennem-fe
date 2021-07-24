@@ -64,7 +64,7 @@
           <div
             v-if="isEnergy"
             class="summary-col-energy cell-value">
-            <div v-if="isTypeChangeSinceLine && !isYAxisAbsolute">
+            <div v-if="isTypeChangeSinceLine">
               –
             </div>
             <div v-else>
@@ -146,7 +146,7 @@
           <div
             v-if="isEnergy"
             class="summary-col-energy cell-value">
-            <div v-if="isTypeChangeSinceLine && !isYAxisAbsolute">
+            <div v-if="isTypeChangeSinceLine">
               –
             </div>
             <div v-else>
@@ -205,6 +205,9 @@
             <span v-if="hoverOn || focusOn">
               {{ pointSummary._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
             </span>
+            <span v-else-if="isTypeChangeSinceLine">
+              –
+            </span>
             <span v-else>
               {{ summary._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
             </span>
@@ -214,6 +217,9 @@
             class="summary-col-energy cell-value">
             <span v-if="hoverOn || focusOn">
               {{ pointSummary._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+            </span>
+            <span v-else-if="isTypeChangeSinceLine">
+              –
             </span>
             <span v-else>
               {{ summary._totalEnergy | formatValue }}
@@ -245,7 +251,13 @@
           <div
             v-if="isEnergy"
             class="summary-col-energy cell-value">
-            <span>
+            <span v-if="hoverOn || focusOn">
+              {{ renewablesValue | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+            </span>
+            <span v-else-if="isTypeChangeSinceLine">
+              –
+            </span>
+            <span v-else>
               {{ renewablesValue | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
             </span>
           </div>
@@ -254,6 +266,9 @@
             class="summary-col-energy cell-value">
             <span v-if="hoverOn || focusOn">
               {{ renewablesValue | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+            </span>
+            <span v-else-if="isTypeChangeSinceLine">
+              –
             </span>
             <span v-else>
               {{ renewablesValue | formatValue }}
