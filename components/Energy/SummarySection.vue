@@ -65,6 +65,7 @@
         :focus-date="focusDate"
         :convert-value="convertValue"
         :highlight-domain="highlightId"
+        :is-power-type="!isEnergyType"
       />
     </section>
 
