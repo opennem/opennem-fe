@@ -1,7 +1,7 @@
 <template>
   <section>
     <power-energy-chart
-      v-if="ready && showChartPowerEnergy"
+      v-if="ready && exportPowerEnergy"
       :power-energy-dataset="currentDataset"
       :domain-power-energy="currentDomainPowerEnergy"
       :hidden-domains="hiddenFuelTechs"
@@ -18,7 +18,7 @@
     />
 
     <emissions-chart
-      v-if="ready && domainEmissions.length > 0 && showChartEmissionsVolume && featureEmissions"
+      v-if="ready && domainEmissions.length > 0 && exportEmissionsVolume && featureEmissions"
       :read-only="true"
       :zoom-extent="filteredDates"
       :emissions-dataset="currentDataset"
@@ -32,7 +32,7 @@
     />
 
     <emission-intensity-chart
-      v-if="ready && domainEmissions.length > 0 && showChartEmissionIntensity && featureEmissions"
+      v-if="ready && domainEmissions.length > 0 && exportEmissionIntensity && featureEmissions"
       :read-only="true"
       :zoom-extent="filteredDates"
       :emission-intensity-dataset="emissionIntensityData"
@@ -41,7 +41,7 @@
     />
 
     <price-chart
-      v-if="ready && domainPrice.length > 0 && showChartPrice"
+      v-if="ready && domainPrice.length > 0 && exportPrice"
       :read-only="true"
       :zoom-extent="filteredDates"
       :price-dataset="currentDataset"
@@ -51,7 +51,7 @@
     />
 
     <temperature-chart
-      v-if="ready && domainTemperature.length > 0 && showChartTemperature"
+      v-if="ready && domainTemperature.length > 0 && exportTemperature"
       :read-only="true"
       :zoom-extent="filteredDates"
     />
@@ -108,7 +108,13 @@ export default {
       averageEmissions: 'energy/emissions/averageEmissions',
       emissionIntensityData: 'energy/emissions/emissionIntensityData',
 
-      featureEmissions: 'feature/emissions'
+      featureEmissions: 'feature/emissions',
+
+      exportPowerEnergy: 'export/powerEnergy',
+      exportEmissionsVolume: 'export/emissionsVolume',
+      exportEmissionIntensity: 'export/emissionIntensity',
+      exportPrice: 'export/price',
+      exportTemperature: 'export/temperature'
     }),
     domains() {
       return this.currentDomainPowerEnergy

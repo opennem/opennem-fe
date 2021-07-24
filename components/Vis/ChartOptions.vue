@@ -27,7 +27,7 @@
                 :key="type"
                 :class="{'is-selected': chartType === type}"
                 class="button is-small"
-                @click.stop="handleTypeClick(type)">{{ chartLabel[type] }}</button>
+                @click.stop="() => handleTypeClick(type)">{{ chartLabel[type] }}</button>
             </div>
           </fieldset>
 
