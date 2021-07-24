@@ -1085,7 +1085,7 @@ export default {
       }
     },
 
-    calculatePointSummary(data) {
+    calculatePointSummary(data, marketValueData) {
       let totalSources = 0
       let totalGeneration = 0
       let totalLoads = 0
@@ -1130,7 +1130,7 @@ export default {
         if (this.isEnergy) {
           this.marketValueDomains.forEach((ft, index) => {
             const category = ft.category
-            const value = this.pointSummary[ft.id]
+            const value = marketValueData[ft.id]
             const findEnergyEq = this.energyDomains.find(
               e => e[this.propRef] === ft[this.propRef]
             )
@@ -1139,7 +1139,7 @@ export default {
                 'There is an issue finding the energy fuel tech in market value calculations.'
               )
             }
-            const ftTotal = this.pointSummary[findEnergyEq.id]
+            const ftTotal = marketValueData[findEnergyEq.id]
             const avValue = value / ftTotal / 1000
 
             this.pointSummary[ft.id] = avValue
@@ -1207,7 +1207,7 @@ export default {
         // }
       }
 
-      this.calculatePointSummary(point)
+      this.calculatePointSummary(point, _cloneDeep(dataFound))
     },
 
     handleSourcesOrderUpdate(newSourceOrder) {
