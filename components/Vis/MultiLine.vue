@@ -66,7 +66,10 @@ import {
   curveLinear,
   curveMonotoneX
 } from 'd3-shape'
+import { format as d3Format } from 'd3-format'
 import { extent } from 'd3-array'
+
+import * as CONFIG from './shared/config.js'
 
 export default {
   props: {
@@ -176,7 +179,7 @@ export default {
     },
     pathStrokeWidth: {
       type: Number,
-      default: () => 1.5
+      default: () => 2
     },
     showCursorDots: {
       type: Boolean,
@@ -354,9 +357,17 @@ export default {
       if (domain) {
         this.$vis1Group
           .selectAll('path')
-          .attr('opacity', d => (d === domain ? 1 : 0.2))
+          .style('opacity', d => (d === domain ? 1 : 0.1))
+          .style(
+            'stroke-width',
+            d =>
+              d === domain ? this.pathStrokeWidth + 1 : this.pathStrokeWidth
+          )
       } else {
-        this.$vis1Group.selectAll('path').attr('opacity', 1)
+        this.$vis1Group
+          .selectAll('path')
+          .style('opacity', 0.9)
+          .style('stroke-width', this.pathStrokeWidth)
       }
     },
     curveType(type) {
@@ -592,8 +603,9 @@ export default {
           .attr('class', key => `${key}-path`)
           .style('stroke', key => this.colours1[key])
           .style('stroke-width', this.pathStrokeWidth)
-          .style('filter', 'url(#shadow)')
+          // .style('filter', 'url(#shadow)')
           .style('fill', 'transparent')
+          .style('opacity', 0.9)
           .style('clip-path', this.clipPathUrl)
           .style('-webkit-clip-path', this.clipPathUrl)
           .attr('d', this.drawVis1Path)
@@ -646,8 +658,8 @@ export default {
         .append('path')
         .attr('class', key => `${key}-path`)
         .style('stroke', key => this.colours2[key])
-        .style('stroke-width', 2)
-        .style('filter', 'url(#shadow)')
+        .style('stroke-width', 3)
+        // .style('filter', 'url(#shadow)')
         .style('fill', 'transparent')
         .style('clip-path', this.clipPathUrl)
         .style('-webkit-clip-path', this.clipPathUrl)
@@ -675,7 +687,9 @@ export default {
       g.selectAll('.y-axis-left-text .tick text')
         .text(t => {
           const tickText = this.shouldConvertValue ? this.convertValue(t) : t
-          return `${tickText}${this.y1AxisUnit}`
+          return `${d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(tickText)}${
+            this.y1AxisUnit
+          }`
         })
         .attr('dx', 5)
         .attr('dy', -2)
@@ -759,7 +773,7 @@ export default {
             .merge(dots)
             .attr('cx', this.x(dataPoint.date))
             .attr('cy', key => this.y1(dataPoint[key]))
-            .attr('r', 2)
+            .attr('r', 4)
             .attr('fill', key => this.colours1[key])
             .exit()
             .remove()

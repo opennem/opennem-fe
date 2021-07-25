@@ -25,11 +25,12 @@
 
 <script>
 import _cloneDeep from 'lodash.clonedeep'
-import { select, mouse, event, selectAll } from 'd3-selection'
+import { select, mouse, event } from 'd3-selection'
 import { scaleTime } from 'd3-scale'
 import { axisBottom } from 'd3-axis'
 import { extent } from 'd3-array'
 import { brushX } from 'd3-brush'
+import { onBrush, onBrushEnded } from './shared/brushEvents'
 
 export default {
   props: {
@@ -56,6 +57,15 @@ export default {
     xTicks: {
       type: Function,
       default: () => null
+    },
+
+    interval: {
+      type: String,
+      default: ''
+    },
+    filterPeriod: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -100,6 +110,9 @@ export default {
         return updated
       }
       return []
+    },
+    datasetDateExtent() {
+      return extent(this.updatedDataset, d => new Date(d.date))
     }
   },
   watch: {
@@ -181,6 +194,7 @@ export default {
       this.brushX = brushX()
         .extent([[0, 0], [this.width, this.svgHeight]])
         .on('end', this.brushEnded)
+
       this.$brushGroup = $svg.select('.brush-group')
       this.$brushGroup.call(this.brushX)
 
@@ -194,6 +208,21 @@ export default {
       })
       $svg.on('mouseleave', () => {
         this.handleSvgLeave()
+      })
+
+      this.brushX.on('brush', function() {
+        if (!event.selection) return
+        if (event.sourceEvent.type === 'brush') return
+
+        const dateRange = onBrush({
+          s: event.selection,
+          x: self.x,
+          interval: self.interval,
+          filterPeriod: self.filterPeriod
+        })
+
+        select(this).call(self.brushX.move, dateRange.map(self.x))
+        self.$emit('date-hover', this, self.getXAxisDateByMouse(this))
       })
     },
 
@@ -248,10 +277,14 @@ export default {
       // Turn off the brush selection
       this.$brushGroup.call(this.brushX.move, null)
 
-      const s = event.selection
-      let start = this.x.invert(s[0])
-      let end = this.x.invert(s[1])
-      this.$emit('date-filter', [start, end])
+      const dateRange = onBrushEnded({
+        s: event.selection,
+        x: this.x,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod,
+        datasetEndDate: this.datasetDateExtent[1]
+      })
+      this.$emit('date-filter', dateRange)
     },
 
     getXAxisDateByMouse(evt) {

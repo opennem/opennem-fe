@@ -38,6 +38,7 @@ export const state = () => ({
   datasetFull: [],
   datasetFlat: [],
   currentDataset: [],
+  changeSinceDataset: [],
   domainPowerEnergy: [],
   domainPowerEnergyGrouped: [],
   domainEmissions: [],

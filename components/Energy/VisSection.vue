@@ -22,11 +22,8 @@
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
       @svgClick="handleSvgClick"
-      @selectedDataset="ds => {
-        selectedDataset = ds
-        updateCompareData()
-      }"
-      @displayUnit="unit => selectedUnit = unit"
+      @selectedDataset="handleSelectedDatasetChange"
+      @displayUnit="handleDisplayUnitChange"
     />
 
     <energy-compare
@@ -101,9 +98,10 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
-import { min, max } from 'd3-array'
 import _cloneDeep from 'lodash.clonedeep'
 import addYears from 'date-fns/addYears'
+
+import * as OPTIONS from '@/constants/chart-options.js'
 
 import DateDisplay from '@/services/DateDisplay.js'
 import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
@@ -175,6 +173,8 @@ export default {
       emissionIntensityData: 'energy/emissions/emissionIntensityData',
       averageEmissionIntensity: 'energy/emissions/averageEmissionIntensity',
 
+      chartType: 'chartOptionsPowerEnergy/chartType',
+
       featureEmissions: 'feature/emissions'
     }),
 
@@ -190,6 +190,10 @@ export default {
 
     byGeneration() {
       return this.percentContributionTo === 'generation'
+    },
+
+    isTypeChangeSinceLine() {
+      return this.chartType === OPTIONS.CHART_CHANGE_SINCE_LINE
     },
 
     renewablesLineColour() {
@@ -251,7 +255,9 @@ export default {
     ...mapMutations({
       setFocusDate: 'visInteract/focusDate',
       setFilteredDates: 'regionEnergy/filteredDates',
-      setCompareDifference: 'compareDifference'
+      setChangeSinceDataset: 'regionEnergy/changeSinceDataset',
+      setCompareDifference: 'compareDifference',
+      setPowerEnergyDisplayUnit: 'chartOptionsPowerEnergy/displayUnit'
     }),
     clearHoverFocus() {
       this.isHovering = false
@@ -376,6 +382,19 @@ export default {
       }
 
       this.updateFilteredDates(filteredDates)
+    },
+
+    handleSelectedDatasetChange(ds) {
+      if (this.isTypeChangeSinceLine) {
+        this.setChangeSinceDataset(ds)
+      }
+      this.selectedDataset = ds
+      this.updateCompareData()
+    },
+
+    handleDisplayUnitChange(unit) {
+      this.setPowerEnergyDisplayUnit(unit)
+      this.selectedUnit = unit
     }
   }
 }

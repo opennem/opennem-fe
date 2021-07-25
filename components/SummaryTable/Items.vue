@@ -29,7 +29,13 @@
       <div
         v-if="isEnergyType"
         class="summary-col-energy">
-        <span>
+        <span v-if="showPointSummary">
+          {{ getValue(ft.id) | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+        </span>
+        <span v-else-if="isTypeChangeSinceLine">
+          –
+        </span>
+        <span v-else>
           {{ getValue(ft.id) | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
         </span>
       </div>
@@ -147,12 +153,13 @@ export default {
     ...mapGetters({
       fuelTechGroupName: 'fuelTechGroupName',
       percentContributionTo: 'percentContributionTo',
-      chartEnergyRenewablesLine:
-        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
 
       isEnergyType: 'regionEnergy/isEnergyType',
       domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
 
+      isTypeChangeSinceLine: 'chartOptionsPowerEnergy/isTypeChangeSinceLine',
+      chartEnergyRenewablesLine:
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
       chartEnergyUnit: 'chartOptionsPowerEnergy/chartEnergyUnit',
       chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
       chartEnergyDisplayPrefix:

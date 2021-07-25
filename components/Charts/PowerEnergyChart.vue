@@ -17,6 +17,7 @@
       :is-type-area="isTypeArea"
       :is-type-proportion="isTypeProportion"
       :is-type-line="isTypeLine"
+      :is-type-change-since-line="isTypeChangeSinceLine"
       :is-y-axis-absolute="isYAxisAbsolute"
       :is-y-axis-percentage="isYAxisPercentage"
       :is-y-axis-average-power="isYAxisAveragePower"
@@ -80,17 +81,17 @@
     />
 
     <button
-      v-if="chartShown && isTypeLine && zoomExtent.length > 0 && !readOnly"
+      v-if="chartShown && (isTypeLine || isTypeChangeSinceLine) && zoomExtent.length > 0 && !readOnly"
       class="button is-rounded is-small reset-btn"
       @click.stop="handleZoomReset"
     >
       Zoom Out
     </button>
     <multi-line
-      v-if="chartShown && isTypeLine"
+      v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
       :svg-height="chartHeight - 30"
       :domains1="domains"
-      :dataset1="multiLineDataset"
+      :dataset1="dataset"
       :domains2="[{
         label: 'Renewables',
         domain: 'value',
@@ -119,14 +120,17 @@
       @domain-hover="handleDomainHover"
       @enter="handleVisEnter"
       @leave="handleVisLeave" />
+    
     <date-brush
-      v-if="chartShown && isTypeLine"
-      :dataset="multiLineDataset"
+      v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
+      :dataset="dataset"
       :zoom-range="zoomExtent"
       :x-ticks="xTicks"
       :tick-format="tickFormat"
       :second-tick-format="secondTickFormat"
       :read-only="readOnly"
+      :interval="interval"
+      :filter-period="filterPeriod"
       class="date-brush vis-chart"
       @date-hover="handleDateHover"
       @date-filter="handleZoomExtent"
@@ -173,7 +177,8 @@ const energyOptions = {
     OPTIONS.CHART_HIDDEN,
     OPTIONS.CHART_STACKED,
     OPTIONS.CHART_PROPORTION,
-    OPTIONS.CHART_LINE
+    OPTIONS.CHART_LINE,
+    OPTIONS.CHART_CHANGE_SINCE_LINE
   ],
   curve: [
     OPTIONS.CHART_CURVE_SMOOTH,
@@ -313,7 +318,12 @@ export default {
         'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
       chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
       chartEnergyRenewablesLine:
-        'chartOptionsPowerEnergy/chartEnergyRenewablesLine'
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+
+      isTypeArea: 'chartOptionsPowerEnergy/isTypeArea',
+      isTypeProportion: 'chartOptionsPowerEnergy/isTypeProportion',
+      isTypeLine: 'chartOptionsPowerEnergy/isTypeLine',
+      isTypeChangeSinceLine: 'chartOptionsPowerEnergy/isTypeChangeSinceLine'
     }),
 
     tickFormat() {
@@ -355,18 +365,13 @@ export default {
     },
 
     shouldConvertValue() {
-      return this.isTypeArea || (this.isTypeLine && !this.isYAxisPercentage)
+      return (
+        this.isTypeArea ||
+        ((this.isTypeLine || this.isTypeChangeSinceLine) &&
+          !this.isYAxisPercentage)
+      )
     },
 
-    isTypeArea() {
-      return this.chartType === OPTIONS.CHART_STACKED
-    },
-    isTypeProportion() {
-      return this.chartType === OPTIONS.CHART_PROPORTION
-    },
-    isTypeLine() {
-      return this.chartType === OPTIONS.CHART_LINE
-    },
     isYAxisPercentage() {
       return this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE
     },
@@ -381,9 +386,10 @@ export default {
     },
 
     domains() {
-      const domains = this.isTypeArea
-        ? this.powerEnergyDomains
-        : this.energyPercentDomains
+      const domains =
+        this.isTypeArea || this.isTypeChangeSinceLine
+          ? this.powerEnergyDomains
+          : this.energyPercentDomains
       return domains.filter(
         d => !_includes(this.hiddenDomains, d[this.propName])
       )
@@ -593,6 +599,7 @@ export default {
         isRollingSum: this.isRollingSumRange
       })
     },
+
     multiLineDataset() {
       if (this.isYAxisAbsolute) {
         return this.multiLineEnergyDataset
@@ -601,6 +608,16 @@ export default {
       }
       return this.averagePowerDataset
     },
+
+    changeSinceDataset() {
+      if (this.isYAxisAbsolute) {
+        return this.getChangeSinceDataset(this.multiLineEnergyDataset)
+      } else if (this.isYAxisPercentage) {
+        return this.getChangeSinceDataset(this.multiLineEnergyDataset, true)
+      }
+      return this.getChangeSinceDataset(this.averagePowerDataset)
+    },
+
     stackedAreaDataset() {
       if (this.isTypeArea) {
         if (this.isYAxisAbsolute) {
@@ -613,10 +630,13 @@ export default {
         return this.energyPercentDataset
       }
     },
+
     dataset() {
       let ds = null
       if (this.isTypeLine) {
         ds = this.multiLineDataset
+      } else if (this.isTypeChangeSinceLine) {
+        ds = this.changeSinceDataset
       } else {
         ds = this.stackedAreaDataset
       }
@@ -673,13 +693,10 @@ export default {
       return highest + (highest * 10) / 100
     },
     energyLineYMin() {
-      const dataset = this.multiLineDataset
-      const lowest = this.getMinValue(dataset)
-      return lowest < 0 ? 0 : lowest
+      return this.getMinValueByLowest(this.dataset)
     },
     energyLineYMax() {
-      const dataset = this.multiLineDataset
-      return this.getMaxValue(dataset)
+      return this.getMaxValueByHighest(this.dataset)
     },
 
     renewablesPercentageDataset() {
@@ -821,6 +838,9 @@ export default {
     },
     chartUnitPrefix() {
       this.$emit('selectedDataset', this.dataset)
+    },
+    interval() {
+      this.handleTypeClick()
     }
   },
 
@@ -840,7 +860,7 @@ export default {
         value
       )
     },
-    getMinValue(dataset) {
+    getMinValueByLowest(dataset) {
       let min = 0
       dataset.forEach(d => {
         if (d._lowest < min) {
@@ -848,6 +868,15 @@ export default {
         }
       })
       return min
+    },
+    getMaxValueByHighest(dataset) {
+      let max = 0
+      dataset.forEach(d => {
+        if (d._highest > max) {
+          max = d._highest
+        }
+      })
+      return max
     },
     getMaxValue(dataset) {
       let max = 0
@@ -866,6 +895,48 @@ export default {
       }
       return interval.toLowerCase()
     },
+
+    getChangeSinceDataset(dataset, calculateProportion) {
+      const filtered =
+        this.zoomExtent.length > 0
+          ? dataset.filter(
+              d => d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
+            )
+          : dataset
+
+      const change = filtered[0]
+      const newDataset = filtered.map((d, i) => {
+        let min = 0,
+          max = 0
+        const obj = {
+          date: d.date,
+          time: d.time
+        }
+        this.domains.forEach(domain => {
+          const id = domain.id
+          const cValue = change[id] || 0
+          obj[id] = d[id] - cValue
+
+          if (calculateProportion && i > 0) {
+            const proportion = (obj[id] / cValue) * 100
+            obj[id] = isFinite(proportion) ? proportion : 0
+          }
+
+          if (obj[id] < min) {
+            min = obj[id]
+          }
+          if (obj[id] > max) {
+            max = obj[id]
+          }
+          obj._lowest = min
+          obj._highest = max
+        })
+        return obj
+      })
+
+      return newDataset
+    },
+
     handleDomainHover(domain) {
       this.setHoverDomain(domain)
     },
