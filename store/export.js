@@ -54,7 +54,6 @@ export const mutations = {
     state.powerEnergy = data
   },
   emissionsVolume(state, data) {
-    console.log('eVol', data)
     lsSet('exportEmissionsVolume', data)
     state.emissionsVolume = data
   },

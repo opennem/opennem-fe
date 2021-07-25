@@ -127,6 +127,9 @@ export default {
     this.exportCharts.forEach(c => {
       let localState = lsGet(c.name)
       let state = localState && localState !== 'false' ? true : false
+      if (c.name === 'exportPowerEnergy' && localState === null) {
+        state = true
+      }
       this.$store.commit(`export/${c.commit}`, state)
     })
   },
