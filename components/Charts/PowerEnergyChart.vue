@@ -897,12 +897,16 @@ export default {
     },
 
     getChangeSinceDataset(dataset, calculateProportion) {
+      const excludeIncompleteIntervals = ds =>
+        ds.filter(d => !d._isIncompleteBucket)
+      const filterExtentFilter = ds =>
+        ds.filter(
+          d => d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
+        )
       const filtered =
         this.zoomExtent.length > 0
-          ? dataset.filter(
-              d => d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
-            )
-          : dataset
+          ? excludeIncompleteIntervals(filterExtentFilter(dataset))
+          : excludeIncompleteIntervals(dataset)
 
       const change = filtered[0]
       const newDataset = filtered.map((d, i) => {
