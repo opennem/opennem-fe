@@ -13,24 +13,24 @@
         v-tooltip="prevFacilityName"
         v-if="prevFacilityPath"
         :to="prevFacilityPath">
-        <i class="fal fa-fw fa-arrow-circle-left"/>
+        <i class="fal fa-fw fa-arrow-circle-up"/>
       </nuxt-link>
       <span
         v-else
         class="is-disabled">
-        <i class="fal fa-fw fa-arrow-circle-left"/>
+        <i class="fal fa-fw fa-arrow-circle-up"/>
       </span>
 
       <nuxt-link
         v-tooltip="nextFacilityName"
         v-if="nextFacilityPath"
         :to="nextFacilityPath">
-        <i class="fal fa-fw fa-arrow-circle-right"/>
+        <i class="fal fa-fw fa-arrow-circle-down"/>
       </nuxt-link>
       <span
         v-else
         class="is-disabled">
-        <i class="fal fa-fw fa-arrow-circle-right"/>
+        <i class="fal fa-fw fa-arrow-circle-down"/>
       </span>
     </nav>
   </header>
