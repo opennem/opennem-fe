@@ -162,6 +162,7 @@ export default {
 
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
+      filteredDates: 'regionEnergy/filteredDates',
       currentDataset: 'regionEnergy/currentDataset',
       domainEmissions: 'regionEnergy/domainEmissions',
       domainTemperature: 'regionEnergy/domainTemperature',
@@ -249,6 +250,7 @@ export default {
 
   created() {
     this.clearHoverFocus()
+    this.zoomExtent = this.filteredDates
   },
 
   methods: {
