@@ -54,6 +54,13 @@ export default function(range, interval, isZoomed, filterPeriod) {
   }
   if (range === 'ALL') {
     const isFilter = !filterPeriod || filterPeriod !== 'All'
+    const hasFilters = hasIntervalFilters(interval)
+    if (interval === INTERVAL_HALFYEAR) {
+      const periodMonth = DateDisplay.getPeriodMonth(filterPeriod)
+      if (isFilter && hasFilters && periodMonth && periodMonth !== 0) {
+        return timeMonth.filter(d => d.getMonth() === periodMonth)
+      }
+    }
     if (interval === 'Fin Year') {
       return timeMonth.filter(d => d.getMonth() === 6)
     }

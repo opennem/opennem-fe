@@ -190,7 +190,11 @@ export default {
     },
     range(curr, prev) {
       this.setCompareDifference(false)
-      this.doUpdateTickFormats({ range: curr, interval: this.interval })
+      this.doUpdateTickFormats({
+        range: curr,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod
+      })
       if (isPowerRange(curr) && isPowerRange(prev)) {
         this.doUpdateDatasetByFilterRange({
           range: curr,
@@ -208,7 +212,11 @@ export default {
     },
     interval(interval) {
       this.setCompareDifference(false)
-      this.doUpdateTickFormats({ range: this.range, interval: interval })
+      this.doUpdateTickFormats({
+        range: this.range,
+        interval,
+        filterPeriod: this.filterPeriod
+      })
       this.doUpdateDatasetByInterval({ range: this.range, interval })
     },
     filteredDates(dates) {
@@ -224,6 +232,13 @@ export default {
         range: this.range,
         interval: this.interval,
         period
+      })
+
+      this.doUpdateXTicks({
+        range: this.range,
+        interval: this.interval,
+        isZoomed: this.filteredDates.length > 0,
+        filterPeriod: period
       })
     },
     fuelTechGroupName(groupName) {
@@ -268,7 +283,11 @@ export default {
         period: this.filterPeriod,
         groupName: this.fuelTechGroupName
       })
-      this.doUpdateTickFormats({ range: this.range, interval: this.interval })
+      this.doUpdateTickFormats({
+        range: this.range,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod
+      })
     } else {
       this.$router.push({
         params: { region: 'nem' },

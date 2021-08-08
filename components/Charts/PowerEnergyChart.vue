@@ -850,7 +850,8 @@ export default {
     }),
 
     ...mapActions({
-      doUpdateXTicks: 'visInteract/doUpdateXTicks'
+      doUpdateXTicks: 'visInteract/doUpdateXTicks',
+      doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
     }),
 
     convertValue(value) {
@@ -968,6 +969,11 @@ export default {
         range: this.range,
         interval: this.interval,
         isZoomed: this.zoomExtent.length > 0,
+        filterPeriod: this.filterPeriod
+      })
+      this.doUpdateTickFormats({
+        range: this.range,
+        interval: this.interval,
         filterPeriod: this.filterPeriod
       })
     }

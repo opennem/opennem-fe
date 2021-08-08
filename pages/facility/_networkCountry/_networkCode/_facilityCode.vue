@@ -1017,12 +1017,20 @@ export default {
     },
 
     range(curr) {
-      this.doUpdateTickFormats({ range: curr, interval: this.interval })
+      this.doUpdateTickFormats({
+        range: curr,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod
+      })
       this.getFacilityStats()
     },
 
     interval(val) {
-      this.doUpdateTickFormats({ range: this.range, interval: val })
+      this.doUpdateTickFormats({
+        range: this.range,
+        interval: val,
+        filterPeriod: this.filterPeriod
+      })
       if (this.range === '30D') {
         this.getFacilityStats()
       } else {
@@ -1059,7 +1067,11 @@ export default {
   created() {
     this.getFacility()
 
-    this.doUpdateTickFormats({ range: this.range, interval: this.interval })
+    this.doUpdateTickFormats({
+      range: this.range,
+      interval: this.interval,
+      filterPeriod: this.filterPeriod
+    })
     this.doSetChartEnergyPrefixes(SI.MEGA)
     this.doHideEmissionsChart()
   },
