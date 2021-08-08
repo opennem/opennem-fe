@@ -734,8 +734,16 @@ export default {
             )
           : dataset
 
-      const total = filteredDataset.reduce((a, b) => a + b._total, 0)
-      const average = total / filteredDataset.length
+      const ds = filteredDataset.map(d => {
+        let total = 0
+        this.domains.forEach(domain => {
+          total += d[domain.id] || 0
+        })
+        return total
+      })
+
+      const total = ds.reduce((a, b) => a + b, 0)
+      const average = total / ds.length
       return this.convertValue(average)
     },
 
