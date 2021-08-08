@@ -122,7 +122,11 @@ export default {
       groupName: this.fuelTechGroupName,
       useV3: false
     })
-    this.doUpdateTickFormats({ range: this.range, interval: this.interval })
+    this.doUpdateTickFormats({
+      range: this.range,
+      interval: this.interval,
+      filterPeriod: this.filterPeriod
+    })
   },
 
   methods: {

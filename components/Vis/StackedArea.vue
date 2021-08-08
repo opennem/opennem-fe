@@ -1546,7 +1546,7 @@ export default {
           return `${yearStr}`
         })
         const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
-        if (isFilter && periodMonth) {
+        if (isFilter && periodMonth && periodMonth !== 0) {
           tickLength = d3TimeMonth.filter(d => d.getMonth() === periodMonth)
         }
       } else if (this.interval === INTERVAL_FINYEAR) {

@@ -97,7 +97,7 @@ export const actions = {
     commit('xGuides', xGuides)
   },
 
-  doUpdateTickFormats({ commit }, { range, interval }) {
+  doUpdateTickFormats({ commit }, { range, interval, filterPeriod }) {
     let tickFormat = 'defaultFormat',
       secondTickFormat = 'secondaryFormat'
     switch (interval) {
@@ -120,9 +120,19 @@ export const actions = {
           return `FY${year.substr(2, 2)}`
         }
         break
+      case INTERVAL_HALFYEAR:
       case INTERVAL_SEASON:
       case INTERVAL_QUARTER:
-      case INTERVAL_HALFYEAR:
+        tickFormat = d => {
+          const year = d.getFullYear() + ''
+          const nextYear = d.getFullYear() + 1 + ''
+          const yearStr =
+            filterPeriod === 'Summer'
+              ? `${year}/${nextYear.substr(2, 2)}`
+              : year
+          return `${yearStr}`
+        }
+        break
       case INTERVAL_YEAR:
         tickFormat = 'rangeAllIntervalMonthTimeFormat'
         break
