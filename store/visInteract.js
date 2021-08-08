@@ -121,6 +121,8 @@ export const actions = {
         }
         break
       case INTERVAL_HALFYEAR:
+      case INTERVAL_SEASON:
+      case INTERVAL_QUARTER:
         tickFormat = d => {
           const year = d.getFullYear() + ''
           const nextYear = d.getFullYear() + 1 + ''
@@ -131,8 +133,6 @@ export const actions = {
           return `${yearStr}`
         }
         break
-      case INTERVAL_SEASON:
-      case INTERVAL_QUARTER:
       case INTERVAL_YEAR:
         tickFormat = 'rangeAllIntervalMonthTimeFormat'
         break
