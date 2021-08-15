@@ -233,3 +233,7 @@ export function isSolar(fuelTech) {
     fuelTech === ROOFTOP_SOLAR
   )
 }
+
+export function isValidFuelTech(fuelTech) {
+  return FUEL_TECH_LABEL[fuelTech] !== undefined
+}

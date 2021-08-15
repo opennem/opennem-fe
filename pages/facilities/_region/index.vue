@@ -203,6 +203,13 @@ export default {
       return this.$route.params.region === 'au'
     },
 
+    queryTech() {
+      const techs = this.$route.query.tech
+        ? this.$route.query.tech.split(',')
+        : []
+      return techs.filter(t => FUEL_TECHS.isValidFuelTech(t))
+    },
+
     facilitySortBy() {
       return this.$store.getters['facility/sortBy']
     },
@@ -254,7 +261,7 @@ export default {
     this.sortBy = this.facilitySortBy
     this.orderBy = this.facilityOrderBy
     this.selectedStatuses = this.facilitySelectedStatuses
-    this.selectedTechs = this.facilitySelectedTechs
+    this.selectedTechs = this.queryTech
 
     if (this.facilityDataset.length > 0) {
       this.facilityData = this.facilityDataset
@@ -267,7 +274,8 @@ export default {
   methods: {
     ...mapMutations({
       previousPath: 'facility/previousPath',
-      setFilteredFacilities: 'facility/filteredFacilities'
+      setFilteredFacilities: 'facility/filteredFacilities',
+      setQuery: 'app/query'
     }),
     fetchData() {
       const urls = []
@@ -458,9 +466,25 @@ export default {
     handleFacilityOut() {
       this.hoveredFacility = null
     },
+    getQuery(techs) {
+      const tech = techs.length > 0 ? techs.join(',') : ''
+      return {
+        tech
+      }
+    },
+    updateQuery(techs, statuses, size) {
+      const query = this.getQuery(techs)
+
+      this.setQuery(query)
+      this.$router.push({
+        params: { region: this.regionId },
+        query
+      })
+    },
     handleTechsSelected(techs) {
       this.selectedTechs = techs
       this.$store.dispatch('facility/selectedTechs', this.selectedTechs)
+      this.updateQuery(techs, this.selectedStatuses, this.selectedSize)
     },
     handleStatusesSelected(statuses) {
       this.selectedStatuses = statuses
