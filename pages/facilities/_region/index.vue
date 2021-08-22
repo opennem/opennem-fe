@@ -485,13 +485,9 @@ export default {
       this.handleFacilitySelect(find, false)
     },
     handleFacilitySelect(facility, shouldZoom) {
-      if (facility) {
-        this.$router.push({ query: { selected: facility.facilityId } })
-      } else {
-        this.$router.push({ query: {} })
-      }
       this.selectedFacility = facility
       this.shouldZoomWhenSelected = shouldZoom
+      this.updateQuery()
     },
     handleFacilityHover(facility, shouldZoom) {
       this.hoveredFacility = facility
@@ -500,10 +496,13 @@ export default {
     handleFacilityOut() {
       this.hoveredFacility = null
     },
-    getQuery(techs, statuses, sizes) {
+    getQuery(selectedFacility, techs, statuses, sizes) {
       const join = arr => (arr.length > 0 ? arr.join(',') : '')
       const query = {}
 
+      if (selectedFacility) {
+        query.selected = selectedFacility.facilityId
+      }
       if (techs.length) {
         query.tech = join(techs)
       }
@@ -516,8 +515,13 @@ export default {
 
       return query
     },
-    updateQuery(techs, statuses, sizes) {
-      const query = this.getQuery(techs, statuses, sizes)
+    updateQuery() {
+      const query = this.getQuery(
+        this.selectedFacility,
+        this.selectedTechs,
+        this.selectedStatuses,
+        this.selectedSizes
+      )
 
       this.setQuery(query)
       this.$router.push({
@@ -528,17 +532,17 @@ export default {
     handleTechsSelected(techs) {
       this.selectedTechs = techs
       this.$store.dispatch('facility/selectedTechs', techs)
-      this.updateQuery(techs, this.selectedStatuses, this.selectedSizes)
+      this.updateQuery()
     },
     handleStatusesSelected(statuses) {
       this.selectedStatuses = statuses
       this.$store.dispatch('facility/selectedStatuses', statuses)
-      this.updateQuery(this.selectedTechs, statuses, this.selectedSizes)
+      this.updateQuery()
     },
     handleSizesSelected(sizes) {
       this.selectedSizes = sizes
       this.$store.dispatch('facility/selectedSizes', sizes)
-      this.updateQuery(this.selectedTechs, this.selectedStatuses, sizes)
+      this.updateQuery()
     },
     handleCloseDetail() {
       this.selectedFacility = null
