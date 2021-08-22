@@ -1,7 +1,7 @@
-export const FACILITY_LESS_THAN_1_MW = 'LESS_THAN_1_MW'
-export const FACILITY_1_TO_5_MW = '1_TO_5_MW'
-export const FACILITY_5_TO_30_MW = '5_TO_30_MW'
-export const FACILITY_MORE_THAN_30_MW = 'MORE_THAN_30_MW'
+export const FACILITY_LESS_THAN_1_MW = 'less_than_1_mw'
+export const FACILITY_1_TO_5_MW = '1_to_5_mw'
+export const FACILITY_5_TO_30_MW = '5_to_30_mw'
+export const FACILITY_MORE_THAN_30_MW = 'more_than_30_mw'
 
 export const FACILITY_SIZE = {}
 FACILITY_SIZE[FACILITY_LESS_THAN_1_MW] = val => val < 1
