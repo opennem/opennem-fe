@@ -142,10 +142,11 @@
       <DropdownSelection
         v-if="!searchOn"
         :name="'Size'"
+        :initial-selections="selectedSizes"
         :selections="sizes"
         :align-right-menu="true"
         class="filter-size"
-        @selected="handleSizeSelected"
+        @selected="handleSizesSelected"
       />
 
     </div>
@@ -182,6 +183,10 @@ export default {
       default: () => []
     },
     selectedStatuses: {
+      type: Array,
+      default: () => []
+    },
+    selectedSizes: {
       type: Array,
       default: () => []
     }
@@ -385,8 +390,8 @@ export default {
       this.$emit('selectedStatuses', selectedStatuses)
     },
 
-    handleSizeSelected(size) {
-      this.$emit('selectedSize', size)
+    handleSizesSelected(sizes) {
+      this.$emit('selectedSizes', sizes)
     },
 
     handleViewSelect(view) {
