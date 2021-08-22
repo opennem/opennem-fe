@@ -3,10 +3,11 @@
     <facility-filters
       :selected-techs="selectedTechs"
       :selected-statuses="selectedStatuses"
+      :selected-sizes="selectedSizes"
       class="facility-filters"
       @techsSelect="handleTechsSelected"
       @selectedStatuses="handleStatusesSelected"
-      @selectedSize="handleSizeSelected"
+      @selectedSizes="handleSizesSelected"
       @facilityNameFilter="handleFacilityNameFilter"
     />
 
@@ -78,8 +79,14 @@ import _orderBy from 'lodash.orderby'
 import _cloneDeep from 'lodash.clonedeep'
 
 import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
-import { FACILITY_OPERATING } from '~/constants/facility-status.js'
-import { FACILITY_SIZE } from '~/constants/facility-size.js'
+import {
+  FACILITY_OPERATING,
+  isValidFacilityStatus
+} from '~/constants/facility-status.js'
+import {
+  FACILITY_SIZE,
+  isValidFacilitySize
+} from '~/constants/facility-size.js'
 
 import {
   FacilityRegions,
@@ -156,9 +163,9 @@ export default {
       facilityData: [],
       selectedFacility: null,
       hoveredFacility: null,
-      selectedStatuses: [FACILITY_OPERATING],
+      selectedStatuses: [],
       selectedTechs: [],
-      selectedSize: '',
+      selectedSizes: [],
       sortBy: 'displayName',
       orderBy: ASCENDING,
       totalFacilities: 0,
@@ -210,6 +217,20 @@ export default {
       return techs.filter(t => FUEL_TECHS.isValidFuelTech(t))
     },
 
+    queryStatus() {
+      const statuses = this.$route.query.status
+        ? this.$route.query.status.split(',')
+        : []
+      return statuses.filter(t => isValidFacilityStatus(t))
+    },
+
+    querySize() {
+      const sizes = this.$route.query.size
+        ? this.$route.query.size.split(',')
+        : []
+      return sizes.filter(t => isValidFacilitySize(t))
+    },
+
     facilitySortBy() {
       return this.$store.getters['facility/sortBy']
     },
@@ -242,7 +263,7 @@ export default {
     selectedStatuses() {
       this.updateFacilitiesData()
     },
-    selectedSize() {
+    selectedSizes() {
       this.updateFacilitiesData()
     },
     sortBy() {
@@ -260,8 +281,21 @@ export default {
     this.$store.dispatch('currentView', 'facilities')
     this.sortBy = this.facilitySortBy
     this.orderBy = this.facilityOrderBy
-    this.selectedStatuses = this.facilitySelectedStatuses
+    // this.selectedStatuses = this.facilitySelectedStatuses
+    this.selectedStatuses = this.queryStatus
     this.selectedTechs = this.queryTech
+    this.selectedSizes = this.querySize
+
+    if (this.$route.query.status === undefined) {
+      // set default to operating
+      // const defaultStatusQuery = [FACILITY_OPERATING]
+      // this.updateQuery(
+      //   this.selectedTechs,
+      //   defaultStatusQuery,
+      //   this.selectedSizes
+      // )
+      // this.selectedStatuses = defaultStatusQuery
+    }
 
     if (this.facilityDataset.length > 0) {
       this.facilityData = this.facilityDataset
@@ -360,12 +394,12 @@ export default {
       )
 
       const filtered = sortedData.filter(d => {
-        if (this.selectedSize.length === 0) {
+        if (this.selectedSizes.length === 0) {
           return true
         }
 
         let check = false
-        this.selectedSize.forEach(s => {
+        this.selectedSizes.forEach(s => {
           if (FACILITY_SIZE[s](d.generatorCap)) {
             check = true
           }
@@ -466,14 +500,24 @@ export default {
     handleFacilityOut() {
       this.hoveredFacility = null
     },
-    getQuery(techs) {
-      const tech = techs.length > 0 ? techs.join(',') : ''
-      return {
-        tech
+    getQuery(techs, statuses, sizes) {
+      const join = arr => (arr.length > 0 ? arr.join(',') : '')
+      const query = {}
+
+      if (techs.length) {
+        query.tech = join(techs)
       }
+      if (statuses.length) {
+        query.status = join(statuses)
+      }
+      if (sizes.length) {
+        query.size = join(sizes)
+      }
+
+      return query
     },
-    updateQuery(techs, statuses, size) {
-      const query = this.getQuery(techs)
+    updateQuery(techs, statuses, sizes) {
+      const query = this.getQuery(techs, statuses, sizes)
 
       this.setQuery(query)
       this.$router.push({
@@ -483,16 +527,18 @@ export default {
     },
     handleTechsSelected(techs) {
       this.selectedTechs = techs
-      this.$store.dispatch('facility/selectedTechs', this.selectedTechs)
-      this.updateQuery(techs, this.selectedStatuses, this.selectedSize)
+      this.$store.dispatch('facility/selectedTechs', techs)
+      this.updateQuery(techs, this.selectedStatuses, this.selectedSizes)
     },
     handleStatusesSelected(statuses) {
       this.selectedStatuses = statuses
-      this.$store.dispatch('facility/selectedStatuses', this.selectedStatuses)
+      this.$store.dispatch('facility/selectedStatuses', statuses)
+      this.updateQuery(this.selectedTechs, statuses, this.selectedSizes)
     },
-    handleSizeSelected(size) {
-      this.selectedSize = size
-      this.$store.dispatch('facility/selectedSize', this.selectedSize)
+    handleSizesSelected(sizes) {
+      this.selectedSizes = sizes
+      this.$store.dispatch('facility/selectedSizes', sizes)
+      this.updateQuery(this.selectedTechs, this.selectedStatuses, sizes)
     },
     handleCloseDetail() {
       this.selectedFacility = null
