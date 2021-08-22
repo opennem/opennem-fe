@@ -66,6 +66,7 @@
         :convert-value="convertValue"
         :highlight-domain="highlightId"
         :is-power-type="!isEnergyType"
+        @domain-click="handleDomainClick"
       />
     </section>
 
@@ -138,12 +139,14 @@ export default {
       fuelTechGroupName: 'fuelTechGroupName',
       hiddenFuelTechs: 'hiddenFuelTechs',
       chartUnit: 'chartUnit',
+
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
       filteredDates: 'regionEnergy/filteredDates',
       filteredCurrentDataset: 'regionEnergy/filteredCurrentDataset',
       domainTemperature: 'regionEnergy/domainTemperature',
       domainPrice: 'regionEnergy/domainPrice',
+      domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       currentDomainMarketValue: 'regionEnergy/currentDomainMarketValue',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
@@ -158,6 +161,10 @@ export default {
         'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
       chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit'
     }),
+
+    regionId() {
+      return this.$route.params.region
+    },
     chartCurrentUnit() {
       return this.isEnergyType
         ? this.chartEnergyCurrentUnit
@@ -253,6 +260,28 @@ export default {
       } else {
         this.$store.commit('visInteract/chartSummaryPie', false)
       }
+    },
+    handleDomainClick(domain) {
+      let fuelTechs = []
+      if (domain.domainIds) {
+        domain.domainIds.forEach(d => {
+          const find = this.domainPowerEnergy.find(
+            peDomain => peDomain.id === d
+          )
+          fuelTechs.push(find.fuelTech)
+        })
+      } else {
+        fuelTechs.push(domain.fuelTech)
+      }
+      const query = {
+        tech: fuelTechs.join(','),
+        status: 'operating'
+      }
+
+      this.$router.push({
+        path: `/facilities/${this.regionId}/`,
+        query
+      })
     }
   }
 }

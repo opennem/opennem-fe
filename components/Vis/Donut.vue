@@ -29,6 +29,7 @@
         
       </g>
     </svg>
+    <div class="vis-tooltip">Click/tap to see facilities</div>
   </div>
 </template>
 
@@ -36,7 +37,7 @@
 import _debounce from 'lodash.debounce'
 import { scaleOrdinal as d3ScaleOrdinal } from 'd3-scale'
 import { pie as d3Pie, arc as d3Arc } from 'd3-shape'
-import { select as d3Select } from 'd3-selection'
+import { select as d3Select, event } from 'd3-selection'
 import { mean as d3Mean } from 'd3-array'
 
 export default {
@@ -99,7 +100,8 @@ export default {
       colour: null,
       hoverOnSlice: false,
       hoverOnSliceData: null,
-      $donut: null
+      $donut: null,
+      $tooltip: null
     }
   },
 
@@ -252,6 +254,7 @@ export default {
 
     setup() {
       this.$donut = d3Select(`#${this.id} .slices`)
+      this.$tooltip = d3Select('.donut-vis .vis-tooltip')
 
       this.pie = d3Pie()
         .padAngle(0.005)
@@ -261,6 +264,10 @@ export default {
         .innerRadius(this.radius * 0.5)
         .outerRadius(this.radius - 1)
       this.colour = d3ScaleOrdinal()
+
+      this.$donut.on('mouseleave', () => {
+        this.$tooltip.style('display', 'none')
+      })
     },
 
     update() {
@@ -271,6 +278,7 @@ export default {
         .selectAll('path')
         .data(arcs)
         .join('path')
+        .attr('class', 'donut-arc')
         .attr('d', this.arc)
         .attr('fill', d => this.colour(d.data.name))
         .on('mouseover', slice => {
@@ -283,6 +291,20 @@ export default {
         .on('mouseout', () => {
           this.hoverOnSliceData = null
           this.hoverOnSlice = false
+        })
+        .on('mousemove', slice => {
+          const id = slice.data.name
+          const find = this.domains.find(d => d.id === id)
+          this.$tooltip
+            .html(`Click/tap to see <strong>${find.label}</strong> facilities`)
+            .style('display', 'block')
+            .style('top', event.pageY - 30 + 'px')
+            .style('left', event.pageX - 150 + 'px')
+        })
+        .on('click', slice => {
+          const id = slice.data.name
+          const find = this.domains.find(d => d.id === id)
+          this.$emit('domain-click', find)
         })
     }
   }
@@ -301,5 +323,15 @@ export default {
     fill: #666;
     font-size: 12px;
   }
+}
+.vis-tooltip {
+  font-size: 10px;
+  padding: 6px;
+  background-color: rgba(255, 255, 255, 0.75);
+  position: absolute;
+  display: none;
+  pointer-events: none;
+  border-radius: 4px;
+  box-shadow: 0 3px 3px rgba(10, 10, 10, 0.1);
 }
 </style>
