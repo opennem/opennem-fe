@@ -288,13 +288,13 @@ export default {
 
     if (this.$route.query.status === undefined) {
       // set default to operating
-      // const defaultStatusQuery = [FACILITY_OPERATING]
-      // this.updateQuery(
-      //   this.selectedTechs,
-      //   defaultStatusQuery,
-      //   this.selectedSizes
-      // )
-      // this.selectedStatuses = defaultStatusQuery
+      const defaultStatusQuery = [FACILITY_OPERATING]
+      this.updateQuery(
+        this.selectedTechs,
+        defaultStatusQuery,
+        this.selectedSizes
+      )
+      this.selectedStatuses = defaultStatusQuery
     }
 
     if (this.facilityDataset.length > 0) {
