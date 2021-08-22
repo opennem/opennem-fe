@@ -18,7 +18,7 @@
         class="dropdown-menu">
         <div class="dropdown-content">
           <nuxt-link
-            :to="`/${currentView}/au/`"
+            :to="{ path: `/${currentView}/au/`, query: getQuery(currentView) }"
             class="dropdown-item"
             @click.native="handleClick">All Regions</nuxt-link>
 
@@ -27,7 +27,7 @@
           <nuxt-link
             v-for="link in links"
             :key="link.id"
-            :to="{ path: `/${currentView}/${link.id}/`, query}"
+            :to="{ path: `/${currentView}/${link.id}/`, query: getQuery(currentView)}"
             :class="{
               'dropdown-item-child': link.isChild,
               'dropdown-item-first-child': link.isFirstChild,
@@ -67,7 +67,8 @@ export default {
   computed: {
     ...mapGetters({
       currentView: 'currentView',
-      query: 'app/query'
+      query: 'app/query',
+      facilitiesQuery: 'app/facilitiesQuery'
     }),
     regionId() {
       return this.$route.params.region
@@ -124,6 +125,9 @@ export default {
           }
         })
         .filter(r => r.id !== 'au')
+    },
+    getQuery(view) {
+      return view === 'facilities' ? this.facilitiesQuery : this.query
     },
     getRegionLabel(regionId) {
       const region = this.regions.find(d => d.id === regionId)
