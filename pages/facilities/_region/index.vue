@@ -288,13 +288,8 @@ export default {
 
     if (this.$route.query.status === undefined) {
       // set default to operating
-      const defaultStatusQuery = [FACILITY_OPERATING]
-      this.updateQuery(
-        this.selectedTechs,
-        defaultStatusQuery,
-        this.selectedSizes
-      )
-      this.selectedStatuses = defaultStatusQuery
+      this.selectedStatuses = [FACILITY_OPERATING]
+      this.updateQuery()
     }
 
     if (this.facilityDataset.length > 0) {
@@ -309,7 +304,7 @@ export default {
     ...mapMutations({
       previousPath: 'facility/previousPath',
       setFilteredFacilities: 'facility/filteredFacilities',
-      setQuery: 'app/query'
+      setQuery: 'app/facilitiesQuery'
     }),
     fetchData() {
       const urls = []

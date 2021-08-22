@@ -5,6 +5,7 @@ export const state = () => ({
   errorHeader: '',
   errorMessage: '',
   query: null,
+  facilitiesQuery: null,
   showFeatureToggle: false
 })
 
@@ -17,6 +18,7 @@ export const getters = {
   errorHeader: state => state.errorHeader,
   errorMessage: state => state.errorMessage,
   query: state => state.query,
+  facilitiesQuery: state => state.facilitiesQuery,
   showFeatureToggle: state => state.showFeatureToggle
 }
 
@@ -38,6 +40,9 @@ export const mutations = {
   },
   query(state, query) {
     state.query = query
+  },
+  facilitiesQuery(state, query) {
+    state.facilitiesQuery = query
   },
   showFeatureToggle(state, showFeatureToggle) {
     state.showFeatureToggle = showFeatureToggle
