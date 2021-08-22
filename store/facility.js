@@ -27,10 +27,10 @@ export const state = () => ({
   dataset: [],
   sortBy: 'displayName',
   orderBy: 'asc',
-  selectedStatuses: [FACILITY_OPERATING],
+  selectedStatuses: [],
   selectedTechGroups: [],
   selectedTechs: [],
-  selectedSize: [],
+  selectedSizes: [],
   selectedView: 'list',
   selectedMapStyle: MAP_STYLE_LIGHT,
   filteredFacilities: [],
@@ -70,8 +70,8 @@ export const mutations = {
   selectedStatuses(state, data) {
     state.selectedStatuses = data
   },
-  selectedSize(state, data) {
-    state.selectedSize = data
+  selectedSizes(state, data) {
+    state.selectedSizes = data
   },
   selectedTechGroups(state, data) {
     state.selectedTechGroups = data
@@ -154,7 +154,7 @@ export const getters = {
   selectedStatuses: state => _cloneDeep(state.selectedStatuses),
   selectedTechGroups: state => _cloneDeep(state.selectedTechGroups),
   selectedTechs: state => _cloneDeep(state.selectedTechs),
-  selectedSize: state => _cloneDeep(state.selectedSize),
+  selectedSizes: state => _cloneDeep(state.selectedSizes),
   selectedView: state => state.selectedView,
   selectedMapStyle: state => state.selectedMapStyle,
   filteredFacilities: state => state.filteredFacilities,
@@ -200,8 +200,8 @@ export const actions = {
   selectedTechs({ commit }, data) {
     commit('selectedTechs', data)
   },
-  selectedSize({ commit }, data) {
-    commit('selectedSize', data)
+  selectedSizes({ commit }, data) {
+    commit('selectedSizes', data)
   },
   selectedView({ commit }, data) {
     commit('selectedView', data)
