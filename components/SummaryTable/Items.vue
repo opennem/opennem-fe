@@ -26,6 +26,14 @@
         <div class="ft-label">{{ ft.label }}</div>
       </div>
 
+      <div class="summary-col-external-link-icon">
+        <a 
+          v-if="validDomainToEmit(ft)"
+          @click.stop="handleFacilitiesLinkClick(ft)">
+          <i class="fal fa-external-link-square"/>
+        </a>
+      </div>
+
       <div
         v-if="isEnergyType"
         class="summary-col-energy">
@@ -367,11 +375,26 @@ export default {
     },
     handleMouseLeave() {
       this.$emit('mouse-leave')
+    },
+
+    handleFacilitiesLinkClick(ft) {
+      this.$emit('domain-click', ft)
+    },
+
+    validDomainToEmit(domain) {
+      if (domain.category === 'source') {
+        if (domain.fuelTech && domain.fuelTech !== 'imports') {
+          return true
+        } else if (domain.group) {
+          const group = domain.group.split('.')
+          if (group[group.length - 1] !== 'imports') {
+            return true
+          }
+        }
+      }
+
+      return false
     }
   }
 }
 </script>
-
-<style lang="scss" scoped>
-@import '~/assets/scss/variables.scss';
-</style>

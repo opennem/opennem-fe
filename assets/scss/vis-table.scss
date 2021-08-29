@@ -220,6 +220,10 @@
 
     &:hover {
       background-color: $row-hover;
+
+      .summary-col-external-link-icon {
+        visibility: visible;
+      }
     }
   }
 
@@ -230,6 +234,11 @@
     .ft-label {
       padding-left: 5px;
     }
+  }
+
+  .summary-col-external-link-icon {
+    width: 20px;
+    visibility: hidden;
   }
 
   .colour-square {

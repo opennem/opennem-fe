@@ -19,6 +19,7 @@
       @summary-update="handleSummaryUpdated"
       @mouse-enter="handleSummaryRowMouseEnter"
       @mouse-leave="handleSummaryRowMouseLeave"
+      @domain-click="handleDomainClick"
     />
 
     <section

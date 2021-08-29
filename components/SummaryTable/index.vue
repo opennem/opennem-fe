@@ -26,6 +26,10 @@
             <group-selector v-if="groupSelection" />
           </div>
 
+          <div 
+            class="summary-col-external-link-icon" 
+            style="width: 20px;"/>
+
           <div
             v-if="isEnergy"
             class="summary-col-energy cell-toggle"
@@ -60,6 +64,10 @@
 
         <div class="summary-row">
           <div class="summary-col-label">Sources</div>
+
+          <div 
+            class="summary-col-external-link-icon" 
+            style="width: 20px;"/>
 
           <div
             v-if="isEnergy"
@@ -135,6 +143,7 @@
         @fuelTechsHidden="handleSourceFuelTechsHidden"
         @mouse-enter="handleMouseEnter"
         @mouse-leave="handleMouseLeave"
+        @domain-click="handleDomainClick"
       />
 
       <div
@@ -142,6 +151,10 @@
         class="summary-column-headers">
         <div class="summary-row">
           <div class="summary-col-label">Loads</div>
+
+          <div 
+            class="summary-col-external-link-icon" 
+            style="width: 20px;"/>
 
           <div
             v-if="isEnergy"
@@ -199,6 +212,10 @@
         <div class="summary-row last-row">
           <div class="summary-col-label">Net</div>
 
+          <div 
+            class="summary-col-external-link-icon" 
+            style="width: 20px;"/>
+
           <div
             v-if="isEnergy"
             class="summary-col-energy cell-value">
@@ -247,6 +264,10 @@
               class="renewable-line" />
             Renewables
           </div>
+
+          <div 
+            class="summary-col-external-link-icon" 
+            style="width: 20px;"/>
 
           <div
             v-if="isEnergy"
@@ -1366,6 +1387,10 @@ export default {
       const total = this.summary._totalEnergyForPercentageCalculation
 
       return (rowValue / total) * 100
+    },
+
+    handleDomainClick(domain) {
+      this.$emit('domain-click', domain)
     }
   }
 }
@@ -1444,7 +1469,7 @@ export default {
   .summary-col-av-value,
   .summary-col-ev,
   .summary-col-ei {
-    width: 25%;
+    width: 23%;
     text-align: right;
     padding: 0 5px;
   }
