@@ -292,20 +292,42 @@ export default {
           this.hoverOnSliceData = null
           this.hoverOnSlice = false
         })
-        .on('mousemove', slice => {
+        .on('mousemove', (slice, evt) => {
           const id = slice.data.name
           const find = this.domains.find(d => d.id === id)
-          this.$tooltip
-            .html(`Click/tap to see <strong>${find.label}</strong> facilities`)
-            .style('display', 'block')
-            .style('top', event.pageY - 30 + 'px')
-            .style('left', event.pageX - 150 + 'px')
+          if (this.validDomainToEmit(find)) {
+            this.$tooltip
+              .html(
+                `Click/tap to see <strong>${find.label}</strong> facilities`
+              )
+              .style('display', 'block')
+              .style('top', event.pageY - 30 + 'px')
+              .style('left', event.pageX - 150 + 'px')
+          } else {
+            this.$tooltip.style('display', 'none')
+            d3Select(event.currentTarget).style('cursor', 'default')
+          }
         })
         .on('click', slice => {
           const id = slice.data.name
           const find = this.domains.find(d => d.id === id)
-          this.$emit('domain-click', find)
+
+          if (this.validDomainToEmit(find)) {
+            this.$emit('domain-click', find)
+          }
         })
+    },
+
+    validDomainToEmit(domain) {
+      if (domain.fuelTech && domain.fuelTech !== 'imports') {
+        return true
+      } else if (domain.group) {
+        const group = domain.group.split('.')
+        if (group[group.length - 1] !== 'imports') {
+          return true
+        }
+      }
+      return false
     }
   }
 }
