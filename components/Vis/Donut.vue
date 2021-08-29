@@ -228,6 +228,10 @@ export default {
 
   mounted() {
     window.addEventListener('resize', _debounce(this.handleResize, 10))
+    this.isTouch =
+      'ontouchstart' in window ||
+      navigator.maxTouchPoints > 0 ||
+      navigator.msMaxTouchPoints > 0
     this.setupWidthHeight()
     this.setup()
     this.update()
@@ -292,13 +296,14 @@ export default {
           this.hoverOnSliceData = null
           this.hoverOnSlice = false
         })
-        .on('mousemove', (slice, evt) => {
+        .on('mousemove', slice => {
           const id = slice.data.name
           const find = this.domains.find(d => d.id === id)
           if (this.validDomainToEmit(find)) {
+            const eventType = this.isTouch ? 'Tap' : 'Click'
             this.$tooltip
               .html(
-                `Click/tap to see <strong>${find.label}</strong> facilities`
+                `${eventType} to see <strong>${find.label}</strong> facilities`
               )
               .style('display', 'block')
               .style('top', event.pageY - 30 + 'px')
