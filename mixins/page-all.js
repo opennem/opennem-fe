@@ -25,6 +25,12 @@ export default {
 
       this.setHostEnv(hostEnv())
 
+      this.setIsTouchDevice(
+        'ontouchstart' in window ||
+          navigator.maxTouchPoints > 0 ||
+          navigator.msMaxTouchPoints > 0
+      )
+
       this.setWindowWidth(window.innerWidth)
       this.$nextTick(() => {
         window.addEventListener(
@@ -40,6 +46,7 @@ export default {
   methods: {
     ...mapMutations({
       setWindowWidth: 'app/windowWidth',
+      setIsTouchDevice: 'app/isTouchDevice',
 
       setEmissions: 'feature/emissions',
       setRegionCompare: 'feature/regionCompare',

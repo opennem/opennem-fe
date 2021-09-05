@@ -1,6 +1,7 @@
 export const state = () => ({
   apiVersion: null,
   windowWidth: 600,
+  isTouchDevice: false,
   showError: false,
   errorHeader: '',
   errorMessage: '',
@@ -12,6 +13,7 @@ export const state = () => ({
 export const getters = {
   apiVersion: state => state.apiVersion,
   windowWidth: state => state.windowWidth,
+  isTouchDevice: state => state.isTouchDevice,
   widthBreak: state => state.windowWidth < 1024,
   tabletBreak: state => state.windowWidth < 769,
   showError: state => state.showError,
@@ -28,6 +30,9 @@ export const mutations = {
   },
   windowWidth(state, windowWidth) {
     state.windowWidth = windowWidth
+  },
+  isTouchDevice(state, isTouchDevice) {
+    state.isTouchDevice = isTouchDevice
   },
   showError(state, showError) {
     state.showError = showError

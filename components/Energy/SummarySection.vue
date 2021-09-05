@@ -67,6 +67,7 @@
         :convert-value="convertValue"
         :highlight-domain="highlightId"
         :is-power-type="!isEnergyType"
+        :is-touch-device="isTouchDevice"
         @domain-click="handleDomainClick"
       />
     </section>
@@ -129,6 +130,8 @@ export default {
 
   computed: {
     ...mapGetters({
+      isTouchDevice: 'app/isTouchDevice',
+
       hoverDomain: 'visInteract/hoverDomain',
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',

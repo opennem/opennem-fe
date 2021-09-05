@@ -85,6 +85,10 @@ export default {
     isPowerType: {
       type: Boolean,
       default: false
+    },
+    isTouchDevice: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -228,10 +232,6 @@ export default {
 
   mounted() {
     window.addEventListener('resize', _debounce(this.handleResize, 10))
-    this.isTouch =
-      'ontouchstart' in window ||
-      navigator.maxTouchPoints > 0 ||
-      navigator.msMaxTouchPoints > 0
     this.setupWidthHeight()
     this.setup()
     this.update()
@@ -300,7 +300,7 @@ export default {
           const id = slice.data.name
           const find = this.domains.find(d => d.id === id)
           if (this.validDomainToEmit(find)) {
-            const eventType = this.isTouch ? 'Tap' : 'Click'
+            const eventType = this.isTouchDevice ? 'Tap' : 'Click'
             this.$tooltip
               .html(
                 `${eventType} to see <strong>${find.label}</strong> facilities`

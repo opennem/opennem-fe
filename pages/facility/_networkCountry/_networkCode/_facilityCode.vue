@@ -310,6 +310,7 @@
           :highlight-domain="highlightDomain"
           :convert-value="convertValue"
           :is-power-type="!isEnergyType || (isEnergyType && isYAxisAveragePower)"
+          :is-touch-device="isTouchDevice"
           style="margin-top: 2rem; padding-top: 2rem;"
         />
       </section>
@@ -487,6 +488,8 @@ export default {
   computed: {
     ...mapGetters({
       widthBreak: 'app/widthBreak',
+      isTouchDevice: 'app/isTouchDevice',
+
       fetchingFacility: 'facility/fetchingFacility',
       fetchingStats: 'facility/fetchingStats',
       facility: 'facility/selectedFacility',
