@@ -722,9 +722,7 @@ export default {
     },
 
     averageEnergy() {
-      const dataset = this.isYAxisAveragePower
-        ? this.averagePowerDataset
-        : this.stackedAreaDataset
+      const dataset = this.dataset
       const filteredDataset =
         this.zoomExtent.length > 0
           ? dataset.filter(
