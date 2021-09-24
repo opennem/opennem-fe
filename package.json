@@ -52,6 +52,7 @@
     "mapbox-gl": "^2.2.0",
     "mapbox-gl-animated-popup": "^0.1.4",
     "nuxt": "^2.13.0",
+    "papaparse": "^5.3.1",
     "v-tooltip": "^2.0.2",
     "vue-clickaway": "^2.2.2",
     "vue-json-csv": "^1.2.4",

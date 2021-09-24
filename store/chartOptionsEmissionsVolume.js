@@ -8,8 +8,8 @@ export const state = () => ({
   chartCurve: OPTIONS.CHART_CURVE_STEP,
 
   chartUnit: 'tCO₂e',
-  chartUnitPrefix: SI.BASE,
-  chartDisplayPrefix: SI.KILO
+  chartUnitPrefix: SI.MEGA,
+  chartDisplayPrefix: SI.MEGA
 })
 
 export const getters = {
