@@ -157,7 +157,9 @@ export default {
   },
 
   mounted() {
-    this.$axios.get('/data/nggi-emissions.csv').then(res => {
+    const url =
+      'https://gist.githubusercontent.com/chienleng/0bb3b5ab285c781a342c7776fc52fc27/raw/956e2201926c2f8da56ce4d24c65f1be0e72055f/nggi.csv'
+    this.$axios.get(url).then(res => {
       const csvData = Papa.parse(res.data, { header: true })
       const data = csvData.data.map(d => {
         const obj = {}
