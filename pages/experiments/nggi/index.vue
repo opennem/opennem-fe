@@ -2,6 +2,29 @@
   <div class="container">
     <h1>NGGI Emissions</h1>
 
+    <!-- <DataOptionsBar
+      :ranges="ranges"
+      :intervals="intervals"
+      :range="range"
+      :interval="interval"
+      :filter-period="filterPeriod"
+      @rangeChange="handleRangeChange"
+      @intervalChange="handleIntervalChange"
+      @queryChange="handleQueryChange"
+      @filterPeriodChange="handleFilterPeriodChange" /> -->
+
+    <DataOptionsBar
+      :ranges="ranges"
+      :intervals="intervals"
+      :range="range"
+      :interval="interval"
+      :filter-period="filterPeriod"
+      style="position: relative; margin-bottom: 1rem;"
+      @rangeChange="handleRangeChange"
+      @rangeOptionChange="handleRangeChange"
+      @intervalChange="handleIntervalChange"
+      @filterPeriodChange="handleFilterPeriodChange" /> 
+
     <div class="chart-table">
       <EmissionsChart
         v-if="dataset.length > 0"
@@ -15,6 +38,7 @@
         :hover-on="isHovering"
         :hover-date="hoverDate"
         :zoom-extent="zoomExtent"
+        :filter-period="filterPeriod"
         class="chart"
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"
@@ -46,11 +70,25 @@ import { mapActions, mapMutations } from 'vuex'
 import parse from 'date-fns/parse'
 import subMonths from 'date-fns/subMonths'
 import Papa from 'papaparse'
+import _cloneDeep from 'lodash.clonedeep'
+
+import {
+  NGGI_RANGES,
+  NGGI_RANGE_INTERVALS,
+  RANGE_ALL,
+  RANGE_ALL_12MTH_ROLLING
+} from '@/constants/ranges.js'
+import { INTERVAL_QUARTER, FILTER_NONE } from '@/constants/interval-filters.js'
 
 import regionDisplayTzs from '@/constants/region-display-timezones.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import { mutateDate } from '@/services/datetime-helpers.js'
+
+import transformTo12MthRollingSum from '@/data/transform/emissions-quarter-12-month-rolling-sum'
+import { dataRollUp, dataFilterByPeriod } from '@/data/parse/nggi-emissions/'
+
 import EmissionsChart from '@/components/Charts/EmissionsChart'
+import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 
 const domainEmissions = [
   {
@@ -123,15 +161,21 @@ export default {
   layout: 'no-container',
 
   components: {
+    DataOptionsBar,
     EmissionsChart
   },
 
   data() {
     return {
+      baseDataset: [],
+      rollingDataset: [],
       dataset: [],
       zoomExtent: [],
       isHovering: false,
-      hoverDate: null
+      hoverDate: null,
+      range: RANGE_ALL,
+      interval: INTERVAL_QUARTER,
+      filterPeriod: FILTER_NONE
     }
   },
 
@@ -141,9 +185,6 @@ export default {
         (prev, cur) => prev + cur._totalEmissions,
         0
       )
-
-      console.log(totalEmissions)
-
       return totalEmissions / this.dataset.length
     }
   },
@@ -151,9 +192,9 @@ export default {
   created() {
     this.domains = domainEmissions.map(d => d)
     this.domainEmissions = domainEmissions.map(d => d).reverse()
-    this.range = 'All'
-    this.interval = 'Quarter'
     this.displayTz = regionDisplayTzs['au']
+    this.ranges = NGGI_RANGES
+    this.intervals = NGGI_RANGE_INTERVALS
   },
 
   mounted() {
@@ -165,7 +206,6 @@ export default {
         const csvData = Papa.parse(res.data, { header: true })
         const data = csvData.data.map(d => {
           const obj = {}
-          let totalEmissions = 0
           const date = subMonths(parse(d.Quarter, 'MMM-yyyy', new Date()), 2)
 
           obj.date = date
@@ -174,27 +214,29 @@ export default {
 
           this.domainEmissions.forEach(domain => {
             obj[domain.id] = parseFloat(d[domain.label])
-            totalEmissions += obj[domain.id] || 0
           })
 
-          obj._totalEmissions = totalEmissions
           return obj
         })
 
-        this.doUpdateXGuides({
-          interval: this.interval,
-          start: data[0].time,
-          end: data[data.length - 1].time
+        this.updateAxisGuides(data)
+
+        this.baseDataset = data
+        this.rollingDataset = transformTo12MthRollingSum(
+          _cloneDeep(data),
+          this.domainEmissions,
+          true
+        )
+
+        const rolledUpData = dataRollUp({
+          dataset: this.baseDataset,
+          domains: this.domainEmissions,
+          interval: this.interval
         })
 
-        this.doUpdateXTicks({
-          range: this.range,
-          interval: this.interval,
-          isZoomed: false,
-          filterPeriod: false
-        })
+        this.updateAxisGuides(rolledUpData)
 
-        this.dataset = data
+        this.dataset = rolledUpData
       })
   },
 
@@ -204,6 +246,21 @@ export default {
       doUpdateXTicks: 'visInteract/doUpdateXTicks',
       doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
     }),
+
+    updateAxisGuides(data) {
+      this.doUpdateXGuides({
+        interval: this.interval,
+        start: data[0].time,
+        end: data[data.length - 1].time
+      })
+
+      this.doUpdateXTicks({
+        range: this.range,
+        interval: this.interval,
+        isZoomed: false,
+        filterPeriod: false
+      })
+    },
 
     handleDateHover(date) {
       this.hoverDate = DateDisplay.getClosestDateByInterval(
@@ -239,6 +296,61 @@ export default {
       }
 
       this.zoomExtent = filteredDates
+    },
+
+    handleRangeChange(range) {
+      this.range = range
+
+      let dataset = this.baseDataset
+
+      if (range === RANGE_ALL_12MTH_ROLLING) {
+        dataset = this.rollingDataset
+      }
+      const rolledUpData = dataRollUp({
+        dataset,
+        domains: this.domainEmissions,
+        interval: this.interval
+      })
+
+      this.dataset = rolledUpData
+    },
+    handleIntervalChange(interval) {
+      this.interval = interval
+
+      let dataset = this.baseDataset
+
+      if (this.range === RANGE_ALL_12MTH_ROLLING) {
+        dataset = this.rollingDataset
+      }
+      const rolledUpData = dataRollUp({
+        dataset,
+        domains: this.domainEmissions,
+        interval
+      })
+
+      this.dataset = rolledUpData
+    },
+
+    handleFilterPeriodChange(period) {
+      console.log(period)
+      this.filterPeriod = period
+
+      let dataset = this.baseDataset
+
+      if (this.range === RANGE_ALL_12MTH_ROLLING) {
+        dataset = this.rollingDataset
+      }
+      const rolledUpData = dataRollUp({
+        dataset,
+        domains: this.domainEmissions,
+        interval: this.interval
+      })
+
+      this.dataset = dataFilterByPeriod({
+        dataset: rolledUpData,
+        interval: this.interval,
+        period
+      })
     }
   }
 }
