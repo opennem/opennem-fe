@@ -243,8 +243,13 @@ export default {
       const domain = this.hoverDomain
       if (domain) {
         const split = domain.split('.')
-        split.pop()
-        return `${split.join('.')}.${EMISSIONS}`
+
+        if (split.length > 1) {
+          split.pop()
+          return `${split.join('.')}.${EMISSIONS}`
+        } else {
+          return domain
+        }
       }
       return ''
     },
