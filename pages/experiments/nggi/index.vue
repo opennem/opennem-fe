@@ -157,43 +157,45 @@ export default {
   },
 
   mounted() {
-    const url =
-      'https://gist.githubusercontent.com/chienleng/0bb3b5ab285c781a342c7776fc52fc27/raw/956e2201926c2f8da56ce4d24c65f1be0e72055f/nggi.csv'
-    this.$axios.get(url).then(res => {
-      const csvData = Papa.parse(res.data, { header: true })
-      const data = csvData.data.map(d => {
-        const obj = {}
-        let totalEmissions = 0
-        const date = subMonths(parse(d.Quarter, 'MMM-yyyy', new Date()), 2)
+    const url = 'https://data.dev.opennem.org.au/nggi/nggi-emissions.csv'
 
-        obj.date = date
-        obj.time = obj.date.getTime()
-        obj.quarter = d.Quarter
+    this.$axios
+      .get(url, { headers: { 'Content-Type': 'text/csv' } })
+      .then(res => {
+        const csvData = Papa.parse(res.data, { header: true })
+        const data = csvData.data.map(d => {
+          const obj = {}
+          let totalEmissions = 0
+          const date = subMonths(parse(d.Quarter, 'MMM-yyyy', new Date()), 2)
 
-        this.domainEmissions.forEach(domain => {
-          obj[domain.id] = parseFloat(d[domain.label])
-          totalEmissions += obj[domain.id] || 0
+          obj.date = date
+          obj.time = obj.date.getTime()
+          obj.quarter = d.Quarter
+
+          this.domainEmissions.forEach(domain => {
+            obj[domain.id] = parseFloat(d[domain.label])
+            totalEmissions += obj[domain.id] || 0
+          })
+
+          obj._totalEmissions = totalEmissions
+          return obj
         })
 
-        obj._totalEmissions = totalEmissions
-        return obj
-      })
+        this.doUpdateXGuides({
+          interval: this.interval,
+          start: data[0].time,
+          end: data[data.length - 1].time
+        })
 
-      this.doUpdateXGuides({
-        interval: this.interval,
-        start: data[0].time,
-        end: data[data.length - 1].time
-      })
+        this.doUpdateXTicks({
+          range: this.range,
+          interval: this.interval,
+          isZoomed: false,
+          filterPeriod: false
+        })
 
-      this.doUpdateXTicks({
-        range: this.range,
-        interval: this.interval,
-        isZoomed: false,
-        filterPeriod: false
+        this.dataset = data
       })
-
-      this.dataset = data
-    })
   },
 
   methods: {
