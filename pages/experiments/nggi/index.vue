@@ -83,14 +83,24 @@ import EmissionsChart from '@/components/Charts/EmissionsChart'
 import NggiLegend from '@/components/Nggi/Legend'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 
-const domainEmissions = [
+const colours = [
+  '#00429d',
+  '#4771b2',
+  '#73a2c6',
+  '#a5d5d8',
+  '#ffbcaf',
+  '#f4777f',
+  '#cf3759',
+  '#93003a'
+]
+const nggi = [
   {
     label: 'Agriculture',
     id: 'agriculture',
     domain: 'agriculture',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#003f5c'
+    colour: '#8650a6'
   },
   {
     label: 'Electricity',
@@ -98,7 +108,7 @@ const domainEmissions = [
     domain: 'electricity',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#2f4b7c'
+    colour: '#86a542'
   },
   {
     label: 'Fugitives',
@@ -106,7 +116,7 @@ const domainEmissions = [
     domain: 'fugitives',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#665191'
+    colour: '#6881d8'
   },
   {
     label: 'Industrial',
@@ -114,7 +124,7 @@ const domainEmissions = [
     domain: 'industrial',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#a05195'
+    colour: '#c18739'
   },
   {
     label: 'Land sector',
@@ -122,7 +132,7 @@ const domainEmissions = [
     domain: 'land-sector',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#d45087'
+    colour: '#b44f8e'
   },
   {
     label: 'Stationary',
@@ -130,7 +140,7 @@ const domainEmissions = [
     domain: 'stationary',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#f95d6a'
+    colour: '#50b47b'
   },
   {
     label: 'Transport',
@@ -138,7 +148,7 @@ const domainEmissions = [
     domain: 'transport',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#ff7c43'
+    colour: '#bb486a'
   },
   {
     label: 'Waste',
@@ -146,9 +156,16 @@ const domainEmissions = [
     domain: 'waste',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#ffa600'
+    colour: '#b84c3e'
   }
 ]
+
+const domainEmissions = nggi.map((d, i) => {
+  return {
+    ...d,
+    colour: colours[i]
+  }
+})
 
 export default {
   layout: 'no-container',
