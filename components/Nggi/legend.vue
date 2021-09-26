@@ -1,6 +1,6 @@
 <template>
   <div class="table">
-    <table class="summary-list">
+    <!-- <table class="summary-list">
       <tbody>
         <tr
           v-for="(d, i) in domains"
@@ -18,7 +18,24 @@
           </td>
         </tr>
       </tbody>
-    </table>
+    </table> -->
+
+    <ul>
+      <li
+        v-for="(d, i) in domains"
+        :key="i"
+        :class="{
+          'is-hidden-domain': isHidden(d.id)
+        }"
+        role="button"
+        @click.exact="handleRowClick(d.id)"
+        @click.shift.exact="handleRowShiftClick(d.id)">
+        <div
+          :style="{ backgroundColor: d.colour}"
+          class="colour-square" />
+        <span>{{ d.label }}</span>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -78,14 +95,13 @@ export default {
 .colour-square {
   width: 18px;
   height: 18px;
-  float: left;
   margin-right: 5px;
   border-radius: 4px;
   box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 
   @include mobile {
-    display: inline;
-    float: none;
+    width: 13px;
+    height: 13px;
   }
 }
 
@@ -139,6 +155,29 @@ table {
 
   .unit-name {
     white-space: nowrap;
+  }
+}
+
+ul {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  max-width: 600px;
+  margin: 0 auto;
+
+  li {
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+
+    &:hover {
+      background-color: #eee;
+    }
+
+    @include mobile {
+      font-size: 12px;
+    }
   }
 }
 </style>

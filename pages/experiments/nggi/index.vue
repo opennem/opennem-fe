@@ -34,7 +34,7 @@
         :interval="interval"
         :show-x-axis="true"
         :average-emissions="averageEmissions"
-        :vis-height="450"
+        :vis-height="600"
         :hover-on="isHovering"
         :hover-date="hoverDate"
         :zoom-extent="zoomExtent"
@@ -83,24 +83,22 @@ import EmissionsChart from '@/components/Charts/EmissionsChart'
 import NggiLegend from '@/components/Nggi/Legend'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 
-const colours = [
-  '#00429d',
-  '#4771b2',
-  '#73a2c6',
-  '#a5d5d8',
-  '#ffbcaf',
-  '#f4777f',
-  '#cf3759',
-  '#93003a'
-]
-const nggi = [
+const domainEmissions = [
+  {
+    label: 'Land sector',
+    id: 'land-sector',
+    domain: 'land-sector',
+    type: 'emissions',
+    units: 'MtCO2e',
+    colour: '#4A772F'
+  },
   {
     label: 'Agriculture',
     id: 'agriculture',
     domain: 'agriculture',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#8650a6'
+    colour: '#79350F'
   },
   {
     label: 'Electricity',
@@ -108,7 +106,7 @@ const nggi = [
     domain: 'electricity',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#86a542'
+    colour: '#3C67BC'
   },
   {
     label: 'Fugitives',
@@ -116,7 +114,7 @@ const nggi = [
     domain: 'fugitives',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#6881d8'
+    colour: '#EA722B'
   },
   {
     label: 'Industrial',
@@ -124,23 +122,16 @@ const nggi = [
     domain: 'industrial',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#c18739'
+    colour: '#F7C4A3'
   },
-  {
-    label: 'Land sector',
-    id: 'land-sector',
-    domain: 'land-sector',
-    type: 'emissions',
-    units: 'MtCO2e',
-    colour: '#b44f8e'
-  },
+
   {
     label: 'Stationary',
     id: 'stationary',
     domain: 'stationary',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#50b47b'
+    colour: '#FFB800'
   },
   {
     label: 'Transport',
@@ -148,7 +139,7 @@ const nggi = [
     domain: 'transport',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#bb486a'
+    colour: '#9B9B9B'
   },
   {
     label: 'Waste',
@@ -156,16 +147,9 @@ const nggi = [
     domain: 'waste',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#b84c3e'
+    colour: '#223C6D'
   }
 ]
-
-const domainEmissions = nggi.map((d, i) => {
-  return {
-    ...d,
-    colour: colours[i]
-  }
-})
 
 export default {
   layout: 'no-container',
@@ -406,14 +390,13 @@ h1 {
 }
 
 .chart-table {
-  display: flex;
-  gap: 2rem;
+  // display: flex;
+  // gap: 2rem;
 
   .chart {
-    width: 80%;
+    width: 100%;
   }
   .table {
-    width: 20%;
     background-color: transparent;
   }
 }

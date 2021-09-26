@@ -888,18 +888,18 @@ export default {
       const stackedData = this.stack(this.updatedDataset)
 
       // Generate null areas
-      const stackNullArea = this.$stackedAreaNullGroup
-        .selectAll('path')
-        .data(stackedData)
-      stackNullArea
-        .enter()
-        .append('path')
-        .attr('d', this.nullArea)
-        .attr('stroke-opacity', 0)
-        .attr('stroke-width', 1)
-        .attr('stroke', '#000')
-        .attr('fill', `url(#${this.id}-incomplete-period-pattern-2)`)
-        .style('pointer-events', 'none')
+      // const stackNullArea = this.$stackedAreaNullGroup
+      //   .selectAll('path')
+      //   .data(stackedData)
+      // stackNullArea
+      //   .enter()
+      //   .append('path')
+      //   .attr('d', this.nullArea)
+      //   .attr('stroke-opacity', 0)
+      //   .attr('stroke-width', 1)
+      //   .attr('stroke', '#000')
+      //   .attr('fill', `url(#${this.id}-incomplete-period-pattern-2)`)
+      //   .style('pointer-events', 'none')
 
       // Generate Stacked Area
       const stackArea = this.$stackedAreaGroup
