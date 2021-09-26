@@ -29,7 +29,7 @@
       <EmissionsChart
         v-if="dataset.length > 0"
         :emissions-dataset="dataset"
-        :domain-emissions="domains"
+        :domain-emissions="filteredDomains"
         :range="range"
         :interval="interval"
         :show-x-axis="true"
@@ -39,28 +39,19 @@
         :hover-date="hoverDate"
         :zoom-extent="zoomExtent"
         :filter-period="filterPeriod"
+        :hidden-domains="hidden"
         class="chart"
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"
         @zoomExtent="handleZoomExtent"
       />
 
-      <div class="table">
-        <table class="summary-list">
-          <tbody>
-            <tr
-              v-for="(d, i) in domainEmissions"
-              :key="i">
-              <td>
-                <div
-                  :style="{ backgroundColor: d.colour}"
-                  class="colour-square" />
-                <span>{{ d.label }}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <NggiLegend
+        :domains="domainEmissions"
+        :hidden="hidden"
+        @rowClick="handleTypeClick"
+        @rowShiftClick="handleTypeShiftClick"
+      />
     </div>
   </div>
 </template>
@@ -71,6 +62,7 @@ import parse from 'date-fns/parse'
 import subMonths from 'date-fns/subMonths'
 import Papa from 'papaparse'
 import _cloneDeep from 'lodash.clonedeep'
+import _includes from 'lodash.includes'
 
 import {
   NGGI_RANGES,
@@ -88,6 +80,7 @@ import transformTo12MthRollingSum from '@/data/transform/emissions-quarter-12-mo
 import { dataRollUp, dataFilterByPeriod } from '@/data/parse/nggi-emissions/'
 
 import EmissionsChart from '@/components/Charts/EmissionsChart'
+import NggiLegend from '@/components/Nggi/Legend'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 
 const domainEmissions = [
@@ -162,6 +155,7 @@ export default {
 
   components: {
     DataOptionsBar,
+    NggiLegend,
     EmissionsChart
   },
 
@@ -170,6 +164,8 @@ export default {
       baseDataset: [],
       rollingDataset: [],
       dataset: [],
+      domains: [],
+      hidden: [],
       zoomExtent: [],
       isHovering: false,
       hoverDate: null,
@@ -186,6 +182,10 @@ export default {
         0
       )
       return totalEmissions / this.dataset.length
+    },
+
+    filteredDomains() {
+      return this.domains.filter(d => !_includes(this.hidden, d.id))
     }
   },
 
@@ -351,15 +351,33 @@ export default {
         interval: this.interval,
         period
       })
+    },
+
+    handleTypeClick(id) {
+      const index = this.hidden.indexOf(id)
+
+      if (index === -1) {
+        this.hidden.push(id)
+      } else {
+        this.hidden.splice(index, 1)
+      }
+
+      if (this.hidden.length === this.domainEmissions.length) {
+        this.hidden = []
+      }
+
+      console.log(this.hidden)
+    },
+
+    handleTypeShiftClick(id) {
+      const toBeHidden = this.domainEmissions.filter(d => d.id !== id)
+      this.hidden = toBeHidden.map(d => d.id)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-@import '~/assets/scss/responsive-mixins.scss';
-@import '~/assets/scss/variables.scss';
-
 .container {
   max-width: 80%;
 }
@@ -369,28 +387,17 @@ h1 {
   font-size: 36px;
   margin: 2rem 0;
 }
-.colour-square {
-  width: 18px;
-  height: 18px;
-  float: left;
-  margin-right: 5px;
-  border-radius: 4px;
-  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 
-  @include mobile {
-    display: inline;
-    float: none;
-  }
-}
 .chart-table {
   display: flex;
   gap: 2rem;
 
   .chart {
-    width: 70%;
+    width: 80%;
   }
   .table {
-    width: 30%;
+    width: 20%;
+    background-color: transparent;
   }
 }
 </style>
