@@ -80,7 +80,8 @@ const emissionsOptions = {
     OPTIONS.CHART_HIDDEN,
     OPTIONS.CHART_STACKED,
     OPTIONS.CHART_PROPORTION,
-    OPTIONS.CHART_LINE
+    OPTIONS.CHART_LINE,
+    OPTIONS.CHART_CHANGE_SINCE_LINE
   ],
   curve: [
     OPTIONS.CHART_CURVE_SMOOTH,
@@ -167,6 +168,10 @@ export default {
     isTypeArea: {
       type: Boolean,
       default: false
+    },
+    isTypeChangeSinceLine: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -180,7 +185,7 @@ export default {
       if (this.isTypeArea) {
         options.si = emissionsSI
       }
-      if (this.isTypeLine) {
+      if (this.isTypeLine || this.isTypeChangeSinceLine) {
         options.yAxis = emissionsYAxis
       }
       return options
@@ -196,6 +201,7 @@ export default {
   methods: {
     handleTypeClick(type) {
       this.$store.commit('chartOptionsEmissionsVolume/chartType', type)
+      this.$emit('type-click', type)
     },
     handleCurveClick(curve) {
       this.$store.commit('chartOptionsEmissionsVolume/chartCurve', curve)

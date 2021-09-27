@@ -24,6 +24,7 @@
       :hover-domain-colour="hoverDomainColour"
       :hover-domain-label="hoverDomainLabel"
       :hover-total="hoverTotal"
+      @type-click="handleTypeClick"
     />
 
     <stacked-area-vis
@@ -65,8 +66,15 @@
       @zoomExtent="handleZoomExtent"
     />
 
+    <button
+      v-if="chartShown && (isTypeLine || isTypeChangeSinceLine) && zoomExtent.length > 0 && !readOnly"
+      class="button is-rounded is-small reset-btn"
+      @click.stop="handleZoomReset"
+    >
+      Zoom Out
+    </button>
     <multi-line
-      v-if="chartShown && isTypeLine"
+      v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
       :svg-height="visHeight"
       :domains1="domains"
       :dataset1="dataset"
@@ -87,12 +95,27 @@
       @domain-hover="handleDomainHover"
       @enter="handleVisEnter"
       @leave="handleVisLeave" />
+    <date-brush
+      v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
+      :dataset="dataset"
+      :zoom-range="zoomExtent"
+      :x-ticks="xTicks"
+      :tick-format="tickFormat"
+      :second-tick-format="secondTickFormat"
+      :read-only="readOnly"
+      :interval="interval"
+      :filter-period="filterPeriod"
+      class="date-brush vis-chart"
+      @date-hover="handleDateHover"
+      @date-filter="handleZoomExtent"
+      @enter="handleVisEnter"
+      @leave="handleVisLeave" />
 
   </div>
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { min, max } from 'd3-array'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
@@ -104,6 +127,7 @@ import * as SI from '@/constants/si.js'
 import { EMISSIONS } from '@/constants/data-types.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
+import DateBrush from '@/components/Vis/DateBrush'
 import StackedAreaVis from '@/components/Vis/StackedArea.vue'
 import EmissionsChartOptions from './EmissionsChartOptions'
 
@@ -111,7 +135,8 @@ export default {
   components: {
     EmissionsChartOptions,
     StackedAreaVis,
-    MultiLine
+    MultiLine,
+    DateBrush
   },
 
   props: {
@@ -202,7 +227,7 @@ export default {
     shouldConvertValue() {
       return (
         this.isTypeArea ||
-        (this.isTypeLine &&
+        ((this.isTypeLine || this.isTypeChangeSinceLine) &&
           this.chartYAxis === OPTIONS.CHART_YAXIS_EMISSIONS_VOL)
       )
     },
@@ -215,6 +240,9 @@ export default {
     },
     isTypeLine() {
       return this.chartType === OPTIONS.CHART_LINE
+    },
+    isTypeChangeSinceLine() {
+      return this.chartType === OPTIONS.CHART_CHANGE_SINCE_LINE
     },
 
     tickFormat() {
@@ -342,6 +370,13 @@ export default {
       return this.emissionsDataset
     },
 
+    changeSinceDataset() {
+      if (this.isYAxisAbsolute) {
+        return this.getChangeSinceDataset(this.lineDataset)
+      }
+      return this.getChangeSinceDataset(this.linePercentageDataset, true)
+    },
+
     dataset() {
       if (this.isTypeArea) {
         return this.stackedDataset
@@ -354,6 +389,9 @@ export default {
           return this.lineDataset
         }
         return this.linePercentageDataset
+      }
+      if (this.isTypeChangeSinceLine) {
+        return this.changeSinceDataset
       }
     },
 
@@ -451,6 +489,12 @@ export default {
     ...mapMutations({
       setHoverDomain: 'visInteract/hoverDomain'
     }),
+
+    ...mapActions({
+      doUpdateXTicks: 'visInteract/doUpdateXTicks',
+      doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
+    }),
+
     convertValue(value) {
       return SI.convertValue(
         this.chartUnitPrefix,
@@ -475,7 +519,77 @@ export default {
     },
     handleZoomExtent(dateRange) {
       this.$emit('zoomExtent', dateRange)
+    },
+    handleZoomReset() {
+      this.$emit('zoomExtent', [])
+    },
+
+    handleTypeClick() {
+      this.doUpdateXTicks({
+        range: this.range,
+        interval: this.interval,
+        isZoomed: this.zoomExtent.length > 0,
+        filterPeriod: this.filterPeriod
+      })
+      this.doUpdateTickFormats({
+        range: this.range,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod
+      })
+    },
+
+    getChangeSinceDataset(dataset, calculateProportion) {
+      const excludeIncompleteIntervals = ds =>
+        ds.filter(d => !d._isIncompleteBucket)
+      const filterExtentFilter = ds =>
+        ds.filter(
+          d => d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
+        )
+      const filtered =
+        this.zoomExtent.length > 0
+          ? excludeIncompleteIntervals(filterExtentFilter(dataset))
+          : excludeIncompleteIntervals(dataset)
+
+      const change = filtered[0]
+      const newDataset = filtered.map((d, i) => {
+        let min = 0,
+          max = 0
+        const obj = {
+          date: d.date,
+          time: d.time
+        }
+        this.domains.forEach(domain => {
+          const id = domain.id
+          const cValue = change[id] || 0
+          obj[id] = d[id] - cValue
+
+          if (calculateProportion && i > 0) {
+            const proportion = (obj[id] / cValue) * 100
+            obj[id] = isFinite(proportion) ? proportion : 0
+          }
+
+          if (obj[id] < min) {
+            min = obj[id]
+          }
+          if (obj[id] > max) {
+            max = obj[id]
+          }
+          obj._lowest = min
+          obj._highest = max
+        })
+        return obj
+      })
+
+      return newDataset
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.reset-btn {
+  position: absolute;
+  top: 39px;
+  right: 24px;
+}
+</style>
