@@ -374,7 +374,7 @@ export default {
       if (this.isYAxisAbsolute) {
         return this.getChangeSinceDataset(this.lineDataset)
       }
-      return this.getChangeSinceDataset(this.linePercentageDataset, true)
+      return this.getChangeSinceDataset(this.lineDataset, true)
     },
 
     dataset() {

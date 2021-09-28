@@ -96,6 +96,8 @@
         <!-- where the stacked area path will show -->
         <g class="stacked-area-null-group" />
         <g class="stacked-area-group" />
+        
+        <g class="total-line-group" />
 
         <!-- where the line path will show -->
         <g
@@ -361,6 +363,7 @@ export default {
       area: null,
       nullArea: null,
       line: null,
+      totalLine: null,
       colours: schemeCategory10,
       stack: null,
       brushX: null,
@@ -380,6 +383,7 @@ export default {
       $stackedAreaGroup: null,
       $stackedAreaNullGroup: null,
       $lineGroup: null,
+      $totalLineGroup: null,
       $xGuideGroup: null,
       $yGuideGroup: null,
       $xIncompleteGroup: null,
@@ -445,6 +449,24 @@ export default {
         return this.dataset
       }
       return []
+    },
+    totalLineData() {
+      return this.updatedDataset.map(d => {
+        const obj = {
+          date: d.date,
+          time: d.time,
+          _isIncompleteBucket: d._isIncompleteBucket,
+          value: 0
+        }
+
+        this.domains.forEach(domain => {
+          if (d[domain.id] > 0) {
+            obj.value += d[domain.id]
+          }
+        })
+
+        return obj
+      })
     },
     updatedDatasetTwo() {
       const updated = _cloneDeep(this.datasetTwo)
@@ -765,6 +787,11 @@ export default {
         .y(d => this.y2(d.value))
       this.line.defined(d => d.value || d.value === 0)
 
+      this.totalLine = d3Line()
+        .x(d => this.x(d.date))
+        .y(d => this.y(d.value))
+      this.totalLine.defined(d => d.value || d.value === 0)
+
       // Event handling
       // - Control tooltip visibility for mouse entering/leaving svg
       $svg.on('mouseenter', () => {
@@ -820,6 +847,7 @@ export default {
         `#${this.id} .stacked-area-null-group`
       )
       this.$lineGroup = select(`#${this.id} .line-group`)
+      this.$totalLineGroup = select(`#${this.id} .total-line-group`)
 
       // Setup the x/y/z Axis domains
       // - Use dataset date range if there is none being passed into
@@ -934,7 +962,27 @@ export default {
           self.$emit('domainOver', d.key)
         })
 
+      this.drawTotalLine()
       this.drawDatasetTwo()
+    },
+
+    drawTotalLine() {
+      this.totalLine.curve(curveMonotoneX)
+      this.$totalLineGroup.selectAll('path').remove()
+
+      // Generate Line
+      this.$totalLineGroup
+        .append('path')
+        .datum(this.totalLineData)
+        .attr('class', 'line-path')
+        .attr('d', this.totalLine)
+        .style('stroke', 'black')
+        .style('stroke-width', 2)
+        .style('stroke-linecap', 'round')
+        .style('stroke-dasharray', '5,5')
+        .style('filter', 'url(#shadow)')
+        .style('clip-path', this.clipPathUrl)
+        .style('-webkit-clip-path', this.clipPathUrl)
     },
 
     drawDatasetTwo() {
