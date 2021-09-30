@@ -967,7 +967,7 @@ export default {
           self.$emit('domainOver', d.key)
         })
 
-      this.drawTotalLine()
+      // this.drawTotalLine()
       this.drawDatasetTwo()
     },
 
