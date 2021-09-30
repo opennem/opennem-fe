@@ -141,7 +141,8 @@ import {
   stack,
   curveStepAfter,
   curveLinear,
-  curveMonotoneX
+  curveMonotoneX,
+  stackOffsetDiverging
 } from 'd3-shape'
 import {
   timeDay as d3TimeDay,
@@ -905,7 +906,11 @@ export default {
       this.updateGuides()
 
       // Setup the keys in the stack so it knows how to draw the area
-      this.stack.keys(this.domainIds).value((d, key) => (d[key] ? d[key] : 0))
+      this.stack
+        .keys(this.domainIds)
+        .value((d, key) => (d[key] ? d[key] : 0))
+        .offset(stackOffsetDiverging)
+
       this.area.curve(this.curveType)
       this.nullArea.curve(curveStepAfter)
 
