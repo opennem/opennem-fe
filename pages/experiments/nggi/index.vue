@@ -40,10 +40,20 @@
         :zoom-extent="zoomExtent"
         :filter-period="filterPeriod"
         :hidden-domains="hidden"
+        :compare-dates="compareDates"
         class="chart"
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"
         @zoomExtent="handleZoomExtent"
+        @svgClick="handleSvgClick"
+      />
+
+      <CompareChart
+        v-if="compareDifference"
+        :compare-data="compareData"
+        :domains="filteredDomains"
+        :range="range"
+        :interval="interval"
       />
 
       <NggiLegend
@@ -57,7 +67,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations } from 'vuex'
+import { mapActions, mapMutations, mapGetters } from 'vuex'
 import parse from 'date-fns/parse'
 import subMonths from 'date-fns/subMonths'
 import Papa from 'papaparse'
@@ -82,6 +92,7 @@ import { dataRollUp, dataFilterByPeriod } from '@/data/parse/nggi-emissions/'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
 import NggiLegend from '@/components/Nggi/Legend'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
+import CompareChart from '@/components/Nggi/CompareChart'
 
 const domainEmissions = [
   {
@@ -157,7 +168,8 @@ export default {
   components: {
     DataOptionsBar,
     NggiLegend,
-    EmissionsChart
+    EmissionsChart,
+    CompareChart
   },
 
   data() {
@@ -172,11 +184,19 @@ export default {
       hoverDate: null,
       range: RANGE_ALL,
       interval: INTERVAL_QUARTER,
-      filterPeriod: FILTER_NONE
+      filterPeriod: FILTER_NONE,
+      compareData: []
     }
   },
 
   computed: {
+    ...mapGetters({
+      focusOn: 'visInteract/isFocusing',
+      focusDate: 'visInteract/focusDate',
+
+      compareDifference: 'compareDifference',
+      compareDates: 'compareDates'
+    }),
     averageEmissions() {
       const totalEmissions = this.dataset.reduce(
         (prev, cur) => prev + cur._totalEmissions,
@@ -186,7 +206,17 @@ export default {
     },
 
     filteredDomains() {
+      console.log(this.domains)
       return this.domains.filter(d => !_includes(this.hidden, d.id))
+    }
+  },
+
+  watch: {
+    compareDifference(compare) {
+      if (!compare) {
+        this.compareData = []
+        this.$store.dispatch('compareDates', [])
+      }
     }
   },
 
@@ -246,6 +276,11 @@ export default {
       doUpdateXGuides: 'visInteract/doUpdateXGuides',
       doUpdateXTicks: 'visInteract/doUpdateXTicks',
       doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
+    }),
+
+    ...mapMutations({
+      setFocusDate: 'visInteract/focusDate',
+      setCompareDifference: 'compareDifference'
     }),
 
     updateAxisGuides(data) {
@@ -373,20 +408,93 @@ export default {
     handleTypeShiftClick(id) {
       const toBeHidden = this.domainEmissions.filter(d => d.id !== id)
       this.hidden = toBeHidden.map(d => d.id)
+    },
+
+    getDataByTime(dataset, time) {
+      return dataset.find(d => d.time === time)
+    },
+
+    handleSvgClick(metaKey) {
+      console.log(metaKey)
+      if (metaKey && this.focusOn && !this.compareDifference) {
+        this.setCompareDifference(true)
+
+        const hoverTime = this.hoverDate ? this.hoverDate.getTime() : 0
+        const focusTime = this.focusDate ? this.focusDate.getTime() : 0
+        const firstData = this.getDataByTime(this.dataset, focusTime)
+        const secondData = this.getDataByTime(this.dataset, hoverTime)
+
+        setTimeout(() => {
+          this.$store.dispatch('compareDates', [focusTime, hoverTime])
+          this.compareData = [firstData, secondData].slice()
+          this.setFocusDate(null)
+        }, 10)
+      } else {
+        if (this.compareDifference) {
+          const hoverTime = this.hoverDate ? this.hoverDate.getTime() : 0
+          let newCompare = false
+          let compareDates = this.compareDates.slice()
+          if (compareDates.length === 2) {
+            const newCompareDates = compareDates.filter(d => d !== hoverTime)
+            if (newCompareDates.length === 1) {
+              compareDates = newCompareDates
+              newCompare = true
+            } else {
+              compareDates.pop()
+            }
+          }
+          if (compareDates.length < 2 && !newCompare) {
+            const newCompareDates = compareDates.filter(d => d !== hoverTime)
+            if (newCompareDates.length === 0) {
+              compareDates = newCompareDates
+            } else {
+              compareDates.push(hoverTime)
+            }
+          }
+          if (compareDates.length === 2) {
+            const firstData = this.getDataByTime(this.dataset, compareDates[0])
+            const secondData = this.getDataByTime(this.dataset, compareDates[1])
+            this.compareData = [firstData, secondData]
+          }
+          if (compareDates.length === 0) {
+            this.setCompareDifference(false)
+          }
+          this.$store.dispatch('compareDates', compareDates)
+        } else if (!this.isTouchDevice) {
+          const hoverTime = this.hoverDate ? this.hoverDate.getTime() : 0
+          const focusTime = this.focusDate ? this.focusDate.getTime() : 0
+          if (this.focusDate && focusTime === hoverTime) {
+            this.setFocusDate(null)
+          } else {
+            this.setFocusDate(this.hoverDate)
+          }
+        }
+      }
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@import '~/assets/scss/responsive-mixins.scss';
+
 .container {
   max-width: 80%;
+
+  @include mobile {
+    max-width: 100%;
+  }
 }
 h1 {
   font-family: Playfair Display, Georgia, Times New Roman, Times, serif;
   font-weight: 700;
   font-size: 36px;
   margin: 2rem 0;
+
+  @include mobile {
+    font-size: 24px;
+    margin: 1rem 0.5rem;
+  }
 }
 
 .chart-table {

@@ -57,6 +57,7 @@
       :convert-value="convertValue"
       :unit="` ${chartDisplayPrefix}${chartUnit}`"
       :filter-period="filterPeriod"
+      :compare-dates="compareDates"
       class="vis-chart"
       @dateOver="handleDateHover"
       @domainOver="handleDomainHover"
@@ -199,6 +200,10 @@ export default {
     filterPeriod: {
       type: String,
       default: 'All'
+    },
+    compareDates: {
+      type: Array,
+      default: () => []
     }
   },
 
