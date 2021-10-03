@@ -469,9 +469,7 @@ export default {
         }
 
         this.domains.forEach(domain => {
-          if (d[domain.id] > 0) {
-            obj.value += d[domain.id]
-          }
+          obj.value += d[domain.id]
         })
 
         return obj
@@ -992,10 +990,10 @@ export default {
         .datum(this.totalLineData)
         .attr('class', 'line-path')
         .attr('d', this.totalLine)
-        .style('stroke', 'black')
-        .style('stroke-width', 2)
+        .style('stroke', '#c74523')
+        .style('stroke-width', 3)
         .style('stroke-linecap', 'round')
-        .style('stroke-dasharray', '5,5')
+        .style('stroke-dasharray', '13,13')
         .style('filter', 'url(#shadow)')
         .style('clip-path', this.clipPathUrl)
         .style('-webkit-clip-path', this.clipPathUrl)
