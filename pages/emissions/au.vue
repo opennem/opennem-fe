@@ -310,7 +310,7 @@ export default {
       this.hoverDate = DateDisplay.getClosestDateByInterval(
         date,
         this.interval,
-        'All'
+        this.filterPeriod
       )
     },
 
@@ -359,20 +359,21 @@ export default {
       this.dataset = rolledUpData.filter(d => isAfter(d.date, this.afterDate))
     },
     handleIntervalChange(interval) {
-      this.interval = interval
+      console.log(interval)
+      // this.interval = interval
 
-      let dataset = this.baseDataset
+      // let dataset = this.baseDataset
 
-      if (this.range === RANGE_ALL_12MTH_ROLLING) {
-        dataset = this.rollingDataset
-      }
-      const rolledUpData = dataRollUp({
-        dataset,
-        domains: this.domainEmissions,
-        interval
-      })
+      // if (this.range === RANGE_ALL_12MTH_ROLLING) {
+      //   dataset = this.rollingDataset
+      // }
+      // const rolledUpData = dataRollUp({
+      //   dataset,
+      //   domains: this.domainEmissions,
+      //   interval
+      // })
 
-      this.dataset = rolledUpData.filter(d => isAfter(d.date, this.afterDate))
+      // this.dataset = rolledUpData.filter(d => isAfter(d.date, this.afterDate))
     },
 
     handleFilterPeriodChange(period) {
