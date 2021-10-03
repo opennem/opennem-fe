@@ -5,17 +5,22 @@
       <h1>Emissions</h1>
     </header>
 
-    <DataOptionsBar
+    <!-- <DataOptionsBar
       :ranges="ranges"
       :intervals="intervals"
       :range="range"
       :interval="interval"
       :filter-period="filterPeriod"
-      style="position: relative; margin-bottom: 1rem;"
       @rangeChange="handleRangeChange"
       @rangeOptionChange="handleRangeChange"
       @intervalChange="handleIntervalChange"
-      @filterPeriodChange="handleFilterPeriodChange" /> 
+      @filterPeriodChange="handleFilterPeriodChange" 
+      style="position: relative; margin-bottom: 1rem;" />  -->
+    
+    <div class="buttons">
+      <button class="button is-small is-rounded is-selected">Rolling Sum</button>
+      <button class="button is-small is-rounded is-selected">Quarter</button>
+    </div>
 
     <div class="chart-table">
       <EmissionsChart
@@ -385,61 +390,60 @@ export default {
       this.zoomExtent = filteredDates
     },
 
-    handleRangeChange(range) {
-      this.range = range
+    // handleRangeChange(range) {
+    //   this.range = range
 
-      let dataset = this.baseDataset
+    //   let dataset = this.baseDataset
 
-      if (range === RANGE_ALL_12MTH_ROLLING) {
-        dataset = this.rollingDataset
-      }
-      const rolledUpData = dataRollUp({
-        dataset,
-        domains: this.domainEmissions,
-        interval: this.interval
-      })
+    //   if (range === RANGE_ALL_12MTH_ROLLING) {
+    //     dataset = this.rollingDataset
+    //   }
+    //   const rolledUpData = dataRollUp({
+    //     dataset,
+    //     domains: this.domainEmissions,
+    //     interval: this.interval
+    //   })
 
-      this.dataset = rolledUpData.filter(d => isAfter(d.date, this.afterDate))
-    },
-    handleIntervalChange(interval) {
-      console.log(interval)
-      // this.interval = interval
+    //   this.dataset = rolledUpData.filter(d => isAfter(d.date, this.afterDate))
+    // },
+    // handleIntervalChange(interval) {
+    //   console.log(interval)
+    //   this.interval = interval
 
-      // let dataset = this.baseDataset
+    //   let dataset = this.baseDataset
 
-      // if (this.range === RANGE_ALL_12MTH_ROLLING) {
-      //   dataset = this.rollingDataset
-      // }
-      // const rolledUpData = dataRollUp({
-      //   dataset,
-      //   domains: this.domainEmissions,
-      //   interval
-      // })
+    //   if (this.range === RANGE_ALL_12MTH_ROLLING) {
+    //     dataset = this.rollingDataset
+    //   }
+    //   const rolledUpData = dataRollUp({
+    //     dataset,
+    //     domains: this.domainEmissions,
+    //     interval
+    //   })
 
-      // this.dataset = rolledUpData.filter(d => isAfter(d.date, this.afterDate))
-    },
+    //   this.dataset = rolledUpData.filter(d => isAfter(d.date, this.afterDate))
+    // },
+    // handleFilterPeriodChange(period) {
+    //   console.log(period)
+    //   this.filterPeriod = period
 
-    handleFilterPeriodChange(period) {
-      console.log(period)
-      this.filterPeriod = period
+    //   let dataset = this.baseDataset
 
-      let dataset = this.baseDataset
+    //   if (this.range === RANGE_ALL_12MTH_ROLLING) {
+    //     dataset = this.rollingDataset
+    //   }
+    //   const rolledUpData = dataRollUp({
+    //     dataset,
+    //     domains: this.domainEmissions,
+    //     interval: this.interval
+    //   })
 
-      if (this.range === RANGE_ALL_12MTH_ROLLING) {
-        dataset = this.rollingDataset
-      }
-      const rolledUpData = dataRollUp({
-        dataset,
-        domains: this.domainEmissions,
-        interval: this.interval
-      })
-
-      this.dataset = dataFilterByPeriod({
-        dataset: rolledUpData.filter(d => isAfter(d.date, this.afterDate)),
-        interval: this.interval,
-        period
-      })
-    },
+    //   this.dataset = dataFilterByPeriod({
+    //     dataset: rolledUpData.filter(d => isAfter(d.date, this.afterDate)),
+    //     interval: this.interval,
+    //     period
+    //   })
+    // },
 
     handleTypeClick(id) {
       const index = this.hidden.indexOf(id)
@@ -538,6 +542,7 @@ export default {
     max-width: 100%;
   }
 }
+
 header {
   color: #000;
   display: flex;
@@ -562,6 +567,13 @@ h1 {
   font-weight: 700;
   font-size: 1.3rem;
   margin: 0;
+}
+
+.buttons {
+  margin: 1rem;
+  .is-small {
+    border-radius: 100px;
+  }
 }
 
 .compare-chart {
