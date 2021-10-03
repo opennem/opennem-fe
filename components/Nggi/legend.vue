@@ -1,25 +1,5 @@
 <template>
   <div class="table">
-    <!-- <table class="summary-list">
-      <tbody>
-        <tr
-          v-for="(d, i) in domains"
-          :key="i"
-          :class="{
-            'is-hidden-domain': isHidden(d.id)
-          }"
-          @click.exact="handleRowClick(d.id)"
-          @click.shift.exact="handleRowShiftClick(d.id)">
-          <td>
-            <div
-              :style="{ backgroundColor: d.colour}"
-              class="colour-square" />
-            <span>{{ d.label }}</span>
-          </td>
-        </tr>
-      </tbody>
-    </table> -->
-
     <ul>
       <li
         v-for="(d, i) in domains"
@@ -102,59 +82,6 @@ export default {
   @include mobile {
     width: 13px;
     height: 13px;
-  }
-}
-
-table {
-  font-size: 12px;
-  width: 100%;
-  table-layout: auto;
-
-  @include desktop {
-    table-layout: auto;
-  }
-
-  .cell-value {
-    font-family: $family-primary;
-  }
-
-  tr:hover td {
-    background-color: #eee;
-  }
-
-  td,
-  th {
-    padding: 3px 6px;
-    border-bottom: 1px solid #ddd;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
-  th {
-    font-family: $family-secondary;
-    font-weight: 700;
-    // border-bottom: 1px solid #000;
-    vertical-align: bottom;
-  }
-
-  .unit-header-row {
-    th {
-      font-weight: 700;
-      small {
-        display: block;
-        color: #999;
-      }
-    }
-  }
-
-  td {
-    border-bottom: 1px solid #ddd;
-    cursor: pointer;
-  }
-
-  .unit-name {
-    white-space: nowrap;
   }
 }
 
