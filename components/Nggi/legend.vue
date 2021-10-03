@@ -164,6 +164,11 @@ ul {
   max-width: 600px;
   margin: 0 auto;
 
+  -webkit-user-select: none; /* Chrome all / Safari all */
+  -moz-user-select: none; /* Firefox all */
+  -ms-user-select: none; /* IE 10+ */
+  user-select: none; /* Likely future */
+
   li {
     cursor: pointer;
     padding: 5px 10px;
