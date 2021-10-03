@@ -69,6 +69,7 @@
         :compare-dates="compareDates"
         :show-total-line="showTotalLine"
         :use-offset-diverge="true"
+        :custom-interval="'year'"
         class="chart"
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"

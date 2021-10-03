@@ -17,7 +17,7 @@
       :is-type-area="isTypeArea"
       :is-type-proportion="isTypeProportion"
       :is-type-line="isTypeLine"
-      :interval="interval"
+      :interval="customInterval === '' ? interval : customInterval"
       :average-emissions-volume="convertValue(averageEmissions)"
       :hover-display-date="hoverDisplayDate"
       :hover-value="domains.length > 1 ? hoverValue : null"
@@ -214,6 +214,10 @@ export default {
     useOffsetDiverge: {
       type: Boolean,
       default: false
+    },
+    customInterval: {
+      type: String,
+      default: ''
     }
   },
 
