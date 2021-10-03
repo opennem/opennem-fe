@@ -67,7 +67,7 @@
         :filter-period="filterPeriod"
         :hidden-domains="hidden"
         :compare-dates="compareDates"
-        :show-total-line="true"
+        :show-total-line="showTotalLine"
         :use-offset-diverge="true"
         class="chart"
         @dateHover="handleDateHover"
@@ -97,8 +97,11 @@
       <NggiLegend
         :domains="domainEmissions"
         :hidden="hidden"
+        :show-total="showTotalLine"
         @rowClick="handleTypeClick"
         @rowShiftClick="handleTypeShiftClick"
+        @totalClick="handleTotalClick"
+        @totalShiftClick="handleTotalShiftClick"
       />
     </div>
   </div>
@@ -267,7 +270,8 @@ export default {
       range: RANGE_ALL_12MTH_ROLLING,
       interval: INTERVAL_QUARTER,
       filterPeriod: FILTER_NONE,
-      compareData: []
+      compareData: [],
+      showTotalLine: true
     }
   },
 
@@ -512,6 +516,11 @@ export default {
       const toBeHidden = this.domainEmissions.filter(d => d.id !== id)
       this.hidden = toBeHidden.map(d => d.id)
     },
+
+    handleTotalClick() {
+      this.showTotalLine = !this.showTotalLine
+    },
+    handleTotalShiftClick() {},
 
     getDataByTime(dataset, time) {
       return dataset.find(d => d.time === time)

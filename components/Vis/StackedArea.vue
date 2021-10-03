@@ -624,6 +624,14 @@ export default {
       } else {
         this.$stackedAreaGroup.selectAll('path').attr('opacity', 1)
       }
+    },
+
+    showTotalLine(val) {
+      if (val) {
+        this.drawTotalLine()
+      } else {
+        this.$totalLineGroup.selectAll('path').remove()
+      }
     }
   },
   created() {
@@ -975,16 +983,15 @@ export default {
         })
 
       if (this.showTotalLine) {
+        this.totalLine.curve(curveMonotoneX)
+        this.$totalLineGroup.selectAll('path').remove()
+
         this.drawTotalLine()
       }
       this.drawDatasetTwo()
     },
 
     drawTotalLine() {
-      this.totalLine.curve(curveMonotoneX)
-      this.$totalLineGroup.selectAll('path').remove()
-
-      // Generate Line
       this.$totalLineGroup
         .append('path')
         .datum(this.totalLineData)

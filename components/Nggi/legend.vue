@@ -15,6 +15,15 @@
           class="colour-square" />
         <span>{{ d.label }}</span>
       </li>
+      <li
+        role="button"
+        @click.exact="() => handleTotalClick()"
+        @click.shift.exact="() => handleTotalShiftClick()">
+        <div
+          :class="{ on: showTotal }"
+          class="net-total-line" />
+        Net Total
+      </li>
     </ul>
   </div>
 </template>
@@ -31,6 +40,10 @@ export default {
     hidden: {
       type: Array,
       default: () => []
+    },
+    showTotal: {
+      type: Boolean,
+      default: true
     }
   },
 
@@ -40,6 +53,12 @@ export default {
     },
     handleRowShiftClick(row) {
       this.$emit('rowShiftClick', row)
+    },
+    handleTotalClick() {
+      this.$emit('totalClick')
+    },
+    handleTotalShiftClick() {
+      this.$emit('totalShiftClick')
     },
     isHidden(id) {
       return _includes(this.hidden, id)
@@ -82,6 +101,18 @@ export default {
   @include mobile {
     width: 13px;
     height: 13px;
+  }
+}
+
+.net-total-line {
+  width: 18px;
+  height: 5px;
+  background: #ddd;
+  margin-right: 5px;
+  border-radius: 5px;
+
+  &.on {
+    background: #c74523;
   }
 }
 
