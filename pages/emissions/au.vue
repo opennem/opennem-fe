@@ -496,7 +496,7 @@ header {
   align-items: center;
   padding: $app-padding / 2;
   background-color: $background-alpha;
-  margin: 2rem 0;
+  margin: 2rem 0 0;
 
   @include mobile {
     margin: 1rem 0.5rem;
