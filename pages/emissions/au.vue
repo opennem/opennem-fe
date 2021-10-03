@@ -112,6 +112,7 @@ import isAfter from 'date-fns/isAfter'
 import Papa from 'papaparse'
 import _cloneDeep from 'lodash.clonedeep'
 import _includes from 'lodash.includes'
+import { timeYear } from 'd3-time'
 
 import {
   NGGI_RANGES,
@@ -122,6 +123,7 @@ import { INTERVAL_QUARTER, FILTER_NONE } from '@/constants/interval-filters.js'
 
 import regionDisplayTzs from '@/constants/region-display-timezones.js'
 import DateDisplay from '@/services/DateDisplay.js'
+import axisTimeFormat from '@/components/Vis/shared/timeFormat.js'
 
 import transformTo12MthRollingSum from '@/data/transform/emissions-quarter-12-month-rolling-sum'
 import { dataRollUp, dataFilterByPeriod } from '@/data/parse/nggi-emissions/'
@@ -347,8 +349,6 @@ export default {
 
         console.log(data)
 
-        this.updateAxisGuides(data)
-
         this.baseDataset = data
         this.rollingDataset = transformTo12MthRollingSum(
           _cloneDeep(data),
@@ -362,7 +362,7 @@ export default {
           interval: this.interval
         })
 
-        this.updateAxisGuides(rolledUpData)
+        this.updateAxisGuides()
 
         this.dataset = rolledUpData.filter(d => isAfter(d.date, this.afterDate))
       })
@@ -370,29 +370,35 @@ export default {
 
   methods: {
     ...mapActions({
-      doUpdateXGuides: 'visInteract/doUpdateXGuides',
-      doUpdateXTicks: 'visInteract/doUpdateXTicks',
-      doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
+      // doUpdateXGuides: 'visInteract/doUpdateXGuides',
+      // doUpdateXTicks: 'visInteract/doUpdateXTicks',
+      // doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
     }),
 
     ...mapMutations({
       setFocusDate: 'visInteract/focusDate',
+      setXTicks: 'visInteract/xTicks',
+      setXGuides: 'visInteract/xGuides',
+      setTickFormat: 'visInteract/tickFormat',
       setCompareDifference: 'compareDifference'
     }),
 
-    updateAxisGuides(data) {
-      this.doUpdateXGuides({
-        interval: this.interval,
-        start: data[0].time,
-        end: data[data.length - 1].time
-      })
+    updateAxisGuides() {
+      this.setXTicks(timeYear.every(1))
+      this.setXGuides([])
+      this.setTickFormat(axisTimeFormat)
+      // this.doUpdateXGuides({
+      //   interval: this.interval,
+      //   start: data[0].time,
+      //   end: data[data.length - 1].time
+      // })
 
-      this.doUpdateXTicks({
-        range: this.range,
-        interval: this.interval,
-        isZoomed: false,
-        filterPeriod: false
-      })
+      // this.doUpdateXTicks({
+      //   range: this.range,
+      //   interval: this.interval,
+      //   isZoomed: false,
+      //   filterPeriod: false
+      // })
     },
 
     handleDateHover(date) {
@@ -654,4 +660,10 @@ h1 {
     background-color: transparent;
   }
 }
+
+// ::v-deep .x-axis {
+//   .tick:last-child text {
+//     text-anchor: end;
+//   }
+// }
 </style>

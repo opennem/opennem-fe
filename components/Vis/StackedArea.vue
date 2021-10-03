@@ -1587,6 +1587,8 @@ export default {
             })
             className = 'interval-fin-year'
           }
+        } else if (this.range === '12 Mth Rolling') {
+          tickLength = d3TimeYear.every(1)
         }
       } else {
         if (this.range === '30D') {
