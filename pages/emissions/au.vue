@@ -17,10 +17,39 @@
       @filterPeriodChange="handleFilterPeriodChange" 
       style="position: relative; margin-bottom: 1rem;" />  -->
     
-    <div class="buttons">
+    <!-- <div class="buttons">
       <button class="button is-small is-rounded is-selected">Rolling Sum</button>
       <button class="button is-small is-rounded is-selected">Quarter</button>
+    </div> -->
+
+    <!-- <DatesDisplay
+      :is-hovering="isHovering"
+      :hovered-date="hoverDate ? hoverDate.getTime() : null"
+      :focus-on="focusOn"
+      :focus-date="focusDate ? focusDate.getTime() : null"
+      :start-date="startDate"
+      :end-date="endDate"
+      :range="range"
+      :interval="interval"
+      :timezone-string="''"
+    /> -->
+
+    <div class="emissions-range-dates">
+      <h2>
+        <time>
+          {{ startDate | customFormatDate({ range, interval, isStart: true }) }}
+        </time>
+        –
+        <time>
+          {{ endDate | customFormatDate({ range, interval, showYear: true, isEnd: true }) }}
+        </time>
+      </h2>
+
+      <h3>
+        12 month rolling sum
+      </h3>
     </div>
+    
 
     <div class="chart-table">
       <EmissionsChart
@@ -102,6 +131,7 @@ import EmissionsChart from '@/components/Charts/EmissionsChart'
 import NggiLegend from '@/components/Nggi/Legend'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import CompareChart from '@/components/Nggi/CompareChart'
+import DatesDisplay from '@/components/SummaryTable/DatesDisplay'
 
 const domainEmissions = [
   {
@@ -179,7 +209,8 @@ export default {
     DataOptionsBar,
     NggiLegend,
     EmissionsChart,
-    CompareChart
+    CompareChart,
+    DatesDisplay
   },
 
   head() {
@@ -261,6 +292,16 @@ export default {
 
     cardFilename() {
       return `${this.baseUrl}opennem-emissions-au.png`
+    },
+
+    startDate() {
+      const dataLength = this.dataset.length
+      return dataLength > 0 ? this.dataset[0].time : null
+    },
+
+    endDate() {
+      const dataLength = this.dataset.length
+      return dataLength > 0 ? this.dataset[dataLength - 1].time : null
     }
   },
 
@@ -567,6 +608,21 @@ h1 {
   font-weight: 700;
   font-size: 1.3rem;
   margin: 0;
+}
+
+.emissions-range-dates {
+  color: #333;
+  margin: 1rem;
+  text-align: center;
+  h2 {
+    font-weight: 100;
+    font-size: 1.8rem;
+  }
+  h3 {
+    font-family: Playfair Display, Georgia, Times New Roman, Times, serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
 }
 
 .buttons {
