@@ -42,13 +42,23 @@
         @svgClick="handleSvgClick"
       />
 
-      <CompareChart
-        v-if="compareDifference"
-        :compare-data="compareData"
-        :domains="filteredDomains"
-        :range="range"
-        :interval="interval"
-      />
+      <div 
+        v-if="compareDifference" 
+        class="compare-chart">
+        <a 
+          class="close-button" 
+          @click.prevent="() => setCompareDifference(false)">
+          <i class="fal fa-times-circle" />
+        </a>
+
+        <CompareChart
+          :compare-data="compareData"
+          :domains="filteredDomains"
+          :range="range"
+          :interval="interval"
+        />
+      </div>
+      
 
       <NggiLegend
         :domains="domainEmissions"
@@ -504,6 +514,17 @@ h1 {
   font-weight: 700;
   font-size: 1.3rem;
   margin: 0;
+}
+
+.compare-chart {
+  position: relative;
+  margin-left: 1rem;
+  .close-button {
+    position: absolute;
+    right: 1rem;
+    top: 1.3em;
+    font-size: 1.3em;
+  }
 }
 
 .chart-table {
