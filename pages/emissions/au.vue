@@ -99,14 +99,6 @@ import CompareChart from '@/components/Nggi/CompareChart'
 
 const domainEmissions = [
   {
-    label: 'Land sector',
-    id: 'land-sector',
-    domain: 'land-sector',
-    type: 'emissions',
-    units: 'MtCO2e',
-    colour: '#4A772F'
-  },
-  {
     label: 'Agriculture',
     id: 'agriculture',
     domain: 'agriculture',
@@ -162,6 +154,14 @@ const domainEmissions = [
     type: 'emissions',
     units: 'MtCO2e',
     colour: '#223C6D'
+  },
+  {
+    label: 'Land sector',
+    id: 'land-sector',
+    domain: 'land-sector',
+    type: 'emissions',
+    units: 'MtCO2e',
+    colour: '#4A772F'
   }
 ]
 
