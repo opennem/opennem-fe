@@ -1,17 +1,9 @@
 <template>
   <div class="container">
-    <h1>NGGI Emissions</h1>
-
-    <!-- <DataOptionsBar
-      :ranges="ranges"
-      :intervals="intervals"
-      :range="range"
-      :interval="interval"
-      :filter-period="filterPeriod"
-      @rangeChange="handleRangeChange"
-      @intervalChange="handleIntervalChange"
-      @queryChange="handleQueryChange"
-      @filterPeriodChange="handleFilterPeriodChange" /> -->
+    <header>
+      <AppLogo class="header-logo" />
+      <h1> NGGI Emissions</h1>
+    </header>
 
     <DataOptionsBar
       :ranges="ranges"
@@ -77,18 +69,17 @@ import _includes from 'lodash.includes'
 import {
   NGGI_RANGES,
   NGGI_RANGE_INTERVALS,
-  RANGE_ALL,
   RANGE_ALL_12MTH_ROLLING
 } from '@/constants/ranges.js'
 import { INTERVAL_QUARTER, FILTER_NONE } from '@/constants/interval-filters.js'
 
 import regionDisplayTzs from '@/constants/region-display-timezones.js'
 import DateDisplay from '@/services/DateDisplay.js'
-import { mutateDate } from '@/services/datetime-helpers.js'
 
 import transformTo12MthRollingSum from '@/data/transform/emissions-quarter-12-month-rolling-sum'
 import { dataRollUp, dataFilterByPeriod } from '@/data/parse/nggi-emissions/'
 
+import AppLogo from '~/components/ui/Logo'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
 import NggiLegend from '@/components/Nggi/Legend'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
@@ -166,6 +157,7 @@ export default {
   layout: 'no-container',
 
   components: {
+    AppLogo,
     DataOptionsBar,
     NggiLegend,
     EmissionsChart,
@@ -178,11 +170,11 @@ export default {
       rollingDataset: [],
       dataset: [],
       domains: [],
-      hidden: [],
+      hidden: ['land-sector'],
       zoomExtent: [],
       isHovering: false,
       hoverDate: null,
-      range: RANGE_ALL,
+      range: RANGE_ALL_12MTH_ROLLING,
       interval: INTERVAL_QUARTER,
       filterPeriod: FILTER_NONE,
       compareData: []
@@ -260,7 +252,7 @@ export default {
         )
 
         const rolledUpData = dataRollUp({
-          dataset: this.baseDataset,
+          dataset: this.rollingDataset,
           domains: this.domainEmissions,
           interval: this.interval
         })
@@ -476,6 +468,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~/assets/scss/variables.scss';
 @import '~/assets/scss/responsive-mixins.scss';
 
 .container {
@@ -485,16 +478,30 @@ export default {
     max-width: 100%;
   }
 }
-h1 {
-  font-family: Playfair Display, Georgia, Times New Roman, Times, serif;
-  font-weight: 700;
-  font-size: 36px;
+header {
+  color: #000;
+  display: flex;
+  align-items: center;
+  padding: $app-padding / 2;
+  background-color: $background-alpha;
   margin: 2rem 0;
 
   @include mobile {
-    font-size: 24px;
     margin: 1rem 0.5rem;
   }
+
+  .header-logo {
+    width: 2.3rem;
+    max-height: 2.3rem;
+    margin: 0.2rem $app-padding / 2;
+  }
+}
+
+h1 {
+  font-family: Playfair Display, Georgia, Times New Roman, Times, serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  margin: 0;
 }
 
 .chart-table {
