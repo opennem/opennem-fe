@@ -58,6 +58,7 @@
       :unit="` ${chartDisplayPrefix}${chartUnit}`"
       :filter-period="filterPeriod"
       :compare-dates="compareDates"
+      :show-total-line="showTotalLine"
       class="vis-chart"
       @dateOver="handleDateHover"
       @domainOver="handleDomainHover"
@@ -204,6 +205,10 @@ export default {
     compareDates: {
       type: Array,
       default: () => []
+    },
+    showTotalLine: {
+      type: Boolean,
+      default: false
     }
   },
 

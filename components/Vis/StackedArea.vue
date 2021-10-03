@@ -342,6 +342,10 @@ export default {
     filterPeriod: {
       type: String,
       default: ''
+    },
+    showTotalLine: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -967,7 +971,9 @@ export default {
           self.$emit('domainOver', d.key)
         })
 
-      // this.drawTotalLine()
+      if (this.showTotalLine) {
+        this.drawTotalLine()
+      }
       this.drawDatasetTwo()
     },
 

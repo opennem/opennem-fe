@@ -33,6 +33,7 @@
         :filter-period="filterPeriod"
         :hidden-domains="hidden"
         :compare-dates="compareDates"
+        :show-total-line="true"
         class="chart"
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"
