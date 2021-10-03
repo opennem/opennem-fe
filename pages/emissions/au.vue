@@ -2,7 +2,7 @@
   <div class="container">
     <header>
       <AppLogo class="header-logo" />
-      <h1> NGGI Emissions</h1>
+      <h1>Emissions</h1>
     </header>
 
     <DataOptionsBar
@@ -177,8 +177,47 @@ export default {
     CompareChart
   },
 
+  head() {
+    return {
+      title: `: Australia’s latest greenhouse gas emissions`,
+      meta: [
+        {
+          hid: 'twitter:title',
+          name: 'twitter:title',
+          content: `OpenNEM: Australia’s latest greenhouse gas emissions`
+        },
+        {
+          hid: 'twitter:image:src',
+          name: 'twitter:image:src',
+          content: this.cardFilename
+        },
+        {
+          hid: 'og:title',
+          property: 'og:title',
+          content: `OpenNEM: Australia’s latest greenhouse gas emissions`
+        },
+        {
+          hid: 'og:image',
+          property: 'og:image',
+          content: this.cardFilename
+        },
+        {
+          hid: 'og:image:width',
+          property: 'og:image:width',
+          content: '1447'
+        },
+        {
+          hid: 'og:image:height',
+          property: 'og:image:height',
+          content: '932'
+        }
+      ]
+    }
+  },
+
   data() {
     return {
+      baseUrl: `${this.$config.url}/images/screens/`,
       baseDataset: [],
       rollingDataset: [],
       dataset: [],
@@ -213,6 +252,10 @@ export default {
     filteredDomains() {
       console.log(this.domains)
       return this.domains.filter(d => !_includes(this.hidden, d.id))
+    },
+
+    cardFilename() {
+      return `${this.baseUrl}opennem-emissions-au.png`
     }
   },
 
