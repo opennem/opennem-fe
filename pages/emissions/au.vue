@@ -74,6 +74,7 @@
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import parse from 'date-fns/parse'
 import subMonths from 'date-fns/subMonths'
+import isAfter from 'date-fns/isAfter'
 import Papa from 'papaparse'
 import _cloneDeep from 'lodash.clonedeep'
 import _includes from 'lodash.includes'
@@ -230,6 +231,7 @@ export default {
     this.displayTz = regionDisplayTzs['au']
     this.ranges = NGGI_RANGES
     this.intervals = NGGI_RANGE_INTERVALS
+    this.afterDate = new Date(2004, 11, 31)
   },
 
   mounted() {
@@ -254,6 +256,8 @@ export default {
           return obj
         })
 
+        console.log(data)
+
         this.updateAxisGuides(data)
 
         this.baseDataset = data
@@ -271,7 +275,7 @@ export default {
 
         this.updateAxisGuides(rolledUpData)
 
-        this.dataset = rolledUpData
+        this.dataset = rolledUpData.filter(d => isAfter(d.date, this.afterDate))
       })
   },
 
@@ -352,7 +356,7 @@ export default {
         interval: this.interval
       })
 
-      this.dataset = rolledUpData
+      this.dataset = rolledUpData.filter(d => isAfter(d.date, this.afterDate))
     },
     handleIntervalChange(interval) {
       this.interval = interval
@@ -368,7 +372,7 @@ export default {
         interval
       })
 
-      this.dataset = rolledUpData
+      this.dataset = rolledUpData.filter(d => isAfter(d.date, this.afterDate))
     },
 
     handleFilterPeriodChange(period) {
@@ -387,7 +391,7 @@ export default {
       })
 
       this.dataset = dataFilterByPeriod({
-        dataset: rolledUpData,
+        dataset: rolledUpData.filter(d => isAfter(d.date, this.afterDate)),
         interval: this.interval,
         period
       })
