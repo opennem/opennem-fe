@@ -1184,6 +1184,12 @@ export default {
           .transition(transition)
           .attr('d', this.line)
       }
+      if (this.showTotalLine) {
+        this.$totalLineGroup
+          .selectAll('path')
+          .transition(transition)
+          .attr('d', this.totalLine)
+      }
     },
 
     updateGuides() {
