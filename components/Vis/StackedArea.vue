@@ -1158,6 +1158,9 @@ export default {
       if (this.hasSecondDataset) {
         this.$lineGroup.selectAll('path').attr('d', this.line)
       }
+      if (this.showTotalLine) {
+        this.$totalLineGroup.selectAll('path').attr('d', this.totalLine)
+      }
     },
 
     zoomRedraw() {
