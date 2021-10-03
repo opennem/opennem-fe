@@ -346,6 +346,10 @@ export default {
     showTotalLine: {
       type: Boolean,
       default: false
+    },
+    useOffsetDiverge: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -910,10 +914,11 @@ export default {
       this.updateGuides()
 
       // Setup the keys in the stack so it knows how to draw the area
-      this.stack
-        .keys(this.domainIds)
-        .value((d, key) => (d[key] ? d[key] : 0))
-        .offset(stackOffsetDiverging)
+      this.stack.keys(this.domainIds).value((d, key) => (d[key] ? d[key] : 0))
+
+      if (this.useOffsetDiverge) {
+        this.stack.offset(stackOffsetDiverging)
+      }
 
       this.area.curve(this.curveType)
       this.nullArea.curve(curveStepAfter)

@@ -34,6 +34,7 @@
         :hidden-domains="hidden"
         :compare-dates="compareDates"
         :show-total-line="true"
+        :use-offset-diverge="true"
         class="chart"
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"

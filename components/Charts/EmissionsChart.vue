@@ -59,6 +59,7 @@
       :filter-period="filterPeriod"
       :compare-dates="compareDates"
       :show-total-line="showTotalLine"
+      :use-offset-diverge="useOffsetDiverge"
       class="vis-chart"
       @dateOver="handleDateHover"
       @domainOver="handleDomainHover"
@@ -207,6 +208,10 @@ export default {
       default: () => []
     },
     showTotalLine: {
+      type: Boolean,
+      default: false
+    },
+    useOffsetDiverge: {
       type: Boolean,
       default: false
     }
