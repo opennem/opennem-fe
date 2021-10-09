@@ -33,7 +33,7 @@
     </template>
     <template
       v-slot:average-value
-      v-if="!readOnly && !isPercentage">
+      v-if="!readOnly && !isPercentage && showAverageValue">
       Av.
       <strong>
         {{ averageEmissionsVolume | formatValue }}
@@ -172,6 +172,10 @@ export default {
     isTypeChangeSinceLine: {
       type: Boolean,
       default: false
+    },
+    showAverageValue: {
+      type: Boolean,
+      default: true
     }
   },
   data() {

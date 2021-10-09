@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="wrapper">
     <header>
       <AppLogo class="header-logo" />
       <h1>Emissions</h1>
@@ -34,8 +34,26 @@
       :timezone-string="''"
     /> -->
 
+    <div class="dataset-selection">
+      <div class="buttons has-addons">
+        <button
+          :class="{ 'is-selected': datasetView === 'quarter' }"
+          class="button" 
+          @click="() => datasetView = 'quarter'">Quarter <strong>2005 — 2021</strong></button>
+        <button
+          :class="{ 'is-selected': datasetView === 'year' }"
+          class="button" 
+          @click="() => datasetView = 'year'">Year <strong>1990 — 2020</strong></button>
+      </div>
+      <button
+        v-if="datasetView === 'year'"
+        :class="{ 'is-selected': addProjections }"
+        class="button" 
+        @click="() => addProjections = !addProjections">Show projections <strong>2021 — 2030</strong></button>
+    </div>
+
     <div class="emissions-range-dates">
-      <h2>
+      <!-- <h2>
         <time>
           {{ startDate | customFormatDate({ range, interval, isStart: true }) }}
         </time>
@@ -43,11 +61,11 @@
         <time>
           {{ endDate | customFormatDate({ range, interval, showYear: true, isEnd: true }) }}
         </time>
-      </h2>
+      </h2> -->
 
-      <h3>
+      <!-- <h3>
         12 month rolling sum
-      </h3>
+      </h3> -->
     </div>
     
 
@@ -55,6 +73,7 @@
       <EmissionsChart
         v-if="dataset.length > 0"
         :emissions-dataset="dataset"
+        :emissions-projection-dataset="isYearDatasetView && addProjections ? projectionDataset : []"
         :domain-emissions="filteredDomains"
         :range="range"
         :interval="interval"
@@ -70,6 +89,8 @@
         :show-total-line="showTotalLine"
         :use-offset-diverge="true"
         :custom-interval="'year'"
+        :incomplete-intervals="isYearDatasetView && addProjections ? projectionsInterval : []"
+        :show-average-value="false"
         class="chart"
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"
@@ -117,17 +138,22 @@ import Papa from 'papaparse'
 import _cloneDeep from 'lodash.clonedeep'
 import _includes from 'lodash.includes'
 import { timeYear } from 'd3-time'
+import { utcFormat } from 'd3-time-format'
 
 import {
   NGGI_RANGES,
   NGGI_RANGE_INTERVALS,
-  RANGE_ALL_12MTH_ROLLING
+  RANGE_ALL_12MTH_ROLLING,
+  RANGE_ALL
 } from '@/constants/ranges.js'
-import { INTERVAL_QUARTER, FILTER_NONE } from '@/constants/interval-filters.js'
+import {
+  INTERVAL_QUARTER,
+  INTERVAL_YEAR,
+  FILTER_NONE
+} from '@/constants/interval-filters.js'
 
 import regionDisplayTzs from '@/constants/region-display-timezones.js'
 import DateDisplay from '@/services/DateDisplay.js'
-import axisTimeFormat from '@/components/Vis/shared/timeFormat.js'
 
 import transformTo12MthRollingSum from '@/data/transform/emissions-quarter-12-month-rolling-sum'
 import { dataRollUp, dataFilterByPeriod } from '@/data/parse/nggi-emissions/'
@@ -259,10 +285,13 @@ export default {
 
   data() {
     return {
+      datasetView: 'quarter',
+      addProjections: false,
       baseUrl: `${this.$config.url}/images/screens/`,
       baseDataset: [],
       rollingDataset: [],
       dataset: [],
+      projectionDataset: [],
       domains: [],
       hidden: ['land-sector'],
       zoomExtent: [],
@@ -309,6 +338,18 @@ export default {
     endDate() {
       const dataLength = this.dataset.length
       return dataLength > 0 ? this.dataset[dataLength - 1].time : null
+    },
+
+    isYearDatasetView() {
+      return this.datasetView === 'year'
+    },
+
+    isQuarterDatasetView() {
+      return this.datasetView === 'quarter'
+    },
+
+    hasProjectionDataset() {
+      return this.projectionDataset.length > 0
     }
   },
 
@@ -318,6 +359,16 @@ export default {
         this.compareData = []
         this.$store.dispatch('compareDates', [])
       }
+    },
+
+    datasetView(val) {
+      if (val === 'quarter') {
+        this.getQuarterData()
+      } else {
+        this.getYearData()
+        this.getProjectionData()
+      }
+      this.updateAxisGuides()
     }
   },
 
@@ -328,49 +379,17 @@ export default {
     this.ranges = NGGI_RANGES
     this.intervals = NGGI_RANGE_INTERVALS
     this.afterDate = new Date(2004, 11, 31)
+
+    this.projectionsInterval = [
+      {
+        start: new Date(2021, 0, 1),
+        end: new Date(2030, 11, 31)
+      }
+    ]
   },
 
   mounted() {
-    const url = 'https://data.dev.opennem.org.au/nggi/nggi-emissions.csv'
-
-    this.$axios
-      .get(url, { headers: { 'Content-Type': 'text/csv' } })
-      .then(res => {
-        const csvData = Papa.parse(res.data, { header: true })
-        const data = csvData.data.map(d => {
-          const obj = {}
-          const date = subMonths(parse(d.Quarter, 'MMM-yyyy', new Date()), 2)
-
-          obj.date = date
-          obj.time = obj.date.getTime()
-          obj.quarter = d.Quarter
-
-          this.domainEmissions.forEach(domain => {
-            obj[domain.id] = parseFloat(d[domain.label])
-          })
-
-          return obj
-        })
-
-        console.log(data)
-
-        this.baseDataset = data
-        this.rollingDataset = transformTo12MthRollingSum(
-          _cloneDeep(data),
-          this.domainEmissions,
-          true
-        )
-
-        const rolledUpData = dataRollUp({
-          dataset: this.rollingDataset,
-          domains: this.domainEmissions,
-          interval: this.interval
-        })
-
-        this.updateAxisGuides()
-
-        this.dataset = rolledUpData.filter(d => isAfter(d.date, this.afterDate))
-      })
+    this.getQuarterData()
   },
 
   methods: {
@@ -388,22 +407,118 @@ export default {
       setCompareDifference: 'compareDifference'
     }),
 
+    getQuarterData() {
+      const url =
+        'https://data.dev.opennem.org.au/nggi/nggi-emissions-2001-2021-quarterly.csv'
+
+      this.$axios
+        .get(url, { headers: { 'Content-Type': 'text/csv' } })
+        .then(res => {
+          const csvData = Papa.parse(res.data, { header: true })
+          const data = csvData.data.map(d => {
+            const obj = {}
+            const date = subMonths(parse(d.Quarter, 'MMM-yyyy', new Date()), 2)
+
+            obj.date = date
+            obj.time = obj.date.getTime()
+            obj.quarter = d.Quarter
+
+            this.domainEmissions.forEach(domain => {
+              obj[domain.id] = parseFloat(d[domain.label])
+            })
+
+            return obj
+          })
+
+          this.range = RANGE_ALL_12MTH_ROLLING
+          this.interval = INTERVAL_QUARTER
+          this.updateAxisGuides()
+
+          this.baseDataset = data
+          this.rollingDataset = transformTo12MthRollingSum(
+            _cloneDeep(data),
+            this.domainEmissions,
+            true
+          )
+
+          const rolledUpData = dataRollUp({
+            dataset: this.rollingDataset,
+            domains: this.domainEmissions,
+            interval: this.interval
+          })
+
+          this.dataset = rolledUpData.filter(d =>
+            isAfter(d.date, this.afterDate)
+          )
+        })
+    },
+
+    getYearData() {
+      const url =
+        'https://data.dev.opennem.org.au/nggi/nggi-emissions-1990-2020-yearly.csv'
+
+      this.$axios
+        .get(url, { headers: { 'Content-Type': 'text/csv' } })
+        .then(res => {
+          const csvData = Papa.parse(res.data, { header: true })
+
+          const data = csvData.data.map(d => {
+            const obj = {}
+            const date = parse(d.Year, 'yyyy', new Date())
+            obj.date = date
+            obj.time = obj.date.getTime()
+            obj.year = d.Year
+
+            this.domainEmissions.forEach(domain => {
+              obj[domain.id] = parseFloat(d[domain.label])
+            })
+
+            return obj
+          })
+
+          this.range = RANGE_ALL
+          this.interval = INTERVAL_YEAR
+          this.updateAxisGuides()
+          this.dataset = data
+        })
+    },
+
+    getProjectionData() {
+      const url =
+        'https://data.dev.opennem.org.au/nggi/nggi-emissions-projections-2021-2030-yearly.csv'
+
+      this.$axios
+        .get(url, { headers: { 'Content-Type': 'text/csv' } })
+        .then(res => {
+          const csvData = Papa.parse(res.data, { header: true })
+
+          const data = csvData.data.map(d => {
+            const obj = {}
+            const date = parse(d.Year, 'yyyy', new Date())
+            obj.date = date
+            obj.time = obj.date.getTime()
+            obj.year = d.Year
+
+            this.domainEmissions.forEach(domain => {
+              obj[domain.id] = parseFloat(d[domain.label])
+            })
+
+            return obj
+          })
+
+          // this.range = RANGE_ALL
+          // this.interval = INTERVAL_YEAR
+          // this.updateAxisGuides()
+          this.projectionDataset = data
+        })
+    },
+
     updateAxisGuides() {
+      const formatYear = utcFormat('%Y')
+      const timeFormat = date => formatYear(date)
       this.setXTicks(timeYear.every(1))
       this.setXGuides([])
-      this.setTickFormat(axisTimeFormat)
-      // this.doUpdateXGuides({
-      //   interval: this.interval,
-      //   start: data[0].time,
-      //   end: data[data.length - 1].time
-      // })
-
-      // this.doUpdateXTicks({
-      //   range: this.range,
-      //   interval: this.interval,
-      //   isZoomed: false,
-      //   filterPeriod: false
-      // })
+      this.setTickFormat(timeFormat)
     },
 
     handleDateHover(date) {
@@ -529,13 +644,17 @@ export default {
 
     handleSvgClick(metaKey) {
       console.log(metaKey)
+      const dataset = this.hasProjectionDataset
+        ? [..._cloneDeep(this.dataset), ..._cloneDeep(this.projectionDataset)]
+        : _cloneDeep(this.dataset)
+
       if (metaKey && this.focusOn && !this.compareDifference) {
         this.setCompareDifference(true)
 
         const hoverTime = this.hoverDate ? this.hoverDate.getTime() : 0
         const focusTime = this.focusDate ? this.focusDate.getTime() : 0
-        const firstData = this.getDataByTime(this.dataset, focusTime)
-        const secondData = this.getDataByTime(this.dataset, hoverTime)
+        const firstData = this.getDataByTime(dataset, focusTime)
+        const secondData = this.getDataByTime(dataset, hoverTime)
 
         setTimeout(() => {
           this.$store.dispatch('compareDates', [focusTime, hoverTime])
@@ -565,8 +684,8 @@ export default {
             }
           }
           if (compareDates.length === 2) {
-            const firstData = this.getDataByTime(this.dataset, compareDates[0])
-            const secondData = this.getDataByTime(this.dataset, compareDates[1])
+            const firstData = this.getDataByTime(dataset, compareDates[0])
+            const secondData = this.getDataByTime(dataset, compareDates[1])
             this.compareData = [firstData, secondData]
           }
           if (compareDates.length === 0) {
@@ -592,12 +711,8 @@ export default {
 @import '~/assets/scss/variables.scss';
 @import '~/assets/scss/responsive-mixins.scss';
 
-.container {
-  max-width: 80%;
-
-  @include mobile {
-    max-width: 100%;
-  }
+.wrapper {
+  padding-right: 10px;
 }
 
 header {
@@ -668,6 +783,15 @@ h1 {
   }
   .table {
     background-color: transparent;
+  }
+}
+
+.dataset-selection {
+  display: flex;
+  align-items: center;
+
+  strong {
+    margin-left: 10px;
   }
 }
 
