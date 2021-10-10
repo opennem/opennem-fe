@@ -126,6 +126,7 @@
           :domains="filteredDomains"
           :range="range"
           :interval="interval"
+          :unit="chartCurrentUnit"
         />
       </div>
       
@@ -349,6 +350,7 @@ export default {
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
       chartType: 'chartOptionsEmissionsVolume/chartType',
+      chartCurrentUnit: 'chartOptionsEmissionsVolume/chartCurrentUnit',
 
       compareDifference: 'compareDifference',
       compareDates: 'compareDates',
@@ -383,8 +385,7 @@ export default {
     },
 
     filteredDomains() {
-      console.log(this.domains)
-      return this.domains.filter(d => !_includes(this.hidden, d.id))
+      return this.domainEmissions.filter(d => !_includes(this.hidden, d.id))
     },
 
     cardFilename() {
