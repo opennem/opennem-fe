@@ -20,7 +20,9 @@
             flood-color="rgba(0, 0, 0, 0.2)" />
         </filter>
       </defs>
-      
+      <g 
+        :transform="axisTransform" 
+        class="y-shades" />
       <g 
         :transform="axisTransform" 
         class="x-axis" />
@@ -252,7 +254,8 @@ export default {
       $cursorLine: null,
       $cursorDotsGroup: null,
       $hoverGroup: null,
-      $xShadesGroup: null
+      $xShadesGroup: null,
+      $yShadesGroup: null
     }
   },
 
@@ -397,6 +400,8 @@ export default {
       }
     },
     zoomRange(newRange) {
+      this.$cursorDotsGroup.selectAll('circle').remove()
+      this.clearCursorLine()
       if (newRange.length > 0) {
         this.x.domain(newRange)
       } else {
@@ -532,8 +537,9 @@ export default {
         .tickSize(this.width)
         .ticks(5)
 
-      // x axis shading
+      // axis shading
       this.$xShadesGroup = $svg.select('.x-shades')
+      this.$yShadesGroup = $svg.select('.y-shades')
 
       // Vis
       this.$vis1Group = $svg.select('.vis1-group')
@@ -628,6 +634,22 @@ export default {
         .attr('x', d => this.x(d.start))
         .attr('width', d => this.x(d.end) - this.x(d.start))
         .attr('height', this.height)
+
+      this.$yShadesGroup.selectAll('rect').remove()
+      this.$yShadesGroup
+        .selectAll('rect')
+        .data([
+          {
+            start: this.y1.domain()[1],
+            end: 0
+          }
+        ])
+        .enter()
+        .append('rect')
+        .attr('y', d => this.y1(d.start))
+        .attr('width', this.width)
+        .attr('height', d => this.y1(d.end) - this.y1(d.start))
+        .style('fill', 'rgba(255,255,255, 0.4)')
 
       this.$vis1Group.selectAll('path').remove()
 
@@ -769,6 +791,10 @@ export default {
     drawLeftYAxis(g) {
       g.call(this.yAxisLeft)
       g.selectAll('.y-axis .tick text').remove()
+      g.selectAll('.tick line').attr(
+        'class',
+        d => (d === 0 && this.yMinComputed !== 0 ? 'base' : '')
+      )
     },
 
     drawLeftYAxisText(g) {

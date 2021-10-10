@@ -17,6 +17,7 @@
       :is-type-area="isTypeArea"
       :is-type-proportion="isTypeProportion"
       :is-type-line="isTypeLine"
+      :is-type-change-since-line="isTypeChangeSinceLine"
       :interval="customInterval === '' ? interval : customInterval"
       :average-emissions-volume="convertValue(averageEmissions)"
       :hover-display-date="hoverDisplayDate"
@@ -274,6 +275,12 @@ export default {
     isTypeChangeSinceLine() {
       return this.chartType === OPTIONS.CHART_CHANGE_SINCE_LINE
     },
+    isYAxisAbsolute() {
+      return this.chartYAxis === OPTIONS.CHART_YAXIS_ABSOLUTE
+    },
+    isYAxisPercentage() {
+      return this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE
+    },
 
     tickFormat() {
       if (typeof this.visTickFormat === 'string') {
@@ -290,7 +297,8 @@ export default {
       let unit = this.chartCurrentUnit
       if (
         this.isTypeProportion ||
-        (this.isTypeLine && this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE)
+        ((this.isTypeLine || this.isTypeChangeSinceLine) &&
+          this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE)
       ) {
         unit = '%'
       }
@@ -427,7 +435,7 @@ export default {
         ? [...this.lineDataset, ...this.lineProjectionDataset]
         : this.lineDataset
 
-      return this.getChangeSinceDataset(dataset, !this.isYAxisAbsolute)
+      return this.getChangeSinceDataset(dataset, this.isYAxisPercentage)
     },
 
     changeSinceDataset() {
@@ -624,6 +632,18 @@ export default {
     }
   },
 
+  watch: {
+    changeSinceDataset(curr, prev) {
+      if (curr.length !== prev.length) {
+        this.$emit('changeDataset', this.changeSinceDataset)
+      }
+    }
+  },
+
+  mounted() {
+    this.$emit('changeDataset', this.changeSinceDataset)
+  },
+
   methods: {
     ...mapMutations({
       setHoverDomain: 'visInteract/hoverDomain'
@@ -692,7 +712,8 @@ export default {
       const change = filtered[0]
       const newDataset = filtered.map((d, i) => {
         let min = 0,
-          max = 0
+          max = 0,
+          total = 0
         const obj = {
           date: d.date,
           time: d.time
@@ -715,8 +736,20 @@ export default {
           }
           obj._lowest = min
           obj._highest = max
+
+          total += d[id]
         })
+
+        obj._total = total
+
         return obj
+      })
+
+      const newChange = newDataset[0]
+      newDataset.forEach(d => {
+        const totalChange =
+          ((d._total - newChange._total) / newChange._total) * 100
+        d._totalChange = totalChange
       })
 
       return newDataset

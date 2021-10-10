@@ -71,9 +71,9 @@
         <g class="x-guides-group" />
 
         <!-- x and y axis ticks/lines/text -->
-        <g
+        <!-- <g
           :transform="xAxisTransform"
-          :class="xAxisClass" />
+          :class="xAxisClass" /> -->
 
         <g :class="yAxisClass" />
 
@@ -119,6 +119,9 @@
           v-show="hasSecondDataset"
           class="y-axis-2" />
         <g class="y-guides-group" />
+        <g
+          :transform="xAxisTransform"
+          :class="xAxisClass" />
       </g>
 
       <!-- cursor line and tooltip -->
@@ -1437,6 +1440,7 @@ export default {
     drawCompare(compareDates) {
       const compareLength = compareDates.length
 
+      this.$compareGroup.selectAll('g').remove()
       this.$compareGroup.selectAll('rect').remove()
       this.$compareGroup.select('path').remove()
       this.$compareGroup.select('text').remove()
@@ -1467,6 +1471,13 @@ export default {
           const distance = this.x(time2) - this.x(time1)
           const limit = 180
 
+          this.$compareGroup
+            .append('rect')
+            .attr('id', `${this.id}-compare-bg-rect`)
+            .attr('width', this.width)
+            .attr('height', this.height)
+            .style('fill', 'rgba(255, 255, 255, 0.2)')
+
           if (distance > limit) {
             this.$compareGroup
               .append('path')
@@ -1480,9 +1491,10 @@ export default {
               .append('text')
               .attr('x', 10)
               .attr('dy', -5)
-              .style('font-size', '12px')
-              .style('fill', 'darkred')
-              .style('text-shadow', '2px 2px 0 #D0D1CD')
+              .style('font-size', '16px')
+              .style('font-weight', 'bold')
+              .style('fill', 'black')
+              .style('text-shadow', '1px 2px 0 #fff')
               .append('textPath')
               .attr('href', `#${this.id}-compare-line`)
               .text(compareString)
@@ -1495,13 +1507,15 @@ export default {
               .attr('d', line([[time1, value1], [time2, value2]]))
               .style('stroke', 'darkred')
               .style('stroke-width', 2)
+
             this.$compareGroup
               .append('text')
               .attr('x', this.x(time1))
               .attr('y', change < 0 ? this.y(value1) : this.y(value2))
-              .style('font-size', '12px')
-              .style('fill', 'darkred')
-              .style('text-shadow', '2px 2px 0 #D0D1CD')
+              .style('font-size', '16px')
+              .style('font-weight', 'bold')
+              .style('fill', 'black')
+              .style('text-shadow', '1px 2px 0 #fff')
               .style('text-anchor', nearRightEdge ? 'end' : 'start')
               .text(compareString)
           }

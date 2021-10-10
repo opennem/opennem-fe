@@ -39,29 +39,42 @@
         <button
           :class="{ 'is-selected': datasetView === 'quarter' }"
           class="button" 
-          @click="() => datasetView = 'quarter'">Quarter <strong>2005 — 2021</strong></button>
+          @click="handleQuarterViewSelect">Quarterly <strong>2005 — 2021</strong></button>
         <button
           :class="{ 'is-selected': datasetView === 'year' }"
           class="button" 
-          @click="() => datasetView = 'year'">Year <strong>1990 — 2020</strong></button>
+          @click="handleYearViewSelect">Annual <strong>1990 — 2020</strong></button>
       </div>
       <button
         v-if="datasetView === 'year'"
         :class="{ 'is-selected': addProjections }"
         class="button" 
-        @click="() => addProjections = !addProjections">Show projections <strong>2021 — 2030</strong></button>
+        @click="handleProjectionsToggle">Projections <strong>2021 — 2030</strong></button>
     </div>
 
     <div class="emissions-range-dates">
-      <!-- <h2>
-        <time>
-          {{ startDate | customFormatDate({ range, interval, isStart: true }) }}
+      <h2>
+        <!-- <time v-if="isHovering">
+          {{ hoverDate | customFormatDate({ range, interval, showIntervalRange: true }) }}
         </time>
-        –
-        <time>
-          {{ endDate | customFormatDate({ range, interval, showYear: true, isEnd: true }) }}
-        </time>
-      </h2> -->
+
+        <time v-if="!isHovering && focusOn">
+          {{ focusDate | customFormatDate({ range, interval, showIntervalRange: true }) }}
+        </time> -->
+
+        <!-- <span v-if="!isHovering && !focusOn"> -->
+        <span>
+          <time>
+            {{ startDate | customFormatDate({ range: 'ALL', interval: 'Year', isStart: true }) }}
+          </time>
+          –
+          <time>
+            {{ endDate | customFormatDate({ range: 'ALL', interval: 'Year', isEnd: false }) }}
+          </time>
+        </span>
+      </h2>
+
+      
 
       <!-- <h3>
         12 month rolling sum
@@ -79,7 +92,7 @@
         :interval="interval"
         :show-x-axis="true"
         :average-emissions="averageEmissions"
-        :vis-height="600"
+        :vis-height="tabletBreak ? 300 : 600"
         :hover-on="isHovering"
         :hover-date="hoverDate"
         :zoom-extent="zoomExtent"
@@ -96,6 +109,7 @@
         @isHovering="handleIsHovering"
         @zoomExtent="handleZoomExtent"
         @svgClick="handleSvgClick"
+        @changeDataset="handleChangeDatasetChange"
       />
 
       <div 
@@ -116,15 +130,36 @@
       </div>
       
 
-      <NggiLegend
+      <!-- <NggiLegend
         :domains="domainEmissions"
         :hidden="hidden"
         :show-total="showTotalLine"
+        :show-total-in-legend="isStackedChartType"
+        @rowClick="handleTypeClick"
+        @rowShiftClick="handleTypeShiftClick"
+        @totalClick="handleTotalClick"
+        @totalShiftClick="handleTotalShiftClick"
+      /> -->
+
+      <BarChart
+        :bar-width="300"
+        :domains="domainEmissions"
+        :hidden="hidden"
+        :dataset="filteredDataset"
+        :hover-on="isHovering" 
+        :hover-date="hoverDate"
+        :focus-on="focusOn"
+        :focus-date="focusDate"
+        :show-total="showTotalLine"
+        :show-total-in-legend="isStackedChartType"
+        class="bar-chart"
         @rowClick="handleTypeClick"
         @rowShiftClick="handleTypeShiftClick"
         @totalClick="handleTotalClick"
         @totalShiftClick="handleTotalShiftClick"
       />
+      <!-- :highlight-domain="highlightId" -->
+
     </div>
   </div>
 </template>
@@ -133,12 +168,13 @@
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import parse from 'date-fns/parse'
 import subMonths from 'date-fns/subMonths'
+import subDays from 'date-fns/subDays'
 import isAfter from 'date-fns/isAfter'
 import Papa from 'papaparse'
 import _cloneDeep from 'lodash.clonedeep'
 import _includes from 'lodash.includes'
 import { timeYear } from 'd3-time'
-import { utcFormat } from 'd3-time-format'
+import { timeFormat } from 'd3-time-format'
 
 import {
   NGGI_RANGES,
@@ -151,6 +187,7 @@ import {
   INTERVAL_YEAR,
   FILTER_NONE
 } from '@/constants/interval-filters.js'
+import * as OPTIONS from '@/constants/chart-options.js'
 
 import regionDisplayTzs from '@/constants/region-display-timezones.js'
 import DateDisplay from '@/services/DateDisplay.js'
@@ -164,6 +201,7 @@ import NggiLegend from '@/components/Nggi/Legend'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import CompareChart from '@/components/Nggi/CompareChart'
 import DatesDisplay from '@/components/SummaryTable/DatesDisplay'
+import BarChart from '@/components/Nggi/BarChart.vue'
 
 const domainEmissions = [
   {
@@ -242,7 +280,8 @@ export default {
     NggiLegend,
     EmissionsChart,
     CompareChart,
-    DatesDisplay
+    DatesDisplay,
+    BarChart
   },
 
   head() {
@@ -309,10 +348,32 @@ export default {
     ...mapGetters({
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
+      chartType: 'chartOptionsEmissionsVolume/chartType',
 
       compareDifference: 'compareDifference',
-      compareDates: 'compareDates'
+      compareDates: 'compareDates',
+
+      tabletBreak: 'app/tabletBreak'
     }),
+    filteredDataset() {
+      const dataset =
+        this.isYearDatasetView && this.addProjections
+          ? [...this.dataset, ...this.projectionDataset]
+          : this.dataset
+
+      if (this.zoomExtent.length > 0) {
+        return dataset.filter(
+          d => d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
+        )
+      }
+
+      return dataset
+    },
+
+    isStackedChartType() {
+      return this.chartType === OPTIONS.CHART_STACKED
+    },
+
     averageEmissions() {
       const totalEmissions = this.dataset.reduce(
         (prev, cur) => prev + cur._totalEmissions,
@@ -331,13 +392,24 @@ export default {
     },
 
     startDate() {
+      if (this.zoomExtent.length > 0) {
+        return this.zoomExtent[0]
+      }
+
       const dataLength = this.dataset.length
       return dataLength > 0 ? this.dataset[0].time : null
     },
 
     endDate() {
-      const dataLength = this.dataset.length
-      return dataLength > 0 ? this.dataset[dataLength - 1].time : null
+      if (this.zoomExtent.length > 0) {
+        return subDays(this.zoomExtent[1], 1)
+      }
+
+      const dataset = this.hasProjectionDataset
+        ? this.projectionDataset
+        : this.dataset
+      const dataLength = dataset.length
+      return dataLength > 0 ? dataset[dataLength - 1].time : null
     },
 
     isYearDatasetView() {
@@ -349,7 +421,7 @@ export default {
     },
 
     hasProjectionDataset() {
-      return this.projectionDataset.length > 0
+      return this.addProjections && this.projectionDataset.length > 0
     }
   },
 
@@ -362,6 +434,7 @@ export default {
     },
 
     datasetView(val) {
+      this.setCompareDifference(false)
       if (val === 'quarter') {
         this.getQuarterData()
       } else {
@@ -369,6 +442,15 @@ export default {
         this.getProjectionData()
       }
       this.updateAxisGuides()
+    },
+
+    tabletBreak(val) {
+      console.log(val)
+      if (val) {
+        this.updateAxisGuides(10)
+      } else {
+        this.updateAxisGuides(0.1)
+      }
     }
   },
 
@@ -416,6 +498,7 @@ export default {
         .then(res => {
           const csvData = Papa.parse(res.data, { header: true })
           const data = csvData.data.map(d => {
+            let total = 0
             const obj = {}
             const date = subMonths(parse(d.Quarter, 'MMM-yyyy', new Date()), 2)
 
@@ -424,8 +507,12 @@ export default {
             obj.quarter = d.Quarter
 
             this.domainEmissions.forEach(domain => {
-              obj[domain.id] = parseFloat(d[domain.label])
+              const val = parseFloat(d[domain.label])
+              obj[domain.id] = val
+              total += val
             })
+
+            obj._total = total
 
             return obj
           })
@@ -447,6 +534,16 @@ export default {
             interval: this.interval
           })
 
+          rolledUpData.forEach(d => {
+            let total = 0
+            this.domainEmissions.forEach(domain => {
+              total += d[domain.id] || 0
+            })
+            d._total = total
+          })
+
+          console.log(rolledUpData)
+
           this.dataset = rolledUpData.filter(d =>
             isAfter(d.date, this.afterDate)
           )
@@ -463,6 +560,7 @@ export default {
           const csvData = Papa.parse(res.data, { header: true })
 
           const data = csvData.data.map(d => {
+            let total = 0
             const obj = {}
             const date = parse(d.Year, 'yyyy', new Date())
             obj.date = date
@@ -470,8 +568,12 @@ export default {
             obj.year = d.Year
 
             this.domainEmissions.forEach(domain => {
-              obj[domain.id] = parseFloat(d[domain.label])
+              const val = parseFloat(d[domain.label])
+              obj[domain.id] = val
+              total += val
             })
+
+            obj._total = total
 
             return obj
           })
@@ -493,6 +595,7 @@ export default {
           const csvData = Papa.parse(res.data, { header: true })
 
           const data = csvData.data.map(d => {
+            let total = 0
             const obj = {}
             const date = parse(d.Year, 'yyyy', new Date())
             obj.date = date
@@ -500,9 +603,12 @@ export default {
             obj.year = d.Year
 
             this.domainEmissions.forEach(domain => {
-              obj[domain.id] = parseFloat(d[domain.label])
+              const val = parseFloat(d[domain.label])
+              obj[domain.id] = val
+              total += val
             })
 
+            obj._total = total
             return obj
           })
 
@@ -513,12 +619,13 @@ export default {
         })
     },
 
-    updateAxisGuides() {
-      const formatYear = utcFormat('%Y')
-      const timeFormat = date => formatYear(date)
-      this.setXTicks(timeYear.every(1))
+    updateAxisGuides(year) {
+      const y = this.tabletBreak ? timeYear.every(4) : timeYear.every(1)
+      const formatYear = timeFormat('%Y')
+      const format = date => formatYear(date)
+      this.setXTicks(y)
       this.setXGuides([])
-      this.setTickFormat(timeFormat)
+      this.setTickFormat(format)
     },
 
     handleDateHover(date) {
@@ -643,7 +750,6 @@ export default {
     },
 
     handleSvgClick(metaKey) {
-      console.log(metaKey)
       const dataset = this.hasProjectionDataset
         ? [..._cloneDeep(this.dataset), ..._cloneDeep(this.projectionDataset)]
         : _cloneDeep(this.dataset)
@@ -702,6 +808,23 @@ export default {
           }
         }
       }
+    },
+
+    handleQuarterViewSelect() {
+      this.datasetView = 'quarter'
+      this.addProjections = false
+    },
+
+    handleYearViewSelect() {
+      this.datasetView = 'year'
+    },
+
+    handleProjectionsToggle() {
+      this.addProjections = !this.addProjections
+    },
+
+    handleChangeDatasetChange(dataset) {
+      // console.log(dataset[dataset.length - 1]._totalChange)
     }
   }
 }
@@ -713,6 +836,10 @@ export default {
 
 .wrapper {
   padding-right: 10px;
+
+  @include mobile {
+    padding-right: 0;
+  }
 }
 
 header {
@@ -742,17 +869,25 @@ h1 {
 }
 
 .emissions-range-dates {
+  position: absolute;
+  right: 1rem;
+  margin-top: -3.3rem;
   color: #333;
-  margin: 1rem;
-  text-align: center;
   h2 {
     font-weight: 100;
-    font-size: 1.8rem;
+    font-size: 1.4rem;
   }
   h3 {
     font-family: Playfair Display, Georgia, Times New Roman, Times, serif;
     font-weight: 700;
     font-size: 1.1rem;
+  }
+
+  @include mobile {
+    position: relative;
+    margin: 10px 0;
+    right: 0;
+    text-align: center;
   }
 }
 
@@ -792,6 +927,32 @@ h1 {
 
   strong {
     margin-left: 10px;
+  }
+
+  @include mobile {
+    background-color: rgba(255, 255, 255, 0.5);
+    display: block;
+    text-align: center;
+
+    .buttons {
+      margin: 0;
+      justify-content: center;
+      border-radius: 0;
+    }
+
+    .button {
+      border-radius: 0;
+    }
+  }
+}
+
+.bar-chart {
+  width: 400px;
+  margin: 0 auto;
+
+  @include mobile {
+    width: 100%;
+    padding: 2rem;
   }
 }
 

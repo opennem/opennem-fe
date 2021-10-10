@@ -77,7 +77,7 @@ const emissionsYAxis = [
 ]
 const emissionsOptions = {
   type: [
-    OPTIONS.CHART_HIDDEN,
+    // OPTIONS.CHART_HIDDEN,
     OPTIONS.CHART_STACKED,
     OPTIONS.CHART_PROPORTION,
     OPTIONS.CHART_LINE,
@@ -198,7 +198,8 @@ export default {
     isPercentage() {
       return (
         this.isTypeProportion ||
-        (this.isTypeLine && this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE)
+        ((this.isTypeLine || this.isTypeChangeSinceLine) &&
+          this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE)
       )
     }
   },
@@ -211,30 +212,41 @@ export default {
       this.$store.commit('chartOptionsEmissionsVolume/chartCurve', curve)
     },
     handlePrefixClick(prefix) {
-      this.$store.commit(
-        'chartOptionsEmissionsVolume/chartDisplayPrefix',
-        prefix
-      )
+      if (prefix !== null) {
+        this.$store.commit(
+          'chartOptionsEmissionsVolume/chartDisplayPrefix',
+          prefix
+        )
+      }
     },
     handleYAxisClick(yAxis) {
       this.$store.commit('chartOptionsEmissionsVolume/chartYAxis', yAxis)
     },
 
     togglePrefix(prefix) {
-      const length = this.options.si.length
-      const index = this.options.si.findIndex(p => p === prefix)
-      let nextIndex = index + 1
+      if (this.options.si) {
+        const length = this.options.si.length
+        const index = this.options.si.findIndex(p => p === prefix)
+        let nextIndex = index + 1
 
-      if (nextIndex === length) {
-        nextIndex = 0
+        if (nextIndex === length) {
+          nextIndex = 0
+        }
+
+        return this.options.si[nextIndex]
       }
 
-      return this.options.si[nextIndex]
+      return null
     },
 
     handleUnitClick() {
-      const updatedPrefix = this.togglePrefix(this.chartDisplayPrefix)
-      this.handlePrefixClick(updatedPrefix)
+      if (
+        this.isTypeArea ||
+        ((this.isTypeLine || this.isTypeChangeSinceLine) && !this.isPercentage)
+      ) {
+        const updatedPrefix = this.togglePrefix(this.chartDisplayPrefix)
+        this.handlePrefixClick(updatedPrefix)
+      }
     }
   }
 }

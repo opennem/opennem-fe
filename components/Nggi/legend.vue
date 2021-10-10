@@ -16,6 +16,7 @@
         <span>{{ d.label }}</span>
       </li>
       <li
+        v-if="showTotalInLegend"
         role="button"
         @click.exact="() => handleTotalClick()"
         @click.shift.exact="() => handleTotalShiftClick()">
@@ -42,6 +43,10 @@ export default {
       default: () => []
     },
     showTotal: {
+      type: Boolean,
+      default: true
+    },
+    showTotalInLegend: {
       type: Boolean,
       default: true
     }
