@@ -2,7 +2,7 @@
   <div class="wrapper">
     <header>
       <AppLogo class="header-logo" />
-      <h1>Emissions</h1>
+      <h1>Australian Emissions</h1>
     </header>
 
     <!-- <DataOptionsBar
@@ -123,7 +123,7 @@
 
         <CompareChart
           :compare-data="compareData"
-          :domains="filteredDomains"
+          :domains="filteredDomainEmissions"
           :range="range"
           :interval="interval"
           :unit="chartCurrentUnit"
@@ -143,7 +143,7 @@
       /> -->
 
       <BarChart
-        :bar-width="300"
+        :bar-width="200"
         :domains="domainEmissions"
         :hidden="hidden"
         :dataset="filteredDataset"
@@ -357,6 +357,7 @@ export default {
 
       tabletBreak: 'app/tabletBreak'
     }),
+
     filteredDataset() {
       const dataset =
         this.isYearDatasetView && this.addProjections
@@ -385,6 +386,10 @@ export default {
     },
 
     filteredDomains() {
+      return this.domains.filter(d => !_includes(this.hidden, d.id))
+    },
+
+    filteredDomainEmissions() {
       return this.domainEmissions.filter(d => !_includes(this.hidden, d.id))
     },
 
@@ -948,12 +953,12 @@ h1 {
 }
 
 .bar-chart {
-  width: 400px;
+  width: 450px;
   margin: 0 auto;
 
   @include mobile {
     width: 100%;
-    padding: 2rem;
+    padding: 5px;
   }
 }
 
