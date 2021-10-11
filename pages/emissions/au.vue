@@ -340,6 +340,7 @@ export default {
       baseDataset: [],
       rollingDataset: [],
       dataset: [],
+      yearlyDataset: [],
       historyDataset: [],
       projectionDataset: [],
       domains: [],
@@ -596,7 +597,7 @@ export default {
           this.range = RANGE_ALL
           this.interval = INTERVAL_YEAR
           this.updateAxisGuides()
-          this.dataset = data.filter(d => d.year >= 2005)
+          this.dataset = this.yearlyDataset = data.filter(d => d.year >= 2005)
           this.historyDataset = data.filter(d => d.year <= 2004)
         })
     },
@@ -840,7 +841,13 @@ export default {
     },
 
     handleHistoryToggle() {
-      this.addHistory = !this.addHistory
+      const add = !this.addHistory
+      this.addHistory = add
+      if (add) {
+        this.dataset = [...this.historyDataset, ...this.yearlyDataset]
+      } else {
+        this.dataset = this.yearlyDataset
+      }
     },
 
     handleChangeDatasetChange(dataset) {
