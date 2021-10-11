@@ -39,17 +39,25 @@
         <button
           :class="{ 'is-selected': datasetView === 'quarter' }"
           class="button" 
-          @click="handleQuarterViewSelect">Quarterly <strong>2005 — 2021</strong></button>
+          @click="handleQuarterViewSelect">Quarterly</button>
         <button
           :class="{ 'is-selected': datasetView === 'year' }"
           class="button" 
-          @click="handleYearViewSelect">Annual <strong>1990 — 2020</strong></button>
+          @click="handleYearViewSelect">Annual</button>
       </div>
-      <button
-        v-if="datasetView === 'year'"
-        :class="{ 'is-selected': addProjections }"
-        class="button" 
-        @click="handleProjectionsToggle">Projections <strong>2021 — 2030</strong></button>
+
+      <div class="buttons">
+        <button
+          v-if="datasetView === 'year'"
+          :class="{ 'is-selected': addHistory }"
+          class="button" 
+          @click="handleHistoryToggle">History <strong>FY1990 — 2004</strong></button>
+        <button
+          v-if="datasetView === 'year'"
+          :class="{ 'is-selected': addProjections }"
+          class="button" 
+          @click="handleProjectionsToggle">Projections <strong>FY2021 — 2030</strong></button>
+      </div>
     </div>
 
     <div class="emissions-range-dates">
@@ -326,11 +334,13 @@ export default {
   data() {
     return {
       datasetView: 'quarter',
+      addHistory: false,
       addProjections: false,
       baseUrl: `${this.$config.url}/images/screens/`,
       baseDataset: [],
       rollingDataset: [],
       dataset: [],
+      historyDataset: [],
       projectionDataset: [],
       domains: [],
       hidden: ['land-sector'],
@@ -451,7 +461,6 @@ export default {
     },
 
     tabletBreak(val) {
-      console.log(val)
       if (val) {
         this.updateAxisGuides(10)
       } else {
@@ -571,7 +580,7 @@ export default {
             const date = parse(d.Year, 'yyyy', new Date())
             obj.date = date
             obj.time = obj.date.getTime()
-            obj.year = d.Year
+            obj.year = parseInt(d.Year, 10)
 
             this.domainEmissions.forEach(domain => {
               const val = parseFloat(d[domain.label])
@@ -587,7 +596,8 @@ export default {
           this.range = RANGE_ALL
           this.interval = INTERVAL_YEAR
           this.updateAxisGuides()
-          this.dataset = data
+          this.dataset = data.filter(d => d.year >= 2005)
+          this.historyDataset = data.filter(d => d.year <= 2004)
         })
     },
 
@@ -827,6 +837,10 @@ export default {
 
     handleProjectionsToggle() {
       this.addProjections = !this.addProjections
+    },
+
+    handleHistoryToggle() {
+      this.addHistory = !this.addHistory
     },
 
     handleChangeDatasetChange(dataset) {
