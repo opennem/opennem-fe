@@ -161,6 +161,8 @@
       />
       <!-- :highlight-domain="highlightId" -->
     </div>
+
+    <EmissionsFooter />
     
   </div>
 </template>
@@ -197,6 +199,7 @@ import transformTo12MthRollingSum from '@/data/transform/emissions-quarter-12-mo
 import { dataRollUp, dataFilterByPeriod } from '@/data/parse/nggi-emissions/'
 
 import AppLogo from '~/components/ui/Logo'
+import EmissionsFooter from '~/components/layout/EmissionsFooter'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
 import NggiLegend from '@/components/Nggi/Legend'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
@@ -277,6 +280,7 @@ export default {
 
   components: {
     AppLogo,
+    EmissionsFooter,
     DataOptionsBar,
     NggiLegend,
     EmissionsChart,
