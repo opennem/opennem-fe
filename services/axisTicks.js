@@ -77,5 +77,8 @@ export default function(range, interval, isZoomed, filterPeriod) {
 
     return timeYear.every(1)
   }
+  if (range === '12 Mth Rolling') {
+    return timeYear.every(1)
+  }
   return null
 }

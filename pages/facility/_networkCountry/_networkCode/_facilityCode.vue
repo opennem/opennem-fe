@@ -809,6 +809,7 @@ export default {
     },
 
     emissionsDomains() {
+      console.log(this.domainEmissions)
       return this.domainEmissions.filter(
         d => !_includes(this.hiddenCodes, d.code)
       )

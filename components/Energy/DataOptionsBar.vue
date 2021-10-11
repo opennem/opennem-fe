@@ -127,6 +127,10 @@ export default {
     interval: {
       type: String,
       default: null
+    },
+    filterPeriod: {
+      type: String,
+      default: null
     }
   },
 
@@ -329,7 +333,7 @@ export default {
 
     intervalLabel(interval) {
       if (this.selectedFilter === FILTER_NONE) {
-        return this.getIntervalLabel(this.interval)
+        return this.getIntervalLabel(interval)
       } else {
         return this.selectedFilter
       }
@@ -411,6 +415,7 @@ export default {
       this.$store.dispatch('compareDates', [])
 
       this.updateQuery(range, this.selectedInterval, this.selectedFilter)
+      this.$emit('rangeOptionChange', range)
     },
 
     handleIntervalChange(interval) {

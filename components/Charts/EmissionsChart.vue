@@ -17,13 +17,16 @@
       :is-type-area="isTypeArea"
       :is-type-proportion="isTypeProportion"
       :is-type-line="isTypeLine"
-      :interval="interval"
+      :is-type-change-since-line="isTypeChangeSinceLine"
+      :interval="customInterval === '' ? interval : customInterval"
       :average-emissions-volume="convertValue(averageEmissions)"
       :hover-display-date="hoverDisplayDate"
       :hover-value="domains.length > 1 ? hoverValue : null"
       :hover-domain-colour="hoverDomainColour"
       :hover-domain-label="hoverDomainLabel"
       :hover-total="hoverTotal"
+      :show-average-value="showAverageValue"
+      @type-click="handleTypeClick"
     />
 
     <stacked-area-vis
@@ -31,6 +34,7 @@
       :read-only="readOnly"
       :domains="domains"
       :dataset="dataset"
+      :projection-dataset="projectionDataset"
       :range="range"
       :interval="interval"
       :curve="chartCurve"
@@ -56,6 +60,9 @@
       :convert-value="convertValue"
       :unit="` ${chartDisplayPrefix}${chartUnit}`"
       :filter-period="filterPeriod"
+      :compare-dates="compareDates"
+      :show-total-line="showTotalLine"
+      :use-offset-diverge="useOffsetDiverge"
       class="vis-chart"
       @dateOver="handleDateHover"
       @domainOver="handleDomainHover"
@@ -65,11 +72,19 @@
       @zoomExtent="handleZoomExtent"
     />
 
+    <button
+      v-if="chartShown && (isTypeLine || isTypeChangeSinceLine) && zoomExtent.length > 0 && !readOnly"
+      class="button is-rounded is-small reset-btn"
+      @click.stop="handleZoomReset"
+    >
+      Zoom Out
+    </button>
     <multi-line
-      v-if="chartShown && isTypeLine"
+      v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
       :svg-height="visHeight"
       :domains1="domains"
       :dataset1="dataset"
+      :projection-dataset="projectionDataset"
       :y1-max="yLineMax"
       :y1-min="yLineMin"
       :x-ticks="xTicks"
@@ -87,12 +102,27 @@
       @domain-hover="handleDomainHover"
       @enter="handleVisEnter"
       @leave="handleVisLeave" />
+    <date-brush
+      v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
+      :dataset="[...dataset, ...projectionDataset]"
+      :zoom-range="zoomExtent"
+      :x-ticks="xTicks"
+      :tick-format="tickFormat"
+      :second-tick-format="secondTickFormat"
+      :read-only="readOnly"
+      :interval="interval"
+      :filter-period="filterPeriod"
+      class="date-brush vis-chart"
+      @date-hover="handleDateHover"
+      @date-filter="handleZoomExtent"
+      @enter="handleVisEnter"
+      @leave="handleVisLeave" />
 
   </div>
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { min, max } from 'd3-array'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
@@ -104,18 +134,24 @@ import * as SI from '@/constants/si.js'
 import { EMISSIONS } from '@/constants/data-types.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
-import StackedAreaVis from '@/components/Vis/StackedArea.vue'
+import DateBrush from '@/components/Vis/DateBrush'
+import StackedAreaVis from '@/components/Vis/StackedArea2.vue'
 import EmissionsChartOptions from './EmissionsChartOptions'
 
 export default {
   components: {
     EmissionsChartOptions,
     StackedAreaVis,
-    MultiLine
+    MultiLine,
+    DateBrush
   },
 
   props: {
     emissionsDataset: {
+      type: Array,
+      default: () => []
+    },
+    emissionsProjectionDataset: {
       type: Array,
       default: () => []
     },
@@ -174,6 +210,26 @@ export default {
     filterPeriod: {
       type: String,
       default: 'All'
+    },
+    compareDates: {
+      type: Array,
+      default: () => []
+    },
+    showTotalLine: {
+      type: Boolean,
+      default: false
+    },
+    useOffsetDiverge: {
+      type: Boolean,
+      default: false
+    },
+    customInterval: {
+      type: String,
+      default: ''
+    },
+    showAverageValue: {
+      type: Boolean,
+      default: true
     }
   },
 
@@ -202,7 +258,7 @@ export default {
     shouldConvertValue() {
       return (
         this.isTypeArea ||
-        (this.isTypeLine &&
+        ((this.isTypeLine || this.isTypeChangeSinceLine) &&
           this.chartYAxis === OPTIONS.CHART_YAXIS_EMISSIONS_VOL)
       )
     },
@@ -215,6 +271,15 @@ export default {
     },
     isTypeLine() {
       return this.chartType === OPTIONS.CHART_LINE
+    },
+    isTypeChangeSinceLine() {
+      return this.chartType === OPTIONS.CHART_CHANGE_SINCE_LINE
+    },
+    isYAxisAbsolute() {
+      return this.chartYAxis === OPTIONS.CHART_YAXIS_ABSOLUTE
+    },
+    isYAxisPercentage() {
+      return this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE
     },
 
     tickFormat() {
@@ -232,7 +297,8 @@ export default {
       let unit = this.chartCurrentUnit
       if (
         this.isTypeProportion ||
-        (this.isTypeLine && this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE)
+        ((this.isTypeLine || this.isTypeChangeSinceLine) &&
+          this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE)
       ) {
         unit = '%'
       }
@@ -243,8 +309,13 @@ export default {
       const domain = this.hoverDomain
       if (domain) {
         const split = domain.split('.')
-        split.pop()
-        return `${split.join('.')}.${EMISSIONS}`
+
+        if (split.length > 1) {
+          split.pop()
+          return `${split.join('.')}.${EMISSIONS}`
+        } else {
+          return domain
+        }
       }
       return ''
     },
@@ -254,7 +325,7 @@ export default {
       return find ? find.id : ''
     },
     yMax() {
-      const dataset = _cloneDeep(this.dataset)
+      const dataset = _cloneDeep(this.withProjectionDataset)
       dataset.forEach(d => {
         let stackedMax = 0
         this.domains.forEach(domain => {
@@ -265,7 +336,7 @@ export default {
       return max(dataset, d => d._stackedTotalEmissionsMax)
     },
     yMin() {
-      const dataset = _cloneDeep(this.dataset)
+      const dataset = _cloneDeep(this.withProjectionDataset)
       dataset.forEach(d => {
         let emissionsMin = 0
         this.domains.forEach(domain => {
@@ -281,7 +352,7 @@ export default {
     yLineMin() {
       let min = 0
 
-      this.dataset.forEach(d => {
+      this.withProjectionDataset.forEach(d => {
         this.domains.forEach(domain => {
           const val = d[domain.id]
           if (val < min) {
@@ -296,7 +367,7 @@ export default {
     yLineMax() {
       let max = 0
 
-      this.dataset.forEach(d => {
+      this.withProjectionDataset.forEach(d => {
         this.domains.forEach(domain => {
           const val = d[domain.id]
           if (val > max) {
@@ -319,8 +390,26 @@ export default {
       return domains.filter(d => !_includes(hidden, d[this.propName]))
     },
 
+    hasProjectionDataset() {
+      return this.emissionsProjectionDataset.length > 0
+    },
+
     stackedDataset() {
       const dataset = _cloneDeep(this.emissionsDataset)
+      dataset.forEach(d => {
+        this.emissionsDomains.forEach(e => {
+          if (e.category === FT.LOAD) {
+            const negValue = -d[e.id]
+            d[e.id] = negValue
+          }
+        })
+      })
+
+      return dataset
+    },
+
+    stackedProjectionDataset() {
+      const dataset = _cloneDeep(this.emissionsProjectionDataset)
       dataset.forEach(d => {
         this.emissionsDomains.forEach(e => {
           if (e.category === FT.LOAD) {
@@ -337,6 +426,44 @@ export default {
       return this.emissionsDataset
     },
 
+    lineProjectionDataset() {
+      return this.emissionsProjectionDataset
+    },
+
+    changeWithProjectionsDataset() {
+      const dataset = this.hasProjectionDataset
+        ? [...this.lineDataset, ...this.lineProjectionDataset]
+        : this.lineDataset
+
+      return this.getChangeSinceDataset(dataset, this.isYAxisPercentage)
+    },
+
+    changeSinceDataset() {
+      if (this.hasProjectionDataset) {
+        return this.changeWithProjectionsDataset.filter(
+          d => d.time <= this.lineDataset[this.lineDataset.length - 1].time
+        )
+      }
+
+      return this.changeWithProjectionsDataset
+    },
+
+    changeSinceProjectionDataset() {
+      if (this.hasProjectionDataset) {
+        return this.changeWithProjectionsDataset.filter(
+          d => d.time > this.lineDataset[this.lineDataset.length - 1].time
+        )
+      }
+
+      return []
+    },
+
+    withProjectionDataset() {
+      return this.hasProjectionDataset
+        ? [...this.dataset, ...this.projectionDataset]
+        : this.dataset
+    },
+
     dataset() {
       if (this.isTypeArea) {
         return this.stackedDataset
@@ -350,10 +477,49 @@ export default {
         }
         return this.linePercentageDataset
       }
+      if (this.isTypeChangeSinceLine) {
+        return this.changeSinceDataset
+      }
+    },
+
+    projectionDataset() {
+      if (this.isTypeArea) {
+        return this.stackedProjectionDataset
+      }
+      if (this.isTypeProportion) {
+        return this.proportionProjectionDataset
+      }
+      if (this.isTypeLine) {
+        if (this.chartYAxis === OPTIONS.CHART_YAXIS_EMISSIONS_VOL) {
+          return this.lineProjectionDataset
+        }
+        return this.linePercentageProjectionDataset
+      }
+      if (this.isTypeChangeSinceLine) {
+        return this.changeSinceProjectionDataset
+      }
     },
 
     linePercentageDataset() {
       const dataset = _cloneDeep(this.lineDataset)
+      dataset.forEach(d => {
+        let total = 0
+
+        this.emissionsDomains.forEach(e => {
+          total += d[e.id]
+        })
+
+        this.emissionsDomains.forEach(e => {
+          const value = d[e.id]
+          d[e.id] = (value / total) * 100
+        })
+      })
+
+      return dataset
+    },
+
+    linePercentageProjectionDataset() {
+      const dataset = _cloneDeep(this.lineProjectionDataset)
       dataset.forEach(d => {
         let total = 0
 
@@ -388,6 +554,24 @@ export default {
       return dataset
     },
 
+    proportionProjectionDataset() {
+      const dataset = _cloneDeep(this.emissionsProjectionDataset)
+      dataset.forEach(d => {
+        let total = 0
+
+        this.emissionsDomains.forEach(e => {
+          total += d[e.id]
+        })
+
+        this.emissionsDomains.forEach(e => {
+          const value = d[e.id]
+          d[e.id] = (value / total) * 100
+        })
+      })
+
+      return dataset
+    },
+
     hoverData() {
       let date = this.focusDate
       if (this.hoverOn) {
@@ -397,8 +581,14 @@ export default {
         return null
       }
       const time = date.getTime()
-      return this.dataset ? this.dataset.find(d => d.time === time) : null
+
+      let data = this.withProjectionDataset
+        ? this.withProjectionDataset.find(d => d.time === time)
+        : null
+
+      return data
     },
+
     hoverValue() {
       return this.hoverData
         ? this.shouldConvertValue
@@ -442,10 +632,28 @@ export default {
     }
   },
 
+  watch: {
+    changeSinceDataset(curr, prev) {
+      if (curr.length !== prev.length) {
+        this.$emit('changeDataset', this.changeSinceDataset)
+      }
+    }
+  },
+
+  mounted() {
+    this.$emit('changeDataset', this.changeSinceDataset)
+  },
+
   methods: {
     ...mapMutations({
       setHoverDomain: 'visInteract/hoverDomain'
     }),
+
+    ...mapActions({
+      doUpdateXTicks: 'visInteract/doUpdateXTicks',
+      doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
+    }),
+
     convertValue(value) {
       return SI.convertValue(
         this.chartUnitPrefix,
@@ -470,7 +678,90 @@ export default {
     },
     handleZoomExtent(dateRange) {
       this.$emit('zoomExtent', dateRange)
+    },
+    handleZoomReset() {
+      this.$emit('zoomExtent', [])
+    },
+
+    handleTypeClick() {
+      this.doUpdateXTicks({
+        range: this.range,
+        interval: this.interval,
+        isZoomed: this.zoomExtent.length > 0,
+        filterPeriod: this.filterPeriod
+      })
+      this.doUpdateTickFormats({
+        range: this.range,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod
+      })
+    },
+
+    getChangeSinceDataset(dataset, calculateProportion) {
+      const excludeIncompleteIntervals = ds =>
+        ds.filter(d => !d._isIncompleteBucket)
+      const filterExtentFilter = ds =>
+        ds.filter(
+          d => d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
+        )
+      const filtered =
+        this.zoomExtent.length > 0
+          ? excludeIncompleteIntervals(filterExtentFilter(dataset))
+          : excludeIncompleteIntervals(dataset)
+
+      const change = filtered[0]
+      const newDataset = filtered.map((d, i) => {
+        let min = 0,
+          max = 0,
+          total = 0
+        const obj = {
+          date: d.date,
+          time: d.time
+        }
+        this.domains.forEach(domain => {
+          const id = domain.id
+          const cValue = change[id] || 0
+          obj[id] = d[id] - cValue
+
+          if (calculateProportion && i > 0) {
+            const proportion = (obj[id] / cValue) * 100
+            obj[id] = isFinite(proportion) ? proportion : 0
+          }
+
+          if (obj[id] < min) {
+            min = obj[id]
+          }
+          if (obj[id] > max) {
+            max = obj[id]
+          }
+          obj._lowest = min
+          obj._highest = max
+
+          total += d[id]
+        })
+
+        obj._total = total
+
+        return obj
+      })
+
+      const newChange = newDataset[0]
+      newDataset.forEach(d => {
+        const totalChange =
+          ((d._total - newChange._total) / newChange._total) * 100
+        d._totalChange = totalChange
+      })
+
+      return newDataset
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.reset-btn {
+  position: absolute;
+  top: 39px;
+  right: 24px;
+}
+</style>

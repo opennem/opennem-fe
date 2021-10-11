@@ -71,9 +71,9 @@
         <g class="x-guides-group" />
 
         <!-- x and y axis ticks/lines/text -->
-        <g
+        <!-- <g
           :transform="xAxisTransform"
-          :class="xAxisClass" />
+          :class="xAxisClass" /> -->
 
         <g :class="yAxisClass" />
 
@@ -96,6 +96,7 @@
         <!-- where the stacked area path will show -->
         <g class="stacked-area-null-group" />
         <g class="stacked-area-group" />
+        <g class="stacked-area-group-2" />
         
         <g class="total-line-group" />
 
@@ -118,6 +119,9 @@
           v-show="hasSecondDataset"
           class="y-axis-2" />
         <g class="y-guides-group" />
+        <g
+          :transform="xAxisTransform"
+          :class="xAxisClass" />
       </g>
 
       <!-- cursor line and tooltip -->
@@ -160,6 +164,7 @@ import { select, selectAll, mouse, event } from 'd3-selection'
 import { schemeCategory10 } from 'd3-scale-chromatic'
 import { brushX } from 'd3-brush'
 import debounce from 'lodash.debounce'
+import endOfYear from 'date-fns/endOfYear'
 
 import {
   INTERVAL_5MIN,
@@ -191,6 +196,10 @@ export default {
       default: false
     },
     dataset: {
+      type: Array,
+      default: () => []
+    },
+    projectionDataset: {
       type: Array,
       default: () => []
     },
@@ -390,6 +399,7 @@ export default {
       $focusGroup: null,
       $tooltipGroup: null,
       $stackedAreaGroup: null,
+      $stackedAreaGroup2: null,
       $stackedAreaNullGroup: null,
       $lineGroup: null,
       $totalLineGroup: null,
@@ -400,6 +410,7 @@ export default {
       // Stacked Area
       stackedAreaPathClass: CONFIG.CHART_STACKED_AREA_PATH_CLASS,
       stackedAreaGroupClass: CONFIG.CHART_STACKED_AREA_GROUP_CLASS,
+      stackedAreaGroup2Class: CONFIG.CHART_STACKED_AREA_GROUP_2_CLASS,
       xAxisClass: CONFIG.X_AXIS_CLASS,
       xAxisBrushGroupClass: CONFIG.X_AXIS_BRUSH_GROUP_CLASS,
       yAxisClass: CONFIG.Y_AXIS_CLASS,
@@ -436,14 +447,19 @@ export default {
     hasSecondDataset() {
       return this.datasetTwo.length > 0
     },
+    hasProjectionDataset() {
+      return this.projectionDataset.length > 0
+    },
     updatedDataset() {
       if (this.dataset.length > 0) {
+        const dataset = this.hasProjectionDataset
+          ? [..._cloneDeep(this.dataset), ..._cloneDeep(this.projectionDataset)]
+          : _cloneDeep(this.dataset)
+
         const isEnergyType =
           this.range !== '1D' && this.range !== '3D' && this.range !== '7D'
         if (isEnergyType) {
-          const updated = _cloneDeep(this.dataset)
-          const lastItem = _cloneDeep(updated[updated.length - 1])
-
+          const lastItem = _cloneDeep(dataset[dataset.length - 1])
           const nextDate = getNextDateByInterval(
             lastItem.date,
             this.interval,
@@ -452,13 +468,14 @@ export default {
           lastItem.date = nextDate
           lastItem.time = nextDate.getTime()
 
-          updated.push(lastItem)
-          return updated
+          dataset.push(lastItem)
         }
-        return this.dataset
+
+        return dataset
       }
       return []
     },
+
     totalLineData() {
       return this.updatedDataset.map(d => {
         const obj = {
@@ -858,6 +875,9 @@ export default {
       this.$stackedAreaGroup = select(
         `#${this.id} .${this.stackedAreaGroupClass}`
       )
+      this.$stackedAreaGroup2 = select(
+        `#${this.id} .${this.stackedAreaGroup2Class}`
+      )
       this.$stackedAreaNullGroup = select(
         `#${this.id} .stacked-area-null-group`
       )
@@ -931,10 +951,10 @@ export default {
 
       // Remove Area
       this.$stackedAreaGroup.selectAll('path').remove()
+      this.$stackedAreaGroup2.selectAll('path').remove()
       this.$stackedAreaNullGroup.selectAll('path').remove()
 
       const stackedData = this.stack(this.updatedDataset)
-
       // Generate null areas
       // const stackNullArea = this.$stackedAreaNullGroup
       //   .selectAll('path')
@@ -1420,6 +1440,7 @@ export default {
     drawCompare(compareDates) {
       const compareLength = compareDates.length
 
+      this.$compareGroup.selectAll('g').remove()
       this.$compareGroup.selectAll('rect').remove()
       this.$compareGroup.select('path').remove()
       this.$compareGroup.select('text').remove()
@@ -1450,6 +1471,13 @@ export default {
           const distance = this.x(time2) - this.x(time1)
           const limit = 180
 
+          this.$compareGroup
+            .append('rect')
+            .attr('id', `${this.id}-compare-bg-rect`)
+            .attr('width', this.width)
+            .attr('height', this.height)
+            .style('fill', 'rgba(255, 255, 255, 0.2)')
+
           if (distance > limit) {
             this.$compareGroup
               .append('path')
@@ -1463,9 +1491,10 @@ export default {
               .append('text')
               .attr('x', 10)
               .attr('dy', -5)
-              .style('font-size', '12px')
-              .style('fill', 'darkred')
-              .style('text-shadow', '2px 2px 0 #D0D1CD')
+              .style('font-size', '16px')
+              .style('font-weight', 'bold')
+              .style('fill', 'black')
+              .style('text-shadow', '1px 2px 0 #fff')
               .append('textPath')
               .attr('href', `#${this.id}-compare-line`)
               .text(compareString)
@@ -1478,13 +1507,15 @@ export default {
               .attr('d', line([[time1, value1], [time2, value2]]))
               .style('stroke', 'darkred')
               .style('stroke-width', 2)
+
             this.$compareGroup
               .append('text')
               .attr('x', this.x(time1))
               .attr('y', change < 0 ? this.y(value1) : this.y(value2))
-              .style('font-size', '12px')
-              .style('fill', 'darkred')
-              .style('text-shadow', '2px 2px 0 #D0D1CD')
+              .style('font-size', '16px')
+              .style('font-weight', 'bold')
+              .style('fill', 'black')
+              .style('text-shadow', '1px 2px 0 #fff')
               .style('text-anchor', nearRightEdge ? 'end' : 'start')
               .text(compareString)
           }

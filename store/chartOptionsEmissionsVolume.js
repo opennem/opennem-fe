@@ -5,11 +5,11 @@ export const state = () => ({
   chartDefaultType: OPTIONS.CHART_STACKED,
   chartType: OPTIONS.CHART_STACKED,
   chartYAxis: OPTIONS.CHART_YAXIS_EMISSIONS_VOL,
-  chartCurve: OPTIONS.CHART_CURVE_STEP,
+  chartCurve: OPTIONS.CHART_CURVE_SMOOTH,
 
   chartUnit: 'tCO₂e',
-  chartUnitPrefix: SI.BASE,
-  chartDisplayPrefix: SI.KILO
+  chartUnitPrefix: SI.MEGA,
+  chartDisplayPrefix: SI.MEGA
 })
 
 export const getters = {
