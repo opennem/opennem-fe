@@ -60,9 +60,11 @@
       </div>
     </div>
 
-    <div class="emissions-range-dates">
-      <h2>
-        <!-- <time v-if="isHovering">
+    <div class="chart-table">
+      <div class="chart-wrapper">
+        <div class="emissions-range-dates">
+          <h2>
+            <!-- <time v-if="isHovering">
           {{ hoverDate | customFormatDate({ range, interval, showIntervalRange: true }) }}
         </time>
 
@@ -70,72 +72,62 @@
           {{ focusDate | customFormatDate({ range, interval, showIntervalRange: true }) }}
         </time> -->
 
-        <!-- <span v-if="!isHovering && !focusOn"> -->
-        <span>
-          <time>
-            {{ startDate | customFormatDate({ range: 'ALL', interval: 'Year', isStart: true }) }}
-          </time>
-          –
-          <time>
-            {{ endDate | customFormatDate({ range: 'ALL', interval: 'Year', isEnd: false }) }}
-          </time>
-        </span>
-      </h2>
-
-      
-
-      <!-- <h3>
-        12 month rolling sum
-      </h3> -->
-    </div>
-    
-
-    <div class="chart-table">
-      <EmissionsChart
-        v-if="dataset.length > 0"
-        :emissions-dataset="dataset"
-        :emissions-projection-dataset="isYearDatasetView && addProjections ? projectionDataset : []"
-        :domain-emissions="filteredDomains"
-        :range="range"
-        :interval="interval"
-        :show-x-axis="true"
-        :average-emissions="averageEmissions"
-        :vis-height="tabletBreak ? 300 : 600"
-        :hover-on="isHovering"
-        :hover-date="hoverDate"
-        :zoom-extent="zoomExtent"
-        :filter-period="filterPeriod"
-        :hidden-domains="hidden"
-        :compare-dates="compareDates"
-        :show-total-line="showTotalLine"
-        :use-offset-diverge="true"
-        :custom-interval="'year'"
-        :incomplete-intervals="isYearDatasetView && addProjections ? projectionsInterval : []"
-        :show-average-value="false"
-        class="chart"
-        @dateHover="handleDateHover"
-        @isHovering="handleIsHovering"
-        @zoomExtent="handleZoomExtent"
-        @svgClick="handleSvgClick"
-        @changeDataset="handleChangeDatasetChange"
-      />
-
-      <div 
-        v-if="compareDifference" 
-        class="compare-chart">
-        <a 
-          class="close-button" 
-          @click.prevent="() => setCompareDifference(false)">
-          <i class="fal fa-times-circle" />
-        </a>
-
-        <CompareChart
-          :compare-data="compareData"
-          :domains="filteredDomainEmissions"
+            <!-- <span v-if="!isHovering && !focusOn"> -->
+            <span>
+              <time>
+                {{ startDate | customFormatDate({ range: 'ALL', interval: 'Year', isStart: true }) }}
+              </time>
+              –
+              <time>
+                {{ endDate | customFormatDate({ range: 'ALL', interval: 'Year', isEnd: false }) }}
+              </time>
+            </span>
+          </h2>
+        </div>
+        <EmissionsChart
+          v-if="dataset.length > 0"
+          :emissions-dataset="dataset"
+          :emissions-projection-dataset="isYearDatasetView && addProjections ? projectionDataset : []"
+          :domain-emissions="filteredDomains"
           :range="range"
           :interval="interval"
-          :unit="chartCurrentUnit"
+          :show-x-axis="true"
+          :average-emissions="averageEmissions"
+          :vis-height="tabletBreak ? 300 : 600"
+          :hover-on="isHovering"
+          :hover-date="hoverDate"
+          :zoom-extent="zoomExtent"
+          :filter-period="filterPeriod"
+          :hidden-domains="hidden"
+          :compare-dates="compareDates"
+          :show-total-line="showTotalLine"
+          :use-offset-diverge="true"
+          :custom-interval="'year'"
+          :incomplete-intervals="isYearDatasetView && addProjections ? projectionsInterval : []"
+          :show-average-value="false"
+          @dateHover="handleDateHover"
+          @isHovering="handleIsHovering"
+          @zoomExtent="handleZoomExtent"
+          @svgClick="handleSvgClick"
+          @changeDataset="handleChangeDatasetChange"
         />
+        <div 
+          v-if="compareDifference" 
+          class="compare-chart">
+          <a 
+            class="close-button" 
+            @click.prevent="() => setCompareDifference(false)">
+            <i class="fal fa-times-circle" />
+          </a>
+
+          <CompareChart
+            :compare-data="compareData"
+            :domains="filteredDomainEmissions"
+            :range="range"
+            :interval="interval"
+            :unit="chartCurrentUnit"
+          />
+        </div>
       </div>
       
 
@@ -155,21 +147,21 @@
         :domains="domainEmissions"
         :hidden="hidden"
         :dataset="filteredDataset"
-        :hover-on="isHovering" 
-        :hover-date="hoverDate"
+        :hover-on="isHovering"
+        :hover-date="hoverDate" 
         :focus-on="focusOn"
         :focus-date="focusDate"
         :show-total="showTotalLine"
         :show-total-in-legend="isStackedChartType"
-        class="bar-chart"
+        class="legend-bar"
         @rowClick="handleTypeClick"
         @rowShiftClick="handleTypeShiftClick"
         @totalClick="handleTotalClick"
         @totalShiftClick="handleTotalShiftClick"
       />
       <!-- :highlight-domain="highlightId" -->
-
     </div>
+    
   </div>
 </template>
 
@@ -862,10 +854,10 @@ export default {
 @import '~/assets/scss/responsive-mixins.scss';
 
 .wrapper {
-  padding-right: 10px;
+  padding-right: 0;
 
-  @include mobile {
-    padding-right: 0;
+  @include desktop {
+    padding-right: 10px;
   }
 }
 
@@ -875,10 +867,10 @@ header {
   align-items: center;
   padding: $app-padding / 2;
   background-color: $background-alpha;
-  margin: 2rem 0 0;
+  margin: 1rem 0.5rem;
 
-  @include mobile {
-    margin: 1rem 0.5rem;
+  @include desktop {
+    margin: 2rem 0 0;
   }
 
   .header-logo {
@@ -896,25 +888,20 @@ h1 {
 }
 
 .emissions-range-dates {
-  position: absolute;
-  right: 1rem;
-  margin-top: -3.3rem;
+  position: relative;
+  margin: 10px 0;
+  right: 0;
+  text-align: center;
   color: #333;
   h2 {
     font-weight: 100;
     font-size: 1.4rem;
   }
-  h3 {
-    font-family: Playfair Display, Georgia, Times New Roman, Times, serif;
-    font-weight: 700;
-    font-size: 1.1rem;
-  }
 
-  @include mobile {
-    position: relative;
-    margin: 10px 0;
-    right: 0;
-    text-align: center;
+  @include desktop {
+    position: absolute;
+    right: 2rem;
+    margin-top: -3.3rem;
   }
 }
 
@@ -937,49 +924,87 @@ h1 {
 }
 
 .chart-table {
-  // display: flex;
-  // gap: 2rem;
+  display: block;
+  padding-right: 0.5rem;
 
-  .chart {
+  .chart-wrapper {
     width: 100%;
   }
-  .table {
+  .legend-bar {
+    width: 350px;
     background-color: transparent;
+    margin: 18px auto;
+  }
+
+  @include desktop {
+    display: flex;
+    align-items: stretch;
+    gap: 1rem;
+
+    .chart-wrapper {
+      width: calc(100% - 400px);
+    }
+    .legend-bar {
+      width: 400px;
+    }
   }
 }
 
 .dataset-selection {
-  display: flex;
-  align-items: center;
+  background-color: rgba(255, 255, 255, 0.5);
+  display: block;
+  text-align: center;
+  margin-bottom: 0.5rem;
+
+  .buttons {
+    margin: 0;
+    justify-content: center;
+    border-radius: 0;
+
+    .button {
+      margin-right: 0;
+    }
+  }
+
+  .button {
+    font-size: 0.8em;
+    border-radius: 0;
+  }
 
   strong {
     margin-left: 10px;
   }
 
-  @include mobile {
-    background-color: rgba(255, 255, 255, 0.5);
-    display: block;
-    text-align: center;
+  @include desktop {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    text-align: left;
 
     .buttons {
-      margin: 0;
-      justify-content: center;
-      border-radius: 0;
+      margin: 1rem;
+      justify-content: flex-start;
+      border-radius: 10px;
+
+      &:not(.has-addons) .button:first-child {
+        margin-right: 0.5rem;
+      }
     }
 
     .button {
-      border-radius: 0;
+      font-size: 1em;
+      border-radius: 10px;
     }
   }
 }
 
 .bar-chart {
-  width: 450px;
-  margin: 0 auto;
+  width: 100%;
+  padding: 5px;
 
-  @include mobile {
-    width: 100%;
-    padding: 5px;
+  @include desktop {
+    width: 450px;
+    margin: 0 auto;
   }
 }
 

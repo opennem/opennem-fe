@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <div>
     <div
       v-for="domain in xDomains"
       :key="domain.id"
@@ -48,7 +48,7 @@
         Net Total
       </div>
     </div>
-  </section>
+  </div>
 </template>
 
 <script>
@@ -274,11 +274,15 @@ export default {
   -ms-user-select: none; /* IE 10+ */
   user-select: none; /* Likely future */
 
+  &:first-child {
+    border-top: 1px solid #ddd;
+  }
+
   .row-label {
     text-align: right;
     font-size: 12px;
     font-weight: 700;
-    width: 150px;
+    width: 130px;
     display: flex;
     align-items: center;
     cursor: pointer;
@@ -290,7 +294,7 @@ export default {
     }
   }
   .row-bar-wrapper {
-    width: 250px;
+    width: 220px;
     margin-left: 1rem;
     display: flex;
     align-items: center;
