@@ -1,16 +1,33 @@
 <template>
-  <div>
+  <div 
+    :aria-rowcount="xDomains.length" 
+    role="table">
+    <div 
+      class="row header" 
+      role="row">
+      <span 
+        class="row-label" 
+        role="columnheader" 
+        aria-sort="none">Sector</span>
+      <span 
+        class="row-value" 
+        role="columnheader" 
+        aria-sort="none">Emissions/Contribution</span>
+    </div>
+
     <div
       v-for="domain in xDomains"
       :key="domain.id"
       :class="{
         'is-hidden-domain': isHidden(domain.id)
       }"
-      role="button"
+      role="button row"
       class="row"
       @click.exact="handleRowClick(domain.id)"
       @click.shift.exact="handleRowShiftClick(domain.id)">
-      <div class="row-label">
+      <div 
+        class="row-label" 
+        role="cell">
         <div
           :style="{ backgroundColor: domain.colour}"
           class="colour-square" />
@@ -18,8 +35,15 @@
       </div>
 
       <div 
+        class="row-value" 
+        role="cell">
+        {{ getValue(domain.id) | formatValue }}
+      </div>
+
+      <div 
         v-if="!isHidden(domain.id)" 
-        class="row-bar-wrapper">
+        class="row-bar-wrapper" 
+        role="cell">
         <div
           :style="{
             'width': `${getWidth(domain.id)}px`,
@@ -185,9 +209,13 @@ export default {
       const find = this.barDataset.find(d => d.name === id)
       if (find) {
         this.x.domain([0, this.total])
-        return this.x(find.value)
+        return find.value > 0 ? this.x(find.value) : 1
       }
       return 0
+    },
+    getValue(id) {
+      const find = this.barDataset.find(d => d.name === id)
+      return find ? find.value : '—'
     },
     getContribution(id) {
       const find = this.barDataset.find(d => d.name === id)
@@ -274,35 +302,43 @@ export default {
   -ms-user-select: none; /* IE 10+ */
   user-select: none; /* Likely future */
 
+  &.header {
+    font-weight: 700;
+  }
+
   &:first-child {
     border-top: 1px solid #ddd;
   }
 
   .row-label {
-    text-align: right;
     font-size: 12px;
     font-weight: 700;
-    width: 130px;
+    width: 160px;
     display: flex;
     align-items: center;
     cursor: pointer;
     padding: 3px 6px;
     border-radius: 6px;
+    white-space: nowrap;
 
     &:hover {
       background-color: #eee;
     }
   }
+  .row-value {
+    width: 40px;
+    font-size: 0.8em;
+    text-align: right;
+  }
   .row-bar-wrapper {
-    width: 220px;
+    width: 200px;
     margin-left: 1rem;
     display: flex;
     align-items: center;
   }
   .contribution {
     // width: 10%;
-    font-size: 0.9em;
-    font-weight: 100;
+    font-size: 0.8em;
     margin-left: 0.25rem;
   }
   .row-bar {
