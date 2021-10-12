@@ -209,6 +209,7 @@ import BarChart from '@/components/Nggi/BarChart.vue'
 
 const domainEmissions = [
   {
+    csvLabel: 'Agriculture',
     label: 'Agriculture',
     id: 'agriculture',
     domain: 'agriculture',
@@ -217,6 +218,7 @@ const domainEmissions = [
     colour: '#79350F'
   },
   {
+    csvLabel: 'Electricity',
     label: 'Electricity',
     id: 'electricity',
     domain: 'electricity',
@@ -225,6 +227,7 @@ const domainEmissions = [
     colour: '#3C67BC'
   },
   {
+    csvLabel: 'Fugitives',
     label: 'Fugitives',
     id: 'fugitives',
     domain: 'fugitives',
@@ -233,7 +236,8 @@ const domainEmissions = [
     colour: '#EA722B'
   },
   {
-    label: 'Industrial',
+    csvLabel: 'Industrial',
+    label: 'Industrial processes',
     id: 'industrial',
     domain: 'industrial',
     type: 'emissions',
@@ -242,7 +246,8 @@ const domainEmissions = [
   },
 
   {
-    label: 'Stationary',
+    csvLabel: 'Stationary',
+    label: 'Other stationary',
     id: 'stationary',
     domain: 'stationary',
     type: 'emissions',
@@ -250,6 +255,7 @@ const domainEmissions = [
     colour: '#FFB800'
   },
   {
+    csvLabel: 'Transport',
     label: 'Transport',
     id: 'transport',
     domain: 'transport',
@@ -258,6 +264,7 @@ const domainEmissions = [
     colour: '#9B9B9B'
   },
   {
+    csvLabel: 'Waste',
     label: 'Waste',
     id: 'waste',
     domain: 'waste',
@@ -266,7 +273,8 @@ const domainEmissions = [
     colour: '#223C6D'
   },
   {
-    label: 'Land sector',
+    csvLabel: 'Land sector',
+    label: 'Land management',
     id: 'land-sector',
     domain: 'land-sector',
     type: 'emissions',
@@ -519,7 +527,7 @@ export default {
             obj.quarter = d.Quarter
 
             this.domainEmissions.forEach(domain => {
-              const val = parseFloat(d[domain.label])
+              const val = parseFloat(d[domain.csvLabel])
               obj[domain.id] = val
               total += val
             })
@@ -580,7 +588,7 @@ export default {
             obj.year = parseInt(d.Year, 10)
 
             this.domainEmissions.forEach(domain => {
-              const val = parseFloat(d[domain.label])
+              const val = parseFloat(d[domain.csvLabel])
               obj[domain.id] = val
               total += val
             })
@@ -616,7 +624,7 @@ export default {
             obj.year = d.Year
 
             this.domainEmissions.forEach(domain => {
-              const val = parseFloat(d[domain.label])
+              const val = parseFloat(d[domain.csvLabel])
               obj[domain.id] = val
               total += val
             })
