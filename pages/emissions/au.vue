@@ -217,7 +217,8 @@ const domainEmissions = [
     domain: 'agriculture',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#79350F'
+    colour: '#79350F',
+    description: `Emissions from agricultural sources other than energy, <br>land clearing and landfill and liquid wastes <br> <em>(e.g. ruminant methane, fertiliser application)</em>`
   },
   {
     csvLabel: 'Electricity',
@@ -226,7 +227,8 @@ const domainEmissions = [
     domain: 'electricity',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#3C67BC'
+    colour: '#3C67BC',
+    description: `Emissions from creating power provided to a public electricity network <br> <em>(e.g. generators operating in the NEM, SWIS, DKIS)</em>`
   },
   {
     csvLabel: 'Fugitives',
@@ -235,7 +237,8 @@ const domainEmissions = [
     domain: 'fugitives',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#EA722B'
+    colour: '#EA722B',
+    description: `Non-productive supply chain emissions from fossil fuel production and transport<br> <em>(e.g. emissions from venting and flaring in gas production, emissions released from <br>coal seams during coal mining)</em>`
   },
   {
     csvLabel: 'Industrial',
@@ -244,7 +247,8 @@ const domainEmissions = [
     domain: 'industrial',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#F7C4A3'
+    colour: '#F7C4A3',
+    description: `Chemical and other industrial sources, including fossil fuels used as a chemical feedstock<br> <em>(e.g. coke use in steel-making, gas use in fertiliser manufacture)</em>`
   },
 
   {
@@ -254,7 +258,8 @@ const domainEmissions = [
     domain: 'stationary',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#FFB800'
+    colour: '#FFB800',
+    description: `Emissions produced providing energy on-site, other than transport of electricity<br> <em>(e.g. industrial heat, household gas, on-site electricity)</em>`
   },
   {
     csvLabel: 'Transport',
@@ -263,7 +268,8 @@ const domainEmissions = [
     domain: 'transport',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#9B9B9B'
+    colour: '#9B9B9B',
+    description: `Emissions produced to drive domestic transport <br> <em>(e.g. cars, trucks, trains, planes, and boats)</em>`
   },
   {
     csvLabel: 'Waste',
@@ -272,7 +278,8 @@ const domainEmissions = [
     domain: 'waste',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#223C6D'
+    colour: '#223C6D',
+    description: `Emissions from solid and liquid wastes<br> <em>(e.g. landfill, sewage)</em>`
   },
   {
     csvLabel: 'Land sector',
@@ -281,7 +288,8 @@ const domainEmissions = [
     domain: 'land-sector',
     type: 'emissions',
     units: 'MtCO2e',
-    colour: '#4A772F'
+    colour: '#4A772F',
+    description: `Emissions from clearing, restoration and conversion of managed lands <br> <em>(e.g. natural regrowth of managed forests, clearing for agricultural and forestry purposes)</em>`
   }
 ]
 

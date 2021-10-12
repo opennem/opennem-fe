@@ -26,6 +26,7 @@
       @click.exact="handleRowClick(domain.id)"
       @click.shift.exact="handleRowShiftClick(domain.id)">
       <div 
+        v-tooltip.right="{ content: domain.description }"
         class="row-label" 
         role="cell">
         <div
