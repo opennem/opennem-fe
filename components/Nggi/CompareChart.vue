@@ -2,8 +2,10 @@
   <div class="compare-container">
     <div class="compare-header">
       <div class="chart-label">
+        <span v-if="isFY">FY</span>
         <strong>{{ firstDate | customFormatDate({ range, interval, showIntervalRange: true }) }}</strong>
         vs
+        <span v-if="isFY">FY</span>
         <strong>{{ secondDate | customFormatDate({ range, interval, showIntervalRange: true }) }}</strong>
       </div>
     </div>
@@ -72,6 +74,10 @@ export default {
     interval: {
       type: String,
       default: () => ''
+    },
+    isFY: {
+      type: Boolean,
+      default: false
     }
   },
 

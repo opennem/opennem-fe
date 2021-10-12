@@ -51,12 +51,12 @@
           v-if="datasetView === 'year'"
           :class="{ 'is-selected': addHistory }"
           class="button" 
-          @click="handleHistoryToggle">History <strong>FY1990 — 2004</strong></button>
+          @click="handleHistoryToggle">History <strong>FY 1990 — 2004</strong></button>
         <button
           v-if="datasetView === 'year'"
           :class="{ 'is-selected': addProjections }"
           class="button" 
-          @click="handleProjectionsToggle">Projections <strong>FY2021 — 2030</strong></button>
+          @click="handleProjectionsToggle">Projections <strong>FY 2021 — 2030</strong></button>
       </div>
     </div>
 
@@ -73,6 +73,7 @@
         </time> -->
 
             <!-- <span v-if="!isHovering && !focusOn"> -->
+            <span v-if="isYearDatasetView">FY</span>
             <span>
               <time>
                 {{ startDate | customFormatDate({ range: 'ALL', interval: 'Year', isStart: true }) }}
@@ -126,6 +127,7 @@
             :range="range"
             :interval="interval"
             :unit="chartCurrentUnit"
+            :is-f-y="isYearDatasetView"
           />
         </div>
       </div>
