@@ -943,7 +943,7 @@ h1 {
     width: 100%;
   }
   .legend-bar {
-    width: 350px;
+    width: 430px;
     background-color: transparent;
     margin: 18px auto;
   }
