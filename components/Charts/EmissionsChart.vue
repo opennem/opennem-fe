@@ -51,6 +51,7 @@
       :x-guides="xGuides"
       :x-axis-dy="tabletBreak ? 8 : 12"
       :y-axis-ticks="4"
+      :x-ticks="xTicks"
       :focus-date="focusDate"
       :focus-on="focusOn"
       :incomplete-intervals="incompleteIntervals"
@@ -684,12 +685,12 @@ export default {
     },
 
     handleTypeClick() {
-      this.doUpdateXTicks({
-        range: this.range,
-        interval: this.interval,
-        isZoomed: this.zoomExtent.length > 0,
-        filterPeriod: this.filterPeriod
-      })
+      // this.doUpdateXTicks({
+      //   range: this.range,
+      //   interval: this.interval,
+      //   isZoomed: this.zoomExtent.length > 0,
+      //   filterPeriod: this.filterPeriod
+      // })
       this.doUpdateTickFormats({
         range: this.range,
         interval: this.interval,

@@ -304,6 +304,10 @@ export default {
       type: Number,
       default: () => 12
     },
+    xTicks: {
+      type: Function,
+      default: () => null
+    },
     incompleteIntervals: {
       type: Array,
       default: () => []
@@ -716,6 +720,7 @@ export default {
       // Set up where x, y axis appears
       this.xAxis = axisBottom(this.x)
         .tickSize(-this.height)
+        .ticks(this.xTicks)
         .tickFormat((d, i) => this.timeFormats(d, i === 0))
       this.yAxis = axisRight(this.y)
         .tickSize(this.width)
@@ -1672,7 +1677,11 @@ export default {
         this.xAxis.tickFormat((d, i) => this.timeFormats(d, i === 0))
       }
 
-      this.xAxis.ticks(tickLength)
+      if (this.xTicks) {
+        this.xAxis.ticks(this.xTicks)
+      } else {
+        this.xAxis.ticks(tickLength)
+      }
 
       // add secondary x axis tick label here
       const insertSecondaryAxisTick = function(d, i) {

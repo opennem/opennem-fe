@@ -14,6 +14,7 @@ export const getters = {
   apiVersion: state => state.apiVersion,
   windowWidth: state => state.windowWidth,
   isTouchDevice: state => state.isTouchDevice,
+  wideScreenBreak: state => state.windowWidth < 1450,
   widthBreak: state => state.windowWidth < 1024,
   tabletBreak: state => state.windowWidth < 769,
   showError: state => state.showError,

@@ -372,7 +372,9 @@ export default {
       compareDifference: 'compareDifference',
       compareDates: 'compareDates',
 
-      tabletBreak: 'app/tabletBreak'
+      tabletBreak: 'app/tabletBreak',
+      widthBreak: 'app/widthBreak',
+      wideScreenBreak: 'app/wideScreenBreak'
     }),
 
     filteredDataset() {
@@ -467,12 +469,16 @@ export default {
       this.updateAxisGuides()
     },
 
-    tabletBreak(val) {
-      if (val) {
-        this.updateAxisGuides(10)
-      } else {
-        this.updateAxisGuides(0.1)
-      }
+    tabletBreak() {
+      this.updateAxisGuides()
+    },
+
+    widthBreak() {
+      this.updateAxisGuides()
+    },
+
+    wideScreenBreak() {
+      this.updateAxisGuides()
     }
   },
 
@@ -642,8 +648,21 @@ export default {
         })
     },
 
-    updateAxisGuides(year) {
-      const y = this.tabletBreak ? timeYear.every(4) : timeYear.every(1)
+    updateAxisGuides() {
+      let years = 1
+      if (this.widthBreak) {
+        years = 4
+      } else if (this.widthBreak) {
+        years = 2
+      } else if (this.wideScreenBreak) {
+        if (this.addHistory || this.addProjections) {
+          years = 2
+        } else {
+          years = 1
+        }
+      }
+
+      const y = timeYear.every(years)
       const formatYear = timeFormat('%Y')
       const format = date => formatYear(date)
       this.setXTicks(y)
@@ -844,6 +863,7 @@ export default {
 
     handleProjectionsToggle() {
       this.addProjections = !this.addProjections
+      this.updateAxisGuides()
     },
 
     handleHistoryToggle() {
@@ -854,6 +874,7 @@ export default {
       } else {
         this.dataset = this.yearlyDataset
       }
+      this.updateAxisGuides()
     },
 
     handleChangeDatasetChange(dataset) {
