@@ -164,7 +164,7 @@
       <!-- :highlight-domain="highlightId" -->
     </div>
 
-    <EmissionsFooter />
+    <EmissionsFooter :show-annual-source="isYearDatasetView" />
     
   </div>
 </template>
@@ -898,9 +898,11 @@ export default {
 
 .wrapper {
   padding-right: 0;
+  margin-bottom: 4.5rem;
 
   @include desktop {
     padding-right: 10px;
+    margin-bottom: 3rem;
   }
 }
 

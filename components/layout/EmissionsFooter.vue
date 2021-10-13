@@ -10,16 +10,24 @@
         </div>
         
         <div class="sources">
-          Sources:
-          <a
-            href="https://www.aemo.com.au/"
-            title="Link to AEMO">AEMO</a>,
-          <a
-            href="http://apvi.org.au/"
-            title="Link to APVI">APVI</a>,
-          <a
-            href="http://www.bom.gov.au/"
-            title="Link to BoM">BoM</a>
+          <span v-if="showAnnualSource">
+            Annual:
+            <a
+              target="_blank"
+              href="https://www.industry.gov.au/data-and-publications/australias-emissions-projections-2020"
+              title="Link to Australia’s emissions projections 2020">Australia’s emissions projections 2020</a>,
+              Department of Industry, Science, Energy and Resources
+          </span>
+          <span v-else>
+            Quarterly:
+            <a
+              target="_blank"
+              href="https://www.industry.gov.au/data-and-publications/national-greenhouse-gas-inventory-quarterly-update-march-2021"
+              title="Link to National Greenhouse Gas Inventory Quarterly Update: March 2021">National Greenhouse Gas Inventory Quarterly Update: March 2021</a>,
+              Department of Industry, Science, Energy and Resources
+          </span>
+          
+          
         </div>
       </div>
 
@@ -47,6 +55,13 @@
 import { mapGetters } from 'vuex'
 
 export default {
+  props: {
+    showAnnualSource: {
+      type: Boolean,
+      default: false
+    }
+  },
+
   data() {
     return {
       version: this.$config.version
