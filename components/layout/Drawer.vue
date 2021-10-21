@@ -17,7 +17,7 @@
         <nuxt-link
           v-for="view in views"
           :key="view.id"
-          :to="`/${view.id}/${regionId}/`"
+          :to="`/${view.id}/${getRegionId(view.id)}/`"
           class="menu-item"
         >
           {{ view.label }}
@@ -27,7 +27,9 @@
         </nuxt-link>
       </div>
 
-      <div class="menu">
+      <div 
+        v-if="!isEmissionsView" 
+        class="menu">
         <nuxt-link
           :to="`/${currentView}/au/`"
           class="menu-item">
@@ -56,7 +58,9 @@
         </nuxt-link>
       </div>
 
-      <div class="app-options">
+      <div 
+        v-if="!isEmissionsView" 
+        class="app-options">
         <div class="control">
           <label>Contribution to</label>
           <consumption-generation-toggle />
@@ -107,6 +111,9 @@ export default {
     }),
     regionId() {
       return this.$route.params.region
+    },
+    isEmissionsView() {
+      return this.currentView === 'emissions'
     }
   },
 
@@ -151,6 +158,11 @@ export default {
     close() {
       window.scrollTo(0, 0)
       this.$emit('close')
+    },
+
+    getRegionId(viewId) {
+      const id = this.regionId || 'nem'
+      return viewId === 'emissions' ? 'au' : id
     }
   }
 }

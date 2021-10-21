@@ -27,11 +27,13 @@
 import { mapGetters, mapActions } from 'vuex'
 import AppHeader from '~/components/layout/AppHeader'
 import AppFooter from '~/components/layout/AppFooter'
+import EmissionsFooter from '~/components/layout/EmissionsFooter'
 
 export default {
   components: {
     AppHeader,
-    AppFooter
+    AppFooter,
+    EmissionsFooter
   },
 
   data() {
@@ -42,11 +44,16 @@ export default {
 
   computed: {
     ...mapGetters({
+      currrentView: 'currentView',
       showError: 'app/showError',
       errorHeader: 'app/errorHeader',
       errorMessage: 'app/errorMessage',
       tabletBreak: 'app/tabletBreak'
-    })
+    }),
+
+    isEmissionsView() {
+      return this.currrentView === 'emissions'
+    }
   },
 
   methods: {

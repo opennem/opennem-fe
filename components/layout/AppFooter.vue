@@ -9,7 +9,7 @@
           <strong>v{{ version }}</strong>
         </div>
         <div
-          v-if="hasAPIversion"
+          v-if="hasAPIversion && !isEmissionsView"
           class="version">
           <a
             v-tooltip="'Open developer documentation'"
@@ -17,7 +17,31 @@
             API docs
           </a>: <strong>{{ apiVersion }}</strong>
         </div>
-        <div class="sources">
+
+        <div 
+          v-if="isEmissionsView" 
+          class="sources">
+          <span v-if="showAnnualSource">
+            Annual:
+            <a
+              target="_blank"
+              href="https://www.industry.gov.au/data-and-publications/australias-emissions-projections-2020"
+              title="Link to Australia’s emissions projections 2020">Australia’s emissions projections 2020</a>,
+              Department of Industry, Science, Energy and Resources
+          </span>
+          <span v-else>
+            Quarterly:
+            <a
+              target="_blank"
+              href="https://www.industry.gov.au/data-and-publications/national-greenhouse-gas-inventory-quarterly-update-march-2021"
+              title="Link to National Greenhouse Gas Inventory Quarterly Update: March 2021">National Greenhouse Gas Inventory Quarterly Update: March 2021</a>,
+              Department of Industry, Science, Energy and Resources
+          </span>          
+        </div>
+        
+        <div 
+          v-else 
+          class="sources">
           Sources:
           <a
             href="https://www.aemo.com.au/"
@@ -29,6 +53,7 @@
             href="http://www.bom.gov.au/"
             title="Link to BoM">BoM</a>
         </div>
+        
       </div>
 
       <div class="right">
@@ -87,8 +112,11 @@ export default {
   computed: {
     ...mapGetters({
       hostEnv: 'hostEnv',
+      currentView: 'currentView',
       apiVersion: 'app/apiVersion',
-      showFeatureToggle: 'app/showFeatureToggle'
+      showFeatureToggle: 'app/showFeatureToggle',
+
+      showAnnualSource: 'emissionsPage/showAnnualSource'
     }),
 
     isDev() {
@@ -97,6 +125,16 @@ export default {
 
     hasAPIversion() {
       return this.apiVersion
+    },
+
+    isEmissionsView() {
+      return this.currentView === 'emissions'
+    }
+  },
+
+  watch: {
+    showAnnualSource(val) {
+      console.log(val)
     }
   },
 

@@ -14,7 +14,7 @@
         v-if="!tabletBreak"
         class="selection" />
       <region-dropdown
-        v-if="!tabletBreak"
+        v-if="!tabletBreak && !isEmissionsView"
         class="selection" />
     </div>
 
@@ -131,6 +131,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      currentView: 'currentView',
       tabletBreak: 'app/tabletBreak',
 
       facilitySelectedView: 'facility/selectedView',
@@ -152,6 +153,10 @@ export default {
       set(val) {
         this.$store.dispatch('facility/selectedView', val)
       }
+    },
+
+    isEmissionsView() {
+      return this.currentView === 'emissions'
     },
 
     range() {
