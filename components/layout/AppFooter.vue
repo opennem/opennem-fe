@@ -9,7 +9,7 @@
           <strong>v{{ version }}</strong>
         </div>
         <div
-          v-if="hasAPIversion && !isEmissionsView"
+          v-show="hasAPIversion && !isEmissionsView"
           class="version">
           <a
             v-tooltip="'Open developer documentation'"
@@ -19,7 +19,7 @@
         </div>
 
         <div 
-          v-if="isEmissionsView" 
+          v-show="isEmissionsView" 
           class="sources">
           <span v-if="showAnnualSource">
             Annual:
@@ -40,7 +40,7 @@
         </div>
         
         <div 
-          v-else 
+          v-show="!isEmissionsView" 
           class="sources">
           Sources:
           <a

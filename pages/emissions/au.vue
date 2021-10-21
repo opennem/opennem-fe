@@ -1,38 +1,5 @@
 <template>
   <div class="wrapper">
-    <!-- <header>
-      <AppLogo class="header-logo" />
-      <h1>Australian Emissions</h1>
-    </header> -->
-
-    <!-- <DataOptionsBar
-      :ranges="ranges"
-      :intervals="intervals"
-      :range="range"
-      :interval="interval"
-      :filter-period="filterPeriod"
-      @rangeChange="handleRangeChange"
-      @rangeOptionChange="handleRangeChange"
-      @intervalChange="handleIntervalChange"
-      @filterPeriodChange="handleFilterPeriodChange" 
-      style="position: relative; margin-bottom: 1rem;" />  -->
-    
-    <!-- <div class="buttons">
-      <button class="button is-small is-rounded is-selected">Rolling Sum</button>
-      <button class="button is-small is-rounded is-selected">Quarter</button>
-    </div> -->
-
-    <!-- <DatesDisplay
-      :is-hovering="isHovering"
-      :hovered-date="hoverDate ? hoverDate.getTime() : null"
-      :focus-on="focusOn"
-      :focus-date="focusDate ? focusDate.getTime() : null"
-      :start-date="startDate"
-      :end-date="endDate"
-      :range="range"
-      :interval="interval"
-      :timezone-string="''"
-    /> -->
 
     <div class="dataset-selection">
       <div class="buttons has-addons">
@@ -64,15 +31,6 @@
       <div class="chart-wrapper">
         <div class="emissions-range-dates">
           <h2>
-            <!-- <time v-if="isHovering">
-          {{ hoverDate | customFormatDate({ range, interval, showIntervalRange: true }) }}
-        </time>
-
-        <time v-if="!isHovering && focusOn">
-          {{ focusDate | customFormatDate({ range, interval, showIntervalRange: true }) }}
-        </time> -->
-
-            <!-- <span v-if="!isHovering && !focusOn"> -->
             <span v-if="isYearDatasetView">FY</span>
             <span>
               <time>
@@ -131,19 +89,6 @@
           />
         </div>
       </div>
-      
-
-      <!-- <NggiLegend
-        :domains="domainEmissions"
-        :hidden="hidden"
-        :show-total="showTotalLine"
-        :show-total-in-legend="isStackedChartType"
-        @rowClick="handleTypeClick"
-        @rowShiftClick="handleTypeShiftClick"
-        @totalClick="handleTotalClick"
-        @totalShiftClick="handleTotalShiftClick"
-      /> -->
-
       <BarChart
         :bar-width="200"
         :domains="domainEmissions"
@@ -161,7 +106,6 @@
         @totalClick="handleTotalClick"
         @totalShiftClick="handleTotalShiftClick"
       />
-      <!-- :highlight-domain="highlightId" -->
     </div>    
   </div>
 </template>

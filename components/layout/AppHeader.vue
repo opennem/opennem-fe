@@ -14,7 +14,7 @@
         v-if="!tabletBreak"
         class="selection" />
       <region-dropdown
-        v-if="!tabletBreak && !isEmissionsView"
+        v-show="!tabletBreak && !isEmissionsView"
         class="selection" />
     </div>
 
@@ -24,7 +24,7 @@
         :open="openDrawer"
         @close="closeDrawer" />
 
-      <div
+      <!-- <div
         v-if="!isFacilitiesView && showButtons"
         :class="{ hide: tabletBreak }"
         class="more-buttons"
@@ -39,7 +39,7 @@
         >
           Compare
         </button>
-      </div>
+      </div> -->
 
       <div
         v-if="!tabletBreak && showButtons"

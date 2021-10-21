@@ -28,7 +28,7 @@
       </div>
 
       <div 
-        v-if="!isEmissionsView" 
+        v-show="!isEmissionsView" 
         class="menu">
         <nuxt-link
           :to="`/${currentView}/au/`"
@@ -59,7 +59,7 @@
       </div>
 
       <div 
-        v-if="!isEmissionsView" 
+        v-show="!isEmissionsView" 
         class="app-options">
         <div class="control">
           <label>Contribution to</label>

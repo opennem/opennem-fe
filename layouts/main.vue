@@ -44,16 +44,11 @@ export default {
 
   computed: {
     ...mapGetters({
-      currrentView: 'currentView',
       showError: 'app/showError',
       errorHeader: 'app/errorHeader',
       errorMessage: 'app/errorMessage',
       tabletBreak: 'app/tabletBreak'
-    }),
-
-    isEmissionsView() {
-      return this.currrentView === 'emissions'
-    }
+    })
   },
 
   methods: {
