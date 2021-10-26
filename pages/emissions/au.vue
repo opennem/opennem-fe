@@ -533,8 +533,10 @@ export default {
     },
 
     getYearData() {
+      // const url =
+      //   'https://data.dev.opennem.org.au/nggi/nggi-emissions-1990-2020-yearly.csv'
       const url =
-        'https://data.dev.opennem.org.au/nggi/nggi-emissions-1990-2020-yearly.csv'
+        'https://data.dev.opennem.org.au/nggi/nggi-emissions-1990-2020-yearly-updated-26Oct2021.csv'
 
       this.$axios
         .get(url, { headers: { 'Content-Type': 'text/csv' } })
@@ -569,8 +571,10 @@ export default {
     },
 
     getProjectionData() {
+      // const url =
+      //   'https://data.dev.opennem.org.au/nggi/nggi-emissions-projections-2021-2030-yearly.csv'
       const url =
-        'https://data.dev.opennem.org.au/nggi/nggi-emissions-projections-2021-2030-yearly.csv'
+        'https://data.dev.opennem.org.au/nggi/nggi-emissions-projections-2021-2030-yearly-updated-26Oct2021.csv'
 
       this.$axios
         .get(url, { headers: { 'Content-Type': 'text/csv' } })
