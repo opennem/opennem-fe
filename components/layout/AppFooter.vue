@@ -25,8 +25,8 @@
             Annual:
             <a
               target="_blank"
-              href="https://www.industry.gov.au/data-and-publications/australias-emissions-projections-2020"
-              title="Link to Australia’s emissions projections 2020">Australia’s emissions projections 2020</a>,
+              href="https://www.industry.gov.au/data-and-publications/australias-emissions-projections-2021"
+              title="Link to Australia’s emissions projections 2021">Australia’s emissions projections 2021</a>,
               Department of Industry, Science, Energy and Resources
           </span>
           <span v-else>
