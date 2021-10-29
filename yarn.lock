@@ -943,10 +943,10 @@
   resolved "https://registry.yarnpkg.com/@mapbox/point-geometry/-/point-geometry-0.1.0.tgz#8a83f9335c7860effa2eeeca254332aa0aeed8f2"
   integrity sha1-ioP5M1x4YO/6Lu7KJUMyqgru2PI=
 
-"@mapbox/tiny-sdf@^1.2.5":
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/@mapbox/tiny-sdf/-/tiny-sdf-1.2.5.tgz#424c620a96442b20402552be70a7f62a8407cc59"
-  integrity sha512-cD8A/zJlm6fdJOk6DqPUV8mcpyJkRz2x2R+/fYcWDYG3oWbG7/L7Yl/WqQ1VZCjnL9OTIMAn6c+BC5Eru4sQEw==
+"@mapbox/tiny-sdf@^2.0.2":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@mapbox/tiny-sdf/-/tiny-sdf-2.0.4.tgz#497d7153a61b7cef4638b9e9e91cd37403dead07"
+  integrity sha512-CBtL2rhZiYmdIryksp0zh4Mmx54iClYfNb0mpYeHrZnq4z84lVjre7LBWGPEjWspEn6AiF0lxC1HaZDye89m3g==
 
 "@mapbox/unitbezier@^0.0.0":
   version "0.0.0"
@@ -6702,22 +6702,22 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
-mapbox-gl-animated-popup@^0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/mapbox-gl-animated-popup/-/mapbox-gl-animated-popup-0.1.4.tgz#526c56adcc497b5a9afcd11fe1db6118503f9353"
-  integrity sha512-0wXYdY2ojIbpBdECHIdX6gMcQMocP8XCIaqkP1b48pHVOcfTXU5/WoUocR1PzvGieQSwjuWs88AV5pCHXecS3w==
+mapbox-gl-animated-popup@0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/mapbox-gl-animated-popup/-/mapbox-gl-animated-popup-0.2.1.tgz#d25bc3fab3ac8782c97cfaca2fc091b3173b44fd"
+  integrity sha512-Q03xv4JOejg0Qr3hAkQhoahGXHNtWgwQaJoozBcHvqyXZH2zOOtTfp9nZcTm7keABXj18v/e94GOawbBvC2Drw==
 
-mapbox-gl@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/mapbox-gl/-/mapbox-gl-2.2.0.tgz#f0228a251c5fb733a341528be0114612bfc5a982"
-  integrity sha512-/9OQjaOIpQcZfXMFMxnjjAjhVGPjuAxQFAbdvG6CXD5aLhm1j2D3zxCCfxxMCEuILRBCbkxEAhVf3JoT+aFXEQ==
+mapbox-gl@2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/mapbox-gl/-/mapbox-gl-2.5.1.tgz#77678c903feeabf759548a216e2e94ceaf4bc7be"
+  integrity sha512-mUYOe8z+00fWEtBDAtiNeVDH2wsoEQlOK0UskbIPKnG1XRTDYzzofh8f/1BHe1Q3OLxce2TQ+Ou3uo1yAlePaA==
   dependencies:
     "@mapbox/geojson-rewind" "^0.5.0"
     "@mapbox/geojson-types" "^1.0.2"
     "@mapbox/jsonlint-lines-primitives" "^2.0.2"
     "@mapbox/mapbox-gl-supported" "^2.0.0"
     "@mapbox/point-geometry" "^0.1.0"
-    "@mapbox/tiny-sdf" "^1.2.5"
+    "@mapbox/tiny-sdf" "^2.0.2"
     "@mapbox/unitbezier" "^0.0.0"
     "@mapbox/vector-tile" "^1.3.1"
     "@mapbox/whoots-js" "^3.1.0"
@@ -6732,7 +6732,7 @@ mapbox-gl@^2.2.0:
     potpack "^1.0.1"
     quickselect "^2.0.0"
     rw "^1.3.3"
-    supercluster "^7.1.2"
+    supercluster "^7.1.3"
     tinyqueue "^2.0.3"
     vt-pbf "^3.1.1"
 
@@ -9916,10 +9916,10 @@ stylehacks@^4.0.0:
     postcss "^7.0.0"
     postcss-selector-parser "^3.0.0"
 
-supercluster@^7.1.2:
-  version "7.1.2"
-  resolved "https://registry.yarnpkg.com/supercluster/-/supercluster-7.1.2.tgz#cf02a60283a0118212024f3bf02e4e63bb148e2c"
-  integrity sha512-bGA0pk3DYMjLTY1h+rbh0imi/I8k/Lg0rzdBGfyQs0Xkiix7jK2GUmH1qSD8+jq6U0Vu382QHr3+rbbiHqdKJA==
+supercluster@^7.1.3:
+  version "7.1.4"
+  resolved "https://registry.yarnpkg.com/supercluster/-/supercluster-7.1.4.tgz#6762aabfd985d3390b49f13b815567d5116a828a"
+  integrity sha512-GhKkRM1jMR6WUwGPw05fs66pOFWhf59lXq+Q3J3SxPvhNcmgOtLRV6aVQPMRsmXdpaeFJGivt+t7QXUPL3ff4g==
   dependencies:
     kdbush "^3.0.0"
 
