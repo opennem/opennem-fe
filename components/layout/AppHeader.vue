@@ -1,35 +1,53 @@
 <template>
   <header :class="{ 'facilities-header': isFacilitiesView }">
-    <div class="header-dropdowns">
-      <div
-        class="logo-wrapper"
-        @click="toggleDrawer">
-        <i
-          v-if="ready && tabletBreak"
-          class="fal fa-ellipsis-v" />
-        <app-logo class="header-logo" />
-        <h1 v-if="ready && tabletBreak">{{ regionLabel }}</h1>
+
+    <div v-if="ready">
+      <div 
+        v-if="isEmissionsWorldView" 
+        class="header-dropdowns">
+        <div
+          class="logo-wrapper"
+          @click="toggleDrawer">
+          <i
+            v-if="ready && tabletBreak"
+            class="fal fa-ellipsis-v" />
+          <app-logo class="header-logo" />
+          <h1>Emissions</h1>
+        </div>
       </div>
-      <view-dropdown
-        v-if="!tabletBreak"
-        class="selection" />
-      <region-dropdown
-        v-show="!tabletBreak && !isEmissionsView"
-        class="selection" />
-    </div>
 
-    <div>
-      <app-drawer
-        v-if="tabletBreak"
-        :open="openDrawer"
-        @close="closeDrawer" />
+      <div 
+        v-else 
+        class="header-dropdowns">
+        <div
+          class="logo-wrapper"
+          @click="toggleDrawer">
+          <i
+            v-if="ready && tabletBreak"
+            class="fal fa-ellipsis-v" />
+          <app-logo class="header-logo" />
+          <h1 v-if="ready && tabletBreak">{{ regionLabel }}</h1>
+        </div>
+        <view-dropdown
+          v-if="!tabletBreak"
+          class="selection" />
+        <region-dropdown
+          v-show="!tabletBreak && !isEmissionsView"
+          class="selection" />
+      </div>
 
-      <div
-        v-if="!isFacilitiesView && showButtons"
-        :class="{ hide: tabletBreak }"
-        class="more-buttons"
-      >
-        <consumption-generation-toggle />
+      <div>
+        <app-drawer
+          v-if="tabletBreak"
+          :open="openDrawer"
+          @close="closeDrawer" />
+
+        <div
+          v-if="!isFacilitiesView && showButtons"
+          :class="{ hide: tabletBreak }"
+          class="more-buttons"
+        >
+          <consumption-generation-toggle />
 
         <!-- <button
           v-if="(focusOn || compareDifference) && isEnergy"
@@ -39,56 +57,58 @@
         >
           Compare
         </button> -->
-      </div>
+        </div>
 
-      <div
-        v-if="!tabletBreak && showButtons"
-        class="share-button-wrapper">
-        <button
-          v-on-clickaway="handleClickAway"
-          :class="{ 'is-loading is-primary': generating }"
-          class="share-button button is-rounded"
-          @click="handleShareButtonClicked"
-        >
-          <img
-            src="~/assets/img/share-icon.svg"
-            alt="Share icon" >
-          <span class="label-image">Export</span>
-        </button>
-        <transition name="slide-down-fade">
-          <div
-            v-if="showShareMenu"
-            class="share-menu dropdown-menu">
-            <div class="dropdown-content">
-              <a
-                v-if="!isFacilitiesView"
-                class="dropdown-item button"
-                @click="handleExportImage"
-              >
-                <i class="fal fa-fw fa-chart-bar" />
-                <span class="label-image">PNG</span>
-              </a>
-              <a
-                class="dropdown-item button"
-                @click="handleExportDataClick">
-                <download-csv
-                  :data="exportData"
-                  :name="`${filename}.csv`">
-                  <i class="fal fa-fw fa-table" />
-                  <span class="label-csv">CSV</span>
-                </download-csv>
-              </a>
+        <div
+          v-if="!tabletBreak && showButtons"
+          class="share-button-wrapper">
+          <button
+            v-on-clickaway="handleClickAway"
+            :class="{ 'is-loading is-primary': generating }"
+            class="share-button button is-rounded"
+            @click="handleShareButtonClicked"
+          >
+            <img
+              src="~/assets/img/share-icon.svg"
+              alt="Share icon" >
+            <span class="label-image">Export</span>
+          </button>
+          <transition name="slide-down-fade">
+            <div
+              v-if="showShareMenu"
+              class="share-menu dropdown-menu">
+              <div class="dropdown-content">
+                <a
+                  v-if="!isFacilitiesView"
+                  class="dropdown-item button"
+                  @click="handleExportImage"
+                >
+                  <i class="fal fa-fw fa-chart-bar" />
+                  <span class="label-image">PNG</span>
+                </a>
+                <a
+                  class="dropdown-item button"
+                  @click="handleExportDataClick">
+                  <download-csv
+                    :data="exportData"
+                    :name="`${filename}.csv`">
+                    <i class="fal fa-fw fa-table" />
+                    <span class="label-csv">CSV</span>
+                  </download-csv>
+                </a>
+              </div>
             </div>
-          </div>
-        </transition>
-      </div>
+          </transition>
+        </div>
 
-      <FacilityViewToggle
-        v-if="tabletBreak && !openDrawer && isFacilitiesView"
-        :view="selectedView"
-        @viewSelect="(v) => selectedView = v"
-      />
+        <FacilityViewToggle
+          v-if="tabletBreak && !openDrawer && isFacilitiesView"
+          :view="selectedView"
+          @viewSelect="(v) => selectedView = v"
+        />
+      </div>
     </div>
+    
   </header>
 </template>
 
@@ -157,6 +177,10 @@ export default {
 
     isEmissionsView() {
       return this.currentView === 'emissions'
+    },
+
+    isEmissionsWorldView() {
+      return this.currentView === 'emissions-world'
     },
 
     range() {

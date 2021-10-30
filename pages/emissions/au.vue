@@ -233,10 +233,9 @@ const domainEmissions = [
 ]
 
 export default {
-  layout: 'main', // no-container
+  layout: 'main',
 
   components: {
-    // AppLogo,
     DataOptionsBar,
     NggiLegend,
     EmissionsChart,
