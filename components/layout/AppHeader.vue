@@ -24,22 +24,22 @@
         :open="openDrawer"
         @close="closeDrawer" />
 
-      <!-- <div
+      <div
         v-if="!isFacilitiesView && showButtons"
         :class="{ hide: tabletBreak }"
         class="more-buttons"
       >
         <consumption-generation-toggle />
 
-        <button
+        <!-- <button
           v-if="(focusOn || compareDifference) && isEnergy"
           :class="{ 'is-selected': compareDifference }"
           class="compare-button button is-rounded"
           @click="handleCompareClick"
         >
           Compare
-        </button>
-      </div> -->
+        </button> -->
+      </div>
 
       <div
         v-if="!tabletBreak && showButtons"
