@@ -7,7 +7,7 @@
         <EmissionsChart
           v-if="ready"
           :emissions-dataset="dataset"
-          :domain-emissions="displayDomains"
+          :domain-emissions="filteredDisplayDomains"
           :range="range"
           :interval="interval"
           :show-x-axis="true"
@@ -17,6 +17,7 @@
           :hover-date="hoverDate"
           :zoom-extent="zoomExtent"
           :filter-period="filterPeriod"
+          :hidden-domains="hidden"
           @dateHover="handleDateHover"
           @isHovering="handleIsHovering"
           @zoomExtent="handleZoomExtent"
@@ -25,7 +26,10 @@
 
       <CountryLegend
         :domains="domains"
+        :hidden="hidden"
         class="legend"
+        @rowClick="handleTypeClick"
+        @rowShiftClick="handleTypeShiftClick"
       />
     </div>
     
@@ -109,6 +113,7 @@ export default {
       showAreas: ['AUS', 'GBR', 'EU27BX', 'USA', 'CHN', 'IND'],
       dataset: [],
       domains: [],
+      hidden: [],
       displayDomains: [],
       range: RANGE_ALL,
       interval: INTERVAL_YEAR,
@@ -116,6 +121,15 @@ export default {
       zoomExtent: [],
       isHovering: false,
       hoverDate: null
+    }
+  },
+
+  computed: {
+    filteredDomains() {
+      return this.domains.filter(d => !_includes(this.hidden, d.id))
+    },
+    filteredDisplayDomains() {
+      return this.displayDomains.filter(d => !_includes(this.hidden, d.id))
     }
   },
 
@@ -361,6 +375,27 @@ export default {
       }
 
       this.zoomExtent = filteredDates
+    },
+
+    handleTypeClick(id) {
+      const index = this.hidden.indexOf(id)
+
+      if (index === -1) {
+        this.hidden.push(id)
+      } else {
+        this.hidden.splice(index, 1)
+      }
+
+      if (this.hidden.length === this.domains.length) {
+        this.hidden = []
+      }
+
+      console.log(this.hidden)
+    },
+
+    handleTypeShiftClick(id) {
+      const toBeHidden = this.domains.filter(d => d.id !== id)
+      this.hidden = toBeHidden.map(d => d.id)
     }
   }
 }
