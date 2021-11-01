@@ -64,7 +64,7 @@
         <button
           v-on-clickaway="handleClickAway"
           :class="{ 'is-loading is-primary': generating }"
-          class="share-button button is-rounded"
+          class="share-button button"
           @click="handleShareButtonClicked"
         >
           <img
@@ -491,12 +491,6 @@ header {
   }
 
   .button {
-    font-size: 11px;
-
-    &.is-rounded {
-      min-width: 55px;
-    }
-
     @include mobile {
       border-radius: 0 !important;
     }
