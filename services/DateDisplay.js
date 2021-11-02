@@ -59,6 +59,10 @@ function getFormatStringDay(showYear) {
   return showYear ? '%a, %-d %b %Y' : '%a, %-d %b'
 }
 
+function getFormatStringDetailed(showYear) {
+  return showYear ? '%-d %b %Y, %-I:%M %p' : '%-d %b, %-I:%M %p'
+}
+
 function getSeasonLabel(month) {
   switch (month) {
     case '3':
@@ -178,8 +182,6 @@ export default {
     showIntervalRange
   ) {
     const now = Date.now()
-    const today = utcFormat('%d/%m/%Y')(now)
-    const fDate = utcFormat('%d/%m/%Y')(time)
     const thisYear = utcFormat('%Y')(now)
     const fYear = utcFormat('%Y')(time)
     const sYear = showYear || thisYear !== fYear
@@ -279,13 +281,7 @@ export default {
         }
         break
       default:
-        if (today === fDate) {
-          formatString = 'Today at %-I:%M %p'
-        } else if (thisYear === fYear) {
-          formatString = '%-d %b, %-I:%M %p'
-        } else {
-          formatString = '%-d %b %Y, %-I:%M %p'
-        }
+        formatString = getFormatStringDetailed(thisYear === fYear)
         display = utcFormat(formatString)(time)
     }
 
@@ -325,19 +321,11 @@ export default {
 
   defaultDisplayDate(time) {
     const now = Date.now()
-    const today = utcFormat('%d/%m/%Y')(now)
-    const fDate = utcFormat('%d/%m/%Y')(time)
     const thisYear = utcFormat('%Y')(now)
     const fYear = utcFormat('%Y')(time)
     let formatString = ''
 
-    if (today === fDate) {
-      formatString = 'Today at %-I:%M %p'
-    } else if (thisYear === fYear) {
-      formatString = '%-d %b, %-I:%M %p'
-    } else {
-      formatString = '%-d %b %Y, %-I:%M %p'
-    }
+    formatString = getFormatStringDetailed(thisYear === fYear)
     return utcFormat(formatString)(time)
   },
 
