@@ -38,9 +38,16 @@
               Department of Industry, Science, Energy and Resources
           </span>          
         </div>
+
+        <div v-show="isEmissionsWorldView">
+          <a
+            target="_blank"
+            href="https://zenodo.org/record/5494497#.YXod3NlBz0p"
+            title="Link to dataset used by this visualisation">PRIMAP-hist (HISTCR; Kyoto GHG (AR4); Total)</a>,
+        </div>
         
         <div 
-          v-show="!isEmissionsView" 
+          v-show="!isEmissionsView && !isEmissionsWorldView" 
           class="sources">
           Sources:
           <a
@@ -129,6 +136,11 @@ export default {
 
     isEmissionsView() {
       return this.currentView === 'emissions'
+    },
+
+    isEmissionsWorldView() {
+      console.log(this.currentView)
+      return this.currentView === 'emissions-world'
     }
   },
 

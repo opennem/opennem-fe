@@ -41,7 +41,7 @@
         @focus="() => showList = true">
       
       <div 
-        v-show="showList" 
+        v-show="showList"
         class="area-code-list">
         <ol>
           <li 
@@ -137,11 +137,9 @@ export default {
     },
     handleCodeClick(code) {
       this.$emit('codeAdd', code)
-      this.showList = false
     },
     handleRemoveRow(code) {
       this.$emit('codeRemove', code)
-      this.showList = false
     },
     onClickAway() {
       this.showList = false

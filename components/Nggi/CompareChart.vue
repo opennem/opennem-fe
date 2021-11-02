@@ -137,6 +137,7 @@ export default {
       }
       return null
     },
+
     datasetPercent() {
       if (this.hasCompareData) {
         const changePercent = {}

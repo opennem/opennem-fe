@@ -26,6 +26,7 @@
 
 <script>
 import _debounce from 'lodash.debounce'
+import _sortBy from 'lodash.sortby'
 import { scaleOrdinal, scaleLinear, scaleBand } from 'd3-scale'
 import { schemeCategory10 } from 'd3-scale-chromatic'
 import { axisBottom, axisLeft } from 'd3-axis'
@@ -98,7 +99,8 @@ export default {
       $columnGroup: null,
       $columnLabelGroup: null,
       $xAxisGroup: null,
-      $yAxisGroup: null
+      $yAxisGroup: null,
+      orderedDomains: []
     }
   },
 
@@ -174,14 +176,20 @@ export default {
 
   methods: {
     updateColumnData() {
-      this.columnData = this.domains.map(domain => {
-        const id = domain.id
-        return {
-          name: id,
-          label: domain.label,
-          value: this.updatedDataset[id]
-        }
-      })
+      this.columnData = _sortBy(
+        this.domains.map(domain => {
+          const id = domain.id
+          return {
+            name: id,
+            label: domain.label,
+            value: this.updatedDataset[id]
+          }
+        }),
+        ['value']
+      )
+      this.orderedDomains = this.columnData
+        .map(d => this.domains.find(domain => domain.id === d.name))
+        .reverse()
     },
     setupWidthHeight() {
       const chartWidth = this.$el.offsetWidth
@@ -221,8 +229,8 @@ export default {
         `#${this.id} .${this.columnLabelGroupClass}`
       )
 
-      const xDomains = this.domains.map(d => d.id)
-      const zColours = this.domains.map(d => d.colour)
+      const xDomains = this.orderedDomains.map(d => d.id)
+      const zColours = this.orderedDomains.map(d => d.colour)
 
       const data = this.columnData
       const yValues = data.map(d => d.value)
@@ -260,6 +268,7 @@ export default {
         .join('rect')
         .attr('x', d => this.x(d.name))
         .attr('y', d => (d.value > 0 ? this.y(d.value) : this.y(0)))
+        .attr('rx', 5)
         .attr('height', d => Math.abs(this.y(0) - this.y(d.value)))
         .attr('width', this.x.bandwidth())
         .attr('fill', d => this.z(d.name))
