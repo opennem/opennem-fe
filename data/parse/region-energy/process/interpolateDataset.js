@@ -7,7 +7,6 @@ function findInterpolateSeriesTypes(data) {
       d['fuel_tech'] === FT.ROOFTOP_SOLAR || d['fuel_tech'] === FT.SOLAR_ROOFTOP
   )
   const temperatureItem = data.find(d => DT.isTemperature(d.type))
-  const priceItem = data.find(d => d.type === DT.PRICE)
   const interpolateSeriesTypes = []
   if (rooftopSolarItem) {
     interpolateSeriesTypes.push({
@@ -21,26 +20,6 @@ function findInterpolateSeriesTypes(data) {
     interpolateSeriesTypes.push({
       key: temperatureItem.id,
       interpolation: 'linear',
-      startIndex: -1,
-      currentValue: null
-    })
-  }
-  if (priceItem) {
-    interpolateSeriesTypes.push({
-      key: priceItem.id,
-      interpolation: 'step',
-      startIndex: -1,
-      currentValue: null
-    })
-    interpolateSeriesTypes.push({
-      key: DT.PRICE_ABOVE_300,
-      interpolation: 'step',
-      startIndex: -1,
-      currentValue: null
-    })
-    interpolateSeriesTypes.push({
-      key: DT.PRICE_BELOW_0,
-      interpolation: 'step',
       startIndex: -1,
       currentValue: null
     })
