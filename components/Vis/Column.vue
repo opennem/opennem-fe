@@ -69,6 +69,10 @@ export default {
     highlightDomain: {
       type: String,
       default: null
+    },
+    usePercentage: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -110,11 +114,14 @@ export default {
     },
     xAxisTransform() {
       return `translate(0, ${this.height})`
+    },
+    updatedDataset() {
+      return this.usePercentage ? this.datasetPercent : this.dataset
     }
   },
 
   watch: {
-    dataset(updated) {
+    updatedDataset(updated) {
       if (updated) {
         this.updateColumnData()
         this.update()
@@ -155,7 +162,7 @@ export default {
     )
     this.setupWidthHeight()
     this.setup()
-    if (this.dataset) {
+    if (this.updatedDataset) {
       this.updateColumnData()
       this.update()
     }
@@ -172,7 +179,7 @@ export default {
         return {
           name: id,
           label: domain.label,
-          value: this.dataset[id]
+          value: this.updatedDataset[id]
         }
       })
     },
@@ -260,24 +267,48 @@ export default {
     },
 
     drawColumnLabels() {
+      const mainLabel = d => {
+        const format = value => this.formatValue(value)
+        let value = format(this.convertValue(d.value))
+        if (this.usePercentage) {
+          const percent = this.datasetPercent[d.name]
+          value = `${d.name} (${format(percent)}%)`
+        }
+
+        return value
+      }
+
+      const secondaryLabel = d => {
+        if (this.usePercentage) {
+          return ''
+        }
+        const bandwidth = this.x.bandwidth()
+        const percent = this.datasetPercent[d.name]
+        let string = ''
+        if (percent && bandwidth > 60) {
+          string += ` (${this.formatValue(percent)}%)`
+        }
+        return string
+      }
+
       this.$columnLabelGroup
         .selectAll('text')
         .data(this.columnData)
         .join('text')
-        .attr('x', d => this.x(d.name))
+        .attr(
+          'x',
+          d =>
+            this.usePercentage
+              ? this.x(d.name) + this.x.bandwidth() / 2
+              : this.x(d.name)
+        )
         .attr('y', d => (d.value > 0 ? this.y(d.value) : this.y(0)))
         .attr(
           'dy',
           d => (d.value > 0 ? -2 : Math.abs(this.y(0) - this.y(d.value)) + 11)
         )
-        // .attr('transform', 'rotate(-1)')
-        // .text(d => d.label)
-        .text(d => {
-          const value = this.formatValue(this.convertValue(d.value))
-          let string = value
-
-          return string
-        })
+        .style('text-anchor', this.usePercentage ? 'middle' : 'start')
+        .text(d => mainLabel(d))
 
       this.$columnLabelGroup
         .selectAll('text')
@@ -285,15 +316,8 @@ export default {
         .append('tspan')
         .style('fill', '#444')
         .style('font-size', '9px')
-        .text(d => {
-          const bandwidth = this.x.bandwidth()
-          const percent = this.datasetPercent[d.name]
-          let string = ''
-          if (percent && bandwidth > 60) {
-            string += ` (${this.formatValue(percent)}%)`
-          }
-          return string
-        })
+        .style('text-anchor', 'start')
+        .text(d => secondaryLabel(d))
     },
 
     resizeRedraw() {

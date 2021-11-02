@@ -912,7 +912,7 @@ h1 {
   .close-button {
     position: absolute;
     right: 1rem;
-    top: 1.3em;
+    top: 2em;
     font-size: 1.3em;
   }
 }

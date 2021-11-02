@@ -25,16 +25,17 @@
         </div>
       </div> -->
       <div class="compare-chart">
-        <div class="compare-chart-unit">{{ unit }}</div>
+        <div class="compare-chart-unit">{{ displayUnit }}</div>
         <column-vis
           v-if="hasCompareData"
           :domains="domains"
           :dataset="dataset"
-          :unit="unit"
+          :unit="displayUnit"
           :dataset-percent="datasetPercent"
           :vis-height="visHeight"
           :display-prefix="chartDisplayPrefix"
           :convert-value="convertValue"
+          :use-percentage="usePercentage"
         />
       </div>
     </div>
@@ -78,13 +79,20 @@ export default {
     isFY: {
       type: Boolean,
       default: false
+    },
+    usePercentage: {
+      type: Boolean,
+      default: false
+    },
+    visHeight: {
+      type: Number,
+      default: 200
     }
   },
 
   data() {
     return {
-      updatedCompareData: [],
-      visHeight: 200
+      updatedCompareData: []
     }
   },
 
@@ -109,6 +117,10 @@ export default {
     },
     chartType() {
       return this.$store.getters.energyChartType
+    },
+
+    displayUnit() {
+      return this.usePercentage ? '%' : this.unit
     },
 
     dataset() {
@@ -161,8 +173,8 @@ export default {
   },
 
   mounted() {
-    const $height = this.$el.offsetHeight < 200 ? 200 : this.$el.offsetHeight
-    this.visHeight = $height
+    // const $height = this.$el.offsetHeight < 200 ? 200 : this.$el.offsetHeight
+    // this.visHeight = $height
   },
 
   methods: {
@@ -194,13 +206,14 @@ export default {
 <style lang="scss" scoped>
 .chart-label {
   text-align: center;
+  font-size: 20px;
 }
 .compare-chart-legend {
   padding: 0.5rem 1rem;
-  margin: 0 0.5rem 0.5rem;
+  // margin: 0 0.5rem 0.5rem;
   background-color: rgba(0, 0, 0, 0.05);
-  box-shadow: inset 0 1px 10px rgba(0, 0, 0, 0.05);
-  border-radius: 3px;
+  // box-shadow: inset 0 1px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
   display: flex;
   align-items: center;
 

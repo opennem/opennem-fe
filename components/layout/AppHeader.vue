@@ -11,7 +11,7 @@
           v-if="ready && tabletBreak"
           class="fal fa-ellipsis-v" />
         <app-logo class="header-logo" />
-        <h1>Emissions</h1>
+        <h1>Change in emissions by country</h1>
       </div>
     </div>
 

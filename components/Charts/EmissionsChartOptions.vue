@@ -63,7 +63,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import ChartHeader from '@/components/Vis/ChartHeader'
 import ChartOptions from '@/components/Vis/ChartOptions'
@@ -75,21 +74,6 @@ const emissionsYAxis = [
   OPTIONS.CHART_YAXIS_EMISSIONS_VOL,
   OPTIONS.CHART_YAXIS_PERCENTAGE
 ]
-const emissionsOptions = {
-  type: [
-    // OPTIONS.CHART_HIDDEN,
-    OPTIONS.CHART_STACKED,
-    OPTIONS.CHART_PROPORTION,
-    OPTIONS.CHART_LINE,
-    OPTIONS.CHART_CHANGE_SINCE_LINE
-  ],
-  curve: [
-    OPTIONS.CHART_CURVE_SMOOTH,
-    OPTIONS.CHART_CURVE_STEP,
-    OPTIONS.CHART_CURVE_STRAIGHT
-  ],
-  yAxis: []
-}
 
 export default {
   components: {
@@ -176,6 +160,10 @@ export default {
     showAverageValue: {
       type: Boolean,
       default: true
+    },
+    emissionsOptions: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
@@ -185,7 +173,7 @@ export default {
   },
   computed: {
     options() {
-      let options = _cloneDeep(emissionsOptions)
+      let options = _cloneDeep(this.emissionsOptions)
       if (this.isTypeArea) {
         options.si = emissionsSI
       }

@@ -1,8 +1,15 @@
 <template>
   <div class="wrapper">
 
-    <div class="chart-table">
+    <!-- <header>
+      <div class="chart-label">
+        <strong>{{ firstDate | customFormatDate({ range, interval, showIntervalRange: true }) }}</strong>
+        —
+        <strong>{{ secondDate | customFormatDate({ range, interval, showIntervalRange: true }) }}</strong>
+      </div>
+    </header> -->
 
+    <div class="chart-table">
       <div class="chart-wrapper">
         <EmissionsChart
           v-if="ready"
@@ -11,43 +18,68 @@
           :range="range"
           :interval="interval"
           :show-x-axis="true"
-          :vis-height="600"
+          :vis-height="300"
           :show-average-value="false"
           :hover-on="isHovering"
           :hover-date="hoverDate"
           :zoom-extent="zoomExtent"
           :filter-period="filterPeriod"
           :hidden-domains="hidden"
+          :compare-dates="compareDates"
+          :emissions-options="emissionsOptions"
           @dateHover="handleDateHover"
           @isHovering="handleIsHovering"
           @zoomExtent="handleZoomExtent"
         />
+
+        <div 
+          v-if="compareDifference" 
+          class="compare-chart">          
+          <CompareChart
+            :compare-data="compareData"
+            :domains="filteredDisplayDomains"
+            :range="range"
+            :interval="interval"
+            :unit="chartCurrentUnit"
+            :use-percentage="true"
+            :vis-height="350"
+          />
+        </div>
       </div>
 
       <CountryLegend
+        :area-codes="areaCodes"
         :domains="domains"
         :hidden="hidden"
         class="legend"
         @rowClick="handleTypeClick"
         @rowShiftClick="handleTypeShiftClick"
+        @codeAdd="handleCodeAdd"
+        @codeRemove="handleCodeRemove"
       />
     </div>
+
+    <!-- <CountrySelector /> -->
     
   </div>
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import Papa from 'papaparse'
 import _uniq from 'lodash.uniq'
 import _includes from 'lodash.includes'
 import { timeYear } from 'd3-time'
 import { timeFormat } from 'd3-time-format'
+import subYears from 'date-fns/subYears'
 import { RANGE_ALL } from '@/constants/ranges.js'
+import * as OPTIONS from '@/constants/chart-options.js'
 import { INTERVAL_YEAR, FILTER_NONE } from '@/constants/interval-filters.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
 import CountryLegend from '@/components/Emissions/CountryLegend'
+import CountrySelector from '@/components/Emissions/CountrySelector'
+import CompareChart from '@/components/Nggi/CompareChart'
 
 const extraAreaCodes = [
   {
@@ -97,6 +129,20 @@ const colours = [
   '#bab0ab'
 ]
 
+const emissionsOptions = {
+  type: [
+    OPTIONS.CHART_HIDDEN,
+    OPTIONS.CHART_LINE,
+    OPTIONS.CHART_CHANGE_SINCE_LINE
+  ],
+  curve: [
+    OPTIONS.CHART_CURVE_SMOOTH,
+    OPTIONS.CHART_CURVE_STEP,
+    OPTIONS.CHART_CURVE_STRAIGHT
+  ],
+  yAxis: []
+}
+
 export default {
   layout: 'main',
 
@@ -104,13 +150,15 @@ export default {
 
   components: {
     EmissionsChart,
-    CountryLegend
+    CountryLegend,
+    CountrySelector,
+    CompareChart
   },
 
   data() {
     return {
       ready: false,
-      showAreas: ['AUS', 'GBR', 'EU27BX', 'USA', 'CHN', 'IND'],
+      showAreas: ['AUS', 'GBR', 'USA', 'JPN', 'NZL', 'CAN'],
       dataset: [],
       domains: [],
       hidden: [],
@@ -120,11 +168,39 @@ export default {
       filterPeriod: FILTER_NONE,
       zoomExtent: [],
       isHovering: false,
-      hoverDate: null
+      hoverDate: null,
+      compareData: [],
+      emissionsOptions,
+      firstDate: null,
+      secondDate: null
     }
   },
 
   computed: {
+    ...mapGetters({
+      focusOn: 'visInteract/isFocusing',
+      focusDate: 'visInteract/focusDate',
+      chartCurrentUnit: 'chartOptionsEmissionsVolume/chartCurrentUnit'
+    }),
+
+    compareDates: {
+      get() {
+        return this.$store.getters.compareDates
+      },
+      set(val) {
+        this.$store.dispatch('compareDates', val)
+      }
+    },
+
+    compareDifference: {
+      get() {
+        return this.$store.getters.compareDifference
+      },
+      set(val) {
+        this.$store.dispatch('compareDifference', val)
+      }
+    },
+
     filteredDomains() {
       return this.domains.filter(d => !_includes(this.hidden, d.id))
     },
@@ -137,6 +213,34 @@ export default {
     ready(val) {
       if (val) {
         this.generateDatasetWithCategory(['M.0.EL'])
+        setTimeout(() => {
+          this.handleZoomExtent([])
+        }, 10)
+      }
+    },
+
+    showAreas() {
+      this.compareDifference = false
+      this.generateDatasetWithCategory(['M.0.EL'])
+      setTimeout(() => {
+        this.handleZoomExtent(this.zoomExtent)
+      }, 10)
+    },
+
+    compareDifference(compare) {
+      if (!compare) {
+        this.compareData = []
+        this.compareDates = []
+      }
+    },
+
+    zoomExtent(val) {
+      if (val.length === 2) {
+        this.firstDate = val[0]
+        this.secondDate = subYears(val[1], 1)
+      } else {
+        this.firstDate = this.dataset[0].date
+        this.secondDate = this.dataset[this.dataset.length - 1].date
       }
     }
   },
@@ -147,6 +251,8 @@ export default {
     this.areaCodes = []
     this.emissionsData = []
     this.$store.dispatch('currentView', 'emissions-world')
+    this.setChartYAxis(OPTIONS.CHART_YAXIS_PERCENTAGE)
+    this.setChartType(OPTIONS.CHART_CHANGE_SINCE_LINE)
 
     this.updateAxisGuides()
   },
@@ -159,7 +265,11 @@ export default {
     ...mapMutations({
       setXTicks: 'visInteract/xTicks',
       setXGuides: 'visInteract/xGuides',
-      setTickFormat: 'visInteract/tickFormat'
+      setTickFormat: 'visInteract/tickFormat',
+      setVisSecondTickFormat: 'visInteract/secondTickFormat',
+      setFocusDate: 'visInteract/focusDate',
+      setChartType: 'chartOptionsEmissionsVolume/chartType',
+      setChartYAxis: 'chartOptionsEmissionsVolume/chartYAxis'
     }),
 
     getFilteredDataObj(categories) {
@@ -210,6 +320,8 @@ export default {
         }
       })
       this.displayDomains = [...this.domains].reverse()
+      this.firstDate = this.dataset[0].date
+      this.secondDate = this.dataset[this.dataset.length - 1].date
     },
 
     updateAreaCodes({ emissions, areaDict, codeDict }) {
@@ -339,6 +451,7 @@ export default {
       this.setXTicks(y)
       this.setXGuides([])
       this.setTickFormat(format)
+      this.setVisSecondTickFormat('secondaryFormat')
     },
 
     handleDateHover(date) {
@@ -355,26 +468,53 @@ export default {
 
     handleZoomExtent(dateRange) {
       let filteredDates = []
-      if (dateRange && dateRange.length > 0) {
-        let startTime = DateDisplay.snapToClosestInterval(
+
+      if (dateRange && dateRange.length === 2) {
+        const startTime = DateDisplay.snapToClosestInterval(
           this.interval,
           dateRange[0]
         )
-        let endTime = DateDisplay.snapToClosestInterval(
+        const endTime = DateDisplay.snapToClosestInterval(
           this.interval,
           dateRange[1]
         )
-        // if (this.interval === 'Fin Year') {
-        //   startTime = addYears(startTime, 2)
-        //   endTime = addYears(endTime, 1)
-        // }
-
         filteredDates = [startTime, endTime]
       } else {
         filteredDates = []
       }
 
       this.zoomExtent = filteredDates
+
+      // COMPARE
+      this.setCompareData(filteredDates)
+    },
+
+    setCompareData(filteredDates) {
+      const firstPoint = this.dataset[0]
+      const lastPoint = this.dataset[this.dataset.length - 1]
+
+      this.compareDifference = true
+      const getDataByTime = date =>
+        this.dataset.find(d => d.time === date.getTime())
+
+      setTimeout(() => {
+        let secondComparePoint = null
+
+        if (filteredDates.length === 2) {
+          secondComparePoint = subYears(filteredDates[1], 1)
+          this.compareDates = [filteredDates[0], secondComparePoint]
+        } else {
+          this.compareDates = [firstPoint.date, lastPoint.date]
+          secondComparePoint = lastPoint.date
+        }
+
+        this.compareData = [
+          getDataByTime(this.compareDates[0]),
+          getDataByTime(secondComparePoint)
+        ]
+
+        console.log(this.compareData)
+      }, 10)
     },
 
     handleTypeClick(id) {
@@ -396,7 +536,77 @@ export default {
     handleTypeShiftClick(id) {
       const toBeHidden = this.domains.filter(d => d.id !== id)
       this.hidden = toBeHidden.map(d => d.id)
+    },
+
+    handleCodeAdd(code) {
+      this.showAreas.push(code)
+    },
+    handleCodeRemove(code) {
+      if (this.showAreas.length !== 1) {
+        this.showAreas = this.showAreas.filter(a => a !== code)
+      }
     }
+
+    // handleSvgClick(metaKey) {
+    //   const dataset = this.dataset
+    //   const getDataByTime = time => dataset.find(d => d.time === time)
+
+    //   if (metaKey && this.focusOn && !this.compareDifference) {
+    //     this.compareDifference = true
+
+    //     const hoverTime = this.hoverDate ? this.hoverDate.getTime() : 0
+    //     const focusTime = this.focusDate ? this.focusDate.getTime() : 0
+    //     const firstData = getDataByTime(focusTime)
+    //     const secondData = getDataByTime(hoverTime)
+
+    //     setTimeout(() => {
+    //       this.compareDates = [focusTime, hoverTime]
+    //       this.compareData = [firstData, secondData].slice()
+    //       this.setFocusDate(null)
+    //     }, 10)
+    //   } else {
+    //     if (this.compareDifference) {
+    //       const hoverTime = this.hoverDate ? this.hoverDate.getTime() : 0
+    //       let newCompare = false
+    //       let compareDates = this.compareDates.slice()
+    //       if (compareDates.length === 2) {
+    //         const newCompareDates = compareDates.filter(d => d !== hoverTime)
+    //         if (newCompareDates.length === 1) {
+    //           compareDates = newCompareDates
+    //           newCompare = true
+    //         } else {
+    //           compareDates.pop()
+    //         }
+    //       }
+    //       if (compareDates.length < 2 && !newCompare) {
+    //         const newCompareDates = compareDates.filter(d => d !== hoverTime)
+    //         if (newCompareDates.length === 0) {
+    //           compareDates = newCompareDates
+    //         } else {
+    //           compareDates.push(hoverTime)
+    //         }
+    //       }
+    //       if (compareDates.length === 2) {
+    //         const firstData = getDataByTime(compareDates[0])
+    //         const secondData = getDataByTime(compareDates[1])
+    //         console.log(firstData, secondData)
+    //         this.compareData = [firstData, secondData]
+    //       }
+    //       if (compareDates.length === 0) {
+    //         this.compareDifference = false
+    //       }
+    //       this.$store.dispatch('compareDates', compareDates)
+    //     } else if (!this.isTouchDevice) {
+    //       const hoverTime = this.hoverDate ? this.hoverDate.getTime() : 0
+    //       const focusTime = this.focusDate ? this.focusDate.getTime() : 0
+    //       if (this.focusDate && focusTime === hoverTime) {
+    //         this.setFocusDate(null)
+    //       } else {
+    //         this.setFocusDate(this.hoverDate)
+    //       }
+    //     }
+    //   }
+    // }
   }
 }
 </script>
@@ -415,30 +625,53 @@ export default {
   }
 }
 
+// header {
+//   text-align: center;
+//   h2 {
+//     font-family: $header-font-family;
+//     font-size: 2rem;
+//     font-weight: bold;
+//     margin-top: 0.5rem;
+//     color: black;
+//   }
+// }
+
 .chart-table {
   display: block;
-  padding-right: 0.5rem;
+  padding-right: 0.8rem;
 
   .chart-wrapper {
     width: 100%;
   }
   .legend {
-    width: 430px;
+    width: 80%;
     background-color: transparent;
     margin: 18px auto;
   }
 
-  @include desktop {
+  @include tablet {
     display: flex;
     align-items: stretch;
-    gap: 1rem;
+    gap: 0.2rem;
 
     .chart-wrapper {
-      width: calc(100% - 400px);
+      width: calc(100% - 200px);
     }
     .legend {
-      width: 400px;
+      width: 200px;
     }
   }
+}
+
+.compare-chart {
+  position: relative;
+  margin-left: 1rem;
+
+  // .close-button {
+  //   position: absolute;
+  //   right: 1rem;
+  //   top: 1.3em;
+  //   font-size: 1.3em;
+  // }
 }
 </style>

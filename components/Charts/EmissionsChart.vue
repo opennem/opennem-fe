@@ -26,6 +26,7 @@
       :hover-domain-label="hoverDomainLabel"
       :hover-total="hoverTotal"
       :show-average-value="showAverageValue"
+      :emissions-options="emissionsOptions"
       @type-click="handleTypeClick"
     />
 
@@ -139,6 +140,22 @@ import DateBrush from '@/components/Vis/DateBrush'
 import StackedAreaVis from '@/components/Vis/StackedArea2.vue'
 import EmissionsChartOptions from './EmissionsChartOptions'
 
+const emissionsOptions = {
+  type: [
+    // OPTIONS.CHART_HIDDEN,
+    OPTIONS.CHART_STACKED,
+    OPTIONS.CHART_PROPORTION,
+    OPTIONS.CHART_LINE,
+    OPTIONS.CHART_CHANGE_SINCE_LINE
+  ],
+  curve: [
+    OPTIONS.CHART_CURVE_SMOOTH,
+    OPTIONS.CHART_CURVE_STEP,
+    OPTIONS.CHART_CURVE_STRAIGHT
+  ],
+  yAxis: []
+}
+
 export default {
   components: {
     EmissionsChartOptions,
@@ -231,6 +248,10 @@ export default {
     showAverageValue: {
       type: Boolean,
       default: true
+    },
+    emissionsOptions: {
+      type: Object,
+      default: () => emissionsOptions
     }
   },
 
@@ -291,6 +312,7 @@ export default {
     },
 
     secondTickFormat() {
+      console.log(this.visSecondTickFormat)
       return AxisTimeFormats[this.visSecondTickFormat]
     },
 
