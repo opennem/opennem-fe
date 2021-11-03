@@ -193,7 +193,7 @@ export default {
     },
     setupWidthHeight() {
       const chartWidth = this.$el.offsetWidth
-      const width = chartWidth - this.margin.left - this.margin.right
+      const width = chartWidth
       const height = this.svgHeight
       this.svgWidth = chartWidth
       this.width = width < 0 ? 0 : width
@@ -268,7 +268,8 @@ export default {
         .join('rect')
         .attr('x', d => this.x(d.name))
         .attr('y', d => (d.value > 0 ? this.y(d.value) : this.y(0)))
-        .attr('rx', 5)
+        .attr('rx', 2)
+        .attr('ry', 2)
         .attr('height', d => Math.abs(this.y(0) - this.y(d.value)))
         .attr('width', this.x.bandwidth())
         .attr('fill', d => this.z(d.name))

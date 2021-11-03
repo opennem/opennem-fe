@@ -675,9 +675,15 @@ export default {
   }
 }
 
+::v-deep .compare-chart-legend {
+  background-color: transparent;
+  padding: 0 0 0 10px;
+}
+
 .compare-chart {
   position: relative;
-  margin-left: 1rem;
+  margin-top: 10px;
+  // margin-left: 1rem;
 
   // .close-button {
   //   position: absolute;
