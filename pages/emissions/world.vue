@@ -195,6 +195,10 @@ export default {
       chartCurrentUnit: 'chartOptionsEmissionsVolume/chartCurrentUnit'
     }),
 
+    queryAreas() {
+      return this.$route.query.areas
+    },
+
     compareDates: {
       get() {
         return this.$store.getters.compareDates
@@ -232,11 +236,13 @@ export default {
     },
 
     showAreas() {
-      this.compareDifference = false
-      this.generateDatasetWithCategory(['M.0.EL'])
-      setTimeout(() => {
-        this.handleZoomExtent(this.zoomExtent)
-      }, 10)
+      if (this.ready) {
+        this.compareDifference = false
+        this.generateDatasetWithCategory(['M.0.EL'])
+        setTimeout(() => {
+          this.handleZoomExtent(this.zoomExtent)
+        }, 10)
+      }
     },
 
     compareDifference(compare) {
@@ -258,6 +264,10 @@ export default {
   },
 
   created() {
+    if (this.queryAreas) {
+      this.showAreas = this.queryAreas.split(',')
+    }
+
     this.years = []
     this.categories = []
     this.areaCodes = []
@@ -552,11 +562,20 @@ export default {
 
     handleCodeAdd(code) {
       this.showAreas.push(code)
+      this.updatedQueryAreas()
     },
+
     handleCodeRemove(code) {
       if (this.showAreas.length !== 1) {
         this.showAreas = this.showAreas.filter(a => a !== code)
+        this.updatedQueryAreas()
       }
+    },
+
+    updatedQueryAreas() {
+      this.$router.push({
+        query: { areas: this.showAreas.join(',') }
+      })
     }
 
     // handleSvgClick(metaKey) {
