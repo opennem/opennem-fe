@@ -72,6 +72,7 @@ import _includes from 'lodash.includes'
 import { timeYear } from 'd3-time'
 import { timeFormat } from 'd3-time-format'
 import subYears from 'date-fns/subYears'
+import addYears from 'date-fns/addYears'
 import { RANGE_ALL } from '@/constants/ranges.js'
 import * as OPTIONS from '@/constants/chart-options.js'
 import { INTERVAL_YEAR, FILTER_NONE } from '@/constants/interval-filters.js'
@@ -79,6 +80,7 @@ import DateDisplay from '@/services/DateDisplay.js'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
 import CountryLegend from '@/components/Emissions/CountryLegend'
 import CompareChart from '@/components/Nggi/CompareChart'
+import { area } from 'd3-shape'
 
 const extraAreaCodes = [
   {
@@ -199,6 +201,10 @@ export default {
       return this.$route.query.areas
     },
 
+    queryExtent() {
+      return this.$route.query.extent
+    },
+
     compareDates: {
       get() {
         return this.$store.getters.compareDates
@@ -230,7 +236,7 @@ export default {
       if (val) {
         this.generateDatasetWithCategory(['M.0.EL'])
         setTimeout(() => {
-          this.handleZoomExtent([])
+          this.handleZoomExtent(this.zoomExtent)
         }, 10)
       }
     },
@@ -267,6 +273,20 @@ export default {
     if (this.queryAreas) {
       this.showAreas = this.queryAreas.split(',')
     }
+    if (this.queryExtent) {
+      const extent = this.queryExtent.split(',')
+
+      try {
+        this.checkQueryExtentIsCorrect(extent)
+        extent.forEach(e => this.checkYearIsWithinRange(e))
+        this.zoomExtent = [
+          new Date(extent[0], 0, 1),
+          addYears(new Date(extent[1], 0, 1), 1)
+        ]
+      } catch (e) {
+        console.log('Invalid values for extent query: ' + e.message)
+      }
+    }
 
     this.years = []
     this.categories = []
@@ -293,6 +313,26 @@ export default {
       setChartType: 'chartOptionsEmissionsVolume/chartType',
       setChartYAxis: 'chartOptionsEmissionsVolume/chartYAxis'
     }),
+
+    checkYearIsWithinRange(year) {
+      const yearInt = parseInt(year, 10)
+      if (yearInt >= 1990 && yearInt <= 2019) {
+        return true
+      } else {
+        throw new RangeError('The year must be between 1990 and 2019.')
+      }
+    },
+    checkQueryExtentIsCorrect(extent) {
+      if (extent.length !== 2) {
+        throw new RangeError('Extent query must contain two year values.')
+      }
+
+      const firstValue = parseInt(extent[0], 10)
+      const secondValue = parseInt(extent[1], 10)
+      if (firstValue >= secondValue) {
+        throw new Error('First year value must be before second year value.')
+      }
+    },
 
     getFilteredDataObj(categories) {
       const data = this.emissionsData.filter(
@@ -346,7 +386,7 @@ export default {
       this.secondDate = this.dataset[this.dataset.length - 1].date
     },
 
-    updateAreaCodes({ emissions, areaDict, codeDict }) {
+    updateAreaCodesAndCheckShowAreaCodes({ emissions, areaDict, codeDict }) {
       const emissionsAreas = _uniq(emissions.map(d => d.area)).sort()
       const areaCodes = {}
 
@@ -358,6 +398,16 @@ export default {
         .filter(c => c)
         .sort()
 
+      // check show areas
+      const showAreas = []
+      this.showAreas.forEach(a => {
+        if (areaCodes[a]) {
+          showAreas.push(a)
+        }
+      })
+      this.showAreas = showAreas
+
+      // update area codes
       this.areaCodes = areaCodeValues.map(c => {
         return {
           code: areaDict[c],
@@ -375,7 +425,11 @@ export default {
         this.getAreaCodes().then(({ areaDict, codeDict }) => {
           this.getEmissions().then(emissions => {
             this.emissionsData = emissions
-            this.updateAreaCodes({ emissions, areaDict, codeDict })
+            this.updateAreaCodesAndCheckShowAreaCodes({
+              emissions,
+              areaDict,
+              codeDict
+            })
 
             // console.log(this.emissionsData, this.areaCodes)
             this.ready = true
@@ -489,6 +543,7 @@ export default {
     },
 
     handleZoomExtent(dateRange) {
+      console.log('handle', dateRange)
       let filteredDates = []
 
       if (dateRange && dateRange.length === 2) {

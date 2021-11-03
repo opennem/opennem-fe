@@ -532,7 +532,7 @@ export default {
               .tickValues(this.y1Ticks)
           : axisLeft(this.y1)
               .tickSize(-this.width)
-              .ticks(5)
+              .ticks(8)
       this.yAxisRight = axisRight(this.y2)
         .tickSize(this.width)
         .ticks(5)
@@ -614,7 +614,9 @@ export default {
       } else {
         this.x.domain(this.xExtent)
       }
-      this.y1.domain([this.y1Min, this.y1Max])
+      const yRange = Math.abs(this.y1Min) + Math.abs(this.y1Max)
+      const padding = (yRange * 10) / 100
+      this.y1.domain([this.y1Min - padding, this.y1Max + padding])
       this.y2.domain([this.y2Min, this.y2Max])
       if (!this.y1Log) {
         this.y1.nice()
