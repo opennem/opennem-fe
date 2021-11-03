@@ -1,5 +1,5 @@
 <template>
-  <div class="table">
+  <div class="legend">
     <ul>
       <li
         v-for="(d, i) in domains"
@@ -197,9 +197,6 @@ export default {
 
 ul {
   margin: 0 auto;
-  position: sticky;
-  top: 1rem;
-
   -webkit-user-select: none; /* Chrome all / Safari all */
   -moz-user-select: none; /* Firefox all */
   -ms-user-select: none; /* IE 10+ */
@@ -240,7 +237,7 @@ ul {
 
 .add-area {
   padding: 1rem;
-  margin: 1rem 0 1rem 1rem;
+  margin: 1rem 0 1rem 0.5rem;
   background-color: #eee;
   position: relative;
 

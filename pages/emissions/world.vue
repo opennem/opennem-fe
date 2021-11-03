@@ -732,7 +732,7 @@ export default {
   .legend {
     width: 80%;
     background-color: transparent;
-    margin: 18px auto;
+    margin: 2rem auto;
   }
 
   @include tablet {
