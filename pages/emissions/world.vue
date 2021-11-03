@@ -201,8 +201,8 @@ export default {
       return this.$route.query.areas
     },
 
-    queryExtent() {
-      return this.$route.query.extent
+    queryRange() {
+      return this.$route.query.range
     },
 
     compareDates: {
@@ -273,18 +273,18 @@ export default {
     if (this.queryAreas) {
       this.showAreas = this.queryAreas.split(',')
     }
-    if (this.queryExtent) {
-      const extent = this.queryExtent.split(',')
+    if (this.queryRange) {
+      const range = this.queryRange.split(',')
 
       try {
-        this.checkQueryExtentIsCorrect(extent)
-        extent.forEach(e => this.checkYearIsWithinRange(e))
+        this.checkQueryRangeIsCorrect(range)
+        range.forEach(e => this.checkYearIsWithinRange(e))
         this.zoomExtent = [
-          new Date(extent[0], 0, 1),
-          addYears(new Date(extent[1], 0, 1), 1)
+          new Date(range[0], 0, 1),
+          addYears(new Date(range[1], 0, 1), 1)
         ]
       } catch (e) {
-        console.log('Invalid values for extent query: ' + e.message)
+        console.log('Invalid values for range query: ' + e.message)
       }
     }
 
@@ -322,13 +322,13 @@ export default {
         throw new RangeError('The year must be between 1990 and 2019.')
       }
     },
-    checkQueryExtentIsCorrect(extent) {
-      if (extent.length !== 2) {
-        throw new RangeError('Extent query must contain two year values.')
+    checkQueryRangeIsCorrect(range) {
+      if (range.length !== 2) {
+        throw new RangeError('Range query must contain two year values.')
       }
 
-      const firstValue = parseInt(extent[0], 10)
-      const secondValue = parseInt(extent[1], 10)
+      const firstValue = parseInt(range[0], 10)
+      const secondValue = parseInt(range[1], 10)
       if (firstValue >= secondValue) {
         throw new Error('First year value must be before second year value.')
       }
@@ -543,7 +543,6 @@ export default {
     },
 
     handleZoomExtent(dateRange) {
-      console.log('handle', dateRange)
       let filteredDates = []
 
       if (dateRange && dateRange.length === 2) {
@@ -562,8 +561,8 @@ export default {
 
       this.zoomExtent = filteredDates
 
-      // COMPARE
       this.setCompareData(filteredDates)
+      this.updateQueries()
     },
 
     setCompareData(filteredDates) {
@@ -617,19 +616,32 @@ export default {
 
     handleCodeAdd(code) {
       this.showAreas.push(code)
-      this.updatedQueryAreas()
+      this.updateQueries()
     },
 
     handleCodeRemove(code) {
       if (this.showAreas.length !== 1) {
         this.showAreas = this.showAreas.filter(a => a !== code)
-        this.updatedQueryAreas()
+        this.updateQueries()
       }
     },
 
-    updatedQueryAreas() {
+    updateQueries() {
+      const getYear = date => {
+        return date.getFullYear()
+      }
+
+      const getRangeQuery = () => {
+        const firstYear = getYear(this.zoomExtent[0])
+        const secondYear = getYear(subYears(this.zoomExtent[1], 1))
+        return `${firstYear},${secondYear}`
+      }
+
       this.$router.push({
-        query: { areas: this.showAreas.join(',') }
+        query: {
+          areas: this.showAreas.join(','),
+          range: this.zoomExtent.length === 2 ? getRangeQuery() : undefined
+        }
       })
     }
 
@@ -750,8 +762,8 @@ export default {
 }
 
 ::v-deep .compare-chart-legend {
-  background-color: transparent;
-  padding: 0 0 0 10px;
+  background-color: transparent !important;
+  padding: 0 0 0 10px !important;
 }
 
 .compare-chart {

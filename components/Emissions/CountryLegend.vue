@@ -1,5 +1,5 @@
 <template>
-  <div class="legend">
+  <div class="">
     <ul>
       <li
         v-for="(d, i) in domains"
@@ -213,7 +213,7 @@ ul {
     .remove-btn {
       display: none;
       position: absolute;
-      right: 0;
+      right: 1.5rem;
       font-size: 12px;
       border: none;
       color: $opennem-primary;
