@@ -42,7 +42,7 @@
             :interval="interval"
             :unit="chartCurrentUnit"
             :use-percentage="true"
-            :vis-height="350"
+            :vis-height="300"
           />
         </div>
       </div>
@@ -270,6 +270,7 @@ export default {
         this.firstDate = this.dataset[0].date
         this.secondDate = this.dataset[this.dataset.length - 1].date
       }
+      this.updateAxisGuides()
     },
 
     tabletBreak() {
@@ -538,7 +539,9 @@ export default {
 
     updateAxisGuides() {
       let years = 1
-      if (this.widthBreak) {
+      if (this.zoomExtent.length === 2) {
+        years = 1
+      } else if (this.widthBreak) {
         years = 4
       } else if (this.widthBreak) {
         years = 2
