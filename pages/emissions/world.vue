@@ -194,7 +194,11 @@ export default {
     ...mapGetters({
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
-      chartCurrentUnit: 'chartOptionsEmissionsVolume/chartCurrentUnit'
+      chartCurrentUnit: 'chartOptionsEmissionsVolume/chartCurrentUnit',
+
+      tabletBreak: 'app/tabletBreak',
+      widthBreak: 'app/widthBreak',
+      wideScreenBreak: 'app/wideScreenBreak'
     }),
 
     queryAreas() {
@@ -266,6 +270,18 @@ export default {
         this.firstDate = this.dataset[0].date
         this.secondDate = this.dataset[this.dataset.length - 1].date
       }
+    },
+
+    tabletBreak() {
+      this.updateAxisGuides()
+    },
+
+    widthBreak() {
+      this.updateAxisGuides()
+    },
+
+    wideScreenBreak() {
+      this.updateAxisGuides()
     }
   },
 
@@ -521,7 +537,16 @@ export default {
     },
 
     updateAxisGuides() {
-      const y = timeYear.every(1)
+      let years = 1
+      if (this.widthBreak) {
+        years = 4
+      } else if (this.widthBreak) {
+        years = 2
+      } else if (this.wideScreenBreak) {
+        years = 1
+      }
+
+      const y = timeYear.every(years)
       const formatYear = timeFormat('%Y')
       const format = date => formatYear(date)
       this.setXTicks(y)
