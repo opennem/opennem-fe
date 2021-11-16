@@ -267,7 +267,7 @@ export default {
     }),
 
     cardFilename() {
-      return `${this.baseUrl}opennem-emissions-au.png`
+      return `${this.baseUrl}opennem-emissions-world.png`
     },
 
     queryAreas() {
