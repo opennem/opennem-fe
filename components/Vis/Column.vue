@@ -288,7 +288,7 @@ export default {
         let value = format(this.convertValue(d.value))
         if (this.usePercentage) {
           const percent = this.datasetPercent[d.name]
-          value = `${d.name}`
+          value = `${d.label}`
         }
 
         return value
@@ -316,16 +316,16 @@ export default {
           'x',
           d =>
             this.usePercentage
-              ? this.x(d.name) + this.x.bandwidth() / 2
+              ? this.x(d.name) + this.x.bandwidth()
               : this.x(d.name)
         )
         .attr('y', d => (d.value > 0 ? this.y(d.value) : this.y(0)))
         .attr(
           'dy',
-          d => (d.value > 0 ? -2 : Math.abs(this.y(0) - this.y(d.value)) + 11)
+          d => (d.value > 0 ? -2 : Math.abs(this.y(0) - this.y(d.value)) + 12)
         )
-        .style('text-anchor', this.usePercentage ? 'middle' : 'start')
-        .style('font-size', this.tabletBreak ? '10px' : '12px')
+        .style('text-anchor', this.usePercentage ? 'end' : 'start')
+        .style('font-size', this.tabletBreak ? '11px' : '13px')
         .text(d => mainLabel(d))
 
       this.$columnLabelGroup
@@ -335,14 +335,15 @@ export default {
         .attr(
           'x',
           d =>
+            // ? this.x(d.name) + this.x.bandwidth() / 2
             this.usePercentage
-              ? this.x(d.name) + this.x.bandwidth() / 2
+              ? this.x(d.name) + this.x.bandwidth()
               : this.x(d.name)
         )
         .attr('dy', d => (d.value > 0 ? -12 : 12))
         .style('fill', '#444')
-        .style('font-size', '10px')
-        .style('text-anchor', this.usePercentage ? 'middle' : 'start')
+        .style('font-size', '12px')
+        .style('text-anchor', this.usePercentage ? 'end' : 'start')
         .text(d => secondaryLabel(d))
     },
 

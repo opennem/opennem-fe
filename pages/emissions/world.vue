@@ -42,7 +42,7 @@
             :interval="interval"
             :unit="chartCurrentUnit"
             :use-percentage="true"
-            :vis-height="300"
+            :vis-height="350"
           />
         </div>
       </div>
@@ -80,7 +80,6 @@ import DateDisplay from '@/services/DateDisplay.js'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
 import CountryLegend from '@/components/Emissions/CountryLegend'
 import CompareChart from '@/components/Nggi/CompareChart'
-import { area } from 'd3-shape'
 
 const extraAreaCodes = [
   {
@@ -117,32 +116,54 @@ const extraAreaCodes = [
   }
 ]
 
-// const colours = [
-//   '#4e79a7',
-//   '#f28e2c',
-//   '#e15759',
-//   '#76b7b2',
-//   '#59a14f',
-//   '#edc949',
-//   '#af7aa1',
-//   '#ff9da7',
-//   '#9c755f',
-//   '#bab0ab'
-// ]
 const colours = [
-  '#a6cee3',
-  '#1f78b4',
-  '#b2df8a',
-  '#33a02c',
-  '#fb9a99',
-  '#e31a1c',
-  '#fdbf6f',
-  '#ff7f00',
-  '#cab2d6',
-  '#6a3d9a',
-  '#ffff99',
-  '#b15928'
+  '#4e79a7',
+  '#f28e2c',
+  '#e15759',
+  '#76b7b2',
+  '#59a14f',
+  '#edc949',
+  '#af7aa1',
+  '#ff9da7',
+  '#9c755f',
+  '#bab0ab'
 ]
+// const colours = [
+//   '#a6cee3',
+//   '#1f78b4',
+//   '#b2df8a',
+//   '#33a02c',
+//   '#fb9a99',
+//   '#e31a1c',
+//   '#fdbf6f',
+//   '#ff7f00',
+//   '#cab2d6',
+//   '#6a3d9a',
+//   '#ffff99',
+//   '#b15928'
+// ]
+// const colours = [
+//   '#780000',
+//   '#bb2c1e',
+//   '#ea694e',
+//   '#fcaf97',
+//   '#ffbcaf',
+//   '#f4777f',
+//   '#cf3759',
+//   '#93003a',
+//   '#a6cee3',
+//   '#1f78b4',
+//   '#b2df8a',
+//   '#33a02c',
+//   '#fb9a99',
+//   '#e31a1c',
+//   '#fdbf6f',
+//   '#ff7f00',
+//   '#cab2d6',
+//   '#6a3d9a',
+//   '#ffff99',
+//   '#b15928'
+// ]
 
 const emissionsOptions = {
   type: [
@@ -162,6 +183,49 @@ export default {
   layout: 'main',
 
   // TODO: head
+  head() {
+    return {
+      title: `: Emissions by country`,
+      meta: [
+        {
+          hid: 'twitter:title',
+          name: 'twitter:title',
+          content: `OpenNEM: Emissions by country`
+        },
+        {
+          hid: 'twitter:image:src',
+          name: 'twitter:image:src',
+          content: this.cardFilename
+        },
+        {
+          hid: 'og:title',
+          property: 'og:title',
+          content: `OpenNEM: Emissions by country`
+        },
+        {
+          hid: 'og:image',
+          property: 'og:image',
+          content: this.cardFilename
+        },
+        {
+          hid: 'og:image:width',
+          property: 'og:image:width',
+          content: '1447'
+        },
+        {
+          hid: 'og:image:height',
+          property: 'og:image:height',
+          content: '932'
+        }
+      ],
+      script: [
+        {
+          src: 'https://platform.twitter.com/widgets.js',
+          charset: 'utf-8'
+        }
+      ]
+    }
+  },
 
   components: {
     EmissionsChart,
@@ -172,6 +236,7 @@ export default {
   data() {
     return {
       ready: false,
+      baseUrl: `${this.$config.url}/images/screens/`,
       showAreas: ['AUS', 'GBR', 'USA', 'JPN', 'NZL', 'CAN'],
       dataset: [],
       domains: [],
@@ -200,6 +265,10 @@ export default {
       widthBreak: 'app/widthBreak',
       wideScreenBreak: 'app/wideScreenBreak'
     }),
+
+    cardFilename() {
+      return `${this.baseUrl}opennem-emissions-au.png`
+    },
 
     queryAreas() {
       return this.$route.query.areas
@@ -369,9 +438,9 @@ export default {
     generateDatasetWithCategory(categories) {
       const dataset = []
       const filteredDataObj = this.getFilteredDataObj(categories)
-      const getAreaLabel = code => {
+      const getArea = code => {
         const find = this.areaCodes.find(a => a.code === code)
-        return find ? find.area : ''
+        return find ? find : ''
       }
 
       this.years.forEach(y => {
@@ -391,11 +460,13 @@ export default {
 
       this.dataset = dataset
       this.domains = this.showAreas.map((a, i) => {
+        const area = getArea(a)
         return {
           id: a,
           domain: a,
-          label: getAreaLabel(a),
-          colour: colours[i]
+          label: area.area,
+          colour: colours[i],
+          flag: area.flag
         }
       })
       this.displayDomains = [...this.domains].reverse()
@@ -403,9 +474,24 @@ export default {
       this.secondDate = this.dataset[this.dataset.length - 1].date
     },
 
-    updateAreaCodesAndCheckShowAreaCodes({ emissions, areaDict, codeDict }) {
+    updateAreaCodesAndCheckShowAreaCodes({
+      emissions,
+      areaDict,
+      codeDict,
+      alpha2AreaDict
+    }) {
       const emissionsAreas = _uniq(emissions.map(d => d.area)).sort()
       const areaCodes = {}
+      const getFlagEmoji = countryCode => {
+        if (countryCode) {
+          const codePoints = countryCode
+            .toUpperCase()
+            .split('')
+            .map(char => 127397 + char.charCodeAt())
+          return String.fromCodePoint(...codePoints)
+        }
+        return ''
+      }
 
       emissionsAreas.forEach(a => {
         areaCodes[a] = codeDict[a]
@@ -426,9 +512,12 @@ export default {
 
       // update area codes
       this.areaCodes = areaCodeValues.map(c => {
+        const flag = getFlagEmoji(alpha2AreaDict[c])
         return {
           code: areaDict[c],
-          area: c
+          alpha2code: alpha2AreaDict[c],
+          area: `${flag} ${c}`,
+          flag
         }
       })
     },
@@ -439,13 +528,14 @@ export default {
       this.getCategories().then(categories => {
         this.categories = categories
 
-        this.getAreaCodes().then(({ areaDict, codeDict }) => {
+        this.getAreaCodes().then(({ areaDict, codeDict, alpha2AreaDict }) => {
           this.getEmissions().then(emissions => {
             this.emissionsData = emissions
             this.updateAreaCodesAndCheckShowAreaCodes({
               emissions,
               areaDict,
-              codeDict
+              codeDict,
+              alpha2AreaDict
             })
 
             // console.log(this.emissionsData, this.areaCodes)
@@ -471,18 +561,20 @@ export default {
     getAreaCodes() {
       // const url = '/data/country-codes.csv'
       const url =
-        'https://data.dev.opennem.org.au/temp-emissions-data/world/country-codes.csv'
+        'https://data.dev.opennem.org.au/temp-emissions-data/world/country-codes-all.csv'
 
       return this.$axios
         .get(url, { headers: { 'Content-Type': 'text/csv' } })
         .then(res => {
           const csvData = Papa.parse(res.data, { header: true })
           const codeDict = {}
+          const alpha2AreaDict = {}
           const areaDict = {}
 
           csvData.data.forEach(d => {
-            codeDict[d.Code.trim()] = d.Country.trim()
-            areaDict[d.Country.trim()] = d.Code.trim()
+            codeDict[d['alpha-3-code'].trim()] = d.country.trim()
+            areaDict[d.country.trim()] = d['alpha-3-code'].trim()
+            alpha2AreaDict[d.country.trim()] = d['alpha-2-code'].trim()
           })
 
           extraAreaCodes.forEach(a => {
@@ -492,7 +584,8 @@ export default {
 
           return {
             codeDict,
-            areaDict
+            areaDict,
+            alpha2AreaDict
           }
         })
     },
@@ -772,7 +865,7 @@ export default {
   .legend {
     width: 80%;
     background-color: transparent;
-    margin: 2rem auto;
+    margin: 1.5rem auto;
   }
 
   @include tablet {
@@ -781,10 +874,10 @@ export default {
     gap: 0.2rem;
 
     .chart-wrapper {
-      width: calc(100% - 200px);
+      width: calc(100% - 300px);
     }
     .legend {
-      width: 200px;
+      width: 300px;
     }
   }
 }

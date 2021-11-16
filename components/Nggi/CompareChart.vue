@@ -28,7 +28,7 @@
         <div class="compare-chart-unit">{{ displayUnit }}</div>
         <column-vis
           v-if="hasCompareData"
-          :domains="domains"
+          :domains="updatedDomains"
           :dataset="dataset"
           :unit="displayUnit"
           :dataset-percent="datasetPercent"
@@ -160,6 +160,15 @@ export default {
         return changePercent
       }
       return null
+    },
+
+    updatedDomains() {
+      return this.domains.map(d => {
+        return {
+          ...d,
+          label: `${d.flag} ${d.id}`
+        }
+      })
     }
   },
 
@@ -176,6 +185,7 @@ export default {
   mounted() {
     // const $height = this.$el.offsetHeight < 200 ? 200 : this.$el.offsetHeight
     // this.visHeight = $height
+    console.log(this.domains)
   },
 
   methods: {

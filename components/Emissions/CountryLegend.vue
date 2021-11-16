@@ -1,5 +1,49 @@
 <template>
-  <div class="">
+  <div class="country-legend">
+    <div class="twitter-hashtag-button-wrapper">
+      <a 
+        :data-url="href"
+        href="https://twitter.com/intent/tweet?ref_src=twsrc%5Etfw" 
+        class="twitter-hashtag-button" 
+        data-size="large" 
+        data-text="How they compare" 
+        data-related="Opennem" 
+        data-show-count="false">Tweet #opennem</a>
+    </div>
+    
+    <div 
+      v-on-clickaway="onClickAway" 
+      v-show="showAddArea" 
+      class="add-area">
+      <label>Countries/areas</label>
+      <input
+        v-model="query"
+        class="input" 
+        type="text"
+        placeholder="Type to filter countries"
+        @focus="() => showList = true">
+      
+      <div 
+        v-show="showList"
+        class="area-code-list">
+        <ol>
+          <li 
+            v-for="a in filteredAreaCodes" 
+            :key="a.code">
+            <button 
+              @click="() => handleCodeClick(a.code)" 
+              @keyup="(evt) => handleKeyup(evt, a.code)">
+              {{ a.area }}
+            </button>
+          </li>
+        </ol>
+      </div>
+      <button 
+        v-show="showList" 
+        class="close-list-btn button is-primary"
+        @click="() => showList = false">Close</button>
+    </div>
+
     <ul>
       <li
         v-for="(d, i) in domains"
@@ -28,34 +72,7 @@
       class="button is-small is-primary" 
       @click="() => showAddArea = true">Add more</button> -->
 
-    <div 
-      v-on-clickaway="onClickAway" 
-      v-show="showAddArea" 
-      class="add-area">
-      <label>Countries/areas</label>
-      <input
-        v-model="query"
-        class="input" 
-        type="text"
-        placeholder="Search"
-        @focus="() => showList = true">
-      
-      <div 
-        v-show="showList"
-        class="area-code-list">
-        <ol>
-          <li 
-            v-for="a in filteredAreaCodes" 
-            :key="a.code">
-            <button 
-              @click="() => handleCodeClick(a.code)" 
-              @keyup="(evt) => handleKeyup(evt, a.code)">
-              {{ a.area }}
-            </button>
-          </li>
-        </ol>
-      </div>
-    </div>
+    
   </div>
 </template>
 
@@ -86,7 +103,8 @@ export default {
       area: null,
       query: '',
       showAddArea: true,
-      showList: false
+      showList: false,
+      href: null
     }
   },
 
@@ -110,6 +128,11 @@ export default {
 
   created() {
     console.log(this.areaCodes)
+  },
+
+  mounted() {
+    console.log(this.$route, window.location)
+    this.href = window.location.href
   },
 
   methods: {
@@ -152,6 +175,9 @@ export default {
 @import '~/assets/scss/responsive-mixins.scss';
 @import '~/assets/scss/variables.scss';
 
+.country-legend {
+  padding: 0 1rem;
+}
 .is-inactive {
   td {
     color: #aaa;
@@ -209,12 +235,13 @@ ul {
     display: flex;
     align-items: center;
     font-size: 13px;
+    position: relative;
 
     .remove-btn {
       display: none;
       position: absolute;
-      right: 1.5rem;
-      font-size: 12px;
+      right: 0;
+      font-size: 14px;
       border: none;
       color: $opennem-primary;
       cursor: pointer;
@@ -236,27 +263,30 @@ ul {
 }
 
 .add-area {
-  padding: 1rem;
-  margin: 1rem 0 1rem 0.5rem;
-  background-color: #eee;
+  margin: 0 0 1rem 0.5rem;
   position: relative;
+  z-index: 999;
 
   label {
-    font-size: 10px;
     font-weight: bold;
   }
 }
 
+.close-list-btn {
+  width: 100%;
+  position: absolute;
+  margin-top: 335px;
+  left: 0;
+}
 .area-code-list {
   position: absolute;
   height: 300px;
   overflow-y: auto;
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 3px;
   background-color: #eee;
-  margin-top: 0.5rem;
-  left: 0.5rem;
-  right: 0.5rem;
+  left: 0;
+  right: 0;
 
   ol {
     list-style-type: none;
@@ -280,6 +310,17 @@ ul {
         background: white;
       }
     }
+  }
+}
+
+.twitter-hashtag-button-wrapper {
+  position: absolute;
+  top: 2rem;
+  right: 1rem;
+  z-index: 999;
+
+  @include mobile {
+    top: 1rem;
   }
 }
 </style>
