@@ -2,15 +2,17 @@
   <div
     :class="{'is-active': dropdownActive}"
     class="dropdown">
-    <a
+    <button
       v-on-clickaway="handleClickAway"
-      class="dropdown-trigger"
+      class="dropdown-trigger button inverted"
       @click="handleClick">
       <span>
         <strong>{{ regionLabel }}</strong>
-        <i class="fal fa-chevron-down" />
+        <i
+          :class="['fal dropdown-trigger-icon', dropdownActive ? 'fa-chevron-up' : 'fa-chevron-down']"
+        />
       </span>
-    </a>
+    </button>
 
     <transition name="slide-down-fade">
       <div

@@ -9,7 +9,7 @@
     border-radius: $header-hover-radius;
   }
 
-  .fa-chevron-down {
+  .dropdown-trigger-icon {
     font-size: 0.8rem;
     color: $opennem-link-color;
     position: relative;
@@ -17,8 +17,11 @@
   }
 
   .dropdown-trigger {
+    background-color: transparent;
+    height: 2.25rem;
     font-family: $header-font-family;
     font-weight: 700;
+    font-size: inherit;
     margin-right: $app-padding / 2;
     padding: $app-padding / 8 $app-padding / 2;
     color: #000;
