@@ -22,8 +22,8 @@
             Quarterly:
             <a
               target="_blank"
-              href="https://www.industry.gov.au/data-and-publications/national-greenhouse-gas-inventory-quarterly-update-march-2021"
-              title="Link to National Greenhouse Gas Inventory Quarterly Update: March 2021">National Greenhouse Gas Inventory Quarterly Update: March 2021</a>,
+              href="https://www.industry.gov.au/data-and-publications/national-greenhouse-gas-inventory-quarterly-update-june-2021"
+              title="Link to National Greenhouse Gas Inventory Quarterly Update: June 2021">National Greenhouse Gas Inventory Quarterly Update: June 2021</a>,
               Department of Industry, Science, Energy and Resources
           </span>
           
