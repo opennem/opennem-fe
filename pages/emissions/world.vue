@@ -113,6 +113,10 @@ const extraAreaCodes = [
   {
     code: 'UMBRELLA',
     area: 'Umbrella Group'
+  },
+  {
+    code: 'OECD',
+    area: 'OECD Average'
   }
 ]
 
