@@ -177,7 +177,6 @@ export default {
       this.updateData()
     },
     domains(val) {
-      console.log(val)
       this.updateData()
     }
   },
@@ -185,12 +184,11 @@ export default {
   mounted() {
     // const $height = this.$el.offsetHeight < 200 ? 200 : this.$el.offsetHeight
     // this.visHeight = $height
-    console.log(this.domains)
+    // console.log(this.domains)
   },
 
   methods: {
     updateData() {
-      console.log(this.domains, this.compareData)
       if (this.compareData.length === 2 && this.compareData[0]) {
         let latter = this.compareData[0]
         let former = this.compareData[1]

@@ -312,7 +312,6 @@ export default {
     },
 
     secondTickFormat() {
-      console.log(this.visSecondTickFormat)
       return AxisTimeFormats[this.visSecondTickFormat]
     },
 
