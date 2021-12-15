@@ -1,14 +1,6 @@
 <template>
   <div class="wrapper">
 
-    <!-- <header>
-      <div class="chart-label">
-        <strong>{{ firstDate | customFormatDate({ range, interval, showIntervalRange: true }) }}</strong>
-        —
-        <strong>{{ secondDate | customFormatDate({ range, interval, showIntervalRange: true }) }}</strong>
-      </div>
-    </header> -->
-
     <div class="chart-table">
       <div class="chart-wrapper">
         <EmissionsChart
@@ -58,8 +50,6 @@
         @codeRemove="handleCodeRemove"
       />
     </div>
-
-    <!-- <CountrySelector /> -->
     
   </div>
 </template>
@@ -133,42 +123,6 @@ const colours = [
   '#9c755f',
   '#bab0ab'
 ]
-// const colours = [
-//   '#a6cee3',
-//   '#1f78b4',
-//   '#b2df8a',
-//   '#33a02c',
-//   '#fb9a99',
-//   '#e31a1c',
-//   '#fdbf6f',
-//   '#ff7f00',
-//   '#cab2d6',
-//   '#6a3d9a',
-//   '#ffff99',
-//   '#b15928'
-// ]
-// const colours = [
-//   '#780000',
-//   '#bb2c1e',
-//   '#ea694e',
-//   '#fcaf97',
-//   '#ffbcaf',
-//   '#f4777f',
-//   '#cf3759',
-//   '#93003a',
-//   '#a6cee3',
-//   '#1f78b4',
-//   '#b2df8a',
-//   '#33a02c',
-//   '#fb9a99',
-//   '#e31a1c',
-//   '#fdbf6f',
-//   '#ff7f00',
-//   '#cab2d6',
-//   '#6a3d9a',
-//   '#ffff99',
-//   '#b15928'
-// ]
 
 const emissionsOptions = {
   type: [
@@ -187,7 +141,6 @@ const emissionsOptions = {
 export default {
   layout: 'main',
 
-  // TODO: head
   head() {
     return {
       title: `: Emissions by country`,
