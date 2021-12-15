@@ -412,6 +412,7 @@ export default {
         throw new RangeError('The year must be between 1990 and 2019.')
       }
     },
+
     checkQueryRangeIsCorrect(range) {
       if (range.length !== 2) {
         throw new RangeError('Range query must contain two year values.')
@@ -456,7 +457,7 @@ export default {
         }
 
         this.showAreas.forEach(a => {
-          obj[a] = parseInt(filteredDataObj[a][y], 10)
+          obj[a] = filteredDataObj[a][y]
         })
 
         dataset.push(obj)
@@ -714,7 +715,7 @@ export default {
           getDataByTime(secondComparePoint)
         ]
 
-        console.log(this.compareData)
+        console.log('comparedata', this.compareData)
       }, 10)
     },
 
