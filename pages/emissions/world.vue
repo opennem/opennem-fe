@@ -103,7 +103,8 @@ const extraAreaCodes = [
     area: 'BASIC countries (Brazil, South Africa, India and China)'
   },
   {
-    code: 'EU27BX',
+    code: 'EU27',
+    alpha2code: 'EU',
     area: 'European Union post Brexit'
   },
   {
@@ -585,6 +586,7 @@ export default {
           extraAreaCodes.forEach(a => {
             codeDict[a.code] = a.area
             areaDict[a.area] = a.code
+            alpha2AreaDict[a.area] = a.alpha2code
           })
 
           return {
@@ -714,8 +716,6 @@ export default {
           getDataByTime(this.compareDates[0]),
           getDataByTime(secondComparePoint)
         ]
-
-        console.log('comparedata', this.compareData)
       }, 10)
     },
 
@@ -731,8 +731,6 @@ export default {
       if (this.hidden.length === this.domains.length) {
         this.hidden = []
       }
-
-      console.log(this.hidden)
     },
 
     handleTypeShiftClick(id) {
