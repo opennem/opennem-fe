@@ -52,5 +52,12 @@ export const actions = {
   },
   doHideChart({ commit }) {
     commit('chartType', OPTIONS.CHART_HIDDEN)
+  },
+  reset({ commit }) {
+    commit('chartType', OPTIONS.CHART_STACKED)
+    commit('chartYAxis', OPTIONS.CHART_YAXIS_EMISSIONS_VOL)
+    commit('chartCurve', OPTIONS.CHART_CURVE_SMOOTH)
+    commit('chartUnitPrefix', SI.MEGA)
+    commit('chartDisplayPrefix', SI.MEGA)
   }
 }

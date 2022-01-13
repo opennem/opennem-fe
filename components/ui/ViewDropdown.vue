@@ -53,6 +53,9 @@ export default {
     regionId() {
       return this.$route.params.region
     },
+    emissionsRegionId() {
+      return this.$route.name
+    },
     currentView() {
       return this.$store.getters.currentView
     },
@@ -80,7 +83,7 @@ export default {
     },
     getRegionId(viewId) {
       const id = this.regionId || 'nem'
-      return viewId === 'emissions' ? 'au' : id
+      return viewId === 'emissions' ? this.emissionsRegionId : id
     }
   }
 }

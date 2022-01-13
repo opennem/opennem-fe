@@ -9,7 +9,7 @@
           <strong>v{{ version }}</strong>
         </div>
         <div
-          v-show="hasAPIversion && !isEmissionsView"
+          v-show="hasAPIversion && !isEmissionsAuRegion"
           class="version">
           <a
             v-tooltip="'Open developer documentation'"
@@ -19,7 +19,7 @@
         </div>
 
         <div 
-          v-show="isEmissionsView" 
+          v-show="isEmissionsAuRegion" 
           class="sources">
           <span v-if="showAnnualSource">
             Annual:
@@ -39,7 +39,7 @@
           </span>          
         </div>
 
-        <div v-show="isEmissionsWorldView">
+        <div v-show="isEmissionsWorldRegion">
           <a
             target="_blank"
             href="https://zenodo.org/record/5494497#.YXod3NlBz0p"
@@ -47,7 +47,7 @@
         </div>
         
         <div 
-          v-show="!isEmissionsView && !isEmissionsWorldView" 
+          v-show="!isEmissionsAuRegion && !isEmissionsWorldRegion" 
           class="sources">
           Sources:
           <a
@@ -134,13 +134,12 @@ export default {
       return this.apiVersion
     },
 
-    isEmissionsView() {
-      return this.currentView === 'emissions'
+    isEmissionsAuRegion() {
+      return this.$route.name === 'emissions-au'
     },
 
-    isEmissionsWorldView() {
-      console.log(this.currentView)
-      return this.currentView === 'emissions-world'
+    isEmissionsWorldRegion() {
+      return this.$route.name === 'emissions-world'
     }
   },
 

@@ -2,21 +2,7 @@
   <header :class="{ 'facilities-header': isFacilitiesView }">
 
     <div 
-      v-if="ready && isEmissionsWorldView" 
-      class="header-dropdowns">
-      <div
-        class="logo-wrapper"
-        @click="toggleDrawer">
-        <i
-          v-if="ready && tabletBreak"
-          class="fal fa-ellipsis-v" />
-        <app-logo class="header-logo" />
-        <h1>Emissions by country</h1>
-      </div>
-    </div>
-
-    <div 
-      v-if="ready && !isEmissionsWorldView" 
+      v-if="ready" 
       class="header-dropdowns">
       <div
         class="logo-wrapper"
@@ -33,9 +19,13 @@
       <region-dropdown
         v-show="!tabletBreak && !isEmissionsView"
         class="selection" />
+      <EmissionsRegionDropdown 
+        v-show="!tabletBreak && isEmissionsView"
+        class="selection"
+      />
     </div>
 
-    <div v-if="ready && !isEmissionsWorldView">
+    <div v-if="ready && !isEmissionsWorldRegion">
       <app-drawer
         v-if="tabletBreak"
         :open="openDrawer"
@@ -122,6 +112,7 @@ import AppLogo from '~/components/ui/Logo'
 import ViewDropdown from '~/components/ui/ViewDropdown'
 import ConsumptionGenerationToggle from '~/components/ui/ConsumptionGenerationToggle'
 import RegionDropdown from '~/components/ui/RegionDropdown'
+import EmissionsRegionDropdown from '~/components/Emissions/EmissionsRegionDropdown'
 import AppDrawer from '~/components/layout/Drawer'
 import FacilityViewToggle from '~/components/Facility/ViewToggle'
 
@@ -133,7 +124,8 @@ export default {
     RegionDropdown,
     ConsumptionGenerationToggle,
     AppDrawer,
-    FacilityViewToggle
+    FacilityViewToggle,
+    EmissionsRegionDropdown
   },
   mixins: [clickaway],
 
@@ -177,8 +169,8 @@ export default {
       return this.currentView === 'emissions'
     },
 
-    isEmissionsWorldView() {
-      return this.currentView === 'emissions-world'
+    isEmissionsWorldRegion() {
+      return this.$route.name === 'emissions-world'
     },
 
     range() {

@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import Papa from 'papaparse'
 import _uniq from 'lodash.uniq'
 import _includes from 'lodash.includes'
@@ -336,15 +336,22 @@ export default {
     this.categories = []
     this.areaCodes = []
     this.emissionsData = []
-    this.$store.dispatch('currentView', 'emissions-world')
     this.setChartYAxis(OPTIONS.CHART_YAXIS_PERCENTAGE)
     this.setChartType(OPTIONS.CHART_CHANGE_SINCE_LINE)
 
     this.updateAxisGuides()
+
+    this.$store.dispatch('currentView', 'emissions')
   },
 
   mounted() {
     this.getData()
+  },
+
+  beforeDestroy() {
+    this.resetChartOptions()
+    this.compareDifference = false
+    this.compareDates = []
   },
 
   methods: {
@@ -356,6 +363,10 @@ export default {
       setFocusDate: 'visInteract/focusDate',
       setChartType: 'chartOptionsEmissionsVolume/chartType',
       setChartYAxis: 'chartOptionsEmissionsVolume/chartYAxis'
+    }),
+
+    ...mapActions({
+      resetChartOptions: 'chartOptionsEmissionsVolume/reset'
     }),
 
     checkYearIsWithinRange(year) {
