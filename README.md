@@ -14,5 +14,27 @@ Developed by:
 * [simon holmes à court (@simonahac) | Twitter](https://twitter.com/simonahac)
 * [Steven Tan (@chienleng) | Twitter](https://twitter.com/chienleng)
 
+---
+
+## Development
+
+This project uses [Yarn (v1 - classic)](https://classic.yarnpkg.com/lang/en/) for package management, ensure that Yarn is installed globally first.
+
+```sh
+$ yarn install
+```
+
+This will install the required Node packages.
+
+### Run the dev server
+
+```sh
+$ yarn dev
+```
+
+This wil run the local [`Nuxt`](https://nuxtjs.org/) dev server, you should be able to open `http://localhost:3000/` in your browser, by default the public facing Opennem API will be used.
+
+---
+
 ## License
 OpenNEM is MIT licensed.
