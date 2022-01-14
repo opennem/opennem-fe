@@ -142,7 +142,6 @@ import transformTo12MthRollingSum from '@/data/transform/emissions-quarter-12-mo
 import { dataRollUp, dataFilterByPeriod } from '@/data/parse/nggi-emissions/'
 
 import EmissionsChart from '@/components/Charts/EmissionsChart'
-import NggiLegend from '@/components/Nggi/Legend'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import CompareChart from '@/components/Nggi/CompareChart'
 import DatesDisplay from '@/components/SummaryTable/DatesDisplay'
@@ -237,7 +236,6 @@ export default {
 
   components: {
     DataOptionsBar,
-    NggiLegend,
     EmissionsChart,
     CompareChart,
     DatesDisplay,
