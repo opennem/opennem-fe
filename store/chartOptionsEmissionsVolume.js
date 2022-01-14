@@ -59,5 +59,11 @@ export const actions = {
     commit('chartCurve', OPTIONS.CHART_CURVE_SMOOTH)
     commit('chartUnitPrefix', SI.MEGA)
     commit('chartDisplayPrefix', SI.MEGA)
+  },
+  setStepCurve({ commit }) {
+    commit('chartCurve', OPTIONS.CHART_CURVE_STEP)
+  },
+  setSmoothCurve({ commit }) {
+    commit('chartCurve', OPTIONS.CHART_CURVE_SMOOTH)
   }
 }

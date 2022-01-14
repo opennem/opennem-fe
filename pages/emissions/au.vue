@@ -445,7 +445,7 @@ export default {
         end: new Date(2030, 11, 31)
       }
     ]
-
+    this.setEmissionsSmoothCurve()
     this.$store.dispatch('currentView', 'emissions')
   },
 
@@ -458,6 +458,7 @@ export default {
       // doUpdateXGuides: 'visInteract/doUpdateXGuides',
       // doUpdateXTicks: 'visInteract/doUpdateXTicks',
       // doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
+      setEmissionsSmoothCurve: 'chartOptionsEmissionsVolume/setSmoothCurve'
     }),
 
     ...mapMutations({

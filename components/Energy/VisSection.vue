@@ -97,7 +97,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import addYears from 'date-fns/addYears'
 
@@ -250,6 +250,7 @@ export default {
 
   created() {
     this.clearHoverFocus()
+    this.setEmissionsStepCurve()
     this.zoomExtent = this.filteredDates
   },
 
@@ -260,6 +261,9 @@ export default {
       setChangeSinceDataset: 'regionEnergy/changeSinceDataset',
       setCompareDifference: 'compareDifference',
       setPowerEnergyDisplayUnit: 'chartOptionsPowerEnergy/displayUnit'
+    }),
+    ...mapActions({
+      setEmissionsStepCurve: 'chartOptionsEmissionsVolume/setStepCurve'
     }),
     clearHoverFocus() {
       this.isHovering = false
