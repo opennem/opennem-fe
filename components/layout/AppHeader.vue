@@ -25,7 +25,7 @@
       />
     </div>
 
-    <div v-if="ready && !isEmissionsWorldRegion">
+    <div v-if="ready">
       <app-drawer
         v-if="tabletBreak"
         :open="openDrawer"

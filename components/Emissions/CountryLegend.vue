@@ -265,7 +265,7 @@ ul {
 .add-area {
   margin: 0 0 1rem 0.5rem;
   position: relative;
-  z-index: 999;
+  z-index: 99;
 
   label {
     font-weight: bold;
@@ -317,7 +317,7 @@ ul {
   position: absolute;
   top: 2rem;
   right: 1rem;
-  z-index: 999;
+  z-index: 100;
 
   @include mobile {
     top: 1rem;
