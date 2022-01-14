@@ -18,9 +18,32 @@
           v-for="view in views"
           :key="view.id"
           :to="`/${view.id}/${getRegionId(view.id)}/`"
+          :class="{ 'nuxt-link-active': view.id === currentView }"
           class="menu-item"
         >
           {{ view.label }}
+          <span class="icon">
+            <i class="fal fa-chevron-right" />
+          </span>
+        </nuxt-link>
+      </div>
+
+      <div 
+        v-show="isEmissionsView" 
+        class="menu">
+        <nuxt-link
+          :to="`/${currentView}/au/`"
+          class="menu-item">
+          Australia
+          <span class="icon">
+            <i class="fal fa-chevron-right" />
+          </span>
+        </nuxt-link>
+
+        <nuxt-link
+          :to="`/${currentView}/world/`"
+          class="menu-item">
+          World
           <span class="icon">
             <i class="fal fa-chevron-right" />
           </span>

@@ -1,6 +1,9 @@
 <template>
   <header :class="{ 'facilities-header': isFacilitiesView }">
-    <div class="header-dropdowns">
+
+    <div 
+      v-if="ready" 
+      class="header-dropdowns">
       <div
         class="logo-wrapper"
         @click="toggleDrawer">
@@ -16,9 +19,13 @@
       <region-dropdown
         v-show="!tabletBreak && !isEmissionsView"
         class="selection" />
+      <EmissionsRegionDropdown 
+        v-show="!tabletBreak && isEmissionsView"
+        class="selection"
+      />
     </div>
 
-    <div>
+    <div v-if="ready">
       <app-drawer
         v-if="tabletBreak"
         :open="openDrawer"
@@ -31,14 +38,14 @@
       >
         <consumption-generation-toggle />
 
-        <!-- <button
-          v-if="(focusOn || compareDifference) && isEnergy"
-          :class="{ 'is-selected': compareDifference }"
-          class="compare-button button is-rounded"
-          @click="handleCompareClick"
-        >
-          Compare
-        </button> -->
+      <!-- <button
+        v-if="(focusOn || compareDifference) && isEnergy"
+        :class="{ 'is-selected': compareDifference }"
+        class="compare-button button is-rounded"
+        @click="handleCompareClick"
+      >
+        Compare
+      </button> -->
       </div>
 
       <div
@@ -47,7 +54,7 @@
         <button
           v-on-clickaway="handleClickAway"
           :class="{ 'is-loading is-primary': generating }"
-          class="share-button button is-rounded"
+          class="share-button button"
           @click="handleShareButtonClicked"
         >
           <img
@@ -89,6 +96,7 @@
         @viewSelect="(v) => selectedView = v"
       />
     </div>
+    
   </header>
 </template>
 
@@ -104,6 +112,7 @@ import AppLogo from '~/components/ui/Logo'
 import ViewDropdown from '~/components/ui/ViewDropdown'
 import ConsumptionGenerationToggle from '~/components/ui/ConsumptionGenerationToggle'
 import RegionDropdown from '~/components/ui/RegionDropdown'
+import EmissionsRegionDropdown from '~/components/Emissions/EmissionsRegionDropdown'
 import AppDrawer from '~/components/layout/Drawer'
 import FacilityViewToggle from '~/components/Facility/ViewToggle'
 
@@ -115,7 +124,8 @@ export default {
     RegionDropdown,
     ConsumptionGenerationToggle,
     AppDrawer,
-    FacilityViewToggle
+    FacilityViewToggle,
+    EmissionsRegionDropdown
   },
   mixins: [clickaway],
 
@@ -157,6 +167,10 @@ export default {
 
     isEmissionsView() {
       return this.currentView === 'emissions'
+    },
+
+    isEmissionsWorldRegion() {
+      return this.$route.name === 'emissions-world'
     },
 
     range() {
@@ -378,6 +392,7 @@ header {
 
   .share-button-wrapper {
     position: relative;
+    margin-right: 1.5rem;
     .button:focus {
       color: $opennem-link-color;
     }
@@ -453,7 +468,7 @@ header {
 }
 .more-buttons {
   position: absolute;
-  right: 90px;
+  right: 8rem;
 
   @include mobile {
     right: 0;
@@ -468,12 +483,6 @@ header {
   }
 
   .button {
-    font-size: 11px;
-
-    &.is-rounded {
-      min-width: 55px;
-    }
-
     @include mobile {
       border-radius: 0 !important;
     }

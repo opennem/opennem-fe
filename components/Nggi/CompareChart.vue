@@ -25,16 +25,17 @@
         </div>
       </div> -->
       <div class="compare-chart">
-        <div class="compare-chart-unit">{{ unit }}</div>
+        <div class="compare-chart-unit">{{ displayUnit }}</div>
         <column-vis
           v-if="hasCompareData"
-          :domains="domains"
+          :domains="updatedDomains"
           :dataset="dataset"
-          :unit="unit"
+          :unit="displayUnit"
           :dataset-percent="datasetPercent"
           :vis-height="visHeight"
           :display-prefix="chartDisplayPrefix"
           :convert-value="convertValue"
+          :use-percentage="usePercentage"
         />
       </div>
     </div>
@@ -78,13 +79,20 @@ export default {
     isFY: {
       type: Boolean,
       default: false
+    },
+    usePercentage: {
+      type: Boolean,
+      default: false
+    },
+    visHeight: {
+      type: Number,
+      default: 200
     }
   },
 
   data() {
     return {
-      updatedCompareData: [],
-      visHeight: 200
+      updatedCompareData: []
     }
   },
 
@@ -111,6 +119,10 @@ export default {
       return this.$store.getters.energyChartType
     },
 
+    displayUnit() {
+      return this.usePercentage ? '%' : this.unit
+    },
+
     dataset() {
       if (this.hasCompareData) {
         const change = {}
@@ -125,6 +137,7 @@ export default {
       }
       return null
     },
+
     datasetPercent() {
       if (this.hasCompareData) {
         const changePercent = {}
@@ -147,6 +160,15 @@ export default {
         return changePercent
       }
       return null
+    },
+
+    updatedDomains() {
+      return this.domains.map(d => {
+        return {
+          ...d,
+          label: `${d.flag} ${d.id}`
+        }
+      })
     }
   },
 
@@ -155,19 +177,18 @@ export default {
       this.updateData()
     },
     domains(val) {
-      console.log(val)
       this.updateData()
     }
   },
 
   mounted() {
-    const $height = this.$el.offsetHeight < 200 ? 200 : this.$el.offsetHeight
-    this.visHeight = $height
+    // const $height = this.$el.offsetHeight < 200 ? 200 : this.$el.offsetHeight
+    // this.visHeight = $height
+    // console.log(this.domains)
   },
 
   methods: {
     updateData() {
-      console.log(this.domains, this.compareData)
       if (this.compareData.length === 2 && this.compareData[0]) {
         let latter = this.compareData[0]
         let former = this.compareData[1]
@@ -194,13 +215,14 @@ export default {
 <style lang="scss" scoped>
 .chart-label {
   text-align: center;
+  font-size: 20px;
 }
 .compare-chart-legend {
   padding: 0.5rem 1rem;
-  margin: 0 0.5rem 0.5rem;
+  // margin: 0 0.5rem 0.5rem;
   background-color: rgba(0, 0, 0, 0.05);
-  box-shadow: inset 0 1px 10px rgba(0, 0, 0, 0.05);
-  border-radius: 3px;
+  // box-shadow: inset 0 1px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
   display: flex;
   align-items: center;
 

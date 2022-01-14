@@ -40,8 +40,9 @@ export default {
 
 <style lang="scss" scoped>
 .consumption-generation-toggle {
-  .button {
-    border-radius: 4px;
+  .button:first-child {
+    position: relative;
+    left: 2px;
   }
 }
 </style>

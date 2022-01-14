@@ -25,7 +25,9 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import _debounce from 'lodash.debounce'
+import _sortBy from 'lodash.sortby'
 import { scaleOrdinal, scaleLinear, scaleBand } from 'd3-scale'
 import { schemeCategory10 } from 'd3-scale-chromatic'
 import { axisBottom, axisLeft } from 'd3-axis'
@@ -69,6 +71,10 @@ export default {
     highlightDomain: {
       type: String,
       default: null
+    },
+    usePercentage: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -86,7 +92,7 @@ export default {
       yAxis: null,
       column: null,
       colours: schemeCategory10,
-      margin: CONFIG.DEFAULT_MARGINS,
+      margin: { left: 10, right: 1, top: 20, bottom: 20 },
       columnGroupClass: 'column-group',
       columnLabelGroupClass: 'column-label-group',
       xAxisClass: CONFIG.X_AXIS_CLASS,
@@ -94,11 +100,15 @@ export default {
       $columnGroup: null,
       $columnLabelGroup: null,
       $xAxisGroup: null,
-      $yAxisGroup: null
+      $yAxisGroup: null,
+      orderedDomains: []
     }
   },
 
   computed: {
+    ...mapGetters({
+      tabletBreak: 'app/tabletBreak'
+    }),
     id() {
       return `column-${this._uid}`
     },
@@ -110,11 +120,14 @@ export default {
     },
     xAxisTransform() {
       return `translate(0, ${this.height})`
+    },
+    updatedDataset() {
+      return this.usePercentage ? this.datasetPercent : this.dataset
     }
   },
 
   watch: {
-    dataset(updated) {
+    updatedDataset(updated) {
       if (updated) {
         this.updateColumnData()
         this.update()
@@ -155,7 +168,7 @@ export default {
     )
     this.setupWidthHeight()
     this.setup()
-    if (this.dataset) {
+    if (this.updatedDataset) {
       this.updateColumnData()
       this.update()
     }
@@ -167,22 +180,28 @@ export default {
 
   methods: {
     updateColumnData() {
-      this.columnData = this.domains.map(domain => {
-        const id = domain.id
-        return {
-          name: id,
-          label: domain.label,
-          value: this.dataset[id]
-        }
-      })
+      this.columnData = _sortBy(
+        this.domains.map(domain => {
+          const id = domain.id
+          return {
+            name: id,
+            label: domain.label,
+            value: this.updatedDataset[id]
+          }
+        }),
+        ['value']
+      )
+      this.orderedDomains = this.columnData
+        .map(d => this.domains.find(domain => domain.id === d.name))
+        .reverse()
     },
     setupWidthHeight() {
       const chartWidth = this.$el.offsetWidth
-      const width = chartWidth - this.margin.left - this.margin.right
-      const height = this.svgHeight
+      const width = chartWidth
+      const height = this.svgHeight - this.margin.top - this.margin.bottom
       this.svgWidth = chartWidth
       this.width = width < 0 ? 0 : width
-      this.height = height < 0 ? 0 : height - 33
+      this.height = height < 0 ? 0 : height
     },
 
     setup() {
@@ -195,9 +214,9 @@ export default {
 
       // Define x, y, z scale types
       this.x = scaleBand()
-        .range([60, this.width - 30])
-        .padding(0.1)
-      this.y = scaleLinear().range([this.height, 0])
+        .range([30, this.width - 15])
+        .padding(0.2)
+      this.y = scaleLinear().range([this.height - 5, 5])
       this.z = scaleOrdinal() // Colour
 
       // Set up where x, y axis appears
@@ -214,8 +233,8 @@ export default {
         `#${this.id} .${this.columnLabelGroupClass}`
       )
 
-      const xDomains = this.domains.map(d => d.id)
-      const zColours = this.domains.map(d => d.colour)
+      const xDomains = this.orderedDomains.map(d => d.id)
+      const zColours = this.orderedDomains.map(d => d.colour)
 
       const data = this.columnData
       const yValues = data.map(d => d.value)
@@ -253,6 +272,8 @@ export default {
         .join('rect')
         .attr('x', d => this.x(d.name))
         .attr('y', d => (d.value > 0 ? this.y(d.value) : this.y(0)))
+        .attr('rx', 2)
+        .attr('ry', 2)
         .attr('height', d => Math.abs(this.y(0) - this.y(d.value)))
         .attr('width', this.x.bandwidth())
         .attr('fill', d => this.z(d.name))
@@ -260,45 +281,75 @@ export default {
     },
 
     drawColumnLabels() {
+      this.$columnLabelGroup.selectAll('g').remove()
+
+      const mainLabel = d => {
+        const format = value => this.formatValue(value)
+        let value = format(this.convertValue(d.value))
+        if (this.usePercentage) {
+          const percent = this.datasetPercent[d.name]
+          value = `${d.label}`
+        }
+
+        return value
+      }
+
+      const secondaryLabel = d => {
+        // if (this.usePercentage) {
+        //   return ''
+        // }
+        const bandwidth = this.x.bandwidth()
+        const percent = this.datasetPercent[d.name]
+        let string = ''
+        // if (percent && bandwidth > 60) {
+        if (percent) {
+          string += `${this.formatValue(percent)}%`
+        }
+        return string
+      }
+
       this.$columnLabelGroup
         .selectAll('text')
         .data(this.columnData)
         .join('text')
-        .attr('x', d => this.x(d.name))
+        .attr(
+          'x',
+          d =>
+            this.usePercentage
+              ? this.x(d.name) + this.x.bandwidth()
+              : this.x(d.name)
+        )
         .attr('y', d => (d.value > 0 ? this.y(d.value) : this.y(0)))
         .attr(
           'dy',
-          d => (d.value > 0 ? -2 : Math.abs(this.y(0) - this.y(d.value)) + 11)
+          d => (d.value > 0 ? -2 : Math.abs(this.y(0) - this.y(d.value)) + 12)
         )
-        // .attr('transform', 'rotate(-1)')
-        // .text(d => d.label)
-        .text(d => {
-          const value = this.formatValue(this.convertValue(d.value))
-          let string = value
-
-          return string
-        })
+        .style('text-anchor', this.usePercentage ? 'end' : 'start')
+        .style('font-size', this.tabletBreak ? '11px' : '13px')
+        .text(d => mainLabel(d))
 
       this.$columnLabelGroup
         .selectAll('text')
         .data(this.columnData)
         .append('tspan')
+        .attr(
+          'x',
+          d =>
+            // ? this.x(d.name) + this.x.bandwidth() / 2
+            this.usePercentage
+              ? this.x(d.name) + this.x.bandwidth()
+              : this.x(d.name)
+        )
+        .attr('dy', d => (d.value > 0 ? -12 : 12))
         .style('fill', '#444')
-        .style('font-size', '9px')
-        .text(d => {
-          const bandwidth = this.x.bandwidth()
-          const percent = this.datasetPercent[d.name]
-          let string = ''
-          if (percent && bandwidth > 60) {
-            string += ` (${this.formatValue(percent)}%)`
-          }
-          return string
-        })
+        .style('font-size', '12px')
+        .style('text-anchor', this.usePercentage ? 'end' : 'start')
+        .text(d => secondaryLabel(d))
     },
 
     resizeRedraw() {
-      this.x.range([60, this.width - 30])
-      this.y.range([this.height, 0])
+      this.x.range([30, this.width - 15])
+      this.y.range([this.height - 5, 5])
       this.yAxis.tickSize(-this.width)
 
       this.$yAxisGroup.call(this.customYAxis)

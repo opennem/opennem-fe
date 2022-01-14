@@ -24,6 +24,7 @@
             v-for="view in views"
             :key="view.id"
             :to="`/${view.id}/${getRegionId(view.id)}/`"
+            :class="{ 'nuxt-link-active': view.id === currentView }"
             class="dropdown-item"
             @click.native="handleViewClick(view.id)"
           >
@@ -52,6 +53,9 @@ export default {
   computed: {
     regionId() {
       return this.$route.params.region
+    },
+    emissionsRegionId() {
+      return this.$route.name
     },
     currentView() {
       return this.$store.getters.currentView

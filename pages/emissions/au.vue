@@ -233,10 +233,9 @@ const domainEmissions = [
 ]
 
 export default {
-  layout: 'main', // no-container
+  layout: 'main',
 
   components: {
-    // AppLogo,
     DataOptionsBar,
     NggiLegend,
     EmissionsChart,
@@ -446,7 +445,7 @@ export default {
         end: new Date(2030, 11, 31)
       }
     ]
-
+    this.setEmissionsSmoothCurve()
     this.$store.dispatch('currentView', 'emissions')
   },
 
@@ -459,6 +458,7 @@ export default {
       // doUpdateXGuides: 'visInteract/doUpdateXGuides',
       // doUpdateXTicks: 'visInteract/doUpdateXTicks',
       // doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
+      setEmissionsSmoothCurve: 'chartOptionsEmissionsVolume/setSmoothCurve'
     }),
 
     ...mapMutations({
@@ -915,7 +915,7 @@ h1 {
   .close-button {
     position: absolute;
     right: 1rem;
-    top: 1.3em;
+    top: 2em;
     font-size: 1.3em;
   }
 }

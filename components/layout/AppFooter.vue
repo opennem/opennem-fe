@@ -9,7 +9,7 @@
           <strong>v{{ version }}</strong>
         </div>
         <div
-          v-show="hasAPIversion && !isEmissionsView"
+          v-show="hasAPIversion && !isEmissionsAuRegion"
           class="version">
           <a
             v-tooltip="'Open developer documentation'"
@@ -19,7 +19,7 @@
         </div>
 
         <div 
-          v-show="isEmissionsView" 
+          v-show="isEmissionsAuRegion" 
           class="sources">
           <span v-if="showAnnualSource">
             Annual:
@@ -38,9 +38,16 @@
               Department of Industry, Science, Energy and Resources
           </span>          
         </div>
+
+        <div v-show="isEmissionsWorldRegion">
+          <a
+            target="_blank"
+            href="https://zenodo.org/record/5494497#.YXod3NlBz0p"
+            title="Link to dataset used by this visualisation">PRIMAP-hist (HISTCR; Kyoto GHG (AR4); Total)</a>,
+        </div>
         
         <div 
-          v-show="!isEmissionsView" 
+          v-show="!isEmissionsAuRegion && !isEmissionsWorldRegion" 
           class="sources">
           Sources:
           <a
@@ -127,8 +134,12 @@ export default {
       return this.apiVersion
     },
 
-    isEmissionsView() {
-      return this.currentView === 'emissions'
+    isEmissionsAuRegion() {
+      return this.$route.name === 'emissions-au'
+    },
+
+    isEmissionsWorldRegion() {
+      return this.$route.name === 'emissions-world'
     }
   },
 
