@@ -42,8 +42,8 @@
         <div v-show="isEmissionsWorldRegion">
           <a
             target="_blank"
-            href="https://zenodo.org/record/5494497#.YXod3NlBz0p"
-            title="Link to dataset used by this visualisation">PRIMAP-hist (HISTCR; Kyoto GHG (AR4); Total)</a>,
+            href="https://doi.org/10.5281/zenodo.5494497"
+            title="Link to dataset used by this visualisation">PRIMAP-hist (HISTCR; Kyoto GHG (AR4); Total excl. Landuse)</a>,
         </div>
         
         <div 
