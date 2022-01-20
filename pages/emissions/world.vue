@@ -112,7 +112,7 @@ const extraAreaCodes = [
   },
   {
     code: 'G20',
-    area: 'G20 Average'
+    area: 'G20 nations (including EU)'
   }
 ]
 
