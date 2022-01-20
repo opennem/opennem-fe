@@ -56,6 +56,7 @@
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import { interpolateSpectral } from 'd3-scale-chromatic'
 import Papa from 'papaparse'
 import _uniq from 'lodash.uniq'
 import _includes from 'lodash.includes'
@@ -113,19 +114,6 @@ const extraAreaCodes = [
     code: 'G20',
     area: 'G20 Average'
   }
-]
-
-const colours = [
-  '#4e79a7',
-  '#f28e2c',
-  '#e15759',
-  '#76b7b2',
-  '#59a14f',
-  '#edc949',
-  '#af7aa1',
-  '#ff9da7',
-  '#9c755f',
-  '#bab0ab'
 ]
 
 const emissionsOptions = {
@@ -435,11 +423,12 @@ export default {
       this.dataset = dataset
       this.domains = this.showAreas.map((a, i) => {
         const area = getArea(a)
+        const colour = interpolateSpectral(i / this.showAreas.length)
         return {
           id: a,
           domain: a,
           label: area.area,
-          colour: colours[i],
+          colour,
           flag: area.flag
         }
       })
