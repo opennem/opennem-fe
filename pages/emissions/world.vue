@@ -108,7 +108,7 @@ const extraAreaCodes = [
   },
   {
     code: 'OECD',
-    area: 'OECD Average'
+    area: 'OECD nations'
   },
   {
     code: 'G20',
