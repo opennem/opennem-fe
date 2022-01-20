@@ -108,6 +108,10 @@ const extraAreaCodes = [
   {
     code: 'OECD',
     area: 'OECD Average'
+  },
+  {
+    code: 'G20',
+    area: 'G20 Average'
   }
 ]
 
@@ -518,7 +522,7 @@ export default {
     getCategories() {
       // const url = '/data/categories.csv'
       const url =
-        'https://data.dev.opennem.org.au/temp-emissions-data/world/categories.csv'
+        'https://data.opennem.org.au/v1/emissions/world/categories.csv'
 
       return this.$axios
         .get(url, { headers: { 'Content-Type': 'text/csv' } })
@@ -531,7 +535,7 @@ export default {
     getAreaCodes() {
       // const url = '/data/country-codes.csv'
       const url =
-        'https://data.dev.opennem.org.au/temp-emissions-data/world/country-codes-all.csv'
+        'https://data.opennem.org.au/v1/emissions/world/country-codes-all.csv'
 
       return this.$axios
         .get(url, { headers: { 'Content-Type': 'text/csv' } })
@@ -564,7 +568,7 @@ export default {
     getEmissions() {
       // const url = '/data/country-emissions.csv'
       const url =
-        'https://data.dev.opennem.org.au/temp-emissions-data/world/country-emissions.csv'
+        'https://data.opennem.org.au/v1/emissions/world/country-emissions.csv'
 
       const keyArea = 'area (ISO3)'
       const keyCategory = 'category (IPCC2006_PRIMAP)'
