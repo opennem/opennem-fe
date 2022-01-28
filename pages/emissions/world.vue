@@ -94,7 +94,7 @@ const extraAreaCodes = [
     area: 'BASIC countries (Brazil, South Africa, India and China)'
   },
   {
-    code: 'EU27',
+    code: 'EU27BX',
     alpha2code: 'EU',
     area: 'European Union post Brexit'
   },
