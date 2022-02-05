@@ -35,6 +35,7 @@
             :unit="chartCurrentUnit"
             :use-percentage="true"
             :vis-height="350"
+            :show-x-axis="false"
           />
         </div>
       </div>

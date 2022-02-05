@@ -75,6 +75,10 @@ export default {
     usePercentage: {
       type: Boolean,
       default: false
+    },
+    showXAxis: {
+      type: Boolean,
+      default: true
     }
   },
 
@@ -92,7 +96,7 @@ export default {
       yAxis: null,
       column: null,
       colours: schemeCategory10,
-      margin: { left: 10, right: 1, top: 20, bottom: 20 },
+      margin: { left: 10, right: 1, top: 20, bottom: 40 },
       columnGroupClass: 'column-group',
       columnLabelGroupClass: 'column-label-group',
       xAxisClass: CONFIG.X_AXIS_CLASS,
@@ -119,7 +123,7 @@ export default {
       return `translate(0,20)`
     },
     xAxisTransform() {
-      return `translate(0, ${this.height})`
+      return `translate(0, ${this.height + this.margin.top + 5})`
     },
     updatedDataset() {
       return this.usePercentage ? this.datasetPercent : this.dataset
@@ -250,10 +254,22 @@ export default {
       this.y.domain(yExtent)
       this.z.range(zColours).domain(xDomains)
 
-      // this.$xAxisGroup.call(this.xAxis)
+      if (this.showXAxis) {
+        this.$xAxisGroup.call(this.customXAxis)
+      }
       this.$yAxisGroup.call(this.customYAxis)
       this.drawColumns()
       this.drawColumnLabels()
+    },
+
+    customXAxis(g) {
+      g.call(this.xAxis)
+      g.selectAll('.tick text')
+        .style('text-anchor', 'middle')
+        .text(t => {
+          const label = this.domains.find(d => d.id === t).label
+          return label || t
+        })
     },
 
     customYAxis(g) {
@@ -284,8 +300,13 @@ export default {
       this.$columnLabelGroup.selectAll('g').remove()
 
       const mainLabel = d => {
-        const format = value => this.formatValue(value)
+        if (d.value === 0) {
+          return 'No change'
+        }
+
+        const format = val => this.formatValue(val)
         let value = format(this.convertValue(d.value))
+
         if (this.usePercentage) {
           const percent = this.datasetPercent[d.name]
           value = `${d.label}`
