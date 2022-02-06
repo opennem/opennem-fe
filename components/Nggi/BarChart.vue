@@ -23,6 +23,8 @@
       }"
       role="button row"
       class="row"
+      @mouseenter="onMouseEnter(domain.id)"
+      @mouseleave="onMouseLeave"
       @click.exact="handleRowClick(domain.id)"
       @click.shift.exact="handleRowShiftClick(domain.id)">
       <div 
@@ -65,6 +67,8 @@
       class="row"
       @click.exact="() => handleTotalClick()"
       @click.shift.exact="() => handleTotalShiftClick()"
+      @mouseenter="onMouseEnter('totalLine')"
+      @mouseleave="onMouseLeave"
     >
       <div class="row-label">
         <div
@@ -249,6 +253,12 @@ export default {
     },
     handleTotalShiftClick() {
       this.$emit('totalShiftClick')
+    },
+    onMouseEnter(id) {
+      this.$emit('mouseEnter', id)
+    },
+    onMouseLeave() {
+      this.$emit('mouseLeave')
     }
   }
 }

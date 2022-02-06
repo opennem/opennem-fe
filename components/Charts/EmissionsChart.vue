@@ -199,7 +199,7 @@ export default {
     },
     propName: {
       type: String,
-      default: ''
+      default: 'id'
     },
     range: {
       type: String,
@@ -344,7 +344,7 @@ export default {
     highlightId() {
       const domain = this.highlightDomain
       const find = this.domains.find(d => d[this.propName] === domain)
-      return find ? find.id : ''
+      return find ? find.id : domain
     },
     yMax() {
       const dataset = _cloneDeep(this.withProjectionDataset)

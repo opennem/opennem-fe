@@ -105,6 +105,8 @@
         @rowShiftClick="handleTypeShiftClick"
         @totalClick="handleTotalClick"
         @totalShiftClick="handleTotalShiftClick"
+        @mouseEnter="handleMouseEnter"
+        @mouseLeave="handleMouseLeave"
       />
     </div>    
   </div>
@@ -464,6 +466,7 @@ export default {
       setXTicks: 'visInteract/xTicks',
       setXGuides: 'visInteract/xGuides',
       setTickFormat: 'visInteract/tickFormat',
+      setHighlightDomain: 'visInteract/highlightDomain',
       setCompareDifference: 'compareDifference',
 
       setShowAnnualSource: 'emissionsPage/showAnnualSource'
@@ -523,8 +526,6 @@ export default {
             })
             d._total = total
           })
-
-          console.log(rolledUpData)
 
           this.dataset = rolledUpData.filter(d =>
             isAfter(d.date, this.afterDate)
@@ -731,8 +732,6 @@ export default {
       if (this.hidden.length === this.domainEmissions.length) {
         this.hidden = []
       }
-
-      console.log(this.hidden)
     },
 
     handleTypeShiftClick(id) {
@@ -837,6 +836,13 @@ export default {
 
     handleChangeDatasetChange(dataset) {
       // console.log(dataset[dataset.length - 1]._totalChange)
+    },
+
+    handleMouseEnter(id) {
+      this.setHighlightDomain(id)
+    },
+    handleMouseLeave() {
+      this.setHighlightDomain('')
     }
   }
 }

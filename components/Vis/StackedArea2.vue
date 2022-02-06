@@ -639,11 +639,18 @@ export default {
     },
     highlightDomain(domain) {
       if (domain) {
-        this.$stackedAreaGroup
-          .selectAll('path')
-          .attr('opacity', d => (d.key === domain ? 1 : 0.2))
+        if (domain === 'totalLine') {
+          this.$stackedAreaGroup.selectAll('path').attr('opacity', 0.1)
+          this.$totalLineGroup.selectAll('path').attr('opacity', 1)
+        } else {
+          this.$stackedAreaGroup
+            .selectAll('path')
+            .attr('opacity', d => (d.key === domain ? 1 : 0.1))
+          this.$totalLineGroup.selectAll('path').attr('opacity', 0.1)
+        }
       } else {
         this.$stackedAreaGroup.selectAll('path').attr('opacity', 1)
+        this.$totalLineGroup.selectAll('path').attr('opacity', 1)
       }
     },
 
