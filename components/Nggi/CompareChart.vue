@@ -37,6 +37,7 @@
           :convert-value="convertValue"
           :use-percentage="usePercentage"
           :show-x-axis="showXAxis"
+          :highlight-domain="highlightDomain"
         />
       </div>
     </div>
