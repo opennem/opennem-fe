@@ -639,11 +639,18 @@ export default {
     },
     highlightDomain(domain) {
       if (domain) {
-        this.$stackedAreaGroup
-          .selectAll('path')
-          .attr('opacity', d => (d.key === domain ? 1 : 0.2))
+        if (domain === 'totalLine') {
+          this.$stackedAreaGroup.selectAll('path').attr('opacity', 0.1)
+          this.$totalLineGroup.selectAll('path').attr('opacity', 1)
+        } else {
+          this.$stackedAreaGroup
+            .selectAll('path')
+            .attr('opacity', d => (d.key === domain ? 1 : 0.1))
+          this.$totalLineGroup.selectAll('path').attr('opacity', 0.1)
+        }
       } else {
         this.$stackedAreaGroup.selectAll('path').attr('opacity', 1)
+        this.$totalLineGroup.selectAll('path').attr('opacity', 1)
       }
     },
 
@@ -1008,7 +1015,7 @@ export default {
         })
 
       if (this.showTotalLine) {
-        this.totalLine.curve(curveMonotoneX)
+        this.totalLine.curve(this.curveType)
         this.$totalLineGroup.selectAll('path').remove()
 
         this.drawTotalLine()
@@ -1023,9 +1030,9 @@ export default {
         .attr('class', 'line-path')
         .attr('d', this.totalLine)
         .style('stroke', '#c74523')
-        .style('stroke-width', 3)
+        .style('stroke-width', this.curve === 'step' ? 2 : 3)
         .style('stroke-linecap', 'round')
-        .style('stroke-dasharray', '13,13')
+        .style('stroke-dasharray', this.curve === 'step' ? '0' : '13,13')
         .style('filter', 'url(#shadow)')
         .style('clip-path', this.clipPathUrl)
         .style('-webkit-clip-path', this.clipPathUrl)
@@ -1447,8 +1454,8 @@ export default {
 
       this.$compareGroup.selectAll('g').remove()
       this.$compareGroup.selectAll('rect').remove()
-      this.$compareGroup.select('path').remove()
-      this.$compareGroup.select('text').remove()
+      this.$compareGroup.selectAll('path').remove()
+      this.$compareGroup.selectAll('text').remove()
 
       if (compareLength > 0 && compareLength < 3) {
         const compareFocusGroup = this.$compareGroup.append('g')
@@ -1466,15 +1473,18 @@ export default {
           const value2 = compareData2.value
           const change = value2 - value1
           const changePercentage = (change / value1) * 100
-          const changeType = change < 0 ? 'decrease' : 'increase'
-          const compareString = `${changeType} of ${format(
+          const compareString = `${change < 0 ? '-' : '+'}${format(
             this.convertValue(Math.abs(change))
-          )}${this.unit} (${formatPercentage(changePercentage)})`
+          )}${this.unit} (${change < 0 ? '' : '+'}${formatPercentage(
+            changePercentage
+          )})`
           const line = d3Line()
             .x(d => this.x(d[0]))
             .y(d => this.y(d[1]))
-          const distance = this.x(time2) - this.x(time1)
-          const limit = 180
+          const xTime1 = this.x(time1)
+          const xTime2 = this.x(time2)
+          const distance = xTime2 - xTime1
+          const limit = this.width / 2
 
           this.$compareGroup
             .append('rect')
@@ -1494,14 +1504,13 @@ export default {
 
             this.$compareGroup
               .append('text')
-              .attr('x', 10)
-              .attr('dy', -5)
+              .attr('x', this.width / 2)
+              .attr('y', 20)
               .style('font-size', '16px')
               .style('font-weight', 'bold')
               .style('fill', 'black')
               .style('text-shadow', '1px 2px 0 #fff')
-              .append('textPath')
-              .attr('href', `#${this.id}-compare-line`)
+              .style('text-anchor', 'middle')
               .text(compareString)
           } else {
             const nearRightEdge = this.width - this.x(time2) < limit
@@ -1515,8 +1524,8 @@ export default {
 
             this.$compareGroup
               .append('text')
-              .attr('x', this.x(time1))
-              .attr('y', change < 0 ? this.y(value1) : this.y(value2))
+              .attr('x', nearRightEdge ? xTime2 : xTime1)
+              .attr('y', 20)
               .style('font-size', '16px')
               .style('font-weight', 'bold')
               .style('fill', 'black')

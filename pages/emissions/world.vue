@@ -35,6 +35,7 @@
             :unit="chartCurrentUnit"
             :use-percentage="true"
             :vis-height="350"
+            :show-x-axis="false"
           />
         </div>
       </div>
@@ -48,6 +49,8 @@
         @rowShiftClick="handleTypeShiftClick"
         @codeAdd="handleCodeAdd"
         @codeRemove="handleCodeRemove"
+        @mouseEnter="handleMouseEnter"
+        @mouseLeave="handleMouseLeave"
       />
     </div>
     
@@ -353,6 +356,7 @@ export default {
       setTickFormat: 'visInteract/tickFormat',
       setVisSecondTickFormat: 'visInteract/secondTickFormat',
       setFocusDate: 'visInteract/focusDate',
+      setHighlightDomain: 'visInteract/highlightDomain',
       setChartType: 'chartOptionsEmissionsVolume/chartType',
       setChartYAxis: 'chartOptionsEmissionsVolume/chartYAxis'
     }),
@@ -724,6 +728,13 @@ export default {
           range: this.zoomExtent.length === 2 ? getRangeQuery() : undefined
         }
       })
+    },
+
+    handleMouseEnter(id) {
+      this.setHighlightDomain(id)
+    },
+    handleMouseLeave() {
+      this.setHighlightDomain('')
     }
 
     // handleSvgClick(metaKey) {

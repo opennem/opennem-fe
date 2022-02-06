@@ -423,8 +423,22 @@ export default {
             d =>
               d === domain ? this.pathStrokeWidth + 1 : this.pathStrokeWidth
           )
+
+        this.$projectionVisGroup
+          .selectAll('path')
+          .style('opacity', d => (d === domain ? 1 : 0.1))
+          .style(
+            'stroke-width',
+            d =>
+              d === domain ? this.pathStrokeWidth + 1 : this.pathStrokeWidth
+          )
       } else {
         this.$vis1Group
+          .selectAll('path')
+          .style('opacity', 0.9)
+          .style('stroke-width', this.pathStrokeWidth)
+
+        this.$projectionVisGroup
           .selectAll('path')
           .style('opacity', 0.9)
           .style('stroke-width', this.pathStrokeWidth)
