@@ -1440,15 +1440,18 @@ export default {
           const value2 = compareData2.value
           const change = value2 - value1
           const changePercentage = (change / value1) * 100
-          const changeType = change < 0 ? 'decrease' : 'increase'
-          const compareString = `${changeType} of ${format(
+          const compareString = `${change < 0 ? '-' : '+'}${format(
             this.convertValue(Math.abs(change))
-          )}${this.unit} (${formatPercentage(changePercentage)})`
+          )}${this.unit} (${change < 0 ? '' : '+'}${formatPercentage(
+            changePercentage
+          )})`
           const line = d3Line()
             .x(d => this.x(d[0]))
             .y(d => this.y(d[1]))
-          const distance = this.x(time2) - this.x(time1)
-          const limit = 180
+          const xTime1 = this.x(time1)
+          const xTime2 = this.x(time2)
+          const distance = xTime2 - xTime1
+          const limit = this.width / 2
 
           if (distance > limit) {
             this.$compareGroup
@@ -1461,13 +1464,13 @@ export default {
 
             this.$compareGroup
               .append('text')
-              .attr('x', 10)
-              .attr('dy', -5)
-              .style('font-size', '12px')
-              .style('fill', 'darkred')
-              .style('text-shadow', '2px 2px 0 #D0D1CD')
-              .append('textPath')
-              .attr('href', `#${this.id}-compare-line`)
+              .attr('x', this.width / 2)
+              .attr('y', 20)
+              .style('font-size', '16px')
+              .style('font-weight', 'bold')
+              .style('fill', 'black')
+              .style('text-shadow', '1px 2px 0 #fff')
+              .style('text-anchor', 'middle')
               .text(compareString)
           } else {
             const nearRightEdge = this.width - this.x(time2) < limit
@@ -1480,11 +1483,12 @@ export default {
               .style('stroke-width', 2)
             this.$compareGroup
               .append('text')
-              .attr('x', this.x(time1))
-              .attr('y', change < 0 ? this.y(value1) : this.y(value2))
-              .style('font-size', '12px')
-              .style('fill', 'darkred')
-              .style('text-shadow', '2px 2px 0 #D0D1CD')
+              .attr('x', nearRightEdge ? xTime2 : xTime1)
+              .attr('y', 20)
+              .style('font-size', '16px')
+              .style('font-weight', 'bold')
+              .style('fill', 'black')
+              .style('text-shadow', '1px 2px 0 #fff')
               .style('text-anchor', nearRightEdge ? 'end' : 'start')
               .text(compareString)
           }
