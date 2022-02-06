@@ -1473,10 +1473,11 @@ export default {
           const value2 = compareData2.value
           const change = value2 - value1
           const changePercentage = (change / value1) * 100
-          const changeType = change < 0 ? 'decrease' : 'increase'
-          const compareString = `${changeType} of ${format(
+          const compareString = `${change < 0 ? '-' : '+'}${format(
             this.convertValue(Math.abs(change))
-          )}${this.unit} (${formatPercentage(changePercentage)})`
+          )}${this.unit} (${change < 0 ? '' : '+'}${formatPercentage(
+            changePercentage
+          )})`
           const line = d3Line()
             .x(d => this.x(d[0]))
             .y(d => this.y(d[1]))
