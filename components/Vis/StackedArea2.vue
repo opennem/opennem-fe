@@ -1454,8 +1454,8 @@ export default {
 
       this.$compareGroup.selectAll('g').remove()
       this.$compareGroup.selectAll('rect').remove()
-      this.$compareGroup.select('path').remove()
-      this.$compareGroup.select('text').remove()
+      this.$compareGroup.selectAll('path').remove()
+      this.$compareGroup.selectAll('text').remove()
 
       if (compareLength > 0 && compareLength < 3) {
         const compareFocusGroup = this.$compareGroup.append('g')
@@ -1480,8 +1480,10 @@ export default {
           const line = d3Line()
             .x(d => this.x(d[0]))
             .y(d => this.y(d[1]))
-          const distance = this.x(time2) - this.x(time1)
-          const limit = 180
+          const xTime1 = this.x(time1)
+          const xTime2 = this.x(time2)
+          const distance = xTime2 - xTime1
+          const limit = this.width / 2
 
           this.$compareGroup
             .append('rect')
@@ -1501,14 +1503,13 @@ export default {
 
             this.$compareGroup
               .append('text')
-              .attr('x', 10)
-              .attr('dy', -5)
+              .attr('x', this.width / 2)
+              .attr('y', 20)
               .style('font-size', '16px')
               .style('font-weight', 'bold')
               .style('fill', 'black')
               .style('text-shadow', '1px 2px 0 #fff')
-              .append('textPath')
-              .attr('href', `#${this.id}-compare-line`)
+              .style('text-anchor', 'middle')
               .text(compareString)
           } else {
             const nearRightEdge = this.width - this.x(time2) < limit
@@ -1522,8 +1523,8 @@ export default {
 
             this.$compareGroup
               .append('text')
-              .attr('x', this.x(time1))
-              .attr('y', change < 0 ? this.y(value1) : this.y(value2))
+              .attr('x', nearRightEdge ? xTime2 : xTime1)
+              .attr('y', 20)
               .style('font-size', '16px')
               .style('font-weight', 'bold')
               .style('fill', 'black')
