@@ -36,6 +36,7 @@
             :use-percentage="true"
             :vis-height="350"
             :show-x-axis="false"
+            @mouseEnter="handleMouseEnter"
           />
         </div>
       </div>

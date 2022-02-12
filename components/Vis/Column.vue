@@ -294,6 +294,13 @@ export default {
         .attr('width', this.x.bandwidth())
         .attr('fill', d => this.z(d.name))
         .attr('class', d => `${d.name}`)
+
+      this.$columnGroup.selectAll('rect').on('mouseenter', d => {
+        this.$emit('domainOver', d.name)
+      })
+      this.$columnGroup.selectAll('rect').on('mouseleave', d => {
+        this.$emit('domainOver', '')
+      })
     },
 
     drawColumnLabels() {
