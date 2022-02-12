@@ -5,7 +5,7 @@ export const state = () => ({
   chartDefaultType: OPTIONS.CHART_STACKED,
   chartType: OPTIONS.CHART_STACKED,
   chartYAxis: OPTIONS.CHART_YAXIS_EMISSIONS_VOL,
-  chartCurve: OPTIONS.CHART_CURVE_SMOOTH,
+  chartCurve: OPTIONS.CHART_CURVE_STEP,
 
   chartUnit: 'tCO₂e',
   chartUnitPrefix: SI.MEGA,

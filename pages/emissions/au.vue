@@ -113,7 +113,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapGetters } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 import parse from 'date-fns/parse'
 import subMonths from 'date-fns/subMonths'
 import subDays from 'date-fns/subDays'
@@ -141,7 +141,7 @@ import regionDisplayTzs from '@/constants/region-display-timezones.js'
 import DateDisplay from '@/services/DateDisplay.js'
 
 import transformTo12MthRollingSum from '@/data/transform/emissions-quarter-12-month-rolling-sum'
-import { dataRollUp, dataFilterByPeriod } from '@/data/parse/nggi-emissions/'
+import { dataRollUp } from '@/data/parse/nggi-emissions/'
 
 import EmissionsChart from '@/components/Charts/EmissionsChart'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
@@ -445,7 +445,6 @@ export default {
         end: new Date(2030, 11, 31)
       }
     ]
-    this.setEmissionsSmoothCurve()
     this.$store.dispatch('currentView', 'emissions')
   },
 
@@ -454,13 +453,6 @@ export default {
   },
 
   methods: {
-    ...mapActions({
-      // doUpdateXGuides: 'visInteract/doUpdateXGuides',
-      // doUpdateXTicks: 'visInteract/doUpdateXTicks',
-      // doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
-      setEmissionsSmoothCurve: 'chartOptionsEmissionsVolume/setSmoothCurve'
-    }),
-
     ...mapMutations({
       setFocusDate: 'visInteract/focusDate',
       setXTicks: 'visInteract/xTicks',
