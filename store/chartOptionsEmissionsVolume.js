@@ -62,8 +62,5 @@ export const actions = {
   },
   setStepCurve({ commit }) {
     commit('chartCurve', OPTIONS.CHART_CURVE_STEP)
-  },
-  setSmoothCurve({ commit }) {
-    commit('chartCurve', OPTIONS.CHART_CURVE_SMOOTH)
   }
 }

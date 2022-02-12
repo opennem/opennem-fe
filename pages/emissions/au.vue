@@ -113,7 +113,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex'
+import { mapActions, mapMutations, mapGetters } from 'vuex'
 import parse from 'date-fns/parse'
 import subMonths from 'date-fns/subMonths'
 import subDays from 'date-fns/subDays'
@@ -446,6 +446,7 @@ export default {
       }
     ]
     this.$store.dispatch('currentView', 'emissions')
+    this.setStepCurve()
   },
 
   mounted() {
@@ -453,6 +454,9 @@ export default {
   },
 
   methods: {
+    ...mapActions({
+      setStepCurve: 'chartOptionsEmissionsVolume/setStepCurve'
+    }),
     ...mapMutations({
       setFocusDate: 'visInteract/focusDate',
       setXTicks: 'visInteract/xTicks',
