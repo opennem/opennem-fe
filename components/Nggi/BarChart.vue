@@ -70,12 +70,24 @@
       @mouseenter="onMouseEnter('totalLine')"
       @mouseleave="onMouseLeave"
     >
-      <div class="row-label">
+      <div 
+        class="row-label"
+        role="cell">
         <div
           :class="{ on: showTotal }"
           class="net-total-line" />
         Net Total
       </div>
+
+      <div 
+        class="row-value" 
+        role="cell">
+        {{ total | formatValue }}
+      </div>
+
+      <div 
+        class="row-bar-wrapper" 
+        role="cell"/>
     </div>
   </div>
 </template>
@@ -343,7 +355,7 @@ export default {
   }
   .row-bar-wrapper {
     width: 200px;
-    margin-left: 1rem;
+    margin-left: 0.5rem;
     display: flex;
     align-items: center;
   }
