@@ -353,7 +353,7 @@ export default {
           d => (d.value > 0 ? -2 : Math.abs(this.y(0) - this.y(d.value)) + 12)
         )
         .style('text-anchor', this.usePercentage ? 'end' : 'start')
-        .style('font-size', this.tabletBreak ? '11px' : '13px')
+        .style('font-size', this.tabletBreak ? '11px' : '11px')
         .text(d => mainLabel(d))
 
       this.$columnLabelGroup
@@ -370,7 +370,7 @@ export default {
         )
         .attr('dy', d => (d.value > 0 ? -12 : 12))
         .style('fill', '#444')
-        .style('font-size', '12px')
+        .style('font-size', '11px')
         .style('text-anchor', this.usePercentage ? 'end' : 'start')
         .text(d => secondaryLabel(d))
     },
