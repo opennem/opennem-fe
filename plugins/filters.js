@@ -66,15 +66,13 @@ Vue.filter('formatValue', (value, prepend = '') => {
   const fString = smartFormatString(value)
   const f = d3Format(fString)
   const fValue = f(value)
-  return isFinite(value) && !isNaN(value) && value !== null
-    ? `${prepend}${fValue}`
-    : '–'
+  return isFinite(value) && value !== null ? `${prepend}${fValue}` : '–'
 })
 Vue.filter('formatValue2', value => {
   const fString = smartFormatString(value)
   const f = d3Format(fString)
   const fValue = f(value)
-  return isFinite(value) && !isNaN(value) && value ? fValue : '0'
+  return isFinite(value) && value ? fValue : '0'
 })
 
 Vue.filter('facilityFormatNumber', value => {
@@ -95,7 +93,7 @@ Vue.filter('customFormatValue', value => {
     fString = ',.1f'
   }
   const f = d3Format(fString)
-  return isFinite(value) && !isNaN(value) && value ? f(value) : '–'
+  return isFinite(value) && value ? f(value) : '–'
 })
 
 Vue.filter('percentageFormatNumber', value => {
@@ -105,7 +103,7 @@ Vue.filter('percentageFormatNumber', value => {
   }
   const f = d3Format(fString)
   const fValue = f(value) + '%'
-  return isFinite(value) && !isNaN(value) && value !== null ? fValue : '–'
+  return isFinite(value) && value !== null ? fValue : '–'
 })
 
 Vue.filter('percentageFormatNumber2', value => {
@@ -115,15 +113,13 @@ Vue.filter('percentageFormatNumber2', value => {
   }
   const f = d3Format(fString)
   const fValue = f(value) + '%'
-  return isFinite(value) && !isNaN(value) && value ? fValue : '0%'
+  return isFinite(value) && value ? fValue : '0%'
 })
 
 Vue.filter('formatCurrency', (value, formatString = ',.2f') => {
   const f = d3Format(`$${formatString}`)
   const fValue = f(value)
-  return isFinite(value) && !isNaN(value) && value !== null && value !== ''
-    ? fValue
-    : '–'
+  return isFinite(value) && value !== null && value !== '' ? fValue : '–'
 })
 
 Vue.filter('toLowerCase', string => {

@@ -38,6 +38,7 @@
           :use-percentage="usePercentage"
           :show-x-axis="showXAxis"
           :highlight-domain="highlightDomain"
+          @domainOver="(domain) => $emit('mouseEnter', domain)"
         />
       </div>
     </div>

@@ -1032,7 +1032,6 @@ export default {
         .style('stroke', '#c74523')
         .style('stroke-width', this.curve === 'step' ? 2 : 3)
         .style('stroke-linecap', 'round')
-        .style('stroke-dasharray', this.curve === 'step' ? '0' : '13,13')
         .style('filter', 'url(#shadow)')
         .style('clip-path', this.clipPathUrl)
         .style('-webkit-clip-path', this.clipPathUrl)
