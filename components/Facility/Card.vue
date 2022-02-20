@@ -62,24 +62,22 @@
       </div>
     </div>
 
-    <!-- <PowerEnergyChart
+    <!-- :hover-on="isHovering"
+      :hover-date="hoverDate"
+      :zoom-extent="zoomExtent" -->
+
+
+    <PowerEnergyChart
       v-if="!fetchingStats && selectedFacilityUnitsDataset.length > 0"
       :power-energy-dataset="selectedFacilityUnitsDataset"
       :domain-power-energy="powerEnergyDomains"
       :range="range"
       :interval="interval"
-      :hover-on="isHovering"
-      :hover-date="hoverDate"
-      :zoom-extent="zoomExtent"
       :prop-name="'code'"
       :chart-height="250"
       :y-max="facilityRegisteredCapacity"
-      :incomplete-intervals="incompleteIntervals"
-      :is-energy-type="isEnergyType"
-      :power-options="powerOptions"
-      :energy-options="energyOptions"
       :filter-period="filterPeriod"
-    /> -->
+    />
   </div>
 </template>
 
@@ -107,8 +105,35 @@ export default {
   computed: {
     ...mapGetters({
       fetchingStats: 'facility/fetchingStats',
-      selectedFacilityUnitsDataset: 'facility/selectedFacilityUnitsDataset'
+      selectedFacilityUnitsDataset: 'facility/selectedFacilityUnitsDataset',
+
+      range: 'facility/range',
+      interval: 'facility/interval',
+      filterPeriod: 'facility/filterPeriod',
+
+      selectedFacility: 'facility/selectedFacility',
+      unitsSummary: 'facility/unitsSummary',
+      facilityName: 'facility/facilityName',
+      facilityUnits: 'facility/facilityUnits',
+      facilityLocation: 'facility/facilityLocation',
+      facilityNetworkRegion: 'facility/facilityNetworkRegion',
+      facilityDescription: 'facility/facilityDescription',
+      facilityWikiLink: 'facility/facilityWikiLink',
+      facilityFuelTechsColours: 'facility/facilityFuelTechsColours'
     }),
+
+    powerEnergyDomains() {
+      return [...this.unitsSummary].reverse()
+    },
+
+    facilityRegisteredCapacity() {
+      return this.powerEnergyDomains.length > 0
+        ? this.powerEnergyDomains.reduce(
+            (acc, cur) => acc + (cur.registeredCapacity || 0),
+            0
+          )
+        : 0
+    },
 
     isAvailable() {
       return this.facility
@@ -146,6 +171,38 @@ export default {
     }
   },
 
+  watch: {
+    selectedFacilityUnitsDataset(val) {
+      console.log('watch', val)
+    },
+    selectedFacility(val) {
+      console.log('watch', val)
+      if (val) {
+        this.getFacilityStats()
+      }
+    },
+    selectedFacilityUnitsDataset(dataset) {
+      if (dataset.length > 0) {
+        this.doUpdateXGuides({
+          interval: this.interval,
+          start: dataset[0].time,
+          end: dataset[dataset.length - 1].time
+        })
+
+        // this.doUpdateXTicks({
+        //   range: this.range,
+        //   interval: this.interval,
+        //   isZoomed: this.zoomExtent.length > 0,
+        //   filterPeriod: this.filterPeriod
+        // })
+
+        // this.updateYGuides()
+      }
+      // clear dates
+      // this.setFocusDate(null)
+    }
+  },
+
   created() {
     this.getFacility()
   },
@@ -153,7 +210,10 @@ export default {
   methods: {
     ...mapActions({
       doGetFacilityByCode: 'facility/doGetFacilityByCode',
-      doGetStationStats: 'facility/doGetStationStats'
+      doGetStationStats: 'facility/doGetStationStats',
+
+      doUpdateXGuides: 'visInteract/doUpdateXGuides',
+      doUpdateXTicks: 'visInteract/doUpdateXTicks'
     }),
 
     getFacility() {
