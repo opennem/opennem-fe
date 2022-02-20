@@ -341,12 +341,10 @@ import {
   FACILITY_RETIRED,
   getFacilityStatusLabelById
 } from '@/constants/facility-status.js'
-import regionDisplayTzs from '@/constants/region-display-timezones.js'
 
 import EnergyToAveragePower from '@/data/transform/energy-to-average-power.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
-import { mutateDate } from '@/services/datetime-helpers.js'
 
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import PowerEnergyChart from '@/components/Charts/PowerEnergyChart'
@@ -502,12 +500,12 @@ export default {
       selectedFacilityError: 'facility/selectedFacilityError',
       selectedFacilityErrorMessage: 'facility/selectedFacilityErrorMessage',
       facilityName: 'facility/facilityName',
-      facilityUnits: 'facility/facilityUnits',
       facilityLocation: 'facility/facilityLocation',
       facilityNetworkRegion: 'facility/facilityNetworkRegion',
       facilityDescription: 'facility/facilityDescription',
       facilityWikiLink: 'facility/facilityWikiLink',
       facilityFuelTechsColours: 'facility/facilityFuelTechsColours',
+      unitsSummary: 'facility/unitsSummary',
 
       showFields: 'feedback/showFields',
 
@@ -593,43 +591,6 @@ export default {
     },
     facilityPhotos() {
       return this.facility ? this.facility.photos : []
-    },
-    unitsSummary() {
-      return this.facilityUnits.map((d, i) => {
-        const find = this.domainPowerEnergy.find(
-          domain => domain.code === d.code
-        )
-        const findMarketValue = this.domainMarketValue.find(
-          domain => domain.code === d.code
-        )
-        const id = find ? find.id : null
-        const marketValueId = findMarketValue ? findMarketValue.id : null
-        const emissionIntensity = d.emissions_factor_co2 * 1000 // kgCO₂e/MWh
-        const displayTz = regionDisplayTzs[this.networkCode.toLowerCase()]
-        const dataFirstSeen = d.data_first_seen
-          ? mutateDate(d.data_first_seen, displayTz)
-          : null
-        const dataLastSeen = d.data_last_seen
-          ? mutateDate(d.data_last_seen, displayTz)
-          : null
-
-        return {
-          colour: this.facilityFuelTechsColours[d.code],
-          domain: id,
-          id,
-          marketValueId,
-          emissionIntensity,
-          code: d.code,
-          label: d.code,
-          registeredCapacity: d.capacity_registered,
-          status: d.status ? d.status.label || d.status : '',
-          fuelTechLabel: d.fueltech,
-          category: FT.FUEL_TECH_CATEGORY[d.fueltech],
-          hasEmissionsFactor: d.emissions_factor_co2,
-          dataFirstSeen,
-          dataLastSeen
-        }
-      })
     },
     operatingDomains() {
       return this.unitsSummary.filter(d => d.status === FACILITY_OPERATING)
@@ -1018,6 +979,7 @@ export default {
       setShowFields: 'feedback/showFields',
       setQuery: 'app/query'
     }),
+
     ...mapActions({
       doUpdateXGuides: 'visInteract/doUpdateXGuides',
       doUpdateXTicks: 'visInteract/doUpdateXTicks',

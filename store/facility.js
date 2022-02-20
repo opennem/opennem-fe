@@ -10,11 +10,15 @@ import { color } from 'd3-color'
 
 import http from '@/services/Api.js'
 import PerfTime from '@/plugins/perfTime.js'
-import { DEFAULT_FUEL_TECH_COLOUR } from '@/constants/energy-fuel-techs/group-default.js'
-import { FACILITY_OPERATING } from '@/constants/facility-status.js'
+import { mutateDate } from '@/services/datetime-helpers.js'
+import {
+  DEFAULT_FUEL_TECH_COLOUR,
+  FUEL_TECH_CATEGORY
+} from '@/constants/energy-fuel-techs/group-default.js'
 import { isPowerRange, RANGE_7D } from '@/constants/ranges.js'
 import { INTERVAL_30MIN } from '@/constants/interval-filters.js'
 import { MAP_STYLE_LIGHT } from '@/constants/facilities/map-styles.js'
+import regionDisplayTzs from '@/constants/region-display-timezones.js'
 
 import {
   dataProcess,
@@ -264,6 +268,43 @@ export const getters = {
 
     return obj
   },
+  unitsSummary: (state, getters) =>
+    getters.facilityUnits.map((d, i) => {
+      const find = state.domainPowerEnergy.find(
+        domain => domain.code === d.code
+      )
+      const findMarketValue = state.domainMarketValue.find(
+        domain => domain.code === d.code
+      )
+      const id = find ? find.id : null
+      const marketValueId = findMarketValue ? findMarketValue.id : null
+      const emissionIntensity = d.emissions_factor_co2 * 1000 // kgCO₂e/MWh
+      const displayTz =
+        regionDisplayTzs[state.selectedFacility.network.toLowerCase()]
+      const dataFirstSeen = d.data_first_seen
+        ? mutateDate(d.data_first_seen, displayTz)
+        : null
+      const dataLastSeen = d.data_last_seen
+        ? mutateDate(d.data_last_seen, displayTz)
+        : null
+
+      return {
+        colour: getters.facilityFuelTechsColours[d.code],
+        domain: id,
+        id,
+        marketValueId,
+        emissionIntensity,
+        code: d.code,
+        label: d.code,
+        registeredCapacity: d.capacity_registered,
+        status: d.status ? d.status.label || d.status : '',
+        fuelTechLabel: d.fueltech,
+        category: FUEL_TECH_CATEGORY[d.fueltech],
+        hasEmissionsFactor: d.emissions_factor_co2,
+        dataFirstSeen,
+        dataLastSeen
+      }
+    }),
 
   domainPowerEnergy: state => _cloneDeep(state.domainPowerEnergy),
   domainEmissions: state => _cloneDeep(state.domainEmissions),
