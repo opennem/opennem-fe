@@ -6,12 +6,12 @@
       <i class="fal fa-times" />
     </a>
 
-    <div style="width: 70%;">
+    <div>
       <div class="facility-name">
         {{ facility.displayName }}
       </div>
 
-      <div class="fuel-tech-colour-wrapper">
+      <!-- <div class="fuel-tech-colour-wrapper">
         <div
           v-for="(ft, ftIndex) in facility.fuelTechs"
           :key="ftIndex"
@@ -19,7 +19,7 @@
             backgroundColor: getColour(ft),
           }"
           class="source-colour" />
-      </div>
+      </div> -->
       
       <div class="region">
         {{ region }}
@@ -61,13 +61,38 @@
         –
       </div>
     </div>
+
+    <!-- <PowerEnergyChart
+      v-if="!fetchingStats && selectedFacilityUnitsDataset.length > 0"
+      :power-energy-dataset="selectedFacilityUnitsDataset"
+      :domain-power-energy="powerEnergyDomains"
+      :range="range"
+      :interval="interval"
+      :hover-on="isHovering"
+      :hover-date="hoverDate"
+      :zoom-extent="zoomExtent"
+      :prop-name="'code'"
+      :chart-height="250"
+      :y-max="facilityRegisteredCapacity"
+      :incomplete-intervals="incompleteIntervals"
+      :is-energy-type="isEnergyType"
+      :power-options="powerOptions"
+      :energy-options="energyOptions"
+      :filter-period="filterPeriod"
+    /> -->
   </div>
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
+import PowerEnergyChart from '@/components/Charts/PowerEnergyChart'
 
 export default {
+  components: {
+    PowerEnergyChart
+  },
+
   props: {
     facility: {
       type: Object,
@@ -80,6 +105,11 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      fetchingStats: 'facility/fetchingStats',
+      selectedFacilityUnitsDataset: 'facility/selectedFacilityUnitsDataset'
+    }),
+
     isAvailable() {
       return this.facility
     },
@@ -107,10 +137,50 @@ export default {
         return cap
       }
       return ''
+    },
+
+    facilityNetworkRegion() {
+      return this.facility && this.facility.network
+        ? this.facility.network.code || this.facility.network
+        : ''
     }
   },
 
+  created() {
+    this.getFacility()
+  },
+
   methods: {
+    ...mapActions({
+      doGetFacilityByCode: 'facility/doGetFacilityByCode',
+      doGetStationStats: 'facility/doGetStationStats'
+    }),
+
+    getFacility() {
+      console.log(
+        this.facility,
+        this.facility.country,
+        this.facility.facilityId,
+        this.facility.network
+      )
+      this.doGetFacilityByCode({
+        countryCode: this.facility.country,
+        networkCode: this.facility.network,
+        facilityCode: this.facility.facilityId
+      })
+    },
+
+    getFacilityStats() {
+      const networkRegion = this.facilityNetworkRegion
+      const facilityCode = this.facility.facilityId
+      const facilityFuelTechsColours = this.facilityFuelTechsColours
+      this.doGetStationStats({
+        networkRegion,
+        facilityCode,
+        facilityFuelTechsColours
+      })
+    },
+
     getFtLabel(ft) {
       const ftLabel = FUEL_TECHS.FUEL_TECH_LABEL[ft]
       if (ftLabel) {
@@ -142,14 +212,17 @@ export default {
   box-shadow: -10px 0 15px rgba(100, 100, 100, 0.1);
   background-color: #fff;
   position: fixed;
-  left: 0;
-  right: 0;
+  height: 40vh;
+  left: 50vw;
+  right: 5rem;
   bottom: 0;
-  z-index: 98;
+  margin-left: 4rem;
+  z-index: 100;
   padding: 10px 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  // display: flex;
+  // justify-content: space-between;
+  // align-items: center;
+  border-radius: 10px;
 
   .close-btn {
     position: absolute;
