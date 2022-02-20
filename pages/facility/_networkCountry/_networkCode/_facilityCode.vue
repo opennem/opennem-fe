@@ -322,10 +322,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import _uniq from 'lodash.uniq'
-import _sortBy from 'lodash.sortby'
 import _includes from 'lodash.includes'
-import { interpolateRgb, quantize } from 'd3-interpolate'
-import { color } from 'd3-color'
 import isBefore from 'date-fns/isBefore'
 import isAfter from 'date-fns/isAfter'
 import addYears from 'date-fns/addYears'
@@ -504,6 +501,14 @@ export default {
       domainVolWeightedPrices: 'facility/domainVolWeightedPrices',
       selectedFacilityError: 'facility/selectedFacilityError',
       selectedFacilityErrorMessage: 'facility/selectedFacilityErrorMessage',
+      facilityName: 'facility/facilityName',
+      facilityUnits: 'facility/facilityUnits',
+      facilityLocation: 'facility/facilityLocation',
+      facilityNetworkRegion: 'facility/facilityNetworkRegion',
+      facilityDescription: 'facility/facilityDescription',
+      facilityWikiLink: 'facility/facilityWikiLink',
+      facilityFuelTechsColours: 'facility/facilityFuelTechsColours',
+
       showFields: 'feedback/showFields',
 
       chartShown: 'chartOptionsPowerEnergy/chartShown',
@@ -530,6 +535,7 @@ export default {
 
       averageEmissions: 'energy/emissions/averageEmissions'
     }),
+
     countryCode() {
       return this.$route.params.networkCountry
     },
@@ -568,45 +574,11 @@ export default {
     facilityCode() {
       return this.$route.params.facilityCode
     },
-    facilityName() {
-      return this.facility && this.facility.name ? this.facility.name : ''
-    },
-    facilityDescription() {
-      return this.facility && this.facility.description
-        ? this.facility.description
-        : ''
-    },
-    facilityNetworkRegion() {
-      return this.facility && this.facility.network
-        ? this.facility.network.code || this.facility.network
-        : ''
-    },
-    facilityWikiLink() {
-      let link = null
 
-      if (this.facility) {
-        if (this.facility.website_url) {
-          link = {
-            type: 'website',
-            url: this.facility.website_url
-          }
-        } else if (this.facility.wikipedia_link) {
-          link = {
-            type: 'wikipedia',
-            url: this.facility.wikipedia_link
-          }
-        }
-      }
-      return link
-    },
     hasDescription() {
       return this.facilityDescription !== ''
     },
-    facilityUnits() {
-      return this.facility
-        ? _sortBy(this.facility.facilities, ['status.code', 'code'])
-        : []
-    },
+
     facilityRegisteredCapacity() {
       return this.powerEnergyDomains.length > 0
         ? this.powerEnergyDomains.reduce(
@@ -615,56 +587,7 @@ export default {
           )
         : 0
     },
-    facilityLocation() {
-      return this.facility ? this.facility.location : null
-    },
-    facilityState() {
-      return this.facility && this.facility.location
-        ? this.facility.location.state
-        : ''
-    },
-    facilityFuelTechsColours() {
-      const fuelTechs = this.facilityUnits.map(d => d.fueltech)
 
-      // get only unique fuel techs
-      const uniqFuelTechs = _uniq(fuelTechs.filter(d => d !== '')).sort()
-      const uniqFuelTechsCount = {}
-      uniqFuelTechs.forEach(d => {
-        uniqFuelTechsCount[d] = fuelTechs.filter(ft => ft === d).length
-      })
-
-      // set different opacity variations of fuel tech
-      const colours = {}
-      uniqFuelTechs.forEach(ft => {
-        const colour = color(this.getUnitColour(ft))
-        const count = uniqFuelTechsCount[ft]
-
-        colours[ft] =
-          count > 1
-            ? quantize(
-                interpolateRgb(
-                  colour,
-                  colour.copy({ opacity: 1 / count + 0.3 })
-                ),
-                count
-              ).reverse()
-            : [colour.formatRgb()]
-      })
-
-      // apply each colour variation to facility unit
-      const obj = {}
-      uniqFuelTechs.forEach(ft => {
-        const filter = this.facilityUnits.filter(d => {
-          const fuelTechCode = d.fueltech.code || d.fueltech
-          return d.fueltech && fuelTechCode === ft
-        })
-        filter.forEach((f, i) => {
-          obj[f.code] = colours[ft][i]
-        })
-      })
-
-      return obj
-    },
     participant() {
       return this.facility ? this.facility.participant_id : ''
     },
@@ -1179,14 +1102,7 @@ export default {
       }
       return interval.toLowerCase()
     },
-    getUnitColour(fuelTech) {
-      const unknownColour = '#ccc'
-      if (fuelTech) {
-        const colour = FT.DEFAULT_FUEL_TECH_COLOUR[fuelTech]
-        return colour || unknownColour
-      }
-      return unknownColour
-    },
+
     handleZoomExtent(dateRange) {
       let filteredDates = []
       if (dateRange && dateRange.length > 0) {
