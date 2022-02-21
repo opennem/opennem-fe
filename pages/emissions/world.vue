@@ -35,6 +35,8 @@
             :unit="chartCurrentUnit"
             :use-percentage="true"
             :vis-height="350"
+            :show-x-axis="false"
+            @mouseEnter="handleMouseEnter"
           />
         </div>
       </div>
@@ -48,6 +50,8 @@
         @rowShiftClick="handleTypeShiftClick"
         @codeAdd="handleCodeAdd"
         @codeRemove="handleCodeRemove"
+        @mouseEnter="handleMouseEnter"
+        @mouseLeave="handleMouseLeave"
       />
     </div>
     
@@ -56,6 +60,7 @@
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import { interpolateSpectral } from 'd3-scale-chromatic'
 import Papa from 'papaparse'
 import _uniq from 'lodash.uniq'
 import _includes from 'lodash.includes'
@@ -93,7 +98,7 @@ const extraAreaCodes = [
     area: 'BASIC countries (Brazil, South Africa, India and China)'
   },
   {
-    code: 'EU27',
+    code: 'EU27BX',
     alpha2code: 'EU',
     area: 'European Union post Brexit'
   },
@@ -107,21 +112,12 @@ const extraAreaCodes = [
   },
   {
     code: 'OECD',
-    area: 'OECD Average'
+    area: 'OECD nations'
+  },
+  {
+    code: 'G20',
+    area: 'G20 nations (including EU)'
   }
-]
-
-const colours = [
-  '#4e79a7',
-  '#f28e2c',
-  '#e15759',
-  '#76b7b2',
-  '#59a14f',
-  '#edc949',
-  '#af7aa1',
-  '#ff9da7',
-  '#9c755f',
-  '#bab0ab'
 ]
 
 const emissionsOptions = {
@@ -361,6 +357,7 @@ export default {
       setTickFormat: 'visInteract/tickFormat',
       setVisSecondTickFormat: 'visInteract/secondTickFormat',
       setFocusDate: 'visInteract/focusDate',
+      setHighlightDomain: 'visInteract/highlightDomain',
       setChartType: 'chartOptionsEmissionsVolume/chartType',
       setChartYAxis: 'chartOptionsEmissionsVolume/chartYAxis'
     }),
@@ -431,11 +428,12 @@ export default {
       this.dataset = dataset
       this.domains = this.showAreas.map((a, i) => {
         const area = getArea(a)
+        const colour = interpolateSpectral(i / this.showAreas.length)
         return {
           id: a,
           domain: a,
           label: area.area,
-          colour: colours[i],
+          colour,
           flag: area.flag
         }
       })
@@ -518,7 +516,7 @@ export default {
     getCategories() {
       // const url = '/data/categories.csv'
       const url =
-        'https://data.dev.opennem.org.au/temp-emissions-data/world/categories.csv'
+        'https://data.opennem.org.au/v1/emissions/world/categories.csv'
 
       return this.$axios
         .get(url, { headers: { 'Content-Type': 'text/csv' } })
@@ -531,7 +529,7 @@ export default {
     getAreaCodes() {
       // const url = '/data/country-codes.csv'
       const url =
-        'https://data.dev.opennem.org.au/temp-emissions-data/world/country-codes-all.csv'
+        'https://data.opennem.org.au/v1/emissions/world/country-codes-all.csv'
 
       return this.$axios
         .get(url, { headers: { 'Content-Type': 'text/csv' } })
@@ -564,7 +562,7 @@ export default {
     getEmissions() {
       // const url = '/data/country-emissions.csv'
       const url =
-        'https://data.dev.opennem.org.au/temp-emissions-data/world/country-emissions.csv'
+        'https://data.opennem.org.au/v1/emissions/world/country-emissions.csv'
 
       const keyArea = 'area (ISO3)'
       const keyCategory = 'category (IPCC2006_PRIMAP)'
@@ -731,6 +729,13 @@ export default {
           range: this.zoomExtent.length === 2 ? getRangeQuery() : undefined
         }
       })
+    },
+
+    handleMouseEnter(id) {
+      this.setHighlightDomain(id)
+    },
+    handleMouseLeave() {
+      this.setHighlightDomain('')
     }
 
     // handleSvgClick(metaKey) {

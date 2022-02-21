@@ -36,6 +36,9 @@
           :display-prefix="chartDisplayPrefix"
           :convert-value="convertValue"
           :use-percentage="usePercentage"
+          :show-x-axis="showXAxis"
+          :highlight-domain="highlightDomain"
+          @domainOver="(domain) => $emit('mouseEnter', domain)"
         />
       </div>
     </div>
@@ -87,6 +90,10 @@ export default {
     visHeight: {
       type: Number,
       default: 200
+    },
+    showXAxis: {
+      type: Boolean,
+      default: true
     }
   },
 
@@ -133,6 +140,7 @@ export default {
             change[d] = latter[d] - former[d]
           }
         })
+
         return change
       }
       return null
@@ -166,7 +174,7 @@ export default {
       return this.domains.map(d => {
         return {
           ...d,
-          label: `${d.flag} ${d.id}`
+          label: d.flag ? `${d.flag} ${d.id}` : d.label
         }
       })
     }
@@ -176,7 +184,7 @@ export default {
     compareData() {
       this.updateData()
     },
-    domains(val) {
+    domains() {
       this.updateData()
     }
   },

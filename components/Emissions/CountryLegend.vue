@@ -52,6 +52,8 @@
           'is-hidden-domain': isHidden(d.id)
         }"
         role="button"
+        @mouseenter="onMouseEnter(d.id)"
+        @mouseleave="onMouseLeave"
         @click.exact="handleRowClick(d.id)"
         @click.shift.exact="handleRowShiftClick(d.id)">
         <div
@@ -166,6 +168,12 @@ export default {
     },
     onClickAway() {
       this.showList = false
+    },
+    onMouseEnter(id) {
+      this.$emit('mouseEnter', id)
+    },
+    onMouseLeave() {
+      this.$emit('mouseLeave')
     }
   }
 }
