@@ -22,13 +22,12 @@
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
       @svgClick="handleSvgClick"
-      @selectedDataset="ds => selectedDataset = ds"
-      @displayUnit="unit => selectedUnit = unit"
+      @selectedDataset="handleSelectedDatasetChange"
+      @displayUnit="handleDisplayUnitChange"
     />
 
     <energy-compare
       v-if="compareDifference"
-      :domains="domains"
       :unit="selectedUnit"
       :compare-data="compareData"
     />
@@ -98,10 +97,11 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
-import { min, max } from 'd3-array'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import addYears from 'date-fns/addYears'
+
+import * as OPTIONS from '@/constants/chart-options.js'
 
 import DateDisplay from '@/services/DateDisplay.js'
 import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
@@ -162,6 +162,7 @@ export default {
 
       ready: 'regionEnergy/ready',
       isEnergyType: 'regionEnergy/isEnergyType',
+      filteredDates: 'regionEnergy/filteredDates',
       currentDataset: 'regionEnergy/currentDataset',
       domainEmissions: 'regionEnergy/domainEmissions',
       domainTemperature: 'regionEnergy/domainTemperature',
@@ -172,6 +173,8 @@ export default {
       averageEmissions: 'energy/emissions/averageEmissions',
       emissionIntensityData: 'energy/emissions/emissionIntensityData',
       averageEmissionIntensity: 'energy/emissions/averageEmissionIntensity',
+
+      chartType: 'chartOptionsPowerEnergy/chartType',
 
       featureEmissions: 'feature/emissions'
     }),
@@ -190,6 +193,10 @@ export default {
       return this.percentContributionTo === 'generation'
     },
 
+    isTypeChangeSinceLine() {
+      return this.chartType === OPTIONS.CHART_CHANGE_SINCE_LINE
+    },
+
     renewablesLineColour() {
       return this.fuelTechGroupName === 'Renewable/Fossil' ||
         this.fuelTechGroupName === 'Flexibility'
@@ -203,7 +210,8 @@ export default {
 
     chartHeight() {
       let height = 330
-      if (this.regionId === 'nem' && !this.tabletBreak) {
+      const isNemOrAu = this.regionId === 'nem' || this.regionId === 'au'
+      if (isNemOrAu && !this.tabletBreak) {
         height = 520
       }
       return height
@@ -237,30 +245,25 @@ export default {
         this.compareData = []
         this.$store.dispatch('compareDates', [])
       }
-    },
-    selectedDataset(ds) {
-      if (this.compareDates.length === 2) {
-        const firstData = this.getDataByTime(
-          this.selectedDataset,
-          this.compareDates[0]
-        )
-        const secondData = this.getDataByTime(
-          this.selectedDataset,
-          this.compareDates[1]
-        )
-        this.compareData = [firstData, secondData]
-      }
     }
   },
 
   created() {
     this.clearHoverFocus()
+    this.setEmissionsStepCurve()
+    this.zoomExtent = this.filteredDates
   },
 
   methods: {
     ...mapMutations({
       setFocusDate: 'visInteract/focusDate',
-      setFilteredDates: 'regionEnergy/filteredDates'
+      setFilteredDates: 'regionEnergy/filteredDates',
+      setChangeSinceDataset: 'regionEnergy/changeSinceDataset',
+      setCompareDifference: 'compareDifference',
+      setPowerEnergyDisplayUnit: 'chartOptionsPowerEnergy/displayUnit'
+    }),
+    ...mapActions({
+      setEmissionsStepCurve: 'chartOptionsEmissionsVolume/setStepCurve'
     }),
     clearHoverFocus() {
       this.isHovering = false
@@ -273,6 +276,19 @@ export default {
     updateFilteredDates(filteredDates) {
       this.zoomExtent = filteredDates
       this.setFilteredDates(filteredDates)
+    },
+    updateCompareData() {
+      if (this.compareDates.length === 2) {
+        const firstData = this.getDataByTime(
+          this.selectedDataset,
+          this.compareDates[0]
+        )
+        const secondData = this.getDataByTime(
+          this.selectedDataset,
+          this.compareDates[1]
+        )
+        this.compareData = [firstData, secondData]
+      }
     },
     handleDateHover(date) {
       this.hoverDate = DateDisplay.getClosestDateByInterval(
@@ -357,12 +373,13 @@ export default {
           this.interval,
           dateRange[0]
         )
-        const endTime = DateDisplay.snapToClosestInterval(
+        let endTime = DateDisplay.snapToClosestInterval(
           this.interval,
           dateRange[1]
         )
         if (this.interval === 'Fin Year') {
-          startTime = addYears(startTime, 1)
+          startTime = addYears(startTime, 2)
+          endTime = addYears(endTime, 1)
         }
 
         filteredDates = [startTime, endTime]
@@ -371,6 +388,19 @@ export default {
       }
 
       this.updateFilteredDates(filteredDates)
+    },
+
+    handleSelectedDatasetChange(ds) {
+      if (this.isTypeChangeSinceLine) {
+        this.setChangeSinceDataset(ds)
+      }
+      this.selectedDataset = ds
+      this.updateCompareData()
+    },
+
+    handleDisplayUnitChange(unit) {
+      this.setPowerEnergyDisplayUnit(unit)
+      this.selectedUnit = unit
     }
   }
 }

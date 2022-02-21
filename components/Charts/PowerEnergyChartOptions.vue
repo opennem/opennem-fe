@@ -5,6 +5,7 @@
       v-if="!readOnly">
       <chart-options
         :options="options"
+        :si="options.si"
         :chart-type="chartType"
         :chart-curve="chartCurve"
         :chart-shown="chartShown"
@@ -83,7 +84,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import EventBus from '@/plugins/eventBus'
 import ChartHeader from '@/components/Vis/ChartHeader'
 import ChartOptions from '@/components/Vis/ChartOptions'
@@ -136,6 +136,10 @@ export default {
       default: false
     },
     isTypeLine: {
+      type: Boolean,
+      default: false
+    },
+    isTypeChangeSinceLine: {
       type: Boolean,
       default: false
     },
@@ -225,7 +229,9 @@ export default {
     allowDisplayHover() {
       return (
         !this.isRenewableLineOnly &&
-        (this.isTypeArea || (this.isTypeLine && !this.isYAxisPercentage))
+        (this.isTypeArea ||
+          ((this.isTypeLine || this.isTypeChangeSinceLine) &&
+            !this.isYAxisPercentage))
       )
     },
     showAverageValue() {
@@ -257,16 +263,25 @@ export default {
       let options = []
       if (this.isEnergyType) {
         options = this.energyOptions
-        if (this.isTypeLine) {
-          options.yAxis = [
-            OPTIONS.CHART_YAXIS_ENERGY,
-            OPTIONS.CHART_YAXIS_AVERAGE_POWER,
-            OPTIONS.CHART_YAXIS_PERCENTAGE
-          ]
+        if (this.isTypeLine || this.isTypeChangeSinceLine) {
+          if (this.isTypeChangeSinceLine) {
+            options.yAxis = [
+              OPTIONS.CHART_YAXIS_ENERGY,
+              OPTIONS.CHART_YAXIS_AVERAGE_POWER
+            ]
+          } else {
+            options.yAxis = [
+              OPTIONS.CHART_YAXIS_ENERGY,
+              OPTIONS.CHART_YAXIS_AVERAGE_POWER,
+              OPTIONS.CHART_YAXIS_PERCENTAGE
+            ]
+          }
           if (this.isYAxisAbsolute) {
             options.si = energySi
           } else if (this.isYAxisAveragePower) {
             options.si = powerSi
+          } else {
+            options.si = []
           }
         } else if (this.isTypeArea) {
           options.yAxis = [
@@ -301,21 +316,39 @@ export default {
   methods: {
     handleTypeClick(type) {
       if (this.isEnergyType) {
+        // reset to default measurement
+        const isLineOrChangeSinceType =
+          this.chartType === OPTIONS.CHART_LINE ||
+          this.chartType === OPTIONS.CHART_CHANGE_SINCE_LINE
+        const changeToProportionType = type === OPTIONS.CHART_PROPORTION
+        const changeToStackedType = type === OPTIONS.CHART_STACKED
+        const changeToChangeSinceType = type === OPTIONS.CHART_CHANGE_SINCE_LINE
+        const changeToHiddenType = type === OPTIONS.CHART_HIDDEN
+        const isPercentageYAxis =
+          this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE
+        const isAveragePowerYAxis =
+          this.chartYAxis === OPTIONS.CHART_YAXIS_AVERAGE_POWER
+
         if (
-          (this.chartType === OPTIONS.CHART_LINE &&
-            this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE) ||
-          ((this.chartType === OPTIONS.CHART_LINE ||
-            this.chartType === OPTIONS.CHART_STACKED) &&
-            this.chartYAxis === OPTIONS.CHART_YAXIS_AVERAGE_POWER &&
-            type === OPTIONS.CHART_PROPORTION)
+          isPercentageYAxis &&
+          (changeToHiddenType ||
+            changeToStackedType ||
+            changeToProportionType ||
+            changeToChangeSinceType)
         ) {
           this.$store.commit(
             'chartOptionsPowerEnergy/chartEnergyYAxis',
             OPTIONS.CHART_YAXIS_ENERGY
           )
         }
+
+        if (isAveragePowerYAxis && changeToProportionType) {
+          this.$store.commit(
+            'chartOptionsPowerEnergy/chartEnergyYAxis',
+            OPTIONS.CHART_YAXIS_ENERGY
+          )
+        }
       } else {
-        console.log('power', this.chartYAxis)
         if (
           this.chartType === OPTIONS.CHART_LINE &&
           this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE
@@ -376,7 +409,11 @@ export default {
     },
     handleUnitClick() {
       if (!this.isRenewableLineOnly) {
-        if (this.isTypeArea || (this.isTypeLine && !this.isYAxisPercentage)) {
+        if (
+          this.isTypeArea ||
+          ((this.isTypeLine || this.isTypeChangeSinceLine) &&
+            !this.isYAxisPercentage)
+        ) {
           const updatedPrefix = this.togglePrefix(this.chartDisplayPrefix)
           this.handlePrefixClick(updatedPrefix)
         }

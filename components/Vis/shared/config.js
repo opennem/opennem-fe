@@ -27,4 +27,5 @@ export const CHART_LINE = 'line'
 const stackedArea = 'stacked-area'
 export const CHART_STACKED_AREA = stackedArea
 export const CHART_STACKED_AREA_GROUP_CLASS = `${stackedArea}-group`
+export const CHART_STACKED_AREA_GROUP_2_CLASS = `${stackedArea}-group-2`
 export const CHART_STACKED_AREA_PATH_CLASS = `${stackedArea}-path`

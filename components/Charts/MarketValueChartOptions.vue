@@ -5,6 +5,7 @@
       v-if="!readOnly">
       <chart-options
         :options="options"
+        :si="options.si"
         :chart-type="chartType"
         :chart-curve="chartCurve"
         :chart-shown="chartShown"

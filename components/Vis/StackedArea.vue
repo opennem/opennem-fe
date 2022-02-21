@@ -96,6 +96,8 @@
         <!-- where the stacked area path will show -->
         <g class="stacked-area-null-group" />
         <g class="stacked-area-group" />
+        
+        <g class="total-line-group" />
 
         <!-- where the line path will show -->
         <g
@@ -139,7 +141,8 @@ import {
   stack,
   curveStepAfter,
   curveLinear,
-  curveMonotoneX
+  curveMonotoneX,
+  stackOffsetDiverging
 } from 'd3-shape'
 import {
   timeDay as d3TimeDay,
@@ -156,7 +159,6 @@ import { format as d3Format } from 'd3-format'
 import { select, selectAll, mouse, event } from 'd3-selection'
 import { schemeCategory10 } from 'd3-scale-chromatic'
 import { brushX } from 'd3-brush'
-import { timeFormat as d3Timeformat } from 'd3-time-format'
 import debounce from 'lodash.debounce'
 
 import {
@@ -179,6 +181,8 @@ import axisSecondaryTimeFormat from './shared/secondaryTimeFormat.js'
 import DateDisplay from '~/services/DateDisplay.js'
 import { getNextDateByInterval } from '@/services/datetime-helpers.js'
 import AxisTimeFormats from '~/services/axisTimeFormats.js'
+
+import { onBrush, onBrushEnded } from './shared/brushEvents'
 
 export default {
   props: {
@@ -338,6 +342,14 @@ export default {
     filterPeriod: {
       type: String,
       default: ''
+    },
+    showTotalLine: {
+      type: Boolean,
+      default: false
+    },
+    useOffsetDiverge: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -360,6 +372,7 @@ export default {
       area: null,
       nullArea: null,
       line: null,
+      totalLine: null,
       colours: schemeCategory10,
       stack: null,
       brushX: null,
@@ -379,6 +392,7 @@ export default {
       $stackedAreaGroup: null,
       $stackedAreaNullGroup: null,
       $lineGroup: null,
+      $totalLineGroup: null,
       $xGuideGroup: null,
       $yGuideGroup: null,
       $xIncompleteGroup: null,
@@ -444,6 +458,22 @@ export default {
         return this.dataset
       }
       return []
+    },
+    totalLineData() {
+      return this.updatedDataset.map(d => {
+        const obj = {
+          date: d.date,
+          time: d.time,
+          _isIncompleteBucket: d._isIncompleteBucket,
+          value: 0
+        }
+
+        this.domains.forEach(domain => {
+          obj.value += d[domain.id]
+        })
+
+        return obj
+      })
     },
     updatedDatasetTwo() {
       const updated = _cloneDeep(this.datasetTwo)
@@ -593,6 +623,14 @@ export default {
           .attr('opacity', d => (d.key === domain ? 1 : 0.2))
       } else {
         this.$stackedAreaGroup.selectAll('path').attr('opacity', 1)
+      }
+    },
+
+    showTotalLine(val) {
+      if (val) {
+        this.drawTotalLine()
+      } else {
+        this.$totalLineGroup.selectAll('path').remove()
       }
     }
   },
@@ -764,6 +802,11 @@ export default {
         .y(d => this.y2(d.value))
       this.line.defined(d => d.value || d.value === 0)
 
+      this.totalLine = d3Line()
+        .x(d => this.x(d.date))
+        .y(d => this.y(d.value))
+      this.totalLine.defined(d => d.value || d.value === 0)
+
       // Event handling
       // - Control tooltip visibility for mouse entering/leaving svg
       $svg.on('mouseenter', () => {
@@ -789,98 +832,18 @@ export default {
       this.brushX.on('brush', function() {
         if (!event.selection) return
         if (event.sourceEvent.type === 'brush') return
-        const s = event.selection
-        let startX = self.x.invert(s[0])
-        let endX = self.x.invert(s[1])
 
-        if (self.interval === INTERVAL_FINYEAR) {
-          if (startX.getMonth() >= 6) {
-            startX.setFullYear(startX.getFullYear() + 1)
-          }
-          if (endX.getMonth() >= 6) {
-            endX.setFullYear(endX.getFullYear() + 1)
-          }
-        }
+        const d1 = onBrush({
+          s: event.selection,
+          x: self.x,
+          interval: self.interval,
+          filterPeriod: self.filterPeriod
+        })
 
-        const isFilter = !self.filterPeriod || self.filterPeriod !== 'All'
-        if (isFilter && hasIntervalFilters(self.interval)) {
-          const periodMonth = DateDisplay.getPeriodMonth(self.filterPeriod)
-          const startXMonth = startX.getMonth()
-          const endXMonth = endX.getMonth()
-
-          if (self.interval === INTERVAL_MONTH) {
-            startX = DateDisplay.mutateMonthDate(
-              startX,
-              startXMonth,
-              self.filterPeriod
-            )
-            endX = DateDisplay.mutateMonthDate(
-              endX,
-              endXMonth,
-              self.filterPeriod
-            )
-          } else if (self.interval === INTERVAL_SEASON) {
-            startX = DateDisplay.mutateSeasonDate(
-              startX,
-              startXMonth,
-              self.filterPeriod
-            )
-            endX = DateDisplay.mutateSeasonDate(
-              endX,
-              endXMonth,
-              self.filterPeriod
-            )
-          } else if (self.interval === INTERVAL_QUARTER) {
-            startX = DateDisplay.mutateQuarterDate(
-              startX,
-              startXMonth,
-              self.filterPeriod
-            )
-            endX = DateDisplay.mutateQuarterDate(
-              endX,
-              endXMonth,
-              self.filterPeriod
-            )
-          } else if (self.interval === INTERVAL_HALFYEAR) {
-            startX = DateDisplay.mutateHalfYearDate(
-              startX,
-              startXMonth,
-              self.filterPeriod
-            )
-            endX = DateDisplay.mutateHalfYearDate(
-              endX,
-              endXMonth,
-              self.filterPeriod
-            )
-          }
-
-          if (self.interval === INTERVAL_MONTH) {
-            startX.setMonth(periodMonth)
-            endX.setMonth(periodMonth)
-          } else {
-            startX.setMonth(periodMonth + 1)
-            endX.setMonth(periodMonth + 1)
-          }
-        }
-
-        const startTime = DateDisplay.roundToClosestInterval(
-          self.interval,
-          self.filterPeriod,
-          startX,
-          'floor'
-        )
-        const endTime = DateDisplay.roundToClosestInterval(
-          self.interval,
-          self.filterPeriod,
-          endX,
-          'ceil'
-        )
-        const d1 = [startTime, endTime]
         select(this).call(self.brushX.move, d1.map(self.x))
-        self.$emit('eventChange', this)
         self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
-        self.$emit('domainOver', null)
       })
+
       this.$xAxisBrushGroup
         .selectAll('.brush')
         .on('touchmove mousemove', function() {
@@ -899,6 +862,7 @@ export default {
         `#${this.id} .stacked-area-null-group`
       )
       this.$lineGroup = select(`#${this.id} .line-group`)
+      this.$totalLineGroup = select(`#${this.id} .total-line-group`)
 
       // Setup the x/y/z Axis domains
       // - Use dataset date range if there is none being passed into
@@ -957,6 +921,11 @@ export default {
 
       // Setup the keys in the stack so it knows how to draw the area
       this.stack.keys(this.domainIds).value((d, key) => (d[key] ? d[key] : 0))
+
+      if (this.useOffsetDiverge) {
+        this.stack.offset(stackOffsetDiverging)
+      }
+
       this.area.curve(this.curveType)
       this.nullArea.curve(curveStepAfter)
 
@@ -967,18 +936,18 @@ export default {
       const stackedData = this.stack(this.updatedDataset)
 
       // Generate null areas
-      const stackNullArea = this.$stackedAreaNullGroup
-        .selectAll('path')
-        .data(stackedData)
-      stackNullArea
-        .enter()
-        .append('path')
-        .attr('d', this.nullArea)
-        .attr('stroke-opacity', 0)
-        .attr('stroke-width', 1)
-        .attr('stroke', '#000')
-        .attr('fill', `url(#${this.id}-incomplete-period-pattern-2)`)
-        .style('pointer-events', 'none')
+      // const stackNullArea = this.$stackedAreaNullGroup
+      //   .selectAll('path')
+      //   .data(stackedData)
+      // stackNullArea
+      //   .enter()
+      //   .append('path')
+      //   .attr('d', this.nullArea)
+      //   .attr('stroke-opacity', 0)
+      //   .attr('stroke-width', 1)
+      //   .attr('stroke', '#000')
+      //   .attr('fill', `url(#${this.id}-incomplete-period-pattern-2)`)
+      //   .style('pointer-events', 'none')
 
       // Generate Stacked Area
       const stackArea = this.$stackedAreaGroup
@@ -1013,7 +982,28 @@ export default {
           self.$emit('domainOver', d.key)
         })
 
+      if (this.showTotalLine) {
+        this.totalLine.curve(curveMonotoneX)
+        this.$totalLineGroup.selectAll('path').remove()
+
+        this.drawTotalLine()
+      }
       this.drawDatasetTwo()
+    },
+
+    drawTotalLine() {
+      this.$totalLineGroup
+        .append('path')
+        .datum(this.totalLineData)
+        .attr('class', 'line-path')
+        .attr('d', this.totalLine)
+        .style('stroke', '#c74523')
+        .style('stroke-width', 3)
+        .style('stroke-linecap', 'round')
+        .style('stroke-dasharray', '13,13')
+        .style('filter', 'url(#shadow)')
+        .style('clip-path', this.clipPathUrl)
+        .style('-webkit-clip-path', this.clipPathUrl)
     },
 
     drawDatasetTwo() {
@@ -1173,6 +1163,9 @@ export default {
       if (this.hasSecondDataset) {
         this.$lineGroup.selectAll('path').attr('d', this.line)
       }
+      if (this.showTotalLine) {
+        this.$totalLineGroup.selectAll('path').attr('d', this.totalLine)
+      }
     },
 
     zoomRedraw() {
@@ -1195,6 +1188,12 @@ export default {
           .selectAll('path')
           .transition(transition)
           .attr('d', this.line)
+      }
+      if (this.showTotalLine) {
+        this.$totalLineGroup
+          .selectAll('path')
+          .transition(transition)
+          .attr('d', this.totalLine)
       }
     },
 
@@ -1518,93 +1517,13 @@ export default {
       // Turn off the brush selection
       selectAll('.brush').call(this.brushX.move, null)
 
-      // Get the brush selection (start/end) points -> dates
-      const s = event.selection
-      let startX = this.x.invert(s[0])
-      let endX = this.x.invert(s[1])
-
-      if (this.interval === INTERVAL_YEAR) {
-        if (startX.getMonth() >= 6) {
-          startX.setFullYear(startX.getFullYear() + 1)
-        }
-        if (endX.getMonth() >= 6) {
-          endX.setFullYear(endX.getFullYear() + 1)
-        }
-      }
-
-      const isFilter = !this.filterPeriod || this.filterPeriod !== 'All'
-      if (isFilter && hasIntervalFilters(this.interval)) {
-        const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
-        const startXMonth = startX.getMonth()
-        const endXMonth = endX.getMonth()
-
-        if (this.interval === INTERVAL_MONTH) {
-          startX = DateDisplay.mutateMonthDate(
-            startX,
-            startXMonth,
-            this.filterPeriod
-          )
-          endX = DateDisplay.mutateMonthDate(endX, endXMonth, this.filterPeriod)
-        } else if (this.interval === INTERVAL_SEASON) {
-          startX = DateDisplay.mutateSeasonDate(
-            startX,
-            startXMonth,
-            this.filterPeriod
-          )
-          endX = DateDisplay.mutateSeasonDate(
-            endX,
-            endXMonth,
-            this.filterPeriod
-          )
-        } else if (this.interval === INTERVAL_QUARTER) {
-          startX = DateDisplay.mutateQuarterDate(
-            startX,
-            startXMonth,
-            this.filterPeriod
-          )
-          endX = DateDisplay.mutateQuarterDate(
-            endX,
-            endXMonth,
-            this.filterPeriod
-          )
-        } else if (this.interval === INTERVAL_HALFYEAR) {
-          startX = DateDisplay.mutateHalfYearDate(
-            startX,
-            startXMonth,
-            this.filterPeriod
-          )
-          endX = DateDisplay.mutateHalfYearDate(
-            endX,
-            endXMonth,
-            this.filterPeriod
-          )
-        }
-
-        if (this.interval === INTERVAL_MONTH) {
-          startX.setMonth(periodMonth)
-          endX.setMonth(periodMonth)
-        } else {
-          startX.setMonth(periodMonth + 1)
-          endX.setMonth(periodMonth + 1)
-        }
-      }
-
-      const startTime = DateDisplay.roundToClosestInterval(
-        this.interval,
-        this.filterPeriod,
-        startX,
-        'floor'
-      )
-      const endTime = DateDisplay.roundToClosestInterval(
-        this.interval,
-        this.filterPeriod,
-        endX,
-        'ceil'
-      )
-
-      const dateRange = isFilter
-        ? this.getZoomDateRanges(startX, endX)
-        : [startTime, endTime]
+      const dateRange = onBrushEnded({
+        s: event.selection,
+        x: this.x,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod,
+        datasetEndDate: this.datasetDateExtent[1]
+      })
 
       // Set it to the current X domain
       this.x.domain(dateRange)
@@ -1612,57 +1531,6 @@ export default {
       this.zoomRedraw()
       EventBus.$emit('dataset.filter', dateRange)
       this.$emit('zoomExtent', dateRange)
-    },
-
-    getZoomDateRanges(startDate, endDate) {
-      let start = startDate
-      let end = endDate
-      const duration = endDate - startDate
-      let limit = 0
-
-      function checkWithZoomLimits(limit, datasetEndDate) {
-        if (duration < limit) {
-          const newEnd = new Date(startDate).getTime() + limit
-          const datasetEndTime = new Date(datasetEndDate).getTime()
-
-          if (newEnd > datasetEndTime) {
-            start = new Date(datasetEndTime - limit)
-            end = datasetEndDate
-          } else {
-            end = new Date(newEnd)
-          }
-        }
-
-        return [start, end]
-      }
-
-      // Limit the zoom level based on interval
-      switch (this.interval) {
-        case INTERVAL_5MIN:
-        case INTERVAL_30MIN:
-          limit = 14400000
-          break
-        case INTERVAL_DAY:
-          limit = 345600000
-          break
-        case INTERVAL_WEEK:
-          limit = 2419200000
-          break
-        case INTERVAL_MONTH:
-          limit = 10519200000
-          break
-        case INTERVAL_SEASON:
-        case INTERVAL_QUARTER:
-        case INTERVAL_HALFYEAR:
-          limit = 23668200000
-          break
-        case INTERVAL_YEAR:
-        case INTERVAL_YEAR:
-          limit = 126230400000
-          break
-      }
-
-      return checkWithZoomLimits(limit, this.datasetDateExtent[1])
     },
 
     customXAxis(g) {
@@ -1726,6 +1594,8 @@ export default {
             })
             className = 'interval-fin-year'
           }
+        } else if (this.range === '12 Mth Rolling') {
+          tickLength = d3TimeYear.every(1)
         }
       } else {
         if (this.range === '30D') {
@@ -1756,7 +1626,7 @@ export default {
           return `${yearStr}`
         })
         const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
-        if (isFilter && periodMonth) {
+        if (isFilter && periodMonth && periodMonth !== 0) {
           tickLength = d3TimeMonth.filter(d => d.getMonth() === periodMonth)
         }
       } else if (this.interval === INTERVAL_FINYEAR) {

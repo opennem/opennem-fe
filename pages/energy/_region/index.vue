@@ -142,9 +142,7 @@ export default {
       domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
 
       query: 'app/query',
-      showFeatureToggle: 'app/showFeatureToggle',
-
-      useV3: 'feature/v3Data'
+      showFeatureToggle: 'app/showFeatureToggle'
     }),
     regionId() {
       return this.$route.params.region
@@ -186,14 +184,17 @@ export default {
           range: this.range,
           interval: this.interval,
           period: this.filterPeriod,
-          groupName: this.fuelTechGroupName,
-          useV3: this.useV3
+          groupName: this.fuelTechGroupName
         })
       }
     },
     range(curr, prev) {
       this.setCompareDifference(false)
-      this.doUpdateTickFormats({ range: curr, interval: this.interval })
+      this.doUpdateTickFormats({
+        range: curr,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod
+      })
       if (isPowerRange(curr) && isPowerRange(prev)) {
         this.doUpdateDatasetByFilterRange({
           range: curr,
@@ -205,14 +206,17 @@ export default {
           range: curr,
           interval: this.interval,
           period: this.filterPeriod,
-          groupName: this.fuelTechGroupName,
-          useV3: this.useV3
+          groupName: this.fuelTechGroupName
         })
       }
     },
     interval(interval) {
       this.setCompareDifference(false)
-      this.doUpdateTickFormats({ range: this.range, interval: interval })
+      this.doUpdateTickFormats({
+        range: this.range,
+        interval,
+        filterPeriod: this.filterPeriod
+      })
       this.doUpdateDatasetByInterval({ range: this.range, interval })
     },
     filteredDates(dates) {
@@ -228,6 +232,13 @@ export default {
         range: this.range,
         interval: this.interval,
         period
+      })
+
+      this.doUpdateXTicks({
+        range: this.range,
+        interval: this.interval,
+        isZoomed: this.filteredDates.length > 0,
+        filterPeriod: period
       })
     },
     fuelTechGroupName(groupName) {
@@ -260,7 +271,9 @@ export default {
 
     if (isValidRegion(this.regionId)) {
       this.$store.dispatch('currentView', 'energy')
-      if (this.regionId === 'wem' && !this.isEnergyType) {
+
+      const isWemOrAu = this.regionId === 'wem' || this.regionId === 'au'
+      if (isWemOrAu && !this.isEnergyType) {
         this.setInterval('30m')
       }
       this.doGetRegionDataByRangeInterval({
@@ -268,10 +281,13 @@ export default {
         range: this.range,
         interval: this.interval,
         period: this.filterPeriod,
-        groupName: this.fuelTechGroupName,
-        useV3: this.useV3
+        groupName: this.fuelTechGroupName
       })
-      this.doUpdateTickFormats({ range: this.range, interval: this.interval })
+      this.doUpdateTickFormats({
+        range: this.range,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod
+      })
     } else {
       this.$router.push({
         params: { region: 'nem' },

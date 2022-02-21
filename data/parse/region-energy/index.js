@@ -71,7 +71,6 @@ export function dataProcess(res, range, interval, period, displayTz) {
   } = process(responses, displayTz)
 
   const isEnergyType = type === 'energy'
-
   const {
     earliestEnergyStartDate,
     latestEnergyLastDate
@@ -99,6 +98,11 @@ export function dataProcess(res, range, interval, period, displayTz) {
   }
 
   const dataset = filterDatasetByRange(datasetFull, range)
+
+  let rollingDb = null
+  if (range === RANGE_ALL_12MTH_ROLLING) {
+    rollingDb = _cloneDeep(dataset)
+  }
 
   const currentDataset =
     dataPowerEnergyInterval === interval
@@ -163,7 +167,8 @@ export function dataProcess(res, range, interval, period, displayTz) {
     domainPrice,
     domainTemperature,
     currentDataset: filterDatasetByPeriod(currentDataset, interval, period),
-    units
+    units,
+    rollingDb
   }
 }
 

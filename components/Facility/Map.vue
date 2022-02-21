@@ -113,6 +113,10 @@ export default {
       const data = _cloneDeep(this.data)
       data.forEach(d => {
         const properties = d.jsonData.properties
+        d.jsonData.type = 'Feature'
+        if (d.jsonData.geometry) {
+          d.jsonData.geometry.type = 'Point'
+        }
         properties.generatorCap = d.generatorCap
         properties.colour = d.colour
         properties.radius = this.getRadius(d.generatorCap)
@@ -214,6 +218,11 @@ export default {
         }
       })
 
+      this.map.on('dblclick', 'facilitiesLayer', e => {
+        const id = e.features[0].properties.facility_id
+        this.$emit('facilityOpen', id)
+      })
+
       this.map.on('click', 'facilitiesLayer', e => {
         const id = e.features[0].properties.facility_id
 
@@ -247,7 +256,7 @@ export default {
     },
 
     getFeaturesFromData() {
-      return this.updatedData.map(d => d.jsonData)
+      return this.updatedData.filter(d => d.hasLocation).map(d => d.jsonData)
     },
 
     updateMapSource() {

@@ -28,6 +28,7 @@
           v-if="hasCompareData"
           :domains="updatedDomains"
           :dataset="dataset"
+          :unit="unit"
           :dataset-percent="datasetPercent"
           :vis-height="visHeight"
           :display-prefix="chartDisplayPrefix"
@@ -45,6 +46,7 @@ import { mapGetters } from 'vuex'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 
+import * as OPTIONS from '@/constants/chart-options.js'
 import * as SI from '@/constants/si.js'
 import ColumnVis from '~/components/Vis/Column.vue'
 export default {
@@ -79,23 +81,46 @@ export default {
 
       highlightDomain: 'visInteract/highlightDomain',
 
+      chartEnergyYAxis: 'chartOptionsPowerEnergy/chartEnergyYAxis',
+      chartEnergyUnit: 'chartOptionsPowerEnergy/chartEnergyUnit',
       chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
       chartEnergyDisplayPrefix:
         'chartOptionsPowerEnergy/chartEnergyDisplayPrefix',
 
+      chartPowerYAxis: 'chartOptionsPowerEnergy/chartPowerYAxis',
+      chartPowerUnit: 'chartOptionsPowerEnergy/chartPowerUnit',
       chartPowerUnitPrefix: 'chartOptionsPowerEnergy/chartPowerUnitPrefix',
       chartPowerDisplayPrefix: 'chartOptionsPowerEnergy/chartPowerDisplayPrefix'
     }),
 
+    chartYAxis() {
+      return this.isEnergyType ? this.chartEnergyYAxis : this.chartPowerYAxis
+    },
+
+    chartUnit() {
+      return this.isEnergyType
+        ? this.isYAxisAveragePower
+          ? this.chartPowerUnit
+          : this.chartEnergyUnit
+        : this.chartPowerUnit
+    },
     chartUnitPrefix() {
       return this.isEnergyType
-        ? this.chartEnergyUnitPrefix
+        ? this.isYAxisAveragePower
+          ? this.chartPowerUnitPrefix
+          : this.chartEnergyUnitPrefix
         : this.chartPowerUnitPrefix
     },
     chartDisplayPrefix() {
       return this.isEnergyType
-        ? this.chartEnergyDisplayPrefix
+        ? this.isYAxisAveragePower
+          ? this.chartPowerDisplayPrefix
+          : this.chartEnergyDisplayPrefix
         : this.chartPowerDisplayPrefix
+    },
+
+    isYAxisAveragePower() {
+      return this.chartYAxis === OPTIONS.CHART_YAXIS_AVERAGE_POWER
     },
 
     powerEnergyDomains() {
@@ -191,18 +216,8 @@ export default {
   },
 
   watch: {
-    compareData(update) {
-      if (update.length === 2 && update[0]) {
-        let latter = update[0]
-        let former = update[1]
-        if (update[1].date > latter.date) {
-          latter = update[1]
-          former = update[0]
-        }
-        this.updatedCompareData = [former, latter]
-      } else {
-        this.updatedCompareData = []
-      }
+    compareData() {
+      this.updateData()
     }
   },
 
@@ -212,6 +227,19 @@ export default {
   },
 
   methods: {
+    updateData() {
+      if (this.compareData.length === 2 && this.compareData[0]) {
+        let latter = this.compareData[0]
+        let former = this.compareData[1]
+        if (this.compareData[1].date > latter.date) {
+          latter = this.compareData[1]
+          former = this.compareData[0]
+        }
+        this.updatedCompareData = [former, latter]
+      } else {
+        this.updatedCompareData = []
+      }
+    },
     convertValue(value) {
       return SI.convertValue(
         this.chartUnitPrefix,

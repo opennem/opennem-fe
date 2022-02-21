@@ -2,15 +2,17 @@
   <div
     :class="{'is-active': dropdownActive}"
     class="dropdown">
-    <a
+    <button
       v-on-clickaway="handleClickAway"
-      class="dropdown-trigger"
+      class="dropdown-trigger button inverted"
       @click="handleClick">
       <span>
         <strong>{{ regionLabel }}</strong>
-        <i class="fal fa-chevron-down" />
+        <i
+          :class="['fal dropdown-trigger-icon', dropdownActive ? 'fa-chevron-up' : 'fa-chevron-down']"
+        />
       </span>
-    </a>
+    </button>
 
     <transition name="slide-down-fade">
       <div
@@ -18,19 +20,16 @@
         class="dropdown-menu">
         <div class="dropdown-content">
           <nuxt-link
-            v-show="showRegionLink('au')"
-            :to="`/${currentView}/au/`"
+            :to="{ path: `/${currentView}/au/`, query: getQuery(currentView) }"
             class="dropdown-item"
             @click.native="handleClick">All Regions</nuxt-link>
 
-          <hr
-            v-show="showRegionLink('au')"
-            class="dropdown-divider">
+          <hr class="dropdown-divider">
 
           <nuxt-link
             v-for="link in links"
             :key="link.id"
-            :to="{ path: `/${currentView}/${link.id}/`, query}"
+            :to="{ path: `/${currentView}/${link.id}/`, query: getQuery(currentView)}"
             :class="{
               'dropdown-item-child': link.isChild,
               'dropdown-item-first-child': link.isFirstChild,
@@ -71,7 +70,7 @@ export default {
     ...mapGetters({
       currentView: 'currentView',
       query: 'app/query',
-      featureAuEnergy: 'feature/auEnergy'
+      facilitiesQuery: 'app/facilitiesQuery'
     }),
     regionId() {
       return this.$route.params.region
@@ -129,6 +128,9 @@ export default {
         })
         .filter(r => r.id !== 'au')
     },
+    getQuery(view) {
+      return view === 'facilities' ? this.facilitiesQuery : this.query
+    },
     getRegionLabel(regionId) {
       const region = this.regions.find(d => d.id === regionId)
       return region ? region.label : ''
@@ -144,15 +146,6 @@ export default {
     },
     handleClickAway() {
       this.dropdownActive = false
-    },
-    showRegionLink(regionId) {
-      if (this.featureAuEnergy) {
-        return true
-      }
-      if (regionId === 'au' && this.currentView === 'energy') {
-        return false
-      }
-      return true
     }
   }
 }

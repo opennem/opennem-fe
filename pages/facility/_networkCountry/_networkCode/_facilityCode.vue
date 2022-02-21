@@ -310,6 +310,7 @@
           :highlight-domain="highlightDomain"
           :convert-value="convertValue"
           :is-power-type="!isEnergyType || (isEnergyType && isYAxisAveragePower)"
+          :is-touch-device="isTouchDevice"
           style="margin-top: 2rem; padding-top: 2rem;"
         />
       </section>
@@ -327,6 +328,7 @@ import { interpolateRgb, quantize } from 'd3-interpolate'
 import { color } from 'd3-color'
 import isBefore from 'date-fns/isBefore'
 import isAfter from 'date-fns/isAfter'
+import addYears from 'date-fns/addYears'
 
 import * as FT from '~/constants/energy-fuel-techs/group-default.js'
 import * as SI from '@/constants/si'
@@ -409,7 +411,39 @@ export default {
 
   head() {
     return {
-      title: ` Facility: ${this.facilityName}`
+      title: ` Facility: ${this.facilityName}`,
+      meta: [
+        {
+          hid: 'twitter:title',
+          name: 'twitter:title',
+          content: `OpenNEM Facility: ${this.facilityName}`
+        },
+        {
+          hid: 'twitter:image:src',
+          name: 'twitter:image:src',
+          content: this.cardFilename
+        },
+        {
+          hid: 'og:title',
+          property: 'og:title',
+          content: `OpenNEM Facility: ${this.facilityName}`
+        },
+        {
+          hid: 'og:image',
+          property: 'og:image',
+          content: this.cardFilename
+        },
+        {
+          hid: 'og:image:width',
+          property: 'og:image:width',
+          content: '1447'
+        },
+        {
+          hid: 'og:image:height',
+          property: 'og:image:height',
+          content: '932'
+        }
+      ]
     }
   },
 
@@ -445,13 +479,17 @@ export default {
       powerOptions,
       energyOptions,
       ranges: FACILITY_RANGES,
-      intervals: FACILITY_RANGE_INTERVALS
+      intervals: FACILITY_RANGE_INTERVALS,
+      baseUrl: `${this.$config.url}/images/screens/`,
+      useDev: this.$config.useDev
     }
   },
 
   computed: {
     ...mapGetters({
       widthBreak: 'app/widthBreak',
+      isTouchDevice: 'app/isTouchDevice',
+
       fetchingFacility: 'facility/fetchingFacility',
       fetchingStats: 'facility/fetchingStats',
       facility: 'facility/selectedFacility',
@@ -504,6 +542,13 @@ export default {
     fullPath() {
       return this.$route.fullPath
     },
+
+    cardFilename() {
+      return this.useDev
+        ? `${this.baseUrl}opennem-facilities-dev.png`
+        : `${this.baseUrl}opennem-facility-info.png`
+    },
+
     isEnergyType() {
       return this.dataType === 'energy'
     },
@@ -764,6 +809,7 @@ export default {
     },
 
     emissionsDomains() {
+      console.log(this.domainEmissions)
       return this.domainEmissions.filter(
         d => !_includes(this.hiddenCodes, d.code)
       )
@@ -975,12 +1021,20 @@ export default {
     },
 
     range(curr) {
-      this.doUpdateTickFormats({ range: curr, interval: this.interval })
+      this.doUpdateTickFormats({
+        range: curr,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod
+      })
       this.getFacilityStats()
     },
 
     interval(val) {
-      this.doUpdateTickFormats({ range: this.range, interval: val })
+      this.doUpdateTickFormats({
+        range: this.range,
+        interval: val,
+        filterPeriod: this.filterPeriod
+      })
       if (this.range === '30D') {
         this.getFacilityStats()
       } else {
@@ -1017,7 +1071,11 @@ export default {
   created() {
     this.getFacility()
 
-    this.doUpdateTickFormats({ range: this.range, interval: this.interval })
+    this.doUpdateTickFormats({
+      range: this.range,
+      interval: this.interval,
+      filterPeriod: this.filterPeriod
+    })
     this.doSetChartEnergyPrefixes(SI.MEGA)
     this.doHideEmissionsChart()
   },
@@ -1130,7 +1188,27 @@ export default {
       return unknownColour
     },
     handleZoomExtent(dateRange) {
-      this.zoomExtent = dateRange
+      let filteredDates = []
+      if (dateRange && dateRange.length > 0) {
+        let startTime = DateDisplay.snapToClosestInterval(
+          this.interval,
+          dateRange[0]
+        )
+        let endTime = DateDisplay.snapToClosestInterval(
+          this.interval,
+          dateRange[1]
+        )
+        if (this.interval === 'Fin Year') {
+          startTime = addYears(startTime, 2)
+          endTime = addYears(endTime, 1)
+        }
+
+        filteredDates = [startTime, endTime]
+      } else {
+        filteredDates = []
+      }
+
+      this.zoomExtent = filteredDates
     },
 
     handleCodeHover(code) {

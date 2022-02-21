@@ -26,10 +26,24 @@
         <div class="ft-label">{{ ft.label }}</div>
       </div>
 
+      <div class="summary-col-external-link-icon">
+        <a 
+          v-if="validDomainToEmit(ft)"
+          @click.stop="handleFacilitiesLinkClick(ft)">
+          <i class="fal fa-external-link-square"/>
+        </a>
+      </div>
+
       <div
         v-if="isEnergyType"
         class="summary-col-energy">
-        <span>
+        <span v-if="showPointSummary">
+          {{ getValue(ft.id) | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+        </span>
+        <span v-else-if="isTypeChangeSinceLine">
+          –
+        </span>
+        <span v-else>
           {{ getValue(ft.id) | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
         </span>
       </div>
@@ -147,12 +161,13 @@ export default {
     ...mapGetters({
       fuelTechGroupName: 'fuelTechGroupName',
       percentContributionTo: 'percentContributionTo',
-      chartEnergyRenewablesLine:
-        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
 
       isEnergyType: 'regionEnergy/isEnergyType',
       domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
 
+      isTypeChangeSinceLine: 'chartOptionsPowerEnergy/isTypeChangeSinceLine',
+      chartEnergyRenewablesLine:
+        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
       chartEnergyUnit: 'chartOptionsPowerEnergy/chartEnergyUnit',
       chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
       chartEnergyDisplayPrefix:
@@ -281,9 +296,7 @@ export default {
     },
 
     getValue(key) {
-      return this.showPointSummary
-        ? this.pointSummary[key] || ''
-        : this.summary[key] || ''
+      return this.showPointSummary ? this.pointSummary[key] : this.summary[key]
     },
 
     getContribution(key) {
@@ -302,9 +315,7 @@ export default {
         this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
       const find = this.marketValueOrder.find(d => d[property] === ft[property])
       const id = find ? find.id : null
-      return this.showPointSummary
-        ? this.pointSummary[id] || ''
-        : this.summary[id] || ''
+      return this.showPointSummary ? this.pointSummary[id] : this.summary[id]
     },
 
     getEmissionsVolume(ft) {
@@ -313,8 +324,8 @@ export default {
       const emissionObj = this.emissionsDomains.find(d => d.id === emissionId)
       if (emissionObj) {
         return this.showPointSummary
-          ? this.pointSummary[emissionObj.id] || ''
-          : this.summary[emissionObj.id] || ''
+          ? this.pointSummary[emissionObj.id]
+          : this.summary[emissionObj.id]
       }
       return '-'
     },
@@ -329,8 +340,8 @@ export default {
 
       if (energy && emissionObj) {
         let emissionsVolume = this.showPointSummary
-          ? this.pointSummary[emissionObj.id] || ''
-          : this.summary[emissionObj.id] || ''
+          ? this.pointSummary[emissionObj.id]
+          : this.summary[emissionObj.id]
 
         return emissionsVolume / Math.abs(energy)
       }
@@ -364,11 +375,26 @@ export default {
     },
     handleMouseLeave() {
       this.$emit('mouse-leave')
+    },
+
+    handleFacilitiesLinkClick(ft) {
+      this.$emit('domain-click', ft)
+    },
+
+    validDomainToEmit(domain) {
+      if (domain.category === 'source') {
+        if (domain.fuelTech && domain.fuelTech !== 'imports') {
+          return true
+        } else if (domain.group) {
+          const group = domain.group.split('.')
+          if (group[group.length - 1] !== 'imports') {
+            return true
+          }
+        }
+      }
+
+      return false
     }
   }
 }
 </script>
-
-<style lang="scss" scoped>
-@import '~/assets/scss/variables.scss';
-</style>

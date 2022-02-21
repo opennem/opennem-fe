@@ -16,9 +16,9 @@
       <div class="menu">
         <nuxt-link
           v-for="view in views"
-          v-show="showViewLink(view.id)"
           :key="view.id"
-          :to="`/${view.id}/${regionId}/`"
+          :to="`/${view.id}/${getRegionId(view.id)}/`"
+          :class="{ 'nuxt-link-active': view.id === currentView }"
           class="menu-item"
         >
           {{ view.label }}
@@ -28,9 +28,32 @@
         </nuxt-link>
       </div>
 
-      <div class="menu">
+      <div 
+        v-show="isEmissionsView" 
+        class="menu">
         <nuxt-link
-          v-show="showRegionLink('au')"
+          :to="`/${currentView}/au/`"
+          class="menu-item">
+          Australia
+          <span class="icon">
+            <i class="fal fa-chevron-right" />
+          </span>
+        </nuxt-link>
+
+        <nuxt-link
+          :to="`/${currentView}/world/`"
+          class="menu-item">
+          World
+          <span class="icon">
+            <i class="fal fa-chevron-right" />
+          </span>
+        </nuxt-link>
+      </div>
+
+      <div 
+        v-show="!isEmissionsView" 
+        class="menu">
+        <nuxt-link
           :to="`/${currentView}/au/`"
           class="menu-item">
           All Regions
@@ -39,9 +62,7 @@
           </span>
         </nuxt-link>
 
-        <hr
-          v-show="showRegionLink('au')"
-          class="dropdown-divider">
+        <hr class="dropdown-divider">
 
         <nuxt-link
           v-for="link in links"
@@ -60,7 +81,9 @@
         </nuxt-link>
       </div>
 
-      <div class="app-options">
+      <div 
+        v-show="!isEmissionsView" 
+        class="app-options">
         <div class="control">
           <label>Contribution to</label>
           <consumption-generation-toggle />
@@ -107,12 +130,13 @@ export default {
   computed: {
     ...mapGetters({
       currentView: 'currentView',
-      showFeatureToggle: 'app/showFeatureToggle',
-      featureAuEnergy: 'feature/auEnergy',
-      useV3: 'feature/v3Data'
+      showFeatureToggle: 'app/showFeatureToggle'
     }),
     regionId() {
       return this.$route.params.region
+    },
+    isEmissionsView() {
+      return this.currentView === 'emissions'
     }
   },
 
@@ -159,27 +183,9 @@ export default {
       this.$emit('close')
     },
 
-    showViewLink(view) {
-      if (this.featureAuEnergy) {
-        return true
-      }
-      if (this.regionId === 'au' && view === 'energy') {
-        return false
-      }
-      if (!this.useV3 && view === 'stripes') {
-        return false
-      }
-      return true
-    },
-
-    showRegionLink(regionId) {
-      if (this.featureAuEnergy) {
-        return true
-      }
-      if (regionId === 'au' && this.currentView === 'energy') {
-        return false
-      }
-      return true
+    getRegionId(viewId) {
+      const id = this.regionId || 'nem'
+      return viewId === 'emissions' ? 'au' : id
     }
   }
 }

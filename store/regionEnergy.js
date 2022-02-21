@@ -9,6 +9,7 @@ import {
   dataFilterByPeriod
 } from '@/data/parse/region-energy'
 import { isValidRegion } from '@/constants/energy-regions.js'
+import { RANGE_ALL_12MTH_ROLLING } from '@/constants/ranges.js'
 
 let currentRegion = ''
 
@@ -37,6 +38,7 @@ export const state = () => ({
   datasetFull: [],
   datasetFlat: [],
   currentDataset: [],
+  changeSinceDataset: [],
   domainPowerEnergy: [],
   domainPowerEnergyGrouped: [],
   domainEmissions: [],
@@ -62,6 +64,8 @@ export const getters = {
   datasetFlat: state => state.datasetFlat,
   datasetFull: state => state.datasetFull,
   currentDataset: state => state.currentDataset,
+  changeSinceDataset: state => state.changeSinceDataset,
+  rollingDb: state => state.rollingDb,
   domainPowerEnergy: state => state.domainPowerEnergy,
   domainPowerEnergyGrouped: state => state.domainPowerEnergyGrouped,
   domainEmissions: state => state.domainEmissions,
@@ -120,6 +124,12 @@ export const mutations = {
   },
   currentDataset(state, currentDataset) {
     state.currentDataset = _cloneDeep(currentDataset)
+  },
+  changeSinceDataset(state, changeSinceDataset) {
+    state.changeSinceDataset = _cloneDeep(changeSinceDataset)
+  },
+  rollingDb(state, rollingDb) {
+    state.rollingDb = _cloneDeep(rollingDb)
   },
   domainPowerEnergy(state, domainPowerEnergy) {
     state.domainPowerEnergy = _cloneDeep(domainPowerEnergy)
@@ -329,13 +339,13 @@ export const actions = {
 
   doGetRegionDataByRangeInterval(
     { commit, dispatch, rootGetters },
-    { region, range, interval, period, groupName, useV3 }
+    { region, range, interval, period, groupName }
   ) {
     dispatch('app/doClearError', null, { root: true })
 
     if (isValidRegion(region) && range !== '' && interval !== '') {
       const displayTz = rootGetters.displayTimeZone
-      const urls = Data.getEnergyUrls(region, range, useV3)
+      const urls = Data.getEnergyUrls(region, range)
       currentRegion = region
       commit('ready', false)
       commit('isFetching', true)
@@ -345,18 +355,6 @@ export const actions = {
         const perf = new PerfTime()
         perf.time()
         console.info(`------ ${currentRegion} — ${range}/${interval} (start)`)
-
-        // Workaround to flip imports market_value data
-        if (!useV3) {
-          responses.forEach(r => {
-            r.forEach(rD => {
-              if (rD.fuel_tech === 'imports' && rD.type === 'market_value') {
-                const newData = rD.history.data.map(hD => -hD)
-                rD.history.data = newData
-              }
-            })
-          })
-        }
 
         const {
           datasetFull,
@@ -372,7 +370,8 @@ export const actions = {
           domainPrice,
           domainTemperature,
           dataType,
-          units
+          units,
+          rollingDb
         } = dataProcess(responses, range, interval, period, displayTz)
 
         perf.timeEnd(
@@ -387,6 +386,7 @@ export const actions = {
         commit('datasetFull', datasetFull)
         commit('datasetFlat', datasetFlat)
         commit('currentDataset', currentDataset)
+        commit('rollingDb', rollingDb)
         commit('dataPowerEnergyInterval', dataPowerEnergyInterval)
 
         commit('domainPowerEnergy', domainPowerEnergy)
@@ -400,8 +400,6 @@ export const actions = {
         commit('currentDomainPowerEnergy', domainPowerEnergyGrouped[groupName])
         commit('currentDomainEmissions', domainEmissionsGrouped[groupName])
         commit('currentDomainMarketValue', domainMarketValueGrouped[groupName])
-
-        console.log(currentDataset)
 
         // parse units
         let prefix = ''
@@ -480,11 +478,13 @@ export const actions = {
   doUpdateDatasetByInterval({ state, commit }, { range, interval }) {
     // Ignore if data is still being fetched.
     if (!state.isFetching) {
-      // console.log('****** doUpdateDatasetByInterval')
       console.info(`------ ${currentRegion} — ${range}/${interval} (start)`)
+
+      const datasetFlat =
+        range === RANGE_ALL_12MTH_ROLLING ? state.rollingDb : state.datasetFlat
       const { currentDataset } = dataRollUp({
         isEnergyType: state.isEnergyType,
-        datasetFlat: _cloneDeep(state.datasetFlat),
+        datasetFlat: _cloneDeep(datasetFlat),
         domainPowerEnergy: state.domainPowerEnergy,
         domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
         domainEmissions: state.domainEmissions,
@@ -518,9 +518,11 @@ export const actions = {
     { range, interval, period }
   ) {
     // console.log('****** doUpdateDatasetByFilterPeriod')
+    const datasetFlat =
+      range === RANGE_ALL_12MTH_ROLLING ? state.rollingDb : state.datasetFlat
     const { currentDataset } = dataRollUp({
       isEnergyType: state.isEnergyType,
-      datasetFlat: _cloneDeep(state.datasetFlat),
+      datasetFlat: _cloneDeep(datasetFlat),
       domainPowerEnergy: state.domainPowerEnergy,
       domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
       domainEmissions: state.domainEmissions,
@@ -541,9 +543,11 @@ export const actions = {
   },
 
   doUpdateDatasetByFilterRange({ state, commit }, { range, interval }) {
+    const datasetFlat =
+      range === RANGE_ALL_12MTH_ROLLING ? state.rollingDb : state.datasetFlat
     const { currentDataset } = dataRollUp({
       isEnergyType: state.isEnergyType,
-      datasetFlat: _cloneDeep(state.datasetFlat),
+      datasetFlat: _cloneDeep(datasetFlat),
       domainPowerEnergy: state.domainPowerEnergy,
       domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
       domainEmissions: state.domainEmissions,

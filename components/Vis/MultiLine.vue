@@ -20,7 +20,9 @@
             flood-color="rgba(0, 0, 0, 0.2)" />
         </filter>
       </defs>
-      
+      <g 
+        :transform="axisTransform" 
+        class="y-shades" />
       <g 
         :transform="axisTransform" 
         class="x-axis" />
@@ -42,6 +44,9 @@
       <g 
         :transform="axisTransform"
         class="vis2-group" />
+      <g 
+        :transform="axisTransform"
+        class="projection-vis-group" />
       <g 
         :transform="axisTransform" 
         class="y-axis-left-text" />
@@ -66,7 +71,10 @@ import {
   curveLinear,
   curveMonotoneX
 } from 'd3-shape'
+import { format as d3Format } from 'd3-format'
 import { extent } from 'd3-array'
+
+import * as CONFIG from './shared/config.js'
 
 export default {
   props: {
@@ -107,6 +115,10 @@ export default {
       default: () => []
     },
     dataset2: {
+      type: Array,
+      default: () => []
+    },
+    projectionDataset: {
       type: Array,
       default: () => []
     },
@@ -176,7 +188,7 @@ export default {
     },
     pathStrokeWidth: {
       type: Number,
-      default: () => 1.5
+      default: () => 2
     },
     showCursorDots: {
       type: Boolean,
@@ -236,12 +248,14 @@ export default {
       $yAxisRightTextGroup: null,
       $vis1Group: null,
       $vis2Group: null,
+      $projectionVisGroup: null,
       $cursorLineGroup: null,
       $cursorRect: null,
       $cursorLine: null,
       $cursorDotsGroup: null,
       $hoverGroup: null,
-      $xShadesGroup: null
+      $xShadesGroup: null,
+      $yShadesGroup: null
     }
   },
 
@@ -287,20 +301,59 @@ export default {
       return dict
     },
     xExtent() {
-      return extent(this.updatedDataset1, d => new Date(d.date))
+      return extent(this.withProjectionDataset, d => new Date(d.date))
     },
     hasHighlight() {
       return this.highlightDomain ? true : false
     },
+    hasProjectionDataset() {
+      return this.projectionDataset.length > 0
+    },
+    withProjectionDataset() {
+      const dataset = this.hasProjectionDataset
+        ? [...this.dataset1, ...this.updatedProjectionDataset]
+        : this.updatedDataset1
+      return dataset
+    },
     updatedDataset1() {
       if (this.dataset1.length > 0) {
         const updated = _cloneDeep(this.dataset1)
+        if (this.hasProjectionDataset) {
+          const firstItem = _cloneDeep(this.projectionDataset[0])
+          updated.push(firstItem)
+          return updated
+        } else {
+          const lastSecondItem = _cloneDeep(updated[updated.length - 2])
+          const lastItem = _cloneDeep(updated[updated.length - 1])
+          const hasItems = lastItem && lastSecondItem
+
+          if (hasItems) {
+            const intervalTime = lastItem.time - lastSecondItem.time
+            lastItem.time = lastItem.time + intervalTime
+            lastItem.date = new Date(lastItem.time)
+            updated.push(lastItem)
+          }
+
+          return updated
+        }
+      }
+      return []
+    },
+
+    updatedProjectionDataset() {
+      if (this.projectionDataset.length > 0) {
+        const updated = _cloneDeep(this.projectionDataset)
         const lastSecondItem = _cloneDeep(updated[updated.length - 2])
         const lastItem = _cloneDeep(updated[updated.length - 1])
-        const intervalTime = lastItem.time - lastSecondItem.time
-        lastItem.time = lastItem.time + intervalTime
-        lastItem.date = new Date(lastItem.time)
-        updated.push(lastItem)
+        const hasItems = lastItem && lastSecondItem
+
+        if (hasItems) {
+          const intervalTime = lastItem.time - lastSecondItem.time
+          lastItem.time = lastItem.time + intervalTime
+          lastItem.date = new Date(lastItem.time)
+          updated.push(lastItem)
+        }
+
         return updated
       }
       return []
@@ -331,6 +384,14 @@ export default {
       this.setup()
       this.draw()
     },
+    projectionDataset(val) {
+      if (val.length <= 0) {
+        this.$projectionVisGroup.selectAll('path').remove()
+      }
+      this.setupWidthHeight()
+      this.setup()
+      this.draw()
+    },
     dateHovered(newValue) {
       if (newValue) {
         this.drawCursor(newValue)
@@ -339,6 +400,8 @@ export default {
       }
     },
     zoomRange(newRange) {
+      this.$cursorDotsGroup.selectAll('circle').remove()
+      this.clearCursorLine()
       if (newRange.length > 0) {
         this.x.domain(newRange)
       } else {
@@ -354,9 +417,17 @@ export default {
       if (domain) {
         this.$vis1Group
           .selectAll('path')
-          .attr('opacity', d => (d === domain ? 1 : 0.2))
+          .style('opacity', d => (d === domain ? 1 : 0.1))
+          .style(
+            'stroke-width',
+            d =>
+              d === domain ? this.pathStrokeWidth + 1 : this.pathStrokeWidth
+          )
       } else {
-        this.$vis1Group.selectAll('path').attr('opacity', 1)
+        this.$vis1Group
+          .selectAll('path')
+          .style('opacity', 0.9)
+          .style('stroke-width', this.pathStrokeWidth)
       }
     },
     curveType(type) {
@@ -461,16 +532,18 @@ export default {
               .tickValues(this.y1Ticks)
           : axisLeft(this.y1)
               .tickSize(-this.width)
-              .ticks(5)
+              .ticks(8)
       this.yAxisRight = axisRight(this.y2)
         .tickSize(this.width)
         .ticks(5)
 
-      // x axis shading
+      // axis shading
       this.$xShadesGroup = $svg.select('.x-shades')
+      this.$yShadesGroup = $svg.select('.y-shades')
 
       // Vis
       this.$vis1Group = $svg.select('.vis1-group')
+      this.$projectionVisGroup = $svg.select('.projection-vis-group')
       this.stack = stack()
       if (this.stacked) {
         this.vis1 = d3Area()
@@ -541,7 +614,9 @@ export default {
       } else {
         this.x.domain(this.xExtent)
       }
-      this.y1.domain([this.y1Min, this.y1Max])
+      const yRange = Math.abs(this.y1Min) + Math.abs(this.y1Max)
+      const padding = (yRange * 10) / 100
+      this.y1.domain([this.y1Min - padding, this.y1Max + padding])
       this.y2.domain([this.y2Min, this.y2Max])
       if (!this.y1Log) {
         this.y1.nice()
@@ -561,6 +636,22 @@ export default {
         .attr('x', d => this.x(d.start))
         .attr('width', d => this.x(d.end) - this.x(d.start))
         .attr('height', this.height)
+
+      this.$yShadesGroup.selectAll('rect').remove()
+      this.$yShadesGroup
+        .selectAll('rect')
+        .data([
+          {
+            start: this.y1.domain()[1],
+            end: 0
+          }
+        ])
+        .enter()
+        .append('rect')
+        .attr('y', d => this.y1(d.start))
+        .attr('width', this.width)
+        .attr('height', d => this.y1(d.end) - this.y1(d.start))
+        .style('fill', 'rgba(255,255,255, 0.4)')
 
       this.$vis1Group.selectAll('path').remove()
 
@@ -592,8 +683,9 @@ export default {
           .attr('class', key => `${key}-path`)
           .style('stroke', key => this.colours1[key])
           .style('stroke-width', this.pathStrokeWidth)
-          .style('filter', 'url(#shadow)')
+          // .style('filter', 'url(#shadow)')
           .style('fill', 'transparent')
+          .style('opacity', 0.9)
           .style('clip-path', this.clipPathUrl)
           .style('-webkit-clip-path', this.clipPathUrl)
           .attr('d', this.drawVis1Path)
@@ -608,6 +700,10 @@ export default {
       if (this.showY2) {
         this.drawDataset2()
       }
+
+      if (this.hasProjectionDataset) {
+        this.drawProjectionLines()
+      }
     },
 
     redraw() {
@@ -620,12 +716,42 @@ export default {
         this.$vis1Group.selectAll('path').attr('d', this.vis1)
       } else {
         this.$vis1Group.selectAll('path').attr('d', this.drawVis1Path)
+        this.$projectionVisGroup
+          .selectAll('path')
+          .attr('d', this.drawProjectionVisPath)
       }
       this.$vis2Group.selectAll('path').attr('d', this.drawLineRightPath)
       this.$xShadesGroup
         .selectAll('rect')
         .attr('x', d => this.x(d.start))
         .attr('width', d => this.x(d.end) - this.x(d.start))
+    },
+
+    drawProjectionLines() {
+      this.$projectionVisGroup.selectAll('path').remove()
+      const self = this
+      const vis = this.$projectionVisGroup.selectAll('path').data(this.keys1)
+      vis
+        .enter()
+        .append('path')
+        .attr('class', key => `${key}-path`)
+        .style('stroke', key => this.colours1[key])
+        .style('stroke-width', this.pathStrokeWidth)
+        // .style('filter', 'url(#shadow)')
+        .style('fill', 'transparent')
+        .style('opacity', 0.9)
+        .style('stroke-dasharray', '7,7')
+        .style('clip-path', this.clipPathUrl)
+        .style('-webkit-clip-path', this.clipPathUrl)
+        .attr('d', this.drawProjectionVisPath)
+
+      this.$projectionVisGroup
+        .selectAll('path')
+        .on('mousemove touchmove', function(d) {
+          const date = self.getXAxisDateByMouse(this)
+          self.$emit('date-hover', this, date)
+          self.$emit('domain-hover', d)
+        })
     },
 
     drawDataset2() {
@@ -646,8 +772,8 @@ export default {
         .append('path')
         .attr('class', key => `${key}-path`)
         .style('stroke', key => this.colours2[key])
-        .style('stroke-width', 2)
-        .style('filter', 'url(#shadow)')
+        .style('stroke-width', 3)
+        // .style('filter', 'url(#shadow)')
         .style('fill', 'transparent')
         .style('clip-path', this.clipPathUrl)
         .style('-webkit-clip-path', this.clipPathUrl)
@@ -667,6 +793,10 @@ export default {
     drawLeftYAxis(g) {
       g.call(this.yAxisLeft)
       g.selectAll('.y-axis .tick text').remove()
+      g.selectAll('.tick line').attr(
+        'class',
+        d => (d === 0 && this.yMinComputed !== 0 ? 'base' : '')
+      )
     },
 
     drawLeftYAxisText(g) {
@@ -675,7 +805,9 @@ export default {
       g.selectAll('.y-axis-left-text .tick text')
         .text(t => {
           const tickText = this.shouldConvertValue ? this.convertValue(t) : t
-          return `${tickText}${this.y1AxisUnit}`
+          return `${d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(tickText)}${
+            this.y1AxisUnit
+          }`
         })
         .attr('dx', 5)
         .attr('dy', -2)
@@ -690,6 +822,22 @@ export default {
         .attr('dx', -5)
         .attr('dy', -2)
         .attr('opacity', this.y1TickText ? 1 : 0)
+    },
+
+    drawProjectionVisPath(key) {
+      const data = this.updatedProjectionDataset.map(d => {
+        if (this.drawIncompleteBucket) {
+          return {
+            date: d.date,
+            value: d[key]
+          }
+        }
+        return {
+          date: d.date,
+          value: d._isIncompleteBucket ? null : d[key]
+        }
+      })
+      return this.vis1(data)
     },
 
     drawVis1Path(key) {
@@ -727,10 +875,10 @@ export default {
     drawCursor(date) {
       const xDate = this.x(date)
       let nextDate = null
-      const dataPoint = this.updatedDataset1.find((d, i) => {
+      const dataPoint = this.withProjectionDataset.find((d, i) => {
         const time = d.time || d.date
         const match = time === date.getTime()
-        const nextDataPoint = this.updatedDataset1[i + 1]
+        const nextDataPoint = this.withProjectionDataset[i + 1]
         if (match && nextDataPoint) {
           nextDate = nextDataPoint.time || nextDataPoint.date
         }
@@ -759,7 +907,7 @@ export default {
             .merge(dots)
             .attr('cx', this.x(dataPoint.date))
             .attr('cy', key => this.y1(dataPoint[key]))
-            .attr('r', 2)
+            .attr('r', 4)
             .attr('fill', key => this.colours1[key])
             .exit()
             .remove()

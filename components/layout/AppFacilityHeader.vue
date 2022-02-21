@@ -1,36 +1,37 @@
 <template>
   <header>
-    <nuxt-link
-      :to="path"
-      class="back-link">
+    <a
+      :href="path"
+      class="back-link"
+      @click.prevent="backToFacilities">
       <i class="fal fa-chevron-left"/>
       <AppLogo class="logo" />
       <h1>Facilities</h1>
-    </nuxt-link>
+    </a>
 
     <nav v-if="filteredFacilities.length > 1">
       <nuxt-link
         v-tooltip="prevFacilityName"
         v-if="prevFacilityPath"
         :to="prevFacilityPath">
-        <i class="fal fa-fw fa-arrow-circle-left"/>
+        <i class="fal fa-fw fa-arrow-circle-up"/>
       </nuxt-link>
       <span
         v-else
         class="is-disabled">
-        <i class="fal fa-fw fa-arrow-circle-left"/>
+        <i class="fal fa-fw fa-arrow-circle-up"/>
       </span>
 
       <nuxt-link
         v-tooltip="nextFacilityName"
         v-if="nextFacilityPath"
         :to="nextFacilityPath">
-        <i class="fal fa-fw fa-arrow-circle-right"/>
+        <i class="fal fa-fw fa-arrow-circle-down"/>
       </nuxt-link>
       <span
         v-else
         class="is-disabled">
-        <i class="fal fa-fw fa-arrow-circle-right"/>
+        <i class="fal fa-fw fa-arrow-circle-down"/>
       </span>
     </nav>
   </header>
@@ -56,6 +57,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      facilitiesQuery: 'app/facilitiesQuery',
       previousPath: 'facility/previousPath',
       filteredFacilities: 'facility/filteredFacilities'
     }),
@@ -86,6 +88,10 @@ export default {
   },
 
   methods: {
+    backToFacilities(e) {
+      e.preventDefault()
+      this.$router.push({ path: this.path, query: this.facilitiesQuery })
+    },
     listenToNavKeys(e) {
       const isLeft = e.keyCode === 37
       const isUp = e.keyCode === 38
@@ -103,7 +109,7 @@ export default {
         }
       } else if (isLeft) {
         e.preventDefault()
-        this.$router.push({ path: this.path })
+        this.$router.push({ path: this.path, query: this.facilitiesQuery })
       }
     },
     updatePaths() {

@@ -142,10 +142,11 @@
       <DropdownSelection
         v-if="!searchOn"
         :name="'Size'"
+        :initial-selections="selectedSizes"
         :selections="sizes"
         :align-right-menu="true"
         class="filter-size"
-        @selected="handleSizeSelected"
+        @selected="handleSizesSelected"
       />
 
     </div>
@@ -182,6 +183,10 @@ export default {
       default: () => []
     },
     selectedStatuses: {
+      type: Array,
+      default: () => []
+    },
+    selectedSizes: {
       type: Array,
       default: () => []
     }
@@ -235,33 +240,16 @@ export default {
     }
   },
 
+  watch: {
+    selectedTechs() {
+      this.updateSelectedTechGroups()
+    }
+  },
+
   mounted() {
     EventBus.$on('facilities.filter.clear', this.clearFilter)
 
-    // Filter Group
-    const groups = this.simplifiedGroup.filter(
-      g => (g.type === 'source' && g.id !== FT.IMPORTS) || g.id === FT.PUMPS
-    )
-    const findSolarGroup = groups.find(g => g.id === FACILITY_GROUP_SOLAR)
-    const findBatteryGroup = groups.find(g => g.id === FACILITY_GROUP_BATTERY)
-
-    findSolarGroup.fields = [FT.SOLAR_UTILITY] // remove 'rooftop_solar'
-    findBatteryGroup.label = 'Battery' // rename battery discharging
-
-    groups.forEach(g => {
-      this.allTechs.push(g)
-
-      g.fields.forEach(f => {
-        if (
-          _includes(this.selectedTechs, f) &&
-          !_includes(this.selectedTechGroups, g.id)
-        ) {
-          this.selectedTechGroups.push(g.id)
-        }
-      })
-    })
-
-    // this.allTechs.reverse()
+    this.updateSelectedTechGroups()
   },
   beforeDestroy() {
     EventBus.$off('facilities.filter.clear')
@@ -270,6 +258,32 @@ export default {
     ...mapMutations({
       setSelectedTechGroups: 'facility/selectedTechGroups'
     }),
+
+    updateSelectedTechGroups() {
+      this.allTechs = []
+      const groups = this.simplifiedGroup.filter(
+        g => (g.type === 'source' && g.id !== FT.IMPORTS) || g.id === FT.PUMPS
+      )
+      const findSolarGroup = groups.find(g => g.id === FACILITY_GROUP_SOLAR)
+      const findBatteryGroup = groups.find(g => g.id === FACILITY_GROUP_BATTERY)
+
+      findSolarGroup.fields = [FT.SOLAR_UTILITY] // remove 'rooftop_solar'
+      findBatteryGroup.label = 'Battery' // rename battery discharging
+
+      groups.forEach(g => {
+        this.allTechs.push(g)
+
+        g.fields.forEach(f => {
+          if (
+            _includes(this.selectedTechs, f) &&
+            !_includes(this.selectedTechGroups, g.id)
+          ) {
+            this.selectedTechGroups.push(g.id)
+          }
+        })
+      })
+    },
+
     handleKeyup() {
       this.$emit('facilityNameFilter', this.filterFacilityName)
     },
@@ -376,8 +390,8 @@ export default {
       this.$emit('selectedStatuses', selectedStatuses)
     },
 
-    handleSizeSelected(size) {
-      this.$emit('selectedSize', size)
+    handleSizesSelected(sizes) {
+      this.$emit('selectedSizes', sizes)
     },
 
     handleViewSelect(view) {

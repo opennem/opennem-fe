@@ -2,16 +2,18 @@
   <div
     :class="{ 'is-active': dropdownActive }"
     class="dropdown">
-    <a
+    <button
       v-on-clickaway="handleClickAway"
-      class="dropdown-trigger"
+      class="dropdown-trigger button inverted"
       @click="handleClick"
     >
       <span>
         <strong>{{ viewLabel }}</strong>
-        <i class="fal fa-chevron-down" />
+        <i
+          :class="['fal dropdown-trigger-icon', dropdownActive ? 'fa-chevron-up' : 'fa-chevron-down']"
+        />
       </span>
-    </a>
+    </button>
 
     <transition name="slide-down-fade">
       <div
@@ -20,9 +22,9 @@
         <div class="dropdown-content">
           <nuxt-link
             v-for="view in views"
-            v-show="showLink(view.id)"
             :key="view.id"
-            :to="`/${view.id}/${regionId}/`"
+            :to="`/${view.id}/${getRegionId(view.id)}/`"
+            :class="{ 'nuxt-link-active': view.id === currentView }"
             class="dropdown-item"
             @click.native="handleViewClick(view.id)"
           >
@@ -35,7 +37,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
 import VIEWS from '~/constants/views.js'
 
@@ -50,12 +51,11 @@ export default {
   },
 
   computed: {
-    ...mapGetters({
-      featureAuEnergy: 'feature/auEnergy',
-      useV3: 'feature/v3Data'
-    }),
     regionId() {
       return this.$route.params.region
+    },
+    emissionsRegionId() {
+      return this.$route.name
     },
     currentView() {
       return this.$store.getters.currentView
@@ -82,18 +82,9 @@ export default {
     handleClickAway() {
       this.dropdownActive = false
     },
-    showLink(view) {
-      if (this.featureAuEnergy) {
-        return true
-      }
-      if (this.regionId === 'au' && view === 'energy') {
-        return false
-      }
-      if (!this.useV3 && view === 'stripes') {
-        return false
-      }
-
-      return true
+    getRegionId(viewId) {
+      const id = this.regionId || 'nem'
+      return viewId === 'emissions' ? 'au' : id
     }
   }
 }

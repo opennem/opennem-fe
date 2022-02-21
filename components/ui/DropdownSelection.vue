@@ -91,6 +91,12 @@ export default {
     })
   },
 
+  watch: {
+    initialSelections(val) {
+      this.selected = val
+    }
+  },
+
   created() {
     this.selected = this.initialSelections
   },
@@ -105,16 +111,16 @@ export default {
     },
     handleClick(val) {
       const isIncluded = _includes(this.selected, val)
+      let selected = _cloneDeep(this.selected)
       if (isIncluded) {
-        this.selected = this.selected.filter(d => d !== val)
+        selected = this.selected.filter(d => d !== val)
       } else {
-        this.selected.push(val)
+        selected.push(val)
       }
-      this.$emit('selected', _cloneDeep(this.selected))
+      this.$emit('selected', selected)
     },
     clearSelected() {
-      this.selected = []
-      this.$emit('selected', _cloneDeep(this.selected))
+      this.$emit('selected', _cloneDeep([]))
     },
     getLabel(selected) {
       const name = this.name

@@ -3,10 +3,11 @@
     <facility-filters
       :selected-techs="selectedTechs"
       :selected-statuses="selectedStatuses"
+      :selected-sizes="selectedSizes"
       class="facility-filters"
       @techsSelect="handleTechsSelected"
       @selectedStatuses="handleStatusesSelected"
-      @selectedSize="handleSizeSelected"
+      @selectedSizes="handleSizesSelected"
       @facilityNameFilter="handleFacilityNameFilter"
     />
 
@@ -55,7 +56,8 @@
         :hovered="hoveredFacility"
         :selected="selectedFacility"
         class="facility-map"
-        @facilitySelect="handleMapFacilitySelect" />
+        @facilitySelect="handleMapFacilitySelect"
+        @facilityOpen="handleMapFacilityOpen"/>
 
       <transition name="slide-up-fade">
         <facility-card
@@ -77,8 +79,14 @@ import _orderBy from 'lodash.orderby'
 import _cloneDeep from 'lodash.clonedeep'
 
 import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
-import { FACILITY_OPERATING } from '~/constants/facility-status.js'
-import { FACILITY_SIZE } from '~/constants/facility-size.js'
+import {
+  FACILITY_OPERATING,
+  isValidFacilityStatus
+} from '~/constants/facility-status.js'
+import {
+  FACILITY_SIZE,
+  isValidFacilitySize
+} from '~/constants/facility-size.js'
 
 import {
   FacilityRegions,
@@ -155,9 +163,9 @@ export default {
       facilityData: [],
       selectedFacility: null,
       hoveredFacility: null,
-      selectedStatuses: [FACILITY_OPERATING],
+      selectedStatuses: [],
       selectedTechs: [],
-      selectedSize: '',
+      selectedSizes: [],
       sortBy: 'displayName',
       orderBy: ASCENDING,
       totalFacilities: 0,
@@ -171,8 +179,7 @@ export default {
     ...mapGetters({
       hostEnv: 'hostEnv',
       windowWidth: 'app/windowWidth',
-      tabletBreak: 'app/tabletBreak',
-      useV3: 'feature/v3Data'
+      tabletBreak: 'app/tabletBreak'
     }),
     filteredFacilities: {
       get() {
@@ -201,6 +208,27 @@ export default {
     },
     isAllRegion() {
       return this.$route.params.region === 'au'
+    },
+
+    queryTech() {
+      const techs = this.$route.query.tech
+        ? this.$route.query.tech.split(',')
+        : []
+      return techs.filter(t => FUEL_TECHS.isValidFuelTech(t))
+    },
+
+    queryStatus() {
+      const statuses = this.$route.query.status
+        ? this.$route.query.status.split(',')
+        : []
+      return statuses.filter(t => isValidFacilityStatus(t))
+    },
+
+    querySize() {
+      const sizes = this.$route.query.size
+        ? this.$route.query.size.split(',')
+        : []
+      return sizes.filter(t => isValidFacilitySize(t))
     },
 
     facilitySortBy() {
@@ -235,7 +263,7 @@ export default {
     selectedStatuses() {
       this.updateFacilitiesData()
     },
-    selectedSize() {
+    selectedSizes() {
       this.updateFacilitiesData()
     },
     sortBy() {
@@ -253,8 +281,16 @@ export default {
     this.$store.dispatch('currentView', 'facilities')
     this.sortBy = this.facilitySortBy
     this.orderBy = this.facilityOrderBy
-    this.selectedStatuses = this.facilitySelectedStatuses
-    this.selectedTechs = this.facilitySelectedTechs
+    // this.selectedStatuses = this.facilitySelectedStatuses
+    this.selectedStatuses = this.queryStatus
+    this.selectedTechs = this.queryTech
+    this.selectedSizes = this.querySize
+
+    if (this.$route.query.status === undefined) {
+      // set default to operating
+      this.selectedStatuses = [FACILITY_OPERATING]
+      this.updateQuery()
+    }
 
     if (this.facilityDataset.length > 0) {
       this.facilityData = this.facilityDataset
@@ -267,16 +303,12 @@ export default {
   methods: {
     ...mapMutations({
       previousPath: 'facility/previousPath',
-      setFilteredFacilities: 'facility/filteredFacilities'
+      setFilteredFacilities: 'facility/filteredFacilities',
+      setQuery: 'app/facilitiesQuery'
     }),
     fetchData() {
       const urls = []
-
-      if (this.useV3) {
-        urls.push('/v3/geo/au_facilities.json')
-      } else {
-        urls.push('/facility/facility_registry.json')
-      }
+      urls.push('/v3/geo/au_facilities.json')
 
       if (urls.length > 0) {
         Http(urls)
@@ -292,26 +324,14 @@ export default {
     },
 
     handleResponses(responses) {
-      if (this.useV3) {
-        if (responses.length > 0 && responses[0].features) {
-          FacilityDataParse.flattenV3(responses[0].features).then(res => {
-            this.facilityData = res
-            this.ready = true
-            this.$store.dispatch('facility/dataset', res)
-          })
-        } else {
-          console.warn('There is an issue parsing the response.')
-        }
+      if (responses.length > 0 && responses[0].features) {
+        FacilityDataParse.flattenV3(responses[0].features).then(res => {
+          this.facilityData = res
+          this.ready = true
+          this.$store.dispatch('facility/dataset', res)
+        })
       } else {
-        if (responses.length > 0 && responses[0]) {
-          FacilityDataParse.flatten(responses[0]).then(res => {
-            this.facilityData = res
-            this.ready = true
-            this.$store.dispatch('facility/dataset', res)
-          })
-        } else {
-          console.warn('There is an issue parsing the response.')
-        }
+        console.warn('There is an issue parsing the response.')
       }
     },
 
@@ -369,12 +389,12 @@ export default {
       )
 
       const filtered = sortedData.filter(d => {
-        if (this.selectedSize.length === 0) {
+        if (this.selectedSizes.length === 0) {
           return true
         }
 
         let check = false
-        this.selectedSize.forEach(s => {
+        this.selectedSizes.forEach(s => {
           if (FACILITY_SIZE[s](d.generatorCap)) {
             check = true
           }
@@ -460,13 +480,9 @@ export default {
       this.handleFacilitySelect(find, false)
     },
     handleFacilitySelect(facility, shouldZoom) {
-      if (facility) {
-        this.$router.push({ query: { selected: facility.facilityId } })
-      } else {
-        this.$router.push({ query: {} })
-      }
       this.selectedFacility = facility
       this.shouldZoomWhenSelected = shouldZoom
+      this.updateQuery()
     },
     handleFacilityHover(facility, shouldZoom) {
       this.hoveredFacility = facility
@@ -475,20 +491,60 @@ export default {
     handleFacilityOut() {
       this.hoveredFacility = null
     },
+    getQuery(selectedFacility, techs, statuses, sizes) {
+      const join = arr => (arr.length > 0 ? arr.join(',') : '')
+      const query = {}
+
+      if (selectedFacility) {
+        query.selected = selectedFacility.facilityId
+      }
+      if (techs.length) {
+        query.tech = join(techs)
+      }
+      if (statuses.length) {
+        query.status = join(statuses)
+      }
+      if (sizes.length) {
+        query.size = join(sizes)
+      }
+
+      return query
+    },
+    updateQuery() {
+      const query = this.getQuery(
+        this.selectedFacility,
+        this.selectedTechs,
+        this.selectedStatuses,
+        this.selectedSizes
+      )
+
+      this.setQuery(query)
+      this.$router.push({
+        params: { region: this.regionId },
+        query
+      })
+    },
     handleTechsSelected(techs) {
       this.selectedTechs = techs
-      this.$store.dispatch('facility/selectedTechs', this.selectedTechs)
+      this.$store.dispatch('facility/selectedTechs', techs)
+      this.updateQuery()
     },
     handleStatusesSelected(statuses) {
       this.selectedStatuses = statuses
-      this.$store.dispatch('facility/selectedStatuses', this.selectedStatuses)
+      this.$store.dispatch('facility/selectedStatuses', statuses)
+      this.updateQuery()
     },
-    handleSizeSelected(size) {
-      this.selectedSize = size
-      this.$store.dispatch('facility/selectedSize', this.selectedSize)
+    handleSizesSelected(sizes) {
+      this.selectedSizes = sizes
+      this.$store.dispatch('facility/selectedSizes', sizes)
+      this.updateQuery()
     },
     handleCloseDetail() {
       this.selectedFacility = null
+    },
+    handleMapFacilityOpen(facilityId) {
+      const find = this.facilityData.find(f => f.facilityId === facilityId)
+      this.handleOpenFacilityView(find)
     },
     handleOpenFacilityView(facility) {
       this.handleFacilitySelect(facility, true)

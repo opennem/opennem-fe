@@ -127,6 +127,10 @@ export default {
     interval: {
       type: String,
       default: null
+    },
+    filterPeriod: {
+      type: String,
+      default: null
     }
   },
 
@@ -166,6 +170,9 @@ export default {
     queryFilter() {
       return this.$route.query.filter
     },
+    isWemOrAu() {
+      return this.regionId === 'wem' || this.regionId === 'au'
+    },
     isPowerRange() {
       return (
         this.selectedRange === RANGE_1D ||
@@ -202,7 +209,7 @@ export default {
         range = getRangeByRangeQuery(this.queryRange)
         interval = getIntervalByIntervalQuery(this.queryInterval)
 
-        if (this.regionId === 'wem' && interval === INTERVAL_5MIN) {
+        if (this.isWemOrAu && interval === INTERVAL_5MIN) {
           interval = INTERVAL_30MIN
           this.updateQuery(range, interval, filter)
         }
@@ -261,7 +268,7 @@ export default {
     setSelectedRangeIntervals(selected) {
       if (selected !== '') {
         let intervals = this.intervals[selected]
-        if (this.regionId === 'wem' && this.isPowerRange) {
+        if (this.isWemOrAu && this.isPowerRange) {
           intervals = ['30m']
         }
         this.selectedRangeIntervals = intervals
@@ -326,7 +333,7 @@ export default {
 
     intervalLabel(interval) {
       if (this.selectedFilter === FILTER_NONE) {
-        return this.getIntervalLabel(this.interval)
+        return this.getIntervalLabel(interval)
       } else {
         return this.selectedFilter
       }
@@ -390,7 +397,7 @@ export default {
           console.log('nothing yet')
       }
 
-      if (this.regionId === 'wem' && isPower) {
+      if (this.isWemOrAu && isPower) {
         interval = '30m'
       }
 
@@ -408,6 +415,7 @@ export default {
       this.$store.dispatch('compareDates', [])
 
       this.updateQuery(range, this.selectedInterval, this.selectedFilter)
+      this.$emit('rangeOptionChange', range)
     },
 
     handleIntervalChange(interval) {

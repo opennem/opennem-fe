@@ -39,12 +39,11 @@ export const actions = {
     commit('selectedFields', [])
   },
 
-  async submit({}, payload) {
-    const res = await http.request({
+  submit({}, payload) {
+    return http.request({
       url: '/feedback',
       method: 'post',
       data: payload
     })
-    return res
   }
 }

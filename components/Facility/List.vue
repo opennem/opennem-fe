@@ -63,9 +63,9 @@
         'is-inactive': !active(facility.status)
       }"
       class="card"
-      @mouseover="handleRowHover(facility)"
+      @mouseover="isTouchDevice ? handleRowClick(facility) : handleRowHover(facility)"
       @mouseout="handleRowOut"
-      @click="handleRowClick(facility)"
+      @click="isTouchDevice ? handleRowDoubleClick(facility) : handleRowClick(facility)"
       @dblclick="handleRowDoubleClick(facility)"
     >
       <div
@@ -270,7 +270,7 @@ export default {
     ...mapGetters({
       windowWidth: 'app/windowWidth',
       tabletBreak: 'app/tabletBreak',
-      useV3: 'feature/v3Data'
+      isTouchDevice: 'app/isTouchDevice'
     }),
     queryFacilityId() {
       return this.$route.query.selected
@@ -739,8 +739,6 @@ export default {
   }
 }
 
-.name-col {
-}
 .region-col {
   width: 11%;
 

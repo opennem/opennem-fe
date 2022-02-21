@@ -27,7 +27,7 @@
                 :key="type"
                 :class="{'is-selected': chartType === type}"
                 class="button is-small"
-                @click.stop="handleTypeClick(type)">{{ chartLabel[type] }}</button>
+                @click.stop="() => handleTypeClick(type)">{{ chartLabel[type] }}</button>
             </div>
           </fieldset>
 
@@ -99,6 +99,10 @@ export default {
         }
       }
     },
+    si: {
+      type: Array,
+      default: () => []
+    },
     chartShown: {
       type: Boolean,
       default: false
@@ -157,7 +161,7 @@ export default {
       return this.options.yAxis || []
     },
     prefixes() {
-      return this.options.si || []
+      return this.si
     },
     isLineType() {
       return this.chartType === CHART_LINE

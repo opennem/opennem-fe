@@ -6,14 +6,22 @@ import * as RenewableFossilGroup from './group-renewable-fossil.js'
 import * as SolarResidualGroup from './group-solar-residual.js'
 import * as CoalGasRenewablesGroup from './group-coal-gas-renewables.js'
 
-export const Groups = {
-  Default: DefaultGroup, // default group is just the root power/energy
-  Simplified: SimplifiedGroup,
-  'Coal/Gas/Renewables': CoalGasRenewablesGroup,
-  Flexibility: FlexibilityGroup,
-  'Renewable/Fossil': RenewableFossilGroup,
-  'Solar/Residual': SolarResidualGroup
-}
+export const GROUP_DEFAULT = 'Default'
+export const GROUP_SIMPLIFIED = 'Simplified'
+export const GROUP_COAL_GAS_RENEWABLES = 'Coal/Gas/Renewables'
+export const GROUP_FLEXIBILITY = 'Flexibility'
+export const GROUP_RENEWABLE_FOSSIL = 'Renewable/Fossil'
+export const GROUP_SOLAR_RESIDUAL = 'Solar/Residual'
+
+export const Groups = {}
+Groups[GROUP_DEFAULT] = DefaultGroup // default group is just the root power/energy
+Groups[GROUP_SIMPLIFIED] = SimplifiedGroup
+Groups[GROUP_COAL_GAS_RENEWABLES] = CoalGasRenewablesGroup
+Groups[GROUP_FLEXIBILITY] = FlexibilityGroup
+Groups[GROUP_RENEWABLE_FOSSIL] = RenewableFossilGroup
+Groups[GROUP_SOLAR_RESIDUAL] = SolarResidualGroup
+
+export const ftGroups = Object.keys(Groups)
 
 export function getAllGroups(powerEnergyDomains, type) {
   const parsed = {}

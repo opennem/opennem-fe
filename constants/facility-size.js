@@ -1,7 +1,7 @@
-export const FACILITY_LESS_THAN_1_MW = 'FACILITY_LESS_THAN_1_MW'
-export const FACILITY_1_TO_5_MW = 'FACILITY_1_TO_5_MW'
-export const FACILITY_5_TO_30_MW = 'FACILITY_5_TO_30_MW'
-export const FACILITY_MORE_THAN_30_MW = 'FACILITY_MORE_THAN_30_MW'
+export const FACILITY_LESS_THAN_1_MW = 'less_than_1_mw'
+export const FACILITY_1_TO_5_MW = '1_to_5_mw'
+export const FACILITY_5_TO_30_MW = '5_to_30_mw'
+export const FACILITY_MORE_THAN_30_MW = 'more_than_30_mw'
 
 export const FACILITY_SIZE = {}
 FACILITY_SIZE[FACILITY_LESS_THAN_1_MW] = val => val < 1
@@ -31,4 +31,9 @@ export const FacilitySize = [
 export function getFacilitySizeLabelById(id) {
   const find = FacilitySize.find(s => s.id === id)
   return find ? find.label : ''
+}
+
+export function isValidFacilitySize(id) {
+  const find = FacilitySize.find(s => s.id === id)
+  return find ? true : false
 }
