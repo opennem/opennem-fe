@@ -34,7 +34,9 @@ const getBaseUrl = () => {
     baseUrl = process.env.DATA_BASE_URL
   }
 
-  console.info('baseUrl', baseUrl)
+  console.info('baseUrl', baseUrl, host)
+  console.info('host', host)
+  console.info('env', process.env.DATA_BASE_URL)
 
   return baseUrl
 }
