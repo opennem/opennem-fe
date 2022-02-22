@@ -18,44 +18,6 @@ import { getVolWeightedPriceDomains } from '@/data/parse/region-energy/process/g
 
 let request = null
 
-const getApiBaseUrl = () => {
-  let apiBaseUrl = `https://api.opennem.org.au`
-  let host = undefined
-  if (typeof window !== 'undefined') {
-    host = window.location.host
-  }
-
-  if (
-    host &&
-    (host === 'localhost:3000' ||
-      host.startsWith('127') ||
-      host.startsWith('192') ||
-      host.startsWith('localhost'))
-  ) {
-    apiBaseUrl = `/api`
-  }
-
-  if (host && host.startsWith('dev')) {
-    apiBaseUrl = `https://api.dev.opennem.org.au`
-  }
-
-  if (process.env.API_BASE_URL !== undefined) {
-    apiBaseUrl = process.env.API_BASE_URL
-  }
-
-  console.info('apiBaseUrl', apiBaseUrl)
-
-  return apiBaseUrl
-}
-
-const http = axios.create({
-  baseURL: getApiBaseUrl(),
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json'
-  }
-})
-
 const stationPath = (country, network, facility) =>
   `/station/${country}/${network}/${facility}`
 const statsPath = (type, networkRegion, code, query) =>
