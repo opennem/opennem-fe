@@ -77,6 +77,7 @@
       :chart-height="250"
       :y-max="facilityRegisteredCapacity"
       :filter-period="filterPeriod"
+      :power-options="powerOptions"
     />
   </div>
 </template>
@@ -84,7 +85,18 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
+import * as OPTIONS from '@/constants/chart-options.js'
 import PowerEnergyChart from '@/components/Charts/PowerEnergyChart'
+
+const powerOptions = {
+  type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_STACKED],
+  curve: [
+    OPTIONS.CHART_CURVE_SMOOTH,
+    OPTIONS.CHART_CURVE_STEP,
+    OPTIONS.CHART_CURVE_STRAIGHT
+  ],
+  yAxis: [OPTIONS.CHART_YAXIS_ABSOLUTE, OPTIONS.CHART_YAXIS_PERCENTAGE]
+}
 
 export default {
   components: {
@@ -99,6 +111,12 @@ export default {
     selectedTechs: {
       type: Array,
       default: () => []
+    }
+  },
+
+  data() {
+    return {
+      powerOptions
     }
   },
 
@@ -172,6 +190,11 @@ export default {
   },
 
   watch: {
+    facility(val) {
+      if (val) {
+        this.getFacility()
+      }
+    },
     selectedFacilityUnitsDataset(val) {
       console.log('watch', val)
     },
