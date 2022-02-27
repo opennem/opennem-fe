@@ -6,69 +6,86 @@
       <i class="fal fa-times" />
     </a>
 
-    <div>
-      <div class="facility-name">
-        {{ facility.displayName }}
-      </div>
-
-      <!-- <div class="fuel-tech-colour-wrapper">
-        <div
-          v-for="(ft, ftIndex) in facility.fuelTechs"
-          :key="ftIndex"
-          :style="{ 
-            backgroundColor: getColour(ft),
-          }"
-          class="source-colour" />
-      </div> -->
+    <div class="facility-card-header">
+      <div>
+        <div class="facility-name">
+          <nuxt-link
+            v-tooltip="'View facility info'"
+            :to="{
+              path: facilityPath
+            }"
+            class="facility-info-link">
+            <i class="fal fa-external-link-square"/>
+            {{ facility.displayName }}
+          </nuxt-link>
+        </div>
       
-      <div class="region">
-        {{ region }}
+        <div class="region">
+          {{ regionLabel }}
+        </div>
+
+        <div class="fuel-techs">
+          <span
+            v-for="(ft, genFtIndex) in facility.genFuelTechs"
+            :key="genFtIndex"
+          >
+            {{ getFtLabel(ft) }}
+            <small v-if="facility.genFuelTechs.length > 1">
+              ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span><span v-else>MW</span>)
+            </small><span v-if="genFtIndex !== facility.genFuelTechs.length - 1">,</span> 
+          </span>
+          <span v-if="facility.loadFuelTechs.length && facility.genFuelTechs.length">,</span>
+          <em
+            v-for="(ft, loadFtIndex) in facility.loadFuelTechs"
+            :key="loadFtIndex"
+          >
+            {{ getFtLabel(ft) }}
+            <small>
+              ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span><span v-else>MW</span>)
+            </small><span v-if="loadFtIndex !== facility.loadFuelTechs.length - 1">,</span>
+          </em>
+        </div>
       </div>
 
-      <div class="fuel-techs">
-        <span
-          v-for="(ft, genFtIndex) in facility.genFuelTechs"
-          :key="genFtIndex"
-        >
-          {{ getFtLabel(ft) }}
-          <small v-if="facility.genFuelTechs.length > 1">
-            ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span><span v-else>MW</span>)
-          </small><span v-if="genFtIndex !== facility.genFuelTechs.length - 1">,</span> 
-        </span>
-        <span v-if="facility.loadFuelTechs.length && facility.genFuelTechs.length">,</span>
-        <em
-          v-for="(ft, loadFtIndex) in facility.loadFuelTechs"
-          :key="loadFtIndex"
-        >
-          {{ getFtLabel(ft) }}
-          <small>
-            ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span><span v-else>MW</span>)
-          </small><span v-if="loadFtIndex !== facility.loadFuelTechs.length - 1">,</span>
-        </em>
+      <div class="capacity-wrapper">
+        <span class="capacity-label">Generator capacity</span>
+        <div v-show="facility.generatorCap">
+          {{ generatorCap | facilityFormatNumber }}
+          <span 
+            v-if="generatorCap !== 0 && generatorCap < 1" 
+            class="unit">kW</span><span 
+              v-if="generatorCap !== 0 && generatorCap >= 1" 
+              class="unit">MW</span>
+        </div>
+        <div v-show="!facility.generatorCap">
+          –
+        </div>
       </div>
     </div>
-
-    <div class="capacity-wrapper">
-      <div v-show="facility.generatorCap">
-        {{ generatorCap | facilityFormatNumber }}
-        <span 
-          v-if="generatorCap !== 0 && generatorCap < 1" 
-          class="unit">kW</span><span 
-            v-if="generatorCap !== 0 && generatorCap >= 1" 
-            class="unit">MW</span>
-      </div>
-      <div v-show="!facility.generatorCap">
-        –
-      </div>
-    </div>
+    
 
     <!-- :hover-on="isHovering"
       :hover-date="hoverDate"
       :zoom-extent="zoomExtent" -->
-
-
+    <transition name="fade">
+      <div
+        v-if="!fetchingStats && selectedFacilityUnitsDataset.length === 0"
+        class="not-found-card card">
+        <i class="fal fa-chart-area"/>
+        <div>
+          <span v-if="selectedFacilityError">{{ selectedFacilityErrorMessage }}</span>
+          <span v-else>Facility statistics data not available</span>
+        </div>
+      </div>
+    </transition>
+  
+    <transition name="fade">
+      <Loader
+        v-if="fetchingStats || fetchingFacility"
+        class="facility-chart-loader" />
+    </transition>
     <PowerEnergyChart
-      v-if="!fetchingStats && selectedFacilityUnitsDataset.length > 0"
+      v-if="!fetchingStats && !fetchingFacility && selectedFacilityUnitsDataset.length > 0"
       :power-energy-dataset="selectedFacilityUnitsDataset"
       :domain-power-energy="powerEnergyDomains"
       :range="range"
@@ -78,6 +95,12 @@
       :y-max="facilityRegisteredCapacity"
       :filter-period="filterPeriod"
       :power-options="powerOptions"
+      :hover-on="isHovering"
+      :hover-date="hoverDate"
+      :zoom-extent="zoomExtent"
+      @dateHover="handleDateHover"
+      @isHovering="handleIsHovering"
+      @zoomExtent="handleZoomExtent"
     />
   </div>
 </template>
@@ -86,7 +109,10 @@
 import { mapGetters, mapActions } from 'vuex'
 import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 import * as OPTIONS from '@/constants/chart-options.js'
+import { FacilityRegions } from '~/constants/facility-regions.js'
+import DateDisplay from '@/services/DateDisplay.js'
 import PowerEnergyChart from '@/components/Charts/PowerEnergyChart'
+import Loader from '@/components/ui/Loader'
 
 const powerOptions = {
   type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_STACKED],
@@ -100,7 +126,8 @@ const powerOptions = {
 
 export default {
   components: {
-    PowerEnergyChart
+    PowerEnergyChart,
+    Loader
   },
 
   props: {
@@ -116,14 +143,20 @@ export default {
 
   data() {
     return {
-      powerOptions
+      powerOptions,
+      zoomExtent: [],
+      isHovering: false,
+      hoverDate: null
     }
   },
 
   computed: {
     ...mapGetters({
+      fetchingFacility: 'facility/fetchingFacility',
       fetchingStats: 'facility/fetchingStats',
       selectedFacilityUnitsDataset: 'facility/selectedFacilityUnitsDataset',
+      selectedFacilityError: 'facility/selectedFacilityError',
+      selectedFacilityErrorMessage: 'facility/selectedFacilityErrorMessage',
 
       range: 'facility/range',
       interval: 'facility/interval',
@@ -162,6 +195,19 @@ export default {
         return this.facility.regionId
       }
       return ''
+    },
+
+    regionLabel() {
+      const region = FacilityRegions.find(d => d.id === this.region)
+      return region ? region.label : ''
+    },
+
+    facilityPath() {
+      return `/facility/${encodeURIComponent(
+        this.facility.country
+      )}/${encodeURIComponent(this.facility.network)}/${encodeURIComponent(
+        this.facility.facilityId
+      )}/`
     },
 
     generatorCap() {
@@ -239,14 +285,8 @@ export default {
       doUpdateXTicks: 'visInteract/doUpdateXTicks'
     }),
 
-    getFacility() {
-      console.log(
-        this.facility,
-        this.facility.country,
-        this.facility.facilityId,
-        this.facility.network
-      )
-      this.doGetFacilityByCode({
+    async getFacility() {
+      await this.doGetFacilityByCode({
         countryCode: this.facility.country,
         networkCode: this.facility.network,
         facilityCode: this.facility.facilityId
@@ -285,27 +325,64 @@ export default {
 
     close() {
       this.$emit('close')
+    },
+
+    handleZoomExtent(dateRange) {
+      let filteredDates = []
+      if (dateRange && dateRange.length > 0) {
+        let startTime = DateDisplay.snapToClosestInterval(
+          this.interval,
+          dateRange[0]
+        )
+        let endTime = DateDisplay.snapToClosestInterval(
+          this.interval,
+          dateRange[1]
+        )
+
+        filteredDates = [startTime, endTime]
+      } else {
+        filteredDates = []
+      }
+
+      this.zoomExtent = filteredDates
+    },
+
+    handleDateHover(date) {
+      this.hoverDate = DateDisplay.getClosestDateByInterval(
+        date,
+        this.interval,
+        this.filterPeriod
+      )
+    },
+    handleIsHovering(hovering) {
+      this.isHovering = hovering
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@import '~/assets/scss/responsive-mixins.scss';
+@import '~/assets/scss/variables.scss';
+
 .facility-card {
   box-shadow: -10px 0 15px rgba(100, 100, 100, 0.1);
   background-color: #fff;
   position: fixed;
-  height: 40vh;
-  left: 50vw;
-  right: 5rem;
+  height: 43vh;
+  left: 0;
+  right: 2rem;
   bottom: 0;
-  margin-left: 4rem;
+  margin-left: 2rem;
   z-index: 100;
-  padding: 10px 40px;
-  // display: flex;
-  // justify-content: space-between;
-  // align-items: center;
+  padding: 2rem 2rem 2rem 20px;
   border-radius: 10px;
+
+  @include tablet {
+    left: 50vw;
+    margin-left: 1rem;
+    right: 2rem;
+  }
 
   .close-btn {
     position: absolute;
@@ -315,6 +392,7 @@ export default {
 
   .facility-name {
     font-weight: 600;
+    font-size: 1.3rem;
   }
 
   .region {
@@ -328,12 +406,29 @@ export default {
   }
 }
 
+.facility-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-left: 10px;
+}
+
 .capacity-wrapper {
   font-size: 20px;
+  line-height: 1.2;
+  text-align: right;
 
   .unit {
     font-size: 12px;
     margin-left: -2px;
+  }
+
+  span.capacity-label {
+    font-family: $header-font-family;
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
   }
 }
 
@@ -347,5 +442,33 @@ export default {
 .source-colour {
   width: 6px;
   height: 100%;
+}
+
+.facility-chart-loader {
+  position: absolute;
+  margin: 100px auto 0;
+  left: 45%;
+}
+
+.not-found-card {
+  height: 250px;
+  margin-left: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  flex-wrap: wrap;
+  box-shadow: none;
+  color: #888;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  i {
+    font-size: 1.3em;
+    width: 100%;
+    text-align: center;
+  }
+  span {
+    font-size: 0.9em;
+  }
 }
 </style>

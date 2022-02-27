@@ -379,8 +379,18 @@ export const actions = {
       })
   },
 
+  resetSelectedFacilityUnits({ commit }) {
+    commit('selectedFacilityUnits', [])
+    commit('selectedFacilityUnitsDataset', [])
+    commit('selectedFacilityUnitsDatasetFlat', [])
+    commit('domainPowerEnergy', [])
+    commit('domainEmissions', [])
+    commit('domainMarketValue', [])
+    commit('domainVolWeightedPrices', [])
+  },
+
   doGetStationStats(
-    { commit, getters, rootGetters },
+    { commit, getters, rootGetters, dispatch },
     { networkRegion, facilityCode, facilityFuelTechsColours }
   ) {
     const displayTz = rootGetters.displayTimeZone
@@ -415,14 +425,8 @@ export const actions = {
     request = axios.CancelToken.source()
 
     commit('fetchingStats', true)
-    commit('selectedFacilityUnitsDataset', [])
-    commit('selectedFacilityUnitsDatasetFlat', [])
-    commit('selectedFacilityUnits', [])
-    commit('domainPowerEnergy', [])
-    commit('domainEmissions', [])
-    commit('domainMarketValue', [])
-    commit('domainVolWeightedPrices', [])
     commit('dataType', type)
+    dispatch('resetSelectedFacilityUnits')
 
     http
       .get(ref, {

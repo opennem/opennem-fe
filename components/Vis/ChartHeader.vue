@@ -11,7 +11,9 @@
       <div class="average-value">
         <slot name="average-value" />
       </div>
-      <div class="hover-date">
+      <div 
+        v-if="hasHoverDate" 
+        class="hover-date">
         <time>
           <slot name="hover-date" />
         </time>
@@ -27,6 +29,10 @@
 export default {
   props: {
     chartShown: {
+      type: Boolean,
+      default: false
+    },
+    hasHoverDate: {
       type: Boolean,
       default: false
     }

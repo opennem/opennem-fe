@@ -182,7 +182,6 @@ export default {
       }
     },
     onMapLoaded(event) {
-      console.log('load')
       this.map = event.map
       this.popup = new AnimatedPopup(popupOptions(10))
       this.selectedPopup = new AnimatedPopup(popupOptions(0, 'selected'))
@@ -336,7 +335,7 @@ export default {
           .addTo(this.map)
 
         if (flyTo) {
-          this.map.flyTo({
+          this.map.jumpTo({
             center: coordinates,
             zoom: 8,
             speed: 1.8,
