@@ -472,7 +472,7 @@ export default {
       // const url =
       //   'https://data.dev.opennem.org.au/nggi/nggi-emissions-2001-2021-quarterly.csv'
       const url =
-        'https://data.dev.opennem.org.au/nggi/nggi-emissions-2001-June2021-quarterly.csv'
+        'https://data.dev.opennem.org.au/nggi/nggi-emissions-2001-September2021-quarterly.csv'
 
       this.$axios
         .get(url, { headers: { 'Content-Type': 'text/csv' } })
