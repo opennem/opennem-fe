@@ -1,7 +1,7 @@
 <template>
   <div class="facility-card">
-    <a
-      class="close-btn"
+    <a 
+      class="close-btn" 
       @click="close">
       <i class="fal fa-times" />
     </a>
@@ -14,35 +14,42 @@
             :to="{
               path: facilityPath
             }"
-            class="facility-info-link">
-            <i class="fal fa-external-link-square"/>
+            class="facility-info-link"
+          >
+            <i class="fal fa-external-link-square" />
             {{ facility.displayName }}
           </nuxt-link>
         </div>
-      
-        <div class="region">
-          {{ regionLabel }}
-        </div>
+
+        <div class="region">{{ regionLabel }}</div>
 
         <div class="fuel-techs">
-          <span
-            v-for="(ft, genFtIndex) in facility.genFuelTechs"
-            :key="genFtIndex"
-          >
+          <span 
+            v-for="(ft, genFtIndex) in facility.genFuelTechs" 
+            :key="genFtIndex">
             {{ getFtLabel(ft) }}
             <small v-if="facility.genFuelTechs.length > 1">
-              ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span><span v-else>MW</span>)
-            </small><span v-if="genFtIndex !== facility.genFuelTechs.length - 1">,</span> 
+              ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}
+              <span
+                v-if="facility.fuelTechRegisteredCap[ft] < 1"
+              >kW</span>
+              <span v-else>MW</span>)
+            </small>
+            <span v-if="genFtIndex !== facility.genFuelTechs.length - 1">,</span>
           </span>
           <span v-if="facility.loadFuelTechs.length && facility.genFuelTechs.length">,</span>
-          <em
-            v-for="(ft, loadFtIndex) in facility.loadFuelTechs"
-            :key="loadFtIndex"
-          >
+          <em 
+            v-for="(ft, loadFtIndex) in facility.loadFuelTechs" 
+            :key="loadFtIndex">
             {{ getFtLabel(ft) }}
             <small>
-              ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span><span v-else>MW</span>)
-            </small><span v-if="loadFtIndex !== facility.loadFuelTechs.length - 1">,</span>
+              ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}
+              <span
+                v-if="facility.fuelTechRegisteredCap[ft] < 1"
+              >kW</span>
+              <span v-else>MW</span>)
+            </small>
+            <span v-if="loadFtIndex !== facility.loadFuelTechs.length - 1">,</span>
           </em>
         </div>
       </div>
@@ -51,37 +58,37 @@
         <span class="capacity-label">Generator capacity</span>
         <div v-show="facility.generatorCap">
           {{ generatorCap | facilityFormatNumber }}
+          <span
+            v-if="generatorCap !== 0 && generatorCap < 1"
+            class="unit"
+          >kW</span>
           <span 
-            v-if="generatorCap !== 0 && generatorCap < 1" 
-            class="unit">kW</span><span 
-              v-if="generatorCap !== 0 && generatorCap >= 1" 
-              class="unit">MW</span>
+            v-if="generatorCap !== 0 && generatorCap >= 1" 
+            class="unit">MW</span>
         </div>
-        <div v-show="!facility.generatorCap">
-          –
-        </div>
+        <div v-show="!facility.generatorCap">–</div>
       </div>
     </div>
-    
 
     <!-- :hover-on="isHovering"
       :hover-date="hoverDate"
-      :zoom-extent="zoomExtent" -->
+    :zoom-extent="zoomExtent"-->
     <transition name="fade">
       <div
         v-if="!fetchingStats && selectedFacilityUnitsDataset.length === 0"
-        class="not-found-card card">
-        <i class="fal fa-chart-area"/>
+        class="not-found-card card"
+      >
+        <i class="fal fa-chart-area" />
         <div>
           <span v-if="selectedFacilityError">{{ selectedFacilityErrorMessage }}</span>
           <span v-else>Facility statistics data not available</span>
         </div>
       </div>
     </transition>
-  
+
     <transition name="fade">
-      <Loader
-        v-if="fetchingStats || fetchingFacility"
+      <Loader 
+        v-if="fetchingStats || fetchingFacility" 
         class="facility-chart-loader" />
     </transition>
     <PowerEnergyChart
@@ -106,10 +113,12 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 import * as OPTIONS from '@/constants/chart-options.js'
 import { FacilityRegions } from '~/constants/facility-regions.js'
+import { RANGE_3D } from '@/constants/ranges.js'
+import { INTERVAL_30MIN } from '@/constants/interval-filters.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import PowerEnergyChart from '@/components/Charts/PowerEnergyChart'
 import Loader from '@/components/ui/Loader'
@@ -241,11 +250,7 @@ export default {
         this.getFacility()
       }
     },
-    selectedFacilityUnitsDataset(val) {
-      console.log('watch', val)
-    },
     selectedFacility(val) {
-      console.log('watch', val)
       if (val) {
         this.getFacilityStats()
       }
@@ -258,25 +263,31 @@ export default {
           end: dataset[dataset.length - 1].time
         })
 
-        // this.doUpdateXTicks({
-        //   range: this.range,
-        //   interval: this.interval,
-        //   isZoomed: this.zoomExtent.length > 0,
-        //   filterPeriod: this.filterPeriod
-        // })
-
-        // this.updateYGuides()
+        this.setYGuides([
+          {
+            value: this.facilityRegisteredCapacity,
+            text: 'Registered Capacity'
+          }
+        ])
       }
-      // clear dates
-      // this.setFocusDate(null)
     }
   },
 
   created() {
+    this.setRange(RANGE_3D)
+    this.setInterval(INTERVAL_30MIN)
     this.getFacility()
   },
 
   methods: {
+    ...mapMutations({
+      setRange: 'facility/range',
+      setInterval: 'facility/interval',
+      setFilterPeriod: 'facility/filterPeriod',
+
+      setYGuides: 'visInteract/yGuides'
+    }),
+
     ...mapActions({
       doGetFacilityByCode: 'facility/doGetFacilityByCode',
       doGetStationStats: 'facility/doGetStationStats',
@@ -369,11 +380,11 @@ export default {
   box-shadow: -10px 0 15px rgba(100, 100, 100, 0.1);
   background-color: #fff;
   position: fixed;
-  height: 43vh;
+  height: 420px;
   left: 0;
-  right: 2rem;
+  right: 0;
   bottom: 0;
-  margin-left: 2rem;
+  margin-left: 0;
   z-index: 100;
   padding: 2rem 2rem 2rem 20px;
   border-radius: 10px;

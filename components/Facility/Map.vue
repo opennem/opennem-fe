@@ -159,6 +159,7 @@ export default {
     this.popup = null
     this.source = null
     this.layer = null
+    this.facilityJump = false
     this.bounds = new this.$mapbox.LngLatBounds()
     this.scale = new this.$mapbox.ScaleControl()
   },
@@ -237,8 +238,17 @@ export default {
         this.removePopup(this.popup)
       })
 
+      this.map.on('moveend', () => {
+        if (this.facilityJump) {
+          this.facilityJump = false
+          this.map.panBy([0, 150], { duration: 250 })
+        }
+      })
+
       if (this.selected) {
-        this.displayPopup(this.selected, this.selectedPopup, true)
+        setTimeout(() => {
+          this.displayPopup(this.selected, this.selectedPopup, true)
+        }, 1000)
       }
     },
 
@@ -335,11 +345,10 @@ export default {
           .addTo(this.map)
 
         if (flyTo) {
+          this.facilityJump = true
           this.map.jumpTo({
             center: coordinates,
-            zoom: 8,
-            speed: 1.8,
-            curve: 1.8
+            zoom: 8
           })
         }
       }
