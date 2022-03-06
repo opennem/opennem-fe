@@ -1,13 +1,24 @@
 import _cloneDeep from 'lodash.clonedeep'
 import _includes from 'lodash.includes'
+import _sortBy from 'lodash.sortby'
+import _uniq from 'lodash.uniq'
+
 import axios from 'axios'
+
+import { interpolateRgb, quantize } from 'd3-interpolate'
+import { color } from 'd3-color'
 
 import http from '@/services/Api.js'
 import PerfTime from '@/plugins/perfTime.js'
-import { FACILITY_OPERATING } from '@/constants/facility-status.js'
+import { mutateDate } from '@/services/datetime-helpers.js'
+import {
+  DEFAULT_FUEL_TECH_COLOUR,
+  FUEL_TECH_CATEGORY
+} from '@/constants/energy-fuel-techs/group-default.js'
 import { isPowerRange, RANGE_7D } from '@/constants/ranges.js'
 import { INTERVAL_30MIN } from '@/constants/interval-filters.js'
 import { MAP_STYLE_LIGHT } from '@/constants/facilities/map-styles.js'
+import regionDisplayTzs from '@/constants/region-display-timezones.js'
 
 import {
   dataProcess,
@@ -22,6 +33,15 @@ const stationPath = (country, network, facility) =>
   `/station/${country}/${network}/${facility}`
 const statsPath = (type, networkRegion, code, query) =>
   `/stats/${type}/station/${networkRegion}/${code}${query}`
+
+function getUnitColour(fuelTech) {
+  const unknownColour = '#ccc'
+  if (fuelTech) {
+    const colour = DEFAULT_FUEL_TECH_COLOUR[fuelTech]
+    return colour || unknownColour
+  }
+  return unknownColour
+}
 
 export const state = () => ({
   dataset: [],
@@ -173,6 +193,119 @@ export const getters = {
   selectedFacilityError: state => state.selectedFacilityError,
   selectedFacilityErrorMessage: state => state.selectedFacilityErrorMessage,
 
+  facilityName: state =>
+    state.selectedFacility && state.selectedFacility.name
+      ? state.selectedFacility.name
+      : '',
+  facilityUnits: state =>
+    state.selectedFacility
+      ? _sortBy(state.selectedFacility.facilities, ['status.code', 'code'])
+      : [],
+  facilityLocation: state =>
+    state.selectedFacility ? state.selectedFacility.location : null,
+  facilityNetworkRegion: state =>
+    state.selectedFacility && state.selectedFacility.network
+      ? state.selectedFacility.network.code || state.selectedFacility.network
+      : '',
+  facilityDescription: state =>
+    state.selectedFacility && state.selectedFacility.description
+      ? state.selectedFacility.description
+      : '',
+  facilityWikiLink: state => {
+    let link = null
+
+    if (state.selectedFacility) {
+      if (state.selectedFacility.website_url) {
+        link = {
+          type: 'website',
+          url: state.selectedFacility.website_url
+        }
+      } else if (state.selectedFacility.wikipedia_link) {
+        link = {
+          type: 'wikipedia',
+          url: state.selectedFacility.wikipedia_link
+        }
+      }
+    }
+    return link
+  },
+  facilityFuelTechsColours: (state, getters) => {
+    const fuelTechs = getters.facilityUnits.map(d => d.fueltech)
+
+    // get only unique fuel techs
+    const uniqFuelTechs = _uniq(fuelTechs.filter(d => d !== '')).sort()
+    const uniqFuelTechsCount = {}
+    uniqFuelTechs.forEach(d => {
+      uniqFuelTechsCount[d] = fuelTechs.filter(ft => ft === d).length
+    })
+
+    // set different opacity variations of fuel tech
+    const colours = {}
+    uniqFuelTechs.forEach(ft => {
+      const colour = color(getUnitColour(ft))
+      const count = uniqFuelTechsCount[ft]
+
+      colours[ft] =
+        count > 1
+          ? quantize(
+              interpolateRgb(colour, colour.copy({ opacity: 1 / count + 0.3 })),
+              count
+            ).reverse()
+          : [colour.formatRgb()]
+    })
+
+    // apply each colour variation to facility unit
+    const obj = {}
+    uniqFuelTechs.forEach(ft => {
+      const filter = getters.facilityUnits.filter(d => {
+        const fuelTechCode = d.fueltech.code || d.fueltech
+        return d.fueltech && fuelTechCode === ft
+      })
+      filter.forEach((f, i) => {
+        obj[f.code] = colours[ft][i]
+      })
+    })
+
+    return obj
+  },
+  unitsSummary: (state, getters) =>
+    getters.facilityUnits.map((d, i) => {
+      const find = state.domainPowerEnergy.find(
+        domain => domain.code === d.code
+      )
+      const findMarketValue = state.domainMarketValue.find(
+        domain => domain.code === d.code
+      )
+      const id = find ? find.id : null
+      const marketValueId = findMarketValue ? findMarketValue.id : null
+      const emissionIntensity = d.emissions_factor_co2 * 1000 // kgCO₂e/MWh
+      const displayTz =
+        regionDisplayTzs[state.selectedFacility.network.toLowerCase()]
+      const dataFirstSeen = d.data_first_seen
+        ? mutateDate(d.data_first_seen, displayTz)
+        : null
+      const dataLastSeen = d.data_last_seen
+        ? mutateDate(d.data_last_seen, displayTz)
+        : null
+
+      return {
+        colour: getters.facilityFuelTechsColours[d.code],
+        domain: id,
+        id,
+        marketValueId,
+        emissionIntensity,
+        code: d.code,
+        label: d.code,
+        registeredCapacity: d.capacity_registered,
+        status: d.status ? d.status.label || d.status : '',
+        fuelTechLabel: d.fueltech,
+        category: FUEL_TECH_CATEGORY[d.fueltech],
+        hasEmissionsFactor: d.emissions_factor_co2,
+        dataFirstSeen,
+        dataLastSeen
+      }
+    }),
+
   domainPowerEnergy: state => _cloneDeep(state.domainPowerEnergy),
   domainEmissions: state => _cloneDeep(state.domainEmissions),
   domainMarketValue: state => _cloneDeep(state.domainMarketValue),
@@ -214,7 +347,6 @@ export const actions = {
       encodeURIComponent(networkCode),
       encodeURIComponent(facilityCode)
     )
-    // const ref = '/test-data/BAYSW.json'
 
     commit('fetchingFacility', true)
     commit('selectedFacility', null)
@@ -247,8 +379,18 @@ export const actions = {
       })
   },
 
+  resetSelectedFacilityUnits({ commit }) {
+    commit('selectedFacilityUnits', [])
+    commit('selectedFacilityUnitsDataset', [])
+    commit('selectedFacilityUnitsDatasetFlat', [])
+    commit('domainPowerEnergy', [])
+    commit('domainEmissions', [])
+    commit('domainMarketValue', [])
+    commit('domainVolWeightedPrices', [])
+  },
+
   doGetStationStats(
-    { commit, getters, rootGetters },
+    { commit, getters, rootGetters, dispatch },
     { networkRegion, facilityCode, facilityFuelTechsColours }
   ) {
     const displayTz = rootGetters.displayTimeZone
@@ -283,14 +425,8 @@ export const actions = {
     request = axios.CancelToken.source()
 
     commit('fetchingStats', true)
-    commit('selectedFacilityUnitsDataset', [])
-    commit('selectedFacilityUnitsDatasetFlat', [])
-    commit('selectedFacilityUnits', [])
-    commit('domainPowerEnergy', [])
-    commit('domainEmissions', [])
-    commit('domainMarketValue', [])
-    commit('domainVolWeightedPrices', [])
     commit('dataType', type)
+    dispatch('resetSelectedFacilityUnits')
 
     http
       .get(ref, {

@@ -61,7 +61,7 @@
 
       <transition name="slide-up-fade">
         <facility-card
-          v-if="selectedFacility && tabletBreak"
+          v-if="selectedFacility"
           :selected-techs="selectedTechs"
           :facility="selectedFacility"
           @close="handleCloseDetail"
@@ -595,7 +595,7 @@ export default {
       position: fixed;
       right: 0;
       top: 25px;
-      z-index: 999;
+      z-index: 99;
       padding: 0 1rem 0 0;
     }
   }
