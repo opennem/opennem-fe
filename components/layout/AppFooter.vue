@@ -1,104 +1,125 @@
 <template>
-  <div>
-    <footer class="">
-      <div class="left">
-        <div class="version">
-          <span
-            v-if="isDev"
-            class="tag">DEV</span>
-          <strong>v{{ version }}</strong>
-        </div>
-        <div
-          v-show="hasAPIversion && !isEmissionsAuRegion"
-          class="version">
-          <a
-            v-tooltip="'Open developer documentation'"
-            href="https://developers.opennem.org.au/">
-            API docs
-          </a>: <strong>{{ apiVersion }}</strong>
-        </div>
+  <footer class="">
+    <div class="left">
+      <div class="version">
+        <span
+          v-if="isDev"
+          class="tag">DEV</span>
+        <strong>v{{ version }}</strong>
+      </div>
+        
+      <div class="version">
+        <a
+          v-tooltip="'OpenNEM status page'"
+          rel="external"
+          class="icon-link"
+          target="_blank"
+          href="https://status.opennem.org.au/">
+          <i class="fal fa-fw fa-fw fa-clipboard-list-check"/>
+        </a>
+        <a
+          v-tooltip="'Developer documentation'"
+          rel="external"
+          class="icon-link"
+          target="_blank"
+          href="https://developers.opennem.org.au/">
+          <i class="fal fa-fw fa-book"/>
+        </a>
+        <strong v-show="hasAPIversion && !isEmissionsAuRegion">API: {{ apiVersion }}</strong>
+      </div>
 
-        <div 
-          v-show="isEmissionsAuRegion" 
-          class="sources">
-          <span v-if="showAnnualSource">
-            Annual:
-            <a
-              target="_blank"
-              href="https://www.industry.gov.au/data-and-publications/australias-emissions-projections-2021"
-              title="Link to Australia’s emissions projections 2021">Australia’s emissions projections 2021</a>,
-              Department of Industry, Science, Energy and Resources
-          </span>
-          <span v-else>
-            Quarterly:
-            <a
-              target="_blank"
-              href="https://www.industry.gov.au/data-and-publications/national-greenhouse-gas-inventory-quarterly-update-september-2021"
-              title="Link to National Greenhouse Gas Inventory Quarterly Update: September 2021">National Greenhouse Gas Inventory Quarterly Update: September 2021</a>,
-              Department of Industry, Science, Energy and Resources
-          </span>          
-        </div>
-
-        <div v-show="isEmissionsWorldRegion">
+      <div 
+        v-show="isEmissionsAuRegion" 
+        class="sources">
+        <span v-if="showAnnualSource">
+          Annual:
           <a
             target="_blank"
-            href="https://doi.org/10.5281/zenodo.5494497"
-            title="Link to dataset used by this visualisation">PRIMAP-hist (HISTCR; Kyoto GHG (AR4); Total excl. Landuse)</a>,
-        </div>
-        
-        <div 
-          v-show="!isEmissionsAuRegion && !isEmissionsWorldRegion" 
-          class="sources">
-          Sources:
+            href="https://www.industry.gov.au/data-and-publications/australias-emissions-projections-2021"
+            title="Link to Australia’s emissions projections 2021">Australia’s emissions projections 2021</a>,
+            Department of Industry, Science, Energy and Resources
+        </span>
+        <span v-else>
+          Quarterly:
           <a
-            href="https://www.aemo.com.au/"
-            title="Link to AEMO">AEMO</a>,
-          <a
-            href="http://apvi.org.au/"
-            title="Link to APVI">APVI</a>,
-          <a
-            href="http://www.bom.gov.au/"
-            title="Link to BoM">BoM</a>
-        </div>
-        
+            target="_blank"
+            href="https://www.industry.gov.au/data-and-publications/national-greenhouse-gas-inventory-quarterly-update-september-2021"
+            title="Link to National Greenhouse Gas Inventory Quarterly Update: September 2021">National Greenhouse Gas Inventory Quarterly Update: September 2021</a>,
+            Department of Industry, Science, Energy and Resources
+        </span>          
       </div>
 
-      <div class="right">
-
-        <!-- :style="{ right: `${featureRightPos}px`, bottom: `${featrueBottomPos}px` }" -->
-
-        <transition name="slide-up-fade">
-          <FeatureToggle
-            v-if="showFeatureToggle"
-
-            class="features"
-            @done="setShowFeatureToggle(false)" />
-        </transition>
-
+      <div 
+        v-show="isEmissionsWorldRegion" 
+        class="sources">
         <a
-          ref="featureElement"
-          class="icon-link"
-          @click.stop="handleFeatureToggleClick">
-          <i class="fal fa-vial" />
-        </a>
-
-        <a
-          class="icon-link"
-          href="https://twitter.com/opennem">
-          <i class="fab fa-twitter" />
-        </a>
-        <a
-          class="icon-link"
-          href="https://github.com/opennem">
-          <i class="fab fa-github" />
-        </a>
-        <nuxt-link
-          to="/about/"
-          class="about-link">About OpenNEM</nuxt-link>
+          target="_blank"
+          href="https://doi.org/10.5281/zenodo.5494497"
+          title="Link to dataset used by this visualisation">PRIMAP-hist (HISTCR; Kyoto GHG (AR4); Total excl. Landuse)</a>,
       </div>
-    </footer>
-  </div>
+        
+      <div 
+        v-show="!isEmissionsAuRegion && !isEmissionsWorldRegion" 
+        class="sources">
+        Sources:
+        <a
+          rel="external"
+          href="https://www.aemo.com.au/"
+          title="Link to AEMO">AEMO</a>,
+        <a
+          rel="external"
+          href="http://apvi.org.au/"
+          title="Link to APVI">APVI</a>,
+        <a
+          rel="external"
+          href="http://www.bom.gov.au/"
+          title="Link to BoM">BoM</a>
+      </div>
+        
+    </div>
 
+    <div class="right">
+
+      <!-- :style="{ right: `${featureRightPos}px`, bottom: `${featrueBottomPos}px` }" -->
+
+      <transition name="slide-up-fade">
+        <FeatureToggle
+          v-if="showFeatureToggle"
+
+          class="features"
+          @done="setShowFeatureToggle(false)" />
+      </transition>
+
+      <a
+        v-tooltip="'Experimental features'"
+        ref="featureElement"
+        class="icon-link"
+        target="_blank"
+        @click.stop="handleFeatureToggleClick">
+        <i class="fal fa-fw fa-vial" />
+      </a>
+
+      <a
+        v-tooltip="'Twitter'"
+        rel="external"
+        class="icon-link"
+        target="_blank"
+        href="https://twitter.com/opennem">
+        <i class="fab fa-fw fa-twitter" />
+      </a>
+      <a
+        v-tooltip="'Github'"
+        rel="external"
+        class="icon-link"
+        target="_blank"
+        href="https://github.com/opennem">
+        <i class="fab fa-fw fa-github" />
+      </a>
+      <nuxt-link
+        to="/about/"
+        class="about-link">About OpenNEM</nuxt-link>
+    </div>
+  </footer>
 </template>
 
 <script>
@@ -207,13 +228,13 @@ footer {
 
     &.icon-link {
       border-bottom-style: none;
-      padding-right: 0.5rem;
+      margin-right: 5px;
       font-size: 13px;
     }
   }
 
   .version {
-    margin-right: 2rem;
+    margin-right: 1rem;
 
     .tag {
       padding: 1px 4px;
