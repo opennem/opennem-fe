@@ -236,12 +236,25 @@ $menu-border-colour-hover: #999;
   }
 
   ::v-deep footer {
-    display: flex;
+    display: block;
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    align-items: flex-end;
+
+    .version {
+      margin-top: 3px;
+      margin-right: 0;
+      float: right;
+      &:first-of-type {
+        float: left;
+      }
+    }
+
+    .sources {
+      clear: both;
+      padding: 5px 0;
+    }
 
     .left,
     .right {
@@ -253,7 +266,8 @@ $menu-border-colour-hover: #999;
     }
 
     .about-link {
-      display: block;
+      float: left;
+      margin-right: 10px;
     }
   }
 }
