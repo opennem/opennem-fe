@@ -56,6 +56,27 @@
           rel="external"
         >Nik Cubrilovic</a>
       </p>
+
+      <p class="social-links">
+        <a
+          v-tooltip="`OpenNEM's twitter page`"
+          class="icon-link"
+          title="OpenNEM's twitter page"
+          rel="external"
+          href="https://twitter.com/opennem"
+        >
+          <i class="fab fa-lg fa-twitter" />
+        </a>
+        <a
+          v-tooltip="`OpenNEM's github page`"
+          class="icon-link"
+          title="OpenNEM's github page"
+          rel="external"
+          href="https://github.com/opennem"
+        >
+          <i class="fab fa-lg fa-github" />
+        </a>
+      </p>
     </section>
 
     <div class="sponsors">
@@ -97,22 +118,22 @@
       class="about-section"
       style="border-top: 1px solid #ddd; padding-top: 1.5rem; display: flex; justify-content: space-between;"
     >
-      <div class="social-links">
+      <div class="dev-links">
         <a
-          class="icon-link"
-          title="OpenNEM's twitter page"
+          v-tooltip="'OpenNEM status page'"
           rel="external"
-          href="https://twitter.com/opennem"
-        >
-          <i class="fab fa-lg fa-twitter" />
+          class="icon-link"
+          target="_blank"
+          href="https://status.opennem.org.au/">
+          <i class="fal fa-lg fa-clipboard-list-check"/>
         </a>
         <a
-          class="icon-link"
-          title="OpenNEM's github page"
+          v-tooltip="'Developer documentation'"
           rel="external"
-          href="https://github.com/opennem"
-        >
-          <i class="fab fa-lg fa-github" />
+          class="icon-link"
+          target="_blank"
+          href="https://developers.opennem.org.au/">
+          <i class="fal fa-lg fa-book"/>
         </a>
       </div>
 
@@ -266,6 +287,19 @@ h1 {
 }
 
 .social-links {
+  a {
+    border-bottom: 0;
+    color: #aaa;
+    font-size: 1.5rem;
+    margin: 0 0.5rem;
+
+    &:hover {
+      color: #333;
+    }
+  }
+}
+
+.dev-links {
   a {
     border-bottom: 0;
     color: #aaa;

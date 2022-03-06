@@ -15,7 +15,7 @@
           class="icon-link"
           target="_blank"
           href="https://status.opennem.org.au/">
-          <i class="fal fa-fw fa-fw fa-clipboard-list-check"/>
+          <i class="fal fa-fw fa-clipboard-list-check"/>
         </a>
         <a
           v-tooltip="'Developer documentation'"
