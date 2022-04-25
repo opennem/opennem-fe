@@ -15,7 +15,7 @@
             <a
               target="_blank"
               href="https://www.industry.gov.au/data-and-publications/australias-emissions-projections-2020"
-              title="Link to Australia’s emissions projections 2020">Australia’s emissions projections 2020</a>,
+              title="Link to Australia’s emissions projections 2020">Australia’s emissions projections 2020 (fig. 7)</a>,
               Department of Industry, Science, Energy and Resources
           </span>
           <span v-else>

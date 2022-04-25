@@ -233,6 +233,81 @@ const domainEmissions = [
   }
 ]
 
+const domainEmissionsObj = {
+  Agriculture: {
+    label: 'Agriculture',
+    id: 'agriculture',
+    domain: 'agriculture',
+    type: 'emissions',
+    units: 'MtCO2e',
+    colour: '#79350F',
+    description: `Emissions from agricultural sources other than energy, <br>land clearing and landfill and liquid wastes <br> <em>(e.g. ruminant methane, fertiliser application)</em>`
+  },
+  Electricity: {
+    label: 'Electricity',
+    id: 'electricity',
+    domain: 'electricity',
+    type: 'emissions',
+    units: 'MtCO2e',
+    colour: '#3C67BC',
+    description: `Emissions from creating power provided to a public electricity network <br> <em>(e.g. generators operating in the NEM, SWIS, DKIS)</em>`
+  },
+  Fugitives: {
+    label: 'Fugitives',
+    id: 'fugitives',
+    domain: 'fugitives',
+    type: 'emissions',
+    units: 'MtCO2e',
+    colour: '#EA722B',
+    description: `Non-productive supply chain emissions from fossil fuel production and transport<br> <em>(e.g. emissions from venting and flaring in gas production, emissions released from <br>coal seams during coal mining)</em>`
+  },
+  'Industrial processes': {
+    label: 'Industrial processes',
+    id: 'industrial',
+    domain: 'industrial',
+    type: 'emissions',
+    units: 'MtCO2e',
+    colour: '#F7C4A3',
+    description: `Chemical and other industrial sources, including fossil fuels used as a chemical feedstock<br> <em>(e.g. coke use in steel-making, gas use in fertiliser manufacture)</em>`
+  },
+  'Stationary energy': {
+    label: 'Other stationary',
+    id: 'stationary',
+    domain: 'stationary',
+    type: 'emissions',
+    units: 'MtCO2e',
+    colour: '#FFB800',
+    description: `Emissions produced providing energy on-site, other than transport of electricity<br> <em>(e.g. industrial heat, household gas, on-site electricity)</em>`
+  },
+  Transport: {
+    label: 'Transport',
+    id: 'transport',
+    domain: 'transport',
+    type: 'emissions',
+    units: 'MtCO2e',
+    colour: '#9B9B9B',
+    description: `Emissions produced to drive domestic transport <br> <em>(e.g. cars, trucks, trains, planes, and boats)</em>`
+  },
+  Waste: {
+    label: 'Waste',
+    id: 'waste',
+    domain: 'waste',
+    type: 'emissions',
+    units: 'MtCO2e',
+    colour: '#223C6D',
+    description: `Emissions from solid and liquid wastes<br> <em>(e.g. landfill, sewage)</em>`
+  },
+  LULUCF: {
+    label: 'Land management',
+    id: 'land-sector',
+    domain: 'land-sector',
+    type: 'emissions',
+    units: 'MtCO2e',
+    colour: '#4A772F',
+    description: `Emissions from clearing, restoration and conversion of managed lands <br> <em>(e.g. natural regrowth of managed forests, clearing for agricultural and forestry purposes)</em>`
+  }
+}
+
 export default {
   layout: 'main',
 
@@ -409,7 +484,6 @@ export default {
         this.getQuarterData()
       } else {
         this.getYearData()
-        this.getProjectionData()
       }
       this.updateAxisGuides()
     },
@@ -530,76 +604,58 @@ export default {
     },
 
     getYearData() {
-      // const url =
-      //   'https://data.dev.opennem.org.au/nggi/nggi-emissions-1990-2020-yearly.csv'
       const url =
-        'https://data.dev.opennem.org.au/nggi/nggi-emissions-1990-2020-yearly-updated-26Oct2021.csv'
+        'https://data.opennem.org.au/emissions/au-2021-emissions-projections-fig-7.csv'
 
       this.$axios
         .get(url, { headers: { 'Content-Type': 'text/csv' } })
         .then(res => {
           const csvData = Papa.parse(res.data, { header: true })
+          const data = []
 
-          const data = csvData.data.map(d => {
+          csvData.data.forEach(d => {
+            const domain = domainEmissionsObj[d['Sector']]
+            const years = Object.keys(d).filter(k => k !== 'Sector')
+            if (data.length === 0) {
+              years.forEach(y => {
+                const obj = {
+                  year: parseInt(y, 10)
+                }
+                obj[domain.id] = parseFloat(d[y])
+                data.push(obj)
+              })
+            } else {
+              years.forEach(y => {
+                const find = data.find(d => d.year === parseInt(y, 10))
+                find[domain.id] = parseFloat(d[y])
+              })
+            }
+          })
+
+          data.forEach(d => {
             let total = 0
-            const obj = {}
-            const date = parse(d.Year, 'yyyy', new Date())
-            obj.date = date
-            obj.time = obj.date.getTime()
-            obj.year = parseInt(d.Year, 10)
+            const date = parse(d.year, 'yyyy', new Date())
+            d.date = date
+            d.time = date.getTime()
 
             this.domainEmissions.forEach(domain => {
-              const val = parseFloat(d[domain.csvLabel])
-              obj[domain.id] = val
+              const val = parseFloat(d[domain.id])
               total += val
             })
 
-            obj._total = total
-
-            return obj
+            d._total = total
           })
+
+          console.log(data)
 
           this.range = RANGE_ALL
           this.interval = INTERVAL_YEAR
           this.updateAxisGuides()
-          this.dataset = this.yearlyDataset = data.filter(d => d.year >= 2005)
+          this.dataset = this.yearlyDataset = data.filter(
+            d => d.year >= 2005 && d.year <= 2020
+          )
           this.historyDataset = data.filter(d => d.year <= 2004)
-        })
-    },
-
-    getProjectionData() {
-      // const url =
-      //   'https://data.dev.opennem.org.au/nggi/nggi-emissions-projections-2021-2030-yearly.csv'
-      const url =
-        'https://data.dev.opennem.org.au/nggi/nggi-emissions-projections-2021-2030-yearly-updated-26Oct2021.csv'
-
-      this.$axios
-        .get(url, { headers: { 'Content-Type': 'text/csv' } })
-        .then(res => {
-          const csvData = Papa.parse(res.data, { header: true })
-
-          const data = csvData.data.map(d => {
-            let total = 0
-            const obj = {}
-            const date = parse(d.Year, 'yyyy', new Date())
-            obj.date = date
-            obj.time = obj.date.getTime()
-            obj.year = d.Year
-
-            this.domainEmissions.forEach(domain => {
-              const val = parseFloat(d[domain.csvLabel])
-              obj[domain.id] = val
-              total += val
-            })
-
-            obj._total = total
-            return obj
-          })
-
-          // this.range = RANGE_ALL
-          // this.interval = INTERVAL_YEAR
-          // this.updateAxisGuides()
-          this.projectionDataset = data
+          this.projectionDataset = data.filter(d => d.year >= 2021)
         })
     },
 
