@@ -4,23 +4,23 @@
     <div class="dataset-selection">
       <div class="buttons has-addons">
         <button
-          :class="{ 'is-selected': datasetView === 'quarter' }"
+          :class="{ 'is-selected': isQuarterDatasetView }"
           class="button" 
-          @click="handleQuarterViewSelect">Quarterly</button>
+          @click="handleQuarterViewSelect">Quarter</button>
         <button
-          :class="{ 'is-selected': datasetView === 'year' }"
+          :class="{ 'is-selected': isYearDatasetView }"
           class="button" 
-          @click="handleYearViewSelect">Annual</button>
+          @click="handleYearViewSelect">Year</button>
       </div>
 
       <div class="buttons">
         <button
-          v-if="datasetView === 'year'"
+          v-if="isYearDatasetView"
           :class="{ 'is-selected': addHistory }"
           class="button" 
           @click="handleHistoryToggle">History <strong>FY 1990 — 2004</strong></button>
         <button
-          v-if="datasetView === 'year'"
+          v-if="isYearDatasetView"
           :class="{ 'is-selected': addProjections }"
           class="button" 
           @click="handleProjectionsToggle">Projections <strong>FY 2021 — 2030</strong></button>
@@ -125,8 +125,8 @@ import { timeYear } from 'd3-time'
 import { timeFormat } from 'd3-time-format'
 
 import {
-  NGGI_RANGES,
-  NGGI_RANGE_INTERVALS,
+  EMISSIONS_RANGES,
+  EMISSIONS_RANGE_INTERVALS,
   RANGE_ALL_12MTH_ROLLING,
   RANGE_ALL
 } from '@/constants/ranges.js'
@@ -359,7 +359,7 @@ export default {
 
   data() {
     return {
-      datasetView: 'quarter',
+      datasetView: INTERVAL_QUARTER,
       addHistory: false,
       addProjections: false,
       baseUrl: `${this.$config.url}/images/screens/`,
@@ -396,6 +396,10 @@ export default {
       widthBreak: 'app/widthBreak',
       wideScreenBreak: 'app/wideScreenBreak'
     }),
+
+    queryInterval() {
+      return this.$route.query.interval
+    },
 
     filteredDataset() {
       const dataset =
@@ -458,11 +462,11 @@ export default {
     },
 
     isYearDatasetView() {
-      return this.datasetView === 'year'
+      return this.datasetView === INTERVAL_YEAR
     },
 
     isQuarterDatasetView() {
-      return this.datasetView === 'quarter'
+      return this.datasetView === INTERVAL_QUARTER
     },
 
     hasProjectionDataset() {
@@ -478,14 +482,17 @@ export default {
       }
     },
 
-    datasetView(val) {
-      this.setCompareDifference(false)
-      if (val === 'quarter') {
-        this.getQuarterData()
-      } else {
-        this.getYearData()
+    datasetView: {
+      immediate: true,
+      handler(val) {
+        this.setCompareDifference(false)
+        if (val === INTERVAL_QUARTER) {
+          this.getQuarterData()
+        } else {
+          this.getYearData()
+        }
+        this.updateAxisGuides()
       }
-      this.updateAxisGuides()
     },
 
     tabletBreak() {
@@ -509,8 +516,8 @@ export default {
     this.domains = domainEmissions.map(d => d)
     this.domainEmissions = domainEmissions.map(d => d).reverse()
     this.displayTz = regionDisplayTzs['au']
-    this.ranges = NGGI_RANGES
-    this.intervals = NGGI_RANGE_INTERVALS
+    this.ranges = EMISSIONS_RANGES
+    this.intervals = EMISSIONS_RANGE_INTERVALS
     this.afterDate = new Date(2004, 11, 31)
 
     this.projectionsInterval = [
@@ -524,7 +531,17 @@ export default {
   },
 
   mounted() {
-    this.getQuarterData()
+    let interval = this.queryInterval
+
+    if (!this.queryInterval) {
+      interval = INTERVAL_QUARTER.toLowerCase()
+    }
+
+    if (interval === INTERVAL_QUARTER.toLowerCase()) {
+      this.handleQuarterViewSelect()
+    } else {
+      this.handleYearViewSelect()
+    }
   },
 
   methods: {
@@ -862,12 +879,14 @@ export default {
     },
 
     handleQuarterViewSelect() {
-      this.datasetView = 'quarter'
+      this.datasetView = INTERVAL_QUARTER
       this.addProjections = false
+      this.updateQueries()
     },
 
     handleYearViewSelect() {
-      this.datasetView = 'year'
+      this.datasetView = INTERVAL_YEAR
+      this.updateQueries()
     },
 
     handleProjectionsToggle() {
@@ -895,6 +914,14 @@ export default {
     },
     handleMouseLeave() {
       this.setHighlightDomain('')
+    },
+
+    updateQueries() {
+      this.$router.push({
+        query: {
+          interval: this.datasetView
+        }
+      })
     }
   }
 }
