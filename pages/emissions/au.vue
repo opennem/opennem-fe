@@ -359,6 +359,7 @@ export default {
 
   data() {
     return {
+      fetching: false,
       datasetView: INTERVAL_QUARTER,
       addHistory: false,
       addProjections: false,
@@ -399,6 +400,14 @@ export default {
 
     queryInterval() {
       return this.$route.query.interval
+    },
+
+    queryHistory() {
+      return this.$route.query.history
+    },
+
+    queryProjections() {
+      return this.$route.query.projections
     },
 
     filteredDataset() {
@@ -482,16 +491,12 @@ export default {
       }
     },
 
-    datasetView: {
-      immediate: true,
-      handler(val) {
-        this.setCompareDifference(false)
-        if (val === INTERVAL_QUARTER) {
-          this.getQuarterData()
-        } else {
-          this.getYearData()
-        }
-        this.updateAxisGuides()
+    datasetView(val) {
+      this.setCompareDifference(false)
+      if (val === INTERVAL_QUARTER) {
+        this.getQuarterData()
+      } else {
+        this.getYearData()
       }
     },
 
@@ -532,16 +537,22 @@ export default {
 
   mounted() {
     let interval = this.queryInterval
+    let projections = this.queryProjections
+    let history = this.queryHistory
 
     if (!this.queryInterval) {
-      interval = INTERVAL_QUARTER.toLowerCase()
+      interval = INTERVAL_QUARTER
     }
-
-    if (interval === INTERVAL_QUARTER.toLowerCase()) {
+    if (interval === INTERVAL_QUARTER) {
       this.handleQuarterViewSelect()
+      this.getQuarterData()
     } else {
+      if (history && history === 'true') this.addHistory = true
+      if (projections && projections === 'true') this.addProjections = true
       this.handleYearViewSelect()
+      this.getYearData()
     }
+    this.updateAxisGuides()
   },
 
   methods: {
@@ -560,120 +571,142 @@ export default {
     }),
 
     getQuarterData() {
+      console.log('get Quarter data')
       // const url =
       //   'https://data.dev.opennem.org.au/nggi/nggi-emissions-2001-2021-quarterly.csv'
-      const url =
-        'https://data.dev.opennem.org.au/nggi/nggi-emissions-2001-September2021-quarterly.csv'
 
-      this.$axios
-        .get(url, { headers: { 'Content-Type': 'text/csv' } })
-        .then(res => {
-          const csvData = Papa.parse(res.data, { header: true })
-          const data = csvData.data.map(d => {
-            let total = 0
-            const obj = {}
-            const date = subMonths(parse(d.Quarter, 'MMM-yyyy', new Date()), 2)
+      if (!this.fetching) {
+        const url =
+          'https://data.dev.opennem.org.au/nggi/nggi-emissions-2001-September2021-quarterly.csv'
 
-            obj.date = date
-            obj.time = obj.date.getTime()
-            obj.quarter = d.Quarter
+        this.fetching = true
+        this.$axios
+          .get(url, { headers: { 'Content-Type': 'text/csv' } })
+          .then(res => {
+            const csvData = Papa.parse(res.data, { header: true })
+            const data = csvData.data.map(d => {
+              let total = 0
+              const obj = {}
+              const date = subMonths(
+                parse(d.Quarter, 'MMM-yyyy', new Date()),
+                2
+              )
 
-            this.domainEmissions.forEach(domain => {
-              const val = parseFloat(d[domain.csvLabel])
-              obj[domain.id] = val
-              total += val
+              obj.date = date
+              obj.time = obj.date.getTime()
+              obj.quarter = d.Quarter
+
+              this.domainEmissions.forEach(domain => {
+                const val = parseFloat(d[domain.csvLabel])
+                obj[domain.id] = val
+                total += val
+              })
+
+              obj._total = total
+
+              return obj
             })
 
-            obj._total = total
+            this.range = RANGE_ALL_12MTH_ROLLING
+            this.interval = INTERVAL_QUARTER
+            this.updateAxisGuides()
 
-            return obj
-          })
+            this.baseDataset = data
+            this.rollingDataset = transformTo12MthRollingSum(
+              _cloneDeep(data),
+              this.domainEmissions,
+              true
+            )
 
-          this.range = RANGE_ALL_12MTH_ROLLING
-          this.interval = INTERVAL_QUARTER
-          this.updateAxisGuides()
-
-          this.baseDataset = data
-          this.rollingDataset = transformTo12MthRollingSum(
-            _cloneDeep(data),
-            this.domainEmissions,
-            true
-          )
-
-          const rolledUpData = dataRollUp({
-            dataset: this.rollingDataset,
-            domains: this.domainEmissions,
-            interval: this.interval
-          })
-
-          rolledUpData.forEach(d => {
-            let total = 0
-            this.domainEmissions.forEach(domain => {
-              total += d[domain.id] || 0
+            const rolledUpData = dataRollUp({
+              dataset: this.rollingDataset,
+              domains: this.domainEmissions,
+              interval: this.interval
             })
-            d._total = total
-          })
 
-          this.dataset = rolledUpData.filter(d =>
-            isAfter(d.date, this.afterDate)
-          )
-        })
+            rolledUpData.forEach(d => {
+              let total = 0
+              this.domainEmissions.forEach(domain => {
+                total += d[domain.id] || 0
+              })
+              d._total = total
+            })
+
+            this.dataset = rolledUpData.filter(d =>
+              isAfter(d.date, this.afterDate)
+            )
+          })
+          .finally(() => {
+            this.fetching = false
+          })
+      }
     },
 
     getYearData() {
-      const url =
-        'https://data.opennem.org.au/emissions/au-2021-emissions-projections-fig-7.csv'
+      if (!this.fetching) {
+        const url =
+          'https://data.opennem.org.au/emissions/au-2021-emissions-projections-fig-7.csv'
 
-      this.$axios
-        .get(url, { headers: { 'Content-Type': 'text/csv' } })
-        .then(res => {
-          const csvData = Papa.parse(res.data, { header: true })
-          const data = []
+        this.fetching = true
+        this.$axios
+          .get(url, { headers: { 'Content-Type': 'text/csv' } })
+          .then(res => {
+            const csvData = Papa.parse(res.data, { header: true })
+            const data = []
 
-          csvData.data.forEach(d => {
-            const domain = domainEmissionsObj[d['Sector']]
-            const years = Object.keys(d).filter(k => k !== 'Sector')
-            if (data.length === 0) {
-              years.forEach(y => {
-                const obj = {
-                  year: parseInt(y, 10)
-                }
-                obj[domain.id] = parseFloat(d[y])
-                data.push(obj)
-              })
-            } else {
-              years.forEach(y => {
-                const find = data.find(d => d.year === parseInt(y, 10))
-                find[domain.id] = parseFloat(d[y])
-              })
-            }
-          })
-
-          data.forEach(d => {
-            let total = 0
-            const date = parse(d.year, 'yyyy', new Date())
-            d.date = date
-            d.time = date.getTime()
-
-            this.domainEmissions.forEach(domain => {
-              const val = parseFloat(d[domain.id])
-              total += val
+            csvData.data.forEach(d => {
+              const domain = domainEmissionsObj[d['Sector']]
+              const years = Object.keys(d).filter(k => k !== 'Sector')
+              if (data.length === 0) {
+                years.forEach(y => {
+                  const obj = {
+                    year: parseInt(y, 10)
+                  }
+                  obj[domain.id] = parseFloat(d[y])
+                  data.push(obj)
+                })
+              } else {
+                years.forEach(y => {
+                  const find = data.find(d => d.year === parseInt(y, 10))
+                  find[domain.id] = parseFloat(d[y])
+                })
+              }
             })
 
-            d._total = total
+            data.forEach(d => {
+              let total = 0
+              const date = parse(d.year, 'yyyy', new Date())
+              d.date = date
+              d.time = date.getTime()
+
+              this.domainEmissions.forEach(domain => {
+                const val = parseFloat(d[domain.id])
+                total += val
+              })
+
+              d._total = total
+            })
+
+            this.range = RANGE_ALL
+            this.interval = INTERVAL_YEAR
+            this.yearlyDataset = data.filter(
+              d => d.year >= 2005 && d.year <= 2020
+            )
+            this.historyDataset = data.filter(d => d.year <= 2004)
+            this.projectionDataset = data.filter(d => d.year >= 2021)
+
+            if (this.addHistory) {
+              this.dataset = [...this.historyDataset, ...this.yearlyDataset]
+            } else {
+              this.dataset = this.yearlyDataset
+            }
+
+            this.updateAxisGuides()
           })
-
-          console.log(data)
-
-          this.range = RANGE_ALL
-          this.interval = INTERVAL_YEAR
-          this.updateAxisGuides()
-          this.dataset = this.yearlyDataset = data.filter(
-            d => d.year >= 2005 && d.year <= 2020
-          )
-          this.historyDataset = data.filter(d => d.year <= 2004)
-          this.projectionDataset = data.filter(d => d.year >= 2021)
-        })
+          .finally(() => {
+            this.fetching = false
+          })
+      }
     },
 
     updateAxisGuides() {
@@ -733,61 +766,6 @@ export default {
 
       this.zoomExtent = filteredDates
     },
-
-    // handleRangeChange(range) {
-    //   this.range = range
-
-    //   let dataset = this.baseDataset
-
-    //   if (range === RANGE_ALL_12MTH_ROLLING) {
-    //     dataset = this.rollingDataset
-    //   }
-    //   const rolledUpData = dataRollUp({
-    //     dataset,
-    //     domains: this.domainEmissions,
-    //     interval: this.interval
-    //   })
-
-    //   this.dataset = rolledUpData.filter(d => isAfter(d.date, this.afterDate))
-    // },
-    // handleIntervalChange(interval) {
-    //   console.log(interval)
-    //   this.interval = interval
-
-    //   let dataset = this.baseDataset
-
-    //   if (this.range === RANGE_ALL_12MTH_ROLLING) {
-    //     dataset = this.rollingDataset
-    //   }
-    //   const rolledUpData = dataRollUp({
-    //     dataset,
-    //     domains: this.domainEmissions,
-    //     interval
-    //   })
-
-    //   this.dataset = rolledUpData.filter(d => isAfter(d.date, this.afterDate))
-    // },
-    // handleFilterPeriodChange(period) {
-    //   console.log(period)
-    //   this.filterPeriod = period
-
-    //   let dataset = this.baseDataset
-
-    //   if (this.range === RANGE_ALL_12MTH_ROLLING) {
-    //     dataset = this.rollingDataset
-    //   }
-    //   const rolledUpData = dataRollUp({
-    //     dataset,
-    //     domains: this.domainEmissions,
-    //     interval: this.interval
-    //   })
-
-    //   this.dataset = dataFilterByPeriod({
-    //     dataset: rolledUpData.filter(d => isAfter(d.date, this.afterDate)),
-    //     interval: this.interval,
-    //     period
-    //   })
-    // },
 
     handleTypeClick(id) {
       const index = this.hidden.indexOf(id)
@@ -881,6 +859,7 @@ export default {
     handleQuarterViewSelect() {
       this.datasetView = INTERVAL_QUARTER
       this.addProjections = false
+      this.addHistory = false
       this.updateQueries()
     },
 
@@ -892,6 +871,7 @@ export default {
     handleProjectionsToggle() {
       this.addProjections = !this.addProjections
       this.updateAxisGuides()
+      this.updateQueries()
     },
 
     handleHistoryToggle() {
@@ -903,6 +883,7 @@ export default {
         this.dataset = this.yearlyDataset
       }
       this.updateAxisGuides()
+      this.updateQueries()
     },
 
     handleChangeDatasetChange(dataset) {
@@ -919,7 +900,9 @@ export default {
     updateQueries() {
       this.$router.push({
         query: {
-          interval: this.datasetView
+          interval: this.datasetView,
+          projections: this.addProjections,
+          history: this.addHistory
         }
       })
     }
