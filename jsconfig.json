@@ -1,5 +1,12 @@
 {
-    "include": [
-        "./src/**/*"
-    ]
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./*"],
+      "@/*": ["./*"],
+      "~~/*": ["./*"],
+      "@@/*": ["./*"]
+    }
+  },
+  "exclude": ["node_modules", ".nuxt", "dist", "static", ".git", ".github"]
 }
