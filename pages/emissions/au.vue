@@ -570,84 +570,159 @@ export default {
       setShowAnnualSource: 'emissionsPage/showAnnualSource'
     }),
 
-    getQuarterData() {
+    async getQuarterData() {
       console.log('get Quarter data')
       // const url =
       //   'https://data.dev.opennem.org.au/nggi/nggi-emissions-2001-2021-quarterly.csv'
 
       if (!this.fetching) {
+        const jsonUrl =
+          'https://opennem-edge-data.netlify.app/data/au/emissions/quarter.json'
         const url =
           'https://data.dev.opennem.org.au/nggi/nggi-emissions-2001-September2021-quarterly.csv'
 
         this.fetching = true
-        this.$axios
-          .get(url, { headers: { 'Content-Type': 'text/csv' } })
-          .then(res => {
-            const csvData = Papa.parse(res.data, { header: true })
-            const data = csvData.data.map(d => {
-              let total = 0
-              const obj = {}
-              const date = subMonths(
-                parse(d.Quarter, 'MMM-yyyy', new Date()),
-                2
-              )
 
-              obj.date = date
-              obj.time = obj.date.getTime()
-              obj.quarter = d.Quarter
+        let response = await fetch(jsonUrl)
 
-              this.domainEmissions.forEach(domain => {
-                const val = parseFloat(d[domain.csvLabel])
-                obj[domain.id] = val
-                total += val
-              })
+        if (response.ok) {
+          let json = await response.json()
+          console.log('quarter ok', json)
 
-              obj._total = total
+          const data = json.map(d => {
+            let total = 0
+            const obj = {}
+            const date = subMonths(parse(d.Quarter, 'MMM-yyyy', new Date()), 2)
 
-              return obj
+            obj.date = date
+            obj.time = obj.date.getTime()
+            obj.quarter = d.Quarter
+
+            this.domainEmissions.forEach(domain => {
+              const val = parseFloat(d[domain.csvLabel])
+              obj[domain.id] = val
+              total += val
             })
 
-            this.range = RANGE_ALL_12MTH_ROLLING
-            this.interval = INTERVAL_QUARTER
-            this.updateAxisGuides()
+            obj._total = total
 
-            this.baseDataset = data
-            this.rollingDataset = transformTo12MthRollingSum(
-              _cloneDeep(data),
-              this.domainEmissions,
-              true
-            )
-
-            const rolledUpData = dataRollUp({
-              dataset: this.rollingDataset,
-              domains: this.domainEmissions,
-              interval: this.interval
-            })
-
-            rolledUpData.forEach(d => {
-              let total = 0
-              this.domainEmissions.forEach(domain => {
-                total += d[domain.id] || 0
-              })
-              d._total = total
-            })
-
-            this.dataset = rolledUpData.filter(d =>
-              isAfter(d.date, this.afterDate)
-            )
+            return obj
           })
-          .finally(() => {
-            this.fetching = false
+
+          this.range = RANGE_ALL_12MTH_ROLLING
+          this.interval = INTERVAL_QUARTER
+          this.updateAxisGuides()
+
+          this.baseDataset = data
+          this.rollingDataset = transformTo12MthRollingSum(
+            _cloneDeep(data),
+            this.domainEmissions,
+            true
+          )
+
+          const rolledUpData = dataRollUp({
+            dataset: this.rollingDataset,
+            domains: this.domainEmissions,
+            interval: this.interval
           })
+
+          rolledUpData.forEach(d => {
+            let total = 0
+            this.domainEmissions.forEach(domain => {
+              total += d[domain.id] || 0
+            })
+            d._total = total
+          })
+
+          this.dataset = rolledUpData.filter(d =>
+            isAfter(d.date, this.afterDate)
+          )
+
+          this.fetching = false
+        } else {
+          alert('HTTP-Error: ' + response.status)
+        }
+
+        // this.$axios
+        //   .get(url, { headers: { 'Content-Type': 'text/csv' } })
+        //   .then(res => {
+        //     const csvData = Papa.parse(res.data, { header: true })
+        //     const data = csvData.data.map(d => {
+        //       let total = 0
+        //       const obj = {}
+        //       const date = subMonths(
+        //         parse(d.Quarter, 'MMM-yyyy', new Date()),
+        //         2
+        //       )
+
+        //       obj.date = date
+        //       obj.time = obj.date.getTime()
+        //       obj.quarter = d.Quarter
+
+        //       this.domainEmissions.forEach(domain => {
+        //         const val = parseFloat(d[domain.csvLabel])
+        //         obj[domain.id] = val
+        //         total += val
+        //       })
+
+        //       obj._total = total
+
+        //       return obj
+        //     })
+
+        //     this.range = RANGE_ALL_12MTH_ROLLING
+        //     this.interval = INTERVAL_QUARTER
+        //     this.updateAxisGuides()
+
+        //     this.baseDataset = data
+        //     this.rollingDataset = transformTo12MthRollingSum(
+        //       _cloneDeep(data),
+        //       this.domainEmissions,
+        //       true
+        //     )
+
+        //     const rolledUpData = dataRollUp({
+        //       dataset: this.rollingDataset,
+        //       domains: this.domainEmissions,
+        //       interval: this.interval
+        //     })
+
+        //     rolledUpData.forEach(d => {
+        //       let total = 0
+        //       this.domainEmissions.forEach(domain => {
+        //         total += d[domain.id] || 0
+        //       })
+        //       d._total = total
+        //     })
+
+        //     this.dataset = rolledUpData.filter(d =>
+        //       isAfter(d.date, this.afterDate)
+        //     )
+        //   })
+        //   .finally(() => {
+        //     this.fetching = false
+        //   })
       }
     },
 
-    getYearData() {
+    async getYearData() {
       if (!this.fetching) {
+        const jsonUrl =
+          'https://opennem-edge-data.netlify.app/data/au/emissions/year.json'
         const url =
           'https://data.opennem.org.au/emissions/au-2021-emissions-projections-fig-7.csv'
 
         this.fetching = true
+
+        // let response = await fetch(jsonUrl)
+
+        // if (response.ok) {
+        //   let json = await response.json()
+        //   console.log('year ok', json)
+        // } else {
+        //   alert('HTTP-Error: ' + response.status)
+        // }
+
         this.$axios
           .get(url, { headers: { 'Content-Type': 'text/csv' } })
           .then(res => {
