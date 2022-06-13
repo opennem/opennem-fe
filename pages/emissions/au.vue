@@ -572,24 +572,21 @@ export default {
 
     async getQuarterData() {
       console.log('get Quarter data')
-      // const url =
-      //   'https://data.dev.opennem.org.au/nggi/nggi-emissions-2001-2021-quarterly.csv'
 
       if (!this.fetching) {
         const jsonUrl =
           'https://opennem-edge-data.netlify.app/data/au/emissions/quarter.json'
-        const url =
-          'https://data.dev.opennem.org.au/nggi/nggi-emissions-2001-September2021-quarterly.csv'
 
         this.fetching = true
 
-        let response = await fetch(jsonUrl)
+        const response = await fetch(jsonUrl)
 
         if (response.ok) {
-          let json = await response.json()
+          const json = await response.json()
+          const jData = json.data || json
           console.log('quarter ok', json)
 
-          const data = json.map(d => {
+          const data = jData.map(d => {
             let total = 0
             const obj = {}
             const date = subMonths(parse(d.Quarter, 'MMM-yyyy', new Date()), 2)
@@ -642,145 +639,78 @@ export default {
         } else {
           alert('HTTP-Error: ' + response.status)
         }
-
-        // this.$axios
-        //   .get(url, { headers: { 'Content-Type': 'text/csv' } })
-        //   .then(res => {
-        //     const csvData = Papa.parse(res.data, { header: true })
-        //     const data = csvData.data.map(d => {
-        //       let total = 0
-        //       const obj = {}
-        //       const date = subMonths(
-        //         parse(d.Quarter, 'MMM-yyyy', new Date()),
-        //         2
-        //       )
-
-        //       obj.date = date
-        //       obj.time = obj.date.getTime()
-        //       obj.quarter = d.Quarter
-
-        //       this.domainEmissions.forEach(domain => {
-        //         const val = parseFloat(d[domain.csvLabel])
-        //         obj[domain.id] = val
-        //         total += val
-        //       })
-
-        //       obj._total = total
-
-        //       return obj
-        //     })
-
-        //     this.range = RANGE_ALL_12MTH_ROLLING
-        //     this.interval = INTERVAL_QUARTER
-        //     this.updateAxisGuides()
-
-        //     this.baseDataset = data
-        //     this.rollingDataset = transformTo12MthRollingSum(
-        //       _cloneDeep(data),
-        //       this.domainEmissions,
-        //       true
-        //     )
-
-        //     const rolledUpData = dataRollUp({
-        //       dataset: this.rollingDataset,
-        //       domains: this.domainEmissions,
-        //       interval: this.interval
-        //     })
-
-        //     rolledUpData.forEach(d => {
-        //       let total = 0
-        //       this.domainEmissions.forEach(domain => {
-        //         total += d[domain.id] || 0
-        //       })
-        //       d._total = total
-        //     })
-
-        //     this.dataset = rolledUpData.filter(d =>
-        //       isAfter(d.date, this.afterDate)
-        //     )
-        //   })
-        //   .finally(() => {
-        //     this.fetching = false
-        //   })
       }
     },
 
     async getYearData() {
+      console.log('get year data')
       if (!this.fetching) {
         const jsonUrl =
           'https://opennem-edge-data.netlify.app/data/au/emissions/year.json'
-        const url =
-          'https://data.opennem.org.au/emissions/au-2021-emissions-projections-fig-7.csv'
 
         this.fetching = true
 
-        // let response = await fetch(jsonUrl)
+        const response = await fetch(jsonUrl)
 
-        // if (response.ok) {
-        //   let json = await response.json()
-        //   console.log('year ok', json)
-        // } else {
-        //   alert('HTTP-Error: ' + response.status)
-        // }
+        if (response.ok) {
+          const json = await response.json()
+          const jData = json.data || json
+          console.log('year ok', json)
+          const data = []
 
-        this.$axios
-          .get(url, { headers: { 'Content-Type': 'text/csv' } })
-          .then(res => {
-            const csvData = Papa.parse(res.data, { header: true })
-            const data = []
-
-            csvData.data.forEach(d => {
-              const domain = domainEmissionsObj[d['Sector']]
-              const years = Object.keys(d).filter(k => k !== 'Sector')
-              if (data.length === 0) {
-                years.forEach(y => {
-                  const obj = {
-                    year: parseInt(y, 10)
-                  }
-                  obj[domain.id] = parseFloat(d[y])
-                  data.push(obj)
-                })
-              } else {
-                years.forEach(y => {
-                  const find = data.find(d => d.year === parseInt(y, 10))
-                  find[domain.id] = parseFloat(d[y])
-                })
-              }
-            })
-
-            data.forEach(d => {
-              let total = 0
-              const date = parse(d.year, 'yyyy', new Date())
-              d.date = date
-              d.time = date.getTime()
-
-              this.domainEmissions.forEach(domain => {
-                const val = parseFloat(d[domain.id])
-                total += val
+          jData.forEach(d => {
+            const domain = domainEmissionsObj[d['Sector']]
+            const years = Object.keys(d).filter(k => k !== 'Sector')
+            if (data.length === 0) {
+              years.forEach(y => {
+                const obj = {
+                  year: parseInt(y, 10)
+                }
+                obj[domain.id] = parseFloat(d[y])
+                data.push(obj)
               })
+            } else {
+              years.forEach(y => {
+                const find = data.find(d => d.year === parseInt(y, 10))
+                find[domain.id] = parseFloat(d[y])
+              })
+            }
+          })
 
-              d._total = total
+          data.forEach(d => {
+            let total = 0
+            const date = parse(d.year, 'yyyy', new Date())
+            d.date = date
+            d.time = date.getTime()
+
+            this.domainEmissions.forEach(domain => {
+              const val = parseFloat(d[domain.id])
+              total += val
             })
 
-            this.range = RANGE_ALL
-            this.interval = INTERVAL_YEAR
-            this.yearlyDataset = data.filter(
-              d => d.year >= 2005 && d.year <= 2020
-            )
-            this.historyDataset = data.filter(d => d.year <= 2004)
-            this.projectionDataset = data.filter(d => d.year >= 2021)
-
-            if (this.addHistory) {
-              this.dataset = [...this.historyDataset, ...this.yearlyDataset]
-            } else {
-              this.dataset = this.yearlyDataset
-            }
-
-            this.updateAxisGuides()
+            d._total = total
           })
-          .finally(() => {
-            this.fetching = false
-          })
+
+          this.range = RANGE_ALL
+          this.interval = INTERVAL_YEAR
+          this.yearlyDataset = data.filter(
+            d => d.year >= 2005 && d.year <= 2020
+          )
+          this.historyDataset = data.filter(d => d.year <= 2004)
+          this.projectionDataset = data.filter(d => d.year >= 2021)
+
+          if (this.addHistory) {
+            this.dataset = [...this.historyDataset, ...this.yearlyDataset]
+          } else {
+            this.dataset = this.yearlyDataset
+          }
+
+          this.updateAxisGuides()
+
+          this.fetching = false
+        } else {
+          alert('HTTP-Error: ' + response.status)
+        }
       }
     },
 
