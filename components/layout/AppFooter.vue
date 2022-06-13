@@ -31,22 +31,14 @@
       <div 
         v-show="isEmissionsAuRegion" 
         class="sources">
-        <span v-if="showAnnualSource">
-          Annual:
-          <a
-            target="_blank"
-            href="https://www.industry.gov.au/data-and-publications/australias-emissions-projections-2021"
-            title="Link to Australia’s emissions projections 2021">Australia’s emissions projections 2021 (fig. 7)</a>,
-            Department of Industry, Science, Energy and Resources
-        </span>
-        <span v-else>
-          Quarterly:
-          <a
-            target="_blank"
-            href="https://www.industry.gov.au/data-and-publications/national-greenhouse-gas-inventory-quarterly-update-september-2021"
-            title="Link to National Greenhouse Gas Inventory Quarterly Update: September 2021">National Greenhouse Gas Inventory Quarterly Update: September 2021</a>,
-            Department of Industry, Science, Energy and Resources
-        </span>          
+
+        Source:
+
+        <a 
+          :href="footerSourceUrl" 
+          :title="`Link to ${footerSourceLabel}`" 
+          target="_blank">{{ footerSourceLabel }}</a>
+       
       </div>
 
       <div 
@@ -144,7 +136,8 @@ export default {
       apiVersion: 'app/apiVersion',
       showFeatureToggle: 'app/showFeatureToggle',
 
-      showAnnualSource: 'emissionsPage/showAnnualSource'
+      footerSourceLabel: 'emissionsPage/footerSourceLabel',
+      footerSourceUrl: 'emissionsPage/footerSourceUrl'
     }),
 
     isDev() {
@@ -161,12 +154,6 @@ export default {
 
     isEmissionsWorldRegion() {
       return this.$route.name === 'emissions-world'
-    }
-  },
-
-  watch: {
-    showAnnualSource(val) {
-      console.log(val)
     }
   },
 

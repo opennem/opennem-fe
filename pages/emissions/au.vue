@@ -510,10 +510,6 @@ export default {
 
     wideScreenBreak() {
       this.updateAxisGuides()
-    },
-
-    isYearDatasetView(val) {
-      this.setShowAnnualSource(val)
     }
   },
 
@@ -567,7 +563,8 @@ export default {
       setHighlightDomain: 'visInteract/highlightDomain',
       setCompareDifference: 'compareDifference',
 
-      setShowAnnualSource: 'emissionsPage/showAnnualSource'
+      setSourceLabel: 'emissionsPage/footerSourceLabel',
+      setSourceUrl: 'emissionsPage/footerSourceUrl'
     }),
 
     async getQuarterData() {
@@ -585,6 +582,8 @@ export default {
           const json = await response.json()
           const jData = json.data || json
           console.log('quarter ok', json)
+
+          this.updateFooterSource(json.source)
 
           const data = jData.map(d => {
             let total = 0
@@ -656,6 +655,9 @@ export default {
           const json = await response.json()
           const jData = json.data || json
           console.log('year ok', json)
+
+          this.updateFooterSource(json.source)
+
           const data = []
 
           jData.forEach(d => {
@@ -712,6 +714,11 @@ export default {
           alert('HTTP-Error: ' + response.status)
         }
       }
+    },
+
+    updateFooterSource(source) {
+      this.setSourceLabel(source.label)
+      this.setSourceUrl(source.url)
     },
 
     updateAxisGuides() {
