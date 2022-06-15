@@ -17,6 +17,16 @@
       </article>
     </transition>
 
+    <transition name="slide-down-fade">
+      <article
+        v-if="siteAnnouncement"
+        class="message is-primary">
+        <div
+          class="message-body"
+          v-html="siteAnnouncement" />
+      </article>
+    </transition>
+
     <app-header />
     <nuxt />
     <app-footer v-if="!tabletBreak" />
@@ -45,7 +55,8 @@ export default {
       showError: 'app/showError',
       errorHeader: 'app/errorHeader',
       errorMessage: 'app/errorMessage',
-      tabletBreak: 'app/tabletBreak'
+      tabletBreak: 'app/tabletBreak',
+      siteAnnouncement: 'app/siteAnnouncement'
     })
   },
 
@@ -87,6 +98,15 @@ export default {
     margin-left: -250px;
     z-index: 99999;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .message {
+    margin-bottom: 0.5rem;
+  }
+
+  .message-body {
+    border-left: 0;
+    text-align: center;
   }
 }
 </style>

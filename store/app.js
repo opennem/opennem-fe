@@ -7,7 +7,8 @@ export const state = () => ({
   errorMessage: '',
   query: null,
   facilitiesQuery: null,
-  showFeatureToggle: false
+  showFeatureToggle: false,
+  siteAnnouncement: process.env.SITEWIDE_ANNOUNCEMENT
 })
 
 export const getters = {
@@ -22,7 +23,8 @@ export const getters = {
   errorMessage: state => state.errorMessage,
   query: state => state.query,
   facilitiesQuery: state => state.facilitiesQuery,
-  showFeatureToggle: state => state.showFeatureToggle
+  showFeatureToggle: state => state.showFeatureToggle,
+  siteAnnouncement: state => state.siteAnnouncement
 }
 
 export const mutations = {
