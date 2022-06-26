@@ -29,16 +29,20 @@ module.exports = {
 
   head: {
     htmlAttrs: {
-      lang: 'en-AU',
+      lang: 'en',
       translate: 'no'
     },
     titleTemplate: 'OpenNEM%s',
     meta: [
       { charset: 'utf-8' },
-      { 'http-equiv': 'content-language', content: 'en-AU' },
+      { 'http-equiv': 'content-language', content: 'en' },
       {
         name: 'viewport',
         content: 'width=device-width, initial-scale=1, user-scalable=no'
+      },
+      {
+        name: 'google',
+        content: 'notranslate'
       },
       { hid: 'description', name: 'description', content: pkg.description },
       // Twitter
