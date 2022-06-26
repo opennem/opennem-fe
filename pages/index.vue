@@ -59,7 +59,7 @@ export default {
 
       case '#/region/all-regions/energy':
       default:
-        this.$router.push({ path: 'energy/nem' })
+        this.$router.push('/energy/nem/')
     }
   }
 }
