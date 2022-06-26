@@ -218,7 +218,6 @@ module.exports = {
     '~plugins/filters.js',
     '~plugins/directives.js',
     '~plugins/tooltip.js',
-    '~plugins/sentry.js',
     { src: '~/plugins/mapbox', mode: 'client' }
   ],
 
@@ -228,7 +227,8 @@ module.exports = {
   modules: [
     // Doc: https://github.com/nuxt-community/axios-module#usage
     '@nuxtjs/axios',
-    '@nuxtjs/proxy'
+    '@nuxtjs/proxy',
+    '@nuxtjs/sentry'
   ],
 
   proxy: {
@@ -245,6 +245,20 @@ module.exports = {
   */
   axios: {
     // See https://github.com/nuxt-community/axios-module#options
+  },
+
+  /*
+  ** Sentry config
+  */
+  sentry: {
+    dsn:
+      'https://c89c945a3c14478f9df55a65ddb1fbae@o402615.ingest.sentry.io/5265226',
+    config: {
+      environment: useDev ? 'development' : 'production'
+    },
+    clientIntegrations: {
+      Vue: { attachProps: true }
+    }
   },
 
   /*
