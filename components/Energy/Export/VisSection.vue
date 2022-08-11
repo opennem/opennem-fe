@@ -50,6 +50,16 @@
       :interval="interval"
     />
 
+    <price-chart
+      v-if="ready && domainDemandPrice.length > 0 && exportPrice"
+      :price-dataset="currentDataset"
+      :domain-price="domainDemandPrice"
+      :range="range"
+      :interval="interval"
+      :zoom-extent="filteredDates"
+      :use-demand="true"
+      :read-only="true" />
+
     <temperature-chart
       v-if="ready && domainTemperature.length > 0 && exportTemperature"
       :read-only="true"
@@ -96,6 +106,7 @@ export default {
       domainEmissions: 'regionEnergy/domainEmissions',
       domainTemperature: 'regionEnergy/domainTemperature',
       domainPrice: 'regionEnergy/domainPrice',
+      domainDemandPrice: 'regionEnergy/domainDemandPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
 
