@@ -162,7 +162,6 @@ function updateMetricObject(
     let inflatedPrice = null
 
     if (hasInflation) {
-      console.log('datasetInflation', datasetInflation)
       const startQ = startOfQuarter(d.date)
       const find = datasetInflation.find(dInflation => {
         const startQMonth = startQ.getMonth()

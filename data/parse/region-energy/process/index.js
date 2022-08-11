@@ -1,4 +1,5 @@
 import parseISO from 'date-fns/parseISO'
+import format from 'date-fns/format'
 import addDays from 'date-fns/addDays'
 import addMonths from 'date-fns/addMonths'
 import PerfTime from '@/plugins/perfTime.js'
@@ -122,16 +123,16 @@ export default function(data, displayTz) {
   const hasInflation = dataInflation.length > 0
   if (hasInflation) {
     // adjust the start date to july 1922, instead of june 1922 to match the quarter
-    dataInflation[0].history.start = addMonths(
+    const inflationStart = addMonths(
       parseISO(dataInflation[0].history.start),
       1
-    ).toISOString()
-
-    dataInflation[0].history.last = addDays(
-      parseISO(dataInflation[0].history.last),
-      1
-    ).toISOString()
+    )
+    dataInflation[0].history.start =
+      format(inflationStart, 'yyyy-MM-dd') +
+      'T' +
+      format(inflationStart, 'hh:mm:ssxxx')
   }
+
   const datasetInflation = hasInflation
     ? createEmptyDatasets(dataInflation, displayTz)
     : []

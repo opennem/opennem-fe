@@ -49,7 +49,6 @@ function transformStripesDataset(d) {
     const dataset = d.dataset.filter(e => e.date.getFullYear() === yearInt)
 
     if (dataset.length > 0) {
-      console.log('d.inflation', d.inflation)
       data.push({
         year,
         originalDataset: dataset,

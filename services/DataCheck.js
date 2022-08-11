@@ -144,6 +144,7 @@ export function getStartEndNumInterval(dataObj, displayTz, ignoreTime) {
   const startDateTime = mutateDate(history.start, displayTz, ignoreTime)
   const lastDateTime = mutateDate(history.last, displayTz, ignoreTime)
   const interval = intervalParser(history.interval)
+
   const num = getArrLength({
     intervalKey: interval.key,
     intervalValue: interval.value,
