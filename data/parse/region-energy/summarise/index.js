@@ -269,9 +269,9 @@ export default function({
 
     // calculate demand vol weighted pricing
     let demandPrice = null
+    let demandEnergy = null
     if (domainDemandEnergy && domainDemandEnergy.length) {
       const demandMarketValue = d[domainDemandMarketValue[0].id]
-      let demandEnergy = null
       domainDemandEnergy.forEach(domain => {
         if (!demandEnergy) {
           demandEnergy = d[domain.id]
@@ -429,6 +429,9 @@ export default function({
       !isNaN(volWeightedPrice) && volWeightedPrice < 0
         ? volWeightedPrice
         : -0.01
+
+    dataset[i]._demandEnergy = demandEnergy
+    dataset[i]._demandPrice = demandPrice
 
     dataset[i][VW_PRICE] = isNaN(demandPrice) ? null : demandPrice
     dataset[i][VW_PRICE_ABOVE_300] =

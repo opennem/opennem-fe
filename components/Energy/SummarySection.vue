@@ -82,7 +82,7 @@
       :dataset="filteredCurrentDataset"
       :range="range"
       :interval="interval"
-      :price-id="domainPrice.length > 0 ? domainPrice[0].id : ''"
+      :price-id="recordsPriceId"
       :temperature-id="temperatureMeanDomain"
       @recordSelect="handleRecordSelect"
       @recordDeselect="handleRecordDeselect"
@@ -220,6 +220,18 @@ export default {
         this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
       const find = this.domains.find(d => d[property] === domain)
       return find ? find.id : ''
+    },
+
+    recordsPriceId() {
+      let id = ''
+
+      if (this.isEnergyType) {
+        id =
+          this.domainDemandPrice.length > 0 ? this.domainDemandPrice[0].id : ''
+      } else {
+        id = this.domainPrice.length > 0 ? this.domainPrice[0].id : ''
+      }
+      return id
     }
   },
 
