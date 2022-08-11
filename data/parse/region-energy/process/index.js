@@ -14,6 +14,7 @@ import {
   getTemperatureDomains,
   getPriceDomains,
   getVolWeightedPriceDomains,
+  getDemandVWPriceDomains,
   getInflationDomain
 } from './getDomains.js'
 
@@ -29,6 +30,8 @@ export default function(data, displayTz) {
     dataPriceMarketValue,
     dataTemperature,
     dataInflation,
+    demandEnergy,
+    demandMarketValue,
     fuelTechDataType,
     isPowerData,
     hasPowerEnergyData,
@@ -72,6 +75,36 @@ export default function(data, displayTz) {
   } else {
     console.warn('There is no price or market value in this dataset')
   }
+
+  let domainDemandPrice = []
+  const domainDemandEnergy = demandEnergy.map(d => {
+    return {
+      domain: d.id,
+      id: d.id,
+      label: 'Demand energy',
+      type: 'energy',
+      colour: 'steelblue'
+    }
+  })
+
+  const domainDemandMarketValue = demandMarketValue.map(d => {
+    return {
+      domain: d.id,
+      id: d.id,
+      label: 'Demand market value',
+      type: 'market_value'
+    }
+  })
+
+  if (demandEnergy.length && demandMarketValue.length) {
+    domainDemandPrice = getDemandVWPriceDomains()
+  } else {
+    console.warn('There is no demand energy or market value in this dataset')
+  }
+
+  console.log('domainDemandPrice', domainDemandPrice)
+  console.log('domainDemandEnergy', domainDemandEnergy)
+  console.log('domainDemandMarketValue', domainDemandMarketValue)
 
   const domainTemperature = getTemperatureDomains(dataTemperature)
 
@@ -119,6 +152,9 @@ export default function(data, displayTz) {
     domainEmissions,
     domainMarketValue,
     domainPrice,
+    domainDemandPrice,
+    domainDemandEnergy,
+    domainDemandMarketValue,
     domainTemperature,
     domainInflation,
     dataPowerEnergyInterval,

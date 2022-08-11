@@ -5,6 +5,9 @@
       :temperature-domains="domainTemperature"
       :market-value-domains="currentDomainMarketValue"
       :emissions-domains="currentDomainEmissions"
+      :demand-price-domains="domainDemandPrice"
+      :demand-energy-domains="domainDemandEnergy"
+      :demand-market-value-domains="domainDemandMarketValue"
       :price-id="domainPrice.length > 0 ? domainPrice[0].id : ''"
       :dataset="filteredCurrentDataset"
       :hover-date="hoverDate"
@@ -151,6 +154,9 @@ export default {
       domainTemperature: 'regionEnergy/domainTemperature',
       domainPrice: 'regionEnergy/domainPrice',
       domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
+      domainDemandPrice: 'regionEnergy/domainDemandPrice',
+      domainDemandEnergy: 'regionEnergy/domainDemandEnergy',
+      domainDemandMarketValue: 'regionEnergy/domainDemandMarketValue',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       currentDomainMarketValue: 'regionEnergy/currentDomainMarketValue',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',

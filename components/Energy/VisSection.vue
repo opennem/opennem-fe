@@ -81,8 +81,10 @@
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
       @svgClick="handleSvgClick" />
+    
+    
 
-    <temperature-chart
+    <!-- <temperature-chart
       v-if="ready && domainTemperature.length > 0"
       :hover-on="isHovering"
       :hover-date="hoverDate"
@@ -91,7 +93,49 @@
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
+      @svgClick="handleSvgClick" /> -->
+
+    <h4 style="margin-left: 1rem; font-size: 18px; border-top: 1px solid steelblue;">Demand</h4>
+    <price-chart
+      v-if="ready && domainDemandPrice.length > 0"
+      :price-dataset="currentDataset"
+      :domain-price="domainDemandPrice"
+      :range="range"
+      :interval="interval"
+      :hover-on="isHovering"
+      :hover-date="hoverDate"
+      :zoom-extent="zoomExtent"
+      :filter-period="filterPeriod"
+      :use-demand="true"
+      @dateHover="handleDateHover"
+      @isHovering="handleIsHovering"
+      @zoomExtent="handleZoomExtent"
       @svgClick="handleSvgClick" />
+    <power-energy-chart
+      v-if="ready"
+      :power-energy-dataset="currentDataset"
+      :domain-power-energy="domainDemandEnergy"
+      :range="range"
+      :interval="interval"
+      :by-generation="byGeneration"
+      :compare-dates="compareDates"
+      :hover-on="isHovering"
+      :hover-date="hoverDate"
+      :zoom-extent="zoomExtent"
+      :prop-name="propName"
+      :chart-height="chartHeight"
+      :filter-period="filterPeriod"
+      :incomplete-intervals="incompleteIntervals"
+      :is-energy-type="isEnergyType"
+      @dateHover="handleDateHover"
+      @isHovering="handleIsHovering"
+      @zoomExtent="handleZoomExtent"
+      @svgClick="handleSvgClick"
+      @selectedDataset="handleSelectedDatasetChange"
+      @displayUnit="handleDisplayUnitChange"
+    />
+
+    
 
   </section>
 </template>
@@ -166,6 +210,8 @@ export default {
       currentDataset: 'regionEnergy/currentDataset',
       domainEmissions: 'regionEnergy/domainEmissions',
       domainTemperature: 'regionEnergy/domainTemperature',
+      domainDemandPrice: 'regionEnergy/domainDemandPrice',
+      domainDemandEnergy: 'regionEnergy/domainDemandEnergy',
       domainPrice: 'regionEnergy/domainPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
