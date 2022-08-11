@@ -104,7 +104,14 @@ export function dataProcess(res, range, interval, period, displayTz) {
   if (range === RANGE_ALL_12MTH_ROLLING) {
     datasetFull = transformTo12MthRollingSum(
       datasetFlat,
-      [...domainPowerEnergy, ...domainEmissions, ...domainMarketValue],
+      [
+        ...domainPowerEnergy,
+        ...domainEmissions,
+        ...domainMarketValue,
+        ...domainDemandPrice,
+        ...domainDemandEnergy,
+        ...domainDemandMarketValue
+      ],
       range === RANGE_ALL_12MTH_ROLLING
     )
   } else {
