@@ -26,6 +26,9 @@ export function simpleDataProcess(res, displayTz) {
     domainEmissions,
     domainTemperature,
     domainInflation,
+    domainDemandPrice,
+    domainDemandEnergy,
+    domainDemandMarketValue,
     type
   } = process(responses, displayTz)
 
@@ -38,7 +41,10 @@ export function simpleDataProcess(res, displayTz) {
     domainPowerEnergy,
     domainEmissions,
     domainPrice: isEnergyType ? domainMarketValue : domainPrice,
-    domainInflation
+    domainInflation,
+    domainDemandPrice,
+    domainDemandEnergy,
+    domainDemandMarketValue
   })
 
   return {
@@ -48,6 +54,9 @@ export function simpleDataProcess(res, displayTz) {
     domainTemperature,
     domainPrice,
     domainMarketValue,
+    domainDemandPrice,
+    domainDemandEnergy,
+    domainDemandMarketValue,
     inflation: {
       data: datasetInflation,
       domain: domainInflation

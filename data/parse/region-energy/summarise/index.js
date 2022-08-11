@@ -282,13 +282,13 @@ export default function({
         ? demandMarketValue / demandEnergy / 1000
         : demandMarketValue / demandEnergy
 
-      console.log(
-        i,
-        'demandPrice',
-        demandPrice,
-        demandEnergy,
-        demandMarketValue
-      )
+      // console.log(
+      //   i,
+      //   'demandPrice',
+      //   demandPrice,
+      //   demandEnergy,
+      //   demandMarketValue
+      // )
     }
 
     // null checks

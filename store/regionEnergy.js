@@ -304,6 +304,9 @@ export const actions = {
           domainTemperature,
           domainPrice,
           domainMarketValue,
+          domainDemandPrice,
+          domainDemandEnergy,
+          domainDemandMarketValue,
           inflation
         } = simpleDataProcess(responses, displayTz)
 
@@ -318,6 +321,9 @@ export const actions = {
           domainTemperature,
           domainPrice,
           domainMarketValue,
+          domainDemandPrice,
+          domainDemandEnergy,
+          domainDemandMarketValue,
           inflation
         }
       }

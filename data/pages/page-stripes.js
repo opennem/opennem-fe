@@ -23,18 +23,18 @@ export async function getRegionStripesData(fetchFunc, regions) {
         region: r.label,
         regionId: r.id,
         originalDataset: rData.dataset,
-        data: getStripesDataset(
-          rData.dataset,
-          rData.inflation ? rData.inflation.data : [],
-          rData.domainPowerEnergy,
-          rData.domainEmissions,
-          rData.domainTemperature,
-          rData.domainPrice,
-          rData.domainMarketValue,
-          rData.inflation ? rData.inflation.domain : null,
-          false,
-          allBucket
-        )
+        data: getStripesDataset({
+          dataset: rData.dataset,
+          datasetInflation: rData.inflation ? rData.inflation.data : [],
+          domainPowerEnergy: rData.domainPowerEnergy,
+          domainEmissions: rData.domainEmissions,
+          domainTemperature: rData.domainTemperature,
+          domainPrice: rData.domainPrice,
+          domainMarketValue: rData.domainMarketValue,
+          domainInflation: rData.inflation ? rData.inflation.domain : null,
+          topUp: false,
+          bucket: allBucket
+        })
       })
     })
   })
@@ -49,21 +49,25 @@ function transformStripesDataset(d) {
     const dataset = d.dataset.filter(e => e.date.getFullYear() === yearInt)
 
     if (dataset.length > 0) {
+      console.log('d.inflation', d.inflation)
       data.push({
         year,
         originalDataset: dataset,
-        data: getStripesDataset(
+        data: getStripesDataset({
           dataset,
-          d.inflation ? d.inflation.data : [],
-          d.domainPowerEnergy,
-          d.domainEmissions,
-          d.domainTemperature,
-          d.domainPrice,
-          d.domainMarketValue,
-          d.inflation ? d.inflation.domain : null,
-          true,
-          getEachDayOfInterval(yearInt)
-        )
+          datasetInflation: d.inflation ? d.inflation.data : [],
+          domainPowerEnergy: d.domainPowerEnergy,
+          domainEmissions: d.domainEmissions,
+          domainTemperature: d.domainTemperature,
+          domainPrice: d.domainPrice,
+          domainMarketValue: d.domainMarketValue,
+          domainDemandPrice: d.domainDemandPrice,
+          domainDemandEnergy: d.domainDemandEnergy,
+          domainDemandMarketValue: d.domainDemandMarketValue,
+          domainInflation: d.inflation ? d.inflation.domain : null,
+          topUp: true,
+          bucket: getEachDayOfInterval(yearInt)
+        })
       })
     }
   })
