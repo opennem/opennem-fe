@@ -2,7 +2,7 @@ import startOfQuarter from 'date-fns/startOfQuarter'
 import differenceInDays from 'date-fns/differenceInDays'
 import addDays from 'date-fns/addDays'
 
-export default function(
+export default function({
   dataset,
   datasetInflation,
   domainPowerEnergy,
@@ -10,10 +10,13 @@ export default function(
   domainTemperature,
   domainPrice,
   domainMarketValue,
+  domainDemandPrice,
+  domainDemandEnergy,
+  domainDemandMarketValue,
   domainInflation,
   topUp,
   bucket
-) {
+}) {
   if (bucket) {
     const data = bucket.map(d => {
       const obj = createEmptyMetricObj(d.date, d.time)
@@ -174,8 +177,8 @@ function updateMetricObject(
 
       if (inflationIndex || inflationIndex === 0) {
         inflatedPrice =
-          d._volWeightedPrice || d._volWeightedPrice === 0
-            ? (lastIndex / inflationIndex) * d._volWeightedPrice
+          d._demandPrice || d._demandPrice === 0
+            ? (lastIndex / inflationIndex) * d._demandPrice
             : null
       }
     }
@@ -200,7 +203,7 @@ function updateMetricObject(
     obj.importsExports = importsExports
     obj.sumImportsExports = sumImportsExports
     obj.netInterconnectorFlow = d._totalDemandImportsExportsProportion
-    obj.price = d._volWeightedPrice
+    obj.price = d._demandPrice
     obj.inflatedPrice = inflatedPrice
     obj.coalValue = d._coalValue
     obj.windValue = d._windValue

@@ -47,6 +47,9 @@ export const state = () => ({
   domainMarketValueGrouped: [],
   domainPrice: [],
   domainTemperature: [],
+  domainDemandPrice: [],
+  domainDemandEnergy: [],
+  domainDemandMarketValue: [],
   currentDomainPowerEnergy: [],
   currentDomainEmissions: [],
   currentDomainMarketValue: [],
@@ -74,6 +77,9 @@ export const getters = {
   domainMarketValueGrouped: state => state.domainMarketValueGrouped,
   domainPrice: state => state.domainPrice,
   domainTemperature: state => state.domainTemperature,
+  domainDemandPrice: state => state.domainDemandPrice,
+  domainDemandEnergy: state => state.domainDemandEnergy,
+  domainDemandMarketValue: state => state.domainDemandMarketValue,
   currentDomainPowerEnergy: state => state.currentDomainPowerEnergy,
   currentDomainEmissions: state => state.currentDomainEmissions,
   currentDomainMarketValue: state => state.currentDomainMarketValue,
@@ -182,6 +188,15 @@ export const mutations = {
   },
   filteredDates(state, filteredDates) {
     state.filteredDates = _cloneDeep(filteredDates)
+  },
+  domainDemandPrice(state, domainDemandPrice) {
+    state.domainDemandPrice = _cloneDeep(domainDemandPrice)
+  },
+  domainDemandEnergy(state, domainDemandEnergy) {
+    state.domainDemandEnergy = _cloneDeep(domainDemandEnergy)
+  },
+  domainDemandMarketValue(state, domainDemandMarketValue) {
+    state.domainDemandMarketValue = _cloneDeep(domainDemandMarketValue)
   }
 }
 
@@ -289,6 +304,9 @@ export const actions = {
           domainTemperature,
           domainPrice,
           domainMarketValue,
+          domainDemandPrice,
+          domainDemandEnergy,
+          domainDemandMarketValue,
           inflation
         } = simpleDataProcess(responses, displayTz)
 
@@ -303,6 +321,9 @@ export const actions = {
           domainTemperature,
           domainPrice,
           domainMarketValue,
+          domainDemandPrice,
+          domainDemandEnergy,
+          domainDemandMarketValue,
           inflation
         }
       }
@@ -369,6 +390,9 @@ export const actions = {
           domainMarketValueGrouped,
           domainPrice,
           domainTemperature,
+          domainDemandPrice,
+          domainDemandEnergy,
+          domainDemandMarketValue,
           dataType,
           units,
           rollingDb
@@ -379,6 +403,8 @@ export const actions = {
             currentDataset.length
           })`
         )
+
+        console.log('domainDemandMarketValue', domainDemandMarketValue)
 
         commit('isFetching', false)
         commit('isEnergyType', dataType === 'energy')
@@ -397,6 +423,9 @@ export const actions = {
         commit('domainMarketValueGrouped', domainMarketValueGrouped)
         commit('domainPrice', domainPrice)
         commit('domainTemperature', domainTemperature)
+        commit('domainDemandPrice', domainDemandPrice)
+        commit('domainDemandEnergy', domainDemandEnergy)
+        commit('domainDemandMarketValue', domainDemandMarketValue)
         commit('currentDomainPowerEnergy', domainPowerEnergyGrouped[groupName])
         commit('currentDomainEmissions', domainEmissionsGrouped[groupName])
         commit('currentDomainMarketValue', domainMarketValueGrouped[groupName])
@@ -493,6 +522,9 @@ export const actions = {
         domainMarketValueGrouped: state.domainMarketValueGrouped,
         domainPrice: state.domainPrice,
         domainTemperature: state.domainTemperature,
+        domainDemandPrice: state.domainDemandPrice,
+        domainDemandEnergy: state.domainDemandEnergy,
+        domainDemandMarketValue: state.domainDemandMarketValue,
         range,
         interval
       })
@@ -531,6 +563,9 @@ export const actions = {
       domainMarketValueGrouped: state.domainMarketValueGrouped,
       domainPrice: state.domainPrice,
       domainTemperature: state.domainTemperature,
+      domainDemandPrice: state.domainDemandPrice,
+      domainDemandEnergy: state.domainDemandEnergy,
+      domainDemandMarketValue: state.domainDemandMarketValue,
       range,
       interval
     })
@@ -556,6 +591,9 @@ export const actions = {
       domainMarketValueGrouped: state.domainMarketValueGrouped,
       domainPrice: state.domainPrice,
       domainTemperature: state.domainTemperature,
+      domainDemandPrice: state.domainDemandPrice,
+      domainDemandEnergy: state.domainDemandEnergy,
+      domainDemandMarketValue: state.domainDemandMarketValue,
       range,
       interval
     })

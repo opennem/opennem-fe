@@ -148,10 +148,13 @@ export default {
 
       chartEnergyRenewablesLine:
         'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+
+      isEnergyType: 'regionEnergy/isEnergyType',
       energyExportData: 'regionEnergy/filteredCurrentDataset',
       energyDomains: 'regionEnergy/currentDomainPowerEnergy',
       emissionDomains: 'regionEnergy/currentDomainEmissions',
       priceDomains: 'regionEnergy/domainPrice',
+      demandPriceDomains: 'regionEnergy/domainDemandPrice',
       temperatureDomains: 'regionEnergy/domainTemperature',
       marketValueDomains: 'regionEnergy/currentDomainMarketValue'
     }),
@@ -226,11 +229,19 @@ export default {
           obj[`${domain.label} Emissions Vol - tCO₂e`] = format(d[domain.id])
         })
         obj['Emissions Intensity - kgCO₂e/MWh'] = format(d._emissionsIntensity)
-        if (this.priceDomains.length > 0) {
-          const priceDomain = this.priceDomains[0]
-          const label =
-            priceDomain.type === 'price' ? 'Price' : 'Volume Weighted Price'
-          obj[`${label} - AUD/MWh`] = format(d[priceDomain.id])
+
+        if (this.isEnergyType) {
+          if (this.demandPriceDomains.length) {
+            const priceDomain = this.demandPriceDomains[0]
+            const label = 'Volume Weighted Price'
+            obj[`${label} - AUD/MWh`] = format(d[priceDomain.id])
+          }
+        } else {
+          if (this.priceDomains.length) {
+            const priceDomain = this.priceDomains[0]
+            const label = 'Price'
+            obj[`${label} - AUD/MWh`] = format(d[priceDomain.id])
+          }
         }
         if (this.hasMarketValue) {
           this.marketValueDomains.forEach(domain => {

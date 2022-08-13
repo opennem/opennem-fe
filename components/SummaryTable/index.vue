@@ -100,7 +100,7 @@
             v-if="!hoverOn && !focusOn"
             class="summary-col-av-value cell-value">
             <span v-if="isAvValueColumn">
-              {{ summary._totalAverageValue | formatCurrency }}
+              {{ summary._totalDemandAverageValue | formatCurrency }}<br>
             </span>
             <span v-if="isEmissionsVolumeColumn">
               {{ sumEmissionsMinusLoads | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
@@ -113,7 +113,7 @@
             v-if="hoverOn || focusOn"
             class="summary-col-av-value cell-value">
             <span v-if="isAvValueColumn">
-              {{ pointSummary._totalAverageValue | formatCurrency }}
+              {{ pointSummary._demandAverageValue | formatCurrency }}<br>
             </span>
             <span v-if="isEmissionsVolumeColumn">
               {{ emissionsHoverValue | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
@@ -360,6 +360,18 @@ export default {
       default: () => []
     },
     marketValueDomains: {
+      type: Array,
+      default: () => []
+    },
+    demandPriceDomains: {
+      type: Array,
+      default: () => []
+    },
+    demandEnergyDomains: {
+      type: Array,
+      default: () => []
+    },
+    demandMarketValueDomains: {
       type: Array,
       default: () => []
     },
@@ -1080,8 +1092,41 @@ export default {
           : 0
 
         let totalAverageValue = 0
+
+        let demandEnergyTotal = 0,
+          demandMarketValueTotal = 0,
+          totalDemandAverageValue = 0
         if (this.isEnergy) {
+          if (this.demandEnergyDomains && this.demandEnergyDomains.length) {
+            const demandEnergyId = this.demandEnergyDomains[0].id
+
+            const demandEnergy = data.map(p => {
+              return p[demandEnergyId] ? p[demandEnergyId] : null
+            })
+            demandEnergyTotal = demandEnergy.reduce((a, b) => a + b, 0)
+            console.log('demandEnergyTotal: ', demandEnergyTotal)
+          }
+
+          if (
+            this.demandMarketValueDomains &&
+            this.demandMarketValueDomains.length
+          ) {
+            const demandMarketValueId = this.demandMarketValueDomains[0].id
+
+            const demandMarketValue = data.map(p => {
+              return p[demandMarketValueId] ? p[demandMarketValueId] : null
+            })
+            demandMarketValueTotal = demandMarketValue.reduce(
+              (a, b) => a + b,
+              0
+            )
+            console.log('demandMarketValueTotal: ', demandMarketValueTotal)
+          }
           totalAverageValue = totalPriceMarketValue / energySummaryTotal / 1000
+          totalDemandAverageValue =
+            demandMarketValueTotal / demandEnergyTotal / 1000
+
+          console.log('totalDemandAverageValue: ', totalDemandAverageValue)
         } else {
           totalAverageValue = volWeightPriceTotal / energySummaryTotal
         }
@@ -1089,6 +1134,7 @@ export default {
         this.summary._totalEnergy = totalEnergy
         this.summary._totalEnergyForPercentageCalculation = totalEnergyForPercentageCalculation
         this.summary._totalAverageValue = totalAverageValue
+        this.summary._totalDemandAverageValue = totalDemandAverageValue
         this.summarySources._totalEnergy = totalSources
         this.summarySources._totalGeneration = totalGeneration
         this.summaryLoads._totalEnergy = totalLoads
@@ -1185,6 +1231,18 @@ export default {
             this.pointSummaryLoads[domain.id] = value
           }
         })
+      }
+      if (this.demandPriceDomains && this.demandPriceDomains.length) {
+        const demandPriceId = this.demandPriceDomains[0].id
+        // const demandEnergyId = this.demandEnergyDomains[0].id
+        // const demandMarketValueId = this.demandMarketValueDomains[0].id
+        // console.log(
+        //   'demand av value:',
+        //   `${this.pointSummary[demandPriceId]} = (${
+        //     this.pointSummary[demandMarketValueId]
+        //   } / ${this.pointSummary[demandEnergyId]} / 1000)`
+        // )
+        this.pointSummary._demandAverageValue = this.pointSummary[demandPriceId]
       }
 
       if (this.priceId) {

@@ -26,6 +26,9 @@ export function simpleDataProcess(res, displayTz) {
     domainEmissions,
     domainTemperature,
     domainInflation,
+    domainDemandPrice,
+    domainDemandEnergy,
+    domainDemandMarketValue,
     type
   } = process(responses, displayTz)
 
@@ -38,7 +41,10 @@ export function simpleDataProcess(res, displayTz) {
     domainPowerEnergy,
     domainEmissions,
     domainPrice: isEnergyType ? domainMarketValue : domainPrice,
-    domainInflation
+    domainInflation,
+    domainDemandPrice,
+    domainDemandEnergy,
+    domainDemandMarketValue
   })
 
   return {
@@ -48,6 +54,9 @@ export function simpleDataProcess(res, displayTz) {
     domainTemperature,
     domainPrice,
     domainMarketValue,
+    domainDemandPrice,
+    domainDemandEnergy,
+    domainDemandMarketValue,
     inflation: {
       data: datasetInflation,
       domain: domainInflation
@@ -62,6 +71,9 @@ export function dataProcess(res, range, interval, period, displayTz) {
     datasetFlat: dFlat,
     domainMarketValue,
     domainPrice,
+    domainDemandPrice,
+    domainDemandEnergy,
+    domainDemandMarketValue,
     domainPowerEnergy,
     domainTemperature,
     domainEmissions,
@@ -81,6 +93,8 @@ export function dataProcess(res, range, interval, period, displayTz) {
     isEnergyType
   )
 
+  console.log('dFlat', dFlat)
+
   const datasetFlat = dFlat.filter(
     d => d.date >= earliestEnergyStartDate && d.date <= latestEnergyLastDate
   )
@@ -90,7 +104,14 @@ export function dataProcess(res, range, interval, period, displayTz) {
   if (range === RANGE_ALL_12MTH_ROLLING) {
     datasetFull = transformTo12MthRollingSum(
       datasetFlat,
-      [...domainPowerEnergy, ...domainEmissions, ...domainMarketValue],
+      [
+        ...domainPowerEnergy,
+        ...domainEmissions,
+        ...domainMarketValue,
+        ...domainDemandPrice,
+        ...domainDemandEnergy,
+        ...domainDemandMarketValue
+      ],
       range === RANGE_ALL_12MTH_ROLLING
     )
   } else {
@@ -113,7 +134,9 @@ export function dataProcess(res, range, interval, period, displayTz) {
             ...domainEmissions,
             ...domainMarketValue,
             ...domainPrice,
-            ...domainTemperature
+            ...domainTemperature,
+            ...domainDemandEnergy,
+            ...domainDemandMarketValue
           ],
           datasetFlat: dataset,
           interval
@@ -127,6 +150,9 @@ export function dataProcess(res, range, interval, period, displayTz) {
     currentDataset,
     domainPowerEnergy,
     domainEmissions,
+    domainDemandPrice,
+    domainDemandEnergy,
+    domainDemandMarketValue,
     domainPrice: isEnergyType ? domainMarketValue : domainPrice
   })
   groupDataset({
@@ -166,6 +192,9 @@ export function dataProcess(res, range, interval, period, displayTz) {
     domainMarketValueGrouped,
     domainPrice,
     domainTemperature,
+    domainDemandPrice,
+    domainDemandEnergy,
+    domainDemandMarketValue,
     currentDataset: filterDatasetByPeriod(currentDataset, interval, period),
     units,
     rollingDb
@@ -182,6 +211,9 @@ export function dataRollUp({
   domainMarketValueGrouped,
   domainPrice,
   domainTemperature,
+  domainDemandPrice,
+  domainDemandEnergy,
+  domainDemandMarketValue,
   range,
   interval,
   isEnergyType
@@ -192,19 +224,35 @@ export function dataRollUp({
       ...domainEmissions,
       ...domainMarketValue,
       ...domainPrice,
-      ...domainTemperature
+      ...domainTemperature,
+      ...domainDemandEnergy,
+      ...domainDemandMarketValue
     ],
     datasetFlat: filterDatasetByRange(datasetFlat, range),
     interval
   })
 
-  summariseDataset({
-    isEnergyType,
-    currentDataset,
-    domainPowerEnergy,
-    domainEmissions,
-    domainPrice: isEnergyType ? domainMarketValue : domainPrice
-  })
+  if (isEnergyType) {
+    summariseDataset({
+      isEnergyType,
+      currentDataset,
+      domainPowerEnergy,
+      domainEmissions,
+      domainDemandPrice,
+      domainDemandEnergy,
+      domainDemandMarketValue,
+      domainPrice: isEnergyType ? domainMarketValue : domainPrice
+    })
+  } else {
+    summariseDataset({
+      isEnergyType,
+      currentDataset,
+      domainPowerEnergy,
+      domainEmissions,
+      domainPrice: isEnergyType ? domainMarketValue : domainPrice
+    })
+  }
+
   groupDataset({
     dataset: currentDataset,
     domainPowerEnergyGrouped,

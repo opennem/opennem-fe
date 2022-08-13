@@ -41,7 +41,7 @@
     />
 
     <price-chart
-      v-if="ready && domainPrice.length > 0 && exportPrice"
+      v-if="ready && !isEnergyType && domainPrice.length > 0 && exportPrice"
       :read-only="true"
       :zoom-extent="filteredDates"
       :price-dataset="currentDataset"
@@ -49,6 +49,16 @@
       :range="range"
       :interval="interval"
     />
+
+    <price-chart
+      v-if="ready && isEnergyType && domainDemandPrice.length > 0 && exportPrice"
+      :price-dataset="currentDataset"
+      :domain-price="domainDemandPrice"
+      :range="range"
+      :interval="interval"
+      :zoom-extent="filteredDates"
+      :use-demand="true"
+      :read-only="true" />
 
     <temperature-chart
       v-if="ready && domainTemperature.length > 0 && exportTemperature"
@@ -96,6 +106,7 @@ export default {
       domainEmissions: 'regionEnergy/domainEmissions',
       domainTemperature: 'regionEnergy/domainTemperature',
       domainPrice: 'regionEnergy/domainPrice',
+      domainDemandPrice: 'regionEnergy/domainDemandPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
 
