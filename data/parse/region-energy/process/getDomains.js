@@ -104,19 +104,19 @@ export function getDemandVWPriceDomains() {
       id: VW_PRICE,
       domain: VW_PRICE,
       type: 'price',
-      colour: 'steelblue'
+      colour: PRICE_COLOUR
     },
     {
       id: VW_PRICE_ABOVE_300,
       domain: VW_PRICE_ABOVE_300,
       type: 'price',
-      colour: 'steelblue'
+      colour: PRICE_COLOUR
     },
     {
       id: VW_PRICE_BELOW_0,
       domain: VW_PRICE_BELOW_0,
       type: 'price',
-      colour: 'steelblue'
+      colour: PRICE_COLOUR
     }
   ]
 }

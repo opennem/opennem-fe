@@ -191,7 +191,7 @@ export default {
   data() {
     return {
       options,
-      lineColour: this.useDemand ? 'steelblue' : '#e34a33'
+      lineColour: '#e34a33'
     }
   },
 

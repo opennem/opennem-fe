@@ -68,7 +68,7 @@
       @svgClick="handleSvgClick" />
 
     <price-chart
-      v-if="ready && domainPrice.length > 0"
+      v-if="ready && !isEnergyType && domainPrice.length > 0"
       :price-dataset="currentDataset"
       :domain-price="domainPrice"
       :range="range"
@@ -81,23 +81,8 @@
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
       @svgClick="handleSvgClick" />
-    
-    
-
-    <!-- <temperature-chart
-      v-if="ready && domainTemperature.length > 0"
-      :hover-on="isHovering"
-      :hover-date="hoverDate"
-      :zoom-extent="zoomExtent"
-      :filter-period="filterPeriod"
-      @dateHover="handleDateHover"
-      @isHovering="handleIsHovering"
-      @zoomExtent="handleZoomExtent"
-      @svgClick="handleSvgClick" /> -->
-
-    <h4 style="margin-left: 1rem; font-size: 18px; border-top: 1px solid steelblue;">Demand</h4>
     <price-chart
-      v-if="ready && domainDemandPrice.length > 0"
+      v-if="ready && isEnergyType && domainDemandPrice.length > 0"
       :price-dataset="currentDataset"
       :domain-price="domainDemandPrice"
       :range="range"
@@ -111,31 +96,17 @@
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
       @svgClick="handleSvgClick" />
-    <power-energy-chart
-      v-if="ready"
-      :power-energy-dataset="currentDataset"
-      :domain-power-energy="domainDemandEnergy"
-      :range="range"
-      :interval="interval"
-      :by-generation="byGeneration"
-      :compare-dates="compareDates"
+
+    <temperature-chart
+      v-if="ready && domainTemperature.length > 0"
       :hover-on="isHovering"
       :hover-date="hoverDate"
       :zoom-extent="zoomExtent"
-      :prop-name="propName"
-      :chart-height="chartHeight"
       :filter-period="filterPeriod"
-      :incomplete-intervals="incompleteIntervals"
-      :is-energy-type="isEnergyType"
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
-      @svgClick="handleSvgClick"
-      @selectedDataset="handleSelectedDatasetChange"
-      @displayUnit="handleDisplayUnitChange"
-    />
-
-    
+      @svgClick="handleSvgClick" />
 
   </section>
 </template>
@@ -211,7 +182,6 @@ export default {
       domainEmissions: 'regionEnergy/domainEmissions',
       domainTemperature: 'regionEnergy/domainTemperature',
       domainDemandPrice: 'regionEnergy/domainDemandPrice',
-      domainDemandEnergy: 'regionEnergy/domainDemandEnergy',
       domainPrice: 'regionEnergy/domainPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',

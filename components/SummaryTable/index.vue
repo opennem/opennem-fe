@@ -100,8 +100,7 @@
             v-if="!hoverOn && !focusOn"
             class="summary-col-av-value cell-value">
             <span v-if="isAvValueColumn">
-              {{ summary._totalAverageValue | formatCurrency }}<br>
-              <em style="color: steelblue; font-style: normal;">{{ summary._totalDemandAverageValue | formatCurrency }}</em>
+              {{ summary._totalDemandAverageValue | formatCurrency }}<br>
             </span>
             <span v-if="isEmissionsVolumeColumn">
               {{ sumEmissionsMinusLoads | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
@@ -114,8 +113,7 @@
             v-if="hoverOn || focusOn"
             class="summary-col-av-value cell-value">
             <span v-if="isAvValueColumn">
-              {{ pointSummary._totalAverageValue | formatCurrency }}<br>
-              <em style="color: steelblue; font-style: normal;">{{ pointSummary._demandAverageValue | formatCurrency }}</em>
+              {{ pointSummary._demandAverageValue | formatCurrency }}<br>
             </span>
             <span v-if="isEmissionsVolumeColumn">
               {{ emissionsHoverValue | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
@@ -1236,14 +1234,14 @@ export default {
       }
       if (this.demandPriceDomains && this.demandPriceDomains.length) {
         const demandPriceId = this.demandPriceDomains[0].id
-        const demandEnergyId = this.demandEnergyDomains[0].id
-        const demandMarketValueId = this.demandMarketValueDomains[0].id
-        console.log(
-          'demand av value:',
-          `${this.pointSummary[demandPriceId]} = (${
-            this.pointSummary[demandMarketValueId]
-          } / ${this.pointSummary[demandEnergyId]} / 1000)`
-        )
+        // const demandEnergyId = this.demandEnergyDomains[0].id
+        // const demandMarketValueId = this.demandMarketValueDomains[0].id
+        // console.log(
+        //   'demand av value:',
+        //   `${this.pointSummary[demandPriceId]} = (${
+        //     this.pointSummary[demandMarketValueId]
+        //   } / ${this.pointSummary[demandEnergyId]} / 1000)`
+        // )
         this.pointSummary._demandAverageValue = this.pointSummary[demandPriceId]
       }
 

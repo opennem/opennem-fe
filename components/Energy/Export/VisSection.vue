@@ -41,7 +41,7 @@
     />
 
     <price-chart
-      v-if="ready && domainPrice.length > 0 && exportPrice"
+      v-if="ready && !isEnergyType && domainPrice.length > 0 && exportPrice"
       :read-only="true"
       :zoom-extent="filteredDates"
       :price-dataset="currentDataset"
@@ -51,7 +51,7 @@
     />
 
     <price-chart
-      v-if="ready && domainDemandPrice.length > 0 && exportPrice"
+      v-if="ready && isEnergyType && domainDemandPrice.length > 0 && exportPrice"
       :price-dataset="currentDataset"
       :domain-price="domainDemandPrice"
       :range="range"
