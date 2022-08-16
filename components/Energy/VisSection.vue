@@ -68,7 +68,7 @@
       @svgClick="handleSvgClick" />
 
     <price-chart
-      v-if="ready && domainPrice.length > 0"
+      v-if="ready && !isEnergyType && domainPrice.length > 0"
       :price-dataset="currentDataset"
       :domain-price="domainPrice"
       :range="range"
@@ -77,6 +77,21 @@
       :hover-date="hoverDate"
       :zoom-extent="zoomExtent"
       :filter-period="filterPeriod"
+      @dateHover="handleDateHover"
+      @isHovering="handleIsHovering"
+      @zoomExtent="handleZoomExtent"
+      @svgClick="handleSvgClick" />
+    <price-chart
+      v-if="ready && isEnergyType && domainDemandPrice.length > 0"
+      :price-dataset="currentDataset"
+      :domain-price="domainDemandPrice"
+      :range="range"
+      :interval="interval"
+      :hover-on="isHovering"
+      :hover-date="hoverDate"
+      :zoom-extent="zoomExtent"
+      :filter-period="filterPeriod"
+      :use-demand="true"
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
@@ -166,6 +181,7 @@ export default {
       currentDataset: 'regionEnergy/currentDataset',
       domainEmissions: 'regionEnergy/domainEmissions',
       domainTemperature: 'regionEnergy/domainTemperature',
+      domainDemandPrice: 'regionEnergy/domainDemandPrice',
       domainPrice: 'regionEnergy/domainPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',

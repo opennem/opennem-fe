@@ -3,6 +3,9 @@ import {
   PRICE,
   PRICE_ABOVE_300,
   PRICE_BELOW_0,
+  VW_PRICE,
+  VW_PRICE_ABOVE_300,
+  VW_PRICE_BELOW_0,
   CPI
 } from '@/constants/data-types'
 
@@ -89,6 +92,29 @@ export function getVolWeightedPriceDomains() {
     {
       id: '_volWeightedPriceBelow0',
       domain: '_volWeightedPriceBelow0',
+      type: 'price',
+      colour: PRICE_COLOUR
+    }
+  ]
+}
+
+export function getDemandVWPriceDomains() {
+  return [
+    {
+      id: VW_PRICE,
+      domain: VW_PRICE,
+      type: 'price',
+      colour: PRICE_COLOUR
+    },
+    {
+      id: VW_PRICE_ABOVE_300,
+      domain: VW_PRICE_ABOVE_300,
+      type: 'price',
+      colour: PRICE_COLOUR
+    },
+    {
+      id: VW_PRICE_BELOW_0,
+      domain: VW_PRICE_BELOW_0,
       type: 'price',
       colour: PRICE_COLOUR
     }

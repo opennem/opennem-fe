@@ -142,7 +142,7 @@ import EmissionsChartOptions from './EmissionsChartOptions'
 
 const emissionsOptions = {
   type: [
-    // OPTIONS.CHART_HIDDEN,
+    OPTIONS.CHART_HIDDEN,
     OPTIONS.CHART_STACKED,
     OPTIONS.CHART_PROPORTION,
     OPTIONS.CHART_LINE,

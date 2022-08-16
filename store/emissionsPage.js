@@ -1,14 +1,19 @@
 export const state = () => ({
-  showAnnualSource: false
+  footerSourceLabel: '',
+  footerSourceUrl: ''
 })
 
 export const getters = {
-  showAnnualSource: state => state.showAnnualSource
+  footerSourceLabel: state => state.footerSourceLabel,
+  footerSourceUrl: state => state.footerSourceUrl
 }
 
 export const mutations = {
-  showAnnualSource(state, data) {
-    state.showAnnualSource = data
+  footerSourceLabel(state, data) {
+    state.footerSourceLabel = data
+  },
+  footerSourceUrl(state, data) {
+    state.footerSourceUrl = data
   }
 }
 

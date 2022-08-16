@@ -15,6 +15,7 @@ module.exports = {
   },
 
   env: {
+    SITEWIDE_ANNOUNCEMENT: process.env.SITEWIDE_ANNOUNCEMENT,
     mapboxToken: process.env.MAPBOX_TOKEN || '',
     DATA_BASE_URL: useDev
       ? 'https://data.dev.opennem.org.au/'
@@ -28,16 +29,20 @@ module.exports = {
 
   head: {
     htmlAttrs: {
-      lang: 'en-AU',
+      lang: 'en',
       translate: 'no'
     },
     titleTemplate: 'OpenNEM%s',
     meta: [
       { charset: 'utf-8' },
-      { 'http-equiv': 'content-language', content: 'en-AU' },
+      { 'http-equiv': 'content-language', content: 'en' },
       {
         name: 'viewport',
         content: 'width=device-width, initial-scale=1, user-scalable=no'
+      },
+      {
+        name: 'google',
+        content: 'notranslate'
       },
       { hid: 'description', name: 'description', content: pkg.description },
       // Twitter
@@ -217,7 +222,6 @@ module.exports = {
     '~plugins/filters.js',
     '~plugins/directives.js',
     '~plugins/tooltip.js',
-    '~plugins/sentry.js',
     { src: '~/plugins/mapbox', mode: 'client' }
   ],
 
@@ -227,7 +231,8 @@ module.exports = {
   modules: [
     // Doc: https://github.com/nuxt-community/axios-module#usage
     '@nuxtjs/axios',
-    '@nuxtjs/proxy'
+    '@nuxtjs/proxy',
+    '@nuxtjs/sentry'
   ],
 
   proxy: {
@@ -244,6 +249,20 @@ module.exports = {
   */
   axios: {
     // See https://github.com/nuxt-community/axios-module#options
+  },
+
+  /*
+  ** Sentry config
+  */
+  sentry: {
+    dsn:
+      'https://c89c945a3c14478f9df55a65ddb1fbae@o402615.ingest.sentry.io/5265226',
+    config: {
+      environment: useDev ? 'development' : 'production'
+    },
+    clientIntegrations: {
+      Vue: { attachProps: true }
+    }
   },
 
   /*

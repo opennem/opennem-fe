@@ -181,6 +181,10 @@ export default {
     averageValue: {
       type: Number,
       default: 0
+    },
+    useDemand: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -212,7 +216,11 @@ export default {
       return this.domainPrice.length > 0 ? this.domainPrice[2].domain : ''
     },
     totalAverageValue() {
-      return this.summary ? this.summary._totalAverageValue : this.averageValue
+      return this.summary
+        ? this.useDemand
+          ? this.summary._totalDemandAverageValue
+          : this.summary._totalAverageValue
+        : this.averageValue
     },
     hoverData() {
       let date = this.focusDate

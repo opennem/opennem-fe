@@ -1,4 +1,5 @@
 import parseISO from 'date-fns/parseISO'
+import format from 'date-fns/format'
 import addDays from 'date-fns/addDays'
 import addMonths from 'date-fns/addMonths'
 import PerfTime from '@/plugins/perfTime.js'
@@ -14,6 +15,7 @@ import {
   getTemperatureDomains,
   getPriceDomains,
   getVolWeightedPriceDomains,
+  getDemandVWPriceDomains,
   getInflationDomain
 } from './getDomains.js'
 
@@ -29,6 +31,8 @@ export default function(data, displayTz) {
     dataPriceMarketValue,
     dataTemperature,
     dataInflation,
+    demandEnergy,
+    demandMarketValue,
     fuelTechDataType,
     isPowerData,
     hasPowerEnergyData,
@@ -73,6 +77,36 @@ export default function(data, displayTz) {
     console.warn('There is no price or market value in this dataset')
   }
 
+  let domainDemandPrice = []
+  const domainDemandEnergy = demandEnergy.map(d => {
+    return {
+      domain: d.id,
+      id: d.id,
+      label: 'Demand energy',
+      type: 'energy',
+      colour: 'steelblue'
+    }
+  })
+
+  const domainDemandMarketValue = demandMarketValue.map(d => {
+    return {
+      domain: d.id,
+      id: d.id,
+      label: 'Demand market value',
+      type: 'market_value'
+    }
+  })
+
+  if (demandEnergy.length && demandMarketValue.length) {
+    domainDemandPrice = getDemandVWPriceDomains()
+  } else {
+    console.warn('There is no demand energy or market value in this dataset')
+  }
+
+  console.log('domainDemandPrice', domainDemandPrice)
+  console.log('domainDemandEnergy', domainDemandEnergy)
+  console.log('domainDemandMarketValue', domainDemandMarketValue)
+
   const domainTemperature = getTemperatureDomains(dataTemperature)
 
   const dataInterval = hasPowerEnergyData
@@ -89,16 +123,16 @@ export default function(data, displayTz) {
   const hasInflation = dataInflation.length > 0
   if (hasInflation) {
     // adjust the start date to july 1922, instead of june 1922 to match the quarter
-    dataInflation[0].history.start = addMonths(
+    const inflationStart = addMonths(
       parseISO(dataInflation[0].history.start),
       1
-    ).toISOString()
-
-    dataInflation[0].history.last = addDays(
-      parseISO(dataInflation[0].history.last),
-      1
-    ).toISOString()
+    )
+    dataInflation[0].history.start =
+      format(inflationStart, 'yyyy-MM-dd') +
+      'T' +
+      format(inflationStart, 'hh:mm:ssxxx')
   }
+
   const datasetInflation = hasInflation
     ? createEmptyDatasets(dataInflation, displayTz)
     : []
@@ -119,6 +153,9 @@ export default function(data, displayTz) {
     domainEmissions,
     domainMarketValue,
     domainPrice,
+    domainDemandPrice,
+    domainDemandEnergy,
+    domainDemandMarketValue,
     domainTemperature,
     domainInflation,
     dataPowerEnergyInterval,

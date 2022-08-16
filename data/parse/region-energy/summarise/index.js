@@ -1,4 +1,9 @@
 import * as FT from '@/constants/energy-fuel-techs/group-default.js'
+import {
+  VW_PRICE,
+  VW_PRICE_ABOVE_300,
+  VW_PRICE_BELOW_0
+} from '@/constants/data-types'
 import PerfTime from '@/plugins/perfTime.js'
 const perfTime = new PerfTime()
 
@@ -13,6 +18,9 @@ export default function({
   domainEmissions,
   domainPrice,
   domainInflation,
+  domainDemandPrice,
+  domainDemandEnergy,
+  domainDemandMarketValue,
   isGigaPrefix = true
 }) {
   perfTime.time()
@@ -259,6 +267,30 @@ export default function({
       })
     }
 
+    // calculate demand vol weighted pricing
+    let demandPrice = null
+    let demandEnergy = null
+    if (domainDemandEnergy && domainDemandEnergy.length) {
+      const demandMarketValue = d[domainDemandMarketValue[0].id]
+      domainDemandEnergy.forEach(domain => {
+        if (!demandEnergy) {
+          demandEnergy = d[domain.id]
+        }
+      })
+
+      demandPrice = isGigaPrefix
+        ? demandMarketValue / demandEnergy / 1000
+        : demandMarketValue / demandEnergy
+
+      // console.log(
+      //   i,
+      //   'demandPrice',
+      //   demandPrice,
+      //   demandEnergy,
+      //   demandMarketValue
+      // )
+    }
+
     // null checks
     if (!hasRenewables) {
       totalRenewables = null
@@ -397,6 +429,15 @@ export default function({
       !isNaN(volWeightedPrice) && volWeightedPrice < 0
         ? volWeightedPrice
         : -0.01
+
+    dataset[i]._demandEnergy = demandEnergy
+    dataset[i]._demandPrice = demandPrice
+
+    dataset[i][VW_PRICE] = isNaN(demandPrice) ? null : demandPrice
+    dataset[i][VW_PRICE_ABOVE_300] =
+      !isNaN(demandPrice) && demandPrice > 300 ? demandPrice : 0.01
+    dataset[i][VW_PRICE_BELOW_0] =
+      !isNaN(demandPrice) && demandPrice < 0 ? demandPrice : -0.01
   })
 
   perfTime.timeEnd('--- data.summarise')

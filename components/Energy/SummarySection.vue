@@ -5,6 +5,9 @@
       :temperature-domains="domainTemperature"
       :market-value-domains="currentDomainMarketValue"
       :emissions-domains="currentDomainEmissions"
+      :demand-price-domains="domainDemandPrice"
+      :demand-energy-domains="domainDemandEnergy"
+      :demand-market-value-domains="domainDemandMarketValue"
       :price-id="domainPrice.length > 0 ? domainPrice[0].id : ''"
       :dataset="filteredCurrentDataset"
       :hover-date="hoverDate"
@@ -79,7 +82,7 @@
       :dataset="filteredCurrentDataset"
       :range="range"
       :interval="interval"
-      :price-id="domainPrice.length > 0 ? domainPrice[0].id : ''"
+      :price-id="recordsPriceId"
       :temperature-id="temperatureMeanDomain"
       @recordSelect="handleRecordSelect"
       @recordDeselect="handleRecordDeselect"
@@ -151,6 +154,9 @@ export default {
       domainTemperature: 'regionEnergy/domainTemperature',
       domainPrice: 'regionEnergy/domainPrice',
       domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
+      domainDemandPrice: 'regionEnergy/domainDemandPrice',
+      domainDemandEnergy: 'regionEnergy/domainDemandEnergy',
+      domainDemandMarketValue: 'regionEnergy/domainDemandMarketValue',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       currentDomainMarketValue: 'regionEnergy/currentDomainMarketValue',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
@@ -214,6 +220,18 @@ export default {
         this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
       const find = this.domains.find(d => d[property] === domain)
       return find ? find.id : ''
+    },
+
+    recordsPriceId() {
+      let id = ''
+
+      if (this.isEnergyType) {
+        id =
+          this.domainDemandPrice.length > 0 ? this.domainDemandPrice[0].id : ''
+      } else {
+        id = this.domainPrice.length > 0 ? this.domainPrice[0].id : ''
+      }
+      return id
     }
   },
 

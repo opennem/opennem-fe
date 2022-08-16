@@ -4,23 +4,23 @@
     <div class="dataset-selection">
       <div class="buttons has-addons">
         <button
-          :class="{ 'is-selected': datasetView === 'quarter' }"
+          :class="{ 'is-selected': isQuarterDatasetView }"
           class="button" 
-          @click="handleQuarterViewSelect">Quarterly</button>
+          @click="handleQuarterViewSelect">Quarter</button>
         <button
-          :class="{ 'is-selected': datasetView === 'year' }"
+          :class="{ 'is-selected': isYearDatasetView }"
           class="button" 
-          @click="handleYearViewSelect">Annual</button>
+          @click="handleYearViewSelect">Year</button>
       </div>
 
       <div class="buttons">
         <button
-          v-if="datasetView === 'year'"
+          v-if="isYearDatasetView"
           :class="{ 'is-selected': addHistory }"
           class="button" 
           @click="handleHistoryToggle">History <strong>FY 1990 — 2004</strong></button>
         <button
-          v-if="datasetView === 'year'"
+          v-if="isYearDatasetView"
           :class="{ 'is-selected': addProjections }"
           class="button" 
           @click="handleProjectionsToggle">Projections <strong>FY 2021 — 2030</strong></button>
@@ -125,8 +125,8 @@ import { timeYear } from 'd3-time'
 import { timeFormat } from 'd3-time-format'
 
 import {
-  NGGI_RANGES,
-  NGGI_RANGE_INTERVALS,
+  EMISSIONS_RANGES,
+  EMISSIONS_RANGE_INTERVALS,
   RANGE_ALL_12MTH_ROLLING,
   RANGE_ALL
 } from '@/constants/ranges.js'
@@ -359,7 +359,8 @@ export default {
 
   data() {
     return {
-      datasetView: 'quarter',
+      fetching: false,
+      datasetView: INTERVAL_QUARTER,
       addHistory: false,
       addProjections: false,
       baseUrl: `${this.$config.url}/images/screens/`,
@@ -396,6 +397,18 @@ export default {
       widthBreak: 'app/widthBreak',
       wideScreenBreak: 'app/wideScreenBreak'
     }),
+
+    queryInterval() {
+      return this.$route.query.interval
+    },
+
+    queryHistory() {
+      return this.$route.query.history
+    },
+
+    queryProjections() {
+      return this.$route.query.projections
+    },
 
     filteredDataset() {
       const dataset =
@@ -458,11 +471,11 @@ export default {
     },
 
     isYearDatasetView() {
-      return this.datasetView === 'year'
+      return this.datasetView === INTERVAL_YEAR
     },
 
     isQuarterDatasetView() {
-      return this.datasetView === 'quarter'
+      return this.datasetView === INTERVAL_QUARTER
     },
 
     hasProjectionDataset() {
@@ -480,12 +493,11 @@ export default {
 
     datasetView(val) {
       this.setCompareDifference(false)
-      if (val === 'quarter') {
+      if (val === INTERVAL_QUARTER) {
         this.getQuarterData()
       } else {
         this.getYearData()
       }
-      this.updateAxisGuides()
     },
 
     tabletBreak() {
@@ -498,10 +510,6 @@ export default {
 
     wideScreenBreak() {
       this.updateAxisGuides()
-    },
-
-    isYearDatasetView(val) {
-      this.setShowAnnualSource(val)
     }
   },
 
@@ -509,8 +517,8 @@ export default {
     this.domains = domainEmissions.map(d => d)
     this.domainEmissions = domainEmissions.map(d => d).reverse()
     this.displayTz = regionDisplayTzs['au']
-    this.ranges = NGGI_RANGES
-    this.intervals = NGGI_RANGE_INTERVALS
+    this.ranges = EMISSIONS_RANGES
+    this.intervals = EMISSIONS_RANGE_INTERVALS
     this.afterDate = new Date(2004, 11, 31)
 
     this.projectionsInterval = [
@@ -524,7 +532,23 @@ export default {
   },
 
   mounted() {
-    this.getQuarterData()
+    let interval = this.queryInterval
+    let projections = this.queryProjections
+    let history = this.queryHistory
+
+    if (!this.queryInterval) {
+      interval = INTERVAL_QUARTER
+    }
+    if (interval === INTERVAL_QUARTER) {
+      this.handleQuarterViewSelect()
+      this.getQuarterData()
+    } else {
+      if (history && history === 'true') this.addHistory = true
+      if (projections && projections === 'true') this.addProjections = true
+      this.handleYearViewSelect()
+      this.getYearData()
+    }
+    this.updateAxisGuides()
   },
 
   methods: {
@@ -539,20 +563,29 @@ export default {
       setHighlightDomain: 'visInteract/highlightDomain',
       setCompareDifference: 'compareDifference',
 
-      setShowAnnualSource: 'emissionsPage/showAnnualSource'
+      setSourceLabel: 'emissionsPage/footerSourceLabel',
+      setSourceUrl: 'emissionsPage/footerSourceUrl'
     }),
 
-    getQuarterData() {
-      // const url =
-      //   'https://data.dev.opennem.org.au/nggi/nggi-emissions-2001-2021-quarterly.csv'
-      const url =
-        'https://data.dev.opennem.org.au/nggi/nggi-emissions-2001-September2021-quarterly.csv'
+    async getQuarterData() {
+      console.log('get Quarter data')
 
-      this.$axios
-        .get(url, { headers: { 'Content-Type': 'text/csv' } })
-        .then(res => {
-          const csvData = Papa.parse(res.data, { header: true })
-          const data = csvData.data.map(d => {
+      if (!this.fetching) {
+        const jsonUrl =
+          'https://opennem-edge-data.netlify.app/data/au/emissions/quarter.json'
+
+        this.fetching = true
+
+        const response = await fetch(jsonUrl)
+
+        if (response.ok) {
+          const json = await response.json()
+          const jData = json.data || json
+          console.log('quarter ok', json)
+
+          this.updateFooterSource(json.source)
+
+          const data = jData.map(d => {
             let total = 0
             const obj = {}
             const date = subMonths(parse(d.Quarter, 'MMM-yyyy', new Date()), 2)
@@ -600,20 +633,34 @@ export default {
           this.dataset = rolledUpData.filter(d =>
             isAfter(d.date, this.afterDate)
           )
-        })
+
+          this.fetching = false
+        } else {
+          alert('HTTP-Error: ' + response.status)
+        }
+      }
     },
 
-    getYearData() {
-      const url =
-        'https://data.opennem.org.au/emissions/au-2021-emissions-projections-fig-7.csv'
+    async getYearData() {
+      console.log('get year data')
+      if (!this.fetching) {
+        const jsonUrl =
+          'https://opennem-edge-data.netlify.app/data/au/emissions/year.json'
 
-      this.$axios
-        .get(url, { headers: { 'Content-Type': 'text/csv' } })
-        .then(res => {
-          const csvData = Papa.parse(res.data, { header: true })
+        this.fetching = true
+
+        const response = await fetch(jsonUrl)
+
+        if (response.ok) {
+          const json = await response.json()
+          const jData = json.data || json
+          console.log('year ok', json)
+
+          this.updateFooterSource(json.source)
+
           const data = []
 
-          csvData.data.forEach(d => {
+          jData.forEach(d => {
             const domain = domainEmissionsObj[d['Sector']]
             const years = Object.keys(d).filter(k => k !== 'Sector')
             if (data.length === 0) {
@@ -646,17 +693,32 @@ export default {
             d._total = total
           })
 
-          console.log(data)
-
           this.range = RANGE_ALL
           this.interval = INTERVAL_YEAR
-          this.updateAxisGuides()
-          this.dataset = this.yearlyDataset = data.filter(
+          this.yearlyDataset = data.filter(
             d => d.year >= 2005 && d.year <= 2020
           )
           this.historyDataset = data.filter(d => d.year <= 2004)
           this.projectionDataset = data.filter(d => d.year >= 2021)
-        })
+
+          if (this.addHistory) {
+            this.dataset = [...this.historyDataset, ...this.yearlyDataset]
+          } else {
+            this.dataset = this.yearlyDataset
+          }
+
+          this.updateAxisGuides()
+
+          this.fetching = false
+        } else {
+          alert('HTTP-Error: ' + response.status)
+        }
+      }
+    },
+
+    updateFooterSource(source) {
+      this.setSourceLabel(source.label)
+      this.setSourceUrl(source.url)
     },
 
     updateAxisGuides() {
@@ -716,61 +778,6 @@ export default {
 
       this.zoomExtent = filteredDates
     },
-
-    // handleRangeChange(range) {
-    //   this.range = range
-
-    //   let dataset = this.baseDataset
-
-    //   if (range === RANGE_ALL_12MTH_ROLLING) {
-    //     dataset = this.rollingDataset
-    //   }
-    //   const rolledUpData = dataRollUp({
-    //     dataset,
-    //     domains: this.domainEmissions,
-    //     interval: this.interval
-    //   })
-
-    //   this.dataset = rolledUpData.filter(d => isAfter(d.date, this.afterDate))
-    // },
-    // handleIntervalChange(interval) {
-    //   console.log(interval)
-    //   this.interval = interval
-
-    //   let dataset = this.baseDataset
-
-    //   if (this.range === RANGE_ALL_12MTH_ROLLING) {
-    //     dataset = this.rollingDataset
-    //   }
-    //   const rolledUpData = dataRollUp({
-    //     dataset,
-    //     domains: this.domainEmissions,
-    //     interval
-    //   })
-
-    //   this.dataset = rolledUpData.filter(d => isAfter(d.date, this.afterDate))
-    // },
-    // handleFilterPeriodChange(period) {
-    //   console.log(period)
-    //   this.filterPeriod = period
-
-    //   let dataset = this.baseDataset
-
-    //   if (this.range === RANGE_ALL_12MTH_ROLLING) {
-    //     dataset = this.rollingDataset
-    //   }
-    //   const rolledUpData = dataRollUp({
-    //     dataset,
-    //     domains: this.domainEmissions,
-    //     interval: this.interval
-    //   })
-
-    //   this.dataset = dataFilterByPeriod({
-    //     dataset: rolledUpData.filter(d => isAfter(d.date, this.afterDate)),
-    //     interval: this.interval,
-    //     period
-    //   })
-    // },
 
     handleTypeClick(id) {
       const index = this.hidden.indexOf(id)
@@ -862,17 +869,21 @@ export default {
     },
 
     handleQuarterViewSelect() {
-      this.datasetView = 'quarter'
+      this.datasetView = INTERVAL_QUARTER
       this.addProjections = false
+      this.addHistory = false
+      this.updateQueries()
     },
 
     handleYearViewSelect() {
-      this.datasetView = 'year'
+      this.datasetView = INTERVAL_YEAR
+      this.updateQueries()
     },
 
     handleProjectionsToggle() {
       this.addProjections = !this.addProjections
       this.updateAxisGuides()
+      this.updateQueries()
     },
 
     handleHistoryToggle() {
@@ -884,6 +895,7 @@ export default {
         this.dataset = this.yearlyDataset
       }
       this.updateAxisGuides()
+      this.updateQueries()
     },
 
     handleChangeDatasetChange(dataset) {
@@ -895,6 +907,16 @@ export default {
     },
     handleMouseLeave() {
       this.setHighlightDomain('')
+    },
+
+    updateQueries() {
+      this.$router.push({
+        query: {
+          interval: this.datasetView,
+          projections: this.addProjections,
+          history: this.addHistory
+        }
+      })
     }
   }
 }
