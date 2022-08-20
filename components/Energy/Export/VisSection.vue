@@ -20,9 +20,9 @@
     <emissions-chart
       v-if="
         ready &&
-        domainEmissions.length > 0 &&
-        exportEmissionsVolume &&
-        featureEmissions
+          domainEmissions.length > 0 &&
+          exportEmissionsVolume &&
+          featureEmissions
       "
       :read-only="true"
       :zoom-extent="filteredDates"
@@ -39,9 +39,9 @@
     <emission-intensity-chart
       v-if="
         ready &&
-        domainEmissions.length > 0 &&
-        exportEmissionIntensity &&
-        featureEmissions
+          domainEmissions.length > 0 &&
+          exportEmissionIntensity &&
+          featureEmissions
       "
       :read-only="true"
       :zoom-extent="filteredDates"

@@ -1,5 +1,7 @@
 <template>
-  <div :class="{ 'is-active': dropdownActive }" class="dropdown">
+  <div 
+    :class="{ 'is-active': dropdownActive }" 
+    class="dropdown">
     <button
       v-on-clickaway="handleClickAway"
       class="dropdown-trigger button inverted"
@@ -17,16 +19,18 @@
     </button>
 
     <transition name="slide-down-fade">
-      <div v-show="dropdownActive" class="dropdown-menu">
+      <div 
+        v-show="dropdownActive" 
+        class="dropdown-menu">
         <div class="dropdown-content">
           <nuxt-link
             :to="{ path: `/${currentView}/au/`, query: getQuery(currentView) }"
             class="dropdown-item"
             @click.native="handleClick"
-            >All Regions</nuxt-link
+          >All Regions</nuxt-link
           >
 
-          <hr class="dropdown-divider" />
+          <hr class="dropdown-divider" >
 
           <nuxt-link
             v-for="link in links"

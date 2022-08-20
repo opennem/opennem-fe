@@ -25,8 +25,12 @@
       class="expand-button"
       @click="handleExpandClick"
     >
-      <i v-if="isFullScreen" class="fal fa-compress" />
-      <i v-else class="fal fa-expand" />
+      <i 
+        v-if="isFullScreen" 
+        class="fal fa-compress" />
+      <i 
+        v-else 
+        class="fal fa-expand" />
     </button>
 
     <v-popover
@@ -38,12 +42,16 @@
       <template slot="popover">
         <i class="fal fa-fw fa-camera" />
         <strong
-          ><a :href="currentPhoto.author_link" target="_blank">{{
+        ><a 
+          :href="currentPhoto.author_link" 
+          target="_blank">{{
             currentPhoto.author
           }}</a></strong
-        >
+          >
         (<small
-          ><a :href="currentPhoto.license_link" target="_blank">{{
+        ><a 
+          :href="currentPhoto.license_link" 
+          target="_blank">{{
             currentPhoto.license_type
           }}</a></small
         >)
@@ -51,7 +59,9 @@
     </v-popover>
 
     <transition name="fade">
-      <div v-if="!hasPhotos" class="not-found-card card">
+      <div 
+        v-if="!hasPhotos" 
+        class="not-found-card card">
         <i class="fal fa-image" />
         <span>Image not available</span>
       </div>

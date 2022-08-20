@@ -21,11 +21,15 @@
 
       <div class="summary-column-headers">
         <div class="summary-row">
-          <div class="summary-col-label" style="padding-top: 3px">
+          <div 
+            class="summary-col-label" 
+            style="padding-top: 3px">
             <group-selector v-if="groupSelection" />
           </div>
 
-          <div class="summary-col-external-link-icon" style="width: 20px" />
+          <div 
+            class="summary-col-external-link-icon" 
+            style="width: 20px" />
 
           <div
             v-if="isEnergy"
@@ -39,7 +43,9 @@
               Energy <small>{{ chartCurrentUnit }}</small>
             </span>
           </div>
-          <div v-else class="summary-col-energy">
+          <div 
+            v-else 
+            class="summary-col-energy">
             <span v-if="hoverOn || focusOn">
               Power <small>{{ chartCurrentUnit }}</small>
             </span>
@@ -60,9 +66,13 @@
         <div class="summary-row">
           <div class="summary-col-label">Sources</div>
 
-          <div class="summary-col-external-link-icon" style="width: 20px" />
+          <div 
+            class="summary-col-external-link-icon" 
+            style="width: 20px" />
 
-          <div v-if="isEnergy" class="summary-col-energy cell-value">
+          <div 
+            v-if="isEnergy" 
+            class="summary-col-energy cell-value">
             <div v-if="isTypeChangeSinceLine">–</div>
             <div v-else>
               <span v-if="hoverOn || focusOn">
@@ -81,7 +91,9 @@
               </span>
             </div>
           </div>
-          <div v-else class="summary-col-energy cell-value">
+          <div 
+            v-else 
+            class="summary-col-energy cell-value">
             <span v-if="hoverOn || focusOn">
               {{
                 pointSummarySources._total
@@ -100,7 +112,7 @@
             class="summary-col-av-value cell-value"
           >
             <span v-if="isAvValueColumn">
-              {{ summary._totalDemandAverageValue | formatCurrency }}<br />
+              {{ summary._totalDemandAverageValue | formatCurrency }}<br >
             </span>
             <span v-if="isEmissionsVolumeColumn">
               {{
@@ -121,7 +133,7 @@
             class="summary-col-av-value cell-value"
           >
             <span v-if="isAvValueColumn">
-              {{ pointSummary._demandAverageValue | formatCurrency }}<br />
+              {{ pointSummary._demandAverageValue | formatCurrency }}<br >
             </span>
             <span v-if="isEmissionsVolumeColumn">
               {{
@@ -161,13 +173,19 @@
         @domain-click="handleDomainClick"
       />
 
-      <div v-if="loadsOrder.length > 0" class="summary-column-headers">
+      <div 
+        v-if="loadsOrder.length > 0" 
+        class="summary-column-headers">
         <div class="summary-row">
           <div class="summary-col-label">Loads</div>
 
-          <div class="summary-col-external-link-icon" style="width: 20px" />
+          <div 
+            class="summary-col-external-link-icon" 
+            style="width: 20px" />
 
-          <div v-if="isEnergy" class="summary-col-energy cell-value">
+          <div 
+            v-if="isEnergy" 
+            class="summary-col-energy cell-value">
             <div v-if="isTypeChangeSinceLine">–</div>
             <div v-else>
               <span v-if="hoverOn || focusOn">
@@ -186,7 +204,9 @@
               </span>
             </div>
           </div>
-          <div v-else class="summary-col-energy cell-value">
+          <div 
+            v-else 
+            class="summary-col-energy cell-value">
             <span v-if="hoverOn || focusOn">
               {{
                 pointSummaryLoads._total
@@ -223,13 +243,19 @@
         @mouse-leave="handleMouseLeave"
       />
 
-      <div v-if="loadsOrder.length > 0" class="summary-column-headers">
+      <div 
+        v-if="loadsOrder.length > 0" 
+        class="summary-column-headers">
         <div class="summary-row last-row">
           <div class="summary-col-label">Net</div>
 
-          <div class="summary-col-external-link-icon" style="width: 20px" />
+          <div 
+            class="summary-col-external-link-icon" 
+            style="width: 20px" />
 
-          <div v-if="isEnergy" class="summary-col-energy cell-value">
+          <div 
+            v-if="isEnergy" 
+            class="summary-col-energy cell-value">
             <span v-if="hoverOn || focusOn">
               {{
                 pointSummary._total
@@ -246,7 +272,9 @@
               }}
             </span>
           </div>
-          <div v-else class="summary-col-energy cell-value">
+          <div 
+            v-else 
+            class="summary-col-energy cell-value">
             <span v-if="hoverOn || focusOn">
               {{
                 pointSummary._total
@@ -284,9 +312,13 @@
             Renewables
           </div>
 
-          <div class="summary-col-external-link-icon" style="width: 20px" />
+          <div 
+            class="summary-col-external-link-icon" 
+            style="width: 20px" />
 
-          <div v-if="isEnergy" class="summary-col-energy cell-value">
+          <div 
+            v-if="isEnergy" 
+            class="summary-col-energy cell-value">
             <span v-if="hoverOn || focusOn">
               {{
                 renewablesValue
@@ -303,7 +335,9 @@
               }}
             </span>
           </div>
-          <div v-else class="summary-col-energy cell-value">
+          <div 
+            v-else 
+            class="summary-col-energy cell-value">
             <span v-if="hoverOn || focusOn">
               {{
                 renewablesValue

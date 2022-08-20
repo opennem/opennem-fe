@@ -11,7 +11,9 @@
             {{ d.label }}
           </option> -->
 
-          <option v-if="featureEmissions" value="carbonIntensity">
+          <option 
+            v-if="featureEmissions" 
+            value="carbonIntensity">
             Carbon intensity
           </option>
           <option value="netInterconnectorFlow">
@@ -72,8 +74,12 @@
         class="colour-legend"
       />
 
-      <div v-if="useHover" class="hover-metric-wrapper">
-        <HoverMetric v-if="showHover" :hover-display="hoverDisplay" />
+      <div 
+        v-if="useHover" 
+        class="hover-metric-wrapper">
+        <HoverMetric 
+          v-if="showHover" 
+          :hover-display="hoverDisplay" />
       </div>
     </div>
   </div>

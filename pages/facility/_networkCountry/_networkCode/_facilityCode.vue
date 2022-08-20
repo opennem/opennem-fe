@@ -1,10 +1,15 @@
 <template>
   <div class="facility-wrapper">
     <transition name="fade">
-      <ReportIssue v-if="showFields" :name="facilityName" :path="fullPath" />
+      <ReportIssue 
+        v-if="showFields" 
+        :name="facilityName" 
+        :path="fullPath" />
     </transition>
 
-    <section :class="{ 'report-view': showFields }" class="facility">
+    <section 
+      :class="{ 'report-view': showFields }" 
+      class="facility">
       <button
         v-if="!showFields"
         class="report-issue-btn button is-rounded"
@@ -45,7 +50,9 @@
       </transition>
 
       <transition name="fade">
-        <div v-if="facility" class="main">
+        <div 
+          v-if="facility" 
+          class="main">
           <header>
             <h2
               v-highlight="showFields"
@@ -157,7 +164,9 @@
             </transition>
 
             <transition name="fade">
-              <Loader v-if="fetchingStats" class="facility-chart-loader" />
+              <Loader 
+                v-if="fetchingStats" 
+                class="facility-chart-loader" />
             </transition>
 
             <PowerEnergyChart
@@ -304,7 +313,9 @@
         </div>
       </transition>
 
-      <section v-if="facility" style="width: 30%; text-align: right">
+      <section 
+        v-if="facility" 
+        style="width: 30%; text-align: right">
         <PhotoMap
           v-if="facility && !widthBreak"
           :facility-name="facilityName"

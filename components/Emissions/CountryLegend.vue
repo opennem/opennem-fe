@@ -9,11 +9,14 @@
         data-text="How they compare"
         data-related="Opennem"
         data-show-count="false"
-        >Tweet #opennem</a
+      >Tweet #opennem</a
       >
     </div>
 
-    <div v-on-clickaway="onClickAway" v-show="showAddArea" class="add-area">
+    <div 
+      v-on-clickaway="onClickAway" 
+      v-show="showAddArea" 
+      class="add-area">
       <label>Countries/areas</label>
       <input
         v-model="query"
@@ -21,11 +24,15 @@
         type="text"
         placeholder="Type to filter countries"
         @focus="() => (showList = true)"
-      />
+      >
 
-      <div v-show="showList" class="area-code-list">
+      <div 
+        v-show="showList" 
+        class="area-code-list">
         <ol>
-          <li v-for="a in filteredAreaCodes" :key="a.code">
+          <li 
+            v-for="a in filteredAreaCodes" 
+            :key="a.code">
             <button
               @click="() => handleCodeClick(a.code)"
               @keyup="(evt) => handleKeyup(evt, a.code)"
@@ -57,7 +64,9 @@
         @click.exact="handleRowClick(d.id)"
         @click.shift.exact="handleRowShiftClick(d.id)"
       >
-        <div :style="{ backgroundColor: d.colour }" class="colour-square" />
+        <div 
+          :style="{ backgroundColor: d.colour }" 
+          class="colour-square" />
         <span class="country-label">{{ d.label }}</span>
 
         <button

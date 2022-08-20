@@ -1,6 +1,8 @@
 <template>
   <div class="facility-card">
-    <a class="close-btn" @click="close">
+    <a 
+      class="close-btn" 
+      @click="close">
       <i class="fal fa-times" />
     </a>
 
@@ -32,13 +34,14 @@
               <span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span>
               <span v-else>MW</span>)
             </small>
-            <span v-if="genFtIndex !== facility.genFuelTechs.length - 1"
-              >,</span
+            <span 
+              v-if="genFtIndex !== facility.genFuelTechs.length - 1"
+            >,</span
             >
           </span>
           <span
             v-if="facility.loadFuelTechs.length && facility.genFuelTechs.length"
-            >,</span
+          >,</span
           >
           <em
             v-for="(ft, loadFtIndex) in facility.loadFuelTechs"
@@ -50,8 +53,9 @@
               <span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span>
               <span v-else>MW</span>)
             </small>
-            <span v-if="loadFtIndex !== facility.loadFuelTechs.length - 1"
-              >,</span
+            <span 
+              v-if="loadFtIndex !== facility.loadFuelTechs.length - 1"
+            >,</span
             >
           </em>
         </div>
@@ -61,11 +65,15 @@
         <span class="capacity-label">Generator capacity</span>
         <div v-show="facility.generatorCap">
           {{ generatorCap | facilityFormatNumber }}
-          <span v-if="generatorCap !== 0 && generatorCap < 1" class="unit"
-            >kW</span
+          <span 
+            v-if="generatorCap !== 0 && generatorCap < 1" 
+            class="unit"
+          >kW</span
           >
-          <span v-if="generatorCap !== 0 && generatorCap >= 1" class="unit"
-            >MW</span
+          <span 
+            v-if="generatorCap !== 0 && generatorCap >= 1" 
+            class="unit"
+          >MW</span
           >
         </div>
         <div v-show="!facility.generatorCap">–</div>
@@ -99,8 +107,8 @@
     <PowerEnergyChart
       v-if="
         !fetchingStats &&
-        !fetchingFacility &&
-        selectedFacilityUnitsDataset.length > 0
+          !fetchingFacility &&
+          selectedFacilityUnitsDataset.length > 0
       "
       :power-energy-dataset="selectedFacilityUnitsDataset"
       :domain-power-energy="powerEnergyDomains"

@@ -1,5 +1,7 @@
 <template>
-  <div ref="draggableContainer" class="draggable-container">
+  <div 
+    ref="draggableContainer" 
+    class="draggable-container">
     <div
       class="draggable-header"
       @touchstart="dragStart"

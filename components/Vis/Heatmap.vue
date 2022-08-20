@@ -4,9 +4,15 @@
       :id="tooltipId"
       class="tooltip">tooltip</div> -->
 
-    <div :id="tooltipId" class="tooltip" />
+    <div 
+      :id="tooltipId" 
+      class="tooltip" />
 
-    <svg :id="id" :height="height" :width="width" class="heatmap" />
+    <svg 
+      :id="id" 
+      :height="height" 
+      :width="width" 
+      class="heatmap" />
   </section>
 </template>
 

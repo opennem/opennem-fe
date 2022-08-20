@@ -2,7 +2,9 @@
   <footer class="">
     <div class="left">
       <div class="version">
-        <span v-if="isDev" class="tag">DEV</span>
+        <span 
+          v-if="isDev" 
+          class="tag">DEV</span>
         <strong>v{{ version }}</strong>
       </div>
 
@@ -25,28 +27,33 @@
         >
           <i class="fal fa-fw fa-book" />
         </a>
-        <strong v-show="hasAPIversion && !isEmissionsAuRegion"
-          >API: {{ apiVersion }}</strong
+        <strong 
+          v-show="hasAPIversion && !isEmissionsAuRegion"
+        >API: {{ apiVersion }}</strong
         >
       </div>
 
-      <div v-show="isEmissionsAuRegion" class="sources">
+      <div 
+        v-show="isEmissionsAuRegion" 
+        class="sources">
         Source:
 
         <a
           :href="footerSourceUrl"
           :title="`Link to ${footerSourceLabel}`"
           target="_blank"
-          >{{ footerSourceLabel }}</a
+        >{{ footerSourceLabel }}</a
         >
       </div>
 
-      <div v-show="isEmissionsWorldRegion" class="sources">
+      <div 
+        v-show="isEmissionsWorldRegion" 
+        class="sources">
         <a
           target="_blank"
           href="https://doi.org/10.5281/zenodo.5494497"
           title="Link to dataset used by this visualisation"
-          >PRIMAP-hist (HISTCR; Kyoto GHG (AR4); Total excl. Landuse)</a
+        >PRIMAP-hist (HISTCR; Kyoto GHG (AR4); Total excl. Landuse)</a
         >,
       </div>
 
@@ -55,14 +62,23 @@
         class="sources"
       >
         Sources:
-        <a rel="external" href="https://www.aemo.com.au/" title="Link to AEMO"
-          >AEMO</a
+        <a 
+          rel="external" 
+          href="https://www.aemo.com.au/" 
+          title="Link to AEMO"
+        >AEMO</a
         >,
-        <a rel="external" href="http://apvi.org.au/" title="Link to APVI"
-          >APVI</a
+        <a 
+          rel="external" 
+          href="http://apvi.org.au/" 
+          title="Link to APVI"
+        >APVI</a
         >,
-        <a rel="external" href="http://www.bom.gov.au/" title="Link to BoM"
-          >BoM</a
+        <a 
+          rel="external" 
+          href="http://www.bom.gov.au/" 
+          title="Link to BoM"
+        >BoM</a
         >
       </div>
     </div>
@@ -106,7 +122,9 @@
       >
         <i class="fab fa-fw fa-github" />
       </a>
-      <nuxt-link to="/about/" class="about-link">About OpenNEM</nuxt-link>
+      <nuxt-link 
+        to="/about/" 
+        class="about-link">About OpenNEM</nuxt-link>
     </div>
   </footer>
 </template>

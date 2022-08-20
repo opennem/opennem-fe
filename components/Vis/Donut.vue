@@ -8,16 +8,26 @@
       class="donut-chart"
     >
       <g class="slices" />
-      <g v-if="hoverOnSlice" class="total">
-        <text class="total-label" dy="-10">{{ hoverOnSliceLabel }}</text>
+      <g 
+        v-if="hoverOnSlice" 
+        class="total">
+        <text 
+          class="total-label" 
+          dy="-10">{{ hoverOnSliceLabel }}</text>
         <text dy="12">{{ hoverOnSlicePercent | percentageFormatNumber }}</text>
       </g>
-      <g v-else class="total">
+      <g 
+        v-else 
+        class="total">
         <g v-if="!isTotalPower">
-          <text v-if="unit === ' TWh'" dy="10">
+          <text 
+            v-if="unit === ' TWh'" 
+            dy="10">
             {{ total | customFormatValue }}{{ unit }}
           </text>
-          <text v-else dy="10">{{ total | formatValue }}{{ unit }}</text>
+          <text 
+            v-else 
+            dy="10">{{ total | formatValue }}{{ unit }}</text>
         </g>
       </g>
     </svg>

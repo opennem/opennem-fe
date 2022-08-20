@@ -8,7 +8,9 @@
       class="panel-block"
       @click="handleStyleClick(d.value)"
     >
-      <img :src="getImgSrc(d.preview)" :alt="getImgAltText(d.label)" />
+      <img 
+        :src="getImgSrc(d.preview)" 
+        :alt="getImgAltText(d.label)" >
       <span>{{ d.label }}</span>
     </div>
   </div>

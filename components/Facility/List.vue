@@ -16,7 +16,9 @@
         />
       </div>
 
-      <div v-show="!hideRegionColumn" class="region-col col-header">
+      <div 
+        v-show="!hideRegionColumn" 
+        class="region-col col-header">
         <span @click="sort('regionId')">
           Region
           <i
@@ -38,7 +40,9 @@
         </span>
       </div>
 
-      <div class="cap-col col-header" @click="sort('generatorCap')">
+      <div 
+        class="cap-col col-header" 
+        @click="sort('generatorCap')">
         Gen. Capacity
         <i
           v-if="sortBy === 'generatorCap'"
@@ -112,14 +116,18 @@
           </span>
         </div>
 
-        <div v-show="!hideRegionColumn" class="region-col">
+        <div 
+          v-show="!hideRegionColumn" 
+          class="region-col">
           <small style="color: #666">{{
             getRegionLabel(facility.regionId)
           }}</small>
         </div>
 
         <div class="tech-col stat">
-          <div v-if="facility.genFuelTechs.length" class="stat-value">
+          <div 
+            v-if="facility.genFuelTechs.length" 
+            class="stat-value">
             <span
               v-for="(ft, genFtIndex) in facility.genFuelTechs"
               :key="genFtIndex"
@@ -131,12 +139,15 @@
                 }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span
                 ><span v-else>MW</span>)
               </small>
-              <span v-if="genFtIndex !== facility.genFuelTechs.length - 1"
-                ><br
-              /></span>
+              <span 
+                v-if="genFtIndex !== facility.genFuelTechs.length - 1"
+              ><br
+              ></span>
             </span>
           </div>
-          <div v-if="facility.loadFuelTechs.length" class="stat-value">
+          <div 
+            v-if="facility.loadFuelTechs.length" 
+            class="stat-value">
             <em
               v-for="(ft, loadFtIndex) in facility.loadFuelTechs"
               :key="loadFtIndex"
@@ -144,19 +155,22 @@
             >
               {{ getFtLabel(ft) }}
               <small
-                >({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber
-                }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span
-                ><span v-else>MW</span>)</small
+              >({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber
+              }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span
+              ><span v-else>MW</span>)</small
               >
-              <span v-if="loadFtIndex !== facility.loadFuelTechs.length - 1"
-                ><br
-              /></span>
+              <span 
+                v-if="loadFtIndex !== facility.loadFuelTechs.length - 1"
+              ><br
+              ></span>
             </em>
           </div>
         </div>
 
         <div class="cap-col stat">
-          <div v-show="facility.generatorCap" class="stat-value has-text-right">
+          <div 
+            v-show="facility.generatorCap" 
+            class="stat-value has-text-right">
             <span
               v-tooltip.auto="{
                 content: getFacilityInfoTooltip(facility),
@@ -164,7 +178,8 @@
               }"
               v-if="hasHiddenCapacity(facility)"
               class="has-hidden-capacity"
-              ><i class="fal fa-info-circle"
+            ><i 
+              class="fal fa-info-circle"
             /></span>
             {{ getGeneratorCap(facility) | facilityFormatNumber }}
             <span
@@ -172,15 +187,15 @@
                 getGeneratorCap(facility) !== 0 && getGeneratorCap(facility) < 1
               "
               class="unit"
-              >kW</span
+            >kW</span
             >
             <span
               v-if="
                 getGeneratorCap(facility) !== 0 &&
-                getGeneratorCap(facility) >= 1
+                  getGeneratorCap(facility) >= 1
               "
               class="unit"
-              >MW</span
+            >MW</span
             >
           </div>
           <div

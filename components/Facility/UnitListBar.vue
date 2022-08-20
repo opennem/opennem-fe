@@ -10,7 +10,9 @@
       class="row-bar"
     />
 
-    <div v-if="isValidContribution" class="contribution">
+    <div 
+      v-if="isValidContribution" 
+      class="contribution">
       {{ contribution | percentageFormatNumber }}
     </div>
   </div>

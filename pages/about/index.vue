@@ -1,6 +1,8 @@
 <template>
   <div class="container">
-    <a class="back-link" @click="$router.go(-1)">&larr; back</a>
+    <a 
+      class="back-link" 
+      @click="$router.go(-1)">&larr; back</a>
 
     <h1>
       <nuxt-link to="/">
@@ -36,23 +38,26 @@
           href="https://twitter.com/dylanjmcconnell"
           title="Dylan's twitter page"
           rel="external"
-          >Dylan McConnell</a
+        >Dylan McConnell</a
         >,
         <a
           href="https://twitter.com/simonahac"
           title="Simon's twitter page"
           rel="external"
-          >Simon Holmes à Court</a
+        >Simon Holmes à Court</a
         >,
         <a
           href="https://twitter.com/chienleng"
           title="Steven's twitter page"
           rel="external"
-          >Steven Tan</a
+        >Steven Tan</a
         >
         and
-        <a href="https://nikcub.me" title="Nik's web site" rel="external"
-          >Nik Cubrilovic</a
+        <a 
+          href="https://nikcub.me" 
+          title="Nik's web site" 
+          rel="external"
+        >Nik Cubrilovic</a
         >
       </p>
 
@@ -84,11 +89,13 @@
           class="about-logos eca-logo"
           src="~/assets/img/eca_logo.png"
           alt="Energy Consumers Australia's logo"
-        />
+        >
         <p>
           This project was co-funded by
-          <a href="http://energyconsumersaustralia.com.au/" rel="external"
-            >Energy Consumers Australia</a
+          <a 
+            href="http://energyconsumersaustralia.com.au/" 
+            rel="external"
+          >Energy Consumers Australia</a
           >
           as part of its grants process for consumer advocacy projects and
           research projects for the benefit of consumers of electricity and
@@ -101,15 +108,19 @@
           class="about-logos eth-logo"
           src="~/assets/img/eth-logo.png"
           alt="Energy Transition Hub's logo"
-        />
+        >
         <p>
           This project is part of the University of Melbourne’s
-          <a href="http://climatecollege.unimelb.edu.au/" rel="external"
-            >Climate and Energy College</a
+          <a 
+            href="http://climatecollege.unimelb.edu.au/" 
+            rel="external"
+          >Climate and Energy College</a
           >
           “Live-Emission tracker” project under the
-          <a href="http://www.energy-transition-hub.org/" rel="external"
-            >Energy Transition Hub</a
+          <a 
+            href="http://www.energy-transition-hub.org/" 
+            rel="external"
+          >Energy Transition Hub</a
           >.
         </p>
       </section>
@@ -157,13 +168,15 @@
           novalidate
         >
           <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
-          <div style="position: absolute; left: -5000px" aria-hidden="true">
+          <div 
+            style="position: absolute; left: -5000px" 
+            aria-hidden="true">
             <input
               type="text"
               name="b_03d0b7fbc9f8d54c06a410737_434dc3a3fb"
               tabindex="-1"
               value
-            />
+            >
           </div>
           <div class="field has-addons">
             <div class="control">
@@ -175,7 +188,7 @@
                 class="email input"
                 placeholder="your email"
                 required
-              />
+              >
             </div>
             <div class="control">
               <input
@@ -184,7 +197,7 @@
                 value="join"
                 name="subscribe"
                 class="button"
-              />
+              >
             </div>
           </div>
         </form>

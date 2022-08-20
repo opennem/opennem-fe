@@ -1,6 +1,8 @@
 <template>
   <chart-header :chart-shown="chartShown">
-    <template v-slot:options v-if="!readOnly">
+    <template 
+      v-slot:options 
+      v-if="!readOnly">
       <chart-options
         :options="options"
         :si="options.si"
@@ -23,11 +25,13 @@
         v-if="chartShown"
         class="display-unit"
         @click.stop="handleUnitClick"
-        >${{ displayUnit }}</small
+      >${{ displayUnit }}</small
       >
     </template>
 
-    <template v-slot:average-value v-if="!readOnly || !hoverValue">
+    <template 
+      v-slot:average-value 
+      v-if="!readOnly || !hoverValue">
       Total
       <strong> {{ total | formatCurrency(',.0f') }}{{ displayUnit }} </strong>
     </template>
@@ -37,21 +41,23 @@
     </template>
 
     <template v-slot:hover-values>
-      <span v-if="hoverValue && showHover" class="ft-value">
+      <span 
+        v-if="hoverValue && showHover" 
+        class="ft-value">
         <em
           :style="{ 'background-color': hoverDomainColour }"
           class="colour-square"
         />
         {{ hoverDomainLabel }}
         <strong
-          >{{ hoverValue | formatCurrency(',.0f') }}{{ displayUnit }}</strong
+        >{{ hoverValue | formatCurrency(',.0f') }}{{ displayUnit }}</strong
         >
       </span>
 
       <span>
         <span v-if="showHover">Total</span>
         <strong
-          >{{ hoverTotal | formatCurrency(',.0f') }}{{ displayUnit }}</strong
+        >{{ hoverTotal | formatCurrency(',.0f') }}{{ displayUnit }}</strong
         >
       </span>
     </template>

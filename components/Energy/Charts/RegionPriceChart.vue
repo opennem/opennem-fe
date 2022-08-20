@@ -8,7 +8,9 @@
     <template v-slot:header>
       <strong>Price</strong>
 
-      <span v-show="chartPrice" class="chart-type-buttons buttons has-addons">
+      <span 
+        v-show="chartPrice" 
+        class="chart-type-buttons buttons has-addons">
         <button
           :class="{ 'is-selected': curve === 'step' }"
           class="button is-small is-rounded"

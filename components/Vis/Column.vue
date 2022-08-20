@@ -1,13 +1,25 @@
 <template>
   <div class="vis column-vis">
-    <svg :width="svgWidth" :height="svgHeight" :id="id" class="column-chart">
-      <g :transform="gTransform" class="axis-line-group">
-        <g :transform="xAxisTransform" :class="xAxisClass" />
+    <svg 
+      :width="svgWidth" 
+      :height="svgHeight" 
+      :id="id" 
+      class="column-chart">
+      <g 
+        :transform="gTransform" 
+        class="axis-line-group">
+        <g 
+          :transform="xAxisTransform" 
+          :class="xAxisClass" />
 
         <g :class="yAxisClass" />
       </g>
-      <g :transform="columnTransform" class="column-group" />
-      <g :transform="columnTransform" class="column-label-group" />
+      <g 
+        :transform="columnTransform" 
+        class="column-group" />
+      <g 
+        :transform="columnTransform" 
+        class="column-label-group" />
     </svg>
   </div>
 </template>

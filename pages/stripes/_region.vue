@@ -63,11 +63,13 @@
             />
           </section>
         </div>
-        <div v-else style="width: 100%">
+        <div 
+          v-else 
+          style="width: 100%">
           <nuxt-link
             :to="`/stripes/${d.regionId}/?metric=${selectedMetric}`"
             class="heatmap-label region-label"
-            >{{ d.region }}</nuxt-link
+          >{{ d.region }}</nuxt-link
           >
           <Heatmap
             :cell-height="75"

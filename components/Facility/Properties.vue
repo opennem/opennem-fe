@@ -2,14 +2,18 @@
   <section class="card dark">
     <header>
       <h4>All properties</h4>
-      <button class="button is-small is-light" @click="show = !show">
+      <button 
+        class="button is-small is-light" 
+        @click="show = !show">
         {{ show ? 'Hide' : 'Show' }}
       </button>
     </header>
 
     <table v-if="hasFacility && show">
       <tbody>
-        <tr v-for="d in keys" :key="d">
+        <tr 
+          v-for="d in keys" 
+          :key="d">
           <th>{{ d }}</th>
           <td v-if="d === 'facilities'">
             <div
@@ -24,7 +28,9 @@
                   }}
                 </caption>
                 <tbody>
-                  <tr v-for="k in getKeys(f)" :key="k">
+                  <tr 
+                    v-for="k in getKeys(f)" 
+                    :key="k">
                     <th>{{ k }}</th>
                     <td>{{ f[k] }}</td>
                   </tr>

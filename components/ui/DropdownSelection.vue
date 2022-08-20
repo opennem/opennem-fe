@@ -9,7 +9,9 @@
       class="dropdown-trigger button is-small is-rounded is-primary"
       @click="dropdownActive = !dropdownActive"
     >
-      <div :class="{ truncate: tabletBreak }" class="dropdown-label">
+      <div 
+        :class="{ truncate: tabletBreak }" 
+        class="dropdown-label">
         <strong>{{ getLabel(selected) }}</strong>
       </div>
       <i class="fal fa-chevron-down" />
@@ -29,7 +31,9 @@
             @click="handleClick(d.id)"
           >
             <span class="selection-checkbox">
-              <i v-if="isSelected(d.id)" class="checkmark-icon fal fa-check" />
+              <i 
+                v-if="isSelected(d.id)" 
+                class="checkmark-icon fal fa-check" />
             </span>
             {{ d.label }}
           </a>
@@ -38,12 +42,12 @@
             <a
               class="button is-rounded is-small is-inverted"
               @click="clearSelected"
-              >Clear</a
+            >Clear</a
             >
             <a
               class="button is-rounded is-small is-primary is-outlined"
               @click="dropdownActive = false"
-              >Close</a
+            >Close</a
             >
           </div>
         </div>

@@ -4,13 +4,13 @@
       :class="{ 'is-selected': isConsumption }"
       class="button is-small"
       @click="handlePercentContributionToClick"
-      >Consumption</span
+    >Consumption</span
     >
     <span
       :class="{ 'is-selected': isGeneration }"
       class="button is-small"
       @click="handlePercentContributionToClick"
-      >Generation</span
+    >Generation</span
     >
   </div>
 </template>

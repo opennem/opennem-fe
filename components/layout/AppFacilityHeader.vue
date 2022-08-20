@@ -1,6 +1,9 @@
 <template>
   <header>
-    <a :href="path" class="back-link" @click.prevent="backToFacilities">
+    <a 
+      :href="path" 
+      class="back-link" 
+      @click.prevent="backToFacilities">
       <i class="fal fa-chevron-left" />
       <AppLogo class="logo" />
       <h1>Facilities</h1>
@@ -14,7 +17,9 @@
       >
         <i class="fal fa-fw fa-arrow-circle-up" />
       </nuxt-link>
-      <span v-else class="is-disabled">
+      <span 
+        v-else 
+        class="is-disabled">
         <i class="fal fa-fw fa-arrow-circle-up" />
       </span>
 
@@ -25,7 +30,9 @@
       >
         <i class="fal fa-fw fa-arrow-circle-down" />
       </nuxt-link>
-      <span v-else class="is-disabled">
+      <span 
+        v-else 
+        class="is-disabled">
         <i class="fal fa-fw fa-arrow-circle-down" />
       </span>
     </nav>

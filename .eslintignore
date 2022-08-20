@@ -13,4 +13,6 @@ yarn.lock
 .prettierignore
 assets/**
 LICENSE.txt
-.eslintignore
+README.md
+package.json
+jsconfig.json

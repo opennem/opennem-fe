@@ -25,7 +25,9 @@
       @domain-click="handleDomainClick"
     />
 
-    <section v-if="showDonutBar" class="bar-donut-wrapper">
+    <section 
+      v-if="showDonutBar" 
+      class="bar-donut-wrapper">
       <header>
         <div class="buttons has-addons">
           <button

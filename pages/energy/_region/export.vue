@@ -11,16 +11,26 @@
     />
 
     <transition name="fade">
-      <div v-if="!ready" class="vis-table-container loading-containers">
-        <div class="vis-container" style="width: 100%">
-          <div class="loader-block" style="height: 30px" />
-          <div class="loader-block" style="height: 400px" />
+      <div 
+        v-if="!ready" 
+        class="vis-table-container loading-containers">
+        <div 
+          class="vis-container" 
+          style="width: 100%">
+          <div 
+            class="loader-block" 
+            style="height: 30px" />
+          <div 
+            class="loader-block" 
+            style="height: 400px" />
         </div>
       </div>
     </transition>
 
     <div id="export-container">
-      <div v-if="ready" class="vis-legend-container">
+      <div 
+        v-if="ready" 
+        class="vis-legend-container">
         <export-image-header :exporting="exporting" />
 
         <div class="vis-table-container">

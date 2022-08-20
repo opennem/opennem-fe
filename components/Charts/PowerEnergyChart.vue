@@ -27,8 +27,8 @@
       :hover-display-date="hoverDisplayDate"
       :hover-value="
         domains.length > 1 ||
-        isTypeProportion ||
-        (isTypeLine && isYAxisPercentage)
+          isTypeProportion ||
+          (isTypeLine && isYAxisPercentage)
           ? hoverValue
           : null
       "
@@ -92,9 +92,9 @@
     <button
       v-if="
         chartShown &&
-        (isTypeLine || isTypeChangeSinceLine) &&
-        zoomExtent.length > 0 &&
-        !readOnly
+          (isTypeLine || isTypeChangeSinceLine) &&
+          zoomExtent.length > 0 &&
+          !readOnly
       "
       class="button is-rounded is-small reset-btn"
       @click.stop="handleZoomReset"

@@ -19,7 +19,9 @@
       </span>
     </div>
     <transition name="slide-down-fade">
-      <div v-show="showMenu" class="show-column-menu dropdown-menu">
+      <div 
+        v-show="showMenu" 
+        class="show-column-menu dropdown-menu">
         <div class="dropdown-content">
           <a
             v-for="(g, index) in groups"

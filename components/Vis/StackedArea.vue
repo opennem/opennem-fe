@@ -16,7 +16,9 @@
       <defs>
         <!-- where to clip -->
         <clipPath :id="`${id}-clip`">
-          <rect :width="width" :height="height" />
+          <rect 
+            :width="width" 
+            :height="height" />
         </clipPath>
 
         <pattern
@@ -26,7 +28,10 @@
           patternUnits="userSpaceOnUse"
           patternTransform="rotate(45)"
         >
-          <line stroke="rgba(236, 233, 230, 0.4)" stroke-width="2px" y2="10" />
+          <line 
+            stroke="rgba(236, 233, 230, 0.4)" 
+            stroke-width="2px" 
+            y2="10" />
         </pattern>
         <pattern
           :id="`${id}-incomplete-period-pattern-2`"
@@ -35,7 +40,10 @@
           patternUnits="userSpaceOnUse"
           patternTransform="rotate(45)"
         >
-          <line stroke="rgba(199, 69, 35, 0.4)" stroke-width="2px" y2="10" />
+          <line 
+            stroke="rgba(199, 69, 35, 0.4)" 
+            stroke-width="2px" 
+            y2="10" />
         </pattern>
 
         <filter id="shadow">
@@ -55,7 +63,9 @@
           refY="4"
           orient="auto"
         >
-          <polygon points="0 0, 8 4, 0 8" fill="darkred" />
+          <polygon 
+            points="0 0, 8 4, 0 8" 
+            fill="darkred" />
         </marker>
       </defs>
 
@@ -67,7 +77,9 @@
         <g class="x-guides-group" />
 
         <!-- x and y axis ticks/lines/text -->
-        <g :transform="xAxisTransform" :class="xAxisClass" />
+        <g 
+          :transform="xAxisTransform" 
+          :class="xAxisClass" />
 
         <g :class="yAxisClass" />
 
@@ -82,7 +94,9 @@
       <g :transform="gTransform">
         <!-- hover layer to read interaction movements -->
         <g :class="hoverLayerClass">
-          <rect :width="width" :height="height" />
+          <rect 
+            :width="width" 
+            :height="height" />
         </g>
 
         <!-- where the stacked area path will show -->
@@ -92,7 +106,9 @@
         <g class="total-line-group" />
 
         <!-- where the line path will show -->
-        <g v-show="hasSecondDataset" class="line-group" />
+        <g 
+          v-show="hasSecondDataset" 
+          class="line-group" />
 
         <g class="x-incomplete-group" />
         <g class="focus-group" />
@@ -100,14 +116,21 @@
       </g>
 
       <!-- yAxis tick text here to show above the area -->
-      <g :transform="gTransform" class="axis-text-group">
+      <g 
+        :transform="gTransform" 
+        class="axis-text-group">
         <g :class="yAxisTickClass" />
-        <g v-show="hasSecondDataset" class="y-axis-2" />
+        <g 
+          v-show="hasSecondDataset" 
+          class="y-axis-2" />
         <g class="y-guides-group" />
       </g>
 
       <!-- cursor line and tooltip -->
-      <g v-show="hoverOn" :transform="gTransform" class="cursor-group">
+      <g 
+        v-show="hoverOn" 
+        :transform="gTransform" 
+        class="cursor-group">
         <g :class="cursorLineGroupClass" />
       </g>
     </svg>

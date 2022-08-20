@@ -23,7 +23,9 @@
           @zoomExtent="handleZoomExtent"
         />
 
-        <div v-if="compareDifference" class="compare-chart">
+        <div 
+          v-if="compareDifference" 
+          class="compare-chart">
           <CompareChart
             :compare-data="compareData"
             :domains="filteredDisplayDomains"

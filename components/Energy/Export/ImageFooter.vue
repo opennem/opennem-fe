@@ -17,9 +17,11 @@
 
     <div v-if="showAttribution">
       Shared by
-      <strong contenteditable="true" @blur="onAttributionBlur">{{
-        exportAttribution
-      }}</strong>
+      <strong 
+        contenteditable="true" 
+        @blur="onAttributionBlur">{{
+          exportAttribution
+        }}</strong>
     </div>
   </div>
 </template>

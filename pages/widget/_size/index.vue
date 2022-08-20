@@ -1,15 +1,25 @@
 <template>
   <div class="energy-region widget-region">
     <transition name="fade">
-      <div v-if="!ready" class="vis-table-container loading-containers">
-        <div class="vis-container" style="width: 100%">
-          <div class="loader-block" style="height: 30px" />
-          <div class="loader-block" style="height: 400px" />
+      <div 
+        v-if="!ready" 
+        class="vis-table-container loading-containers">
+        <div 
+          class="vis-container" 
+          style="width: 100%">
+          <div 
+            class="loader-block" 
+            style="height: 30px" />
+          <div 
+            class="loader-block" 
+            style="height: 400px" />
         </div>
       </div>
     </transition>
 
-    <div v-if="ready" class="vis-legend-container">
+    <div 
+      v-if="ready" 
+      class="vis-legend-container">
       <div class="vis-table-container">
         <vis-section
           :date-hover="hoverDate"
@@ -31,12 +41,14 @@
 
     <div class="widget-footer">
       <div>
-        <a href="https://opennem.org.au/" target="opennem_related">OpenNEM</a>
+        <a 
+          href="https://opennem.org.au/" 
+          target="opennem_related">OpenNEM</a>
         is a project of the
         <a
           href="https://www.energy-transition-hub.org/"
           target="opennem_related"
-          >Energy Transition Hub</a
+        >Energy Transition Hub</a
         >
       </div>
 

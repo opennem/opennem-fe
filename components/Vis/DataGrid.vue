@@ -17,7 +17,9 @@
       </thead>
 
       <tbody>
-        <tr v-for="(row, rowIndex) in rows" :key="`row-${rowIndex}`">
+        <tr 
+          v-for="(row, rowIndex) in rows" 
+          :key="`row-${rowIndex}`">
           <td>{{ rowIndex + 1 }}</td>
           <td
             v-for="(col, colIndex) in columns"

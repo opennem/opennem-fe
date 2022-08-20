@@ -1,6 +1,9 @@
 <template>
   <section>
-    <div v-for="domain in xDomains" :key="domain.id" class="row">
+    <div 
+      v-for="domain in xDomains" 
+      :key="domain.id" 
+      class="row">
       <span class="row-label">
         {{ domain.label }}
       </span>

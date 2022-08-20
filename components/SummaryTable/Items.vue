@@ -1,5 +1,7 @@
 <template>
-  <div :class="{ 'click-disable': !domainToggleable }" class="summary-list">
+  <div 
+    :class="{ 'click-disable': !domainToggleable }" 
+    class="summary-list">
     <div
       v-for="ft in order"
       :key="ft.id"
@@ -11,7 +13,9 @@
       @click.exact="handleRowClick(ft)"
       @click.shift.exact="handleRowShiftClicked(ft)"
     >
-      <div v-tooltip.auto="fuelTechList(ft)" class="summary-col-label">
+      <div 
+        v-tooltip.auto="fuelTechList(ft)" 
+        class="summary-col-label">
         <div
           :style="{
             'background-color': ft.hidden ? 'transparent' : ft.colour,
@@ -32,7 +36,9 @@
         </a>
       </div>
 
-      <div v-if="isEnergyType" class="summary-col-energy">
+      <div 
+        v-if="isEnergyType" 
+        class="summary-col-energy">
         <span v-if="showPointSummary">
           {{
             getValue(ft.id)
@@ -49,7 +55,9 @@
           }}
         </span>
       </div>
-      <div v-else class="summary-col-energy">
+      <div 
+        v-else 
+        class="summary-col-energy">
         <span v-if="showPointSummary">
           {{
             getValue(ft.id)
@@ -68,11 +76,15 @@
         </span>
       </div>
 
-      <div v-show="isAvValueColumn" class="summary-col-av-value">
+      <div 
+        v-show="isAvValueColumn" 
+        class="summary-col-av-value">
         {{ getAverageValue(ft) | formatCurrency }}
       </div>
 
-      <div v-show="isEmissionsVolumeColumn" class="summary-col-ev">
+      <div 
+        v-show="isEmissionsVolumeColumn" 
+        class="summary-col-ev">
         {{
           getEmissionsVolume(ft)
             | convertValue(
@@ -83,7 +95,9 @@
         }}
       </div>
 
-      <div v-show="isEmissionsIntensityColumn" class="summary-col-ev">
+      <div 
+        v-show="isEmissionsIntensityColumn" 
+        class="summary-col-ev">
         {{ getEmissionsIntensity(ft) | formatValue }}
       </div>
     </div>

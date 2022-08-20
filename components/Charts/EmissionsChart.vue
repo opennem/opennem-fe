@@ -78,9 +78,9 @@
     <button
       v-if="
         chartShown &&
-        (isTypeLine || isTypeChangeSinceLine) &&
-        zoomExtent.length > 0 &&
-        !readOnly
+          (isTypeLine || isTypeChangeSinceLine) &&
+          zoomExtent.length > 0 &&
+          !readOnly
       "
       class="button is-rounded is-small reset-btn"
       @click.stop="handleZoomReset"

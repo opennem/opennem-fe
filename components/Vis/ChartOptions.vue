@@ -1,11 +1,16 @@
 <template>
   <div class="chart-options-wrapper">
-    <div class="chart-options-icon" @click.stop="handleMenuClick">
+    <div 
+      class="chart-options-icon" 
+      @click.stop="handleMenuClick">
       <i class="fal fa-bars fa-fw" />
     </div>
 
     <transition name="slide-down-fade">
-      <div v-on-clickaway="onClickAway" v-if="show" class="dropdown-menu">
+      <div 
+        v-on-clickaway="onClickAway" 
+        v-if="show" 
+        class="dropdown-menu">
         <div class="dropdown-content">
           <button
             class="delete close-btn is-small"

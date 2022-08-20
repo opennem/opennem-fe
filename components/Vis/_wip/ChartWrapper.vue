@@ -1,5 +1,7 @@
 <template>
-  <div :class="{ 'is-hovered': isHovering }" class="chart">
+  <div 
+    :class="{ 'is-hovered': isHovering }" 
+    class="chart">
     <button
       v-if="zoomBtn"
       class="button is-rounded is-small reset-btn"
@@ -7,7 +9,9 @@
     >
       Zoom Out
     </button>
-    <div class="chart-title" @click="toggle">
+    <div 
+      class="chart-title" 
+      @click="toggle">
       <div class="chart-label">
         <i
           :class="{
@@ -18,7 +22,9 @@
         />
         <slot name="header" />
       </div>
-      <div v-if="showChart" class="hover-date-value">
+      <div 
+        v-if="showChart" 
+        class="hover-date-value">
         <div class="hover-date">
           <time>
             <slot name="datetime" />

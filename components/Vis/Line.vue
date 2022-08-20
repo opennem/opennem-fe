@@ -7,11 +7,17 @@
     >
       Zoom Out
     </button>
-    <svg :width="svgWidth" :height="svgHeight" :id="id" class="line-chart">
+    <svg 
+      :width="svgWidth" 
+      :height="svgHeight" 
+      :id="id" 
+      class="line-chart">
       <defs>
         <!-- where to clip -->
         <clipPath :id="`${id}-clip`">
-          <rect :width="width" :height="height" />
+          <rect 
+            :width="width" 
+            :height="height" />
         </clipPath>
       </defs>
 
@@ -23,10 +29,16 @@
         <g class="x-guides-group" />
 
         <!-- x and y axis ticks/lines/text -->
-        <g v-show="hasYGuides" class="y-axis-guide-group" />
-        <g :transform="xAxisTransform" :class="xAxisClass" />
+        <g 
+          v-show="hasYGuides" 
+          class="y-axis-guide-group" />
+        <g 
+          :transform="xAxisTransform" 
+          :class="xAxisClass" />
 
-        <g v-show="showYAxis" :class="yAxisClass" />
+        <g 
+          v-show="showYAxis" 
+          :class="yAxisClass" />
 
         <!-- x axis layer to allow zoom in (brush) -->
         <g
@@ -44,19 +56,26 @@
         <g class="line-group" />
 
         <!-- cursor line and tooltip -->
-        <g v-show="hoverOn" class="cursor-group">
+        <g 
+          v-show="hoverOn" 
+          class="cursor-group">
           <g :class="cursorLineGroupClass" />
         </g>
         <g class="focus-group" />
 
         <!-- hover layer to read interaction movements -->
         <g :class="hoverLayerClass">
-          <rect :width="width" :height="height" />
+          <rect 
+            :width="width" 
+            :height="height" />
         </g>
       </g>
 
       <!-- add another yAxis tick text here so it show above the vis -->
-      <g v-show="showYAxis" :transform="gTransform" class="axis-text-group">
+      <g 
+        v-show="showYAxis" 
+        :transform="gTransform" 
+        class="axis-text-group">
         <g :class="yAxisTickClass" />
       </g>
     </svg>

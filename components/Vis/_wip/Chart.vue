@@ -1,10 +1,15 @@
 <template>
   <div class="vis chart-vis">
-    <svg :width="svgWidth" :height="svgHeight" :id="id">
+    <svg 
+      :width="svgWidth" 
+      :height="svgHeight" 
+      :id="id">
       <defs>
         <!-- where to clip -->
         <clipPath :id="`${id}-clip`">
-          <rect :width="width" :height="height" />
+          <rect 
+            :width="width" 
+            :height="height" />
         </clipPath>
         <filter id="shadow">
           <feDropShadow
@@ -16,16 +21,36 @@
         </filter>
       </defs>
 
-      <g :transform="axisTransform" class="x-axis" />
-      <g :transform="axisTransform" class="y-axis" />
-      <g :transform="axisTransform" class="x-shades" />
-      <g :transform="axisTransform" class="cursor-line-group" />
-      <g :transform="axisTransform" class="hover-group" />
-      <g :transform="axisTransform" class="vis1-group" />
-      <g :transform="axisTransform" class="vis2-group" />
-      <g :transform="axisTransform" class="y-axis-left-text" />
-      <g :transform="axisTransform" class="y-axis-right-text" />
-      <g :transform="axisTransform" class="zoom-group" />
+      <g 
+        :transform="axisTransform" 
+        class="x-axis" />
+      <g 
+        :transform="axisTransform" 
+        class="y-axis" />
+      <g 
+        :transform="axisTransform" 
+        class="x-shades" />
+      <g 
+        :transform="axisTransform" 
+        class="cursor-line-group" />
+      <g 
+        :transform="axisTransform" 
+        class="hover-group" />
+      <g 
+        :transform="axisTransform" 
+        class="vis1-group" />
+      <g 
+        :transform="axisTransform" 
+        class="vis2-group" />
+      <g 
+        :transform="axisTransform" 
+        class="y-axis-left-text" />
+      <g 
+        :transform="axisTransform" 
+        class="y-axis-right-text" />
+      <g 
+        :transform="axisTransform" 
+        class="zoom-group" />
     </svg>
   </div>
 </template>

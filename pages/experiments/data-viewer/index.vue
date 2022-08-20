@@ -12,7 +12,7 @@
         @change="handleRegionChange"
       />
 
-      <hr />
+      <hr >
 
       <EnergyFilters
         v-if="selectedView === 'energy'"
@@ -32,7 +32,7 @@
         @dataset="handleDataChange"
       />
 
-      <hr />
+      <hr >
 
       <div class="buttons">
         <button
@@ -71,7 +71,10 @@
       <header>
         <h3>{{ headerDetailTitle }}</h3>
       </header>
-      <DataTable :columns="colsDetail" :rows="rowsDetail" class="is-size-7" />
+      <DataTable 
+        :columns="colsDetail" 
+        :rows="rowsDetail" 
+        class="is-size-7" />
     </section>
   </div>
 </template>

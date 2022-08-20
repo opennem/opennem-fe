@@ -5,11 +5,15 @@
       <slot name="label-unit" />
     </div>
 
-    <div v-if="chartShown" class="hover-date-value">
+    <div 
+      v-if="chartShown" 
+      class="hover-date-value">
       <div class="average-value">
         <slot name="average-value" />
       </div>
-      <div v-if="hasHoverDate" class="hover-date">
+      <div 
+        v-if="hasHoverDate" 
+        class="hover-date">
         <time>
           <slot name="hover-date" />
         </time>

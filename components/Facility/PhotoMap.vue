@@ -1,5 +1,7 @@
 <template>
-  <div :class="layout" class="photo-map">
+  <div 
+    :class="layout" 
+    class="photo-map">
     <div
       v-highlight="showFields"
       v-if="facilityPhotos.length > 0"

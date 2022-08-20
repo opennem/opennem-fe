@@ -25,7 +25,7 @@
             autocapitalize="off"
             spellcheck="false"
             @keyup="handleKeyup"
-          />
+          >
           <span class="icon is-small is-left">
             <i class="fal fa-search" />
           </span>
@@ -53,16 +53,23 @@
           class="dropdown-trigger button is-rounded is-small is-primary"
           @click="techDropdownActive = !techDropdownActive"
         >
-          <div :class="{ truncate: tabletBreak }" class="dropdown-label">
+          <div 
+            :class="{ truncate: tabletBreak }" 
+            class="dropdown-label">
             <strong>{{ techLabel }}</strong>
           </div>
           <i class="fal fa-chevron-down" />
         </button>
 
         <transition name="slide-down-fade">
-          <div v-if="techDropdownActive" class="dropdown-menu">
+          <div 
+            v-if="techDropdownActive" 
+            class="dropdown-menu">
             <div class="dropdown-content">
-              <div v-for="(d, i) in allTechs" :key="i" class="dropdown-item">
+              <div 
+                v-for="(d, i) in allTechs" 
+                :key="i" 
+                class="dropdown-item">
                 <div class="item-group">
                   <span
                     class="expand-collapse"
@@ -91,7 +98,9 @@
                         v-if="hasSelection(d)"
                         class="checkmark-icon fal fa-minus"
                       />
-                      <i v-else class="checkmark-icon fal fa-check" />
+                      <i 
+                        v-else 
+                        class="checkmark-icon fal fa-check" />
                     </span>
                     {{ d.label }}
                   </span>
@@ -101,7 +110,9 @@
                   v-show="d.fields.length > 1 && isGroupExpanded(d.id)"
                   class="subitem-group"
                 >
-                  <div v-for="(field, fIndex) in d.fields" :key="fIndex">
+                  <div 
+                    v-for="(field, fIndex) in d.fields" 
+                    :key="fIndex">
                     <span @click="handleTechClick(d, field)">
                       <span
                         :style="{
@@ -120,16 +131,18 @@
                 </div>
               </div>
 
-              <div class="buttons" style="border-top: 1px solid #eee">
+              <div 
+                class="buttons" 
+                style="border-top: 1px solid #eee">
                 <a
                   class="button is-rounded is-small is-inverted"
                   @click="clearSelectedTechs"
-                  >Clear</a
+                >Clear</a
                 >
                 <a
                   class="button is-rounded is-small is-primary is-outlined"
                   @click="techDropdownActive = false"
-                  >Close</a
+                >Close</a
                 >
               </div>
             </div>

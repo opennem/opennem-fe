@@ -1,6 +1,8 @@
 <template>
   <chart-header :chart-shown="chartShown">
-    <template v-slot:options v-if="!readOnly">
+    <template 
+      v-slot:options 
+      v-if="!readOnly">
       <chart-options
         :options="options"
         :si="options.si"
@@ -26,7 +28,7 @@
         v-if="chartShown && !isPercentage"
         class="display-unit"
         @click.stop="handleUnitClick"
-        >{{ displayUnit }}/{{ interval | intervalLabel }}</small
+      >{{ displayUnit }}/{{ interval | intervalLabel }}</small
       >
     </template>
     <template
@@ -43,15 +45,18 @@
       {{ hoverDisplayDate }}
     </template>
     <template v-slot:hover-values>
-      <span v-if="hoverValue" class="ft-value">
+      <span 
+        v-if="hoverValue" 
+        class="ft-value">
         <em
           :style="{ 'background-color': hoverDomainColour }"
           class="colour-square"
         />
         {{ hoverDomainLabel }}
         <strong v-if="isPercentage">{{ hoverValue | formatValue2 }}%</strong>
-        <strong v-else
-          >{{ hoverValue | formatValue2 }} {{ displayUnit }}</strong
+        <strong 
+          v-else
+        >{{ hoverValue | formatValue2 }} {{ displayUnit }}</strong
         >
       </span>
       <span v-if="!isPercentage">

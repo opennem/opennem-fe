@@ -3,7 +3,9 @@
     :chart-shown="chartShown"
     :has-hover-date="hoverDisplayDate.length > 0"
   >
-    <template v-slot:options v-if="!readOnly">
+    <template 
+      v-slot:options 
+      v-if="!readOnly">
       <chart-options
         :options="options"
         :si="options.si"
@@ -29,11 +31,13 @@
         v-if="chartShown"
         :class="{ 'display-unit': allowDisplayHover }"
         @click.stop="handleUnitClick"
-        >{{ displayUnit }}</small
+      >{{ displayUnit }}</small
       >
     </template>
 
-    <template v-slot:average-value v-if="showAverageValue && !readOnly">
+    <template 
+      v-slot:average-value 
+      v-if="showAverageValue && !readOnly">
       Av.
       <strong>
         {{ averageEnergy | formatValue }}
@@ -45,7 +49,9 @@
       {{ hoverDisplayDate }}
     </template>
     <template v-slot:hover-values>
-      <span v-if="hoverValue" class="ft-value">
+      <span 
+        v-if="hoverValue" 
+        class="ft-value">
         <em
           :style="{ 'background-color': hoverDomainColour }"
           class="colour-square"
@@ -57,7 +63,9 @@
         </strong>
       </span>
 
-      <span v-if="isRenewableLineOnly" class="renewables-value">
+      <span 
+        v-if="isRenewableLineOnly" 
+        class="renewables-value">
         <strong>{{ hoverRenewables | percentageFormatNumber }}</strong>
       </span>
       <span

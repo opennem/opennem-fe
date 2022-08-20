@@ -19,7 +19,9 @@
         </div>
       </div>
     </section>
-    <section v-if="ready" class="widget-buttons">
+    <section 
+      v-if="ready" 
+      class="widget-buttons">
       <div>
         <a
           v-for="chart in chartButtons"
@@ -34,7 +36,7 @@
               : chart.label
           }}
         </a>
-        <hr />
+        <hr >
 
         <span class="tag-group">
           <a
@@ -53,7 +55,7 @@
           :class="{ 'is-primary': percentDisplay }"
           class="tag is-rounded is-white"
           @click="handlePercentDisplay()"
-          >Show %</a
+        >Show %</a
         >
       </div>
     </section>

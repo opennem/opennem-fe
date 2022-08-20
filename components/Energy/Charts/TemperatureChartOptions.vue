@@ -1,6 +1,8 @@
 <template>
   <chart-header :chart-shown="chartShown">
-    <template v-slot:options v-if="!readOnly">
+    <template 
+      v-slot:options 
+      v-if="!readOnly">
       <chart-options
         :options="options"
         :si="options.si"
@@ -18,7 +20,9 @@
       <strong>Temperature</strong>
       <small v-if="chartShown">°C</small>
     </template>
-    <template v-slot:average-value v-if="!readOnly">
+    <template 
+      v-slot:average-value 
+      v-if="!readOnly">
       Av.
       <strong> {{ averageTemperature | formatValue }}°C </strong>
     </template>

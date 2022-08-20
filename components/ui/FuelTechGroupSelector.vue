@@ -1,11 +1,18 @@
 <template>
   <div class="select is-rounded">
     <select v-model="selected">
-      <option v-for="(g, index) in groups" :key="index" :value="g">
+      <option 
+        v-for="(g, index) in groups" 
+        :key="index" 
+        :value="g">
         {{ g }}
       </option>
-      <option v-if="showRegionCompareOption" disabled>——————————</option>
-      <option v-if="showRegionCompareOption" value="regions">Regions</option>
+      <option 
+        v-if="showRegionCompareOption" 
+        disabled>——————————</option>
+      <option 
+        v-if="showRegionCompareOption" 
+        value="regions">Regions</option>
     </select>
   </div>
 </template>

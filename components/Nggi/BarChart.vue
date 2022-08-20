@@ -1,9 +1,19 @@
 <template>
-  <div :aria-rowcount="xDomains.length" role="table">
-    <div class="row header" role="row">
-      <span class="row-label" role="columnheader" aria-sort="none">Sector</span>
-      <span class="row-value" role="columnheader" aria-sort="none"
-        >Emissions/Contribution</span
+  <div 
+    :aria-rowcount="xDomains.length" 
+    role="table">
+    <div 
+      class="row header" 
+      role="row">
+      <span 
+        class="row-label" 
+        role="columnheader" 
+        aria-sort="none">Sector</span>
+      <span 
+        class="row-value" 
+        role="columnheader" 
+        aria-sort="none"
+      >Emissions/Contribution</span
       >
     </div>
 
@@ -32,11 +42,16 @@
         {{ domain.label }}
       </div>
 
-      <div class="row-value" role="cell">
+      <div 
+        class="row-value" 
+        role="cell">
         {{ getValue(domain.id) | formatValue }}
       </div>
 
-      <div v-if="!isHidden(domain.id)" class="row-bar-wrapper" role="cell">
+      <div 
+        v-if="!isHidden(domain.id)" 
+        class="row-bar-wrapper" 
+        role="cell">
         <div
           :style="{
             width: `${getWidth(domain.id)}px`,
@@ -61,16 +76,24 @@
       @mouseenter="onMouseEnter('totalLine')"
       @mouseleave="onMouseLeave"
     >
-      <div class="row-label" role="cell">
-        <div :class="{ on: showTotal }" class="net-total-line" />
+      <div 
+        class="row-label" 
+        role="cell">
+        <div 
+          :class="{ on: showTotal }" 
+          class="net-total-line" />
         Net Total
       </div>
 
-      <div class="row-value" role="cell">
+      <div 
+        class="row-value" 
+        role="cell">
         {{ total | formatValue }}
       </div>
 
-      <div class="row-bar-wrapper" role="cell" />
+      <div 
+        class="row-bar-wrapper" 
+        role="cell" />
     </div>
   </div>
 </template>

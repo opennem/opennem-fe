@@ -25,7 +25,9 @@
         {{ minValue | customFormatValue }}{{ rowUnit }}
       </div>
       <div v-else>{{ minValue | formatValue }}{{ rowUnit }}</div>
-      <time v-show="minDate" datetime="minDate">
+      <time 
+        v-show="minDate" 
+        datetime="minDate">
         {{
           minDate
             | customFormatDate({ range, interval, showIntervalRange: true })
@@ -48,7 +50,9 @@
         {{ maxValue | customFormatValue }}{{ rowUnit }}
       </div>
       <div v-else>{{ maxValue | formatValue }}{{ rowUnit }}</div>
-      <time v-show="maxDate" datetime="maxDate">
+      <time 
+        v-show="maxDate" 
+        datetime="maxDate">
         {{
           maxDate
             | customFormatDate({ range, interval, showIntervalRange: true })

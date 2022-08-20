@@ -99,7 +99,9 @@
           @svgClick="handleSvgClick"
           @changeDataset="handleChangeDatasetChange"
         />
-        <div v-if="compareDifference" class="compare-chart">
+        <div 
+          v-if="compareDifference" 
+          class="compare-chart">
           <a
             class="close-button"
             @click.prevent="() => setCompareDifference(false)"

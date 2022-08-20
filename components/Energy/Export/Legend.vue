@@ -18,7 +18,9 @@
         {{ domain.contribution | percentageFormatNumber }}
       </strong>
     </div>
-    <div v-if="chartEnergyRenewablesLine" class="legend-item">
+    <div 
+      v-if="chartEnergyRenewablesLine" 
+      class="legend-item">
       <span
         :style="{
           background: renewablesLineColour

@@ -1,14 +1,24 @@
 <template>
   <div class="vis brush-vis">
-    <svg :width="svgWidth" :height="svgHeight" :id="id">
+    <svg 
+      :width="svgWidth" 
+      :height="svgHeight" 
+      :id="id">
       <defs>
         <!-- where to clip -->
         <clipPath :id="`${id}-clip`">
-          <rect :width="width" :height="height" />
+          <rect 
+            :width="width" 
+            :height="height" />
         </clipPath>
       </defs>
-      <g :transform="axisTransform" class="x-axis" />
-      <g v-if="!readOnly" :transform="brushTransform" class="brush-group" />
+      <g 
+        :transform="axisTransform" 
+        class="x-axis" />
+      <g 
+        v-if="!readOnly" 
+        :transform="brushTransform" 
+        class="brush-group" />
     </svg>
   </div>
 </template>

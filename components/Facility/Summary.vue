@@ -1,24 +1,35 @@
 <template>
   <summary>
     <div class="summary-wrapper">
-      <div class="description" v-html="description" />
+      <div 
+        class="description" 
+        v-html="description" />
 
-      <v-popover v-if="hasLink" class="wiki-link-text" placement="auto">
+      <v-popover 
+        v-if="hasLink" 
+        class="wiki-link-text" 
+        placement="auto">
         <i class="fal fa-info-circle" />
 
         <template slot="popover">
           <span v-if="hasWikiLink">
             Copied content from
-            <a :href="link" class="wiki-link" target="facility-wiki-link">
+            <a 
+              :href="link" 
+              class="wiki-link" 
+              target="facility-wiki-link">
               Wikipedia
-              <i class="fal fa-external-link" /> </a
+            <i class="fal fa-external-link" /> </a
             >; see that page's history for attribution.
           </span>
           <span v-if="hasWebsiteLink">
             Copied content from
-            <a :href="link" class="wiki-link" target="facility-wiki-link">
+            <a 
+              :href="link" 
+              class="wiki-link" 
+              target="facility-wiki-link">
               website
-              <i class="fal fa-external-link" /> </a
+            <i class="fal fa-external-link" /> </a
             >; see that page for attribution.
           </span>
         </template>

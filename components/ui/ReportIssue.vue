@@ -9,26 +9,34 @@
     <template slot="main">
       <main v-if="submitted">
         <h5>
-          Your report has been submitted. <br />
+          Your report has been submitted. <br >
           Thank you.
         </h5>
       </main>
 
-      <main v-if="isSubmitting" style="margin: 75px 0">
+      <main 
+        v-if="isSubmitting" 
+        style="margin: 75px 0">
         <Loader class="submission-loader" />
       </main>
 
       <main v-if="!isSubmitting && !submitted">
-        <div v-if="hasSubmitError" class="notification is-danger">
+        <div 
+          v-if="hasSubmitError" 
+          class="notification is-danger">
           <p>There is an issue submitting the report.</p>
           <code>{{ submitErrorMsg }}</code>
         </div>
 
         <label>Affected fields <em>(optional)</em></label>
-        <p v-if="selectedFields.length === 0" class="placeholder">
+        <p 
+          v-if="selectedFields.length === 0" 
+          class="placeholder">
           Click/tap on highlighted fields
         </p>
-        <div v-else class="tags">
+        <div 
+          v-else 
+          class="tags">
           <span
             v-for="(field, index) in selectedFields"
             :key="index"
@@ -64,21 +72,30 @@
         />
 
         <label>Your email <em>(optional)</em>)</label>
-        <p v-if="!validEmail && email.length > 5" class="help is-danger">
+        <p 
+          v-if="!validEmail && email.length > 5" 
+          class="help is-danger">
           Please enter a valid email address
         </p>
-        <input v-model="email" type="email" class="input" />
+        <input 
+          v-model="email" 
+          type="email" 
+          class="input" >
 
         <p class="help">* for following up purposes</p>
       </main>
     </template>
     <template slot="footer">
       <footer v-if="submitted && !isSubmitting">
-        <button class="button is-light" @click="handleDone">Done</button>
+        <button 
+          class="button is-light" 
+          @click="handleDone">Done</button>
       </footer>
 
       <footer v-if="!submitted && !isSubmitting">
-        <button class="button is-light" @click="handleDone">Cancel</button>
+        <button 
+          class="button is-light" 
+          @click="handleDone">Cancel</button>
         <button
           :disabled="!validSubmission"
           class="button is-dark is-disabled"

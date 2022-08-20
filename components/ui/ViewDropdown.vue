@@ -1,5 +1,7 @@
 <template>
-  <div :class="{ 'is-active': dropdownActive }" class="dropdown">
+  <div 
+    :class="{ 'is-active': dropdownActive }" 
+    class="dropdown">
     <button
       v-on-clickaway="handleClickAway"
       class="dropdown-trigger button inverted"
@@ -17,7 +19,9 @@
     </button>
 
     <transition name="slide-down-fade">
-      <div v-if="dropdownActive" class="dropdown-menu">
+      <div 
+        v-if="dropdownActive" 
+        class="dropdown-menu">
         <div class="dropdown-content">
           <nuxt-link
             v-for="view in views"

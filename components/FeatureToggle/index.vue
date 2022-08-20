@@ -6,8 +6,12 @@
       @click="handleDoneClick"
     />
     <div class="panel-heading">Features</div>
-    <label class="panel-block" @click.stop>
-      <input v-model="featureEmissions" type="checkbox" />
+    <label 
+      class="panel-block" 
+      @click.stop>
+      <input 
+        v-model="featureEmissions" 
+        type="checkbox" >
       Emissions Charts
     </label>
 

@@ -1,6 +1,9 @@
 <template>
   <span class="loading">
-    <svg width="80px" height="60px" viewBox="5 0 80 60">
+    <svg 
+      width="80px" 
+      height="60px" 
+      viewBox="5 0 80 60">
       <path
         class="sine-wave"
         fill="none"

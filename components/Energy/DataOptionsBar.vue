@@ -13,8 +13,12 @@
         <div v-if="!isString(r)">
           {{ getSelectedRangeLabel(r) }}
         </div>
-        <i v-if="hasRangeFilter(r)" class="filter-caret fal fa-chevron-down" />
-        <div v-show="showRangeOptions(r)" class="filter-menu dropdown-menu">
+        <i 
+          v-if="hasRangeFilter(r)" 
+          class="filter-caret fal fa-chevron-down" />
+        <div 
+          v-show="showRangeOptions(r)" 
+          class="filter-menu dropdown-menu">
           <div class="dropdown-content">
             <a
               v-for="(range, rIndex) in r"
@@ -45,7 +49,9 @@
           v-if="hasFilter(interval)"
           class="filter-caret fal fa-chevron-down"
         />
-        <div v-show="showFilter(interval)" class="filter-menu dropdown-menu">
+        <div 
+          v-show="showFilter(interval)" 
+          class="filter-menu dropdown-menu">
           <div class="dropdown-content">
             <a
               v-for="(f, i) in filters"

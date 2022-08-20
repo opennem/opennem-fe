@@ -24,12 +24,17 @@
           </small>
         </th>
 
-        <th class="align-right" style="width: 80px">
+        <th 
+          class="align-right" 
+          style="width: 80px">
           Registered cap.
           <small>MW</small>
         </th>
 
-        <th v-if="hasEmissions" class="align-right" style="width: 80px">
+        <th 
+          v-if="hasEmissions" 
+          class="align-right" 
+          style="width: 80px">
           Emission Intensity
           <small>kgCO₂e/MWh</small>
         </th>
@@ -59,14 +64,18 @@
           </span>
         </th>
 
-        <th v-if="units.length > 1" style="width: 150px">
+        <th 
+          v-if="units.length > 1" 
+          style="width: 150px">
           <span>
             Proportion
             <small>%</small>
           </span>
         </th>
 
-        <th class="data-col align-right hover-cell" style="width: 80px">
+        <th 
+          class="data-col align-right hover-cell" 
+          style="width: 80px">
           Cap. factor
           <small>%</small>
         </th>
@@ -109,10 +118,13 @@
           class="unit-name"
           @click.self="() => handleFieldClick(`${d.code} label`, d.code)"
         >
-          <div :style="{ backgroundColor: d.colour }" class="colour-square" />
+          <div 
+            :style="{ backgroundColor: d.colour }" 
+            class="colour-square" />
           <span>{{ d.code }}</span>
-          <span v-if="!areAllUnitsOfSameFuelTech"
-            >— {{ getFuelTechLabel(d.fuelTechLabel) }}</span
+          <span 
+            v-if="!areAllUnitsOfSameFuelTech"
+          >— {{ getFuelTechLabel(d.fuelTechLabel) }}</span
           >
         </td>
 
@@ -137,7 +149,9 @@
           {{ d.emissionIntensity | formatValue }}
         </td>
 
-        <td v-if="isAveragePower" class="align-right hover-cell">
+        <td 
+          v-if="isAveragePower" 
+          class="align-right hover-cell">
           <span v-if="hoverOn">
             {{ convertValue(getAvPowerHoverValue(d.id)) | formatValue }}
           </span>
@@ -149,7 +163,9 @@
           </span>
         </td>
 
-        <td v-else class="align-right hover-cell">
+        <td 
+          v-else 
+          class="align-right hover-cell">
           <span v-if="hoverOn">
             {{ convertValue(getHoverValue(d.id)) | formatValue }}
           </span>
@@ -195,7 +211,9 @@
           </span>
         </td>
 
-        <td v-if="hasMarketValue" class="align-right hover-cell">
+        <td 
+          v-if="hasMarketValue" 
+          class="align-right hover-cell">
           <span v-if="hoverOn">
             {{
               convertMarketValue(getHoverValue(d.marketValueId))
@@ -220,7 +238,9 @@
           </span>
         </td>
 
-        <td v-if="hasMarketValue" class="align-right hover-cell">
+        <td 
+          v-if="hasMarketValue" 
+          class="align-right hover-cell">
           <span v-if="hoverOn">
             {{
               calculateAveragePrice(
@@ -257,9 +277,13 @@
           {{ operatingUnitsTotalCapacity }}
         </th>
 
-        <th v-if="hasEmissions" class="align-right cell-value" />
+        <th 
+          v-if="hasEmissions" 
+          class="align-right cell-value" />
 
-        <th v-if="isAveragePower" class="align-right hover-cell cell-value">
+        <th 
+          v-if="isAveragePower" 
+          class="align-right hover-cell cell-value">
           <span v-if="hoverOn">
             {{ convertValue(hoverAveragePowerTotal) | formatValue }}
           </span>
@@ -271,7 +295,9 @@
           </span>
         </th>
 
-        <th v-else class="align-right hover-cell cell-value">
+        <th 
+          v-else 
+          class="align-right hover-cell cell-value">
           <span v-if="hoverOn">
             {{ convertValue(hoverTotal) | formatValue }}
           </span>
@@ -308,7 +334,9 @@
           </span>
         </th>
 
-        <th v-if="hasMarketValue" class="align-right hover-cell cell-value">
+        <th 
+          v-if="hasMarketValue" 
+          class="align-right hover-cell cell-value">
           <span v-if="hoverOn">
             {{ convertMarketValue(hoverTotalMarketValue) | formatValue('$')
             }}<template v-if="hoverTotalMarketValue">{{
@@ -329,7 +357,9 @@
           </span>
         </th>
 
-        <th v-if="hasMarketValue" class="align-right hover-cell cell-value">
+        <th 
+          v-if="hasMarketValue" 
+          class="align-right hover-cell cell-value">
           <span v-if="hoverOn">
             {{ hoverTotalVolWeightedPrice | formatCurrency }}
           </span>

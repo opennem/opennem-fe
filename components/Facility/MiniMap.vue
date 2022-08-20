@@ -20,7 +20,9 @@
           @load="onMapLoaded"
           @click.self="isFullScreen ? () => {} : handleExpandClick()"
         >
-          <div v-if="enableMeasure && distance > 0" class="distance">
+          <div 
+            v-if="enableMeasure && distance > 0" 
+            class="distance">
             {{ distance | formatValue }}km
           </div>
 
@@ -39,7 +41,9 @@
             color="#e34a33"
           />
 
-          <MglNavigationControl v-if="isFullScreen" position="bottom-right" />
+          <MglNavigationControl 
+            v-if="isFullScreen" 
+            position="bottom-right" />
         </MglMap>
       </transition>
       <button
@@ -47,13 +51,19 @@
         class="expand-button"
         @click="handleExpandClick"
       >
-        <i v-if="isFullScreen" class="fal fa-compress" />
-        <i v-else class="fal fa-expand" />
+        <i 
+          v-if="isFullScreen" 
+          class="fal fa-compress" />
+        <i 
+          v-else 
+          class="fal fa-expand" />
       </button>
     </client-only>
 
     <transition name="fade">
-      <div v-if="!hasLocation" class="not-found-card card">
+      <div 
+        v-if="!hasLocation" 
+        class="not-found-card card">
         <i class="fal fa-map-marker-alt" />
         <span>Location not available</span>
       </div>

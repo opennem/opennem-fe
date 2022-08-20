@@ -1,5 +1,9 @@
 <template>
-  <svg :id="id" :height="svgHeight" :width="svgWidth" class="colour-legend" />
+  <svg 
+    :id="id" 
+    :height="svgHeight" 
+    :width="svgWidth" 
+    class="colour-legend" />
 </template>
 
 <script>
