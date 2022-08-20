@@ -11,9 +11,19 @@
       "name": "group_demand",
       "label": "Demand",
       "category": "source",
-      "fuel_techs": ["wind", "hydro", "battery_discharging", "gas_recip",
-        "gas_ocgt", "gas_ccgt", "gas_steam", "distillate", "biomass",
-        "black_coal", "brown_coal"]
+      "fuel_techs": [
+        "wind",
+        "hydro",
+        "battery_discharging",
+        "gas_recip",
+        "gas_ocgt",
+        "gas_ccgt",
+        "gas_steam",
+        "distillate",
+        "biomass",
+        "black_coal",
+        "brown_coal"
+      ]
     },
     {
       "name": "group_imports",

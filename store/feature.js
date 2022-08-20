@@ -10,8 +10,8 @@ export const state = () => ({
 })
 
 export const getters = {
-  emissions: state => state.emissions,
-  regionCompare: state => state.regionCompare
+  emissions: (state) => state.emissions,
+  regionCompare: (state) => state.regionCompare
 }
 
 export const mutations = {

@@ -8,11 +8,11 @@ export const state = () => ({
 })
 
 export const getters = {
-  chartShown: state => state.chartType !== OPTIONS.CHART_HIDDEN,
-  chartDefaultType: state => state.chartDefaultType,
-  chartType: state => state.chartType,
-  chartYAxis: state => state.chartYAxis,
-  chartCurve: state => state.chartCurve
+  chartShown: (state) => state.chartType !== OPTIONS.CHART_HIDDEN,
+  chartDefaultType: (state) => state.chartDefaultType,
+  chartType: (state) => state.chartType,
+  chartYAxis: (state) => state.chartYAxis,
+  chartCurve: (state) => state.chartCurve
 }
 
 export const mutations = {

@@ -168,50 +168,50 @@ export const mutations = {
 }
 
 export const getters = {
-  dataset: state => _cloneDeep(state.dataset),
-  sortBy: state => state.sortBy,
-  orderBy: state => state.orderBy,
-  selectedStatuses: state => _cloneDeep(state.selectedStatuses),
-  selectedTechGroups: state => _cloneDeep(state.selectedTechGroups),
-  selectedTechs: state => _cloneDeep(state.selectedTechs),
-  selectedSizes: state => _cloneDeep(state.selectedSizes),
-  selectedView: state => state.selectedView,
-  selectedMapStyle: state => state.selectedMapStyle,
-  filteredFacilities: state => state.filteredFacilities,
+  dataset: (state) => _cloneDeep(state.dataset),
+  sortBy: (state) => state.sortBy,
+  orderBy: (state) => state.orderBy,
+  selectedStatuses: (state) => _cloneDeep(state.selectedStatuses),
+  selectedTechGroups: (state) => _cloneDeep(state.selectedTechGroups),
+  selectedTechs: (state) => _cloneDeep(state.selectedTechs),
+  selectedSizes: (state) => _cloneDeep(state.selectedSizes),
+  selectedView: (state) => state.selectedView,
+  selectedMapStyle: (state) => state.selectedMapStyle,
+  filteredFacilities: (state) => state.filteredFacilities,
 
-  previousPath: state => state.previousPath,
-  fetchingFacility: state => state.fetchingFacility,
-  fetchingStats: state => state.fetchingStats,
-  selectedFacility: state => _cloneDeep(state.selectedFacility),
-  selectedFacilityNetworkRegion: state =>
+  previousPath: (state) => state.previousPath,
+  fetchingFacility: (state) => state.fetchingFacility,
+  fetchingStats: (state) => state.fetchingStats,
+  selectedFacility: (state) => _cloneDeep(state.selectedFacility),
+  selectedFacilityNetworkRegion: (state) =>
     _cloneDeep(state.selectedFacilityNetworkRegion),
-  selectedFacilityUnits: state => _cloneDeep(state.selectedFacilityUnits),
-  selectedFacilityUnitsDataset: state =>
+  selectedFacilityUnits: (state) => _cloneDeep(state.selectedFacilityUnits),
+  selectedFacilityUnitsDataset: (state) =>
     _cloneDeep(state.selectedFacilityUnitsDataset),
-  selectedFacilityUnitsDatasetFlat: state =>
+  selectedFacilityUnitsDatasetFlat: (state) =>
     _cloneDeep(state.selectedFacilityUnitsDatasetFlat),
-  selectedFacilityError: state => state.selectedFacilityError,
-  selectedFacilityErrorMessage: state => state.selectedFacilityErrorMessage,
+  selectedFacilityError: (state) => state.selectedFacilityError,
+  selectedFacilityErrorMessage: (state) => state.selectedFacilityErrorMessage,
 
-  facilityName: state =>
+  facilityName: (state) =>
     state.selectedFacility && state.selectedFacility.name
       ? state.selectedFacility.name
       : '',
-  facilityUnits: state =>
+  facilityUnits: (state) =>
     state.selectedFacility
       ? _sortBy(state.selectedFacility.facilities, ['status.code', 'code'])
       : [],
-  facilityLocation: state =>
+  facilityLocation: (state) =>
     state.selectedFacility ? state.selectedFacility.location : null,
-  facilityNetworkRegion: state =>
+  facilityNetworkRegion: (state) =>
     state.selectedFacility && state.selectedFacility.network
       ? state.selectedFacility.network.code || state.selectedFacility.network
       : '',
-  facilityDescription: state =>
+  facilityDescription: (state) =>
     state.selectedFacility && state.selectedFacility.description
       ? state.selectedFacility.description
       : '',
-  facilityWikiLink: state => {
+  facilityWikiLink: (state) => {
     let link = null
 
     if (state.selectedFacility) {
@@ -230,18 +230,18 @@ export const getters = {
     return link
   },
   facilityFuelTechsColours: (state, getters) => {
-    const fuelTechs = getters.facilityUnits.map(d => d.fueltech)
+    const fuelTechs = getters.facilityUnits.map((d) => d.fueltech)
 
     // get only unique fuel techs
-    const uniqFuelTechs = _uniq(fuelTechs.filter(d => d !== '')).sort()
+    const uniqFuelTechs = _uniq(fuelTechs.filter((d) => d !== '')).sort()
     const uniqFuelTechsCount = {}
-    uniqFuelTechs.forEach(d => {
-      uniqFuelTechsCount[d] = fuelTechs.filter(ft => ft === d).length
+    uniqFuelTechs.forEach((d) => {
+      uniqFuelTechsCount[d] = fuelTechs.filter((ft) => ft === d).length
     })
 
     // set different opacity variations of fuel tech
     const colours = {}
-    uniqFuelTechs.forEach(ft => {
+    uniqFuelTechs.forEach((ft) => {
       const colour = color(getUnitColour(ft))
       const count = uniqFuelTechsCount[ft]
 
@@ -256,8 +256,8 @@ export const getters = {
 
     // apply each colour variation to facility unit
     const obj = {}
-    uniqFuelTechs.forEach(ft => {
-      const filter = getters.facilityUnits.filter(d => {
+    uniqFuelTechs.forEach((ft) => {
+      const filter = getters.facilityUnits.filter((d) => {
         const fuelTechCode = d.fueltech.code || d.fueltech
         return d.fueltech && fuelTechCode === ft
       })
@@ -271,10 +271,10 @@ export const getters = {
   unitsSummary: (state, getters) =>
     getters.facilityUnits.map((d, i) => {
       const find = state.domainPowerEnergy.find(
-        domain => domain.code === d.code
+        (domain) => domain.code === d.code
       )
       const findMarketValue = state.domainMarketValue.find(
-        domain => domain.code === d.code
+        (domain) => domain.code === d.code
       )
       const id = find ? find.id : null
       const marketValueId = findMarketValue ? findMarketValue.id : null
@@ -306,15 +306,15 @@ export const getters = {
       }
     }),
 
-  domainPowerEnergy: state => _cloneDeep(state.domainPowerEnergy),
-  domainEmissions: state => _cloneDeep(state.domainEmissions),
-  domainMarketValue: state => _cloneDeep(state.domainMarketValue),
-  domainVolWeightedPrices: state => _cloneDeep(state.domainVolWeightedPrices),
+  domainPowerEnergy: (state) => _cloneDeep(state.domainPowerEnergy),
+  domainEmissions: (state) => _cloneDeep(state.domainEmissions),
+  domainMarketValue: (state) => _cloneDeep(state.domainMarketValue),
+  domainVolWeightedPrices: (state) => _cloneDeep(state.domainVolWeightedPrices),
 
-  dataType: state => state.dataType,
-  range: state => state.range,
-  interval: state => state.interval,
-  filterPeriod: state => state.filterPeriod
+  dataType: (state) => state.dataType,
+  range: (state) => state.range,
+  interval: (state) => state.interval,
+  filterPeriod: (state) => state.filterPeriod
 }
 
 export const actions = {
@@ -356,7 +356,7 @@ export const actions = {
 
     http
       .get(ref)
-      .then(response => {
+      .then((response) => {
         const networkCode = response.data.network
           ? response.data.network.code || response.data.network
           : ''
@@ -369,7 +369,7 @@ export const actions = {
           commit('selectedFacilityErrorMessage', response.detail)
         }
       })
-      .catch(e => {
+      .catch((e) => {
         const error = e.toJSON()
         const message = `fetch ${error.config.url} error: ${error.message}`
         console.error(message, e.toJSON())
@@ -432,7 +432,7 @@ export const actions = {
       .get(ref, {
         cancelToken: request.token
       })
-      .then(response => {
+      .then((response) => {
         console.log('fetched stats', response.data)
 
         range = getters.range
@@ -450,7 +450,7 @@ export const actions = {
           domainMarketValue
         } = dataProcess(response.data.data, range, interval, displayTz)
 
-        const domainObj = d => {
+        const domainObj = (d) => {
           return {
             colour: facilityFuelTechsColours[d.code],
             domain: d.id,
@@ -466,10 +466,10 @@ export const actions = {
           mappedDomainEmissions = [],
           mappedDomainMarketValue = []
 
-        codes.forEach(c => {
-          const findPowerEnergy = domainPowerEnergy.find(d => d.code === c)
-          const findEmissions = domainEmissions.find(d => d.code === c)
-          const findMarketValue = domainMarketValue.find(d => d.code === c)
+        codes.forEach((c) => {
+          const findPowerEnergy = domainPowerEnergy.find((d) => d.code === c)
+          const findEmissions = domainEmissions.find((d) => d.code === c)
+          const findMarketValue = domainMarketValue.find((d) => d.code === c)
           if (findPowerEnergy) {
             mappedDomainPowerEnergy.push(domainObj(findPowerEnergy))
           }
@@ -507,7 +507,7 @@ export const actions = {
         })
         commit('fetchingStats', false)
       })
-      .catch(e => {
+      .catch((e) => {
         if (axios.isCancel(e)) {
           console.log('Request cancelled', e.message)
         } else {

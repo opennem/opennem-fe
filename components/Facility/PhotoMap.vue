@@ -1,33 +1,41 @@
 <template>
-  <div 
-    :class="layout" 
-    class="photo-map">
-    <div 
+  <div :class="layout" class="photo-map">
+    <div
       v-highlight="showFields"
       v-if="facilityPhotos.length > 0"
-      @click.stop.self="() => handleFieldClick('Facility photos', facilityPhotos)">
+      @click.stop.self="
+        () => handleFieldClick('Facility photos', facilityPhotos)
+      "
+    >
       <Photos
         :has-photos="facilityPhotos.length > 0"
         :photos="facilityPhotos"
         :name="facilityName"
-        :height="layout === 'aside' ? '250px' : '200px'"/>
+        :height="layout === 'aside' ? '250px' : '200px'"
+      />
     </div>
-    
 
-    <div 
+    <div
       v-highlight="showFields"
-      @click.stop.self="() => handleFieldClick('Facility default map', facilityLocation.geom)">
+      @click.stop.self="
+        () => handleFieldClick('Facility default map', facilityLocation.geom)
+      "
+    >
       <MiniMap
         :has-location="hasLocation"
         :boundary="facilityLocation.boundary"
         :point="facilityLocation.geom"
         :fit-bounds="false"
-        class="map" />
+        class="map"
+      />
     </div>
 
-    <div 
+    <div
       v-highlight="showFields"
-      @click.stop.self="() => handleFieldClick('Facility satellite map', facilityLocation.geom)">
+      @click.stop.self="
+        () => handleFieldClick('Facility satellite map', facilityLocation.geom)
+      "
+    >
       <MiniMap
         :has-location="hasLocation"
         :zoom="13"
@@ -36,7 +44,8 @@
         :map-style="'mapbox://styles/mapbox/satellite-streets-v11'"
         :show-marker="false"
         :is-dark="true"
-        class="map" />
+        class="map"
+      />
     </div>
 
     <!-- <MetaInfo

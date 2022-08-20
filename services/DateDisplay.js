@@ -204,10 +204,7 @@ export default {
           display = timeFormat(formatString)(time)
         } else if (interval === INTERVAL_WEEK) {
           formatString = '%-d %b %Y'
-          const newTime = d3TimeMonday
-            .every(1)
-            .floor(time)
-            .getTime()
+          const newTime = d3TimeMonday.every(1).floor(time).getTime()
           if (showIntervalRange) {
             const sixDayslater = newTime + 518400000
 

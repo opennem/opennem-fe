@@ -2,7 +2,7 @@ import startOfQuarter from 'date-fns/startOfQuarter'
 import differenceInDays from 'date-fns/differenceInDays'
 import addDays from 'date-fns/addDays'
 
-export default function({
+export default function ({
   dataset,
   datasetInflation,
   domainPowerEnergy,
@@ -18,9 +18,9 @@ export default function({
   bucket
 }) {
   if (bucket) {
-    const data = bucket.map(d => {
+    const data = bucket.map((d) => {
       const obj = createEmptyMetricObj(d.date, d.time)
-      const find = dataset.find(x => x.time === d.time)
+      const find = dataset.find((x) => x.time === d.time)
       return updateMetricObject(
         obj,
         find,
@@ -37,7 +37,7 @@ export default function({
     return data
   }
 
-  const data = dataset.map(d => {
+  const data = dataset.map((d) => {
     const obj = createEmptyMetricObj(d.date, d.time)
     return updateMetricObject(
       obj,
@@ -114,14 +114,14 @@ function updateMetricObject(
       importsExports = null,
       hasEmissionsValue = false
 
-    domainEmissions.forEach(domain => {
+    domainEmissions.forEach((domain) => {
       if (d[domain.id] || d[domain.id] === 0) {
         hasEmissionsValue = true
       }
       totalEmissions += d[domain.id] || 0
     })
 
-    domainTemperature.forEach(domain => {
+    domainTemperature.forEach((domain) => {
       if (domain.type === 'temperature_mean') {
         temperature = d[domain.id]
       }
@@ -130,7 +130,7 @@ function updateMetricObject(
       }
     })
 
-    domainPowerEnergy.forEach(domain => {
+    domainPowerEnergy.forEach((domain) => {
       const ft = domain.fuelTech
       const id = domain.id
 
@@ -163,7 +163,7 @@ function updateMetricObject(
 
     if (hasInflation) {
       const startQ = startOfQuarter(d.date)
-      const find = datasetInflation.find(dInflation => {
+      const find = datasetInflation.find((dInflation) => {
         const startQMonth = startQ.getMonth()
         const startQYear = startQ.getFullYear()
         const inflationQMonth = dInflation.date.getMonth()

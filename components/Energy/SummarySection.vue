@@ -25,21 +25,21 @@
       @domain-click="handleDomainClick"
     />
 
-    <section
-      v-if="showDonutBar"
-      class="bar-donut-wrapper">
+    <section v-if="showDonutBar" class="bar-donut-wrapper">
       <header>
         <div class="buttons has-addons">
           <button
             :class="{ 'is-selected': !chartSummaryPie }"
             class="button is-rounded"
-            @click="handleChartSummaryClick('bar')">
+            @click="handleChartSummaryClick('bar')"
+          >
             <i class="fal fa-chart-bar" />
           </button>
           <button
             :class="{ 'is-selected': chartSummaryPie }"
             class="button is-rounded"
-            @click="handleChartSummaryClick('pie')">
+            @click="handleChartSummaryClick('pie')"
+          >
             <i class="fal fa-chart-pie" />
           </button>
         </div>
@@ -87,7 +87,8 @@
       @recordSelect="handleRecordSelect"
       @recordDeselect="handleRecordDeselect"
       @recordMouseEnter="handleRecordMouseEnter"
-      @recordMouseLeave="handleRecordMouseLeave" />
+      @recordMouseLeave="handleRecordMouseLeave"
+    />
   </section>
 </template>
 
@@ -202,14 +203,14 @@ export default {
     domains() {
       const domains = this.powerEnergyDomains
       const hidden = this.hiddenFuelTechs
-      return domains.filter(d => !_includes(hidden, d[this.property]))
+      return domains.filter((d) => !_includes(hidden, d[this.property]))
     },
     donutDomains() {
-      return this.domains.filter(d => d.category === 'source')
+      return this.domains.filter((d) => d.category === 'source')
     },
     temperatureMeanDomain() {
       const find = this.domainTemperature.find(
-        t => t.type === TEMPERATURE || t.type === TEMPERATURE_MEAN
+        (t) => t.type === TEMPERATURE || t.type === TEMPERATURE_MEAN
       )
       return find ? find.domain : ''
     },
@@ -218,7 +219,7 @@ export default {
       const domain = this.highlightDomain
       const property =
         this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
-      const find = this.domains.find(d => d[property] === domain)
+      const find = this.domains.find((d) => d[property] === domain)
       return find ? find.id : ''
     },
 
@@ -286,9 +287,9 @@ export default {
     handleDomainClick(domain) {
       let fuelTechs = []
       if (domain.domainIds) {
-        domain.domainIds.forEach(d => {
+        domain.domainIds.forEach((d) => {
           const find = this.domainPowerEnergy.find(
-            peDomain => peDomain.id === d
+            (peDomain) => peDomain.id === d
           )
           fuelTechs.push(find.fuelTech)
         })

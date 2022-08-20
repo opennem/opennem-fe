@@ -1,7 +1,5 @@
 <template>
-  <div
-    :class="{ 'is-active': dropdownActive }"
-    class="dropdown">
+  <div :class="{ 'is-active': dropdownActive }" class="dropdown">
     <button
       v-on-clickaway="handleClickAway"
       class="dropdown-trigger button inverted"
@@ -10,15 +8,16 @@
       <span>
         <strong>{{ viewLabel }}</strong>
         <i
-          :class="['fal dropdown-trigger-icon', dropdownActive ? 'fa-chevron-up' : 'fa-chevron-down']"
+          :class="[
+            'fal dropdown-trigger-icon',
+            dropdownActive ? 'fa-chevron-up' : 'fa-chevron-down'
+          ]"
         />
       </span>
     </button>
 
     <transition name="slide-down-fade">
-      <div
-        v-if="dropdownActive"
-        class="dropdown-menu">
+      <div v-if="dropdownActive" class="dropdown-menu">
         <div class="dropdown-content">
           <nuxt-link
             v-for="view in views"
@@ -61,7 +60,7 @@ export default {
       return this.$store.getters.currentView
     },
     viewLabel() {
-      const view = this.views.find(d => d.id === this.currentView)
+      const view = this.views.find((d) => d.id === this.currentView)
       return view ? view.label : ''
     }
   },

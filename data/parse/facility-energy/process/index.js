@@ -1,7 +1,7 @@
 import parseAndCheckData from '@/data/parse/region-energy/process/parseAndCheckData.js'
 import flattenAndInterpolate from '@/data/parse/region-energy/process/flattenAndInterpolate.js'
 
-export default function(data, displayTz) {
+export default function (data, displayTz) {
   const {
     dataAll,
     dataPowerEnergy,
@@ -14,7 +14,7 @@ export default function(data, displayTz) {
     hasPowerEnergyData
   } = parseAndCheckData(data, displayTz)
 
-  const mapper = d => {
+  const mapper = (d) => {
     const type = d.data_type || ''
     const units = d.units || ''
     const history = d.history || null

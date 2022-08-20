@@ -2,7 +2,7 @@ import timeGroups from '@/data/helpers/time-groups'
 import energyRollUp from './energyRollUp'
 import powerRollUp from './powerRollUp'
 
-export default function({ domains, datasetFlat, interval }) {
+export default function ({ domains, datasetFlat, interval }) {
   return timeGroups({
     domains,
     datasetFlat,

@@ -1,9 +1,12 @@
 <template>
   <div class="container-fluid">
-    <h1>You are viewing data and features that are still in <strong>development</strong>.</h1>
+    <h1>
+      You are viewing data and features that are still in
+      <strong>development</strong>.
+    </h1>
 
     <app-header />
-    <nuxt/>
+    <nuxt />
     <app-footer v-if="!widthBreak" />
   </div>
 </template>

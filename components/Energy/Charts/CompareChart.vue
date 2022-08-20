@@ -2,9 +2,15 @@
   <div class="compare-container">
     <div class="compare-header">
       <div class="chart-label">
-        <strong>{{ firstDate | customFormatDate({ range, interval, showIntervalRange: true }) }}</strong>
+        <strong>{{
+          firstDate
+            | customFormatDate({ range, interval, showIntervalRange: true })
+        }}</strong>
         vs
-        <strong>{{ secondDate | customFormatDate({ range, interval, showIntervalRange: true }) }}</strong>
+        <strong>{{
+          secondDate
+            | customFormatDate({ range, interval, showIntervalRange: true })
+        }}</strong>
       </div>
     </div>
     <div class="compare-chart-legend">
@@ -12,13 +18,15 @@
         <div
           v-for="(domain, index) in updatedDomains"
           :key="`domain-${index}`"
-          class="legend-item">
+          class="legend-item"
+        >
           <span
             :style="{
               'background-color': domain.colour,
               border: domain.id === '_total' ? `1px dashed #c74523` : 'none'
             }"
-            class="colour-square" />
+            class="colour-square"
+          />
           {{ domain.label }}
         </div>
       </div>
@@ -37,7 +45,6 @@
         />
       </div>
     </div>
-
   </div>
 </template>
 
@@ -133,7 +140,7 @@ export default {
         this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
       const domains = this.powerEnergyDomains
       const hidden = this.hiddenFuelTechs
-      return domains.filter(d => !_includes(hidden, d[property]))
+      return domains.filter((d) => !_includes(hidden, d[property]))
     },
     hasCompareData() {
       return this.updatedCompareData.length === 2
@@ -159,7 +166,7 @@ export default {
         const change = {}
         const former = this.updatedCompareData[0]
         const latter = this.updatedCompareData[1]
-        Object.keys(latter).forEach(d => {
+        Object.keys(latter).forEach((d) => {
           if (d !== 'date' && d.length > 0) {
             change[d] = latter[d] - former[d]
           }
@@ -173,7 +180,7 @@ export default {
         const changePercent = {}
         const former = this.updatedCompareData[0]
         const latter = this.updatedCompareData[1]
-        Object.keys(latter).forEach(d => {
+        Object.keys(latter).forEach((d) => {
           if (d !== 'date' && d.length > 0) {
             if (
               former[d] === null ||
@@ -210,7 +217,7 @@ export default {
       const domain = this.highlightDomain
       const property =
         this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
-      const find = this.domains.find(d => d[property] === domain)
+      const find = this.domains.find((d) => d[property] === domain)
       return find ? find.id : ''
     }
   },

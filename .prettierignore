@@ -1,0 +1,15 @@
+/node_modules/**
+/dist/**
+/tests/unit/coverage/**
+/cypress/
+/.nuxt/
+assets/content.scss
+/static/
+yarn.lock
+.DS_Store
+.editorconfig
+.env*
+.gitignore
+.prettierignore
+assets/**
+LICENSE.txt

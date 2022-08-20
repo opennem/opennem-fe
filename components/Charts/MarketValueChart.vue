@@ -4,7 +4,8 @@
       'is-hovered': hoverOn || focusOn,
       'has-border-bottom': !chartShown
     }"
-    class="chart">
+    class="chart"
+  >
     <market-value-chart-options
       :read-only="readOnly"
       :chart-shown="chartShown"
@@ -82,7 +83,6 @@
       @domain-hover="handleDomainHover"
       @enter="handleVisEnter"
       @leave="handleVisLeave" /> -->
-
   </div>
 </template>
 
@@ -209,39 +209,39 @@ export default {
     },
     highlightId() {
       const domain = this.highlightDomain
-      const find = this.domains.find(d => d[this.propName] === domain)
+      const find = this.domains.find((d) => d[this.propName] === domain)
       return find ? find.id : ''
     },
     yMax() {
       const dataset = _cloneDeep(this.dataset)
-      dataset.forEach(d => {
+      dataset.forEach((d) => {
         let stackedMax = 0
-        this.domains.forEach(domain => {
+        this.domains.forEach((domain) => {
           stackedMax += d[domain.id]
         })
         d._stackedTotalEmissionsMax = stackedMax
       })
-      return max(dataset, d => d._stackedTotalEmissionsMax)
+      return max(dataset, (d) => d._stackedTotalEmissionsMax)
     },
     yMin() {
       const dataset = _cloneDeep(this.dataset)
-      dataset.forEach(d => {
+      dataset.forEach((d) => {
         let min = 0
-        this.domains.forEach(domain => {
+        this.domains.forEach((domain) => {
           if (d[domain.id] < 0) {
             min += d[domain.id] || 0
           }
         })
         d._stackedTotalEmissionsMin = min
       })
-      return min(dataset, d => d._stackedTotalEmissionsMin)
+      return min(dataset, (d) => d._stackedTotalEmissionsMin)
     },
 
     yLineMin() {
       let min = 0
 
-      this.dataset.forEach(d => {
-        this.domains.forEach(domain => {
+      this.dataset.forEach((d) => {
+        this.domains.forEach((domain) => {
           const val = d[domain.id]
           if (val < min) {
             min = val
@@ -255,8 +255,8 @@ export default {
     yLineMax() {
       let max = 0
 
-      this.dataset.forEach(d => {
-        this.domains.forEach(domain => {
+      this.dataset.forEach((d) => {
+        this.domains.forEach((domain) => {
           const val = d[domain.id]
           if (val > max) {
             max = val
@@ -275,7 +275,7 @@ export default {
     domains() {
       const domains = this.marketValueDomains
       const hidden = this.hiddenDomains
-      return domains.filter(d => !_includes(hidden, d[this.propName]))
+      return domains.filter((d) => !_includes(hidden, d[this.propName]))
     },
 
     stackedDataset() {
@@ -294,7 +294,7 @@ export default {
       if (this.zoomExtent.length === 2) {
         const start = this.zoomExtent[0].getTime()
         const end = this.zoomExtent[1].getTime()
-        return this.dataset.filter(d => d.time >= start && d.time < end)
+        return this.dataset.filter((d) => d.time >= start && d.time < end)
       } else {
         return this.dataset
       }
@@ -302,7 +302,7 @@ export default {
 
     datasetTotal() {
       let total = 0
-      this.filteredDataset.forEach(d => {
+      this.filteredDataset.forEach((d) => {
         total += d._totalMarketValue
       })
       return this.convertValue(total)
@@ -317,7 +317,7 @@ export default {
         return null
       }
       const time = date.getTime()
-      return this.dataset ? this.dataset.find(d => d.time === time) : null
+      return this.dataset ? this.dataset.find((d) => d.time === time) : null
     },
     hoverValue() {
       return this.hoverData
@@ -342,17 +342,21 @@ export default {
         : ''
     },
     hoverDomainLabel() {
-      const find = this.domains.find(d => d.id === this.hoverMarketValueDomain)
+      const find = this.domains.find(
+        (d) => d.id === this.hoverMarketValueDomain
+      )
       return find ? find.label : '—'
     },
     hoverDomainColour() {
-      const find = this.domains.find(d => d.id === this.hoverMarketValueDomain)
+      const find = this.domains.find(
+        (d) => d.id === this.hoverMarketValueDomain
+      )
       return find ? find.colour : '—'
     },
     hoverTotal() {
       let total = 0
       if (this.hoverData) {
-        this.domains.forEach(d => {
+        this.domains.forEach((d) => {
           total += this.hoverData[d.id]
         })
       }
@@ -361,9 +365,9 @@ export default {
     incompleteIntervals() {
       const incompletes = []
       const filtered = this.marketValueDataset.filter(
-        d => d._isIncompleteBucket
+        (d) => d._isIncompleteBucket
       )
-      filtered.forEach(f => {
+      filtered.forEach((f) => {
         if (this.interval === 'Week') {
           incompletes.push({
             start: f.date,

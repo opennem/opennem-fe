@@ -4,8 +4,8 @@ export const state = () => ({
 })
 
 export const getters = {
-  footerSourceLabel: state => state.footerSourceLabel,
-  footerSourceUrl: state => state.footerSourceUrl
+  footerSourceLabel: (state) => state.footerSourceLabel,
+  footerSourceUrl: (state) => state.footerSourceUrl
 }
 
 export const mutations = {

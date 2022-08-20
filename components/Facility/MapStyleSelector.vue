@@ -4,12 +4,11 @@
       v-on-clickaway="handleClickAway"
       v-for="(d, i) in mapStyleSelections"
       :key="i"
-      :class="{ selected: d.value === selectedMapStyle}"
+      :class="{ selected: d.value === selectedMapStyle }"
       class="panel-block"
-      @click="handleStyleClick(d.value)">
-      <img 
-        :src="getImgSrc(d.preview)" 
-        :alt="getImgAltText(d.label)" >
+      @click="handleStyleClick(d.value)"
+    >
+      <img :src="getImgSrc(d.preview)" :alt="getImgAltText(d.label)" />
       <span>{{ d.label }}</span>
     </div>
   </div>

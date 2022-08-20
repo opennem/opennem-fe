@@ -11,7 +11,7 @@ const perfTime = new PerfTime()
   - Mutate and summarise each data point
   - Reverse value for load types
 */
-export default function({
+export default function ({
   isEnergyType,
   currentDataset,
   domainPowerEnergy,
@@ -70,7 +70,7 @@ export default function({
       hasImportsExports = false,
       hasValueForPercentageCalculation = false
 
-    domainPowerEnergy.forEach(domain => {
+    domainPowerEnergy.forEach((domain) => {
       const id = domain.id
       const ft = domain.fuelTech
 
@@ -109,7 +109,7 @@ export default function({
       dataset[i]._netImports = 0
     }
 
-    domainPowerEnergy.forEach(domain => {
+    domainPowerEnergy.forEach((domain) => {
       const id = domain.id
       const ft = domain.fuelTech
 
@@ -126,7 +126,7 @@ export default function({
       }
     })
 
-    domainPowerEnergy.forEach(domain => {
+    domainPowerEnergy.forEach((domain) => {
       const id = domain.id
       const ft = domain.fuelTech
 
@@ -213,14 +213,14 @@ export default function({
       }
     })
 
-    domainEmissions.forEach(domain => {
+    domainEmissions.forEach((domain) => {
       totalEmissionsVol += d[domain.id] || 0
     })
 
     // calculate vol weighted pricing
     let allMarketValueNulls = true
     if (isEnergyType) {
-      domainPrice.forEach(domain => {
+      domainPrice.forEach((domain) => {
         const id = domain.id
         const ft = domain.fuelTech
 
@@ -272,7 +272,7 @@ export default function({
     let demandEnergy = null
     if (domainDemandEnergy && domainDemandEnergy.length) {
       const demandMarketValue = d[domainDemandMarketValue[0].id]
-      domainDemandEnergy.forEach(domain => {
+      domainDemandEnergy.forEach((domain) => {
         if (!demandEnergy) {
           demandEnergy = d[domain.id]
         }
@@ -337,13 +337,13 @@ export default function({
     const volWeightedPrice = allMarketValueNulls
       ? null
       : isGigaPrefix
-        ? totalMarketValue / totalDemand / 1000
-        : totalMarketValue / totalDemand
+      ? totalMarketValue / totalDemand / 1000
+      : totalMarketValue / totalDemand
 
-    const nanCheck = value => {
+    const nanCheck = (value) => {
       return isNaN(value) ? null : value
     }
-    const validNumCheck = value => {
+    const validNumCheck = (value) => {
       return value || value === 0
     }
     const getAvValue = (value, generation) => {
@@ -355,9 +355,8 @@ export default function({
     }
 
     dataset[i]._total = totalDemand
-    dataset[
-      i
-    ]._totalEnergyForPercentageCalculation = totalEnergyForPercentageCalculation
+    dataset[i]._totalEnergyForPercentageCalculation =
+      totalEnergyForPercentageCalculation
     dataset[i]._totalRenewables = totalRenewables
 
     dataset[i]._totalDemandRenewablesPercentage = hasRenewables

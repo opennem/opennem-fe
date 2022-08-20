@@ -29,19 +29,19 @@ export const state = () => ({
 })
 
 export const getters = {
-  isHovering: state => state.isHovering,
-  hoverDate: state => state.hoverDate,
-  hoverDomain: state => state.hoverDomain,
-  highlightDomain: state => state.highlightDomain,
-  isFocusing: state => state.focusDate !== null,
-  focusDate: state => state.focusDate,
-  xTicks: state => state.xTicks,
-  xGuides: state => state.xGuides,
-  yGuides: state => state.yGuides,
-  tickFormat: state => state.tickFormat,
-  secondTickFormat: state => state.secondTickFormat,
+  isHovering: (state) => state.isHovering,
+  hoverDate: (state) => state.hoverDate,
+  hoverDomain: (state) => state.hoverDomain,
+  highlightDomain: (state) => state.highlightDomain,
+  isFocusing: (state) => state.focusDate !== null,
+  focusDate: (state) => state.focusDate,
+  xTicks: (state) => state.xTicks,
+  xGuides: (state) => state.xGuides,
+  yGuides: (state) => state.yGuides,
+  tickFormat: (state) => state.tickFormat,
+  secondTickFormat: (state) => state.secondTickFormat,
 
-  chartSummaryPie: state => state.chartSummaryPie
+  chartSummaryPie: (state) => state.chartSummaryPie
 }
 
 export const mutations = {
@@ -115,7 +115,7 @@ export const actions = {
           : (tickFormat = 'intervalMonthTimeFormat')
         break
       case INTERVAL_FINYEAR:
-        tickFormat = d => {
+        tickFormat = (d) => {
           const year = d.getFullYear() + 1 + ''
           return `FY${year.substr(2, 2)}`
         }
@@ -123,7 +123,7 @@ export const actions = {
       case INTERVAL_HALFYEAR:
       case INTERVAL_SEASON:
       case INTERVAL_QUARTER:
-        tickFormat = d => {
+        tickFormat = (d) => {
           const year = d.getFullYear() + ''
           const nextYear = d.getFullYear() + 1 + ''
           const yearStr =

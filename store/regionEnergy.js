@@ -16,8 +16,8 @@ let currentRegion = ''
 function getDataCount(responses) {
   let count = 0
   if (responses.length > 0) {
-    responses.forEach(r => {
-      r.forEach(d => {
+    responses.forEach((r) => {
+      r.forEach((d) => {
         if (d.history && d.history.data) {
           count += d.history.data.length
         }
@@ -61,38 +61,38 @@ export const state = () => ({
 })
 
 export const getters = {
-  ready: state => state.ready,
-  isFetching: state => state.isFetching,
-  isEnergyType: state => state.isEnergyType,
-  datasetFlat: state => state.datasetFlat,
-  datasetFull: state => state.datasetFull,
-  currentDataset: state => state.currentDataset,
-  changeSinceDataset: state => state.changeSinceDataset,
-  rollingDb: state => state.rollingDb,
-  domainPowerEnergy: state => state.domainPowerEnergy,
-  domainPowerEnergyGrouped: state => state.domainPowerEnergyGrouped,
-  domainEmissions: state => state.domainEmissions,
-  domainEmissionsGrouped: state => state.domainEmissionsGrouped,
-  domainMarketValue: state => state.domainMarketValue,
-  domainMarketValueGrouped: state => state.domainMarketValueGrouped,
-  domainPrice: state => state.domainPrice,
-  domainTemperature: state => state.domainTemperature,
-  domainDemandPrice: state => state.domainDemandPrice,
-  domainDemandEnergy: state => state.domainDemandEnergy,
-  domainDemandMarketValue: state => state.domainDemandMarketValue,
-  currentDomainPowerEnergy: state => state.currentDomainPowerEnergy,
-  currentDomainEmissions: state => state.currentDomainEmissions,
-  currentDomainMarketValue: state => state.currentDomainMarketValue,
-  summary: state => state.summary,
-  powerEnergyPrefix: state => state.powerEnergyPrefix,
-  dataPowerEnergyInterval: state => state.dataPowerEnergyInterval,
-  regionTimezoneString: state => state.regionTimezoneString,
-  filteredDates: state => state.filteredDates,
-  filteredCurrentDataset: state => {
+  ready: (state) => state.ready,
+  isFetching: (state) => state.isFetching,
+  isEnergyType: (state) => state.isEnergyType,
+  datasetFlat: (state) => state.datasetFlat,
+  datasetFull: (state) => state.datasetFull,
+  currentDataset: (state) => state.currentDataset,
+  changeSinceDataset: (state) => state.changeSinceDataset,
+  rollingDb: (state) => state.rollingDb,
+  domainPowerEnergy: (state) => state.domainPowerEnergy,
+  domainPowerEnergyGrouped: (state) => state.domainPowerEnergyGrouped,
+  domainEmissions: (state) => state.domainEmissions,
+  domainEmissionsGrouped: (state) => state.domainEmissionsGrouped,
+  domainMarketValue: (state) => state.domainMarketValue,
+  domainMarketValueGrouped: (state) => state.domainMarketValueGrouped,
+  domainPrice: (state) => state.domainPrice,
+  domainTemperature: (state) => state.domainTemperature,
+  domainDemandPrice: (state) => state.domainDemandPrice,
+  domainDemandEnergy: (state) => state.domainDemandEnergy,
+  domainDemandMarketValue: (state) => state.domainDemandMarketValue,
+  currentDomainPowerEnergy: (state) => state.currentDomainPowerEnergy,
+  currentDomainEmissions: (state) => state.currentDomainEmissions,
+  currentDomainMarketValue: (state) => state.currentDomainMarketValue,
+  summary: (state) => state.summary,
+  powerEnergyPrefix: (state) => state.powerEnergyPrefix,
+  dataPowerEnergyInterval: (state) => state.dataPowerEnergyInterval,
+  regionTimezoneString: (state) => state.regionTimezoneString,
+  filteredDates: (state) => state.filteredDates,
+  filteredCurrentDataset: (state) => {
     if (state.isEnergyType) {
       return state.filteredDates.length > 0
         ? state.currentDataset.filter(
-            d =>
+            (d) =>
               d.time >= state.filteredDates[0].getTime() &&
               d.time < state.filteredDates[1].getTime()
           )
@@ -100,7 +100,7 @@ export const getters = {
     } else {
       return state.filteredDates.length > 0
         ? state.currentDataset.filter(
-            d =>
+            (d) =>
               d.time >= state.filteredDates[0].getTime() &&
               d.time <= state.filteredDates[1].getTime()
           )
@@ -242,15 +242,15 @@ export const actions = {
     }
 
     return http([url])
-      .then(res => {
+      .then((res) => {
         const check = res.length > 0 ? (res[0].data ? true : false) : false
         const responses = check ? res[0].data : []
         const all = {}
 
         regions.forEach((r, i) => {
-          const cpiData = responses.find(d => d.type === 'cpi')
+          const cpiData = responses.find((d) => d.type === 'cpi')
           const filtered = responses.filter(
-            d => d.region && d.region.toLowerCase() === r.id
+            (d) => d.region && d.region.toLowerCase() === r.id
           )
           if (cpiData) {
             filtered.push(cpiData)
@@ -261,7 +261,7 @@ export const actions = {
 
         return all
       })
-      .catch(e => {
+      .catch((e) => {
         console.error('error', e)
         let header = 'Error'
         let message = ''
@@ -329,17 +329,17 @@ export const actions = {
       }
 
       return http([url])
-        .then(res => {
+        .then((res) => {
           const check = res.length > 0 ? (res[0].data ? true : false) : false
           let responses = check
-            ? res.map(d => {
+            ? res.map((d) => {
                 return d.data
               })
             : res
 
           return processResponses(responses)
         })
-        .catch(e => {
+        .catch((e) => {
           console.error('error', e)
           let header = 'Error'
           let message = ''
@@ -399,9 +399,7 @@ export const actions = {
         } = dataProcess(responses, range, interval, period, displayTz)
 
         perf.timeEnd(
-          `------ ${currentRegion} — ${range}/${interval} (${dataCount} down to ${
-            currentDataset.length
-          })`
+          `------ ${currentRegion} — ${range}/${interval} (${dataCount} down to ${currentDataset.length})`
         )
 
         console.log('domainDemandMarketValue', domainDemandMarketValue)
@@ -460,10 +458,10 @@ export const actions = {
       }
 
       return http(urls)
-        .then(res => {
+        .then((res) => {
           const check = res.length > 0 ? (res[0].data ? true : false) : false
           let responses = check
-            ? res.map(d => {
+            ? res.map((d) => {
                 return d.data
               })
             : res
@@ -475,7 +473,7 @@ export const actions = {
 
           return processResponses(responses)
         })
-        .catch(e => {
+        .catch((e) => {
           console.error('error', e)
           let header = 'Error'
           let message = ''

@@ -1,19 +1,18 @@
 <template>
-  <div 
-    ref="draggableContainer" 
-    class="draggable-container">
-    <div 
+  <div ref="draggableContainer" class="draggable-container">
+    <div
       class="draggable-header"
       @touchstart="dragStart"
       @touchend="dragEnd"
       @touchmove="drag"
       @mousedown="dragStart"
       @mouseup="dragEnd"
-      @mousemove="drag">
-      <slot name="header"/>
+      @mousemove="drag"
+    >
+      <slot name="header" />
     </div>
-    <slot name="main"/>
-    <slot name="footer"/>
+    <slot name="main" />
+    <slot name="footer" />
   </div>
 </template>
 

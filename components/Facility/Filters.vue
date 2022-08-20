@@ -12,7 +12,8 @@
 
         <p
           v-if="!tabletBreak || (tabletBreak && searchOn)"
-          class="control has-icons-left has-icons-right">
+          class="control has-icons-left has-icons-right"
+        >
           <input
             v-model="filterFacilityName"
             class="input is-small is-rounded filter-station-input"
@@ -23,13 +24,16 @@
             autocorrect="off"
             autocapitalize="off"
             spellcheck="false"
-            @keyup="handleKeyup">
+            @keyup="handleKeyup"
+          />
           <span class="icon is-small is-left">
             <i class="fal fa-search" />
           </span>
 
           <button
-            v-if="(filterFacilityName && !tabletBreak) || (tabletBreak && searchOn)"
+            v-if="
+              (filterFacilityName && !tabletBreak) || (tabletBreak && searchOn)
+            "
             class="close-button button is-rounded is-small is-dark is-inverted"
             @click="tabletBreak ? toggleSearch() : clearFilter()"
           >
@@ -41,54 +45,53 @@
       <div
         v-on-clickaway="onClickAway"
         v-if="!searchOn"
-        :class="{'is-active': techDropdownActive}"
-        class="filter-tech dropdown">
+        :class="{ 'is-active': techDropdownActive }"
+        class="filter-tech dropdown"
+      >
         <button
           :class="{ 'is-inverted': selectedTechGroups.length === 0 }"
           class="dropdown-trigger button is-rounded is-small is-primary"
-          @click="techDropdownActive = !techDropdownActive">
-          <div
-            :class="{ 'truncate': tabletBreak }"
-            class="dropdown-label"
-          >
+          @click="techDropdownActive = !techDropdownActive"
+        >
+          <div :class="{ truncate: tabletBreak }" class="dropdown-label">
             <strong>{{ techLabel }}</strong>
           </div>
           <i class="fal fa-chevron-down" />
         </button>
 
         <transition name="slide-down-fade">
-          <div
-            v-if="techDropdownActive"
-            class="dropdown-menu">
+          <div v-if="techDropdownActive" class="dropdown-menu">
             <div class="dropdown-content">
-              <div
-                v-for="(d, i) in allTechs"
-                :key="i"
-                class="dropdown-item">
+              <div v-for="(d, i) in allTechs" :key="i" class="dropdown-item">
                 <div class="item-group">
                   <span
                     class="expand-collapse"
-                    @click="handleExpandCollapseClick(d.id)">
+                    @click="handleExpandCollapseClick(d.id)"
+                  >
                     <i
                       v-if="d.fields.length > 1 && isGroupExpanded(d.id)"
-                      class="fal fa-fw fa-caret-down" />
+                      class="fal fa-fw fa-caret-down"
+                    />
                     <i
                       v-if="d.fields.length > 1 && !isGroupExpanded(d.id)"
-                      class="fal fa-fw fa-caret-right" />
+                      class="fal fa-fw fa-caret-right"
+                    />
                   </span>
                   <span @click="handleTechGroupClick(d)">
                     <span
                       :style="{
-                        backgroundColor: isGroupSelected(d.id) ? d.colour : '#fff',
+                        backgroundColor: isGroupSelected(d.id)
+                          ? d.colour
+                          : '#fff',
                         'border-color': d.colour
                       }"
-                      class="source-colour">
+                      class="source-colour"
+                    >
                       <i
                         v-if="hasSelection(d)"
-                        class="checkmark-icon fal fa-minus" />
-                      <i
-                        v-else
-                        class="checkmark-icon fal fa-check" />
+                        class="checkmark-icon fal fa-minus"
+                      />
+                      <i v-else class="checkmark-icon fal fa-check" />
                     </span>
                     {{ d.label }}
                   </span>
@@ -96,17 +99,19 @@
 
                 <div
                   v-show="d.fields.length > 1 && isGroupExpanded(d.id)"
-                  class="subitem-group">
-                  <div
-                    v-for="(field, fIndex) in d.fields"
-                    :key="fIndex">
+                  class="subitem-group"
+                >
+                  <div v-for="(field, fIndex) in d.fields" :key="fIndex">
                     <span @click="handleTechClick(d, field)">
                       <span
                         :style="{
-                          backgroundColor: isTechSelected(field) ? getTechColour(field) : '#fff',
+                          backgroundColor: isTechSelected(field)
+                            ? getTechColour(field)
+                            : '#fff',
                           'border-color': getTechColour(field)
                         }"
-                        class="source-colour">
+                        class="source-colour"
+                      >
                         <i class="checkmark-icon fal fa-check" />
                       </span>
                       {{ getTechLabel(field) }}
@@ -115,15 +120,17 @@
                 </div>
               </div>
 
-              <div
-                class="buttons"
-                style="border-top: 1px solid #eee;">
+              <div class="buttons" style="border-top: 1px solid #eee">
                 <a
                   class="button is-rounded is-small is-inverted"
-                  @click="clearSelectedTechs">Clear</a>
+                  @click="clearSelectedTechs"
+                  >Clear</a
+                >
                 <a
                   class="button is-rounded is-small is-primary is-outlined"
-                  @click="techDropdownActive = false">Close</a>
+                  @click="techDropdownActive = false"
+                  >Close</a
+                >
               </div>
             </div>
           </div>
@@ -148,7 +155,6 @@
         class="filter-size"
         @selected="handleSizesSelected"
       />
-
     </div>
   </div>
 </template>
@@ -224,7 +230,7 @@ export default {
       const techLength = this.selectedTechs.length
       if (techGroupLength === 1) {
         const find = this.simplifiedGroup.find(
-          g => g.id === this.selectedTechGroups[0]
+          (g) => g.id === this.selectedTechGroups[0]
         )
         const fieldsLength = find.fields.length
         if (fieldsLength === techLength) {
@@ -262,18 +268,20 @@ export default {
     updateSelectedTechGroups() {
       this.allTechs = []
       const groups = this.simplifiedGroup.filter(
-        g => (g.type === 'source' && g.id !== FT.IMPORTS) || g.id === FT.PUMPS
+        (g) => (g.type === 'source' && g.id !== FT.IMPORTS) || g.id === FT.PUMPS
       )
-      const findSolarGroup = groups.find(g => g.id === FACILITY_GROUP_SOLAR)
-      const findBatteryGroup = groups.find(g => g.id === FACILITY_GROUP_BATTERY)
+      const findSolarGroup = groups.find((g) => g.id === FACILITY_GROUP_SOLAR)
+      const findBatteryGroup = groups.find(
+        (g) => g.id === FACILITY_GROUP_BATTERY
+      )
 
       findSolarGroup.fields = [FT.SOLAR_UTILITY] // remove 'rooftop_solar'
       findBatteryGroup.label = 'Battery' // rename battery discharging
 
-      groups.forEach(g => {
+      groups.forEach((g) => {
         this.allTechs.push(g)
 
-        g.fields.forEach(f => {
+        g.fields.forEach((f) => {
           if (
             _includes(this.selectedTechs, f) &&
             !_includes(this.selectedTechGroups, g.id)
@@ -309,7 +317,7 @@ export default {
     hasSelection(group) {
       const fieldsLength = group.fields.length
       let fieldsSelected = 0
-      group.fields.forEach(f => {
+      group.fields.forEach((f) => {
         if (_includes(this.selectedTechs, f)) {
           fieldsSelected += 1
         }
@@ -329,14 +337,14 @@ export default {
       let selected = _cloneDeep(this.selectedTechs)
       if (isGroupIncluded) {
         this.selectedTechGroups = this.selectedTechGroups.filter(
-          d => d !== groupId
+          (d) => d !== groupId
         )
-        group.fields.forEach(f => {
-          selected = selected.filter(d => d !== f)
+        group.fields.forEach((f) => {
+          selected = selected.filter((d) => d !== f)
         })
       } else {
         this.selectedTechGroups.push(groupId)
-        group.fields.forEach(f => {
+        group.fields.forEach((f) => {
           selected.push(f)
         })
       }
@@ -346,13 +354,13 @@ export default {
       const isIncluded = _includes(this.selectedTechs, techId)
       let selected = _cloneDeep(this.selectedTechs)
       if (isIncluded) {
-        selected = selected.filter(d => d !== techId)
+        selected = selected.filter((d) => d !== techId)
       } else {
         selected.push(techId)
       }
 
       let fieldsSelected = 0
-      group.fields.forEach(f => {
+      group.fields.forEach((f) => {
         if (_includes(selected, f)) {
           fieldsSelected += 1
         }
@@ -360,7 +368,7 @@ export default {
 
       if (fieldsSelected === 0) {
         this.selectedTechGroups = this.selectedTechGroups.filter(
-          d => d !== group.id
+          (d) => d !== group.id
         )
       } else if (fieldsSelected !== 0) {
         const isGroupIncluded = _includes(this.selectedTechGroups, group.id)
@@ -373,7 +381,7 @@ export default {
     handleExpandCollapseClick(groupId) {
       const isIncluded = _includes(this.groupExpanded, groupId)
       if (isIncluded) {
-        this.groupExpanded = this.groupExpanded.filter(d => d !== groupId)
+        this.groupExpanded = this.groupExpanded.filter((d) => d !== groupId)
       } else {
         this.groupExpanded.push(groupId)
       }

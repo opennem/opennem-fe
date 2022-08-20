@@ -13,7 +13,7 @@ function startOfFinYear(date, quarter) {
   return quarter === 1 || quarter === 2 ? subYears(start, 1) : start
 }
 
-export default function(domains, data, rollUp) {
+export default function (domains, data, rollUp) {
   let isIncompleteEnd = false,
     isIncompleteStart = false,
     incompleteStartDate = null,

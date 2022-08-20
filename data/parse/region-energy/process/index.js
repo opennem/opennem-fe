@@ -21,7 +21,7 @@ import {
 
 const perfTime = new PerfTime()
 
-export default function(data, displayTz) {
+export default function (data, displayTz) {
   perfTime.time()
 
   const {
@@ -78,7 +78,7 @@ export default function(data, displayTz) {
   }
 
   let domainDemandPrice = []
-  const domainDemandEnergy = demandEnergy.map(d => {
+  const domainDemandEnergy = demandEnergy.map((d) => {
     return {
       domain: d.id,
       id: d.id,
@@ -88,7 +88,7 @@ export default function(data, displayTz) {
     }
   })
 
-  const domainDemandMarketValue = demandMarketValue.map(d => {
+  const domainDemandMarketValue = demandMarketValue.map((d) => {
     return {
       domain: d.id,
       id: d.id,

@@ -72,15 +72,15 @@ export const mutations = {
 }
 
 export const getters = {
-  title: state => state.title,
-  description: state => state.description,
+  title: (state) => state.title,
+  description: (state) => state.description,
 
-  charts: state => state.charts,
-  powerEnergy: state => state.powerEnergy,
-  emissionsVolume: state => state.emissionsVolume,
-  emissionIntensity: state => state.emissionIntensity,
-  price: state => state.price,
-  temperature: state => state.temperature
+  charts: (state) => state.charts,
+  powerEnergy: (state) => state.powerEnergy,
+  emissionsVolume: (state) => state.emissionsVolume,
+  emissionIntensity: (state) => state.emissionIntensity,
+  price: (state) => state.price,
+  temperature: (state) => state.temperature
 }
 
 export const actions = {

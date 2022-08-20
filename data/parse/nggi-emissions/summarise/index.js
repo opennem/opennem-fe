@@ -1,14 +1,14 @@
 import PerfTime from '@/plugins/perfTime.js'
 const perfTime = new PerfTime()
 
-export default function({ currentDataset, domains }) {
+export default function ({ currentDataset, domains }) {
   perfTime.time()
 
-  currentDataset.forEach(d => {
+  currentDataset.forEach((d) => {
     let totalEmissions = 0,
       allEmissionsNulls = true
 
-    domains.forEach(domain => {
+    domains.forEach((domain) => {
       const id = domain.id
       const value = d[id]
       if (value || value === 0) {

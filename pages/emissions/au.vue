@@ -1,29 +1,40 @@
 <template>
   <div class="wrapper">
-
     <div class="dataset-selection">
       <div class="buttons has-addons">
         <button
           :class="{ 'is-selected': isQuarterDatasetView }"
-          class="button" 
-          @click="handleQuarterViewSelect">Quarter</button>
+          class="button"
+          @click="handleQuarterViewSelect"
+        >
+          Quarter
+        </button>
         <button
           :class="{ 'is-selected': isYearDatasetView }"
-          class="button" 
-          @click="handleYearViewSelect">Year</button>
+          class="button"
+          @click="handleYearViewSelect"
+        >
+          Year
+        </button>
       </div>
 
       <div class="buttons">
         <button
           v-if="isYearDatasetView"
           :class="{ 'is-selected': addHistory }"
-          class="button" 
-          @click="handleHistoryToggle">History <strong>FY 1990 — 2004</strong></button>
+          class="button"
+          @click="handleHistoryToggle"
+        >
+          History <strong>FY 1990 — 2004</strong>
+        </button>
         <button
           v-if="isYearDatasetView"
           :class="{ 'is-selected': addProjections }"
-          class="button" 
-          @click="handleProjectionsToggle">Projections <strong>FY 2021 — 2030</strong></button>
+          class="button"
+          @click="handleProjectionsToggle"
+        >
+          Projections <strong>FY 2021 — 2030</strong>
+        </button>
       </div>
     </div>
 
@@ -34,11 +45,25 @@
             <span v-if="isYearDatasetView">FY</span>
             <span>
               <time>
-                {{ startDate | customFormatDate({ range: 'ALL', interval: 'Year', isStart: true }) }}
+                {{
+                  startDate
+                    | customFormatDate({
+                      range: 'ALL',
+                      interval: 'Year',
+                      isStart: true
+                    })
+                }}
               </time>
               –
               <time>
-                {{ endDate | customFormatDate({ range: 'ALL', interval: 'Year', isEnd: false }) }}
+                {{
+                  endDate
+                    | customFormatDate({
+                      range: 'ALL',
+                      interval: 'Year',
+                      isEnd: false
+                    })
+                }}
               </time>
             </span>
           </h2>
@@ -46,7 +71,9 @@
         <EmissionsChart
           v-if="dataset.length > 0"
           :emissions-dataset="dataset"
-          :emissions-projection-dataset="isYearDatasetView && addProjections ? projectionDataset : []"
+          :emissions-projection-dataset="
+            isYearDatasetView && addProjections ? projectionDataset : []
+          "
           :domain-emissions="filteredDomains"
           :range="range"
           :interval="interval"
@@ -62,7 +89,9 @@
           :show-total-line="showTotalLine"
           :use-offset-diverge="true"
           :custom-interval="'year'"
-          :incomplete-intervals="isYearDatasetView && addProjections ? projectionsInterval : []"
+          :incomplete-intervals="
+            isYearDatasetView && addProjections ? projectionsInterval : []
+          "
           :show-average-value="false"
           @dateHover="handleDateHover"
           @isHovering="handleIsHovering"
@@ -70,12 +99,11 @@
           @svgClick="handleSvgClick"
           @changeDataset="handleChangeDatasetChange"
         />
-        <div 
-          v-if="compareDifference" 
-          class="compare-chart">
-          <a 
-            class="close-button" 
-            @click.prevent="() => setCompareDifference(false)">
+        <div v-if="compareDifference" class="compare-chart">
+          <a
+            class="close-button"
+            @click.prevent="() => setCompareDifference(false)"
+          >
             <i class="fal fa-times-circle" />
           </a>
 
@@ -95,7 +123,7 @@
         :hidden="hidden"
         :dataset="filteredDataset"
         :hover-on="isHovering"
-        :hover-date="hoverDate" 
+        :hover-date="hoverDate"
         :focus-on="focusOn"
         :focus-date="focusDate"
         :show-total="showTotalLine"
@@ -108,7 +136,7 @@
         @mouseEnter="handleMouseEnter"
         @mouseLeave="handleMouseLeave"
       />
-    </div>    
+    </div>
   </div>
 </template>
 
@@ -418,7 +446,7 @@ export default {
 
       if (this.zoomExtent.length > 0) {
         return dataset.filter(
-          d => d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
+          (d) => d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
         )
       }
 
@@ -438,11 +466,11 @@ export default {
     },
 
     filteredDomains() {
-      return this.domains.filter(d => !_includes(this.hidden, d.id))
+      return this.domains.filter((d) => !_includes(this.hidden, d.id))
     },
 
     filteredDomainEmissions() {
-      return this.domainEmissions.filter(d => !_includes(this.hidden, d.id))
+      return this.domainEmissions.filter((d) => !_includes(this.hidden, d.id))
     },
 
     cardFilename() {
@@ -514,8 +542,8 @@ export default {
   },
 
   created() {
-    this.domains = domainEmissions.map(d => d)
-    this.domainEmissions = domainEmissions.map(d => d).reverse()
+    this.domains = domainEmissions.map((d) => d)
+    this.domainEmissions = domainEmissions.map((d) => d).reverse()
     this.displayTz = regionDisplayTzs['au']
     this.ranges = EMISSIONS_RANGES
     this.intervals = EMISSIONS_RANGE_INTERVALS
@@ -585,7 +613,7 @@ export default {
 
           this.updateFooterSource(json.source)
 
-          const data = jData.map(d => {
+          const data = jData.map((d) => {
             let total = 0
             const obj = {}
             const date = subMonths(parse(d.Quarter, 'MMM-yyyy', new Date()), 2)
@@ -594,7 +622,7 @@ export default {
             obj.time = obj.date.getTime()
             obj.quarter = d.Quarter
 
-            this.domainEmissions.forEach(domain => {
+            this.domainEmissions.forEach((domain) => {
               const val = parseFloat(d[domain.csvLabel])
               obj[domain.id] = val
               total += val
@@ -622,15 +650,15 @@ export default {
             interval: this.interval
           })
 
-          rolledUpData.forEach(d => {
+          rolledUpData.forEach((d) => {
             let total = 0
-            this.domainEmissions.forEach(domain => {
+            this.domainEmissions.forEach((domain) => {
               total += d[domain.id] || 0
             })
             d._total = total
           })
 
-          this.dataset = rolledUpData.filter(d =>
+          this.dataset = rolledUpData.filter((d) =>
             isAfter(d.date, this.afterDate)
           )
 
@@ -660,11 +688,11 @@ export default {
 
           const data = []
 
-          jData.forEach(d => {
+          jData.forEach((d) => {
             const domain = domainEmissionsObj[d['Sector']]
-            const years = Object.keys(d).filter(k => k !== 'Sector')
+            const years = Object.keys(d).filter((k) => k !== 'Sector')
             if (data.length === 0) {
-              years.forEach(y => {
+              years.forEach((y) => {
                 const obj = {
                   year: parseInt(y, 10)
                 }
@@ -672,20 +700,20 @@ export default {
                 data.push(obj)
               })
             } else {
-              years.forEach(y => {
-                const find = data.find(d => d.year === parseInt(y, 10))
+              years.forEach((y) => {
+                const find = data.find((d) => d.year === parseInt(y, 10))
                 find[domain.id] = parseFloat(d[y])
               })
             }
           })
 
-          data.forEach(d => {
+          data.forEach((d) => {
             let total = 0
             const date = parse(d.year, 'yyyy', new Date())
             d.date = date
             d.time = date.getTime()
 
-            this.domainEmissions.forEach(domain => {
+            this.domainEmissions.forEach((domain) => {
               const val = parseFloat(d[domain.id])
               total += val
             })
@@ -696,10 +724,10 @@ export default {
           this.range = RANGE_ALL
           this.interval = INTERVAL_YEAR
           this.yearlyDataset = data.filter(
-            d => d.year >= 2005 && d.year <= 2020
+            (d) => d.year >= 2005 && d.year <= 2020
           )
-          this.historyDataset = data.filter(d => d.year <= 2004)
-          this.projectionDataset = data.filter(d => d.year >= 2021)
+          this.historyDataset = data.filter((d) => d.year <= 2004)
+          this.projectionDataset = data.filter((d) => d.year >= 2021)
 
           if (this.addHistory) {
             this.dataset = [...this.historyDataset, ...this.yearlyDataset]
@@ -737,7 +765,7 @@ export default {
 
       const y = timeYear.every(years)
       const formatYear = timeFormat('%Y')
-      const format = date => formatYear(date)
+      const format = (date) => formatYear(date)
       this.setXTicks(y)
       this.setXGuides([])
       this.setTickFormat(format)
@@ -794,8 +822,8 @@ export default {
     },
 
     handleTypeShiftClick(id) {
-      const toBeHidden = this.domainEmissions.filter(d => d.id !== id)
-      this.hidden = toBeHidden.map(d => d.id)
+      const toBeHidden = this.domainEmissions.filter((d) => d.id !== id)
+      this.hidden = toBeHidden.map((d) => d.id)
     },
 
     handleTotalClick() {
@@ -804,7 +832,7 @@ export default {
     handleTotalShiftClick() {},
 
     getDataByTime(dataset, time) {
-      return dataset.find(d => d.time === time)
+      return dataset.find((d) => d.time === time)
     },
 
     handleSvgClick(metaKey) {
@@ -831,7 +859,7 @@ export default {
           let newCompare = false
           let compareDates = this.compareDates.slice()
           if (compareDates.length === 2) {
-            const newCompareDates = compareDates.filter(d => d !== hoverTime)
+            const newCompareDates = compareDates.filter((d) => d !== hoverTime)
             if (newCompareDates.length === 1) {
               compareDates = newCompareDates
               newCompare = true
@@ -840,7 +868,7 @@ export default {
             }
           }
           if (compareDates.length < 2 && !newCompare) {
-            const newCompareDates = compareDates.filter(d => d !== hoverTime)
+            const newCompareDates = compareDates.filter((d) => d !== hoverTime)
             if (newCompareDates.length === 0) {
               compareDates = newCompareDates
             } else {

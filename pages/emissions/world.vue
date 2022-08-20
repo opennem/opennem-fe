@@ -1,6 +1,5 @@
 <template>
   <div class="wrapper">
-
     <div class="chart-table">
       <div class="chart-wrapper">
         <EmissionsChart
@@ -24,9 +23,7 @@
           @zoomExtent="handleZoomExtent"
         />
 
-        <div 
-          v-if="compareDifference" 
-          class="compare-chart">          
+        <div v-if="compareDifference" class="compare-chart">
           <CompareChart
             :compare-data="compareData"
             :domains="filteredDisplayDomains"
@@ -54,7 +51,6 @@
         @mouseLeave="handleMouseLeave"
       />
     </div>
-    
   </div>
 </template>
 
@@ -251,10 +247,10 @@ export default {
     },
 
     filteredDomains() {
-      return this.domains.filter(d => !_includes(this.hidden, d.id))
+      return this.domains.filter((d) => !_includes(this.hidden, d.id))
     },
     filteredDisplayDomains() {
-      return this.displayDomains.filter(d => !_includes(this.hidden, d.id))
+      return this.displayDomains.filter((d) => !_includes(this.hidden, d.id))
     }
   },
 
@@ -318,7 +314,7 @@ export default {
 
       try {
         this.checkQueryRangeIsCorrect(range)
-        range.forEach(e => this.checkYearIsWithinRange(e))
+        range.forEach((e) => this.checkYearIsWithinRange(e))
         this.zoomExtent = [
           new Date(range[0], 0, 1),
           addYears(new Date(range[1], 0, 1), 1)
@@ -389,13 +385,13 @@ export default {
 
     getFilteredDataObj(categories) {
       const data = this.emissionsData.filter(
-        d =>
+        (d) =>
           _includes(this.showAreas, d.area) && _includes(categories, d.category)
       )
 
       const emissionsDataObj = {}
 
-      data.forEach(d => {
+      data.forEach((d) => {
         emissionsDataObj[d.area] = d
       })
 
@@ -405,12 +401,12 @@ export default {
     generateDatasetWithCategory(categories) {
       const dataset = []
       const filteredDataObj = this.getFilteredDataObj(categories)
-      const getArea = code => {
-        const find = this.areaCodes.find(a => a.code === code)
+      const getArea = (code) => {
+        const find = this.areaCodes.find((a) => a.code === code)
         return find ? find : ''
       }
 
-      this.years.forEach(y => {
+      this.years.forEach((y) => {
         const date = new Date(parseInt(y, 10), 0, 1)
         const time = date.getTime()
         const obj = {
@@ -418,7 +414,7 @@ export default {
           time
         }
 
-        this.showAreas.forEach(a => {
+        this.showAreas.forEach((a) => {
           obj[a] = filteredDataObj[a][y]
         })
 
@@ -448,30 +444,30 @@ export default {
       codeDict,
       alpha2AreaDict
     }) {
-      const emissionsAreas = _uniq(emissions.map(d => d.area)).sort()
+      const emissionsAreas = _uniq(emissions.map((d) => d.area)).sort()
       const areaCodes = {}
-      const getFlagEmoji = countryCode => {
+      const getFlagEmoji = (countryCode) => {
         if (countryCode) {
           const codePoints = countryCode
             .toUpperCase()
             .split('')
-            .map(char => 127397 + char.charCodeAt())
+            .map((char) => 127397 + char.charCodeAt())
           return String.fromCodePoint(...codePoints)
         }
         return ''
       }
 
-      emissionsAreas.forEach(a => {
+      emissionsAreas.forEach((a) => {
         areaCodes[a] = codeDict[a]
       })
 
       const areaCodeValues = Object.values(areaCodes)
-        .filter(c => c)
+        .filter((c) => c)
         .sort()
 
       // check show areas
       const showAreas = []
-      this.showAreas.forEach(a => {
+      this.showAreas.forEach((a) => {
         if (areaCodes[a]) {
           showAreas.push(a)
         }
@@ -479,7 +475,7 @@ export default {
       this.showAreas = showAreas
 
       // update area codes
-      this.areaCodes = areaCodeValues.map(c => {
+      this.areaCodes = areaCodeValues.map((c) => {
         const flag = getFlagEmoji(alpha2AreaDict[c])
         return {
           code: areaDict[c],
@@ -493,11 +489,11 @@ export default {
     getData() {
       this.ready = false
 
-      this.getCategories().then(categories => {
+      this.getCategories().then((categories) => {
         this.categories = categories
 
         this.getAreaCodes().then(({ areaDict, codeDict, alpha2AreaDict }) => {
-          this.getEmissions().then(emissions => {
+          this.getEmissions().then((emissions) => {
             this.emissionsData = emissions
             this.updateAreaCodesAndCheckShowAreaCodes({
               emissions,
@@ -520,7 +516,7 @@ export default {
 
       return this.$axios
         .get(url, { headers: { 'Content-Type': 'text/csv' } })
-        .then(res => {
+        .then((res) => {
           const csvData = Papa.parse(res.data, { header: true })
           return csvData.data
         })
@@ -533,19 +529,19 @@ export default {
 
       return this.$axios
         .get(url, { headers: { 'Content-Type': 'text/csv' } })
-        .then(res => {
+        .then((res) => {
           const csvData = Papa.parse(res.data, { header: true })
           const codeDict = {}
           const alpha2AreaDict = {}
           const areaDict = {}
 
-          csvData.data.forEach(d => {
+          csvData.data.forEach((d) => {
             codeDict[d['alpha-3-code'].trim()] = d.country.trim()
             areaDict[d.country.trim()] = d['alpha-3-code'].trim()
             alpha2AreaDict[d.country.trim()] = d['alpha-2-code'].trim()
           })
 
-          extraAreaCodes.forEach(a => {
+          extraAreaCodes.forEach((a) => {
             codeDict[a.code] = a.area
             areaDict[a.area] = a.code
             alpha2AreaDict[a.area] = a.alpha2code
@@ -569,12 +565,12 @@ export default {
 
       return this.$axios
         .get(url, { headers: { 'Content-Type': 'text/csv' } })
-        .then(res => {
+        .then((res) => {
           const csvData = Papa.parse(res.data, { header: true })
 
           let years = []
 
-          Object.keys(csvData.data[0]).forEach(d => {
+          Object.keys(csvData.data[0]).forEach((d) => {
             if (d !== keyArea && d !== keyCategory) {
               years.push(d)
             }
@@ -582,10 +578,10 @@ export default {
 
           this.years = years.sort()
 
-          return csvData.data.map(d => {
+          return csvData.data.map((d) => {
             const data = { ...d }
 
-            this.years.forEach(y => {
+            this.years.forEach((y) => {
               // convert to mega
               data[y] = d[y] / 1000
             })
@@ -613,7 +609,7 @@ export default {
 
       const y = timeYear.every(years)
       const formatYear = timeFormat('%Y')
-      const format = date => formatYear(date)
+      const format = (date) => formatYear(date)
       this.setXTicks(y)
       this.setXGuides([])
       this.setTickFormat(format)
@@ -660,8 +656,8 @@ export default {
       const lastPoint = this.dataset[this.dataset.length - 1]
 
       this.compareDifference = true
-      const getDataByTime = date =>
-        this.dataset.find(d => d.time === date.getTime())
+      const getDataByTime = (date) =>
+        this.dataset.find((d) => d.time === date.getTime())
 
       setTimeout(() => {
         let secondComparePoint = null
@@ -696,8 +692,8 @@ export default {
     },
 
     handleTypeShiftClick(id) {
-      const toBeHidden = this.domains.filter(d => d.id !== id)
-      this.hidden = toBeHidden.map(d => d.id)
+      const toBeHidden = this.domains.filter((d) => d.id !== id)
+      this.hidden = toBeHidden.map((d) => d.id)
     },
 
     handleCodeAdd(code) {
@@ -707,13 +703,13 @@ export default {
 
     handleCodeRemove(code) {
       if (this.showAreas.length !== 1) {
-        this.showAreas = this.showAreas.filter(a => a !== code)
+        this.showAreas = this.showAreas.filter((a) => a !== code)
         this.updateQueries()
       }
     },
 
     updateQueries() {
-      const getYear = date => {
+      const getYear = (date) => {
         return date.getFullYear()
       }
 

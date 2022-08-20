@@ -1,8 +1,6 @@
 <template>
   <chart-header :chart-shown="chartShown">
-    <template
-      v-slot:options
-      v-if="!readOnly">
+    <template v-slot:options v-if="!readOnly">
       <chart-options
         :options="options"
         :si="options.si"
@@ -10,29 +8,25 @@
         :chart-curve="chartCurve"
         :chart-shown="chartShown"
         :show="showChartOptions"
-        @show-change="s => showChartOptions = s"
+        @show-change="(s) => (showChartOptions = s)"
         @type-click="handleTypeClick"
-        @curve-click="handleCurveClick"/>
+        @curve-click="handleCurveClick"
+      />
     </template>
 
     <template v-slot:label-unit>
       <strong>Temperature</strong>
       <small v-if="chartShown">°C</small>
     </template>
-    <template
-      v-slot:average-value
-      v-if="!readOnly">
+    <template v-slot:average-value v-if="!readOnly">
       Av.
-      <strong>
-        {{ averageTemperature | formatValue }}°C
-      </strong>
+      <strong> {{ averageTemperature | formatValue }}°C </strong>
     </template>
     <template v-slot:hover-date>
       {{ hoverDisplayDate }}
     </template>
     <template v-slot:hover-values>
-      <span
-        v-if="hoverMinTemperature">
+      <span v-if="hoverMinTemperature">
         Min
         <strong>{{ hoverMinTemperature | formatValue }}°C</strong>
       </span>
@@ -40,8 +34,7 @@
         Av
         <strong>{{ hoverMeanTemperature | formatValue }}°C</strong>
       </span>
-      <span
-        v-if="hoverMaxTemperature">
+      <span v-if="hoverMaxTemperature">
         Max
         <strong>{{ hoverMaxTemperature | formatValue }}°C</strong>
       </span>

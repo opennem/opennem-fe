@@ -8,8 +8,7 @@ if (typeof window !== 'undefined') {
   host = window.location.host
   if (host === 'opennem.org.au') {
     client = new BrowserClient({
-      dsn:
-        'https://c89c945a3c14478f9df55a65ddb1fbae@o402615.ingest.sentry.io/5265226'
+      dsn: 'https://c89c945a3c14478f9df55a65ddb1fbae@o402615.ingest.sentry.io/5265226'
     })
   }
 }
@@ -54,10 +53,10 @@ function fetchJSON(ref) {
   return new Promise((resolve, reject) => {
     http
       .get(ref)
-      .then(data => {
+      .then((data) => {
         resolve(data)
       })
-      .catch(e => {
+      .catch((e) => {
         const error = e.toJSON()
         const message = `fetch ${error.config.url} error: ${error.message}`
         if (client) {
@@ -69,15 +68,15 @@ function fetchJSON(ref) {
   })
 }
 
-export default function(ref) {
+export default function (ref) {
   return new Promise((resolve, reject) => {
-    const calls = ref.map(r => fetchJSON(r))
+    const calls = ref.map((r) => fetchJSON(r))
     axios
       .all(calls)
       .then(
         axios.spread((...args) => {
           const updated = []
-          args.forEach(a => {
+          args.forEach((a) => {
             if (a.status !== 200) {
               reject(a.originalError)
             } else {
@@ -87,7 +86,7 @@ export default function(ref) {
           resolve(updated)
         })
       )
-      .catch(e => {
+      .catch((e) => {
         reject(e)
       })
   })

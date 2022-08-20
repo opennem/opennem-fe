@@ -2,15 +2,14 @@
   <div
     v-on-clickaway="onClickAway"
     :class="{ 'is-active': dropdownActive }"
-    class="dropdown">
+    class="dropdown"
+  >
     <button
       :class="{ 'is-inverted': selected.length === 0 }"
       class="dropdown-trigger button is-small is-rounded is-primary"
       @click="dropdownActive = !dropdownActive"
     >
-      <div
-        :class="{ 'truncate': tabletBreak }"
-        class="dropdown-label">
+      <div :class="{ truncate: tabletBreak }" class="dropdown-label">
         <strong>{{ getLabel(selected) }}</strong>
       </div>
       <i class="fal fa-chevron-down" />
@@ -20,7 +19,8 @@
       <div
         v-if="dropdownActive"
         :class="{ 'align-right': alignRightMenu }"
-        class="dropdown-menu">
+        class="dropdown-menu"
+      >
         <div class="dropdown-content">
           <a
             v-for="(d, index) in selections"
@@ -29,9 +29,7 @@
             @click="handleClick(d.id)"
           >
             <span class="selection-checkbox">
-              <i
-                v-if="isSelected(d.id)"
-                class="checkmark-icon fal fa-check" />
+              <i v-if="isSelected(d.id)" class="checkmark-icon fal fa-check" />
             </span>
             {{ d.label }}
           </a>
@@ -39,14 +37,18 @@
           <div class="buttons">
             <a
               class="button is-rounded is-small is-inverted"
-              @click="clearSelected">Clear</a>
+              @click="clearSelected"
+              >Clear</a
+            >
             <a
               class="button is-rounded is-small is-primary is-outlined"
-              @click="dropdownActive = false">Close</a>
+              @click="dropdownActive = false"
+              >Close</a
+            >
           </div>
         </div>
       </div>
-    </transition> 
+    </transition>
   </div>
 </template>
 
@@ -113,7 +115,7 @@ export default {
       const isIncluded = _includes(this.selected, val)
       let selected = _cloneDeep(this.selected)
       if (isIncluded) {
-        selected = this.selected.filter(d => d !== val)
+        selected = this.selected.filter((d) => d !== val)
       } else {
         selected.push(val)
       }
@@ -125,7 +127,7 @@ export default {
     getLabel(selected) {
       const name = this.name
       if (selected.length === 1) {
-        return this.selections.find(s => s.id === selected[0]).label
+        return this.selections.find((s) => s.id === selected[0]).label
       } else if (selected.length > 0) {
         return `${name} (${selected.length})`
       } else {

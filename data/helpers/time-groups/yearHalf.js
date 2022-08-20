@@ -32,7 +32,7 @@ function startOfHalfYear(date, halfYearStartMonth) {
   return set(date, { month: halfYearStartMonth, date: 1 })
 }
 
-export default function(domains, data, rollUp) {
+export default function (domains, data, rollUp) {
   let isIncompleteEnd = false,
     isIncompleteStart = false,
     incompleteStartDate = null,

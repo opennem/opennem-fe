@@ -6,9 +6,9 @@ let emptyIdCount = 0
 
 function transformFacilityData(data) {
   const stationIds = Object.keys(data)
-  const stations = stationIds.map(d => data[d])
+  const stations = stationIds.map((d) => data[d])
 
-  return stations.map(d => {
+  return stations.map((d) => {
     const stationId = d.station_id || ''
     let regionId = d.region_id.toLowerCase() || ''
     const location = d.location || null
@@ -34,7 +34,7 @@ function transformFacilityData(data) {
       regionId = 'wem'
     }
 
-    duidKeys.forEach(unitName => {
+    duidKeys.forEach((unitName) => {
       const unit = d.duid_data[unitName]
       const regCap = unit.registered_capacity
       let fuelTech = unit.fuel_tech
@@ -113,7 +113,7 @@ function transformV3FacilityData(data) {
   const retiredCount = []
   const noStatusCount = []
 
-  const transformed = data.map(d => {
+  const transformed = data.map((d) => {
     const props = d.properties
     const geo = d.geometry
     let hasLocation = true
@@ -156,7 +156,7 @@ function transformV3FacilityData(data) {
     const facilityId = props.facility_id
     let generatorCap = 0
 
-    dispatchUnits.forEach(unit => {
+    dispatchUnits.forEach((unit) => {
       const regCap = unit.capacity_registered
       const fuelTech = unit.fuel_tech
       const unitStatus = unit.status
@@ -222,7 +222,7 @@ function transformV3FacilityData(data) {
       }
     })
 
-    const regions = _uniq(unitNetworkRegions).filter(r => r && r !== 'SNOWY1')
+    const regions = _uniq(unitNetworkRegions).filter((r) => r && r !== 'SNOWY1')
     const regionId = regions[0] ? regions[0].toLowerCase() : ''
     return {
       stationId,
@@ -263,7 +263,7 @@ function transformV3FacilityData(data) {
 
 export default {
   flatten(data) {
-    const promise = new Promise(resolve => {
+    const promise = new Promise((resolve) => {
       let flatData = transformFacilityData(data)
       resolve(flatData)
     })
@@ -272,7 +272,7 @@ export default {
   },
 
   flattenV3(data) {
-    const promise = new Promise(resolve => {
+    const promise = new Promise((resolve) => {
       let flatData = transformV3FacilityData(data)
       resolve(flatData)
     })

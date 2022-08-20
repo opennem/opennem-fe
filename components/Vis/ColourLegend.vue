@@ -1,9 +1,5 @@
 <template>
-  <svg
-    :id="id"
-    :height="svgHeight"
-    :width="svgWidth"
-    class="colour-legend" />
+  <svg :id="id" :height="svgHeight" :width="svgWidth" class="colour-legend" />
 </template>
 
 <script>
@@ -42,15 +38,15 @@ function rampHorizontal(x, color, height) {
       .attr('xlink:href', canvas.toDataURL())
   }
 
-  ramp.position = function(_) {
+  ramp.position = function (_) {
     return arguments.length ? ((x = _), ramp) : x
   }
 
-  ramp.color = function(_) {
+  ramp.color = function (_) {
     return arguments.length ? ((color = _), ramp) : color
   }
 
-  ramp.size = function(_) {
+  ramp.size = function (_) {
     return arguments.length ? ((size = +_), ramp) : size
   }
 
@@ -167,12 +163,12 @@ export default {
 
     drawRamp(svg, colour, x) {
       const self = this
-      const value = d => {
+      const value = (d) => {
         return typeof this.multiplier === 'string'
           ? d
           : d * this.multiplier - this.offset
       }
-      const label = d => {
+      const label = (d) => {
         return this.colourDomainLabel.length > 0
           ? this.colourDomainLabel[d]
           : `${value(d)}${this.unit}`
@@ -197,7 +193,7 @@ export default {
           `translate(0,${this.svgHeight - this.margin.bottom})`
         )
         .call(rampHorizontal(x, colour, this.svgHeight))
-        .on('mousemove touchmove', function() {
+        .on('mousemove touchmove', function () {
           const m = mouse(this)
           const xValue = x.invert(m[0])
           const text = numFormat(self.tooltipFormat)(value(xValue))
@@ -222,7 +218,7 @@ export default {
         .call(
           axisBottom(x)
             .ticks(2)
-            .tickFormat(d => label(d))
+            .tickFormat((d) => label(d))
         )
       svg.select('path.domain').remove()
 
@@ -257,7 +253,7 @@ export default {
       const x = scaleBand()
         .range([marginLeft, this.svgWidth - this.margin.right])
         .domain(this.colourDomain)
-      const label = d => {
+      const label = (d) => {
         return this.colourDomainLabel ? this.colourDomainLabel[d] : d
       }
 
@@ -270,16 +266,16 @@ export default {
       $swatchGroup
         .enter()
         .append('rect')
-        .attr('x', d => x(d))
+        .attr('x', (d) => x(d))
         .attr('y', 0)
         .attr('width', width / length)
         .attr('height', height)
-        .style('fill', d => colour(d))
+        .style('fill', (d) => colour(d))
 
       $swatchGroup
         .enter()
         .append('text')
-        .attr('x', d => x(d) + width / length / 2)
+        .attr('x', (d) => x(d) + width / length / 2)
         .attr('y', height * 2)
         .text((d, i) => label(i))
         .style('font-size', `${this.fontSize}px`)

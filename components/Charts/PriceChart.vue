@@ -4,7 +4,8 @@
       'is-hovered': hoverOn || focusOn,
       'has-border-bottom': !chartShown
     }"
-    class="chart">
+    class="chart"
+  >
     <price-chart-options
       :read-only="readOnly"
       :options="options"
@@ -231,7 +232,7 @@ export default {
         return null
       }
       const time = date.getTime()
-      return this.priceDataset.find(d => d.time === time)
+      return this.priceDataset.find((d) => d.time === time)
     },
     hoverValue() {
       return this.hoverData ? this.hoverData[this.priceDomain] : null

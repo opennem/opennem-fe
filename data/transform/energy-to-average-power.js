@@ -5,7 +5,7 @@ import DateDisplay from '@/services/DateDisplay.js'
 import * as SI from '@/constants/si.js'
 
 // assume average power is MW
-export default function({
+export default function ({
   data,
   domains,
   range,
@@ -22,7 +22,7 @@ export default function({
       time: d.time,
       _isIncompleteBucket: d._isIncompleteBucket
     }
-    const getDiff = date => {
+    const getDiff = (date) => {
       const last = subMonths(date, 12)
       return differenceInSeconds(date, last)
     }
@@ -39,7 +39,7 @@ export default function({
     let totalPower = 0
     let allNulls = true
 
-    domains.forEach(domain => {
+    domains.forEach((domain) => {
       // convert energy to average power
       const value = d[domain.id]
 
@@ -62,10 +62,10 @@ export default function({
     return obj
   })
 
-  dataset.forEach(p => {
+  dataset.forEach((p) => {
     let min = 0,
       max = 0
-    domains.forEach(domain => {
+    domains.forEach((domain) => {
       const id = domain.id
 
       if (p[id] < min) {

@@ -11,14 +11,20 @@
             {{ d.label }}
           </option> -->
 
-          <option
-            v-if="featureEmissions"
-            value="carbonIntensity">Carbon intensity</option>
-          <option value="netInterconnectorFlow">Net interconnector flow (of demand)</option>
+          <option v-if="featureEmissions" value="carbonIntensity">
+            Carbon intensity
+          </option>
+          <option value="netInterconnectorFlow">
+            Net interconnector flow (of demand)
+          </option>
 
           <optgroup label="Proportion">
-            <option value="renewablesProportion">Renewables proportion (of demand)</option>
-            <option value="solarProportion">Solar proportion (of demand)</option>
+            <option value="renewablesProportion">
+              Renewables proportion (of demand)
+            </option>
+            <option value="solarProportion">
+              Solar proportion (of demand)
+            </option>
             <option value="windProportion">Wind proportion (of demand)</option>
             <option value="gasProportion">Gas proportion (of demand)</option>
             <option value="coalProportion">Coal proportion (of demand)</option>
@@ -31,7 +37,9 @@
             <option value="gasValue">Gas value</option>
             <option value="coalValue">Coal value</option>
             <option value="price">Volume-weighted price</option>
-            <option value="inflatedPrice">Volume-weighted price (inflation adjusted)</option>
+            <option value="inflatedPrice">
+              Volume-weighted price (inflation adjusted)
+            </option>
           </optgroup>
 
           <optgroup label="Temperature">
@@ -64,15 +72,9 @@
         class="colour-legend"
       />
 
-      <div
-        v-if="useHover"
-        class="hover-metric-wrapper">
-        <HoverMetric
-          v-if="showHover"
-          :hover-display="hoverDisplay"
-        />
+      <div v-if="useHover" class="hover-metric-wrapper">
+        <HoverMetric v-if="showHover" :hover-display="hoverDisplay" />
       </div>
-
     </div>
   </div>
 </template>
@@ -140,7 +142,7 @@ export default {
       if (this.featureEmissions) {
         return metrics
       }
-      return metrics.filter(d => d.value !== 'carbonIntensity')
+      return metrics.filter((d) => d.value !== 'carbonIntensity')
     }
   }
 }

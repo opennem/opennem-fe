@@ -125,22 +125,22 @@ export const mutations = {
 }
 
 export const getters = {
-  hostEnv: state => state.hostEnv,
-  currentView: state => state.currentView,
-  nemLength: state => state.nem.length,
-  nemData: state => state.nem,
-  fuelTechMeta: state => state.fuelTechMeta,
-  fuelTechNames: state => state.fuelTechNames,
-  fuelTechGroupName: state => state.fuelTechGroupName,
-  fuelTechOrder: state => state.fuelTechOrder,
-  hiddenFuelTechs: state => state.hiddenFuelTechs,
-  energyDomains: state => state.energyDomains,
-  emissionDomains: state => state.emissionDomains,
-  priceDomains: state => state.priceDomains,
-  temperatureDomains: state => state.temperatureDomains,
-  marketValueDomains: state => state.marketValueDomains,
-  range: state => state.range,
-  energyCurveType: state => {
+  hostEnv: (state) => state.hostEnv,
+  currentView: (state) => state.currentView,
+  nemLength: (state) => state.nem.length,
+  nemData: (state) => state.nem,
+  fuelTechMeta: (state) => state.fuelTechMeta,
+  fuelTechNames: (state) => state.fuelTechNames,
+  fuelTechGroupName: (state) => state.fuelTechGroupName,
+  fuelTechOrder: (state) => state.fuelTechOrder,
+  hiddenFuelTechs: (state) => state.hiddenFuelTechs,
+  energyDomains: (state) => state.energyDomains,
+  emissionDomains: (state) => state.emissionDomains,
+  priceDomains: (state) => state.priceDomains,
+  temperatureDomains: (state) => state.temperatureDomains,
+  marketValueDomains: (state) => state.marketValueDomains,
+  range: (state) => state.range,
+  energyCurveType: (state) => {
     switch (state.range) {
       case '1D':
       case '3D':
@@ -150,7 +150,7 @@ export const getters = {
         return 'step'
     }
   },
-  step: state => {
+  step: (state) => {
     switch (state.range) {
       case '1D':
       case '3D':
@@ -160,7 +160,7 @@ export const getters = {
         return true
     }
   },
-  energyChartType: state => {
+  energyChartType: (state) => {
     switch (state.range) {
       case '1D':
       case '3D':
@@ -170,7 +170,7 @@ export const getters = {
         return 'energy'
     }
   },
-  chartUnit: state => {
+  chartUnit: (state) => {
     switch (state.range) {
       case '1D':
       case '3D':
@@ -180,26 +180,26 @@ export const getters = {
         return ' GWh'
     }
   },
-  interval: state => state.interval,
-  dateFilter: state => state.dateFilter,
-  exportData: state => state.exportData,
-  facilityExportData: state => state.facilityExportData,
-  responsiveBreakWidth: state => state.responsiveBreakWidth,
-  exportAttribution: state => state.exportAttribution,
+  interval: (state) => state.interval,
+  dateFilter: (state) => state.dateFilter,
+  exportData: (state) => state.exportData,
+  facilityExportData: (state) => state.facilityExportData,
+  responsiveBreakWidth: (state) => state.responsiveBreakWidth,
+  exportAttribution: (state) => state.exportAttribution,
 
-  showSummaryColumn: state => state.showSummaryColumn,
-  filterPeriod: state => state.filterPeriod,
-  compareDifference: state => state.compareDifference,
-  focusOn: state => state.focusOn,
-  compareDates: state => state.compareDates,
-  drawer: state => state.drawer,
+  showSummaryColumn: (state) => state.showSummaryColumn,
+  filterPeriod: (state) => state.filterPeriod,
+  compareDifference: (state) => state.compareDifference,
+  focusOn: (state) => state.focusOn,
+  compareDates: (state) => state.compareDates,
+  drawer: (state) => state.drawer,
 
-  percentContributionTo: state => state.percentContributionTo,
-  isContributionDemand: state => state.percentContributionTo === 'demand',
-  isContributionGeneration: state =>
+  percentContributionTo: (state) => state.percentContributionTo,
+  isContributionDemand: (state) => state.percentContributionTo === 'demand',
+  isContributionGeneration: (state) =>
     state.percentContributionTo === 'generation',
 
-  displayTimeZone: state => state.displayTimeZone
+  displayTimeZone: (state) => state.displayTimeZone
 }
 
 export const actions = {

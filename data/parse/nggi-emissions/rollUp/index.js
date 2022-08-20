@@ -4,9 +4,9 @@ import timeGroups from '@/data/helpers/time-groups'
 function reducer(a, domains) {
   let obj = {}
   let allNulls = true
-  domains.forEach(domain => {
+  domains.forEach((domain) => {
     const id = domain.id
-    const total = sum(a, d => {
+    const total = sum(a, (d) => {
       const value = d[id]
       if (value || value === 0) {
         allNulls = false
@@ -27,7 +27,11 @@ function rollUp(
   incompleteStartDate,
   incompleteEndDate
 ) {
-  const entries = rollups(data, v => reducer(v, domains), d => d._rollUpDate)
+  const entries = rollups(
+    data,
+    (v) => reducer(v, domains),
+    (d) => d._rollUpDate
+  )
   return entries.map((e, i) => {
     const object = {
       time: e[0],
@@ -35,7 +39,7 @@ function rollUp(
       _isIncompleteBucket: false
     }
 
-    Object.keys(e[1]).forEach(k => {
+    Object.keys(e[1]).forEach((k) => {
       object[k] = e[1][k]
     })
 
@@ -52,7 +56,7 @@ function rollUp(
   })
 }
 
-export default function({ domains, datasetFlat, interval }) {
+export default function ({ domains, datasetFlat, interval }) {
   return timeGroups({
     domains,
     datasetFlat,

@@ -80,12 +80,12 @@ export function getEnergyRegions() {
 }
 
 export function getEnergyRegionLabel(id) {
-  const find = EnergyRegions.find(r => r.id === id)
+  const find = EnergyRegions.find((r) => r.id === id)
   return find ? find.label : ''
 }
 
 export function isValidRegion(id) {
   // if (id === ENERGY_AU) return false
-  const find = EnergyRegions.find(r => r.id === id)
+  const find = EnergyRegions.find((r) => r.id === id)
   return find ? true : false
 }

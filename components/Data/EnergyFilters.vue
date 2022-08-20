@@ -1,10 +1,6 @@
 <template>
   <div>
-    <Dropdown
-      :options="rangeOptions"
-      class="dropdown"
-      @change="handleChange"
-    />
+    <Dropdown :options="rangeOptions" class="dropdown" @change="handleChange" />
     <Dropdown
       :options="intervalOptions"
       class="dropdown"

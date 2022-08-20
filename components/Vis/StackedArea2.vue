@@ -11,13 +11,12 @@
       :width="svgWidth"
       :height="svgHeight"
       :id="id"
-      class="stacked-area-chart">
+      class="stacked-area-chart"
+    >
       <defs>
         <!-- where to clip -->
         <clipPath :id="`${id}-clip`">
-          <rect
-            :width="width"
-            :height="height"/>
+          <rect :width="width" :height="height" />
         </clipPath>
 
         <pattern
@@ -25,22 +24,18 @@
           width="4"
           height="4"
           patternUnits="userSpaceOnUse"
-          patternTransform="rotate(45)">
-          <line
-            stroke="rgba(236, 233, 230, 0.4)"
-            stroke-width="2px"
-            y2="10" />
+          patternTransform="rotate(45)"
+        >
+          <line stroke="rgba(236, 233, 230, 0.4)" stroke-width="2px" y2="10" />
         </pattern>
         <pattern
           :id="`${id}-incomplete-period-pattern-2`"
           width="3"
           height="3"
           patternUnits="userSpaceOnUse"
-          patternTransform="rotate(45)">
-          <line
-            stroke="rgba(199, 69, 35, 0.4)"
-            stroke-width="2px"
-            y2="10" />
+          patternTransform="rotate(45)"
+        >
+          <line stroke="rgba(199, 69, 35, 0.4)" stroke-width="2px" y2="10" />
         </pattern>
 
         <filter id="shadow">
@@ -48,7 +43,8 @@
             dx="0"
             dy="0"
             stdDeviation="0.5"
-            flood-color="rgba(0, 0, 0, 0.5)" />
+            flood-color="rgba(0, 0, 0, 0.5)"
+          />
         </filter>
 
         <marker
@@ -57,17 +53,17 @@
           markerHeight="8"
           refX="7"
           refY="4"
-          orient="auto">
-          <polygon
-            points="0 0, 8 4, 0 8"
-            fill="darkred" />
+          orient="auto"
+        >
+          <polygon points="0 0, 8 4, 0 8" fill="darkred" />
         </marker>
       </defs>
 
       <g
         :transform="gTransform"
         :class="{ 'hide-x-axis-labels': !showXAxis }"
-        class="axis-line-group">
+        class="axis-line-group"
+      >
         <g class="x-guides-group" />
 
         <!-- x and y axis ticks/lines/text -->
@@ -81,29 +77,25 @@
         <g
           v-if="showXAxis && brush && !readOnly"
           :transform="xAxisBrushTransform"
-          class="x-axis-brush-group" />
+          class="x-axis-brush-group"
+        />
       </g>
 
-      <g
-        :transform="gTransform">
+      <g :transform="gTransform">
         <!-- hover layer to read interaction movements -->
         <g :class="hoverLayerClass">
-          <rect
-            :width="width"
-            :height="height"/>
+          <rect :width="width" :height="height" />
         </g>
 
         <!-- where the stacked area path will show -->
         <g class="stacked-area-null-group" />
         <g class="stacked-area-group" />
         <g class="stacked-area-group-2" />
-        
+
         <g class="total-line-group" />
 
         <!-- where the line path will show -->
-        <g
-          v-show="hasSecondDataset"
-          class="line-group" />
+        <g v-show="hasSecondDataset" class="line-group" />
 
         <g class="x-incomplete-group" />
         <g class="focus-group" />
@@ -111,24 +103,15 @@
       </g>
 
       <!-- yAxis tick text here to show above the area -->
-      <g
-        :transform="gTransform"
-        class="axis-text-group">
+      <g :transform="gTransform" class="axis-text-group">
         <g :class="yAxisTickClass" />
-        <g
-          v-show="hasSecondDataset"
-          class="y-axis-2" />
+        <g v-show="hasSecondDataset" class="y-axis-2" />
         <g class="y-guides-group" />
-        <g
-          :transform="xAxisTransform"
-          :class="xAxisClass" />
+        <g :transform="xAxisTransform" :class="xAxisClass" />
       </g>
 
       <!-- cursor line and tooltip -->
-      <g
-        v-show="hoverOn"
-        :transform="gTransform"
-        class="cursor-group">
+      <g v-show="hoverOn" :transform="gTransform" class="cursor-group">
         <g :class="cursorLineGroupClass" />
       </g>
     </svg>
@@ -342,7 +325,7 @@ export default {
     },
     convertValue: {
       type: Function,
-      default: () => function() {}
+      default: () => function () {}
     },
     nullCheckProp: {
       type: String,
@@ -481,7 +464,7 @@ export default {
     },
 
     totalLineData() {
-      return this.updatedDataset.map(d => {
+      return this.updatedDataset.map((d) => {
         const obj = {
           date: d.date,
           time: d.time,
@@ -489,7 +472,7 @@ export default {
           value: 0
         }
 
-        this.domains.forEach(domain => {
+        this.domains.forEach((domain) => {
           obj.value += d[domain.id]
         })
 
@@ -518,13 +501,13 @@ export default {
       return updated
     },
     datasetDateExtent() {
-      return extent(this.updatedDataset, d => new Date(d.date))
+      return extent(this.updatedDataset, (d) => new Date(d.date))
     },
     domainIds() {
-      return this.domains.map(d => d.id).reverse()
+      return this.domains.map((d) => d.id).reverse()
     },
     domainColours() {
-      return this.domains.map(d => d.colour).reverse()
+      return this.domains.map((d) => d.colour).reverse()
     },
     id() {
       return `stacked-area-${this._uid}`
@@ -645,7 +628,7 @@ export default {
         } else {
           this.$stackedAreaGroup
             .selectAll('path')
-            .attr('opacity', d => (d.key === domain ? 1 : 0.1))
+            .attr('opacity', (d) => (d.key === domain ? 1 : 0.1))
           this.$totalLineGroup.selectAll('path').attr('opacity', 0.1)
         }
       } else {
@@ -732,24 +715,24 @@ export default {
       this.yAxis = axisRight(this.y)
         .tickSize(this.width)
         .ticks(this.yAxisTicks)
-        .tickFormat(d => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
+        .tickFormat((d) => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
       this.yAxis2 = axisRight(this.y2)
         .tickSize(30)
         .ticks(5)
-        .tickFormat(d => `${d}%`)
+        .tickFormat((d) => `${d}%`)
 
       this.yAxisTextFormat = d3Format(',.0f')
 
       // Setup the 'brush' area and event handler
       this.brushX = brushX()
-        .extent([[0, 0], [this.width, 40]])
+        .extent([
+          [0, 0],
+          [this.width, 40]
+        ])
         .on('end', this.brushEnded)
 
       // X Axis Brush (zoom in/out interaction)
-      this.$xAxisBrushGroup
-        .append('g')
-        .attr('class', 'brush')
-        .call(this.brushX)
+      this.$xAxisBrushGroup.append('g').attr('class', 'brush').call(this.brushX)
 
       // Create hover line and date (rect/text)
       this.$cursorLineGroup.append('path').attr('class', this.cursorLineClass)
@@ -806,35 +789,33 @@ export default {
       // How to draw the area path
       // - define the area's x value and y0,y1 values
       this.area = d3Area()
-        .x(d => this.x(d.data.date))
-        .y0(d => this.y(d[0]))
-        .y1(d => this.y(d[1]))
+        .x((d) => this.x(d.data.date))
+        .y0((d) => this.y(d[0]))
+        .y1((d) => this.y(d[1]))
 
       this.nullArea = d3Area()
-        .x(d => this.x(d.data.date))
-        .y0(
-          d =>
-            d.data[this.nullCheckProp] || d.data[this.nullCheckProp] === 0
-              ? this.height
-              : this.y(0) - 5
+        .x((d) => this.x(d.data.date))
+        .y0((d) =>
+          d.data[this.nullCheckProp] || d.data[this.nullCheckProp] === 0
+            ? this.height
+            : this.y(0) - 5
         )
-        .y1(
-          d =>
-            d.data[this.nullCheckProp] || d.data[this.nullCheckProp] === 0
-              ? this.height
-              : this.y(0)
+        .y1((d) =>
+          d.data[this.nullCheckProp] || d.data[this.nullCheckProp] === 0
+            ? this.height
+            : this.y(0)
         )
 
       // How to draw the line
       this.line = d3Line()
-        .x(d => this.x(d.date))
-        .y(d => this.y2(d.value))
-      this.line.defined(d => d.value || d.value === 0)
+        .x((d) => this.x(d.date))
+        .y((d) => this.y2(d.value))
+      this.line.defined((d) => d.value || d.value === 0)
 
       this.totalLine = d3Line()
-        .x(d => this.x(d.date))
-        .y(d => this.y(d.value))
-      this.totalLine.defined(d => d.value || d.value === 0)
+        .x((d) => this.x(d.date))
+        .y((d) => this.y(d.value))
+      this.totalLine.defined((d) => d.value || d.value === 0)
 
       // Event handling
       // - Control tooltip visibility for mouse entering/leaving svg
@@ -853,12 +834,12 @@ export default {
       })
 
       // - find date when on the hoverLayer or brushLayer or when brushing
-      this.$hoverLayer.on('touchmove mousemove', function() {
+      this.$hoverLayer.on('touchmove mousemove', function () {
         self.$emit('eventChange', this)
         self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
         self.$emit('domainOver', null)
       })
-      this.brushX.on('brush', function() {
+      this.brushX.on('brush', function () {
         if (!event.selection) return
         if (event.sourceEvent.type === 'brush') return
 
@@ -875,7 +856,7 @@ export default {
 
       this.$xAxisBrushGroup
         .selectAll('.brush')
-        .on('touchmove mousemove', function() {
+        .on('touchmove mousemove', function () {
           self.$emit('eventChange', this)
           self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
           self.$emit('domainOver', null)
@@ -901,22 +882,19 @@ export default {
       const yMin =
         this.yMin || this.yMin === 0
           ? this.yMin
-          : min(this.updatedDataset, d => d._min)
+          : min(this.updatedDataset, (d) => d._min)
       this.yMinComputed = yMin
       const yMax =
         this.yMax || this.yMax === 0
           ? this.yMax
-          : max(this.updatedDataset, d => d._total)
+          : max(this.updatedDataset, (d) => d._total)
       const xDomainExtent = this.dynamicExtent.length
         ? this.dynamicExtent
         : this.datasetDateExtent
       this.x.domain(xDomainExtent)
 
       if (this.domains.length === 0) {
-        this.y
-          .range([this.height, 0])
-          .domain([0, 100])
-          .nice()
+        this.y.range([this.height, 0]).domain([0, 100]).nice()
       } else {
         this.y.domain([yMin, yMax]).nice()
       }
@@ -925,10 +903,10 @@ export default {
 
       const yMaxConverted = this.convertValue(yMax)
       if (yMaxConverted <= 10) {
-        this.yAxis.tickFormat(d => d3Format(',.1f')(d))
+        this.yAxis.tickFormat((d) => d3Format(',.1f')(d))
         this.yAxisTextFormat = d3Format(',.1f')
       } else {
-        this.yAxis.tickFormat(d => d3Format(',.0f')(d))
+        this.yAxis.tickFormat((d) => d3Format(',.0f')(d))
         this.yAxisTextFormat = d3Format(',.0f')
       }
 
@@ -936,17 +914,17 @@ export default {
       if (this.domains.length === 0) {
         this.$yAxisGroup
           .call(this.yAxis)
-          .call(g => g.selectAll('.y-axis .tick').style('opacity', '0'))
+          .call((g) => g.selectAll('.y-axis .tick').style('opacity', '0'))
         this.$yAxisTickGroup
           .call(this.yAxis)
-          .call(g => g.selectAll('.y-axis-tick .tick').style('opacity', '0'))
+          .call((g) => g.selectAll('.y-axis-tick .tick').style('opacity', '0'))
       } else {
         this.$yAxisGroup
           .call(this.customYAxis)
-          .call(g => g.selectAll('.y-axis .tick').style('opacity', '1'))
+          .call((g) => g.selectAll('.y-axis .tick').style('opacity', '1'))
         this.$yAxisTickGroup
           .call(this.customYAxis)
-          .call(g => g.selectAll('.y-axis-tick .tick').style('opacity', '1'))
+          .call((g) => g.selectAll('.y-axis-tick .tick').style('opacity', '1'))
       }
 
       this.updateGuides()
@@ -988,13 +966,13 @@ export default {
       stackArea
         .enter()
         .append('path')
-        .attr('id', d => d.key)
-        .attr('class', d => `${this.stackedAreaPathClass} .${d.key}`)
+        .attr('id', (d) => d.key)
+        .attr('class', (d) => `${this.stackedAreaPathClass} .${d.key}`)
         .attr('d', this.area)
         .attr('stroke-opacity', 0)
         .attr('stroke-width', 1)
         .attr('stroke', '#000')
-        .attr('fill', d => {
+        .attr('fill', (d) => {
           // return `url(#${d.key})`
           return this.z(d.key)
         })
@@ -1008,7 +986,7 @@ export default {
       // - find date and domain
       this.$stackedAreaGroup
         .selectAll('path')
-        .on('touchmove mousemove', function(d) {
+        .on('touchmove mousemove', function (d) {
           self.$emit('eventChange', this)
           self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
           self.$emit('domainOver', d.key)
@@ -1038,7 +1016,7 @@ export default {
     },
 
     drawDatasetTwo() {
-      let y2Max = max(this.updatedDatasetTwo, d => d.value)
+      let y2Max = max(this.updatedDatasetTwo, (d) => d.value)
       let y2Height = this.y(0)
       if (y2Max < 100) {
         y2Max = 100
@@ -1047,10 +1025,7 @@ export default {
         y2Height = this.height
       }
 
-      this.y2
-        .range([y2Height, 0])
-        .domain([0, y2Max])
-        .nice()
+      this.y2.range([y2Height, 0]).domain([0, y2Max]).nice()
 
       this.updateYAxisRight()
 
@@ -1075,20 +1050,20 @@ export default {
         this.yAxis2 = axisLeft(this.y2)
           .tickSize(-this.width)
           .ticks(5)
-          .tickFormat(d => `${d}%`)
+          .tickFormat((d) => `${d}%`)
 
         this.$yAxisGroup2.selectAll('.tick').remove()
         this.$yAxisGroup2
           .attr('transform', `translate(0, 0)`)
           .call(this.yAxis2)
-          .call(g =>
+          .call((g) =>
             g
               .selectAll('.y-axis-2 .tick text')
               .attr('x', 4)
               .attr('dy', -4)
               .style('text-anchor', 'start')
           )
-          .call(g =>
+          .call((g) =>
             g
               .selectAll('.y-axis-2 .tick line')
               .style('stroke', 'rgba(0, 0, 0, 0.1)')
@@ -1098,23 +1073,20 @@ export default {
         this.yAxis2 = axisRight(this.y2)
           .tickSize(30)
           .ticks(5)
-          .tickFormat(d => `${d}%`)
+          .tickFormat((d) => `${d}%`)
 
         this.$yAxisGroup2.selectAll('.tick').remove()
         this.$yAxisGroup2
           .attr('transform', `translate(${this.width - 30}, 0)`)
           .call(this.yAxis2)
-          .call(g =>
+          .call((g) =>
             g
               .selectAll('.y-axis-2 .tick line')
               .attr('stroke', '#ccc')
               .style('opacity', '0')
           )
-          .call(g =>
-            g
-              .selectAll('.y-axis-2 .tick text')
-              .attr('dx', -4)
-              .attr('dy', -4)
+          .call((g) =>
+            g.selectAll('.y-axis-2 .tick text').attr('dx', -4).attr('dy', -4)
           )
       }
     },
@@ -1187,7 +1159,10 @@ export default {
       this.drawFocus(this.focusDate)
       this.drawCompare(this.compareDates)
 
-      this.brushX.extent([[0, 0], [this.width, 40]])
+      this.brushX.extent([
+        [0, 0],
+        [this.width, 40]
+      ])
       this.$xAxisBrushGroup.selectAll('.brush').call(this.brushX)
       this.$stackedAreaGroup.selectAll('path').attr('d', this.area)
       this.$stackedAreaNullGroup.selectAll('path').attr('d', this.nullArea)
@@ -1258,8 +1233,8 @@ export default {
         .enter()
         .append('rect')
         .attr('opacity', 0.05)
-        .attr('x', d => this.x(d.start))
-        .attr('width', d => {
+        .attr('x', (d) => this.x(d.start))
+        .attr('width', (d) => {
           const width = this.x(d.end) - this.x(d.start)
           return width < 0 ? 0 : width
         })
@@ -1277,17 +1252,17 @@ export default {
       yGuides
         .append('line')
         .attr('x1', 0)
-        .attr('y1', d => this.y(d.value))
+        .attr('y1', (d) => this.y(d.value))
         .attr('x2', this.width)
-        .attr('y2', d => this.y(d.value))
+        .attr('y2', (d) => this.y(d.value))
         .attr('stroke', '#c74523')
         .attr('stroke-dasharray', 4.8)
       yGuides
         .append('text')
         .attr('x', this.width)
-        .attr('y', d => this.y(d.value))
+        .attr('y', (d) => this.y(d.value))
         .attr('dy', -4)
-        .text(d => d.text)
+        .text((d) => d.text)
         .style('fill', '#c74523')
         .style('font-size', '10px')
         .style('text-anchor', 'end')
@@ -1298,8 +1273,8 @@ export default {
         .enter()
         .append('rect')
         .attr('opacity', 1)
-        .attr('x', d => this.x(d.start))
-        .attr('width', d => {
+        .attr('x', (d) => this.x(d.start))
+        .attr('width', (d) => {
           const width = this.x(d.end) - this.x(d.start)
           return width < 0 ? 0 : width
         })
@@ -1424,7 +1399,7 @@ export default {
 
       let total = 0
       if (current) {
-        this.domains.forEach(domain => {
+        this.domains.forEach((domain) => {
           total += current[domain.id] || 0
         })
       }
@@ -1458,9 +1433,8 @@ export default {
 
       if (compareLength > 0 && compareLength < 3) {
         const compareFocusGroup = this.$compareGroup.append('g')
-        const { compareData1, compareData2 } = this.getCompareLineCoords(
-          compareDates
-        )
+        const { compareData1, compareData2 } =
+          this.getCompareLineCoords(compareDates)
 
         if (compareData2.time) {
           // only draw line if second point is available
@@ -1478,8 +1452,8 @@ export default {
             changePercentage
           )})`
           const line = d3Line()
-            .x(d => this.x(d[0]))
-            .y(d => this.y(d[1]))
+            .x((d) => this.x(d[0]))
+            .y((d) => this.y(d[1]))
           const xTime1 = this.x(time1)
           const xTime2 = this.x(time2)
           const distance = xTime2 - xTime1
@@ -1496,7 +1470,13 @@ export default {
             this.$compareGroup
               .append('path')
               .attr('id', `${this.id}-compare-line`)
-              .attr('d', line([[time1, value1], [time2, value2]]))
+              .attr(
+                'd',
+                line([
+                  [time1, value1],
+                  [time2, value2]
+                ])
+              )
               .attr('marker-end', `url(#${this.id}-arrowhead)`)
               .style('stroke', 'darkred')
               .style('stroke-width', 2)
@@ -1517,7 +1497,13 @@ export default {
             this.$compareGroup
               .append('path')
               .attr('id', `${this.id}-compare-line`)
-              .attr('d', line([[time1, value1], [time2, value2]]))
+              .attr(
+                'd',
+                line([
+                  [time1, value1],
+                  [time2, value2]
+                ])
+              )
               .style('stroke', 'darkred')
               .style('stroke-width', 2)
 
@@ -1540,8 +1526,8 @@ export default {
           .enter()
           .append('rect')
           .attr('opacity', 1)
-          .attr('x', d => this.x(d))
-          .attr('width', d => {
+          .attr('x', (d) => this.x(d))
+          .attr('width', (d) => {
             const time = new Date(d).getTime()
             const nextDatePeriod = this.findNextDatePeriod(time)
             const nextPeriod = this.x(nextDatePeriod)
@@ -1616,24 +1602,30 @@ export default {
             className = 'interval-season'
             const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
             if (isFilter && periodMonth) {
-              tickLength = d3TimeMonth.filter(d => d.getMonth() === periodMonth)
+              tickLength = d3TimeMonth.filter(
+                (d) => d.getMonth() === periodMonth
+              )
             }
           } else if (this.interval === INTERVAL_QUARTER) {
             className = 'interval-quarter'
             const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
             if (isFilter && periodMonth) {
-              tickLength = d3TimeMonth.filter(d => d.getMonth() === periodMonth)
+              tickLength = d3TimeMonth.filter(
+                (d) => d.getMonth() === periodMonth
+              )
             }
           } else if (this.interval === INTERVAL_HALFYEAR) {
             className = 'interval-half-year'
             const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
             if (isFilter && periodMonth) {
-              tickLength = d3TimeMonth.filter(d => d.getMonth() === periodMonth)
+              tickLength = d3TimeMonth.filter(
+                (d) => d.getMonth() === periodMonth
+              )
             }
           } else if (this.interval === INTERVAL_YEAR) {
             className = 'interval-year'
           } else if (this.interval === INTERVAL_FINYEAR) {
-            tickLength = d3TimeMonth.filter(d => {
+            tickLength = d3TimeMonth.filter((d) => {
               return d.getMonth() === 6
             })
             className = 'interval-fin-year'
@@ -1671,14 +1663,14 @@ export default {
         })
         const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
         if (isFilter && periodMonth && periodMonth !== 0) {
-          tickLength = d3TimeMonth.filter(d => d.getMonth() === periodMonth)
+          tickLength = d3TimeMonth.filter((d) => d.getMonth() === periodMonth)
         }
       } else if (this.interval === INTERVAL_FINYEAR) {
-        this.xAxis.tickFormat(d => {
+        this.xAxis.tickFormat((d) => {
           const year = d.getFullYear() + 1 + ''
           return `FY${year.substr(2, 2)}`
         })
-        tickLength = d3TimeMonth.filter(d => {
+        tickLength = d3TimeMonth.filter((d) => {
           return d.getMonth() === 6
         })
       } else {
@@ -1692,7 +1684,7 @@ export default {
       }
 
       // add secondary x axis tick label here
-      const insertSecondaryAxisTick = function(d, i) {
+      const insertSecondaryAxisTick = function (d, i) {
         const el = select(this)
         const secondaryText = that.secondaryTimeFormats(d)
         if (secondaryText !== '') {
@@ -1715,7 +1707,7 @@ export default {
     customYAxis(g) {
       g.call(this.yAxis)
       g.selectAll('.tick text')
-        .text(t => {
+        .text((t) => {
           const tickText = this.shouldConvertValue
             ? this.yAxisTextFormat(this.convertValue(t))
             : t
@@ -1723,9 +1715,8 @@ export default {
         })
         .attr('x', 4)
         .attr('dy', -4)
-      g.selectAll('.tick line').attr(
-        'class',
-        d => (d === 0 && this.yMinComputed !== 0 ? 'base' : '')
+      g.selectAll('.tick line').attr('class', (d) =>
+        d === 0 && this.yMinComputed !== 0 ? 'base' : ''
       )
     },
 

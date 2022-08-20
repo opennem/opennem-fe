@@ -1,5 +1,5 @@
-export default function(dataAll, datasetAll) {
-  dataAll.forEach(d => {
+export default function (dataAll, datasetAll) {
+  dataAll.forEach((d) => {
     const updateDataset = () => {
       const historyData = [...d.history.data]
       datasetAll.forEach((h, i) => {

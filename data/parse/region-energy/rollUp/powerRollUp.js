@@ -5,7 +5,7 @@ function reducer(a, domains) {
   let obj = {}
   let priceId = null
 
-  domains.forEach(domain => {
+  domains.forEach((domain) => {
     const id = domain.id
     const type = domain.type
     const isPowerOrEnergy = DT.isPowerOrEnergy(type)
@@ -19,7 +19,7 @@ function reducer(a, domains) {
       id !== '_volWeightedPriceBelow0'
 
     if (isPowerOrEnergy || isPrice) {
-      obj[id] = mean(a, d => d[id] || 0)
+      obj[id] = mean(a, (d) => d[id] || 0)
 
       if (type === DT.PRICE) {
         // use the first 30min data for period
@@ -30,7 +30,7 @@ function reducer(a, domains) {
         priceId = id
       }
     } else if (isTemperature) {
-      obj[id] = mean(a, d => d[id])
+      obj[id] = mean(a, (d) => d[id])
     }
   })
 
@@ -44,16 +44,20 @@ function reducer(a, domains) {
   return obj
 }
 
-export default function(domains, data) {
-  const entries = rollups(data, v => reducer(v, domains), d => d._rollUpDate)
+export default function (domains, data) {
+  const entries = rollups(
+    data,
+    (v) => reducer(v, domains),
+    (d) => d._rollUpDate
+  )
 
-  return entries.map(e => {
+  return entries.map((e) => {
     const object = {
       time: e[0],
       date: new Date(e[0])
     }
 
-    Object.keys(e[1]).forEach(k => {
+    Object.keys(e[1]).forEach((k) => {
       object[k] = e[1][k]
     })
     return object

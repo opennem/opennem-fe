@@ -53,7 +53,7 @@ export default {
     return {
       dataset: [],
       metricOptions: metrics,
-      metricYearOptions: getEachYearOfInterval.map(d => {
+      metricYearOptions: getEachYearOfInterval.map((d) => {
         return {
           label: d + '',
           value: d
@@ -79,7 +79,7 @@ export default {
 
       if (this.dataset && this.dataset.length > 0) {
         this.dataset[0].data = this.dataset[0].yearlyData.find(
-          d => d.year + '' === val
+          (d) => d.year + '' === val
         ).data
       }
 
@@ -117,20 +117,20 @@ export default {
       const regions = getStripesRegion(this.region)
 
       if (this.isGroupedRegion) {
-        getRegionStripesData(this.doGetAllData, regions).then(dataset => {
+        getRegionStripesData(this.doGetAllData, regions).then((dataset) => {
           this.dataset = dataset
           this.setTitle(this.selectedMetric)
           this.getCombinedRegionsData(dataset, this.selectedMetric)
         })
       } else {
-        getYearlyStripesData(this.doGetRegionData, regions).then(dataset => {
+        getYearlyStripesData(this.doGetRegionData, regions).then((dataset) => {
           this.dataset = dataset
 
           this.setTitle(this.selectedMetric, this.selectedYear)
 
           if (this.dataset && this.dataset.length > 0) {
             const find = this.dataset[0].yearlyData.find(
-              d => d.year + '' === this.selectedYear
+              (d) => d.year + '' === this.selectedYear
             )
             this.dataset[0].data = find.data
             this.dataset[0].originalDataset = find.originalDataset
@@ -147,7 +147,7 @@ export default {
           dataset,
           dateFormatString: this.isGroupedRegion ? 'MMM yyyy' : 'dd/MM/yyyy',
           selectedMetricObject: this.metricOptions.find(
-            d => d.value === selectedMetric
+            (d) => d.value === selectedMetric
           )
         })
 

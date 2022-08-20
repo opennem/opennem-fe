@@ -12,19 +12,19 @@ export const state = () => ({
 })
 
 export const getters = {
-  apiVersion: state => state.apiVersion,
-  windowWidth: state => state.windowWidth,
-  isTouchDevice: state => state.isTouchDevice,
-  wideScreenBreak: state => state.windowWidth < 1450,
-  widthBreak: state => state.windowWidth < 1024,
-  tabletBreak: state => state.windowWidth < 769,
-  showError: state => state.showError,
-  errorHeader: state => state.errorHeader,
-  errorMessage: state => state.errorMessage,
-  query: state => state.query,
-  facilitiesQuery: state => state.facilitiesQuery,
-  showFeatureToggle: state => state.showFeatureToggle,
-  siteAnnouncement: state => state.siteAnnouncement
+  apiVersion: (state) => state.apiVersion,
+  windowWidth: (state) => state.windowWidth,
+  isTouchDevice: (state) => state.isTouchDevice,
+  wideScreenBreak: (state) => state.windowWidth < 1450,
+  widthBreak: (state) => state.windowWidth < 1024,
+  tabletBreak: (state) => state.windowWidth < 769,
+  showError: (state) => state.showError,
+  errorHeader: (state) => state.errorHeader,
+  errorMessage: (state) => state.errorMessage,
+  query: (state) => state.query,
+  facilitiesQuery: (state) => state.facilitiesQuery,
+  showFeatureToggle: (state) => state.showFeatureToggle,
+  siteAnnouncement: (state) => state.siteAnnouncement
 }
 
 export const mutations = {

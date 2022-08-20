@@ -21,6 +21,6 @@ export function getEmissionsRegions() {
 }
 
 export function getEmissionsRegionLabel(id) {
-  const find = EmissionsRegions.find(r => r.id === id)
+  const find = EmissionsRegions.find((r) => r.id === id)
   return find ? find.label : ''
 }

@@ -13,8 +13,8 @@ const PRICE_COLOUR = '#e34a33'
 
 export function getFuelTechInOrder(data) {
   const fuelTechs = {}
-  FT.DEFAULT_FUEL_TECH_ORDER.forEach(ft => {
-    const find = data.find(d => d.fuel_tech === ft)
+  FT.DEFAULT_FUEL_TECH_ORDER.forEach((ft) => {
+    const find = data.find((d) => d.fuel_tech === ft)
     if (find) {
       fuelTechs[ft] = find.id
     }
@@ -28,7 +28,7 @@ export function getFuelTechDomains(ids, type) {
 
 export function getFuelTechWithTypeDomains(ids, type) {
   const mutateIds = {}
-  Object.keys(ids).forEach(key => {
+  Object.keys(ids).forEach((key) => {
     const split = ids[key].split('.')
     split.pop()
     const newId = `${split.join('.')}.${type}`
@@ -38,7 +38,7 @@ export function getFuelTechWithTypeDomains(ids, type) {
 }
 
 export function getTemperatureDomains(data) {
-  return data.map(d => {
+  return data.map((d) => {
     return {
       id: d.id,
       domain: d.id,
@@ -49,7 +49,7 @@ export function getTemperatureDomains(data) {
 }
 
 export function getPriceDomains(res) {
-  let domains = res.map(d => {
+  let domains = res.map((d) => {
     return { id: d.id, domain: d.id, type: d.type, colour: PRICE_COLOUR }
   })
   if (domains.length > 0) {

@@ -16,14 +16,14 @@ export const mutations = {
 }
 
 export const getters = {
-  showFields: state => state.showFields,
-  selectedFields: state => _cloneDeep(state.selectedFields)
+  showFields: (state) => state.showFields,
+  selectedFields: (state) => _cloneDeep(state.selectedFields)
 }
 
 export const actions = {
   addField({ commit, state }, field) {
     const fields = _cloneDeep(state.selectedFields)
-    const find = fields.find(f => f.key === field.key)
+    const find = fields.find((f) => f.key === field.key)
     if (!find) {
       fields.push(field)
       commit('selectedFields', fields)
@@ -31,7 +31,7 @@ export const actions = {
   },
 
   removeIssueField({ commit, state }, field) {
-    const fields = state.selectedFields.filter(f => f.key !== field.key)
+    const fields = state.selectedFields.filter((f) => f.key !== field.key)
     commit('selectedFields', fields)
   },
 

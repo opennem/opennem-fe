@@ -40,7 +40,7 @@ export function getDefaultInterval() {
 }
 
 export function getIntervalQueryByInterval(interval) {
-  const find = intervalQueries.find(iq => INTERVAL_QUERIES[iq] === interval)
+  const find = intervalQueries.find((iq) => INTERVAL_QUERIES[iq] === interval)
   return find ? find : DEFAULT_QUERY
 }
 

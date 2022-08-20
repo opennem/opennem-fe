@@ -1,10 +1,7 @@
 <template>
   <header>
-    <a
-      :href="path"
-      class="back-link"
-      @click.prevent="backToFacilities">
-      <i class="fal fa-chevron-left"/>
+    <a :href="path" class="back-link" @click.prevent="backToFacilities">
+      <i class="fal fa-chevron-left" />
       <AppLogo class="logo" />
       <h1>Facilities</h1>
     </a>
@@ -13,25 +10,23 @@
       <nuxt-link
         v-tooltip="prevFacilityName"
         v-if="prevFacilityPath"
-        :to="prevFacilityPath">
-        <i class="fal fa-fw fa-arrow-circle-up"/>
+        :to="prevFacilityPath"
+      >
+        <i class="fal fa-fw fa-arrow-circle-up" />
       </nuxt-link>
-      <span
-        v-else
-        class="is-disabled">
-        <i class="fal fa-fw fa-arrow-circle-up"/>
+      <span v-else class="is-disabled">
+        <i class="fal fa-fw fa-arrow-circle-up" />
       </span>
 
       <nuxt-link
         v-tooltip="nextFacilityName"
         v-if="nextFacilityPath"
-        :to="nextFacilityPath">
-        <i class="fal fa-fw fa-arrow-circle-down"/>
+        :to="nextFacilityPath"
+      >
+        <i class="fal fa-fw fa-arrow-circle-down" />
       </nuxt-link>
-      <span
-        v-else
-        class="is-disabled">
-        <i class="fal fa-fw fa-arrow-circle-down"/>
+      <span v-else class="is-disabled">
+        <i class="fal fa-fw fa-arrow-circle-down" />
       </span>
     </nav>
   </header>
@@ -115,10 +110,10 @@ export default {
     updatePaths() {
       const facilitiesLength = this.filteredFacilities.length
       const currentIndex = this.filteredFacilities.findIndex(
-        f => f.facilityId === this.facilityCode
+        (f) => f.facilityId === this.facilityCode
       )
       const currentFacility = this.filteredFacilities.find(
-        f => f.facilityId === this.facilityCode
+        (f) => f.facilityId === this.facilityCode
       )
 
       console.log(this.filteredFacilities, this.facilityCode)

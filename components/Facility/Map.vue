@@ -2,7 +2,8 @@
   <section
     :style="{ height: mapHeight }"
     :class="{ dark: isDarkMap }"
-    class="mapbox">
+    class="mapbox"
+  >
     <client-only>
       <MglMap
         :access-token="accessToken"
@@ -11,24 +12,24 @@
         :zoom="3"
         class="map-container"
         @load="onMapLoaded"
-        @styledata="onMapStyleDataChanged">
-
+        @styledata="onMapStyleDataChanged"
+      >
         <button
-          class="button is-small button-map-style" 
-          @click="showMapStyleSelector = true">
-          <i class="fal fa-map"/>
+          class="button is-small button-map-style"
+          @click="showMapStyleSelector = true"
+        >
+          <i class="fal fa-map" />
         </button>
 
         <transition name="slide-down-fade">
-          <MapStyleSelector 
-            v-if="showMapStyleSelector" 
+          <MapStyleSelector
+            v-if="showMapStyleSelector"
             class="map-style-selection"
-            @done="showMapStyleSelector = false" />
+            @done="showMapStyleSelector = false"
+          />
         </transition>
 
-        <MglNavigationControl
-          position="bottom-right"
-        />
+        <MglNavigationControl position="bottom-right" />
       </MglMap>
     </client-only>
   </section>
@@ -111,7 +112,7 @@ export default {
     updatedData() {
       // @TODO: move this out of component
       const data = _cloneDeep(this.data)
-      data.forEach(d => {
+      data.forEach((d) => {
         const properties = d.jsonData.properties
         d.jsonData.type = 'Feature'
         if (d.jsonData.geometry) {
@@ -191,7 +192,7 @@ export default {
 
       this.addMapSourceAndLayer(true)
 
-      this.map.on('mouseenter', 'facilitiesLayer', e => {
+      this.map.on('mouseenter', 'facilitiesLayer', (e) => {
         this.map.getCanvas().style.cursor = 'pointer'
 
         const coordinates = e.features[0].geometry.coordinates.slice()
@@ -210,20 +211,17 @@ export default {
             !this.selected ||
             (this.selected && this.selected.facilityId !== id)
           ) {
-            this.popup
-              .setLngLat(coordinates)
-              .setHTML(name)
-              .addTo(this.map)
+            this.popup.setLngLat(coordinates).setHTML(name).addTo(this.map)
           }
         }
       })
 
-      this.map.on('dblclick', 'facilitiesLayer', e => {
+      this.map.on('dblclick', 'facilitiesLayer', (e) => {
         const id = e.features[0].properties.facility_id
         this.$emit('facilityOpen', id)
       })
 
-      this.map.on('click', 'facilitiesLayer', e => {
+      this.map.on('click', 'facilitiesLayer', (e) => {
         const id = e.features[0].properties.facility_id
 
         if (this.selected && this.selected.facilityId === id) {
@@ -257,7 +255,7 @@ export default {
     },
 
     setMapBounds(features) {
-      features.forEach(f => {
+      features.forEach((f) => {
         if (f.geometry && f.geometry.coordinates) {
           this.bounds.extend(f.geometry.coordinates)
         }
@@ -265,7 +263,9 @@ export default {
     },
 
     getFeaturesFromData() {
-      return this.updatedData.filter(d => d.hasLocation).map(d => d.jsonData)
+      return this.updatedData
+        .filter((d) => d.hasLocation)
+        .map((d) => d.jsonData)
     },
 
     updateMapSource() {
@@ -325,7 +325,7 @@ export default {
 
     findPoint(point) {
       return this.updatedData.find(
-        d =>
+        (d) =>
           d.facilityId === point.facilityId &&
           d.displayName === point.displayName
       )
@@ -339,10 +339,7 @@ export default {
       const name = find.displayName
 
       if (ctx && coordinates) {
-        ctx
-          .setLngLat(coordinates)
-          .setHTML(name)
-          .addTo(this.map)
+        ctx.setLngLat(coordinates).setHTML(name).addTo(this.map)
 
         if (flyTo) {
           this.facilityJump = true

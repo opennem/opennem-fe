@@ -1,7 +1,5 @@
 <template>
-  <div
-    :class="{ 'click-disable': !domainToggleable }"
-    class="summary-list">
+  <div :class="{ 'click-disable': !domainToggleable }" class="summary-list">
     <div
       v-for="ft in order"
       :key="ft.id"
@@ -11,47 +9,53 @@
       @touchstart="handleTouchstart(ft)"
       @touchend="handleTouchend"
       @click.exact="handleRowClick(ft)"
-      @click.shift.exact="handleRowShiftClicked(ft)">
-
-      <div
-        v-tooltip.auto="fuelTechList(ft)"
-        class="summary-col-label">
+      @click.shift.exact="handleRowShiftClicked(ft)"
+    >
+      <div v-tooltip.auto="fuelTechList(ft)" class="summary-col-label">
         <div
           :style="{
             'background-color': ft.hidden ? 'transparent' : ft.colour,
-            'border-color': ft.hidden ? '#bbb' : ft.colour,
+            'border-color': ft.hidden ? '#bbb' : ft.colour
           }"
-          class="colour-square" />
+          class="colour-square"
+        />
 
         <div class="ft-label">{{ ft.label }}</div>
       </div>
 
       <div class="summary-col-external-link-icon">
-        <a 
+        <a
           v-if="validDomainToEmit(ft)"
-          @click.stop="handleFacilitiesLinkClick(ft)">
-          <i class="fal fa-external-link-square"/>
+          @click.stop="handleFacilitiesLinkClick(ft)"
+        >
+          <i class="fal fa-external-link-square" />
         </a>
       </div>
 
-      <div
-        v-if="isEnergyType"
-        class="summary-col-energy">
+      <div v-if="isEnergyType" class="summary-col-energy">
         <span v-if="showPointSummary">
-          {{ getValue(ft.id) | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          {{
+            getValue(ft.id)
+              | convertValue(chartUnitPrefix, chartDisplayPrefix)
+              | formatValue
+          }}
         </span>
-        <span v-else-if="isTypeChangeSinceLine">
-          –
-        </span>
+        <span v-else-if="isTypeChangeSinceLine"> – </span>
         <span v-else>
-          {{ getValue(ft.id) | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          {{
+            getValue(ft.id)
+              | convertValue(chartUnitPrefix, chartDisplayPrefix)
+              | formatValue
+          }}
         </span>
       </div>
-      <div
-        v-else
-        class="summary-col-energy">
+      <div v-else class="summary-col-energy">
         <span v-if="showPointSummary">
-          {{ getValue(ft.id) | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          {{
+            getValue(ft.id)
+              | convertValue(chartUnitPrefix, chartDisplayPrefix)
+              | formatValue
+          }}
         </span>
         <span v-else>
           {{ getValue(ft.id) | formatValue }}
@@ -64,21 +68,22 @@
         </span>
       </div>
 
-      <div
-        v-show="isAvValueColumn"
-        class="summary-col-av-value">
+      <div v-show="isAvValueColumn" class="summary-col-av-value">
         {{ getAverageValue(ft) | formatCurrency }}
       </div>
 
-      <div
-        v-show="isEmissionsVolumeColumn"
-        class="summary-col-ev">
-        {{ getEmissionsVolume(ft) | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
+      <div v-show="isEmissionsVolumeColumn" class="summary-col-ev">
+        {{
+          getEmissionsVolume(ft)
+            | convertValue(
+              chartEmissionsVolumeUnitPrefix,
+              chartEmissionsVolumeDisplayPrefix
+            )
+            | formatValue
+        }}
       </div>
 
-      <div
-        v-show="isEmissionsIntensityColumn"
-        class="summary-col-ev">
+      <div v-show="isEmissionsIntensityColumn" class="summary-col-ev">
         {{ getEmissionsIntensity(ft) | formatValue }}
       </div>
     </div>
@@ -239,8 +244,10 @@ export default {
       if (domainIds && domainIds.length > 1) {
         let list = ''
         domainIds.sort()
-        domainIds.forEach(id => {
-          const find = this.domainPowerEnergy.find(eDomain => eDomain.id === id)
+        domainIds.forEach((id) => {
+          const find = this.domainPowerEnergy.find(
+            (eDomain) => eDomain.id === id
+          )
           if (find) {
             list += `${find.label}<br>`
           }
@@ -255,7 +262,7 @@ export default {
         const property = ft.fuelTech ? 'fuelTech' : 'group'
         const hidden = _cloneDeep(this.hiddenFuelTechs)
         if (_includes(hidden, ft[property])) {
-          _remove(hidden, d => d === ft[property])
+          _remove(hidden, (d) => d === ft[property])
         } else {
           hidden.push(ft[property])
         }
@@ -267,15 +274,17 @@ export default {
     handleRowShiftClicked(ft) {
       if (this.domainToggleable) {
         const property = ft.fuelTech ? 'fuelTech' : 'group'
-        const hiddenObjs = this.order.filter(d => d[property] !== ft[property])
-        const hidden = hiddenObjs.map(d => d[property])
+        const hiddenObjs = this.order.filter(
+          (d) => d[property] !== ft[property]
+        )
+        const hidden = hiddenObjs.map((d) => d[property])
         this.order = this.updateOrder(this.originalOrder)
         this.$emit('fuelTechsHidden', hidden, true, ft)
       }
     },
 
     updateOrder(order) {
-      return order.map(d => {
+      return order.map((d) => {
         return {
           category: d.category,
           colour: d.colour,
@@ -313,7 +322,9 @@ export default {
     getAverageValue(ft) {
       const property =
         this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
-      const find = this.marketValueOrder.find(d => d[property] === ft[property])
+      const find = this.marketValueOrder.find(
+        (d) => d[property] === ft[property]
+      )
       const id = find ? find.id : null
       return this.showPointSummary ? this.pointSummary[id] : this.summary[id]
     },
@@ -321,7 +332,7 @@ export default {
     getEmissionsVolume(ft) {
       const ftGroup = ft.id.substring(0, ft.id.lastIndexOf('.'))
       const emissionId = `${ftGroup}.emissions`
-      const emissionObj = this.emissionsDomains.find(d => d.id === emissionId)
+      const emissionObj = this.emissionsDomains.find((d) => d.id === emissionId)
       if (emissionObj) {
         return this.showPointSummary
           ? this.pointSummary[emissionObj.id]
@@ -336,7 +347,7 @@ export default {
       const energy = this.showPointSummary
         ? this.pointSummary[ft.id] || null
         : this.summary[ft.id] || null
-      const emissionObj = this.emissionsDomains.find(d => d.id === emissionId)
+      const emissionObj = this.emissionsDomains.find((d) => d.id === emissionId)
 
       if (energy && emissionObj) {
         let emissionsVolume = this.showPointSummary

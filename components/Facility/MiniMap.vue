@@ -3,10 +3,11 @@
     :style="{ height: coordinates ? `${height}px` : '' }"
     :class="{
       'full-screen': isFullScreen,
-      'dark': isDark
+      dark: isDark
     }"
     class="mapbox"
-    @click.self="handleExpandClick">
+    @click.self="handleExpandClick"
+  >
     <client-only>
       <transition name="fade">
         <MglMap
@@ -17,11 +18,9 @@
           :center="coordinates"
           class="map-container"
           @load="onMapLoaded"
-          @click.self="isFullScreen ? () => {} : handleExpandClick()">
-
-          <div 
-            v-if="enableMeasure && distance > 0" 
-            class="distance">
+          @click.self="isFullScreen ? () => {} : handleExpandClick()"
+        >
+          <div v-if="enableMeasure && distance > 0" class="distance">
             {{ distance | formatValue }}km
           </div>
 
@@ -29,40 +28,33 @@
             v-if="isFullScreen"
             :class="{ 'is-primary': enableMeasure }"
             class="button is-small button-measure"
-            @click="enableMeasure = !enableMeasure">
-            <i class="fal fa-ruler-combined"/>
+            @click="enableMeasure = !enableMeasure"
+          >
+            <i class="fal fa-ruler-combined" />
           </button>
 
           <MglMarker
             v-if="showMarker || isFullScreen"
             :coordinates="coordinates"
-            color="#e34a33" />
-
-          <MglNavigationControl
-            v-if="isFullScreen"
-            position="bottom-right"
+            color="#e34a33"
           />
 
+          <MglNavigationControl v-if="isFullScreen" position="bottom-right" />
         </MglMap>
       </transition>
       <button
         v-tooltip.left-start="isFullScreen ? 'Exit full screen' : 'Full screen'"
         class="expand-button"
-        @click="handleExpandClick">
-        <i
-          v-if="isFullScreen"
-          class="fal fa-compress" />
-        <i
-          v-else
-          class="fal fa-expand" />
+        @click="handleExpandClick"
+      >
+        <i v-if="isFullScreen" class="fal fa-compress" />
+        <i v-else class="fal fa-expand" />
       </button>
     </client-only>
 
     <transition name="fade">
-      <div
-        v-if="!hasLocation"
-        class="not-found-card card">
-        <i class="fal fa-map-marker-alt"/>
+      <div v-if="!hasLocation" class="not-found-card card">
+        <i class="fal fa-map-marker-alt" />
         <span>Location not available</span>
       </div>
     </transition>
@@ -196,7 +188,7 @@ export default {
     },
 
     setupMapEvents() {
-      this.map.on('click', e => {
+      this.map.on('click', (e) => {
         if (this.enableMeasure) {
           const features = this.map.queryRenderedFeatures(e.point, {
             layers: ['measure-points']
@@ -209,7 +201,7 @@ export default {
           if (features.length) {
             var id = features[0].properties.id
             this.measurements.features = this.measurements.features.filter(
-              function(point) {
+              function (point) {
                 return point.properties.id !== id
               }
             )
@@ -229,11 +221,10 @@ export default {
           }
 
           if (this.measurements.features.length > 1) {
-            this.lineString.geometry.coordinates = this.measurements.features.map(
-              function(point) {
+            this.lineString.geometry.coordinates =
+              this.measurements.features.map(function (point) {
                 return point.geometry.coordinates
-              }
-            )
+              })
 
             this.measurements.features.push(this.lineString)
           } else {
@@ -248,7 +239,7 @@ export default {
         }
       })
 
-      this.map.on('mousemove', e => {
+      this.map.on('mousemove', (e) => {
         if (this.enableMeasure) {
           var features = this.map.queryRenderedFeatures(e.point, {
             layers: ['measure-points']

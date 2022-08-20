@@ -12,42 +12,32 @@
       @filterPeriodChange="handleFilterPeriodChange"
     />
     <transition name="fade">
-      <div
-        v-if="!ready"
-        class="vis-table-container loading-containers">
+      <div v-if="!ready" class="vis-table-container loading-containers">
         <div class="vis-container">
-          <div
-            class="loader-block"
-            style="height: 30px" />
-          <div
-            class="loader-block"
-            style="height: 400px" />
+          <div class="loader-block" style="height: 30px" />
+          <div class="loader-block" style="height: 400px" />
         </div>
         <div class="table-container">
-          <div
-            class="loader-block"
-            style="height: 30px" />
-          <div
-            class="loader-block"
-            style="height: 400px" />
+          <div class="loader-block" style="height: 30px" />
+          <div class="loader-block" style="height: 400px" />
         </div>
       </div>
     </transition>
-    <div
-      v-if="ready"
-      class="vis-table-container">
+    <div v-if="ready" class="vis-table-container">
       <vis-section
         :date-hover="hoverDate"
         :on-hover="isHovering"
         class="vis-container"
         @dateHover="handleDateHover"
-        @isHovering="handleIsHovering" />
+        @isHovering="handleIsHovering"
+      />
       <summary-section
         :hover-date="hoverDate"
         :is-hovering="isHovering"
         class="table-container"
         @dateHover="handleDateHover"
-        @isHovering="handleIsHovering" />
+        @isHovering="handleIsHovering"
+      />
     </div>
   </div>
 </template>
@@ -162,17 +152,17 @@ export default {
 
     emissionsDomains() {
       const domains = this.currentDomainEmissions.filter(
-        d => d.category !== FT.LOAD
+        (d) => d.category !== FT.LOAD
       )
       const hidden = this.hiddenFuelTechs
       return domains
-        ? domains.filter(d => !_includes(hidden, d[this.property]))
+        ? domains.filter((d) => !_includes(hidden, d[this.property]))
         : []
     },
     powerEnergyDomains() {
       const domains = this.currentDomainPowerEnergy
       const hidden = this.hiddenFuelTechs
-      return domains.filter(d => !_includes(hidden, d[this.property]))
+      return domains.filter((d) => !_includes(hidden, d[this.property]))
     }
   },
 
@@ -364,5 +354,4 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

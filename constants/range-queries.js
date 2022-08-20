@@ -31,7 +31,7 @@ export function getDefaultRange() {
 }
 
 export function getRangeQueryByRange(range) {
-  const find = rangeQueries.find(rq => RANGE_QUERIES[rq] === range)
+  const find = rangeQueries.find((rq) => RANGE_QUERIES[rq] === range)
   return find ? find : DEFAULT_QUERY
 }
 

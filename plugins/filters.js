@@ -46,7 +46,7 @@ Vue.filter(
   }
 )
 
-Vue.filter('intervalLabel', interval => {
+Vue.filter('intervalLabel', (interval) => {
   if (interval === 'Fin Year') {
     return 'year'
   }
@@ -68,14 +68,14 @@ Vue.filter('formatValue', (value, prepend = '') => {
   const fValue = f(value)
   return isFinite(value) && value !== null ? `${prepend}${fValue}` : '–'
 })
-Vue.filter('formatValue2', value => {
+Vue.filter('formatValue2', (value) => {
   const fString = smartFormatString(value)
   const f = d3Format(fString)
   const fValue = f(value)
   return isFinite(value) && value ? fValue : '0'
 })
 
-Vue.filter('facilityFormatNumber', value => {
+Vue.filter('facilityFormatNumber', (value) => {
   let v = value
   let fString = ',.0f'
   if (v < 10 && v >= 1) {
@@ -87,7 +87,7 @@ Vue.filter('facilityFormatNumber', value => {
   return f(v)
 })
 
-Vue.filter('customFormatValue', value => {
+Vue.filter('customFormatValue', (value) => {
   let fString = smartFormatString(value)
   if (fString === ',.0f') {
     fString = ',.1f'
@@ -96,7 +96,7 @@ Vue.filter('customFormatValue', value => {
   return isFinite(value) && value ? f(value) : '–'
 })
 
-Vue.filter('percentageFormatNumber', value => {
+Vue.filter('percentageFormatNumber', (value) => {
   let fString = smartFormatString(value)
   if (fString === ',.0f') {
     fString = ',.1f'
@@ -106,7 +106,7 @@ Vue.filter('percentageFormatNumber', value => {
   return isFinite(value) && value !== null ? fValue : '–'
 })
 
-Vue.filter('percentageFormatNumber2', value => {
+Vue.filter('percentageFormatNumber2', (value) => {
   let fString = smartFormatString(value)
   if (fString === ',.0f') {
     fString = ',.1f'
@@ -122,7 +122,7 @@ Vue.filter('formatCurrency', (value, formatString = ',.2f') => {
   return isFinite(value) && value !== null && value !== '' ? fValue : '–'
 })
 
-Vue.filter('toLowerCase', string => {
+Vue.filter('toLowerCase', (string) => {
   return string.toLowerCase()
 })
 

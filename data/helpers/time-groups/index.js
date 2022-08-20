@@ -11,7 +11,7 @@ import PerfTime from '@/plugins/perfTime.js'
 
 const perfTime = new PerfTime()
 
-export default function({ domains, datasetFlat, interval, rollUp }) {
+export default function ({ domains, datasetFlat, interval, rollUp }) {
   perfTime.time()
   let rolled = datasetFlat
   switch (interval) {

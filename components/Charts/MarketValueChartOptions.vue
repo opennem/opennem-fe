@@ -1,8 +1,6 @@
 <template>
   <chart-header :chart-shown="chartShown">
-    <template
-      v-slot:options
-      v-if="!readOnly">
+    <template v-slot:options v-if="!readOnly">
       <chart-options
         :options="options"
         :si="options.si"
@@ -12,10 +10,11 @@
         :show="chartOptions"
         :chart-display-prefix="chartDisplayPrefix"
         :unit-prefix="'$'"
-        @show-change="s => chartOptions = s"
+        @show-change="(s) => (chartOptions = s)"
         @type-click="handleTypeClick"
         @prefix-click="handlePrefixClick"
-        @curve-click="handleCurveClick"/>
+        @curve-click="handleCurveClick"
+      />
     </template>
 
     <template v-slot:label-unit>
@@ -23,16 +22,14 @@
       <small
         v-if="chartShown"
         class="display-unit"
-        @click.stop="handleUnitClick">${{ displayUnit }}</small>
+        @click.stop="handleUnitClick"
+        >${{ displayUnit }}</small
+      >
     </template>
 
-    <template
-      v-slot:average-value
-      v-if="!readOnly || !hoverValue">
+    <template v-slot:average-value v-if="!readOnly || !hoverValue">
       Total
-      <strong>
-        {{ total | formatCurrency(',.0f') }}{{ displayUnit }}
-      </strong>
+      <strong> {{ total | formatCurrency(',.0f') }}{{ displayUnit }} </strong>
     </template>
 
     <template v-slot:hover-date>
@@ -40,19 +37,22 @@
     </template>
 
     <template v-slot:hover-values>
-      <span
-        v-if="hoverValue && showHover"
-        class="ft-value">
+      <span v-if="hoverValue && showHover" class="ft-value">
         <em
           :style="{ 'background-color': hoverDomainColour }"
-          class="colour-square" />
+          class="colour-square"
+        />
         {{ hoverDomainLabel }}
-        <strong>{{ hoverValue | formatCurrency(',.0f') }}{{ displayUnit }}</strong>
+        <strong
+          >{{ hoverValue | formatCurrency(',.0f') }}{{ displayUnit }}</strong
+        >
       </span>
 
       <span>
         <span v-if="showHover">Total</span>
-        <strong>{{ hoverTotal | formatCurrency(',.0f') }}{{ displayUnit }}</strong>
+        <strong
+          >{{ hoverTotal | formatCurrency(',.0f') }}{{ displayUnit }}</strong
+        >
       </span>
     </template>
   </chart-header>
@@ -165,7 +165,7 @@ export default {
 
     togglePrefix(prefix) {
       const length = this.options.si.length
-      const index = this.options.si.findIndex(p => p === prefix)
+      const index = this.options.si.findIndex((p) => p === prefix)
       let nextIndex = index + 1
 
       if (nextIndex === length) {

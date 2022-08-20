@@ -1,23 +1,28 @@
 <template>
-  <chart-wrapper 
+  <chart-wrapper
     :show-chart="chartPrice"
     :hover-values="hoverValues"
     :formatter="$options.filters.formatCurrency"
-    state-name="chartPrice">
+    state-name="chartPrice"
+  >
     <template v-slot:header>
       <strong>Price</strong>
 
-      <span 
-        v-show="chartPrice" 
-        class="chart-type-buttons buttons has-addons">
-        <button 
-          :class="{'is-selected': curve === 'step'}"
-          class="button is-small is-rounded" 
-          @click.stop="setCurve('step')">step</button>
-        <button 
-          :class="{'is-selected': curve === 'smooth'}"
-          class="button is-small is-rounded" 
-          @click.stop="setCurve('smooth')">curve</button>
+      <span v-show="chartPrice" class="chart-type-buttons buttons has-addons">
+        <button
+          :class="{ 'is-selected': curve === 'step' }"
+          class="button is-small is-rounded"
+          @click.stop="setCurve('step')"
+        >
+          step
+        </button>
+        <button
+          :class="{ 'is-selected': curve === 'smooth' }"
+          class="button is-small is-rounded"
+          @click.stop="setCurve('smooth')"
+        >
+          curve
+        </button>
       </span>
     </template>
     <template v-slot:datetime>
@@ -45,10 +50,11 @@
       :curve="curve"
       :show-cursor-dots="showCursorDots"
       class="dash-stroke-lines"
-      style="height: 75px;"
+      style="height: 75px"
       @date-hover="handleDateHover"
       @enter="handleEnter"
-      @leave="handleLeave" />
+      @leave="handleLeave"
+    />
     <multi-line
       v-show="chartPrice"
       :toggled="chartPrice"
@@ -67,10 +73,11 @@
       :y1-ticks="yTicks"
       :curve="curve"
       :show-cursor-dots="showCursorDots"
-      style="height: 150px;"
+      style="height: 150px"
       @date-hover="handleDateHover"
       @enter="handleEnter"
-      @leave="handleLeave" />
+      @leave="handleLeave"
+    />
     <multi-line
       v-show="showNegLogChart"
       :toggled="showNegLogChart"
@@ -94,8 +101,8 @@
       class="dash-stroke-lines"
       @date-hover="handleDateHover"
       @enter="handleEnter"
-      @leave="handleLeave" />
-    
+      @leave="handleLeave"
+    />
   </chart-wrapper>
 </template>
 
@@ -142,10 +149,10 @@ export default {
       chartPrice: 'chartOptionsPrice/chartShown'
     }),
     priceMin() {
-      return min(this.priceDataset, d => d._lowest)
+      return min(this.priceDataset, (d) => d._lowest)
     },
     priceMax() {
-      return max(this.priceDataset, d => d._highest)
+      return max(this.priceDataset, (d) => d._highest)
     },
     yMax() {
       if (this.showPosLogChart) {

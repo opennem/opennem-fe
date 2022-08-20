@@ -4,7 +4,7 @@ import {
   checkPowerEnergyExists
 } from '@/services/DataCheck.js'
 
-export default function(response, displayTz) {
+export default function (response, displayTz) {
   const data = response.data || response
   const dataAll = [],
     dataPower = [],
@@ -17,7 +17,7 @@ export default function(response, displayTz) {
     demandEnergy = [],
     demandMarketValue = []
   // filter out each type to its own array
-  data.forEach(d => {
+  data.forEach((d) => {
     const typeProp = typeof d.data_type === 'undefined' ? 'type' : 'data_type'
     if (DT.isValidDataType(d[typeProp])) {
       dataAll.push(d)
@@ -73,7 +73,7 @@ export default function(response, displayTz) {
 
   checkPowerEnergyExists({ dataPower, dataEnergy })
   const isPowerData = dataPower.length > 0
-  data.forEach(d => {
+  data.forEach((d) => {
     checkHistoryObject(d, displayTz, !isPowerData)
   })
 

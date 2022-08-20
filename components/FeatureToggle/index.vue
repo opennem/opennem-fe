@@ -3,14 +3,11 @@
     <button
       class="delete close-btn is-small"
       aria-label="delete"
-      @click="handleDoneClick" />
+      @click="handleDoneClick"
+    />
     <div class="panel-heading">Features</div>
-    <label
-      class="panel-block"
-      @click.stop>
-      <input
-        v-model="featureEmissions"
-        type="checkbox" >
+    <label class="panel-block" @click.stop>
+      <input v-model="featureEmissions" type="checkbox" />
       Emissions Charts
     </label>
 
@@ -20,7 +17,6 @@
           type="checkbox">
         Region Compare Charts
       </label> -->
-
   </div>
 </template>
 
@@ -28,19 +24,19 @@
 export default {
   computed: {
     featureEmissions: {
-      get: function() {
+      get: function () {
         return this.$store.getters['feature/emissions']
       },
-      set: function(newValue) {
+      set: function (newValue) {
         this.$store.commit('feature/emissions', newValue)
       }
     },
 
     featureRegionCompare: {
-      get: function() {
+      get: function () {
         return this.$store.getters['feature/regionCompare']
       },
-      set: function(newValue) {
+      set: function (newValue) {
         this.$store.commit('feature/regionCompare', newValue)
       }
     }

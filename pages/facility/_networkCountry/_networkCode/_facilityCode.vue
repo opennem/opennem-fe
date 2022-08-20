@@ -1,38 +1,36 @@
 <template>
   <div class="facility-wrapper">
     <transition name="fade">
-      <ReportIssue
-        v-if="showFields"
-        :name="facilityName"
-        :path="fullPath" />
+      <ReportIssue v-if="showFields" :name="facilityName" :path="fullPath" />
     </transition>
-    
-    <section
-      :class="{ 'report-view': showFields }"
-      class="facility">
 
-      <button 
+    <section :class="{ 'report-view': showFields }" class="facility">
+      <button
         v-if="!showFields"
-        class="report-issue-btn button is-rounded" 
-        @click="handleReportIssueClick">
-        <i class="fal fa-fw fa-comment-alt-exclamation"/>
+        class="report-issue-btn button is-rounded"
+        @click="handleReportIssueClick"
+      >
+        <i class="fal fa-fw fa-comment-alt-exclamation" />
         Report an Issue
       </button>
-      
 
       <transition name="fade">
         <div
           v-if="!fetchingFacility && !facility"
           class="not-found-card card"
-          style="height: 60vh; margin: 0 auto;">
-          <i class="fal fa-industry-alt"/>
+          style="height: 60vh; margin: 0 auto"
+        >
+          <i class="fal fa-industry-alt" />
           <div>
-            <span v-if="selectedFacilityError">{{ selectedFacilityErrorMessage }}</span>
+            <span v-if="selectedFacilityError">{{
+              selectedFacilityErrorMessage
+            }}</span>
             <span v-else>Facility not available</span>
             <button
               v-tooltip="'Try loading facility again'"
               class="button is-rounded try-again-button"
-              @click="getFacility">
+              @click="getFacility"
+            >
               <i class="fal fa-redo" />
             </button>
           </div>
@@ -42,24 +40,28 @@
       <transition name="fade">
         <Loader
           v-if="fetchingFacility && !facility"
-          class="facility-chart-loader" />
+          class="facility-chart-loader"
+        />
       </transition>
 
       <transition name="fade">
-        <div
-          v-if="facility"
-          class="main">
+        <div v-if="facility" class="main">
           <header>
             <h2
               v-highlight="showFields"
               @click="() => handleFieldClick('Facility name', facilityName)"
-            >{{ facilityName }}</h2>
+            >
+              {{ facilityName }}
+            </h2>
 
             <div class="facility-details">
               <div
                 v-highlight="showFields"
                 class="facility-fuel-techs"
-                @click="() => handleFieldClick('Facility fuel tech', facilityFuelTechs)"
+                @click="
+                  () =>
+                    handleFieldClick('Facility fuel tech', facilityFuelTechs)
+                "
               >
                 <div
                   v-for="(ft, index) in facilityFuelTechs"
@@ -70,16 +72,23 @@
                     :style="{
                       'background-color': ft.colour
                     }"
-                    class="colour-square" />
+                    class="colour-square"
+                  />
                   {{ ft.label }}
                 </div>
               </div>
-          
+
               <span
                 v-highlight="showFields"
                 v-if="facilityStatus"
                 class="tag facility-status"
-                @click="() => handleFieldClick('Facility status and dates', `${facilityStatus} ${facilityDates}`)"
+                @click="
+                  () =>
+                    handleFieldClick(
+                      'Facility status and dates',
+                      `${facilityStatus} ${facilityDates}`
+                    )
+                "
               >
                 <strong>{{ getFacilityStatusLabel(facilityStatus) }}</strong>
                 <em>{{ facilityDates }}</em>
@@ -90,7 +99,8 @@
           <Summary
             v-if="hasDescription"
             :description="facilityDescription"
-            :link-object="facilityWikiLink" />
+            :link-object="facilityWikiLink"
+          />
 
           <transition name="fade">
             <PhotoMap
@@ -102,7 +112,7 @@
             />
           </transition>
 
-          <div style="position: relative; margin-bottom: 1rem;">
+          <div style="position: relative; margin-bottom: 1rem">
             <DataOptionsBar
               :ranges="ranges"
               :intervals="intervals"
@@ -112,9 +122,10 @@
               @rangeChange="handleRangeChange"
               @intervalChange="handleIntervalChange"
               @queryChange="handleQueryChange"
-              @filterPeriodChange="handleFilterPeriodChange" />
+              @filterPeriodChange="handleFilterPeriodChange"
+            />
 
-              <!-- <Dropdown
+            <!-- <Dropdown
           v-if="isEnergyType"
           :options="chartTypeOptions"
           class="dropdown chart-type-options"
@@ -126,15 +137,19 @@
             <transition name="fade">
               <div
                 v-if="!fetchingStats && stackedAreaDataset.length === 0"
-                class="not-found-card card">
-                <i class="fal fa-chart-area"/>
+                class="not-found-card card"
+              >
+                <i class="fal fa-chart-area" />
                 <div>
-                  <span v-if="selectedFacilityError">{{ selectedFacilityErrorMessage }}</span>
+                  <span v-if="selectedFacilityError">{{
+                    selectedFacilityErrorMessage
+                  }}</span>
                   <span v-else>Facility statistics data not available</span>
                   <button
                     v-tooltip="'Try loading facility statistics again'"
                     class="button is-rounded try-again-button"
-                    @click="getFacilityStats">
+                    @click="getFacilityStats"
+                  >
                     <i class="fal fa-redo" />
                   </button>
                 </div>
@@ -142,9 +157,7 @@
             </transition>
 
             <transition name="fade">
-              <Loader
-                v-if="fetchingStats"
-                class="facility-chart-loader" />
+              <Loader v-if="fetchingStats" class="facility-chart-loader" />
             </transition>
 
             <PowerEnergyChart
@@ -244,7 +257,11 @@
             <UnitList
               :ready="!fetchingStats"
               :is-energy-type="isEnergyType"
-              :power-energy-unit="` ${isEnergyType && !isYAxisAveragePower ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
+              :power-energy-unit="` ${
+                isEnergyType && !isYAxisAveragePower
+                  ? chartEnergyCurrentUnit
+                  : chartPowerCurrentUnit
+              }`"
               :is-y-axis-average-power="isYAxisAveragePower"
               :units="unitsSummary"
               :hover-on="isHovering"
@@ -264,10 +281,11 @@
               class="unit-list"
               @codeHover="handleCodeHover"
               @codeClick="handleCodeClick"
-              @codeShiftClick="handleCodeShiftClick" />
+              @codeShiftClick="handleCodeShiftClick"
+            />
           </section>
 
-        <!-- <EnergyBar
+          <!-- <EnergyBar
           :bar-width="400"
           :domains="powerEnergyDomains"
           :dataset="stackedAreaDatasetFilteredByZoomExtent"
@@ -278,18 +296,15 @@
           :highlight-domain="highlightDomain"
         /> -->
 
-        <!-- :convert-value="convertValue" -->
+          <!-- :convert-value="convertValue" -->
 
-        <!-- <FacilityProperties
+          <!-- <FacilityProperties
           :facility="facility"
           class="facility-props" /> -->
         </div>
       </transition>
 
-      <section
-        v-if="facility"
-        style="width: 30%; text-align: right">
-
+      <section v-if="facility" style="width: 30%; text-align: right">
         <PhotoMap
           v-if="facility && !widthBreak"
           :facility-name="facilityName"
@@ -299,7 +314,11 @@
 
         <DonutVis
           v-if="!fetchingStats && powerEnergyDomains.length > 1"
-          :unit="` ${isEnergyType && !isYAxisAveragePower ? chartEnergyCurrentUnit : chartPowerCurrentUnit}`"
+          :unit="` ${
+            isEnergyType && !isYAxisAveragePower
+              ? chartEnergyCurrentUnit
+              : chartPowerCurrentUnit
+          }`"
           :domains="powerEnergyDomains"
           :dataset="stackedAreaDatasetFilteredByZoomExtent"
           :dynamic-extent="zoomExtent"
@@ -309,14 +328,15 @@
           :focus-date="focusDate"
           :highlight-domain="highlightDomain"
           :convert-value="convertValue"
-          :is-power-type="!isEnergyType || (isEnergyType && isYAxisAveragePower)"
+          :is-power-type="
+            !isEnergyType || (isEnergyType && isYAxisAveragePower)
+          "
           :is-touch-device="isTouchDevice"
-          style="margin-top: 2rem; padding-top: 2rem;"
+          style="margin-top: 2rem; padding-top: 2rem"
         />
       </section>
     </section>
   </div>
-  
 </template>
 
 <script>
@@ -593,20 +613,20 @@ export default {
       return this.facility ? this.facility.photos : []
     },
     operatingDomains() {
-      return this.unitsSummary.filter(d => d.status === FACILITY_OPERATING)
+      return this.unitsSummary.filter((d) => d.status === FACILITY_OPERATING)
     },
     powerEnergyDomains() {
       return this.unitsSummary
-        .filter(d => !_includes(this.hiddenCodes, d.code))
+        .filter((d) => !_includes(this.hiddenCodes, d.code))
         .reverse()
     },
 
     facilityFuelTechs() {
       const fuelTechs = _uniq(
-        this.unitsSummary.map(d => d.fuelTechLabel)
+        this.unitsSummary.map((d) => d.fuelTechLabel)
       ).sort()
 
-      const data = fuelTechs.map(ft => {
+      const data = fuelTechs.map((ft) => {
         return {
           id: ft,
           colour: FT.DEFAULT_FUEL_TECH_COLOUR[ft],
@@ -618,7 +638,7 @@ export default {
     },
 
     facilityStatus() {
-      const unitStatus = _uniq(this.unitsSummary.map(d => d.status))
+      const unitStatus = _uniq(this.unitsSummary.map((d) => d.status))
       if (_includes(unitStatus, FACILITY_OPERATING)) {
         // if at least one unit is operating, the facility is in operation
         return FACILITY_OPERATING
@@ -640,7 +660,7 @@ export default {
       let date = null
       // earliest operating data first seen
 
-      this.operatingDomains.forEach(d => {
+      this.operatingDomains.forEach((d) => {
         if (!date) {
           date = d.dataFirstSeen
         } else if (isBefore(d.dataFirstSeen, date)) {
@@ -655,7 +675,7 @@ export default {
       let date = null
       // most recent data last seen
 
-      this.unitsSummary.forEach(d => {
+      this.unitsSummary.forEach((d) => {
         if (!date) {
           date = d.dataLastSeen
         } else if (isAfter(d.dataLastSeen, date)) {
@@ -667,7 +687,7 @@ export default {
     },
 
     facilityDates() {
-      const formatLocalDate = t =>
+      const formatLocalDate = (t) =>
         this.$options.filters.formatLocalDate(t, '%_d %b %Y')
 
       if (this.isFacilityOperating) {
@@ -695,12 +715,12 @@ export default {
     emissionsDomains() {
       console.log(this.domainEmissions)
       return this.domainEmissions.filter(
-        d => !_includes(this.hiddenCodes, d.code)
+        (d) => !_includes(this.hiddenCodes, d.code)
       )
     },
     marketValueDomains() {
       return this.domainMarketValue.filter(
-        d => !_includes(this.hiddenCodes, d.code)
+        (d) => !_includes(this.hiddenCodes, d.code)
       )
     },
 
@@ -710,7 +730,7 @@ export default {
         const end = this.zoomExtent[1]
 
         return this.selectedFacilityUnitsDataset.filter(
-          d => d.date >= start && d.date < end
+          (d) => d.date >= start && d.date < end
         )
       }
       return this.selectedFacilityUnitsDataset
@@ -722,7 +742,7 @@ export default {
         const end = this.zoomExtent[1]
 
         return this.stackedAreaDataset.filter(
-          d => d.date >= start && d.date < end
+          (d) => d.date >= start && d.date < end
         )
       }
       return this.stackedAreaDataset
@@ -745,7 +765,7 @@ export default {
       })
     },
     emissionIntensityData() {
-      const dataset = this.selectedFacilityUnitsDataset.map(d => {
+      const dataset = this.selectedFacilityUnitsDataset.map((d) => {
         const obj = {
           date: d.date,
           time: d.time,
@@ -754,10 +774,10 @@ export default {
         let totalEmissions = 0,
           totalPowerEnergy = 0
 
-        this.domainEmissions.forEach(domain => {
+        this.domainEmissions.forEach((domain) => {
           totalEmissions += d[domain.id] || 0
         })
-        this.domainPowerEnergy.forEach(domain => {
+        this.domainPowerEnergy.forEach((domain) => {
           totalPowerEnergy += d[domain.id] || 0
         })
         let ei = (totalEmissions / totalPowerEnergy) * 1000 // convert to kgCo2/MWh
@@ -854,7 +874,7 @@ export default {
 
     facilityHasEmissions() {
       let hasEmissionsFactor = false
-      this.unitsSummary.forEach(d => {
+      this.unitsSummary.forEach((d) => {
         if (!hasEmissionsFactor && d.hasEmissionsFactor) {
           hasEmissionsFactor = true
         }
@@ -1106,8 +1126,8 @@ export default {
       }
     },
     handleCodeShiftClick(code) {
-      const toBeHidden = this.unitsSummary.filter(d => d.code !== code)
-      const hiddenCodes = toBeHidden.map(d => d.code)
+      const toBeHidden = this.unitsSummary.filter((d) => d.code !== code)
+      const hiddenCodes = toBeHidden.map((d) => d.code)
       this.hiddenCodes = hiddenCodes
     },
 

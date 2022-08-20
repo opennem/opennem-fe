@@ -6,26 +6,35 @@
         <div v-if="ready">
           <button
             class="cancel-button button is-small is-rounded is-primary is-inverted"
-            @click="handleCancelClick">Cancel</button>
+            @click="handleCancelClick"
+          >
+            Cancel
+          </button>
           <button
             class="button is-small is-rounded is-primary"
-            @click="handleExportClick">Download</button>
+            @click="handleExportClick"
+          >
+            Download
+          </button>
         </div>
       </div>
     </section>
-    <section 
-      v-if="ready" 
-      class="widget-buttons">
+    <section v-if="ready" class="widget-buttons">
       <div>
         <a
           v-for="chart in chartButtons"
           :key="chart.name"
           :class="{ 'is-primary': isEnabled(chart.name) }"
           class="tag is-rounded is-white"
-          @click="handleChartToggle(chart)">
-          {{ chart.name === 'exportPowerEnergy' ? getPowerEnergyChartLabel(chart.label) : chart.label }}
+          @click="handleChartToggle(chart)"
+        >
+          {{
+            chart.name === 'exportPowerEnergy'
+              ? getPowerEnergyChartLabel(chart.label)
+              : chart.label
+          }}
         </a>
-        <hr>
+        <hr />
 
         <span class="tag-group">
           <a
@@ -33,16 +42,19 @@
             :key="table.name"
             :class="{ 'is-primary': isEnabled(table.name) }"
             class="tag is-rounded is-white"
-            @click="handleTableToggle(table.name)">
+            @click="handleTableToggle(table.name)"
+          >
             {{ table.label }}
           </a>
         </span>
-        
+
         <a
           v-if="legend"
           :class="{ 'is-primary': percentDisplay }"
           class="tag is-rounded is-white"
-          @click="handlePercentDisplay()">Show %</a>
+          @click="handlePercentDisplay()"
+          >Show %</a
+        >
       </div>
     </section>
   </header>
@@ -112,7 +124,7 @@ export default {
     },
     chartButtons() {
       return this.exportCharts.filter(
-        c =>
+        (c) =>
           (this.hasEmissions && this.featureEmissions
             ? true
             : c.name !== 'exportEmissionsVolume' &&
@@ -124,7 +136,7 @@ export default {
   },
 
   created() {
-    this.exportCharts.forEach(c => {
+    this.exportCharts.forEach((c) => {
       let localState = lsGet(c.name)
       let state = localState && localState !== 'false' ? true : false
       if (c.name === 'exportPowerEnergy' && localState === null) {

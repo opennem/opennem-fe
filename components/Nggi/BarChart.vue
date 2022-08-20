@@ -1,18 +1,10 @@
 <template>
-  <div 
-    :aria-rowcount="xDomains.length" 
-    role="table">
-    <div 
-      class="row header" 
-      role="row">
-      <span 
-        class="row-label" 
-        role="columnheader" 
-        aria-sort="none">Sector</span>
-      <span 
-        class="row-value" 
-        role="columnheader" 
-        aria-sort="none">Emissions/Contribution</span>
+  <div :aria-rowcount="xDomains.length" role="table">
+    <div class="row header" role="row">
+      <span class="row-label" role="columnheader" aria-sort="none">Sector</span>
+      <span class="row-value" role="columnheader" aria-sort="none"
+        >Emissions/Contribution</span
+      >
     </div>
 
     <div
@@ -26,34 +18,33 @@
       @mouseenter="onMouseEnter(domain.id)"
       @mouseleave="onMouseLeave"
       @click.exact="handleRowClick(domain.id)"
-      @click.shift.exact="handleRowShiftClick(domain.id)">
-      <div 
+      @click.shift.exact="handleRowShiftClick(domain.id)"
+    >
+      <div
         v-tooltip.right="{ content: domain.description }"
-        class="row-label" 
-        role="cell">
+        class="row-label"
+        role="cell"
+      >
         <div
-          :style="{ backgroundColor: domain.colour}"
-          class="colour-square" />
+          :style="{ backgroundColor: domain.colour }"
+          class="colour-square"
+        />
         {{ domain.label }}
       </div>
 
-      <div 
-        class="row-value" 
-        role="cell">
+      <div class="row-value" role="cell">
         {{ getValue(domain.id) | formatValue }}
       </div>
 
-      <div 
-        v-if="!isHidden(domain.id)" 
-        class="row-bar-wrapper" 
-        role="cell">
+      <div v-if="!isHidden(domain.id)" class="row-bar-wrapper" role="cell">
         <div
           :style="{
-            'width': `${getWidth(domain.id)}px`,
+            width: `${getWidth(domain.id)}px`,
             'background-color': domain.colour,
-            'opacity': getOpacity(domain.id)
+            opacity: getOpacity(domain.id)
           }"
-          class="row-bar" />
+          class="row-bar"
+        />
 
         <div class="contribution">
           {{ getContribution(domain.id) | percentageFormatNumber }}
@@ -70,24 +61,16 @@
       @mouseenter="onMouseEnter('totalLine')"
       @mouseleave="onMouseLeave"
     >
-      <div 
-        class="row-label"
-        role="cell">
-        <div
-          :class="{ on: showTotal }"
-          class="net-total-line" />
+      <div class="row-label" role="cell">
+        <div :class="{ on: showTotal }" class="net-total-line" />
         Net Total
       </div>
 
-      <div 
-        class="row-value" 
-        role="cell">
+      <div class="row-value" role="cell">
         {{ total | formatValue }}
       </div>
 
-      <div 
-        class="row-bar-wrapper" 
-        role="cell"/>
+      <div class="row-bar-wrapper" role="cell" />
     </div>
   </div>
 </template>
@@ -154,11 +137,11 @@ export default {
 
   computed: {
     barDataset() {
-      const domains = this.xDomains.filter(d => !_includes(this.hidden, d.id))
+      const domains = this.xDomains.filter((d) => !_includes(this.hidden, d.id))
       const dataset = this.dataset
 
       if (this.hoverOn && this.hoverData) {
-        return domains.map(domain => {
+        return domains.map((domain) => {
           const id = domain.id
           return {
             name: id,
@@ -166,7 +149,7 @@ export default {
           }
         })
       } else if (this.focusOn && this.focusData) {
-        return domains.map(domain => {
+        return domains.map((domain) => {
           const id = domain.id
           return {
             name: id,
@@ -175,7 +158,7 @@ export default {
         })
       }
 
-      return domains.map(domain => {
+      return domains.map((domain) => {
         const id = domain.id
         return {
           name: id,
@@ -190,14 +173,14 @@ export default {
 
     hoverData() {
       if (this.hoverDate && this.dataset.length > 0) {
-        return this.dataset.find(d => d.time === this.hoverDate.getTime())
+        return this.dataset.find((d) => d.time === this.hoverDate.getTime())
       }
       return null
     },
 
     focusData() {
       if (this.focusDate && this.dataset.length > 0) {
-        return this.dataset.find(d => d.time === this.focusDate.getTime())
+        return this.dataset.find((d) => d.time === this.focusDate.getTime())
       }
       return null
     }
@@ -223,7 +206,7 @@ export default {
 
   methods: {
     getWidth(id) {
-      const find = this.barDataset.find(d => d.name === id)
+      const find = this.barDataset.find((d) => d.name === id)
       if (find) {
         this.x.domain([0, this.total])
         return find.value > 0 ? this.x(find.value) : 1
@@ -231,11 +214,11 @@ export default {
       return 0
     },
     getValue(id) {
-      const find = this.barDataset.find(d => d.name === id)
+      const find = this.barDataset.find((d) => d.name === id)
       return find ? find.value : '—'
     },
     getContribution(id) {
-      const find = this.barDataset.find(d => d.name === id)
+      const find = this.barDataset.find((d) => d.name === id)
       if (find) {
         return (find.value / this.total) * 100
       }

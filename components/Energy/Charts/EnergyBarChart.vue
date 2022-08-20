@@ -1,9 +1,6 @@
 <template>
   <section>
-    <div
-      v-for="domain in xDomains"
-      :key="domain.id"
-      class="row">
+    <div v-for="domain in xDomains" :key="domain.id" class="row">
       <span class="row-label">
         {{ domain.label }}
       </span>
@@ -11,17 +8,17 @@
       <div class="row-bar-wrapper">
         <div
           :style="{
-            'width': `${getWidth(domain.id)}px`,
+            width: `${getWidth(domain.id)}px`,
             'background-color': domain.colour,
-            'opacity': getOpacity(domain.id)
+            opacity: getOpacity(domain.id)
           }"
-          class="row-bar" />
+          class="row-bar"
+        />
 
         <div class="contribution">
           {{ getContribution(domain.id) | percentageFormatNumber }}
         </div>
       </div>
-
     </div>
   </section>
 </template>
@@ -80,7 +77,7 @@ export default {
       const dataset = this.dataset
 
       if (this.hoverOn && this.hoverData) {
-        return domains.map(domain => {
+        return domains.map((domain) => {
           const id = domain.id
           return {
             name: id,
@@ -88,7 +85,7 @@ export default {
           }
         })
       } else if (this.focusOn && this.focusData) {
-        return domains.map(domain => {
+        return domains.map((domain) => {
           const id = domain.id
           return {
             name: id,
@@ -97,7 +94,7 @@ export default {
         })
       }
 
-      return domains.map(domain => {
+      return domains.map((domain) => {
         const id = domain.id
         return {
           name: id,
@@ -112,14 +109,14 @@ export default {
 
     hoverData() {
       if (this.hoverDate && this.dataset.length > 0) {
-        return this.dataset.find(d => d.time === this.hoverDate.getTime())
+        return this.dataset.find((d) => d.time === this.hoverDate.getTime())
       }
       return null
     },
 
     focusData() {
       if (this.focusDate && this.dataset.length > 0) {
-        return this.dataset.find(d => d.time === this.focusDate.getTime())
+        return this.dataset.find((d) => d.time === this.focusDate.getTime())
       }
       return null
     }
@@ -145,7 +142,7 @@ export default {
 
   methods: {
     getWidth(id) {
-      const find = this.barDataset.find(d => d.name === id)
+      const find = this.barDataset.find((d) => d.name === id)
       if (find) {
         this.x.domain([0, this.total])
         return this.x(find.value)
@@ -153,7 +150,7 @@ export default {
       return 0
     },
     getContribution(id) {
-      const find = this.barDataset.find(d => d.name === id)
+      const find = this.barDataset.find((d) => d.name === id)
       if (find) {
         return (find.value / this.total) * 100
       }

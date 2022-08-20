@@ -6,8 +6,8 @@ function reducer(a, domains) {
     temperatureId = null,
     temperatureCount = 0
 
-  a.forEach(point => {
-    domains.forEach(domain => {
+  a.forEach((point) => {
+    domains.forEach((domain) => {
       const id = domain.id
       const type = domain.type
       let isNew = false
@@ -42,7 +42,7 @@ function reducer(a, domains) {
     })
   })
 
-  domains.forEach(domain => {
+  domains.forEach((domain) => {
     let allNulls = true
     const id = domain.id
     const type = domain.type
@@ -51,7 +51,7 @@ function reducer(a, domains) {
     const isEmissionsType = DT.isEmissions(type)
 
     if (isPowerOrEnergy || isMarketValueType || isEmissionsType) {
-      const total = sum(a, d => {
+      const total = sum(a, (d) => {
         let value = d[id]
 
         if (value || value === 0) {
@@ -70,7 +70,7 @@ function reducer(a, domains) {
   return obj
 }
 
-export default function(
+export default function (
   domains,
   data,
   isIncompleteStart,
@@ -78,7 +78,11 @@ export default function(
   incompleteStartDate,
   incompleteEndDate
 ) {
-  const entries = rollups(data, v => reducer(v, domains), d => d._rollUpDate)
+  const entries = rollups(
+    data,
+    (v) => reducer(v, domains),
+    (d) => d._rollUpDate
+  )
   return entries.map((e, i) => {
     const object = {
       time: e[0],
@@ -86,7 +90,7 @@ export default function(
       _isIncompleteBucket: false
     }
 
-    Object.keys(e[1]).forEach(k => {
+    Object.keys(e[1]).forEach((k) => {
       object[k] = e[1][k]
     })
 

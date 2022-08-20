@@ -1,12 +1,7 @@
 <template>
-  <div
-    :class="{ open: drawer }"
-    class="drawer-wrapper"
-    @click="close">
+  <div :class="{ open: drawer }" class="drawer-wrapper" @click="close">
     <div class="drawer">
-      <div
-        class="drawer-header"
-        @click="close">
+      <div class="drawer-header" @click="close">
         <logo class="header-logo" />
         <span class="close-button">
           <i class="fal fa-times" />
@@ -28,21 +23,15 @@
         </nuxt-link>
       </div>
 
-      <div 
-        v-show="isEmissionsView" 
-        class="menu">
-        <nuxt-link
-          :to="`/${currentView}/au/`"
-          class="menu-item">
+      <div v-show="isEmissionsView" class="menu">
+        <nuxt-link :to="`/${currentView}/au/`" class="menu-item">
           Australia
           <span class="icon">
             <i class="fal fa-chevron-right" />
           </span>
         </nuxt-link>
 
-        <nuxt-link
-          :to="`/${currentView}/world/`"
-          class="menu-item">
+        <nuxt-link :to="`/${currentView}/world/`" class="menu-item">
           World
           <span class="icon">
             <i class="fal fa-chevron-right" />
@@ -50,19 +39,15 @@
         </nuxt-link>
       </div>
 
-      <div 
-        v-show="!isEmissionsView" 
-        class="menu">
-        <nuxt-link
-          :to="`/${currentView}/au/`"
-          class="menu-item">
+      <div v-show="!isEmissionsView" class="menu">
+        <nuxt-link :to="`/${currentView}/au/`" class="menu-item">
           All Regions
           <span class="icon">
             <i class="fal fa-chevron-right" />
           </span>
         </nuxt-link>
 
-        <hr class="dropdown-divider">
+        <hr class="dropdown-divider" />
 
         <nuxt-link
           v-for="link in links"
@@ -73,7 +58,8 @@
             'menu-item-first-child': link.isFirstChild,
             'menu-item-last-child': link.isLastChild
           }"
-          class="menu-item">
+          class="menu-item"
+        >
           {{ link.label }}
           <span class="icon">
             <i class="fal fa-chevron-right" />
@@ -81,9 +67,7 @@
         </nuxt-link>
       </div>
 
-      <div 
-        v-show="!isEmissionsView" 
-        class="app-options">
+      <div v-show="!isEmissionsView" class="app-options">
         <div class="control">
           <label>Contribution to</label>
           <consumption-generation-toggle />
@@ -162,7 +146,7 @@ export default {
     getLinks() {
       // create links without 'all' since a divider is needed
       return this.regions
-        .map(r => {
+        .map((r) => {
           const isChild = r.parentRegion ? true : false
           const isFirstChild = r.parentFirstChild ? true : false
           const isLastChild = r.parentLastChild ? true : false
@@ -175,7 +159,7 @@ export default {
             isLastChild
           }
         })
-        .filter(r => r.id !== 'au')
+        .filter((r) => r.id !== 'au')
     },
 
     close() {

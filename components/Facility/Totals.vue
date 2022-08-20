@@ -2,11 +2,17 @@
   <div
     :style="{
       width: `${divWidth}px`,
-      position: position,
+      position: position
     }"
-    class="totals" >
-    <span class="total-facilities">Facilities: <strong>{{ totalFacilities }}</strong></span>
-    <span class="total-cap">Capacity: <strong>{{ totalCap | facilityFormatNumber }}</strong> <span v-if="totalCap < 1">kW</span><span v-else>MW</span></span>
+    class="totals"
+  >
+    <span class="total-facilities"
+      >Facilities: <strong>{{ totalFacilities }}</strong></span
+    >
+    <span class="total-cap"
+      >Capacity: <strong>{{ totalCap | facilityFormatNumber }}</strong>
+      <span v-if="totalCap < 1">kW</span><span v-else>MW</span></span
+    >
   </div>
 </template>
 

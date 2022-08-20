@@ -44,7 +44,7 @@ function startOfSeason(date, currentMonth, seasonStartMonth) {
   return set(date, { month: seasonStartMonth, date: 1 })
 }
 
-export default function(domains, data, rollUp) {
+export default function (domains, data, rollUp) {
   let isIncompleteEnd = false,
     isIncompleteStart = false,
     incompleteStartDate = null,

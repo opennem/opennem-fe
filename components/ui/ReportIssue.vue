@@ -2,46 +2,43 @@
   <Draggable class="floating-palette">
     <template slot="header">
       <header>
-        <i class="fal fa-fw fa-comment-alt-exclamation"/>
+        <i class="fal fa-fw fa-comment-alt-exclamation" />
         Report an Issue
       </header>
     </template>
     <template slot="main">
       <main v-if="submitted">
-        <h5>Your report has been submitted. <br> Thank you.</h5>
+        <h5>
+          Your report has been submitted. <br />
+          Thank you.
+        </h5>
       </main>
 
-      <main 
-        v-if="isSubmitting" 
-        style="margin: 75px 0;">
+      <main v-if="isSubmitting" style="margin: 75px 0">
         <Loader class="submission-loader" />
-      </main> 
+      </main>
 
       <main v-if="!isSubmitting && !submitted">
-        <div
-          v-if="hasSubmitError"
-          class="notification is-danger">
+        <div v-if="hasSubmitError" class="notification is-danger">
           <p>There is an issue submitting the report.</p>
           <code>{{ submitErrorMsg }}</code>
         </div>
 
         <label>Affected fields <em>(optional)</em></label>
-        <p
-          v-if="selectedFields.length === 0"
-          class="placeholder">
+        <p v-if="selectedFields.length === 0" class="placeholder">
           Click/tap on highlighted fields
         </p>
-        <div
-          v-else
-          class="tags">
-          <span 
-            v-for="(field, index) in selectedFields" 
+        <div v-else class="tags">
+          <span
+            v-for="(field, index) in selectedFields"
             :key="index"
-            class="tag is-primary">
+            class="tag is-primary"
+          >
             {{ field.key }}
             <button
               class="delete is-small"
-              @click="() => handleRemoveField(field)"/>
+              @click="() => handleRemoveField(field)"
+            />
           </span>
         </div>
 
@@ -49,52 +46,44 @@
           Sources
           <em v-if="triedSubmitting && !validSources">* (required)</em>
         </label>
-        <textarea 
+        <textarea
           v-model="sources"
           :class="{ 'has-error': triedSubmitting && !validSources }"
-          class="textarea source-input" 
-          placeholder="One source per line"/>
-        
+          class="textarea source-input"
+          placeholder="One source per line"
+        />
+
         <label>
           Describe
           <em v-if="triedSubmitting && !validDescription">* (required)</em>
         </label>
-        <textarea 
+        <textarea
           v-model="description"
           :class="{ 'has-error': triedSubmitting && !validDescription }"
-          class="textarea" />
+          class="textarea"
+        />
 
         <label>Your email <em>(optional)</em>)</label>
-        <p 
-          v-if="!validEmail && email.length > 5" 
-          class="help is-danger">Please enter a valid email address</p>
-        <input
-          v-model="email"
-          type="email" 
-          class="input">
-        
+        <p v-if="!validEmail && email.length > 5" class="help is-danger">
+          Please enter a valid email address
+        </p>
+        <input v-model="email" type="email" class="input" />
+
         <p class="help">* for following up purposes</p>
       </main>
     </template>
     <template slot="footer">
       <footer v-if="submitted && !isSubmitting">
-        <button
-          class="button is-light"
-          @click="handleDone">
-          Done
-        </button>
+        <button class="button is-light" @click="handleDone">Done</button>
       </footer>
-      
+
       <footer v-if="!submitted && !isSubmitting">
-        <button
-          class="button is-light"
-          @click="handleDone">
-          Cancel
-        </button>
+        <button class="button is-light" @click="handleDone">Cancel</button>
         <button
           :disabled="!validSubmission"
           class="button is-dark is-disabled"
-          @click="handleReportIssueSubmit">
+          @click="handleReportIssueSubmit"
+        >
           Report
         </button>
       </footer>
@@ -194,12 +183,12 @@ export default {
         this.isSubmitting = true
 
         this.submitFeedback(payload)
-          .then(r => {
+          .then((r) => {
             this.submitted = true
             this.isSubmitting = false
             lsSet('feedbackEmail', this.email)
           })
-          .catch(error => {
+          .catch((error) => {
             this.hasSubmitError = true
             this.isSubmitting = false
             if (error.response) {
@@ -226,7 +215,8 @@ export default {
     },
 
     checkEmail(email) {
-      var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      var re =
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       return re.test(email)
     },
 

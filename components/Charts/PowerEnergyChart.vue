@@ -4,7 +4,8 @@
       'is-hovered': hoverOn || focusOn,
       'has-border-bottom': !chartShown
     }"
-    class="chart">
+    class="chart"
+  >
     <power-energy-chart-options
       :read-only="readOnly"
       :chart-shown="chartShown"
@@ -24,7 +25,13 @@
       :is-renewable-line-only="isRenewableLineOnly"
       :average-energy="averageEnergy"
       :hover-display-date="hoverDisplayDate"
-      :hover-value="domains.length > 1 || (isTypeProportion || (isTypeLine && isYAxisPercentage)) ? hoverValue : null"
+      :hover-value="
+        domains.length > 1 ||
+        isTypeProportion ||
+        (isTypeLine && isYAxisPercentage)
+          ? hoverValue
+          : null
+      "
       :hover-domain-colour="hoverDomainColour"
       :hover-domain-label="hoverDomainLabel"
       :hover-renewables="hoverRenewables"
@@ -61,7 +68,9 @@
       :focus-date="focusDate"
       :focus-on="focusOn"
       :incomplete-intervals="incompleteIntervals"
-      :dataset-two="chartEnergyRenewablesLine ? renewablesPercentageDataset : []"
+      :dataset-two="
+        chartEnergyRenewablesLine ? renewablesPercentageDataset : []
+      "
       :dataset-two-colour="renewablesLineColour"
       :highlight-domain="highlightId"
       :mobile-screen="tabletBreak"
@@ -81,7 +90,12 @@
     />
 
     <button
-      v-if="chartShown && (isTypeLine || isTypeChangeSinceLine) && zoomExtent.length > 0 && !readOnly"
+      v-if="
+        chartShown &&
+        (isTypeLine || isTypeChangeSinceLine) &&
+        zoomExtent.length > 0 &&
+        !readOnly
+      "
       class="button is-rounded is-small reset-btn"
       @click.stop="handleZoomReset"
     >
@@ -92,11 +106,13 @@
       :svg-height="chartHeight - 30"
       :domains1="domains"
       :dataset1="dataset"
-      :domains2="[{
-        label: 'Renewables',
-        domain: 'value',
-        colour: renewablesLineColour
-      }]"
+      :domains2="[
+        {
+          label: 'Renewables',
+          domain: 'value',
+          colour: renewablesLineColour
+        }
+      ]"
       :dataset2="renewablesPercentageDataset"
       :show-y2="chartEnergyRenewablesLine"
       :y2-max="renewablesMax"
@@ -119,8 +135,9 @@
       @date-hover="handleDateHover"
       @domain-hover="handleDomainHover"
       @enter="handleVisEnter"
-      @leave="handleVisLeave" />
-    
+      @leave="handleVisLeave"
+    />
+
     <date-brush
       v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
       :dataset="dataset"
@@ -135,7 +152,8 @@
       @date-hover="handleDateHover"
       @date-filter="handleZoomExtent"
       @enter="handleVisEnter"
-      @leave="handleVisLeave" />
+      @leave="handleVisLeave"
+    />
   </div>
 </template>
 
@@ -391,7 +409,7 @@ export default {
           ? this.powerEnergyDomains
           : this.energyPercentDomains
       return domains.filter(
-        d => !_includes(this.hiddenDomains, d[this.propName])
+        (d) => !_includes(this.hiddenDomains, d[this.propName])
       )
     },
     powerEnergyDomains() {
@@ -400,7 +418,7 @@ export default {
         : []
     },
     energyPercentDomains() {
-      return this.powerEnergyDomains.filter(d => d.category === 'source')
+      return this.powerEnergyDomains.filter((d) => d.category === 'source')
     },
 
     singleDomain() {
@@ -415,7 +433,7 @@ export default {
 
     highlightId() {
       const domain = this.highlightDomain
-      const find = this.domains.find(d => d[this.propName] === domain)
+      const find = this.domains.find((d) => d[this.propName] === domain)
       return find ? find.id : ''
     },
 
@@ -474,7 +492,7 @@ export default {
           min = 0,
           max = 0
 
-        this.domains.forEach(domain => {
+        this.domains.forEach((domain) => {
           const id = domain.id
           const ft = domain.fuelTech
 
@@ -498,7 +516,7 @@ export default {
           }
         })
 
-        this.domains.forEach(domain => {
+        this.domains.forEach((domain) => {
           const ft = domain.fuelTech
           if (domain.category === 'source') {
             if (ft === 'battery_discharging') {
@@ -519,22 +537,22 @@ export default {
       return dataset
     },
     energyGrossPercentDataset() {
-      const dataset = this.powerEnergyDataset.map(d => {
+      const dataset = this.powerEnergyDataset.map((d) => {
         const obj = {
           date: d.date,
           time: d.time,
           _isIncompleteBucket: d._isIncompleteBucket
         }
-        this.domains.forEach(domain => {
+        this.domains.forEach((domain) => {
           obj[domain.id] = (d[domain.id] / d._total) * 100
         })
         return obj
       })
 
-      dataset.forEach(p => {
+      dataset.forEach((p) => {
         let min = 0,
           max = 0
-        this.domains.forEach(domain => {
+        this.domains.forEach((domain) => {
           const id = domain.id
 
           if (domain.category === 'load') {
@@ -554,13 +572,13 @@ export default {
       return dataset
     },
     multiLineEnergyDataset() {
-      const dataset = this.powerEnergyDataset.map(d => {
+      const dataset = this.powerEnergyDataset.map((d) => {
         const obj = {
           date: d.date,
           time: d.time,
           _isIncompleteBucket: d._isIncompleteBucket
         }
-        this.powerEnergyDomains.forEach(domain => {
+        this.powerEnergyDomains.forEach((domain) => {
           if (domain.category === 'load') {
             obj[domain.id] = d[domain.id] === 0 ? null : -d[domain.id]
           } else {
@@ -570,10 +588,10 @@ export default {
         return obj
       })
 
-      dataset.forEach(p => {
+      dataset.forEach((p) => {
         let min = 0,
           max = 0
-        this.domains.forEach(domain => {
+        this.domains.forEach((domain) => {
           const id = domain.id
 
           if (p[id] < min) {
@@ -644,21 +662,21 @@ export default {
       return ds
     },
     yMin() {
-      const loadDomains = this.domains.filter(d => d.category === LOAD)
+      const loadDomains = this.domains.filter((d) => d.category === LOAD)
       if (loadDomains.length === 0) {
         return 0
       } else {
         const dataset = _cloneDeep(this.stackedAreaDataset)
-        dataset.forEach(d => {
+        dataset.forEach((d) => {
           let stackedMin = 0
-          this.domains.forEach(domain => {
+          this.domains.forEach((domain) => {
             if (d[domain.id] < 0) {
               stackedMin += d[domain.id] || 0
             }
           })
           d._stackedTotalMin = stackedMin
         })
-        return min(dataset, d => d._stackedTotalMin)
+        return min(dataset, (d) => d._stackedTotalMin)
       }
     },
     // yMax() {
@@ -675,9 +693,9 @@ export default {
     computedYMax() {
       let highest = 0
 
-      this.stackedAreaDataset.forEach(d => {
+      this.stackedAreaDataset.forEach((d) => {
         let total = 0
-        this.domains.forEach(domain => {
+        this.domains.forEach((domain) => {
           total += d[domain.id] || 0
         })
 
@@ -700,7 +718,7 @@ export default {
     },
 
     renewablesPercentageDataset() {
-      const d = this.powerEnergyDataset.map(d => {
+      const d = this.powerEnergyDataset.map((d) => {
         return {
           date: d.date,
           time: d.time,
@@ -714,7 +732,7 @@ export default {
     },
 
     renewablesMax() {
-      let m = max(this.renewablesPercentageDataset, d => d.value)
+      let m = max(this.renewablesPercentageDataset, (d) => d.value)
       return m < 100 ? 100 : m
     },
     isRenewableLineOnly() {
@@ -726,15 +744,15 @@ export default {
       const filteredDataset =
         this.zoomExtent.length > 0
           ? dataset.filter(
-              d =>
+              (d) =>
                 d.time >= this.zoomExtent[0].getTime() &&
                 d.time <= this.zoomExtent[1].getTime() - 1
             )
           : dataset
 
-      const ds = filteredDataset.map(d => {
+      const ds = filteredDataset.map((d) => {
         let total = 0
-        this.domains.forEach(domain => {
+        this.domains.forEach((domain) => {
           total += d[domain.id] || 0
         })
         return total
@@ -764,7 +782,7 @@ export default {
         return null
       }
       const time = date.getTime()
-      return this.dataset.find(d => d.time === time)
+      return this.dataset.find((d) => d.time === time)
     },
     hoverValue() {
       let value = null
@@ -796,13 +814,15 @@ export default {
     },
     hoverDomainLabel() {
       const find = this.domainPowerEnergy.find(
-        d => d.id === this.hoverPowerEnergyDomain
+        (d) => d.id === this.hoverPowerEnergyDomain
       )
       return find ? find.label : '—'
     },
     hoverDomainColour() {
       const find = this.domainPowerEnergy
-        ? this.domainPowerEnergy.find(d => d.id === this.hoverPowerEnergyDomain)
+        ? this.domainPowerEnergy.find(
+            (d) => d.id === this.hoverPowerEnergyDomain
+          )
         : null
       return find ? find.colour : '—'
     },
@@ -810,7 +830,7 @@ export default {
       let total = 0
       let allNulls = true
       if (this.hoverData) {
-        this.domains.forEach(d => {
+        this.domains.forEach((d) => {
           const value = this.hoverData[d.id]
           total += value || 0
           if (value || value === 0) {
@@ -869,7 +889,7 @@ export default {
     },
     getMinValueByLowest(dataset) {
       let min = 0
-      dataset.forEach(d => {
+      dataset.forEach((d) => {
         if (d._lowest < min) {
           min = d._lowest
         }
@@ -878,7 +898,7 @@ export default {
     },
     getMaxValueByHighest(dataset) {
       let max = 0
-      dataset.forEach(d => {
+      dataset.forEach((d) => {
         if (d._highest > max) {
           max = d._highest
         }
@@ -887,8 +907,8 @@ export default {
     },
     getMaxValue(dataset) {
       let max = 0
-      dataset.forEach(d => {
-        this.domains.forEach(domain => {
+      dataset.forEach((d) => {
+        this.domains.forEach((domain) => {
           if (d[domain.id] > max && !d._isIncompleteBucket) {
             max = d[domain.id]
           }
@@ -904,11 +924,11 @@ export default {
     },
 
     getChangeSinceDataset(dataset, calculateProportion) {
-      const excludeIncompleteIntervals = ds =>
-        ds.filter(d => !d._isIncompleteBucket)
-      const filterExtentFilter = ds =>
+      const excludeIncompleteIntervals = (ds) =>
+        ds.filter((d) => !d._isIncompleteBucket)
+      const filterExtentFilter = (ds) =>
         ds.filter(
-          d => d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
+          (d) => d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
         )
       const filtered =
         this.zoomExtent.length > 0
@@ -923,7 +943,7 @@ export default {
           date: d.date,
           time: d.time
         }
-        this.domains.forEach(domain => {
+        this.domains.forEach((domain) => {
           const id = domain.id
           const cValue = change[id] || 0
           obj[id] = d[id] - cValue

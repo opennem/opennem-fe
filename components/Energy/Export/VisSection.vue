@@ -18,7 +18,12 @@
     />
 
     <emissions-chart
-      v-if="ready && domainEmissions.length > 0 && exportEmissionsVolume && featureEmissions"
+      v-if="
+        ready &&
+        domainEmissions.length > 0 &&
+        exportEmissionsVolume &&
+        featureEmissions
+      "
       :read-only="true"
       :zoom-extent="filteredDates"
       :emissions-dataset="currentDataset"
@@ -32,7 +37,12 @@
     />
 
     <emission-intensity-chart
-      v-if="ready && domainEmissions.length > 0 && exportEmissionIntensity && featureEmissions"
+      v-if="
+        ready &&
+        domainEmissions.length > 0 &&
+        exportEmissionIntensity &&
+        featureEmissions
+      "
       :read-only="true"
       :zoom-extent="filteredDates"
       :emission-intensity-dataset="emissionIntensityData"
@@ -51,21 +61,23 @@
     />
 
     <price-chart
-      v-if="ready && isEnergyType && domainDemandPrice.length > 0 && exportPrice"
+      v-if="
+        ready && isEnergyType && domainDemandPrice.length > 0 && exportPrice
+      "
       :price-dataset="currentDataset"
       :domain-price="domainDemandPrice"
       :range="range"
       :interval="interval"
       :zoom-extent="filteredDates"
       :use-demand="true"
-      :read-only="true" />
+      :read-only="true"
+    />
 
     <temperature-chart
       v-if="ready && domainTemperature.length > 0 && exportTemperature"
       :read-only="true"
       :zoom-extent="filteredDates"
     />
-
   </section>
 </template>
 

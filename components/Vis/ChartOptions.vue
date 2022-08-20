@@ -1,33 +1,33 @@
 <template>
   <div class="chart-options-wrapper">
-    <div
-      class="chart-options-icon"
-      @click.stop="handleMenuClick">
-      <i class="fal fa-bars fa-fw"/>
+    <div class="chart-options-icon" @click.stop="handleMenuClick">
+      <i class="fal fa-bars fa-fw" />
     </div>
 
     <transition name="slide-down-fade">
-      <div
-        v-on-clickaway="onClickAway"
-        v-if="show"
-        class="dropdown-menu">
+      <div v-on-clickaway="onClickAway" v-if="show" class="dropdown-menu">
         <div class="dropdown-content">
           <button
             class="delete close-btn is-small"
             aria-label="delete"
-            @click.stop="emitShow(false)" />
+            @click.stop="emitShow(false)"
+          />
 
           <fieldset>
             <label>Chart</label>
             <div
-              :class="{'is-chart-hidden': !chartShown}"
-              class="chart-options-buttons buttons has-addons">
+              :class="{ 'is-chart-hidden': !chartShown }"
+              class="chart-options-buttons buttons has-addons"
+            >
               <button
                 v-for="type in types"
                 :key="type"
-                :class="{'is-selected': chartType === type}"
+                :class="{ 'is-selected': chartType === type }"
                 class="button is-small"
-                @click.stop="() => handleTypeClick(type)">{{ chartLabel[type] }}</button>
+                @click.stop="() => handleTypeClick(type)"
+              >
+                {{ chartLabel[type] }}
+              </button>
             </div>
           </fieldset>
 
@@ -37,9 +37,12 @@
               <button
                 v-for="curve in curves"
                 :key="curve"
-                :class="{'is-selected': chartCurve === curve}"
+                :class="{ 'is-selected': chartCurve === curve }"
                 class="button is-small"
-                @click.stop="handleCurveClick(curve)">{{ chartLabel[curve] }}</button>
+                @click.stop="handleCurveClick(curve)"
+              >
+                {{ chartLabel[curve] }}
+              </button>
             </div>
           </fieldset>
 
@@ -47,13 +50,17 @@
             <label>Measurement</label>
             <div
               class="chart-options-buttons buttons has-addons"
-              style="margin-right: 1rem;">
+              style="margin-right: 1rem"
+            >
               <button
                 v-for="yAxis in yAxes"
                 :key="yAxis"
-                :class="{'is-selected': chartYAxis === yAxis}"
+                :class="{ 'is-selected': chartYAxis === yAxis }"
                 class="button is-small"
-                @click.stop="handleYAxisClick(yAxis)">{{ chartLabel[yAxis] }}</button>
+                @click.stop="handleYAxisClick(yAxis)"
+              >
+                {{ chartLabel[yAxis] }}
+              </button>
             </div>
           </fieldset>
 
@@ -61,13 +68,17 @@
             <label>Units</label>
             <div
               class="chart-options-buttons buttons has-addons"
-              style="margin-right: 1rem;">
+              style="margin-right: 1rem"
+            >
               <button
                 v-for="prefix in prefixes"
                 :key="prefix"
-                :class="{'is-selected': chartDisplayPrefix === prefix}"
+                :class="{ 'is-selected': chartDisplayPrefix === prefix }"
                 class="button is-small"
-                @click.stop="handlePrefixClick(prefix)">{{ `${unitPrefix}${prefix}${chartUnit}` }}</button>
+                @click.stop="handlePrefixClick(prefix)"
+              >
+                {{ `${unitPrefix}${prefix}${chartUnit}` }}
+              </button>
             </div>
           </fieldset>
         </div>

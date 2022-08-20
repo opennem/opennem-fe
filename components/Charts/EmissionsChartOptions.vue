@@ -1,8 +1,6 @@
 <template>
   <chart-header :chart-shown="chartShown">
-    <template
-      v-slot:options
-      v-if="!readOnly">
+    <template v-slot:options v-if="!readOnly">
       <chart-options
         :options="options"
         :si="options.si"
@@ -13,7 +11,7 @@
         :chart-y-axis="chartYAxis"
         :chart-display-prefix="chartDisplayPrefix"
         :show="chartOptions"
-        @show-change="s => chartOptions = s"
+        @show-change="(s) => (chartOptions = s)"
         @type-click="handleTypeClick"
         @curve-click="handleCurveClick"
         @prefix-click="handlePrefixClick"
@@ -23,17 +21,18 @@
 
     <template v-slot:label-unit>
       <strong>Emissions Volume</strong>
-      <small
-        v-if="chartShown && isPercentage">
-        {{ displayUnit }}</small>
+      <small v-if="chartShown && isPercentage"> {{ displayUnit }}</small>
       <small
         v-if="chartShown && !isPercentage"
         class="display-unit"
-        @click.stop="handleUnitClick">{{ displayUnit }}/{{ interval | intervalLabel }}</small>
+        @click.stop="handleUnitClick"
+        >{{ displayUnit }}/{{ interval | intervalLabel }}</small
+      >
     </template>
     <template
       v-slot:average-value
-      v-if="!readOnly && !isPercentage && showAverageValue">
+      v-if="!readOnly && !isPercentage && showAverageValue"
+    >
       Av.
       <strong>
         {{ averageEmissionsVolume | formatValue }}
@@ -44,15 +43,16 @@
       {{ hoverDisplayDate }}
     </template>
     <template v-slot:hover-values>
-      <span
-        v-if="hoverValue"
-        class="ft-value">
+      <span v-if="hoverValue" class="ft-value">
         <em
           :style="{ 'background-color': hoverDomainColour }"
-          class="colour-square" />
+          class="colour-square"
+        />
         {{ hoverDomainLabel }}
         <strong v-if="isPercentage">{{ hoverValue | formatValue2 }}%</strong>
-        <strong v-else>{{ hoverValue | formatValue2 }} {{ displayUnit }}</strong>
+        <strong v-else
+          >{{ hoverValue | formatValue2 }} {{ displayUnit }}</strong
+        >
       </span>
       <span v-if="!isPercentage">
         Total
@@ -214,7 +214,7 @@ export default {
     togglePrefix(prefix) {
       if (this.options.si) {
         const length = this.options.si.length
-        const index = this.options.si.findIndex(p => p === prefix)
+        const index = this.options.si.findIndex((p) => p === prefix)
         let nextIndex = index + 1
 
         if (nextIndex === length) {

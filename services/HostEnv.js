@@ -1,4 +1,4 @@
-export default function() {
+export default function () {
   let hostEnv = 'dev' // Default location of where the data comes from
   if (typeof window !== 'undefined') {
     const host = window.location.host
