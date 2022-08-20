@@ -815,7 +815,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.chart-vis ::v-deep svg {
+.chart-vis :deep(svg) {
   .y-axis-left-text .tick text {
     color: #000;
     text-anchor: start;

@@ -1112,10 +1112,4 @@ h1 {
     margin: 0 auto;
   }
 }
-
-// ::v-deep .x-axis {
-//   .tick:last-child text {
-//     text-anchor: end;
-//   }
-// }
 </style>

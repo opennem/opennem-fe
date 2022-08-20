@@ -852,7 +852,7 @@ export default {
   }
 }
 
-::v-deep .compare-chart-legend {
+:deep(.compare-chart-legend) {
   background-color: transparent !important;
   padding: 0 0 0 10px !important;
 }

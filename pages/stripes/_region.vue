@@ -392,7 +392,7 @@ h3 {
   }
 }
 
-::v-deep .heatmap {
+:deep(.heatmap) {
   border: 1px solid #ddd;
 }
 </style>

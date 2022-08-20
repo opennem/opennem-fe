@@ -25,7 +25,7 @@ export default {
 .container-fluid {
   margin-top: 1rem;
 }
-::v-deep .logo img {
+:deep(.logo img) {
   max-height: 50px;
 }
 </style>

@@ -236,7 +236,7 @@ $menu-border-colour-hover: #999;
     }
   }
 
-  ::v-deep footer {
+  :deep(footer) {
     display: block;
     position: absolute;
     bottom: 0;

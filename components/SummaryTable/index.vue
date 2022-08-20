@@ -1556,7 +1556,7 @@ export default {
   }
 }
 
-::v-deep .summary-column-headers {
+:deep(.summary-column-headers) {
   .summary-row {
     font-family: $header-font-family;
     font-weight: 700;
@@ -1564,7 +1564,7 @@ export default {
   }
 }
 
-::v-deep .summary-row {
+:deep(.summary-row) {
   display: flex;
   font-size: 1em;
   padding: 3px 4px;

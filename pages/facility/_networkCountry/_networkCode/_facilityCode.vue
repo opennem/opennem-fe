@@ -1246,7 +1246,7 @@ header {
   }
 }
 
-::v-deep h3 {
+:deep(h3) {
   font-family: $header-font-family;
   font-size: 1.4em;
   border-bottom: 1px solid #666;
@@ -1279,7 +1279,7 @@ header {
   margin: 0.5rem 0;
 }
 
-::v-deep .not-found-card {
+:deep(.not-found-card) {
   width: 100%;
   height: 150px;
   display: flex;
@@ -1301,7 +1301,7 @@ header {
   }
 }
 
-::v-deep .range-interval-selectors {
+:deep(.range-interval-selectors) {
   padding-left: 0;
 }
 

@@ -196,15 +196,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.dash-stroke-lines ::v-deep {
-  .line-left-path-group path {
-    stroke-dasharray: 1.5;
-  }
-  .y-axis-left-text .tick text {
-    font-size: 7px;
-    fill: #666;
-  }
+.dash-stroke-lines :deep(.line-left-path-group path) {
+  stroke-dasharray: 1.5;
 }
+
+.dash-stroke-lines :deep(.y-axis-left-text .tick text) {
+  font-size: 7px;
+  fill: #666;
+}
+
 .chart-type-buttons {
   display: inline-block;
   position: relative;

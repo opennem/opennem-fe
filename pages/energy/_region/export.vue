@@ -272,7 +272,7 @@ export default {
   }
 }
 
-::v-deep .vis-chart {
+:deep(.vis-chart) {
   margin-right: 10px;
 }
 </style>

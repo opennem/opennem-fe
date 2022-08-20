@@ -220,7 +220,7 @@ export default {
   position: relative;
   top: 3px;
 
-  ::v-deep .hover-date-value {
+  :deep(.hover-date-value) {
     position: static;
   }
 
