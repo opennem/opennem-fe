@@ -1,11 +1,11 @@
 <template>
-  <div
-    :class="{ open: drawer }"
-    class="drawer-wrapper"
+  <div 
+    :class="{ open: drawer }" 
+    class="drawer-wrapper" 
     @click="close">
     <div class="drawer">
-      <div
-        class="drawer-header"
+      <div 
+        class="drawer-header" 
         @click="close">
         <logo class="header-logo" />
         <span class="close-button">
@@ -31,8 +31,8 @@
       <div 
         v-show="isEmissionsView" 
         class="menu">
-        <nuxt-link
-          :to="`/${currentView}/au/`"
+        <nuxt-link 
+          :to="`/${currentView}/au/`" 
           class="menu-item">
           Australia
           <span class="icon">
@@ -40,8 +40,8 @@
           </span>
         </nuxt-link>
 
-        <nuxt-link
-          :to="`/${currentView}/world/`"
+        <nuxt-link 
+          :to="`/${currentView}/world/`" 
           class="menu-item">
           World
           <span class="icon">
@@ -53,8 +53,8 @@
       <div 
         v-show="!isEmissionsView" 
         class="menu">
-        <nuxt-link
-          :to="`/${currentView}/au/`"
+        <nuxt-link 
+          :to="`/${currentView}/au/`" 
           class="menu-item">
           All Regions
           <span class="icon">
@@ -62,7 +62,7 @@
           </span>
         </nuxt-link>
 
-        <hr class="dropdown-divider">
+        <hr class="dropdown-divider" >
 
         <nuxt-link
           v-for="link in links"
@@ -73,7 +73,8 @@
             'menu-item-first-child': link.isFirstChild,
             'menu-item-last-child': link.isLastChild
           }"
-          class="menu-item">
+          class="menu-item"
+        >
           {{ link.label }}
           <span class="icon">
             <i class="fal fa-chevron-right" />
@@ -162,7 +163,7 @@ export default {
     getLinks() {
       // create links without 'all' since a divider is needed
       return this.regions
-        .map(r => {
+        .map((r) => {
           const isChild = r.parentRegion ? true : false
           const isFirstChild = r.parentFirstChild ? true : false
           const isLastChild = r.parentLastChild ? true : false
@@ -175,7 +176,7 @@ export default {
             isLastChild
           }
         })
-        .filter(r => r.id !== 'au')
+        .filter((r) => r.id !== 'au')
     },
 
     close() {
@@ -235,7 +236,7 @@ $menu-border-colour-hover: #999;
     }
   }
 
-  ::v-deep footer {
+  :deep(footer) {
     display: block;
     position: absolute;
     bottom: 0;

@@ -4,7 +4,8 @@
       'is-hovered': hoverOn || focusOn,
       'has-border-bottom': !chartShown
     }"
-    class="chart">
+    class="chart"
+  >
     <emissions-chart-options
       :read-only="readOnly"
       :chart-shown="chartShown"
@@ -75,7 +76,12 @@
     />
 
     <button
-      v-if="chartShown && (isTypeLine || isTypeChangeSinceLine) && zoomExtent.length > 0 && !readOnly"
+      v-if="
+        chartShown &&
+          (isTypeLine || isTypeChangeSinceLine) &&
+          zoomExtent.length > 0 &&
+          !readOnly
+      "
       class="button is-rounded is-small reset-btn"
       @click.stop="handleZoomReset"
     >
@@ -103,7 +109,8 @@
       @date-hover="handleDateHover"
       @domain-hover="handleDomainHover"
       @enter="handleVisEnter"
-      @leave="handleVisLeave" />
+      @leave="handleVisLeave"
+    />
     <date-brush
       v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
       :dataset="[...dataset, ...projectionDataset]"
@@ -118,8 +125,8 @@
       @date-hover="handleDateHover"
       @date-filter="handleZoomExtent"
       @enter="handleVisEnter"
-      @leave="handleVisLeave" />
-
+      @leave="handleVisLeave"
+    />
   </div>
 </template>
 
@@ -343,39 +350,39 @@ export default {
     },
     highlightId() {
       const domain = this.highlightDomain
-      const find = this.domains.find(d => d[this.propName] === domain)
+      const find = this.domains.find((d) => d[this.propName] === domain)
       return find ? find.id : domain
     },
     yMax() {
       const dataset = _cloneDeep(this.withProjectionDataset)
-      dataset.forEach(d => {
+      dataset.forEach((d) => {
         let stackedMax = 0
-        this.domains.forEach(domain => {
+        this.domains.forEach((domain) => {
           stackedMax += d[domain.id]
         })
         d._stackedTotalEmissionsMax = stackedMax
       })
-      return max(dataset, d => d._stackedTotalEmissionsMax)
+      return max(dataset, (d) => d._stackedTotalEmissionsMax)
     },
     yMin() {
       const dataset = _cloneDeep(this.withProjectionDataset)
-      dataset.forEach(d => {
+      dataset.forEach((d) => {
         let emissionsMin = 0
-        this.domains.forEach(domain => {
+        this.domains.forEach((domain) => {
           if (d[domain.id] < 0) {
             emissionsMin += d[domain.id] || 0
           }
         })
         d._stackedTotalEmissionsMin = emissionsMin
       })
-      return min(dataset, d => d._stackedTotalEmissionsMin)
+      return min(dataset, (d) => d._stackedTotalEmissionsMin)
     },
 
     yLineMin() {
       let min = 0
 
-      this.withProjectionDataset.forEach(d => {
-        this.domains.forEach(domain => {
+      this.withProjectionDataset.forEach((d) => {
+        this.domains.forEach((domain) => {
           const val = d[domain.id]
           if (val < min) {
             min = val
@@ -389,8 +396,8 @@ export default {
     yLineMax() {
       let max = 0
 
-      this.withProjectionDataset.forEach(d => {
-        this.domains.forEach(domain => {
+      this.withProjectionDataset.forEach((d) => {
+        this.domains.forEach((domain) => {
           const val = d[domain.id]
           if (val > max) {
             max = val
@@ -409,7 +416,7 @@ export default {
     domains() {
       const domains = this.emissionsDomains
       const hidden = this.hiddenDomains
-      return domains.filter(d => !_includes(hidden, d[this.propName]))
+      return domains.filter((d) => !_includes(hidden, d[this.propName]))
     },
 
     hasProjectionDataset() {
@@ -418,8 +425,8 @@ export default {
 
     stackedDataset() {
       const dataset = _cloneDeep(this.emissionsDataset)
-      dataset.forEach(d => {
-        this.emissionsDomains.forEach(e => {
+      dataset.forEach((d) => {
+        this.emissionsDomains.forEach((e) => {
           if (e.category === FT.LOAD) {
             const negValue = -d[e.id]
             d[e.id] = negValue
@@ -432,8 +439,8 @@ export default {
 
     stackedProjectionDataset() {
       const dataset = _cloneDeep(this.emissionsProjectionDataset)
-      dataset.forEach(d => {
-        this.emissionsDomains.forEach(e => {
+      dataset.forEach((d) => {
+        this.emissionsDomains.forEach((e) => {
           if (e.category === FT.LOAD) {
             const negValue = -d[e.id]
             d[e.id] = negValue
@@ -463,7 +470,7 @@ export default {
     changeSinceDataset() {
       if (this.hasProjectionDataset) {
         return this.changeWithProjectionsDataset.filter(
-          d => d.time <= this.lineDataset[this.lineDataset.length - 1].time
+          (d) => d.time <= this.lineDataset[this.lineDataset.length - 1].time
         )
       }
 
@@ -473,7 +480,7 @@ export default {
     changeSinceProjectionDataset() {
       if (this.hasProjectionDataset) {
         return this.changeWithProjectionsDataset.filter(
-          d => d.time > this.lineDataset[this.lineDataset.length - 1].time
+          (d) => d.time > this.lineDataset[this.lineDataset.length - 1].time
         )
       }
 
@@ -524,14 +531,14 @@ export default {
 
     linePercentageDataset() {
       const dataset = _cloneDeep(this.lineDataset)
-      dataset.forEach(d => {
+      dataset.forEach((d) => {
         let total = 0
 
-        this.emissionsDomains.forEach(e => {
+        this.emissionsDomains.forEach((e) => {
           total += d[e.id]
         })
 
-        this.emissionsDomains.forEach(e => {
+        this.emissionsDomains.forEach((e) => {
           const value = d[e.id]
           d[e.id] = (value / total) * 100
         })
@@ -542,14 +549,14 @@ export default {
 
     linePercentageProjectionDataset() {
       const dataset = _cloneDeep(this.lineProjectionDataset)
-      dataset.forEach(d => {
+      dataset.forEach((d) => {
         let total = 0
 
-        this.emissionsDomains.forEach(e => {
+        this.emissionsDomains.forEach((e) => {
           total += d[e.id]
         })
 
-        this.emissionsDomains.forEach(e => {
+        this.emissionsDomains.forEach((e) => {
           const value = d[e.id]
           d[e.id] = (value / total) * 100
         })
@@ -560,14 +567,14 @@ export default {
 
     proportionDataset() {
       const dataset = _cloneDeep(this.emissionsDataset)
-      dataset.forEach(d => {
+      dataset.forEach((d) => {
         let total = 0
 
-        this.emissionsDomains.forEach(e => {
+        this.emissionsDomains.forEach((e) => {
           total += d[e.id]
         })
 
-        this.emissionsDomains.forEach(e => {
+        this.emissionsDomains.forEach((e) => {
           const value = d[e.id]
           d[e.id] = (value / total) * 100
         })
@@ -578,14 +585,14 @@ export default {
 
     proportionProjectionDataset() {
       const dataset = _cloneDeep(this.emissionsProjectionDataset)
-      dataset.forEach(d => {
+      dataset.forEach((d) => {
         let total = 0
 
-        this.emissionsDomains.forEach(e => {
+        this.emissionsDomains.forEach((e) => {
           total += d[e.id]
         })
 
-        this.emissionsDomains.forEach(e => {
+        this.emissionsDomains.forEach((e) => {
           const value = d[e.id]
           d[e.id] = (value / total) * 100
         })
@@ -605,7 +612,7 @@ export default {
       const time = date.getTime()
 
       let data = this.withProjectionDataset
-        ? this.withProjectionDataset.find(d => d.time === time)
+        ? this.withProjectionDataset.find((d) => d.time === time)
         : null
 
       return data
@@ -636,17 +643,17 @@ export default {
         : ''
     },
     hoverDomainLabel() {
-      const find = this.domains.find(d => d.id === this.hoverEmissionsDomain)
+      const find = this.domains.find((d) => d.id === this.hoverEmissionsDomain)
       return find ? find.label : '—'
     },
     hoverDomainColour() {
-      const find = this.domains.find(d => d.id === this.hoverEmissionsDomain)
+      const find = this.domains.find((d) => d.id === this.hoverEmissionsDomain)
       return find ? find.colour : '—'
     },
     hoverTotal() {
       let total = 0
       if (this.hoverData) {
-        this.domains.forEach(d => {
+        this.domains.forEach((d) => {
           total += this.hoverData[d.id]
         })
       }
@@ -720,11 +727,11 @@ export default {
     },
 
     getChangeSinceDataset(dataset, calculateProportion) {
-      const excludeIncompleteIntervals = ds =>
-        ds.filter(d => !d._isIncompleteBucket)
-      const filterExtentFilter = ds =>
+      const excludeIncompleteIntervals = (ds) =>
+        ds.filter((d) => !d._isIncompleteBucket)
+      const filterExtentFilter = (ds) =>
         ds.filter(
-          d => d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
+          (d) => d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
         )
       const filtered =
         this.zoomExtent.length > 0
@@ -740,7 +747,7 @@ export default {
           date: d.date,
           time: d.time
         }
-        this.domains.forEach(domain => {
+        this.domains.forEach((domain) => {
           const id = domain.id
           const cValue = change[id] || 0
           obj[id] = d[id] - cValue
@@ -768,7 +775,7 @@ export default {
       })
 
       const newChange = newDataset[0]
-      newDataset.forEach(d => {
+      newDataset.forEach((d) => {
         const totalChange =
           ((d._total - newChange._total) / newChange._total) * 100
         d._totalChange = totalChange

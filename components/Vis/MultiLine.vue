@@ -1,23 +1,23 @@
 <template>
   <div class="vis multi-line-vis">
     <svg 
-      :width="svgWidth"
-      :height="svgHeight"
+      :width="svgWidth" 
+      :height="svgHeight" 
       :id="id">
-
       <defs>
         <!-- where to clip -->
         <clipPath :id="`${id}-clip`">
-          <rect
-            :width="width"
-            :height="height"/>
+          <rect 
+            :width="width" 
+            :height="height" />
         </clipPath>
         <filter id="shadow">
           <feDropShadow
             dx="0"
             dy="1"
-            stdDeviation="1" 
-            flood-color="rgba(0, 0, 0, 0.2)" />
+            stdDeviation="1"
+            flood-color="rgba(0, 0, 0, 0.2)"
+          />
         </filter>
       </defs>
       <g 
@@ -39,13 +39,13 @@
         :transform="axisTransform" 
         class="hover-group" />
       <g 
-        :transform="axisTransform"
+        :transform="axisTransform" 
         class="vis1-group" />
       <g 
-        :transform="axisTransform"
+        :transform="axisTransform" 
         class="vis2-group" />
       <g 
-        :transform="axisTransform"
+        :transform="axisTransform" 
         class="projection-vis-group" />
       <g 
         :transform="axisTransform" 
@@ -53,7 +53,6 @@
       <g 
         :transform="axisTransform" 
         class="y-axis-right-text" />
-      
     </svg>
   </div>
 </template>
@@ -220,7 +219,7 @@ export default {
     },
     convertValue: {
       type: Function,
-      default: () => function() {}
+      default: () => function () {}
     }
   },
 
@@ -281,27 +280,27 @@ export default {
       }
     },
     keys1() {
-      return this.domains1.map(d => d.domain)
+      return this.domains1.map((d) => d.domain)
     },
     colours1() {
       const dict = {}
-      this.domains1.forEach(d => {
+      this.domains1.forEach((d) => {
         dict[d.domain] = d.colour
       })
       return dict
     },
     keys2() {
-      return this.domains2.map(d => d.domain)
+      return this.domains2.map((d) => d.domain)
     },
     colours2() {
       const dict = {}
-      this.domains2.forEach(d => {
+      this.domains2.forEach((d) => {
         dict[d.domain] = d.colour
       })
       return dict
     },
     xExtent() {
-      return extent(this.withProjectionDataset, d => new Date(d.date))
+      return extent(this.withProjectionDataset, (d) => new Date(d.date))
     },
     hasHighlight() {
       return this.highlightDomain ? true : false
@@ -417,20 +416,16 @@ export default {
       if (domain) {
         this.$vis1Group
           .selectAll('path')
-          .style('opacity', d => (d === domain ? 1 : 0.1))
-          .style(
-            'stroke-width',
-            d =>
-              d === domain ? this.pathStrokeWidth + 1 : this.pathStrokeWidth
+          .style('opacity', (d) => (d === domain ? 1 : 0.1))
+          .style('stroke-width', (d) =>
+            d === domain ? this.pathStrokeWidth + 1 : this.pathStrokeWidth
           )
 
         this.$projectionVisGroup
           .selectAll('path')
-          .style('opacity', d => (d === domain ? 1 : 0.1))
-          .style(
-            'stroke-width',
-            d =>
-              d === domain ? this.pathStrokeWidth + 1 : this.pathStrokeWidth
+          .style('opacity', (d) => (d === domain ? 1 : 0.1))
+          .style('stroke-width', (d) =>
+            d === domain ? this.pathStrokeWidth + 1 : this.pathStrokeWidth
           )
       } else {
         this.$vis1Group
@@ -527,29 +522,17 @@ export default {
       this.x = scaleTime().range([0, this.width])
       this.y1 = this.y1Log
         ? scaleSymlog().range(this.y1Range)
-        : scaleLinear()
-            .range(this.y1Range)
-            .nice()
-      this.y2 = scaleLinear()
-        .range(this.y2Range)
-        .nice()
+        : scaleLinear().range(this.y1Range).nice()
+      this.y2 = scaleLinear().range(this.y2Range).nice()
       this.z = scaleOrdinal()
 
       // Axis
-      this.xAxis = axisBottom(this.x)
-        .tickSize(this.height)
-        .ticks(this.xTicks)
+      this.xAxis = axisBottom(this.x).tickSize(this.height).ticks(this.xTicks)
       this.yAxisLeft =
         this.y1Ticks.length > 0
-          ? axisLeft(this.y1)
-              .tickSize(-this.width)
-              .tickValues(this.y1Ticks)
-          : axisLeft(this.y1)
-              .tickSize(-this.width)
-              .ticks(8)
-      this.yAxisRight = axisRight(this.y2)
-        .tickSize(this.width)
-        .ticks(5)
+          ? axisLeft(this.y1).tickSize(-this.width).tickValues(this.y1Ticks)
+          : axisLeft(this.y1).tickSize(-this.width).ticks(8)
+      this.yAxisRight = axisRight(this.y2).tickSize(this.width).ticks(5)
 
       // axis shading
       this.$xShadesGroup = $svg.select('.x-shades')
@@ -561,24 +544,24 @@ export default {
       this.stack = stack()
       if (this.stacked) {
         this.vis1 = d3Area()
-          .x(d => this.x(d.data.date))
-          .y0(d => this.y1(d[0]))
-          .y1(d => this.y1(d[1]))
+          .x((d) => this.x(d.data.date))
+          .y0((d) => this.y1(d[0]))
+          .y1((d) => this.y1(d[1]))
           .curve(this.curveType)
       } else {
         this.vis1 = d3Line()
-          .x(d => this.x(d.date))
-          .y(d => this.y1(d.value))
+          .x((d) => this.x(d.date))
+          .y((d) => this.y1(d.value))
           .curve(this.curveType)
-        this.vis1.defined(d => d.value || d.value === 0)
+        this.vis1.defined((d) => d.value || d.value === 0)
       }
 
       this.$vis2Group = $svg.select('.vis2-group')
       this.lineRight = d3Line()
-        .x(d => this.x(d.date))
-        .y(d => this.y2(d.value))
+        .x((d) => this.x(d.date))
+        .y((d) => this.y2(d.value))
         .curve(curveMonotoneX)
-      this.lineRight.defined(d => d.value || d.value === 0)
+      this.lineRight.defined((d) => d.value || d.value === 0)
 
       // Hover
       this.$hoverGroup = $svg.select('.hover-group')
@@ -600,7 +583,7 @@ export default {
       }
 
       // Events
-      this.$hoverGroup.on('touchmove mousemove', function() {
+      this.$hoverGroup.on('touchmove mousemove', function () {
         const date = self.getXAxisDateByMouse(this)
         self.$emit('date-hover', this, date)
       })
@@ -647,8 +630,8 @@ export default {
         .enter()
         .append('rect')
         .attr('opacity', 0.05)
-        .attr('x', d => this.x(d.start))
-        .attr('width', d => this.x(d.end) - this.x(d.start))
+        .attr('x', (d) => this.x(d.start))
+        .attr('width', (d) => this.x(d.end) - this.x(d.start))
         .attr('height', this.height)
 
       this.$yShadesGroup.selectAll('rect').remove()
@@ -662,9 +645,9 @@ export default {
         ])
         .enter()
         .append('rect')
-        .attr('y', d => this.y1(d.start))
+        .attr('y', (d) => this.y1(d.start))
         .attr('width', this.width)
-        .attr('height', d => this.y1(d.end) - this.y1(d.start))
+        .attr('height', (d) => this.y1(d.end) - this.y1(d.start))
         .style('fill', 'rgba(255,255,255, 0.4)')
 
       this.$vis1Group.selectAll('path').remove()
@@ -683,10 +666,10 @@ export default {
         vis1
           .enter()
           .append('path')
-          .attr('class', key => `${key}-path`)
+          .attr('class', (key) => `${key}-path`)
           .attr('d', this.vis1)
           .attr('stroke-opacity', 0)
-          .attr('fill', d => this.colours1[d.key])
+          .attr('fill', (d) => this.colours1[d.key])
           .style('clip-path', this.clipPathUrl)
           .style('-webkit-clip-path', this.clipPathUrl)
           .style('pointer-events', 'auto')
@@ -694,8 +677,8 @@ export default {
         vis1
           .enter()
           .append('path')
-          .attr('class', key => `${key}-path`)
-          .style('stroke', key => this.colours1[key])
+          .attr('class', (key) => `${key}-path`)
+          .style('stroke', (key) => this.colours1[key])
           .style('stroke-width', this.pathStrokeWidth)
           // .style('filter', 'url(#shadow)')
           .style('fill', 'transparent')
@@ -705,7 +688,7 @@ export default {
           .attr('d', this.drawVis1Path)
       }
 
-      this.$vis1Group.selectAll('path').on('mousemove touchmove', function(d) {
+      this.$vis1Group.selectAll('path').on('mousemove touchmove', function (d) {
         const date = self.getXAxisDateByMouse(this)
         self.$emit('date-hover', this, date)
         self.$emit('domain-hover', d)
@@ -737,8 +720,8 @@ export default {
       this.$vis2Group.selectAll('path').attr('d', this.drawLineRightPath)
       this.$xShadesGroup
         .selectAll('rect')
-        .attr('x', d => this.x(d.start))
-        .attr('width', d => this.x(d.end) - this.x(d.start))
+        .attr('x', (d) => this.x(d.start))
+        .attr('width', (d) => this.x(d.end) - this.x(d.start))
     },
 
     drawProjectionLines() {
@@ -748,8 +731,8 @@ export default {
       vis
         .enter()
         .append('path')
-        .attr('class', key => `${key}-path`)
-        .style('stroke', key => this.colours1[key])
+        .attr('class', (key) => `${key}-path`)
+        .style('stroke', (key) => this.colours1[key])
         .style('stroke-width', this.pathStrokeWidth)
         // .style('filter', 'url(#shadow)')
         .style('fill', 'transparent')
@@ -761,7 +744,7 @@ export default {
 
       this.$projectionVisGroup
         .selectAll('path')
-        .on('mousemove touchmove', function(d) {
+        .on('mousemove touchmove', function (d) {
           const date = self.getXAxisDateByMouse(this)
           self.$emit('date-hover', this, date)
           self.$emit('domain-hover', d)
@@ -773,10 +756,7 @@ export default {
       if (y2Height <= 0 || this.domains1.length === 0) {
         y2Height = this.height
       }
-      this.y2
-        .range([y2Height, 0])
-        .domain([this.y2Min, this.y2Max])
-        .nice()
+      this.y2.range([y2Height, 0]).domain([this.y2Min, this.y2Max]).nice()
       this.$yAxisRightTextGroup.call(this.drawRightYAxisText)
       this.$vis2Group.selectAll('path').remove()
       this.$vis2Group
@@ -784,8 +764,8 @@ export default {
         .data(this.keys2)
         .enter()
         .append('path')
-        .attr('class', key => `${key}-path`)
-        .style('stroke', key => this.colours2[key])
+        .attr('class', (key) => `${key}-path`)
+        .style('stroke', (key) => this.colours2[key])
         .style('stroke-width', 3)
         // .style('filter', 'url(#shadow)')
         .style('fill', 'transparent')
@@ -807,9 +787,8 @@ export default {
     drawLeftYAxis(g) {
       g.call(this.yAxisLeft)
       g.selectAll('.y-axis .tick text').remove()
-      g.selectAll('.tick line').attr(
-        'class',
-        d => (d === 0 && this.yMinComputed !== 0 ? 'base' : '')
+      g.selectAll('.tick line').attr('class', (d) =>
+        d === 0 && this.yMinComputed !== 0 ? 'base' : ''
       )
     },
 
@@ -817,7 +796,7 @@ export default {
       g.call(this.yAxisLeft)
       g.selectAll('.y-axis-left-text .tick line').remove()
       g.selectAll('.y-axis-left-text .tick text')
-        .text(t => {
+        .text((t) => {
           const tickText = this.shouldConvertValue ? this.convertValue(t) : t
           return `${d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(tickText)}${
             this.y1AxisUnit
@@ -832,14 +811,14 @@ export default {
       g.call(this.yAxisRight)
       g.selectAll('.y-axis-right-text .tick line').remove()
       g.selectAll('.y-axis-right-text .tick text')
-        .text(t => `${t}${this.y2AxisUnit}`)
+        .text((t) => `${t}${this.y2AxisUnit}`)
         .attr('dx', -5)
         .attr('dy', -2)
         .attr('opacity', this.y1TickText ? 1 : 0)
     },
 
     drawProjectionVisPath(key) {
-      const data = this.updatedProjectionDataset.map(d => {
+      const data = this.updatedProjectionDataset.map((d) => {
         if (this.drawIncompleteBucket) {
           return {
             date: d.date,
@@ -855,7 +834,7 @@ export default {
     },
 
     drawVis1Path(key) {
-      const data = this.updatedDataset1.map(d => {
+      const data = this.updatedDataset1.map((d) => {
         if (this.drawIncompleteBucket) {
           return {
             date: d.date,
@@ -871,7 +850,7 @@ export default {
     },
 
     drawLineRightPath(key) {
-      const data = this.dataset2.map(d => {
+      const data = this.dataset2.map((d) => {
         if (this.drawIncompleteBucket) {
           return {
             date: d.date,
@@ -920,9 +899,9 @@ export default {
             .append('circle')
             .merge(dots)
             .attr('cx', this.x(dataPoint.date))
-            .attr('cy', key => this.y1(dataPoint[key]))
+            .attr('cy', (key) => this.y1(dataPoint[key]))
             .attr('r', 4)
-            .attr('fill', key => this.colours1[key])
+            .attr('fill', (key) => this.colours1[key])
             .exit()
             .remove()
         } else {
@@ -959,7 +938,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.multi-line-vis ::v-deep svg {
+.multi-line-vis :deep(svg) {
   .y-axis-left-text .tick text {
     color: #000;
     text-anchor: start;

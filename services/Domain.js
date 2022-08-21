@@ -9,14 +9,14 @@ export default {
     if (dict) {
       const order = dict.FUEL_TECH_ORDER
 
-      order.forEach(id => {
+      order.forEach((id) => {
         const grouping = dict.FUEL_TECH_GROUP[id]
-        const find = domains.find(d => _includes(grouping, d.fuelTech))
+        const find = domains.find((d) => _includes(grouping, d.fuelTech))
 
         if (find) {
           const domainIds = []
-          grouping.forEach(g => {
-            const domain = domains.find(d => d.fuelTech === g)
+          grouping.forEach((g) => {
+            const domain = domains.find((d) => d.fuelTech === g)
             if (domain) domainIds.push(domain.id)
           })
           groupDomains.push({
@@ -38,7 +38,7 @@ export default {
 
   getAllDomainObjs() {
     const order = FUEL_TECHS.DEFAULT_FUEL_TECH_ORDER
-    return order.map(ft => {
+    return order.map((ft) => {
       return {
         // id: `${region}.fuel_tech.${ft}.${type}`,
         fuelTech: ft,
@@ -54,9 +54,9 @@ export default {
   getDomainObjsOrder(domainObjs, domainOrder) {
     // get the unique domains in the right order
     const order = domainOrder
-    const uniq = _uniqBy(domainObjs, 'fuelTech').map(d => d.fuelTech)
+    const uniq = _uniqBy(domainObjs, 'fuelTech').map((d) => d.fuelTech)
     const domainObjsOrder = []
-    order.forEach(o => {
+    order.forEach((o) => {
       if (_includes(uniq, o)) {
         domainObjsOrder.push(o)
       }
@@ -66,11 +66,11 @@ export default {
 
   getEnergyDomains(res) {
     let domains = []
-    res.forEach(r => {
+    res.forEach((r) => {
       const rData = r.data || r
       const objs = rData
-        .filter(d => d.type === 'power' || d.type === 'energy')
-        .map(d => {
+        .filter((d) => d.type === 'power' || d.type === 'energy')
+        .map((d) => {
           return {
             id: d.id,
             fuelTech: d.fuel_tech,
@@ -85,16 +85,18 @@ export default {
 
   getEmissionsDomains(res) {
     let domains = []
-    res.forEach(r => {
+    res.forEach((r) => {
       const rData = r.data || r
-      const objs = rData.filter(d => d.type === EMISSIONS).map(d => {
-        return {
-          id: d.id,
-          fuelTech: d.fuel_tech,
-          type: d.type,
-          group: d.group
-        }
-      })
+      const objs = rData
+        .filter((d) => d.type === EMISSIONS)
+        .map((d) => {
+          return {
+            id: d.id,
+            fuelTech: d.fuel_tech,
+            type: d.type,
+            group: d.group
+          }
+        })
       domains = [...domains, ...objs]
     })
     return domains
@@ -124,14 +126,16 @@ export default {
       meanId = '',
       maxId = ''
 
-    res.forEach(r => {
+    res.forEach((r) => {
       const rData = r.data || r
-      const objs = rData.filter(d => isTemperatureType(d.type)).map(d => {
-        if (isTemperatureMeanType(d.type)) meanId = d.id
-        if (isTemperatureMinType(d.type)) minId = d.id
-        if (isTemperatureMaxType(d.type)) maxId = d.id
-        return { id: d.id, type: d.type, colour: 'red' }
-      })
+      const objs = rData
+        .filter((d) => isTemperatureType(d.type))
+        .map((d) => {
+          if (isTemperatureMeanType(d.type)) meanId = d.id
+          if (isTemperatureMinType(d.type)) minId = d.id
+          if (isTemperatureMaxType(d.type)) maxId = d.id
+          return { id: d.id, type: d.type, colour: 'red' }
+        })
       domains = [...domains, ...objs]
     })
 
@@ -148,11 +152,11 @@ export default {
     const PRICE_BELOW_0 = 'price.below0'
     const PRICE_COLOUR = 'blue'
     let domains = []
-    res.forEach(r => {
+    res.forEach((r) => {
       const rData = r.data || r
       const objs = rData
-        .filter(d => d.type === 'price' || d.type === 'volume_weighted_price')
-        .map(d => {
+        .filter((d) => d.type === 'price' || d.type === 'volume_weighted_price')
+        .map((d) => {
           return { id: d.id, type: d.type, colour: PRICE_COLOUR }
         })
       domains = [...domains, ...objs]
@@ -196,7 +200,7 @@ export default {
 
   getDomainObjs(region, domainIds, type) {
     // create ft Objects that has the right id and meta data
-    return domainIds.map(ft => {
+    return domainIds.map((ft) => {
       return {
         id: `${region}.fuel_tech.${ft}.${type}`,
         domain: `${region}.fuel_tech.${ft}.${type}`,

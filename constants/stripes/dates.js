@@ -6,13 +6,13 @@ import { NEM_START_YEAR, NEM_START_MONTH } from '../nem-start-date'
 export const getEachYearOfInterval = eachYearOfInterval({
   start: new Date(NEM_START_YEAR, 0, 1),
   end: new Date()
-}).map(d => d.getFullYear())
+}).map((d) => d.getFullYear())
 
-export const getEachDayOfInterval = year => {
+export const getEachDayOfInterval = (year) => {
   return eachDayOfInterval({
     start: new Date(year, 0, 1),
     end: new Date(year, 11, 31)
-  }).map(d => {
+  }).map((d) => {
     return {
       date: d,
       time: d.getTime()
@@ -33,7 +33,7 @@ export const getEachMonthOfInterval = () => {
   return eachMonthOfInterval({
     start: new Date(NEM_START_YEAR, NEM_START_MONTH, 1),
     end: new Date(year, month, 1)
-  }).map(d => {
+  }).map((d) => {
     return {
       date: d,
       time: d.getTime()

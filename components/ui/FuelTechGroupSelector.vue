@@ -1,9 +1,9 @@
 <template>
   <div class="select is-rounded">
     <select v-model="selected">
-      <option
-        v-for="(g, index) in groups"
-        :key="index"
+      <option 
+        v-for="(g, index) in groups" 
+        :key="index" 
         :value="g">
         {{ g }}
       </option>

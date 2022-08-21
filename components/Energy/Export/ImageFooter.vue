@@ -4,7 +4,8 @@
       <button
         v-if="!showAttribution"
         class="button is-small is-rounded is-primary is-inverted"
-        @click="showAttribution = true">
+        @click="showAttribution = true"
+      >
         Add Attribution
       </button>
     </div>
@@ -15,12 +16,13 @@
     </div>
 
     <div v-if="showAttribution">
-      Shared by 
-      <strong
-        contenteditable="true"
-        @blur="onAttributionBlur">{{ exportAttribution }}</strong>
+      Shared by
+      <strong 
+        contenteditable="true" 
+        @blur="onAttributionBlur">{{
+          exportAttribution
+        }}</strong>
     </div>
-
   </div>
 </template>
 

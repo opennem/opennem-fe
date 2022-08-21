@@ -1,28 +1,28 @@
 <template>
   <div class="container-fluid">
     <transition name="slide-down-fade">
-      <article
-        v-if="showError"
+      <article 
+        v-if="showError" 
         class="error-message message is-warning">
         <div class="message-header">
           <p>{{ errorHeader }}</p>
-          <button
-            class="delete"
-            aria-label="delete"
-            @click="doClearError"/>
+          <button 
+            class="delete" 
+            aria-label="delete" 
+            @click="doClearError" />
         </div>
-        <div
-          class="message-body"
+        <div 
+          class="message-body" 
           v-html="errorMessage" />
       </article>
     </transition>
 
     <transition name="slide-down-fade">
-      <article
-        v-if="siteAnnouncement"
+      <article 
+        v-if="siteAnnouncement" 
         class="message is-primary">
-        <div
-          class="message-body"
+        <div 
+          class="message-body" 
           v-html="siteAnnouncement" />
       </article>
     </transition>

@@ -1,7 +1,7 @@
 import PerfTime from '@/plugins/perfTime.js'
 const perfTime = new PerfTime()
 
-export default function({
+export default function ({
   isEnergyType,
   currentDataset,
   domainPowerEnergy,
@@ -10,7 +10,7 @@ export default function({
 }) {
   perfTime.time()
 
-  currentDataset.forEach(d => {
+  currentDataset.forEach((d) => {
     let totalPowerEnergy = 0,
       totalMarketValue = 0,
       totalEmissions = 0,
@@ -18,7 +18,7 @@ export default function({
       allMarketValueNulls = true,
       allEmissionsNulls = true
 
-    domainPowerEnergy.forEach(domain => {
+    domainPowerEnergy.forEach((domain) => {
       const id = domain.id
       const value = d[id]
       if (value || value === 0) {
@@ -27,7 +27,7 @@ export default function({
       totalPowerEnergy += value || 0
     })
 
-    domainMarketValue.forEach(domain => {
+    domainMarketValue.forEach((domain) => {
       const id = domain.id
       const value = d[id]
 
@@ -38,7 +38,7 @@ export default function({
       totalMarketValue += value || 0
     })
 
-    domainEmissions.forEach(domain => {
+    domainEmissions.forEach((domain) => {
       const id = domain.id
       const value = d[id]
       if (value || value === 0) {

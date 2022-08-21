@@ -8,7 +8,7 @@ import {
   utcYear
 } from 'd3-time'
 
-export default function(time) {
+export default function (time) {
   if (time <= 64800000) {
     // less than 18 hours
     return utcHour.every(1)

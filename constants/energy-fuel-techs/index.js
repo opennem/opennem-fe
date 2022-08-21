@@ -25,7 +25,7 @@ export const ftGroups = Object.keys(Groups)
 
 export function getAllGroups(powerEnergyDomains, type) {
   const parsed = {}
-  Object.keys(Groups).forEach(key => {
+  Object.keys(Groups).forEach((key) => {
     parsed[key] =
       key === 'Default'
         ? powerEnergyDomains

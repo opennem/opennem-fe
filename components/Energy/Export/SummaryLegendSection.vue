@@ -14,9 +14,8 @@
       :hidden-fuel-techs="hiddenFuelTechs"
       :domain-toggleable="false"
       :group-selection="false"
-      style="margin-bottom: 1rem;"
+      style="margin-bottom: 1rem"
     />
-
   </section>
 </template>
 

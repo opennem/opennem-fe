@@ -21,7 +21,7 @@ import {
   hasIntervalFilters
 } from '@/constants/interval-filters.js'
 
-export default function(range, interval, isZoomed, filterPeriod) {
+export default function (range, interval, isZoomed, filterPeriod) {
   if (range === '3D') {
     return utcDay.every(0.5)
   }
@@ -63,12 +63,12 @@ export default function(range, interval, isZoomed, filterPeriod) {
     ) {
       const periodMonth = DateDisplay.getPeriodMonth(filterPeriod)
       if (isFilter && periodMonth) {
-        return timeMonth.filter(d => d.getMonth() === periodMonth)
+        return timeMonth.filter((d) => d.getMonth() === periodMonth)
       }
     }
 
     if (interval === 'Fin Year') {
-      return timeMonth.filter(d => d.getMonth() === 6)
+      return timeMonth.filter((d) => d.getMonth() === 6)
     }
 
     if (isZoomed) {

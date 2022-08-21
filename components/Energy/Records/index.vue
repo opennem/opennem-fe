@@ -7,18 +7,27 @@
         <div>
           <span>
             <time>
-              {{ startDate | customFormatDate({ range, interval, isStart: true }) }}
+              {{
+                startDate | customFormatDate({ range, interval, isStart: true })
+              }}
             </time>
             –
             <time>
-              {{ endDate | customFormatDate({ range, interval, showYear: true, isEnd: true }) }}
+              {{
+                endDate
+                  | customFormatDate({
+                    range,
+                    interval,
+                    showYear: true,
+                    isEnd: true
+                  })
+              }}
             </time>
           </span>
           <small>
             {{ timezoneString }}
           </small>
         </div>
-        
       </caption>
       <thead>
         <tr>
@@ -43,7 +52,8 @@
           @recordSelect="handleRecordSelect"
           @recordDeselect="handleRecordDeselect"
           @recordMouseEnter="handleRecordEnter"
-          @recordMouseLeave="handleRecordLeave" />
+          @recordMouseLeave="handleRecordLeave"
+        />
 
         <energy-record
           v-if="isContributionDemand"
@@ -59,7 +69,8 @@
           @recordSelect="handleRecordSelect"
           @recordDeselect="handleRecordDeselect"
           @recordMouseEnter="handleRecordEnter"
-          @recordMouseLeave="handleRecordLeave" />
+          @recordMouseLeave="handleRecordLeave"
+        />
 
         <energy-record
           v-if="isContributionDemand"
@@ -76,8 +87,9 @@
           @recordSelect="handleRecordSelect"
           @recordDeselect="handleRecordDeselect"
           @recordMouseEnter="handleRecordEnter"
-          @recordMouseLeave="handleRecordLeave" />
-        
+          @recordMouseLeave="handleRecordLeave"
+        />
+
         <energy-record
           v-if="isContributionGeneration"
           :row-label="'Generation'"
@@ -92,8 +104,9 @@
           @recordSelect="handleRecordSelect"
           @recordDeselect="handleRecordDeselect"
           @recordMouseEnter="handleRecordEnter"
-          @recordMouseLeave="handleRecordLeave" />
-        
+          @recordMouseLeave="handleRecordLeave"
+        />
+
         <energy-record
           v-if="isContributionGeneration"
           :row-label="'Renewables'"
@@ -109,7 +122,8 @@
           @recordSelect="handleRecordSelect"
           @recordDeselect="handleRecordDeselect"
           @recordMouseEnter="handleRecordEnter"
-          @recordMouseLeave="handleRecordLeave" />
+          @recordMouseLeave="handleRecordLeave"
+        />
 
         <energy-record
           v-if="priceId"
@@ -126,7 +140,8 @@
           @recordSelect="handleRecordSelect"
           @recordDeselect="handleRecordDeselect"
           @recordMouseEnter="handleRecordEnter"
-          @recordMouseLeave="handleRecordLeave" />
+          @recordMouseLeave="handleRecordLeave"
+        />
 
         <energy-record
           v-if="temperatureId"
@@ -142,8 +157,8 @@
           @recordSelect="handleRecordSelect"
           @recordDeselect="handleRecordDeselect"
           @recordMouseEnter="handleRecordEnter"
-          @recordMouseLeave="handleRecordLeave" />
-
+          @recordMouseLeave="handleRecordLeave"
+        />
       </tbody>
     </table>
   </section>
@@ -320,10 +335,10 @@ export default {
       if (this.dataset.length > 0) {
         const dataset = _cloneDeep(this.dataset)
 
-        dataset.forEach(d => {
+        dataset.forEach((d) => {
           let selectedTotal = null
 
-          this.selectedPowerEnergyDomains.forEach(domain => {
+          this.selectedPowerEnergyDomains.forEach((domain) => {
             if (d[domain.id]) {
               selectedTotal += d[domain.id]
             }
@@ -337,7 +352,7 @@ export default {
           minSelectedDate = dataset[0].date,
           maxSelectedDate = dataset[0].date
 
-        dataset.forEach(d => {
+        dataset.forEach((d) => {
           const selectedTotal = d._selectedTotal
           if (selectedTotal <= minSelected || !minSelected) {
             minSelected = selectedTotal
@@ -389,7 +404,7 @@ export default {
         maxTemperature = 0,
         maxTemperatureDate = null
 
-      updatedDataset.every(d => {
+      updatedDataset.every((d) => {
         if (d._total) {
           maxDemand = d._total
           maxDemandDate = d.time
@@ -420,7 +435,7 @@ export default {
         return true
       })
 
-      updatedDataset.forEach(d => {
+      updatedDataset.forEach((d) => {
         if (!minDemandDate && d._total !== null && d._total !== 0) {
           minDemand = d._total
           minDemandDate = d.time

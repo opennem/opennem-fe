@@ -14,16 +14,15 @@
     "generate-dev": "FOR=dev nuxt generate",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "precommit": "npm run lint",
-    "release": "dotenv release-it --"
+    "release": "dotenv release-it --",
+    "fix": "yarn fix:eslint && yarn fix:prettier",
+    "fix:eslint": "eslint --fix \"**/*.*\"",
+    "fix:prettier": "prettier --write \"**/*.*\""
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.0.0",
     "@nuxtjs/proxy": "^2.0.1",
-    "@nuxtjs/sentry": "^5.1.7",
     "@opennem/energy-tools": "^1.5.1",
-    "@sentry/browser": "^7.10.0",
-    "@sentry/integrations": "^6.19.7",
-    "@sentry/tracing": "^7.10.0",
     "@turf/length": "^6.3.0",
     "cross-env": "^5.2.0",
     "d3-array": "^2.0.3",
@@ -53,7 +52,7 @@
     "lodash.uniqby": "^4.7.0",
     "mapbox-gl": "2.5.1",
     "mapbox-gl-animated-popup": "0.2.1",
-    "nuxt": "^2.13.0",
+    "nuxt": "^2.15.8",
     "papaparse": "^5.3.1",
     "v-tooltip": "^2.0.2",
     "vue-clickaway": "^2.2.2",
@@ -72,7 +71,7 @@
     "eslint-plugin-vue": "^4.0.0",
     "node-sass": "^6.0.1",
     "nodemon": "^1.11.0",
-    "prettier": "1.14.3",
+    "prettier": "^2.7.1",
     "release-it": "^14.0.2",
     "sass-loader": "^10.2.1"
   },

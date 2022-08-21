@@ -1,24 +1,24 @@
 <template>
   <div class="vis column-vis">
-    <svg
-      :width="svgWidth"
-      :height="svgHeight"
-      :id="id"
+    <svg 
+      :width="svgWidth" 
+      :height="svgHeight" 
+      :id="id" 
       class="column-chart">
-      <g
-        :transform="gTransform"
+      <g 
+        :transform="gTransform" 
         class="axis-line-group">
-        <g
-          :transform="xAxisTransform"
+        <g 
+          :transform="xAxisTransform" 
           :class="xAxisClass" />
 
         <g :class="yAxisClass" />
       </g>
-      <g
-        :transform="columnTransform"
+      <g 
+        :transform="columnTransform" 
         class="column-group" />
-      <g
-        :transform="columnTransform"
+      <g 
+        :transform="columnTransform" 
         class="column-label-group" />
     </svg>
   </div>
@@ -66,7 +66,7 @@ export default {
     },
     convertValue: {
       type: Function,
-      default: () => function() {}
+      default: () => function () {}
     },
     highlightDomain: {
       type: String,
@@ -154,7 +154,7 @@ export default {
       if (domain && domain !== '') {
         this.$columnGroup
           .selectAll('rect')
-          .attr('opacity', d => (d.name === domain ? 1 : 0.2))
+          .attr('opacity', (d) => (d.name === domain ? 1 : 0.2))
       } else {
         this.$columnGroup.selectAll('rect').attr('opacity', 1)
       }
@@ -185,7 +185,7 @@ export default {
   methods: {
     updateColumnData() {
       this.columnData = _sortBy(
-        this.domains.map(domain => {
+        this.domains.map((domain) => {
           const id = domain.id
           return {
             name: id,
@@ -196,7 +196,7 @@ export default {
         ['value']
       )
       this.orderedDomains = this.columnData
-        .map(d => this.domains.find(domain => domain.id === d.name))
+        .map((d) => this.domains.find((domain) => domain.id === d.name))
         .reverse()
     },
     setupWidthHeight() {
@@ -228,7 +228,7 @@ export default {
       this.yAxis = axisLeft(this.y)
         .tickSize(-this.width)
         .ticks(5)
-        .tickFormat(d => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
+        .tickFormat((d) => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
     },
 
     update() {
@@ -237,11 +237,11 @@ export default {
         `#${this.id} .${this.columnLabelGroupClass}`
       )
 
-      const xDomains = this.orderedDomains.map(d => d.id)
-      const zColours = this.orderedDomains.map(d => d.colour)
+      const xDomains = this.orderedDomains.map((d) => d.id)
+      const zColours = this.orderedDomains.map((d) => d.colour)
 
       const data = this.columnData
-      const yValues = data.map(d => d.value)
+      const yValues = data.map((d) => d.value)
       const yExtent = d3Extent(yValues)
       if (yExtent[0] > 0) {
         yExtent[0] = 0
@@ -266,8 +266,8 @@ export default {
       g.call(this.xAxis)
       g.selectAll('.tick text')
         .style('text-anchor', 'middle')
-        .text(t => {
-          const label = this.domains.find(d => d.id === t).label
+        .text((t) => {
+          const label = this.domains.find((d) => d.id === t).label
           return label || t
         })
     },
@@ -275,10 +275,10 @@ export default {
     customYAxis(g) {
       g.call(this.yAxis)
       g.selectAll('.tick text')
-        .text(t => this.formatValue(this.convertValue(t)))
+        .text((t) => this.formatValue(this.convertValue(t)))
         .attr('x', 4)
         .attr('dy', -4)
-      g.selectAll('.tick line').attr('class', d => (d === 0 ? 'base' : ''))
+      g.selectAll('.tick line').attr('class', (d) => (d === 0 ? 'base' : ''))
     },
 
     drawColumns() {
@@ -286,19 +286,19 @@ export default {
         .selectAll('rect')
         .data(this.columnData)
         .join('rect')
-        .attr('x', d => this.x(d.name))
-        .attr('y', d => (d.value > 0 ? this.y(d.value) : this.y(0)))
+        .attr('x', (d) => this.x(d.name))
+        .attr('y', (d) => (d.value > 0 ? this.y(d.value) : this.y(0)))
         .attr('rx', 2)
         .attr('ry', 2)
-        .attr('height', d => Math.abs(this.y(0) - this.y(d.value)))
+        .attr('height', (d) => Math.abs(this.y(0) - this.y(d.value)))
         .attr('width', this.x.bandwidth())
-        .attr('fill', d => this.z(d.name))
-        .attr('class', d => `${d.name}`)
+        .attr('fill', (d) => this.z(d.name))
+        .attr('class', (d) => `${d.name}`)
 
-      this.$columnGroup.selectAll('rect').on('mouseenter', d => {
+      this.$columnGroup.selectAll('rect').on('mouseenter', (d) => {
         this.$emit('domainOver', d.name)
       })
-      this.$columnGroup.selectAll('rect').on('mouseleave', d => {
+      this.$columnGroup.selectAll('rect').on('mouseleave', (d) => {
         this.$emit('domainOver', '')
       })
     },
@@ -306,12 +306,12 @@ export default {
     drawColumnLabels() {
       this.$columnLabelGroup.selectAll('g').remove()
 
-      const mainLabel = d => {
+      const mainLabel = (d) => {
         if (d.value === 0) {
           return 'No change'
         }
 
-        const format = val => this.formatValue(val)
+        const format = (val) => this.formatValue(val)
         let value = format(this.convertValue(d.value))
 
         if (this.usePercentage) {
@@ -322,7 +322,7 @@ export default {
         return value
       }
 
-      const secondaryLabel = d => {
+      const secondaryLabel = (d) => {
         // if (this.usePercentage) {
         //   return ''
         // }
@@ -340,39 +340,34 @@ export default {
         .selectAll('text')
         .data(this.columnData)
         .join('text')
-        .attr(
-          'x',
-          d =>
-            this.usePercentage
-              ? this.x(d.name) + this.x.bandwidth()
-              : this.x(d.name)
+        .attr('x', (d) =>
+          this.usePercentage
+            ? this.x(d.name) + this.x.bandwidth()
+            : this.x(d.name)
         )
-        .attr('y', d => (d.value > 0 ? this.y(d.value) : this.y(0)))
-        .attr(
-          'dy',
-          d => (d.value > 0 ? -2 : Math.abs(this.y(0) - this.y(d.value)) + 12)
+        .attr('y', (d) => (d.value > 0 ? this.y(d.value) : this.y(0)))
+        .attr('dy', (d) =>
+          d.value > 0 ? -2 : Math.abs(this.y(0) - this.y(d.value)) + 12
         )
         .style('text-anchor', this.usePercentage ? 'end' : 'start')
         .style('font-size', this.tabletBreak ? '11px' : '11px')
-        .text(d => mainLabel(d))
+        .text((d) => mainLabel(d))
 
       this.$columnLabelGroup
         .selectAll('text')
         .data(this.columnData)
         .append('tspan')
-        .attr(
-          'x',
-          d =>
-            // ? this.x(d.name) + this.x.bandwidth() / 2
-            this.usePercentage
-              ? this.x(d.name) + this.x.bandwidth()
-              : this.x(d.name)
+        .attr('x', (d) =>
+          // ? this.x(d.name) + this.x.bandwidth() / 2
+          this.usePercentage
+            ? this.x(d.name) + this.x.bandwidth()
+            : this.x(d.name)
         )
-        .attr('dy', d => (d.value > 0 ? -12 : 12))
+        .attr('dy', (d) => (d.value > 0 ? -12 : 12))
         .style('fill', '#444')
         .style('font-size', '11px')
         .style('text-anchor', this.usePercentage ? 'end' : 'start')
-        .text(d => secondaryLabel(d))
+        .text((d) => secondaryLabel(d))
     },
 
     resizeRedraw() {
@@ -397,5 +392,4 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

@@ -24,32 +24,39 @@
         <div class="region">{{ regionLabel }}</div>
 
         <div class="fuel-techs">
-          <span 
-            v-for="(ft, genFtIndex) in facility.genFuelTechs" 
-            :key="genFtIndex">
+          <span
+            v-for="(ft, genFtIndex) in facility.genFuelTechs"
+            :key="genFtIndex"
+          >
             {{ getFtLabel(ft) }}
             <small v-if="facility.genFuelTechs.length > 1">
               ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}
-              <span
-                v-if="facility.fuelTechRegisteredCap[ft] < 1"
-              >kW</span>
+              <span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span>
               <span v-else>MW</span>)
             </small>
-            <span v-if="genFtIndex !== facility.genFuelTechs.length - 1">,</span>
+            <span 
+              v-if="genFtIndex !== facility.genFuelTechs.length - 1"
+            >,</span
+            >
           </span>
-          <span v-if="facility.loadFuelTechs.length && facility.genFuelTechs.length">,</span>
-          <em 
-            v-for="(ft, loadFtIndex) in facility.loadFuelTechs" 
-            :key="loadFtIndex">
+          <span
+            v-if="facility.loadFuelTechs.length && facility.genFuelTechs.length"
+          >,</span
+          >
+          <em
+            v-for="(ft, loadFtIndex) in facility.loadFuelTechs"
+            :key="loadFtIndex"
+          >
             {{ getFtLabel(ft) }}
             <small>
               ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}
-              <span
-                v-if="facility.fuelTechRegisteredCap[ft] < 1"
-              >kW</span>
+              <span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span>
               <span v-else>MW</span>)
             </small>
-            <span v-if="loadFtIndex !== facility.loadFuelTechs.length - 1">,</span>
+            <span 
+              v-if="loadFtIndex !== facility.loadFuelTechs.length - 1"
+            >,</span
+            >
           </em>
         </div>
       </div>
@@ -58,13 +65,16 @@
         <span class="capacity-label">Generator capacity</span>
         <div v-show="facility.generatorCap">
           {{ generatorCap | facilityFormatNumber }}
-          <span
-            v-if="generatorCap !== 0 && generatorCap < 1"
+          <span 
+            v-if="generatorCap !== 0 && generatorCap < 1" 
             class="unit"
-          >kW</span>
+          >kW</span
+          >
           <span 
             v-if="generatorCap !== 0 && generatorCap >= 1" 
-            class="unit">MW</span>
+            class="unit"
+          >MW</span
+          >
         </div>
         <div v-show="!facility.generatorCap">–</div>
       </div>
@@ -80,19 +90,26 @@
       >
         <i class="fal fa-chart-area" />
         <div>
-          <span v-if="selectedFacilityError">{{ selectedFacilityErrorMessage }}</span>
+          <span v-if="selectedFacilityError">{{
+            selectedFacilityErrorMessage
+          }}</span>
           <span v-else>Facility statistics data not available</span>
         </div>
       </div>
     </transition>
 
     <transition name="fade">
-      <Loader 
-        v-if="fetchingStats || fetchingFacility" 
-        class="facility-chart-loader" />
+      <Loader
+        v-if="fetchingStats || fetchingFacility"
+        class="facility-chart-loader"
+      />
     </transition>
     <PowerEnergyChart
-      v-if="!fetchingStats && !fetchingFacility && selectedFacilityUnitsDataset.length > 0"
+      v-if="
+        !fetchingStats &&
+          !fetchingFacility &&
+          selectedFacilityUnitsDataset.length > 0
+      "
       :power-energy-dataset="selectedFacilityUnitsDataset"
       :domain-power-energy="powerEnergyDomains"
       :range="range"
@@ -207,7 +224,7 @@ export default {
     },
 
     regionLabel() {
-      const region = FacilityRegions.find(d => d.id === this.region)
+      const region = FacilityRegions.find((d) => d.id === this.region)
       return region ? region.label : ''
     },
 
@@ -227,7 +244,7 @@ export default {
 
         const ftRegCap = this.facility.fuelTechRegisteredCap
         let cap = 0
-        this.selectedTechs.forEach(d => {
+        this.selectedTechs.forEach((d) => {
           if (FUEL_TECHS.FUEL_TECH_CATEGORY[d] !== 'load' && ftRegCap[d]) {
             cap += ftRegCap[d]
           }

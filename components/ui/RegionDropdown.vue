@@ -1,42 +1,52 @@
 <template>
-  <div
-    :class="{'is-active': dropdownActive}"
+  <div 
+    :class="{ 'is-active': dropdownActive }" 
     class="dropdown">
     <button
       v-on-clickaway="handleClickAway"
       class="dropdown-trigger button inverted"
-      @click="handleClick">
+      @click="handleClick"
+    >
       <span>
         <strong>{{ regionLabel }}</strong>
         <i
-          :class="['fal dropdown-trigger-icon', dropdownActive ? 'fa-chevron-up' : 'fa-chevron-down']"
+          :class="[
+            'fal dropdown-trigger-icon',
+            dropdownActive ? 'fa-chevron-up' : 'fa-chevron-down'
+          ]"
         />
       </span>
     </button>
 
     <transition name="slide-down-fade">
-      <div
-        v-show="dropdownActive"
+      <div 
+        v-show="dropdownActive" 
         class="dropdown-menu">
         <div class="dropdown-content">
           <nuxt-link
             :to="{ path: `/${currentView}/au/`, query: getQuery(currentView) }"
             class="dropdown-item"
-            @click.native="handleClick">All Regions</nuxt-link>
+            @click.native="handleClick"
+          >All Regions</nuxt-link
+          >
 
-          <hr class="dropdown-divider">
+          <hr class="dropdown-divider" >
 
           <nuxt-link
             v-for="link in links"
             :key="link.id"
-            :to="{ path: `/${currentView}/${link.id}/`, query: getQuery(currentView)}"
+            :to="{
+              path: `/${currentView}/${link.id}/`,
+              query: getQuery(currentView)
+            }"
             :class="{
               'dropdown-item-child': link.isChild,
               'dropdown-item-first-child': link.isFirstChild,
               'dropdown-item-last-child': link.isLastChild
             }"
             class="dropdown-item"
-            @click.native="handleClick">
+            @click.native="handleClick"
+          >
             {{ link.label }}
           </nuxt-link>
         </div>
@@ -113,7 +123,7 @@ export default {
     getLinks() {
       // create links without 'all' since a divider is needed
       return this.regions
-        .map(r => {
+        .map((r) => {
           const isChild = r.parentRegion ? true : false
           const isFirstChild = r.parentFirstChild ? true : false
           const isLastChild = r.parentLastChild ? true : false
@@ -126,17 +136,17 @@ export default {
             isLastChild
           }
         })
-        .filter(r => r.id !== 'au')
+        .filter((r) => r.id !== 'au')
     },
     getQuery(view) {
       return view === 'facilities' ? this.facilitiesQuery : this.query
     },
     getRegionLabel(regionId) {
-      const region = this.regions.find(d => d.id === regionId)
+      const region = this.regions.find((d) => d.id === regionId)
       return region ? region.label : ''
     },
     getRegionTimezoneString(regionId) {
-      const region = this.regions.find(d => d.id === regionId)
+      const region = this.regions.find((d) => d.id === regionId)
       return region ? region.timezoneString : null
     },
     handleClick() {

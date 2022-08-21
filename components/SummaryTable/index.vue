@@ -3,7 +3,8 @@
     <export-legend
       v-if="displayAsLegend"
       :domains="legendDomains"
-      :show-percent="showPercentInLegend"/>
+      :show-percent="showPercentInLegend"
+    />
 
     <div v-else>
       <dates-display
@@ -20,20 +21,21 @@
 
       <div class="summary-column-headers">
         <div class="summary-row">
-          <div
-            class="summary-col-label"
-            style="padding-top: 3px;">
+          <div 
+            class="summary-col-label" 
+            style="padding-top: 3px">
             <group-selector v-if="groupSelection" />
           </div>
 
           <div 
             class="summary-col-external-link-icon" 
-            style="width: 20px;"/>
+            style="width: 20px" />
 
           <div
             v-if="isEnergy"
             class="summary-col-energy cell-toggle"
-            @click="handleUnitCellClicked">
+            @click="handleUnitCellClicked"
+          >
             <span v-if="isTypeChangeSinceLine">
               Change since <small>{{ displayUnit }}</small>
             </span>
@@ -41,20 +43,19 @@
               Energy <small>{{ chartCurrentUnit }}</small>
             </span>
           </div>
-          <div
-            v-else
+          <div 
+            v-else 
             class="summary-col-energy">
             <span v-if="hoverOn || focusOn">
               Power <small>{{ chartCurrentUnit }}</small>
             </span>
-            <span v-else>
-              Energy <small>GWh</small>
-            </span>
+            <span v-else> Energy <small>GWh</small> </span>
           </div>
 
           <div
             class="summary-col-contribution cell-toggle"
-            @click="handlePercentContributionToClick">
+            @click="handlePercentContributionToClick"
+          >
             Contribution <small>to {{ percentContributionTo }}</small>
           </div>
           <div class="summary-col-av-value">
@@ -67,28 +68,38 @@
 
           <div 
             class="summary-col-external-link-icon" 
-            style="width: 20px;"/>
+            style="width: 20px" />
 
-          <div
-            v-if="isEnergy"
+          <div 
+            v-if="isEnergy" 
             class="summary-col-energy cell-value">
-            <div v-if="isTypeChangeSinceLine">
-              –
-            </div>
+            <div v-if="isTypeChangeSinceLine">–</div>
             <div v-else>
               <span v-if="hoverOn || focusOn">
-                {{ pointSummarySources._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+                {{
+                  pointSummarySources._total
+                    | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                    | formatValue
+                }}
               </span>
               <span v-else>
-                {{ summarySources._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
-              </span> 
+                {{
+                  summarySources._totalEnergy
+                    | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                    | formatValue
+                }}
+              </span>
             </div>
           </div>
-          <div
-            v-else
+          <div 
+            v-else 
             class="summary-col-energy cell-value">
             <span v-if="hoverOn || focusOn">
-              {{ pointSummarySources._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+              {{
+                pointSummarySources._total
+                  | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                  | formatValue
+              }}
             </span>
             <span v-else>
               {{ summarySources._totalEnergy | formatValue }}
@@ -98,12 +109,20 @@
           <div class="summary-col-contribution cell-value" />
           <div
             v-if="!hoverOn && !focusOn"
-            class="summary-col-av-value cell-value">
+            class="summary-col-av-value cell-value"
+          >
             <span v-if="isAvValueColumn">
-              {{ summary._totalDemandAverageValue | formatCurrency }}<br>
+              {{ summary._totalDemandAverageValue | formatCurrency }}<br >
             </span>
             <span v-if="isEmissionsVolumeColumn">
-              {{ sumEmissionsMinusLoads | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
+              {{
+                sumEmissionsMinusLoads
+                  | convertValue(
+                    chartEmissionsVolumeUnitPrefix,
+                    chartEmissionsVolumeDisplayPrefix
+                  )
+                  | formatValue
+              }}
             </span>
             <span v-if="isEmissionsIntensityColumn">
               {{ averageEmissionIntensity | formatValue }}
@@ -111,12 +130,20 @@
           </div>
           <div
             v-if="hoverOn || focusOn"
-            class="summary-col-av-value cell-value">
+            class="summary-col-av-value cell-value"
+          >
             <span v-if="isAvValueColumn">
-              {{ pointSummary._demandAverageValue | formatCurrency }}<br>
+              {{ pointSummary._demandAverageValue | formatCurrency }}<br >
             </span>
             <span v-if="isEmissionsVolumeColumn">
-              {{ emissionsHoverValue | convertValue(chartEmissionsVolumeUnitPrefix, chartEmissionsVolumeDisplayPrefix) | formatValue }}
+              {{
+                emissionsHoverValue
+                  | convertValue(
+                    chartEmissionsVolumeUnitPrefix,
+                    chartEmissionsVolumeDisplayPrefix
+                  )
+                  | formatValue
+              }}
             </span>
             <span v-if="isEmissionsIntensityColumn">
               {{ emissionIntensityHoverValue | formatValue }}
@@ -146,36 +173,46 @@
         @domain-click="handleDomainClick"
       />
 
-      <div
-        v-if="loadsOrder.length > 0"
+      <div 
+        v-if="loadsOrder.length > 0" 
         class="summary-column-headers">
         <div class="summary-row">
           <div class="summary-col-label">Loads</div>
 
           <div 
             class="summary-col-external-link-icon" 
-            style="width: 20px;"/>
+            style="width: 20px" />
 
-          <div
-            v-if="isEnergy"
+          <div 
+            v-if="isEnergy" 
             class="summary-col-energy cell-value">
-            <div v-if="isTypeChangeSinceLine">
-              –
-            </div>
+            <div v-if="isTypeChangeSinceLine">–</div>
             <div v-else>
               <span v-if="hoverOn || focusOn">
-                {{ pointSummaryLoads._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+                {{
+                  pointSummaryLoads._total
+                    | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                    | formatValue
+                }}
               </span>
               <span v-else>
-                {{ summaryLoads._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+                {{
+                  summaryLoads._totalEnergy
+                    | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                    | formatValue
+                }}
               </span>
             </div>
           </div>
-          <div
-            v-else
+          <div 
+            v-else 
             class="summary-col-energy cell-value">
             <span v-if="hoverOn || focusOn">
-              {{ pointSummaryLoads._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+              {{
+                pointSummaryLoads._total
+                  | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                  | formatValue
+              }}
             </span>
             <span v-else>
               {{ summaryLoads._totalEnergy | formatValue }}
@@ -206,38 +243,46 @@
         @mouse-leave="handleMouseLeave"
       />
 
-      <div
-        v-if="loadsOrder.length > 0"
-        class="summary-column-headers" >
+      <div 
+        v-if="loadsOrder.length > 0" 
+        class="summary-column-headers">
         <div class="summary-row last-row">
           <div class="summary-col-label">Net</div>
 
           <div 
             class="summary-col-external-link-icon" 
-            style="width: 20px;"/>
+            style="width: 20px" />
 
-          <div
-            v-if="isEnergy"
+          <div 
+            v-if="isEnergy" 
             class="summary-col-energy cell-value">
             <span v-if="hoverOn || focusOn">
-              {{ pointSummary._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+              {{
+                pointSummary._total
+                  | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                  | formatValue
+              }}
             </span>
-            <span v-else-if="isTypeChangeSinceLine">
-              –
-            </span>
+            <span v-else-if="isTypeChangeSinceLine"> – </span>
             <span v-else>
-              {{ summary._totalEnergy | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+              {{
+                summary._totalEnergy
+                  | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                  | formatValue
+              }}
             </span>
           </div>
-          <div
-            v-else
+          <div 
+            v-else 
             class="summary-col-energy cell-value">
             <span v-if="hoverOn || focusOn">
-              {{ pointSummary._total | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+              {{
+                pointSummary._total
+                  | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                  | formatValue
+              }}
             </span>
-            <span v-else-if="isTypeChangeSinceLine">
-              –
-            </span>
+            <span v-else-if="isTypeChangeSinceLine"> – </span>
             <span v-else>
               {{ summary._totalEnergy | formatValue }}
             </span>
@@ -253,7 +298,8 @@
         @touchstart="handleTouchstart"
         @touchend="handleTouchend"
         @click.exact="handleRenewableRowClicked"
-        @click.shift.exact="handleRenewableRowShiftClicked">
+        @click.shift.exact="handleRenewableRowShiftClicked"
+      >
         <div class="summary-row last-row">
           <div class="summary-col-label">
             <div
@@ -261,36 +307,45 @@
                 on: chartEnergyRenewablesLine,
                 'alt-colour': useAltRenewablesLineColour
               }"
-              class="renewable-line" />
+              class="renewable-line"
+            />
             Renewables
           </div>
 
           <div 
             class="summary-col-external-link-icon" 
-            style="width: 20px;"/>
+            style="width: 20px" />
 
-          <div
-            v-if="isEnergy"
+          <div 
+            v-if="isEnergy" 
             class="summary-col-energy cell-value">
             <span v-if="hoverOn || focusOn">
-              {{ renewablesValue | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+              {{
+                renewablesValue
+                  | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                  | formatValue
+              }}
             </span>
-            <span v-else-if="isTypeChangeSinceLine">
-              –
-            </span>
+            <span v-else-if="isTypeChangeSinceLine"> – </span>
             <span v-else>
-              {{ renewablesValue | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+              {{
+                renewablesValue
+                  | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                  | formatValue
+              }}
             </span>
           </div>
-          <div
-            v-else
+          <div 
+            v-else 
             class="summary-col-energy cell-value">
             <span v-if="hoverOn || focusOn">
-              {{ renewablesValue | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+              {{
+                renewablesValue
+                  | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                  | formatValue
+              }}
             </span>
-            <span v-else-if="isTypeChangeSinceLine">
-              –
-            </span>
+            <span v-else-if="isTypeChangeSinceLine"> – </span>
             <span v-else>
               {{ renewablesValue | formatValue }}
             </span>
@@ -298,20 +353,20 @@
 
           <div
             v-if="!hoverOn && !focusOn"
-            class="summary-col-contribution cell-value">
+            class="summary-col-contribution cell-value"
+          >
             {{ renewablesPercentage | percentageFormatNumber }}
           </div>
           <div
             v-if="hoverOn || focusOn"
-            class="summary-col-contribution cell-value">
+            class="summary-col-contribution cell-value"
+          >
             {{ pointRenewablesPercentage | percentageFormatNumber }}
           </div>
           <div class="summary-col-av-value cell-value" />
         </div>
       </div>
     </div>
-
-    
   </div>
 </template>
 
@@ -554,7 +609,7 @@ export default {
 
       if (date) {
         const time = date.getTime()
-        const find = this.emissionIntensityData.find(d => d.time === time)
+        const find = this.emissionIntensityData.find((d) => d.time === time)
         return find ? find : null
       }
 
@@ -575,32 +630,32 @@ export default {
 
     sourcesOrderLength() {
       return this.energyDomains.filter(
-        d => d.category === 'source' || d.category === 'load'
+        (d) => d.category === 'source' || d.category === 'load'
       ).length
     },
 
     sourcesOrder() {
-      return this.energyDomains.filter(d => d.category === 'source')
+      return this.energyDomains.filter((d) => d.category === 'source')
     },
 
     loadsOrder() {
-      return this.energyDomains.filter(d => d.category === 'load')
+      return this.energyDomains.filter((d) => d.category === 'load')
     },
 
     sourcesMarketValueOrder() {
-      return this.marketValueDomains.filter(d => d.category === 'source')
+      return this.marketValueDomains.filter((d) => d.category === 'source')
     },
 
     loadsMarketValueOrder() {
-      return this.marketValueDomains.filter(d => d.category === 'load')
+      return this.marketValueDomains.filter((d) => d.category === 'load')
     },
 
     legendDomains() {
       const hidden = this.hiddenFuelTechs
       const domains = this.energyDomains.filter(
-        d => !_includes(hidden, d[this.propRef])
+        (d) => !_includes(hidden, d[this.propRef])
       )
-      domains.forEach(d => {
+      domains.forEach((d) => {
         d.contribution = this.getContribution(d.id)
       })
       return domains
@@ -767,7 +822,7 @@ export default {
 
     // if all is hidden, then unhide all
     let hiddenLength = 0
-    this.energyDomains.forEach(d => {
+    this.energyDomains.forEach((d) => {
       if (_includes(hiddenFuelTechs, d[this.propRef])) {
         hiddenLength += 1
       }
@@ -781,9 +836,9 @@ export default {
 
     this.$emit('fuelTechsHidden', hiddenFuelTechs)
 
-    hiddenFuelTechs.forEach(fuelTech => {
+    hiddenFuelTechs.forEach((fuelTech) => {
       const find = this.energyDomains.find(
-        domain => domain[this.propRef] === fuelTech
+        (domain) => domain[this.propRef] === fuelTech
       )
       if (find) {
         if (find.category === 'source') {
@@ -816,9 +871,9 @@ export default {
         this.summarySources = {}
         this.summaryLoads = {}
 
-        const energySummary = data.map(d => {
+        const energySummary = data.map((d) => {
           let p = 0
-          this.energyDomains.forEach(ft => {
+          this.energyDomains.forEach((ft) => {
             p += d[ft.id] || 0
           })
           return p
@@ -831,7 +886,7 @@ export default {
         const volWeightPriceTotal = volWeightPrice.reduce((a, b) => a + b, 0)
 
         const dataEnergyMap = (ft, excludeHidden) => {
-          return data.map(d => {
+          return data.map((d) => {
             const energy = {}
             const setEnergy = () => {
               if (this.isEnergy) {
@@ -857,7 +912,7 @@ export default {
           })
         }
         const dataPowerMap = (ft, excludeHidden) => {
-          return data.map(d => {
+          return data.map((d) => {
             const power = {}
             const setPower = () => {
               if (!this.isEnergy) {
@@ -888,17 +943,16 @@ export default {
         const startDate = start.date
         const endDate = end.date
         const fullDatasetFiltered = this.datasetFull.filter(
-          df => df.time >= start.time && df.time <= end.time
+          (df) => df.time >= start.time && df.time <= end.time
         )
         const bucketSizeMins = differenceInMinutes(endDate, startDate) + 1
 
         // Calculate Energy
-        this.energyDomains.forEach(ft => {
+        this.energyDomains.forEach((ft) => {
           const category = ft.category
-          const fullDomainData = fullDatasetFiltered.map(fd => fd[ft.id])
-          const fullDomainDataMinusHidden = fullDatasetFiltered.map(
-            fd =>
-              _includes(this.hiddenFuelTechs, ft[this.propRef]) ? 0 : fd[ft.id]
+          const fullDomainData = fullDatasetFiltered.map((fd) => fd[ft.id])
+          const fullDomainDataMinusHidden = fullDatasetFiltered.map((fd) =>
+            _includes(this.hiddenFuelTechs, ft[this.propRef]) ? 0 : fd[ft.id]
           )
 
           const dataEnergy = dataEnergyMap(ft)
@@ -943,9 +997,9 @@ export default {
         })
 
         // Calculate Emissions
-        this.emissionsDomains.forEach(ft => {
+        this.emissionsDomains.forEach((ft) => {
           const category = ft.category
-          const dataEVMinusHidden = data.map(d => {
+          const dataEVMinusHidden = data.map((d) => {
             const emissionsVol = {}
             if (!_includes(this.hiddenFuelTechs, ft[this.propRef])) {
               if (
@@ -986,7 +1040,7 @@ export default {
               let avValue = null
               let dataMarketValueSum = 0
 
-              const dataMarketValue = data.map(d => {
+              const dataMarketValue = data.map((d) => {
                 const marketValue = {}
                 marketValue[ft.id] = d[ft.id]
                 return marketValue
@@ -996,7 +1050,7 @@ export default {
                 0
               )
               const findEnergyEq = this.energyDomains.find(
-                e => e[this.propRef] === ft[this.propRef]
+                (e) => e[this.propRef] === ft[this.propRef]
               )
               if (!findEnergyEq) {
                 console.error(
@@ -1018,7 +1072,7 @@ export default {
           } else {
             let avValue = null
 
-            this.energyDomains.forEach(domain => {
+            this.energyDomains.forEach((domain) => {
               const id = domain.id
               const ftPrice = data.map((p, pIndex) => {
                 const price = data[pIndex][this.priceId]
@@ -1034,11 +1088,11 @@ export default {
 
             avValue = null
 
-            this.marketValueDomains.forEach(domain => {
+            this.marketValueDomains.forEach((domain) => {
               const category = domain.category
               const id = domain.id
               const findEnergyEq = this.energyDomains.find(
-                e => e[this.propRef] === domain[this.propRef]
+                (e) => e[this.propRef] === domain[this.propRef]
               )
               const ftId = findEnergyEq.id
               let avValue = null
@@ -1073,14 +1127,14 @@ export default {
         }
 
         // Calculate Temperature domains
-        const temperatureObj = this.temperatureDomains.find(domain => {
+        const temperatureObj = this.temperatureDomains.find((domain) => {
           return domain.type === 'temperature' ||
             domain.type === 'temperature_mean'
             ? domain.id
             : null
         })
         const temperatureWithoutNulls = temperatureObj
-          ? data.filter(d => {
+          ? data.filter((d) => {
               return d[temperatureObj.id] !== null
             })
           : []
@@ -1100,7 +1154,7 @@ export default {
           if (this.demandEnergyDomains && this.demandEnergyDomains.length) {
             const demandEnergyId = this.demandEnergyDomains[0].id
 
-            const demandEnergy = data.map(p => {
+            const demandEnergy = data.map((p) => {
               return p[demandEnergyId] ? p[demandEnergyId] : null
             })
             demandEnergyTotal = demandEnergy.reduce((a, b) => a + b, 0)
@@ -1113,7 +1167,7 @@ export default {
           ) {
             const demandMarketValueId = this.demandMarketValueDomains[0].id
 
-            const demandMarketValue = data.map(p => {
+            const demandMarketValue = data.map((p) => {
               return p[demandMarketValueId] ? p[demandMarketValueId] : null
             })
             demandMarketValueTotal = demandMarketValue.reduce(
@@ -1132,7 +1186,8 @@ export default {
         }
 
         this.summary._totalEnergy = totalEnergy
-        this.summary._totalEnergyForPercentageCalculation = totalEnergyForPercentageCalculation
+        this.summary._totalEnergyForPercentageCalculation =
+          totalEnergyForPercentageCalculation
         this.summary._totalAverageValue = totalAverageValue
         this.summary._totalDemandAverageValue = totalDemandAverageValue
         this.summarySources._totalEnergy = totalSources
@@ -1164,7 +1219,7 @@ export default {
       this.pointSummaryLoads = {}
 
       if (!_isEmpty(this.pointSummary)) {
-        this.energyDomains.forEach(ft => {
+        this.energyDomains.forEach((ft) => {
           const category = ft.category
           const value = this.pointSummary[ft.id]
 
@@ -1199,7 +1254,7 @@ export default {
             const category = ft.category
             const value = marketValueData[ft.id]
             const findEnergyEq = this.energyDomains.find(
-              e => e[this.propRef] === ft[this.propRef]
+              (e) => e[this.propRef] === ft[this.propRef]
             )
             if (!findEnergyEq) {
               console.error(
@@ -1221,7 +1276,7 @@ export default {
         }
 
         // Calculate Emissions
-        this.emissionsDomains.forEach(domain => {
+        this.emissionsDomains.forEach((domain) => {
           const category = domain.category
           const value = this.pointSummary[domain.id]
 
@@ -1263,7 +1318,7 @@ export default {
     updatePointSummary(date) {
       if (!date) return
 
-      const dataFound = this.dataset.find(d => d.time === date.getTime())
+      const dataFound = this.dataset.find((d) => d.time === date.getTime())
 
       this.hoveredTemperature =
         dataFound && dataFound[this.temperatureId]
@@ -1274,7 +1329,7 @@ export default {
 
       if (this.isTypeChangeSinceLine) {
         const changeSinceData = this.changeSinceDataset.find(
-          d => d.time === date.getTime()
+          (d) => d.time === date.getTime()
         )
 
         point = _cloneDeep(changeSinceData)
@@ -1298,8 +1353,8 @@ export default {
     },
 
     setFuelTechOrder(sources, loads) {
-      const loadsOrder = loads.map(d => d.fuelTech)
-      const sourcesOrder = sources.map(d => d.fuelTech)
+      const loadsOrder = loads.map((d) => d.fuelTech)
+      const sourcesOrder = sources.map((d) => d.fuelTech)
       const order = [...sourcesOrder, ...loadsOrder]
       this.$store.dispatch('fuelTechOrder', order.reverse())
     },
@@ -1308,13 +1363,13 @@ export default {
       let hiddenFuelTechs = [...this.hiddenSources, ...this.hiddenLoads]
       // if all is hidden, then unhide all
       let sourcesHiddenLength = 0
-      this.sourcesOrder.forEach(d => {
+      this.sourcesOrder.forEach((d) => {
         if (_includes(this.hiddenSources, d[this.propRef])) {
           sourcesHiddenLength += 1
         }
       })
       let loadsHiddenLength = 0
-      this.loadsOrder.forEach(d => {
+      this.loadsOrder.forEach((d) => {
         if (_includes(this.hiddenLoads, d[this.propRef])) {
           loadsHiddenLength += 1
         }
@@ -1337,18 +1392,18 @@ export default {
       if (hideOthers) {
         if (this.fuelTechGroupName === 'Default') {
           const hiddenSources = Domain.getAllDomainObjs().filter(
-            d => d.category === 'source' && d.fuelTech !== onlyFt.fuelTech
+            (d) => d.category === 'source' && d.fuelTech !== onlyFt.fuelTech
           )
           const hiddenLoads = Domain.getAllDomainObjs().filter(
-            d => d.category === 'load'
+            (d) => d.category === 'load'
           )
-          this.hiddenSources = hiddenSources.map(d => d.fuelTech)
-          this.hiddenLoads = hiddenLoads.map(d => d.fuelTech)
+          this.hiddenSources = hiddenSources.map((d) => d.fuelTech)
+          this.hiddenLoads = hiddenLoads.map((d) => d.fuelTech)
         } else {
           const hiddenLoads = this.domainPowerEnergyGrouped[
             this.fuelTechGroupName
-          ].filter(d => d.category === 'load')
-          this.hiddenLoads = hiddenLoads.map(d => d[this.propRef])
+          ].filter((d) => d.category === 'load')
+          this.hiddenLoads = hiddenLoads.map((d) => d[this.propRef])
           // this.hiddenLoads = this.loadsOrder.map(d => d[property])
         }
       }
@@ -1360,15 +1415,15 @@ export default {
       if (hideOthers) {
         if (this.fuelTechGroupName === 'Default') {
           const hiddenSources = Domain.getAllDomainObjs().filter(
-            d => d.category === 'source'
+            (d) => d.category === 'source'
           )
           const hiddenLoads = Domain.getAllDomainObjs().filter(
-            d => d.category === 'load' && d.fuelTech !== onlyFt.fuelTech
+            (d) => d.category === 'load' && d.fuelTech !== onlyFt.fuelTech
           )
-          this.hiddenSources = hiddenSources.map(d => d.fuelTech)
-          this.hiddenLoads = hiddenLoads.map(d => d.fuelTech)
+          this.hiddenSources = hiddenSources.map((d) => d.fuelTech)
+          this.hiddenLoads = hiddenLoads.map((d) => d.fuelTech)
         } else {
-          this.hiddenSources = this.sourcesOrder.map(d => d[this.propRef])
+          this.hiddenSources = this.sourcesOrder.map((d) => d[this.propRef])
         }
       }
       this.emitHiddenFuelTechs()
@@ -1407,19 +1462,19 @@ export default {
     handleRenewableRowShiftClicked() {
       if (this.fuelTechGroupName === 'Default') {
         const hiddenSources = Domain.getAllDomainObjs().filter(
-          d => d.category === 'source'
+          (d) => d.category === 'source'
         )
         const hiddenLoads = Domain.getAllDomainObjs().filter(
-          d => d.category === 'load'
+          (d) => d.category === 'load'
         )
-        this.hiddenSources = hiddenSources.map(d => d.fuelTech)
-        this.hiddenLoads = hiddenLoads.map(d => d.fuelTech)
+        this.hiddenSources = hiddenSources.map((d) => d.fuelTech)
+        this.hiddenLoads = hiddenLoads.map((d) => d.fuelTech)
       } else {
         const hiddenLoads = this.domainPowerEnergyGrouped[
           this.fuelTechGroupName
-        ].filter(d => d.category === 'load')
-        this.hiddenLoads = hiddenLoads.map(d => d[this.propRef])
-        this.hiddenSources = this.sourcesOrder.map(d => d[this.propRef])
+        ].filter((d) => d.category === 'load')
+        this.hiddenLoads = hiddenLoads.map((d) => d[this.propRef])
+        this.hiddenSources = this.sourcesOrder.map((d) => d[this.propRef])
       }
 
       this.$store.commit(
@@ -1501,7 +1556,7 @@ export default {
   }
 }
 
-::v-deep .summary-column-headers {
+:deep(.summary-column-headers) {
   .summary-row {
     font-family: $header-font-family;
     font-weight: 700;
@@ -1509,7 +1564,7 @@ export default {
   }
 }
 
-::v-deep .summary-row {
+:deep(.summary-row) {
   display: flex;
   font-size: 1em;
   padding: 3px 4px;

@@ -4,14 +4,14 @@
       :id="tooltipId"
       class="tooltip">tooltip</div> -->
 
-    <div
-      :id="tooltipId"
-      class="tooltip"/>
+    <div 
+      :id="tooltipId" 
+      class="tooltip" />
 
-    <svg
-      :id="id"
-      :height="height"
-      :width="width"
+    <svg 
+      :id="id" 
+      :height="height" 
+      :width="width" 
       class="heatmap" />
   </section>
 </template>
@@ -164,7 +164,7 @@ export default {
         .domain(this.colourDomain)
         .range(this.colourRange)
       this.bandScale = scaleBand()
-        .domain(data.map(d => d.time))
+        .domain(data.map((d) => d.time))
         .range([0, this.width])
 
       // const dataLength = this.expectedDataLength || data.length
@@ -188,7 +188,7 @@ export default {
         .attr('height', barHeight)
         .attr('rx', this.radius)
         .style('shape-rendering', 'crispEdges')
-        .style('fill', d => {
+        .style('fill', (d) => {
           const divisor =
             typeof this.divisor === 'string' ? d[this.valueProp] : this.divisor
           let value =
@@ -210,11 +210,11 @@ export default {
         .append('rect')
         .attr('width', this.width)
         .attr('height', this.height)
-        .on('touchenter mouseenter mousemove touchmove', function() {
+        .on('touchenter mouseenter mousemove touchmove', function () {
           const m = mouse(this)
           const index = Math.round(m[0] / self.bandScale.step())
           let time = self.bandScale.domain()[index]
-          let point = data.find(d => d.time === time)
+          let point = data.find((d) => d.time === time)
 
           if (index === data.length) {
             point = data[index - 1]
@@ -236,7 +236,7 @@ export default {
             .style('pointer-events', 'none')
             .style('opacity', 1)
         })
-        .on('mouseleave touchend', function() {
+        .on('mouseleave touchend', function () {
           self.$tooltip.style('opacity', 0)
           self.$emit('rect-mouseout')
         })

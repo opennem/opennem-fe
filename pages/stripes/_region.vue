@@ -18,7 +18,6 @@
         :style="{ 'margin-top': useAllPeriods ? '35px' : '0' }"
         class="vis-section"
       >
-
         <HoverMetric
           v-if="hoverDate"
           :is-yearly="d.yearlyData && d.yearlyData.length > 0 ? true : false"
@@ -29,7 +28,7 @@
           :selected-metric-object="selectedMetricObject"
           :selected-period="selectedPeriodObject"
           :style="{ display: useAllPeriods ? 'block' : 'none' }"
-          @hover-obj="d => hoverDisplay = d"
+          @hover-obj="(d) => (hoverDisplay = d)"
         />
 
         <div v-if="d.yearlyData">
@@ -46,24 +45,32 @@
               :radius="0"
               :dataset="yData.data"
               :value-prop="selectedMetric"
-              :tooltip-value-prop="selectedMetricObject.valueProp ? selectedMetricObject.valueProp : selectedMetric"
+              :tooltip-value-prop="
+                selectedMetricObject.valueProp
+                  ? selectedMetricObject.valueProp
+                  : selectedMetric
+              "
               :divisor="selectedMetricObject.divisor"
               :offset="selectedMetricObject.offset"
               :colour-range="selectedMetricObject.range"
               :colour-domain="selectedMetricObject.domain"
-              @rect-mousemove="obj => {
-                handleMousemove(obj, d.regionId)
-              }"
+              @rect-mousemove="
+                (obj) => {
+                  handleMousemove(obj, d.regionId)
+                }
+              "
               @rect-mouseout="handleMouseout"
             />
           </section>
         </div>
-        <div
-          v-else
+        <div 
+          v-else 
           style="width: 100%">
           <nuxt-link
             :to="`/stripes/${d.regionId}/?metric=${selectedMetric}`"
-            class="heatmap-label region-label">{{ d.region }}</nuxt-link>
+            class="heatmap-label region-label"
+          >{{ d.region }}</nuxt-link
+          >
           <Heatmap
             :cell-height="75"
             :svg-width="width"
@@ -71,21 +78,26 @@
             :radius="0"
             :dataset="d.data"
             :value-prop="selectedMetric"
-            :tooltip-value-prop="selectedMetricObject.valueProp ? selectedMetricObject.valueProp : selectedMetric"
+            :tooltip-value-prop="
+              selectedMetricObject.valueProp
+                ? selectedMetricObject.valueProp
+                : selectedMetric
+            "
             :divisor="selectedMetricObject.divisor"
             :offset="selectedMetricObject.offset"
             :colour-range="selectedMetricObject.range"
             :colour-domain="selectedMetricObject.domain"
             :hover-date="hoverDate"
-            @rect-mousemove="obj => {
-              handleMousemove(obj, d.regionId)
-            }"
+            @rect-mousemove="
+              (obj) => {
+                handleMousemove(obj, d.regionId)
+              }
+            "
             @rect-mouseout="handleMouseout"
           />
         </div>
       </section>
     </div>
-
   </div>
 </template>
 
@@ -207,11 +219,11 @@ export default {
     },
 
     selectedMetricObject() {
-      return this.metrics.find(m => m.value === this.selectedMetric)
+      return this.metrics.find((m) => m.value === this.selectedMetric)
     },
 
     selectedPeriodObject() {
-      return this.periods.find(p => p.value === this.selectedPeriod)
+      return this.periods.find((p) => p.value === this.selectedPeriod)
     },
 
     regionId() {
@@ -286,13 +298,13 @@ export default {
       if (this.useAllPeriods) {
         this.selectedPeriod = 'all/month'
 
-        getRegionStripesData(this.doGetAllData, regions).then(d => {
+        getRegionStripesData(this.doGetAllData, regions).then((d) => {
           this.regionData = d
         })
       } else {
         this.selectedPeriod = 'multiyear/day'
 
-        getYearlyStripesData(this.doGetRegionData, regions).then(d => {
+        getYearlyStripesData(this.doGetRegionData, regions).then((d) => {
           this.regionData = d
         })
       }
@@ -380,7 +392,7 @@ h3 {
   }
 }
 
-::v-deep .heatmap {
+:deep(.heatmap) {
   border: 1px solid #ddd;
 }
 </style>

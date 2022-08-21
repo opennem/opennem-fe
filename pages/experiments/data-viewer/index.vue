@@ -12,7 +12,7 @@
         @change="handleRegionChange"
       />
 
-      <hr>
+      <hr >
 
       <EnergyFilters
         v-if="selectedView === 'energy'"
@@ -32,15 +32,21 @@
         @dataset="handleDataChange"
       />
 
-      <hr>
+      <hr >
 
       <div class="buttons">
         <button
           class="button is-primary is-rounded is-fullwidth"
-          @click="handleFetchClick">Fetch</button>
+          @click="handleFetchClick"
+        >
+          Fetch
+        </button>
         <button
           class="button is-outlined is-rounded is-fullwidth"
-          @click="handleResetClick">Reset</button>
+          @click="handleResetClick"
+        >
+          Reset
+        </button>
       </div>
 
       <!-- <button class="button is-outlined is-rounded is-fullwidth">download as csv</button> -->
@@ -65,14 +71,11 @@
       <header>
         <h3>{{ headerDetailTitle }}</h3>
       </header>
-      <DataTable
-        :columns="colsDetail"
-        :rows="rowsDetail"
-        class="is-size-7"
-      />
+      <DataTable 
+        :columns="colsDetail" 
+        :rows="rowsDetail" 
+        class="is-size-7" />
     </section>
-
-
   </div>
 </template>
 
@@ -103,7 +106,7 @@ export default {
 
   data() {
     return {
-      regionOptions: getEnergyRegions().map(d => {
+      regionOptions: getEnergyRegions().map((d) => {
         d.value = d.id
         return d
       }),
@@ -179,13 +182,13 @@ export default {
     handleCellClick({ col, colIndex, row, rowIndex }) {
       console.log(col, colIndex, row, rowIndex)
       const title = `${col.label} — ${format(row.date, dateFormatString)}`
-      const regionData = this.dataset.find(d => d.regionId === col.field)
+      const regionData = this.dataset.find((d) => d.regionId === col.field)
       // const data = regionData
       //   ? regionData.data.find(d => d.time === row.time)
       //   : null
 
       const originalData = regionData
-        ? regionData.originalDataset.find(d => d.time === row.time)
+        ? regionData.originalDataset.find((d) => d.time === row.time)
         : null
 
       console.log(regionData, regionData.originalDataset, originalData)
@@ -212,7 +215,7 @@ export default {
         //   })
         // })
 
-        Object.keys(originalData).forEach(key => {
+        Object.keys(originalData).forEach((key) => {
           const type = key === 'date' ? 'date' : 'number'
           rows.push({
             key,

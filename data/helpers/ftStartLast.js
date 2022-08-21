@@ -10,9 +10,9 @@ export function getEarliestLatestDates(
 ) {
   let earliestEnergyStartDate = null,
     latestEnergyLastDate = null
-  domainPowerEnergy.forEach(domain => {
+  domainPowerEnergy.forEach((domain) => {
     const id = domain.id
-    const find = dataset.find(d => d.id === id)
+    const find = dataset.find((d) => d.id === id)
     const start = new Date(
       mutateDate(find.history.start, displayTz, ignoreTime)
     )

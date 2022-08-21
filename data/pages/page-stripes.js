@@ -15,8 +15,8 @@ export const dateFormatString = 'MMM yyyy'
 export async function getRegionStripesData(fetchFunc, regions) {
   const regionData = []
 
-  await fetchFunc({ regions }).then(d => {
-    regions.forEach(r => {
+  await fetchFunc({ regions }).then((d) => {
+    regions.forEach((r) => {
       const rData = d[r.id]
 
       regionData.push({
@@ -46,7 +46,7 @@ function transformStripesDataset(d) {
   const data = []
   getEachYearOfInterval.forEach((year, yIndex) => {
     const yearInt = parseInt(year)
-    const dataset = d.dataset.filter(e => e.date.getFullYear() === yearInt)
+    const dataset = d.dataset.filter((e) => e.date.getFullYear() === yearInt)
 
     if (dataset.length > 0) {
       data.push({
@@ -81,7 +81,7 @@ export function getYearlyStripesData(fetchFunc, regions) {
     const yearlyData = []
     promises.push(
       new Promise((resolve, reject) => {
-        fetchFunc({ region: r.id }).then(d => {
+        fetchFunc({ region: r.id }).then((d) => {
           resolve({
             region: r.label,
             regionId: r.id,
@@ -93,7 +93,7 @@ export function getYearlyStripesData(fetchFunc, regions) {
   })
 
   return new Promise((resolve, reject) => {
-    Promise.all(promises).then(d => resolve(d))
+    Promise.all(promises).then((d) => resolve(d))
   })
 }
 
@@ -109,9 +109,9 @@ export function getStripesDateRange() {
 export function getStripesRegion(currentRegionId) {
   const filter =
     currentRegionId === 'au'
-      ? d => d.id !== 'au' && d.id !== 'nem'
+      ? (d) => d.id !== 'au' && d.id !== 'nem'
       : currentRegionId === 'nem'
-        ? d => d.id !== 'au' && d.id !== 'nem' && d.id !== 'wem'
-        : d => d.id === currentRegionId
+      ? (d) => d.id !== 'au' && d.id !== 'nem' && d.id !== 'wem'
+      : (d) => d.id === currentRegionId
   return getEnergyRegions().filter(filter)
 }

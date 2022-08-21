@@ -8,10 +8,9 @@
       @touchend="handleTouchend"
       @mousedown="handleMousedown"
       @mouseup="handleMouseup"
-      @mouseout="handleMouseout">
-      <span v-if="isAvValueColumn">
-        Av.Value <small>$/MWh</small>
-      </span>
+      @mouseout="handleMouseout"
+    >
+      <span v-if="isAvValueColumn"> Av.Value <small>$/MWh</small> </span>
       <span v-if="isEmissionsVolumeColumn">
         Volume <small>{{ chartEmissionsVolumeCurrentUnit }}</small>
       </span>
@@ -20,8 +19,8 @@
       </span>
     </div>
     <transition name="slide-down-fade">
-      <div
-        v-show="showMenu"
+      <div 
+        v-show="showMenu" 
         class="show-column-menu dropdown-menu">
         <div class="dropdown-content">
           <a
@@ -31,7 +30,8 @@
               'is-selected': g.id === selected
             }"
             class="dropdown-item"
-            @click="handleDropdownClicked(g.id)">
+            @click="handleDropdownClicked(g.id)"
+          >
             {{ g.label }}
           </a>
         </div>

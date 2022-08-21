@@ -3,10 +3,16 @@
     <div class="compare-header">
       <div class="chart-label">
         <span v-if="isFY">FY</span>
-        <strong>{{ firstDate | customFormatDate({ range, interval, showIntervalRange: true }) }}</strong>
+        <strong>{{
+          firstDate
+            | customFormatDate({ range, interval, showIntervalRange: true })
+        }}</strong>
         vs
         <span v-if="isFY">FY</span>
-        <strong>{{ secondDate | customFormatDate({ range, interval, showIntervalRange: true }) }}</strong>
+        <strong>{{
+          secondDate
+            | customFormatDate({ range, interval, showIntervalRange: true })
+        }}</strong>
       </div>
     </div>
     <div class="compare-chart-legend">
@@ -42,7 +48,6 @@
         />
       </div>
     </div>
-
   </div>
 </template>
 
@@ -135,7 +140,7 @@ export default {
         const change = {}
         const former = this.updatedCompareData[0]
         const latter = this.updatedCompareData[1]
-        Object.keys(latter).forEach(d => {
+        Object.keys(latter).forEach((d) => {
           if (d !== 'date' && d.length > 0) {
             change[d] = latter[d] - former[d]
           }
@@ -151,7 +156,7 @@ export default {
         const changePercent = {}
         const former = this.updatedCompareData[0]
         const latter = this.updatedCompareData[1]
-        Object.keys(latter).forEach(d => {
+        Object.keys(latter).forEach((d) => {
           if (d !== 'date' && d.length > 0) {
             if (
               former[d] === null ||
@@ -171,7 +176,7 @@ export default {
     },
 
     updatedDomains() {
-      return this.domains.map(d => {
+      return this.domains.map((d) => {
         return {
           ...d,
           label: d.flag ? `${d.flag} ${d.id}` : d.label

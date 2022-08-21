@@ -4,25 +4,28 @@
       <button
         v-if="!showTitle"
         class="button is-small is-rounded is-primary is-inverted"
-        @click="showTitle = true">
+        @click="showTitle = true"
+      >
         Add Title
       </button>
       <button
         v-if="!showDescription"
         class="button is-small is-rounded is-primary is-inverted"
-        @click="showDescription = true">
+        @click="showDescription = true"
+      >
         Add Description
       </button>
     </div>
 
-    <h3 
+    <h3
       v-if="showTitle"
       contenteditable="true"
       autocomplete="off"
       autocorrect="off"
       autocapitalize="off"
       spellcheck="true"
-      @blur="onTitleBlur">
+      @blur="onTitleBlur"
+    >
       {{ title }}
     </h3>
     <h5
@@ -96,7 +99,7 @@ export default {
   methods: {
     getRegionLabel() {
       const id = this.regionId
-      const find = this.regions.find(region => region.id === id)
+      const find = this.regions.find((region) => region.id === id)
       if (id === 'nem') {
         return 'OpenNEM'
       }

@@ -3,10 +3,10 @@ import addMonths from 'date-fns/addMonths'
 import addQuarters from 'date-fns/addQuarters'
 import addYears from 'date-fns/addYears'
 
-export default function({ dataset, range, interval, filterPeriod }) {
+export default function ({ dataset, range, interval, filterPeriod }) {
   const incompletes = []
-  const filtered = dataset.filter(d => d._isIncompleteBucket)
-  filtered.forEach(f => {
+  const filtered = dataset.filter((d) => d._isIncompleteBucket)
+  filtered.forEach((f) => {
     if (interval === 'Week') {
       incompletes.push({
         start: f.date,

@@ -1,9 +1,10 @@
 <template>
-  <chart-header 
-    :chart-shown="chartShown" 
-    :has-hover-date="hoverDisplayDate.length > 0">
-    <template
-      v-slot:options
+  <chart-header
+    :chart-shown="chartShown"
+    :has-hover-date="hoverDisplayDate.length > 0"
+  >
+    <template 
+      v-slot:options 
       v-if="!readOnly">
       <chart-options
         :options="options"
@@ -16,11 +17,12 @@
         :chart-unit="chartUnit"
         :chart-display-prefix="chartDisplayPrefix"
         :show="chartOptions"
-        @show-change="s => chartOptions = s"
+        @show-change="(s) => (chartOptions = s)"
         @type-click="handleTypeClick"
         @y-axis-click="handleYAxisClick"
         @curve-click="handleCurveClick"
-        @prefix-click="handlePrefixClick" />
+        @prefix-click="handlePrefixClick"
+      />
     </template>
 
     <template v-slot:label-unit>
@@ -28,11 +30,13 @@
       <small
         v-if="chartShown"
         :class="{ 'display-unit': allowDisplayHover }"
-        @click.stop="handleUnitClick">{{ displayUnit }}</small>
+        @click.stop="handleUnitClick"
+      >{{ displayUnit }}</small
+      >
     </template>
 
-    <template
-      v-slot:average-value
+    <template 
+      v-slot:average-value 
       v-if="showAverageValue && !readOnly">
       Av.
       <strong>
@@ -45,12 +49,13 @@
       {{ hoverDisplayDate }}
     </template>
     <template v-slot:hover-values>
-      <span
-        v-if="hoverValue"
+      <span 
+        v-if="hoverValue" 
         class="ft-value">
         <em
           :style="{ 'background-color': hoverDomainColour }"
-          class="colour-square" />
+          class="colour-square"
+        />
         {{ hoverDomainLabel }}
         <strong>
           {{ hoverValue | formatValue }}
@@ -58,24 +63,24 @@
         </strong>
       </span>
 
-      <span
-        v-if="isRenewableLineOnly"
+      <span 
+        v-if="isRenewableLineOnly" 
         class="renewables-value">
         <strong>{{ hoverRenewables | percentageFormatNumber }}</strong>
       </span>
       <span
         v-else-if="!isTypeProportion && !(isTypeLine && isYAxisPercentage)"
-        class="total-value">
+        class="total-value"
+      >
         <span v-if="singleDomainLabel">
           <em
             :style="{ 'background-color': singleDomainColour }"
-            class="colour-square" />
+            class="colour-square"
+          />
           {{ singleDomainLabel }}
         </span>
-        <span v-else>
-          Total
-        </span>
-        
+        <span v-else> Total </span>
+
         <strong>
           {{ hoverTotal | formatValue }}
           <span>{{ displayUnit }}</span>
@@ -400,7 +405,7 @@ export default {
     },
     togglePrefix(prefix) {
       const length = this.options.si.length
-      const index = this.options.si.findIndex(p => p === prefix)
+      const index = this.options.si.findIndex((p) => p === prefix)
       let nextIndex = index + 1
 
       if (nextIndex === length) {

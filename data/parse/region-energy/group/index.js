@@ -2,7 +2,7 @@ import _cloneDeep from 'lodash.clonedeep'
 import PerfTime from '@/plugins/perfTime.js'
 const perfTime = new PerfTime()
 
-export default function({
+export default function ({
   dataset,
   domainPowerEnergyGrouped,
   domainEmissionsGrouped,
@@ -11,7 +11,7 @@ export default function({
   perfTime.time()
 
   const groups = _cloneDeep(domainPowerEnergyGrouped)
-  Object.keys(groups).forEach(key => {
+  Object.keys(groups).forEach((key) => {
     groups[key] = [
       ...groups[key],
       ...domainEmissionsGrouped[key],
@@ -19,14 +19,14 @@ export default function({
     ]
   })
 
-  dataset.forEach(d => {
-    Object.keys(groups).forEach(key => {
+  dataset.forEach((d) => {
+    Object.keys(groups).forEach((key) => {
       if (key !== 'Default') {
         const groupDomains = groups[key]
-        groupDomains.forEach(g => {
+        groupDomains.forEach((g) => {
           let groupValue = 0,
             allNulls = true
-          g.domainIds.forEach(dId => {
+          g.domainIds.forEach((dId) => {
             groupValue += d[dId]
             if (d[dId] || d[dId === 0]) {
               allNulls = false

@@ -3,25 +3,30 @@
     <div
       v-for="(domain, index) in domains"
       :key="`domain-${index}`"
-      class="legend-item">
+      class="legend-item"
+    >
       <span
         :style="{
           'background-color': domain.colour
         }"
-        class="colour-square" />
+        class="colour-square"
+      />
       {{ domain.label }}
-      <strong v-if="showPercent && (domain.contribution || domain.contribution === 0)">
+      <strong
+        v-if="showPercent && (domain.contribution || domain.contribution === 0)"
+      >
         {{ domain.contribution | percentageFormatNumber }}
       </strong>
     </div>
-    <div
-      v-if="chartEnergyRenewablesLine"
+    <div 
+      v-if="chartEnergyRenewablesLine" 
       class="legend-item">
       <span
-        :style="{ 
+        :style="{
           background: renewablesLineColour
         }"
-        class="renewables-line" />
+        class="renewables-line"
+      />
       Renewables
     </div>
   </section>

@@ -1,7 +1,7 @@
 <template>
   <span class="hover-container">
-    <em
-      :style="{ 'background-color': colour }"
+    <em 
+      :style="{ 'background-color': colour }" 
       class="colour-square" />
     {{ label }}
     <strong>{{ value }} {{ unit }}</strong>

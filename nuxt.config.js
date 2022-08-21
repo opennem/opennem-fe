@@ -6,6 +6,7 @@ const timestamp = new Date().getTime()
 const useDev = process.env.FOR === 'dev'
 
 module.exports = {
+  target: 'static',
   publicRuntimeConfig: {
     version: pkg.version,
     useDev,
@@ -176,13 +177,13 @@ module.exports = {
   },
 
   /*
-  ** Customize the progress-bar color
-  */
+   ** Customize the progress-bar color
+   */
   loading: { color: '#e34a33' },
 
   /*
-  ** Global CSS
-  */
+   ** Global CSS
+   */
   css: ['@/assets/scss/app.scss'],
 
   generate: {
@@ -215,8 +216,8 @@ module.exports = {
   },
 
   /*
-  ** Plugins to load before mounting the App
-  */
+   ** Plugins to load before mounting the App
+   */
   plugins: [
     '~plugins/mixins.js',
     '~plugins/filters.js',
@@ -226,13 +227,12 @@ module.exports = {
   ],
 
   /*
-  ** Nuxt.js modules
-  */
+   ** Nuxt.js modules
+   */
   modules: [
     // Doc: https://github.com/nuxt-community/axios-module#usage
     '@nuxtjs/axios',
-    '@nuxtjs/proxy',
-    '@nuxtjs/sentry'
+    '@nuxtjs/proxy'
   ],
 
   proxy: {
@@ -245,33 +245,19 @@ module.exports = {
   },
 
   /*
-  ** Axios module configuration
-  */
+   ** Axios module configuration
+   */
   axios: {
     // See https://github.com/nuxt-community/axios-module#options
   },
 
   /*
-  ** Sentry config
-  */
-  sentry: {
-    dsn:
-      'https://c89c945a3c14478f9df55a65ddb1fbae@o402615.ingest.sentry.io/5265226',
-    config: {
-      environment: useDev ? 'development' : 'production'
-    },
-    clientIntegrations: {
-      Vue: { attachProps: true }
-    }
-  },
-
-  /*
-  ** Build configuration
-  */
+   ** Build configuration
+   */
   build: {
     /*
-    ** You can extend webpack config here
-    */
+     ** You can extend webpack config here
+     */
     publicPath: `/_nuxt_${timestamp}/`,
     plugins: [
       new webpack.IgnorePlugin({

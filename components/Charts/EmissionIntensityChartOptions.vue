@@ -1,7 +1,7 @@
 <template>
   <chart-header :chart-shown="chartShown">
-    <template
-      v-slot:options
+    <template 
+      v-slot:options 
       v-if="!readOnly">
       <chart-options
         :options="options"
@@ -10,29 +10,28 @@
         :chart-curve="chartCurve"
         :chart-shown="chartShown"
         :show="showChartOptions"
-        @show-change="s => showChartOptions = s"
+        @show-change="(s) => (showChartOptions = s)"
         @type-click="handleTypeClick"
-        @curve-click="handleCurveClick"/>
+        @curve-click="handleCurveClick"
+      />
     </template>
 
     <template v-slot:label-unit>
       <strong>Emission Intensity</strong>
       <small v-if="chartShown">kgCO₂e/MWh</small>
     </template>
-    <template
-      v-slot:average-value
+    <template 
+      v-slot:average-value 
       v-if="!readOnly">
       Av.
-      <strong>
-        {{ averageEmissionIntensity | formatValue }} kgCO₂e/MWh
-      </strong>
+      <strong> {{ averageEmissionIntensity | formatValue }} kgCO₂e/MWh </strong>
     </template>
     <template v-slot:hover-date>
       {{ hoverDisplayDate }}
     </template>
     <template v-slot:hover-values>
-      <span
-        v-if="hoverValue"
+      <span 
+        v-if="hoverValue" 
         class="ft-value">
         <strong>{{ hoverValue | formatValue }} kgCO₂e/MWh</strong>
       </span>

@@ -7,47 +7,48 @@
     >
       Zoom Out
     </button>
-    <svg
-      :width="svgWidth"
-      :height="svgHeight"
-      :id="id"
+    <svg 
+      :width="svgWidth" 
+      :height="svgHeight" 
+      :id="id" 
       class="line-chart">
       <defs>
         <!-- where to clip -->
         <clipPath :id="`${id}-clip`">
-          <rect
-            :width="width"
-            :height="height"/>
+          <rect 
+            :width="width" 
+            :height="height" />
         </clipPath>
       </defs>
 
       <g
         :transform="gTransform"
         :class="{ 'hide-x-axis-labels': !showXAxis }"
-        class="axis-line-group">
+        class="axis-line-group"
+      >
         <g class="x-guides-group" />
 
         <!-- x and y axis ticks/lines/text -->
-        <g
-          v-show="hasYGuides"
+        <g 
+          v-show="hasYGuides" 
           class="y-axis-guide-group" />
-        <g
-          :transform="xAxisTransform"
+        <g 
+          :transform="xAxisTransform" 
           :class="xAxisClass" />
 
-        <g
-          v-show="showYAxis"
+        <g 
+          v-show="showYAxis" 
           :class="yAxisClass" />
 
         <!-- x axis layer to allow zoom in (brush) -->
         <g
           v-if="showXAxis && !readOnly"
           :transform="xAxisBrushTransform"
-          class="x-axis-brush-group" />
+          class="x-axis-brush-group"
+        />
       </g>
 
-      <g
-        :transform="gTransform">
+      <g :transform="gTransform">
         <!-- where the area path will show -->
         <g class="area-group" />
 
@@ -55,8 +56,8 @@
         <g class="line-group" />
 
         <!-- cursor line and tooltip -->
-        <g
-          v-show="hoverOn"
+        <g 
+          v-show="hoverOn" 
           class="cursor-group">
           <g :class="cursorLineGroupClass" />
         </g>
@@ -64,16 +65,16 @@
 
         <!-- hover layer to read interaction movements -->
         <g :class="hoverLayerClass">
-          <rect
-            :width="width"
-            :height="height"/>
+          <rect 
+            :width="width" 
+            :height="height" />
         </g>
       </g>
 
       <!-- add another yAxis tick text here so it show above the vis -->
-      <g
-        v-show="showYAxis"
-        :transform="gTransform"
+      <g 
+        v-show="showYAxis" 
+        :transform="gTransform" 
         class="axis-text-group">
         <g :class="yAxisTickClass" />
       </g>
@@ -361,7 +362,7 @@ export default {
       return []
     },
     datasetDateExtent() {
-      return extent(this.updatedDataset, d => new Date(d.date))
+      return extent(this.updatedDataset, (d) => new Date(d.date))
     },
     hasMinMax() {
       return this.minDomainId !== '' && this.maxDomainId !== ''
@@ -515,18 +516,18 @@ export default {
       this.yAxis = axisRight(this.y)
         .tickSize(this.width)
         .ticks(this.yAxisTicks)
-        .tickFormat(d => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
+        .tickFormat((d) => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
 
       // Setup the 'brush' area and event handler
       this.brushX = brushX()
-        .extent([[0, 0], [this.width, 40]])
+        .extent([
+          [0, 0],
+          [this.width, 40]
+        ])
         .on('end', this.brushEnded)
 
       // X Axis Brush (zoom in/out interaction)
-      this.$xAxisBrushGroup
-        .append('g')
-        .attr('class', 'brush')
-        .call(this.brushX)
+      this.$xAxisBrushGroup.append('g').attr('class', 'brush').call(this.brushX)
 
       // Create hover line and date
       this.$cursorLineGroup.append('path').attr('class', this.cursorLineClass)
@@ -585,25 +586,25 @@ export default {
 
       // How to draw the line
       this.line = line()
-        .x(d => this.x(d.date))
-        .y(d => this.y(d[this.domainId]))
+        .x((d) => this.x(d.date))
+        .y((d) => this.y(d[this.domainId]))
         .curve(this.curveType)
 
-      this.line.defined(d => d[this.domainId] || d[this.domainId] === 0)
+      this.line.defined((d) => d[this.domainId] || d[this.domainId] === 0)
 
       // How to draw the area path
-      const validCheck = value => {
+      const validCheck = (value) => {
         return value || value === 0
       }
       this.area = d3Area()
-        .x(d => this.x(d.date))
-        .y0(d => {
+        .x((d) => this.x(d.date))
+        .y0((d) => {
           return validCheck(d[this.minDomainId]) &&
             validCheck(d[this.maxDomainId])
             ? this.y(d[this.minDomainId])
             : null
         })
-        .y1(d => {
+        .y1((d) => {
           return validCheck(d[this.minDomainId]) &&
             validCheck(d[this.maxDomainId])
             ? this.y(d[this.maxDomainId])
@@ -628,17 +629,17 @@ export default {
       })
 
       // - find date when on the hoverLayer or brushLayer or when brushing
-      this.$hoverLayer.on('touchmove mousemove', function() {
+      this.$hoverLayer.on('touchmove mousemove', function () {
         self.$emit('eventChange', this)
         self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
       })
-      this.brushX.on('brush', function() {
+      this.brushX.on('brush', function () {
         self.$emit('eventChange', this)
         self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
       })
       this.$xAxisBrushGroup
         .selectAll('.brush')
-        .on('touchmove mousemove', function() {
+        .on('touchmove mousemove', function () {
           self.$emit('eventChange', this)
           self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
         })
@@ -659,8 +660,9 @@ export default {
       const yMin =
         this.yMin || this.yMin === 0
           ? this.yMin
-          : min(this.updatedDataset, d => d[minDomain])
-      const yMax = this.yMax || max(this.updatedDataset, d => d[maxDomain]) + 5
+          : min(this.updatedDataset, (d) => d[minDomain])
+      const yMax =
+        this.yMax || max(this.updatedDataset, (d) => d[maxDomain]) + 5
 
       this.x.domain(xDomainExtent)
       this.y.domain([yMin, yMax])
@@ -684,7 +686,7 @@ export default {
         .datum(this.updatedDataset)
         .attr('class', `${this.linePathClass}`)
         .attr('d', this.line)
-        .style('stroke', d => this.z(this.domainId))
+        .style('stroke', (d) => this.z(this.domainId))
         .style('clip-path', this.clipPathUrl)
         .style('-webkit-clip-path', this.clipPathUrl)
 
@@ -703,7 +705,7 @@ export default {
 
       // Event handling
       // - find date and domain
-      this.$lineGroup.selectAll('path').on('touchmove mousemove', function() {
+      this.$lineGroup.selectAll('path').on('touchmove mousemove', function () {
         self.$emit('eventChange', this)
         self.$emit('dateOver', this, self.getXAxisDateByMouse(this))
       })
@@ -747,8 +749,8 @@ export default {
         .enter()
         .append('rect')
         .attr('opacity', 0.05)
-        .attr('x', d => this.x(d.start))
-        .attr('width', d => this.x(d.end) - this.x(d.start))
+        .attr('x', (d) => this.x(d.start))
+        .attr('width', (d) => this.x(d.end) - this.x(d.start))
         .attr('height', this.height)
     },
 
@@ -972,7 +974,10 @@ export default {
       this.updateXGuides()
       this.drawFocus(this.focusDate)
 
-      this.brushX.extent([[0, 0], [this.width, 40]])
+      this.brushX.extent([
+        [0, 0],
+        [this.width, 40]
+      ])
       this.$xAxisBrushGroup.selectAll('.brush').call(this.brushX)
       this.$lineGroup.selectAll('path').attr('d', this.line)
       this.$areaGroup.selectAll('path').attr('d', this.area)
@@ -1056,24 +1061,24 @@ export default {
             className = 'interval-season'
             const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
             if (isFilter && periodMonth) {
-              tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+              tickLength = timeMonth.filter((d) => d.getMonth() === periodMonth)
             }
           } else if (this.interval === 'Quarter') {
             className = 'interval-quarter'
             const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
             if (isFilter && periodMonth) {
-              tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+              tickLength = timeMonth.filter((d) => d.getMonth() === periodMonth)
             }
           } else if (this.interval === 'Half Year') {
             className = 'interval-half-year'
             const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
             if (isFilter && periodMonth) {
-              tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+              tickLength = timeMonth.filter((d) => d.getMonth() === periodMonth)
             }
           } else if (this.interval === 'Year') {
             className = 'interval-year'
           } else if (this.interval === 'Fin Year') {
-            tickLength = timeMonth.filter(d => {
+            tickLength = timeMonth.filter((d) => {
               return d.getMonth() === 6
             })
             className = 'interval-fin-year'
@@ -1106,14 +1111,14 @@ export default {
         })
         const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
         if (isFilter && periodMonth) {
-          tickLength = timeMonth.filter(d => d.getMonth() === periodMonth)
+          tickLength = timeMonth.filter((d) => d.getMonth() === periodMonth)
         }
       } else if (this.interval === 'Fin Year') {
-        this.xAxis.tickFormat(d => {
+        this.xAxis.tickFormat((d) => {
           const year = d.getFullYear() + 1 + ''
           return `FY${year.substr(2, 2)}`
         })
-        tickLength = timeMonth.filter(d => {
+        tickLength = timeMonth.filter((d) => {
           return d.getMonth() === 6
         })
       } else {
@@ -1123,37 +1128,30 @@ export default {
       this.xAxis.ticks(tickLength)
 
       // add secondary x axis tick label here
-      const insertSecondaryAxisTick = function(d) {
+      const insertSecondaryAxisTick = function (d) {
         const el = select(this)
         const secondaryText = axisSecondaryTimeFormat(d)
         if (secondaryText !== '') {
-          el.append('tspan')
-            .text(secondaryText)
-            .attr('x', 2)
-            .attr('dy', 12)
+          el.append('tspan').text(secondaryText).attr('x', 2).attr('dy', 12)
         }
       }
 
       g.call(this.xAxis)
       g.selectAll('.tick text').each(insertSecondaryAxisTick)
-      g.selectAll('.tick text')
-        .attr('x', 2)
-        .attr('y', 5)
+      g.selectAll('.tick text').attr('x', 2).attr('y', 5)
       g.selectAll('.tick line').attr('y1', 20)
     },
 
     customYAxis(g) {
       g.call(this.yAxis)
-      g.selectAll('.tick text')
-        .attr('x', 4)
-        .attr('dy', -4)
+      g.selectAll('.tick text').attr('x', 4).attr('dy', -4)
     },
 
     guideYAxis(g) {
       const yAxis = axisRight(this.y)
         .tickSize(this.width)
         .tickValues(this.yGuides)
-        .tickFormat(d => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
+        .tickFormat((d) => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
 
       g.call(yAxis)
 

@@ -2,18 +2,20 @@
   <section
     :class="{ 'full-screen': isFullScreen }"
     class="photobox"
-    @click.self="handleExpandClick">
-
+    @click.self="handleExpandClick"
+  >
     <transition name="fade">
       <VueperSlides
         v-if="hasPhotos"
         :dragging-distance="20"
         :fixed-height="isFullScreen ? '100%' : height"
-        @slide="handleSlide">
+        @slide="handleSlide"
+      >
         <VueperSlide
           v-for="(photo, index) in photos"
           :key="`photo${index}`"
-          :image="photo.photo_url" />
+          :image="photo.photo_url"
+        />
       </VueperSlides>
     </transition>
 
@@ -21,40 +23,49 @@
       v-tooltip.left-start="isFullScreen ? 'Exit full screen' : 'Full screen'"
       v-if="hasPhotos"
       class="expand-button"
-      @click="handleExpandClick">
-      <i
-        v-if="isFullScreen"
+      @click="handleExpandClick"
+    >
+      <i 
+        v-if="isFullScreen" 
         class="fal fa-compress" />
-      <i
-        v-else
+      <i 
+        v-else 
         class="fal fa-expand" />
     </button>
 
     <v-popover
       v-if="hasPhotos && hasPhotoAuthor(currentPhoto.author)"
       class="wiki-link-text"
-      placement="auto">
-      <i class="fal fa-info-circle"/>
+      placement="auto"
+    >
+      <i class="fal fa-info-circle" />
       <template slot="popover">
         <i class="fal fa-fw fa-camera" />
-        <strong><a 
+        <strong
+        ><a 
           :href="currentPhoto.author_link" 
-          target="_blank">{{ currentPhoto.author }}</a></strong>
-        (<small><a 
+          target="_blank">{{
+            currentPhoto.author
+          }}</a></strong
+          >
+        (<small
+        ><a 
           :href="currentPhoto.license_link" 
-          target="_blank">{{ currentPhoto.license_type }}</a></small>)
+          target="_blank">{{
+            currentPhoto.license_type
+          }}</a></small
+        >)
       </template>
     </v-popover>
 
     <transition name="fade">
-      <div
-        v-if="!hasPhotos"
+      <div 
+        v-if="!hasPhotos" 
         class="not-found-card card">
-        <i class="fal fa-image"/>
+        <i class="fal fa-image" />
         <span>Image not available</span>
       </div>
     </transition>
-
   </section>
 </template>
 
@@ -196,18 +207,17 @@ $radius: 0.5rem;
   }
 }
 
-::v-deep .vueperslides__track,
-::v-deep .vueperslides__parallax-wrapper,
-::v-deep .vueperslides__inner,
-::v-deep .vueperslides,
-::v-deep .vueperslides__track-inner,
-::v-deep .vueperslide,
-::v-deep .vueperslide__content-wrapper {
+:deep(.vueperslides__track),
+:deep(.vueperslides__parallax-wrapper),
+:deep(.vueperslides__inner),
+:deep(.vueperslides),
+:deep(.vueperslides__track-inner),
+:deep(.vueperslide),
+:deep(.vueperslide__content-wrapper) {
   border-radius: 10px;
 }
-::v-deep
-  .vueperslides:not(.no-shadow):not(.vueperslides--3d)
-  .vueperslides__parallax-wrapper:after {
+:deep(.vueperslides:not(.no-shadow):not(.vueperslides--3d)
+    .vueperslides__parallax-wrapper:after) {
   box-shadow: none;
 }
 </style>

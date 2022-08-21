@@ -23,11 +23,11 @@ export const FacilityStatus = [
 ]
 
 export function getFacilityStatusLabelById(id) {
-  const find = FacilityStatus.find(s => s.id === id)
+  const find = FacilityStatus.find((s) => s.id === id)
   return find ? find.label : ''
 }
 
 export function isValidFacilityStatus(id) {
-  const find = FacilityStatus.find(s => s.id === id)
+  const find = FacilityStatus.find((s) => s.id === id)
   return find ? true : false
 }

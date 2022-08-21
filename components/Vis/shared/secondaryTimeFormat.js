@@ -19,20 +19,22 @@ const formatMillisecond = utcFormat('.%L'),
   formatYear = utcFormat('%Y'),
   emptyTime = () => ''
 
-export default function(date) {
-  return (utcSecond(date) < date
-    ? emptyTime
-    : utcMinute(date) < date
+export default function (date) {
+  return (
+    utcSecond(date) < date
+      ? emptyTime
+      : utcMinute(date) < date
       ? emptyTime
       : utcHour(date) < date
-        ? emptyTime
-        : utcDay(date) < date
-          ? emptyTime
-          : utcMonth(date) < date
-            ? utcWeek(date) < date
-              ? formatDay
-              : formatWeek
-            : utcYear(date) < date
-              ? emptyTime
-              : emptyTime)(date)
+      ? emptyTime
+      : utcDay(date) < date
+      ? emptyTime
+      : utcMonth(date) < date
+      ? utcWeek(date) < date
+        ? formatDay
+        : formatWeek
+      : utcYear(date) < date
+      ? emptyTime
+      : emptyTime
+  )(date)
 }

@@ -92,7 +92,7 @@ export default {
     },
 
     getHoverValue(data, date, selectedMetric) {
-      const find = data.find(d => d.time === date.getTime())
+      const find = data.find((d) => d.time === date.getTime())
       return find && (find[selectedMetric] || find[selectedMetric] === 0)
         ? `${this.valueFormat(find[selectedMetric])}${
             this.selectedMetricObject.unit

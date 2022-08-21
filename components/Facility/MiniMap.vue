@@ -3,10 +3,11 @@
     :style="{ height: coordinates ? `${height}px` : '' }"
     :class="{
       'full-screen': isFullScreen,
-      'dark': isDark
+      dark: isDark
     }"
     class="mapbox"
-    @click.self="handleExpandClick">
+    @click.self="handleExpandClick"
+  >
     <client-only>
       <transition name="fade">
         <MglMap
@@ -17,8 +18,8 @@
           :center="coordinates"
           class="map-container"
           @load="onMapLoaded"
-          @click.self="isFullScreen ? () => {} : handleExpandClick()">
-
+          @click.self="isFullScreen ? () => {} : handleExpandClick()"
+        >
           <div 
             v-if="enableMeasure && distance > 0" 
             class="distance">
@@ -29,40 +30,41 @@
             v-if="isFullScreen"
             :class="{ 'is-primary': enableMeasure }"
             class="button is-small button-measure"
-            @click="enableMeasure = !enableMeasure">
-            <i class="fal fa-ruler-combined"/>
+            @click="enableMeasure = !enableMeasure"
+          >
+            <i class="fal fa-ruler-combined" />
           </button>
 
           <MglMarker
             v-if="showMarker || isFullScreen"
             :coordinates="coordinates"
-            color="#e34a33" />
-
-          <MglNavigationControl
-            v-if="isFullScreen"
-            position="bottom-right"
+            color="#e34a33"
           />
 
+          <MglNavigationControl 
+            v-if="isFullScreen" 
+            position="bottom-right" />
         </MglMap>
       </transition>
       <button
         v-tooltip.left-start="isFullScreen ? 'Exit full screen' : 'Full screen'"
         class="expand-button"
-        @click="handleExpandClick">
-        <i
-          v-if="isFullScreen"
+        @click="handleExpandClick"
+      >
+        <i 
+          v-if="isFullScreen" 
           class="fal fa-compress" />
-        <i
-          v-else
+        <i 
+          v-else 
           class="fal fa-expand" />
       </button>
     </client-only>
 
     <transition name="fade">
-      <div
-        v-if="!hasLocation"
+      <div 
+        v-if="!hasLocation" 
         class="not-found-card card">
-        <i class="fal fa-map-marker-alt"/>
+        <i class="fal fa-map-marker-alt" />
         <span>Location not available</span>
       </div>
     </transition>
@@ -196,7 +198,7 @@ export default {
     },
 
     setupMapEvents() {
-      this.map.on('click', e => {
+      this.map.on('click', (e) => {
         if (this.enableMeasure) {
           const features = this.map.queryRenderedFeatures(e.point, {
             layers: ['measure-points']
@@ -209,7 +211,7 @@ export default {
           if (features.length) {
             var id = features[0].properties.id
             this.measurements.features = this.measurements.features.filter(
-              function(point) {
+              function (point) {
                 return point.properties.id !== id
               }
             )
@@ -229,11 +231,10 @@ export default {
           }
 
           if (this.measurements.features.length > 1) {
-            this.lineString.geometry.coordinates = this.measurements.features.map(
-              function(point) {
+            this.lineString.geometry.coordinates =
+              this.measurements.features.map(function (point) {
                 return point.geometry.coordinates
-              }
-            )
+              })
 
             this.measurements.features.push(this.lineString)
           } else {
@@ -248,7 +249,7 @@ export default {
         }
       })
 
-      this.map.on('mousemove', e => {
+      this.map.on('mousemove', (e) => {
         if (this.enableMeasure) {
           var features = this.map.queryRenderedFeatures(e.point, {
             layers: ['measure-points']
@@ -489,28 +490,27 @@ export default {
     }
   }
 
-  ::v-deep .mapboxgl-canvas {
+  :deep(.mapboxgl-canvas) {
     border-radius: 10px;
     outline: none;
   }
-  ::v-deep .mapboxgl-ctrl-logo {
+  :deep(.mapboxgl-ctrl-logo) {
     transform: scale(0.75);
     position: relative;
     left: -10px;
   }
-  ::v-deep .mapboxgl-ctrl-attrib.mapboxgl-compact {
+  :deep(.mapboxgl-ctrl-attrib.mapboxgl-compact) {
     padding: 0;
   }
-  ::v-deep
-    .mapboxgl-ctrl-attrib.mapboxgl-compact-show
-    .mapboxgl-ctrl-attrib-inner {
+  :deep(.mapboxgl-ctrl-attrib.mapboxgl-compact-show
+      .mapboxgl-ctrl-attrib-inner) {
     position: relative;
     right: 25px;
     background-color: #fff;
     padding-left: 10px;
     border-radius: 20px;
   }
-  ::v-deep .mapboxgl-ctrl-attrib-button {
+  :deep(.mapboxgl-ctrl-attrib-button) {
     background-repeat: no-repeat;
     background-color: transparent;
     background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='20' height='20' viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='white' d='M256 40c118.621 0 216 96.075 216 216 0 119.291-96.61 216-216 216-119.244 0-216-96.562-216-216 0-119.203 96.602-216 216-216m0-32C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm-36 344h12V232h-12c-6.627 0-12-5.373-12-12v-8c0-6.627 5.373-12 12-12h48c6.627 0 12 5.373 12 12v140h12c6.627 0 12 5.373 12 12v8c0 6.627-5.373 12-12 12h-72c-6.627 0-12-5.373-12-12v-8c0-6.627 5.373-12 12-12zm36-240c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32z'/%3E%3C/svg%3E");
@@ -521,11 +521,11 @@ export default {
     right: 0;
     top: auto;
   }
-  ::v-deep .mapboxgl-ctrl-attrib-button[aria-pressed='true'] {
+  :deep(.mapboxgl-ctrl-attrib-button[aria-pressed='true']) {
     background-repeat: no-repeat;
     background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='20' height='20' viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='black' d='M256 40c118.621 0 216 96.075 216 216 0 119.291-96.61 216-216 216-119.244 0-216-96.562-216-216 0-119.203 96.602-216 216-216m0-32C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm-36 344h12V232h-12c-6.627 0-12-5.373-12-12v-8c0-6.627 5.373-12 12-12h48c6.627 0 12 5.373 12 12v140h12c6.627 0 12 5.373 12 12v8c0 6.627-5.373 12-12 12h-72c-6.627 0-12-5.373-12-12v-8c0-6.627 5.373-12 12-12zm36-240c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32z'/%3E%3C/svg%3E");
   }
-  ::v-deep .mapboxgl-ctrl.mapboxgl-ctrl-attrib {
+  :deep(.mapboxgl-ctrl.mapboxgl-ctrl-attrib) {
     border-radius: 10px;
     min-height: auto;
   }

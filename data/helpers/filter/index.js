@@ -35,7 +35,7 @@ export function filterDatasetByRange(dataset, range) {
     } else if (range === RANGE_1Y) {
       newStartDate = subMonths(latestDate, 12)
     }
-    return dataset.filter(d => d.date >= newStartDate && d.date <= latestDate)
+    return dataset.filter((d) => d.date >= newStartDate && d.date <= latestDate)
   }
 
   return dataset
@@ -46,7 +46,7 @@ export function filterDatasetByPeriod(dataset, interval, period) {
     return dataset
   }
   const month = DateDisplay.getPeriodMonth(period)
-  return dataset.filter(d => {
+  return dataset.filter((d) => {
     const dMonth = d.date.getMonth()
     return dMonth === month
   })

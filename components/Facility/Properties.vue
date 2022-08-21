@@ -1,15 +1,14 @@
 <template>
   <section class="card dark">
     <header>
-      <h4>
-        All properties
-      </h4>
+      <h4>All properties</h4>
       <button 
         class="button is-small is-light" 
-        @click="show = !show">{{ show ? 'Hide' : 'Show' }}</button>
+        @click="show = !show">
+        {{ show ? 'Hide' : 'Show' }}
+      </button>
     </header>
 
-    
     <table v-if="hasFacility && show">
       <tbody>
         <tr 
@@ -17,18 +16,21 @@
           :key="d">
           <th>{{ d }}</th>
           <td v-if="d === 'facilities'">
-
-            <div 
-              v-for="(f, i) in facility[d]" 
+            <div
+              v-for="(f, i) in facility[d]"
               :key="`facility-${i}`"
-              class="unit-card card dim">
+              class="unit-card card dim"
+            >
               <table>
-                <caption>{{ f.code }}</caption>
+                <caption>
+                  {{
+                    f.code
+                  }}
+                </caption>
                 <tbody>
                   <tr 
                     v-for="k in getKeys(f)" 
-                    :key="k"
-                  >
+                    :key="k">
                     <th>{{ k }}</th>
                     <td>{{ f[k] }}</td>
                   </tr>
@@ -40,7 +42,6 @@
         </tr>
       </tbody>
     </table>
-    
   </section>
 </template>
 

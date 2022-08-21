@@ -1,46 +1,62 @@
 <template>
   <tr
     :class="{
-      'divider': divider,
+      divider: divider,
       'has-date-focus': recordSelectDate
-  }">
+    }"
+  >
     <th>
       {{ rowLabel }}
       <small>{{ rowUnit }}</small>
     </th>
 
     <td
-      :class="{ 'on': minOn }"
+      :class="{ on: minOn }"
       class="has-text-right"
       @click="handleMinClick(minDate)"
       @mouseenter="handleMouseEnter(minDate)"
-      @mouseleave="handleMouseLeave">
+      @mouseleave="handleMouseLeave"
+    >
       <div v-if="isCurrency">{{ minValue | formatCurrency }}</div>
-      <div v-else-if="rowUnit === '%'">{{ minValue | percentageFormatNumber2 }}</div>
-      <div v-else-if="rowUnit === ' TWh'">{{ minValue | customFormatValue }}{{ rowUnit }}</div>
+      <div v-else-if="rowUnit === '%'">
+        {{ minValue | percentageFormatNumber2 }}
+      </div>
+      <div v-else-if="rowUnit === ' TWh'">
+        {{ minValue | customFormatValue }}{{ rowUnit }}
+      </div>
       <div v-else>{{ minValue | formatValue }}{{ rowUnit }}</div>
-      <time
-        v-show="minDate"
-        datetime="minDate"
-      >
-        {{ minDate | customFormatDate({ range, interval, showIntervalRange: true }) }}
+      <time 
+        v-show="minDate" 
+        datetime="minDate">
+        {{
+          minDate
+            | customFormatDate({ range, interval, showIntervalRange: true })
+        }}
       </time>
     </td>
 
     <td
-      :class="{ 'on': maxOn }"
+      :class="{ on: maxOn }"
       class="has-text-right"
       @click="handleMaxClick(maxDate)"
       @mouseenter="handleMouseEnter(maxDate)"
-      @mouseleave="handleMouseLeave">
+      @mouseleave="handleMouseLeave"
+    >
       <div v-if="isCurrency">{{ maxValue | formatCurrency }}</div>
-      <div v-else-if="rowUnit === '%'">{{ maxValue | percentageFormatNumber2 }}</div>
-      <div v-else-if="rowUnit === ' TWh'">{{ maxValue | customFormatValue }}{{ rowUnit }}</div>
+      <div v-else-if="rowUnit === '%'">
+        {{ maxValue | percentageFormatNumber2 }}
+      </div>
+      <div v-else-if="rowUnit === ' TWh'">
+        {{ maxValue | customFormatValue }}{{ rowUnit }}
+      </div>
       <div v-else>{{ maxValue | formatValue }}{{ rowUnit }}</div>
-      <time
-        v-show="maxDate"
+      <time 
+        v-show="maxDate" 
         datetime="maxDate">
-        {{ maxDate | customFormatDate({ range, interval, showIntervalRange: true }) }}
+        {{
+          maxDate
+            | customFormatDate({ range, interval, showIntervalRange: true })
+        }}
       </time>
     </td>
   </tr>

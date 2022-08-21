@@ -4,7 +4,7 @@
       <app-logo class="app-logo" />
       <h1>National Electricity Market</h1>
     </header>
-    <nuxt/>
+    <nuxt />
   </div>
 </template>
 

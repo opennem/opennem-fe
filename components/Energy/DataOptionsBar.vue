@@ -7,17 +7,17 @@
         :key="i"
         :class="{ 'is-selected': isRangeSelected(r) }"
         class="button is-rounded"
-        @click.stop="handleRangeClick(r)">
-
+        @click.stop="handleRangeClick(r)"
+      >
         <div v-if="isString(r)">{{ r }}</div>
         <div v-if="!isString(r)">
           {{ getSelectedRangeLabel(r) }}
         </div>
-        <i
-          v-if="hasRangeFilter(r)"
+        <i 
+          v-if="hasRangeFilter(r)" 
           class="filter-caret fal fa-chevron-down" />
-        <div
-          v-show="showRangeOptions(r)"
+        <div 
+          v-show="showRangeOptions(r)" 
           class="filter-menu dropdown-menu">
           <div class="dropdown-content">
             <a
@@ -25,8 +25,9 @@
               :key="`rangeOption${rIndex}`"
               :class="{ 'is-selected': range === selectedRange }"
               class="dropdown-item"
-              @click.stop="handleRangeOptionClick(range)">
-              {{ range }}           
+              @click.stop="handleRangeOptionClick(range)"
+            >
+              {{ range }}
             </a>
           </div>
         </div>
@@ -40,15 +41,16 @@
         :key="i"
         :class="{ 'is-selected': interval === selectedInterval }"
         class="button is-rounded"
-        @click.stop="handleIntervalChange(interval)">
-
+        @click.stop="handleIntervalChange(interval)"
+      >
         <div v-if="!hasFilter(interval)">{{ getIntervalLabel(interval) }}</div>
         <div v-if="hasFilter(interval)">{{ intervalLabel(interval) }}</div>
         <i
           v-if="hasFilter(interval)"
-          class="filter-caret fal fa-chevron-down" />
-        <div
-          v-show="showFilter(interval)"
+          class="filter-caret fal fa-chevron-down"
+        />
+        <div 
+          v-show="showFilter(interval)" 
           class="filter-menu dropdown-menu">
           <div class="dropdown-content">
             <a
@@ -56,7 +58,8 @@
               :key="`filter${i}`"
               :class="{ 'is-selected': f === selectedFilter }"
               class="dropdown-item"
-              @click.stop="handleFilterPeriodClick(f)">
+              @click.stop="handleFilterPeriodClick(f)"
+            >
               {{ f }}
             </a>
           </div>
@@ -489,7 +492,7 @@ export default {
     getSelectedRangeLabel(r) {
       let label = null
 
-      r.forEach(d => {
+      r.forEach((d) => {
         if (d === this.selectedRange) {
           label = d
         }

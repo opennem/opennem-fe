@@ -5,28 +5,30 @@
       :height="svgHeight"
       :id="id"
       :viewBox="viewBox"
-      class="donut-chart">
+      class="donut-chart"
+    >
       <g class="slices" />
-      <g
-        v-if="hoverOnSlice"
+      <g 
+        v-if="hoverOnSlice" 
         class="total">
-        <text
-          class="total-label"
+        <text 
+          class="total-label" 
           dy="-10">{{ hoverOnSliceLabel }}</text>
         <text dy="12">{{ hoverOnSlicePercent | percentageFormatNumber }}</text>
       </g>
-      <g
-        v-else
+      <g 
+        v-else 
         class="total">
         <g v-if="!isTotalPower">
-          <text
-            v-if="unit === ' TWh'"
-            dy="10">{{ total | customFormatValue }}{{ unit }}</text>
-          <text
-            v-else
+          <text 
+            v-if="unit === ' TWh'" 
+            dy="10">
+            {{ total | customFormatValue }}{{ unit }}
+          </text>
+          <text 
+            v-else 
             dy="10">{{ total | formatValue }}{{ unit }}</text>
         </g>
-        
       </g>
     </svg>
     <div class="vis-tooltip">Click/tap to see facilities</div>
@@ -76,7 +78,7 @@ export default {
     },
     convertValue: {
       type: Function,
-      default: d => d
+      default: (d) => d
     },
     highlightDomain: {
       type: String,
@@ -118,7 +120,7 @@ export default {
       const dataset = this.dataset
 
       if (this.hoverOn && this.hoverData) {
-        return domains.map(domain => {
+        return domains.map((domain) => {
           const id = domain.id
           return {
             name: id,
@@ -126,7 +128,7 @@ export default {
           }
         })
       } else if (this.focusOn && this.focusData) {
-        return domains.map(domain => {
+        return domains.map((domain) => {
           const id = domain.id
           return {
             name: id,
@@ -135,7 +137,7 @@ export default {
         })
       }
 
-      return domains.map(domain => {
+      return domains.map((domain) => {
         const id = domain.id
         return {
           name: id,
@@ -147,9 +149,9 @@ export default {
     updatedDataset() {
       const domains = this.domains
       const dataset = this.dataset
-      return dataset.map(d => {
+      return dataset.map((d) => {
         let total = null
-        domains.forEach(domain => {
+        domains.forEach((domain) => {
           total += d[domain.id] || 0
         })
 
@@ -161,26 +163,26 @@ export default {
 
     hoverData() {
       if (this.hoverDate && this.dataset.length > 0) {
-        return this.dataset.find(d => d.time === this.hoverDate.getTime())
+        return this.dataset.find((d) => d.time === this.hoverDate.getTime())
       }
       return null
     },
 
     focusData() {
       if (this.focusDate && this.dataset.length > 0) {
-        return this.dataset.find(d => d.time === this.focusDate.getTime())
+        return this.dataset.find((d) => d.time === this.focusDate.getTime())
       }
       return null
     },
 
     isTotalPower() {
-      return this.isPowerType && (!this.hoverOn && !this.focusOn)
+      return this.isPowerType && !this.hoverOn && !this.focusOn
     },
 
     total() {
       let total = 0
       if (this.isTotalPower) {
-        total = d3Mean(this.updatedDataset, d => d._totalSources)
+        total = d3Mean(this.updatedDataset, (d) => d._totalSources)
       } else {
         total = this.donutDataset.reduce((a, b) => a + (b.value || 0), 0)
       }
@@ -188,11 +190,11 @@ export default {
     },
 
     domainIds() {
-      return this.domains.map(d => d.id).reverse()
+      return this.domains.map((d) => d.id).reverse()
     },
 
     domainColours() {
-      return this.domains.map(d => d.colour).reverse()
+      return this.domains.map((d) => d.colour).reverse()
     },
 
     viewBox() {
@@ -223,7 +225,7 @@ export default {
       if (domain && domain !== '') {
         this.$donut
           .selectAll('path')
-          .attr('opacity', d => (d.data.name === domain ? 1 : 0.2))
+          .attr('opacity', (d) => (d.data.name === domain ? 1 : 0.2))
       } else {
         this.$donut.selectAll('path').attr('opacity', 1)
       }
@@ -263,7 +265,7 @@ export default {
       this.pie = d3Pie()
         .padAngle(0.005)
         .sort(null)
-        .value(d => d.value)
+        .value((d) => d.value)
       this.arc = d3Arc()
         .innerRadius(this.radius * 0.5)
         .outerRadius(this.radius - 1)
@@ -284,10 +286,10 @@ export default {
         .join('path')
         .attr('class', 'donut-arc')
         .attr('d', this.arc)
-        .attr('fill', d => this.colour(d.data.name))
-        .on('mouseover', slice => {
+        .attr('fill', (d) => this.colour(d.data.name))
+        .on('mouseover', (slice) => {
           const id = slice.data.name
-          const find = this.domains.find(d => d.id === id)
+          const find = this.domains.find((d) => d.id === id)
           find.value = slice.data.value
           this.hoverOnSliceData = find
           this.hoverOnSlice = true
@@ -296,9 +298,9 @@ export default {
           this.hoverOnSliceData = null
           this.hoverOnSlice = false
         })
-        .on('mousemove', slice => {
+        .on('mousemove', (slice) => {
           const id = slice.data.name
-          const find = this.domains.find(d => d.id === id)
+          const find = this.domains.find((d) => d.id === id)
           if (this.validDomainToEmit(find)) {
             const eventType = this.isTouchDevice ? 'Tap' : 'Click'
             this.$tooltip
@@ -313,9 +315,9 @@ export default {
             d3Select(event.currentTarget).style('cursor', 'default')
           }
         })
-        .on('click', slice => {
+        .on('click', (slice) => {
           const id = slice.data.name
-          const find = this.domains.find(d => d.id === id)
+          const find = this.domains.find((d) => d.id === id)
 
           if (this.validDomainToEmit(find)) {
             this.$emit('domain-click', find)

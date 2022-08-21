@@ -24,10 +24,10 @@ export const mutations = {
 }
 
 export const getters = {
-  emissionIntensityData: state => state.emissionIntensityData,
-  averageEmissionIntensity: state => state.averageEmissionIntensity,
-  averageEmissions: state => state.averageEmissions,
-  sumEmissionsMinusLoads: state => state.sumEmissionsMinusLoads
+  emissionIntensityData: (state) => state.emissionIntensityData,
+  averageEmissionIntensity: (state) => state.averageEmissionIntensity,
+  averageEmissions: (state) => state.averageEmissions,
+  sumEmissionsMinusLoads: (state) => state.sumEmissionsMinusLoads
 }
 
 export const actions = {
@@ -56,10 +56,10 @@ export const actions = {
       return 0
     }
     const batteryDischarging = domainPowerEnergy.find(
-      d => d.fuelTech === FT.BATTERY_DISCHARGING
+      (d) => d.fuelTech === FT.BATTERY_DISCHARGING
     )
 
-    const dataset = datasetAll.map(d => {
+    const dataset = datasetAll.map((d) => {
       const obj = {
         date: d.date,
         time: d.time,
@@ -74,7 +74,7 @@ export const actions = {
         totalBatteryDischarging += d[batteryDischarging.id]
       }
 
-      emissionsDomains.forEach(domain => {
+      emissionsDomains.forEach((domain) => {
         totalEmissions += addUp(d, domain)
 
         if (domain.category !== 'load') {
@@ -82,7 +82,7 @@ export const actions = {
         }
       })
 
-      powerEnergyDomains.forEach(domain => {
+      powerEnergyDomains.forEach((domain) => {
         totalPowerEnergy += addUp(d, domain)
       })
 
@@ -91,7 +91,8 @@ export const actions = {
 
       obj._totalEmissions = totalEmissions
       obj._totalEmissionsMinusLoads = totalEmissionsMinusLoads
-      obj._totalPowerEnergyMinusBatteryDischarging = totalPowerEnergyMinusBatteryDischarging
+      obj._totalPowerEnergyMinusBatteryDischarging =
+        totalPowerEnergyMinusBatteryDischarging
 
       let ei = totalEmissions / totalPowerEnergyMinusBatteryDischarging
       const isValidEI = Number.isFinite(ei)

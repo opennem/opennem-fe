@@ -8,14 +8,16 @@
       :y1-min="yLineMin"
       :x-ticks="xTicks"
       :curve="chartCurve"
-      class="vis-chart" />
+      class="vis-chart"
+    />
     <DateBrush
       :dataset="dataset"
       :x-ticks="xTicks"
       :tick-format="tickFormat"
       :second-tick-format="secondTickFormat"
       :read-only="true"
-      class="date-brush vis-chart" />
+      class="date-brush vis-chart"
+    />
   </div>
 </template>
 
@@ -47,8 +49,8 @@ export default {
     yLineMin() {
       let min = 0
 
-      this.dataset.forEach(d => {
-        this.domains.forEach(domain => {
+      this.dataset.forEach((d) => {
+        this.domains.forEach((domain) => {
           const val = d[domain.id]
           if (val < min) {
             min = val
@@ -62,8 +64,8 @@ export default {
     yLineMax() {
       let max = 0
 
-      this.dataset.forEach(d => {
-        this.domains.forEach(domain => {
+      this.dataset.forEach((d) => {
+        this.domains.forEach((domain) => {
           const val = d[domain.id]
           if (val > max) {
             max = val

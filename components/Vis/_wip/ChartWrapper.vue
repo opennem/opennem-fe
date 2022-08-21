@@ -1,6 +1,6 @@
 <template>
   <div 
-    :class="{'is-hovered': isHovering}" 
+    :class="{ 'is-hovered': isHovering }" 
     class="chart">
     <button
       v-if="zoomBtn"
@@ -18,29 +18,31 @@
             'fa-caret-down': showChart,
             'fa-caret-right': !showChart
           }"
-          class="fal fa-fw" />
-        <slot name="header"/>
+          class="fal fa-fw"
+        />
+        <slot name="header" />
       </div>
       <div 
         v-if="showChart" 
         class="hover-date-value">
         <div class="hover-date">
           <time>
-            <slot name="datetime"/>
+            <slot name="datetime" />
           </time>
         </div>
         <div class="hover-values">
-          <hover-values 
-            v-for="(v, i) in hoverValues" 
-            :key="i" 
-            :label="v.label" 
-            :value="formatter(v.value)" 
-            :unit="v.unit" 
-            :colour="v.colour"/>
+          <hover-values
+            v-for="(v, i) in hoverValues"
+            :key="i"
+            :label="v.label"
+            :value="formatter(v.value)"
+            :unit="v.unit"
+            :colour="v.colour"
+          />
         </div>
       </div>
     </div>
-    <slot/>
+    <slot />
   </div>
 </template>
 
@@ -71,7 +73,7 @@ export default {
     },
     formatter: {
       type: Function,
-      default: v => v
+      default: (v) => v
     }
   },
   computed: {

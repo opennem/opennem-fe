@@ -83,20 +83,18 @@ export function dataProcess(res, range, interval, period, displayTz) {
   } = process(responses, displayTz)
 
   const isEnergyType = type === 'energy'
-  const {
-    earliestEnergyStartDate,
-    latestEnergyLastDate
-  } = getEarliestLatestDates(
-    domainPowerEnergy,
-    responses,
-    displayTz,
-    isEnergyType
-  )
+  const { earliestEnergyStartDate, latestEnergyLastDate } =
+    getEarliestLatestDates(
+      domainPowerEnergy,
+      responses,
+      displayTz,
+      isEnergyType
+    )
 
   console.log('dFlat', dFlat)
 
   const datasetFlat = dFlat.filter(
-    d => d.date >= earliestEnergyStartDate && d.date <= latestEnergyLastDate
+    (d) => d.date >= earliestEnergyStartDate && d.date <= latestEnergyLastDate
   )
 
   let datasetFull

@@ -1,26 +1,26 @@
 <template>
   <div class="vis chart-vis">
     <svg 
-      :width="svgWidth"
-      :height="svgHeight"
+      :width="svgWidth" 
+      :height="svgHeight" 
       :id="id">
-
       <defs>
         <!-- where to clip -->
         <clipPath :id="`${id}-clip`">
-          <rect
-            :width="width"
-            :height="height"/>
+          <rect 
+            :width="width" 
+            :height="height" />
         </clipPath>
         <filter id="shadow">
           <feDropShadow
             dx="0"
             dy="1"
-            stdDeviation="1" 
-            flood-color="rgba(0, 0, 0, 0.2)" />
+            stdDeviation="1"
+            flood-color="rgba(0, 0, 0, 0.2)"
+          />
         </filter>
       </defs>
-      
+
       <g 
         :transform="axisTransform" 
         class="x-axis" />
@@ -37,20 +37,20 @@
         :transform="axisTransform" 
         class="hover-group" />
       <g 
-        :transform="axisTransform"
+        :transform="axisTransform" 
         class="vis1-group" />
       <g 
-        :transform="axisTransform"
+        :transform="axisTransform" 
         class="vis2-group" />
       <g 
         :transform="axisTransform" 
         class="y-axis-left-text" />
       <g 
         :transform="axisTransform" 
-        class="y-axis-right-text" /> 
+        class="y-axis-right-text" />
       <g 
-        :transform="axisTransform"
-        class="zoom-group" />   
+        :transform="axisTransform" 
+        class="zoom-group" />
     </svg>
   </div>
 </template>
@@ -260,21 +260,21 @@ export default {
       }
     },
     keys1() {
-      return this.domains1.map(d => d.domain)
+      return this.domains1.map((d) => d.domain)
     },
     colours1() {
       const dict = {}
-      this.domains1.forEach(d => {
+      this.domains1.forEach((d) => {
         dict[d.domain] = d.colour
       })
       return dict
     },
     keys2() {
-      return this.domains2.map(d => d.domain)
+      return this.domains2.map((d) => d.domain)
     },
     colours2() {
       const dict = {}
-      this.domains2.forEach(d => {
+      this.domains2.forEach((d) => {
         dict[d.domain] = d.colour
       })
       return dict
@@ -335,7 +335,7 @@ export default {
       if (domain) {
         this.$vis1Group
           .selectAll('path')
-          .attr('opacity', d => (d === domain ? 1 : 0.2))
+          .attr('opacity', (d) => (d === domain ? 1 : 0.2))
       } else {
         this.$vis1Group.selectAll('path').attr('opacity', 1)
       }
@@ -348,16 +348,16 @@ export default {
       if (updated) {
         this.vis1 = (data, x) =>
           d3Area()
-            .x(d => x(d.data.date))
-            .y0(d => this.y1(d[0]))
-            .y1(d => this.y1(d[1]))
+            .x((d) => x(d.data.date))
+            .y0((d) => this.y1(d[0]))
+            .y1((d) => this.y1(d[1]))
             .curve(this.curveType)(data)
       } else {
         this.vis1 = d3Line()
-          .x(d => this.x(d.date))
-          .y(d => this.y1(d.value))
+          .x((d) => this.x(d.date))
+          .y((d) => this.y1(d.value))
           .curve(this.curveType)
-        this.vis1.defined(d => d.value || d.value === 0)
+        this.vis1.defined((d) => d.value || d.value === 0)
       }
       this.draw()
     }
@@ -437,12 +437,8 @@ export default {
       this.x = scaleTime().range([0, this.width])
       this.y1 = this.y1Log
         ? scaleSymlog().range(this.y1Range)
-        : scaleLinear()
-            .range(this.y1Range)
-            .nice()
-      this.y2 = scaleLinear()
-        .range(this.y2Range)
-        .nice()
+        : scaleLinear().range(this.y1Range).nice()
+      this.y2 = scaleLinear().range(this.y2Range).nice()
       this.z = scaleOrdinal()
 
       // Axis
@@ -450,15 +446,9 @@ export default {
       // .ticks(this.xTicks)
       this.yAxisLeft =
         this.y1Ticks.length > 0
-          ? axisLeft(this.y1)
-              .tickSize(-this.width)
-              .tickValues(this.y1Ticks)
-          : axisLeft(this.y1)
-              .tickSize(-this.width)
-              .ticks(5)
-      this.yAxisRight = axisRight(this.y2)
-        .tickSize(this.width)
-        .ticks(5)
+          ? axisLeft(this.y1).tickSize(-this.width).tickValues(this.y1Ticks)
+          : axisLeft(this.y1).tickSize(-this.width).ticks(5)
+      this.yAxisRight = axisRight(this.y2).tickSize(this.width).ticks(5)
 
       // x axis shading
       this.$xShadesGroup = $svg.select('.x-shades')
@@ -469,24 +459,24 @@ export default {
       if (this.stacked) {
         this.vis1 = (data, x) =>
           d3Area()
-            .x(d => x(d.data.date))
-            .y0(d => this.y1(d[0]))
-            .y1(d => this.y1(d[1]))
+            .x((d) => x(d.data.date))
+            .y0((d) => this.y1(d[0]))
+            .y1((d) => this.y1(d[1]))
             .curve(this.curveType)(data)
       } else {
         this.vis1 = d3Line()
-          .x(d => this.x(d.date))
-          .y(d => this.y1(d.value))
+          .x((d) => this.x(d.date))
+          .y((d) => this.y1(d.value))
           .curve(this.curveType)
-        this.vis1.defined(d => d.value || d.value === 0)
+        this.vis1.defined((d) => d.value || d.value === 0)
       }
 
       this.$vis2Group = $svg.select('.vis2-group')
       this.lineRight = d3Line()
-        .x(d => this.x(d.date))
-        .y(d => this.y2(d.value))
+        .x((d) => this.x(d.date))
+        .y((d) => this.y2(d.value))
         .curve(curveMonotoneX)
-      this.lineRight.defined(d => d.value || d.value === 0)
+      this.lineRight.defined((d) => d.value || d.value === 0)
 
       // Hover
       this.$hoverGroup = $svg.select('.hover-group')
@@ -517,12 +507,18 @@ export default {
       let xz = this.x
       this.zoom = zoom()
         .scaleExtent([1, 5000])
-        .extent([[this.marginLeft, 0], [this.width, this.height]])
-        .translateExtent([[this.marginLeft, -Infinity], [this.width, Infinity]])
+        .extent([
+          [this.marginLeft, 0],
+          [this.width, this.height]
+        ])
+        .translateExtent([
+          [this.marginLeft, -Infinity],
+          [this.width, Infinity]
+        ])
         .on('zoom', () => {
           xz = event.transform.rescaleX(this.x)
           if (this.stacked) {
-            this.$vis1Group.selectAll('path').attr('d', d => this.vis1(d, xz))
+            this.$vis1Group.selectAll('path').attr('d', (d) => this.vis1(d, xz))
           } else {
             this.$vis1Group.selectAll('path').attr('d', this.drawVis1Path)
           }
@@ -534,7 +530,7 @@ export default {
           // console.log(differenceInYears(xz.invert(this.width), xz.invert(0)))
         })
 
-      this.$zoomGroup.call(this.zoom).on('touchmove mousemove', function() {
+      this.$zoomGroup.call(this.zoom).on('touchmove mousemove', function () {
         const m = mouse(this)
         const date = xz.invert(m[0])
         console.log(date)
@@ -542,7 +538,7 @@ export default {
       })
 
       // Events
-      this.$hoverGroup.on('touchmove mousemove', function() {
+      this.$hoverGroup.on('touchmove mousemove', function () {
         const date = self.getXAxisDateByMouse(this)
         self.$emit('date-hover', this, date)
       })
@@ -578,8 +574,8 @@ export default {
         .enter()
         .append('rect')
         .attr('opacity', 0.05)
-        .attr('x', d => this.x(d.start))
-        .attr('width', d => this.x(d.end) - this.x(d.start))
+        .attr('x', (d) => this.x(d.start))
+        .attr('width', (d) => this.x(d.end) - this.x(d.start))
         .attr('height', this.height)
 
       this.$vis1Group.selectAll('path').remove()
@@ -596,10 +592,10 @@ export default {
         vis1
           .enter()
           .append('path')
-          .attr('class', key => `${key}-path`)
-          .attr('d', d => this.vis1(d, this.x))
+          .attr('class', (key) => `${key}-path`)
+          .attr('d', (d) => this.vis1(d, this.x))
           .attr('stroke-opacity', 0)
-          .attr('fill', d => this.colours1[d.key])
+          .attr('fill', (d) => this.colours1[d.key])
           .style('clip-path', this.clipPathUrl)
           .style('-webkit-clip-path', this.clipPathUrl)
           .style('pointer-events', 'auto')
@@ -607,8 +603,8 @@ export default {
         vis1
           .enter()
           .append('path')
-          .attr('class', key => `${key}-path`)
-          .style('stroke', key => this.colours1[key])
+          .attr('class', (key) => `${key}-path`)
+          .style('stroke', (key) => this.colours1[key])
           .style('stroke-width', this.pathStrokeWidth)
           .style('filter', 'url(#shadow)')
           .style('fill', 'transparent')
@@ -617,7 +613,7 @@ export default {
           .attr('d', this.drawVis1Path)
       }
 
-      this.$vis1Group.selectAll('path').on('mousemove touchmove', function(d) {
+      this.$vis1Group.selectAll('path').on('mousemove touchmove', function (d) {
         const date = self.getXAxisDateByMouse(this)
         self.$emit('date-hover', this, date)
         self.$emit('domain-hover', d)
@@ -642,8 +638,8 @@ export default {
       this.$vis2Group.selectAll('path').attr('d', this.drawLineRightPath)
       this.$xShadesGroup
         .selectAll('rect')
-        .attr('x', d => this.x(d.start))
-        .attr('width', d => this.x(d.end) - this.x(d.start))
+        .attr('x', (d) => this.x(d.start))
+        .attr('width', (d) => this.x(d.end) - this.x(d.start))
     },
 
     drawDataset2() {
@@ -651,10 +647,7 @@ export default {
       if (y2Height <= 0 || this.domains1.length === 0) {
         y2Height = this.height
       }
-      this.y2
-        .range([y2Height, 0])
-        .domain([this.y2Min, this.y2Max])
-        .nice()
+      this.y2.range([y2Height, 0]).domain([this.y2Min, this.y2Max]).nice()
       this.$yAxisRightTextGroup.call(this.drawRightYAxisText)
       this.$vis2Group.selectAll('path').remove()
       this.$vis2Group
@@ -662,8 +655,8 @@ export default {
         .data(this.keys2)
         .enter()
         .append('path')
-        .attr('class', key => `${key}-path`)
-        .style('stroke', key => this.colours2[key])
+        .attr('class', (key) => `${key}-path`)
+        .style('stroke', (key) => this.colours2[key])
         .style('stroke-width', 2)
         .style('filter', 'url(#shadow)')
         .style('fill', 'transparent')
@@ -691,7 +684,7 @@ export default {
       g.call(this.yAxisLeft)
       g.selectAll('.y-axis-left-text .tick line').remove()
       g.selectAll('.y-axis-left-text .tick text')
-        .text(t => `${t}${this.y1AxisUnit}`)
+        .text((t) => `${t}${this.y1AxisUnit}`)
         .attr('dx', 5)
         .attr('dy', -2)
         .attr('opacity', this.y1TickText ? 1 : 0)
@@ -701,14 +694,14 @@ export default {
       g.call(this.yAxisRight)
       g.selectAll('.y-axis-right-text .tick line').remove()
       g.selectAll('.y-axis-right-text .tick text')
-        .text(t => `${t}${this.y2AxisUnit}`)
+        .text((t) => `${t}${this.y2AxisUnit}`)
         .attr('dx', -5)
         .attr('dy', -2)
         .attr('opacity', this.y1TickText ? 1 : 0)
     },
 
     drawVis1Path(key) {
-      const data = this.dataset1.map(d => {
+      const data = this.dataset1.map((d) => {
         if (this.drawIncompleteBucket) {
           return {
             date: d.date,
@@ -724,7 +717,7 @@ export default {
     },
 
     drawLineRightPath(key) {
-      const data = this.dataset2.map(d => {
+      const data = this.dataset2.map((d) => {
         if (this.drawIncompleteBucket) {
           return {
             date: d.date,
@@ -773,9 +766,9 @@ export default {
               .append('circle')
               .merge(dots)
               .attr('cx', this.x(dataPoint.date))
-              .attr('cy', key => this.y1(dataPoint[key]))
+              .attr('cy', (key) => this.y1(dataPoint[key]))
               .attr('r', 2)
-              .attr('fill', key => this.colours1[key])
+              .attr('fill', (key) => this.colours1[key])
               .exit()
               .remove()
           }
@@ -822,7 +815,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.chart-vis ::v-deep svg {
+.chart-vis :deep(svg) {
   .y-axis-left-text .tick text {
     color: #000;
     text-anchor: start;

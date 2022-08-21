@@ -137,7 +137,7 @@ export default {
 
     yMax() {
       let max = 1000
-      this.emissionIntensityDataset.forEach(d => {
+      this.emissionIntensityDataset.forEach((d) => {
         if (d._emissionIntensity > max) {
           max = d._emissionIntensity
         }
@@ -154,17 +154,13 @@ export default {
         return null
       }
       const time = date.getTime()
-      return this.emissionIntensityDataset.find(d => d.time === time)
+      return this.emissionIntensityDataset.find((d) => d.time === time)
     },
 
     hoverValue() {
       if (this.hoverData) {
         console.log(
-          `emissions: ${
-            this.hoverData._totalEmissions
-          }, power/energy (w/o battery_discharging): ${
-            this.hoverData._totalPowerEnergyMinusBatteryDischarging
-          }, intensity: ${this.hoverData._emissionIntensity}`
+          `emissions: ${this.hoverData._totalEmissions}, power/energy (w/o battery_discharging): ${this.hoverData._totalPowerEnergyMinusBatteryDischarging}, intensity: ${this.hoverData._emissionIntensity}`
         )
       }
       return this.hoverData ? this.hoverData._emissionIntensity : null

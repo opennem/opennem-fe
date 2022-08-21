@@ -1,11 +1,17 @@
 <template>
   <header>
     <time v-if="isHovering">
-      {{ hoveredDate | customFormatDate({ range, interval, showIntervalRange: true }) }}
+      {{
+        hoveredDate
+          | customFormatDate({ range, interval, showIntervalRange: true })
+      }}
     </time>
 
     <time v-if="!isHovering && focusOn">
-      {{ focusDate | customFormatDate({ range, interval, showIntervalRange: true }) }}
+      {{
+        focusDate
+          | customFormatDate({ range, interval, showIntervalRange: true })
+      }}
     </time>
 
     <span v-if="!isHovering && !focusOn">
@@ -14,7 +20,10 @@
       </time>
       –
       <time>
-        {{ endDate | customFormatDate({ range, interval, showYear: true, isEnd: true }) }}
+        {{
+          endDate
+            | customFormatDate({ range, interval, showYear: true, isEnd: true })
+        }}
       </time>
     </span>
 

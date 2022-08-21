@@ -3,14 +3,15 @@
     <div
       v-if="isValidContribution"
       :style="{
-        'width': `${width}px`,
+        width: `${width}px`,
         'background-color': colour,
         opacity: 0.4
       }"
-      class="row-bar" />
+      class="row-bar"
+    />
 
-    <div
-      v-if="isValidContribution"
+    <div 
+      v-if="isValidContribution" 
       class="contribution">
       {{ contribution | percentageFormatNumber }}
     </div>

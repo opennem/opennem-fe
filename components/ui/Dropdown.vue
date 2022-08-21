@@ -1,12 +1,11 @@
 <template>
   <div class="select is-rounded">
-    <select
-      v-if="options.length > 0"
+    <select 
+      v-if="options.length > 0" 
       v-model="selected">
-      <option
-        v-for="(d, i) in options"
-        :key="`option-${i}`"
-      >
+      <option 
+        v-for="(d, i) in options" 
+        :key="`option-${i}`">
         {{ d.label }}
       </option>
     </select>

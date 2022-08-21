@@ -1,22 +1,26 @@
 <template>
-  <div
-    :class="{'is-active': dropdownActive}"
+  <div 
+    :class="{ 'is-active': dropdownActive }" 
     class="dropdown">
     <button
       v-on-clickaway="handleClickAway"
       class="dropdown-trigger button inverted"
-      @click="handleClick">
+      @click="handleClick"
+    >
       <span>
         <strong>{{ regionLabel }}</strong>
         <i
-          :class="['fal dropdown-trigger-icon', dropdownActive ? 'fa-chevron-up' : 'fa-chevron-down']"
+          :class="[
+            'fal dropdown-trigger-icon',
+            dropdownActive ? 'fa-chevron-up' : 'fa-chevron-down'
+          ]"
         />
       </span>
     </button>
 
     <transition name="slide-down-fade">
-      <div
-        v-show="dropdownActive"
+      <div 
+        v-show="dropdownActive" 
         class="dropdown-menu">
         <div class="dropdown-content">
           <nuxt-link
@@ -24,7 +28,8 @@
             :key="link.id"
             :to="{ name: link.id }"
             class="dropdown-item"
-            @click.native="handleClick">
+            @click.native="handleClick"
+          >
             {{ link.label }}
           </nuxt-link>
         </div>

@@ -11,27 +11,26 @@
     />
 
     <transition name="fade">
-      <div
-        v-if="!ready"
+      <div 
+        v-if="!ready" 
         class="vis-table-container loading-containers">
-        <div
-          class="vis-container"
+        <div 
+          class="vis-container" 
           style="width: 100%">
-          <div
-            class="loader-block"
+          <div 
+            class="loader-block" 
             style="height: 30px" />
-          <div
-            class="loader-block"
+          <div 
+            class="loader-block" 
             style="height: 400px" />
         </div>
       </div>
     </transition>
 
     <div id="export-container">
-      <div
-        v-if="ready"
-        class="vis-legend-container"
-      >
+      <div 
+        v-if="ready" 
+        class="vis-legend-container">
         <export-image-header :exporting="exporting" />
 
         <div class="vis-table-container">
@@ -40,12 +39,14 @@
             :show-summary="summary"
             :show-legend="legend"
             :show-percent="percentDisplay"
-            class="table-container" />
+            class="table-container"
+          />
         </div>
 
         <export-image-footer
           :show-bom-source="showBomSource"
-          :exporting="exporting"/>
+          :exporting="exporting"
+        />
       </div>
     </div>
   </div>
@@ -120,17 +121,17 @@ export default {
 
     emissionsDomains() {
       const domains = this.currentDomainEmissions.filter(
-        d => d.category !== FT.LOAD
+        (d) => d.category !== FT.LOAD
       )
       const hidden = this.hiddenFuelTechs
       return domains
-        ? domains.filter(d => !_includes(hidden, d[this.property]))
+        ? domains.filter((d) => !_includes(hidden, d[this.property]))
         : []
     },
     powerEnergyDomains() {
       const domains = this.currentDomainPowerEnergy
       const hidden = this.hiddenFuelTechs
-      return domains.filter(d => !_includes(hidden, d[this.property]))
+      return domains.filter((d) => !_includes(hidden, d[this.property]))
     }
   },
 
@@ -237,7 +238,7 @@ export default {
     handleExportClick() {
       this.exporting = true
       let date = ''
-      let region = this.regions.find(r => r.id === this.regionId).label
+      let region = this.regions.find((r) => r.id === this.regionId).label
       if (this.filteredCurrentDataset.length > 0) {
         date = utcFormat('%Y%m%d')(this.filteredCurrentDataset[0].date)
       }
@@ -246,7 +247,7 @@ export default {
       }
       domToImage
         .toBlob(document.getElementById('export-container'))
-        .then(blob => {
+        .then((blob) => {
           saveAs(blob, `${date} ${region}.png`)
           this.exporting = false
         })
@@ -271,7 +272,7 @@ export default {
   }
 }
 
-::v-deep .vis-chart {
+:deep(.vis-chart) {
   margin-right: 10px;
 }
 </style>

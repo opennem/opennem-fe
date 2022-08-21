@@ -3,10 +3,10 @@
     :class="{
       'is-hovered': hoverOn || focusOn,
       'has-border-bottom': !chartShown,
-      'adjustment': chartPrice
+      adjustment: chartPrice
     }"
-    class="temperature-chart chart">
-
+    class="temperature-chart chart"
+  >
     <temperature-chart-options
       :read-only="readOnly"
       :options="options"
@@ -139,16 +139,20 @@ export default {
     },
     temperatureMeanDomain() {
       const find = this.temperatureDomains.find(
-        t => t.type === TEMPERATURE || t.type === TEMPERATURE_MEAN
+        (t) => t.type === TEMPERATURE || t.type === TEMPERATURE_MEAN
       )
       return find ? find.domain : ''
     },
     temperatureMinDomain() {
-      const find = this.temperatureDomains.find(t => t.type === TEMPERATURE_MIN)
+      const find = this.temperatureDomains.find(
+        (t) => t.type === TEMPERATURE_MIN
+      )
       return find ? find.domain : ''
     },
     temperatureMaxDomain() {
-      const find = this.temperatureDomains.find(t => t.type === TEMPERATURE_MAX)
+      const find = this.temperatureDomains.find(
+        (t) => t.type === TEMPERATURE_MAX
+      )
       return find ? find.domain : ''
     },
     averageTemperature() {
@@ -163,7 +167,7 @@ export default {
         return null
       }
       const time = date.getTime()
-      return this.currentDataset.find(d => d.time === time)
+      return this.currentDataset.find((d) => d.time === time)
     },
     hoverMeanTemperature() {
       return this.hoverData ? this.hoverData[this.temperatureMeanDomain] : 0

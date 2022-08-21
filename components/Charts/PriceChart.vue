@@ -4,7 +4,8 @@
       'is-hovered': hoverOn || focusOn,
       'has-border-bottom': !chartShown
     }"
-    class="chart">
+    class="chart"
+  >
     <price-chart-options
       :read-only="readOnly"
       :options="options"
@@ -231,7 +232,7 @@ export default {
         return null
       }
       const time = date.getTime()
-      return this.priceDataset.find(d => d.time === time)
+      return this.priceDataset.find((d) => d.time === time)
     },
     hoverValue() {
       return this.hoverData ? this.hoverData[this.priceDomain] : null
@@ -281,21 +282,21 @@ export default {
   position: relative;
   top: -14px;
 }
-::v-deep .price-vis .y-axis-guide-group .domain {
+:deep(.price-vis .y-axis-guide-group .domain) {
   fill: rgba(255, 255, 255, 0.1);
 }
-::v-deep .price-pos-vis .y-axis-guide-group .tick:not(:first-of-type) text,
-::v-deep .price-neg-vis .y-axis-guide-group .tick text {
+:deep(.price-pos-vis .y-axis-guide-group .tick:not(:first-of-type) text),
+:deep(.price-neg-vis .y-axis-guide-group .tick text) {
   display: none;
 }
-::v-deep .price-neg-vis .line-group path,
-::v-deep .price-pos-vis .line-group path {
+:deep(.price-neg-vis .line-group path),
+:deep(.price-pos-vis .line-group path) {
   stroke-dasharray: 1;
 }
-::v-deep .price-vis .focus-top-rect,
-::v-deep .price-vis .focus-bottom-rect,
-::v-deep .price-pos-vis .focus-bottom-rect,
-::v-deep .price-neg-vis .focus-top-rect {
+:deep(.price-vis .focus-top-rect),
+:deep(.price-vis .focus-bottom-rect),
+:deep(.price-pos-vis .focus-bottom-rect),
+:deep(.price-neg-vis .focus-top-rect) {
   opacity: 0 !important;
 }
 </style>

@@ -28,88 +28,98 @@ const formatMillisecond = timeFormat('.%L'),
 
 export default {
   defaultFormat(date) {
-    return (utcSecond(date) < date
-      ? formatMillisecond
-      : utcMinute(date) < date
+    return (
+      utcSecond(date) < date
+        ? formatMillisecond
+        : utcMinute(date) < date
         ? formatSecond
         : utcHour(date) < date
-          ? formatMinute
-          : utcDay(date) < date
-            ? formatHour
-            : utcMonth(date) < date
-              ? utcWeek(date) < date
-                ? formatDay
-                : formatWeek
-              : utcYear(date) < date
-                ? formatMonth
-                : formatYear)(date)
+        ? formatMinute
+        : utcDay(date) < date
+        ? formatHour
+        : utcMonth(date) < date
+        ? utcWeek(date) < date
+          ? formatDay
+          : formatWeek
+        : utcYear(date) < date
+        ? formatMonth
+        : formatYear
+    )(date)
   },
 
   secondaryFormat(date) {
     const formatDay = utcFormat('%e %b')
     const formatWeek = utcFormat('%e %b')
 
-    return (utcSecond(date) < date
-      ? empty
-      : utcMinute(date) < date
+    return (
+      utcSecond(date) < date
+        ? empty
+        : utcMinute(date) < date
         ? empty
         : utcHour(date) < date
-          ? empty
-          : utcDay(date) < date
-            ? empty
-            : utcMonth(date) < date
-              ? utcWeek(date) < date
-                ? formatDay
-                : formatWeek
-              : utcYear(date) < date
-                ? empty
-                : empty)(date)
+        ? empty
+        : utcDay(date) < date
+        ? empty
+        : utcMonth(date) < date
+        ? utcWeek(date) < date
+          ? formatDay
+          : formatWeek
+        : utcYear(date) < date
+        ? empty
+        : empty
+    )(date)
   },
 
   intervalDayTimeFormat(date) {
-    return (timeSecond(date) < date
-      ? formatMillisecond
-      : timeMinute(date) < date
+    return (
+      timeSecond(date) < date
+        ? formatMillisecond
+        : timeMinute(date) < date
         ? formatSecond
         : timeHour(date) < date
-          ? formatMinute
-          : timeDay(date) < date
-            ? formatHour
-            : timeMonth(date) < date
-              ? timeWeek(date) < date
-                ? formatDay
-                : formatWeek
-              : timeYear(date) < date
-                ? formatDay
-                : formatYear)(date)
+        ? formatMinute
+        : timeDay(date) < date
+        ? formatHour
+        : timeMonth(date) < date
+        ? timeWeek(date) < date
+          ? formatDay
+          : formatWeek
+        : timeYear(date) < date
+        ? formatDay
+        : formatYear
+    )(date)
   },
 
   intervalDaySecondaryTimeFormat(date) {
-    return (timeMonth(date) < date
-      ? timeWeek(date) < date
+    return (
+      timeMonth(date) < date
+        ? timeWeek(date) < date
+          ? timeFormat('%e %b')
+          : timeFormat('%e %b')
+        : timeYear(date) < date
         ? timeFormat('%e %b')
-        : timeFormat('%e %b')
-      : timeYear(date) < date
-        ? timeFormat('%e %b')
-        : empty)(date)
+        : empty
+    )(date)
   },
 
   intervalWeekTimeFormat(date) {
-    return (timeSecond(date) < date
-      ? formatMillisecond
-      : timeMinute(date) < date
+    return (
+      timeSecond(date) < date
+        ? formatMillisecond
+        : timeMinute(date) < date
         ? formatSecond
         : timeHour(date) < date
-          ? formatMinute
-          : timeDay(date) < date
-            ? formatHour
-            : timeMonth(date) < date
-              ? timeWeek(date) < date
-                ? timeFormat('%e %b')
-                : timeFormat('%e %b')
-              : timeYear(date) < date
-                ? formatDay
-                : formatYear)(date)
+        ? formatMinute
+        : timeDay(date) < date
+        ? formatHour
+        : timeMonth(date) < date
+        ? timeWeek(date) < date
+          ? timeFormat('%e %b')
+          : timeFormat('%e %b')
+        : timeYear(date) < date
+        ? formatDay
+        : formatYear
+    )(date)
   },
 
   intervalWeekSecondaryTimeFormat(date) {
@@ -117,40 +127,44 @@ export default {
   },
 
   intervalMonthTimeFormat(date, showYear) {
-    return (timeSecond(date) < date
-      ? formatMillisecond
-      : timeMinute(date) < date
+    return (
+      timeSecond(date) < date
+        ? formatMillisecond
+        : timeMinute(date) < date
         ? formatSecond
         : timeHour(date) < date
-          ? formatMinute
-          : timeDay(date) < date
-            ? formatHour
-            : timeMonth(date) < date
-              ? timeWeek(date) < date
-                ? formatDay
-                : formatWeek
-              : timeYear(date) < date
-                ? showYear
-                  ? timeFormat('%b %Y')
-                  : timeFormat('%b')
-                : formatYear)(date)
+        ? formatMinute
+        : timeDay(date) < date
+        ? formatHour
+        : timeMonth(date) < date
+        ? timeWeek(date) < date
+          ? formatDay
+          : formatWeek
+        : timeYear(date) < date
+        ? showYear
+          ? timeFormat('%b %Y')
+          : timeFormat('%b')
+        : formatYear
+    )(date)
   },
 
   rangeAllIntervalMonthTimeFormat(date) {
-    return (timeSecond(date) < date
-      ? formatMillisecond
-      : timeMinute(date) < date
+    return (
+      timeSecond(date) < date
+        ? formatMillisecond
+        : timeMinute(date) < date
         ? formatSecond
         : timeHour(date) < date
-          ? formatMinute
-          : timeDay(date) < date
-            ? formatHour
-            : timeMonth(date) < date
-              ? timeWeek(date) < date
-                ? formatDay
-                : formatWeek
-              : timeYear(date) < date
-                ? timeFormat('%b')
-                : formatYear)(date)
+        ? formatMinute
+        : timeDay(date) < date
+        ? formatHour
+        : timeMonth(date) < date
+        ? timeWeek(date) < date
+          ? formatDay
+          : formatWeek
+        : timeYear(date) < date
+        ? timeFormat('%b')
+        : formatYear
+    )(date)
   }
 }

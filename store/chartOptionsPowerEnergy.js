@@ -23,34 +23,34 @@ export const state = () => ({
 })
 
 export const getters = {
-  chartShown: state => state.chartType !== OPTIONS.CHART_HIDDEN,
-  chartDefaultType: state => state.chartDefaultType,
-  chartType: state => state.chartType,
+  chartShown: (state) => state.chartType !== OPTIONS.CHART_HIDDEN,
+  chartDefaultType: (state) => state.chartDefaultType,
+  chartType: (state) => state.chartType,
 
-  chartEnergyYAxis: state => state.chartEnergyYAxis,
-  chartEnergyCurve: state => state.chartEnergyCurve,
-  chartEnergyUnit: state => state.chartEnergyUnit,
-  chartEnergyUnitPrefix: state => state.chartEnergyUnitPrefix,
-  chartEnergyDisplayPrefix: state => state.chartEnergyDisplayPrefix,
-  chartEnergyCurrentUnit: state =>
+  chartEnergyYAxis: (state) => state.chartEnergyYAxis,
+  chartEnergyCurve: (state) => state.chartEnergyCurve,
+  chartEnergyUnit: (state) => state.chartEnergyUnit,
+  chartEnergyUnitPrefix: (state) => state.chartEnergyUnitPrefix,
+  chartEnergyDisplayPrefix: (state) => state.chartEnergyDisplayPrefix,
+  chartEnergyCurrentUnit: (state) =>
     `${state.chartEnergyDisplayPrefix}${state.chartEnergyUnit}`,
 
-  chartPowerYAxis: state => state.chartPowerYAxis,
-  chartPowerCurve: state => state.chartPowerCurve,
-  chartPowerUnit: state => state.chartPowerUnit,
-  chartPowerUnitPrefix: state => state.chartPowerUnitPrefix,
-  chartPowerDisplayPrefix: state => state.chartPowerDisplayPrefix,
-  chartPowerCurrentUnit: state =>
+  chartPowerYAxis: (state) => state.chartPowerYAxis,
+  chartPowerCurve: (state) => state.chartPowerCurve,
+  chartPowerUnit: (state) => state.chartPowerUnit,
+  chartPowerUnitPrefix: (state) => state.chartPowerUnitPrefix,
+  chartPowerDisplayPrefix: (state) => state.chartPowerDisplayPrefix,
+  chartPowerCurrentUnit: (state) =>
     `${state.chartPowerDisplayPrefix}${state.chartPowerUnit}`,
 
-  chartEnergyRenewablesLine: state => state.chartEnergyRenewablesLine,
+  chartEnergyRenewablesLine: (state) => state.chartEnergyRenewablesLine,
 
-  displayUnit: state => state.displayUnit,
+  displayUnit: (state) => state.displayUnit,
 
-  isTypeArea: state => state.chartType === OPTIONS.CHART_STACKED,
-  isTypeProportion: state => state.chartType === OPTIONS.CHART_PROPORTION,
-  isTypeLine: state => state.chartType === OPTIONS.CHART_LINE,
-  isTypeChangeSinceLine: state =>
+  isTypeArea: (state) => state.chartType === OPTIONS.CHART_STACKED,
+  isTypeProportion: (state) => state.chartType === OPTIONS.CHART_PROPORTION,
+  isTypeLine: (state) => state.chartType === OPTIONS.CHART_LINE,
+  isTypeChangeSinceLine: (state) =>
     state.chartType === OPTIONS.CHART_CHANGE_SINCE_LINE
 }
 

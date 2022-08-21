@@ -65,7 +65,8 @@
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
-      @svgClick="handleSvgClick" />
+      @svgClick="handleSvgClick"
+    />
 
     <price-chart
       v-if="ready && !isEnergyType && domainPrice.length > 0"
@@ -80,7 +81,8 @@
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
-      @svgClick="handleSvgClick" />
+      @svgClick="handleSvgClick"
+    />
     <price-chart
       v-if="ready && isEnergyType && domainDemandPrice.length > 0"
       :price-dataset="currentDataset"
@@ -95,7 +97,8 @@
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
-      @svgClick="handleSvgClick" />
+      @svgClick="handleSvgClick"
+    />
 
     <temperature-chart
       v-if="ready && domainTemperature.length > 0"
@@ -106,8 +109,8 @@
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
-      @svgClick="handleSvgClick" />
-
+      @svgClick="handleSvgClick"
+    />
   </section>
 </template>
 
@@ -287,7 +290,7 @@ export default {
       this.setFocusDate(null)
     },
     getDataByTime(dataset, time) {
-      return dataset.find(d => d.time === time)
+      return dataset.find((d) => d.time === time)
     },
     updateFilteredDates(filteredDates) {
       this.zoomExtent = filteredDates
@@ -338,7 +341,7 @@ export default {
           let compareDates = this.compareDates.slice()
 
           if (compareDates.length === 2) {
-            const newCompareDates = compareDates.filter(d => d !== hoverTime)
+            const newCompareDates = compareDates.filter((d) => d !== hoverTime)
             if (newCompareDates.length === 1) {
               compareDates = newCompareDates
               newCompare = true
@@ -347,7 +350,7 @@ export default {
             }
           }
           if (compareDates.length < 2 && !newCompare) {
-            const newCompareDates = compareDates.filter(d => d !== hoverTime)
+            const newCompareDates = compareDates.filter((d) => d !== hoverTime)
             if (newCompareDates.length === 0) {
               compareDates = newCompareDates
             } else {

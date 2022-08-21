@@ -172,7 +172,7 @@ FUEL_TECH_LABEL[SOLAR_UTILITY] = 'Solar (Utility)'
 FUEL_TECH_LABEL[SOLAR_ROOFTOP] = 'Solar (Rooftop)'
 
 export function getFuelTechObjs(fuelTechs, type) {
-  return Object.keys(fuelTechs).map(ft => {
+  return Object.keys(fuelTechs).map((ft) => {
     return {
       id: fuelTechs[ft],
       domain: fuelTechs[ft],

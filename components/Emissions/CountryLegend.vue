@@ -1,16 +1,18 @@
 <template>
   <div class="country-legend">
     <div class="twitter-hashtag-button-wrapper">
-      <a 
+      <a
         :data-url="href"
-        href="https://twitter.com/intent/tweet?ref_src=twsrc%5Etfw" 
-        class="twitter-hashtag-button" 
-        data-size="large" 
-        data-text="How they compare" 
-        data-related="Opennem" 
-        data-show-count="false">Tweet #opennem</a>
+        href="https://twitter.com/intent/tweet?ref_src=twsrc%5Etfw"
+        class="twitter-hashtag-button"
+        data-size="large"
+        data-text="How they compare"
+        data-related="Opennem"
+        data-show-count="false"
+      >Tweet #opennem</a
+      >
     </div>
-    
+
     <div 
       v-on-clickaway="onClickAway" 
       v-show="showAddArea" 
@@ -18,30 +20,35 @@
       <label>Countries/areas</label>
       <input
         v-model="query"
-        class="input" 
+        class="input"
         type="text"
         placeholder="Type to filter countries"
-        @focus="() => showList = true">
-      
+        @focus="() => (showList = true)"
+      >
+
       <div 
-        v-show="showList"
+        v-show="showList" 
         class="area-code-list">
         <ol>
           <li 
             v-for="a in filteredAreaCodes" 
             :key="a.code">
-            <button 
-              @click="() => handleCodeClick(a.code)" 
-              @keyup="(evt) => handleKeyup(evt, a.code)">
+            <button
+              @click="() => handleCodeClick(a.code)"
+              @keyup="(evt) => handleKeyup(evt, a.code)"
+            >
               {{ a.area }}
             </button>
           </li>
         </ol>
       </div>
-      <button 
-        v-show="showList" 
+      <button
+        v-show="showList"
         class="close-list-btn button is-primary"
-        @click="() => showList = false">Close</button>
+        @click="() => (showList = false)"
+      >
+        Close
+      </button>
     </div>
 
     <ul>
@@ -55,17 +62,19 @@
         @mouseenter="onMouseEnter(d.id)"
         @mouseleave="onMouseLeave"
         @click.exact="handleRowClick(d.id)"
-        @click.shift.exact="handleRowShiftClick(d.id)">
-        <div
-          :style="{ backgroundColor: d.colour}"
+        @click.shift.exact="handleRowShiftClick(d.id)"
+      >
+        <div 
+          :style="{ backgroundColor: d.colour }" 
           class="colour-square" />
         <span class="country-label">{{ d.label }}</span>
 
         <button
           v-show="domains.length > 1"
-          class="remove-btn" 
-          @click.stop="() => handleRemoveRow(d.id)">
-          <i class="fal fa-times"/>
+          class="remove-btn"
+          @click.stop="() => handleRemoveRow(d.id)"
+        >
+          <i class="fal fa-times" />
         </button>
       </li>
     </ul>
@@ -73,8 +82,6 @@
     <!-- <button 
       class="button is-small is-primary" 
       @click="() => showAddArea = true">Add more</button> -->
-
-    
   </div>
 </template>
 
@@ -112,8 +119,8 @@ export default {
 
   computed: {
     filteredAreaCodes() {
-      const domains = this.domains.map(d => d.id)
-      return this.areaCodes.filter(a => {
+      const domains = this.domains.map((d) => d.id)
+      return this.areaCodes.filter((a) => {
         return (
           !_includes(domains, a.code) &&
           a.area.toLowerCase().indexOf(this.query.toLowerCase().trim()) !== -1

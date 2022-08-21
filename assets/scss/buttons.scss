@@ -1,8 +1,7 @@
-$button-background: hsla(0, 0%, 100%, .5);
-$button-hover-background: hsla(0, 0%, 100%, .9);
+$button-background: hsla(0, 0%, 100%, 0.5);
+$button-hover-background: hsla(0, 0%, 100%, 0.9);
 
 .buttons {
-
   &:not(:last-child),
   &:last-child,
   .button {

@@ -12,26 +12,26 @@
     />
 
     <transition name="fade">
-      <div
-        v-if="!ready"
+      <div 
+        v-if="!ready" 
         class="facility-list-map-container loading-containers">
         <div class="facility-list">
-          <div
-            class="loader-block"
+          <div 
+            class="loader-block" 
             style="height: 400px" />
         </div>
-        <div
-          class="facility-map"
-          style="margin-top: 127px;">
-          <div
-            class="loader-block"
+        <div 
+          class="facility-map" 
+          style="margin-top: 127px">
+          <div 
+            class="loader-block" 
             style="height: 400px" />
         </div>
       </div>
     </transition>
 
-    <div
-      v-if="ready"
+    <div 
+      v-if="ready" 
       class="facility-list-map-container">
       <facility-list
         v-if="!tabletBreak || (tabletBreak && selectedView === 'list')"
@@ -57,7 +57,8 @@
         :selected="selectedFacility"
         class="facility-map"
         @facilitySelect="handleMapFacilitySelect"
-        @facilityOpen="handleMapFacilityOpen"/>
+        @facilityOpen="handleMapFacilityOpen"
+      />
 
       <transition name="slide-up-fade">
         <facility-card
@@ -214,21 +215,21 @@ export default {
       const techs = this.$route.query.tech
         ? this.$route.query.tech.split(',')
         : []
-      return techs.filter(t => FUEL_TECHS.isValidFuelTech(t))
+      return techs.filter((t) => FUEL_TECHS.isValidFuelTech(t))
     },
 
     queryStatus() {
       const statuses = this.$route.query.status
         ? this.$route.query.status.split(',')
         : []
-      return statuses.filter(t => isValidFacilityStatus(t))
+      return statuses.filter((t) => isValidFacilityStatus(t))
     },
 
     querySize() {
       const sizes = this.$route.query.size
         ? this.$route.query.size.split(',')
         : []
-      return sizes.filter(t => isValidFacilitySize(t))
+      return sizes.filter((t) => isValidFacilitySize(t))
     },
 
     facilitySortBy() {
@@ -312,10 +313,10 @@ export default {
 
       if (urls.length > 0) {
         Http(urls)
-          .then(responses => {
+          .then((responses) => {
             this.handleResponses(responses)
           })
-          .catch(e => {
+          .catch((e) => {
             console.error(e)
           })
       } else {
@@ -325,7 +326,7 @@ export default {
 
     handleResponses(responses) {
       if (responses.length > 0 && responses[0].features) {
-        FacilityDataParse.flattenV3(responses[0].features).then(res => {
+        FacilityDataParse.flattenV3(responses[0].features).then((res) => {
           this.facilityData = res
           this.ready = true
           this.$store.dispatch('facility/dataset', res)
@@ -339,7 +340,7 @@ export default {
       let selectedFt = null,
         count = 0
 
-      this.selectedTechs.forEach(tech => {
+      this.selectedTechs.forEach((tech) => {
         if (_includes(facility.fuelTechs, tech)) {
           selectedFt = tech
           count += 1
@@ -352,7 +353,7 @@ export default {
       ) {
         const ftCaps = facility.fuelTechRegisteredCap
         let highest = 0
-        Object.keys(ftCaps).forEach(d => {
+        Object.keys(ftCaps).forEach((d) => {
           if (
             FUEL_TECHS.FUEL_TECH_CATEGORY[d] === FUEL_TECHS.SOURCE &&
             ftCaps[d] >= highest
@@ -371,7 +372,7 @@ export default {
       const sortedData = _orderBy(
         this.facilityData,
         [
-          d => {
+          (d) => {
             if (this.selectedTechs.length === 0) {
               return d[this.sortBy]
             }
@@ -379,7 +380,7 @@ export default {
               return d[this.sortBy]
             }
             let totals = 0
-            this.selectedTechs.forEach(ft => {
+            this.selectedTechs.forEach((ft) => {
               totals += d.fuelTechRegisteredCap[ft] || 0
             })
             return totals
@@ -388,13 +389,13 @@ export default {
         [this.orderBy]
       )
 
-      const filtered = sortedData.filter(d => {
+      const filtered = sortedData.filter((d) => {
         if (this.selectedSizes.length === 0) {
           return true
         }
 
         let check = false
-        this.selectedSizes.forEach(s => {
+        this.selectedSizes.forEach((s) => {
           if (FACILITY_SIZE[s](d.generatorCap)) {
             check = true
           }
@@ -413,7 +414,7 @@ export default {
 
       async function updateFilter() {
         return filtered.filter(
-          g =>
+          (g) =>
             g.displayName
               .toLowerCase()
               .includes(that.filterString.toLowerCase()) &&
@@ -421,27 +422,27 @@ export default {
               (regionIds.length > 0 &&
                 _includes(regionIds, g.regionId.toLowerCase()))) &&
             (that.selectedStatuses.length <= 0 ||
-              g.unitStatuses.some(r => that.selectedStatuses.includes(r))) &&
+              g.unitStatuses.some((r) => that.selectedStatuses.includes(r))) &&
             (that.selectedTechs.length <= 0 ||
-              g.fuelTechs.some(r => that.selectedTechs.includes(r)))
+              g.fuelTechs.some((r) => that.selectedTechs.includes(r)))
         )
       }
 
-      updateFilter().then(facilities => {
+      updateFilter().then((facilities) => {
         that.filteredFacilities = _cloneDeep(facilities)
         that.totalFacilities = facilities.length
-        that.filteredFacilities.forEach(f => {
+        that.filteredFacilities.forEach((f) => {
           f.colour = that.getColour(f)
         })
 
-        const exportData = facilities.map(d => {
+        const exportData = facilities.map((d) => {
           // eslint-disable-line
-          const region = FacilityRegions.find(r => r.id === d.regionId)
+          const region = FacilityRegions.find((r) => r.id === d.regionId)
           return {
             'Facility Name': d.displayName,
             Status: d.status,
             Region: region ? region.label : '',
-            Technology: d.fuelTechs.map(ft => FUEL_TECHS.FUEL_TECH_LABEL[ft]),
+            Technology: d.fuelTechs.map((ft) => FUEL_TECHS.FUEL_TECH_LABEL[ft]),
             'Generator Capacity (MW)': d.generatorCap,
             Latitude: d.location.latitude,
             Longitude: d.location.longitude
@@ -476,7 +477,7 @@ export default {
       this.$store.dispatch('facility/orderBy', this.orderBy)
     },
     handleMapFacilitySelect(facilityId) {
-      const find = this.facilityData.find(f => f.facilityId === facilityId)
+      const find = this.facilityData.find((f) => f.facilityId === facilityId)
       this.handleFacilitySelect(find, false)
     },
     handleFacilitySelect(facility, shouldZoom) {
@@ -492,7 +493,7 @@ export default {
       this.hoveredFacility = null
     },
     getQuery(selectedFacility, techs, statuses, sizes) {
-      const join = arr => (arr.length > 0 ? arr.join(',') : '')
+      const join = (arr) => (arr.length > 0 ? arr.join(',') : '')
       const query = {}
 
       if (selectedFacility) {
@@ -543,7 +544,7 @@ export default {
       this.selectedFacility = null
     },
     handleMapFacilityOpen(facilityId) {
-      const find = this.facilityData.find(f => f.facilityId === facilityId)
+      const find = this.facilityData.find((f) => f.facilityId === facilityId)
       this.handleOpenFacilityView(find)
     },
     handleOpenFacilityView(facility) {

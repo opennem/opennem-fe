@@ -1,6 +1,6 @@
 import { getStartEndNumInterval, incrementTime } from '@/services/DataCheck.js'
 
-export default function(data, displayTz) {
+export default function (data, displayTz) {
   if (data.length <= 0 || (data.length > 0 && !data[0].history)) {
     return []
   }

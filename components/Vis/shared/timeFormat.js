@@ -25,21 +25,23 @@ const formatMillisecond = utcFormat('.%L'),
   formatMonth = utcFormat('%b %y'),
   formatYear = utcFormat('%Y')
 
-export default function(d) {
+export default function (d) {
   const date = d
-  return (utcSecond(date) < date
-    ? formatMillisecond
-    : utcMinute(date) < date
+  return (
+    utcSecond(date) < date
+      ? formatMillisecond
+      : utcMinute(date) < date
       ? formatSecond
       : utcHour(date) < date
-        ? formatMinute
-        : utcDay(date) < date
-          ? formatHour
-          : utcMonth(date) < date
-            ? utcWeek(date) < date
-              ? formatDay
-              : formatWeek
-            : utcYear(date) < date
-              ? formatMonth
-              : formatYear)(date)
+      ? formatMinute
+      : utcDay(date) < date
+      ? formatHour
+      : utcMonth(date) < date
+      ? utcWeek(date) < date
+        ? formatDay
+        : formatWeek
+      : utcYear(date) < date
+      ? formatMonth
+      : formatYear
+  )(date)
 }

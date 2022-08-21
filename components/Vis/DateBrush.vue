@@ -1,23 +1,23 @@
 <template>
   <div class="vis brush-vis">
-    <svg
-      :width="svgWidth"
-      :height="svgHeight"
+    <svg 
+      :width="svgWidth" 
+      :height="svgHeight" 
       :id="id">
       <defs>
         <!-- where to clip -->
         <clipPath :id="`${id}-clip`">
-          <rect
-            :width="width"
-            :height="height"/>
+          <rect 
+            :width="width" 
+            :height="height" />
         </clipPath>
       </defs>
-      <g
-        :transform="axisTransform"
+      <g 
+        :transform="axisTransform" 
         class="x-axis" />
-      <g
-        v-if="!readOnly"
-        :transform="brushTransform"
+      <g 
+        v-if="!readOnly" 
+        :transform="brushTransform" 
         class="brush-group" />
     </svg>
   </div>
@@ -96,7 +96,7 @@ export default {
       return `translate(${this.margin.left}, 0)`
     },
     xExtent() {
-      return extent(this.updatedDataset, d => new Date(d.date))
+      return extent(this.updatedDataset, (d) => new Date(d.date))
     },
     updatedDataset() {
       if (this.dataset.length > 0) {
@@ -112,7 +112,7 @@ export default {
       return []
     },
     datasetDateExtent() {
-      return extent(this.updatedDataset, d => new Date(d.date))
+      return extent(this.updatedDataset, (d) => new Date(d.date))
     }
   },
   watch: {
@@ -159,7 +159,10 @@ export default {
       this.x.range([0, this.width])
       this.xAxis.tickSize(this.height)
       this.$xAxisGroup.call(this.drawXAxis)
-      this.brushX.extent([[0, 0], [this.width, this.svgHeight]])
+      this.brushX.extent([
+        [0, 0],
+        [this.width, this.svgHeight]
+      ])
       this.$brushGroup.call(this.brushX)
     },
 
@@ -180,9 +183,7 @@ export default {
       this.$xAxisGroup = $svg.select('.x-axis')
 
       // Define scales
-      this.x = scaleTime()
-        .range([0, this.width])
-        .nice()
+      this.x = scaleTime().range([0, this.width]).nice()
 
       // Axis
       this.xAxis = axisBottom(this.x)
@@ -192,14 +193,17 @@ export default {
 
       // Brush
       this.brushX = brushX()
-        .extent([[0, 0], [this.width, this.svgHeight]])
+        .extent([
+          [0, 0],
+          [this.width, this.svgHeight]
+        ])
         .on('end', this.brushEnded)
 
       this.$brushGroup = $svg.select('.brush-group')
       this.$brushGroup.call(this.brushX)
 
       // Events
-      this.$brushGroup.on('touchmove mousemove', function() {
+      this.$brushGroup.on('touchmove mousemove', function () {
         const date = self.getXAxisDateByMouse(this)
         self.$emit('date-hover', this, date)
       })
@@ -210,7 +214,7 @@ export default {
         this.handleSvgLeave()
       })
 
-      this.brushX.on('brush', function() {
+      this.brushX.on('brush', function () {
         if (!event.selection) return
         if (event.sourceEvent.type === 'brush') return
 
@@ -254,7 +258,7 @@ export default {
         .style('-webkit-clip-path', this.clipPathUrl)
       g.call(this.xAxis)
       g.selectAll('.x-axis .tick line').attr('y2', this.svgHeight)
-      g.selectAll('.x-axis .tick text').each(function(d, i) {
+      g.selectAll('.x-axis .tick text').each(function (d, i) {
         const el = select(this)
         const text2 = self.secondTickFormat(d)
         el.attr('x', 2)

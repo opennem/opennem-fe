@@ -27,17 +27,17 @@
             highlight: rowIndex === rowHighlightIndex
           }"
         >
-          <td
-            v-if="showRowNum"
-            class="num-col"
-          >{{ rowIndex + 1 }}</td>
+          <td 
+            v-if="showRowNum" 
+            class="num-col">{{ rowIndex + 1 }}</td>
           <td
             v-for="(col, colIndex) in columns"
             :key="`column-${rowIndex}-${colIndex}`"
             :class="{
               'has-text-left': col.textAlign === 'left',
               highlight: colIndex === colHighlightIndex,
-              focus: colIndex === colHighlightIndex && rowIndex === rowHighlightIndex
+              focus:
+                colIndex === colHighlightIndex && rowIndex === rowHighlightIndex
             }"
             @click="handleCellClick(col, colIndex, row, rowIndex)"
           >

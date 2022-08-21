@@ -4,7 +4,7 @@ import endOfMonth from 'date-fns/endOfMonth'
 import isAfter from 'date-fns/isAfter'
 import isBefore from 'date-fns/isBefore'
 
-export default function(domains, data, rollUp) {
+export default function (domains, data, rollUp) {
   let isIncompleteEnd = false,
     isIncompleteStart = false,
     incompleteStartDate = null,

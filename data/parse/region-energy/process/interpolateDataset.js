@@ -3,10 +3,10 @@ import * as DT from '@/constants/data-types.js'
 
 function findInterpolateSeriesTypes(data) {
   const rooftopSolarItem = data.find(
-    d =>
+    (d) =>
       d['fuel_tech'] === FT.ROOFTOP_SOLAR || d['fuel_tech'] === FT.SOLAR_ROOFTOP
   )
-  const temperatureItem = data.find(d => DT.isTemperature(d.type))
+  const temperatureItem = data.find((d) => DT.isTemperature(d.type))
   const interpolateSeriesTypes = []
   if (rooftopSolarItem) {
     interpolateSeriesTypes.push({
@@ -28,12 +28,12 @@ function findInterpolateSeriesTypes(data) {
   return interpolateSeriesTypes
 }
 
-export default function(dataAll, datasetAll) {
+export default function (dataAll, datasetAll) {
   const forInterpolate = findInterpolateSeriesTypes(dataAll)
 
   if (forInterpolate.length > 0) {
     datasetAll.forEach((d, i) => {
-      forInterpolate.forEach(type => {
+      forInterpolate.forEach((type) => {
         if (d[type.key] !== null && typeof d[type.key] !== 'undefined') {
           if (type.interpolation === 'linear') {
             if (type.startIndex === -1) {

@@ -65,7 +65,7 @@ export function isValidFilterQuery(filter) {
 }
 
 export function getFilterQueryByFilter(filter) {
-  const find = filterQueries.find(d => FILTER_QUERIES[d] === filter)
+  const find = filterQueries.find((d) => FILTER_QUERIES[d] === filter)
   return find && find !== FILTER_QUERY_NONE ? find : null
 }
 

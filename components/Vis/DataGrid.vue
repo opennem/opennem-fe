@@ -17,17 +17,20 @@
       </thead>
 
       <tbody>
-        <tr
-          v-for="(row, rowIndex) in rows"
-          :key="`row-${rowIndex}`"
-        >
+        <tr 
+          v-for="(row, rowIndex) in rows" 
+          :key="`row-${rowIndex}`">
           <td>{{ rowIndex + 1 }}</td>
           <td
             v-for="(col, colIndex) in columns"
             :key="`column-${rowIndex}-${colIndex}`"
           >
-            <span v-if="col.type === 'date'">{{ dateFormat(row[col.field]) }}</span>
-            <span v-else>{{ valueFormat(row[col.field], col.formatString) }}</span>
+            <span v-if="col.type === 'date'">{{
+              dateFormat(row[col.field])
+            }}</span>
+            <span v-else>{{
+              valueFormat(row[col.field], col.formatString)
+            }}</span>
           </td>
         </tr>
       </tbody>
@@ -68,5 +71,4 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

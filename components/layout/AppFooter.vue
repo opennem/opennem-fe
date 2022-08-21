@@ -2,43 +2,48 @@
   <footer class="">
     <div class="left">
       <div class="version">
-        <span
-          v-if="isDev"
+        <span 
+          v-if="isDev" 
           class="tag">DEV</span>
         <strong>v{{ version }}</strong>
       </div>
-        
+
       <div class="version">
         <a
           v-tooltip="'OpenNEM status page'"
           rel="external"
           class="icon-link"
           target="_blank"
-          href="https://status.opennem.org.au/">
-          <i class="fal fa-fw fa-clipboard-list-check"/>
+          href="https://status.opennem.org.au/"
+        >
+          <i class="fal fa-fw fa-clipboard-list-check" />
         </a>
         <a
           v-tooltip="'Developer documentation'"
           rel="external"
           class="icon-link"
           target="_blank"
-          href="https://developers.opennem.org.au/">
-          <i class="fal fa-fw fa-book"/>
+          href="https://developers.opennem.org.au/"
+        >
+          <i class="fal fa-fw fa-book" />
         </a>
-        <strong v-show="hasAPIversion && !isEmissionsAuRegion">API: {{ apiVersion }}</strong>
+        <strong 
+          v-show="hasAPIversion && !isEmissionsAuRegion"
+        >API: {{ apiVersion }}</strong
+        >
       </div>
 
       <div 
         v-show="isEmissionsAuRegion" 
         class="sources">
-
         Source:
 
-        <a 
-          :href="footerSourceUrl" 
-          :title="`Link to ${footerSourceLabel}`" 
-          target="_blank">{{ footerSourceLabel }}</a>
-       
+        <a
+          :href="footerSourceUrl"
+          :title="`Link to ${footerSourceLabel}`"
+          target="_blank"
+        >{{ footerSourceLabel }}</a
+        >
       </div>
 
       <div 
@@ -47,39 +52,46 @@
         <a
           target="_blank"
           href="https://doi.org/10.5281/zenodo.5494497"
-          title="Link to dataset used by this visualisation">PRIMAP-hist (HISTCR; Kyoto GHG (AR4); Total excl. Landuse)</a>,
+          title="Link to dataset used by this visualisation"
+        >PRIMAP-hist (HISTCR; Kyoto GHG (AR4); Total excl. Landuse)</a
+        >,
       </div>
-        
-      <div 
-        v-show="!isEmissionsAuRegion && !isEmissionsWorldRegion" 
-        class="sources">
+
+      <div
+        v-show="!isEmissionsAuRegion && !isEmissionsWorldRegion"
+        class="sources"
+      >
         Sources:
-        <a
-          rel="external"
-          href="https://www.aemo.com.au/"
-          title="Link to AEMO">AEMO</a>,
-        <a
-          rel="external"
-          href="http://apvi.org.au/"
-          title="Link to APVI">APVI</a>,
-        <a
-          rel="external"
-          href="http://www.bom.gov.au/"
-          title="Link to BoM">BoM</a>
+        <a 
+          rel="external" 
+          href="https://www.aemo.com.au/" 
+          title="Link to AEMO"
+        >AEMO</a
+        >,
+        <a 
+          rel="external" 
+          href="http://apvi.org.au/" 
+          title="Link to APVI"
+        >APVI</a
+        >,
+        <a 
+          rel="external" 
+          href="http://www.bom.gov.au/" 
+          title="Link to BoM"
+        >BoM</a
+        >
       </div>
-        
     </div>
 
     <div class="right">
-
       <!-- :style="{ right: `${featureRightPos}px`, bottom: `${featrueBottomPos}px` }" -->
 
       <transition name="slide-up-fade">
         <FeatureToggle
           v-if="showFeatureToggle"
-
           class="features"
-          @done="setShowFeatureToggle(false)" />
+          @done="setShowFeatureToggle(false)"
+        />
       </transition>
 
       <a
@@ -87,7 +99,8 @@
         ref="featureElement"
         class="icon-link"
         target="_blank"
-        @click.stop="handleFeatureToggleClick">
+        @click.stop="handleFeatureToggleClick"
+      >
         <i class="fal fa-fw fa-vial" />
       </a>
 
@@ -96,7 +109,8 @@
         rel="external"
         class="icon-link"
         target="_blank"
-        href="https://twitter.com/opennem">
+        href="https://twitter.com/opennem"
+      >
         <i class="fab fa-fw fa-twitter" />
       </a>
       <a
@@ -104,11 +118,12 @@
         rel="external"
         class="icon-link"
         target="_blank"
-        href="https://github.com/opennem">
+        href="https://github.com/opennem"
+      >
         <i class="fab fa-fw fa-github" />
       </a>
-      <nuxt-link
-        to="/about/"
+      <nuxt-link 
+        to="/about/" 
         class="about-link">About OpenNEM</nuxt-link>
     </div>
   </footer>

@@ -4,7 +4,7 @@
       <div class="info-button-col col-header" />
 
       <div
-        :style="{ width: hideRegionColumn ? '60%' : '50%'}"
+        :style="{ width: hideRegionColumn ? '60%' : '50%' }"
         class="name-col col-header"
         @click="sort('displayName')"
       >
@@ -12,46 +12,44 @@
         <i
           v-if="sortBy === 'displayName'"
           :class="getColumnIcon('displayName')"
-          class="fal" />
+          class="fal"
+        />
       </div>
 
-      <div
-        v-show="!hideRegionColumn"
-        class="region-col col-header"
-      >
+      <div 
+        v-show="!hideRegionColumn" 
+        class="region-col col-header">
         <span @click="sort('regionId')">
           Region
           <i
             v-if="sortBy === 'regionId'"
             :class="getColumnIcon('regionId')"
-            class="fal" />
+            class="fal"
+          />
         </span>
       </div>
 
-      <div
-        class="tech-col col-header"
-      >
+      <div class="tech-col col-header">
         <span @click="sort('fuelTechs')">
           {{ techHeaderName }}
           <i
             v-if="sortBy === 'fuelTechs'"
             :class="getColumnIcon('fuelTechs')"
-            class="fal" />
+            class="fal"
+          />
         </span>
       </div>
 
-      <div
-        class="cap-col col-header"
-        @click="sort('generatorCap')"
-      >
+      <div 
+        class="cap-col col-header" 
+        @click="sort('generatorCap')">
         Gen. Capacity
         <i
           v-if="sortBy === 'generatorCap'"
           :class="getColumnIcon('generatorCap')"
-          class="fal" />
+          class="fal"
+        />
       </div>
-
-      
     </div>
 
     <div
@@ -63,14 +61,21 @@
         'is-inactive': !active(facility.status)
       }"
       class="card"
-      @mouseover="isTouchDevice ? handleRowClick(facility) : handleRowHover(facility)"
+      @mouseover="
+        isTouchDevice ? handleRowClick(facility) : handleRowHover(facility)
+      "
       @mouseout="handleRowOut"
-      @click="isTouchDevice ? handleRowDoubleClick(facility) : handleRowClick(facility)"
+      @click="
+        isTouchDevice
+          ? handleRowDoubleClick(facility)
+          : handleRowClick(facility)
+      "
       @dblclick="handleRowDoubleClick(facility)"
     >
       <div
         class="bar-left"
-        style="display: flex; position: absolute; left: 0; height: 100%;">
+        style="display: flex; position: absolute; left: 0; height: 100%"
+      >
         <span
           v-for="(ft, ftIndex) in facility.fuelTechs"
           :key="ftIndex"
@@ -80,7 +85,8 @@
             backgroundSize: '5px 5px',
             opacity: getOpacity(ft)
           }"
-          class="source-colour-side" />
+          class="source-colour-side"
+        />
       </div>
 
       <div class="facility-detail">
@@ -88,35 +94,39 @@
           <a
             v-tooltip="'View facility info'"
             class="facility-info-link"
-            @click="handleRowDoubleClick(facility)">
-            <i class="fal fa-external-link-square"/>
+            @click="handleRowDoubleClick(facility)"
+          >
+            <i class="fal fa-external-link-square" />
           </a>
         </div>
 
         <div
-          :style="{ width: hideRegionColumn ? '60%' : '50%'}"
-          class="name-col">
-
+          :style="{ width: hideRegionColumn ? '60%' : '50%' }"
+          class="name-col"
+        >
           <h2 class="station-name">
             {{ facility.displayName }}
           </h2>
           <span
             v-if="!facility.hasLocation"
-            class="has-location-icon fa-stack fa-1x">
-            <i class="fal fa-map-marker-alt fa-stack-1x"/>
+            class="has-location-icon fa-stack fa-1x"
+          >
+            <i class="fal fa-map-marker-alt fa-stack-1x" />
             <i class="fal fa-ban fa-stack-2x" />
-          </span>          
+          </span>
         </div>
 
-        <div
-          v-show="!hideRegionColumn"
+        <div 
+          v-show="!hideRegionColumn" 
           class="region-col">
-          <small style="color: #666;">{{ getRegionLabel(facility.regionId) }}</small>
+          <small style="color: #666">{{
+            getRegionLabel(facility.regionId)
+          }}</small>
         </div>
 
         <div class="tech-col stat">
-          <div
-            v-if="facility.genFuelTechs.length"
+          <div 
+            v-if="facility.genFuelTechs.length" 
             class="stat-value">
             <span
               v-for="(ft, genFtIndex) in facility.genFuelTechs"
@@ -125,13 +135,18 @@
             >
               {{ getFtLabel(ft) }}
               <small v-if="facility.genFuelTechs.length > 1">
-                ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span><span v-else>MW</span>)
+                ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber
+                }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span
+                ><span v-else>MW</span>)
               </small>
-              <span v-if="genFtIndex !== facility.genFuelTechs.length - 1"><br></span>
+              <span 
+                v-if="genFtIndex !== facility.genFuelTechs.length - 1"
+              ><br
+              ></span>
             </span>
           </div>
-          <div
-            v-if="facility.loadFuelTechs.length"
+          <div 
+            v-if="facility.loadFuelTechs.length" 
             class="stat-value">
             <em
               v-for="(ft, loadFtIndex) in facility.loadFuelTechs"
@@ -139,15 +154,22 @@
               :style="{ opacity: getOpacity(ft) }"
             >
               {{ getFtLabel(ft) }}
-              <small>({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span><span v-else>MW</span>)</small>
-              <span v-if="loadFtIndex !== facility.loadFuelTechs.length - 1"><br></span>
+              <small
+              >({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber
+              }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span
+              ><span v-else>MW</span>)</small
+              >
+              <span 
+                v-if="loadFtIndex !== facility.loadFuelTechs.length - 1"
+              ><br
+              ></span>
             </em>
           </div>
         </div>
 
         <div class="cap-col stat">
-          <div
-            v-show="facility.generatorCap"
+          <div 
+            v-show="facility.generatorCap" 
             class="stat-value has-text-right">
             <span
               v-tooltip.auto="{
@@ -155,18 +177,31 @@
                 trigger: tabletBreak ? 'click' : 'hover'
               }"
               v-if="hasHiddenCapacity(facility)"
-              class="has-hidden-capacity"><i class="fal fa-info-circle"/></span>
+              class="has-hidden-capacity"
+            ><i 
+              class="fal fa-info-circle"
+            /></span>
             {{ getGeneratorCap(facility) | facilityFormatNumber }}
             <span
-              v-if="getGeneratorCap(facility) !== 0 && getGeneratorCap(facility) < 1"
-              class="unit">kW</span>
+              v-if="
+                getGeneratorCap(facility) !== 0 && getGeneratorCap(facility) < 1
+              "
+              class="unit"
+            >kW</span
+            >
             <span
-              v-if="getGeneratorCap(facility) !== 0 && getGeneratorCap(facility) >= 1"
-              class="unit">MW</span>
+              v-if="
+                getGeneratorCap(facility) !== 0 &&
+                  getGeneratorCap(facility) >= 1
+              "
+              class="unit"
+            >MW</span
+            >
           </div>
           <div
             v-show="!facility.generatorCap"
-            class="stat-value has-text-right">
+            class="stat-value has-text-right"
+          >
             –
           </div>
         </div>
@@ -286,11 +321,11 @@ export default {
     },
     totalCap() {
       let total = 0
-      this.filteredFacilities.forEach(facility => {
+      this.filteredFacilities.forEach((facility) => {
         if (this.selectedTechs.length === 0) {
           total += facility.generatorCap
         } else {
-          this.selectedTechs.forEach(ft => {
+          this.selectedTechs.forEach((ft) => {
             if (facility.fuelTechRegisteredCap[ft]) {
               total += facility.fuelTechRegisteredCap[ft]
             }
@@ -325,7 +360,7 @@ export default {
 
       if (this.queryFacilityId) {
         const find = this.filteredFacilities.find(
-          f => f.facilityId === this.queryFacilityId
+          (f) => f.facilityId === this.queryFacilityId
         )
         if (find) {
           this.handleRowClick(find)
@@ -371,7 +406,7 @@ export default {
         : null
       const length = this.filteredFacilities.length
       const index = this.filteredFacilities.findIndex(
-        f => f.stationId === selectedId
+        (f) => f.stationId === selectedId
       )
       if (index !== -1) {
         if (isUp) {
@@ -412,7 +447,7 @@ export default {
     sort(colId) {
       this.$emit('orderChanged', colId)
     },
-    handleRowClick: _debounce(function(facility) {
+    handleRowClick: _debounce(function (facility) {
       console.log(`${facility.displayName} view model`, facility)
       console.log(`${facility.displayName} json obj`, facility.jsonData)
       if (!this.tabletBreak) {
@@ -427,11 +462,11 @@ export default {
       }
     }, 200),
     // eslint-disable-next-line
-    handleRowHover: _debounce(function(facility) {
+    handleRowHover: _debounce(function (facility) {
       this.$emit('facilityHover', facility, true)
     }, 200),
     // eslint-disable-next-line
-    handleRowOut: _debounce(function() {
+    handleRowOut: _debounce(function () {
       this.$emit('facilityMouseout')
     }, 200),
     shouldRightAligned(colHeaderId) {
@@ -464,7 +499,7 @@ export default {
       return ft || '—'
     },
     getRegionLabel(code) {
-      const find = FacilityRegions.find(region => region.id === code)
+      const find = FacilityRegions.find((region) => region.id === code)
       return find ? find.abbr : code
     },
     getColour(fuelTech) {
@@ -490,7 +525,7 @@ export default {
       }
 
       let cap = 0
-      this.selectedTechs.forEach(d => {
+      this.selectedTechs.forEach((d) => {
         if (
           FUEL_TECHS.FUEL_TECH_CATEGORY[d] !== 'load' &&
           facility.fuelTechRegisteredCap[d]
@@ -505,7 +540,7 @@ export default {
       const units = facility.units
       let string = ''
       const excluded = []
-      units.forEach(u => {
+      units.forEach((u) => {
         let isTechExcluded = false,
           isStatusExcluded = false
         if (
@@ -520,7 +555,7 @@ export default {
 
       const uniq = _uniqBy(excluded, 'name')
 
-      uniq.forEach(e => {
+      uniq.forEach((e) => {
         const ftLabel = this.getFtLabel(e.fuelTech)
         const statusLabel = getFacilityStatusLabelById(e.status)
         const regCap = this.$options.filters.facilityFormatNumber(e.regCap)
@@ -533,9 +568,9 @@ export default {
     hasHiddenCapacity(facility) {
       const ftBoolArr = []
       if (this.selectedTechs.length > 0) {
-        facility.fuelTechs.forEach(ft => {
+        facility.fuelTechs.forEach((ft) => {
           let isSelected = false
-          this.selectedTechs.forEach(selectedFt => {
+          this.selectedTechs.forEach((selectedFt) => {
             if (selectedFt === ft) {
               isSelected = true
             }
@@ -548,9 +583,9 @@ export default {
 
       const statusBoolArr = []
       if (this.selectedStatuses.length > 0) {
-        facility.unitStatuses.forEach(status => {
+        facility.unitStatuses.forEach((status) => {
           let isSelected = false
-          this.selectedStatuses.forEach(selectedStatus => {
+          this.selectedStatuses.forEach((selectedStatus) => {
             if (selectedStatus === status) {
               isSelected = true
             }
