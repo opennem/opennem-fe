@@ -213,10 +213,11 @@ $radius: 0.5rem;
 :deep(.vueperslides),
 :deep(.vueperslides__track-inner),
 :deep(.vueperslide),
-:deep(.vueperslide__content-wrapper){
+:deep(.vueperslide__content-wrapper) {
   border-radius: 10px;
 }
-:deep(.vueperslides:not(.no-shadow):not(.vueperslides--3d) .vueperslides__parallax-wrapper:after) {
+:deep(.vueperslides:not(.no-shadow):not(.vueperslides--3d)
+    .vueperslides__parallax-wrapper:after) {
   box-shadow: none;
 }
 </style>

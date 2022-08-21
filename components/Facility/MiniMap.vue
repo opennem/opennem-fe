@@ -502,7 +502,8 @@ export default {
   :deep(.mapboxgl-ctrl-attrib.mapboxgl-compact) {
     padding: 0;
   }
-  :deep(.mapboxgl-ctrl-attrib.mapboxgl-compact-show .mapboxgl-ctrl-attrib-inner) {
+  :deep(.mapboxgl-ctrl-attrib.mapboxgl-compact-show
+      .mapboxgl-ctrl-attrib-inner) {
     position: relative;
     right: 25px;
     background-color: #fff;
