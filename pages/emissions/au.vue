@@ -43,7 +43,12 @@
         <div class="emissions-range-dates">
           <h2>
             <span v-if="isYearDatasetView">FY</span>
-            <span>
+
+            <span v-if="isHovering">
+              {{ hoverDate | customFormatDate({ range, interval }) }}
+            </span>
+            
+            <span v-else>
               <time>
                 {{
                   startDate
