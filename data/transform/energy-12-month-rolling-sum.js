@@ -6,7 +6,7 @@ import PerfTime from '@/plugins/perfTime.js'
 
 const perfTime = new PerfTime()
 
-export default function (data, keys, filter) {
+export default function (data, keys) {
   perfTime.time()
   for (let x = data.length - 1; x >= 0; x--) {
     const d = data[x]
@@ -33,9 +33,7 @@ export default function (data, keys, filter) {
   // filter out incomplete rolling sums
   const firstDate = data[0].date
   const firstAvailable = addMonths(firstDate, 11)
-  const updated = filter
-    ? data.filter((d) => isAfter(d.date, firstAvailable))
-    : data
+  const updated = data.filter((d) => isAfter(d.date, firstAvailable))
 
   perfTime.timeEnd('--- data.12month-rolling-sum')
 
