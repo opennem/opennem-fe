@@ -273,7 +273,7 @@ export default {
 
     if (isValidRegion(this.regionId)) {
       this.$store.dispatch('currentView', 'energy')
-      this.setEmissionsVolumnePrefix('')
+      this.setEmissionsVolumePrefix('')
 
       const isWemOrAu = this.regionId === 'wem' || this.regionId === 'au'
       if (isWemOrAu && !this.isEnergyType) {
@@ -326,7 +326,7 @@ export default {
       setXGuides: 'visInteract/xGuides',
       setYGuides: 'visInteract/yGuides',
 
-      setEmissionsVolumnePrefix: 'chartOptionsEmissionsVolume/chartUnitPrefix'
+      setEmissionsVolumePrefix: 'chartOptionsEmissionsVolume/chartUnitPrefix'
     }),
 
     updateEmissionsData() {

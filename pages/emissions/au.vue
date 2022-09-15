@@ -74,7 +74,7 @@
           </h2>
         </div>
         <EmissionsChart
-          v-if="dataset.length > 0"
+          v-if="!fetching && dataset.length > 0"
           :emissions-dataset="dataset"
           :emissions-projection-dataset="
             isYearDatasetView && addProjections ? projectionDataset : []
@@ -171,6 +171,7 @@ import {
   FILTER_NONE
 } from '@/constants/interval-filters.js'
 import * as OPTIONS from '@/constants/chart-options.js'
+import * as SI from '@/constants/si'
 
 import regionDisplayTzs from '@/constants/region-display-timezones.js'
 import DateDisplay from '@/services/DateDisplay.js'
@@ -577,6 +578,7 @@ export default {
     if (interval === INTERVAL_QUARTER) {
       this.handleQuarterViewSelect()
       this.getQuarterData()
+      this.setEmissionsVolumePrefix(SI.MEGA)
     } else {
       if (history && history === 'true') this.addHistory = true
       if (projections && projections === 'true') this.addProjections = true
@@ -599,7 +601,9 @@ export default {
       setCompareDifference: 'compareDifference',
 
       setSourceLabel: 'emissionsPage/footerSourceLabel',
-      setSourceUrl: 'emissionsPage/footerSourceUrl'
+      setSourceUrl: 'emissionsPage/footerSourceUrl',
+
+      setEmissionsVolumePrefix: 'chartOptionsEmissionsVolume/chartUnitPrefix'
     }),
 
     async getQuarterData() {
