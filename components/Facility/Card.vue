@@ -205,8 +205,9 @@ export default {
     },
 
     facilityRegisteredCapacity() {
-      return this.powerEnergyDomains.length > 0
-        ? this.powerEnergyDomains.reduce(
+      const domains = this.powerEnergyDomains.filter(d => !FUEL_TECHS.isLoad(d.fuelTechLabel))
+      return domains.length > 0
+        ? domains.reduce(
             (acc, cur) => acc + (cur.registeredCapacity || 0),
             0
           )
