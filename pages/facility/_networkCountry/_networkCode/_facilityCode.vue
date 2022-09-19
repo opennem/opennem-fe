@@ -170,8 +170,8 @@
             </transition>
 
             <PowerEnergyChart
-              v-if="!fetchingStats && selectedFacilityUnitsDataset.length > 0"
-              :power-energy-dataset="selectedFacilityUnitsDataset"
+              v-if="!fetchingStats && powerEnergyChartDataset.length > 0"
+              :power-energy-dataset="powerEnergyChartDataset"
               :domain-power-energy="powerEnergyDomains"
               :range="range"
               :interval="interval"
@@ -354,6 +354,8 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import _uniq from 'lodash.uniq'
 import _includes from 'lodash.includes'
+import _cloneDeep from 'lodash.clonedeep'
+
 import isBefore from 'date-fns/isBefore'
 import isAfter from 'date-fns/isAfter'
 import addYears from 'date-fns/addYears'
@@ -609,8 +611,9 @@ export default {
     },
 
     facilityRegisteredCapacity() {
-      return this.powerEnergyDomains.length > 0
-        ? this.powerEnergyDomains.reduce(
+      const domains = this.powerEnergyDomains.filter(d => !FT.isLoad(d.fuelTechLabel))
+      return domains.length > 0
+        ? domains.reduce(
             (acc, cur) => acc + (cur.registeredCapacity || 0),
             0
           )
@@ -892,6 +895,24 @@ export default {
       })
 
       return hasEmissionsFactor
+    },
+
+    powerEnergyChartDataset() {
+      const ds = _cloneDeep(this.selectedFacilityUnitsDataset)
+
+      this.unitsSummary.forEach(unit => {
+        const ft = unit.fuelTechLabel
+
+        if (FT.isLoad(ft)) {
+          ds.forEach(d => {
+            const id = unit.id
+            const negValue = -d[id]
+            d[id] = negValue
+          })
+        }
+      })
+
+      return ds
     }
   },
 

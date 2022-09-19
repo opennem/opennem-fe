@@ -234,6 +234,15 @@ export function isSolar(fuelTech) {
   )
 }
 
+export function isLoad(fuelTech) {
+  return (
+    fuelTech === BATTERY_CHARGING ||
+    fuelTech === PUMPS ||
+    fuelTech === IMPORTS ||
+    fuelTech === EXPORTS
+  )
+}
+
 export function isValidFuelTech(fuelTech) {
   return FUEL_TECH_LABEL[fuelTech] !== undefined
 }
