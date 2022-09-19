@@ -91,26 +91,34 @@ export function dataProcess(res, range, interval, period, displayTz) {
       isEnergyType
     )
 
-  console.log('dFlat', dFlat)
-
   const datasetFlat = dFlat.filter(
     (d) => d.date >= earliestEnergyStartDate && d.date <= latestEnergyLastDate
   )
 
   let datasetFull
 
+  const domains = [
+    ...domainPowerEnergy,
+    ...domainEmissions,
+    ...domainMarketValue,
+    ...domainPrice,
+    ...domainTemperature,
+    ...domainDemandEnergy,
+    ...domainDemandMarketValue
+  ]
+
   if (range === RANGE_ALL_12MTH_ROLLING) {
+    function rolledUpData(_ds) {
+      return rollUp({
+        domains,
+        datasetFlat: _ds,
+        interval
+      })
+    }
+
     datasetFull = transformTo12MthRollingSum(
-      datasetFlat,
-      [
-        ...domainPowerEnergy,
-        ...domainEmissions,
-        ...domainMarketValue,
-        ...domainDemandPrice,
-        ...domainDemandEnergy,
-        ...domainDemandMarketValue
-      ],
-      range === RANGE_ALL_12MTH_ROLLING
+      rolledUpData(datasetFlat),
+      domains
     )
   } else {
     datasetFull = _cloneDeep(datasetFlat)
@@ -118,27 +126,21 @@ export function dataProcess(res, range, interval, period, displayTz) {
 
   const dataset = filterDatasetByRange(datasetFull, range)
 
-  let rollingDb = null
-  if (range === RANGE_ALL_12MTH_ROLLING) {
-    rollingDb = _cloneDeep(dataset)
-  }
+  let currentDataset = null
 
-  const currentDataset =
-    dataPowerEnergyInterval === interval
-      ? _cloneDeep(dataset)
-      : rollUp({
-          domains: [
-            ...domainPowerEnergy,
-            ...domainEmissions,
-            ...domainMarketValue,
-            ...domainPrice,
-            ...domainTemperature,
-            ...domainDemandEnergy,
-            ...domainDemandMarketValue
-          ],
-          datasetFlat: dataset,
-          interval
-        })
+  if (range === RANGE_ALL_12MTH_ROLLING) {
+    currentDataset = _cloneDeep(dataset)
+  } else {
+    currentDataset =
+      dataPowerEnergyInterval === interval
+        ? _cloneDeep(dataset)
+        : rollUp({
+            domains,
+            datasetFlat: dataset,
+            interval
+          })
+  }
+  
   const domainPowerEnergyGrouped = getAllGroups(domainPowerEnergy, type)
   const domainEmissionsGrouped = getAllGroups(domainEmissions, EMISSIONS)
   const domainMarketValueGrouped = getAllGroups(domainMarketValue, MARKET_VALUE)
@@ -194,8 +196,7 @@ export function dataProcess(res, range, interval, period, displayTz) {
     domainDemandEnergy,
     domainDemandMarketValue,
     currentDataset: filterDatasetByPeriod(currentDataset, interval, period),
-    units,
-    rollingDb
+    units
   }
 }
 
@@ -216,19 +217,37 @@ export function dataRollUp({
   interval,
   isEnergyType
 }) {
-  const currentDataset = rollUp({
-    domains: [
-      ...domainPowerEnergy,
-      ...domainEmissions,
-      ...domainMarketValue,
-      ...domainPrice,
-      ...domainTemperature,
-      ...domainDemandEnergy,
-      ...domainDemandMarketValue
-    ],
-    datasetFlat: filterDatasetByRange(datasetFlat, range),
-    interval
-  })
+  let currentDataset = null
+  const domains = [
+    ...domainPowerEnergy,
+    ...domainEmissions,
+    ...domainMarketValue,
+    ...domainPrice,
+    ...domainTemperature,
+    ...domainDemandEnergy,
+    ...domainDemandMarketValue
+  ]
+
+  if (range === RANGE_ALL_12MTH_ROLLING) {
+    function rolledUpData(_ds) {
+      return rollUp({
+        domains,
+        datasetFlat: _ds,
+        interval
+      })
+    }
+
+    currentDataset = transformTo12MthRollingSum(
+      rolledUpData(datasetFlat),
+      domains
+    )
+  } else {
+    currentDataset = rollUp({
+      domains,
+      datasetFlat: filterDatasetByRange(datasetFlat, range),
+      interval
+    })
+  }
 
   if (isEnergyType) {
     summariseDataset({

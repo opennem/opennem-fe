@@ -651,8 +651,7 @@ export default {
           this.baseDataset = data
           this.rollingDataset = transformTo12MthRollingSum(
             _cloneDeep(data),
-            this.domainEmissions,
-            true
+            this.domainEmissions
           )
 
           const rolledUpData = dataRollUp({
