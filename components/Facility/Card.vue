@@ -108,9 +108,9 @@
       v-if="
         !fetchingStats &&
           !fetchingFacility &&
-          selectedFacilityUnitsDataset.length > 0
+          powerEnergyChartDataset.length > 0
       "
-      :power-energy-dataset="selectedFacilityUnitsDataset"
+      :power-energy-dataset="powerEnergyChartDataset"
       :domain-power-energy="powerEnergyDomains"
       :range="range"
       :interval="interval"
@@ -131,6 +131,7 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
+import _cloneDeep from 'lodash.clonedeep'
 import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
 import * as OPTIONS from '@/constants/chart-options.js'
 import { FacilityRegions } from '~/constants/facility-regions.js'
@@ -258,6 +259,24 @@ export default {
       return this.facility && this.facility.network
         ? this.facility.network.code || this.facility.network
         : ''
+    },
+
+    powerEnergyChartDataset() {
+      const ds = _cloneDeep(this.selectedFacilityUnitsDataset)
+
+      this.unitsSummary.forEach(unit => {
+        const ft = unit.fuelTechLabel
+
+        if (FUEL_TECHS.isLoad(ft)) {
+          ds.forEach(d => {
+            const id = unit.id
+            const negValue = -d[id]
+            d[id] = negValue
+          })
+        }
+      })
+
+      return ds
     }
   },
 
