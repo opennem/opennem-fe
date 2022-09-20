@@ -271,10 +271,24 @@
 
     <tfoot v-if="units.length > 1">
       <tr>
-        <th>Total</th>
+        <th>
+          Total
+          <span v-if="hasLoads">
+            ({{ operatingUnitLabels }})
+          </span>
+          <span v-else>
+            ({{ operatingUnitLabels }})
+          </span>
+        </th>
 
         <th class="align-right cell-value">
-          {{ operatingUnitsTotalCapacity }}
+          <span v-if="hasLoads">
+            {{ operatingSourceUnitsTotalCapacity }}
+            {{ operatingLoadUnitsTotalCapacity }}
+          </span>
+          <span v-else>
+            {{ operatingUnitsTotalCapacity }}
+          </span>
         </th>
 
         <th 
@@ -378,6 +392,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
+import _uniq from 'lodash.uniq'
 import * as FT from '~/constants/energy-fuel-techs/group-default.js'
 import {
   FACILITY_OPERATING,
@@ -475,9 +490,11 @@ export default {
     ...mapGetters({
       showFields: 'feedback/showFields'
     }),
+
     isAveragePower() {
       return this.isEnergyType && this.isYAxisAveragePower
     },
+
     filteredUnits() {
       const units = _cloneDeep(this.units)
       units.forEach((u) => {
@@ -486,12 +503,45 @@ export default {
       })
       return units
     },
+
     operatingUnits() {
       return this.filteredUnits.filter((u) => u.status === FACILITY_OPERATING)
     },
+
+    operatingSourceUnits() {
+      return this.filteredUnits.filter(u => !FT.isLoad(u.fuelTechLabel))
+    },
+
+    operatingLoadUnits() {
+      return this.filteredUnits.filter(u => FT.isLoad(u.fuelTechLabel))
+    },
+
+    hasLoads() {
+      return this.operatingLoadUnits.length
+    },
+
     operatingUnitsTotalCapacity() {
       return this.calculateTotalRegisteredCapacity(this.operatingUnits)
     },
+
+    operatingSourceUnitsTotalCapacity() {
+      console.log(this.operatingSourceUnits)
+      return this.calculateTotalRegisteredCapacity(this.operatingSourceUnits)
+    },
+
+    operatingLoadUnitsTotalCapacity() {
+      console.log(this.operatingLoadUnits)
+      return this.calculateTotalRegisteredCapacity(this.operatingLoadUnits)
+    },
+
+    operatingUnitLabels() {
+      const sourceFts = _uniq(this.operatingSourceUnits.map(u => u.fuelTechLabel))
+      const loadFts = _uniq(this.operatingLoadUnits.map(u => u.fuelTechLabel))
+
+      const reducer = (labels, ft) => labels ? `${labels}, ${this.getFuelTechLabel(ft)}` : this.getFuelTechLabel(ft)
+      return `${sourceFts.reduce(reducer, '')}/${loadFts.reduce(reducer, '')}`
+    },  
+
     areAllUnitsOfSameFuelTech() {
       let same = true,
         currentFuelTech =
