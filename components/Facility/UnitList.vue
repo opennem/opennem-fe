@@ -298,29 +298,57 @@
         <th 
           v-if="isAveragePower" 
           class="align-right hover-cell cell-value">
-          <span v-if="hoverOn">
-            {{ convertValue(hoverAveragePowerTotal) | formatValue }}
-          </span>
-          <span v-if="!hoverOn && focusOn">
-            {{ convertValue(focusAveragePowerTotal) | formatValue }}
-          </span>
-          <span v-if="!hoverOn && !focusOn">
-            {{ convertValue(summary.totalAvPower) | formatValue }}
-          </span>
+          <div v-if="hasLoads">
+            <span v-if="hoverOn">
+              {{ convertValue(hoverAveragePowerSourceTotal) | formatValue }}/{{ convertValue(hoverAveragePowerLoadTotal) | formatValue }}
+            </span>
+            <span v-if="!hoverOn && focusOn">
+              {{ convertValue(focusAveragePowerSourceTotal) | formatValue }}/{{ convertValue(focusAveragePowerLoadTotal) | formatValue }}
+            </span>
+            <span v-if="!hoverOn && !focusOn">
+              {{ convertValue(summary.totalAvPower) | formatValue }}
+            </span>
+          </div>
+
+          <div v-else>
+            <span v-if="hoverOn">
+              {{ convertValue(hoverAveragePowerTotal) | formatValue }}
+            </span>
+            <span v-if="!hoverOn && focusOn">
+              {{ convertValue(focusAveragePowerTotal) | formatValue }}
+            </span>
+            <span v-if="!hoverOn && !focusOn">
+              {{ convertValue(summary.totalAvPower) | formatValue }}
+            </span>
+          </div>
         </th>
 
         <th 
           v-else 
           class="align-right hover-cell cell-value">
-          <span v-if="hoverOn">
-            {{ convertValue(hoverTotal) | formatValue }}
-          </span>
-          <span v-if="!hoverOn && focusOn">
-            {{ convertValue(focusTotal) | formatValue }}
-          </span>
-          <span v-if="!hoverOn && !focusOn">
-            {{ convertValue(summary.totalEnergy) | formatValue }}
-          </span>
+          <div v-if="hasLoads">
+            <span v-if="hoverOn">
+              {{ convertValue(hoverSourceTotal) | formatValue }}/{{ convertValue(hoverLoadTotal) | formatValue }}
+            </span>
+            <span v-if="!hoverOn && focusOn">
+              {{ convertValue(focusSourceTotal) | formatValue }}/{{ convertValue(focusLoadTotal) | formatValue }}
+            </span>
+            <span v-if="!hoverOn && !focusOn">
+              {{ convertValue(summary.totalEnergy) | formatValue }}
+            </span>
+          </div>
+
+          <div v-else>
+            <span v-if="hoverOn">
+              {{ convertValue(hoverTotal) | formatValue }}
+            </span>
+            <span v-if="!hoverOn && focusOn">
+              {{ convertValue(focusTotal) | formatValue }}
+            </span>
+            <span v-if="!hoverOn && !focusOn">
+              {{ convertValue(summary.totalEnergy) | formatValue }}
+            </span>
+          </div>
         </th>
 
         <th v-if="units.length > 1" />
@@ -707,14 +735,29 @@ export default {
     hoverAveragePowerData() {
       return this.getAveragePowerData(this.hoverDate)
     },
+
     hoverTotal() {
-      return this.getTotal('id', this.hoverData)
+      return this.getTotal(this.operatingUnits, 'id', this.hoverData)
     },
+    hoverSourceTotal() {
+      return this.getTotal(this.operatingSourceUnits, 'id', this.hoverData)
+    },
+    hoverLoadTotal() {
+      return this.getTotal(this.operatingLoadUnits, 'id', this.hoverData)
+    },
+
     hoverAveragePowerTotal() {
-      return this.getTotal('id', this.hoverAveragePowerData)
+      return this.getTotal(this.operatingUnits, 'id', this.hoverAveragePowerData)
     },
+    hoverAveragePowerSourceTotal() {
+      return this.getTotal(this.operatingSourceUnits, 'id', this.hoverAveragePowerData)
+    },
+    hoverAveragePowerLoadTotal() {
+      return this.getTotal(this.operatingLoadUnits, 'id', this.hoverAveragePowerData)
+    },
+
     hoverTotalMarketValue() {
-      return this.getTotal('marketValueId', this.hoverData)
+      return this.getTotal(this.operatingUnits, 'marketValueId', this.hoverData)
     },
     hoverTotalVolWeightedPrice() {
       return this.hoverData ? this.hoverData._volWeightedPrice : null
@@ -726,14 +769,29 @@ export default {
     focusAveragePowerData() {
       return this.getAveragePowerData(this.focusDate)
     },
+
     focusTotal() {
-      return this.getTotal('id', this.focusData)
+      return this.getTotal(this.operatingUnits, 'id', this.focusData)
     },
+    focusSourceTotal() {
+      return this.getTotal(this.operatingSourceUnits, 'id', this.focusData)
+    },
+    focusLoadTotal() {
+      return this.getTotal(this.operatingLoadUnits, 'id', this.focusData)
+    },
+
     focusAveragePowerTotal() {
-      return this.getTotal('id', this.focusAveragePowerData)
+      return this.getTotal(this.operatingUnits, 'id', this.focusAveragePowerData)
     },
+    focusAveragePowerSourceTotal() {
+      return this.getTotal(this.operatingSourceUnits, 'id', this.focusAveragePowerData)
+    },
+    focusAveragePowerLoadTotal() {
+      return this.getTotal(this.operatingLoadUnits, 'id', this.focusAveragePowerData)
+    },
+
     focusTotalMarketValue() {
-      return this.getTotal('marketValueId', this.focusData)
+      return this.getTotal(this.operatingUnits, 'marketValueId', this.focusData)
     },
     focusTotalVolWeightedPrice() {
       return this.focusData ? this.focusData._volWeightedPrice : null
@@ -787,12 +845,12 @@ export default {
         ? this.averagePowerDataset.find((d) => d.time === date.getTime())
         : null
     },
-    getTotal(prop, data) {
+    getTotal(units, prop, data) {
       if (!data) {
         return null
       }
       let total = null
-      this.operatingUnits.forEach((u) => {
+      units.forEach((u) => {
         const value = data[u[prop]]
         if (value || value === 0) {
           total += value
