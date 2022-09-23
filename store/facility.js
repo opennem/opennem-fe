@@ -300,6 +300,7 @@ export const getters = {
         status: d.status ? d.status.label || d.status : '',
         fuelTechLabel: d.fueltech,
         category: FUEL_TECH_CATEGORY[d.fueltech],
+        dispatchType: d.dispatch_type,
         hasEmissionsFactor: d.emissions_factor_co2,
         dataFirstSeen,
         dataLastSeen
