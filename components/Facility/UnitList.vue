@@ -306,7 +306,7 @@
               {{ convertValue(focusAveragePowerSourceTotal) | formatValue }}/{{ convertValue(focusAveragePowerLoadTotal) | formatValue }}
             </span>
             <span v-if="!hoverOn && !focusOn">
-              {{ convertValue(summary.totalAvPower) | formatValue }}
+              {{ convertValue(summary.totalSourceAvPower) | formatValue }}/{{ convertValue(summary.totalLoadAvPower) | formatValue }}
             </span>
           </div>
 
@@ -334,7 +334,7 @@
               {{ convertValue(focusSourceTotal) | formatValue }}/{{ convertValue(focusLoadTotal) | formatValue }}
             </span>
             <span v-if="!hoverOn && !focusOn">
-              {{ convertValue(summary.totalEnergy) | formatValue }}
+              {{ convertValue(summary.totalSourceEnergy) | formatValue }}/{{ convertValue(summary.totalLoadEnergy) | formatValue }}
             </span>
           </div>
 
@@ -354,26 +354,60 @@
         <th v-if="units.length > 1" />
 
         <th class="align-right hover-cell cell-value">
-          Av.
-          <span v-if="hoverOn">
-            {{
-              calculateCapacityFactor(
-                isEnergyType ? hoverAveragePowerTotal : hoverTotal,
-                operatingUnitsTotalCapacity
-              ) | percentageFormatNumber
-            }}
-          </span>
-          <span v-if="!hoverOn && focusOn">
-            {{
-              calculateCapacityFactor(
-                isEnergyType ? focusAveragePowerTotal : focusTotal,
-                operatingUnitsTotalCapacity
-              ) | percentageFormatNumber
-            }}
-          </span>
-          <span v-if="!hoverOn && !focusOn">
-            {{ summary.capFactor | percentageFormatNumber }}
-          </span>
+          <div v-if="hasLoads">
+            Av.
+            <span v-if="hoverOn">
+              {{
+                calculateCapacityFactor(
+                  isEnergyType ? hoverAveragePowerSourceTotal : hoverSourceTotal,
+                  operatingSourceUnitsTotalCapacity
+                ) | percentageFormatNumber
+              }}/{{
+                calculateCapacityFactor(
+                  isEnergyType ? hoverAveragePowerLoadTotal : hoverLoadTotal,
+                  operatingLoadUnitsTotalCapacity
+                ) | percentageFormatNumber
+              }}
+            </span>
+            <span v-if="!hoverOn && focusOn">
+              {{
+                calculateCapacityFactor(
+                  isEnergyType ? focusAveragePowerSourceTotal : focusSourceTotal,
+                  operatingSourceUnitsTotalCapacity
+                ) | percentageFormatNumber
+              }}/{{
+                calculateCapacityFactor(
+                  isEnergyType ? focusAveragePowerLoadTotal : focusLoadTotal,
+                  operatingLoadUnitsTotalCapacity
+                ) | percentageFormatNumber
+              }}
+            </span>
+            <span v-if="!hoverOn && !focusOn">
+              {{ summary.sourceCapFactor | percentageFormatNumber }}/{{ summary.loadCapFactor | percentageFormatNumber }}
+            </span>
+          </div>
+          <div v-else>
+            Av.
+            <span v-if="hoverOn">
+              {{
+                calculateCapacityFactor(
+                  isEnergyType ? hoverAveragePowerTotal : hoverTotal,
+                  operatingUnitsTotalCapacity
+                ) | percentageFormatNumber
+              }}
+            </span>
+            <span v-if="!hoverOn && focusOn">
+              {{
+                calculateCapacityFactor(
+                  isEnergyType ? focusAveragePowerTotal : focusTotal,
+                  operatingUnitsTotalCapacity
+                ) | percentageFormatNumber
+              }}
+            </span>
+            <span v-if="!hoverOn && !focusOn">
+              {{ summary.capFactor | percentageFormatNumber }}
+            </span>
+          </div>
         </th>
 
         <th 
@@ -553,12 +587,10 @@ export default {
     },
 
     operatingSourceUnitsTotalCapacity() {
-      console.log(this.operatingSourceUnits)
       return this.calculateTotalRegisteredCapacity(this.operatingSourceUnits)
     },
 
     operatingLoadUnitsTotalCapacity() {
-      console.log(this.operatingLoadUnits)
       return this.calculateTotalRegisteredCapacity(this.operatingLoadUnits)
     },
 
@@ -613,10 +645,16 @@ export default {
     },
 
     summary() {
+      const units = this.units.map(u => {
+        return {
+          ...u,
+          isLoad: FT.isLoad(u.fuelTechLabel)
+        }
+      })
       // dataset length not including undefined or null values
       const ds = this.dataset.filter((d) => {
         let allNulls = true
-        this.units.forEach((u) => {
+        units.forEach((u) => {
           const id = u.id
           if (d[id] || d[id] === 0) {
             allNulls = false
@@ -628,23 +666,36 @@ export default {
       const summary = {}
       const unitNonNullLength = {}
       let totalOperatingRegCap = 0,
+        totalOperatingSourceRegCap = 0,
+        totalOperatingLoadRegCap = 0,
         totalPower = null,
+        totalSourcePower = null,
+        totalLoadPower = null,
         totalEnergy = null,
+        totalSourceEnergy = null,
+        totalLoadEnergy = null,
         totalMarketValue = null
+      
 
       // setup and calculate total Registered capacity
-      this.units.forEach((u) => {
+      units.forEach((u) => {
         const id = u.id
         summary[id] = {
           power: null,
           avPower: null,
           energy: null,
           capFactor: null,
-          marketValue: null
+          marketValue: null,
+          isLoad: u.isLoad
         }
         unitNonNullLength[id] = 0
         if (u.status === FACILITY_OPERATING) {
           totalOperatingRegCap += u.registeredCapacity
+          if (u.isLoad) {
+            totalOperatingLoadRegCap += u.registeredCapacity
+          } else {
+            totalOperatingSourceRegCap += u.registeredCapacity
+          }
         }
       })
 
@@ -670,7 +721,7 @@ export default {
 
       // sum power / energy for each Unit
       ds.forEach((d) => {
-        this.units.forEach((u) => {
+        units.forEach((u) => {
           const id = u.id
           const marketValueId = u.marketValueId
 
@@ -683,9 +734,8 @@ export default {
         })
       })
 
-      this.units.forEach((u) => {
+      units.forEach((u) => {
         const id = u.id
-        const marketValueId = u.marketValueId
 
         // calculate capacity factor - av power / registered capacity
         // - average power is calculated using non null length
@@ -705,19 +755,45 @@ export default {
         totalPower += summary[id].power
         totalEnergy += summary[id].energy
         totalMarketValue += summary[id].marketValue
+
+        if (u.isLoad) {
+          totalLoadPower += summary[id].power
+          totalLoadEnergy += summary[id].energy
+        } else {
+          totalSourcePower += summary[id].power
+          totalSourceEnergy += summary[id].energy
+        }
       })
 
       const hasData = ds.length > 0
 
       summary.totalPower = hasData ? totalPower : null
-      summary.totalAvPower = hasData ? totalPower / ds.length : null
+      summary.totalSourcePower = hasData ? totalSourcePower : null
+      summary.totalLoadPower = hasData ? totalLoadPower : null
       summary.totalEnergy = hasData ? totalEnergy : null
-      summary.avPower = hasData ? totalPower / ds.length : null
+      summary.totalSourceEnergy = hasData ? totalSourceEnergy : null
+      summary.totalLoadEnergy = hasData ? totalLoadEnergy : null
+
+      summary.totalAvPower = hasData ? totalPower / ds.length : null
+      summary.totalSourceAvPower = hasData ? totalSourcePower / ds.length : null
+      summary.totalLoadAvPower = hasData ? totalLoadPower / ds.length : null
+
       summary.capFactor = hasData
-        ? summary.avPower === 0
+        ? summary.totalAvPower === 0
           ? 0
-          : (summary.avPower / totalOperatingRegCap) * 100
+          : (summary.totalAvPower / totalOperatingRegCap) * 100
         : null
+      summary.sourceCapFactor = hasData
+        ? summary.totalSourceAvPower === 0
+          ? 0
+          : (summary.totalSourceAvPower / totalOperatingSourceRegCap) * 100
+        : null
+      summary.loadCapFactor = hasData
+        ? summary.totalLoadAvPower === 0
+          ? 0
+          : (summary.totalLoadAvPower / totalOperatingLoadRegCap) * 100
+        : null
+
       summary.totalMarketValue = hasData ? totalMarketValue : null
       summary.totalAvMarketValue = hasData ? totalMarketValue / ds.length : null
       summary.volWeightedPrice = hasData
@@ -725,7 +801,7 @@ export default {
           ? totalMarketValue / totalEnergy
           : totalMarketValue / totalPower
         : null
-
+      
       return summary
     },
 
