@@ -7,6 +7,7 @@
       :emissions-domains="currentDomainEmissions"
       :demand-price-domains="domainDemandPrice"
       :demand-energy-domains="domainDemandEnergy"
+      :demand-power-domains="domainDemandPower"
       :demand-market-value-domains="domainDemandMarketValue"
       :price-id="domainPrice.length > 0 ? domainPrice[0].id : ''"
       :dataset="filteredCurrentDataset"
@@ -159,6 +160,7 @@ export default {
       domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
       domainDemandPrice: 'regionEnergy/domainDemandPrice',
       domainDemandEnergy: 'regionEnergy/domainDemandEnergy',
+      domainDemandPower: 'regionEnergy/domainDemandPower',
       domainDemandMarketValue: 'regionEnergy/domainDemandMarketValue',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       currentDomainMarketValue: 'regionEnergy/currentDomainMarketValue',
