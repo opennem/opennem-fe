@@ -282,6 +282,10 @@ export default function ({
         ? demandMarketValue / demandEnergy / 1000
         : demandMarketValue / demandEnergy
 
+      if (demandEnergy === null || demandMarketValue === null) {
+        demandPrice = null
+      }
+
       // console.log(
       //   i,
       //   'demandPrice',

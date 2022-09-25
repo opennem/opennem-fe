@@ -218,6 +218,9 @@ export const actions = {
         domainTemperature,
         domainPrice,
         domainMarketValue,
+        domainDemandPrice,
+        domainDemandEnergy,
+        domainDemandMarketValue,
         inflation
       } = simpleDataProcess(responses, displayTz)
 
@@ -232,6 +235,9 @@ export const actions = {
         domainTemperature,
         domainPrice,
         domainMarketValue,
+        domainDemandPrice,
+        domainDemandEnergy,
+        domainDemandMarketValue,
         inflation
       }
     }
@@ -247,8 +253,17 @@ export const actions = {
           const filtered = responses.filter(
             (d) => d.region && d.region.toLowerCase() === r.id
           )
+
+          // WORKAROUND for demand series using code as region id
+          const filtered2 = responses.filter(
+            (d) => d.code && d.code.toLowerCase() === r.id
+          )
+
           if (cpiData) {
             filtered.push(cpiData)
+          }
+          if (filtered2.length) {
+            filtered2.forEach(d => filtered.push(d))
           }
           currentRegion = r.id
           all[r.id] = processResponses([filtered])

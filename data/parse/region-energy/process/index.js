@@ -103,10 +103,6 @@ export default function (data, displayTz) {
     console.warn('There is no demand energy or market value in this dataset')
   }
 
-  console.log('domainDemandPrice', domainDemandPrice)
-  console.log('domainDemandEnergy', domainDemandEnergy)
-  console.log('domainDemandMarketValue', domainDemandMarketValue)
-
   const domainTemperature = getTemperatureDomains(dataTemperature)
 
   const dataInterval = hasPowerEnergyData
