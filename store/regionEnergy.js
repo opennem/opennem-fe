@@ -575,6 +575,7 @@ export const actions = {
       domainTemperature: state.domainTemperature,
       domainDemandPrice: state.domainDemandPrice,
       domainDemandEnergy: state.domainDemandEnergy,
+      domainDemandPower: state.domainDemandPower,
       domainDemandMarketValue: state.domainDemandMarketValue,
       range,
       interval
@@ -601,6 +602,7 @@ export const actions = {
       domainTemperature: state.domainTemperature,
       domainDemandPrice: state.domainDemandPrice,
       domainDemandEnergy: state.domainDemandEnergy,
+      domainDemandPower: state.domainDemandPower,
       domainDemandMarketValue: state.domainDemandMarketValue,
       range,
       interval
