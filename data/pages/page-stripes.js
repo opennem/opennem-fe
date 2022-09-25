@@ -31,6 +31,9 @@ export async function getRegionStripesData(fetchFunc, regions) {
           domainTemperature: rData.domainTemperature,
           domainPrice: rData.domainPrice,
           domainMarketValue: rData.domainMarketValue,
+          domainDemandPrice: rData.domainDemandPrice,
+          domainDemandEnergy: rData.domainDemandEnergy,
+          domainDemandMarketValue: rData.domainDemandMarketValue,
           domainInflation: rData.inflation ? rData.inflation.domain : null,
           topUp: false,
           bucket: allBucket
