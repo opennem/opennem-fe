@@ -32,6 +32,7 @@ export default function (data, displayTz) {
     dataTemperature,
     dataInflation,
     demandEnergy,
+    demandPower,
     demandMarketValue,
     fuelTechDataType,
     isPowerData,
@@ -84,6 +85,16 @@ export default function (data, displayTz) {
       id: d.id,
       label: 'Demand energy',
       type: 'energy',
+      colour: 'steelblue'
+    }
+  })
+
+  const domainDemandPower = demandPower.map((d) => {
+    return {
+      domain: d.id,
+      id: d.id,
+      label: 'Demand power',
+      type: 'power',
       colour: 'steelblue'
     }
   })
@@ -149,6 +160,7 @@ export default function (data, displayTz) {
     domainEmissions,
     domainMarketValue,
     domainPrice,
+    domainDemandPower,
     domainDemandPrice,
     domainDemandEnergy,
     domainDemandMarketValue,

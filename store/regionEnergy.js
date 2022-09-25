@@ -48,6 +48,7 @@ export const state = () => ({
   domainTemperature: [],
   domainDemandPrice: [],
   domainDemandEnergy: [],
+  domainDemandPower: [],
   domainDemandMarketValue: [],
   currentDomainPowerEnergy: [],
   currentDomainEmissions: [],
@@ -77,6 +78,7 @@ export const getters = {
   domainTemperature: (state) => state.domainTemperature,
   domainDemandPrice: (state) => state.domainDemandPrice,
   domainDemandEnergy: (state) => state.domainDemandEnergy,
+  domainDemandPower: (state) => state.domainDemandPower,
   domainDemandMarketValue: (state) => state.domainDemandMarketValue,
   currentDomainPowerEnergy: (state) => state.currentDomainPowerEnergy,
   currentDomainEmissions: (state) => state.currentDomainEmissions,
@@ -189,6 +191,9 @@ export const mutations = {
   },
   domainDemandEnergy(state, domainDemandEnergy) {
     state.domainDemandEnergy = _cloneDeep(domainDemandEnergy)
+  },
+  domainDemandPower(state, domainDemandPower) {
+    state.domainDemandPower = _cloneDeep(domainDemandPower)
   },
   domainDemandMarketValue(state, domainDemandMarketValue) {
     state.domainDemandMarketValue = _cloneDeep(domainDemandMarketValue)
@@ -402,6 +407,7 @@ export const actions = {
           domainTemperature,
           domainDemandPrice,
           domainDemandEnergy,
+          domainDemandPower,
           domainDemandMarketValue,
           dataType,
           units
@@ -431,6 +437,7 @@ export const actions = {
         commit('domainTemperature', domainTemperature)
         commit('domainDemandPrice', domainDemandPrice)
         commit('domainDemandEnergy', domainDemandEnergy)
+        commit('domainDemandPower', domainDemandPower)
         commit('domainDemandMarketValue', domainDemandMarketValue)
         commit('currentDomainPowerEnergy', domainPowerEnergyGrouped[groupName])
         commit('currentDomainEmissions', domainEmissionsGrouped[groupName])
@@ -528,6 +535,7 @@ export const actions = {
         domainTemperature: state.domainTemperature,
         domainDemandPrice: state.domainDemandPrice,
         domainDemandEnergy: state.domainDemandEnergy,
+        domainDemandPower: state.domainDemandPower,
         domainDemandMarketValue: state.domainDemandMarketValue,
         range,
         interval

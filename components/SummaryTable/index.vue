@@ -111,8 +111,11 @@
             v-if="!hoverOn && !focusOn"
             class="summary-col-av-value cell-value"
           >
-            <span v-if="isAvValueColumn">
-              {{ summary._totalDemandAverageValue | formatCurrency }}<br >
+            <span v-if="isEnergy && isAvValueColumn">
+              {{ summary._totalDemandAverageValue | formatCurrency }}
+            </span>
+            <span v-if="!isEnergy && isAvValueColumn">
+              {{ summary._totalAverageValue | formatCurrency }}
             </span>
             <span v-if="isEmissionsVolumeColumn">
               {{
@@ -132,8 +135,11 @@
             v-if="hoverOn || focusOn"
             class="summary-col-av-value cell-value"
           >
-            <span v-if="isAvValueColumn">
-              {{ pointSummary._demandAverageValue | formatCurrency }}<br >
+            <span v-if="isEnergy && isAvValueColumn">
+              {{ pointSummary._demandAverageValue | formatCurrency }}
+            </span>
+            <span v-if="!isEnergy && isAvValueColumn">
+              {{ pointSummary._totalAverageValue | formatCurrency }}
             </span>
             <span v-if="isEmissionsVolumeColumn">
               {{
@@ -423,6 +429,10 @@ export default {
       default: () => []
     },
     demandEnergyDomains: {
+      type: Array,
+      default: () => []
+    },
+    demandPowerDomains: {
       type: Array,
       default: () => []
     },
@@ -1148,6 +1158,7 @@ export default {
         let totalAverageValue = 0
 
         let demandEnergyTotal = 0,
+          demandPowerTotal = 0,
           demandMarketValueTotal = 0,
           totalDemandAverageValue = 0
         if (this.isEnergy) {
@@ -1182,7 +1193,17 @@ export default {
 
           console.log('totalDemandAverageValue: ', totalDemandAverageValue)
         } else {
-          totalAverageValue = volWeightPriceTotal / energySummaryTotal
+          if (this.demandPowerDomains && this.demandPowerDomains.length) {
+            const demandPowerId = this.demandPowerDomains[0].id
+            const demandPower = data.map((p) => {
+              return p[demandPowerId] ? p[demandPowerId] : null
+            })
+            demandPowerTotal = demandPower.reduce((a, b) => a + b, 0)
+
+            console.log('demand power total', demandPowerTotal)
+            console.log('calculated power total', energySummaryTotal)
+          }
+          totalAverageValue = volWeightPriceTotal / demandPowerTotal
         }
 
         this.summary._totalEnergy = totalEnergy

@@ -15,6 +15,7 @@ export default function (response, displayTz) {
     dataTemperature = [],
     dataInflation = [],
     demandEnergy = [],
+    demandPower = [],
     demandMarketValue = []
   // filter out each type to its own array
   data.forEach((d) => {
@@ -44,6 +45,8 @@ export default function (response, displayTz) {
 
         break
       case DT.DEMAND:
+        console.log('demand datatype')
+        demandPower.push(d)
         break
       case DT.EMISSIONS:
         dataEmissions.push(d)
@@ -84,6 +87,7 @@ export default function (response, displayTz) {
     dataPriceMarketValue,
     dataTemperature,
     dataInflation,
+    demandPower,
     demandEnergy,
     demandMarketValue,
     isPowerData,

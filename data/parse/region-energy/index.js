@@ -73,6 +73,7 @@ export function dataProcess(res, range, interval, period, displayTz) {
     domainPrice,
     domainDemandPrice,
     domainDemandEnergy,
+    domainDemandPower,
     domainDemandMarketValue,
     domainPowerEnergy,
     domainTemperature,
@@ -104,6 +105,7 @@ export function dataProcess(res, range, interval, period, displayTz) {
     ...domainPrice,
     ...domainTemperature,
     ...domainDemandEnergy,
+    ...domainDemandPower,
     ...domainDemandMarketValue
   ]
 
@@ -152,6 +154,7 @@ export function dataProcess(res, range, interval, period, displayTz) {
     domainEmissions,
     domainDemandPrice,
     domainDemandEnergy,
+    domainDemandPower,
     domainDemandMarketValue,
     domainPrice: isEnergyType ? domainMarketValue : domainPrice
   })
@@ -169,6 +172,7 @@ export function dataProcess(res, range, interval, period, displayTz) {
       currentDataset: dataset,
       domainPowerEnergy,
       domainEmissions,
+      domainDemandPower,
       domainPrice: domainPrice
     })
     groupDataset({
@@ -194,6 +198,7 @@ export function dataProcess(res, range, interval, period, displayTz) {
     domainTemperature,
     domainDemandPrice,
     domainDemandEnergy,
+    domainDemandPower,
     domainDemandMarketValue,
     currentDataset: filterDatasetByPeriod(currentDataset, interval, period),
     units
@@ -212,6 +217,7 @@ export function dataRollUp({
   domainTemperature,
   domainDemandPrice,
   domainDemandEnergy,
+  domainDemandPower,
   domainDemandMarketValue,
   range,
   interval,
@@ -225,6 +231,7 @@ export function dataRollUp({
     ...domainPrice,
     ...domainTemperature,
     ...domainDemandEnergy,
+    ...domainDemandPower,
     ...domainDemandMarketValue
   ]
 
@@ -265,6 +272,7 @@ export function dataRollUp({
       isEnergyType,
       currentDataset,
       domainPowerEnergy,
+      domainDemandPower,
       domainEmissions,
       domainPrice: isEnergyType ? domainMarketValue : domainPrice
     })
