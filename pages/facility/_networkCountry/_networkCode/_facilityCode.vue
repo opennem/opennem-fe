@@ -180,7 +180,8 @@
               :zoom-extent="zoomExtent"
               :prop-name="'code'"
               :chart-height="250"
-              :y-max="facilityRegisteredCapacity"
+              :y-max="facilityRegisteredSourceCapacity"
+              :y-min="-Math.abs(facilityRegisteredLoadCapacity)"
               :incomplete-intervals="incompleteIntervals"
               :is-energy-type="isEnergyType"
               :power-options="powerOptions"
@@ -610,8 +611,18 @@ export default {
       return this.facilityDescription !== ''
     },
 
-    facilityRegisteredCapacity() {
+    facilityRegisteredSourceCapacity() {
       const domains = this.powerEnergyDomains.filter(d => !FT.isLoad(d.fuelTechLabel))
+      return domains.length > 0
+        ? domains.reduce(
+            (acc, cur) => acc + (cur.registeredCapacity || 0),
+            0
+          )
+        : 0
+    },
+
+    facilityRegisteredLoadCapacity() {
+      const domains = this.powerEnergyDomains.filter(d => FT.isLoad(d.fuelTechLabel))
       return domains.length > 0
         ? domains.reduce(
             (acc, cur) => acc + (cur.registeredCapacity || 0),
@@ -952,7 +963,11 @@ export default {
       this.updateYGuides()
     },
 
-    facilityRegisteredCapacity() {
+    facilityRegisteredSourceCapacity() {
+      this.updateYGuides()
+    },
+
+    facilityRegisteredLoadCapacity() {
       this.updateYGuides()
     },
 
@@ -1068,21 +1083,29 @@ export default {
     },
 
     updateYGuides() {
-      const hasHidden = this.hiddenCodes.length > 0
+      const sourceHidden = this.hiddenCodes.filter(c => this.unitsSummary.find(u => u.code === c && !FT.isLoad(u.fuelTechLabel)))
+      const loadHidden = this.hiddenCodes.filter(c => this.unitsSummary.find(u => u.code === c && FT.isLoad(u.fuelTechLabel)))
       const regCapText = 'Registered Capacity'
-      const partialText = hasHidden ? ' (partial)' : ''
-      const yGuides =
-        (this.facilityRegisteredCapacity &&
-          this.facilityRegisteredCapacity > 0 &&
-          this.dataType === 'power') ||
-        (this.dataType === 'energy' && this.isYAxisAveragePower)
-          ? [
-              {
-                value: this.facilityRegisteredCapacity,
-                text: `${regCapText}${partialText}`
-              }
-            ]
-          : []
+      const sourcePartialText = sourceHidden.length > 0 ? ' (partial)' : ''
+      const loadPartialText = loadHidden.length > 0 ? ' (partial)' : ''
+
+      const yGuides = []
+
+      if (this.dataType === 'power' || (this.dataType === 'energy' && this.isYAxisAveragePower)) {
+        if (this.facilityRegisteredSourceCapacity && this.facilityRegisteredSourceCapacity > 0) {
+          yGuides.push({
+            value: this.facilityRegisteredSourceCapacity,
+            text: `${regCapText}${sourcePartialText}`
+          })
+        }
+
+        if (this.facilityRegisteredLoadCapacity && this.facilityRegisteredLoadCapacity > 0) {
+          yGuides.push({
+            value: -Math.abs(this.facilityRegisteredLoadCapacity),
+            text: `${regCapText}${loadPartialText}`
+          })
+        }
+      }
 
       this.setYGuides(yGuides)
     },

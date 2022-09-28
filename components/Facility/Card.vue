@@ -116,7 +116,8 @@
       :interval="interval"
       :prop-name="'code'"
       :chart-height="250"
-      :y-max="facilityRegisteredCapacity"
+      :y-max="facilityRegisteredSourceCapacity"
+      :y-min="-Math.abs(facilityRegisteredLoadCapacity)"
       :filter-period="filterPeriod"
       :power-options="powerOptions"
       :hover-on="isHovering"
@@ -204,8 +205,18 @@ export default {
       return [...this.unitsSummary].reverse()
     },
 
-    facilityRegisteredCapacity() {
+    facilityRegisteredSourceCapacity() {
       const domains = this.powerEnergyDomains.filter(d => !FUEL_TECHS.isLoad(d.fuelTechLabel))
+      return domains.length > 0
+        ? domains.reduce(
+            (acc, cur) => acc + (cur.registeredCapacity || 0),
+            0
+          )
+        : 0
+    },
+
+    facilityRegisteredLoadCapacity() {
+      const domains = this.powerEnergyDomains.filter(d => FUEL_TECHS.isLoad(d.fuelTechLabel))
       return domains.length > 0
         ? domains.reduce(
             (acc, cur) => acc + (cur.registeredCapacity || 0),
@@ -302,7 +313,11 @@ export default {
 
         this.setYGuides([
           {
-            value: this.facilityRegisteredCapacity,
+            value: this.facilityRegisteredSourceCapacity,
+            text: 'Registered Capacity'
+          },
+          {
+            value: -Math.abs(this.facilityRegisteredLoadCapacity),
             text: 'Registered Capacity'
           }
         ])
