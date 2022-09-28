@@ -171,6 +171,10 @@ FUEL_TECH_LABEL[ROOFTOP_SOLAR] = 'Solar (Rooftop)'
 FUEL_TECH_LABEL[SOLAR_UTILITY] = 'Solar (Utility)'
 FUEL_TECH_LABEL[SOLAR_ROOFTOP] = 'Solar (Rooftop)'
 
+export const FUEL_TECH_SHORT_LABEL = {}
+FUEL_TECH_SHORT_LABEL[BATTERY_CHARGING] = 'Charging'
+FUEL_TECH_SHORT_LABEL[BATTERY_DISCHARGING] = 'Discharging'
+
 export function getFuelTechObjs(fuelTechs, type) {
   return Object.keys(fuelTechs).map((ft) => {
     return {

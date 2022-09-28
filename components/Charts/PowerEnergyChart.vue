@@ -53,7 +53,7 @@
       :range="range"
       :interval="interval"
       :curve="chartCurve"
-      :y-min="isTypeArea ? yMin : 0"
+      :y-min="isTypeArea ? computedYMin : 0"
       :y-max="isTypeArea ? computedYMax : 100"
       :vis-height="chartHeight"
       :hover-on="hoverOn"
@@ -298,6 +298,10 @@ export default {
       default: () => {
         return _cloneDeep(energyOptions)
       }
+    },
+    yMin: {
+      type: Number,
+      default: 0
     },
     yMax: {
       type: Number,
@@ -661,24 +665,24 @@ export default {
       this.$emit('selectedDataset', ds)
       return ds
     },
-    yMin() {
-      const loadDomains = this.domains.filter((d) => d.category === LOAD)
-      if (loadDomains.length === 0) {
-        return 0
-      } else {
-        const dataset = _cloneDeep(this.stackedAreaDataset)
-        dataset.forEach((d) => {
-          let stackedMin = 0
-          this.domains.forEach((domain) => {
-            if (d[domain.id] < 0) {
-              stackedMin += d[domain.id] || 0
-            }
-          })
-          d._stackedTotalMin = stackedMin
-        })
-        return min(dataset, (d) => d._stackedTotalMin)
-      }
-    },
+    // yMin() {
+    //   const loadDomains = this.domains.filter((d) => d.category === LOAD)
+    //   if (loadDomains.length === 0) {
+    //     return 0
+    //   } else {
+    //     const dataset = _cloneDeep(this.stackedAreaDataset)
+    //     dataset.forEach((d) => {
+    //       let stackedMin = 0
+    //       this.domains.forEach((domain) => {
+    //         if (d[domain.id] < 0) {
+    //           stackedMin += d[domain.id] || 0
+    //         }
+    //       })
+    //       d._stackedTotalMin = stackedMin
+    //     })
+    //     return min(dataset, (d) => d._stackedTotalMin)
+    //   }
+    // },
     // yMax() {
     //   const dataset = _cloneDeep(this.stackedAreaDataset)
     //   dataset.forEach(d => {
@@ -690,6 +694,31 @@ export default {
     //   })
     //   return max(dataset, d => d._stackedTotalMax)
     // },
+    computedYMin() {
+      let lowest = 0
+
+      const loadDomains = this.domains.filter((d) => d.category === LOAD)
+      if (loadDomains.length === 0) {
+        return lowest
+      } else {
+        this.stackedAreaDataset.forEach((d) => {
+          let total = 0
+          loadDomains.forEach((domain) => {
+            total += d[domain.id] || 0
+          })
+
+          if (total < lowest) {
+            lowest = total
+          }
+        })
+
+        if (lowest >= this.yMin) {
+          lowest = this.yMin
+        }
+
+        return lowest + (lowest * 10) / 100
+      }
+    },
     computedYMax() {
       let highest = 0
 
