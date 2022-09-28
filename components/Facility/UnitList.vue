@@ -1,18 +1,17 @@
 <template>
   <table class="summary-list">
     <caption>
-      <dates-display
-        v-if="ready && hasDatetime"
-        :is-hovering="hoverOn"
+      <dates-display 
+        v-if="ready && hasDatetime" 
+        :is-hovering="hoverOn" 
         :focus-on="focusOn"
-        :hovered-date="hoverDate ? hoverDate.getTime() : null"
+        :hovered-date="hoverDate ? hoverDate.getTime() : null" 
         :focus-date="focusDate ? focusDate.getTime() : null"
-        :start-date="startTime"
-        :end-date="endTime"
-        :range="range"
-        :interval="interval"
-        class="date-display"
-      />
+        :start-date="startTime" 
+        :end-date="endTime" 
+        :range="range" 
+        :interval="interval" 
+        class="date-display" />
     </caption>
 
     <thead class="unit-header-row">
@@ -39,10 +38,9 @@
           <small>kgCO₂e/MWh</small>
         </th>
 
-        <th
-          class="data-col date-col align-right hover-cell"
-          style="width: 100px"
-        >
+        <th 
+          class="data-col date-col align-right hover-cell" 
+          style="width: 100px">
           <span v-if="isEnergyType && !isYAxisAveragePower">
             Energy
             <small>{{ powerEnergyUnit }}</small>
@@ -80,72 +78,63 @@
           <small>%</small>
         </th>
 
-        <th
-          v-if="hasMarketValue"
-          class="data-col align-right hover-cell"
-          style="width: 100px"
-        >
+        <th 
+          v-if="hasMarketValue" 
+          class="data-col align-right hover-cell" 
+          style="width: 100px">
           Market value
           <small>${{ marketValueDisplayUnit }}</small>
         </th>
 
-        <th
-          v-if="hasMarketValue"
-          class="data-col align-right hover-cell"
-          style="width: 100px"
-        >
+        <th 
+          v-if="hasMarketValue" 
+          class="data-col align-right hover-cell" 
+          style="width: 100px">
           Av. Value
           <small>$</small>
         </th>
       </tr>
     </thead>
     <tbody>
-      <tr
-        v-for="(d, i) in filteredUnits"
-        :key="i"
+      <tr 
+        v-for="(d, i) in filteredUnits" 
+        :key="i" 
         :class="{
           'is-inactive': !isActive(d.status),
           'is-hidden-unit': d.isHidden
-        }"
-        @click.exact="handleRowClick(d.code)"
+        }" 
+        @click.exact="handleRowClick(d.code)" 
         @click.shift.exact="handleRowShiftClick(d.code)"
-        @mouseenter="handleMouseEnter(d.code, d.status)"
-        @mouseleave="handleMouseLeave"
-      >
-        <td
-          v-tooltip.left="getTooltip(d)"
-          v-highlight="showFields"
+        @mouseenter="handleMouseEnter(d.code, d.status)" 
+        @mouseleave="handleMouseLeave">
+        <td 
+          v-tooltip.left="getTooltip(d)" 
+          v-highlight="showFields" 
           class="unit-name"
-          @click.self="() => handleFieldClick(`${d.code} label`, d.code)"
-        >
+          @click.self="() => handleFieldClick(`${d.code} label`, d.code)">
           <div 
             :style="{ backgroundColor: d.colour }" 
             class="colour-square" />
           <span>{{ d.code }}</span>
-          <span 
-            v-if="!areAllUnitsOfSameFuelTech"
-          >— {{ getFuelTechLabel(d.fuelTechLabel) }}</span
-          >
+          <span v-if="!areAllUnitsOfSameFuelTech">— {{ getFuelTechLabel(d.fuelTechLabel) }}</span>
         </td>
 
-        <td
-          v-highlight="showFields"
-          class="align-right"
+        <td 
+          v-highlight="showFields" 
+          class="align-right" 
           @click.self="
             () => handleFieldClick(`${d.code} reg cap`, d.registeredCapacity)
-          "
-        >
+          ">
           {{ d.registeredCapacity }}
         </td>
 
-        <td
-          v-highlight="showFields"
-          v-if="hasEmissions"
-          class="align-right"
+        <td 
+          v-highlight="showFields" 
+          v-if="hasEmissions" 
+          class="align-right" 
           @click.self="
             () => handleFieldClick(`${d.code} intensity`, d.emissionIntensity)
-          "
-        >
+          ">
           {{ d.emissionIntensity | formatValue }}
         </td>
 
@@ -178,15 +167,14 @@
         </td>
 
         <td v-if="units.length > 1">
-          <UnitListBar
-            v-if="ready"
-            :bar-width="150"
+          <UnitListBar 
+            v-if="ready" 
+            :bar-width="150" 
             :colour="
               areAllUnitsOfSameFuelTech ? getFirstUnitFuelTechColour : d.colour
-            "
-            :value="getCellValue(d)"
-            :total="getCellTotalValue(d)"
-          />
+            " 
+            :value="getCellValue(d)" 
+            :total="getCellTotalValue(d)" />
         </td>
 
         <td class="align-right hover-cell">
@@ -272,19 +260,15 @@
     <tfoot v-if="units.length > 1">
       <tr>
         <th>
-          Total
+          Total<br>
           <span v-if="hasLoads">
-            ({{ operatingUnitLabels }})
-          </span>
-          <span v-else>
             ({{ operatingUnitLabels }})
           </span>
         </th>
 
         <th class="align-right cell-value">
           <span v-if="hasLoads">
-            {{ operatingSourceUnitsTotalCapacity }}
-            {{ operatingLoadUnitsTotalCapacity }}
+            {{ operatingSourceUnitsTotalCapacity }}/{{ operatingLoadUnitsTotalCapacity }}
           </span>
           <span v-else>
             {{ operatingUnitsTotalCapacity }}
@@ -300,13 +284,16 @@
           class="align-right hover-cell cell-value">
           <div v-if="hasLoads">
             <span v-if="hoverOn">
-              {{ convertValue(hoverAveragePowerSourceTotal) | formatValue }}/{{ convertValue(hoverAveragePowerLoadTotal) | formatValue }}
+              {{ convertValue(hoverAveragePowerSourceTotal) | formatValue }}/{{ convertValue(hoverAveragePowerLoadTotal)
+              | formatValue }}
             </span>
             <span v-if="!hoverOn && focusOn">
-              {{ convertValue(focusAveragePowerSourceTotal) | formatValue }}/{{ convertValue(focusAveragePowerLoadTotal) | formatValue }}
+              {{ convertValue(focusAveragePowerSourceTotal) | formatValue }}/{{ convertValue(focusAveragePowerLoadTotal)
+              | formatValue }}
             </span>
             <span v-if="!hoverOn && !focusOn">
-              {{ convertValue(summary.totalSourceAvPower) | formatValue }}/{{ convertValue(summary.totalLoadAvPower) | formatValue }}
+              {{ convertValue(summary.totalSourceAvPower) | formatValue }}/{{ convertValue(summary.totalLoadAvPower) |
+              formatValue }}
             </span>
           </div>
 
@@ -334,7 +321,8 @@
               {{ convertValue(focusSourceTotal) | formatValue }}/{{ convertValue(focusLoadTotal) | formatValue }}
             </span>
             <span v-if="!hoverOn && !focusOn">
-              {{ convertValue(summary.totalSourceEnergy) | formatValue }}/{{ convertValue(summary.totalLoadEnergy) | formatValue }}
+              {{ convertValue(summary.totalSourceEnergy) | formatValue }}/{{ convertValue(summary.totalLoadEnergy) |
+              formatValue }}
             </span>
           </div>
 
@@ -383,7 +371,8 @@
               }}
             </span>
             <span v-if="!hoverOn && !focusOn">
-              {{ summary.sourceCapFactor | percentageFormatNumber }}/{{ summary.loadCapFactor | percentageFormatNumber }}
+              {{ summary.sourceCapFactor | percentageFormatNumber }}/{{ summary.loadCapFactor | percentageFormatNumber
+              }}
             </span>
           </div>
           <div v-else>
@@ -600,7 +589,7 @@ export default {
 
       const reducer = (labels, ft) => labels ? `${labels}, ${this.getFuelTechLabel(ft)}` : this.getFuelTechLabel(ft)
       return `${sourceFts.reduce(reducer, '')}/${loadFts.reduce(reducer, '')}`
-    },  
+    },
 
     areAllUnitsOfSameFuelTech() {
       let same = true,
@@ -675,7 +664,7 @@ export default {
         totalSourceEnergy = null,
         totalLoadEnergy = null,
         totalMarketValue = null
-      
+
 
       // setup and calculate total Registered capacity
       units.forEach((u) => {
@@ -741,7 +730,7 @@ export default {
         // - average power is calculated using non null length
         summary[id].capFactor = unitNonNullLength[id]
           ? (summary[id].power / unitNonNullLength[id] / u.registeredCapacity) *
-            100
+          100
           : null
 
         summary[id].avPower = unitNonNullLength[id]
@@ -801,7 +790,7 @@ export default {
           ? totalMarketValue / totalEnergy
           : totalMarketValue / totalPower
         : null
-      
+
       return summary
     },
 
@@ -955,7 +944,7 @@ export default {
     },
 
     getFuelTechLabel(code) {
-      return FT.FUEL_TECH_LABEL[code]
+      return FT.FUEL_TECH_SHORT_LABEL[code] || FT.FUEL_TECH_LABEL[code]
     },
 
     getCellValue(d) {
@@ -1039,6 +1028,7 @@ export default {
   .colour-square {
     background-color: white !important;
   }
+
   .unit-name {
     color: #aaa;
   }
@@ -1102,6 +1092,7 @@ table {
     -ms-user-select: none;
     user-select: none;
   }
+
   th {
     font-family: $family-secondary;
     font-weight: 700;
@@ -1112,6 +1103,7 @@ table {
   .unit-header-row {
     th {
       font-weight: 700;
+
       small {
         display: block;
         color: #999;
