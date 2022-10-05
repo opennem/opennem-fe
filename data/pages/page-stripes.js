@@ -8,7 +8,7 @@ import {
 } from '@/constants/stripes/dates.js'
 import { getEnergyRegions } from '@/constants/energy-regions.js'
 
-const allBucket = getEachMonthOfInterval()
+export const allBucket = getEachMonthOfInterval()
 
 export const dateFormatString = 'MMM yyyy'
 
@@ -107,6 +107,20 @@ export function getStripesDateRange() {
     dateFormatString
   )
   return `${firstDate} – ${lastDate}`
+}
+
+export function getStripesStartEndDates() {
+  const firstDate = format(allBucket[0].date, dateFormatString)
+  const lastDate = format(
+    allBucket[allBucket.length - 1].date,
+    dateFormatString
+  )
+
+  console.log('allBucket', allBucket)
+  return {
+    start: allBucket[0].date,
+    end: allBucket[allBucket.length - 1].date
+  }
 }
 
 export function getStripesRegion(currentRegionId) {

@@ -79,6 +79,16 @@ export function getEnergyRegions() {
   return _cloneDeep(EnergyRegions)
 }
 
+export function getNemRegions() {
+  return EnergyRegions.filter(
+    d => d.id === ENERGY_NSW ||
+      d.id === ENERGY_QLD ||
+      d.id === ENERGY_SA ||
+      d.id === ENERGY_TAS ||
+      d.id === ENERGY_VIC
+    )
+}
+
 export function getEnergyRegionLabel(id) {
   const find = EnergyRegions.find((r) => r.id === id)
   return find ? find.label : ''
