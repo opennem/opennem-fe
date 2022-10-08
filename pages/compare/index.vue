@@ -15,6 +15,25 @@
         {{ lineChartDataset.length }}
       </div>
 
+      <OpenChart
+        v-if="!fetching && lineChartDataset.length > 0"
+        :chart-dataset="lineChartDataset"
+        :chart-domains="domains"
+        :range="range"
+        :interval="interval"
+        :show-x-axis="true"
+        :vis-height="500"
+        :hover-on="isHovering"
+        :hover-date="hoverDate"
+        :zoom-extent="zoomExtent"
+        :filter-period="filterPeriod"
+        :hidden-domains="hiddenDomains"
+        :show-average-value="false"
+        @dateHover="handleDateHover"
+        @isHovering="handleIsHovering"
+        @zoomExtent="handleZoomExtent"
+      />
+
       <section 
         v-for="(d, i) in regionData" 
         :key="`region-${i}`" 
@@ -70,9 +89,13 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import debounce from 'lodash.debounce'
+import cloneDeep from 'lodash.clonedeep'
 
 import { getEnergyRegionLabel, getNemRegions } from '@/constants/energy-regions.js'
 import { periods, metrics } from '@/constants/stripes/'
+import { RANGE_ALL } from '@/constants/ranges.js'
+import { INTERVAL_MONTH, FILTER_NONE } from '@/constants/interval-filters.js'
+import DateDisplay from '@/services/DateDisplay.js'
 
 import {
   allBucket,
@@ -87,6 +110,8 @@ import ColourLegend from '@/components/Vis/ColourLegend'
 import OptionsLegend from '@/components/Stripes/OptionsLegend'
 import HoverMetric from '@/components/Stripes/HoverMetric'
 
+import OpenChart from '@/components/Charts/OpenChart'
+
 export default {
   layout: 'main',
 
@@ -94,7 +119,8 @@ export default {
     Heatmap,
     ColourLegend,
     OptionsLegend,
-    HoverMetric
+    HoverMetric,
+    OpenChart
   },
 
   head() {
@@ -137,6 +163,7 @@ export default {
 
   data() {
     return {
+      fetching: false,
       baseUrl: `${this.$config.url}/images/screens/`,
       width: 0,
       periods,
@@ -144,23 +171,27 @@ export default {
       dateRange: getStripesDateRange(),
       startEndDates: getStripesStartEndDates(),
       regionData: [],
+      range: RANGE_ALL,
+      interval: INTERVAL_MONTH,
+      filterPeriod: FILTER_NONE,
       hoverDate: null,
       hoverValue: null,
       hoverRegion: '',
       hoverDisplay: null,
       regionId: 'nem',
       allBucket,
-      domains: getNemRegions()
+      domains: getNemRegions(),
+      hiddenDomains: [],
+      zoomExtent: [],
+      isHovering: false
     }
   },
 
   computed: {
     ...mapGetters({
-      range: 'range',
-      interval: 'interval',
-      filterPeriod: 'filterPeriod',
       fuelTechGroupName: 'fuelTechGroupName',
-      tabletBreak: 'app/tabletBreak'
+      tabletBreak: 'app/tabletBreak',
+      xGuides: 'visInteract/xGuides'
     }),
 
     selectedPeriod: {
@@ -211,7 +242,7 @@ export default {
 
     lineChartDataset() {
       console.log(this.domains, this.regionData, this.selectedMetric)
-      const arr = allBucket
+      const arr = cloneDeep(allBucket)
 
       this.regionData.forEach(region => {
         console.log(region.regionId)
@@ -226,6 +257,8 @@ export default {
 
       return arr
     }
+
+    
   },
 
   watch: {
@@ -236,6 +269,19 @@ export default {
       if (metric) {
         this.selectedMetric = metric
       }
+    },
+    async lineChartDataset(val) {
+      console.log('line', val)
+      if (val.length > 0) {
+        await this.doUpdateXGuides({
+          interval: this.interval,
+          start: val[0].time,
+          end: val[val.length - 1].time
+        })
+      }
+    },
+    xGuides(val) {
+      console.log('xGuides', val)
     }
   },
 
@@ -268,7 +314,8 @@ export default {
   methods: {
     ...mapActions({
       doGetRegionData: 'regionEnergy/doGetRegionData',
-      doGetAllData: 'regionEnergy/doGetAllData'
+      doGetAllData: 'regionEnergy/doGetAllData',
+      doUpdateXGuides: 'visInteract/doUpdateXGuides'
     }),
     ...mapMutations({
       setQuery: 'app/query'
@@ -276,6 +323,7 @@ export default {
 
     getData(id, period) {
       // reset
+      this.fetching = true
       this.regionData = []
       const regions = getStripesRegion(id)
 
@@ -283,6 +331,7 @@ export default {
 
       getRegionStripesData(this.doGetAllData, regions).then((d) => {
         this.regionData = d
+        this.fetching = false
         console.log('this.regionData', d)
         console.log('startEndDates', this.startEndDates)
       })
@@ -292,11 +341,45 @@ export default {
       this.hoverRegion = regionId
       this.hoverDate = date
       this.hoverValue = value
+      this.isHovering = true
     },
     handleMouseout() {
       this.hoverDate = null
       this.hoverValue = null
-    }
+      this.isHovering = false
+    },
+
+    handleDateHover(date) {
+      this.hoverDate = DateDisplay.getClosestDateByInterval(
+        date,
+        this.interval,
+        this.filterPeriod
+      )
+    },
+
+    handleIsHovering(hovering) {
+      this.isHovering = hovering
+    },
+
+    handleZoomExtent(dateRange) {
+      let filteredDates = []
+      if (dateRange && dateRange.length > 0) {
+        let startTime = DateDisplay.snapToClosestInterval(
+          this.interval,
+          dateRange[0]
+        )
+        let endTime = DateDisplay.snapToClosestInterval(
+          this.interval,
+          dateRange[1]
+        )
+
+        filteredDates = [startTime, endTime]
+      } else {
+        filteredDates = []
+      }
+
+      this.zoomExtent = filteredDates
+    },
   }
 }
 </script>

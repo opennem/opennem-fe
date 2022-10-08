@@ -80,7 +80,12 @@ export function getEnergyRegions() {
 }
 
 export function getNemRegions() {
-  return EnergyRegions.filter(
+  return EnergyRegions.map(d => {
+    return {
+      ...d,
+      domain: d.id
+    }
+  }).filter(
     d => d.id === ENERGY_NSW ||
       d.id === ENERGY_QLD ||
       d.id === ENERGY_SA ||

@@ -20,7 +20,7 @@ export const state = () => ({
   highlightDomain: '',
   focusDate: null,
   xTicks: null,
-  xGuides: null,
+  xGuides: [],
   yGuides: [],
   tickFormat: '',
   secondTickFormat: '',
