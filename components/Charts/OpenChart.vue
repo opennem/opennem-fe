@@ -6,7 +6,7 @@
     }"
     class="chart"
   >
-    <!-- <emissions-chart-options
+    <open-chart-options
       :read-only="readOnly"
       :chart-shown="chartShown"
       :chart-type="chartType"
@@ -29,7 +29,7 @@
       :show-average-value="showAverageValue"
       :emissions-options="chartOptions"
       @type-click="handleTypeClick"
-    /> -->
+    />
 
     <stacked-area-vis
       v-if="chartShown && (isTypeArea || isTypeProportion)"
@@ -145,13 +145,10 @@ import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
 import StackedAreaVis from '@/components/Vis/StackedArea2.vue'
-// import EmissionsChartOptions from './EmissionsChartOptions'
+import OpenChartOptions from './OpenChartOptions'
 
 const chartOptions = {
   type: [
-    OPTIONS.CHART_HIDDEN,
-    OPTIONS.CHART_STACKED,
-    OPTIONS.CHART_PROPORTION,
     OPTIONS.CHART_LINE,
     OPTIONS.CHART_CHANGE_SINCE_LINE
   ],
@@ -165,7 +162,7 @@ const chartOptions = {
 
 export default {
   components: {
-    // EmissionsChartOptions,
+    OpenChartOptions,
     StackedAreaVis,
     MultiLine,
     DateBrush
