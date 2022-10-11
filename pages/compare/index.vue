@@ -11,9 +11,17 @@
       :show-hover="hoverDate ? true : false" />
 
     <div class="vis-container">
-      <div>
-        {{ lineChartDataset.length }}
-      </div>
+      <DataOptionsBar
+        :ranges="ranges"
+        :intervals="intervals"
+        :range="range"
+        :interval="interval"
+        :filter-period="filterPeriod"
+        @rangeChange="handleRangeChange"
+        @intervalChange="handleIntervalChange"
+        @queryChange="handleQueryChange"
+        @filterPeriodChange="handleFilterPeriodChange"
+      />
 
       <OpenChart
         v-if="!fetching && lineChartDataset.length > 0"
@@ -93,7 +101,7 @@ import cloneDeep from 'lodash.clonedeep'
 
 import { getEnergyRegionLabel, getNemRegions } from '@/constants/energy-regions.js'
 import { periods, metrics } from '@/constants/stripes/'
-import { RANGE_ALL } from '@/constants/ranges.js'
+import { RANGE_ALL, COMPARE_RANGES, COMPARE_RANGE_INTERVALS } from '@/constants/ranges.js'
 import { INTERVAL_MONTH, FILTER_NONE } from '@/constants/interval-filters.js'
 import DateDisplay from '@/services/DateDisplay.js'
 
@@ -110,6 +118,7 @@ import ColourLegend from '@/components/Vis/ColourLegend'
 import OptionsLegend from '@/components/Stripes/OptionsLegend'
 import HoverMetric from '@/components/Stripes/HoverMetric'
 
+import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import OpenChart from '@/components/Charts/OpenChart'
 
 export default {
@@ -120,7 +129,8 @@ export default {
     ColourLegend,
     OptionsLegend,
     HoverMetric,
-    OpenChart
+    OpenChart,
+    DataOptionsBar
   },
 
   head() {
@@ -171,6 +181,8 @@ export default {
       dateRange: getStripesDateRange(),
       startEndDates: getStripesStartEndDates(),
       regionData: [],
+      ranges: COMPARE_RANGES,
+      intervals: COMPARE_RANGE_INTERVALS,
       range: RANGE_ALL,
       interval: INTERVAL_MONTH,
       filterPeriod: FILTER_NONE,
@@ -380,6 +392,24 @@ export default {
 
       this.zoomExtent = filteredDates
     },
+
+    handleRangeChange(range) {
+      this.range = range
+    },
+    handleIntervalChange(interval) {
+      this.interval = interval
+    },
+    handleFilterPeriodChange(period) {
+      this.filterPeriod = period
+    },
+    handleQueryChange(query) {
+      console.log(query)
+      // this.$router.push({
+      //   query
+      // })
+
+      // this.setQuery(query)
+    }
   }
 }
 </script>
