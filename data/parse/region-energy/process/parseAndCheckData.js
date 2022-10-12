@@ -28,7 +28,7 @@ export default function (response, displayTz) {
       case DT.POWER:
         // set demand as a separate series
         if (d.id.includes('demand')) {
-          demandEnergy.push(d)
+          demandPower.push(d)
         } else {
           dataPower.push(d)
           dataPowerEnergy.push(d)
@@ -42,14 +42,13 @@ export default function (response, displayTz) {
           dataEnergy.push(d)
           dataPowerEnergy.push(d)
         }
-
-        break
-      case DT.DEMAND:
-        console.log('demand datatype')
-        demandPower.push(d)
         break
       case DT.EMISSIONS:
         dataEmissions.push(d)
+        break
+      case DT.DEMAND:
+        // TODO: deprecated `type` - next version of demand will be part of the `power`
+        demandPower.push(d)
         break
       case DT.MARKET_VALUE:
       case DT.PRICE:
