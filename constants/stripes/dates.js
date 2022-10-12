@@ -2,7 +2,7 @@ import eachYearOfInterval from 'date-fns/eachYearOfInterval'
 import eachMonthOfInterval from 'date-fns/eachMonthOfInterval'
 import eachDayOfInterval from 'date-fns/eachDayOfInterval'
 import { NEM_START_YEAR, NEM_START_MONTH } from '../nem-start-date'
-import { INTERVAL_MONTH, INTERVAL_YEAR, INTERVAL_SEASON } from '../interval-filters'
+import { INTERVAL_MONTH, INTERVAL_YEAR, INTERVAL_SEASON, INTERVAL_QUARTER, INTERVAL_HALFYEAR, INTERVAL_FINYEAR } from '../interval-filters'
 
 export const getEachYearOfInterval = eachYearOfInterval({
   start: new Date(NEM_START_YEAR, 0, 1),
@@ -57,7 +57,38 @@ export const getEachOfInterval = (interval) => {
       return m === 11 || m === 2 || m === 5 || m === 8
     })
 
-    console.log(months)
+    return months
+  }
+
+  if (interval === INTERVAL_QUARTER) {
+    console.log('Quarter interval')
+
+    const months = getEachMonthOfInterval().filter(d => {
+      const m = d.date.getMonth()
+      return m === 0 || m === 3 || m === 6 || m === 9
+    })
+
+    return months
+  }
+
+  if (interval === INTERVAL_HALFYEAR) {
+    console.log('Half year interval')
+
+    const months = getEachMonthOfInterval().filter(d => {
+      const m = d.date.getMonth()
+      return m === 0 || m === 6
+    })
+
+    return months
+  }
+
+  if (interval === INTERVAL_FINYEAR) {
+    console.log('Fin year interval')
+
+    const months = getEachMonthOfInterval().filter(d => {
+      const m = d.date.getMonth()
+      return m === 6
+    })
 
     return months
   }
