@@ -99,15 +99,23 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 import debounce from 'lodash.debounce'
 import cloneDeep from 'lodash.clonedeep'
 
-import { getEnergyRegionLabel, getNemRegions } from '@/constants/energy-regions.js'
+import { getEnergyRegionLabel, getAuRegions } from '@/constants/energy-regions.js'
 import { periods, metrics } from '@/constants/stripes/'
-import { RANGE_ALL, COMPARE_RANGES, COMPARE_RANGE_INTERVALS } from '@/constants/ranges.js'
+import { RANGE_ALL, RANGE_ALL_12MTH_ROLLING, RANGE_INTERVALS, COMPARE_RANGES, COMPARE_RANGE_INTERVALS } from '@/constants/ranges.js'
 import { INTERVAL_MONTH, FILTER_NONE } from '@/constants/interval-filters.js'
 import DateDisplay from '@/services/DateDisplay.js'
+import {
+  simpleDataProcess,
+  dataProcess,
+  simpleDataRollUp,
+  dataFilterByPeriod
+} from '@/data/parse/region-energy'
+import getStripesDataset from '@/data/transform/energy-to-stripe-metrics.js'
 
 import {
   allBucket,
   getRegionStripesData,
+  getRegionCompareData,
   getStripesDateRange,
   getStripesStartEndDates,
   getStripesRegion
@@ -180,7 +188,9 @@ export default {
       metrics,
       dateRange: getStripesDateRange(),
       startEndDates: getStripesStartEndDates(),
+      responseDataset: null,
       regionData: [],
+      dataDomains: {},
       ranges: COMPARE_RANGES,
       intervals: COMPARE_RANGE_INTERVALS,
       range: RANGE_ALL,
@@ -192,10 +202,11 @@ export default {
       hoverDisplay: null,
       regionId: 'nem',
       allBucket,
-      domains: getNemRegions(),
+      domains: getAuRegions(),
       hiddenDomains: [],
       zoomExtent: [],
-      isHovering: false
+      isHovering: false,
+      bucket: []
     }
   },
 
@@ -253,29 +264,27 @@ export default {
     },
 
     lineChartDataset() {
-      console.log(this.domains, this.regionData, this.selectedMetric)
-      const arr = cloneDeep(allBucket)
+      const arr = cloneDeep(this.bucket)
 
-      this.regionData.forEach(region => {
-        console.log(region.regionId)
-        const id =  region.regionId
+      if (arr && arr.length) {
+        this.regionData.forEach(region => {
+          const id =  region.regionId
 
-        region.data.forEach((d, i) => {
-          arr[i][id] = d[this.selectedMetric]
+          region.data.forEach((d, i) => {
+            arr[i][id] = d[this.selectedMetric]
+          })
         })
-      })
 
-      console.log('arr', arr)
+        return arr
+      }
 
-      return arr
+      return []
     }
-
-    
   },
 
   watch: {
     regionId(id) {
-      this.getData(id, this.selectedPeriod)
+      this.getData(id)
     },
     queryMetric(metric) {
       if (metric) {
@@ -283,7 +292,6 @@ export default {
       }
     },
     async lineChartDataset(val) {
-      console.log('line', val)
       if (val.length > 0) {
         await this.doUpdateXGuides({
           interval: this.interval,
@@ -291,9 +299,6 @@ export default {
           end: val[val.length - 1].time
         })
       }
-    },
-    xGuides(val) {
-      console.log('xGuides', val)
     }
   },
 
@@ -309,7 +314,7 @@ export default {
     }
 
     this.$store.dispatch('currentView', 'compare')
-    this.getData(this.regionId, this.selectedPeriod)
+    this.getData(this.regionId)
 
     this.width = this.$el.offsetWidth - 32
 
@@ -333,19 +338,64 @@ export default {
       setQuery: 'app/query'
     }),
 
-    getData(id, period) {
-      // reset
+    getData() {
       this.fetching = true
       this.regionData = []
-      const regions = getStripesRegion(id)
 
-      this.selectedPeriod = 'all/month'
+      this.doGetAllData({ regions: this.domains }).then(d => {
+        this.responseDataset = cloneDeep(d)
+        this.setRegionDataAndBucket(this.responseDataset)
+      })
+    },
 
-      getRegionStripesData(this.doGetAllData, regions).then((d) => {
-        this.regionData = d
+    updateDataWithInterval() {
+      if (this.responseDataset) {
+        this.setRegionDataAndBucket(this.responseDataset)
+      } 
+    },
+
+    setRegionDataAndBucket(data) {
+      const d = cloneDeep(data)
+      const dataset = {}
+      const regions = this.domains
+
+      regions.forEach(r => {
+        const id = r.id
+
+        const { currentDataset } = simpleDataRollUp({
+          isEnergyType: true,
+          datasetFlat: cloneDeep(d[id].dataset),
+          domainPowerEnergy: d[id].domainPowerEnergy,
+          domainEmissions: d[id].domainEmissions,
+          domainMarketValue: d[id].domainMarketValue,
+          domainPrice: d[id].domainPrice,
+          domainTemperature: d[id].domainTemperature,
+          domainDemandPrice: d[id].domainDemandPrice,
+          domainDemandEnergy: d[id].domainDemandEnergy,
+          domainDemandPower: [],
+          domainDemandMarketValue: d[id].domainDemandMarketValue,
+          range: this.range,
+          interval: this.interval
+        })
+
+        dataset[id] = {
+          originalDataset: currentDataset,
+          domainPowerEnergy: d[id].domainPowerEnergy,
+          domainEmissions: d[id].domainEmissions,
+          domainMarketValue: d[id].domainMarketValue,
+          domainPrice: d[id].domainPrice,
+          domainTemperature: d[id].domainTemperature,
+          domainDemandPrice: d[id].domainDemandPrice,
+          domainDemandEnergy: d[id].domainDemandEnergy,
+          domainDemandPower: [],
+          domainDemandMarketValue: d[id].domainDemandMarketValue
+        }
+      })
+
+      getRegionCompareData(dataset, regions, this.interval).then(r => {
+        this.regionData = r.regionData
+        this.bucket = r.bucket
         this.fetching = false
-        console.log('this.regionData', d)
-        console.log('startEndDates', this.startEndDates)
       })
     },
 
@@ -395,9 +445,12 @@ export default {
 
     handleRangeChange(range) {
       this.range = range
+      this.interval = RANGE_INTERVALS[range][0]
     },
     handleIntervalChange(interval) {
       this.interval = interval
+
+      this.updateDataWithInterval()
     },
     handleFilterPeriodChange(period) {
       this.filterPeriod = period

@@ -2,6 +2,7 @@ import format from 'date-fns/format'
 
 import getStripesDataset from '@/data/transform/energy-to-stripe-metrics.js'
 import {
+  getEachOfInterval,
   getEachYearOfInterval,
   getEachMonthOfInterval,
   getEachDayOfInterval
@@ -11,6 +12,49 @@ import { getEnergyRegions } from '@/constants/energy-regions.js'
 export const allBucket = getEachMonthOfInterval()
 
 export const dateFormatString = 'MMM yyyy'
+
+export async function getRegionCompareData(dataset, regions, interval) {
+  const regionData = []
+  const bucket = getEachOfInterval(interval)
+
+  regions.forEach(region => {
+    const rData = dataset[region.id]
+
+    const data = getStripesDataset({
+      dataset: rData.originalDataset,
+      datasetInflation: rData.inflation ? rData.inflation.data : [],
+      domainPowerEnergy: rData.domainPowerEnergy,
+      domainEmissions: rData.domainEmissions,
+      domainTemperature: rData.domainTemperature,
+      domainPrice: rData.domainPrice,
+      domainMarketValue: rData.domainMarketValue,
+      domainDemandPrice: rData.domainDemandPrice,
+      domainDemandEnergy: rData.domainDemandEnergy,
+      domainDemandMarketValue: rData.domainDemandMarketValue,
+      domainInflation: rData.inflation ? rData.inflation.domain : null,
+      topUp: false,
+      bucket
+    })
+
+    regionData.push({
+      region: region.label,
+      regionId: region.id,
+      originalDataset: rData.originalDataset,
+      domainPowerEnergy: rData.domainPowerEnergy,
+      domainEmissions: rData.domainEmissions,
+      domainTemperature: rData.domainTemperature,
+      domainPrice: rData.domainPrice,
+      domainMarketValue: rData.domainMarketValue,
+      domainDemandPrice: rData.domainDemandPrice,
+      domainDemandEnergy: rData.domainDemandEnergy,
+      domainDemandMarketValue: rData.domainDemandMarketValue,
+      domainInflation: rData.inflation ? rData.inflation.domain : null,
+      data
+    })
+  })
+
+  return { bucket, regionData }
+}
 
 export async function getRegionStripesData(fetchFunc, regions) {
   const regionData = []
@@ -23,6 +67,15 @@ export async function getRegionStripesData(fetchFunc, regions) {
         region: r.label,
         regionId: r.id,
         originalDataset: rData.dataset,
+        domainPowerEnergy: rData.domainPowerEnergy,
+        domainEmissions: rData.domainEmissions,
+        domainTemperature: rData.domainTemperature,
+        domainPrice: rData.domainPrice,
+        domainMarketValue: rData.domainMarketValue,
+        domainDemandPrice: rData.domainDemandPrice,
+        domainDemandEnergy: rData.domainDemandEnergy,
+        domainDemandMarketValue: rData.domainDemandMarketValue,
+        domainInflation: rData.inflation ? rData.inflation.domain : null,
         data: getStripesDataset({
           dataset: rData.dataset,
           datasetInflation: rData.inflation ? rData.inflation.data : [],
@@ -116,7 +169,6 @@ export function getStripesStartEndDates() {
     dateFormatString
   )
 
-  console.log('allBucket', allBucket)
   return {
     start: allBucket[0].date,
     end: allBucket[allBucket.length - 1].date
