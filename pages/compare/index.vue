@@ -332,7 +332,8 @@ export default {
     ...mapActions({
       doGetRegionData: 'regionEnergy/doGetRegionData',
       doGetAllData: 'regionEnergy/doGetAllData',
-      doUpdateXGuides: 'visInteract/doUpdateXGuides'
+      doUpdateXGuides: 'visInteract/doUpdateXGuides',
+      doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
     }),
     ...mapMutations({
       setQuery: 'app/query'
@@ -359,6 +360,12 @@ export default {
       const dataset = {}
       const regions = this.domains
 
+      this.doUpdateTickFormats({
+        range: this.range,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod
+      })
+
       regions.forEach(r => {
         const id = r.id
 
@@ -378,8 +385,14 @@ export default {
           interval: this.interval
         })
 
+        const { filteredDatasetFlat } = dataFilterByPeriod({
+          currentDataset,
+          interval: this.interval,
+          period: this.filterPeriod
+        })
+
         dataset[id] = {
-          originalDataset: currentDataset,
+          originalDataset: filteredDatasetFlat,
           domainPowerEnergy: d[id].domainPowerEnergy,
           domainEmissions: d[id].domainEmissions,
           domainMarketValue: d[id].domainMarketValue,
@@ -392,7 +405,7 @@ export default {
         }
       })
 
-      getRegionCompareData(dataset, regions, this.interval).then(r => {
+      getRegionCompareData(dataset, regions, this.interval, this.filterPeriod).then(r => {
         this.regionData = r.regionData
         this.bucket = r.bucket
         this.fetching = false
@@ -453,7 +466,10 @@ export default {
       this.updateDataWithInterval()
     },
     handleFilterPeriodChange(period) {
+      console.log(period)
       this.filterPeriod = period
+
+      this.updateDataWithInterval()
     },
     handleQueryChange(query) {
       console.log(query)

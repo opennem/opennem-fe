@@ -13,9 +13,9 @@ export const allBucket = getEachMonthOfInterval()
 
 export const dateFormatString = 'MMM yyyy'
 
-export async function getRegionCompareData(dataset, regions, interval) {
+export async function getRegionCompareData(dataset, regions, interval, filterPeriod) {
   const regionData = []
-  const bucket = getEachOfInterval(interval)
+  const bucket = getEachOfInterval(interval, filterPeriod)
 
   regions.forEach(region => {
     const rData = dataset[region.id]
