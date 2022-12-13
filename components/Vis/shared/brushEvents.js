@@ -75,7 +75,7 @@ export function onBrushEnded({ s, x, interval, filterPeriod, datasetEndDate }) {
   let startX = x.invert(s[0])
   let endX = x.invert(s[1])
 
-  if (interval === INTERVAL_YEAR) {
+  if (interval === INTERVAL_FINYEAR) {
     if (startX.getMonth() >= 6) {
       startX.setFullYear(startX.getFullYear() + 1)
     }

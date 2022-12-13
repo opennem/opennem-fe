@@ -9,28 +9,23 @@
       </div>
 
       <div class="version">
-        <a
-          v-tooltip="'OpenNEM status page'"
-          rel="external"
-          class="icon-link"
+        <a 
+          v-tooltip="'OpenNEM status page'" 
+          rel="external" 
+          class="icon-link" 
           target="_blank"
-          href="https://status.opennem.org.au/"
-        >
+          href="https://status.opennem.org.au/">
           <i class="fal fa-fw fa-clipboard-list-check" />
         </a>
-        <a
-          v-tooltip="'Developer documentation'"
-          rel="external"
-          class="icon-link"
+        <a 
+          v-tooltip="'Developer documentation'" 
+          rel="external" 
+          class="icon-link" 
           target="_blank"
-          href="https://developers.opennem.org.au/"
-        >
+          href="https://developers.opennem.org.au/">
           <i class="fal fa-fw fa-book" />
         </a>
-        <strong 
-          v-show="hasAPIversion && !isEmissionsAuRegion"
-        >API: {{ apiVersion }}</strong
-        >
+        <strong v-show="hasAPIversion && !isEmissionsAuRegion">API: {{ apiVersion }}</strong>
       </div>
 
       <div 
@@ -38,48 +33,38 @@
         class="sources">
         Source:
 
-        <a
-          :href="footerSourceUrl"
-          :title="`Link to ${footerSourceLabel}`"
-          target="_blank"
-        >{{ footerSourceLabel }}</a
-        >
+        <a 
+          :href="footerSourceUrl" 
+          :title="`Link to ${footerSourceLabel}`" 
+          target="_blank">{{ footerSourceLabel }}</a>
       </div>
 
       <div 
         v-show="isEmissionsWorldRegion" 
         class="sources">
-        <a
-          target="_blank"
-          href="https://doi.org/10.5281/zenodo.5494497"
-          title="Link to dataset used by this visualisation"
-        >PRIMAP-hist (HISTCR; Kyoto GHG (AR4); Total excl. Landuse)</a
-        >,
+        <a 
+          target="_blank" 
+          href="https://zenodo.org/record/7179775#.Y5WC4OxxU0E"
+          title="Link to dataset used by this visualisation">Gütschow, J.; Pflüger, M. (2022): The PRIMAP-hist national
+          historical emissions time series v2.4 (1750-2021).</a>
       </div>
 
-      <div
-        v-show="!isEmissionsAuRegion && !isEmissionsWorldRegion"
-        class="sources"
-      >
+      <div 
+        v-show="!isEmissionsAuRegion && !isEmissionsWorldRegion" 
+        class="sources">
         Sources:
         <a 
           rel="external" 
           href="https://www.aemo.com.au/" 
-          title="Link to AEMO"
-        >AEMO</a
-        >,
+          title="Link to AEMO">AEMO</a>,
         <a 
           rel="external" 
           href="http://apvi.org.au/" 
-          title="Link to APVI"
-        >APVI</a
-        >,
+          title="Link to APVI">APVI</a>,
         <a 
           rel="external" 
           href="http://www.bom.gov.au/" 
-          title="Link to BoM"
-        >BoM</a
-        >
+          title="Link to BoM">BoM</a>
       </div>
     </div>
 
@@ -87,39 +72,35 @@
       <!-- :style="{ right: `${featureRightPos}px`, bottom: `${featrueBottomPos}px` }" -->
 
       <transition name="slide-up-fade">
-        <FeatureToggle
-          v-if="showFeatureToggle"
-          class="features"
-          @done="setShowFeatureToggle(false)"
-        />
+        <FeatureToggle 
+          v-if="showFeatureToggle" 
+          class="features" 
+          @done="setShowFeatureToggle(false)" />
       </transition>
 
-      <a
-        v-tooltip="'Experimental features'"
-        ref="featureElement"
-        class="icon-link"
+      <a 
+        v-tooltip="'Experimental features'" 
+        ref="featureElement" 
+        class="icon-link" 
         target="_blank"
-        @click.stop="handleFeatureToggleClick"
-      >
+        @click.stop="handleFeatureToggleClick">
         <i class="fal fa-fw fa-vial" />
       </a>
 
-      <a
-        v-tooltip="'Twitter'"
-        rel="external"
-        class="icon-link"
-        target="_blank"
-        href="https://twitter.com/opennem"
-      >
+      <a 
+        v-tooltip="'Twitter'" 
+        rel="external" 
+        class="icon-link" 
+        target="_blank" 
+        href="https://twitter.com/opennem">
         <i class="fab fa-fw fa-twitter" />
       </a>
-      <a
-        v-tooltip="'Github'"
-        rel="external"
-        class="icon-link"
-        target="_blank"
-        href="https://github.com/opennem"
-      >
+      <a 
+        v-tooltip="'Github'" 
+        rel="external" 
+        class="icon-link" 
+        target="_blank" 
+        href="https://github.com/opennem">
         <i class="fab fa-fw fa-github" />
       </a>
       <nuxt-link 
@@ -224,6 +205,7 @@ footer {
   a {
     color: #fff;
     border-bottom: 1px dashed #fff;
+
     &:hover {
       border-bottom-style: solid;
     }
