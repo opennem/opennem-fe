@@ -2,56 +2,53 @@
   <div class="wrapper">
     <div class="chart-table">
       <div class="chart-wrapper">
-        <EmissionsChart
-          v-if="ready"
-          :emissions-dataset="dataset"
+        <EmissionsChart 
+          v-if="ready" 
+          :emissions-dataset="dataset" 
           :domain-emissions="filteredDisplayDomains"
-          :range="range"
-          :interval="interval"
-          :show-x-axis="true"
-          :vis-height="300"
+          :range="range" 
+          :interval="interval" 
+          :show-x-axis="true" 
+          :vis-height="300" 
           :show-average-value="false"
-          :hover-on="isHovering"
-          :hover-date="hoverDate"
-          :zoom-extent="zoomExtent"
+          :hover-on="isHovering" 
+          :hover-date="hoverDate" 
+          :zoom-extent="zoomExtent" 
           :filter-period="filterPeriod"
-          :hidden-domains="hidden"
-          :compare-dates="compareDates"
+          :hidden-domains="hidden" 
+          :compare-dates="compareDates" 
           :emissions-options="emissionsOptions"
-          @dateHover="handleDateHover"
-          @isHovering="handleIsHovering"
-          @zoomExtent="handleZoomExtent"
-        />
+          @dateHover="handleDateHover" 
+          @isHovering="handleIsHovering" 
+          @zoomExtent="handleZoomExtent" />
 
         <div 
           v-if="compareDifference" 
           class="compare-chart">
-          <CompareChart
-            :compare-data="compareData"
-            :domains="filteredDisplayDomains"
+          <CompareChart 
+            :compare-data="compareData" 
+            :domains="filteredDisplayDomains" 
             :range="range"
-            :interval="interval"
-            :unit="chartCurrentUnit"
-            :use-percentage="true"
-            :vis-height="350"
+            :interval="interval" 
+            :unit="chartCurrentUnit" 
+            :use-percentage="true" 
+            :vis-height="350" 
             :show-x-axis="false"
-            @mouseEnter="handleMouseEnter"
-          />
+            @mouseEnter="handleMouseEnter" />
         </div>
       </div>
 
-      <CountryLegend
-        :area-codes="areaCodes"
-        :domains="domains"
-        :hidden="hidden"
+      <CountryLegend 
+        :area-codes="areaCodes" 
+        :domains="domains" 
+        :hidden="hidden" 
         class="legend"
-        @rowClick="handleTypeClick"
-        @rowShiftClick="handleTypeShiftClick"
+        @rowClick="handleTypeClick" 
+        @rowShiftClick="handleTypeShiftClick" 
         @codeAdd="handleCodeAdd"
-        @codeRemove="handleCodeRemove"
-        @mouseEnter="handleMouseEnter"
-        @mouseLeave="handleMouseLeave"
-      />
+        @codeRemove="handleCodeRemove" 
+        @mouseEnter="handleMouseEnter" 
+        @mouseLeave="handleMouseLeave" />
     </div>
   </div>
 </template>
@@ -366,10 +363,10 @@ export default {
 
     checkYearIsWithinRange(year) {
       const yearInt = parseInt(year, 10)
-      if (yearInt >= 1990 && yearInt <= 2019) {
+      if (yearInt >= 1990 && yearInt <= 2021) {
         return true
       } else {
-        throw new RangeError('The year must be between 1990 and 2019.')
+        throw new RangeError('The year must be between 1990 and 2021.')
       }
     },
 
@@ -560,7 +557,7 @@ export default {
     getEmissions() {
       // const url = '/data/country-emissions.csv'
       const url =
-        'https://data.opennem.org.au/v1/emissions/world/country-emissions.csv'
+        'https://data.opennem.org.au/v1/emissions/world/country-emissions-20221213.csv'
 
       const keyArea = 'area (ISO3)'
       const keyCategory = 'category (IPCC2006_PRIMAP)'
@@ -667,9 +664,11 @@ export default {
         if (filteredDates.length === 2) {
           secondComparePoint = subYears(filteredDates[1], 1)
           this.compareDates = [filteredDates[0], secondComparePoint]
+
         } else {
           this.compareDates = [firstPoint.date, lastPoint.date]
           secondComparePoint = lastPoint.date
+
         }
 
         this.compareData = [
@@ -832,6 +831,7 @@ export default {
   .chart-wrapper {
     width: 100%;
   }
+
   .legend {
     width: 80%;
     background-color: transparent;
@@ -846,6 +846,7 @@ export default {
     .chart-wrapper {
       width: calc(100% - 300px);
     }
+
     .legend {
       width: 300px;
     }
