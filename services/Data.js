@@ -3,14 +3,33 @@ import subYears from 'date-fns/subYears'
 
 import * as rangesJs from '~/constants/ranges.js'
 
+function getYearPaths(prepend, regionId, oneYearAgo) {
+  const today = new Date()
+  const thisFullYear = today.getFullYear()
+  const thisDate = today.getDate()
+  const thisMonth = today.getMonth()
+
+  const paths = []
+
+  if (thisFullYear !== oneYearAgo) {
+    paths.push(`v3/stats/au${prepend}/${regionId}/energy/${oneYearAgo}.json`)
+  }
+
+  // check it's not 1/1/yyyy since the new year won't be generated yet
+  if (thisDate !== 1 && thisMonth !== 0) {
+    paths.push(`v3/stats/au${prepend}/${regionId}/energy/${thisFullYear}.json`)
+  }
+
+  return paths
+}
+
 export default {
   getEnergyUrls(region, range) {
     const prepend =
       region === 'wem' || region === 'nem' || region === 'au' ? '' : '/NEM'
     const regionId = region.toUpperCase()
-    const thisFullYear = new Date().getFullYear()
     let oneYearAgo = null
-    const urls = []
+    let urls = []
 
     switch (range) {
       case rangesJs.RANGE_1D:
@@ -18,32 +37,16 @@ export default {
       case rangesJs.RANGE_7D:
         urls.push(`v3/stats/au${prepend}/${regionId}/power/7d.json`)
         break
+
       case rangesJs.RANGE_30D:
         const thirtyDaysAgo = subDays(new Date(), 30)
         oneYearAgo = thirtyDaysAgo.getFullYear()
-
-        if (thisFullYear !== oneYearAgo) {
-          urls.push(
-            `v3/stats/au${prepend}/${regionId}/energy/${oneYearAgo}.json`
-          )
-        }
-
-        urls.push(
-          `v3/stats/au${prepend}/${regionId}/energy/${thisFullYear}.json`
-        )
+        urls = getYearPaths(prepend, regionId, oneYearAgo)
         break
+
       case rangesJs.RANGE_1Y:
         oneYearAgo = subYears(new Date(), 1).getFullYear()
-
-        if (thisFullYear !== oneYearAgo) {
-          urls.push(
-            `v3/stats/au${prepend}/${regionId}/energy/${oneYearAgo}.json`
-          )
-        }
-
-        urls.push(
-          `v3/stats/au${prepend}/${regionId}/energy/${thisFullYear}.json`
-        )
+        urls = getYearPaths(prepend, regionId, oneYearAgo)
         break
 
       case rangesJs.RANGE_ALL:
