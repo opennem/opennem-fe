@@ -10,13 +10,14 @@ function getYearPaths(prepend, regionId, oneYearAgo) {
   const thisMonth = today.getMonth()
 
   const paths = []
+  const is1Jan = thisDate === 1 && thisMonth === 0
 
   if (thisFullYear !== oneYearAgo) {
     paths.push(`v3/stats/au${prepend}/${regionId}/energy/${oneYearAgo}.json`)
   }
 
   // check it's not 1/1/yyyy since the new year won't be generated yet
-  if (thisDate !== 1 && thisMonth !== 0) {
+  if (!is1Jan) {
     paths.push(`v3/stats/au${prepend}/${regionId}/energy/${thisFullYear}.json`)
   }
 
