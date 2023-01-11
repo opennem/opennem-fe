@@ -15,14 +15,12 @@
       <view-dropdown 
         v-if="!tabletBreak" 
         class="selection" />
-      <region-dropdown
-        v-show="!tabletBreak && !isEmissionsView"
-        class="selection"
-      />
-      <EmissionsRegionDropdown
-        v-show="!tabletBreak && isEmissionsView"
-        class="selection"
-      />
+      <region-dropdown 
+        v-show="!tabletBreak && !isEmissionsView" 
+        class="selection" />
+      <EmissionsRegionDropdown 
+        v-show="!tabletBreak && isEmissionsView" 
+        class="selection" />
     </div>
 
     <div v-if="ready">
@@ -31,11 +29,10 @@
         :open="openDrawer" 
         @close="closeDrawer" />
 
-      <div
-        v-if="!isFacilitiesView && showButtons"
-        :class="{ hide: tabletBreak }"
-        class="more-buttons"
-      >
+      <div 
+        v-if="!isFacilitiesView && showButtons" 
+        :class="{ hide: tabletBreak }" 
+        class="more-buttons">
         <consumption-generation-toggle />
 
         <!-- <button
@@ -50,28 +47,26 @@
 
       <div 
         v-if="!tabletBreak && showButtons" 
-        class="share-button-wrapper">
-        <button
-          v-on-clickaway="handleClickAway"
+        class="s-button-wrapper">
+        <button 
+          v-on-clickaway="handleClickAway" 
           :class="{ 'is-loading is-primary': generating }"
-          class="share-button button"
-          @click="handleShareButtonClicked"
-        >
+          class="s-button button" 
+          @click="handleShareButtonClicked">
           <img 
             src="~/assets/img/share-icon.svg" 
-            alt="Share icon" >
+            alt="Share icon">
           <span class="label-image">Export</span>
         </button>
         <transition name="slide-down-fade">
           <div 
             v-if="showShareMenu" 
-            class="share-menu dropdown-menu">
+            class="s-menu dropdown-menu">
             <div class="dropdown-content">
-              <a
-                v-if="!isFacilitiesView"
-                class="dropdown-item button"
-                @click="handleExportImage"
-              >
+              <a 
+                v-if="!isFacilitiesView" 
+                class="dropdown-item button" 
+                @click="handleExportImage">
                 <i class="fal fa-fw fa-chart-bar" />
                 <span class="label-image">PNG</span>
               </a>
@@ -90,11 +85,10 @@
         </transition>
       </div>
 
-      <FacilityViewToggle
-        v-if="tabletBreak && !openDrawer && isFacilitiesView"
+      <FacilityViewToggle 
+        v-if="tabletBreak && !openDrawer && isFacilitiesView" 
         :view="selectedView"
-        @viewSelect="(v) => (selectedView = v)"
-      />
+        @viewSelect="(v) => (selectedView = v)" />
     </div>
   </header>
 </template>
@@ -400,16 +394,17 @@ header {
     }
   }
 
-  .share-button-wrapper {
+  .s-button-wrapper {
     position: relative;
     margin-right: 1.5rem;
+
     .button:focus {
       color: $opennem-link-color;
     }
   }
 
   &.facilities-header {
-    .share-button-wrapper {
+    .s-button-wrapper {
       position: absolute;
       left: 50%;
       top: 12px;
@@ -424,6 +419,7 @@ header {
         min-width: 30px;
         border-radius: 4px;
         padding: 0;
+
         @include desktop {
           min-width: 62px;
           padding: 0 15px;
@@ -432,6 +428,7 @@ header {
 
       .label-image {
         display: none;
+
         @include desktop {
           display: inline;
         }
@@ -439,8 +436,9 @@ header {
     }
   }
 
-  .share-button {
+  .s-button {
     font-size: 11px;
+
     img {
       width: 10px;
       color: $opennem-link-color;
@@ -451,18 +449,19 @@ header {
     }
   }
 
-  .share-menu {
+  .s-menu {
     display: block;
     right: 0;
     left: auto;
     min-width: 40px;
+
     .dropdown-item {
       border-radius: 0;
       min-width: 40px;
     }
   }
 
-  .share-buttons {
+  .s-buttons {
     .button {
       font-size: 0.9rem;
     }
@@ -470,12 +469,14 @@ header {
     .label-image {
       margin-left: 3px;
     }
+
     .fa-chart-bar {
       position: relative;
       top: 1px;
     }
   }
 }
+
 .more-buttons {
   position: absolute;
   right: 8rem;
@@ -488,6 +489,7 @@ header {
       display: none;
     }
   }
+
   .buttons {
     display: inline;
   }
@@ -498,6 +500,7 @@ header {
     }
   }
 }
+
 .compare-button {
   margin-left: 10px;
 }

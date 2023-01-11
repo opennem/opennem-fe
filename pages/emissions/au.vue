@@ -2,38 +2,34 @@
   <div class="wrapper">
     <div class="dataset-selection">
       <div class="buttons has-addons">
-        <button
-          :class="{ 'is-selected': isQuarterDatasetView }"
-          class="button"
-          @click="handleQuarterViewSelect"
-        >
+        <button 
+          :class="{ 'is-selected': isQuarterDatasetView }" 
+          class="button" 
+          @click="handleQuarterViewSelect">
           Quarter
         </button>
-        <button
-          :class="{ 'is-selected': isYearDatasetView }"
-          class="button"
-          @click="handleYearViewSelect"
-        >
+        <button 
+          :class="{ 'is-selected': isYearDatasetView }" 
+          class="button" 
+          @click="handleYearViewSelect">
           Year
         </button>
       </div>
 
       <div class="buttons">
-        <button
-          v-if="isYearDatasetView"
-          :class="{ 'is-selected': addHistory }"
+        <button 
+          v-if="isYearDatasetView" 
+          :class="{ 'is-selected': addHistory }" 
           class="button"
-          @click="handleHistoryToggle"
-        >
+          @click="handleHistoryToggle">
           History <strong>FY 1990 — 2004</strong>
         </button>
-        <button
-          v-if="isYearDatasetView"
-          :class="{ 'is-selected': addProjections }"
+        <button 
+          v-if="isYearDatasetView" 
+          :class="{ 'is-selected': addProjections }" 
           class="button"
-          @click="handleProjectionsToggle"
-        >
-          Projections <strong>FY 2021 — 2030</strong>
+          @click="handleProjectionsToggle">
+          Projections <strong>FY 2021 — 2035</strong>
         </button>
       </div>
     </div>
@@ -47,7 +43,7 @@
             <span v-if="isHovering">
               {{ hoverDate | customFormatDate({ range, interval }) }}
             </span>
-            
+
             <span v-else>
               <time>
                 {{
@@ -73,76 +69,72 @@
             </span>
           </h2>
         </div>
-        <EmissionsChart
-          v-if="!fetching && dataset.length > 0"
+        <EmissionsChart 
+          v-if="!fetching && dataset.length > 0" 
           :emissions-dataset="dataset"
           :emissions-projection-dataset="
             isYearDatasetView && addProjections ? projectionDataset : []
-          "
-          :domain-emissions="filteredDomains"
-          :range="range"
-          :interval="interval"
+          " 
+          :domain-emissions="filteredDomains" 
+          :range="range" 
+          :interval="interval" 
           :show-x-axis="true"
-          :average-emissions="averageEmissions"
-          :vis-height="tabletBreak ? 300 : 600"
+          :average-emissions="averageEmissions" 
+          :vis-height="tabletBreak ? 300 : 600" 
           :hover-on="isHovering"
-          :hover-date="hoverDate"
-          :zoom-extent="zoomExtent"
-          :filter-period="filterPeriod"
+          :hover-date="hoverDate" 
+          :zoom-extent="zoomExtent" 
+          :filter-period="filterPeriod" 
           :hidden-domains="hidden"
-          :compare-dates="compareDates"
-          :show-total-line="showTotalLine"
+          :compare-dates="compareDates" 
+          :show-total-line="showTotalLine" 
           :use-offset-diverge="true"
-          :custom-interval="'year'"
+          :custom-interval="'year'" 
           :incomplete-intervals="
             isYearDatasetView && addProjections ? projectionsInterval : []
-          "
-          :show-average-value="false"
-          @dateHover="handleDateHover"
+          " 
+          :show-average-value="false" 
+          @dateHover="handleDateHover" 
           @isHovering="handleIsHovering"
-          @zoomExtent="handleZoomExtent"
-          @svgClick="handleSvgClick"
-          @changeDataset="handleChangeDatasetChange"
-        />
+          @zoomExtent="handleZoomExtent" 
+          @svgClick="handleSvgClick" 
+          @changeDataset="handleChangeDatasetChange" />
         <div 
           v-if="compareDifference" 
           class="compare-chart">
-          <a
-            class="close-button"
-            @click.prevent="() => setCompareDifference(false)"
-          >
+          <a 
+            class="close-button" 
+            @click.prevent="() => setCompareDifference(false)">
             <i class="fal fa-times-circle" />
           </a>
 
-          <CompareChart
-            :compare-data="compareData"
-            :domains="filteredDomainEmissions"
+          <CompareChart 
+            :compare-data="compareData" 
+            :domains="filteredDomainEmissions" 
             :range="range"
-            :interval="interval"
-            :unit="chartCurrentUnit"
-            :is-f-y="isYearDatasetView"
-          />
+            :interval="interval" 
+            :unit="chartCurrentUnit" 
+            :is-f-y="isYearDatasetView" />
         </div>
       </div>
-      <BarChart
-        :bar-width="200"
-        :domains="domainEmissions"
-        :hidden="hidden"
+      <BarChart 
+        :bar-width="200" 
+        :domains="domainEmissions" 
+        :hidden="hidden" 
         :dataset="filteredDataset"
-        :hover-on="isHovering"
-        :hover-date="hoverDate"
-        :focus-on="focusOn"
+        :hover-on="isHovering" 
+        :hover-date="hoverDate" 
+        :focus-on="focusOn" 
         :focus-date="focusDate"
-        :show-total="showTotalLine"
-        :show-total-in-legend="isStackedChartType"
+        :show-total="showTotalLine" 
+        :show-total-in-legend="isStackedChartType" 
         class="legend-bar"
-        @rowClick="handleTypeClick"
-        @rowShiftClick="handleTypeShiftClick"
+        @rowClick="handleTypeClick" 
+        @rowShiftClick="handleTypeShiftClick" 
         @totalClick="handleTotalClick"
-        @totalShiftClick="handleTotalShiftClick"
-        @mouseEnter="handleMouseEnter"
-        @mouseLeave="handleMouseLeave"
-      />
+        @totalShiftClick="handleTotalShiftClick" 
+        @mouseEnter="handleMouseEnter" 
+        @mouseLeave="handleMouseLeave" />
     </div>
   </div>
 </template>
@@ -560,7 +552,7 @@ export default {
     this.projectionsInterval = [
       {
         start: new Date(2021, 0, 1),
-        end: new Date(2030, 11, 31)
+        end: new Date(2035, 11, 31)
       }
     ]
     this.$store.dispatch('currentView', 'emissions')
@@ -839,7 +831,7 @@ export default {
     handleTotalClick() {
       this.showTotalLine = !this.showTotalLine
     },
-    handleTotalShiftClick() {},
+    handleTotalShiftClick() { },
 
     getDataByTime(dataset, time) {
       return dataset.find((d) => d.time === time)
@@ -1006,6 +998,7 @@ h1 {
   right: 0;
   text-align: center;
   color: #333;
+
   h2 {
     font-weight: 100;
     font-size: 1.4rem;
@@ -1020,6 +1013,7 @@ h1 {
 
 .buttons {
   margin: 1rem;
+
   .is-small {
     border-radius: 100px;
   }
@@ -1028,6 +1022,7 @@ h1 {
 .compare-chart {
   position: relative;
   margin-left: 1rem;
+
   .close-button {
     position: absolute;
     right: 1rem;
@@ -1043,6 +1038,7 @@ h1 {
   .chart-wrapper {
     width: 100%;
   }
+
   .legend-bar {
     width: 430px;
     background-color: transparent;
@@ -1057,6 +1053,7 @@ h1 {
     .chart-wrapper {
       width: calc(100% - 400px);
     }
+
     .legend-bar {
       width: 400px;
     }
