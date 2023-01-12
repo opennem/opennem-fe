@@ -16,7 +16,7 @@
         v-if="!tabletBreak" 
         class="selection" />
       <region-dropdown 
-        v-show="!tabletBreak && !isEmissionsView" 
+        v-show="!tabletBreak && !isEmissionsView && !isCompareView" 
         class="selection" />
       <EmissionsRegionDropdown 
         v-show="!tabletBreak && isEmissionsView" 
@@ -163,6 +163,10 @@ export default {
 
     isEmissionsView() {
       return this.currentView === 'emissions'
+    },
+
+    isCompareView() {
+      return this.currentView === 'compare'
     },
 
     isEmissionsWorldRegion() {

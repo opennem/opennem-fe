@@ -14,5 +14,9 @@ export default [
   {
     id: 'stripes',
     label: 'Stripes'
+  },
+  {
+    id: 'compare',
+    label: 'Compare Regions'
   }
 ]

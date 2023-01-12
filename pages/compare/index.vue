@@ -1,17 +1,17 @@
 <template>
   <div class="container-fluid">
-    <h3>{{ dateRange }}</h3>
+    <!-- <h3>{{ dateRange }}</h3> -->
 
     <OptionsLegend 
       :legend-width="tabletBreak ? 200 : 310" 
       :legend-font-size="tabletBreak ? 9 : 10"
-      :show-legend="regionData.length > 0" 
+      :show-legend="false" 
       :hover-display="hoverDisplay" 
       :use-hover="!useAllPeriods"
       :show-hover="hoverDate ? true : false" />
 
     <div class="vis-container">
-      <DataOptionsBar
+      <!-- <DataOptionsBar
         :ranges="ranges"
         :intervals="intervals"
         :range="range"
@@ -21,28 +21,58 @@
         @intervalChange="handleIntervalChange"
         @queryChange="handleQueryChange"
         @filterPeriodChange="handleFilterPeriodChange"
-      />
+      /> -->
 
-      <OpenChart
+      <div 
         v-if="!fetching && lineChartDataset.length > 0"
-        :chart-dataset="lineChartDataset"
-        :chart-domains="domains"
-        :range="range"
-        :interval="interval"
-        :show-x-axis="true"
-        :vis-height="500"
-        :hover-on="isHovering"
-        :hover-date="hoverDate"
-        :zoom-extent="zoomExtent"
-        :filter-period="filterPeriod"
-        :hidden-domains="hiddenDomains"
-        :show-average-value="false"
-        @dateHover="handleDateHover"
-        @isHovering="handleIsHovering"
-        @zoomExtent="handleZoomExtent"
-      />
+        style="display: flex; gap: 1rem;">
+        <OpenChart
+          style="width: 70%"
+          :chart-dataset="lineChartDataset"
+          :chart-domains="domains"
+          :range="range"
+          :interval="interval"
+          :show-x-axis="true"
+          :vis-height="500"
+          :hover-on="isHovering"
+          :hover-date="hoverDate"
+          :zoom-extent="zoomExtent"
+          :filter-period="filterPeriod"
+          :hidden-domains="hiddenDomains"
+          :show-average-value="false"
+          @dateHover="handleDateHover"
+          @isHovering="handleIsHovering"
+          @zoomExtent="handleZoomExtent"
+        />
 
-      <section 
+        <div class="table-container summary-list">
+          <table>
+            <thead>
+              <tr>
+                <th>Regions</th>
+                <th class="cell-value align-right">
+                  <span>{{ selectedMetricLabel }}</span>
+                  <!-- <span class="unit">{{ selectedMetricUnit }}</span> -->
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr 
+                v-for="domain in domains" 
+                :key="domain.id">
+                <td>
+                  <div 
+                    :style="{ backgroundColor: domain.colour }" 
+                    class="colour-square" />
+                  {{ domain.label }}</td>
+                <td style="text-align: right;">{{ getHoverValue(domain.id) | formatValue }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- <section 
         v-for="(d, i) in regionData" 
         :key="`region-${i}`" 
         class="vis-section">
@@ -73,7 +103,7 @@
             :dataset="d.data"
             :value-prop="selectedMetric" 
             :tooltip-value-prop="
-              selectedMetricObject.valueProp
+              selectedMetricObject.valueProp  
                 ? selectedMetricObject.valueProp
                 : selectedMetric
             " 
@@ -89,7 +119,7 @@
             " 
             @rect-mouseout="handleMouseout" />
         </div>
-      </section>
+      </section> -->
     </div>
   </div>
 </template>
@@ -98,6 +128,7 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import debounce from 'lodash.debounce'
 import cloneDeep from 'lodash.clonedeep'
+import isSameDay from 'date-fns/isSameDay'
 
 import { getEnergyRegionLabel, getAuRegions } from '@/constants/energy-regions.js'
 import { periods, metrics } from '@/constants/stripes/'
@@ -143,12 +174,12 @@ export default {
 
   head() {
     return {
-      title: `: ${getEnergyRegionLabel(this.regionId)} Stripes`,
+      title: `: ${getEnergyRegionLabel(this.regionId)} Compare`,
       meta: [
         {
           hid: 'twitter:title',
           name: 'twitter:title',
-          content: `OpenNEM: ${getEnergyRegionLabel(this.regionId)} Stripes`
+          content: `OpenNEM: ${getEnergyRegionLabel(this.regionId)} Compare`
         },
         {
           hid: 'twitter:image:src',
@@ -158,7 +189,7 @@ export default {
         {
           hid: 'og:title',
           property: 'og:title',
-          content: `OpenNEM: ${getEnergyRegionLabel(this.regionId)} Stripes`
+          content: `OpenNEM: ${getEnergyRegionLabel(this.regionId)} Compare`
         },
         {
           hid: 'og:image',
@@ -245,6 +276,14 @@ export default {
 
     selectedMetricObject() {
       return this.metrics.find((m) => m.value === this.selectedMetric)
+    },
+
+    selectedMetricLabel() {
+      return this.selectedMetricObject?.label
+    },
+
+    selectedMetricUnit() {
+      return this.selectedMetricObject?.unit
     },
 
     selectedPeriodObject() {
@@ -478,6 +517,11 @@ export default {
       // })
 
       // this.setQuery(query)
+    },
+
+    getHoverValue(id) {
+      const find = this.lineChartDataset.find(d => isSameDay(d.date, this.hoverDate))
+      return find ? find[id] : ''
     }
   }
 }
@@ -508,6 +552,61 @@ h3 {
 
 .vis-container {
   margin-top: 1.8rem;
+}
+
+.table-container {
+  width: 30%;
+
+  table {
+    width: 100%;
+    font-size: 0.9rem;
+  }
+
+  thead th {
+    font-family: $header-font-family;
+    font-weight: 700;
+    font-size: 0.8rem;
+    border-bottom: 1px solid #ddd;
+    padding: 0.3rem 0;
+    white-space: nowrap;
+  }
+
+  th:first-child {
+    width: 40%;
+  }
+
+  tbody td {
+    border-bottom: 1px solid #ddd;
+    padding: 0.3rem 0;
+    white-space: nowrap;
+  }
+
+  .align-right {
+    text-align: right;
+  }
+
+  .cell-value span {
+    display: block; 
+  }
+
+  .cell-unit {
+    font-size: 0.8rem;
+    color: #999;
+  }
+
+  .colour-square {
+    width: 18px;
+    height: 18px;
+    float: left;
+    margin-right: 5px;
+    border-radius: 4px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+
+    @include mobile {
+      display: inline;
+      float: none;
+    }
+  }
 }
 
 .vis-section {

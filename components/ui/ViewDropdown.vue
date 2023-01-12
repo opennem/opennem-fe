@@ -26,7 +26,7 @@
           <nuxt-link
             v-for="view in views"
             :key="view.id"
-            :to="`/${view.id}/${getRegionId(view.id)}/`"
+            :to="`/${view.id}${getRegionId(view.id)}`"
             :class="{ 'nuxt-link-active': view.id === currentView }"
             class="dropdown-item"
             @click.native="handleViewClick(view.id)"
@@ -86,8 +86,9 @@ export default {
       this.dropdownActive = false
     },
     getRegionId(viewId) {
-      const id = this.regionId || 'nem'
-      return viewId === 'emissions' ? 'au' : id
+      if (viewId === 'compare') return '/'
+      const regionId = this.regionId || 'nem'
+      return viewId === 'emissions' ? '/au/' : `/${regionId}/`
     }
   }
 }

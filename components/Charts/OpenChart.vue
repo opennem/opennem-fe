@@ -668,7 +668,12 @@ export default {
 
   mounted() {
     this.$emit('changeDataset', this.changeSinceDataset)
-
+    this.doUpdateXTicks({
+      range: this.range,
+      interval: this.interval,
+      isZoomed: this.zoomExtent.length > 0,
+      filterPeriod: this.filterPeriod
+    })
     this.doUpdateTickFormats({
       range: this.range,
       interval: this.interval,
@@ -716,6 +721,12 @@ export default {
     },
 
     handleTypeClick() {
+      this.doUpdateXTicks({
+        range: this.range,
+        interval: this.interval,
+        isZoomed: this.zoomExtent.length > 0,
+        filterPeriod: this.filterPeriod
+      })
       this.doUpdateTickFormats({
         range: this.range,
         interval: this.interval,
