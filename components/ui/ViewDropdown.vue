@@ -66,12 +66,22 @@ export default {
     viewLabel() {
       const view = this.views.find((d) => d.id === this.currentView)
       return view ? view.label : ''
+    },
+    featureCompare() {
+      return this.$store.getters['feature/regionCompare']
     }
   },
 
-  created() {
-    if (this.featureMetrics) {
-      this.views = VIEWS
+  watch: {
+    featureCompare: {
+      immediate: true,
+      handler: function(val) {
+        if (val) {
+          this.views = [...VIEWS, { id: 'compare', label: 'Compare Regions' }]
+        } else {
+          this.views = [...VIEWS]
+        }
+      }
     }
   },
 
