@@ -15,12 +15,12 @@
       Emissions Charts
     </label>
 
-    <!-- <label class="panel-block">
-        <input
-          v-model="featureRegionCompare"
-          type="checkbox">
-        Region Compare Charts
-      </label> -->
+    <label class="panel-block">
+      <input
+        v-model="featureRegionCompare"
+        type="checkbox">
+      Region Compare Charts
+    </label>
   </div>
 </template>
 

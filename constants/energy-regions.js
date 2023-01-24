@@ -70,13 +70,29 @@ const EnergyRegions = [
     id: ENERGY_WEM,
     abbr: 'WA',
     label: 'Western Australia (SWIS)',
-    colour: '#000000',
+    colour: '#333333',
     timezoneString: 'AWST'
   }
 ]
 
 export function getEnergyRegions() {
   return _cloneDeep(EnergyRegions)
+}
+
+export function getAuRegions() {
+  return EnergyRegions.map(d => {
+    return {
+      ...d,
+      domain: d.id
+    }
+  }).filter(
+    d => d.id === ENERGY_NSW ||
+      d.id === ENERGY_QLD ||
+      d.id === ENERGY_SA ||
+      d.id === ENERGY_TAS ||
+      d.id === ENERGY_VIC ||
+      d.id === ENERGY_WEM
+    )
 }
 
 export function getEnergyRegionLabel(id) {

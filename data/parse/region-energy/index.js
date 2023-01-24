@@ -224,6 +224,7 @@ export function dataRollUp({
   isEnergyType
 }) {
   let currentDataset = null
+
   const domains = [
     ...domainPowerEnergy,
     ...domainEmissions,
@@ -284,6 +285,82 @@ export function dataRollUp({
     domainEmissionsGrouped,
     domainMarketValueGrouped
   })
+
+  return {
+    currentDataset
+  }
+}
+
+export function simpleDataRollUp({
+  datasetFlat,
+  domainPowerEnergy,
+  domainEmissions,
+  domainMarketValue,
+  domainPrice,
+  domainTemperature,
+  domainDemandPrice,
+  domainDemandEnergy,
+  domainDemandPower,
+  domainDemandMarketValue,
+  range,
+  interval,
+  isEnergyType
+}) {
+  let currentDataset = null
+
+  const domains = [
+    ...domainPowerEnergy,
+    ...domainEmissions,
+    ...domainMarketValue,
+    ...domainPrice,
+    ...domainTemperature,
+    ...domainDemandEnergy,
+    ...domainDemandPower,
+    ...domainDemandMarketValue
+  ]
+
+  if (range === RANGE_ALL_12MTH_ROLLING) {
+    function rolledUpData(_ds) {
+      return rollUp({
+        domains,
+        datasetFlat: _ds,
+        interval
+      })
+    }
+
+    currentDataset = transformTo12MthRollingSum(
+      rolledUpData(datasetFlat),
+      domains
+    )
+  } else {
+    currentDataset = rollUp({
+      domains,
+      datasetFlat: filterDatasetByRange(datasetFlat, range),
+      interval
+    })
+  }
+
+  if (isEnergyType) {
+    summariseDataset({
+      isEnergyType,
+      currentDataset,
+      domainPowerEnergy,
+      domainEmissions,
+      domainDemandPrice,
+      domainDemandEnergy,
+      domainDemandMarketValue,
+      domainPrice: isEnergyType ? domainMarketValue : domainPrice
+    })
+  } else {
+    summariseDataset({
+      isEnergyType,
+      currentDataset,
+      domainPowerEnergy,
+      domainDemandPower,
+      domainEmissions,
+      domainPrice: isEnergyType ? domainMarketValue : domainPrice
+    })
+  }
 
   return {
     currentDataset
