@@ -408,24 +408,8 @@ export default {
       regions.forEach(r => {
         const id = r.id
 
-        const { currentDataset } = simpleDataRollUp({
-          isEnergyType: true,
-          datasetFlat: cloneDeep(d[id].dataset),
-          domainPowerEnergy: d[id].domainPowerEnergy,
-          domainEmissions: d[id].domainEmissions,
-          domainMarketValue: d[id].domainMarketValue,
-          domainPrice: d[id].domainPrice,
-          domainTemperature: d[id].domainTemperature,
-          domainDemandPrice: d[id].domainDemandPrice,
-          domainDemandEnergy: d[id].domainDemandEnergy,
-          domainDemandPower: [],
-          domainDemandMarketValue: d[id].domainDemandMarketValue,
-          range: this.range,
-          interval: this.interval
-        })
-
         const { filteredDatasetFlat } = dataFilterByPeriod({
-          currentDataset,
+          currentDataset: d[id].dataset,
           interval: this.interval,
           period: this.filterPeriod
         })
