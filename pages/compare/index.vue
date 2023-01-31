@@ -424,7 +424,8 @@ export default {
           domainDemandPrice: d[id].domainDemandPrice,
           domainDemandEnergy: d[id].domainDemandEnergy,
           domainDemandPower: [],
-          domainDemandMarketValue: d[id].domainDemandMarketValue
+          domainDemandMarketValue: d[id].domainDemandMarketValue,
+          inflation: d[id].inflation
         }
       })
 
