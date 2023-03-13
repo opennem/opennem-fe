@@ -201,6 +201,107 @@ export const mutations = {
 }
 
 export const actions = {
+  doGetAllMonthlyData({ commit, dispatch, rootGetters }, { regions, range, interval, filterPeriod }) {
+    dispatch('app/doClearError', null, { root: true })
+
+    const displayTz = rootGetters.displayTimeZone
+    const url = Data.getAllMonthlyPath()
+
+    commit('ready', false)
+    commit('isFetching', true)
+
+    function processResponses(responses) {
+      const dataCount = getDataCount(responses)
+      const perf = new PerfTime()
+      perf.time()
+      console.info(`------ ${currentRegion} (start)`)
+
+      const {
+        datasetFull,
+        datasetFlat,
+        currentDataset: dataset,
+        dataPowerEnergyInterval,
+        domainPowerEnergy,
+        domainPowerEnergyGrouped,
+        domainEmissions,
+        domainEmissionsGrouped,
+        domainMarketValue,
+        domainMarketValueGrouped,
+        domainPrice,
+        domainTemperature,
+        domainDemandPrice,
+        domainDemandEnergy,
+        domainDemandPower,
+        domainDemandMarketValue,
+        dataType,
+        units
+      } = dataProcess(responses, range, interval, filterPeriod, displayTz)
+
+      perf.timeEnd(
+        `------ ${currentRegion} — (${dataCount} down to ${dataset.length})`
+      )
+
+      return {
+        dataset,
+        domainPowerEnergy,
+        domainEmissions,
+        domainTemperature,
+        domainPrice,
+        domainMarketValue,
+        domainDemandPrice,
+        domainDemandEnergy,
+        domainDemandMarketValue
+      }
+    }
+
+    return http([url])
+      .then((res) => {
+        const check = res.length > 0 ? (res[0].data ? true : false) : false
+        const responses = check ? res[0].data : []
+        const all = {}
+
+        regions.forEach((r, i) => {
+          console.log('region', r.id)
+          const cpiData = responses.find((d) => d.type === 'cpi')
+          const filtered = responses.filter(
+            (d) => d.region && d.region.toLowerCase() === r.id
+          )
+
+          // WORKAROUND for demand series using code as region id
+          const filtered2 = responses.filter(
+            (d) => d.code && d.code.toLowerCase() === r.id
+          )
+
+          if (cpiData) {
+            filtered.push(cpiData)
+          }
+          if (filtered2.length) {
+            filtered2.forEach(d => filtered.push(d))
+          }
+          currentRegion = r.id
+          all[r.id] = processResponses([filtered])
+        })
+
+        return all
+      })
+      .catch((e) => {
+        console.error('error', e)
+        let header = 'Error'
+        let message = ''
+
+        if (!e) {
+          message =
+            'There is an issue processing the responses. Please check the developer console and contact OpenNEM.'
+        } else {
+          const error = e.toJSON()
+          header = `${error.message}`
+          message = `Trying to fetch <code>${error.config.url}</code>`
+
+          console.log(error)
+        }
+      })
+  },
+
   doGetAllData({ commit, dispatch, rootGetters }, { regions }) {
     dispatch('app/doClearError', null, { root: true })
 
@@ -391,7 +492,7 @@ export const actions = {
         const perf = new PerfTime()
         perf.time()
         console.info(`------ ${currentRegion} — ${range}/${interval} (start)`)
-
+        console.log('***', range, interval, period)
         const {
           datasetFull,
           datasetFlat,
