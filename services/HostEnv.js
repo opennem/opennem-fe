@@ -10,7 +10,7 @@ export default function () {
       hostEnv = 'dev'
     }
     if (host === 'staging.opennem.org.au') {
-      hostEnv = 'prod'
+      hostEnv = 'staging'
     }
   }
   return hostEnv
