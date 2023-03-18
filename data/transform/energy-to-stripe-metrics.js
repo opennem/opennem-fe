@@ -1,6 +1,7 @@
 import startOfQuarter from 'date-fns/startOfQuarter'
 import differenceInDays from 'date-fns/differenceInDays'
 import addDays from 'date-fns/addDays'
+import { BATTERY_DISCHARGING } from '@/constants/energy-fuel-techs/group-default.js'
 
 export default function ({
   dataset,
@@ -107,18 +108,21 @@ function updateMetricObject(
   if (d) {
     let totalEmissions = 0,
       totalPowerEnergy = 0,
+      totalBatteryDischarging = 0,
       temperature = null,
       maxTemperature = null,
       sumImportsExports = 0,
       hasImportsExportsValue = false,
       importsExports = null,
       hasEmissionsValue = false
-
+    
     domainEmissions.forEach((domain) => {
       if (d[domain.id] || d[domain.id] === 0) {
         hasEmissionsValue = true
       }
-      totalEmissions += d[domain.id] || 0
+      if (domain.category !== 'load' || domain.fuelTech !== 'exports') {
+        totalEmissions += d[domain.id] || 0
+      }
     })
 
     domainTemperature.forEach((domain) => {
@@ -137,6 +141,9 @@ function updateMetricObject(
       if (domain.category !== 'load' || ft === 'exports') {
         totalPowerEnergy += d[id] || 0
       }
+      if (ft === BATTERY_DISCHARGING) {
+        totalBatteryDischarging += d[id] || 0
+      }
       if (ft === 'imports' || ft === 'exports') {
         if (d[id] || d[id] === 0) {
           hasImportsExportsValue = true
@@ -145,7 +152,10 @@ function updateMetricObject(
       }
     })
 
-    const ei = hasEmissionsValue ? totalEmissions / totalPowerEnergy : null
+    const totalPowerEnergyMinusBatteryDischarging =
+      totalPowerEnergy - totalBatteryDischarging
+
+    const ei = hasEmissionsValue ? totalEmissions / totalPowerEnergyMinusBatteryDischarging : null
     const isValidEI = Number.isFinite(ei)
 
     // if no value

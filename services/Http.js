@@ -23,6 +23,10 @@ const getBaseUrl = () => {
     baseUrl = `https://data.dev.opennem.org.au/`
   }
 
+  if (host && host.startsWith('staging')) {
+    baseUrl = `https://data.staging.opennem.org.au/`
+  }
+
   if (process.env.DATA_BASE_URL !== undefined) {
     baseUrl = process.env.DATA_BASE_URL
   }
