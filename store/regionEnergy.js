@@ -234,7 +234,8 @@ export const actions = {
         domainDemandPower,
         domainDemandMarketValue,
         dataType,
-        units
+        units,
+        inflation
       } = dataProcess(responses, range, interval, filterPeriod, displayTz)
 
       perf.timeEnd(
@@ -250,7 +251,8 @@ export const actions = {
         domainMarketValue,
         domainDemandPrice,
         domainDemandEnergy,
-        domainDemandMarketValue
+        domainDemandMarketValue,
+        inflation
       }
     }
 

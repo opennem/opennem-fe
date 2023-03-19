@@ -2,13 +2,55 @@
   <div class="container-fluid">
     <!-- <h3>{{ dateRange }}</h3> -->
 
-    <OptionsLegend 
+    <!-- <OptionsLegend 
       :legend-width="tabletBreak ? 200 : 310" 
       :legend-font-size="tabletBreak ? 9 : 10"
       :show-legend="false" 
       :hover-display="hoverDisplay" 
       :use-hover="!useAllPeriods"
-      :show-hover="hoverDate ? true : false" />
+      :show-hover="hoverDate ? true : false" /> -->
+    
+    <div class="metric-selection select is-rounded">
+      <select v-model="selectedMetric">
+        <option 
+          v-if="featureEmissions" 
+          value="carbonIntensity">
+          Carbon intensity
+        </option>
+        <option value="netInterconnectorFlow">
+          Net interconnector flow (of demand)
+        </option>
+
+        <!-- <optgroup label="Proportion">
+          <option value="renewablesProportion">
+            Renewables proportion (of demand)
+          </option>
+          <option value="solarProportion">
+            Solar proportion (of demand)
+          </option>
+          <option value="windProportion">Wind proportion (of demand)</option>
+          <option value="gasProportion">Gas proportion (of demand)</option>
+          <option value="coalProportion">Coal proportion (of demand)</option>
+        </optgroup> -->
+
+        <optgroup label="Average value">
+          <option value="solarValue">Solar value</option>
+          <option value="windValue">Wind value</option>
+          <option value="hydroValue">Hydro value</option>
+          <option value="gasValue">Gas value</option>
+          <option value="coalValue">Coal value</option>
+          <option value="price">Volume-weighted price</option>
+          <option value="inflatedPrice">
+            Volume-weighted price (inflation adjusted)
+          </option>
+        </optgroup>
+
+        <optgroup label="Temperature">
+          <option value="temperature">Average temperature</option>
+          <option value="maxTemperature">Max temperature</option>
+        </optgroup>
+      </select>
+    </div>
 
     <div class="vis-container">
       <DataOptionsBar
@@ -65,7 +107,7 @@
                     :style="{ backgroundColor: domain.colour }" 
                     class="colour-square" />
                   {{ domain.label }}</td>
-                <td style="text-align: right;">{{ getHoverValue(domain.id) | formatValue }}</td>
+                <td style="text-align: right;">{{ getHoverValue(domain.id) }}</td>
               </tr>
             </tbody>
           </table>
@@ -245,8 +287,24 @@ export default {
     ...mapGetters({
       fuelTechGroupName: 'fuelTechGroupName',
       tabletBreak: 'app/tabletBreak',
-      xGuides: 'visInteract/xGuides'
+      xGuides: 'visInteract/xGuides',
+      featureEmissions: 'feature/emissions'
     }),
+
+    selectedMetric: {
+      get() {
+        return this.$store.getters['stripes/selectedMetric']
+      },
+
+      set(val) {
+        this.$router.push({
+          query: {
+            metric: val
+          }
+        })
+        this.$store.commit('stripes/selectedMetric', val)
+      }
+    },
 
     selectedPeriod: {
       get() {
@@ -258,21 +316,21 @@ export default {
       }
     },
 
-    selectedMetric: {
-      get() {
-        return this.$store.getters['stripes/selectedMetric']
-      },
+    // selectedMetric: {
+    //   get() {
+    //     return this.$store.getters['stripes/selectedMetric']
+    //   },
 
-      set(val) {
-        const query = { metric: val }
-        this.$router.push({
-          path: `?metric=${val}`
-        })
-        this.$store.commit('stripes/selectedMetric', val)
-        this.setQuery(query)
-        this.hoverDisplay = null
-      }
-    },
+    //   set(val) {
+    //     const query = { metric: val }
+    //     this.$router.push({
+    //       path: `?metric=${val}`
+    //     })
+    //     this.$store.commit('stripes/selectedMetric', val)
+    //     this.setQuery(query)
+    //     this.hoverDisplay = null
+    //   }
+    // },
 
     selectedMetricObject() {
       return this.metrics.find((m) => m.value === this.selectedMetric)
@@ -306,6 +364,7 @@ export default {
       const arr = cloneDeep(this.bucket)
 
       if (arr && arr.length) {
+        console.log('lineChartDataset', this.regionData)
         this.regionData.forEach(region => {
           const id =  region.regionId
 
@@ -339,6 +398,10 @@ export default {
         })
       }
     }
+  },
+
+  created() {
+    this.$store.commit('stripes/selectedMetric', 'windValue')
   },
 
   mounted() {
@@ -383,10 +446,11 @@ export default {
       this.fetching = true
       this.regionData = []
 
-      // this.doGetAllData({ regions: this.domains }).then(d => {
-      //   this.responseDataset = cloneDeep(d)
-      //   this.setRegionDataAndBucket(this.responseDataset)
-      // })
+      this.doGetAllData({ regions: this.domains }).then(d => {
+        // console.log('d', d)
+        // this.responseDataset = cloneDeep(d)
+        // this.setRegionDataAndBucket(this.responseDataset)
+      })
 
       this.doGetAllMonthlyData({
         regions: this.domains,
@@ -402,7 +466,8 @@ export default {
 
     updateDataWithInterval() {
       if (this.responseDataset) {
-        this.setRegionDataAndBucket(this.responseDataset)
+        // this.setRegionDataAndBucket(this.responseDataset)
+        this.getData()
       } 
     },
 
