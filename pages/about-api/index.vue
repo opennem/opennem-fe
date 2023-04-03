@@ -11,7 +11,10 @@
       About the OpenNEM API
     </h1>
 
-    <section class="about-section intro-section">Getting an access token</section>
+    <section class="about-section intro-section">
+      <h3>Add your details to our API list to let us know you use-case</h3>
+      <h3>Getting an access token</h3>
+    </section>
 
   </div>
 </template>
