@@ -13,10 +13,11 @@
       <tbody>
         <tr 
           v-for="domain in domains" 
-          :key="domain.id">
+          :key="domain.id"
+          @click="handleDomainHide(domain.id)">
           <td>
             <div 
-              :style="{ backgroundColor: domain.colour }" 
+              :style="{ backgroundColor: `${domain.colour}${isHidden(domain.id) ? '30' : ''}` }" 
               class="colour-square" />
             {{ domain.label }}</td>
           <td style="text-align: right;">{{ valueFormat(dataset[domain.id]) }}</td>
@@ -35,6 +36,10 @@ export default {
     domains: {
       type: Array,
       required: true,
+      default: () => []
+    },
+    hidden: {
+      type: Array,
       default: () => []
     },
     dataset: {
@@ -76,6 +81,12 @@ export default {
     valueFormat(value) {
       if (value !== 0 && !value) return '—'
       return numFormat(this.selectedMetricFormat || ',.0f')(value) + this.selectedMetricUnit
+    },
+    isHidden(id) {
+      return this.hidden.includes(id)
+    },
+    handleDomainHide(id) {
+      this.$emit('domain-hide', id)
     }
   }
 }
@@ -98,7 +109,7 @@ export default {
     font-weight: 700;
     font-size: 0.8rem;
     border-bottom: 1px solid #ddd;
-    padding: 0.3rem 0;
+    padding: 0.3rem;
     white-space: nowrap;
   }
 
@@ -110,6 +121,12 @@ export default {
     border-bottom: 1px solid #ddd;
     padding: 0.3rem 0;
     white-space: nowrap;
+    cursor: pointer;
+    padding: 0.3rem;
+  }
+
+  tr:hover td {
+    background-color: #f5f5f5;
   }
 
   .align-right {

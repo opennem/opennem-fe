@@ -89,7 +89,9 @@
 
         <CompareTable 
           :domains="domains" 
-          :dataset="tableDataset" />
+          :hidden="hiddenDomains"
+          :dataset="tableDataset"
+          @domain-hide="handleDomainHide"/>
       </div>
 
       <!-- <section 
@@ -555,6 +557,14 @@ export default {
       // })
 
       // this.setQuery(query)
+    },
+
+    handleDomainHide(domainId) {
+      if (this.hiddenDomains.includes(domainId)) {
+        this.hiddenDomains = this.hiddenDomains.filter(d => d !== domainId)
+      } else {
+        this.hiddenDomains = [...this.hiddenDomains, domainId]
+      }
     }
   }
 }
