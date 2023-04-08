@@ -19,7 +19,7 @@
               :style="{ backgroundColor: domain.colour }" 
               class="colour-square" />
             {{ domain.label }}</td>
-          <td style="text-align: right;">{{ valueFormat(dataset[domain.id]) }}{{ selectedMetricUnit }}</td>
+          <td style="text-align: right;">{{ valueFormat(dataset[domain.id]) }}</td>
         </tr>
       </tbody>
     </table>
@@ -76,7 +76,7 @@ export default {
     valueFormat(value) {
       console.log(value)
       if (value !== 0 && !value) return '—'
-      return numFormat(this.selectedMetricFormat || ',.0f')(value)
+      return numFormat(this.selectedMetricFormat || ',.0f')(value) + this.selectedMetricUnit
     }
   }
 }
