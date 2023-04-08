@@ -74,7 +74,6 @@ export default {
 
   methods: {
     valueFormat(value) {
-      console.log(value)
       if (value !== 0 && !value) return '—'
       return numFormat(this.selectedMetricFormat || ',.0f')(value) + this.selectedMetricUnit
     }
