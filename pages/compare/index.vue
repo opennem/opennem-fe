@@ -87,31 +87,9 @@
           @zoomExtent="handleZoomExtent"
         />
 
-        <div class="table-container summary-list">
-          <table>
-            <thead>
-              <tr>
-                <th>Regions</th>
-                <th class="cell-value align-right">
-                  <span>{{ selectedMetricLabel }}</span>
-                  <!-- <span class="unit">{{ selectedMetricUnit }}</span> -->
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr 
-                v-for="domain in domains" 
-                :key="domain.id">
-                <td>
-                  <div 
-                    :style="{ backgroundColor: domain.colour }" 
-                    class="colour-square" />
-                  {{ domain.label }}</td>
-                <td style="text-align: right;">{{ getHoverValue(domain.id) }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <CompareTable 
+          :domains="domains" 
+          :dataset="tableDataset" />
       </div>
 
       <!-- <section 
@@ -201,6 +179,7 @@ import HoverMetric from '@/components/Stripes/HoverMetric'
 
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import OpenChart from '@/components/Charts/OpenChart'
+import CompareTable from '@/components/Compare/Table.vue'
 
 export default {
   layout: 'main',
@@ -211,7 +190,8 @@ export default {
     OptionsLegend,
     HoverMetric,
     OpenChart,
-    DataOptionsBar
+    DataOptionsBar,
+    CompareTable
   },
 
   head() {
@@ -279,7 +259,8 @@ export default {
       hiddenDomains: [],
       zoomExtent: [],
       isHovering: false,
-      bucket: []
+      bucket: [],
+      tableDataset: {}
     }
   },
 
@@ -331,18 +312,6 @@ export default {
     //     this.hoverDisplay = null
     //   }
     // },
-
-    selectedMetricObject() {
-      return this.metrics.find((m) => m.value === this.selectedMetric)
-    },
-
-    selectedMetricLabel() {
-      return this.selectedMetricObject?.label
-    },
-
-    selectedMetricUnit() {
-      return this.selectedMetricObject?.unit
-    },
 
     selectedPeriodObject() {
       return this.periods.find((p) => p.value === this.selectedPeriod)
@@ -396,6 +365,13 @@ export default {
           start: val[0].time,
           end: val[val.length - 1].time
         })
+      }
+    },
+
+    hoverDate(val) {
+      if (val) {
+        const find = this.lineChartDataset.find(d => isSameDay(d.date, this.hoverDate))
+        this.tableDataset = find || {}
       }
     }
   },
@@ -579,11 +555,6 @@ export default {
       // })
 
       // this.setQuery(query)
-    },
-
-    getHoverValue(id) {
-      const find = this.lineChartDataset.find(d => isSameDay(d.date, this.hoverDate))
-      return find ? find[id] : ''
     }
   }
 }
@@ -614,61 +585,6 @@ h3 {
 
 .vis-container {
   margin-top: 1.8rem;
-}
-
-.table-container {
-  width: 30%;
-
-  table {
-    width: 100%;
-    font-size: 0.9rem;
-  }
-
-  thead th {
-    font-family: $header-font-family;
-    font-weight: 700;
-    font-size: 0.8rem;
-    border-bottom: 1px solid #ddd;
-    padding: 0.3rem 0;
-    white-space: nowrap;
-  }
-
-  th:first-child {
-    width: 40%;
-  }
-
-  tbody td {
-    border-bottom: 1px solid #ddd;
-    padding: 0.3rem 0;
-    white-space: nowrap;
-  }
-
-  .align-right {
-    text-align: right;
-  }
-
-  .cell-value span {
-    display: block; 
-  }
-
-  .cell-unit {
-    font-size: 0.8rem;
-    color: #999;
-  }
-
-  .colour-square {
-    width: 18px;
-    height: 18px;
-    float: left;
-    margin-right: 5px;
-    border-radius: 4px;
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-
-    @include mobile {
-      display: inline;
-      float: none;
-    }
-  }
 }
 
 .vis-section {
