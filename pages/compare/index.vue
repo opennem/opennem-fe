@@ -413,6 +413,7 @@ export default {
       doGetRegionData: 'regionEnergy/doGetRegionData',
       doGetAllData: 'regionEnergy/doGetAllData',
       doGetAllMonthlyData: 'regionEnergy/doGetAllMonthlyData',
+      doUpdateAllRegionDatasetByInterval: 'regionEnergy/doUpdateAllRegionDatasetByInterval',
       doUpdateXGuides: 'visInteract/doUpdateXGuides',
       doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
     }),
@@ -424,19 +425,12 @@ export default {
       this.fetching = true
       this.regionData = []
 
-      this.doGetAllData({ regions: this.domains }).then(d => {
-        // console.log('d', d)
-        // this.responseDataset = cloneDeep(d)
-        // this.setRegionDataAndBucket(this.responseDataset)
-      })
-
       this.doGetAllMonthlyData({
         regions: this.domains,
         range: this.range,
         interval: this.interval,
         filterPeriod: this.filterPeriod
       }).then(d => {
-        console.log('done', d)
         this.responseDataset = cloneDeep(d)
         this.setRegionDataAndBucket(this.responseDataset)
       })
@@ -444,8 +438,14 @@ export default {
 
     updateDataWithInterval() {
       if (this.responseDataset) {
-        // this.setRegionDataAndBucket(this.responseDataset)
-        this.getData()
+        this.doUpdateAllRegionDatasetByInterval({
+          allDataset: this.responseDataset,
+          regions: this.domains,
+          range: this.range,
+          interval: this.interval,
+        }).then(d => {
+          this.setRegionDataAndBucket(d)
+        })
       } 
     },
 

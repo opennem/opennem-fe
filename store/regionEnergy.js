@@ -284,6 +284,8 @@ export const actions = {
           all[r.id] = processResponses([filtered])
         })
 
+        commit('isFetching', true)
+
         return all
       })
       .catch((e) => {
@@ -618,6 +620,50 @@ export const actions = {
     } else {
       console.log('not processing data')
     }
+  },
+
+  doUpdateAllRegionDatasetByInterval({ state, commit }, { allDataset, regions, range, interval }) {
+    const updated = {}
+
+    function rollup(regionData) {
+      const { currentDataset } = dataRollUp({
+        isEnergyType: true,
+        datasetFlat: _cloneDeep(regionData.dataset),
+        domainPowerEnergy: regionData.domainPowerEnergy,
+        domainPowerEnergyGrouped: [],
+        domainEmissions: regionData.domainEmissions,
+        domainEmissionsGrouped: [],
+        domainMarketValue: regionData.domainMarketValue,
+        domainMarketValueGrouped: [],
+        domainPrice: regionData.domainPrice,
+        domainTemperature: regionData.domainTemperature,
+        domainDemandPrice: regionData.domainDemandPrice,
+        domainDemandEnergy: regionData.domainDemandEnergy,
+        domainDemandPower: [],
+        domainDemandMarketValue: regionData.domainDemandMarketValue,
+        range,
+        interval
+      })
+
+      return {
+        dataset: currentDataset,
+        domainPowerEnergy: regionData.domainPowerEnergy,
+        domainEmissions: regionData.domainEmissions,
+        domainTemperature: regionData.domainTemperature,
+        domainDemandPrice: regionData.domainDemandPrice,
+        domainMarketValue: regionData.domainMarketValue,
+        domainDemandPrice: regionData.domainDemandPrice,
+        domainDemandEnergy: regionData.domainDemandEnergy,
+        domainDemandMarketValue: regionData.domainDemandMarketValue,
+        inflation: regionData.inflation
+      }
+    }
+
+    regions.forEach((region) => {
+      updated[region.id] = rollup(allDataset[region.id])
+    })
+
+    return updated
   },
 
   doUpdateDatasetByInterval({ state, commit }, { range, interval }) {
