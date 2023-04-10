@@ -69,6 +69,8 @@ export function dataProcess(res, range, interval, period, displayTz) {
 
   const {
     datasetFlat: dFlat,
+    datasetInflation,
+    domainInflation,
     domainMarketValue,
     domainPrice,
     domainDemandPrice,
@@ -156,7 +158,9 @@ export function dataProcess(res, range, interval, period, displayTz) {
     domainDemandEnergy,
     domainDemandPower,
     domainDemandMarketValue,
-    domainPrice: isEnergyType ? domainMarketValue : domainPrice
+    domainPrice: isEnergyType ? domainMarketValue : domainPrice,
+    datasetInflation,
+    domainInflation
   })
   groupDataset({
     dataset: currentDataset,
@@ -201,7 +205,11 @@ export function dataProcess(res, range, interval, period, displayTz) {
     domainDemandPower,
     domainDemandMarketValue,
     currentDataset: filterDatasetByPeriod(currentDataset, interval, period),
-    units
+    units,
+    inflation: {
+      data: datasetInflation,
+      domain: domainInflation
+    }
   }
 }
 
