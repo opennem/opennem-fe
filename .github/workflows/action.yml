@@ -1,0 +1,19 @@
+name: Send Slack notifications
+on: 
+  push:
+    branches:
+      - 'feature/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Send Slack deployment notifications
+      uses: arddluma/cloudflare-pages-slack-notification@v2.2
+      with:
+        accountEmail: ${{ secrets.CF_ACCOUNT_EMAIL  }}
+        apiKey: ${{ secrets.CF_API_KEY  }}
+        accountId: ${{ secrets.CF_ACC_ID  }}
+        project: ${{ secrets.CF_PROJECT  }}
+        githubToken: ${{ secrets.GITHUB_TOKEN }}
+        slackWebHook: ${{ secrets.SLACK_WEBHOOK  }}
