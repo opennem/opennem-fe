@@ -68,13 +68,13 @@ export default function({
 
     const totalPowerEnergyMinusBatteryDischarging =
       totalPowerEnergy - totalBatteryDischarging
-
+    
     obj._totalEmissions = totalEmissions
     obj._totalEmissionsMinusLoads = totalEmissionsMinusLoads
     obj._totalPowerEnergyMinusBatteryDischarging =
       totalPowerEnergyMinusBatteryDischarging
 
-    let ei = totalEmissions / totalPowerEnergyMinusBatteryDischarging
+    let ei = totalEmissions / totalPowerEnergy
     const isValidEI = Number.isFinite(ei)
 
     obj._emissionIntensity = isValidEI ? ei : null
