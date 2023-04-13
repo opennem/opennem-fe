@@ -77,6 +77,10 @@ export default function({
     let ei = totalEmissions / totalPowerEnergy
     const isValidEI = Number.isFinite(ei)
 
+    if ((ei < 0 || ei > 1500) || !isValidEI) {
+      console.error(`EI out of range: ${ei}`)
+    }
+
     obj._emissionIntensity = isValidEI ? ei : null
     return obj
   })
