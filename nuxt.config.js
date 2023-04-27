@@ -7,6 +7,7 @@ const useDev = process.env.FOR === 'dev'
 
 module.exports = {
   target: 'static',
+  ssr: false,
   publicRuntimeConfig: {
     version: pkg.version,
     useDev,
