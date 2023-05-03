@@ -149,7 +149,8 @@ export default {
       priceDomains: 'regionEnergy/domainPrice',
       demandPriceDomains: 'regionEnergy/domainDemandPrice',
       temperatureDomains: 'regionEnergy/domainTemperature',
-      marketValueDomains: 'regionEnergy/currentDomainMarketValue'
+      marketValueDomains: 'regionEnergy/currentDomainMarketValue',
+      emissionIntensityData: 'energy/emissions/emissionIntensityData'
     }),
 
     selectedView: {
@@ -225,7 +226,10 @@ export default {
         this.emissionDomains.forEach((domain) => {
           obj[`${domain.label} Emissions Vol - tCO₂e`] = format(d[domain.id])
         })
-        obj['Emissions Intensity - kgCO₂e/MWh'] = format(d._emissionsIntensity)
+        const ei = this.emissionIntensityData.find(
+          (e) => e.time === d.time
+        )
+        obj['Emissions Intensity - kgCO₂e/MWh'] = format(ei._emissionIntensity)
 
         if (this.isEnergyType) {
           if (this.demandPriceDomains.length) {
