@@ -29,7 +29,7 @@
           :class="{ 'is-selected': addProjections }" 
           class="button"
           @click="handleProjectionsToggle">
-          Projections <strong>FY 2021 — 2035</strong>
+          Projections <strong>FY {{ this.projectionStartYear }} — 2035</strong>
         </button>
       </div>
     </div>
@@ -407,7 +407,9 @@ export default {
       interval: INTERVAL_QUARTER,
       filterPeriod: FILTER_NONE,
       compareData: [],
-      showTotalLine: true
+      showTotalLine: true,
+      projectionStartYear: new Date().getFullYear(),
+      projectionsInterval: []
     }
   },
 
@@ -549,12 +551,6 @@ export default {
     this.intervals = EMISSIONS_RANGE_INTERVALS
     this.afterDate = new Date(2004, 11, 31)
 
-    this.projectionsInterval = [
-      {
-        start: new Date(2021, 0, 1),
-        end: new Date(2035, 11, 31)
-      }
-    ]
     this.$store.dispatch('currentView', 'emissions')
     this.setStepCurve()
   },
@@ -687,6 +683,13 @@ export default {
           console.log('year ok', json)
 
           this.updateFooterSource(json.source)
+          this.projectionStartYear = json.projectionStartYear
+          this.projectionsInterval = [
+            {
+              start: new Date(this.projectionStartYear, 0, 1),
+              end: new Date(2035, 11, 31)
+            }
+          ]
 
           const data = []
 
@@ -726,10 +729,10 @@ export default {
           this.range = RANGE_ALL
           this.interval = INTERVAL_YEAR
           this.yearlyDataset = data.filter(
-            (d) => d.year >= 2005 && d.year <= 2020
+            (d) => d.year >= 2005 && d.year <= this.projectionStartYear - 1
           )
           this.historyDataset = data.filter((d) => d.year <= 2004)
-          this.projectionDataset = data.filter((d) => d.year >= 2021)
+          this.projectionDataset = data.filter((d) => d.year >= this.projectionStartYear)
 
           if (this.addHistory) {
             this.dataset = [...this.historyDataset, ...this.yearlyDataset]
