@@ -7,6 +7,7 @@ const useDev = process.env.FOR === 'dev'
 
 module.exports = {
   target: 'static',
+  ssr: false,
   publicRuntimeConfig: {
     version: pkg.version,
     useDev,
@@ -258,7 +259,8 @@ module.exports = {
     /*
      ** You can extend webpack config here
      */
-    publicPath: `/_nuxt_${timestamp}/`,
+    // publicPath: `/_nuxt_${timestamp}/`,
+    publicPath: `/js/`,
     plugins: [
       new webpack.IgnorePlugin({
         resourceRegExp: /^\.\/locale$/,
