@@ -66,11 +66,11 @@
         <div class="summary-row">
           <div class="summary-col-label">Sources</div>
 
-          <div 
+          <!-- <div
             class="summary-col-external-link-icon" 
             style="width: 20px" />
 
-          <div 
+           <div 
             v-if="isEnergy" 
             class="summary-col-energy cell-value">
             <div v-if="isTypeChangeSinceLine">–</div>
@@ -154,7 +154,7 @@
             <span v-if="isEmissionsIntensityColumn">
               {{ emissionIntensityHoverValue | formatValue }}
             </span>
-          </div>
+          </div> -->
         </div>
       </div>
 

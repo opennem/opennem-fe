@@ -68,14 +68,18 @@ export default function({
 
     const totalPowerEnergyMinusBatteryDischarging =
       totalPowerEnergy - totalBatteryDischarging
-
+    
     obj._totalEmissions = totalEmissions
     obj._totalEmissionsMinusLoads = totalEmissionsMinusLoads
     obj._totalPowerEnergyMinusBatteryDischarging =
       totalPowerEnergyMinusBatteryDischarging
 
-    let ei = totalEmissions / totalPowerEnergyMinusBatteryDischarging
+    let ei = totalEmissions / totalPowerEnergy
     const isValidEI = Number.isFinite(ei)
+
+    if ((ei < 0 || ei > 1500) || !isValidEI) {
+      console.error(`EI out of range: ${ei}`)
+    }
 
     obj._emissionIntensity = isValidEI ? ei : null
     return obj
