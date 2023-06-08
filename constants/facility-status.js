@@ -1,5 +1,4 @@
 export const FACILITY_COMMITTED = 'committed'
-export const FACILITY_COMMISSIONING = 'commissioning'
 export const FACILITY_OPERATING = 'operating'
 export const FACILITY_RETIRED = 'retired'
 
@@ -7,10 +6,6 @@ export const FacilityStatus = [
   {
     id: FACILITY_COMMITTED,
     label: 'Committed'
-  },
-  {
-    id: FACILITY_COMMISSIONING,
-    label: 'Commissioning'
   },
   {
     id: FACILITY_OPERATING,
