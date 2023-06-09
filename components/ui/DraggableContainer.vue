@@ -84,6 +84,8 @@ export default {
   z-index: 10;
 }
 .draggable-header {
+  position: sticky;
+  top: 0;
   z-index: 11;
 }
 </style>

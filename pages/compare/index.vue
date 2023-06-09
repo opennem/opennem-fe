@@ -9,6 +9,24 @@
       :hover-display="hoverDisplay" 
       :use-hover="!useAllPeriods"
       :show-hover="hoverDate ? true : false" /> -->
+
+    <Draggable class="floating-palette">
+      <template slot="header">
+        <header>Vic</header>
+      </template>
+      <template slot="main">
+        <table class="table is-fullwidth is-striped is-narrow">
+          <tbody>
+            <tr 
+              v-for="(d) in regionTableData?.data" 
+              :key="d.time">
+              <td>{{ d.time | formatLocalDate }}</td>
+              <td style="text-align: right;">{{ d[selectedMetric] | formatValue }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </template>
+    </Draggable>
     
     <div class="metric-selection select is-rounded">
       <select v-model="selectedMetric">
@@ -183,6 +201,9 @@ import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import OpenChart from '@/components/Charts/OpenChart'
 import CompareTable from '@/components/Compare/Table.vue'
 
+import Draggable from '@/components/ui/DraggableContainer'
+
+
 export default {
   layout: 'main',
 
@@ -193,7 +214,8 @@ export default {
     HoverMetric,
     OpenChart,
     DataOptionsBar,
-    CompareTable
+    CompareTable,
+    Draggable
   },
 
   head() {
@@ -329,6 +351,12 @@ export default {
 
     cardFilename() {
       return `${this.baseUrl}opennem-stripes-${this.regionId}.png`
+    },
+
+    regionTableData() {
+      const vicData = this.regionData.filter((d) => d.regionId === 'vic1')[0]
+      console.log(vicData, this.selectedMetric)
+      return vicData
     },
 
     lineChartDataset() {
@@ -580,6 +608,39 @@ export default {
 
   @include mobile {
     padding-top: 0;
+  }
+}
+
+.floating-palette {
+  width: 300px;
+  background-color: #fff;
+  z-index: 9999;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  top: 15vh;
+  right: 50px;
+  bottom: 100px;
+  overflow-y: auto;
+  font-size: 10px;
+
+  table {
+    font-weight: bold;
+
+  }
+
+  header {
+    background-color: #eee;
+    cursor: move;
+    padding: 10px;
+    border-radius: 6px 6px 0 0;
+    font-weight: 700;
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', Times, serif;
+    font-size: 16px;
+
+    i.fal {
+      position: relative;
+      top: 1px;
+    }
   }
 }
 
