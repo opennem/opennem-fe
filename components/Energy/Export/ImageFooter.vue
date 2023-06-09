@@ -133,7 +133,12 @@ strong {
   justify-content: space-between;
   align-items: center;
 
+  & > div {
+    width: 100%;
+  }
+
   .licence {
+    text-align: right;
     font-size: 1.2rem;
     color: $opennem-link-color;
   }
