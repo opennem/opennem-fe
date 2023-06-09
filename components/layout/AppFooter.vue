@@ -103,6 +103,15 @@
         href="https://github.com/opennem">
         <i class="fab fa-fw fa-github" />
       </a>
+      <a 
+        v-tooltip="'Creative Commons Attribution 4.0 International License (CC BY 4.0)'" 
+        rel="external" 
+        class="icon-link" 
+        target="_blank" 
+        href="https://creativecommons.org/licenses/by/4.0/">
+        <i class="fab fa-fw fa-brands fa-creative-commons" />
+        <i class="fab fa-fw fa-brands fa-creative-commons-by" />
+      </a>
       <nuxt-link 
         to="/about/" 
         class="about-link">About OpenNEM</nuxt-link>
