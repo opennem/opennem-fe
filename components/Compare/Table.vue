@@ -6,7 +6,13 @@
           <th>Regions</th>
           <th class="cell-value align-right">
             <span>{{ selectedMetricLabel }}</span>
-            <!-- <span class="unit">{{ selectedMetricUnit }}</span> -->
+          </th>
+        </tr>
+        <tr v-if="selectedMetricUnit">
+          <th 
+            colspan="2" 
+            style="text-align: right;">
+            <span class="unit">{{ selectedMetricUnit }}</span>
           </th>
         </tr>
       </thead>
@@ -80,7 +86,9 @@ export default {
   methods: {
     valueFormat(value) {
       if (value !== 0 && !value) return '—'
-      return numFormat(this.selectedMetricFormat || ',.0f')(value) + this.selectedMetricUnit
+      const formattedValue = numFormat(this.selectedMetricFormat || ',.0f')(value)
+      if (this.selectedMetricLabel === "Carbon intensity") return formattedValue
+      return formattedValue + this.selectedMetricUnit
     },
     isHidden(id) {
       return this.hidden.includes(id)
