@@ -663,6 +663,9 @@ export default {
       if (curr.length !== prev.length) {
         this.$emit('changeDataset', this.changeSinceDataset)
       }
+    },
+    interval() {
+      this.handleTypeClick()
     }
   },
 
