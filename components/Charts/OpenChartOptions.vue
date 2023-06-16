@@ -55,7 +55,8 @@
           class="colour-square"
         />
         {{ hoverDomainLabel }}
-        <strong v-if="isPercentage">{{ hoverValue | formatValue2 }}%</strong>
+        <strong v-if="!showConvertValue">{{ hoverValue }}</strong>
+        <strong v-else-if="isPercentage">{{ hoverValue | formatValue2 }}%</strong>
         <strong 
           v-else
         >{{ hoverValue | formatValue2 }} {{ displayUnit }}</strong
@@ -129,7 +130,7 @@ export default {
       default: ''
     },
     hoverValue: {
-      type: Number,
+      type: Number | String,
       default: 0
     },
     hoverDomainColour: {
@@ -171,6 +172,10 @@ export default {
     emissionsOptions: {
       type: Object,
       default: () => {}
+    },
+    showConvertValue: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
