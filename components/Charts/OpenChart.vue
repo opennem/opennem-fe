@@ -28,6 +28,7 @@
       :hover-total="hoverTotal"
       :show-average-value="showAverageValue"
       :emissions-options="chartOptions"
+      :show-convert-value="!valueFormatter && shouldConvertValue"
       @type-click="handleTypeClick"
     />
 
@@ -59,7 +60,7 @@
       :incomplete-intervals="incompleteIntervals"
       :highlight-domain="highlightId"
       :display-prefix="chartDisplayPrefix"
-      :should-convert-value="shouldConvertValue"
+      :should-convert-value="!valueFormatter && shouldConvertValue"
       :convert-value="convertValue"
       :unit="` ${chartDisplayPrefix}${chartUnit}`"
       :filter-period="filterPeriod"
@@ -103,7 +104,7 @@
       :x-shades="xGuides"
       :highlight-domain="highlightId"
       :display-prefix="chartDisplayPrefix"
-      :should-convert-value="shouldConvertValue"
+      :should-convert-value="!valueFormatter && shouldConvertValue"
       :convert-value="convertValue"
       class="vis-chart"
       @date-hover="handleDateHover"
@@ -256,7 +257,11 @@ export default {
     chartOptions: {
       type: Object,
       default: () => chartOptions
-    }
+    },
+    valueFormatter: {
+      type: Function,
+      default: null
+    },
   },
 
   computed: {
@@ -331,20 +336,21 @@ export default {
       return unit
     },
 
-    hoverEmissionsDomain() {
-      const domain = this.hoverDomain
-      if (domain) {
-        const split = domain.split('.')
+    // hoverDomain() {
+    //   const domain = this.hoverDomain
+    //   console.log('domain', domain)
+    //   if (domain) {
+    //     const split = domain.split('.')
 
-        if (split.length > 1) {
-          split.pop()
-          return `${split.join('.')}.${EMISSIONS}`
-        } else {
-          return domain
-        }
-      }
-      return ''
-    },
+    //     if (split.length > 1) {
+    //       split.pop()
+    //       return `${split.join('.')}.${EMISSIONS}`
+    //     } else {
+    //       return domain
+    //     }
+    //   }
+    //   return ''
+    // },
     highlightId() {
       const domain = this.highlightDomain
       const find = this.filteredDomains.find((d) => d[this.propName] === domain)
@@ -618,8 +624,10 @@ export default {
     hoverValue() {
       return this.hoverData
         ? this.shouldConvertValue
-          ? this.convertValue(this.hoverData[this.hoverEmissionsDomain])
-          : this.hoverData[this.hoverEmissionsDomain]
+          ? this.valueFormatter
+            ? this.valueFormatter(this.hoverData[this.hoverDomain])
+            : this.convertValue(this.hoverData[this.hoverDomain])
+          : this.valueFormatter(this.hoverData[this.hoverDomain])
         : null
     },
     hoverDisplayDate() {
@@ -640,11 +648,11 @@ export default {
         : ''
     },
     hoverDomainLabel() {
-      const find = this.filteredDomains.find((d) => d.id === this.hoverEmissionsDomain)
+      const find = this.filteredDomains.find((d) => d.id === this.hoverDomain)
       return find ? find.label : '—'
     },
     hoverDomainColour() {
-      const find = this.filteredDomains.find((d) => d.id === this.hoverEmissionsDomain)
+      const find = this.filteredDomains.find((d) => d.id === this.hoverDomain)
       return find ? find.colour : '—'
     },
     hoverTotal() {
