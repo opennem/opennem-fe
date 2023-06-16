@@ -1,6 +1,5 @@
 <template>
   <div class="container-fluid">
-    <!-- <h3>{{ dateRange }}</h3> -->
 
     <!-- <OptionsLegend 
       :legend-width="tabletBreak ? 200 : 310" 
@@ -10,7 +9,7 @@
       :use-hover="!useAllPeriods"
       :show-hover="hoverDate ? true : false" /> -->
 
-    <Draggable class="floating-palette">
+    <!-- <Draggable class="floating-palette">
       <template slot="header">
         <header>Vic</header>
       </template>
@@ -21,25 +20,28 @@
               v-for="(d) in regionTableData?.data" 
               :key="d.time">
               <td>{{ d.time | formatLocalDate }}</td>
-              <td style="text-align: right;">{{ d[selectedMetric] | formatValue }}</td>
+              <td style="text-align: right;">{{ valueFormatter(d[selectedMetric]) }}</td>
             </tr>
           </tbody>
         </table>
       </template>
-    </Draggable>
+    </Draggable> -->
     
-    <div class="metric-selection select is-rounded">
-      <select v-model="selectedMetric">
-        <option 
-          v-if="featureEmissions" 
-          value="carbonIntensity">
-          Carbon intensity
-        </option>
-        <option value="netInterconnectorFlow">
-          Net interconnector flow (of demand)
-        </option>
+    <div class="vis-container">
+      <div class="vis-options">
+        <div 
+          class="metric-selection select is-rounded">
+          <select v-model="selectedMetric">
+            <option 
+              v-if="featureEmissions" 
+              value="carbonIntensity">
+              Carbon intensity
+            </option>
+            <option value="netInterconnectorFlow">
+              Net interconnector flow (of demand)
+            </option>
 
-        <!-- <optgroup label="Proportion">
+            <!-- <optgroup label="Proportion">
           <option value="renewablesProportion">
             Renewables proportion (of demand)
           </option>
@@ -51,43 +53,44 @@
           <option value="coalProportion">Coal proportion (of demand)</option>
         </optgroup> -->
 
-        <optgroup label="Average value">
-          <option value="solarValue">Solar value</option>
-          <option value="windValue">Wind value</option>
-          <option value="hydroValue">Hydro value</option>
-          <option value="gasValue">Gas value</option>
-          <option value="coalValue">Coal value</option>
-          <option value="price">Volume-weighted price</option>
-          <option value="inflatedPrice">
-            Volume-weighted price (inflation adjusted)
-          </option>
-        </optgroup>
+            <optgroup label="Average value">
+              <option value="solarValue">Solar value</option>
+              <option value="windValue">Wind value</option>
+              <option value="hydroValue">Hydro value</option>
+              <option value="gasValue">Gas value</option>
+              <option value="coalValue">Coal value</option>
+              <option value="price">Volume-weighted price</option>
+              <option value="inflatedPrice">
+                Volume-weighted price (inflation adjusted)
+              </option>
+            </optgroup>
 
-        <optgroup label="Temperature">
-          <option value="temperature">Average temperature</option>
-          <option value="maxTemperature">Max temperature</option>
-        </optgroup>
-      </select>
-    </div>
-
-    <div class="vis-container">
-      <DataOptionsBar
-        :ranges="ranges"
-        :intervals="intervals"
-        :range="range"
-        :interval="interval"
-        :filter-period="filterPeriod"
-        @rangeChange="handleRangeChange"
-        @intervalChange="handleIntervalChange"
-        @queryChange="handleQueryChange"
-        @filterPeriodChange="handleFilterPeriodChange"
-      />
-
+            <optgroup label="Temperature">
+              <option value="temperature">Average temperature</option>
+              <option value="maxTemperature">Max temperature</option>
+            </optgroup>
+          </select>
+        </div>
+    
+        <DataOptionsBar
+          class="options-bar"
+          :ranges="ranges"
+          :intervals="intervals"
+          :range="range"
+          :interval="interval"
+          :filter-period="filterPeriod"
+          @rangeChange="handleRangeChange"
+          @intervalChange="handleIntervalChange"
+          @queryChange="handleQueryChange"
+          @filterPeriodChange="handleFilterPeriodChange"
+        />
+      </div>
+      
       <div 
         v-if="!fetching && lineChartDataset.length > 0"
-        style="display: flex; gap: 1rem;">
+        class="chart-table-container">
         <OpenChart
-          style="width: 70%"
+          class="open-chart"
           :chart-dataset="lineChartDataset"
           :chart-domains="domains"
           :range="range"
@@ -100,16 +103,30 @@
           :filter-period="filterPeriod"
           :hidden-domains="hiddenDomains"
           :show-average-value="false"
+          :value-formatter="valueFormatter"
           @dateHover="handleDateHover"
           @isHovering="handleIsHovering"
           @zoomExtent="handleZoomExtent"
         />
 
-        <CompareTable 
-          :domains="domains" 
-          :hidden="hiddenDomains"
-          :dataset="tableDataset"
-          @domain-hide="handleDomainHide"/>
+        <aside class="compare-table">
+          <dates-display
+            :is-hovering="isHovering"
+            :hovered-date="hoverDate?.getTime()"
+            :start-date="startEndDates.start.getTime()"
+            :end-date="startEndDates.end.getTime()"
+            :range="range"
+            :interval="interval"
+          />
+
+          <CompareTable 
+            style="width: 100%"
+            :domains="domains" 
+            :hidden="hiddenDomains"
+            :dataset="tableDataset"
+            @domain-hide="handleDomainHide"/>
+        </aside>
+        
       </div>
 
       <!-- <section 
@@ -169,6 +186,7 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 import debounce from 'lodash.debounce'
 import cloneDeep from 'lodash.clonedeep'
 import isSameDay from 'date-fns/isSameDay'
+import { format as numFormat } from 'd3-format'
 
 import { getEnergyRegionLabel, getAuRegions } from '@/constants/energy-regions.js'
 import { periods, metrics } from '@/constants/stripes/'
@@ -197,12 +215,13 @@ import ColourLegend from '@/components/Vis/ColourLegend'
 import OptionsLegend from '@/components/Stripes/OptionsLegend'
 import HoverMetric from '@/components/Stripes/HoverMetric'
 
+import DatesDisplay from '@/components/SummaryTable/DatesDisplay'
+
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import OpenChart from '@/components/Charts/OpenChart'
 import CompareTable from '@/components/Compare/Table.vue'
 
 import Draggable from '@/components/ui/DraggableContainer'
-
 
 export default {
   layout: 'main',
@@ -215,7 +234,8 @@ export default {
     OpenChart,
     DataOptionsBar,
     CompareTable,
-    Draggable
+    Draggable,
+    DatesDisplay
   },
 
   head() {
@@ -311,6 +331,9 @@ export default {
       }
     },
 
+    selectedMetricObject() {
+      return this.metrics.find((m) => m.value === this.selectedMetric)
+    },
     selectedPeriod: {
       get() {
         return this.$store.getters['stripes/selectedPeriod']
@@ -320,22 +343,6 @@ export default {
         this.$store.commit('stripes/selectedPeriod', val)
       }
     },
-
-    // selectedMetric: {
-    //   get() {
-    //     return this.$store.getters['stripes/selectedMetric']
-    //   },
-
-    //   set(val) {
-    //     const query = { metric: val }
-    //     this.$router.push({
-    //       path: `?metric=${val}`
-    //     })
-    //     this.$store.commit('stripes/selectedMetric', val)
-    //     this.setQuery(query)
-    //     this.hoverDisplay = null
-    //   }
-    // },
 
     selectedPeriodObject() {
       return this.periods.find((p) => p.value === this.selectedPeriod)
@@ -355,7 +362,6 @@ export default {
 
     regionTableData() {
       const vicData = this.regionData.filter((d) => d.regionId === 'vic1')[0]
-      console.log(vicData, this.selectedMetric)
       return vicData
     },
 
@@ -448,6 +454,16 @@ export default {
     ...mapMutations({
       setQuery: 'app/query'
     }),
+
+    valueFormatter(value) {
+      if (value !== 0 && !value) return '—'
+      const metricFormat = this.selectedMetricObject?.numberFormatString
+      const metricLabel = this.selectedMetricObject?.label
+      const metricUnit = this.selectedMetricObject?.unit
+      const formattedValue = numFormat(metricFormat || ',.0f')(value)
+      if (metricLabel === "Carbon intensity") return formattedValue
+      return formattedValue + metricUnit
+    },
 
     getData() {
       this.fetching = true
@@ -603,7 +619,7 @@ export default {
 @import '~/assets/scss/responsive-mixins.scss';
 
 .container-fluid {
-  padding: 1rem 16px;
+  padding: 0.8rem 0.2rem;
   height: 100%;
 
   @include mobile {
@@ -654,8 +670,47 @@ h3 {
   border-bottom: 1px solid #ddd;
 }
 
-.vis-container {
-  margin-top: 1.8rem;
+.chart-table-container {
+  display: block;
+  padding: 0 0.5rem;
+  
+  & > * {
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+
+  @media screen and (min-width: 1083px) {
+    display: flex;
+    gap: 0.5rem;  
+
+    .open-chart {
+      width: 70%;
+    }
+    .compare-table {
+      width: 30%;
+    }
+  }
+}
+
+.vis-options {
+  display: block;
+  padding: 0 0.5rem;
+  
+  & > * {
+    margin-bottom: 1rem;
+  }
+
+  @media screen and (min-width: 1083px) {
+    display: flex;
+    margin-bottom: 1rem;
+  }
+}
+
+.options-bar {
+  @media screen and (min-width: 1083px) {
+    padding: 0; 
+    margin-left: 1rem;
+  }
 }
 
 .vis-section {
