@@ -1,6 +1,7 @@
 import * as FT from '@/constants/energy-fuel-techs/group-default.js'
+import { is } from 'date-fns/locale'
 
-function calAverage(isEnergyType, dataset) {
+function calAverage(isEnergyType, isWemOrAu, dataset) {
   const totalEmissions = dataset.reduce(
     (prev, cur) => prev + cur._totalEmissions,
     0
@@ -10,9 +11,11 @@ function calAverage(isEnergyType, dataset) {
     0
   )
 
-  return isEnergyType
+  let ei = isEnergyType
     ? totalEmissions / totalPowerEnergy
-    : totalEmissions / totalPowerEnergy * 1000
+    : totalEmissions / totalPowerEnergy * 1000 
+
+  return isWemOrAu ? ei * 2 : ei * 12
 }
 
 export default function({
@@ -21,7 +24,8 @@ export default function({
   emissionsDomains,
   powerEnergyDomains,
   domainPowerEnergy,
-  isEnergyType
+  isEnergyType,
+  isWemOrAu
 }) {
   const addUp = (data, domain) => {
     if (isCalculateByGeneration) {
@@ -77,9 +81,17 @@ export default function({
     obj._totalPowerEnergyMinusBatteryDischarging =
       totalPowerEnergyMinusBatteryDischarging
 
+      console.log('isEnergyType', isEnergyType)
     let ei = isEnergyType
       ? totalEmissions / totalPowerEnergy
       : totalEmissions / totalPowerEnergy * 1000
+
+    console.log('isWemOrAu', isWemOrAu)
+    if (isWemOrAu) {
+      ei = ei * 2
+    } else {
+      ei = ei * 12
+    }
     const isValidEI = Number.isFinite(ei)
 
     if ((ei < 0 || ei > 1500) || !isValidEI) {
@@ -97,7 +109,7 @@ export default function({
 
   return {
     emissionIntensityData: dataset,
-    averageEmissionIntensity: calAverage(isEnergyType, dataset),
+    averageEmissionIntensity: calAverage(isEnergyType, isWemOrAu, dataset),
     averageEmissions: sumEmissionsMinusLoads / dataset.length,
     sumEmissionsMinusLoads
   }

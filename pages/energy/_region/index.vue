@@ -121,7 +121,8 @@ export default {
       baseUrl: `${this.$config.url}/images/screens/`,
       useDev: this.$config.useDev,
       ranges: RANGES,
-      intervals: RANGE_INTERVALS
+      intervals: RANGE_INTERVALS,
+      isWemOrAu: false
     }
   },
 
@@ -275,8 +276,8 @@ export default {
       this.$store.dispatch('currentView', 'energy')
       this.setEmissionsVolumePrefix('')
 
-      const isWemOrAu = this.regionId === 'wem' || this.regionId === 'au'
-      if (isWemOrAu && !this.isEnergyType) {
+      this.isWemOrAu = this.regionId === 'wem' || this.regionId === 'au'
+      if (this.sWemOrAu && !this.isEnergyType) {
         this.setInterval('30m')
       }
       this.doGetRegionDataByRangeInterval({
@@ -336,7 +337,8 @@ export default {
         emissionsDomains: this.emissionsDomains,
         powerEnergyDomains: this.powerEnergyDomains,
         domainPowerEnergy: this.domainPowerEnergy,
-        isEnergyType: this.isEnergyType
+        isEnergyType: this.isEnergyType,
+        isWemOrAu: this.isWemOrAu
       })
     },
 
