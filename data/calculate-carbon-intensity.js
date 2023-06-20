@@ -18,7 +18,8 @@ export default function({
   isCalculateByGeneration,
   emissionsDomains,
   powerEnergyDomains,
-  domainPowerEnergy
+  domainPowerEnergy,
+  isEnergyType
 }) {
   const addUp = (data, domain) => {
     if (isCalculateByGeneration) {
@@ -74,7 +75,7 @@ export default function({
     obj._totalPowerEnergyMinusBatteryDischarging =
       totalPowerEnergyMinusBatteryDischarging
 
-    let ei = totalEmissions / totalPowerEnergy
+    let ei = isEnergyType ? totalEmissions / totalPowerEnergy : totalEmissions / totalPowerEnergy * 1000
     const isValidEI = Number.isFinite(ei)
 
     if ((ei < 0 || ei > 1500) || !isValidEI) {

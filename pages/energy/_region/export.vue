@@ -104,6 +104,8 @@ export default {
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
+      isEnergyType: 'regionEnergy/isEnergyType',
+
       showChartTemperature: 'chartOptionsTemperature/chartShown'
     }),
     showBomSource() {
@@ -218,7 +220,8 @@ export default {
         isCalculateByGeneration: this.calculateByGeneration,
         emissionsDomains: this.emissionsDomains,
         powerEnergyDomains: this.powerEnergyDomains,
-        domainPowerEnergy: this.domainPowerEnergy
+        domainPowerEnergy: this.domainPowerEnergy,
+        isEnergyType: this.isEnergyType
       })
     },
 

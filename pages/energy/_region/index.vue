@@ -335,7 +335,8 @@ export default {
         isCalculateByGeneration: this.calculateByGeneration,
         emissionsDomains: this.emissionsDomains,
         powerEnergyDomains: this.powerEnergyDomains,
-        domainPowerEnergy: this.domainPowerEnergy
+        domainPowerEnergy: this.domainPowerEnergy,
+        isEnergyType: this.isEnergyType
       })
     },
 
