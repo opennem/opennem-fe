@@ -1,6 +1,6 @@
 import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 
-function calAverage(dataset) {
+function calAverage(isEnergyType, dataset) {
   const totalEmissions = dataset.reduce(
     (prev, cur) => prev + cur._totalEmissions,
     0
@@ -10,7 +10,9 @@ function calAverage(dataset) {
     0
   )
 
-  return totalEmissions / totalPowerEnergy
+  return isEnergyType
+    ? totalEmissions / totalPowerEnergy
+    : totalEmissions / totalPowerEnergy * 1000
 }
 
 export default function({
@@ -75,7 +77,9 @@ export default function({
     obj._totalPowerEnergyMinusBatteryDischarging =
       totalPowerEnergyMinusBatteryDischarging
 
-    let ei = isEnergyType ? totalEmissions / totalPowerEnergy : totalEmissions / totalPowerEnergy * 1000
+    let ei = isEnergyType
+      ? totalEmissions / totalPowerEnergy
+      : totalEmissions / totalPowerEnergy * 1000
     const isValidEI = Number.isFinite(ei)
 
     if ((ei < 0 || ei > 1500) || !isValidEI) {
@@ -93,7 +97,7 @@ export default function({
 
   return {
     emissionIntensityData: dataset,
-    averageEmissionIntensity: calAverage(dataset),
+    averageEmissionIntensity: calAverage(isEnergyType, dataset),
     averageEmissions: sumEmissionsMinusLoads / dataset.length,
     sumEmissionsMinusLoads
   }
