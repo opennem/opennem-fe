@@ -85,6 +85,15 @@ export function dataProcess(res, range, interval, period, displayTz) {
     units
   } = process(responses, displayTz)
 
+    // WORKAROUND: mutate emissions data (power only) because it's returning "tCO2e/hr" instead of "tCO2e"
+    if (!isEnergyType) {
+      domainEmissions.forEach((d) => {
+        dFlat.forEach((d2) => {
+          d2[d.id] = d2[d.id] / 12
+        })
+      })
+    }
+  
   const isEnergyType = type === 'energy'
   const { earliestEnergyStartDate, latestEnergyLastDate } =
     getEarliestLatestDates(
