@@ -11,11 +11,19 @@ function calAverage(isEnergyType, isWemOrAu, dataset) {
     0
   )
 
-  let ei = isEnergyType
-    ? totalEmissions / totalPowerEnergy
-    : totalEmissions / totalPowerEnergy * 1000 
+  let ei = totalEmissions / totalPowerEnergy
 
-  return isWemOrAu ? ei * 2 : ei * 12
+  if (!isEnergyType) {
+    ei = ei * 1000
+
+    if (isWemOrAu) {
+      ei = ei * 2
+    } else {
+      ei = ei * 12
+    }
+  }
+
+  return ei
 }
 
 export default function({
@@ -81,17 +89,18 @@ export default function({
     obj._totalPowerEnergyMinusBatteryDischarging =
       totalPowerEnergyMinusBatteryDischarging
 
-      console.log('isEnergyType', isEnergyType)
-    let ei = isEnergyType
-      ? totalEmissions / totalPowerEnergy
-      : totalEmissions / totalPowerEnergy * 1000
+    let ei = totalEmissions / totalPowerEnergy
+    
+    if (!isEnergyType) {
+      ei = ei * 1000
 
-    console.log('isWemOrAu', isWemOrAu)
-    if (isWemOrAu) {
-      ei = ei * 2
-    } else {
-      ei = ei * 12
+      if (isWemOrAu) {
+        ei = ei * 2
+      } else {
+        ei = ei * 12
+      }
     }
+    
     const isValidEI = Number.isFinite(ei)
 
     if ((ei < 0 || ei > 1500) || !isValidEI) {
