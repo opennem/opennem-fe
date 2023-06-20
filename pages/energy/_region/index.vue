@@ -57,6 +57,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import _includes from 'lodash.includes'
+import * as SI from '@/constants/si'
 import { isPowerRange, RANGES, RANGE_INTERVALS } from '@/constants/ranges.js'
 import {
   isValidRegion,
@@ -275,6 +276,7 @@ export default {
     if (isValidRegion(this.regionId)) {
       this.$store.dispatch('currentView', 'energy')
       this.setEmissionsVolumePrefix('')
+      this.setEmissionsVolumeDisplayPrefix(SI.BASE)
 
       this.isWemOrAu = this.regionId === 'wem' || this.regionId === 'au'
       if (this.sWemOrAu && !this.isEnergyType) {
@@ -327,7 +329,8 @@ export default {
       setXGuides: 'visInteract/xGuides',
       setYGuides: 'visInteract/yGuides',
 
-      setEmissionsVolumePrefix: 'chartOptionsEmissionsVolume/chartUnitPrefix'
+      setEmissionsVolumePrefix: 'chartOptionsEmissionsVolume/chartUnitPrefix',
+      setEmissionsVolumeDisplayPrefix: 'chartOptionsEmissionsVolume/chartDisplayPrefix'
     }),
 
     updateEmissionsData() {
