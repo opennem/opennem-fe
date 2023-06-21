@@ -172,7 +172,8 @@ export default {
     return {
       order: [],
       mousedownDelay: null,
-      longPress: 500
+      longPress: 500,
+      isWemOrAu: false
     }
   },
 
@@ -204,6 +205,9 @@ export default {
       chartEmissionsVolumeDisplayPrefix:
         'chartOptionsEmissionsVolume/chartDisplayPrefix'
     }),
+    regionId() {
+      return this.$route.params.region
+    },
     chartUnitPrefix() {
       return this.isEnergyType
         ? this.chartEnergyUnitPrefix
@@ -250,6 +254,7 @@ export default {
 
   created() {
     this.order = this.updateOrder(this.originalOrder)
+    this.isWemOrAu = this.regionId === 'wem' || this.regionId === 'au'
   },
 
   methods: {
@@ -367,8 +372,20 @@ export default {
         let emissionsVolume = this.showPointSummary
           ? this.pointSummary[emissionObj.id]
           : this.summary[emissionObj.id]
+        
+        let ei = emissionsVolume / Math.abs(energy)
 
-        return emissionsVolume / Math.abs(energy)
+        if (!this.isEnergyType) {
+          ei = ei * 1000
+
+          if (this.isWemOrAu) {
+            ei = ei * 2
+          } else {
+            ei = ei * 12
+          }
+        }
+
+        return ei
       }
       return '-'
     },
