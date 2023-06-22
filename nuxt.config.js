@@ -171,9 +171,9 @@ module.exports = {
       }
     ],
     script: [
-      { src: '/scripts/ga.js' },
       { src: 'https://cdn.polyfill.io/v2/polyfill.min.js?features=default' },
-      { src: 'https://rum-static.pingdom.net/pa-62141e079034fb0011000844.js' }
+      { async: true, src: 'https://www.googletagmanager.com/gtag/js?id=G-FYYXTDCEND"' },
+      { src: '/scripts/ga.js' }
     ]
   },
 
