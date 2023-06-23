@@ -44,7 +44,7 @@ export default function({
     } else {
       // it's not a load OR it's exports
       if (domain.category !== 'load' || domain.fuelTech === 'exports') {
-        return data[domain.id] || 0
+        return Math.abs(data[domain.id]) || 0
       }
     }
     return 0

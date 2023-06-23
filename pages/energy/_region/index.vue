@@ -166,7 +166,7 @@ export default {
 
     emissionsDomains() {
       const domains = this.currentDomainEmissions.filter(
-        (d) => d.category !== FT.LOAD
+        (d) => d.category !== FT.LOAD || d.fuelTech === FT.EXPORTS
       )
       const hidden = this.hiddenFuelTechs
       return domains
