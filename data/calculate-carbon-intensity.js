@@ -95,7 +95,7 @@ export default function({
       console.error(`EI out of range: ${ei}`)
     }
 
-    obj._emissionIntensity = isValidEI ? ei : null
+    obj._emissionIntensity = isValidEI ? Math.abs(ei) : null
     return obj
   })
 

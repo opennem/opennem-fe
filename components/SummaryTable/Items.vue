@@ -386,7 +386,7 @@ export default {
           }
         }
 
-        return ei
+        return Math.abs(ei)
       }
       return '-'
     },
