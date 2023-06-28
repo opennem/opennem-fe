@@ -15,12 +15,6 @@ function calAverage(isEnergyType, isWemOrAu, dataset) {
 
   if (!isEnergyType) {
     ei = ei * 1000
-
-    if (isWemOrAu) {
-      ei = ei * 2
-    } else {
-      ei = ei * 12
-    }
   }
 
   return ei
@@ -93,12 +87,6 @@ export default function({
     
     if (!isEnergyType) {
       ei = ei * 1000
-
-      if (isWemOrAu) {
-        ei = ei * 2
-      } else {
-        ei = ei * 12
-      }
     }
     
     const isValidEI = Number.isFinite(ei)
