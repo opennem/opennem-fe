@@ -30,16 +30,21 @@ export default function({
   isWemOrAu
 }) {
   const addUp = (data, domain) => {
-    if (isCalculateByGeneration) {
-      // only if it's a source AND it's not imports
-      if (domain.category === 'source' && domain.fuelTech !== 'imports') {
-        return data[domain.id] || 0
-      }
-    } else {
-      // it's not a load OR it's exports
-      if (domain.category !== 'load' || domain.fuelTech === 'exports') {
-        return Math.abs(data[domain.id]) || 0
-      }
+    // if (isCalculateByGeneration) {
+    //   // only if it's a source AND it's not imports
+    //   if (domain.category === 'source' && domain.fuelTech !== 'imports') {
+    //     return data[domain.id] || 0
+    //   }
+    // } else {
+    //   // it's not a load OR it's exports
+    //   if (domain.category !== 'load' || domain.fuelTech === 'exports') {
+    //     return Math.abs(data[domain.id]) || 0
+    //   }
+    // }
+
+    // only if it's a source AND it's not imports
+    if (domain.category === 'source' && domain.fuelTech !== 'imports') {
+      return data[domain.id] || 0
     }
     return 0
   }
@@ -82,6 +87,7 @@ export default function({
     obj._totalEmissionsMinusLoads = totalEmissionsMinusLoads
     obj._totalPowerEnergyMinusBatteryDischarging =
       totalPowerEnergyMinusBatteryDischarging
+    obj._totalPowerEnergy = totalPowerEnergy
 
     let ei = totalEmissions / totalPowerEnergy
     
