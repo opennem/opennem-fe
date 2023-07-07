@@ -379,6 +379,12 @@ export default {
         if (!this.isEnergyType) {
           ei = ei * 1000
 
+          if (this.isWemOrAu) {
+            ei = ei * 2
+          } else {
+            ei = ei * 12
+          }
+
           if (!this.showPointSummary) {
             // if 5m, divide by 12, else assume 30m, divide by 2 to convert energy /hr to power
             const time = this.interval === '5m' ? 12 : 2
