@@ -7,7 +7,7 @@ function calAverage(isEnergyType, isWemOrAu, dataset) {
     0
   )
   const totalPowerEnergy = dataset.reduce(
-    (prev, cur) => prev + cur._totalPowerEnergyMinusBatteryDischarging,
+    (prev, cur) => prev + cur._totalPowerEnergy,
     0
   )
 
@@ -35,7 +35,9 @@ export default function({
   isEnergyType,
   isWemOrAu
 }) {
-  const addUp = (data, domain) => {
+  
+
+  const addUp = (data, domain, hasSource) => {
     // if (isCalculateByGeneration) {
     //   // only if it's a source AND it's not imports
     //   if (domain.category === 'source' && domain.fuelTech !== 'imports') {
@@ -48,16 +50,29 @@ export default function({
     //   }
     // }
 
-    // only if it's a source AND it's not imports
-    if (domain.category === 'source' && domain.fuelTech !== 'imports') {
-      return data[domain.id] || 0
+    if (hasSource) {
+      // only if it's a source AND it's not imports
+      if (domain.category === 'source' && domain.fuelTech !== 'imports') {
+        return data[domain.id] || 0
+      }
+      return 0
+    } else {
+      // if all the selected domains are loads
+      return Math.abs(data[domain.id]) || 0
     }
-    return 0
   }
   
   const batteryDischarging = domainPowerEnergy.find(
     (d) => d.fuelTech === FT.BATTERY_DISCHARGING
   )
+
+  let hasSource = false
+
+  powerEnergyDomains.forEach((domain) => {
+    if (domain.category === 'source') {
+      hasSource = true
+    }
+  })
 
   const dataset = datasetAll.map((d) => {
     const obj = {
@@ -75,15 +90,15 @@ export default function({
     }
 
     emissionsDomains.forEach((domain) => {
-      totalEmissions += addUp(d, domain)
+      totalEmissions += addUp(d, domain, hasSource)
 
       if (domain.category !== 'load') {
-        totalEmissionsMinusLoads += addUp(d, domain)
+        totalEmissionsMinusLoads += addUp(d, domain, hasSource)
       }
     })
 
     powerEnergyDomains.forEach((domain) => {
-      totalPowerEnergy += addUp(d, domain)
+      totalPowerEnergy += addUp(d, domain, hasSource)
     })
 
     const totalPowerEnergyMinusBatteryDischarging =
@@ -121,11 +136,18 @@ export default function({
     (prev, cur) => prev + cur._totalEmissionsMinusLoads,
     0
   )
+  const sumEmissions = dataset.reduce(
+    (prev, cur) => prev + cur._totalEmissions,
+    0
+  )
+  const averageEmissions = hasSource 
+    ? sumEmissionsMinusLoads / dataset.length 
+    : sumEmissions / dataset.length
 
   return {
     emissionIntensityData: dataset,
     averageEmissionIntensity: calAverage(isEnergyType, isWemOrAu, dataset),
-    averageEmissions: sumEmissionsMinusLoads / dataset.length,
+    averageEmissions,
     sumEmissionsMinusLoads
   }
 }
