@@ -1,5 +1,4 @@
 import * as FT from '@/constants/energy-fuel-techs/group-default.js'
-import { is } from 'date-fns/locale'
 
 function calAverage(isEnergyType, isWemOrAu, dataset) {
   const totalEmissions = dataset.reduce(
