@@ -220,6 +220,10 @@ export default {
     convertValue: {
       type: Function,
       default: () => function () {}
+    },
+    padYAxis: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -612,7 +616,7 @@ export default {
         this.x.domain(this.xExtent)
       }
       const yRange = Math.abs(this.y1Min) + Math.abs(this.y1Max)
-      const padding = (yRange * 10) / 100
+      const padding = this.padYAxis ? (yRange * 10) / 100 : 0
       this.y1.domain([this.y1Min - padding, this.y1Max + padding])
       this.y2.domain([this.y2Min, this.y2Max])
       if (!this.y1Log) {

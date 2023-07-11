@@ -106,6 +106,7 @@
       :display-prefix="chartDisplayPrefix"
       :should-convert-value="!valueFormatter && shouldConvertValue"
       :convert-value="convertValue"
+      :pad-y-axis="padYAxis"
       class="vis-chart"
       @date-hover="handleDateHover"
       @domain-hover="handleDomainHover"
@@ -262,6 +263,10 @@ export default {
       type: Function,
       default: null
     },
+    padYAxis: {
+      type: Boolean,
+      default: true
+    }
   },
 
   computed: {
@@ -393,6 +398,8 @@ export default {
         })
       })
 
+      console.log('min', min)
+
       return min
     },
 
@@ -407,6 +414,8 @@ export default {
           }
         })
       })
+
+      console.log('max', max)
 
       return max
     },

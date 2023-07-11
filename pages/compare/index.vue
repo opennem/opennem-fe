@@ -104,6 +104,7 @@
           :hidden-domains="hiddenDomains"
           :show-average-value="false"
           :value-formatter="valueFormatter"
+          :pad-y-axis="false"
           @dateHover="handleDateHover"
           @isHovering="handleIsHovering"
           @zoomExtent="handleZoomExtent"
