@@ -6,7 +6,8 @@
       "@/*": ["./*"],
       "~~/*": ["./*"],
       "@@/*": ["./*"]
-    }
+    },
+    "allowJs": true
   },
   "exclude": ["node_modules", ".nuxt", "dist", "static", ".git", ".github"]
 }

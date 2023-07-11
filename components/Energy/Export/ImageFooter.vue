@@ -10,19 +10,29 @@
       </button>
     </div>
 
-    <div>
-      <span>Sources:</span>
-      <strong>{{ sources }}</strong>
-    </div>
+    <div class="sources-licence-wrapper">
+      <div class="sources">
+        <span>Sources:</span>
+        <strong>{{ sources }}</strong>
 
-    <div v-if="showAttribution">
-      Shared by
-      <strong 
-        contenteditable="true" 
-        @blur="onAttributionBlur">{{
-          exportAttribution
-        }}</strong>
+        <div v-if="showAttribution">
+          Shared by
+          <strong 
+            contenteditable="true" 
+            @blur="onAttributionBlur">{{
+              exportAttribution
+            }}</strong>
+        </div>
+      </div>
+
+      <div class="licence">
+        <span v-tooltip="'Creative Commons Attribution 4.0 International License (CC BY 4.0)'">
+          <i class="fab fa-brands fa-creative-commons" />
+          <i class="fab fa-brands fa-creative-commons-by" />
+        </span>
+      </div>
     </div>
+   
   </div>
 </template>
 
@@ -116,6 +126,21 @@ strong {
     &:hover {
       background-color: #fff;
     }
+  }
+}
+.sources-licence-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  & > div {
+    width: 100%;
+  }
+
+  .licence {
+    text-align: right;
+    font-size: 1.2rem;
+    color: $opennem-link-color;
   }
 }
 </style>
