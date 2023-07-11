@@ -108,10 +108,10 @@ export default {
     },
 
     handleMouseEnter(id) {
-      this.$emit('mouse-enter', id)
+      this.$emit('highlight-domain', id)
     },
     handleMouseLeave() {
-      this.$emit('mouse-leave')
+      this.$emit('highlight-domain', '')
     }
   }
 }

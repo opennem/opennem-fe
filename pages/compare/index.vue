@@ -125,6 +125,7 @@
             :domains="domains" 
             :hidden="hiddenDomains"
             :dataset="tableDataset"
+            @highlight-domain="handleHighlightDomain"
             @domain-hide="handleDomainHide"
             @domains-hide="handleDomainsHide"/>
         </aside>
@@ -454,6 +455,7 @@ export default {
       doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
     }),
     ...mapMutations({
+      setHighlightDomain: 'visInteract/highlightDomain',
       setQuery: 'app/query'
     }),
 
@@ -621,6 +623,10 @@ export default {
 
     handleDomainsHide(domainIds) {
       this.hiddenDomains = [...domainIds]
+    },
+
+    handleHighlightDomain(id) {
+      this.setHighlightDomain(id)
     }
   }
 }
