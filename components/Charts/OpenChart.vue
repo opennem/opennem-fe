@@ -8,13 +8,14 @@
   >
     <open-chart-options
       :read-only="readOnly"
+      :chart-title="chartTitle"
       :chart-shown="chartShown"
       :chart-type="chartType"
       :chart-curve="chartCurve"
       :chart-y-axis="chartYAxis"
       :chart-unit="chartUnit"
       :chart-display-prefix="chartDisplayPrefix"
-      :display-unit="displayUnit"
+      :display-unit="unit"
       :is-type-area="isTypeArea"
       :is-type-proportion="isTypeProportion"
       :is-type-line="isTypeLine"
@@ -171,6 +172,10 @@ export default {
   },
 
   props: {
+    chartTitle: {
+      type: String,
+      default: ''
+    },
     chartDataset: {
       type: Array,
       default: () => []
@@ -266,7 +271,11 @@ export default {
     padYAxis: {
       type: Boolean,
       default: true
-    }
+    },
+    unit: {
+      type: String,
+      default: ''
+    },
   },
 
   computed: {
@@ -330,14 +339,9 @@ export default {
     },
 
     displayUnit() {
+      console.log('unit', this.chartCurrentUnit)
       let unit = this.chartCurrentUnit
-      if (
-        this.isTypeProportion ||
-        ((this.isTypeLine || this.isTypeChangeSinceLine) &&
-          this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE)
-      ) {
-        unit = '%'
-      }
+      
       return unit
     },
 

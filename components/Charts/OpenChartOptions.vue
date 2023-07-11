@@ -23,16 +23,10 @@
       />
     </template>
 
-    <!-- <template v-slot:label-unit>
-      <strong>xx</strong>
-      <small v-if="chartShown && isPercentage"> {{ displayUnit }}</small>
-      <small
-        v-if="chartShown && !isPercentage"
-        class="display-unit"
-        @click.stop="handleUnitClick"
-      >{{ displayUnit }}/{{ interval | intervalLabel }}</small
-      >
-    </template> -->
+    <template v-slot:label-unit>
+      <strong>{{ chartTitle }}</strong>
+      <small v-if="chartShown"> {{ displayUnit }}</small>
+    </template>
     <!-- <template
       v-slot:average-value
       v-if="!readOnly && !isPercentage && showAverageValue"
@@ -89,6 +83,10 @@ export default {
     ChartOptions
   },
   props: {
+    chartTitle: {
+      type: String,
+      default: ''
+    },
     chartShown: {
       type: Boolean,
       default: false

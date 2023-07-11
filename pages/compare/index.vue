@@ -91,6 +91,7 @@
         class="chart-table-container">
         <OpenChart
           class="open-chart"
+          :chart-title="chartTitle"
           :chart-dataset="lineChartDataset"
           :chart-domains="domains"
           :range="range"
@@ -105,6 +106,7 @@
           :show-average-value="false"
           :value-formatter="valueFormatter"
           :pad-y-axis="false"
+          :unit="chartUnit"
           @dateHover="handleDateHover"
           @isHovering="handleIsHovering"
           @zoomExtent="handleZoomExtent"
@@ -318,6 +320,17 @@ export default {
       xGuides: 'visInteract/xGuides',
       featureEmissions: 'feature/emissions'
     }),
+
+    chartTitle() {
+      return this.selectedMetricObject.label
+    },
+
+    chartUnit() {
+      const type= this.selectedMetricObject.value
+
+      if (type.toLowerCase().includes('value')) return '$/MWh'
+      return this.selectedMetricObject.unit
+    },
 
     selectedMetric: {
       get() {
