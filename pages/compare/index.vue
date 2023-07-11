@@ -125,7 +125,8 @@
             :domains="domains" 
             :hidden="hiddenDomains"
             :dataset="tableDataset"
-            @domain-hide="handleDomainHide"/>
+            @domain-hide="handleDomainHide"
+            @domains-hide="handleDomainsHide"/>
         </aside>
         
       </div>
@@ -608,8 +609,18 @@ export default {
       if (this.hiddenDomains.includes(domainId)) {
         this.hiddenDomains = this.hiddenDomains.filter(d => d !== domainId)
       } else {
-        this.hiddenDomains = [...this.hiddenDomains, domainId]
+        const hidden = [...this.hiddenDomains, domainId]
+
+        if (hidden.length === this.domains.length) {
+          this.hiddenDomains = []
+        } else {
+          this.hiddenDomains = hidden
+        }
       }
+    },
+
+    handleDomainsHide(domainIds) {
+      this.hiddenDomains = [...domainIds]
     }
   }
 }

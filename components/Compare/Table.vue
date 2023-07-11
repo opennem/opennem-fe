@@ -3,15 +3,8 @@
     <table>
       <thead>
         <tr>
-          <th>Regions</th>
+          <th colspan="2">Regions</th>
           <th class="cell-value align-right">
-            <span>{{ selectedMetricLabel }}</span>
-          </th>
-        </tr>
-        <tr v-if="selectedMetricUnit">
-          <th 
-            colspan="2" 
-            style="text-align: right;">
             <span class="unit">{{ selectedMetricUnit }}</span>
           </th>
         </tr>
@@ -20,12 +13,20 @@
         <tr 
           v-for="domain in domains" 
           :key="domain.id"
-          @click="handleDomainHide(domain.id)">
-          <td>
+          @mouseenter="handleMouseEnter(domain.id)"
+          @mouseleave="handleMouseLeave"
+          @click.exact="handleRowClick(domain.id)"
+          @click.shift.exact="handleRowShiftClicked(domain.id)">
+          <td style="width: 50%">
             <div 
               :style="{ backgroundColor: `${domain.colour}${isHidden(domain.id) ? '30' : ''}` }" 
               class="colour-square" />
-            {{ domain.label }}</td>
+            {{ domain.label }}
+          </td>
+          <td style="width: 20px"><a 
+            @click.stop="handleLinkClick(domain.id)">
+            <i class="fal fa-external-link-square" />
+          </a></td>
           <td style="text-align: right;">{{ valueFormat(dataset[domain.id]) }}</td>
         </tr>
       </tbody>
@@ -93,8 +94,24 @@ export default {
     isHidden(id) {
       return this.hidden.includes(id)
     },
-    handleDomainHide(id) {
+    handleRowClick(id) {
       this.$emit('domain-hide', id)
+    },
+    handleRowShiftClicked(id) {
+      const hide = this.domains.filter((d) => d.id !== id).map((d) => d.id)
+      this.$emit('domains-hide', hide)
+    },
+    handleLinkClick(id) {
+      this.$router.push({
+        path: `/energy/${id}/?range=7d&interval=30m`
+      })
+    },
+
+    handleMouseEnter(id) {
+      this.$emit('mouse-enter', id)
+    },
+    handleMouseLeave() {
+      this.$emit('mouse-leave')
     }
   }
 }
@@ -130,11 +147,20 @@ export default {
     padding: 0.3rem 0;
     white-space: nowrap;
     cursor: pointer;
+    user-select: none;
     padding: 0.3rem;
+
+    a {
+      visibility: hidden;
+    }
   }
 
   tr:hover td {
     background-color: #f5f5f5;
+
+    a {
+      visibility: visible;
+    }
   }
 
   .align-right {
