@@ -2,7 +2,7 @@
   <div class="column-selector-wrapper">
     <div
       v-on-clickaway="handleClickAway"
-      :class="{ 'has-hover': isEnergyChart && featureEmissions }"
+      :class="{ 'has-hover': featureEmissions }"
       class="column-selector"
       @touchstart="handleTouchstart"
       @touchend="handleTouchend"
@@ -91,14 +91,6 @@ export default {
 
     isEmissionsIntensityColumn() {
       return this.showSummaryColumn === 'emissions-intensity'
-    },
-
-    energyChartType() {
-      return this.$store.getters.energyChartType
-    },
-
-    isEnergyChart() {
-      return this.energyChartType === 'energy'
     }
   },
 
@@ -125,14 +117,14 @@ export default {
       this.clearTimeout()
     },
     handleMousedown() {
-      if (this.isEnergyChart && this.featureEmissions) {
+      if (this.featureEmissions) {
         this.mousedownDelay = setTimeout(() => {
           this.showMenu = true
         }, this.longPress)
       }
     },
     handleMouseup() {
-      if (this.isEnergyChart && !this.showMenu && this.featureEmissions) {
+      if (!this.showMenu && this.featureEmissions) {
         switch (this.selected) {
           case 'av-value':
             this.selected = 'emissions-volume'
@@ -148,7 +140,7 @@ export default {
       this.clearTimeout()
     },
     handleTouchstart() {
-      if (this.isEnergyChart && this.featureEmissions) {
+      if (this.featureEmissions) {
         this.mousedownDelay = setTimeout(() => {
           this.showMenu = true
         }, this.longPress)

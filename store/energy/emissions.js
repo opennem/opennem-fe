@@ -38,7 +38,9 @@ export const actions = {
       isCalculateByGeneration,
       emissionsDomains,
       powerEnergyDomains,
-      domainPowerEnergy
+      domainPowerEnergy,
+      isEnergyType,
+      isWemOrAu
     }
   ) {
     
@@ -52,7 +54,9 @@ export const actions = {
       isCalculateByGeneration,
       emissionsDomains,
       powerEnergyDomains,
-      domainPowerEnergy
+      domainPowerEnergy,
+      isEnergyType,
+      isWemOrAu
     })
 
     commit('emissionIntensityData', emissionIntensityData)

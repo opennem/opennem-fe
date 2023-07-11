@@ -497,6 +497,22 @@ export const actions = {
         perf.time()
         console.info(`------ ${currentRegion} — ${range}/${interval} (start)`)
         console.log('***', range, interval, period)
+
+        // // WORKAROUND: mutate emissions data (power only) because it's returning "tCO2e/hr" instead of "tCO2e"
+        // if (range === '1D' || range === '3D' || range === '7D') {
+        //   const isAuOrWem = currentRegion === 'au' || currentRegion === 'wem'
+        //   responses.forEach((res1) => {
+        //     res1.forEach((r) => {
+        //       if (r.type === 'emissions') {
+        //         const historyData = isAuOrWem
+        //           ? r.history.data.map(d => d / 2)
+        //           : r.history.data.map(d => d / 12)
+        //         r.history.data = historyData
+        //       }
+        //     })
+        //   })
+        // }
+
         const {
           datasetFull,
           datasetFlat,

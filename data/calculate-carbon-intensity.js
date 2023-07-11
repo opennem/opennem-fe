@@ -1,16 +1,28 @@
 import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 
-function calAverage(dataset) {
+function calAverage(isEnergyType, isWemOrAu, dataset) {
   const totalEmissions = dataset.reduce(
     (prev, cur) => prev + cur._totalEmissions,
     0
   )
   const totalPowerEnergy = dataset.reduce(
-    (prev, cur) => prev + cur._totalPowerEnergyMinusBatteryDischarging,
+    (prev, cur) => prev + cur._totalPowerEnergy,
     0
   )
 
-  return totalEmissions / totalPowerEnergy
+  let ei = totalEmissions / totalPowerEnergy
+
+  if (!isEnergyType) {
+    ei = ei * 1000
+
+    if (isWemOrAu) {
+      ei = ei * 2
+    } else {
+      ei = ei * 12
+    }
+  }
+
+  return ei
 }
 
 export default function({
@@ -18,26 +30,48 @@ export default function({
   isCalculateByGeneration,
   emissionsDomains,
   powerEnergyDomains,
-  domainPowerEnergy
+  domainPowerEnergy,
+  isEnergyType,
+  isWemOrAu
 }) {
-  const addUp = (data, domain) => {
-    if (isCalculateByGeneration) {
+  
+
+  const addUp = (data, domain, hasSource) => {
+    // if (isCalculateByGeneration) {
+    //   // only if it's a source AND it's not imports
+    //   if (domain.category === 'source' && domain.fuelTech !== 'imports') {
+    //     return data[domain.id] || 0
+    //   }
+    // } else {
+    //   // it's not a load OR it's exports
+    //   if (domain.category !== 'load' || domain.fuelTech === 'exports') {
+    //     return Math.abs(data[domain.id]) || 0
+    //   }
+    // }
+
+    if (hasSource) {
       // only if it's a source AND it's not imports
       if (domain.category === 'source' && domain.fuelTech !== 'imports') {
         return data[domain.id] || 0
       }
+      return 0
     } else {
-      // it's not a load OR it's exports
-      if (domain.category !== 'load' || domain.fuelTech === 'exports') {
-        return data[domain.id] || 0
-      }
+      // if all the selected domains are loads
+      return Math.abs(data[domain.id]) || 0
     }
-    return 0
   }
   
   const batteryDischarging = domainPowerEnergy.find(
     (d) => d.fuelTech === FT.BATTERY_DISCHARGING
   )
+
+  let hasSource = false
+
+  powerEnergyDomains.forEach((domain) => {
+    if (domain.category === 'source') {
+      hasSource = true
+    }
+  })
 
   const dataset = datasetAll.map((d) => {
     const obj = {
@@ -55,15 +89,15 @@ export default function({
     }
 
     emissionsDomains.forEach((domain) => {
-      totalEmissions += addUp(d, domain)
+      totalEmissions += addUp(d, domain, hasSource)
 
       if (domain.category !== 'load') {
-        totalEmissionsMinusLoads += addUp(d, domain)
+        totalEmissionsMinusLoads += addUp(d, domain, hasSource)
       }
     })
 
     powerEnergyDomains.forEach((domain) => {
-      totalPowerEnergy += addUp(d, domain)
+      totalPowerEnergy += addUp(d, domain, hasSource)
     })
 
     const totalPowerEnergyMinusBatteryDischarging =
@@ -73,15 +107,27 @@ export default function({
     obj._totalEmissionsMinusLoads = totalEmissionsMinusLoads
     obj._totalPowerEnergyMinusBatteryDischarging =
       totalPowerEnergyMinusBatteryDischarging
+    obj._totalPowerEnergy = totalPowerEnergy
 
     let ei = totalEmissions / totalPowerEnergy
+    
+    if (!isEnergyType) {
+      ei = ei * 1000
+
+      if (isWemOrAu) {
+        ei = ei * 2
+      } else {
+        ei = ei * 12
+      }
+    }
+    
     const isValidEI = Number.isFinite(ei)
 
     if ((ei < 0 || ei > 1500) || !isValidEI) {
       console.error(`EI out of range: ${ei}`)
     }
 
-    obj._emissionIntensity = isValidEI ? ei : null
+    obj._emissionIntensity = isValidEI ? Math.abs(ei) : null
     return obj
   })
 
@@ -89,11 +135,18 @@ export default function({
     (prev, cur) => prev + cur._totalEmissionsMinusLoads,
     0
   )
+  const sumEmissions = dataset.reduce(
+    (prev, cur) => prev + cur._totalEmissions,
+    0
+  )
+  const averageEmissions = hasSource 
+    ? sumEmissionsMinusLoads / dataset.length 
+    : sumEmissions / dataset.length
 
   return {
     emissionIntensityData: dataset,
-    averageEmissionIntensity: calAverage(dataset),
-    averageEmissions: sumEmissionsMinusLoads / dataset.length,
+    averageEmissionIntensity: calAverage(isEnergyType, isWemOrAu, dataset),
+    averageEmissions,
     sumEmissionsMinusLoads
   }
 }
