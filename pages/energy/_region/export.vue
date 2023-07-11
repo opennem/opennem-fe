@@ -83,7 +83,8 @@ export default {
       legend: true,
       percentDisplay: false,
       exporting: false,
-      regions: getEnergyRegions()
+      regions: getEnergyRegions(),
+      isWemOrAu: false
     }
   },
 
@@ -104,6 +105,8 @@ export default {
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
+      isEnergyType: 'regionEnergy/isEnergyType',
+
       showChartTemperature: 'chartOptionsTemperature/chartShown'
     }),
     showBomSource() {
@@ -170,6 +173,7 @@ export default {
     this.setupSummaryLegendStates()
 
     this.setFocusDate(null)
+    this.isWemOrAu = this.regionId === 'wem' || this.regionId === 'au'
     this.$store.dispatch('currentView', 'energy')
     this.doGetRegionDataByRangeInterval({
       region: this.regionId,
@@ -218,7 +222,9 @@ export default {
         isCalculateByGeneration: this.calculateByGeneration,
         emissionsDomains: this.emissionsDomains,
         powerEnergyDomains: this.powerEnergyDomains,
-        domainPowerEnergy: this.domainPowerEnergy
+        domainPowerEnergy: this.domainPowerEnergy,
+        isEnergyType: this.isEnergyType,
+        isWemOrAu: this.isWemOrAu
       })
     },
 

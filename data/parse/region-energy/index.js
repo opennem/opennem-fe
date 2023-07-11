@@ -84,7 +84,7 @@ export function dataProcess(res, range, interval, period, displayTz) {
     type,
     units
   } = process(responses, displayTz)
-
+  
   const isEnergyType = type === 'energy'
   const { earliestEnergyStartDate, latestEnergyLastDate } =
     getEarliestLatestDates(

@@ -172,7 +172,8 @@ export default {
     return {
       order: [],
       mousedownDelay: null,
-      longPress: 500
+      longPress: 500,
+      isWemOrAu: false
     }
   },
 
@@ -180,6 +181,7 @@ export default {
     ...mapGetters({
       fuelTechGroupName: 'fuelTechGroupName',
       percentContributionTo: 'percentContributionTo',
+      interval: 'interval',
 
       isEnergyType: 'regionEnergy/isEnergyType',
       domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
@@ -204,6 +206,9 @@ export default {
       chartEmissionsVolumeDisplayPrefix:
         'chartOptionsEmissionsVolume/chartDisplayPrefix'
     }),
+    regionId() {
+      return this.$route.params.region
+    },
     chartUnitPrefix() {
       return this.isEnergyType
         ? this.chartEnergyUnitPrefix
@@ -250,6 +255,7 @@ export default {
 
   created() {
     this.order = this.updateOrder(this.originalOrder)
+    this.isWemOrAu = this.regionId === 'wem' || this.regionId === 'au'
   },
 
   methods: {
@@ -367,8 +373,26 @@ export default {
         let emissionsVolume = this.showPointSummary
           ? this.pointSummary[emissionObj.id]
           : this.summary[emissionObj.id]
+        
+        let ei = emissionsVolume / Math.abs(energy)
 
-        return emissionsVolume / Math.abs(energy)
+        if (!this.isEnergyType) {
+          ei = ei * 1000
+
+          if (this.isWemOrAu) {
+            ei = ei * 2
+          } else {
+            ei = ei * 12
+          }
+
+          if (!this.showPointSummary) {
+            // if 5m, divide by 12, else assume 30m, divide by 2 to convert energy /hr to power
+            const time = this.interval === '5m' ? 12 : 2
+            ei = ei / time / 1000
+          }
+        }
+
+        return Math.abs(ei)
       }
       return '-'
     },

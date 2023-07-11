@@ -57,6 +57,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import _includes from 'lodash.includes'
+import * as SI from '@/constants/si'
 import { isPowerRange, RANGES, RANGE_INTERVALS } from '@/constants/ranges.js'
 import {
   isValidRegion,
@@ -121,7 +122,8 @@ export default {
       baseUrl: `${this.$config.url}/images/screens/`,
       useDev: this.$config.useDev,
       ranges: RANGES,
-      intervals: RANGE_INTERVALS
+      intervals: RANGE_INTERVALS,
+      isWemOrAu: false
     }
   },
 
@@ -164,7 +166,7 @@ export default {
 
     emissionsDomains() {
       const domains = this.currentDomainEmissions.filter(
-        (d) => d.category !== FT.LOAD
+        (d) => d.category !== FT.LOAD || d.fuelTech === FT.EXPORTS
       )
       const hidden = this.hiddenFuelTechs
       return domains
@@ -274,9 +276,10 @@ export default {
     if (isValidRegion(this.regionId)) {
       this.$store.dispatch('currentView', 'energy')
       this.setEmissionsVolumePrefix('')
+      this.setEmissionsVolumeDisplayPrefix(SI.BASE)
 
-      const isWemOrAu = this.regionId === 'wem' || this.regionId === 'au'
-      if (isWemOrAu && !this.isEnergyType) {
+      this.isWemOrAu = this.regionId === 'wem' || this.regionId === 'au'
+      if (this.sWemOrAu && !this.isEnergyType) {
         this.setInterval('30m')
       }
       this.doGetRegionDataByRangeInterval({
@@ -326,7 +329,8 @@ export default {
       setXGuides: 'visInteract/xGuides',
       setYGuides: 'visInteract/yGuides',
 
-      setEmissionsVolumePrefix: 'chartOptionsEmissionsVolume/chartUnitPrefix'
+      setEmissionsVolumePrefix: 'chartOptionsEmissionsVolume/chartUnitPrefix',
+      setEmissionsVolumeDisplayPrefix: 'chartOptionsEmissionsVolume/chartDisplayPrefix'
     }),
 
     updateEmissionsData() {
@@ -335,7 +339,9 @@ export default {
         isCalculateByGeneration: this.calculateByGeneration,
         emissionsDomains: this.emissionsDomains,
         powerEnergyDomains: this.powerEnergyDomains,
-        domainPowerEnergy: this.domainPowerEnergy
+        domainPowerEnergy: this.domainPowerEnergy,
+        isEnergyType: this.isEnergyType,
+        isWemOrAu: this.isWemOrAu
       })
     },
 
