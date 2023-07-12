@@ -357,7 +357,6 @@ export default {
         this.handleRangeChange(r)
       } else {
         const range = r[0]
-
         if (this.selectedRange !== range && !_includes(r, this.selectedRange)) {
           this.handleRangeChange(range)
         } else {
@@ -416,6 +415,8 @@ export default {
       this.hideAllPopups()
       this.$store.dispatch('compareDifference', false)
       this.$store.dispatch('compareDates', [])
+
+      this.updateSelections(range, this.selectedInterval)
 
       this.updateQuery(range, this.selectedInterval, this.selectedFilter)
       this.$emit('rangeOptionChange', range)

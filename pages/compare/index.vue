@@ -79,7 +79,7 @@
           :range="range"
           :interval="interval"
           :filter-period="filterPeriod"
-          @rangeChange="handleRangeChange"
+          @rangeOptionChange="handleRangeChange"
           @intervalChange="handleIntervalChange"
           @queryChange="handleQueryChange"
           @filterPeriodChange="handleFilterPeriodChange"
@@ -598,7 +598,9 @@ export default {
 
     handleRangeChange(range) {
       this.range = range
-      this.interval = RANGE_INTERVALS[range][0]
+      this.interval = COMPARE_RANGE_INTERVALS[range][0]
+
+      this.updateDataWithInterval()
     },
     handleIntervalChange(interval) {
       this.interval = interval
@@ -606,7 +608,6 @@ export default {
       this.updateDataWithInterval()
     },
     handleFilterPeriodChange(period) {
-      console.log(period)
       this.filterPeriod = period
 
       this.updateDataWithInterval()
