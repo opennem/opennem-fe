@@ -181,7 +181,7 @@ export default {
     height: 18px;
     float: left;
     margin-right: 5px;
-    border-radius: 4px;
+    border-radius: 2px;
 
     @include mobile {
       display: inline;
