@@ -501,10 +501,10 @@ export default {
     updateDataWithInterval() {
       if (this.responseDataset) {
         this.doUpdateAllRegionDatasetByInterval({
-          allDataset: this.responseDataset,
           regions: this.domains,
           range: this.range,
           interval: this.interval,
+          filterPeriod: this.filterPeriod
         }).then(d => {
           this.setRegionDataAndBucket(d)
         })

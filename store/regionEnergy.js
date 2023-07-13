@@ -57,7 +57,9 @@ export const state = () => ({
   summary: null,
   powerEnergyPrefix: '',
   dataPowerEnergyInterval: null,
-  regionTimezoneString: null
+  regionTimezoneString: null,
+
+  compareResponse: null,
 })
 
 export const getters = {
@@ -106,7 +108,9 @@ export const getters = {
           )
         : state.currentDataset
     }
-  }
+  },
+
+  compareResponse: (state) => state.compareResponse,
 }
 
 export const mutations = {
@@ -197,6 +201,9 @@ export const mutations = {
   },
   domainDemandMarketValue(state, domainDemandMarketValue) {
     state.domainDemandMarketValue = _cloneDeep(domainDemandMarketValue)
+  },
+  compareResponse(state, compareResponse) {
+    state.compareResponse = _cloneDeep(compareResponse)
   }
 }
 
@@ -261,6 +268,7 @@ export const actions = {
         const check = res.length > 0 ? (res[0].data ? true : false) : false
         const responses = check ? res[0].data : []
         const all = {}
+        const raw = {}
 
         regions.forEach((r, i) => {
           console.log('region', r.id)
@@ -269,22 +277,22 @@ export const actions = {
             (d) => d.region && d.region.toLowerCase() === r.id
           )
 
-          // WORKAROUND for demand series using code as region id
-          const filtered2 = responses.filter(
-            (d) => d.code && d.code.toLowerCase() === r.id
-          )
-
           if (cpiData) {
+            console.log('cpi data')
             filtered.push(cpiData)
           }
-          if (filtered2.length) {
-            filtered2.forEach(d => filtered.push(d))
-          }
+          
           currentRegion = r.id
-          all[r.id] = processResponses([filtered])
+
+          raw[r.id] = [...filtered]
+        })
+
+        regions.forEach((r, i) => {
+          all[r.id] = processResponses([raw[r.id]])
         })
 
         commit('isFetching', true)
+        commit('compareResponse', raw)
 
         return all
       })
@@ -638,45 +646,59 @@ export const actions = {
     }
   },
 
-  doUpdateAllRegionDatasetByInterval({ state, commit }, { allDataset, regions, range, interval }) {
+  doUpdateAllRegionDatasetByInterval({ state, commit, rootGetters }, { regions, range, interval, filterPeriod }) {
     const updated = {}
+    const displayTz = rootGetters.displayTimeZone
 
-    function rollup(regionData) {
-      const { currentDataset } = dataRollUp({
-        isEnergyType: true,
-        datasetFlat: _cloneDeep(regionData.dataset),
-        domainPowerEnergy: regionData.domainPowerEnergy,
-        domainPowerEnergyGrouped: [],
-        domainEmissions: regionData.domainEmissions,
-        domainEmissionsGrouped: [],
-        domainMarketValue: regionData.domainMarketValue,
-        domainMarketValueGrouped: [],
-        domainPrice: regionData.domainPrice,
-        domainTemperature: regionData.domainTemperature,
-        domainDemandPrice: regionData.domainDemandPrice,
-        domainDemandEnergy: regionData.domainDemandEnergy,
-        domainDemandPower: [],
-        domainDemandMarketValue: regionData.domainDemandMarketValue,
-        range,
-        interval
-      })
+    function processResponses(responses) {
+      const dataCount = getDataCount(responses)
+      const perf = new PerfTime()
+      perf.time()
+      console.info(`------ ${currentRegion} (start)`)
+
+      const {
+        datasetFull,
+        datasetFlat,
+        currentDataset: dataset,
+        dataPowerEnergyInterval,
+        domainPowerEnergy,
+        domainPowerEnergyGrouped,
+        domainEmissions,
+        domainEmissionsGrouped,
+        domainMarketValue,
+        domainMarketValueGrouped,
+        domainPrice,
+        domainTemperature,
+        domainDemandPrice,
+        domainDemandEnergy,
+        domainDemandPower,
+        domainDemandMarketValue,
+        dataType,
+        units,
+        inflation
+      } = dataProcess(responses, range, interval, filterPeriod, displayTz)
+
+      perf.timeEnd(
+        `------ ${currentRegion} — (${dataCount} down to ${dataset.length})`
+      )
 
       return {
-        dataset: currentDataset,
-        domainPowerEnergy: regionData.domainPowerEnergy,
-        domainEmissions: regionData.domainEmissions,
-        domainTemperature: regionData.domainTemperature,
-        domainDemandPrice: regionData.domainDemandPrice,
-        domainMarketValue: regionData.domainMarketValue,
-        domainDemandPrice: regionData.domainDemandPrice,
-        domainDemandEnergy: regionData.domainDemandEnergy,
-        domainDemandMarketValue: regionData.domainDemandMarketValue,
-        inflation: regionData.inflation
+        dataset,
+        domainPowerEnergy,
+        domainEmissions,
+        domainTemperature,
+        domainPrice,
+        domainMarketValue,
+        domainDemandPrice,
+        domainDemandEnergy,
+        domainDemandMarketValue,
+        inflation
       }
     }
 
+    const raw = state.compareResponse
     regions.forEach((region) => {
-      updated[region.id] = rollup(allDataset[region.id])
+      updated[region.id] = processResponses([raw[region.id]])
     })
 
     return updated
