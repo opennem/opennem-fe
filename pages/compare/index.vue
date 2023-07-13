@@ -41,17 +41,17 @@
               Net interconnector flow (of demand)
             </option>
 
-            <!-- <optgroup label="Proportion">
-          <option value="renewablesProportion">
-            Renewables proportion (of demand)
-          </option>
-          <option value="solarProportion">
-            Solar proportion (of demand)
-          </option>
-          <option value="windProportion">Wind proportion (of demand)</option>
-          <option value="gasProportion">Gas proportion (of demand)</option>
-          <option value="coalProportion">Coal proportion (of demand)</option>
-        </optgroup> -->
+            <optgroup label="Proportion">
+              <option value="renewablesProportion">
+                Renewables proportion (of demand)
+              </option>
+              <option value="solarProportion">
+                Solar proportion (of demand)
+              </option>
+              <option value="windProportion">Wind proportion (of demand)</option>
+              <option value="gasProportion">Gas proportion (of demand)</option>
+              <option value="coalProportion">Coal proportion (of demand)</option>
+            </optgroup>
 
             <optgroup label="Average value">
               <option value="solarValue">Solar value</option>
@@ -492,6 +492,7 @@ export default {
         interval: this.interval,
         filterPeriod: this.filterPeriod
       }).then(d => {
+        console.log('doGetAllMonthlyData', d)
         this.responseDataset = cloneDeep(d)
         this.setRegionDataAndBucket(this.responseDataset)
       })
