@@ -429,7 +429,7 @@ export default {
   },
 
   created() {
-    this.$store.commit('stripes/selectedMetric', 'windValue')
+    this.$store.commit('stripes/selectedMetric', 'renewablesProportion')
   },
 
   mounted() {
@@ -492,7 +492,6 @@ export default {
         interval: this.interval,
         filterPeriod: this.filterPeriod
       }).then(d => {
-        console.log('doGetAllMonthlyData', d)
         this.responseDataset = cloneDeep(d)
         this.setRegionDataAndBucket(this.responseDataset)
       })
