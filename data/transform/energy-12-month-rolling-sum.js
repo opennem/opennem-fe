@@ -1,8 +1,8 @@
 import subMonths from 'date-fns/subMonths'
 import addMonths from 'date-fns/addMonths'
 import isAfter from 'date-fns/isAfter'
-import _cloneDeep from 'lodash.clonedeep'
 import PerfTime from '@/plugins/perfTime.js'
+import { isTemperature } from '~/constants/data-types'
 
 const perfTime = new PerfTime()
 
@@ -14,18 +14,39 @@ export default function (data, keys) {
 
     keys.forEach((k) => {
       const id = k.id
+      const isTemperatureKey = isTemperature(k.type)
       let sum = d[id] || 0
       let index = x - 1
+      let hasNulls = false
+      let count = 1
+
       if (index >= 0) {
         while (isAfter(data[index].date, last)) {
+          // check whether there are any nulls in the rolling sum for temperature
+          if (!data[index][id] && data[index][id] !== 0) {
+            if (isTemperatureKey) {
+              hasNulls = true
+            }
+            hasNulls = true
+          }
+
           sum += data[index][id] || 0
 
           index--
+          count++
+
           if (index < 0) {
             break
           }
         }
-        data[x][id] = sum
+        
+        // if there are nulls in the rolling sum, set the value to null
+        // average for temperature, sum for everything else
+        if (isTemperatureKey) {
+          data[x][id] = hasNulls ? null : sum / count
+        } else {
+          data[x][id] = hasNulls ? null : sum
+        }
       }
     })
   }

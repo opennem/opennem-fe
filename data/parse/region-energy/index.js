@@ -6,7 +6,7 @@ import process from './process'
 import rollUp from './rollUp'
 import summariseDataset from './summarise'
 import groupDataset from './group'
-import transformTo12MthRollingSum from '../../transform/energy-12-month-rolling-sum'
+import transformTo12MthRolling from '../../transform/energy-12-month-rolling-sum'
 import {
   filterDatasetByRange,
   filterDatasetByPeriod
@@ -120,7 +120,7 @@ export function dataProcess(res, range, interval, period, displayTz) {
       })
     }
 
-    datasetFull = transformTo12MthRollingSum(
+    datasetFull = transformTo12MthRolling(
       rolledUpData(datasetFlat),
       domains
     )
@@ -253,7 +253,7 @@ export function dataRollUp({
       })
     }
 
-    currentDataset = transformTo12MthRollingSum(
+    currentDataset = transformTo12MthRolling(
       rolledUpData(datasetFlat),
       domains
     )
@@ -336,7 +336,7 @@ export function simpleDataRollUp({
       })
     }
 
-    currentDataset = transformTo12MthRollingSum(
+    currentDataset = transformTo12MthRolling(
       rolledUpData(datasetFlat),
       domains
     )
