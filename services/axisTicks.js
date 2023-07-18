@@ -21,7 +21,7 @@ import {
   hasIntervalFilters
 } from '@/constants/interval-filters.js'
 
-export default function (range, interval, isZoomed, filterPeriod) {
+export default function (range, interval, isZoomed, filterPeriod, mobileScreen) {
   if (range === '3D') {
     return utcDay.every(0.5)
   }
@@ -75,10 +75,10 @@ export default function (range, interval, isZoomed, filterPeriod) {
       return null
     }
 
-    return timeYear.every(1)
+    return timeYear.every(mobileScreen ? 2 : 1)
   }
   if (range === '12 Mth Rolling') {
-    return timeYear.every(1)
+    return timeYear.every(mobileScreen ? 2 : 1)
   }
   return null
 }

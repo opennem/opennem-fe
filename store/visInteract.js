@@ -82,8 +82,8 @@ export const mutations = {
 }
 
 export const actions = {
-  doUpdateXTicks({ commit }, { range, interval, isZoomed, filterPeriod }) {
-    commit('xTicks', AxisTicks(range, interval, isZoomed, filterPeriod))
+  doUpdateXTicks({ commit, rootGetters }, { range, interval, isZoomed, filterPeriod }) {
+    commit('xTicks', AxisTicks(range, interval, isZoomed, filterPeriod, rootGetters['app/tabletBreak']))
   },
 
   doUpdateXGuides({ commit }, { interval, start, end }) {
