@@ -1,34 +1,9 @@
 <template>
-  <div class="container-fluid">
-
-    <!-- <OptionsLegend 
-      :legend-width="tabletBreak ? 200 : 310" 
-      :legend-font-size="tabletBreak ? 9 : 10"
-      :show-legend="false" 
-      :hover-display="hoverDisplay" 
-      :use-hover="!useAllPeriods"
-      :show-hover="hoverDate ? true : false" /> -->
-
-    <!-- <Draggable class="floating-palette">
-      <template slot="header">
-        <header>Vic</header>
-      </template>
-      <template slot="main">
-        <table class="table is-fullwidth is-striped is-narrow">
-          <tbody>
-            <tr 
-              v-for="(d) in regionTableData?.data" 
-              :key="d.time">
-              <td>{{ d.time | formatLocalDate }}</td>
-              <td style="text-align: right;">{{ valueFormatter(d[selectedMetric]) }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </template>
-    </Draggable> -->
-    
+  <div class="">    
     <div class="vis-container">
-      <div class="vis-options">
+      <div 
+        class="vis-options" 
+        style="margin-top: 1rem">
         <div 
           class="metric-selection select is-rounded">
           <select v-model="selectedMetric">
@@ -85,7 +60,6 @@
           @filterPeriodChange="handleFilterPeriodChange"
         />
       </div>
-      
       <div 
         v-if="!fetching && lineChartDataset.length > 0"
         class="chart-table-container">
@@ -757,14 +731,19 @@ h3 {
 
 .vis-options {
   display: block;
-  padding: 0 0.5rem;
+  padding: 0;
   
   & > * {
     margin-bottom: 1rem;
   }
 
+  .metric-selection {
+    margin-left: 0.5rem;
+  }
+
   @media screen and (min-width: 1083px) {
     display: flex;
+    padding: 0 0.5rem;
     margin-bottom: 1rem;
   }
 }
