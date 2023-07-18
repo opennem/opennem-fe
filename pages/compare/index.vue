@@ -107,6 +107,7 @@
           :value-formatter="valueFormatter"
           :pad-y-axis="false"
           :unit="chartUnit"
+          :annotations="annotations"
           @dateHover="handleDateHover"
           @isHovering="handleIsHovering"
           @zoomExtent="handleZoomExtent"
@@ -382,7 +383,6 @@ export default {
       const arr = cloneDeep(this.bucket)
 
       if (arr && arr.length) {
-        console.log('lineChartDataset', this.regionData)
         this.regionData.forEach(region => {
           const id =  region.regionId
 
@@ -395,13 +395,39 @@ export default {
       }
 
       return []
+    },
+
+    annotations() {
+      if (this.selectedMetric === 'netInterconnectorFlow') {
+        return [{
+          label: '＋ Imports',
+          valueLocation: 'yTop',
+          offset: 10,
+          'dominant-baseline': 'hanging',
+          'text-anchor': 'end',
+          'font-family': 'Playfair Display',
+          fill: '#666'
+        }, {
+          label: '－ Exports',
+          valueLocation: 'yBottom',
+          offset: -10,
+          'dominant-baseline': 'auto',
+          'text-anchor': 'end',
+          'font-family': 'Playfair Display',
+          fill: '#666'
+        }]
+      }
+
+      return []
     }
+    
   },
 
   watch: {
     regionId(id) {
       this.getData(id)
     },
+
     queryMetric(metric) {
       if (metric) {
         this.selectedMetric = metric

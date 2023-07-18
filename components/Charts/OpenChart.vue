@@ -108,6 +108,7 @@
       :should-convert-value="!valueFormatter && shouldConvertValue"
       :convert-value="convertValue"
       :pad-y-axis="padYAxis"
+      :annotations="annotations"
       class="vis-chart"
       @date-hover="handleDateHover"
       @domain-hover="handleDomainHover"
@@ -276,6 +277,10 @@ export default {
       type: String,
       default: ''
     },
+    annotations: {
+      type: Array,
+      default: () => []
+    }
   },
 
   computed: {

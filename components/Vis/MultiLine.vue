@@ -38,6 +38,7 @@
       <g 
         :transform="axisTransform" 
         class="hover-group" />
+      
       <g 
         :transform="axisTransform" 
         class="vis1-group" />
@@ -47,6 +48,9 @@
       <g 
         :transform="axisTransform" 
         class="projection-vis-group" />
+      <g 
+        :transform="axisTransform"
+        class="annotations-group" />
       <g 
         :transform="axisTransform" 
         class="y-axis-left-text" />
@@ -224,6 +228,10 @@ export default {
     padYAxis: {
       type: Boolean,
       default: false
+    },
+    annotations: {
+      type: Array,
+      default: () => []
     }
   },
 
@@ -258,7 +266,8 @@ export default {
       $cursorDotsGroup: null,
       $hoverGroup: null,
       $xShadesGroup: null,
-      $yShadesGroup: null
+      $yShadesGroup: null,
+      $annotationsGroup: null,
     }
   },
 
@@ -360,6 +369,18 @@ export default {
         return updated
       }
       return []
+    },
+
+    parsedAnnotations() {
+      return this.annotations.map((d) => {
+        let value = 0
+        if (d.valueLocation === 'yTop') value = this.y1.domain()[1]
+        if (d.valueLocation === 'yBottom') value = this.y1.domain()[0]
+        return {
+          ...d,
+          value
+        }
+      })
     }
   },
 
@@ -514,11 +535,14 @@ export default {
     setup() {
       const self = this
       const $svg = select(`#${this.id}`)
+      
       // Axis DOM
       this.$xAxisGroup = $svg.select('.x-axis')
       this.$yAxisGroup = $svg.select('.y-axis')
       this.$yAxisLeftTextGroup = $svg.select('.y-axis-left-text')
       this.$yAxisRightTextGroup = $svg.select('.y-axis-right-text')
+
+      this.$annotationsGroup = $svg.select('.annotations-group')
 
       // Define scales
       this.y1Range = this.y1Invert ? [0, this.height] : [this.height, 0]
@@ -627,6 +651,24 @@ export default {
       this.$yAxisGroup.call(this.drawLeftYAxis)
       this.$yAxisLeftTextGroup.call(this.drawLeftYAxisText)
 
+      this.$annotationsGroup.selectAll('text').remove()
+      this.$annotationsGroup
+        .selectAll('text')
+        .data(this.parsedAnnotations)
+        .enter()
+        .append('text')
+        .text((d) => d.label)
+        .attr('x', this.width - 10)
+        .attr('y', (d) => this.y1(d.value) + d.offset)
+        .style('text-anchor', (d) => d['text-anchor'])
+        .style('dominant-baseline', (d) => d['dominant-baseline'])
+        .style('font-size', '12px')
+        .style('pointer-events', 'none')
+        .style('user-select', 'none')
+        .style('font-family', (d) => d['font-family'])
+        .style('font-weight', 'bold')
+        .style('fill', (d) => d.fill)
+
       this.$xShadesGroup.selectAll('rect').remove()
       this.$xShadesGroup
         .selectAll('rect')
@@ -638,21 +680,22 @@ export default {
         .attr('width', (d) => this.x(d.end) - this.x(d.start))
         .attr('height', this.height)
 
+      const yShades =  [{
+        start: this.y1.domain()[1],
+        end: 0,
+        fill: 'rgba(255,255,255, 0.6)'
+      }]
+
       this.$yShadesGroup.selectAll('rect').remove()
       this.$yShadesGroup
         .selectAll('rect')
-        .data([
-          {
-            start: this.y1.domain()[1],
-            end: 0
-          }
-        ])
+        .data(yShades)
         .enter()
         .append('rect')
         .attr('y', (d) => this.y1(d.start))
         .attr('width', this.width)
         .attr('height', (d) => this.y1(d.end) - this.y1(d.start))
-        .style('fill', 'rgba(255,255,255, 0.4)')
+        .style('fill', (d) => d.fill)
 
       this.$vis1Group.selectAll('path').remove()
 
