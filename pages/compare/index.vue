@@ -309,7 +309,8 @@ export default {
       zoomExtent: [],
       isHovering: false,
       bucket: [],
-      tableDataset: {}
+      tableDataset: {},
+      rangeIntervalsQuery: null
     }
   },
 
@@ -338,11 +339,7 @@ export default {
       },
 
       set(val) {
-        this.$router.push({
-          query: {
-            metric: val
-          }
-        })
+        
         this.$store.commit('stripes/selectedMetric', val)
       }
     },
@@ -410,6 +407,25 @@ export default {
         this.selectedMetric = metric
       }
     },
+
+    selectedMetric(val) {
+      this.$router.push({
+        query: {
+          ...this.rangeIntervalsQuery,
+          metric: val
+        }
+      })
+    }, 
+    
+    rangeIntervalsQuery(val) {
+      this.$router.push({
+        query: {
+          ...val,
+          metric: this.selectedMetric
+        }
+      })
+    },
+
     async lineChartDataset(val) {
       if (val.length > 0) {
         await this.doUpdateXGuides({
@@ -435,12 +451,6 @@ export default {
   mounted() {
     if (this.queryMetric) {
       this.selectedMetric = this.queryMetric
-    } else {
-      this.$router.push({
-        query: {
-          metric: this.selectedMetric
-        }
-      })
     }
 
     this.$store.dispatch('currentView', 'compare')
@@ -613,12 +623,7 @@ export default {
       this.updateDataWithInterval()
     },
     handleQueryChange(query) {
-      console.log(query)
-      // this.$router.push({
-      //   query
-      // })
-
-      // this.setQuery(query)
+      this.rangeIntervalsQuery = query
     },
 
     handleDomainHide(domainId) {
