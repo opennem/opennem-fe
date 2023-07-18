@@ -281,13 +281,12 @@ export const actions = {
             console.log('cpi data')
             filtered.push(cpiData)
           }
-          
-          currentRegion = r.id
 
           raw[r.id] = [...filtered]
         })
 
         regions.forEach((r, i) => {
+          currentRegion = r.id
           all[r.id] = processResponses([raw[r.id]])
         })
 
@@ -698,6 +697,7 @@ export const actions = {
 
     const raw = state.compareResponse
     regions.forEach((region) => {
+      currentRegion = region.id
       updated[region.id] = processResponses([raw[region.id]])
     })
 
