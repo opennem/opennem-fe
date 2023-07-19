@@ -23,7 +23,7 @@
       :interval="customInterval === '' ? interval : customInterval"
       :average-emissions-volume="convertValue(averageValue)"
       :hover-display-date="hoverDisplayDate"
-      :hover-value="filteredDomains.length > 1 ? hoverValue : null"
+      :hover-value="hoverValue"
       :hover-domain-colour="hoverDomainColour"
       :hover-domain-label="hoverDomainLabel"
       :hover-total="hoverTotal"
