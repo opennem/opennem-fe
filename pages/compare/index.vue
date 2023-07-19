@@ -457,6 +457,8 @@ export default {
       if (val) {
         const find = this.lineChartDataset.find(d => isSameDay(d.date, this.hoverDate))
         this.tableDataset = find || {}
+      } else {
+        this.tableDataset = {}
       }
     }
   },
