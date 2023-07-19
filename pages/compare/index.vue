@@ -365,6 +365,21 @@ export default {
           })
         })
 
+        // add display time to show dot in middle of interval
+        arr.forEach((d, i) => {
+          const start = d.time
+          const next = arr[i+1] ? arr[i+1].time : null
+          if (next) {
+            const mid = (next - start) / 2
+            d.displayTime = d.time + mid
+          }
+        })
+
+        const lastSecondItem = arr[arr.length - 2]
+        const lastItem = arr[arr.length - 1]
+        const mid = (lastItem.time - lastSecondItem.time) / 2
+        lastItem.displayTime = lastItem.time + mid
+
         return arr
       }
 

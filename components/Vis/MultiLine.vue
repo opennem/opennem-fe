@@ -343,7 +343,10 @@ export default {
             const intervalTime = lastItem.time - lastSecondItem.time
             lastItem.time = lastItem.time + intervalTime
             lastItem.date = new Date(lastItem.time)
-            updated.push(lastItem)
+            updated.push({
+              time: lastItem.time,
+              date: lastItem.date
+            })
           }
 
           return updated
@@ -868,12 +871,12 @@ export default {
       const data = this.updatedProjectionDataset.map((d) => {
         if (this.drawIncompleteBucket) {
           return {
-            date: d.date,
+            date: d.displayTime || d.date,
             value: d[key]
           }
         }
         return {
-          date: d.date,
+          date: d.displayTime || d.date,
           value: d._isIncompleteBucket ? null : d[key]
         }
       })
@@ -884,12 +887,12 @@ export default {
       const data = this.updatedDataset1.map((d) => {
         if (this.drawIncompleteBucket) {
           return {
-            date: d.date,
+            date: d.displayTime || d.date,
             value: d[key]
           }
         }
         return {
-          date: d.date,
+          date: d.displayTime || d.date,
           value: d._isIncompleteBucket ? null : d[key]
         }
       })
@@ -945,7 +948,7 @@ export default {
             .enter()
             .append('circle')
             .merge(dots)
-            .attr('cx', this.x(dataPoint.date))
+            .attr('cx', this.x(dataPoint.displayTime || dataPoint.date))
             .attr('cy', (key) => this.y1(dataPoint[key]))
             .attr('r', 4)
             .attr('fill', (key) => this.colours1[key])

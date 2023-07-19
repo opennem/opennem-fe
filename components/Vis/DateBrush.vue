@@ -262,6 +262,7 @@ export default {
         const el = select(this)
         const text2 = self.secondTickFormat(d)
         el.attr('x', 2)
+        // el.style('transform', 'rotate(90deg) translateY(-11px)')
         if (text2 !== '') {
           el.append('tspan')
             .text(typeof text2 === 'string' ? text2.trim() : text2)
