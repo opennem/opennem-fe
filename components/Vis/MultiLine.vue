@@ -267,7 +267,7 @@ export default {
       $hoverGroup: null,
       $xShadesGroup: null,
       $yShadesGroup: null,
-      $annotationsGroup: null,
+      $annotationsGroup: null
     }
   },
 
@@ -372,18 +372,6 @@ export default {
         return updated
       }
       return []
-    },
-
-    parsedAnnotations() {
-      return this.annotations.map((d) => {
-        let value = 0
-        if (d.valueLocation === 'yTop') value = this.y1.domain()[1]
-        if (d.valueLocation === 'yBottom') value = this.y1.domain()[0]
-        return {
-          ...d,
-          value
-        }
-      })
     }
   },
 
@@ -494,6 +482,18 @@ export default {
   },
 
   methods: {
+    updateAnnotations(annotations) {
+      return annotations.map((d) => {
+        let value = 0
+        if (d.valueLocation === 'yTop') value = this.y1.domain()[1]
+        if (d.valueLocation === 'yBottom') value = this.y1.domain()[0]
+        return {
+          ...d,
+          value
+        }
+      })
+    },
+
     handleResize() {
       this.setupWidthHeight()
       this.resize()
@@ -654,10 +654,11 @@ export default {
       this.$yAxisGroup.call(this.drawLeftYAxis)
       this.$yAxisLeftTextGroup.call(this.drawLeftYAxisText)
 
+      const parsedAnnotations = this.updateAnnotations(this.annotations)
       this.$annotationsGroup.selectAll('text').remove()
       this.$annotationsGroup
         .selectAll('text')
-        .data(this.parsedAnnotations)
+        .data(parsedAnnotations)
         .enter()
         .append('text')
         .text((d) => d.label)
