@@ -12,20 +12,20 @@
               value="carbonIntensity">
               Carbon intensity
             </option>
-            <option value="netInterconnectorFlow">
-              Net interconnector flow (of demand)
-            </option>
-
-            <optgroup label="Proportion">
+            
+            <optgroup label="Proportion of demand">
+              <option value="netInterconnectorFlow">
+                Net imports
+              </option>
               <option value="renewablesProportion">
-                Renewables proportion (of demand)
+                Renewables proportion
               </option>
               <option value="solarProportion">
-                Solar proportion (of demand)
+                Solar proportion
               </option>
-              <option value="windProportion">Wind proportion (of demand)</option>
-              <option value="gasProportion">Gas proportion (of demand)</option>
-              <option value="coalProportion">Coal proportion (of demand)</option>
+              <option value="windProportion">Wind proportion</option>
+              <option value="gasProportion">Gas proportion</option>
+              <option value="coalProportion">Coal proportion</option>
             </optgroup>
 
             <optgroup label="Average value">
@@ -42,6 +42,7 @@
 
             <optgroup label="Temperature">
               <option value="temperature">Average temperature</option>
+              <option value="minTemperature">Min temperature</option>
               <option value="maxTemperature">Max temperature</option>
             </optgroup>
           </select>

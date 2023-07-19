@@ -46,6 +46,7 @@
 
           <optgroup label="Temperature">
             <option value="temperature">Average temperature</option>
+            <option value="minTemperature">Min temperature</option>
             <option value="maxTemperature">Max temperature</option>
           </optgroup>
         </select>
