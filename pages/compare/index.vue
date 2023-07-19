@@ -55,6 +55,7 @@
           :range="range"
           :interval="interval"
           :filter-period="filterPeriod"
+          :use12-mth-rolling-toggle="true"
           @rangeOptionChange="handleRangeChange"
           @intervalChange="handleIntervalChange"
           @queryChange="handleQueryChange"
@@ -271,7 +272,7 @@ export default {
       dataDomains: {},
       ranges: COMPARE_RANGES,
       intervals: COMPARE_RANGE_INTERVALS,
-      range: RANGE_ALL,
+      range: RANGE_ALL_12MTH_ROLLING,
       interval: INTERVAL_MONTH,
       filterPeriod: FILTER_NONE,
       hoverDate: null,

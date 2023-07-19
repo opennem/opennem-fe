@@ -1,6 +1,19 @@
 <template>
   <div class="range-interval-selectors">
-    <div class="range-buttons buttons has-addons">
+    <div 
+      v-if="use12MthRollingToggle" 
+      class="range-buttons buttons has-addons">
+      <button 
+        :class="{ 'is-selected': is12MthRollingSelected }" 
+        class="button is-rounded"
+        @click="handle12MthRollingClick">
+        12 Mth Rolling
+      </button>
+    </div>
+
+    <div 
+      v-else 
+      class="range-buttons buttons has-addons">
       <button
         v-on-clickaway="handleClickAway"
         v-for="(r, i) in ranges"
@@ -80,6 +93,7 @@ import {
   RANGE_7D,
   RANGE_1Y,
   RANGE_ALL,
+  RANGE_ALL_12MTH_ROLLING,
   getDefaultIntervalByRange,
   isValidRangeInterval
 } from '~/constants/ranges.js'
@@ -134,6 +148,10 @@ export default {
     filterPeriod: {
       type: String,
       default: null
+    },
+    use12MthRollingToggle: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -153,7 +171,8 @@ export default {
       quarterFilters: INTERVAL_FILTERS[INTERVAL_QUARTER],
       halfYearFilters: INTERVAL_FILTERS[INTERVAL_HALFYEAR],
       showAllRangeOptions: false,
-      show1YRangeOptions: false
+      show1YRangeOptions: false,
+      is12MthRollingSelected: true
     }
   },
 
@@ -500,6 +519,12 @@ export default {
       })
 
       return label || r[0]
+    },
+
+    handle12MthRollingClick() {
+      this.is12MthRollingSelected = !this.is12MthRollingSelected
+      const range = this.is12MthRollingSelected ? RANGE_ALL_12MTH_ROLLING : RANGE_ALL
+      this.handleRangeOptionClick(range)
     }
   }
 }
