@@ -1,7 +1,8 @@
 <template>
   <chart-header 
     :chart-shown="chartShown" 
-    :has-hover-date="true">
+    :has-hover-date="!!hoverDisplayDate"
+    :has-hover-value="!!(hoverValue === 0 || hoverValue)">
     <template 
       v-slot:options 
       v-if="!readOnly">

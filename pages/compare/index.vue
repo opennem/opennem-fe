@@ -591,11 +591,11 @@ export default {
     },
 
     handleDateHover(date) {
-      this.hoverDate = DateDisplay.getClosestDateByInterval(
+      this.hoverDate = date ? DateDisplay.getClosestDateByInterval(
         date,
         this.interval,
         this.filterPeriod
-      )
+      ) : null
     },
 
     handleIsHovering(hovering) {

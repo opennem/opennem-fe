@@ -746,6 +746,8 @@ export default {
       this.$emit('zoomExtent', dateRange)
     },
     handleZoomReset() {
+      this.$emit('dateHover', null)
+      this.$emit('isHovering', false)
       this.$emit('zoomExtent', [])
     },
 
