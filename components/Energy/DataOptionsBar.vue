@@ -434,6 +434,7 @@ export default {
       this.hideAllPopups()
       this.$store.dispatch('compareDifference', false)
       this.$store.dispatch('compareDates', [])
+      this.selectedInterval = getDefaultIntervalByRange(range)
 
       this.updateSelections(range, this.selectedInterval)
 
@@ -495,6 +496,7 @@ export default {
       }
 
       this.$emit('queryChange', query)
+      this.$emit('rangeIntervalChange', { query, range, interval, filterPeriod: filter })
     },
 
     isString(v) {

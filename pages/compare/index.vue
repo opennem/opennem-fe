@@ -47,7 +47,7 @@
             </optgroup>
           </select>
         </div>
-    
+
         <DataOptionsBar
           class="options-bar"
           :ranges="ranges"
@@ -56,10 +56,7 @@
           :interval="interval"
           :filter-period="filterPeriod"
           :use12-mth-rolling-toggle="true"
-          @rangeOptionChange="handleRangeChange"
-          @intervalChange="handleIntervalChange"
-          @queryChange="handleQueryChange"
-          @filterPeriodChange="handleFilterPeriodChange"
+          @rangeIntervalChange="handleRangeIntervalChange"
         />
       </div>
       <div 
@@ -110,55 +107,6 @@
         </aside>
         
       </div>
-
-      <!-- <section 
-        v-for="(d, i) in regionData" 
-        :key="`region-${i}`" 
-        class="vis-section">
-
-        <HoverMetric
-          v-if="hoverDate"
-          :is-yearly="d.yearlyData && d.yearlyData.length > 0 ? true : false"
-          :hover-date="hoverDate"
-          :data="d.data"
-          :hover-value="hoverValue"
-          :selected-metric="selectedMetric"
-          :selected-metric-object="selectedMetricObject"
-          :selected-period="selectedPeriodObject"
-          :style="{ display: useAllPeriods ? 'block' : 'none' }"
-          @hover-obj="(d) => (hoverDisplay = d)"
-        />
-        
-        <div style="width: 100%">
-          <nuxt-link 
-            :to="`/stripes/${d.regionId}/?metric=${selectedMetric}`" 
-            class="heatmap-label region-label">{{
-            d.region }}</nuxt-link>
-          <Heatmap 
-            :cell-height="75" 
-            :svg-width="width" 
-            :svg-height="75" 
-            :radius="0" 
-            :dataset="d.data"
-            :value-prop="selectedMetric" 
-            :tooltip-value-prop="
-              selectedMetricObject.valueProp  
-                ? selectedMetricObject.valueProp
-                : selectedMetric
-            " 
-            :divisor="selectedMetricObject.divisor" 
-            :offset="selectedMetricObject.offset"
-            :colour-range="selectedMetricObject.range" 
-            :colour-domain="selectedMetricObject.domain"
-            :hover-date="hoverDate" 
-            @rect-mousemove="
-              (obj) => {
-                handleMousemove(obj, d.regionId)
-              }
-            " 
-            @rect-mouseout="handleMouseout" />
-        </div>
-      </section> -->
     </div>
   </div>
 </template>
@@ -172,24 +120,16 @@ import { format as numFormat } from 'd3-format'
 
 import { getEnergyRegionLabel, getAuRegions } from '@/constants/energy-regions.js'
 import { periods, metrics } from '@/constants/stripes/'
-import { RANGE_ALL, RANGE_ALL_12MTH_ROLLING, RANGE_INTERVALS, COMPARE_RANGES, COMPARE_RANGE_INTERVALS } from '@/constants/ranges.js'
+import { RANGE_ALL_12MTH_ROLLING, COMPARE_RANGES, COMPARE_RANGE_INTERVALS } from '@/constants/ranges.js'
 import { INTERVAL_MONTH, FILTER_NONE } from '@/constants/interval-filters.js'
 import DateDisplay from '@/services/DateDisplay.js'
-import {
-  simpleDataProcess,
-  dataProcess,
-  simpleDataRollUp,
-  dataFilterByPeriod
-} from '@/data/parse/region-energy'
-import getStripesDataset from '@/data/transform/energy-to-stripe-metrics.js'
+import { dataFilterByPeriod } from '@/data/parse/region-energy'
 
 import {
   allBucket,
-  getRegionStripesData,
   getRegionCompareData,
   getStripesDateRange,
   getStripesStartEndDates,
-  getStripesRegion
 } from '@/data/pages/page-stripes.js'
 
 import Heatmap from '@/components/Vis/Heatmap'
@@ -432,7 +372,7 @@ export default {
           metric: val
         }
       })
-    }, 
+    },
     
     rangeIntervalsQuery(val) {
       this.$router.push({
@@ -625,24 +565,13 @@ export default {
       this.zoomExtent = filteredDates
     },
 
-    handleRangeChange(range) {
+    handleRangeIntervalChange({ query, range, interval, filterPeriod }) {
       this.range = range
-      this.interval = COMPARE_RANGE_INTERVALS[range][0]
-
-      this.updateDataWithInterval()
-    },
-    handleIntervalChange(interval) {
       this.interval = interval
-
-      this.updateDataWithInterval()
-    },
-    handleFilterPeriodChange(period) {
-      this.filterPeriod = period
-
-      this.updateDataWithInterval()
-    },
-    handleQueryChange(query) {
+      this.filterPeriod = filterPeriod
       this.rangeIntervalsQuery = query
+
+      this.updateDataWithInterval()
     },
 
     handleDomainHide(domainId) {
