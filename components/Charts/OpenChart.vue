@@ -344,27 +344,9 @@ export default {
     },
 
     displayUnit() {
-      console.log('unit', this.chartCurrentUnit)
-      let unit = this.chartCurrentUnit
-      
-      return unit
+      return this.chartCurrentUnit
     },
 
-    // hoverDomain() {
-    //   const domain = this.hoverDomain
-    //   console.log('domain', domain)
-    //   if (domain) {
-    //     const split = domain.split('.')
-
-    //     if (split.length > 1) {
-    //       split.pop()
-    //       return `${split.join('.')}.${EMISSIONS}`
-    //     } else {
-    //       return domain
-    //     }
-    //   }
-    //   return ''
-    // },
     highlightId() {
       const domain = this.highlightDomain
       const find = this.filteredDomains.find((d) => d[this.propName] === domain)
@@ -407,8 +389,6 @@ export default {
         })
       })
 
-      console.log('min', min)
-
       return min
     },
 
@@ -423,8 +403,6 @@ export default {
           }
         })
       })
-
-      console.log('max', max)
 
       return max
     },
