@@ -16,7 +16,9 @@
           @mouseenter="handleMouseEnter(domain.id)"
           @mouseleave="handleMouseLeave"
           @click.exact="handleRowClick(domain.id)"
-          @click.shift.exact="handleRowShiftClicked(domain.id)">
+          @click.shift.exact="handleRowShiftClicked(domain.id)"
+          @touchstart="handleTouchstart(domain.id)"
+          @touchend="handleTouchend">
           <td style="width: 50%">
             <div 
               :style="{ backgroundColor: `${domain.colour}${isHidden(domain.id) ? '30' : ''}` }" 
@@ -59,6 +61,8 @@ export default {
   data() {
     return  {
       metrics,
+      mousedownDelay: null,
+      longPress: 500
     }
   },
 
@@ -112,6 +116,19 @@ export default {
     },
     handleMouseLeave() {
       this.$emit('highlight-domain', '')
+    },
+
+    handleTouchstart(id) {
+      this.mousedownDelay = setTimeout(() => {
+        this.handleRowShiftClicked(id)
+      }, this.longPress)
+    },
+    handleTouchend() {
+      this.clearTimeout()
+    },
+    clearTimeout() {
+      clearTimeout(this.mousedownDelay)
+      this.mousedownDelay = null
     }
   }
 }
