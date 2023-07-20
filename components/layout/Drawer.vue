@@ -14,6 +14,29 @@
       </div>
 
       <div class="menu">
+
+        <div 
+          v-for="view in views"
+          :key="view.id">
+
+          <hr 
+            v-if="view.id === 'divider'" 
+            style="margin: 0; height: 20px;border-bottom: 1px solid #dedede; background: transparent;">
+
+          <nuxt-link
+            v-else
+            v-show="shouldShow(view.id)"
+            :to="`/${view.id}${getRegionId(view.id)}`"
+            :class="{ 'nuxt-link-active': view.id === currentView }"
+            class="menu-item"
+          >
+            {{ view.label }}
+            <span class="icon">
+              <i class="fal fa-chevron-right" />
+            </span>
+          </nuxt-link>
+        </div>
+        <!-- 
         <nuxt-link
           v-for="view in views"
           :key="view.id"
@@ -25,7 +48,7 @@
           <span class="icon">
             <i class="fal fa-chevron-right" />
           </span>
-        </nuxt-link>
+        </nuxt-link> -->
       </div>
 
       <div 
@@ -156,16 +179,6 @@ export default {
       if (!show) {
         this.drawer = false
       }
-    },
-    featureCompare: {
-      immediate: true,
-      handler: function(val) {
-        if (val) {
-          this.views = [...VIEWS, { id: 'compare', label: 'Compare Regions' }]
-        } else {
-          this.views = [...VIEWS]
-        }
-      }
     }
   },
 
@@ -198,15 +211,17 @@ export default {
       this.$emit('close')
     },
 
-    // getRegionId(viewId) {
-    //   const id = this.regionId || 'nem'
-    //   return viewId === 'emissions' ? 'au' : id
-    // },
-
     getRegionId(viewId) {
       if (viewId === 'compare') return '/'
       const regionId = this.regionId || 'nem'
       return viewId === 'emissions' ? '/au/' : `/${regionId}/`
+    },
+
+    shouldShow(viewId) {
+      if (viewId !== 'compare') {
+        return true
+      }
+      return this.featureCompare && viewId === 'compare'
     }
   }
 }
