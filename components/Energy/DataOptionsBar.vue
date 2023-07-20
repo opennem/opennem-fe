@@ -209,7 +209,12 @@ export default {
   },
 
   mounted() {
-    this.checkQueries()
+    if (this.use12MthRollingToggle) {
+      this.is12MthRollingSelected = this.range === RANGE_ALL_12MTH_ROLLING
+      this.updateSelections(this.range, this.interval, this.filterPeriod)
+    } else {
+      this.checkQueries()
+    }
   },
 
   methods: {

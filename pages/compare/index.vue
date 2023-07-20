@@ -120,7 +120,10 @@ import { format as numFormat } from 'd3-format'
 
 import { getEnergyRegionLabel, getAuRegions } from '@/constants/energy-regions.js'
 import { periods, metrics } from '@/constants/stripes/'
-import { RANGE_ALL_12MTH_ROLLING, COMPARE_RANGES, COMPARE_RANGE_INTERVALS } from '@/constants/ranges.js'
+import { RANGE_ALL, RANGE_ALL_12MTH_ROLLING, COMPARE_RANGES, COMPARE_RANGE_INTERVALS } from '@/constants/ranges.js'
+import { getRangeByRangeQuery } from '@/constants/range-queries'
+import { getIntervalByIntervalQuery } from '@/constants/interval-queries.js'
+import { getFilterByFilterQuery } from '@/constants/filter-queries.js'
 import { INTERVAL_MONTH, FILTER_NONE } from '@/constants/interval-filters.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import { dataFilterByPeriod } from '@/data/parse/region-energy'
@@ -162,12 +165,12 @@ export default {
 
   head() {
     return {
-      title: `: ${getEnergyRegionLabel(this.regionId)} Compare`,
+      title: `: Compare Regions`,
       meta: [
         {
           hid: 'twitter:title',
           name: 'twitter:title',
-          content: `OpenNEM: ${getEnergyRegionLabel(this.regionId)} Compare`
+          content: `OpenNEM: Compare Regions`
         },
         {
           hid: 'twitter:image:src',
@@ -177,7 +180,7 @@ export default {
         {
           hid: 'og:title',
           property: 'og:title',
-          content: `OpenNEM: ${getEnergyRegionLabel(this.regionId)} Compare`
+          content: `OpenNEM: Compare Regions`
         },
         {
           hid: 'og:image',
@@ -282,17 +285,21 @@ export default {
       return this.$route.query.metric
     },
 
-    useAllPeriods() {
-      return this.regionId === 'au' || this.regionId === 'nem'
+    queryRange() {
+      return this.$route.query.range
     },
 
+    queryInterval() {
+      return this.$route.query.interval
+    },
+
+    queryFilterPeriod() {
+      return this.$route.query.filter
+    },
+
+    // update card image
     cardFilename() {
       return `${this.baseUrl}opennem-stripes-${this.regionId}.png`
-    },
-
-    regionTableData() {
-      const vicData = this.regionData.filter((d) => d.regionId === 'vic1')[0]
-      return vicData
     },
 
     lineChartDataset() {
@@ -404,15 +411,15 @@ export default {
   },
 
   created() {
-    this.$store.commit('stripes/selectedMetric', 'renewablesProportion')
+    this.$store.dispatch('currentView', 'compare')
+
+    this.selectedMetric = this.queryMetric || 'renewablesProportion'
+    this.range = this.queryRange ? getRangeByRangeQuery(this.queryRange) : RANGE_ALL_12MTH_ROLLING
+    this.interval = this.queryInterval? getIntervalByIntervalQuery(this.queryInterval) : INTERVAL_MONTH
+    this.filterPeriod = this.queryFilterPeriod ? getFilterByFilterQuery(this.queryFilterPeriod) : FILTER_NONE
   },
 
   mounted() {
-    if (this.queryMetric) {
-      this.selectedMetric = this.queryMetric
-    }
-
-    this.$store.dispatch('currentView', 'compare')
     this.getData(this.regionId)
 
     this.width = this.$el.offsetWidth - 32
@@ -566,7 +573,7 @@ export default {
     },
 
     handleRangeIntervalChange({ query, range, interval, filterPeriod }) {
-      this.range = range
+      this.range = range !== RANGE_ALL_12MTH_ROLLING && range !== RANGE_ALL ? RANGE_ALL_12MTH_ROLLING : range
       this.interval = interval
       this.filterPeriod = filterPeriod
       this.rangeIntervalsQuery = query
