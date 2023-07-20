@@ -15,7 +15,7 @@
             
             <optgroup label="Proportion of demand">
               <option value="netInterconnectorFlow">
-                Net imports
+                Net imports proportion
               </option>
               <option value="renewablesProportion">
                 Renewables proportion
@@ -28,7 +28,7 @@
               <option value="coalProportion">Coal proportion</option>
             </optgroup>
 
-            <optgroup label="Average value">
+            <optgroup label="Average spot market value">
               <option value="solarValue">Solar value</option>
               <option value="windValue">Wind value</option>
               <option value="hydroValue">Hydro value</option>
