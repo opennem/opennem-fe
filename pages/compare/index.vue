@@ -609,6 +609,8 @@ export default {
 @import '~/assets/scss/variables.scss';
 @import '~/assets/scss/responsive-mixins.scss';
 
+$breakpoint: 900px;
+
 .container-fluid {
   padding: 0.8rem 0.2rem;
   height: 100%;
@@ -663,16 +665,17 @@ h3 {
 
 .chart-table-container {
   display: block;
-  padding: 0 0.5rem;
+  padding: 0 0.5rem 0 0;
   
   & > * {
     margin-bottom: 1rem;
     width: 100%;
   }
 
-  @media screen and (min-width: 1083px) {
+  @media screen and (min-width: $breakpoint) {
     display: flex;
     gap: 0.5rem;  
+    padding: 0 0.5rem;
 
     .open-chart {
       width: 70%;
@@ -695,7 +698,7 @@ h3 {
     margin-left: 0.5rem;
   }
 
-  @media screen and (min-width: 1083px) {
+  @media screen and (min-width: $breakpoint) {
     display: flex;
     padding: 0 0.5rem;
     margin-bottom: 1rem;
@@ -703,9 +706,30 @@ h3 {
 }
 
 .options-bar {
-  @media screen and (min-width: 1083px) {
+  @media screen and (min-width: $breakpoint) {
     padding: 0; 
     margin-left: 1rem;
+    display: flex;
+    align-items: center;
+  }
+
+  ::v-deep .buttons {
+    @media screen and (min-width: $breakpoint) {
+      background-color: transparent;
+    }
+  }
+
+  ::v-deep .button {
+    @media screen and (min-width: $breakpoint) {
+      border-radius: 290486px;
+    }
+  }
+
+  ::v-deep .range-buttons {
+    @media screen and (min-width: $breakpoint) {
+      margin-bottom: 0;
+      margin-right: 0.4rem;
+    }
   }
 }
 
