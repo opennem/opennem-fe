@@ -84,6 +84,7 @@
           @dateHover="handleDateHover"
           @isHovering="handleIsHovering"
           @zoomExtent="handleZoomExtent"
+          @svgClick="handleSvgClick"
         />
 
         <aside class="compare-table">
@@ -239,6 +240,7 @@ export default {
       fuelTechGroupName: 'fuelTechGroupName',
       tabletBreak: 'app/tabletBreak',
       xGuides: 'visInteract/xGuides',
+      focusDate: 'visInteract/focusDate',
       featureEmissions: 'feature/emissions'
     }),
 
@@ -445,6 +447,7 @@ export default {
     }),
     ...mapMutations({
       setHighlightDomain: 'visInteract/highlightDomain',
+      setFocusDate: 'visInteract/focusDate',
       setQuery: 'app/query'
     }),
 
@@ -600,6 +603,18 @@ export default {
 
     handleHighlightDomain(id) {
       this.setHighlightDomain(id)
+    },
+
+    handleSvgClick() {
+      // TODO: multiline focus support
+      console.log('handle svg click')
+      // const hoverTime = this.hoverDate ? this.hoverDate.getTime() : 0
+      // const focusTime = this.focusDate ? this.focusDate.getTime() : 0
+      // if (this.focusDate && focusTime === hoverTime) {
+      //   this.setFocusDate(null)
+      // } else {
+      //   this.setFocusDate(this.hoverDate)
+      // }
     }
   }
 }
@@ -713,19 +728,19 @@ h3 {
     align-items: center;
   }
 
-  ::v-deep .buttons {
+  :deep(.buttons) {
     @media screen and (min-width: $breakpoint) {
       background-color: transparent;
     }
   }
 
-  ::v-deep .button {
+  :deep(.button ){
     @media screen and (min-width: $breakpoint) {
       border-radius: 290486px;
     }
   }
 
-  ::v-deep .range-buttons {
+  :deep(.range-b)uttons {
     @media screen and (min-width: $breakpoint) {
       margin-bottom: 0;
       margin-right: 0.4rem;

@@ -100,6 +100,7 @@
       :x-ticks="xTicks"
       :curve="chartCurve"
       :date-hovered="hoverDate"
+      :date-focused="focusDate"
       :zoom-range="zoomExtent"
       :draw-incomplete-bucket="true"
       :x-shades="xGuides"
@@ -114,6 +115,7 @@
       @domain-hover="handleDomainHover"
       @enter="handleVisEnter"
       @leave="handleVisLeave"
+      @svgClick="handleSvgClick"
     />
     <date-brush
       v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"

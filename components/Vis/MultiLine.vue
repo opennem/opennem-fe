@@ -133,6 +133,10 @@ export default {
       type: Date,
       default: () => null
     },
+    dateFocused: {
+      type: Date,
+      default: () => null
+    },
     zoomRange: {
       type: Array,
       default: () => []
@@ -414,6 +418,15 @@ export default {
         this.clearCursorLine()
       }
     },
+    dateFocused(newValue) {
+      // TODO: multiline focus support
+      console.log(newValue)
+      if (newValue) {
+        // this.drawCursor(newValue)
+      } else {
+        // this.clearCursorLine()
+      }
+    },
     zoomRange(newRange) {
       this.$cursorDotsGroup.selectAll('circle').remove()
       this.clearCursorLine()
@@ -623,6 +636,9 @@ export default {
       })
       $svg.on('mouseleave', () => {
         this.handleSvgLeave()
+      })
+      $svg.on('click', () => {
+        this.$emit('svgClick')
       })
     },
 
