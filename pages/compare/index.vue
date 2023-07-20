@@ -454,7 +454,6 @@ export default {
       const metricLabel = this.selectedMetricObject?.label
       const metricUnit = this.selectedMetricObject?.unit
       const formattedValue = numFormat(metricFormat || ',.0f')(value)
-      if (metricLabel === "Carbon intensity") return formattedValue
       return formattedValue + metricUnit
     },
 
