@@ -155,7 +155,6 @@ export default {
     ...mapGetters({
       currentView: 'currentView',
       showFeatureToggle: 'app/showFeatureToggle',
-      featureCompare: 'feature/regionCompare'
     }),
     regionId() {
       return this.$route.params.region
@@ -218,10 +217,11 @@ export default {
     },
 
     shouldShow(viewId) {
-      if (viewId !== 'compare') {
-        return true
-      }
-      return this.featureCompare && viewId === 'compare'
+      return true
+      // if (viewId !== 'compare') {
+      //   return true
+      // }
+      // return this.featureCompare && viewId === 'compare'
     }
   }
 }

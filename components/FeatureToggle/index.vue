@@ -17,13 +17,6 @@
 
     <label class="panel-block">
       <input
-        v-model="featureRegionCompare"
-        type="checkbox">
-      Region Compare Charts
-    </label>
-
-    <label class="panel-block">
-      <input
         v-model="featureComparePrice"
         type="checkbox">
       Compare Pricing
@@ -40,15 +33,6 @@ export default {
       },
       set: function (newValue) {
         this.$store.commit('feature/emissions', newValue)
-      }
-    },
-
-    featureRegionCompare: {
-      get: function () {
-        return this.$store.getters['feature/regionCompare']
-      },
-      set: function (newValue) {
-        this.$store.commit('feature/regionCompare', newValue)
       }
     },
 

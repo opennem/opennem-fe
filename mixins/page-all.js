@@ -3,7 +3,7 @@ import _debounce from 'lodash.debounce'
 import { lsGet, lsSet } from '~/services/LocalStorage'
 import {
   FEATURE_TOGGLE_EMISSIONS,
-  FEATURE_TOGGLE_REGION_COMPARE
+  FEATURE_TOGGLE_COMPARE_PRICE
 } from '@/constants/mutation-types/features.js'
 import hostEnv from '@/services/HostEnv.js'
 
@@ -18,7 +18,7 @@ export default {
   mounted() {
     if (process.client) {
       this.getSetFeature(FEATURE_TOGGLE_EMISSIONS, this.setEmissions)
-      this.getSetFeature(FEATURE_TOGGLE_REGION_COMPARE, this.setRegionCompare)
+      this.getSetFeature(FEATURE_TOGGLE_COMPARE_PRICE, this.setComparePrice)
 
       const exportAttribution = lsGet('exportAttribution') || '@name'
       this.setExportAttribution(exportAttribution)
@@ -49,7 +49,7 @@ export default {
       setIsTouchDevice: 'app/isTouchDevice',
 
       setEmissions: 'feature/emissions',
-      setRegionCompare: 'feature/regionCompare',
+      setComparePrice: 'feature/comparePrice',
 
       setExportAttribution: 'exportAttribution',
 

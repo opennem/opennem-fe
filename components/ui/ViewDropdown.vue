@@ -76,9 +76,6 @@ export default {
     viewLabel() {
       const view = this.views.find((d) => d.id === this.currentView)
       return view ? view.label : ''
-    },
-    featureCompare() {
-      return this.$store.getters['feature/regionCompare']
     }
   },
 
@@ -98,10 +95,11 @@ export default {
       return viewId === 'emissions' ? '/au/' : `/${regionId}/`
     },
     shouldShow(viewId) {
-      if (viewId !== 'compare') {
-        return true
-      }
-      return this.featureCompare && viewId === 'compare'
+      return true
+      // if (viewId !== 'compare') {
+      //   return true
+      // }
+      // return this.featureCompare && viewId === 'compare'
     }
   }
 }
