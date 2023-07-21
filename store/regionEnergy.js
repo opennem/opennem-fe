@@ -278,7 +278,6 @@ export const actions = {
           )
 
           if (cpiData) {
-            console.log('cpi data')
             filtered.push(cpiData)
           }
 
