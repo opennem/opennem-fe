@@ -28,8 +28,8 @@
             :key="view.id">
 
             <hr 
-              v-if="view.id === 'divider'" 
-              style="margin: 2px 0; height: 1px;">
+              class="dropdown-divider"
+              v-if="view.id === 'divider'">
 
             <nuxt-link
               v-else
