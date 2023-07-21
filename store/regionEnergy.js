@@ -271,7 +271,6 @@ export const actions = {
         const raw = {}
 
         regions.forEach((r, i) => {
-          console.log('region', r.id)
           const cpiData = responses.find((d) => d.type === 'cpi')
           const filtered = responses.filter(
             (d) => d.region && d.region.toLowerCase() === r.id
@@ -502,22 +501,6 @@ export const actions = {
         const perf = new PerfTime()
         perf.time()
         console.info(`------ ${currentRegion} — ${range}/${interval} (start)`)
-        console.log('***', range, interval, period)
-
-        // // WORKAROUND: mutate emissions data (power only) because it's returning "tCO2e/hr" instead of "tCO2e"
-        // if (range === '1D' || range === '3D' || range === '7D') {
-        //   const isAuOrWem = currentRegion === 'au' || currentRegion === 'wem'
-        //   responses.forEach((res1) => {
-        //     res1.forEach((r) => {
-        //       if (r.type === 'emissions') {
-        //         const historyData = isAuOrWem
-        //           ? r.history.data.map(d => d / 2)
-        //           : r.history.data.map(d => d / 12)
-        //         r.history.data = historyData
-        //       }
-        //     })
-        //   })
-        // }
 
         const {
           datasetFull,
@@ -543,8 +526,6 @@ export const actions = {
         perf.timeEnd(
           `------ ${currentRegion} — ${range}/${interval} (${dataCount} down to ${currentDataset.length})`
         )
-
-        console.log('domainDemandMarketValue', domainDemandMarketValue)
 
         commit('isFetching', false)
         commit('isEnergyType', dataType === 'energy')
