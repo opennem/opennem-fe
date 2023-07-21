@@ -53,8 +53,6 @@ export const getEachMonthOfInterval = () => {
 
 export const getEachOfInterval = (interval, filterPeriod) => {
   if (interval === INTERVAL_MONTH) {
-    console.log('Month interval', filterPeriod, FILTER_MONTH_NUM[filterPeriod])
-
     return filterPeriod === FILTER_NONE
       ? getEachMonthOfInterval()
       : getEachMonthOfInterval().filter(d => d.date.getMonth() === FILTER_MONTH_NUM[filterPeriod])
