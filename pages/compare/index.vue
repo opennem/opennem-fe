@@ -1,71 +1,69 @@
 <template>
-  <div class="">    
-    <div class="vis-container">
-      <div 
-        class="vis-options" 
-        style="margin-top: 1rem">
-        <MetricSelect class="metric-selection" />
+  <div class="vis-container">
+    <div 
+      class="vis-options" 
+      style="margin-top: 1rem">
+      <MetricSelect class="metric-selection" />
 
-        <DataOptionsBar
-          class="options-bar"
-          :ranges="ranges"
-          :intervals="intervals"
+      <DataOptionsBar
+        class="options-bar"
+        :ranges="ranges"
+        :intervals="intervals"
+        :range="range"
+        :interval="interval"
+        :filter-period="filterPeriod"
+        :use12-mth-rolling-toggle="true"
+        @rangeIntervalChange="handleRangeIntervalChange"
+      />
+    </div>
+    <div 
+      v-if="!fetching && lineChartDataset.length > 0"
+      class="chart-table-container">
+      <OpenChart
+        class="open-chart"
+        :chart-title="chartTitle"
+        :chart-dataset="lineChartDataset"
+        :chart-domains="domains"
+        :range="range"
+        :interval="interval"
+        :show-x-axis="true"
+        :vis-height="500"
+        :hover-on="isHovering"
+        :hover-date="hoverDate"
+        :zoom-extent="zoomExtent"
+        :filter-period="filterPeriod"
+        :hidden-domains="hiddenDomains"
+        :show-average-value="false"
+        :value-formatter="valueFormatter"
+        :pad-y-axis="false"
+        :unit="chartUnit"
+        :annotations="annotations"
+        @dateHover="handleDateHover"
+        @isHovering="handleIsHovering"
+        @zoomExtent="handleZoomExtent"
+        @svgClick="handleSvgClick"
+      />
+
+      <aside class="compare-table">
+        <dates-display
+          :is-hovering="isHovering"
+          :hovered-date="hoverDate?.getTime()"
+          :start-date="startEndDates.start.getTime()"
+          :end-date="startEndDates.end.getTime()"
           :range="range"
           :interval="interval"
-          :filter-period="filterPeriod"
-          :use12-mth-rolling-toggle="true"
-          @rangeIntervalChange="handleRangeIntervalChange"
-        />
-      </div>
-      <div 
-        v-if="!fetching && lineChartDataset.length > 0"
-        class="chart-table-container">
-        <OpenChart
-          class="open-chart"
-          :chart-title="chartTitle"
-          :chart-dataset="lineChartDataset"
-          :chart-domains="domains"
-          :range="range"
-          :interval="interval"
-          :show-x-axis="true"
-          :vis-height="500"
-          :hover-on="isHovering"
-          :hover-date="hoverDate"
-          :zoom-extent="zoomExtent"
-          :filter-period="filterPeriod"
-          :hidden-domains="hiddenDomains"
-          :show-average-value="false"
-          :value-formatter="valueFormatter"
-          :pad-y-axis="false"
-          :unit="chartUnit"
-          :annotations="annotations"
-          @dateHover="handleDateHover"
-          @isHovering="handleIsHovering"
-          @zoomExtent="handleZoomExtent"
-          @svgClick="handleSvgClick"
         />
 
-        <aside class="compare-table">
-          <dates-display
-            :is-hovering="isHovering"
-            :hovered-date="hoverDate?.getTime()"
-            :start-date="startEndDates.start.getTime()"
-            :end-date="startEndDates.end.getTime()"
-            :range="range"
-            :interval="interval"
-          />
-
-          <CompareTable 
-            style="width: 100%"
-            :domains="domains" 
-            :hidden="hiddenDomains"
-            :dataset="tableDataset"
-            @highlight-domain="handleHighlightDomain"
-            @domain-hide="handleDomainHide"
-            @domains-hide="handleDomainsHide"/>
-        </aside>
+        <CompareTable 
+          style="width: 100%"
+          :domains="domains" 
+          :hidden="hiddenDomains"
+          :dataset="tableDataset"
+          @highlight-domain="handleHighlightDomain"
+          @domain-hide="handleDomainHide"
+          @domains-hide="handleDomainsHide"/>
+      </aside>
         
-      </div>
     </div>
   </div>
 </template>
@@ -572,62 +570,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~/assets/scss/variables.scss';
-@import '~/assets/scss/responsive-mixins.scss';
-
 $breakpoint: 900px;
-
-.container-fluid {
-  padding: 0.8rem 0.2rem;
-  height: 100%;
-
-  @include mobile {
-    padding-top: 0;
-  }
-}
-
-.floating-palette {
-  width: 300px;
-  background-color: #fff;
-  z-index: 9999;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-  border-radius: 6px;
-  top: 15vh;
-  right: 50px;
-  bottom: 100px;
-  overflow-y: auto;
-  font-size: 10px;
-
-  table {
-    font-weight: bold;
-
-  }
-
-  header {
-    background-color: #eee;
-    cursor: move;
-    padding: 10px;
-    border-radius: 6px 6px 0 0;
-    font-weight: 700;
-    font-family: 'Playfair Display', Georgia, 'Times New Roman', Times, serif;
-    font-size: 16px;
-
-    i.fal {
-      position: relative;
-      top: 1px;
-    }
-  }
-}
-
-h3 {
-  font-family: $header-font-family;
-  font-size: 1.4em;
-  font-weight: 300;
-  margin-left: 2px;
-  padding-bottom: 0.5rem;
-  text-align: right;
-  border-bottom: 1px solid #ddd;
-}
 
 .chart-table-container {
   display: block;
@@ -697,54 +640,5 @@ h3 {
       margin-right: 0.4rem;
     }
   }
-}
-
-.vis-section {
-  position: relative;
-
-  h4 {
-    font-family: $header-font-family;
-    font-size: 1.2em;
-    font-weight: 700;
-  }
-
-  .heatmap-label {
-    font-family: $header-font-family;
-    font-weight: 700;
-    font-size: 1em;
-    position: absolute;
-    z-index: 9;
-    color: #fff;
-    text-shadow: 0 0 2px rgba(0, 0, 0, 0.4);
-    background-color: rgba(0, 0, 0, 0.2);
-    padding: 0 3px 1px;
-    border-radius: 0 0 1px 0;
-    left: 1px;
-    margin-top: 1px;
-  }
-
-  .region-label {
-    cursor: pointer;
-
-    &:hover {
-      background-color: rgba(0, 0, 0, 0.6);
-    }
-  }
-
-  header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 5px;
-
-    small {
-      font-family: $family-primary;
-      font-size: 0.7em;
-      font-weight: 300;
-    }
-  }
-}
-
-:deep(.heatmap) {
-  border: 1px solid #ddd;
 }
 </style>
