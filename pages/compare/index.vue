@@ -180,7 +180,6 @@ export default {
       hoverValue: null,
       hoverRegion: '',
       hoverDisplay: null,
-      regionId: 'nem',
       allBucket,
       domains: getAuRegions(),
       hiddenDomains: [],
@@ -256,9 +255,8 @@ export default {
       return this.$route.query.filter
     },
 
-    // update card image
     cardFilename() {
-      return `${this.baseUrl}opennem-stripes-${this.regionId}.png`
+      return `${this.baseUrl}opennem-compare.png`
     },
 
     lineChartDataset() {
@@ -321,10 +319,6 @@ export default {
   },
 
   watch: {
-    regionId(id) {
-      this.getData(id)
-    },
-
     queryMetric(metric) {
       if (metric) {
         this.selectedMetric = metric
@@ -379,7 +373,7 @@ export default {
   },
 
   mounted() {
-    this.getData(this.regionId)
+    this.getData()
 
     this.width = this.$el.offsetWidth - 32
 
