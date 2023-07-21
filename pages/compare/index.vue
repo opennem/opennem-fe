@@ -4,49 +4,7 @@
       <div 
         class="vis-options" 
         style="margin-top: 1rem">
-        <div 
-          class="metric-selection select is-rounded">
-          <select v-model="selectedMetric">
-            <option 
-              v-if="featureEmissions" 
-              value="carbonIntensity">
-              Carbon intensity
-            </option>
-            
-            <optgroup label="Proportion of demand">
-              <option value="netInterconnectorFlow">
-                Net imports proportion
-              </option>
-              <option value="renewablesProportion">
-                Renewables proportion
-              </option>
-              <option value="solarProportion">
-                Solar proportion
-              </option>
-              <option value="windProportion">Wind proportion</option>
-              <option value="gasProportion">Gas proportion</option>
-              <option value="coalProportion">Coal proportion</option>
-            </optgroup>
-
-            <optgroup label="Average spot market value">
-              <option value="solarValue">Solar value</option>
-              <option value="windValue">Wind value</option>
-              <option value="hydroValue">Hydro value</option>
-              <option value="gasValue">Gas value</option>
-              <option value="coalValue">Coal value</option>
-              <option value="price">Volume-weighted price</option>
-              <option value="inflatedPrice">
-                Volume-weighted price (inflation adjusted)
-              </option>
-            </optgroup>
-
-            <optgroup label="Temperature">
-              <option value="temperature">Average temperature</option>
-              <option value="minTemperature">Min temperature</option>
-              <option value="maxTemperature">Max temperature</option>
-            </optgroup>
-          </select>
-        </div>
+        <MetricSelect class="metric-selection" />
 
         <DataOptionsBar
           class="options-bar"
@@ -146,8 +104,7 @@ import DatesDisplay from '@/components/SummaryTable/DatesDisplay'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import OpenChart from '@/components/Charts/OpenChart'
 import CompareTable from '@/components/Compare/Table.vue'
-
-import Draggable from '@/components/ui/DraggableContainer'
+import MetricSelect from '@/components/MetricsSelect.vue'
 
 export default {
   layout: 'main',
@@ -160,8 +117,8 @@ export default {
     OpenChart,
     DataOptionsBar,
     CompareTable,
-    Draggable,
-    DatesDisplay
+    DatesDisplay,
+    MetricSelect
   },
 
   head() {
@@ -241,7 +198,8 @@ export default {
       tabletBreak: 'app/tabletBreak',
       xGuides: 'visInteract/xGuides',
       focusDate: 'visInteract/focusDate',
-      featureEmissions: 'feature/emissions'
+      featureEmissions: 'feature/emissions',
+      featureComparePrice: 'feature/comparePrice'
     }),
 
     chartTitle() {
@@ -261,7 +219,6 @@ export default {
       },
 
       set(val) {
-        
         this.$store.commit('stripes/selectedMetric', val)
       }
     },
