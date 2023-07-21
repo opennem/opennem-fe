@@ -45,7 +45,7 @@
       />
 
       <aside class="compare-table">
-        <dates-display
+        <DatesDisplay
           :is-hovering="isHovering"
           :hovered-date="hoverDate?.getTime()"
           :start-date="startEndDates.start.getTime()"
@@ -75,8 +75,8 @@ import cloneDeep from 'lodash.clonedeep'
 import isSameDay from 'date-fns/isSameDay'
 import { format as numFormat } from 'd3-format'
 
-import { getEnergyRegionLabel, getAuRegions } from '@/constants/energy-regions.js'
-import { periods, metrics } from '@/constants/stripes/'
+import { getAuRegions } from '@/constants/energy-regions.js'
+import { metrics } from '@/constants/stripes/'
 import { RANGE_ALL, RANGE_ALL_12MTH_ROLLING, COMPARE_RANGES, COMPARE_RANGE_INTERVALS } from '@/constants/ranges.js'
 import { getRangeByRangeQuery } from '@/constants/range-queries'
 import { getIntervalByIntervalQuery } from '@/constants/interval-queries.js'
@@ -85,17 +85,7 @@ import { INTERVAL_MONTH, FILTER_NONE } from '@/constants/interval-filters.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import { dataFilterByPeriod } from '@/data/parse/region-energy'
 
-import {
-  allBucket,
-  getRegionCompareData,
-  getStripesDateRange,
-  getStripesStartEndDates,
-} from '@/data/pages/page-stripes.js'
-
-import Heatmap from '@/components/Vis/Heatmap'
-import ColourLegend from '@/components/Vis/ColourLegend'
-import OptionsLegend from '@/components/Stripes/OptionsLegend'
-import HoverMetric from '@/components/Stripes/HoverMetric'
+import { getRegionCompareData, getStripesStartEndDates } from '@/data/pages/page-stripes.js'
 
 import DatesDisplay from '@/components/SummaryTable/DatesDisplay'
 
@@ -108,10 +98,6 @@ export default {
   layout: 'main',
 
   components: {
-    Heatmap,
-    ColourLegend,
-    OptionsLegend,
-    HoverMetric,
     OpenChart,
     DataOptionsBar,
     CompareTable,
@@ -121,7 +107,7 @@ export default {
 
   head() {
     return {
-      title: `: Compare Regions`,
+      title: `: Compare Regions — ${this.chartTitle}`,
       meta: [
         {
           hid: 'twitter:title',
@@ -161,14 +147,10 @@ export default {
     return {
       fetching: false,
       baseUrl: `${this.$config.url}/images/screens/`,
-      width: 0,
-      periods,
       metrics,
-      dateRange: getStripesDateRange(),
       startEndDates: getStripesStartEndDates(),
       responseDataset: null,
       regionData: [],
-      dataDomains: {},
       ranges: COMPARE_RANGES,
       intervals: COMPARE_RANGE_INTERVALS,
       range: RANGE_ALL_12MTH_ROLLING,
@@ -176,9 +158,6 @@ export default {
       filterPeriod: FILTER_NONE,
       hoverDate: null,
       hoverValue: null,
-      hoverRegion: '',
-      hoverDisplay: null,
-      allBucket,
       domains: getAuRegions(),
       hiddenDomains: [],
       zoomExtent: [],
@@ -191,12 +170,7 @@ export default {
 
   computed: {
     ...mapGetters({
-      fuelTechGroupName: 'fuelTechGroupName',
-      tabletBreak: 'app/tabletBreak',
-      xGuides: 'visInteract/xGuides',
-      focusDate: 'visInteract/focusDate',
-      featureEmissions: 'feature/emissions',
-      featureComparePrice: 'feature/comparePrice'
+      focusDate: 'visInteract/focusDate'
     }),
 
     chartTitle() {
@@ -222,19 +196,6 @@ export default {
 
     selectedMetricObject() {
       return this.metrics.find((m) => m.value === this.selectedMetric)
-    },
-    selectedPeriod: {
-      get() {
-        return this.$store.getters['stripes/selectedPeriod']
-      },
-
-      set(val) {
-        this.$store.commit('stripes/selectedPeriod', val)
-      }
-    },
-
-    selectedPeriodObject() {
-      return this.periods.find((p) => p.value === this.selectedPeriod)
     },
 
     queryMetric() {
@@ -317,12 +278,6 @@ export default {
   },
 
   watch: {
-    queryMetric(metric) {
-      if (metric) {
-        this.selectedMetric = metric
-      }
-    },
-
     selectedMetric(val) {
       this.$router.push({
         query: {
@@ -372,38 +327,23 @@ export default {
 
   mounted() {
     this.getData()
-
-    this.width = this.$el.offsetWidth - 32
-
-    window.addEventListener(
-      'resize',
-      debounce(() => {
-        this.width =
-          this.$el.offsetWidth === 0 ? this.width : this.$el.offsetWidth - 32
-      }),
-      50
-    )
   },
 
   methods: {
     ...mapActions({
-      doGetRegionData: 'regionEnergy/doGetRegionData',
-      doGetAllData: 'regionEnergy/doGetAllData',
       doGetAllMonthlyData: 'regionEnergy/doGetAllMonthlyData',
       doUpdateAllRegionDatasetByInterval: 'regionEnergy/doUpdateAllRegionDatasetByInterval',
-      doUpdateXGuides: 'visInteract/doUpdateXGuides',
-      doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
+      doUpdateTickFormats: 'visInteract/doUpdateTickFormats',
+      doUpdateXGuides: 'visInteract/doUpdateXGuides'
     }),
     ...mapMutations({
       setHighlightDomain: 'visInteract/highlightDomain',
-      setFocusDate: 'visInteract/focusDate',
-      setQuery: 'app/query'
+      setFocusDate: 'visInteract/focusDate'
     }),
 
     valueFormatter(value) {
       if (value !== 0 && !value) return '—'
       const metricFormat = this.selectedMetricObject?.numberFormatString
-      const metricLabel = this.selectedMetricObject?.label
       const metricUnit = this.selectedMetricObject?.unit
       const formattedValue = numFormat(metricFormat || ',.0f')(value)
       return formattedValue + metricUnit
@@ -480,7 +420,6 @@ export default {
     },
 
     handleMousemove({ id, date, value }, regionId) {
-      this.hoverRegion = regionId
       this.hoverDate = date
       this.hoverValue = value
       this.isHovering = true

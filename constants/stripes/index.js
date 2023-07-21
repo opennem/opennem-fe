@@ -101,7 +101,7 @@ export const metrics = [
   },
 
   {
-    label: 'Net interconnector flow (of demand)',
+    label: 'Net imports proportion (of demand)',
     value: 'netInterconnectorFlow',
     divisor: 50, // -25 to 25.
     offset: 25,
