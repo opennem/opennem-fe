@@ -1,7 +1,8 @@
 <template>
   <chart-header 
     :chart-shown="chartShown" 
-    :has-hover-date="true">
+    :has-hover-date="!!hoverDisplayDate"
+    :has-hover-value="!!(hoverValue === 0 || hoverValue)">
     <template 
       v-slot:options 
       v-if="!readOnly">
@@ -23,16 +24,10 @@
       />
     </template>
 
-    <!-- <template v-slot:label-unit>
-      <strong>xx</strong>
-      <small v-if="chartShown && isPercentage"> {{ displayUnit }}</small>
-      <small
-        v-if="chartShown && !isPercentage"
-        class="display-unit"
-        @click.stop="handleUnitClick"
-      >{{ displayUnit }}/{{ interval | intervalLabel }}</small
-      >
-    </template> -->
+    <template v-slot:label-unit>
+      <strong>{{ chartTitle }}</strong>
+      <small v-if="chartShown"> {{ displayUnit }}</small>
+    </template>
     <!-- <template
       v-slot:average-value
       v-if="!readOnly && !isPercentage && showAverageValue"
@@ -55,7 +50,8 @@
           class="colour-square"
         />
         {{ hoverDomainLabel }}
-        <strong v-if="isPercentage">{{ hoverValue | formatValue2 }}%</strong>
+        <strong v-if="!showConvertValue">{{ hoverValue }}</strong>
+        <strong v-else-if="isPercentage">{{ hoverValue | formatValue2 }}%</strong>
         <strong 
           v-else
         >{{ hoverValue | formatValue2 }} {{ displayUnit }}</strong
@@ -88,6 +84,10 @@ export default {
     ChartOptions
   },
   props: {
+    chartTitle: {
+      type: String,
+      default: ''
+    },
     chartShown: {
       type: Boolean,
       default: false
@@ -129,7 +129,7 @@ export default {
       default: ''
     },
     hoverValue: {
-      type: Number,
+      type: Number | String,
       default: 0
     },
     hoverDomainColour: {
@@ -171,6 +171,10 @@ export default {
     emissionsOptions: {
       type: Object,
       default: () => {}
+    },
+    showConvertValue: {
+      type: Boolean,
+      default: true
     }
   },
   data() {

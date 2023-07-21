@@ -1,75 +1,28 @@
 <template>
-  <div class="container-fluid">
-    <!-- <h3>{{ dateRange }}</h3> -->
-
-    <!-- <OptionsLegend 
-      :legend-width="tabletBreak ? 200 : 310" 
-      :legend-font-size="tabletBreak ? 9 : 10"
-      :show-legend="false" 
-      :hover-display="hoverDisplay" 
-      :use-hover="!useAllPeriods"
-      :show-hover="hoverDate ? true : false" /> -->
-    
-    <div class="metric-selection select is-rounded">
-      <select v-model="selectedMetric">
-        <option 
-          v-if="featureEmissions" 
-          value="carbonIntensity">
-          Carbon intensity
-        </option>
-        <option value="netInterconnectorFlow">
-          Net interconnector flow (of demand)
-        </option>
-
-        <!-- <optgroup label="Proportion">
-          <option value="renewablesProportion">
-            Renewables proportion (of demand)
-          </option>
-          <option value="solarProportion">
-            Solar proportion (of demand)
-          </option>
-          <option value="windProportion">Wind proportion (of demand)</option>
-          <option value="gasProportion">Gas proportion (of demand)</option>
-          <option value="coalProportion">Coal proportion (of demand)</option>
-        </optgroup> -->
-
-        <optgroup label="Average value">
-          <option value="solarValue">Solar value</option>
-          <option value="windValue">Wind value</option>
-          <option value="hydroValue">Hydro value</option>
-          <option value="gasValue">Gas value</option>
-          <option value="coalValue">Coal value</option>
-          <option value="price">Volume-weighted price</option>
-          <option value="inflatedPrice">
-            Volume-weighted price (inflation adjusted)
-          </option>
-        </optgroup>
-
-        <optgroup label="Temperature">
-          <option value="temperature">Average temperature</option>
-          <option value="maxTemperature">Max temperature</option>
-        </optgroup>
-      </select>
-    </div>
-
+  <div class="">    
     <div class="vis-container">
-      <DataOptionsBar
-        :ranges="ranges"
-        :intervals="intervals"
-        :range="range"
-        :interval="interval"
-        :filter-period="filterPeriod"
-        @rangeChange="handleRangeChange"
-        @intervalChange="handleIntervalChange"
-        @queryChange="handleQueryChange"
-        @filterPeriodChange="handleFilterPeriodChange"
-      />
+      <div 
+        class="vis-options" 
+        style="margin-top: 1rem">
+        <MetricSelect class="metric-selection" />
 
+        <DataOptionsBar
+          class="options-bar"
+          :ranges="ranges"
+          :intervals="intervals"
+          :range="range"
+          :interval="interval"
+          :filter-period="filterPeriod"
+          :use12-mth-rolling-toggle="true"
+          @rangeIntervalChange="handleRangeIntervalChange"
+        />
+      </div>
       <div 
         v-if="!fetching && lineChartDataset.length > 0"
-        style="display: flex; gap: 1rem;">
+        class="chart-table-container">
         <OpenChart
-          style="width: 70%"
+          class="open-chart"
+          :chart-title="chartTitle"
           :chart-dataset="lineChartDataset"
           :chart-domains="domains"
           :range="range"
@@ -82,66 +35,37 @@
           :filter-period="filterPeriod"
           :hidden-domains="hiddenDomains"
           :show-average-value="false"
+          :value-formatter="valueFormatter"
+          :pad-y-axis="false"
+          :unit="chartUnit"
+          :annotations="annotations"
           @dateHover="handleDateHover"
           @isHovering="handleIsHovering"
           @zoomExtent="handleZoomExtent"
+          @svgClick="handleSvgClick"
         />
 
-        <CompareTable 
-          :domains="domains" 
-          :hidden="hiddenDomains"
-          :dataset="tableDataset"
-          @domain-hide="handleDomainHide"/>
-      </div>
+        <aside class="compare-table">
+          <dates-display
+            :is-hovering="isHovering"
+            :hovered-date="hoverDate?.getTime()"
+            :start-date="startEndDates.start.getTime()"
+            :end-date="startEndDates.end.getTime()"
+            :range="range"
+            :interval="interval"
+          />
 
-      <!-- <section 
-        v-for="(d, i) in regionData" 
-        :key="`region-${i}`" 
-        class="vis-section">
-
-        <HoverMetric
-          v-if="hoverDate"
-          :is-yearly="d.yearlyData && d.yearlyData.length > 0 ? true : false"
-          :hover-date="hoverDate"
-          :data="d.data"
-          :hover-value="hoverValue"
-          :selected-metric="selectedMetric"
-          :selected-metric-object="selectedMetricObject"
-          :selected-period="selectedPeriodObject"
-          :style="{ display: useAllPeriods ? 'block' : 'none' }"
-          @hover-obj="(d) => (hoverDisplay = d)"
-        />
+          <CompareTable 
+            style="width: 100%"
+            :domains="domains" 
+            :hidden="hiddenDomains"
+            :dataset="tableDataset"
+            @highlight-domain="handleHighlightDomain"
+            @domain-hide="handleDomainHide"
+            @domains-hide="handleDomainsHide"/>
+        </aside>
         
-        <div style="width: 100%">
-          <nuxt-link 
-            :to="`/stripes/${d.regionId}/?metric=${selectedMetric}`" 
-            class="heatmap-label region-label">{{
-            d.region }}</nuxt-link>
-          <Heatmap 
-            :cell-height="75" 
-            :svg-width="width" 
-            :svg-height="75" 
-            :radius="0" 
-            :dataset="d.data"
-            :value-prop="selectedMetric" 
-            :tooltip-value-prop="
-              selectedMetricObject.valueProp  
-                ? selectedMetricObject.valueProp
-                : selectedMetric
-            " 
-            :divisor="selectedMetricObject.divisor" 
-            :offset="selectedMetricObject.offset"
-            :colour-range="selectedMetricObject.range" 
-            :colour-domain="selectedMetricObject.domain"
-            :hover-date="hoverDate" 
-            @rect-mousemove="
-              (obj) => {
-                handleMousemove(obj, d.regionId)
-              }
-            " 
-            @rect-mouseout="handleMouseout" />
-        </div>
-      </section> -->
+      </div>
     </div>
   </div>
 </template>
@@ -151,27 +75,23 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 import debounce from 'lodash.debounce'
 import cloneDeep from 'lodash.clonedeep'
 import isSameDay from 'date-fns/isSameDay'
+import { format as numFormat } from 'd3-format'
 
 import { getEnergyRegionLabel, getAuRegions } from '@/constants/energy-regions.js'
 import { periods, metrics } from '@/constants/stripes/'
-import { RANGE_ALL, RANGE_ALL_12MTH_ROLLING, RANGE_INTERVALS, COMPARE_RANGES, COMPARE_RANGE_INTERVALS } from '@/constants/ranges.js'
+import { RANGE_ALL, RANGE_ALL_12MTH_ROLLING, COMPARE_RANGES, COMPARE_RANGE_INTERVALS } from '@/constants/ranges.js'
+import { getRangeByRangeQuery } from '@/constants/range-queries'
+import { getIntervalByIntervalQuery } from '@/constants/interval-queries.js'
+import { getFilterByFilterQuery } from '@/constants/filter-queries.js'
 import { INTERVAL_MONTH, FILTER_NONE } from '@/constants/interval-filters.js'
 import DateDisplay from '@/services/DateDisplay.js'
-import {
-  simpleDataProcess,
-  dataProcess,
-  simpleDataRollUp,
-  dataFilterByPeriod
-} from '@/data/parse/region-energy'
-import getStripesDataset from '@/data/transform/energy-to-stripe-metrics.js'
+import { dataFilterByPeriod } from '@/data/parse/region-energy'
 
 import {
   allBucket,
-  getRegionStripesData,
   getRegionCompareData,
   getStripesDateRange,
   getStripesStartEndDates,
-  getStripesRegion
 } from '@/data/pages/page-stripes.js'
 
 import Heatmap from '@/components/Vis/Heatmap'
@@ -179,9 +99,12 @@ import ColourLegend from '@/components/Vis/ColourLegend'
 import OptionsLegend from '@/components/Stripes/OptionsLegend'
 import HoverMetric from '@/components/Stripes/HoverMetric'
 
+import DatesDisplay from '@/components/SummaryTable/DatesDisplay'
+
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import OpenChart from '@/components/Charts/OpenChart'
 import CompareTable from '@/components/Compare/Table.vue'
+import MetricSelect from '@/components/MetricsSelect.vue'
 
 export default {
   layout: 'main',
@@ -193,17 +116,19 @@ export default {
     HoverMetric,
     OpenChart,
     DataOptionsBar,
-    CompareTable
+    CompareTable,
+    DatesDisplay,
+    MetricSelect
   },
 
   head() {
     return {
-      title: `: ${getEnergyRegionLabel(this.regionId)} Compare`,
+      title: `: Compare Regions`,
       meta: [
         {
           hid: 'twitter:title',
           name: 'twitter:title',
-          content: `OpenNEM: ${getEnergyRegionLabel(this.regionId)} Compare`
+          content: `OpenNEM: Compare Regions`
         },
         {
           hid: 'twitter:image:src',
@@ -213,7 +138,7 @@ export default {
         {
           hid: 'og:title',
           property: 'og:title',
-          content: `OpenNEM: ${getEnergyRegionLabel(this.regionId)} Compare`
+          content: `OpenNEM: Compare Regions`
         },
         {
           hid: 'og:image',
@@ -248,7 +173,7 @@ export default {
       dataDomains: {},
       ranges: COMPARE_RANGES,
       intervals: COMPARE_RANGE_INTERVALS,
-      range: RANGE_ALL,
+      range: RANGE_ALL_12MTH_ROLLING,
       interval: INTERVAL_MONTH,
       filterPeriod: FILTER_NONE,
       hoverDate: null,
@@ -262,7 +187,8 @@ export default {
       zoomExtent: [],
       isHovering: false,
       bucket: [],
-      tableDataset: {}
+      tableDataset: {},
+      rangeIntervalsQuery: null
     }
   },
 
@@ -271,8 +197,21 @@ export default {
       fuelTechGroupName: 'fuelTechGroupName',
       tabletBreak: 'app/tabletBreak',
       xGuides: 'visInteract/xGuides',
-      featureEmissions: 'feature/emissions'
+      focusDate: 'visInteract/focusDate',
+      featureEmissions: 'feature/emissions',
+      featureComparePrice: 'feature/comparePrice'
     }),
+
+    chartTitle() {
+      return this.selectedMetricObject.label
+    },
+
+    chartUnit() {
+      const type= this.selectedMetricObject.value
+
+      if (type.toLowerCase().includes('value')) return '$/MWh'
+      return this.selectedMetricObject.unit
+    },
 
     selectedMetric: {
       get() {
@@ -280,15 +219,13 @@ export default {
       },
 
       set(val) {
-        this.$router.push({
-          query: {
-            metric: val
-          }
-        })
         this.$store.commit('stripes/selectedMetric', val)
       }
     },
 
+    selectedMetricObject() {
+      return this.metrics.find((m) => m.value === this.selectedMetric)
+    },
     selectedPeriod: {
       get() {
         return this.$store.getters['stripes/selectedPeriod']
@@ -299,22 +236,6 @@ export default {
       }
     },
 
-    // selectedMetric: {
-    //   get() {
-    //     return this.$store.getters['stripes/selectedMetric']
-    //   },
-
-    //   set(val) {
-    //     const query = { metric: val }
-    //     this.$router.push({
-    //       path: `?metric=${val}`
-    //     })
-    //     this.$store.commit('stripes/selectedMetric', val)
-    //     this.setQuery(query)
-    //     this.hoverDisplay = null
-    //   }
-    // },
-
     selectedPeriodObject() {
       return this.periods.find((p) => p.value === this.selectedPeriod)
     },
@@ -323,10 +244,19 @@ export default {
       return this.$route.query.metric
     },
 
-    useAllPeriods() {
-      return this.regionId === 'au' || this.regionId === 'nem'
+    queryRange() {
+      return this.$route.query.range
     },
 
+    queryInterval() {
+      return this.$route.query.interval
+    },
+
+    queryFilterPeriod() {
+      return this.$route.query.filter
+    },
+
+    // update card image
     cardFilename() {
       return `${this.baseUrl}opennem-stripes-${this.regionId}.png`
     },
@@ -335,7 +265,6 @@ export default {
       const arr = cloneDeep(this.bucket)
 
       if (arr && arr.length) {
-        console.log('lineChartDataset', this.regionData)
         this.regionData.forEach(region => {
           const id =  region.regionId
 
@@ -344,22 +273,82 @@ export default {
           })
         })
 
+        // add display time to show dot in middle of interval
+        arr.forEach((d, i) => {
+          const start = d.time
+          const next = arr[i+1] ? arr[i+1].time : null
+          if (next) {
+            const mid = (next - start) / 2
+            d.displayTime = d.time + mid
+          }
+        })
+
+        const lastSecondItem = arr[arr.length - 2]
+        const lastItem = arr[arr.length - 1]
+        const mid = (lastItem.time - lastSecondItem.time) / 2
+        lastItem.displayTime = lastItem.time + mid
+
         return arr
       }
 
       return []
+    },
+
+    annotations() {
+      if (this.selectedMetric === 'netInterconnectorFlow') {
+        return [{
+          label: '＋ Imports',
+          valueLocation: 'yTop',
+          offset: 10,
+          'dominant-baseline': 'hanging',
+          'text-anchor': 'end',
+          'font-family': 'Playfair Display',
+          fill: '#666'
+        }, {
+          label: '－ Exports',
+          valueLocation: 'yBottom',
+          offset: -10,
+          'dominant-baseline': 'auto',
+          'text-anchor': 'end',
+          'font-family': 'Playfair Display',
+          fill: '#666'
+        }]
+      }
+
+      return []
     }
+    
   },
 
   watch: {
     regionId(id) {
       this.getData(id)
     },
+
     queryMetric(metric) {
       if (metric) {
         this.selectedMetric = metric
       }
     },
+
+    selectedMetric(val) {
+      this.$router.push({
+        query: {
+          ...this.rangeIntervalsQuery,
+          metric: val
+        }
+      })
+    },
+    
+    rangeIntervalsQuery(val) {
+      this.$router.push({
+        query: {
+          ...val,
+          metric: this.selectedMetric
+        }
+      })
+    },
+
     async lineChartDataset(val) {
       if (val.length > 0) {
         await this.doUpdateXGuides({
@@ -374,26 +363,22 @@ export default {
       if (val) {
         const find = this.lineChartDataset.find(d => isSameDay(d.date, this.hoverDate))
         this.tableDataset = find || {}
+      } else {
+        this.tableDataset = {}
       }
     }
   },
 
   created() {
-    this.$store.commit('stripes/selectedMetric', 'windValue')
+    this.$store.dispatch('currentView', 'compare')
+
+    this.selectedMetric = this.queryMetric || 'renewablesProportion'
+    this.range = this.queryRange ? getRangeByRangeQuery(this.queryRange) : RANGE_ALL_12MTH_ROLLING
+    this.interval = this.queryInterval? getIntervalByIntervalQuery(this.queryInterval) : INTERVAL_MONTH
+    this.filterPeriod = this.queryFilterPeriod ? getFilterByFilterQuery(this.queryFilterPeriod) : FILTER_NONE
   },
 
   mounted() {
-    if (this.queryMetric) {
-      this.selectedMetric = this.queryMetric
-    } else {
-      this.$router.push({
-        query: {
-          metric: this.selectedMetric
-        }
-      })
-    }
-
-    this.$store.dispatch('currentView', 'compare')
     this.getData(this.regionId)
 
     this.width = this.$el.offsetWidth - 32
@@ -418,8 +403,19 @@ export default {
       doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
     }),
     ...mapMutations({
+      setHighlightDomain: 'visInteract/highlightDomain',
+      setFocusDate: 'visInteract/focusDate',
       setQuery: 'app/query'
     }),
+
+    valueFormatter(value) {
+      if (value !== 0 && !value) return '—'
+      const metricFormat = this.selectedMetricObject?.numberFormatString
+      const metricLabel = this.selectedMetricObject?.label
+      const metricUnit = this.selectedMetricObject?.unit
+      const formattedValue = numFormat(metricFormat || ',.0f')(value)
+      return formattedValue + metricUnit
+    },
 
     getData() {
       this.fetching = true
@@ -439,10 +435,10 @@ export default {
     updateDataWithInterval() {
       if (this.responseDataset) {
         this.doUpdateAllRegionDatasetByInterval({
-          allDataset: this.responseDataset,
           regions: this.domains,
           range: this.range,
           interval: this.interval,
+          filterPeriod: this.filterPeriod
         }).then(d => {
           this.setRegionDataAndBucket(d)
         })
@@ -504,11 +500,11 @@ export default {
     },
 
     handleDateHover(date) {
-      this.hoverDate = DateDisplay.getClosestDateByInterval(
+      this.hoverDate = date ? DateDisplay.getClosestDateByInterval(
         date,
         this.interval,
         this.filterPeriod
-      )
+      ) : null
     },
 
     handleIsHovering(hovering) {
@@ -535,36 +531,47 @@ export default {
       this.zoomExtent = filteredDates
     },
 
-    handleRangeChange(range) {
-      this.range = range
-      this.interval = RANGE_INTERVALS[range][0]
-    },
-    handleIntervalChange(interval) {
+    handleRangeIntervalChange({ query, range, interval, filterPeriod }) {
+      this.range = range !== RANGE_ALL_12MTH_ROLLING && range !== RANGE_ALL ? RANGE_ALL_12MTH_ROLLING : range
       this.interval = interval
+      this.filterPeriod = filterPeriod
+      this.rangeIntervalsQuery = query
 
       this.updateDataWithInterval()
-    },
-    handleFilterPeriodChange(period) {
-      console.log(period)
-      this.filterPeriod = period
-
-      this.updateDataWithInterval()
-    },
-    handleQueryChange(query) {
-      console.log(query)
-      // this.$router.push({
-      //   query
-      // })
-
-      // this.setQuery(query)
     },
 
     handleDomainHide(domainId) {
       if (this.hiddenDomains.includes(domainId)) {
         this.hiddenDomains = this.hiddenDomains.filter(d => d !== domainId)
       } else {
-        this.hiddenDomains = [...this.hiddenDomains, domainId]
+        const hidden = [...this.hiddenDomains, domainId]
+
+        if (hidden.length === this.domains.length) {
+          this.hiddenDomains = []
+        } else {
+          this.hiddenDomains = hidden
+        }
       }
+    },
+
+    handleDomainsHide(domainIds) {
+      this.hiddenDomains = [...domainIds]
+    },
+
+    handleHighlightDomain(id) {
+      this.setHighlightDomain(id)
+    },
+
+    handleSvgClick() {
+      // TODO: multiline focus support
+      console.log('handle svg click')
+      // const hoverTime = this.hoverDate ? this.hoverDate.getTime() : 0
+      // const focusTime = this.focusDate ? this.focusDate.getTime() : 0
+      // if (this.focusDate && focusTime === hoverTime) {
+      //   this.setFocusDate(null)
+      // } else {
+      //   this.setFocusDate(this.hoverDate)
+      // }
     }
   }
 }
@@ -574,12 +581,47 @@ export default {
 @import '~/assets/scss/variables.scss';
 @import '~/assets/scss/responsive-mixins.scss';
 
+$breakpoint: 900px;
+
 .container-fluid {
-  padding: 1rem 16px;
+  padding: 0.8rem 0.2rem;
   height: 100%;
 
   @include mobile {
     padding-top: 0;
+  }
+}
+
+.floating-palette {
+  width: 300px;
+  background-color: #fff;
+  z-index: 9999;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  top: 15vh;
+  right: 50px;
+  bottom: 100px;
+  overflow-y: auto;
+  font-size: 10px;
+
+  table {
+    font-weight: bold;
+
+  }
+
+  header {
+    background-color: #eee;
+    cursor: move;
+    padding: 10px;
+    border-radius: 6px 6px 0 0;
+    font-weight: 700;
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', Times, serif;
+    font-size: 16px;
+
+    i.fal {
+      position: relative;
+      top: 1px;
+    }
   }
 }
 
@@ -593,8 +635,74 @@ h3 {
   border-bottom: 1px solid #ddd;
 }
 
-.vis-container {
-  margin-top: 1.8rem;
+.chart-table-container {
+  display: block;
+  padding: 0 0.5rem 0 0;
+  
+  & > * {
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+
+  @media screen and (min-width: $breakpoint) {
+    display: flex;
+    gap: 0.5rem;  
+    padding: 0 0.5rem;
+
+    .open-chart {
+      width: 70%;
+    }
+    .compare-table {
+      width: 30%;
+    }
+  }
+}
+
+.vis-options {
+  display: block;
+  padding: 0;
+  
+  & > * {
+    margin-bottom: 1rem;
+  }
+
+  .metric-selection {
+    margin-left: 0.5rem;
+  }
+
+  @media screen and (min-width: $breakpoint) {
+    display: flex;
+    padding: 0 0.5rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.options-bar {
+  @media screen and (min-width: $breakpoint) {
+    padding: 0; 
+    margin-left: 1rem;
+    display: flex;
+    align-items: center;
+  }
+
+  :deep(.buttons) {
+    @media screen and (min-width: $breakpoint) {
+      background-color: transparent;
+    }
+  }
+
+  :deep(.button ){
+    @media screen and (min-width: $breakpoint) {
+      border-radius: 290486px;
+    }
+  }
+
+  :deep(.range-b)uttons {
+    @media screen and (min-width: $breakpoint) {
+      margin-bottom: 0;
+      margin-right: 0.4rem;
+    }
+  }
 }
 
 .vis-section {

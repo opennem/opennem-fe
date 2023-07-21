@@ -1,55 +1,7 @@
 <template>
   <div class="options-legend-wrapper">
     <div class="options">
-      <div class="metric-selection select is-rounded">
-        <select v-model="selectedMetric">
-          <!-- <option
-            v-for="(d, i) in metrics"
-            :key="`metric-${i}`"
-            :value="d.value"
-          >
-            {{ d.label }}
-          </option> -->
-
-          <option 
-            v-if="featureEmissions" 
-            value="carbonIntensity">
-            Carbon intensity
-          </option>
-          <option value="netInterconnectorFlow">
-            Net interconnector flow (of demand)
-          </option>
-
-          <optgroup label="Proportion">
-            <option value="renewablesProportion">
-              Renewables proportion (of demand)
-            </option>
-            <option value="solarProportion">
-              Solar proportion (of demand)
-            </option>
-            <option value="windProportion">Wind proportion (of demand)</option>
-            <option value="gasProportion">Gas proportion (of demand)</option>
-            <option value="coalProportion">Coal proportion (of demand)</option>
-          </optgroup>
-
-          <optgroup label="Average value">
-            <option value="solarValue">Solar value</option>
-            <option value="windValue">Wind value</option>
-            <option value="hydroValue">Hydro value</option>
-            <option value="gasValue">Gas value</option>
-            <option value="coalValue">Coal value</option>
-            <option value="price">Volume-weighted price</option>
-            <option value="inflatedPrice">
-              Volume-weighted price (inflation adjusted)
-            </option>
-          </optgroup>
-
-          <optgroup label="Temperature">
-            <option value="temperature">Average temperature</option>
-            <option value="maxTemperature">Max temperature</option>
-          </optgroup>
-        </select>
-      </div>
+      <MetricsSelect class="metric-selection" />
     </div>
 
     <div class="right-col">
@@ -90,11 +42,13 @@ import { mapGetters } from 'vuex'
 import { metrics } from '@/constants/stripes/'
 import ColourLegend from '@/components/Vis/ColourLegend'
 import HoverMetric from '@/components/Stripes/HoverMetric'
+import MetricsSelect from '@/components/MetricsSelect'
 
 export default {
   components: {
     ColourLegend,
-    HoverMetric
+    HoverMetric,
+    MetricsSelect
   },
 
   props: {
@@ -127,22 +81,10 @@ export default {
   computed: {
     ...mapGetters({
       featureEmissions: 'feature/emissions',
+      featureComparePrice: 'feature/comparePrice',
+      selectedMetric: 'stripes/selectedMetric',
       selectedMetricObj: 'stripes/selectedMetricObj'
     }),
-    selectedMetric: {
-      get() {
-        return this.$store.getters['stripes/selectedMetric']
-      },
-
-      set(val) {
-        this.$router.push({
-          query: {
-            metric: val
-          }
-        })
-        this.$store.commit('stripes/selectedMetric', val)
-      }
-    },
 
     metrics() {
       if (this.featureEmissions) {
@@ -150,6 +92,16 @@ export default {
       }
       return metrics.filter((d) => d.value !== 'carbonIntensity')
     }
+  },
+
+  watch: {
+    selectedMetric(val) {
+      this.$router.push({
+          query: {
+            metric: val
+          }
+        })
+    },
   }
 }
 </script>

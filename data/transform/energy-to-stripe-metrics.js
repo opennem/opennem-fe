@@ -81,6 +81,7 @@ function createEmptyMetricObj(date, time) {
     gas: null,
     temperature: null,
     maxTemperature: null,
+    minTemperature: null,
     importsExports: null,
     sumImportsExports: null,
     netInterconnectorFlow: null,
@@ -111,6 +112,7 @@ function updateMetricObject(
       totalBatteryDischarging = 0,
       temperature = null,
       maxTemperature = null,
+      minTemperature = null,
       sumImportsExports = 0,
       hasImportsExportsValue = false,
       importsExports = null,
@@ -131,6 +133,9 @@ function updateMetricObject(
       }
       if (domain.type === 'temperature_max') {
         maxTemperature = d[domain.id]
+      }
+      if (domain.type === 'temperature_min') {
+        minTemperature = d[domain.id]
       }
     })
 
@@ -210,6 +215,7 @@ function updateMetricObject(
     obj.gas = d._totalGas
     obj.temperature = temperature
     obj.maxTemperature = maxTemperature
+    obj.minTemperature = minTemperature
     obj.importsExports = importsExports
     obj.sumImportsExports = sumImportsExports
     obj.netInterconnectorFlow = d._totalDemandImportsExportsProportion

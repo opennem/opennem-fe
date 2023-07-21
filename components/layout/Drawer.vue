@@ -14,10 +14,33 @@
       </div>
 
       <div class="menu">
+
+        <div 
+          v-for="view in views"
+          :key="view.id">
+
+          <hr 
+            v-if="view.id === 'divider'" 
+            style="margin: 0; height: 20px;border-bottom: 1px solid #dedede; background: transparent;">
+
+          <nuxt-link
+            v-else
+            v-show="shouldShow(view.id)"
+            :to="`/${view.id}${getRegionId(view.id)}`"
+            :class="{ 'nuxt-link-active': view.id === currentView }"
+            class="menu-item"
+          >
+            {{ view.label }}
+            <span class="icon">
+              <i class="fal fa-chevron-right" />
+            </span>
+          </nuxt-link>
+        </div>
+        <!-- 
         <nuxt-link
           v-for="view in views"
           :key="view.id"
-          :to="`/${view.id}/${getRegionId(view.id)}/`"
+          :to="`/${view.id}${getRegionId(view.id)}`"
           :class="{ 'nuxt-link-active': view.id === currentView }"
           class="menu-item"
         >
@@ -25,7 +48,7 @@
           <span class="icon">
             <i class="fal fa-chevron-right" />
           </span>
-        </nuxt-link>
+        </nuxt-link> -->
       </div>
 
       <div 
@@ -51,7 +74,7 @@
       </div>
 
       <div 
-        v-show="!isEmissionsView" 
+        v-show="!isEmissionsView && !isCompareView" 
         class="menu">
         <nuxt-link 
           :to="`/${currentView}/au/`" 
@@ -83,7 +106,7 @@
       </div>
 
       <div 
-        v-show="!isEmissionsView" 
+        v-show="!isEmissionsView && !isCompareView"
         class="app-options">
         <div class="control">
           <label>Contribution to</label>
@@ -131,13 +154,17 @@ export default {
   computed: {
     ...mapGetters({
       currentView: 'currentView',
-      showFeatureToggle: 'app/showFeatureToggle'
+      showFeatureToggle: 'app/showFeatureToggle',
+      featureCompare: 'feature/regionCompare'
     }),
     regionId() {
       return this.$route.params.region
     },
     isEmissionsView() {
       return this.currentView === 'emissions'
+    },
+    isCompareView() {
+      return this.currentView === 'compare'
     }
   },
 
@@ -185,8 +212,16 @@ export default {
     },
 
     getRegionId(viewId) {
-      const id = this.regionId || 'nem'
-      return viewId === 'emissions' ? 'au' : id
+      if (viewId === 'compare') return '/'
+      const regionId = this.regionId || 'nem'
+      return viewId === 'emissions' ? '/au/' : `/${regionId}/`
+    },
+
+    shouldShow(viewId) {
+      if (viewId !== 'compare') {
+        return true
+      }
+      return this.featureCompare && viewId === 'compare'
     }
   }
 }

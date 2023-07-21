@@ -18,7 +18,9 @@
           <slot name="hover-date" />
         </time>
       </div>
-      <div class="hover-values">
+      <div 
+        v-if="hasHoverValue" 
+        class="hover-values">
         <slot name="hover-values" />
       </div>
     </div>
@@ -35,6 +37,10 @@ export default {
     hasHoverDate: {
       type: Boolean,
       default: false
+    },
+    hasHoverValue: {
+      type: Boolean,
+      default: true
     }
   }
 }

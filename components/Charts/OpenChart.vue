@@ -8,13 +8,14 @@
   >
     <open-chart-options
       :read-only="readOnly"
+      :chart-title="chartTitle"
       :chart-shown="chartShown"
       :chart-type="chartType"
       :chart-curve="chartCurve"
       :chart-y-axis="chartYAxis"
       :chart-unit="chartUnit"
       :chart-display-prefix="chartDisplayPrefix"
-      :display-unit="displayUnit"
+      :display-unit="unit"
       :is-type-area="isTypeArea"
       :is-type-proportion="isTypeProportion"
       :is-type-line="isTypeLine"
@@ -22,12 +23,13 @@
       :interval="customInterval === '' ? interval : customInterval"
       :average-emissions-volume="convertValue(averageValue)"
       :hover-display-date="hoverDisplayDate"
-      :hover-value="filteredDomains.length > 1 ? hoverValue : null"
+      :hover-value="hoverValue"
       :hover-domain-colour="hoverDomainColour"
       :hover-domain-label="hoverDomainLabel"
       :hover-total="hoverTotal"
       :show-average-value="showAverageValue"
       :emissions-options="chartOptions"
+      :show-convert-value="!valueFormatter && shouldConvertValue"
       @type-click="handleTypeClick"
     />
 
@@ -59,7 +61,7 @@
       :incomplete-intervals="incompleteIntervals"
       :highlight-domain="highlightId"
       :display-prefix="chartDisplayPrefix"
-      :should-convert-value="shouldConvertValue"
+      :should-convert-value="!valueFormatter && shouldConvertValue"
       :convert-value="convertValue"
       :unit="` ${chartDisplayPrefix}${chartUnit}`"
       :filter-period="filterPeriod"
@@ -98,18 +100,22 @@
       :x-ticks="xTicks"
       :curve="chartCurve"
       :date-hovered="hoverDate"
+      :date-focused="focusDate"
       :zoom-range="zoomExtent"
       :draw-incomplete-bucket="true"
       :x-shades="xGuides"
       :highlight-domain="highlightId"
       :display-prefix="chartDisplayPrefix"
-      :should-convert-value="shouldConvertValue"
+      :should-convert-value="!valueFormatter && shouldConvertValue"
       :convert-value="convertValue"
+      :pad-y-axis="padYAxis"
+      :annotations="annotations"
       class="vis-chart"
       @date-hover="handleDateHover"
       @domain-hover="handleDomainHover"
       @enter="handleVisEnter"
       @leave="handleVisLeave"
+      @svgClick="handleSvgClick"
     />
     <date-brush
       v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
@@ -169,6 +175,10 @@ export default {
   },
 
   props: {
+    chartTitle: {
+      type: String,
+      default: ''
+    },
     chartDataset: {
       type: Array,
       default: () => []
@@ -256,6 +266,22 @@ export default {
     chartOptions: {
       type: Object,
       default: () => chartOptions
+    },
+    valueFormatter: {
+      type: Function,
+      default: null
+    },
+    padYAxis: {
+      type: Boolean,
+      default: true
+    },
+    unit: {
+      type: String,
+      default: ''
+    },
+    annotations: {
+      type: Array,
+      default: () => []
     }
   },
 
@@ -320,31 +346,9 @@ export default {
     },
 
     displayUnit() {
-      let unit = this.chartCurrentUnit
-      if (
-        this.isTypeProportion ||
-        ((this.isTypeLine || this.isTypeChangeSinceLine) &&
-          this.chartYAxis === OPTIONS.CHART_YAXIS_PERCENTAGE)
-      ) {
-        unit = '%'
-      }
-      return unit
+      return this.chartCurrentUnit
     },
 
-    hoverEmissionsDomain() {
-      const domain = this.hoverDomain
-      if (domain) {
-        const split = domain.split('.')
-
-        if (split.length > 1) {
-          split.pop()
-          return `${split.join('.')}.${EMISSIONS}`
-        } else {
-          return domain
-        }
-      }
-      return ''
-    },
     highlightId() {
       const domain = this.highlightDomain
       const find = this.filteredDomains.find((d) => d[this.propName] === domain)
@@ -618,8 +622,10 @@ export default {
     hoverValue() {
       return this.hoverData
         ? this.shouldConvertValue
-          ? this.convertValue(this.hoverData[this.hoverEmissionsDomain])
-          : this.hoverData[this.hoverEmissionsDomain]
+          ? this.valueFormatter
+            ? this.valueFormatter(this.hoverData[this.hoverDomain])
+            : this.convertValue(this.hoverData[this.hoverDomain])
+          : this.valueFormatter(this.hoverData[this.hoverDomain])
         : null
     },
     hoverDisplayDate() {
@@ -640,11 +646,11 @@ export default {
         : ''
     },
     hoverDomainLabel() {
-      const find = this.filteredDomains.find((d) => d.id === this.hoverEmissionsDomain)
+      const find = this.filteredDomains.find((d) => d.id === this.hoverDomain)
       return find ? find.label : '—'
     },
     hoverDomainColour() {
-      const find = this.filteredDomains.find((d) => d.id === this.hoverEmissionsDomain)
+      const find = this.filteredDomains.find((d) => d.id === this.hoverDomain)
       return find ? find.colour : '—'
     },
     hoverTotal() {
@@ -663,6 +669,9 @@ export default {
       if (curr.length !== prev.length) {
         this.$emit('changeDataset', this.changeSinceDataset)
       }
+    },
+    interval() {
+      this.handleTypeClick()
     }
   },
 
@@ -717,6 +726,8 @@ export default {
       this.$emit('zoomExtent', dateRange)
     },
     handleZoomReset() {
+      this.$emit('dateHover', null)
+      this.$emit('isHovering', false)
       this.$emit('zoomExtent', [])
     },
 

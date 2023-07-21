@@ -21,6 +21,13 @@
         type="checkbox">
       Region Compare Charts
     </label>
+
+    <label class="panel-block">
+      <input
+        v-model="featureComparePrice"
+        type="checkbox">
+      Compare Pricing
+    </label>
   </div>
 </template>
 
@@ -42,6 +49,15 @@ export default {
       },
       set: function (newValue) {
         this.$store.commit('feature/regionCompare', newValue)
+      }
+    },
+
+    featureComparePrice: {
+      get: function () {
+        return this.$store.getters['feature/comparePrice']
+      },
+      set: function (newValue) {
+        this.$store.commit('feature/comparePrice', newValue)
       }
     }
   },

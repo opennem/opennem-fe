@@ -38,6 +38,7 @@
       <g 
         :transform="axisTransform" 
         class="hover-group" />
+      
       <g 
         :transform="axisTransform" 
         class="vis1-group" />
@@ -47,6 +48,9 @@
       <g 
         :transform="axisTransform" 
         class="projection-vis-group" />
+      <g 
+        :transform="axisTransform"
+        class="annotations-group" />
       <g 
         :transform="axisTransform" 
         class="y-axis-left-text" />
@@ -126,6 +130,10 @@ export default {
       default: () => 'smooth'
     },
     dateHovered: {
+      type: Date,
+      default: () => null
+    },
+    dateFocused: {
       type: Date,
       default: () => null
     },
@@ -220,6 +228,14 @@ export default {
     convertValue: {
       type: Function,
       default: () => function () {}
+    },
+    padYAxis: {
+      type: Boolean,
+      default: false
+    },
+    annotations: {
+      type: Array,
+      default: () => []
     }
   },
 
@@ -254,7 +270,8 @@ export default {
       $cursorDotsGroup: null,
       $hoverGroup: null,
       $xShadesGroup: null,
-      $yShadesGroup: null
+      $yShadesGroup: null,
+      $annotationsGroup: null
     }
   },
 
@@ -330,7 +347,10 @@ export default {
             const intervalTime = lastItem.time - lastSecondItem.time
             lastItem.time = lastItem.time + intervalTime
             lastItem.date = new Date(lastItem.time)
-            updated.push(lastItem)
+            updated.push({
+              time: lastItem.time,
+              date: lastItem.date
+            })
           }
 
           return updated
@@ -396,6 +416,15 @@ export default {
         this.drawCursor(newValue)
       } else {
         this.clearCursorLine()
+      }
+    },
+    dateFocused(newValue) {
+      // TODO: multiline focus support
+      console.log(newValue)
+      if (newValue) {
+        // this.drawCursor(newValue)
+      } else {
+        // this.clearCursorLine()
       }
     },
     zoomRange(newRange) {
@@ -466,6 +495,18 @@ export default {
   },
 
   methods: {
+    updateAnnotations(annotations) {
+      return annotations.map((d) => {
+        let value = 0
+        if (d.valueLocation === 'yTop') value = this.y1.domain()[1]
+        if (d.valueLocation === 'yBottom') value = this.y1.domain()[0]
+        return {
+          ...d,
+          value
+        }
+      })
+    },
+
     handleResize() {
       this.setupWidthHeight()
       this.resize()
@@ -510,11 +551,14 @@ export default {
     setup() {
       const self = this
       const $svg = select(`#${this.id}`)
+      
       // Axis DOM
       this.$xAxisGroup = $svg.select('.x-axis')
       this.$yAxisGroup = $svg.select('.y-axis')
       this.$yAxisLeftTextGroup = $svg.select('.y-axis-left-text')
       this.$yAxisRightTextGroup = $svg.select('.y-axis-right-text')
+
+      this.$annotationsGroup = $svg.select('.annotations-group')
 
       // Define scales
       this.y1Range = this.y1Invert ? [0, this.height] : [this.height, 0]
@@ -593,6 +637,9 @@ export default {
       $svg.on('mouseleave', () => {
         this.handleSvgLeave()
       })
+      $svg.on('click', () => {
+        this.$emit('svgClick')
+      })
     },
 
     handleSvgEnter() {
@@ -612,7 +659,7 @@ export default {
         this.x.domain(this.xExtent)
       }
       const yRange = Math.abs(this.y1Min) + Math.abs(this.y1Max)
-      const padding = (yRange * 10) / 100
+      const padding = this.padYAxis ? (yRange * 10) / 100 : 0
       this.y1.domain([this.y1Min - padding, this.y1Max + padding])
       this.y2.domain([this.y2Min, this.y2Max])
       if (!this.y1Log) {
@@ -622,6 +669,25 @@ export default {
       this.$xAxisGroup.call(this.drawXAxis)
       this.$yAxisGroup.call(this.drawLeftYAxis)
       this.$yAxisLeftTextGroup.call(this.drawLeftYAxisText)
+
+      const parsedAnnotations = this.updateAnnotations(this.annotations)
+      this.$annotationsGroup.selectAll('text').remove()
+      this.$annotationsGroup
+        .selectAll('text')
+        .data(parsedAnnotations)
+        .enter()
+        .append('text')
+        .text((d) => d.label)
+        .attr('x', this.width - 10)
+        .attr('y', (d) => this.y1(d.value) + d.offset)
+        .style('text-anchor', (d) => d['text-anchor'])
+        .style('dominant-baseline', (d) => d['dominant-baseline'])
+        .style('font-size', '12px')
+        .style('pointer-events', 'none')
+        .style('user-select', 'none')
+        .style('font-family', (d) => d['font-family'])
+        .style('font-weight', 'bold')
+        .style('fill', (d) => d.fill)
 
       this.$xShadesGroup.selectAll('rect').remove()
       this.$xShadesGroup
@@ -634,21 +700,22 @@ export default {
         .attr('width', (d) => this.x(d.end) - this.x(d.start))
         .attr('height', this.height)
 
+      const yShades =  [{
+        start: this.y1.domain()[1],
+        end: 0,
+        fill: 'rgba(255,255,255, 0.6)'
+      }]
+
       this.$yShadesGroup.selectAll('rect').remove()
       this.$yShadesGroup
         .selectAll('rect')
-        .data([
-          {
-            start: this.y1.domain()[1],
-            end: 0
-          }
-        ])
+        .data(yShades)
         .enter()
         .append('rect')
         .attr('y', (d) => this.y1(d.start))
         .attr('width', this.width)
         .attr('height', (d) => this.y1(d.end) - this.y1(d.start))
-        .style('fill', 'rgba(255,255,255, 0.4)')
+        .style('fill', (d) => d.fill)
 
       this.$vis1Group.selectAll('path').remove()
 
@@ -821,12 +888,12 @@ export default {
       const data = this.updatedProjectionDataset.map((d) => {
         if (this.drawIncompleteBucket) {
           return {
-            date: d.date,
+            date: d.displayTime || d.date,
             value: d[key]
           }
         }
         return {
-          date: d.date,
+          date: d.displayTime || d.date,
           value: d._isIncompleteBucket ? null : d[key]
         }
       })
@@ -837,12 +904,12 @@ export default {
       const data = this.updatedDataset1.map((d) => {
         if (this.drawIncompleteBucket) {
           return {
-            date: d.date,
+            date: d.displayTime || d.date,
             value: d[key]
           }
         }
         return {
-          date: d.date,
+          date: d.displayTime || d.date,
           value: d._isIncompleteBucket ? null : d[key]
         }
       })
@@ -898,7 +965,7 @@ export default {
             .enter()
             .append('circle')
             .merge(dots)
-            .attr('cx', this.x(dataPoint.date))
+            .attr('cx', this.x(dataPoint.displayTime || dataPoint.date))
             .attr('cy', (key) => this.y1(dataPoint[key]))
             .attr('r', 4)
             .attr('fill', (key) => this.colours1[key])

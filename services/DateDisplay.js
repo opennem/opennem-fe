@@ -63,16 +63,19 @@ function getFormatStringDetailed(showYear) {
   return showYear ? '%-d %b %Y, %-I:%M %p' : '%-d %b, %-I:%M %p'
 }
 
-function getSeasonLabel(month) {
-  switch (month) {
-    case '3':
-      return FILTER_SEASON_AUTUMN
-    case '6':
-      return FILTER_SEASON_WINTER
-    case '9':
-      return FILTER_SEASON_SPRING
-    case '12':
-      return FILTER_SEASON_SUMMER
+function getSeasonLabel(m) {
+  const month = parseInt(m, 10)
+  if (month === 12 || month <= 2) {
+    return FILTER_SEASON_SUMMER
+  }
+  if (month >= 3 && month <= 5) {
+    return FILTER_SEASON_AUTUMN
+  }
+  if (month >= 6 && month <= 8) {
+    return FILTER_SEASON_WINTER
+  }
+  if (month >= 9 && month <= 11) {
+    return FILTER_SEASON_SPRING
   }
 }
 
@@ -89,16 +92,19 @@ function getSeasonOffset(season) {
   }
 }
 
-function getQuarterLabel(month) {
-  switch (month) {
-    case '1':
-      return FILTER_QUARTER_Q1
-    case '4':
-      return FILTER_QUARTER_Q2
-    case '7':
-      return FILTER_QUARTER_Q3
-    case '10':
-      return FILTER_QUARTER_Q4
+function getQuarterLabel(m) {
+  const month = parseInt(m, 10)
+  if (month >= 1 && month <= 3) {
+    return FILTER_QUARTER_Q1
+  }
+  if (month >= 4 && month <= 6) {
+    return FILTER_QUARTER_Q2
+  }
+  if (month >= 7 && month <= 9) {
+    return FILTER_QUARTER_Q3
+  }
+  if (month >= 10 && month <= 12) {
+    return FILTER_QUARTER_Q4
   }
 }
 
