@@ -29,12 +29,8 @@
         <option value="hydroValue">Hydro value</option>
         <option value="gasValue">Gas value</option>
         <option value="coalValue">Coal value</option>
-        <option 
-          v-if="featureComparePrice" 
-          value="price">Volume-weighted price</option>
-        <option 
-          v-if="featureComparePrice" 
-          value="inflatedPrice">
+        <option value="price">Volume-weighted price</option>
+        <option value="inflatedPrice">
           Volume-weighted price (inflation adjusted)
         </option>
       </optgroup>
@@ -53,8 +49,7 @@ import { mapGetters } from 'vuex'
   export default {
     computed: {
       ...mapGetters({
-        featureEmissions: 'feature/emissions',
-        featureComparePrice: 'feature/comparePrice'
+        featureEmissions: 'feature/emissions'
       }),
 
       selectedMetric: {

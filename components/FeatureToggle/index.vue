@@ -6,20 +6,19 @@
       @click="handleDoneClick"
     />
     <div class="panel-heading">Features</div>
-    <label 
-      class="panel-block" 
-      @click.stop>
+    <label class="panel-block">
       <input 
         v-model="featureEmissions" 
-        type="checkbox" >
+        type="checkbox">
       Emissions Charts
     </label>
 
     <label class="panel-block">
       <input
         v-model="featureComparePrice"
-        type="checkbox">
-      Compare Pricing
+        type="checkbox"
+      >
+      Show Compare VWP before 2009
     </label>
   </div>
 </template>
@@ -45,6 +44,14 @@ export default {
       }
     }
   },
+  watch: {
+    featureEmissions() {
+      this.$emit('done')
+    },
+    featureComparePrice() {
+      this.$emit('done')
+    }
+  },
   methods: {
     handleDoneClick() {
       this.$emit('done')
@@ -59,7 +66,7 @@ export default {
   background-color: #fff;
   position: relative;
   font-size: 0.9em;
-  max-width: 200px;
+  max-width: 250px;
   box-shadow: 1px 1px 2px rgba(10, 10, 10, 0.1);
   border-radius: 4px;
 
