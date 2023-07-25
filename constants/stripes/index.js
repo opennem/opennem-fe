@@ -211,7 +211,7 @@ export const metrics = [
     legendType: 'ramp'
   },
   {
-    label: 'Min temperature',
+    label: 'Minimum temperature',
     value: 'minTemperature',
     divisor: 60, // -10 to 50
     offset: 10,
@@ -222,7 +222,7 @@ export const metrics = [
     legendType: 'ramp'
   },
   {
-    label: 'Max temperature',
+    label: 'Maximum temperature',
     value: 'maxTemperature',
     divisor: 60, // -10 to 50
     offset: 10,
