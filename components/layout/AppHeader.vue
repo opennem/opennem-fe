@@ -30,7 +30,7 @@
         @close="closeDrawer" />
 
       <div 
-        v-if="!isFacilitiesView && showButtons" 
+        v-if="!isFacilitiesView && isEnergyOrFacilitiesView" 
         :class="{ hide: tabletBreak }" 
         class="more-buttons">
         <consumption-generation-toggle />
@@ -46,7 +46,7 @@
       </div>
 
       <div 
-        v-if="!tabletBreak && showButtons" 
+        v-if="!tabletBreak && isEnergyOrFacilitiesView" 
         class="s-button-wrapper">
         <button 
           v-on-clickaway="handleClickAway" 
@@ -291,7 +291,7 @@ export default {
     focusOn() {
       return this.$store.getters.focusOn
     },
-    showButtons() {
+    isEnergyOrFacilitiesView() {
       const view = this.$store.getters.currentView
       return view === 'energy' || view === 'facilities'
     }
