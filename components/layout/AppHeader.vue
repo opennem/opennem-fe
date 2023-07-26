@@ -45,6 +45,23 @@
       </button> -->
       </div>
 
+      <div v-if="isCompareView">
+        <a 
+          :class="{ 'is-loading is-primary': generating }"
+          class="s-button button"
+          @click="handleExportDataClick">
+          <download-csv 
+            :data="compareExportData" 
+            :name="`${compareFilename}.csv`">
+            <i 
+              class="fal fa-fw fa-table" 
+              style="margin-right: 5px;" />
+            <span class="label-image">Export CSV</span>
+          </download-csv>
+          
+        </a>
+      </div>
+
       <div 
         v-if="!tabletBreak && isEnergyOrFacilitiesView" 
         class="s-button-wrapper">
@@ -137,6 +154,9 @@ export default {
       currentView: 'currentView',
       tabletBreak: 'app/tabletBreak',
 
+      compareCurrentDataset: 'compare/currentDataset',
+      selectedMetricObj: 'stripes/selectedMetricObj',
+
       facilitySelectedView: 'facility/selectedView',
 
       chartEnergyRenewablesLine:
@@ -192,6 +212,32 @@ export default {
     chartUnit() {
       return this.$store.getters.chartUnit
     },
+
+    compareExportData() {
+      const timeFormat = d3TimeFormat('%Y-%m-%d')
+      let data = []
+
+      if (this.compareCurrentDataset.length > 0) {
+        data = this.compareCurrentDataset[0].data.map(d => {
+          return {
+            date: `${timeFormat(d.date)}`
+          }
+        })
+
+        this.compareCurrentDataset.forEach(region => {
+          region.data.forEach((d, i) => {
+            data[i][`${region.region}`] = d[this.selectedMetricObj.value]
+          })
+        })
+      }
+
+      return data
+    },
+
+    compareFilename() {
+      return `Compare — ${this.selectedMetricObj.label}`
+    },
+
     exportData() {
       const timeFormat = this.isEnergy
         ? d3TimeFormat('%Y-%m-%d')
