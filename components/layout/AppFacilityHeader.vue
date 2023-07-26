@@ -153,14 +153,14 @@ export default {
               nextFacilityCountry
             )}/${encodeURIComponent(nextFacilityNetwork)}/${encodeURIComponent(
               nextFacilityId
-            )}`
+            )}/`
           : null
         this.prevFacilityPath = prevFacilityId
           ? `/facility/${encodeURIComponent(
               prevFacilityCountry
             )}/${encodeURIComponent(prevFacilityNetwork)}/${encodeURIComponent(
               prevFacilityId
-            )}`
+            )}/`
           : null
         this.nextFacilityName = nextFacilityName
         this.prevFacilityName = prevFacilityName

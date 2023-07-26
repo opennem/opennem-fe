@@ -343,7 +343,8 @@ export default {
     }),
     ...mapMutations({
       setHighlightDomain: 'visInteract/highlightDomain',
-      setFocusDate: 'visInteract/focusDate'
+      setFocusDate: 'visInteract/focusDate',
+      setCurrentDataset: 'compare/currentDataset'
     }),
 
     valueFormatter(value) {
@@ -433,6 +434,7 @@ export default {
         this.regionData = r.regionData
         this.bucket = r.bucket
         this.fetching = false
+        this.setCurrentDataset(this.regionData)
       })
     },
 
