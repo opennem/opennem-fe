@@ -86,6 +86,29 @@
               </button>
             </div>
           </fieldset>
+
+          <fieldset>
+            <label>Date axis</label>
+            <div
+              class="chart-options-buttons buttons has-addons"
+              style="margin-right: 1rem"
+            >
+              <button
+                :class="{ 'is-selected': !showDateAxis }"
+                class="button is-small"
+                @click.stop="handleDateAxisClick(false)"
+              >
+                Hidden
+              </button>
+              <button
+                :class="{ 'is-selected': showDateAxis }"
+                class="button is-small"
+                @click.stop="handleDateAxisClick(true)"
+              >
+                Visible
+              </button>
+            </div>
+          </fieldset>
         </div>
       </div>
     </transition>
@@ -154,6 +177,10 @@ export default {
     show: {
       type: Boolean,
       default: () => false
+    },
+    showDateAxis: {
+      type: Boolean,
+      default: () => false
     }
   },
 
@@ -208,6 +235,9 @@ export default {
     },
     handlePrefixClick(prefix) {
       this.$emit('prefix-click', prefix)
+    },
+    handleDateAxisClick(visible) {
+      this.$emit('date-axis', visible)
     }
   }
 }

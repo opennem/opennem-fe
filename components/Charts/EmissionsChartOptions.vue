@@ -13,11 +13,13 @@
         :chart-y-axis="chartYAxis"
         :chart-display-prefix="chartDisplayPrefix"
         :show="chartOptions"
+        :show-date-axis="showDateAxis"
         @show-change="(s) => (chartOptions = s)"
         @type-click="handleTypeClick"
         @curve-click="handleCurveClick"
         @prefix-click="handlePrefixClick"
         @y-axis-click="handleYAxisClick"
+        @date-axis="(visible) => $emit('date-axis', visible)"
       />
     </template>
 
@@ -169,6 +171,10 @@ export default {
     emissionsOptions: {
       type: Object,
       default: () => {}
+    },
+    showDateAxis: {
+      type: Boolean,
+      default: () => false
     }
   },
   data() {

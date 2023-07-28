@@ -4,7 +4,8 @@ export const state = () => ({
   chartDefaultType: OPTIONS.CHART_LINE,
   chartType: OPTIONS.CHART_LINE,
   chartYAxis: OPTIONS.CHART_YAXIS_ABSOLUTE,
-  chartCurve: OPTIONS.CHART_CURVE_SMOOTH
+  chartCurve: OPTIONS.CHART_CURVE_SMOOTH,
+  chartDateAxis: false
 })
 
 export const getters = {
@@ -12,7 +13,8 @@ export const getters = {
   chartDefaultType: (state) => state.chartDefaultType,
   chartType: (state) => state.chartType,
   chartYAxis: (state) => state.chartYAxis,
-  chartCurve: (state) => state.chartCurve
+  chartCurve: (state) => state.chartCurve,
+  chartDateAxis: (state) => state.chartDateAxis
 }
 
 export const mutations = {
@@ -24,6 +26,9 @@ export const mutations = {
   },
   chartCurve(state, data) {
     state.chartCurve = data
+  },
+  chartDateAxis(state, data) {
+    state.chartDateAxis = data
   }
 }
 

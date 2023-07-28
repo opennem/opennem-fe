@@ -21,16 +21,18 @@
       :is-type-line="isTypeLine"
       :is-type-change-since-line="isTypeChangeSinceLine"
       :interval="customInterval === '' ? interval : customInterval"
-      :average-emissions-volume="convertValue(averageValue)"
+      :average-value="convertValue(averageValue)"
       :hover-display-date="hoverDisplayDate"
       :hover-value="hoverValue"
       :hover-domain-colour="hoverDomainColour"
       :hover-domain-label="hoverDomainLabel"
       :hover-total="hoverTotal"
       :show-average-value="showAverageValue"
-      :emissions-options="chartOptions"
+      :default-options-obj="chartOptions"
       :show-convert-value="!valueFormatter && shouldConvertValue"
+      :show-date-axis="showDateAxis"
       @type-click="handleTypeClick"
+      @date-axis="(visible) => showDateAxis = visible"
     />
 
     <stacked-area-vis
@@ -45,9 +47,9 @@
       :y-min="isTypeArea ? yMin : 0"
       :y-max="isTypeArea ? yMax : 100"
       :vis-height="visHeight"
-      :show-x-axis="showXAxis"
+      :show-x-axis="showDateAxis"
       :show-tooltip="false"
-      :show-zoom-out="showXAxis"
+      :show-zoom-out="showDateAxis"
       :hover-on="hoverOn"
       :hover-date="hoverDate"
       :dynamic-extent="zoomExtent"
@@ -118,7 +120,7 @@
       @svgClick="handleSvgClick"
     />
     <date-brush
-      v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
+      v-if="showDateAxis && chartShown && (isTypeLine || isTypeChangeSinceLine)"
       :dataset="[...dataset, ...projectionDataset]"
       :zoom-range="zoomExtent"
       :x-ticks="xTicks"
@@ -229,7 +231,7 @@ export default {
     },
     showXAxis: {
       type: Boolean,
-      default: false
+      default: true
     },
     visHeight: {
       type: Number,
@@ -282,6 +284,12 @@ export default {
     annotations: {
       type: Array,
       default: () => []
+    }
+  },
+
+  data() {
+    return {
+      showDateAxis: false
     }
   },
 
@@ -676,6 +684,7 @@ export default {
   },
 
   mounted() {
+    this.showDateAxis = this.showXAxis
     this.$emit('changeDataset', this.changeSinceDataset)
     this.doUpdateXTicks({
       range: this.range,

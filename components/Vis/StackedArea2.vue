@@ -590,6 +590,9 @@ export default {
   },
 
   watch: {
+    showXAxis() {
+      this.handleResize()
+    },
     domains() {
       this.update()
       this.drawCompare(this.compareDates)

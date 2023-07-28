@@ -9,7 +9,9 @@ export const state = () => ({
 
   chartUnit: 'tCO₂e',
   chartUnitPrefix: SI.MEGA,
-  chartDisplayPrefix: SI.MEGA
+  chartDisplayPrefix: SI.MEGA,
+
+  chartDateAxis: false
 })
 
 export const getters = {
@@ -22,7 +24,9 @@ export const getters = {
   chartUnit: (state) => state.chartUnit,
   chartUnitPrefix: (state) => state.chartUnitPrefix,
   chartDisplayPrefix: (state) => state.chartDisplayPrefix,
-  chartCurrentUnit: (state) => `${state.chartDisplayPrefix}${state.chartUnit}`
+  chartCurrentUnit: (state) => `${state.chartDisplayPrefix}${state.chartUnit}`,
+
+  chartDateAxis: (state) => state.chartDateAxis
 }
 
 export const mutations = {
@@ -43,6 +47,9 @@ export const mutations = {
   },
   chartDisplayPrefix(state, data) {
     state.chartDisplayPrefix = data
+  },
+  chartDateAxis(state, data) {
+    state.chartDateAxis = data
   }
 }
 

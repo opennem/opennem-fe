@@ -10,9 +10,11 @@
         :chart-curve="chartCurve"
         :chart-shown="chartShown"
         :show="showChartOptions"
+        :show-date-axis="showDateAxis"
         @show-change="(s) => (showChartOptions = s)"
         @type-click="handleTypeClick"
         @curve-click="handleCurveClick"
+        @date-axis="(visible) => $emit('date-axis', visible)"
       />
     </template>
 
@@ -94,6 +96,10 @@ export default {
     readOnly: {
       type: Boolean,
       default: false
+    },
+    showDateAxis: {
+      type: Boolean,
+      default: () => false
     }
   },
   data() {

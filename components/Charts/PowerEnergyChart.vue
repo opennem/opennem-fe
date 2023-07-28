@@ -42,7 +42,9 @@
       :energy-options="energyOptions"
       :single-domain-colour="singleDomainColour"
       :single-domain-label="singleDomainLabel"
+      :show-date-axis="showDateAxis"
       @type-click="handleTypeClick"
+      @date-axis="(visible) => showDateAxis = visible"
     />
 
     <stacked-area-vis
@@ -64,6 +66,7 @@
       :y-guides="yGuides"
       :x-axis-dy="tabletBreak ? 8 : 12"
       :y-axis-ticks="5"
+      :show-x-axis="showDateAxis"
       :compare-dates="compareDates"
       :focus-date="focusDate"
       :focus-on="focusOn"
@@ -139,7 +142,7 @@
     />
 
     <date-brush
-      v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
+      v-if="showDateAxis && chartShown && (isTypeLine || isTypeChangeSinceLine)"
       :dataset="dataset"
       :zoom-range="zoomExtent"
       :x-ticks="xTicks"
@@ -347,6 +350,15 @@ export default {
       isTypeLine: 'chartOptionsPowerEnergy/isTypeLine',
       isTypeChangeSinceLine: 'chartOptionsPowerEnergy/isTypeChangeSinceLine'
     }),
+
+    showDateAxis: {
+      get() {
+        return this.$store.getters['chartOptionsPowerEnergy/chartDateAxis']
+      },
+      set(value) {
+        this.$store.commit('chartOptionsPowerEnergy/chartDateAxis', value)
+      }
+    },
 
     tickFormat() {
       if (typeof this.visTickFormat === 'string') {

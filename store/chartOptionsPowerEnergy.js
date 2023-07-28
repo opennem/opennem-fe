@@ -19,7 +19,8 @@ export const state = () => ({
 
   chartEnergyRenewablesLine: false,
 
-  displayUnit: ''
+  displayUnit: '',
+  chartDateAxis: true
 })
 
 export const getters = {
@@ -51,7 +52,9 @@ export const getters = {
   isTypeProportion: (state) => state.chartType === OPTIONS.CHART_PROPORTION,
   isTypeLine: (state) => state.chartType === OPTIONS.CHART_LINE,
   isTypeChangeSinceLine: (state) =>
-    state.chartType === OPTIONS.CHART_CHANGE_SINCE_LINE
+    state.chartType === OPTIONS.CHART_CHANGE_SINCE_LINE,
+
+  chartDateAxis: (state) => state.chartDateAxis
 }
 
 export const mutations = {
@@ -96,6 +99,9 @@ export const mutations = {
   },
   displayUnit(state, data) {
     state.displayUnit = data
+  },
+  chartDateAxis(state, data) {
+    state.chartDateAxis = data
   }
 }
 
