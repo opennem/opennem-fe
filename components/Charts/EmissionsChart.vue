@@ -45,7 +45,7 @@
       :y-min="isTypeArea ? yMin : 0"
       :y-max="isTypeArea ? yMax : 100"
       :vis-height="visHeight"
-      :show-x-axis="showDateAxis"
+      :show-x-axis="false"
       :show-tooltip="false"
       :show-zoom-out="showDateAxis"
       :hover-on="hoverOn"
@@ -114,7 +114,7 @@
       @leave="handleVisLeave"
     />
     <date-brush
-      v-if="showDateAxis && chartShown && (isTypeLine || isTypeChangeSinceLine)"
+      v-if="showDateAxis && chartShown"
       :dataset="[...dataset, ...projectionDataset]"
       :zoom-range="zoomExtent"
       :x-ticks="xTicks"

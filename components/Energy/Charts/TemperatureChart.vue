@@ -23,6 +23,18 @@
       @date-axis="(visible) => showDateAxis = visible"
     />
 
+    <button
+      v-if="
+        showDateAxis && chartShown &&
+          zoomExtent.length > 0 &&
+          !readOnly
+      "
+      class="button is-rounded is-small reset-btn"
+      @click.stop="handleZoomReset"
+    >
+      Zoom Out
+    </button>
+
     <line-vis
       v-if="chartShown"
       :read-only="readOnly"
@@ -65,10 +77,9 @@
       :x-ticks="xTicks"
       :tick-format="tickFormat"
       :second-tick-format="secondTickFormat"
-
       class="date-brush vis-chart"
       @date-hover="handleDateHover"
-      @date-filter="() => {}"
+      @date-filter="handleZoomExtent"
       @enter="handleVisEnter"
       @leave="handleVisLeave"
     />
@@ -281,7 +292,22 @@ export default {
     },
     handleSvgClick(metaKey) {
       this.$emit('svgClick', metaKey)
+    },
+    handleZoomExtent(dateRange) {
+      this.$emit('zoomExtent', dateRange)
+    },
+    handleZoomReset() {
+      this.$emit('zoomExtent', [])
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.reset-btn {
+  position: absolute;
+  top: 39px;
+  right: 14px;
+  z-index: 999;
+}
+</style>
