@@ -314,6 +314,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      percentContributionTo: 'percentContributionTo',
       tabletBreak: 'app/tabletBreak',
 
       hoverDomain: 'visInteract/hoverDomain',
@@ -553,6 +554,8 @@ export default {
       return dataset
     },
     energyGrossPercentDataset() {
+      const demandContribution = this.percentContributionTo === 'demand'
+      const totalKey = demandContribution ? '_totalEnergyForPercentageCalculation' : '_totalGeneration'
       const dataset = this.powerEnergyDataset.map((d) => {
         const obj = {
           date: d.date,
@@ -560,7 +563,7 @@ export default {
           _isIncompleteBucket: d._isIncompleteBucket
         }
         this.domains.forEach((domain) => {
-          obj[domain.id] = (d[domain.id] / d._total) * 100
+          obj[domain.id] = (d[domain.id] / d[totalKey]) * 100
         })
         return obj
       })

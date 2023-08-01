@@ -59,7 +59,10 @@
           class="colour-square"
         />
         {{ hoverDomainLabel }}
-        <strong>
+        <strong v-if="isYAxisPercentage || isTypeProportion">
+          {{ hoverValue | percentageFormatNumber }}
+        </strong>
+        <strong v-else>
           {{ hoverValue | formatValue }}
           <span>{{ displayUnit }}</span>
         </strong>
