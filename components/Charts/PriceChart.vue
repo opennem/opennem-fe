@@ -373,6 +373,11 @@ export default {
   position: relative;
   top: -14px;
 }
+
+.brush-vis {
+  position: relative;
+  top: -14px;
+}
 :deep(.price-vis .y-axis-guide-group .domain) {
   fill: rgba(255, 255, 255, 0.1);
 }
