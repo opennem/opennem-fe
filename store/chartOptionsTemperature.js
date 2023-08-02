@@ -5,7 +5,7 @@ export const state = () => ({
   chartType: OPTIONS.CHART_LINE,
   chartYAxis: OPTIONS.CHART_YAXIS_ABSOLUTE,
   chartCurve: OPTIONS.CHART_CURVE_SMOOTH,
-  chartDateAxis: false
+  chartDateAxis: true
 })
 
 export const getters = {

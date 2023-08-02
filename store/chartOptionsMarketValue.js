@@ -10,7 +10,7 @@ export const state = () => ({
   chartUnitPrefix: SI.BASE,
   chartDisplayPrefix: SI.THOUSAND,
 
-  chartDateAxis: false
+  chartDateAxis: true
 })
 
 export const getters = {

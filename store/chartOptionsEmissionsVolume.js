@@ -11,7 +11,7 @@ export const state = () => ({
   chartUnitPrefix: SI.MEGA,
   chartDisplayPrefix: SI.MEGA,
 
-  chartDateAxis: false
+  chartDateAxis: true
 })
 
 export const getters = {
