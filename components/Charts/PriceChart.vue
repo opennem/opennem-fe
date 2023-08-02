@@ -139,7 +139,7 @@
       :x-ticks="xTicks"
       :tick-format="tickFormat"
       :second-tick-format="secondTickFormat"
-
+      :append-datapoint="isEnergyType ? true : false"
       class="date-brush vis-chart"
       @date-hover="handleDateHover"
       @date-filter="handleZoomExtent"
@@ -243,7 +243,8 @@ export default {
       chartType: 'chartOptionsPrice/chartType',
       chartCurve: 'chartOptionsPrice/chartCurve',
 
-      summary: 'regionEnergy/summary'
+      summary: 'regionEnergy/summary',
+      isEnergyType: 'regionEnergy/isEnergyType'
     }),
 
     showDateAxis: {

@@ -77,6 +77,7 @@
       :x-ticks="xTicks"
       :tick-format="tickFormat"
       :second-tick-format="secondTickFormat"
+      :append-datapoint="isEnergyType ? true : false"
       class="date-brush vis-chart"
       @date-hover="handleDateHover"
       @date-filter="handleZoomExtent"
@@ -167,7 +168,8 @@ export default {
       interval: 'interval',
       currentDataset: 'regionEnergy/currentDataset',
       domainTemperature: 'regionEnergy/domainTemperature',
-      summary: 'regionEnergy/summary'
+      summary: 'regionEnergy/summary',
+      isEnergyType: 'regionEnergy/isEnergyType'
     }),
 
     showDateAxis: {
