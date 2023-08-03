@@ -491,7 +491,7 @@ export default {
         if (ft === FUEL_TECHS.BATTERY_DISCHARGING) {
           return 'Battery'
         }
-        if (ft === FUEL_TECHS.SOLAR_UTILITY || ft === FUEL_TECHS.SOLAR) {
+        if (ft === FUEL_TECHS.SOLAR_UTILITY) {
           return 'Solar'
         }
         return ftLabel
