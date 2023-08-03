@@ -289,17 +289,26 @@ export default {
         period: this.filterPeriod,
         groupName: this.fuelTechGroupName
       })
-      this.doUpdateTickFormats({
-        range: this.range,
-        interval: this.interval,
-        filterPeriod: this.filterPeriod
-      })
     } else {
       this.$router.push({
         params: { region: 'nem' },
         query: this.query
       })
     }
+  },
+
+  mounted() {
+    this.doUpdateTickFormats({
+      range: this.range,
+      interval: this.interval,
+      filterPeriod: this.filterPeriod
+    })
+    this.doUpdateXTicks({
+      range: this.range,
+      interval: this.interval,
+      isZoomed: this.filteredDates.length > 0,
+      filterPeriod: this.filterPeriod
+    })
   },
 
   methods: {

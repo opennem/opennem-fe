@@ -418,6 +418,9 @@ export default {
   },
 
   watch: {
+    showXAxis() {
+      this.handleResize()
+    },
     updatedDataset() {
       this.update()
       this.resizeRedraw()

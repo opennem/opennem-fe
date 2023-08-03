@@ -16,11 +16,13 @@
         :chart-y-axis="chartYAxis"
         :chart-display-prefix="chartDisplayPrefix"
         :show="chartOptions"
+        :show-date-axis="showDateAxis"
         @show-change="(s) => (chartOptions = s)"
         @type-click="handleTypeClick"
         @curve-click="handleCurveClick"
         @prefix-click="handlePrefixClick"
         @y-axis-click="handleYAxisClick"
+        @date-axis="(visible) => $emit('date-axis', visible)"
       />
     </template>
 
@@ -34,7 +36,7 @@
     >
       Av.
       <strong>
-        {{ averageEmissionsVolume | formatValue }}
+        {{ averageValue | formatValue }}
         {{ displayUnit }}/{{ interval | intervalLabel }}
       </strong>
     </template> -->
@@ -116,7 +118,7 @@ export default {
       type: String,
       default: ''
     },
-    averageEmissionsVolume: {
+    averageValue: {
       type: Number,
       default: 0
     },
@@ -168,13 +170,17 @@ export default {
       type: Boolean,
       default: true
     },
-    emissionsOptions: {
+    defaultOptionsObj: {
       type: Object,
       default: () => {}
     },
     showConvertValue: {
       type: Boolean,
       default: true
+    },
+    showDateAxis: {
+      type: Boolean,
+      default: () => false
     }
   },
   data() {
@@ -184,7 +190,7 @@ export default {
   },
   computed: {
     options() {
-      let options = _cloneDeep(this.emissionsOptions)
+      let options = _cloneDeep(this.defaultOptionsObj)
       
       return options
     },

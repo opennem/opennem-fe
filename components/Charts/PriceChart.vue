@@ -16,7 +16,21 @@
       :total-average-value="totalAverageValue"
       :hover-display-date="hoverDisplayDate"
       :hover-value="hoverValue"
+      :show-date-axis="showDateAxis"
+      @date-axis="(visible) => showDateAxis = visible"
     />
+
+    <button
+      v-if="
+        showDateAxis && chartShown &&
+          zoomExtent.length > 0 &&
+          !readOnly
+      "
+      class="button is-rounded is-small reset-btn"
+      @click.stop="handleZoomReset"
+    >
+      Zoom Out
+    </button>
 
     <line-vis
       v-if="chartShown"
@@ -115,16 +129,35 @@
       @enter="handleVisEnter"
       @leave="handleVisLeave"
     />
+    <date-brush
+      v-if="showDateAxis && chartShown"
+      :dataset="priceDataset"
+      :zoom-range="zoomExtent"
+      :read-only="readOnly"
+      :interval="interval"
+      :filter-period="filterPeriod"
+      :x-ticks="xTicks"
+      :tick-format="tickFormat"
+      :second-tick-format="secondTickFormat"
+      :append-datapoint="isEnergyType ? true : false"
+      class="date-brush vis-chart"
+      @date-hover="handleDateHover"
+      @date-filter="handleZoomExtent"
+      @enter="handleVisEnter"
+      @leave="handleVisLeave"
+    />
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import * as OPTIONS from '@/constants/chart-options.js'
+import AxisTimeFormats from '@/services/axisTimeFormats.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import PriceChartOptions from './PriceChartOptions'
 import LineVis from '@/components/Vis/Line.vue'
+import DateBrush from '@/components/Vis/DateBrush'
 
 const options = {
   type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_LINE],
@@ -139,7 +172,8 @@ const options = {
 export default {
   components: {
     PriceChartOptions,
-    LineVis
+    LineVis,
+    DateBrush
   },
 
   props: {
@@ -201,12 +235,38 @@ export default {
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
       xGuides: 'visInteract/xGuides',
+      xTicks: 'visInteract/xTicks',
+      visTickFormat: 'visInteract/tickFormat',
+      visSecondTickFormat: 'visInteract/secondTickFormat',
+
       chartShown: 'chartOptionsPrice/chartShown',
       chartType: 'chartOptionsPrice/chartType',
       chartCurve: 'chartOptionsPrice/chartCurve',
 
-      summary: 'regionEnergy/summary'
+      summary: 'regionEnergy/summary',
+      isEnergyType: 'regionEnergy/isEnergyType'
     }),
+
+    showDateAxis: {
+      get() {
+        return this.$store.getters['chartOptionsPrice/chartDateAxis']
+      },
+      set(value) {
+        this.$store.commit('chartOptionsPrice/chartDateAxis', value)
+      }
+    },
+
+    tickFormat() {
+      if (typeof this.visTickFormat === 'string') {
+        return AxisTimeFormats[this.visTickFormat]
+      }
+      return this.visTickFormat
+    },
+
+    secondTickFormat() {
+      return AxisTimeFormats[this.visSecondTickFormat]
+    },
+
     priceAbove300Domain() {
       return this.domainPrice.length > 0 ? this.domainPrice[1].domain : ''
     },
@@ -256,7 +316,27 @@ export default {
     }
   },
 
+  watch: {
+    showDateAxis() {
+      this.doUpdateXTicks({
+        range: this.range,
+        interval: this.interval,
+        isZoomed: this.zoomExtent.length > 0,
+        filterPeriod: this.filterPeriod
+      })
+      this.doUpdateTickFormats({
+        range: this.range,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod
+      })
+    }
+  },
+
   methods: {
+    ...mapActions({
+      doUpdateXTicks: 'visInteract/doUpdateXTicks',
+      doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
+    }),
     handleDateHover(evt, date) {
       this.$emit('dateHover', date)
     },
@@ -268,17 +348,34 @@ export default {
     },
     handleSvgClick(metaKey) {
       this.$emit('svgClick', metaKey)
+    },
+    handleZoomExtent(dateRange) {
+      this.$emit('zoomExtent', dateRange)
+    },
+    handleZoomReset() {
+      this.$emit('zoomExtent', [])
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.reset-btn {
+  position: absolute;
+  top: 39px;
+  right: 14px;
+  z-index: 999;
+}
 .price-vis {
   position: relative;
   top: -7px;
 }
 .price-neg-vis {
+  position: relative;
+  top: -14px;
+}
+
+.brush-vis {
   position: relative;
   top: -14px;
 }

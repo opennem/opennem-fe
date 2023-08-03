@@ -75,7 +75,7 @@ export default {
 .container-fluid {
   margin-bottom: 1rem;
   @include tablet {
-    margin-bottom: 3rem;
+    margin-bottom: 7rem;
   }
 
   h1 {

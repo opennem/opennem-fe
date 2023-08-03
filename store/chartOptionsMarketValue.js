@@ -8,7 +8,9 @@ export const state = () => ({
   chartCurve: OPTIONS.CHART_CURVE_STEP,
 
   chartUnitPrefix: SI.BASE,
-  chartDisplayPrefix: SI.THOUSAND
+  chartDisplayPrefix: SI.THOUSAND,
+
+  chartDateAxis: true
 })
 
 export const getters = {
@@ -20,7 +22,9 @@ export const getters = {
 
   chartUnitPrefix: (state) => state.chartUnitPrefix,
   chartDisplayPrefix: (state) => state.chartDisplayPrefix,
-  chartCurrentUnit: (state) => state.chartDisplayPrefix
+  chartCurrentUnit: (state) => state.chartDisplayPrefix,
+
+  chartDateAxis: (state) => state.chartDateAxis
 }
 
 export const mutations = {
@@ -39,6 +43,9 @@ export const mutations = {
   },
   chartDisplayPrefix(state, data) {
     state.chartDisplayPrefix = data
+  },
+  chartDateAxis(state, data) {
+    state.chartDateAxis = data
   }
 }
 

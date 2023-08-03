@@ -16,7 +16,21 @@
       :average-emission-intensity="averageEmissionIntensity"
       :hover-display-date="hoverDisplayDate"
       :hover-value="hoverValue"
+      :show-date-axis="showDateAxis"
+      @date-axis="(visible) => showDateAxis = visible"
     />
+
+    <button
+      v-if="
+        showDateAxis && chartShown &&
+          zoomExtent.length > 0 &&
+          !readOnly
+      "
+      class="button is-rounded is-small reset-btn"
+      @click.stop="handleZoomReset"
+    >
+      Zoom Out
+    </button>
 
     <line-vis
       v-if="chartShown"
@@ -38,8 +52,8 @@
       :show-x-axis="false"
       :show-tooltip="false"
       :show-point-on-hover="true"
-      :vis-height="100"
-      :show-zoom-out="false"
+      :vis-height="150"
+      :show-zoom-out="showDateAxis"
       :x-guides="xGuides"
       :y-axis-ticks="3"
       :filter-period="filterPeriod"
@@ -49,15 +63,35 @@
       @enter="handleVisEnter"
       @leave="handleVisLeave"
     />
+
+    <date-brush
+      v-if="showDateAxis && chartShown"
+      :dataset="emissionIntensityDataset"
+      :zoom-range="zoomExtent"
+      :read-only="readOnly"
+      :interval="interval"
+      :filter-period="filterPeriod"
+      :x-ticks="xTicks"
+      :tick-format="tickFormat"
+      :second-tick-format="secondTickFormat"
+      class="date-brush vis-chart"
+      @date-hover="handleDateHover"
+      @date-filter="handleZoomExtent"
+      @enter="handleVisEnter"
+      @leave="handleVisLeave"
+    />
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import * as OPTIONS from '@/constants/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
+import AxisTimeFormats from '@/services/axisTimeFormats.js'
 import EmissionIntensityChartOptions from '@/components/Charts/EmissionIntensityChartOptions'
 import LineVis from '@/components/Vis/Line.vue'
+import MultiLine from '@/components/Vis/MultiLine'
+import DateBrush from '@/components/Vis/DateBrush'
 
 const options = {
   type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_LINE],
@@ -72,7 +106,9 @@ const options = {
 export default {
   components: {
     EmissionIntensityChartOptions,
-    LineVis
+    LineVis,
+    DateBrush,
+    MultiLine
   },
 
   props: {
@@ -132,8 +168,31 @@ export default {
       xGuides: 'visInteract/xGuides',
       chartShown: 'chartOptionsEmissionIntensity/chartShown',
       chartType: 'chartOptionsEmissionIntensity/chartType',
-      chartCurve: 'chartOptionsEmissionIntensity/chartCurve'
+      chartCurve: 'chartOptionsEmissionIntensity/chartCurve',
+      xTicks: 'visInteract/xTicks',
+      visTickFormat: 'visInteract/tickFormat',
+      visSecondTickFormat: 'visInteract/secondTickFormat',
     }),
+
+    showDateAxis: {
+      get() {
+        return this.$store.getters['chartOptionsEmissionIntensity/chartDateAxis']
+      },
+      set(value) {
+        this.$store.commit('chartOptionsEmissionIntensity/chartDateAxis', value)
+      }
+    },
+
+    tickFormat() {
+      if (typeof this.visTickFormat === 'string') {
+        return AxisTimeFormats[this.visTickFormat]
+      }
+      return this.visTickFormat
+    },
+
+    secondTickFormat() {
+      return AxisTimeFormats[this.visSecondTickFormat]
+    },
 
     yMax() {
       let max = 1000
@@ -184,7 +243,28 @@ export default {
     }
   },
 
+  watch: {
+    showDateAxis() {
+      this.doUpdateXTicks({
+        range: this.range,
+        interval: this.interval,
+        isZoomed: this.zoomExtent.length > 0,
+        filterPeriod: this.filterPeriod
+      })
+      this.doUpdateTickFormats({
+        range: this.range,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod
+      })
+    }
+  },
+
   methods: {
+    ...mapActions({
+      doUpdateXTicks: 'visInteract/doUpdateXTicks',
+      doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
+    }),
+
     handleDateHover(evt, date) {
       this.$emit('dateHover', date)
     },
@@ -196,7 +276,22 @@ export default {
     },
     handleSvgClick(metaKey) {
       this.$emit('svgClick', metaKey)
+    },
+    handleZoomExtent(dateRange) {
+      this.$emit('zoomExtent', dateRange)
+    },
+    handleZoomReset() {
+      this.$emit('zoomExtent', [])
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.reset-btn {
+  position: absolute;
+  top: 39px;
+  right: 14px;
+  z-index: 999;
+}
+</style>

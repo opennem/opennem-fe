@@ -17,11 +17,13 @@
         :chart-unit="chartUnit"
         :chart-display-prefix="chartDisplayPrefix"
         :show="chartOptions"
+        :show-date-axis="showDateAxis"
         @show-change="(s) => (chartOptions = s)"
         @type-click="handleTypeClick"
         @y-axis-click="handleYAxisClick"
         @curve-click="handleCurveClick"
         @prefix-click="handlePrefixClick"
+        @date-axis="(visible) => $emit('date-axis', visible)"
       />
     </template>
 
@@ -228,6 +230,10 @@ export default {
     singleDomainLabel: {
       type: String,
       default: null
+    },
+    showDateAxis: {
+      type: Boolean,
+      default: () => false
     }
   },
   data() {

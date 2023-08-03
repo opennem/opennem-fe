@@ -28,7 +28,9 @@
       :hover-total="hoverTotal"
       :show-average-value="showAverageValue"
       :emissions-options="emissionsOptions"
+      :show-date-axis="showDateAxis"
       @type-click="handleTypeClick"
+      @date-axis="(visible) => showDateAxis = visible"
     />
 
     <stacked-area-vis
@@ -43,9 +45,9 @@
       :y-min="isTypeArea ? yMin : 0"
       :y-max="isTypeArea ? yMax : 100"
       :vis-height="visHeight"
-      :show-x-axis="showXAxis"
+      :show-x-axis="false"
       :show-tooltip="false"
-      :show-zoom-out="showXAxis"
+      :show-zoom-out="showDateAxis"
       :hover-on="hoverOn"
       :hover-date="hoverDate"
       :dynamic-extent="zoomExtent"
@@ -112,7 +114,7 @@
       @leave="handleVisLeave"
     />
     <date-brush
-      v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
+      v-if="showDateAxis && chartShown"
       :dataset="[...dataset, ...projectionDataset]"
       :zoom-range="zoomExtent"
       :x-ticks="xTicks"
@@ -220,10 +222,6 @@ export default {
       type: Array,
       default: () => []
     },
-    showXAxis: {
-      type: Boolean,
-      default: false
-    },
     visHeight: {
       type: Number,
       default: 200
@@ -283,6 +281,15 @@ export default {
       chartDisplayPrefix: 'chartOptionsEmissionsVolume/chartDisplayPrefix',
       chartCurrentUnit: 'chartOptionsEmissionsVolume/chartCurrentUnit'
     }),
+
+    showDateAxis: {
+      get() {
+        return this.$store.getters['chartOptionsEmissionsVolume/chartDateAxis']
+      },
+      set(value) {
+        this.$store.commit('chartOptionsEmissionsVolume/chartDateAxis', value)
+      }
+    },
 
     shouldConvertValue() {
       return (
@@ -713,12 +720,12 @@ export default {
     },
 
     handleTypeClick() {
-      // this.doUpdateXTicks({
-      //   range: this.range,
-      //   interval: this.interval,
-      //   isZoomed: this.zoomExtent.length > 0,
-      //   filterPeriod: this.filterPeriod
-      // })
+      this.doUpdateXTicks({
+        range: this.range,
+        interval: this.interval,
+        isZoomed: this.zoomExtent.length > 0,
+        filterPeriod: this.filterPeriod
+      })
       this.doUpdateTickFormats({
         range: this.range,
         interval: this.interval,
