@@ -50,10 +50,10 @@ export const FUEL_TECH_ORDER = [
   BATTERY_CHARGING,
   PUMPS,
   EXPORTS,
-  IMPORTS,
+  VRE,
   BATTERY_DISCHARGING,
-  OTHER,
-  VRE
+  IMPORTS,
+  OTHER
 ]
 
 // Fuel tech group colour
