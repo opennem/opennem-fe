@@ -3,8 +3,7 @@ import * as DT from '@/constants/data-types.js'
 
 function findInterpolateSeriesTypes(data) {
   const rooftopSolarItem = data.find(
-    (d) =>
-      d['fuel_tech'] === FT.ROOFTOP_SOLAR || d['fuel_tech'] === FT.SOLAR_ROOFTOP
+    (d) => d['fuel_tech'] === FT.SOLAR_ROOFTOP
   )
   const temperatureItem = data.find((d) => DT.isTemperature(d.type))
   const interpolateSeriesTypes = []
