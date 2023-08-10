@@ -1,13 +1,15 @@
 .range-interval-selectors {
+  $breakpoint: 769px;
+
   .buttons {
     background-color: rgba(255, 255, 255, 0.5);
 
-    @media screen and (min-width: 1083px) {
+    @media screen and (min-width: $breakpoint) {
       background-color: transparent;
     }
   }
 
-  @media screen and (min-width: 1083px) {
+  @media screen and (min-width: $breakpoint) {
     padding: $app-padding / 2 1rem;
     display: flex;
     align-items: center;
@@ -22,7 +24,7 @@
       min-width: 40px;
     }
 
-    @media screen and (min-width: 1083px) {
+    @media screen and (min-width: $breakpoint) {
       border-radius: 290486px;
     }
 
@@ -32,14 +34,14 @@
   }
 
   .range-buttons {
-    @media screen and (min-width: 1083px) {
+    @media screen and (min-width: $breakpoint) {
       margin-bottom: 0;
       margin-right: 0.4rem;
     }
   }
 
   .filter-period-buttons {
-    @media screen and (min-width: 1083px) {
+    @media screen and (min-width: $breakpoint) {
       margin-left: 1rem;
     }
   }
