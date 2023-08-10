@@ -2,6 +2,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: stretch;
+  gap: 0.1rem;
 
   @include desktop {
     flex-wrap: nowrap;

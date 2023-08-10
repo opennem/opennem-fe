@@ -15,7 +15,9 @@
       <div 
         v-if="!ready" 
         class="vis-table-container loading-containers">
-        <div class="vis-container">
+        <div 
+          class="vis-container" 
+          :style="{ width: `${visWidth}`}">
           <div 
             class="loader-block" 
             style="height: 30px" />
@@ -23,7 +25,9 @@
             class="loader-block" 
             style="height: 400px" />
         </div>
-        <div class="table-container">
+        <div 
+          class="table-container" 
+          :style="{ width: `${tableWidth}`}">
           <div 
             class="loader-block" 
             style="height: 30px" />
@@ -34,18 +38,30 @@
       </div>
     </transition>
     <div 
-      v-if="ready" 
+      v-if="ready"
+      ref="visTableContainer"
       class="vis-table-container">
       <vis-section
         :date-hover="hoverDate"
         :on-hover="isHovering"
+        :style="{ width: `${visWidth}`}"
+        :class="{
+          dragging: dragging,
+        }"
         class="vis-container"
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"
       />
+      <div 
+        class="divider" 
+        v-dragged="onDragged" />
       <summary-section
         :hover-date="hoverDate"
         :is-hovering="isHovering"
+        :class="{
+          dragging: dragging,
+        }"
+        :style="{ width: `${tableWidth}`}"
         class="table-container"
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"
@@ -57,6 +73,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import _includes from 'lodash.includes'
+import EventBus from '~/plugins/eventBus.js'
 import * as SI from '@/constants/si'
 import { isPowerRange, RANGES, RANGE_INTERVALS } from '@/constants/ranges.js'
 import {
@@ -123,7 +140,10 @@ export default {
       useDev: this.$config.useDev,
       ranges: RANGES,
       intervals: RANGE_INTERVALS,
-      isWemOrAu: false
+      isWemOrAu: false,
+      visWidth: '65%',
+      tableWidth: '35%',
+      dragging: false
     }
   },
 
@@ -376,9 +396,40 @@ export default {
     },
     handleFilterPeriodChange(period) {
       this.setFilterPeriod(period)
+    },
+
+    onDragged({ el, deltaX, deltaY, offsetX, offsetY, clientX, clientY, first, last }) {
+      if (first) {
+        this.dragging = true
+        return
+      }
+      if (last) {
+        this.dragging = false
+        return
+      }
+      var l = +window.getComputedStyle(el)['left'].slice(0, -2) || 0
+      var t = +window.getComputedStyle(el)['top'].slice(0, -2) || 0
+      el.style.left = l + deltaX + 'px'
+      el.style.top = t + deltaY + 'px'
+
+      const e = this.$refs.visTableContainer
+      this.visWidth = `${clientX}px`
+      this.tableWidth = `${e.offsetWidth - clientX}px`
+
+      EventBus.$emit('stacked-chart-resize')
     }
   }
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.divider {
+  border-left: 4px dashed #ccc;
+  padding-right: 6px;
+  cursor: ew-resize;
+}
+.dragging {
+  opacity: 0.75;
+  pointer-events: none;
+}
+</style>

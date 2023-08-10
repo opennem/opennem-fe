@@ -41,6 +41,7 @@ import { scaleOrdinal as d3ScaleOrdinal } from 'd3-scale'
 import { pie as d3Pie, arc as d3Arc } from 'd3-shape'
 import { select as d3Select, event } from 'd3-selection'
 import { mean as d3Mean } from 'd3-array'
+import EventBus from '~/plugins/eventBus.js'
 
 export default {
   props: {
@@ -234,6 +235,7 @@ export default {
 
   mounted() {
     window.addEventListener('resize', _debounce(this.handleResize, 10))
+    EventBus.$on('stacked-chart-resize', this.handleResize)
     this.setupWidthHeight()
     this.setup()
     this.update()
@@ -241,6 +243,7 @@ export default {
 
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize)
+    EventBus.$off('stacked-chart-resize')
   },
 
   methods: {
@@ -255,7 +258,7 @@ export default {
 
     handleResize() {
       this.setupWidthHeight()
-      // this.resizeRedraw()
+      this.update()
     },
 
     setup() {

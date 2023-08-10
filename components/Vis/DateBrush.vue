@@ -25,12 +25,15 @@
 
 <script>
 import _cloneDeep from 'lodash.clonedeep'
+import debounce from 'lodash.debounce'
 import { select, mouse, event } from 'd3-selection'
 import { scaleTime } from 'd3-scale'
 import { axisBottom } from 'd3-axis'
 import { extent } from 'd3-array'
 import { brushX } from 'd3-brush'
+import EventBus from '~/plugins/eventBus.js'
 import { onBrush, onBrushEnded } from './shared/brushEvents'
+import * as CONFIG from './shared/config.js'
 
 export default {
   props: {
@@ -147,7 +150,8 @@ export default {
   mounted() {
     this.setupWidthHeight()
     this.setup()
-    window.addEventListener('resize', this.handleResize)
+    window.addEventListener('resize', debounce(this.handleResize, 1))
+    EventBus.$on('stacked-chart-resize', debounce(this.handleResize, 1))
   },
   updated() {
     this.setupWidthHeight()
@@ -156,6 +160,7 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize)
+    EventBus.$off('stacked-chart-resize')
   },
   methods: {
     handleResize() {
