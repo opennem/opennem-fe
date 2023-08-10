@@ -529,6 +529,7 @@ export default {
 
 <style lang="scss" scoped>
 $breakpoint: 900px;
+$breakpoint-options-bar: 480px;
 
 .chart-table-container {
   display: block;
@@ -573,7 +574,7 @@ $breakpoint: 900px;
 }
 
 .options-bar {
-  @media screen and (min-width: $breakpoint) {
+  @media screen and (min-width: $breakpoint-options-bar) {
     padding: 0; 
     margin-left: 1rem;
     display: flex;
@@ -581,19 +582,19 @@ $breakpoint: 900px;
   }
 
   :deep(.buttons) {
-    @media screen and (min-width: $breakpoint) {
+    @media screen and (min-width: $breakpoint-options-bar) {
       background-color: transparent;
     }
   }
 
   :deep(.button ){
-    @media screen and (min-width: $breakpoint) {
+    @media screen and (min-width: $breakpoint-options-bar) {
       border-radius: 290486px;
     }
   }
 
   :deep(.range-b)uttons {
-    @media screen and (min-width: $breakpoint) {
+    @media screen and (min-width: $breakpoint-options-bar) {
       margin-bottom: 0;
       margin-right: 0.4rem;
     }
