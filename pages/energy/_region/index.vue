@@ -45,9 +45,7 @@
         :date-hover="hoverDate"
         :on-hover="isHovering"
         :style="{ width: `${visWidth}`}"
-        :class="{
-          dragging: dragging,
-        }"
+        :class="{ dragging: dragging }"
         class="vis-container"
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"
@@ -58,9 +56,7 @@
       <summary-section
         :hover-date="hoverDate"
         :is-hovering="isHovering"
-        :class="{
-          dragging: dragging,
-        }"
+        :class="{ dragging: dragging }"
         :style="{ width: `${tableWidth}`}"
         class="table-container"
         @dateHover="handleDateHover"
@@ -408,9 +404,9 @@ export default {
         return
       }
       var l = +window.getComputedStyle(el)['left'].slice(0, -2) || 0
-      var t = +window.getComputedStyle(el)['top'].slice(0, -2) || 0
+      // var t = +window.getComputedStyle(el)['top'].slice(0, -2) || 0
       el.style.left = l + deltaX + 'px'
-      el.style.top = t + deltaY + 'px'
+      // el.style.top = t + deltaY + 'px'
 
       const e = this.$refs.visTableContainer
       this.visWidth = `${clientX}px`
