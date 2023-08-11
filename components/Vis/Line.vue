@@ -968,7 +968,12 @@ export default {
 
     resizeRedraw() {
       this.x.range([0, this.width])
-      this.y.range(this.yRange)
+      this.yRange = this.yAxisInvert ? [0, this.height] : [this.height, 0]
+      if (this.yAxisLog) {
+        this.y.range(this.yRange)
+      } else {
+        this.y.range([this.height, 0])
+      }
 
       this.xAxis.tickSize(-this.height)
       this.yAxis.tickSize(this.width)
