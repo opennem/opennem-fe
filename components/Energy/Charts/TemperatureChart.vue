@@ -56,11 +56,12 @@
       :show-x-axis="false"
       :show-tooltip="false"
       :show-point-on-hover="true"
-      :vis-height="100"
+      :vis-height="chartHeight"
       :show-zoom-out="showDateAxis"
       :x-guides="xGuides"
       :y-axis-ticks="3"
       :filter-period="filterPeriod"
+      :class="{ dragging: dragging }"
       class="temperature-vis vis-chart"
       @dateOver="handleDateHover"
       @svgClick="handleSvgClick"
@@ -84,6 +85,9 @@
       @enter="handleVisEnter"
       @leave="handleVisLeave"
     />
+    <div 
+      class="divider" 
+      v-dragged="onDragged" />
   </div>
 </template>
 
@@ -146,7 +150,10 @@ export default {
   data() {
     return {
       options,
-      lineColour: '#e34a33'
+      lineColour: '#e34a33',
+      chartHeight: 100,
+      draggedHeight: 100,
+      dragging: false
     }
   },
 
@@ -300,6 +307,22 @@ export default {
     },
     handleZoomReset() {
       this.$emit('zoomExtent', [])
+    },
+    onDragged({ el, deltaX, deltaY, offsetX, offsetY, clientX, clientY, first, last }) {
+      if (first) {
+        this.dragging = true
+        return
+      }
+      if (last) {
+        this.dragging = false
+        this.draggedHeight = this.chartHeight
+        return
+      }
+      var t = +window.getComputedStyle(el)['top'].slice(0, -2) || 0
+      // el.style.left = l + deltaX + 'px'
+      el.style.top = t + deltaY + 'px'
+
+      this.chartHeight = this.draggedHeight + offsetY
     }
   }
 }
@@ -311,5 +334,16 @@ export default {
   top: 39px;
   right: 14px;
   z-index: 999;
+}
+.divider {
+  border-bottom: 4px dashed #ccc;
+  cursor: ns-resize;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+}
+.dragging {
+  opacity: 0.75;
+  pointer-events: none;
 }
 </style>

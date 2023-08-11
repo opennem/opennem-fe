@@ -44,7 +44,7 @@
       :curve="chartCurve"
       :y-min="isTypeArea ? yMin : 0"
       :y-max="isTypeArea ? yMax : 100"
-      :vis-height="visHeight"
+      :vis-height="chartHeight"
       :show-x-axis="false"
       :show-tooltip="false"
       :show-zoom-out="showDateAxis"
@@ -68,6 +68,7 @@
       :compare-dates="compareDates"
       :show-total-line="showTotalLine"
       :use-offset-diverge="useOffsetDiverge"
+      :class="{ dragging: dragging }"
       class="vis-chart"
       @dateOver="handleDateHover"
       @domainOver="handleDomainHover"
@@ -91,7 +92,7 @@
     </button>
     <multi-line
       v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
-      :svg-height="visHeight"
+      :svg-height="chartHeight"
       :domains1="domains"
       :dataset1="dataset"
       :projection-dataset="projectionDataset"
@@ -107,6 +108,7 @@
       :display-prefix="chartDisplayPrefix"
       :should-convert-value="shouldConvertValue"
       :convert-value="convertValue"
+      :class="{ dragging: dragging }"
       class="vis-chart"
       @date-hover="handleDateHover"
       @domain-hover="handleDomainHover"
@@ -129,6 +131,10 @@
       @enter="handleVisEnter"
       @leave="handleVisLeave"
     />
+
+    <div 
+      class="divider" 
+      v-dragged="onDragged" />
   </div>
 </template>
 
@@ -146,7 +152,7 @@ import { EMISSIONS } from '@/constants/data-types.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
-import StackedAreaVis from '@/components/Vis/StackedArea2.vue'
+import StackedAreaVis from '@/components/Vis/StackedArea.vue'
 import EmissionsChartOptions from './EmissionsChartOptions'
 
 const emissionsOptions = {
@@ -257,6 +263,14 @@ export default {
     emissionsOptions: {
       type: Object,
       default: () => emissionsOptions
+    }
+  },
+
+  data() {
+    return {
+      chartHeight: 200,
+      draggedHeight: 200,
+      dragging: false
     }
   },
 
@@ -678,6 +692,7 @@ export default {
 
   mounted() {
     this.$emit('changeDataset', this.changeSinceDataset)
+    this.chartHeight = this.visHeight
   },
 
   methods: {
@@ -731,6 +746,23 @@ export default {
         interval: this.interval,
         filterPeriod: this.filterPeriod
       })
+    },
+
+    onDragged({ el, deltaX, deltaY, offsetX, offsetY, clientX, clientY, first, last }) {
+      if (first) {
+        this.dragging = true
+        return
+      }
+      if (last) {
+        this.dragging = false
+        this.draggedHeight = this.chartHeight
+        return
+      }
+      var t = +window.getComputedStyle(el)['top'].slice(0, -2) || 0
+      // el.style.left = l + deltaX + 'px'
+      el.style.top = t + deltaY + 'px'
+
+      this.chartHeight = this.draggedHeight + offsetY
     },
 
     getChangeSinceDataset(dataset, calculateProportion) {
@@ -799,5 +831,16 @@ export default {
   position: absolute;
   top: 39px;
   right: 24px;
+}
+.divider {
+  border-bottom: 4px dashed #ccc;
+  cursor: ns-resize;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+}
+.dragging {
+  opacity: 0.75;
+  pointer-events: none;
 }
 </style>

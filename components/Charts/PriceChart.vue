@@ -58,6 +58,7 @@
       :x-guides="xGuides"
       :y-guides="[300, 2000, 6000, 10000, 14000]"
       :filter-period="filterPeriod"
+      :class="{ dragging: dragging }"
       class="price-pos-vis vis-chart"
       @dateOver="handleDateHover"
       @svgClick="handleSvgClick"
@@ -84,12 +85,13 @@
       :y-min="0"
       :y-max="300"
       :show-x-axis="false"
-      :vis-height="80"
+      :vis-height="chartHeight"
       :show-zoom-out="false"
       :connect-zero="false"
       :x-guides="xGuides"
       :y-guides="[0, 100, 200, 300]"
       :filter-period="filterPeriod"
+      :class="{ dragging: dragging }"
       class="price-vis vis-chart"
       @dateOver="handleDateHover"
       @svgClick="handleSvgClick"
@@ -123,6 +125,7 @@
       :x-guides="xGuides"
       :y-guides="[-60, -400]"
       :filter-period="filterPeriod"
+      :class="{ dragging: dragging }"
       class="price-neg-vis vis-chart"
       @dateOver="handleDateHover"
       @svgClick="handleSvgClick"
@@ -146,6 +149,9 @@
       @enter="handleVisEnter"
       @leave="handleVisLeave"
     />
+    <div 
+      class="divider" 
+      v-dragged="onDragged" />
   </div>
 </template>
 
@@ -226,7 +232,10 @@ export default {
   data() {
     return {
       options,
-      lineColour: '#e34a33'
+      lineColour: '#e34a33',
+      chartHeight: 80,
+      draggedHeight: 80,
+      dragging: false
     }
   },
 
@@ -354,6 +363,22 @@ export default {
     },
     handleZoomReset() {
       this.$emit('zoomExtent', [])
+    },
+    onDragged({ el, deltaX, deltaY, offsetX, offsetY, clientX, clientY, first, last }) {
+      if (first) {
+        this.dragging = true
+        return
+      }
+      if (last) {
+        this.dragging = false
+        this.draggedHeight = this.chartHeight
+        return
+      }
+      var t = +window.getComputedStyle(el)['top'].slice(0, -2) || 0
+      // el.style.left = l + deltaX + 'px'
+      el.style.top = t + deltaY + 'px'
+
+      this.chartHeight = this.draggedHeight + offsetY
     }
   }
 }
@@ -395,5 +420,18 @@ export default {
 :deep(.price-pos-vis .focus-bottom-rect),
 :deep(.price-neg-vis .focus-top-rect) {
   opacity: 0 !important;
+}
+
+.divider {  
+  border-bottom: 4px dashed #ccc;
+  cursor: ns-resize;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  transform: translateY(-14px);
+}
+.dragging {
+  opacity: 0.75;
+  pointer-events: none;
 }
 </style>

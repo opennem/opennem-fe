@@ -52,11 +52,12 @@
       :show-x-axis="false"
       :show-tooltip="false"
       :show-point-on-hover="true"
-      :vis-height="150"
+      :vis-height="chartHeight"
       :show-zoom-out="showDateAxis"
       :x-guides="xGuides"
       :y-axis-ticks="3"
       :filter-period="filterPeriod"
+      :class="{ dragging: dragging }"
       class="emission-intensity-vis vis-chart"
       @dateOver="handleDateHover"
       @svgClick="handleSvgClick"
@@ -80,6 +81,10 @@
       @enter="handleVisEnter"
       @leave="handleVisLeave"
     />
+
+    <div 
+      class="divider" 
+      v-dragged="onDragged" />
   </div>
 </template>
 
@@ -90,7 +95,6 @@ import DateDisplay from '@/services/DateDisplay.js'
 import AxisTimeFormats from '@/services/axisTimeFormats.js'
 import EmissionIntensityChartOptions from '@/components/Charts/EmissionIntensityChartOptions'
 import LineVis from '@/components/Vis/Line.vue'
-import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
 
 const options = {
@@ -107,8 +111,7 @@ export default {
   components: {
     EmissionIntensityChartOptions,
     LineVis,
-    DateBrush,
-    MultiLine
+    DateBrush
   },
 
   props: {
@@ -157,7 +160,10 @@ export default {
   data() {
     return {
       options,
-      lineColour: '#e34a33'
+      lineColour: '#e34a33',
+      chartHeight: 150,
+      draggedHeight: 150,
+      dragging: false
     }
   },
 
@@ -282,6 +288,22 @@ export default {
     },
     handleZoomReset() {
       this.$emit('zoomExtent', [])
+    },
+    onDragged({ el, deltaX, deltaY, offsetX, offsetY, clientX, clientY, first, last }) {
+      if (first) {
+        this.dragging = true
+        return
+      }
+      if (last) {
+        this.dragging = false
+        this.draggedHeight = this.chartHeight
+        return
+      }
+      var t = +window.getComputedStyle(el)['top'].slice(0, -2) || 0
+      // el.style.left = l + deltaX + 'px'
+      el.style.top = t + deltaY + 'px'
+
+      this.chartHeight = this.draggedHeight + offsetY
     }
   }
 }
@@ -293,5 +315,16 @@ export default {
   top: 39px;
   right: 14px;
   z-index: 999;
+}
+.divider {
+  border-bottom: 4px dashed #ccc;
+  cursor: ns-resize;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+}
+.dragging {
+  opacity: 0.75;
+  pointer-events: none;
 }
 </style>

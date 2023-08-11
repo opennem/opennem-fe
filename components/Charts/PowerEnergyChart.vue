@@ -57,7 +57,7 @@
       :curve="chartCurve"
       :y-min="isTypeArea ? computedYMin : 0"
       :y-max="isTypeArea ? computedYMax : 100"
-      :vis-height="chartHeight"
+      :vis-height="visHeight"
       :hover-on="hoverOn"
       :hover-date="hoverDate"
       :dynamic-extent="zoomExtent"
@@ -66,7 +66,7 @@
       :y-guides="yGuides"
       :x-axis-dy="tabletBreak ? 8 : 12"
       :y-axis-ticks="5"
-      :show-x-axis="showDateAxis"
+      :show-x-axis="false"
       :compare-dates="compareDates"
       :focus-date="focusDate"
       :focus-on="focusOn"
@@ -83,6 +83,7 @@
       :unit="` ${chartDisplayPrefix}${chartUnit}`"
       :null-check-prop="'_total'"
       :filter-period="filterPeriod"
+      :class="{ dragging: dragging }"
       class="vis-chart"
       @dateOver="handleDateHover"
       @domainOver="handleDomainHover"
@@ -106,7 +107,7 @@
     </button>
     <multi-line
       v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
-      :svg-height="chartHeight - 30"
+      :svg-height="visHeight"
       :domains1="domains"
       :dataset1="dataset"
       :domains2="[
@@ -134,6 +135,7 @@
       :display-prefix="chartDisplayPrefix"
       :should-convert-value="shouldConvertValue"
       :convert-value="convertValue"
+      :class="{ dragging: dragging }"
       class="vis-chart"
       @date-hover="handleDateHover"
       @domain-hover="handleDomainHover"
@@ -142,7 +144,7 @@
     />
 
     <date-brush
-      v-if="showDateAxis && chartShown && (isTypeLine || isTypeChangeSinceLine)"
+      v-if="showDateAxis && chartShown"
       :dataset="dataset"
       :zoom-range="zoomExtent"
       :x-ticks="xTicks"
@@ -157,6 +159,10 @@
       @enter="handleVisEnter"
       @leave="handleVisLeave"
     />
+
+    <div 
+      class="divider" 
+      v-dragged="onDragged" />
   </div>
 </template>
 
@@ -276,7 +282,7 @@ export default {
     },
     chartHeight: {
       type: Number,
-      default: 300
+      default: 330
     },
     filterPeriod: {
       type: String,
@@ -309,6 +315,14 @@ export default {
     yMax: {
       type: Number,
       default: 0
+    }
+  },
+
+  data() {
+    return {
+      visHeight: 330,
+      draggedHeight: 330,
+      dragging: false
     }
   },
 
@@ -914,6 +928,10 @@ export default {
     }
   },
 
+  mounted() {
+    this.visHeight = this.chartHeight
+  },
+
   methods: {
     ...mapMutations({
       setHoverDomain: 'visInteract/hoverDomain'
@@ -1046,7 +1064,24 @@ export default {
         interval: this.interval,
         filterPeriod: this.filterPeriod
       })
-    }
+    },
+
+    onDragged({ el, deltaX, deltaY, offsetX, offsetY, clientX, clientY, first, last }) {
+      if (first) {
+        this.dragging = true
+        return
+      }
+      if (last) {
+        this.dragging = false
+        this.draggedHeight = this.visHeight
+        return
+      }
+      var t = +window.getComputedStyle(el)['top'].slice(0, -2) || 0
+      // el.style.left = l + deltaX + 'px'
+      el.style.top = t + deltaY + 'px'
+
+      this.visHeight = this.draggedHeight + offsetY
+    },
   }
 }
 </script>
@@ -1056,5 +1091,16 @@ export default {
   position: absolute;
   top: 39px;
   right: 24px;
+}
+.divider {
+  border-bottom: 4px dashed #ccc;
+  cursor: ns-resize;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+}
+.dragging {
+  opacity: 0.75;
+  pointer-events: none;
 }
 </style>

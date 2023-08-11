@@ -594,10 +594,12 @@ export default {
         this.drawDatasetTwo()
       }
     },
+
     visHeight(newValue) {
       this.svgHeight = newValue
       this.handleResize()
     },
+
     dynamicExtent(newExtent) {
       if (newExtent && newExtent.length) {
         this.x.domain(newExtent)
