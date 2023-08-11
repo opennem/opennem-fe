@@ -14,7 +14,6 @@
       :zoom-extent="zoomExtent"
       :renewables-line-colour="renewablesLineColour"
       :prop-name="propName"
-      :chart-height="chartHeight"
       :filter-period="filterPeriod"
       :incomplete-intervals="incompleteIntervals"
       :is-energy-type="isEnergyType"
@@ -168,8 +167,6 @@ export default {
 
   computed: {
     ...mapGetters({
-      tabletBreak: 'app/tabletBreak',
-
       range: 'range',
       interval: 'interval',
       compareDifference: 'compareDifference',
@@ -202,10 +199,6 @@ export default {
       featureEmissions: 'feature/emissions'
     }),
 
-    regionId() {
-      return this.$route.params.region
-    },
-
     domains() {
       return this.currentDomainPowerEnergy
         ? _cloneDeep(this.currentDomainPowerEnergy).reverse()
@@ -229,15 +222,6 @@ export default {
 
     propName() {
       return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
-    },
-
-    chartHeight() {
-      let height = 330
-      const isNemOrAu = this.regionId === 'nem' || this.regionId === 'au'
-      if (isNemOrAu && !this.tabletBreak) {
-        height = 520
-      }
-      return height
     },
 
     incompleteIntervals() {
