@@ -32,7 +32,6 @@
     />
 
     <emissions-chart
-      style="margin-top: 1rem;"
       v-if="ready && domainEmissions.length > 0 && featureEmissions"
       :emissions-dataset="currentDataset"
       :domain-emissions="currentDomainEmissions"
@@ -53,7 +52,6 @@
     />
 
     <emission-intensity-chart
-      style="margin-top: 1rem;"
       v-if="ready && domainEmissions.length > 0 && featureEmissions"
       :emission-intensity-dataset="emissionIntensityData"
       :range="range"
@@ -70,7 +68,6 @@
     />
 
     <price-chart
-      style="margin-top: 1rem;"
       v-if="ready && !isEnergyType && domainPrice.length > 0"
       :price-dataset="currentDataset"
       :domain-price="domainPrice"
@@ -86,7 +83,6 @@
       @svgClick="handleSvgClick"
     />
     <price-chart
-      style="margin-top: 1rem;"
       v-if="ready && isEnergyType && domainDemandPrice.length > 0"
       :price-dataset="currentDataset"
       :domain-price="domainDemandPrice"
@@ -104,6 +100,7 @@
     />
 
     <temperature-chart
+      style="top: -14px;"
       v-if="ready && domainTemperature.length > 0"
       :hover-on="isHovering"
       :hover-date="hoverDate"
