@@ -1,7 +1,10 @@
 <template>
   <div 
     class="divider" 
-    :class="{ isDragging: dragging || show }"
+    :class="{ 
+      isDragging: dragging || show,
+      vertical: vertical
+    }"
     v-dragged="onDragged">
     <span/>
     <span/>
@@ -21,6 +24,10 @@ export default {
       default: true
     },
     show: {
+      type: Boolean,
+      default: false
+    },
+    vertical: {
       type: Boolean,
       default: false
     }
@@ -90,6 +97,17 @@ export default {
     border-top: 1px solid transparent;
     transition: border-color 0.2s ease-in-out;
     display: block;
+  }
+
+  &.vertical {
+    cursor: ew-resize;
+    flex-direction: row;
+    padding-right: 6px;
+
+    span {
+      border-top: none;
+      border-left: 1px solid transparent;
+    }
   }
 
   &:hover, &.isDragging {

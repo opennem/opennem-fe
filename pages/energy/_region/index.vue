@@ -50,9 +50,11 @@
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"
       />
-      <div 
-        class="divider" 
-        v-dragged="onDragged" />
+      <Divider 
+        :allow-y="false"
+        :vertical="true"
+        @dragging="(d) => dragging = d" 
+        @dragged="onDragged" />
       <summary-section
         :hover-date="hoverDate"
         :is-hovering="isHovering"
@@ -80,6 +82,7 @@ import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import VisSection from '@/components/Energy/VisSection.vue'
 import SummarySection from '@/components/Energy/SummarySection.vue'
+import Divider from '@/components/Divider.vue'
 
 export default {
   layout: 'main',
@@ -125,7 +128,8 @@ export default {
   components: {
     DataOptionsBar,
     VisSection,
-    SummarySection
+    SummarySection,
+    Divider
   },
 
   data() {
@@ -386,7 +390,7 @@ export default {
     },
     handleRangeChange(range) {
       this.setRange(range)
-    },
+  },
     handleIntervalChange(interval) {
       this.setInterval(interval)
     },
@@ -394,20 +398,7 @@ export default {
       this.setFilterPeriod(period)
     },
 
-    onDragged({ el, deltaX, deltaY, offsetX, offsetY, clientX, clientY, first, last }) {
-      if (first) {
-        this.dragging = true
-        return
-      }
-      if (last) {
-        this.dragging = false
-        return
-      }
-      var l = +window.getComputedStyle(el)['left'].slice(0, -2) || 0
-      // var t = +window.getComputedStyle(el)['top'].slice(0, -2) || 0
-      el.style.left = l + deltaX + 'px'
-      // el.style.top = t + deltaY + 'px'
-
+    onDragged({ clientX }) {
       const e = this.$refs.visTableContainer
       this.visWidth = `${clientX}px`
       this.tableWidth = `${e.offsetWidth - clientX}px`
@@ -419,11 +410,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.divider {
-  border-left: 4px dashed #ccc;
-  padding-right: 6px;
-  cursor: ew-resize;
-}
 .dragging {
   opacity: 0.75;
   pointer-events: none;
