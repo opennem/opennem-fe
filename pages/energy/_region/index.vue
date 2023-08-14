@@ -418,8 +418,16 @@ export default {
     },
 
     handleResize() {
+      const width = window.innerWidth
+
+      if (width < 1024) {
+        this.visWidth = 100
+        this.tableWidth = 100
+        this.widthUnit = '%'
+        return
+      }
+
       if (this.widthUnit === 'px') {
-        const width = window.innerWidth
         this.visWidth = this.visWidth / width * 100
         this.tableWidth = this.tableWidth / width * 100
         this.widthUnit = '%'
