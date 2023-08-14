@@ -5,6 +5,8 @@
       'has-border-bottom': !chartShown
     }"
     class="chart"
+    @mouseover="() => showDivider = true"
+    @mouseleave="() => showDivider = false"
   >
     <price-chart-options
       :read-only="readOnly"
@@ -149,9 +151,12 @@
       @enter="handleVisEnter"
       @leave="handleVisLeave"
     />
-    <div 
-      class="divider" 
-      v-dragged="onDragged" />
+    <Divider       
+      style="transform: translateY(-14px); margin-left: 0.5rem;"
+      :allow-x="false" 
+      :show="showDivider"
+      @dragging="(d) => dragging = d" 
+      @dragged="onDragged" />
   </div>
 </template>
 
@@ -164,6 +169,7 @@ import DateDisplay from '@/services/DateDisplay.js'
 import PriceChartOptions from './PriceChartOptions'
 import LineVis from '@/components/Vis/Line.vue'
 import DateBrush from '@/components/Vis/DateBrush'
+import Divider from '@/components/Divider.vue'
 
 const options = {
   type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_LINE],
@@ -179,7 +185,8 @@ export default {
   components: {
     PriceChartOptions,
     LineVis,
-    DateBrush
+    DateBrush,
+    Divider
   },
 
   props: {
@@ -235,7 +242,8 @@ export default {
       lineColour: '#e34a33',
       chartHeight: 80,
       draggedHeight: 80,
-      dragging: false
+      dragging: false,
+      showDivider: false
     }
   },
 
@@ -364,20 +372,11 @@ export default {
     handleZoomReset() {
       this.$emit('zoomExtent', [])
     },
-    onDragged({ el, deltaX, deltaY, offsetX, offsetY, clientX, clientY, first, last }) {
-      if (first) {
-        this.dragging = true
-        return
-      }
+    onDragged({ offsetY, last }) {
       if (last) {
-        this.dragging = false
         this.draggedHeight = this.chartHeight
         return
       }
-      var t = +window.getComputedStyle(el)['top'].slice(0, -2) || 0
-      // el.style.left = l + deltaX + 'px'
-      el.style.top = t + deltaY + 'px'
-
       this.chartHeight = this.draggedHeight + offsetY
     }
   }
@@ -422,14 +421,6 @@ export default {
   opacity: 0 !important;
 }
 
-.divider {  
-  border-bottom: 4px dashed #ccc;
-  cursor: ns-resize;
-  width: 100%;
-  bottom: 0;
-  left: 0;
-  transform: translateY(-14px);
-}
 .dragging {
   opacity: 0.75;
   pointer-events: none;

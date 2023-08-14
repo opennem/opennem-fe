@@ -5,6 +5,8 @@
       'has-border-bottom': !chartShown
     }"
     class="chart"
+    @mouseover="() => showDivider = true"
+    @mouseleave="() => showDivider = false"
   >
     <emissions-chart-options
       :read-only="readOnly"
@@ -132,9 +134,12 @@
       @leave="handleVisLeave"
     />
 
-    <div 
-      class="divider" 
-      v-dragged="onDragged" />
+    <Divider 
+      style="margin-left: 0.5rem;"
+      :allow-x="false" 
+      :show="showDivider"
+      @dragging="(d) => dragging = d" 
+      @dragged="onDragged" />
   </div>
 </template>
 
@@ -153,6 +158,7 @@ import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
 import StackedAreaVis from '@/components/Vis/StackedArea.vue'
+import Divider from '@/components/Divider.vue'
 import EmissionsChartOptions from './EmissionsChartOptions'
 
 const emissionsOptions = {
@@ -176,7 +182,8 @@ export default {
     EmissionsChartOptions,
     StackedAreaVis,
     MultiLine,
-    DateBrush
+    DateBrush,
+    Divider
   },
 
   props: {
@@ -270,7 +277,8 @@ export default {
     return {
       chartHeight: 200,
       draggedHeight: 200,
-      dragging: false
+      dragging: false,
+      showDivider: false
     }
   },
 
@@ -748,20 +756,11 @@ export default {
       })
     },
 
-    onDragged({ el, deltaX, deltaY, offsetX, offsetY, clientX, clientY, first, last }) {
-      if (first) {
-        this.dragging = true
-        return
-      }
+    onDragged({ offsetY, last }) {
       if (last) {
-        this.dragging = false
         this.draggedHeight = this.chartHeight
         return
       }
-      var t = +window.getComputedStyle(el)['top'].slice(0, -2) || 0
-      // el.style.left = l + deltaX + 'px'
-      el.style.top = t + deltaY + 'px'
-
       this.chartHeight = this.draggedHeight + offsetY
     },
 
@@ -831,13 +830,6 @@ export default {
   position: absolute;
   top: 39px;
   right: 24px;
-}
-.divider {
-  border-bottom: 4px dashed #ccc;
-  cursor: ns-resize;
-  width: 100%;
-  bottom: 0;
-  left: 0;
 }
 .dragging {
   opacity: 0.75;

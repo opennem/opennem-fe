@@ -6,6 +6,8 @@
       adjustment: chartPrice
     }"
     class="temperature-chart chart"
+    @mouseover="() => showDivider = true"
+    @mouseleave="() => showDivider = false"
   >
     <temperature-chart-options
       :read-only="readOnly"
@@ -85,9 +87,12 @@
       @enter="handleVisEnter"
       @leave="handleVisLeave"
     />
-    <div 
-      class="divider" 
-      v-dragged="onDragged" />
+    <Divider 
+      style="margin-left: 0.5rem;"
+      :allow-x="false" 
+      :show="showDivider"
+      @dragging="(d) => dragging = d" 
+      @dragged="onDragged" />
   </div>
 </template>
 
@@ -99,6 +104,7 @@ import DateDisplay from '@/services/DateDisplay.js'
 import TemperatureChartOptions from '@/components/Energy/Charts/TemperatureChartOptions'
 import LineVis from '@/components/Vis/Line.vue'
 import DateBrush from '@/components/Vis/DateBrush'
+import Divider from '@/components/Divider.vue'
 
 import {
   TEMPERATURE,
@@ -121,7 +127,8 @@ export default {
   components: {
     TemperatureChartOptions,
     LineVis,
-    DateBrush
+    DateBrush,
+    Divider
   },
 
   props: {
@@ -153,7 +160,8 @@ export default {
       lineColour: '#e34a33',
       chartHeight: 100,
       draggedHeight: 100,
-      dragging: false
+      dragging: false,
+      showDivider: false
     }
   },
 
@@ -308,20 +316,11 @@ export default {
     handleZoomReset() {
       this.$emit('zoomExtent', [])
     },
-    onDragged({ el, deltaX, deltaY, offsetX, offsetY, clientX, clientY, first, last }) {
-      if (first) {
-        this.dragging = true
-        return
-      }
+    onDragged({ offsetY, last }) {
       if (last) {
-        this.dragging = false
         this.draggedHeight = this.chartHeight
         return
       }
-      var t = +window.getComputedStyle(el)['top'].slice(0, -2) || 0
-      // el.style.left = l + deltaX + 'px'
-      el.style.top = t + deltaY + 'px'
-
       this.chartHeight = this.draggedHeight + offsetY
     }
   }
@@ -334,13 +333,6 @@ export default {
   top: 39px;
   right: 14px;
   z-index: 999;
-}
-.divider {
-  border-bottom: 4px dashed #ccc;
-  cursor: ns-resize;
-  width: 100%;
-  bottom: 0;
-  left: 0;
 }
 .dragging {
   opacity: 0.75;
