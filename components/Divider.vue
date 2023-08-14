@@ -49,6 +49,7 @@ export default {
       if (last) {
         this.dragging = false
         this.$emit('dragging', false)
+        this.$emit('last-drag', false)
         return
       }
 
@@ -77,16 +78,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// .divider {
-//   border-left: 3px double transparent;
-//   padding-right: 6px;
-//   cursor: ew-resize;
-//   transition: border-color 0.2s ease-in-out;
-
-//   &:hover, &.isDragging {
-//     border-left-color: #cfcfcf;
-//   }
-// }
 .divider {
   cursor: ns-resize;
   display: flex;
@@ -102,7 +93,7 @@ export default {
   &.vertical {
     cursor: ew-resize;
     flex-direction: row;
-    padding-right: 6px;
+    padding-right: 8px;
 
     span {
       border-top: none;

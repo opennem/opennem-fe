@@ -167,7 +167,8 @@
       :allow-x="false"
       :show="showDivider"
       @dragging="(d) => dragging = d" 
-      @dragged="onDragged" />
+      @dragged="onDragged"
+      @last-drag="() => draggedHeight = visHeight" />
   </div>
 </template>
 
@@ -1075,10 +1076,6 @@ export default {
     },
 
     onDragged({ offsetY, last }) {
-      if (last) {
-        this.draggedHeight = this.visHeight
-        return
-      }
       this.visHeight = this.draggedHeight + offsetY
     }
   }

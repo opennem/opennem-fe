@@ -156,7 +156,8 @@
       :allow-x="false" 
       :show="showDivider"
       @dragging="(d) => dragging = d" 
-      @dragged="onDragged" />
+      @dragged="onDragged"
+      @last-drag="() => draggedHeight = chartHeight" />
   </div>
 </template>
 
@@ -373,10 +374,6 @@ export default {
       this.$emit('zoomExtent', [])
     },
     onDragged({ offsetY, last }) {
-      if (last) {
-        this.draggedHeight = this.chartHeight
-        return
-      }
       this.chartHeight = this.draggedHeight + offsetY
     }
   }
