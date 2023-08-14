@@ -5,7 +5,7 @@
       'has-border-bottom': !chartShown
     }"
     class="emission-intensity-chart chart"
-    @mouseover="() => showDivider = true"
+    @mouseenter="() => showDivider = true"
     @mouseleave="() => showDivider = false"
   >
     <emission-intensity-chart-options

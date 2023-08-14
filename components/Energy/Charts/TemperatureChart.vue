@@ -6,7 +6,7 @@
       adjustment: chartPrice
     }"
     class="temperature-chart chart"
-    @mouseover="() => showDivider = true"
+    @mouseenter="() => showDivider = true"
     @mouseleave="() => showDivider = false"
   >
     <temperature-chart-options

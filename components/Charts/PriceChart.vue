@@ -5,7 +5,7 @@
       'has-border-bottom': !chartShown
     }"
     class="chart"
-    @mouseover="() => showDivider = true"
+    @mouseenter="() => showDivider = true"
     @mouseleave="() => showDivider = false"
   >
     <price-chart-options
