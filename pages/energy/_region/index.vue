@@ -17,7 +17,7 @@
         class="vis-table-container loading-containers">
         <div 
           class="vis-container" 
-          :style="{ width: `${visWidth}`}">
+          :style="{ width: `${visWidth}${widthUnit}`}">
           <div 
             class="loader-block" 
             style="height: 30px" />
@@ -27,7 +27,7 @@
         </div>
         <div 
           class="table-container" 
-          :style="{ width: `${tableWidth}`}">
+          :style="{ width: `${tableWidth}${widthUnit}`}">
           <div 
             class="loader-block" 
             style="height: 30px" />
@@ -44,7 +44,7 @@
       <vis-section
         :date-hover="hoverDate"
         :on-hover="isHovering"
-        :style="{ width: `${visWidth}`}"
+        :style="{ width: `${visWidth}${widthUnit}`}"
         :class="{ dragging: dragging }"
         class="vis-container"
         @dateHover="handleDateHover"
@@ -59,7 +59,7 @@
         :hover-date="hoverDate"
         :is-hovering="isHovering"
         :class="{ dragging: dragging }"
-        :style="{ width: `${tableWidth}`}"
+        :style="{ width: `${tableWidth}${widthUnit}`}"
         class="table-container"
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"
@@ -141,8 +141,9 @@ export default {
       ranges: RANGES,
       intervals: RANGE_INTERVALS,
       isWemOrAu: false,
-      visWidth: '65%',
-      tableWidth: '35%',
+      visWidth: 65,
+      tableWidth: 35,
+      widthUnit: '%', // px
       dragging: false
     }
   },
@@ -329,6 +330,15 @@ export default {
       isZoomed: this.filteredDates.length > 0,
       filterPeriod: this.filterPeriod
     })
+
+    window.addEventListener(
+      'resize',
+      this.handleResize
+    )
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize)
   },
 
   methods: {
@@ -400,10 +410,21 @@ export default {
 
     onDragged({ clientX }) {
       const e = this.$refs.visTableContainer
-      this.visWidth = `${clientX}px`
-      this.tableWidth = `${e.offsetWidth - clientX}px`
+      this.visWidth = clientX
+      this.tableWidth = e.offsetWidth - clientX
+      this.widthUnit = 'px'
 
       EventBus.$emit('stacked-chart-resize')
+    },
+
+    handleResize() {
+      if (this.widthUnit === 'px') {
+        const width = window.innerWidth
+        this.visWidth = this.visWidth / width * 100
+        this.tableWidth = this.tableWidth / width * 100
+        this.widthUnit = '%'
+      }
+      
     }
   }
 }
