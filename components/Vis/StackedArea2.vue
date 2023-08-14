@@ -681,7 +681,7 @@ export default {
       debounce(this.handleResize, CONFIG.DEBOUNCE_MILLISECONDS)
     )
 
-    EventBus.$on('stacked-chart-resize', debounce(this.handleResize, CONFIG.DEBOUNCE_MILLISECONDS))
+    EventBus.$on('stacked-chart-resize', this.handleResize)
 
     this.setupWidthHeight()
     this.setup()
