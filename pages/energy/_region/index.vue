@@ -432,7 +432,6 @@ export default {
         this.tableWidth = this.tableWidth / width * 100
         this.widthUnit = '%'
       }
-      
     }
   }
 }

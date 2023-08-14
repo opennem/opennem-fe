@@ -317,8 +317,12 @@ export default {
     handleZoomReset() {
       this.$emit('zoomExtent', [])
     },
-    onDragged({ offsetY, last }) {
-      this.chartHeight = this.draggedHeight + offsetY
+    onDragged({ offsetY }) {
+      if (this.draggedHeight + offsetY > 50) {
+        this.chartHeight = this.draggedHeight + offsetY
+      } else {
+        this.chartHeight = 50
+      }
     }
   }
 }

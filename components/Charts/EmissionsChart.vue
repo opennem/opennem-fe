@@ -757,8 +757,12 @@ export default {
       })
     },
 
-    onDragged({ offsetY, last }) {
-      this.chartHeight = this.draggedHeight + offsetY
+    onDragged({ offsetY }) {
+      if (this.draggedHeight + offsetY > 50) {
+        this.chartHeight = this.draggedHeight + offsetY
+      } else {
+        this.chartHeight = 50
+      }
     },
 
     getChangeSinceDataset(dataset, calculateProportion) {

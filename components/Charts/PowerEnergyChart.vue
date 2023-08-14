@@ -1075,8 +1075,12 @@ export default {
       })
     },
 
-    onDragged({ offsetY, last }) {
-      this.visHeight = this.draggedHeight + offsetY
+    onDragged({ offsetY }) {
+      if (this.draggedHeight + offsetY > 50) {
+        this.visHeight = this.draggedHeight + offsetY
+      } else {
+        this.visHeight = 50
+      }
     }
   }
 }
