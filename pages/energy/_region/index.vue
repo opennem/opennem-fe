@@ -410,11 +410,18 @@ export default {
 
     onDragged({ clientX }) {
       const e = this.$refs.visTableContainer
-      this.visWidth = clientX
-      this.tableWidth = e.offsetWidth - clientX
-      this.widthUnit = 'px'
+      const visWidth = clientX
+      const tableWidth = e.offsetWidth - clientX
+      const limit = 365
 
-      EventBus.$emit('stacked-chart-resize')
+      if (tableWidth > limit && visWidth > limit) {
+        this.visWidth = visWidth
+        this.tableWidth = tableWidth
+        this.widthUnit = 'px'
+
+        EventBus.$emit('stacked-chart-resize')
+      }
+      
     },
 
     handleResize() {
