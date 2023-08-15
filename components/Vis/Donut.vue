@@ -243,7 +243,7 @@ export default {
 
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize)
-    EventBus.$off('stacked-chart-resize')
+    EventBus.$off('stacked-chart-resize', this.handleResize)
   },
 
   methods: {

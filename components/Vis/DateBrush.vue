@@ -151,7 +151,7 @@ export default {
     this.setupWidthHeight()
     this.setup()
     window.addEventListener('resize', debounce(this.handleResize, 1))
-    EventBus.$on('stacked-chart-resize', debounce(this.handleResize, 1))
+    EventBus.$on('stacked-chart-resize', this.handleResize)
   },
   updated() {
     this.setupWidthHeight()
@@ -160,7 +160,7 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize)
-    EventBus.$off('stacked-chart-resize')
+    EventBus.$off('stacked-chart-resize', this.handleResize)
   },
   methods: {
     handleResize() {
