@@ -319,6 +319,10 @@ export default {
   },
 
   mounted() {
+    if (window.innerWidth < 1024) {
+      this.setVisTableWidthUnit(100, 100, '%')
+    }
+
     this.doUpdateTickFormats({
       range: this.range,
       interval: this.interval,
@@ -372,6 +376,12 @@ export default {
       setEmissionsVolumeDisplayPrefix: 'chartOptionsEmissionsVolume/chartDisplayPrefix'
     }),
 
+    setVisTableWidthUnit(vis, table, unit) {
+      this.visWidth = vis
+      this.tableWidth = table
+      this.widthUnit = unit
+    },
+
     updateEmissionsData() {
       this.doUpdateEmissionIntensityDataset({
         datasetAll: this.currentDataset,
@@ -415,10 +425,7 @@ export default {
       const limit = 365
 
       if (tableWidth > limit && visWidth > limit) {
-        this.visWidth = visWidth
-        this.tableWidth = tableWidth
-        this.widthUnit = 'px'
-
+        this.setVisTableWidthUnit(visWidth, tableWidth, 'px')
         EventBus.$emit('stacked-chart-resize')
       }
       
@@ -428,16 +435,16 @@ export default {
       const width = window.innerWidth
 
       if (width < 1024) {
-        this.visWidth = 100
-        this.tableWidth = 100
-        this.widthUnit = '%'
+        this.setVisTableWidthUnit(100, 100, '%')
         return
       }
 
       if (this.widthUnit === 'px') {
-        this.visWidth = this.visWidth / width * 100
-        this.tableWidth = this.tableWidth / width * 100
-        this.widthUnit = '%'
+        this.setVisTableWidthUnit(
+          this.visWidth / width * 100,
+          this.tableWidth / width * 100,
+          '%'
+        )
       }
     }
   }
