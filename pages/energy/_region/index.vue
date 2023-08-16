@@ -56,6 +56,7 @@
         @dragging="(d) => dragging = d" 
         @dragged="onDragged" />
       <summary-section
+        ref="tableContainer"
         :hover-date="hoverDate"
         :is-hovering="isHovering"
         :class="{ dragging: dragging }"
@@ -433,19 +434,30 @@ export default {
     },
 
     handleResize() {
-      const width = window.innerWidth
+      const windowWidth = window.innerWidth
 
-      if (width < 1024) {
+      // this will reset the vis/table width to 65/35 % when the window is resized
+      if (windowWidth >= 1024 && this.tableWidth === 100 && this.widthUnit === '%') {
+        this.setVisTableWidthUnit(65, 35, '%')
+        return
+      }
+
+      // if less than 1024px, set all to 100% width
+      if (windowWidth < 1024) {
         this.setVisTableWidthUnit(100, 100, '%')
         return
       }
 
-      if (this.widthUnit === 'px') {
-        this.setVisTableWidthUnit(
-          this.visWidth / width * 100,
-          this.tableWidth / width * 100,
-          '%'
-        )
+      const tableCurrentWidth = this.$refs.tableContainer.$el.offsetWidth
+
+      if (tableCurrentWidth < 450) {
+        // table width should not be less than 450
+        this.setVisTableWidthUnit(windowWidth - 450, 450, 'px')
+      } else if (this.widthUnit === 'px') {
+        // when resizing, convert px to % so it will be responsive
+        const tableWidth = this.tableWidth / windowWidth * 100
+        const visWidth = 100 - tableWidth
+        this.setVisTableWidthUnit(visWidth, tableWidth, '%')
       }
     }
   }
