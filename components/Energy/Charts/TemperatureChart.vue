@@ -338,5 +338,6 @@ export default {
 .dragging {
   opacity: 0.75;
   pointer-events: none;
+  user-select: none;
 }
 </style>

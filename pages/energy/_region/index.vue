@@ -430,7 +430,6 @@ export default {
       }
 
       EventBus.$emit('stacked-chart-resize')
-      
     },
 
     handleResize() {
@@ -465,8 +464,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.vis-table-container {
+  user-select: none;
+}
 .dragging {
   opacity: 0.75;
   pointer-events: none;
+  user-select: none;
 }
 </style>
