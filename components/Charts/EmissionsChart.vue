@@ -833,7 +833,6 @@ export default {
   right: 24px;
 }
 .dragging {
-  opacity: 0.75;
   pointer-events: none;
   user-select: none;
 }

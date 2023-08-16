@@ -429,7 +429,7 @@ export default {
         this.setVisTableWidthUnit(visWidth, tableWidth, 'px')
       }
 
-      EventBus.$emit('stacked-chart-resize')
+      EventBus.$emit('vis-resize')
     },
 
     handleResize() {
@@ -468,7 +468,6 @@ export default {
   user-select: none;
 }
 .dragging {
-  opacity: 0.75;
   pointer-events: none;
   user-select: none;
 }

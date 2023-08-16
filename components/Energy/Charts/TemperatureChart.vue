@@ -336,7 +336,6 @@ export default {
   z-index: 999;
 }
 .dragging {
-  opacity: 0.75;
   pointer-events: none;
   user-select: none;
 }

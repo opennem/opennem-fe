@@ -484,7 +484,7 @@ export default {
     this.setup()
 
     window.addEventListener('resize', debounce(this.handleResize, CONFIG.DEBOUNCE_MILLISECONDS))
-    EventBus.$on('stacked-chart-resize', this.handleResize)
+    EventBus.$on('vis-resize', this.handleResize)
   },
 
   updated() {
@@ -495,7 +495,7 @@ export default {
 
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize)
-    EventBus.$off('stacked-chart-resize', this.handleResize)
+    EventBus.$off('vis-resize', this.handleResize)
   },
 
   methods: {
