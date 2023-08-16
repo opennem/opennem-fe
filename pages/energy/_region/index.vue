@@ -422,12 +422,13 @@ export default {
       const e = this.$refs.visTableContainer
       const visWidth = clientX
       const tableWidth = e.offsetWidth - clientX
-      const limit = 365
+      const limit = 450
 
       if (tableWidth > limit && visWidth > limit) {
         this.setVisTableWidthUnit(visWidth, tableWidth, 'px')
-        EventBus.$emit('stacked-chart-resize')
       }
+
+      EventBus.$emit('stacked-chart-resize')
       
     },
 
