@@ -967,7 +967,10 @@ export default {
             .merge(dots)
             .attr('cx', this.x(dataPoint.displayTime || dataPoint.date))
             .attr('cy', (key) => this.y1(dataPoint[key]))
-            .attr('r', 4)
+            .attr('r', (key) => {
+              const hasValue = this.y1(dataPoint[key]) || this.y1(dataPoint[key]) === 0
+              return hasValue ? 4 : 0
+            })
             .attr('fill', (key) => this.colours1[key])
             .exit()
             .remove()
