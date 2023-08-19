@@ -115,12 +115,20 @@ export default {
     ...mapGetters({
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       currentDataset: 'regionEnergy/currentDataset',
+      range: 'range',
       interval: 'interval',
       filterPeriod: 'filterPeriod',
     }),
     
     intervalVal() {
       return this.interval === '5m' ? 5 : 30
+    },
+
+    rangeVal() {
+      if (this.range === '7D') return 7
+      if (this.range === '3D') return 3
+      if (this.range === '1D') return 1
+      return 1
     },
 
     allDomains() {
@@ -161,6 +169,7 @@ export default {
 
     dataset() {
       const interval = this.intervalVal
+      const range = this.rangeVal
       const dataset = this.currentDataset.map((d) => {
         return {
           date: d.date,
@@ -178,7 +187,7 @@ export default {
         utcCurrent.setUTCDate(utcCurrent.getDate());
         utcCurrent.setUTCHours(0, 0, 0, 0)
 
-        for (let i = 0; i < 7; i++) {
+        for (let i = 0; i < range; i++) {
           keys.push(getDay(utcCurrent))
           utcCurrent = subDays(utcCurrent, 1)
         }
