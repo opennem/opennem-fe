@@ -171,7 +171,7 @@ export default {
 
       console.log('dataset', dataset)
 
-      // TODO: create dayKeys using dataset instead
+      // TODO: maybe create dayKeys using dataset start/last time instead
       const dayKeys = (function() {
         const keys = []
         let utcCurrent = new Date()
