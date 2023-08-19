@@ -206,7 +206,7 @@ export default {
     this.chartCurve = CHART_CURVE_SMOOTH
 
     let utcCurrent = new Date()
-    utcCurrent.setUTCDate(18);
+    utcCurrent.setUTCDate(utcCurrent.getDate());
     utcCurrent.setUTCHours(0, 0, 0)
 
     this.todayKey = getDay(utcCurrent)
