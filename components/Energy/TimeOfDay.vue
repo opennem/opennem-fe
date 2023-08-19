@@ -7,25 +7,58 @@
         @domainSelect="(domain) => selectedDomain = domain" />
     </header>
 
-    <div class="vis-wrapper">
-      <MultiLine
-        :svg-height="400"
-        :domains1="timeDomains"
-        :dataset1="dataset"
-        :y1-max="yLineMax"
-        :y1-min="yLineMin"
-        :x-ticks="xTicks"
-        :curve="chartCurve"
-        class="vis-chart"
-      />
-      <DateBrush
-        :dataset="dataset"
-        :x-ticks="xTicks"
-        :tick-format="tickFormat"
-        :second-tick-format="secondTickFormat"
-        class="date-brush vis-chart"
-      />
+    <div style="display: flex;">
+      <div 
+        style="width: 80%" 
+        class="vis-wrapper">
+        <MultiLine
+          :svg-height="400"
+          :domains1="timeDomains"
+          :dataset1="dataset"
+          :y1-max="yLineMax"
+          :y1-min="yLineMin"
+          :x-ticks="xTicks"
+          :curve="chartCurve"
+          :date-hovered="hoverDate"
+          class="vis-chart"
+          @date-hover="handleDateHover"
+          @domain-hover="handleDomainHover"
+          @enter="handleVisEnter"
+          @leave="handleVisLeave"
+        />
+        <DateBrush
+          :dataset="dataset"
+          :x-ticks="xTicks"
+          :tick-format="tickFormat"
+          :second-tick-format="secondTickFormat"
+          class="date-brush vis-chart"
+        />
+      </div>
+
+      <div style="width: 20%; font-size: 0.8em;">
+        <table class="table is-striped is-narrow is-fullwidth">
+          <thead>
+            <tr>
+              <th 
+                colspan="2" 
+                style="text-align:right">{{ currentX }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr 
+              v-for="(domain, i) in tableRowDomains" 
+              :key="`${domain.id}-${i}`"
+              style="font-weight: bold;"
+              :style="{ color: getTextColour(domain.id) }">
+              <td>{{ domain.id }}</td>
+              <td style="text-align: right;">{{ domain.value | formatValue }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+
+    
   </div>
 </template>
 
@@ -35,10 +68,11 @@ import _cloneDeep from 'lodash.clonedeep'
 import { utcMinute } from 'd3-time'
 import { utcFormat } from 'd3-time-format'
 import addMinutes from 'date-fns/addMinutes'
+import subDays from 'date-fns/subDays'
 import startOfToday from 'date-fns/startOfToday'
 import isToday from 'date-fns/isToday'
 import format from 'date-fns/format'
-
+import DateDisplay from '@/services/DateDisplay.js'
 import { CHART_CURVE_SMOOTH } from '@/constants/chart-options.js'
 import AxisTimeFormats from '@/services/axisTimeFormats.js'
 import MultiLine from '@/components/Vis/MultiLine'
@@ -71,6 +105,9 @@ export default {
     return {
       selectedDomain: null,
       todayKey: null,
+      hoverDate: null,
+      hoverValues: null,
+      currentX: 'time'
     }
   },
 
@@ -79,7 +116,12 @@ export default {
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       currentDataset: 'regionEnergy/currentDataset',
       interval: 'interval',
+      filterPeriod: 'filterPeriod',
     }),
+    
+    intervalVal() {
+      return this.interval === '5m' ? 5 : 30
+    },
 
     allDomains() {
       return this.currentDomainPowerEnergy
@@ -92,23 +134,33 @@ export default {
         return key !== 'x' && key !== 'date' && key !== 'time'
       })
 
+      const getColour = (key) => {
+        if (key === '_average') return '#e34a33'
+        return this.todayKey === key ? 'steelblue' : '#ccc'
+      }
+
       const datasetKeys = keys.map((key) => {
         return {
           domain: key,
           id: key,
-          colour: this.todayKey === key ? 'steelblue' : '#ccc'
+          colour: getColour(key)
         }
       })  
 
-      return [...datasetKeys, {
-        domain: '_average',
-        id: '_average',
-        colour: '#e34a33'
-      }]
+      return datasetKeys
+    },
+
+    tableRowDomains() {
+      return this.timeDomains.map((domain) => {
+        return {
+          id: domain.id,
+          value: this.hoverValues ? this.hoverValues[domain.id] : null
+        }
+      })  
     },
 
     dataset() {
-      const interval = this.interval === '5m' ? 5 : 30
+      const interval = this.intervalVal
       const dataset = this.currentDataset.map((d) => {
         return {
           date: d.date,
@@ -117,43 +169,64 @@ export default {
         }
       })
 
-      let utcCurrent = new Date()
-      utcCurrent.setUTCDate(18);
-      utcCurrent.setUTCHours(0, 0, 0)
-      const bucket = []
+      console.log('dataset', dataset)
 
-      let x = getX(utcCurrent)
+      // TODO: create dayKeys using dataset instead
+      const dayKeys = (function() {
+        const keys = []
+        let utcCurrent = new Date()
+        utcCurrent.setUTCDate(utcCurrent.getDate());
+        utcCurrent.setUTCHours(0, 0, 0, 0)
 
-      for (let i = 0; i < 1440 / interval; i++) {
-        bucket.push({ x, date: utcCurrent, time: utcCurrent.getTime() })
-        utcCurrent = addMinutes(utcCurrent, interval)
-        x = getX(utcCurrent)
-      }
+        for (let i = 0; i < 7; i++) {
+          keys.push(getDay(utcCurrent))
+          utcCurrent = subDays(utcCurrent, 1)
+        }
+
+        return keys
+      })()
+
+      const timeBucket = (function() {
+        let utcCurrent = new Date()
+        utcCurrent.setUTCDate(utcCurrent.getDate());
+        utcCurrent.setUTCHours(0, 0, 0, 0)
+        const b = []
+
+        let x = getX(utcCurrent)
+
+        for (let i = 0; i < 1440 / interval; i++) {
+          b.push({ x, date: utcCurrent, time: utcCurrent.getTime() })
+          utcCurrent = addMinutes(utcCurrent, interval)
+          x = getX(utcCurrent)
+        }
+
+        return b
+      })()
+
+      console.log('dayKeys', dayKeys)
 
       dataset.forEach(d => {
         const date = d.date
         const day = getDay(date)
         const x = getX(date)
-        const find = bucket.find(b => b.x === x)
+        const find = timeBucket.find(b => b.x === x)
         find[day] = d.value
       })
 
-      const keys = Object.keys(bucket[0]).filter((key) => {
-        return key !== 'x' && key !== 'date' && key !== 'time'
-      })
-
-      bucket.forEach(b => {
+      timeBucket.forEach(b => {
         let total = 0
-        keys.forEach(key => {
+        let keyCount = 0
+        dayKeys.forEach(key => {
+          if (b[key] !== undefined && b[key] !== null) keyCount++
           total += b[key] || 0
         })
 
-        b._average = total / keys.length
+        b._average = total / keyCount
       })
 
-      console.log('bucket', bucket)
+      console.log('timeBucket', timeBucket)
 
-      return bucket
+      return timeBucket
     },
 
     yLineMin() {
@@ -188,39 +261,57 @@ export default {
   },
 
   watch: {
-    dataset(val) {
-      console.log(val)
-    },
-    currentDomainPowerEnergy(val) {
-      console.log('changed', val)
-    },
     yLineMax(val) {
-      console.log(val)
+      // console.log(val)
     }
   },
 
   created() {
     this.xTicks = utcMinute.every(60)
     this.tickFormat = utcFormat('%H:%M')
-    this.secondTickFormat = AxisTimeFormats.secondaryFormat
+    this.secondTickFormat = () => ''
     this.chartCurve = CHART_CURVE_SMOOTH
 
     let utcCurrent = new Date()
     utcCurrent.setUTCDate(utcCurrent.getDate());
-    utcCurrent.setUTCHours(0, 0, 0)
+    utcCurrent.setUTCHours(0, 0, 0, 0)
 
     this.todayKey = getDay(utcCurrent)
   },
 
   mounted() {
     console.log(this.currentDomainPowerEnergy)
+  },
+
+  methods: {
+    handleDomainHover(domain) {
+      // console.log(domain)
+    },
+    handleDateHover(evt, date) {
+      // this.$emit('dateHover', date)
+      this.hoverDate = utcMinute.every(this.intervalVal).round(date)
+      this.hoverValues = this.dataset.find(d => d.time === this.hoverDate.getTime())
+      if (this.hoverValues) {
+        this.currentX = this.hoverValues.x
+      }
+      console.log('hovervalues', this.hoverValues)
+    },
+    handleVisEnter() {
+      // this.$emit('isHovering', true)
+    },
+    handleVisLeave() {
+      // this.$emit('isHovering', false)
+    },
+    getTextColour(id) {
+      if (id === '_average') return '#e34a33'
+      return this.todayKey === id ? 'steelblue' : '#123123'
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .time-of-day {
-  padding: 1rem;
   text-align: center;
 }
 header {
