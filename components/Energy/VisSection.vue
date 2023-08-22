@@ -1,7 +1,5 @@
 <template>
   <section>
-    <TimeOfDay />
-
     <power-energy-chart
       v-if="ready"
       :power-energy-dataset="currentDataset"
@@ -136,8 +134,6 @@ import EnergyCompare from '@/components/Energy/Charts/CompareChart'
 import PriceChart from '@/components/Charts/PriceChart'
 import TemperatureChart from '@/components/Energy/Charts/TemperatureChart'
 
-import TimeOfDay from '@/components/Energy/TimeOfDay.vue'
-
 export default {
   components: {
     PowerEnergyChart,
@@ -145,8 +141,7 @@ export default {
     EmissionIntensityChart,
     EnergyCompare,
     PriceChart,
-    TemperatureChart,
-    TimeOfDay
+    TemperatureChart
   },
 
   props: {

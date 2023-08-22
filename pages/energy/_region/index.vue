@@ -36,13 +36,13 @@
     <div 
       v-if="ready" 
       class="vis-table-container">
-      <vis-section
+      <!-- <vis-section
         :date-hover="hoverDate"
         :on-hover="isHovering"
         class="vis-container"
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"
-      />
+      /> -->
       <summary-section
         :hover-date="hoverDate"
         :is-hovering="isHovering"
@@ -50,6 +50,10 @@
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"
       />
+
+      <div style="width: 100%">
+        <TimeOfDaySection />
+      </div>
     </div>
   </div>
 </template>
@@ -67,6 +71,7 @@ import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import VisSection from '@/components/Energy/VisSection.vue'
 import SummarySection from '@/components/Energy/SummarySection.vue'
+import TimeOfDaySection from '@/components/Energy/TimeOfDaySection.vue'
 
 export default {
   layout: 'main',
@@ -112,7 +117,8 @@ export default {
   components: {
     DataOptionsBar,
     VisSection,
-    SummarySection
+    SummarySection,
+    TimeOfDaySection
   },
 
   data() {
