@@ -172,7 +172,8 @@ export default {
       allowResize: 'regionEnergy/allowResize',
 
       query: 'app/query',
-      showFeatureToggle: 'app/showFeatureToggle'
+      showFeatureToggle: 'app/showFeatureToggle',
+      isTouchDevice: 'app/isTouchDevice'
     }),
     
     regionId() {
@@ -327,6 +328,9 @@ export default {
   mounted() {
     if (window.innerWidth < 1024) {
       this.setVisTableWidthUnit(100, 100, '%')
+    }
+
+    if (this.isTouchDevice) {
       this.setAllowResize(false)
     } else {
       this.setAllowResize(true)
