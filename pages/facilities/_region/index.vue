@@ -279,6 +279,7 @@ export default {
   },
 
   mounted() {
+    this.setAllowResize(false)
     this.$store.dispatch('currentView', 'facilities')
     this.sortBy = this.facilitySortBy
     this.orderBy = this.facilityOrderBy
@@ -305,7 +306,8 @@ export default {
     ...mapMutations({
       previousPath: 'facility/previousPath',
       setFilteredFacilities: 'facility/filteredFacilities',
-      setQuery: 'app/facilitiesQuery'
+      setQuery: 'app/facilitiesQuery',
+      setAllowResize: 'regionEnergy/allowResize'
     }),
     fetchData() {
       const urls = []

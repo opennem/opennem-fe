@@ -1020,6 +1020,7 @@ export default {
   },
 
   created() {
+    this.setAllowResize(false)
     this.getFacility()
 
     this.doUpdateTickFormats({
@@ -1044,7 +1045,8 @@ export default {
       setInterval: 'facility/interval',
       setFilterPeriod: 'facility/filterPeriod',
       setShowFields: 'feedback/showFields',
-      setQuery: 'app/query'
+      setQuery: 'app/query',
+      setAllowResize: 'regionEnergy/allowResize'
     }),
 
     ...mapActions({

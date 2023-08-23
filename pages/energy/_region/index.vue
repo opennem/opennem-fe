@@ -328,6 +328,8 @@ export default {
     if (window.innerWidth < 1024) {
       this.setVisTableWidthUnit(100, 100, '%')
       this.setAllowResize(false)
+    } else {
+      this.setAllowResize(true)
     }
 
     this.doUpdateTickFormats({
