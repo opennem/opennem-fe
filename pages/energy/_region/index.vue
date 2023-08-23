@@ -85,6 +85,8 @@ import VisSection from '@/components/Energy/VisSection.vue'
 import SummarySection from '@/components/Energy/SummarySection.vue'
 import Divider from '@/components/Divider.vue'
 
+const minTableWidth = 420
+
 export default {
   layout: 'main',
 
@@ -423,9 +425,8 @@ export default {
       const e = this.$refs.visTableContainer
       const visWidth = clientX
       const tableWidth = e.offsetWidth - clientX
-      const limit = 450
 
-      if (tableWidth > limit && visWidth > limit) {
+      if (tableWidth > minTableWidth && visWidth > minTableWidth) {
         this.setVisTableWidthUnit(visWidth, tableWidth, 'px')
       }
 
@@ -433,6 +434,7 @@ export default {
     },
 
     handleResize() {
+      const minTableWidth = 250
       const windowWidth = window.innerWidth
 
       // this will reset the vis/table width to 65/35 % when the window is resized
@@ -449,9 +451,9 @@ export default {
 
       const tableCurrentWidth = this.$refs.tableContainer.$el.offsetWidth
 
-      if (tableCurrentWidth < 450) {
-        // table width should not be less than 450
-        this.setVisTableWidthUnit(windowWidth - 450, 450, 'px')
+      if (tableCurrentWidth < minTableWidth) {
+        // table width should not be less than minTableWidth
+        this.setVisTableWidthUnit(windowWidth - minTableWidth, minTableWidth, 'px')
       } else if (this.widthUnit === 'px') {
         // when resizing, convert px to % so it will be responsive
         const tableWidth = this.tableWidth / windowWidth * 100
