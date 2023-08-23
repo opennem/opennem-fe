@@ -51,6 +51,7 @@
         @isHovering="handleIsHovering"
       />
       <Divider 
+        v-if="allowResize"
         :allow-y="false"
         :vertical="true"
         @dragging="(d) => dragging = d" 
@@ -168,10 +169,12 @@ export default {
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
+      allowResize: 'regionEnergy/allowResize',
 
       query: 'app/query',
       showFeatureToggle: 'app/showFeatureToggle'
     }),
+    
     regionId() {
       return this.$route.params.region
     },
@@ -324,6 +327,7 @@ export default {
   mounted() {
     if (window.innerWidth < 1024) {
       this.setVisTableWidthUnit(100, 100, '%')
+      this.setAllowResize(false)
     }
 
     this.doUpdateTickFormats({
@@ -376,7 +380,9 @@ export default {
       setYGuides: 'visInteract/yGuides',
 
       setEmissionsVolumePrefix: 'chartOptionsEmissionsVolume/chartUnitPrefix',
-      setEmissionsVolumeDisplayPrefix: 'chartOptionsEmissionsVolume/chartDisplayPrefix'
+      setEmissionsVolumeDisplayPrefix: 'chartOptionsEmissionsVolume/chartDisplayPrefix',
+
+      setAllowResize: 'regionEnergy/allowResize'
     }),
 
     setVisTableWidthUnit(vis, table, unit) {

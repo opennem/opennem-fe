@@ -85,6 +85,7 @@
     />
 
     <Divider 
+      v-if="allowResize"
       style="margin-left: 0.5rem;"
       :allow-x="false" 
       :show="showDivider"
@@ -187,6 +188,8 @@ export default {
       xTicks: 'visInteract/xTicks',
       visTickFormat: 'visInteract/tickFormat',
       visSecondTickFormat: 'visInteract/secondTickFormat',
+
+      allowResize: 'regionEnergy/allowResize'
     }),
 
     showDateAxis: {

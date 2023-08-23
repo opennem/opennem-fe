@@ -163,6 +163,7 @@
     />
 
     <Divider
+      v-if="allowResize"
       style="margin-left: 0.5rem;"
       :allow-x="false"
       :show="showDivider"
@@ -372,7 +373,8 @@ export default {
       isTypeArea: 'chartOptionsPowerEnergy/isTypeArea',
       isTypeProportion: 'chartOptionsPowerEnergy/isTypeProportion',
       isTypeLine: 'chartOptionsPowerEnergy/isTypeLine',
-      isTypeChangeSinceLine: 'chartOptionsPowerEnergy/isTypeChangeSinceLine'
+      isTypeChangeSinceLine: 'chartOptionsPowerEnergy/isTypeChangeSinceLine',
+      allowResize: 'regionEnergy/allowResize'
     }),
 
     showDateAxis: {

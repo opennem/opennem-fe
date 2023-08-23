@@ -135,6 +135,7 @@
     />
 
     <Divider 
+      v-if="allowResize"
       style="margin-left: 0.5rem;"
       :allow-x="false" 
       :show="showDivider"
@@ -302,7 +303,9 @@ export default {
       chartYAxis: 'chartOptionsEmissionsVolume/chartYAxis',
       chartUnitPrefix: 'chartOptionsEmissionsVolume/chartUnitPrefix',
       chartDisplayPrefix: 'chartOptionsEmissionsVolume/chartDisplayPrefix',
-      chartCurrentUnit: 'chartOptionsEmissionsVolume/chartCurrentUnit'
+      chartCurrentUnit: 'chartOptionsEmissionsVolume/chartCurrentUnit',
+
+      allowResize: 'regionEnergy/allowResize'
     }),
 
     showDateAxis: {

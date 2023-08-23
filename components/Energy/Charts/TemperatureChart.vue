@@ -87,7 +87,8 @@
       @enter="handleVisEnter"
       @leave="handleVisLeave"
     />
-    <Divider 
+    <Divider
+      v-if="allowResize"
       style="margin-left: 0.5rem;"
       :allow-x="false" 
       :show="showDivider"
@@ -185,7 +186,8 @@ export default {
       currentDataset: 'regionEnergy/currentDataset',
       domainTemperature: 'regionEnergy/domainTemperature',
       summary: 'regionEnergy/summary',
-      isEnergyType: 'regionEnergy/isEnergyType'
+      isEnergyType: 'regionEnergy/isEnergyType',
+      allowResize: 'regionEnergy/allowResize'
     }),
 
     showDateAxis: {
