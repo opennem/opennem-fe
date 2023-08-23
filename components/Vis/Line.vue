@@ -1043,7 +1043,7 @@ export default {
         if (this.range === '1D') {
           className = 'interval-5m'
         } else if (this.range === '3D') {
-          tickLength = utcDay.every(0.5)
+          tickLength = utcDay.every(1)
           className = 'range-3d'
         } else if (this.range === '7D') {
           tickLength = utcDay.every(1)
@@ -1096,13 +1096,19 @@ export default {
           }
         }
       } else {
-        if (this.range === '1D' || this.range === '3D' || this.range === '7D') {
-          tickLength = utcDay.every(1)
+        if (this.range === '30D') {
+          tickLength = timeMonday.every(0.5)
         } else if (this.range === '1Y') {
-          if (this.interval === 'Week') {
-            tickLength = 7
-          } else if (this.interval === 'Month') {
+          if (this.interval === INTERVAL_DAY) {
+            tickLength = timeMonday.every(1)
+          } else if (this.interval === INTERVAL_WEEK) {
+            tickLength = timeMonday.every(1)
+          } else if (this.interval === INTERVAL_MONTH) {
             tickLength = timeMonth.every(1)
+          }
+        } else if (this.range === 'ALL') {
+          if (this.interval === INTERVAL_YEAR) {
+            tickLength = timeYear.every(1)
           }
         }
       }

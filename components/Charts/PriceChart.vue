@@ -60,6 +60,7 @@
       :x-guides="xGuides"
       :y-guides="[300, 2000, 6000, 10000, 14000]"
       :filter-period="filterPeriod"
+      :zoomed="isZoomed"
       :class="{ dragging: dragging }"
       class="price-pos-vis vis-chart"
       @dateOver="handleDateHover"
@@ -93,6 +94,7 @@
       :x-guides="xGuides"
       :y-guides="[0, 100, 200, 300]"
       :filter-period="filterPeriod"
+      :zoomed="isZoomed"
       :class="{ dragging: dragging }"
       class="price-vis vis-chart"
       @dateOver="handleDateHover"
@@ -127,6 +129,7 @@
       :x-guides="xGuides"
       :y-guides="[-60, -400]"
       :filter-period="filterPeriod"
+      :zoomed="isZoomed"
       :class="{ dragging: dragging }"
       class="price-neg-vis vis-chart"
       @dateOver="handleDateHover"
@@ -251,6 +254,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      tabletBreak: 'app/tabletBreak',
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
       xGuides: 'visInteract/xGuides',
@@ -274,6 +278,10 @@ export default {
       set(value) {
         this.$store.commit('chartOptionsPrice/chartDateAxis', value)
       }
+    },
+
+    isZoomed() {
+      return this.zoomExtent.length > 0
     },
 
     tickFormat() {
