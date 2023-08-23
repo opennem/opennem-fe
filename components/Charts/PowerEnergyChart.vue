@@ -155,6 +155,7 @@
       :read-only="readOnly"
       :interval="interval"
       :filter-period="filterPeriod"
+      :append-datapoint="isTypeLine || isTypeChangeSinceLine"
       class="date-brush vis-chart"
       @date-hover="handleDateHover"
       @date-filter="handleZoomExtent"
