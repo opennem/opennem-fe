@@ -705,6 +705,7 @@ export default {
   mounted() {
     this.$emit('changeDataset', this.changeSinceDataset)
     this.chartHeight = this.visHeight
+    this.handleTypeClick()
   },
 
   methods: {
