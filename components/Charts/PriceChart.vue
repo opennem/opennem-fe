@@ -360,6 +360,12 @@ export default {
     }
   },
 
+  mounted() {
+    if (this.tabletBreak) {
+      this.chartHeight = this.chartHeight + (this.chartHeight * 0.8)
+    }
+  },
+
   methods: {
     ...mapActions({
       doUpdateXTicks: 'visInteract/doUpdateXTicks',

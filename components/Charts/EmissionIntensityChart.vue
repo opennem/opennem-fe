@@ -179,6 +179,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      tabletBreak: 'app/tabletBreak',
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
       xGuides: 'visInteract/xGuides',
@@ -274,6 +275,12 @@ export default {
         interval: this.interval,
         filterPeriod: this.filterPeriod
       })
+    }
+  },
+
+  mounted() {
+    if (this.tabletBreak) {
+      this.chartHeight = this.chartHeight + (this.chartHeight * 0.8)
     }
   },
 

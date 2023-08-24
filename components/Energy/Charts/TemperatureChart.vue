@@ -188,7 +188,8 @@ export default {
       domainTemperature: 'regionEnergy/domainTemperature',
       summary: 'regionEnergy/summary',
       isEnergyType: 'regionEnergy/isEnergyType',
-      allowResize: 'regionEnergy/allowResize'
+      allowResize: 'regionEnergy/allowResize',
+      tabletBreak: 'app/tabletBreak'
     }),
 
     showDateAxis: {
@@ -293,6 +294,12 @@ export default {
         interval: this.interval,
         filterPeriod: this.filterPeriod
       })
+    }
+  },
+
+  mounted() {
+    if (this.tabletBreak) {
+      this.chartHeight = this.chartHeight + (this.chartHeight * 0.8)
     }
   },
 
