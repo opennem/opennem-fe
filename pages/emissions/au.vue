@@ -574,6 +574,8 @@ export default {
       this.getYearData()
     }
     this.updateAxisGuides()
+
+    this.setAllowResize(false)
   },
 
   methods: {
@@ -591,7 +593,9 @@ export default {
       setSourceLabel: 'emissionsPage/footerSourceLabel',
       setSourceUrl: 'emissionsPage/footerSourceUrl',
 
-      setEmissionsVolumePrefix: 'chartOptionsEmissionsVolume/chartUnitPrefix'
+      setEmissionsVolumePrefix: 'chartOptionsEmissionsVolume/chartUnitPrefix',
+
+      setAllowResize: 'regionEnergy/allowResize'
     }),
 
     async getQuarterData() {

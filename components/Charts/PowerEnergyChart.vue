@@ -5,6 +5,8 @@
       'has-border-bottom': !chartShown
     }"
     class="chart"
+    @mouseenter="() => showDivider = true"
+    @mouseleave="() => showDivider = false"
   >
     <power-energy-chart-options
       :read-only="readOnly"
@@ -57,7 +59,7 @@
       :curve="chartCurve"
       :y-min="isTypeArea ? computedYMin : 0"
       :y-max="isTypeArea ? computedYMax : 100"
-      :vis-height="chartHeight"
+      :vis-height="visHeight"
       :hover-on="hoverOn"
       :hover-date="hoverDate"
       :dynamic-extent="zoomExtent"
@@ -66,7 +68,7 @@
       :y-guides="yGuides"
       :x-axis-dy="tabletBreak ? 8 : 12"
       :y-axis-ticks="5"
-      :show-x-axis="showDateAxis"
+      :show-x-axis="false"
       :compare-dates="compareDates"
       :focus-date="focusDate"
       :focus-on="focusOn"
@@ -83,6 +85,7 @@
       :unit="` ${chartDisplayPrefix}${chartUnit}`"
       :null-check-prop="'_total'"
       :filter-period="filterPeriod"
+      :class="{ dragging: dragging }"
       class="vis-chart"
       @dateOver="handleDateHover"
       @domainOver="handleDomainHover"
@@ -106,7 +109,7 @@
     </button>
     <multi-line
       v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
-      :svg-height="chartHeight - 30"
+      :svg-height="visHeight"
       :domains1="domains"
       :dataset1="dataset"
       :domains2="[
@@ -134,6 +137,7 @@
       :display-prefix="chartDisplayPrefix"
       :should-convert-value="shouldConvertValue"
       :convert-value="convertValue"
+      :class="{ dragging: dragging }"
       class="vis-chart"
       @date-hover="handleDateHover"
       @domain-hover="handleDomainHover"
@@ -142,7 +146,7 @@
     />
 
     <date-brush
-      v-if="showDateAxis && chartShown && (isTypeLine || isTypeChangeSinceLine)"
+      v-if="showDateAxis && chartShown"
       :dataset="dataset"
       :zoom-range="zoomExtent"
       :x-ticks="xTicks"
@@ -151,12 +155,22 @@
       :read-only="readOnly"
       :interval="interval"
       :filter-period="filterPeriod"
+      :append-datapoint="isEnergyType || isTypeLine || isTypeChangeSinceLine"
       class="date-brush vis-chart"
       @date-hover="handleDateHover"
       @date-filter="handleZoomExtent"
       @enter="handleVisEnter"
       @leave="handleVisLeave"
     />
+
+    <Divider
+      v-if="allowResize"
+      style="margin-left: 0.5rem;"
+      :allow-x="false"
+      :show="showDivider"
+      @dragging="(d) => dragging = d" 
+      @dragged="onDragged"
+      @last-drag="() => draggedHeight = visHeight" />
   </div>
 </template>
 
@@ -177,6 +191,7 @@ import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
 import StackedAreaVis from '@/components/Vis/StackedArea'
+import Divider from '@/components/Divider.vue'
 import PowerEnergyChartOptions from './PowerEnergyChartOptions'
 
 const powerOptions = {
@@ -218,7 +233,8 @@ export default {
     PowerEnergyChartOptions,
     StackedAreaVis,
     MultiLine,
-    DateBrush
+    DateBrush,
+    Divider
   },
 
   props: {
@@ -276,7 +292,7 @@ export default {
     },
     chartHeight: {
       type: Number,
-      default: 300
+      default: 330
     },
     filterPeriod: {
       type: String,
@@ -309,6 +325,15 @@ export default {
     yMax: {
       type: Number,
       default: 0
+    }
+  },
+
+  data() {
+    return {
+      visHeight: 330,
+      draggedHeight: 330,
+      dragging: false,
+      showDivider: false
     }
   },
 
@@ -349,7 +374,8 @@ export default {
       isTypeArea: 'chartOptionsPowerEnergy/isTypeArea',
       isTypeProportion: 'chartOptionsPowerEnergy/isTypeProportion',
       isTypeLine: 'chartOptionsPowerEnergy/isTypeLine',
-      isTypeChangeSinceLine: 'chartOptionsPowerEnergy/isTypeChangeSinceLine'
+      isTypeChangeSinceLine: 'chartOptionsPowerEnergy/isTypeChangeSinceLine',
+      allowResize: 'regionEnergy/allowResize'
     }),
 
     showDateAxis: {
@@ -914,6 +940,10 @@ export default {
     }
   },
 
+  mounted() {
+    this.visHeight = this.chartHeight
+  },
+
   methods: {
     ...mapMutations({
       setHoverDomain: 'visInteract/hoverDomain'
@@ -1046,6 +1076,14 @@ export default {
         interval: this.interval,
         filterPeriod: this.filterPeriod
       })
+    },
+
+    onDragged({ offsetY }) {
+      if (this.draggedHeight + offsetY > 50) {
+        this.visHeight = this.draggedHeight + offsetY
+      } else {
+        this.visHeight = 50
+      }
     }
   }
 }
@@ -1056,5 +1094,9 @@ export default {
   position: absolute;
   top: 39px;
   right: 24px;
+}
+.dragging {
+  pointer-events: none;
+  user-select: none;
 }
 </style>

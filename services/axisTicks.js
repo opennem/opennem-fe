@@ -23,33 +23,29 @@ import {
 
 export default function (range, interval, isZoomed, filterPeriod, mobileScreen) {
   if (range === '3D') {
-    return utcDay.every(0.5)
+    if (isZoomed) return null
+    return utcDay.every(1)
   }
   if (range === '7D') {
-    if (isZoomed) return utcHour.every(6)
+    if (isZoomed) return null
     return utcDay.every(1)
   }
   if (range === '30D') {
-    if (isZoomed) {
-      return timeDay.every(1)
-    }
-    return timeDay.every(0.5)
+    if (isZoomed) return timeMonday.every(0.5)
+    return timeMonday.every(mobileScreen ? 1 : 0.5)
   }
   if (range === '1Y') {
     if (interval === 'Day') {
-      if (isZoomed) {
-        return null
-      }
-      return timeMonth.every(1)
+      if (isZoomed) return timeMonday.every(1)
+      return timeMonday.every(mobileScreen ? 8 : 4)
     }
     if (interval === 'Week') {
-      if (isZoomed) {
-        return null
-      }
-      return timeMonday.every(4)
+      if (isZoomed) return timeMonday.every(1)
+      return timeMonday.every(mobileScreen ? 8 : 4)
     }
     if (interval === 'Month') {
-      return timeMonth.every(1)
+      if (isZoomed) return timeMonth.every(1)
+      return timeMonth.every(mobileScreen ? 2 : 1)
     }
   }
   if (range === 'ALL') {

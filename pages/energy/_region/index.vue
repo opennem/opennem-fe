@@ -15,7 +15,9 @@
       <div 
         v-if="!ready" 
         class="vis-table-container loading-containers">
-        <div class="vis-container">
+        <div 
+          class="vis-container" 
+          :style="{ width: `${visWidth}${widthUnit}`}">
           <div 
             class="loader-block" 
             style="height: 30px" />
@@ -23,7 +25,9 @@
             class="loader-block" 
             style="height: 400px" />
         </div>
-        <div class="table-container">
+        <div 
+          class="table-container" 
+          :style="{ width: `${tableWidth}${widthUnit}`}">
           <div 
             class="loader-block" 
             style="height: 30px" />
@@ -34,18 +38,30 @@
       </div>
     </transition>
     <div 
-      v-if="ready" 
+      v-if="ready"
+      ref="visTableContainer"
       class="vis-table-container">
       <vis-section
         :date-hover="hoverDate"
         :on-hover="isHovering"
+        :style="{ width: `${visWidth}${widthUnit}`}"
+        :class="{ dragging: dragging }"
         class="vis-container"
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"
       />
+      <Divider 
+        v-if="allowResize"
+        :allow-y="false"
+        :vertical="true"
+        @dragging="(d) => dragging = d" 
+        @dragged="onDragged" />
       <summary-section
+        ref="tableContainer"
         :hover-date="hoverDate"
         :is-hovering="isHovering"
+        :class="{ dragging: dragging }"
+        :style="{ width: `${tableWidth}${widthUnit}`}"
         class="table-container"
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"
@@ -57,6 +73,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import _includes from 'lodash.includes'
+import EventBus from '~/plugins/eventBus.js'
 import * as SI from '@/constants/si'
 import { isPowerRange, RANGES, RANGE_INTERVALS } from '@/constants/ranges.js'
 import {
@@ -67,6 +84,9 @@ import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import VisSection from '@/components/Energy/VisSection.vue'
 import SummarySection from '@/components/Energy/SummarySection.vue'
+import Divider from '@/components/Divider.vue'
+
+const minTableWidth = 420
 
 export default {
   layout: 'main',
@@ -112,7 +132,8 @@ export default {
   components: {
     DataOptionsBar,
     VisSection,
-    SummarySection
+    SummarySection,
+    Divider
   },
 
   data() {
@@ -123,7 +144,11 @@ export default {
       useDev: this.$config.useDev,
       ranges: RANGES,
       intervals: RANGE_INTERVALS,
-      isWemOrAu: false
+      isWemOrAu: false,
+      visWidth: 65,
+      tableWidth: 35,
+      widthUnit: '%', // px
+      dragging: false
     }
   },
 
@@ -144,10 +169,13 @@ export default {
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
+      allowResize: 'regionEnergy/allowResize',
 
       query: 'app/query',
-      showFeatureToggle: 'app/showFeatureToggle'
+      showFeatureToggle: 'app/showFeatureToggle',
+      isTouchDevice: 'app/isTouchDevice'
     }),
+    
     regionId() {
       return this.$route.params.region
     },
@@ -298,6 +326,16 @@ export default {
   },
 
   mounted() {
+    if (window.innerWidth < 1024) {
+      this.setVisTableWidthUnit(100, 100, '%')
+    }
+
+    if (this.isTouchDevice) {
+      this.setAllowResize(false)
+    } else {
+      this.setAllowResize(true)
+    }
+
     this.doUpdateTickFormats({
       range: this.range,
       interval: this.interval,
@@ -309,6 +347,15 @@ export default {
       isZoomed: this.filteredDates.length > 0,
       filterPeriod: this.filterPeriod
     })
+
+    window.addEventListener(
+      'resize',
+      this.handleResize
+    )
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize)
   },
 
   methods: {
@@ -339,8 +386,16 @@ export default {
       setYGuides: 'visInteract/yGuides',
 
       setEmissionsVolumePrefix: 'chartOptionsEmissionsVolume/chartUnitPrefix',
-      setEmissionsVolumeDisplayPrefix: 'chartOptionsEmissionsVolume/chartDisplayPrefix'
+      setEmissionsVolumeDisplayPrefix: 'chartOptionsEmissionsVolume/chartDisplayPrefix',
+
+      setAllowResize: 'regionEnergy/allowResize'
     }),
+
+    setVisTableWidthUnit(vis, table, unit) {
+      this.visWidth = vis
+      this.tableWidth = table
+      this.widthUnit = unit
+    },
 
     updateEmissionsData() {
       this.doUpdateEmissionIntensityDataset({
@@ -370,15 +425,64 @@ export default {
     },
     handleRangeChange(range) {
       this.setRange(range)
-    },
+  },
     handleIntervalChange(interval) {
       this.setInterval(interval)
     },
     handleFilterPeriodChange(period) {
       this.setFilterPeriod(period)
+    },
+
+    onDragged({ clientX }) {
+      const e = this.$refs.visTableContainer
+      const visWidth = clientX
+      const tableWidth = e.offsetWidth - clientX
+
+      if (tableWidth > minTableWidth && visWidth > minTableWidth) {
+        this.setVisTableWidthUnit(visWidth, tableWidth, 'px')
+      }
+
+      EventBus.$emit('vis-resize')
+    },
+
+    handleResize() {
+      const minTableWidth = 250
+      const windowWidth = window.innerWidth
+
+      // this will reset the vis/table width to 65/35 % when the window is resized
+      if (windowWidth >= 1024 && this.tableWidth === 100 && this.widthUnit === '%') {
+        this.setVisTableWidthUnit(65, 35, '%')
+        return
+      }
+
+      // if less than 1024px, set all to 100% width
+      if (windowWidth < 1024) {
+        this.setVisTableWidthUnit(100, 100, '%')
+        return
+      }
+
+      const tableCurrentWidth = this.$refs.tableContainer.$el.offsetWidth
+
+      if (tableCurrentWidth < minTableWidth) {
+        // table width should not be less than minTableWidth
+        this.setVisTableWidthUnit(windowWidth - minTableWidth, minTableWidth, 'px')
+      } else if (this.widthUnit === 'px') {
+        // when resizing, convert px to % so it will be responsive
+        const tableWidth = this.tableWidth / windowWidth * 100
+        const visWidth = 100 - tableWidth
+        this.setVisTableWidthUnit(visWidth, tableWidth, '%')
+      }
     }
   }
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.vis-table-container {
+  user-select: none;
+}
+.dragging {
+  pointer-events: none;
+  user-select: none;
+}
+</style>

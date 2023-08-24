@@ -58,8 +58,8 @@ export const state = () => ({
   powerEnergyPrefix: '',
   dataPowerEnergyInterval: null,
   regionTimezoneString: null,
-
   compareResponse: null,
+  allowResize: true
 })
 
 export const getters = {
@@ -111,6 +111,7 @@ export const getters = {
   },
 
   compareResponse: (state) => state.compareResponse,
+  allowResize: (state) => state.allowResize
 }
 
 export const mutations = {
@@ -204,6 +205,9 @@ export const mutations = {
   },
   compareResponse(state, compareResponse) {
     state.compareResponse = _cloneDeep(compareResponse)
+  },
+  allowResize(state, allowResize) {
+    state.allowResize = allowResize
   }
 }
 

@@ -5,6 +5,8 @@
       'has-border-bottom': !chartShown
     }"
     class="chart"
+    @mouseenter="() => showDivider = true"
+    @mouseleave="() => showDivider = false"
   >
     <price-chart-options
       :read-only="readOnly"
@@ -52,12 +54,14 @@
       :y-min="300"
       :y-max="20000"
       :show-x-axis="false"
-      :vis-height="50"
+      :vis-height="positiveLogChartHeight"
       :show-zoom-out="false"
       :connect-zero="false"
       :x-guides="xGuides"
       :y-guides="[300, 2000, 6000, 10000, 14000]"
       :filter-period="filterPeriod"
+      :zoomed="isZoomed"
+      :class="{ dragging: dragging }"
       class="price-pos-vis vis-chart"
       @dateOver="handleDateHover"
       @svgClick="handleSvgClick"
@@ -84,12 +88,14 @@
       :y-min="0"
       :y-max="300"
       :show-x-axis="false"
-      :vis-height="80"
+      :vis-height="chartHeight"
       :show-zoom-out="false"
       :connect-zero="false"
       :x-guides="xGuides"
       :y-guides="[0, 100, 200, 300]"
       :filter-period="filterPeriod"
+      :zoomed="isZoomed"
+      :class="{ dragging: dragging }"
       class="price-vis vis-chart"
       @dateOver="handleDateHover"
       @svgClick="handleSvgClick"
@@ -117,12 +123,14 @@
       :y-max="-1100"
       :show-x-axis="false"
       :show-tooltip="false"
-      :vis-height="35"
+      :vis-height="negativeLogChartHeight"
       :show-zoom-out="false"
       :connect-zero="false"
       :x-guides="xGuides"
       :y-guides="[-60, -400]"
       :filter-period="filterPeriod"
+      :zoomed="isZoomed"
+      :class="{ dragging: dragging }"
       class="price-neg-vis vis-chart"
       @dateOver="handleDateHover"
       @svgClick="handleSvgClick"
@@ -146,6 +154,14 @@
       @enter="handleVisEnter"
       @leave="handleVisLeave"
     />
+    <Divider
+      v-if="allowResize"    
+      style="transform: translateY(-14px); margin-left: 0.5rem;"
+      :allow-x="false" 
+      :show="showDivider"
+      @dragging="(d) => dragging = d" 
+      @dragged="onDragged"
+      @last-drag="() => draggedHeight = chartHeight" />
   </div>
 </template>
 
@@ -158,6 +174,7 @@ import DateDisplay from '@/services/DateDisplay.js'
 import PriceChartOptions from './PriceChartOptions'
 import LineVis from '@/components/Vis/Line.vue'
 import DateBrush from '@/components/Vis/DateBrush'
+import Divider from '@/components/Divider.vue'
 
 const options = {
   type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_LINE],
@@ -173,7 +190,8 @@ export default {
   components: {
     PriceChartOptions,
     LineVis,
-    DateBrush
+    DateBrush,
+    Divider
   },
 
   props: {
@@ -226,12 +244,19 @@ export default {
   data() {
     return {
       options,
-      lineColour: '#e34a33'
+      lineColour: '#e34a33',
+      chartHeight: 80,
+      positiveLogChartHeight: 50,
+      negativeLogChartHeight: 35,
+      draggedHeight: 80,
+      dragging: false,
+      showDivider: false
     }
   },
 
   computed: {
     ...mapGetters({
+      tabletBreak: 'app/tabletBreak',
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
       xGuides: 'visInteract/xGuides',
@@ -244,7 +269,8 @@ export default {
       chartCurve: 'chartOptionsPrice/chartCurve',
 
       summary: 'regionEnergy/summary',
-      isEnergyType: 'regionEnergy/isEnergyType'
+      isEnergyType: 'regionEnergy/isEnergyType',
+      allowResize: 'regionEnergy/allowResize'
     }),
 
     showDateAxis: {
@@ -254,6 +280,10 @@ export default {
       set(value) {
         this.$store.commit('chartOptionsPrice/chartDateAxis', value)
       }
+    },
+
+    isZoomed() {
+      return this.zoomExtent.length > 0
     },
 
     tickFormat() {
@@ -332,6 +362,14 @@ export default {
     }
   },
 
+  mounted() {
+    if (this.tabletBreak) {
+      this.positiveLogChartHeight = 50 * 125 / 80
+      this.negativeLogChartHeight = 35 * 125 / 80
+      this.chartHeight = 125
+    }
+  },
+
   methods: {
     ...mapActions({
       doUpdateXTicks: 'visInteract/doUpdateXTicks',
@@ -354,6 +392,17 @@ export default {
     },
     handleZoomReset() {
       this.$emit('zoomExtent', [])
+    },
+    onDragged({ offsetY }) {
+      if (this.draggedHeight + offsetY > 35) {
+        const updatedHeight = this.draggedHeight + offsetY
+        const changeInPercentage = updatedHeight / this.chartHeight
+        this.positiveLogChartHeight = this.positiveLogChartHeight * changeInPercentage
+        this.negativeLogChartHeight = this.negativeLogChartHeight * changeInPercentage
+        this.chartHeight = updatedHeight
+      } else {
+        this.chartHeight = 35
+      }
     }
   }
 }
@@ -395,5 +444,10 @@ export default {
 :deep(.price-pos-vis .focus-bottom-rect),
 :deep(.price-neg-vis .focus-top-rect) {
   opacity: 0 !important;
+}
+
+.dragging {
+  opacity: 0.75;
+  pointer-events: none;
 }
 </style>

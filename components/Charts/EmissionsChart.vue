@@ -5,6 +5,8 @@
       'has-border-bottom': !chartShown
     }"
     class="chart"
+    @mouseenter="() => showDivider = true"
+    @mouseleave="() => showDivider = false"
   >
     <emissions-chart-options
       :read-only="readOnly"
@@ -44,7 +46,7 @@
       :curve="chartCurve"
       :y-min="isTypeArea ? yMin : 0"
       :y-max="isTypeArea ? yMax : 100"
-      :vis-height="visHeight"
+      :vis-height="chartHeight"
       :show-x-axis="false"
       :show-tooltip="false"
       :show-zoom-out="showDateAxis"
@@ -68,6 +70,7 @@
       :compare-dates="compareDates"
       :show-total-line="showTotalLine"
       :use-offset-diverge="useOffsetDiverge"
+      :class="{ dragging: dragging }"
       class="vis-chart"
       @dateOver="handleDateHover"
       @domainOver="handleDomainHover"
@@ -91,7 +94,7 @@
     </button>
     <multi-line
       v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
-      :svg-height="visHeight"
+      :svg-height="chartHeight"
       :domains1="domains"
       :dataset1="dataset"
       :projection-dataset="projectionDataset"
@@ -107,6 +110,7 @@
       :display-prefix="chartDisplayPrefix"
       :should-convert-value="shouldConvertValue"
       :convert-value="convertValue"
+      :class="{ dragging: dragging }"
       class="vis-chart"
       @date-hover="handleDateHover"
       @domain-hover="handleDomainHover"
@@ -129,6 +133,15 @@
       @enter="handleVisEnter"
       @leave="handleVisLeave"
     />
+
+    <Divider 
+      v-if="allowResize"
+      style="margin-left: 0.5rem;"
+      :allow-x="false" 
+      :show="showDivider"
+      @dragging="(d) => dragging = d" 
+      @dragged="onDragged"
+      @last-drag="() => draggedHeight = chartHeight" />
   </div>
 </template>
 
@@ -146,7 +159,8 @@ import { EMISSIONS } from '@/constants/data-types.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
-import StackedAreaVis from '@/components/Vis/StackedArea2.vue'
+import StackedAreaVis from '@/components/Vis/StackedArea.vue'
+import Divider from '@/components/Divider.vue'
 import EmissionsChartOptions from './EmissionsChartOptions'
 
 const emissionsOptions = {
@@ -170,7 +184,8 @@ export default {
     EmissionsChartOptions,
     StackedAreaVis,
     MultiLine,
-    DateBrush
+    DateBrush,
+    Divider
   },
 
   props: {
@@ -260,6 +275,15 @@ export default {
     }
   },
 
+  data() {
+    return {
+      chartHeight: 200,
+      draggedHeight: 200,
+      dragging: false,
+      showDivider: false
+    }
+  },
+
   computed: {
     ...mapGetters({
       tabletBreak: 'app/tabletBreak',
@@ -279,7 +303,9 @@ export default {
       chartYAxis: 'chartOptionsEmissionsVolume/chartYAxis',
       chartUnitPrefix: 'chartOptionsEmissionsVolume/chartUnitPrefix',
       chartDisplayPrefix: 'chartOptionsEmissionsVolume/chartDisplayPrefix',
-      chartCurrentUnit: 'chartOptionsEmissionsVolume/chartCurrentUnit'
+      chartCurrentUnit: 'chartOptionsEmissionsVolume/chartCurrentUnit',
+
+      allowResize: 'regionEnergy/allowResize'
     }),
 
     showDateAxis: {
@@ -678,6 +704,8 @@ export default {
 
   mounted() {
     this.$emit('changeDataset', this.changeSinceDataset)
+    this.chartHeight = this.visHeight
+    this.handleTypeClick()
   },
 
   methods: {
@@ -731,6 +759,14 @@ export default {
         interval: this.interval,
         filterPeriod: this.filterPeriod
       })
+    },
+
+    onDragged({ offsetY }) {
+      if (this.draggedHeight + offsetY > 50) {
+        this.chartHeight = this.draggedHeight + offsetY
+      } else {
+        this.chartHeight = 50
+      }
     },
 
     getChangeSinceDataset(dataset, calculateProportion) {
@@ -799,5 +835,9 @@ export default {
   position: absolute;
   top: 39px;
   right: 24px;
+}
+.dragging {
+  pointer-events: none;
+  user-select: none;
 }
 </style>
