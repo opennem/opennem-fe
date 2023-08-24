@@ -54,7 +54,7 @@
       :y-min="300"
       :y-max="20000"
       :show-x-axis="false"
-      :vis-height="50"
+      :vis-height="positiveLogChartHeight"
       :show-zoom-out="false"
       :connect-zero="false"
       :x-guides="xGuides"
@@ -123,7 +123,7 @@
       :y-max="-1100"
       :show-x-axis="false"
       :show-tooltip="false"
-      :vis-height="35"
+      :vis-height="negativeLogChartHeight"
       :show-zoom-out="false"
       :connect-zero="false"
       :x-guides="xGuides"
@@ -246,6 +246,8 @@ export default {
       options,
       lineColour: '#e34a33',
       chartHeight: 80,
+      positiveLogChartHeight: 50,
+      negativeLogChartHeight: 35,
       draggedHeight: 80,
       dragging: false,
       showDivider: false
@@ -391,7 +393,11 @@ export default {
     },
     onDragged({ offsetY }) {
       if (this.draggedHeight + offsetY > 35) {
-        this.chartHeight = this.draggedHeight + offsetY
+        const updatedHeight = this.draggedHeight + offsetY
+        const changeInPercentage = updatedHeight / this.chartHeight
+        this.positiveLogChartHeight = this.positiveLogChartHeight * changeInPercentage
+        this.negativeLogChartHeight = this.negativeLogChartHeight * changeInPercentage
+        this.chartHeight = updatedHeight
       } else {
         this.chartHeight = 35
       }
