@@ -364,7 +364,9 @@ export default {
 
   mounted() {
     if (this.tabletBreak) {
-      this.chartHeight = 150
+      this.positiveLogChartHeight = 50 * 125 / 80
+      this.negativeLogChartHeight = 35 * 125 / 80
+      this.chartHeight = 125
     }
   },
 
