@@ -52,7 +52,7 @@
     "lodash.uniqby": "^4.7.0",
     "mapbox-gl": "2.5.1",
     "mapbox-gl-animated-popup": "0.2.1",
-    "nuxt": "^3.6.5",
+    "nuxt": "^2.15.8",
     "papaparse": "^5.3.1",
     "v-dragged": "^0.0.5",
     "v-tooltip": "^2.0.2",
@@ -70,10 +70,10 @@
     "eslint-loader": "^2.0.0",
     "eslint-plugin-prettier": "2.6.2",
     "eslint-plugin-vue": "^4.0.0",
-    "node-sass": "^9.0.0",
-    "nodemon": "^3.0.1",
+    "node-sass": "^6.0.1",
+    "nodemon": "^1.11.0",
     "prettier": "^2.7.1",
-    "release-it": "^16.1.5",
+    "release-it": "^14.0.2",
     "sass-loader": "^10.2.1"
   },
   "release-it": {
