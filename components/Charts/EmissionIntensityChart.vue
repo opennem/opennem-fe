@@ -5,6 +5,8 @@
       'has-border-bottom': !chartShown
     }"
     class="emission-intensity-chart chart"
+    @mouseenter="() => showDivider = true"
+    @mouseleave="() => showDivider = false"
   >
     <emission-intensity-chart-options
       :read-only="readOnly"
@@ -52,11 +54,12 @@
       :show-x-axis="false"
       :show-tooltip="false"
       :show-point-on-hover="true"
-      :vis-height="150"
+      :vis-height="chartHeight"
       :show-zoom-out="showDateAxis"
       :x-guides="xGuides"
       :y-axis-ticks="3"
       :filter-period="filterPeriod"
+      :class="{ dragging: dragging }"
       class="emission-intensity-vis vis-chart"
       @dateOver="handleDateHover"
       @svgClick="handleSvgClick"
@@ -80,6 +83,15 @@
       @enter="handleVisEnter"
       @leave="handleVisLeave"
     />
+
+    <Divider 
+      v-if="allowResize"
+      style="margin-left: 0.5rem;"
+      :allow-x="false" 
+      :show="showDivider"
+      @dragging="(d) => dragging = d" 
+      @dragged="onDragged"
+      @last-drag="() => draggedHeight = chartHeight" />
   </div>
 </template>
 
@@ -90,8 +102,8 @@ import DateDisplay from '@/services/DateDisplay.js'
 import AxisTimeFormats from '@/services/axisTimeFormats.js'
 import EmissionIntensityChartOptions from '@/components/Charts/EmissionIntensityChartOptions'
 import LineVis from '@/components/Vis/Line.vue'
-import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
+import Divider from '@/components/Divider.vue'
 
 const options = {
   type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_LINE],
@@ -108,7 +120,7 @@ export default {
     EmissionIntensityChartOptions,
     LineVis,
     DateBrush,
-    MultiLine
+    Divider
   },
 
   props: {
@@ -157,12 +169,17 @@ export default {
   data() {
     return {
       options,
-      lineColour: '#e34a33'
+      lineColour: '#e34a33',
+      chartHeight: 150,
+      draggedHeight: 150,
+      dragging: false,
+      showDivider: false
     }
   },
 
   computed: {
     ...mapGetters({
+      tabletBreak: 'app/tabletBreak',
       focusOn: 'visInteract/isFocusing',
       focusDate: 'visInteract/focusDate',
       xGuides: 'visInteract/xGuides',
@@ -172,6 +189,8 @@ export default {
       xTicks: 'visInteract/xTicks',
       visTickFormat: 'visInteract/tickFormat',
       visSecondTickFormat: 'visInteract/secondTickFormat',
+
+      allowResize: 'regionEnergy/allowResize'
     }),
 
     showDateAxis: {
@@ -259,6 +278,12 @@ export default {
     }
   },
 
+  mounted() {
+    if (this.tabletBreak) {
+      this.chartHeight = 200
+    }
+  },
+
   methods: {
     ...mapActions({
       doUpdateXTicks: 'visInteract/doUpdateXTicks',
@@ -282,6 +307,13 @@ export default {
     },
     handleZoomReset() {
       this.$emit('zoomExtent', [])
+    },
+    onDragged({ offsetY }) {
+      if (this.draggedHeight + offsetY > 50) {
+        this.chartHeight = this.draggedHeight + offsetY
+      } else {
+        this.chartHeight = 50
+      }
     }
   }
 }
@@ -293,5 +325,9 @@ export default {
   top: 39px;
   right: 14px;
   z-index: 999;
+}
+.dragging {
+  pointer-events: none;
+  user-select: none;
 }
 </style>

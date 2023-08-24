@@ -462,6 +462,8 @@ export default {
       debounce(this.handleResize, CONFIG.DEBOUNCE_MILLISECONDS)
     )
 
+    EventBus.$on('vis-resize', this.handleResize)
+
     this.setupWidthHeight()
     this.setup()
     this.update()
@@ -469,6 +471,7 @@ export default {
 
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize)
+    EventBus.$off('vis-resize', this.handleResize)
   },
 
   methods: {
@@ -965,7 +968,12 @@ export default {
 
     resizeRedraw() {
       this.x.range([0, this.width])
-      this.y.range(this.yRange)
+      this.yRange = this.yAxisInvert ? [0, this.height] : [this.height, 0]
+      if (this.yAxisLog) {
+        this.y.range(this.yRange)
+      } else {
+        this.y.range([this.height, 0])
+      }
 
       this.xAxis.tickSize(-this.height)
       this.yAxis.tickSize(this.width)
@@ -1035,7 +1043,7 @@ export default {
         if (this.range === '1D') {
           className = 'interval-5m'
         } else if (this.range === '3D') {
-          tickLength = utcDay.every(0.5)
+          tickLength = utcDay.every(1)
           className = 'range-3d'
         } else if (this.range === '7D') {
           tickLength = utcDay.every(1)
@@ -1088,13 +1096,19 @@ export default {
           }
         }
       } else {
-        if (this.range === '1D' || this.range === '3D' || this.range === '7D') {
-          tickLength = utcDay.every(1)
+        if (this.range === '30D') {
+          tickLength = timeMonday.every(0.5)
         } else if (this.range === '1Y') {
-          if (this.interval === 'Week') {
-            tickLength = 7
-          } else if (this.interval === 'Month') {
+          if (this.interval === INTERVAL_DAY) {
+            tickLength = timeMonday.every(1)
+          } else if (this.interval === INTERVAL_WEEK) {
+            tickLength = timeMonday.every(1)
+          } else if (this.interval === INTERVAL_MONTH) {
             tickLength = timeMonth.every(1)
+          }
+        } else if (this.range === 'ALL') {
+          if (this.interval === INTERVAL_YEAR) {
+            tickLength = timeYear.every(1)
           }
         }
       }

@@ -233,6 +233,7 @@ module.exports = {
     '~plugins/filters.js',
     '~plugins/directives.js',
     '~plugins/tooltip.js',
+    '~plugins/vDragged.js',
     { src: '~/plugins/mapbox', mode: 'client' }
   ],
 

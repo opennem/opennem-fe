@@ -6,6 +6,8 @@
       adjustment: chartPrice
     }"
     class="temperature-chart chart"
+    @mouseenter="() => showDivider = true"
+    @mouseleave="() => showDivider = false"
   >
     <temperature-chart-options
       :read-only="readOnly"
@@ -56,11 +58,13 @@
       :show-x-axis="false"
       :show-tooltip="false"
       :show-point-on-hover="true"
-      :vis-height="100"
-      :show-zoom-out="showDateAxis"
+      :vis-height="chartHeight"
+      :show-zoom-out="false"
       :x-guides="xGuides"
       :y-axis-ticks="3"
       :filter-period="filterPeriod"
+      :zoomed="zoomExtent.length > 0"
+      :class="{ dragging: dragging }"
       class="temperature-vis vis-chart"
       @dateOver="handleDateHover"
       @svgClick="handleSvgClick"
@@ -84,6 +88,14 @@
       @enter="handleVisEnter"
       @leave="handleVisLeave"
     />
+    <Divider
+      v-if="allowResize"
+      style="margin-left: 0.5rem;"
+      :allow-x="false" 
+      :show="showDivider"
+      @dragging="(d) => dragging = d" 
+      @dragged="onDragged"
+      @last-drag="() => draggedHeight = chartHeight" />
   </div>
 </template>
 
@@ -95,6 +107,7 @@ import DateDisplay from '@/services/DateDisplay.js'
 import TemperatureChartOptions from '@/components/Energy/Charts/TemperatureChartOptions'
 import LineVis from '@/components/Vis/Line.vue'
 import DateBrush from '@/components/Vis/DateBrush'
+import Divider from '@/components/Divider.vue'
 
 import {
   TEMPERATURE,
@@ -117,7 +130,8 @@ export default {
   components: {
     TemperatureChartOptions,
     LineVis,
-    DateBrush
+    DateBrush,
+    Divider
   },
 
   props: {
@@ -146,7 +160,11 @@ export default {
   data() {
     return {
       options,
-      lineColour: '#e34a33'
+      lineColour: '#e34a33',
+      chartHeight: 100,
+      draggedHeight: 100,
+      dragging: false,
+      showDivider: false
     }
   },
 
@@ -169,7 +187,9 @@ export default {
       currentDataset: 'regionEnergy/currentDataset',
       domainTemperature: 'regionEnergy/domainTemperature',
       summary: 'regionEnergy/summary',
-      isEnergyType: 'regionEnergy/isEnergyType'
+      isEnergyType: 'regionEnergy/isEnergyType',
+      allowResize: 'regionEnergy/allowResize',
+      tabletBreak: 'app/tabletBreak'
     }),
 
     showDateAxis: {
@@ -277,6 +297,12 @@ export default {
     }
   },
 
+  mounted() {
+    if (this.tabletBreak) {
+      this.chartHeight = 200
+    }
+  },
+
   methods: {
     ...mapActions({
       doUpdateXTicks: 'visInteract/doUpdateXTicks',
@@ -300,6 +326,13 @@ export default {
     },
     handleZoomReset() {
       this.$emit('zoomExtent', [])
+    },
+    onDragged({ offsetY }) {
+      if (this.draggedHeight + offsetY > 50) {
+        this.chartHeight = this.draggedHeight + offsetY
+      } else {
+        this.chartHeight = 50
+      }
     }
   }
 }
@@ -311,5 +344,9 @@ export default {
   top: 39px;
   right: 14px;
   z-index: 999;
+}
+.dragging {
+  pointer-events: none;
+  user-select: none;
 }
 </style>

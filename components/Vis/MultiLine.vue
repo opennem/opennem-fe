@@ -63,6 +63,7 @@
 
 <script>
 import _cloneDeep from 'lodash.clonedeep'
+import debounce from 'lodash.debounce'
 import { select, mouse } from 'd3-selection'
 import { scaleOrdinal, scaleLinear, scaleTime, scaleSymlog } from 'd3-scale'
 import { axisBottom, axisLeft, axisRight } from 'd3-axis'
@@ -76,6 +77,7 @@ import {
 } from 'd3-shape'
 import { format as d3Format } from 'd3-format'
 import { extent } from 'd3-array'
+import EventBus from '~/plugins/eventBus.js'
 
 import * as CONFIG from './shared/config.js'
 
@@ -481,7 +483,8 @@ export default {
     this.setupWidthHeight()
     this.setup()
 
-    window.addEventListener('resize', this.handleResize)
+    window.addEventListener('resize', debounce(this.handleResize, CONFIG.DEBOUNCE_MILLISECONDS))
+    EventBus.$on('vis-resize', this.handleResize)
   },
 
   updated() {
@@ -492,6 +495,7 @@ export default {
 
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize)
+    EventBus.$off('vis-resize', this.handleResize)
   },
 
   methods: {

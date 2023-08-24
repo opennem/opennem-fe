@@ -14,7 +14,6 @@
       :zoom-extent="zoomExtent"
       :renewables-line-colour="renewablesLineColour"
       :prop-name="propName"
-      :chart-height="chartHeight"
       :filter-period="filterPeriod"
       :incomplete-intervals="incompleteIntervals"
       :is-energy-type="isEnergyType"
@@ -33,7 +32,6 @@
     />
 
     <emissions-chart
-      style="margin-top: 1rem;"
       v-if="ready && domainEmissions.length > 0 && featureEmissions"
       :emissions-dataset="currentDataset"
       :domain-emissions="currentDomainEmissions"
@@ -54,7 +52,6 @@
     />
 
     <emission-intensity-chart
-      style="margin-top: 1rem;"
       v-if="ready && domainEmissions.length > 0 && featureEmissions"
       :emission-intensity-dataset="emissionIntensityData"
       :range="range"
@@ -71,7 +68,6 @@
     />
 
     <price-chart
-      style="margin-top: 1rem;"
       v-if="ready && !isEnergyType && domainPrice.length > 0"
       :price-dataset="currentDataset"
       :domain-price="domainPrice"
@@ -87,7 +83,6 @@
       @svgClick="handleSvgClick"
     />
     <price-chart
-      style="margin-top: 1rem;"
       v-if="ready && isEnergyType && domainDemandPrice.length > 0"
       :price-dataset="currentDataset"
       :domain-price="domainDemandPrice"
@@ -105,6 +100,7 @@
     />
 
     <temperature-chart
+      style="top: -14px;"
       v-if="ready && domainTemperature.length > 0"
       :hover-on="isHovering"
       :hover-date="hoverDate"
@@ -168,8 +164,6 @@ export default {
 
   computed: {
     ...mapGetters({
-      tabletBreak: 'app/tabletBreak',
-
       range: 'range',
       interval: 'interval',
       compareDifference: 'compareDifference',
@@ -202,10 +196,6 @@ export default {
       featureEmissions: 'feature/emissions'
     }),
 
-    regionId() {
-      return this.$route.params.region
-    },
-
     domains() {
       return this.currentDomainPowerEnergy
         ? _cloneDeep(this.currentDomainPowerEnergy).reverse()
@@ -229,15 +219,6 @@ export default {
 
     propName() {
       return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
-    },
-
-    chartHeight() {
-      let height = 330
-      const isNemOrAu = this.regionId === 'nem' || this.regionId === 'au'
-      if (isNemOrAu && !this.tabletBreak) {
-        height = 520
-      }
-      return height
     },
 
     incompleteIntervals() {
