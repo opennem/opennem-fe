@@ -73,7 +73,7 @@
     "node-sass": "^6.0.1",
     "nodemon": "^1.11.0",
     "prettier": "^2.7.1",
-    "release-it": "^14.0.2",
+    "release-it": "^16.1.5",
     "sass-loader": "^10.2.1"
   },
   "release-it": {
