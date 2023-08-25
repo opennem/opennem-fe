@@ -1,16 +1,51 @@
 <template>
   <div class="energy-region">
-    <data-options-bar
-      :ranges="ranges"
-      :intervals="intervals"
-      :range="range"
-      :interval="interval"
-      :filter-period="filterPeriod"
-      @queryChange="handleQueryChange"
-      @rangeChange="handleRangeChange"
-      @intervalChange="handleIntervalChange"
-      @filterPeriodChange="handleFilterPeriodChange"
-    />
+
+    <div style="display: flex; align-items: center;">
+      <div 
+        class="field has-addons" 
+        style="margin-bottom: 0; margin-left: 1rem;">
+        <p class="control">
+          <button 
+            style="font-size: 11px;"
+            class="button is-rounded" 
+            :class="{ 'is-selected': view === 'main' }"
+            @click="() => view = 'main'">
+            <span>Combined</span>
+          </button>
+        </p>
+        <p class="control">
+          <button 
+            style="font-size: 11px;"
+            class="button is-rounded" 
+            :class="{ 'is-selected': view === 'time-of-day' }"
+            @click="() => view = 'time-of-day'">
+            <span>Time of day</span>
+          </button>
+        </p>
+      </div>
+
+      <data-options-bar
+        v-if="view === 'main'"
+        :ranges="ranges"
+        :intervals="intervals"
+        :range="range"
+        :interval="interval"
+        :filter-period="filterPeriod"
+        :view="view"
+        @queryChange="handleQueryChange"
+        @rangeChange="handleRangeChange"
+        @intervalChange="handleIntervalChange"
+        @filterPeriodChange="handleFilterPeriodChange"
+      />
+
+      <DataOptionsBarTimeOfDay
+        v-if="view === 'time-of-day'"
+        :view="view"
+      />
+      
+    </div>
+    
     <transition name="fade">
       <div 
         v-if="!ready" 
@@ -41,7 +76,9 @@
       v-if="ready"
       ref="visTableContainer"
       class="vis-table-container">
+
       <vis-section
+        v-if="view === 'main'"
         :date-hover="hoverDate"
         :on-hover="isHovering"
         :style="{ width: `${visWidth}${widthUnit}`}"
@@ -50,23 +87,37 @@
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"
       />
+
+      <div 
+        v-if="view === 'time-of-day'" 
+        style="margin-right: 10px;"
+        :style="{ width: `${visWidth}${widthUnit}`}"
+        :class="{ dragging: dragging }">
+        <TimeOfDaySection />
+      </div>
+
       <Divider 
         v-if="allowResize"
         :allow-y="false"
         :vertical="true"
         @dragging="(d) => dragging = d" 
         @dragged="onDragged" />
+      
       <summary-section
         ref="tableContainer"
+        style="position: sticky; top: 0; height: 100%"
         :hover-date="hoverDate"
         :is-hovering="isHovering"
         :class="{ dragging: dragging }"
-        :style="{ width: `${tableWidth}${widthUnit}`}"
+        :style="{
+          width: `${tableWidth}${widthUnit}`
+        }"
         class="table-container"
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"
       />
     </div>
+
   </div>
 </template>
 
@@ -82,9 +133,11 @@ import {
 } from '@/constants/energy-regions.js'
 import * as FT from '@/constants/energy-fuel-techs/group-default.js'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
+import DataOptionsBarTimeOfDay from '~/components/Energy/DataOptionsBarTimeOfDay.vue'
 import VisSection from '@/components/Energy/VisSection.vue'
 import SummarySection from '@/components/Energy/SummarySection.vue'
 import Divider from '@/components/Divider.vue'
+import TimeOfDaySection from '~/components/Energy/TimeOfDaySection.vue'
 
 const minTableWidth = 420
 
@@ -131,9 +184,11 @@ export default {
 
   components: {
     DataOptionsBar,
+    DataOptionsBarTimeOfDay,
     VisSection,
     SummarySection,
-    Divider
+    Divider,
+    TimeOfDaySection
   },
 
   data() {
@@ -148,7 +203,8 @@ export default {
       visWidth: 65,
       tableWidth: 35,
       widthUnit: '%', // px
-      dragging: false
+      dragging: false,
+      view: 'main' // main, time-of-day
     }
   },
 
@@ -480,6 +536,7 @@ export default {
 <style lang="scss" scoped>
 .vis-table-container {
   user-select: none;
+  transition: all 1s ease;
 }
 .dragging {
   pointer-events: none;
