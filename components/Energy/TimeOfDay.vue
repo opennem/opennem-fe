@@ -1,5 +1,27 @@
 <template>
   <div style="display: flex;">
+    <div style="width: 20%; font-size: 0.8em;">
+      <table class="table is-striped is-narrow is-fullwidth">
+        <thead>
+          <tr>
+            <th 
+              colspan="2" 
+              style="text-align:right">{{ currentX }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr 
+            v-for="(domain, i) in tableRowDomains" 
+            :key="`${domain.id}-${i}`"
+            style="font-weight: bold;"
+            :style="{ color: getTextColour(domain.id) }">
+            <td>{{ domain.id }}</td>
+            <td style="text-align: right;">{{ domain.value | formatValue }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <div 
       style="width: 80%" 
       class="vis-wrapper">
@@ -25,28 +47,6 @@
         :second-tick-format="secondTickFormat"
         class="date-brush vis-chart"
       />
-    </div>
-
-    <div style="width: 20%; font-size: 0.8em;">
-      <table class="table is-striped is-narrow is-fullwidth">
-        <thead>
-          <tr>
-            <th 
-              colspan="2" 
-              style="text-align:right">{{ currentX }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr 
-            v-for="(domain, i) in tableRowDomains" 
-            :key="`${domain.id}-${i}`"
-            style="font-weight: bold;"
-            :style="{ color: getTextColour(domain.id) }">
-            <td>{{ domain.id }}</td>
-            <td style="text-align: right;">{{ domain.value | formatValue }}</td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   </div>
 </template>

@@ -1,15 +1,13 @@
 <template>
-  <div class="time-of-day-section">
+  <div 
+    class="time-of-day-section" 
+    style="margin-left: 1rem;">
     <!-- <header>
       <GroupSelector />
       <DomainSelector 
         :domains="allDomains" 
         @domainSelect="(domain) => selectedDomain = domain" />
     </header> -->
-
-    <header>
-      <h2>Last XX days</h2>
-    </header>
 
     <div 
       v-for="ds in datasets" 
@@ -275,13 +273,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-header {
-  h2 {
-    font-weight: bold;
-    font-size: 1.3rem;
-    margin-left: 0.6rem;
-  }
-}
-</style>
