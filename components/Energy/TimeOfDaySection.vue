@@ -12,8 +12,9 @@
     <div 
       v-for="ds in datasets" 
       :key="ds.id">
-      <h3 style="margin-left: 0.6rem; font-weight: bold;">{{ ds.label }}</h3>
+      <!-- <h3 style="margin-left: 0.6rem; font-weight: bold;">{{ ds.label }}</h3> -->
       <TimeOfDay
+        :title="ds.label"
         :domains="timeDomains"
         :dataset="ds.data"
         :x-ticks="xTicks"
@@ -26,6 +27,8 @@
         :today-key="todayKey"
         @date-hover="handleDateHover"
       />
+
+      <hr>
     </div>
 
   </div>
@@ -144,14 +147,20 @@ export default {
       })
 
       const getColour = (key) => {
-        if (key === '_average') return '#e34a33'
-        return this.todayKey === key ? 'steelblue' : '#ccc'
+        if (key === '_average') return '#DC3A33'
+        return this.todayKey === key ? '#666' : '#dedede'
+      }
+
+      const getLabel = (key) => {
+        if (key === '_average') return 'Average'
+        return this.todayKey === key ? `Today (${key})` : key
       }
 
       const datasetKeys = keys.map((key) => {
         return {
           domain: key,
           id: key,
+          label: getLabel(key),
           colour: getColour(key)
         }
       })  

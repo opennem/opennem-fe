@@ -1,12 +1,22 @@
 <template>
   <div style="display: flex;">
-    <div style="width: 20%; font-size: 0.8em;">
-      <table class="table is-striped is-narrow is-fullwidth">
+    <div style="width: 25%;">
+      <table 
+        style="font-size: 11px;" 
+        class="table is-narrow is-fullwidth">
         <thead>
           <tr>
-            <th 
-              colspan="2" 
-              style="text-align:right">{{ currentX }}</th>
+            <th>
+              <button 
+                class="button is-small" 
+                @click="handleTableToggle">
+                <i 
+                  class="fal fa-fw" 
+                  :class="{ 'fa-caret-right': !expand, 'fa-caret-down': expand }" />
+                {{ title }}
+              </button>
+            </th>
+            <th style="text-align:right">{{ currentX }}</th>
           </tr>
         </thead>
         <tbody>
@@ -15,7 +25,7 @@
             :key="`${domain.id}-${i}`"
             style="font-weight: bold;"
             :style="{ color: getTextColour(domain.id) }">
-            <td>{{ domain.id }}</td>
+            <td>{{ domain.label }}</td>
             <td style="text-align: right;">{{ domain.value | formatValue }}</td>
           </tr>
         </tbody>
@@ -23,10 +33,10 @@
     </div>
 
     <div 
-      style="width: 80%" 
+      style="width: 75%" 
       class="vis-wrapper">
       <MultiLine
-        :svg-height="250"
+        :svg-height="chartHeight"
         :domains1="domains"
         :dataset1="dataset"
         :y1-max="yMax"
@@ -63,6 +73,10 @@ export default {
   },
 
   props: {
+    title: {
+      type: String,
+      default: ''
+    },
     domains: {
       type: Array,
       default: () => []
@@ -105,11 +119,39 @@ export default {
     }
   },
 
+  data() {
+    return {
+      expand: false
+    }
+  },
+
   computed: {
+    chartHeight() {
+      return this.expand ? 400 : 200
+    },
+    
+
     tableRowDomains() {
+      return this.expand ? this.allRowsDomains : this.collapsedDomains
+    },
+
+    allRowsDomains() {
       return this.domains.map((domain) => {
         return {
           id: domain.id,
+          label: domain.label,
+          value: this.hoverValues ? this.hoverValues[domain.id] : null
+        }
+      })  
+    },
+
+    collapsedDomains() {
+      const domains = this.domains.filter(d => d.id === '_average' || d.id === this.todayKey)
+
+      return domains.map((domain) => {
+        return {
+          id: domain.id,
+          label: domain.label,
           value: this.hoverValues ? this.hoverValues[domain.id] : null
         }
       })  
@@ -144,9 +186,41 @@ export default {
     },
     
     getTextColour(id) {
-      if (id === '_average') return '#e34a33'
-      return this.todayKey === id ? 'steelblue' : '#123123'
+      if (id === '_average') return '#DC3A33'
+      return this.todayKey === id ? '#333' : '#787878'
+    },
+
+    handleTableToggle() {
+      this.expand = !this.expand
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+@import '~/assets/scss/variables.scss';
+
+table.table {
+  position: sticky;
+  top: 0;
+  background: none;
+  border-bottom: 1px solid #696969;
+  
+  thead tr th {
+    border-bottom: 1px solid #696969;
+    padding-left: 0;
+    vertical-align: center;
+  }
+
+  button.button {
+    background: transparent;
+    padding: 0;
+    min-width: auto;
+    color: #454545;
+    font-weight: bold;
+    font-size: 13px;
+    height: auto;
+    font-family: $header-font-family;
+  }
+}
+</style>
