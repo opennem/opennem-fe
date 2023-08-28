@@ -2,17 +2,11 @@
   <div 
     class="time-of-day-section" 
     style="margin-left: 1rem;">
-    <!-- <header>
-      <GroupSelector />
-      <DomainSelector 
-        :domains="allDomains" 
-        @domainSelect="(domain) => selectedDomain = domain" />
-    </header> -->
 
     <div 
       v-for="ds in datasets" 
-      :key="ds.id">
-      <!-- <h3 style="margin-left: 0.6rem; font-weight: bold;">{{ ds.label }}</h3> -->
+      :key="ds.id"
+      style="padding-bottom: 1rem; margin-bottom: 1rem;">
       <TimeOfDay
         :title="ds.label"
         :domains="timeDomains"
@@ -27,10 +21,7 @@
         :today-key="todayKey"
         @date-hover="handleDateHover"
       />
-
-      <hr>
     </div>
-
   </div>
 </template>
 
@@ -45,7 +36,6 @@ import { CHART_CURVE_SMOOTH } from '@/constants/chart-options.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
-import DomainSelector from './DomainSelector.vue'
 import TimeOfDay from './TimeOfDay.vue'
 
 function getX(d) {
@@ -97,7 +87,6 @@ export default {
     MultiLine,
     DateBrush,
     GroupSelector,
-    DomainSelector,
     TimeOfDay
   },
 
@@ -192,8 +181,9 @@ export default {
 
 
   created() {
-    this.xTicks = utcMinute.every(60)
-    this.tickFormat = utcFormat('%H:%M')
+    // this.xTicks = utcMinute.every(60)
+    this.xTicks = null
+    this.tickFormat = utcFormat('%I%p')
     this.secondTickFormat = () => ''
     this.chartCurve = CHART_CURVE_SMOOTH
 
