@@ -1720,6 +1720,7 @@ export default {
 <style lang="scss" scoped>
 .stacked-area-vis {
   position: relative;
+  line-height: 0;
 }
 .reset-btn {
   position: absolute;

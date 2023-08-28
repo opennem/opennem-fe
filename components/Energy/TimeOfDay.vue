@@ -209,7 +209,7 @@ table.table {
   thead tr th {
     border-bottom: 1px solid #696969;
     padding-left: 0;
-    vertical-align: center;
+    vertical-align: bottom;
   }
 
   button.button {

@@ -1193,6 +1193,7 @@ export default {
 <style lang="scss" scoped>
 .line-vis {
   position: relative;
+  line-height: 0;
 }
 .reset-btn {
   position: absolute;

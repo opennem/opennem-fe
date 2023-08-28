@@ -100,7 +100,7 @@
     />
 
     <temperature-chart
-      style="top: -14px;"
+      style="top: -2px;"
       v-if="ready && domainTemperature.length > 0"
       :hover-on="isHovering"
       :hover-date="hoverDate"
