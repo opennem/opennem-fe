@@ -41,6 +41,7 @@
         :dataset1="dataset"
         :y1-max="yMax"
         :y1-min="yMin"
+        :y1-ticks="yTicks"
         :x-ticks="xTicks"
         :curve="chartCurve"
         :date-hovered="hoverDate"
@@ -62,6 +63,7 @@
 </template>
 
 <script>
+import { utcHour } from 'd3-time'
 import _cloneDeep from 'lodash.clonedeep'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
@@ -85,9 +87,9 @@ export default {
       type: Array,
       default: () => []
     },
-    xTicks: {
-      type: Function,
-      default: () => {}
+    yTicks: {
+      type: Array,
+      default: () => []
     },
     tickFormat: {
       type: Function,
@@ -121,7 +123,8 @@ export default {
 
   data() {
     return {
-      expand: false
+      expand: false,
+      xTicks: utcHour.every(2)
     }
   },
 

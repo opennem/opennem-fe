@@ -11,7 +11,7 @@
         :title="ds.label"
         :domains="timeDomains"
         :dataset="ds.data"
-        :x-ticks="xTicks"
+        :y-ticks="yTicks"
         :tick-format="tickFormat"
         :second-tick-format="secondTickFormat"
         :curve="chartCurve"
@@ -44,11 +44,7 @@ function getX(d) {
 }
 
 function getDay(d) {
-  const year = d.getUTCFullYear()
-  const month = d.getUTCMonth() + 1
-  const day = d.getUTCDate()
-
-  return `${year}-${month}-${day}`
+  return utcFormat('%e %b %Y')(d)
 }
 
 function getDayKeys(range) {
@@ -65,18 +61,30 @@ function getDayKeys(range) {
   return keys
 }
 
+function getTimeLabel(d) {
+  const date = new Date(d)
+  const hours = date.getUTCHours()
+  const minutes = date.getUTCMinutes()
+  const ampm = hours >= 12 ? 'pm' : 'am'
+  const hour = function() {
+    return hours === 0 || hours === 12 ? 12 : hours % 12
+  }()
+  const min = minutes === 0 ? '' : `:${minutes}`
+  return `${hour}${min}${ampm}`
+}
+
 function getTimebucket(interval) {
   let utcCurrent = new Date()
   utcCurrent.setUTCDate(utcCurrent.getDate());
   utcCurrent.setUTCHours(0, 0, 0, 0)
   const b = []
 
-  let x = getX(utcCurrent)
+  let x = getTimeLabel(utcCurrent)
 
   for (let i = 0; i < 1440 / interval; i++) {
     b.push({ x, date: utcCurrent, time: utcCurrent.getTime() })
     utcCurrent = addMinutes(utcCurrent, interval)
-    x = getX(utcCurrent)
+    x = getTimeLabel(utcCurrent)
   }
 
   return b
@@ -181,9 +189,8 @@ export default {
 
 
   created() {
-    // this.xTicks = utcMinute.every(60)
-    this.xTicks = null
-    this.tickFormat = utcFormat('%I%p')
+    this.yTicks = []
+    this.tickFormat = (d) => getTimeLabel(d)
     this.secondTickFormat = () => ''
     this.chartCurve = CHART_CURVE_SMOOTH
 
@@ -202,7 +209,6 @@ export default {
     handleDateHover(date) {
       // this.$emit('dateHover', date)
       this.hoverDate = utcMinute.every(this.intervalVal).round(date)
-      
     },
 
     getYMin(dataset) {
@@ -251,7 +257,7 @@ export default {
       dataset.forEach(d => {
         const date = d.date
         const day = getDay(date)
-        const x = getX(date)
+        const x = getTimeLabel(date)
         const find = timeBucket.find(b => b.x === x)
         find[day] = d.value
       })
