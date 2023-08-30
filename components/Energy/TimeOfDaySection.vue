@@ -38,11 +38,6 @@ import DateBrush from '@/components/Vis/DateBrush'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
 import TimeOfDay from './TimeOfDay.vue'
 
-function getX(d) {
-  const pad = (n) => String(n).padStart(2, '0')
-  return `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`
-}
-
 function getDay(d) {
   return utcFormat('%e %b %Y')(d)
 }
@@ -143,11 +138,6 @@ export default {
         return key !== 'x' && key !== 'date' && key !== 'time'
       })
 
-      const getColour = (key) => {
-        if (key === '_average') return '#DC3A33'
-        return this.todayKey === key ? '#666' : '#dedede'
-      }
-
       const getLabel = (key) => {
         if (key === '_average') return 'Average'
         return this.todayKey === key ? `Today (${key})` : key
@@ -157,8 +147,7 @@ export default {
         return {
           domain: key,
           id: key,
-          label: getLabel(key),
-          colour: getColour(key)
+          label: getLabel(key)
         }
       })  
 

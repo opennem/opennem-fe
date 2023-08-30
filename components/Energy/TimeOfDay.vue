@@ -16,7 +16,7 @@
                 {{ title }}
               </button>
             </th>
-            <th style="text-align:right">{{ currentX }}</th>
+            <th style="text-align:right;">{{ currentX }}</th>
           </tr>
         </thead>
         <tbody>
@@ -37,7 +37,7 @@
       class="vis-wrapper">
       <MultiLine
         :svg-height="chartHeight"
-        :domains1="domains"
+        :domains1="domainsWithColour"
         :dataset1="dataset"
         :y1-max="yMax"
         :y1-min="yMin"
@@ -132,24 +132,33 @@ export default {
     chartHeight() {
       return this.expand ? 400 : 200
     },
-    
 
+    domainsWithColour() {
+      return this.domains.map((domain) => {
+        return {
+          ...domain,
+          colour: this.getChartColour(domain.id),
+          value: this.hoverValues ? this.hoverValues[domain.id] : null
+        }
+      })
+    },
+    
     tableRowDomains() {
       return this.expand ? this.allRowsDomains : this.collapsedDomains
     },
 
     allRowsDomains() {
-      return this.domains.map((domain) => {
+      return this.domainsWithColour.map((domain) => {
         return {
           id: domain.id,
           label: domain.label,
           value: this.hoverValues ? this.hoverValues[domain.id] : null
         }
-      })  
+      }) 
     },
 
     collapsedDomains() {
-      const domains = this.domains.filter(d => d.id === '_average' || d.id === this.todayKey)
+      const domains = this.domainsWithColour.filter(d => d.id === '_average' || d.id === this.todayKey)
 
       return domains.map((domain) => {
         return {
@@ -187,10 +196,15 @@ export default {
     handleVisLeave() {
       // this.$emit('isHovering', false)
     },
-    
+
+    getChartColour(id) {
+      if (id === '_average') return '#DC3A33'
+      return this.todayKey === id ? '#333' : this.expand ? '#aaa' : '#ddd';
+    },
+
     getTextColour(id) {
       if (id === '_average') return '#DC3A33'
-      return this.todayKey === id ? '#333' : '#787878'
+      return this.todayKey === id ? '#333' : this.expand ? '#787878' : '#ddd';
     },
 
     handleTableToggle() {
@@ -218,12 +232,12 @@ table.table {
   button.button {
     background: transparent;
     padding: 0;
-    min-width: auto;
     color: #454545;
     font-weight: bold;
     font-size: 13px;
     height: auto;
     font-family: $header-font-family;
+    min-width: auto;
   }
 }
 </style>
