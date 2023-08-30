@@ -25,8 +25,7 @@
             :key="`${domain.id}-${i}`"
             style="font-weight: bold;"
             :style="{
-              color: getTextColour(domain.id),
-              backgroundColor: domain.id === hightlightRow ? '#ddd' : 'transparent'
+              color: getTextColour(domain.id)
             }"
             @mouseenter="() => handleMouseEnter(domain.id)"
             @mouseleave="() => handleMouseLeave()">
@@ -43,7 +42,7 @@
       <MultiLine
         :svg-height="chartHeight"
         :domains1="domainsWithColour"
-        :dataset1="dataset"
+        :dataset1="lineDataset"
         :y1-max="yMax"
         :y1-min="yMin"
         :y1-ticks="yTicks"
@@ -51,6 +50,7 @@
         :curve="chartCurve"
         :date-hovered="hoverDate"
         :highlight-domain="highlightDomain"
+        :positive-y-bg="'rgba(255,255,255, 0.2)'"
         class="vis-chart"
         @date-hover="(evt, date) => $emit('date-hover', date)" 
         @domain-hover="handleDomainHover"
@@ -150,6 +150,26 @@ export default {
         }
       })
     },
+
+    lineDataset() {
+      const arr = _cloneDeep(this.dataset)
+
+      arr.forEach((d, i) => {
+        const start = d.time
+        const next = arr[i+1] ? arr[i+1].time : null
+        if (next) {
+          const mid = (next - start) / 2
+          d.displayTime = d.time + mid
+        }
+      })
+
+      const lastSecondItem = arr[arr.length - 2]
+      const lastItem = arr[arr.length - 1]
+      const mid = (lastItem.time - lastSecondItem.time) / 2
+      lastItem.displayTime = lastItem.time + mid
+
+      return arr
+    },
     
     tableRowDomains() {
       return this.expand ? this.allRowsDomains : this.collapsedDomains
@@ -194,7 +214,7 @@ export default {
 
   methods: {
     handleDomainHover(domain) {
-      this.hightlightRow = domain
+      // this.hightlightRow = domain
     },
     
     handleVisEnter() {
