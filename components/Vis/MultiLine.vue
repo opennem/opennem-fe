@@ -32,12 +32,6 @@
       <g 
         :transform="axisTransform" 
         class="x-shades" />
-      <g 
-        :transform="axisTransform" 
-        class="cursor-line-group" />
-      <g 
-        :transform="axisTransform" 
-        class="hover-group" />
       
       <g 
         :transform="axisTransform" 
@@ -57,6 +51,14 @@
       <g 
         :transform="axisTransform" 
         class="y-axis-right-text" />
+
+      <g 
+        :transform="axisTransform" 
+        class="cursor-line-group" />
+      <g 
+        :transform="axisTransform" 
+        class="hover-group" />
+
     </svg>
   </div>
 </template>
@@ -238,6 +240,10 @@ export default {
     annotations: {
       type: Array,
       default: () => []
+    },
+    positiveYBg: {
+      type: String,
+      default: 'rgba(255,255,255, 0.6)'
     }
   },
 
@@ -378,6 +384,14 @@ export default {
         return updated
       }
       return []
+    },
+
+    yShades() {
+      return [{
+        start: this.y1?.domain()[1],
+        end: 0,
+        fill: this.positiveYBg
+      }]
     }
   },
 
@@ -704,16 +718,10 @@ export default {
         .attr('width', (d) => this.x(d.end) - this.x(d.start))
         .attr('height', this.height)
 
-      const yShades =  [{
-        start: this.y1.domain()[1],
-        end: 0,
-        fill: 'rgba(255,255,255, 0.6)'
-      }]
-
       this.$yShadesGroup.selectAll('rect').remove()
       this.$yShadesGroup
         .selectAll('rect')
-        .data(yShades)
+        .data(this.yShades)
         .enter()
         .append('rect')
         .attr('y', (d) => this.y1(d.start))
