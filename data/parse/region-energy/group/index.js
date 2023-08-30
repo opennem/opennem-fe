@@ -28,7 +28,7 @@ export default function ({
             allNulls = true
           g.domainIds.forEach((dId) => {
             groupValue += d[dId]
-            if (d[dId] || d[dId === 0]) {
+            if (d[dId] || d[dId] === 0) {
               allNulls = false
             }
           })
