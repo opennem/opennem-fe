@@ -33,6 +33,7 @@ import { utcFormat } from 'd3-time-format'
 import addMinutes from 'date-fns/addMinutes'
 import subDays from 'date-fns/subDays'
 import { CHART_CURVE_SMOOTH } from '@/constants/chart-options.js'
+import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
@@ -196,8 +197,11 @@ export default {
 
   methods: {
     handleDateHover(date) {
-      // this.$emit('dateHover', date)
-      this.hoverDate = utcMinute.every(this.intervalVal).round(date)
+      this.hoverDate = DateDisplay.getClosestDateByInterval(
+        date,
+        this.interval,
+        this.filterPeriod
+      )
     },
 
     getYMin(dataset) {
