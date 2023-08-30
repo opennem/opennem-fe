@@ -3,7 +3,7 @@
     <div style="width: 25%;">
       <table 
         style="font-size: 11px;" 
-        class="table is-narrow is-fullwidth">
+        class="table is-narrow is-fullwidth is-hoverable">
         <thead>
           <tr>
             <th>
@@ -24,7 +24,12 @@
             v-for="(domain, i) in tableRowDomains" 
             :key="`${domain.id}-${i}`"
             style="font-weight: bold;"
-            :style="{ color: getTextColour(domain.id) }">
+            :style="{
+              color: getTextColour(domain.id),
+              backgroundColor: domain.id === hightlightRow ? '#ddd' : 'transparent'
+            }"
+            @mouseenter="() => handleMouseEnter(domain.id)"
+            @mouseleave="() => handleMouseLeave()">
             <td>{{ domain.label }}</td>
             <td style="text-align: right;">{{ domain.value | formatValue }}</td>
           </tr>
@@ -45,6 +50,7 @@
         :x-ticks="xTicks"
         :curve="chartCurve"
         :date-hovered="hoverDate"
+        :highlight-domain="highlightDomain"
         class="vis-chart"
         @date-hover="(evt, date) => $emit('date-hover', date)" 
         @domain-hover="handleDomainHover"
@@ -124,7 +130,9 @@ export default {
   data() {
     return {
       expand: false,
-      xTicks: utcHour.every(2)
+      xTicks: utcHour.every(2),
+      highlightDomain: null,
+      hightlightRow: null
     }
   },
 
@@ -186,7 +194,7 @@ export default {
 
   methods: {
     handleDomainHover(domain) {
-      // console.log(domain)
+      this.hightlightRow = domain
     },
     
     handleVisEnter() {
@@ -199,7 +207,7 @@ export default {
 
     getChartColour(id) {
       if (id === '_average') return '#DC3A33'
-      return this.todayKey === id ? '#333' : this.expand ? '#aaa' : '#ddd';
+      return this.todayKey === id ? '#333' : this.expand ? '#cfcfcf' : '#ddd';
     },
 
     getTextColour(id) {
@@ -209,6 +217,14 @@ export default {
 
     handleTableToggle() {
       this.expand = !this.expand
+    },
+
+    handleMouseEnter(id) {
+      this.highlightDomain = id
+    },
+
+    handleMouseLeave() {
+      this.highlightDomain = null
     }
   }
 }

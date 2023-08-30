@@ -5,13 +5,13 @@
       style="margin-bottom: 0;">
         
       <button 
-        v-for="range in ranges"
-        :key="range.value"
+        v-for="d in ranges"
+        :key="d.value"
         style="font-size: 11px;"
         class="button is-rounded" 
-        :class="{ 'is-selected': view === range.value }"
-        @click="handleRangeClick">
-        <span>{{ range.label }}</span>
+        :class="{ 'is-selected': range === d.value }"
+        @click="() => handleRangeClick(d.value)">
+        <span>{{ d.label }}</span>
       </button>
         
     </div>
@@ -21,13 +21,13 @@
       style="margin-bottom: 0;">
         
       <button
-        v-for="interval in intervals"
-        :key="interval.value" 
+        v-for="d in intervals"
+        :key="d.value" 
         style="font-size: 11px;"
         class="button is-rounded" 
-        :class="{ 'is-selected': view === interval.value }"
-        @click="handleIntervalClick">
-        <span>{{ interval.label }}</span>
+        :class="{ 'is-selected': interval === d.value }"
+        @click="() => handleIntervalClick(d.value)">
+        <span>{{ d.label }}</span>
       </button>
         
     </div>
@@ -40,6 +40,14 @@ export default {
     view: {
       type: String,
       default: 'main'
+    },
+    range: {
+      type: String,
+      default: '3D'
+    },
+    interval: {
+      type: String,
+      default: '5m'
     }
   },
 
@@ -54,10 +62,10 @@ export default {
           label: '7D',
           value: '7D'
         },
-        {
-          label: '28D',
-          value: '28D'
-        }
+        // {
+        //   label: '28D',
+        //   value: '28D'
+        // }
       ],
       intervals: [
         {
@@ -74,11 +82,11 @@ export default {
 
   methods: {
     handleRangeClick(range) {
-      this.$emit('range-click', range)
+      this.$emit('rangeChange', range)
     },
 
     handleIntervalClick(interval) {
-      this.$emit('interval-click', interval)
+      this.$emit('intervalChange', interval)
     }
   }
 
