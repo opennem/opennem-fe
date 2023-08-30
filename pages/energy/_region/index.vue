@@ -42,6 +42,10 @@
       <DataOptionsBarTimeOfDay
         v-if="view === 'time-of-day'"
         :view="view"
+        :range="range"
+        :interval="interval"
+        @rangeChange="handleRangeChange"
+        @intervalChange="handleIntervalChange"
       />
       
     </div>
