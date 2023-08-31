@@ -200,7 +200,7 @@ export default {
     },
     pathStrokeWidth: {
       type: Number,
-      default: () => 2
+      default: () => 1
     },
     showCursorDots: {
       type: Boolean,
@@ -498,7 +498,10 @@ export default {
       this.$vis1Group
         .selectAll('path')
         .style('opacity', 0.9)
-        .style('stroke-width', this.pathStrokeWidth)
+        .style('stroke-width', (d) => {
+          const find = this.domains1.find((domain) => domain.id === d)
+          return find ? find.pathStrokeWidth : this.pathStrokeWidth
+        })
 
       this.$projectionVisGroup
         .selectAll('path')
@@ -766,7 +769,10 @@ export default {
           .append('path')
           .attr('class', (key) => `${key}-path`)
           .style('stroke', (key) => this.colours1[key])
-          .style('stroke-width', this.pathStrokeWidth)
+          .style('stroke-width', (d) => {
+            const find = this.domains1.find((domain) => domain.id === d)
+            return find ? find.pathStrokeWidth : this.pathStrokeWidth
+          })
           // .style('filter', 'url(#shadow)')
           .style('fill', 'transparent')
           .style('opacity', 0.9)
@@ -822,7 +828,10 @@ export default {
         .append('path')
         .attr('class', (key) => `${key}-path`)
         .style('stroke', (key) => this.colours1[key])
-        .style('stroke-width', this.pathStrokeWidth)
+        .style('stroke-width', (d) => {
+            const find = this.domains1.find((domain) => domain.id === d)
+            return find ? find.pathStrokeWidth : this.pathStrokeWidth
+          })
         // .style('filter', 'url(#shadow)')
         .style('fill', 'transparent')
         .style('opacity', 0.9)
