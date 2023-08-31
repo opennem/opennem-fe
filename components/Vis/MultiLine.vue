@@ -52,12 +52,13 @@
         :transform="axisTransform" 
         class="y-axis-right-text" />
 
-      <g 
-        :transform="axisTransform" 
-        class="cursor-line-group" />
+      
       <g 
         :transform="axisTransform" 
         class="hover-group" />
+      <g 
+        :transform="axisTransform" 
+        class="cursor-line-group" />
 
     </svg>
   </div>
@@ -459,29 +460,9 @@ export default {
     },
     highlightDomain(domain) {
       if (domain) {
-        this.$vis1Group
-          .selectAll('path')
-          .style('opacity', (d) => (d === domain ? 1 : 0.1))
-          .style('stroke-width', (d) =>
-            d === domain ? this.pathStrokeWidth + 1 : this.pathStrokeWidth
-          )
-
-        this.$projectionVisGroup
-          .selectAll('path')
-          .style('opacity', (d) => (d === domain ? 1 : 0.1))
-          .style('stroke-width', (d) =>
-            d === domain ? this.pathStrokeWidth + 1 : this.pathStrokeWidth
-          )
+        this.highlightPath(domain)
       } else {
-        this.$vis1Group
-          .selectAll('path')
-          .style('opacity', 0.9)
-          .style('stroke-width', this.pathStrokeWidth)
-
-        this.$projectionVisGroup
-          .selectAll('path')
-          .style('opacity', 0.9)
-          .style('stroke-width', this.pathStrokeWidth)
+        this.unHighlightPath()
       }
     },
     curveType(type) {
@@ -513,6 +494,33 @@ export default {
   },
 
   methods: {
+    unHighlightPath() {
+      this.$vis1Group
+        .selectAll('path')
+        .style('opacity', 0.9)
+        .style('stroke-width', this.pathStrokeWidth)
+
+      this.$projectionVisGroup
+        .selectAll('path')
+        .style('opacity', 0.9)
+        .style('stroke-width', this.pathStrokeWidth)
+    },
+    highlightPath(domain) {
+      this.$vis1Group
+        .selectAll('path')
+        .style('opacity', (d) => (d === domain ? 1 : 0.3))
+        .style('stroke-width', (d) =>
+          d === domain ? this.pathStrokeWidth + 1 : this.pathStrokeWidth
+        )
+
+      this.$projectionVisGroup
+        .selectAll('path')
+        .style('opacity', (d) => (d === domain ? 1 : 0.3))
+        .style('stroke-width', (d) =>
+          d === domain ? this.pathStrokeWidth + 1 : this.pathStrokeWidth
+        )
+    },
+
     updateAnnotations(annotations) {
       return annotations.map((d) => {
         let value = 0
@@ -645,14 +653,14 @@ export default {
       }
 
       // Events
-      this.$hoverGroup.on('touchmove mousemove', function () {
-        const date = self.getXAxisDateByMouse(this)
+      this.$hoverGroup.on('pointermove', function () {
+        const date = self.getXAxisDateByPointer(this)
         self.$emit('date-hover', this, date)
       })
-      $svg.on('mouseenter', () => {
+      $svg.on('pointerenter', () => {
         this.handleSvgEnter()
       })
-      $svg.on('mouseleave', () => {
+      $svg.on('pointerleave', () => {
         this.handleSvgLeave()
       })
       $svg.on('click', () => {
@@ -764,11 +772,13 @@ export default {
           .style('opacity', 0.9)
           .style('clip-path', this.clipPathUrl)
           .style('-webkit-clip-path', this.clipPathUrl)
+          .style('pointer-events', 'auto')
           .attr('d', this.drawVis1Path)
       }
 
-      this.$vis1Group.selectAll('path').on('mousemove touchmove', function (d) {
-        const date = self.getXAxisDateByMouse(this)
+      // TODO: remove this since it's been replaced by tracking the dots
+      this.$vis1Group.selectAll('path').on('pointermove', function (d) {
+        const date = self.getXAxisDateByPointer(this)
         self.$emit('date-hover', this, date)
         self.$emit('domain-hover', d)
       })
@@ -823,8 +833,8 @@ export default {
 
       this.$projectionVisGroup
         .selectAll('path')
-        .on('mousemove touchmove', function (d) {
-          const date = self.getXAxisDateByMouse(this)
+        .on('pointermove', function (d) {
+          const date = self.getXAxisDateByPointer(this)
           self.$emit('date-hover', this, date)
           self.$emit('domain-hover', d)
         })
@@ -945,6 +955,7 @@ export default {
     },
 
     drawCursor(date) {
+      const self = this
       const xDate = this.x(date)
       let nextDate = null
       const dataPoint = this.withProjectionDataset.find((d, i) => {
@@ -984,8 +995,22 @@ export default {
               return hasValue ? 4 : 0
             })
             .attr('fill', (key) => this.colours1[key])
+            .on('pointermove', function (d) {
+              select(this).attr('r', 6)
+              self.highlightPath(d)
+              self.$emit('domain-hover', d)              
+            })
+            .on('pointerleave', function() {
+              self.$cursorDotsGroup.selectAll('circle').attr('r', (key) => {
+                const hasValue = self.y1(dataPoint[key]) || self.y1(dataPoint[key]) === 0
+                return hasValue ? 4 : 0
+              })
+              self.unHighlightPath()
+              self.$emit('domain-hover', null)
+            })
             .exit()
             .remove()
+          
         } else {
           this.$cursorDotsGroup.selectAll('circle').remove()
         }
@@ -1010,7 +1035,7 @@ export default {
       this.$cursorRect.attr('width', 0).attr('height', 0)
     },
 
-    getXAxisDateByMouse(evt) {
+    getXAxisDateByPointer(evt) {
       const m = mouse(evt)
       const date = this.x.invert(m[0])
       return date
