@@ -65,7 +65,7 @@ function getTimeLabel(d) {
   const hour = function() {
     return hours === 0 || hours === 12 ? 12 : hours % 12
   }()
-  const min = minutes === 0 ? '' : `:${minutes}`
+  const min = minutes === 0 ? '' : `:${(minutes + '').padStart(2, '0')}`
   return `${hour}${min}${ampm}`
 }
 
