@@ -141,7 +141,7 @@ export default {
 
       const getLabel = (key) => {
         if (key === '_average') return 'Average'
-        return this.todayKey === key ? `Today (${key})` : key
+        return key
       }
 
       const datasetKeys = keys.map((key) => {
