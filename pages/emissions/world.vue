@@ -475,7 +475,8 @@ export default {
 
       // update area codes
       this.areaCodes = areaCodeValues.map((c) => {
-        const flag = getFlagEmoji(alpha2AreaDict[c])
+        let flag = getFlagEmoji(alpha2AreaDict[c])
+        if (!flag) flag = '🏳️'
         return {
           code: areaDict[c],
           alpha2code: alpha2AreaDict[c],
