@@ -1,12 +1,12 @@
 <template>
-  <div style="display: flex;">
+  <div style="display: flex; flex-wrap: nowrap;">
     <div style="width: 25%;">
       <table 
-        style="font-size: 11px;" 
+        style="font-size: 11px; table-layout: fixed;" 
         class="table is-narrow is-fullwidth is-hoverable">
         <thead>
           <tr>
-            <th>
+            <th colspan="2">
               <button 
                 class="button is-small" 
                 @click="handleTableToggle">
@@ -16,7 +16,7 @@
                 {{ title }}
               </button>
             </th>
-            <th style="text-align:right;">{{ currentX }}</th>
+            <!-- <th style="text-align:right; white-space: nowrap">{{ currentX }}</th> -->
           </tr>
         </thead>
         <tbody>
@@ -25,7 +25,8 @@
             :key="`${domain.id}-${i}`"
             style="font-weight: bold;"
             :style="{
-              color: getTextColour(domain.id)
+              color: getTextColour(domain.id),
+              background: highlightRow === domain.id ? 'rgba(255,255,255, 0.8)' : 'none'
             }"
             @mouseenter="() => handleMouseEnter(domain.id)"
             @mouseleave="() => handleMouseLeave()">
@@ -33,12 +34,49 @@
             <td style="text-align: right;">{{ domain.value | formatValue }}</td>
           </tr>
         </tbody>
+
+        <tfoot>
+          <tr>
+            <th 
+              colspan="2"
+              style="text-align:right; white-space: nowrap; height: 23px;">{{ currentX }}</th>
+          </tr>
+        </tfoot>
       </table>
     </div>
 
     <div 
       style="width: 75%" 
       class="vis-wrapper">
+
+      <header>
+        <div class="chart-title">
+          {{ title }}
+        </div>
+
+        <div 
+          v-if="tooltipValues"
+          class="chart-hover-values">
+        
+          <div class="datetime">
+            <time>{{ tooltipValues.date }}</time>
+          </div>
+          <div class="value">
+            {{ tooltipValues.value | formatValue }}
+          </div>
+        </div>
+        <div 
+          v-else 
+          class="chart-hover-values">
+        <!-- <div class="datetime">
+          <time>28 Aug 2023, 8pm</time>
+        </div>
+        <div class="value">
+          1234
+        </div> -->
+        </div>
+      </header>
+      
       <MultiLine
         :svg-height="chartHeight"
         :domains1="domainsWithColour"
@@ -132,11 +170,23 @@ export default {
       expand: false,
       xTicks: utcHour.every(2),
       highlightDomain: null,
-      hightlightRow: null
+      highlightRow: null
     }
   },
 
   computed: {
+    tooltipValues() {
+      if (this.highlightRow && this.hoverValues) {
+        const domainLabel = this.highlightRow === '_average' ? 'Average' : this.highlightRow
+        return {
+          date: `${domainLabel}, ${this.hoverValues.x}`,
+          value: this.hoverValues[this.highlightRow]
+        }
+      }
+
+      return null
+    },
+
     chartHeight() {
       return this.expand ? 400 : 200
     },
@@ -146,7 +196,8 @@ export default {
         return {
           ...domain,
           colour: this.getChartColour(domain.id),
-          value: this.hoverValues ? this.hoverValues[domain.id] : null
+          value: this.hoverValues ? this.hoverValues[domain.id] : null,
+          pathStrokeWidth: this.getPathStrokeWidth(domain.id)
         }
       })
     },
@@ -214,7 +265,7 @@ export default {
 
   methods: {
     handleDomainHover(domain) {
-      // this.hightlightRow = domain
+      this.highlightRow = domain
     },
     
     handleVisEnter() {
@@ -227,12 +278,17 @@ export default {
 
     getChartColour(id) {
       if (id === '_average') return '#DC3A33'
-      return this.todayKey === id ? '#333' : this.expand ? '#cfcfcf' : '#ddd';
+      return this.todayKey === id ? '#333' : this.expand ? '#aaa' : '#ccc';
     },
 
     getTextColour(id) {
       if (id === '_average') return '#DC3A33'
       return this.todayKey === id ? '#333' : this.expand ? '#787878' : '#ddd';
+    },
+
+    getPathStrokeWidth(id) {
+      if (id === '_average') return 2
+      return this.todayKey === id ? 2 : 1;
     },
 
     handleTableToggle() {
@@ -253,16 +309,39 @@ export default {
 <style lang="scss" scoped>
 @import '~/assets/scss/variables.scss';
 
+$radius: 4px;
+$hover-padding: 3px 6px 2px;
+
+.vis-wrapper {
+  header {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 10px;
+    padding-top: 2px;
+    margin-bottom: 2px;
+
+    .chart-title {
+      font-size: 13px;
+      font-family: $header-font-family;
+      font-weight: bold;
+    }
+  }
+}
+
 table.table {
   position: sticky;
   top: 0;
   background: none;
-  border-bottom: 1px solid #696969;
+  // border-bottom: 1px solid #696969;
   
   thead tr th {
     border-bottom: 1px solid #696969;
     padding-left: 0;
     vertical-align: bottom;
+  }
+
+  tfoot tr th {
+    border-top: 1px solid #696969;
   }
 
   button.button {
@@ -274,6 +353,26 @@ table.table {
     height: auto;
     font-family: $header-font-family;
     min-width: auto;
+  }
+}
+
+.chart-hover-values {
+  display: flex;
+  font-size: 10px;
+  justify-content: flex-end;
+  align-content: center;
+  height: 20px;
+  font-weight: bold;
+
+  .datetime {
+    background-color: rgba(199, 69, 35, 0.1);
+    border-radius: $radius 0 0 $radius;
+    padding: $hover-padding;
+  }
+  .value {
+    background-color: #fff;
+    border-radius: 0 $radius $radius 0;
+    padding: $hover-padding;
   }
 }
 </style>
