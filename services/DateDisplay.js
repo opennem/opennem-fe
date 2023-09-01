@@ -335,9 +335,9 @@ export default {
   snapToClosestInterval(interval, date, isLinear) {
     switch (interval) {
       case INTERVAL_5MIN:
-        return utcMinute.every(5).floor(date)
+        return utcMinute.every(5).round(date)
       case INTERVAL_30MIN:
-        return utcMinute.every(30).floor(date)
+        return utcMinute.every(30).round(date)
       case INTERVAL_DAY:
         return d3TimeDay.every(1).floor(date)
       case INTERVAL_WEEK:
