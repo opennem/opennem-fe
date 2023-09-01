@@ -770,7 +770,7 @@ export default {
           .attr('class', (key) => `${key}-path`)
           .attr('d', this.vis1)
           .attr('stroke-opacity', 0)
-          .attr('fill', (d) => this.colours1[d.key])
+          .attr('fill', (d) => `${this.colours1[d.key]}ee`)
           .style('clip-path', this.clipPathUrl)
           .style('-webkit-clip-path', this.clipPathUrl)
           .style('pointer-events', 'auto')
