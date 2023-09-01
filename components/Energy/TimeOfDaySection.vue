@@ -3,6 +3,40 @@
     class="time-of-day-section" 
     style="margin-left: 1rem;">
 
+    <header>
+      <div class="chart-title">
+        An Average Day
+      </div>
+    </header>
+
+    <MultiLine
+      :svg-height="400"
+      :domains1="currentDomainPowerEnergy"
+      :dataset1="averagesDataset"
+      :y1-max="averageYMax"
+      :y1-min="averageYMin"
+      :y1-ticks="yTicks"
+      :x-ticks="xTicks"
+      :curve="chartCurve"
+      :date-hovered="hoverDate"
+      :stacked="true"
+      :show-cursor-dots="false"
+      :cursor-type="'line'"
+      :margin-left="0"
+      :append-datapoint="false"
+      class="vis-chart"
+      @date-hover="(evt, date) => handleDateHover(date)"
+    />
+    <DateBrush
+      :dataset="averagesDataset"
+      :x-ticks="xTicks"
+      :tick-format="tickFormat"
+      :second-tick-format="secondTickFormat"
+      :margin-left="0"
+      :append-datapoint="false"
+      class="date-brush vis-chart"
+    />
+
     <div 
       v-for="ds in datasets" 
       :key="ds.id"
@@ -28,13 +62,14 @@
 <script>
 import { mapGetters } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
-import { utcMinute } from 'd3-time'
+import { utcHour } from 'd3-time'
 import { utcFormat } from 'd3-time-format'
 import addMinutes from 'date-fns/addMinutes'
 import subDays from 'date-fns/subDays'
 import { CHART_CURVE_SMOOTH } from '@/constants/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
+import StackedArea from '../Vis/StackedArea.vue'
 import DateBrush from '@/components/Vis/DateBrush'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
 import TimeOfDay from './TimeOfDay.vue'
@@ -88,6 +123,7 @@ function getTimebucket(interval) {
 
 export default {
   components: {
+    StackedArea,
     MultiLine,
     DateBrush,
     GroupSelector,
@@ -99,6 +135,7 @@ export default {
       selectedDomain: null,
       todayKey: null,
       hoverDate: null,
+      xTicks: utcHour.every(2)
     }
   },
 
@@ -170,6 +207,65 @@ export default {
       console.log('datasets', datasets)
 
       return datasets
+    },
+
+    averagesDataset() {
+      const averagesDs = []
+
+      if (this.datasets.length > 0) {
+        this.datasets.forEach(ds => {
+          const id = ds.id
+
+          ds.data.forEach((d, i) => {
+            if (averagesDs.length !== ds.data.length) {
+              averagesDs.push({
+                x: d.x,
+                date: d.date,
+                time: d.time
+              })
+              averagesDs[i][id] = d._average
+            } else {
+              averagesDs[i][id] = d._average
+            }
+          })
+        })
+      }
+
+      console.log('average datasets', averagesDs)
+
+      return averagesDs
+    },
+
+    averageYMin() {
+      let min = 0
+
+      this.averagesDataset.forEach((d) => {
+        this.currentDomainPowerEnergy.forEach((domain) => {
+          const val = d[domain.id]
+          if (val < min) {
+            min = val
+          }
+        })
+      })
+
+      return min
+    },
+
+    averageYMax() {
+      let max = 0
+
+      this.averagesDataset.forEach((d) => {
+        let sum = 0
+        this.currentDomainPowerEnergy.forEach((domain) => {
+          sum += d[domain.id] || 0      
+        })
+
+        if (sum > max) {
+          max = sum
+        }
+      })
+
+      return max
     },
 
     dataset() {
@@ -271,3 +367,12 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+@import '~/assets/scss/variables.scss';
+.chart-title {
+  font-size: 13px;
+  font-family: $header-font-family;
+  font-weight: bold;
+}
+</style>
