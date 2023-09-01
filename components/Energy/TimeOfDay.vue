@@ -49,33 +49,10 @@
       style="width: 75%" 
       class="vis-wrapper">
 
-      <header>
-        <div class="chart-title">
-          {{ title }}
-        </div>
-
-        <div 
-          v-if="tooltipValues"
-          class="chart-hover-values">
-        
-          <div class="datetime">
-            <time>{{ tooltipValues.date }}</time>
-          </div>
-          <div class="value">
-            {{ tooltipValues.value | formatValue }}
-          </div>
-        </div>
-        <div 
-          v-else 
-          class="chart-hover-values">
-        <!-- <div class="datetime">
-          <time>28 Aug 2023, 8pm</time>
-        </div>
-        <div class="value">
-          1234
-        </div> -->
-        </div>
-      </header>
+      <TimeOfDayChartHeader
+        :title="title"
+        :tooltip-values="tooltipValues"
+      />
       
       <MultiLine
         :svg-height="chartHeight"
@@ -90,6 +67,7 @@
         :highlight-domain="highlightDomain"
         :positive-y-bg="'rgba(255,255,255, 0.2)'"
         :cursor-type="'line'"
+        :append-datapoint="false"
         class="vis-chart"
         @date-hover="(evt, date) => $emit('date-hover', date)" 
         @domain-hover="handleDomainHover"
@@ -101,6 +79,7 @@
         :x-ticks="xTicks"
         :tick-format="tickFormat"
         :second-tick-format="secondTickFormat"
+        :append-datapoint="false"
         class="date-brush vis-chart"
       />
     </div>
@@ -112,11 +91,13 @@ import { utcHour } from 'd3-time'
 import _cloneDeep from 'lodash.clonedeep'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
+import TimeOfDayChartHeader from './TimeOfDayChartHeader.vue'
 
 export default {
   components: {
     MultiLine,
-    DateBrush
+    DateBrush,
+    TimeOfDayChartHeader
   },
 
   props: {
@@ -290,9 +271,6 @@ export default {
 <style lang="scss" scoped>
 @import '~/assets/scss/variables.scss';
 
-$radius: 4px;
-$hover-padding: 3px 6px 2px;
-
 .vis-wrapper {
   header {
     display: flex;
@@ -300,12 +278,6 @@ $hover-padding: 3px 6px 2px;
     padding-left: 10px;
     padding-top: 2px;
     margin-bottom: 2px;
-
-    .chart-title {
-      font-size: 13px;
-      font-family: $header-font-family;
-      font-weight: bold;
-    }
   }
 }
 
@@ -334,26 +306,6 @@ table.table {
     height: auto;
     font-family: $header-font-family;
     min-width: auto;
-  }
-}
-
-.chart-hover-values {
-  display: flex;
-  font-size: 10px;
-  justify-content: flex-end;
-  align-content: center;
-  height: 20px;
-  font-weight: bold;
-
-  .datetime {
-    background-color: rgba(199, 69, 35, 0.1);
-    border-radius: $radius 0 0 $radius;
-    padding: $hover-padding;
-  }
-  .value {
-    background-color: #fff;
-    border-radius: 0 $radius $radius 0;
-    padding: $hover-padding;
   }
 }
 </style>
