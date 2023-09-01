@@ -80,7 +80,7 @@
       <MultiLine
         :svg-height="chartHeight"
         :domains1="domainsWithColour"
-        :dataset1="lineDataset"
+        :dataset1="dataset"
         :y1-max="yMax"
         :y1-min="yMin"
         :y1-ticks="yTicks"
@@ -89,6 +89,7 @@
         :date-hovered="hoverDate"
         :highlight-domain="highlightDomain"
         :positive-y-bg="'rgba(255,255,255, 0.2)'"
+        :cursor-type="'line'"
         class="vis-chart"
         @date-hover="(evt, date) => $emit('date-hover', date)" 
         @domain-hover="handleDomainHover"
@@ -200,26 +201,6 @@ export default {
           pathStrokeWidth: this.getPathStrokeWidth(domain.id)
         }
       })
-    },
-
-    lineDataset() {
-      const arr = _cloneDeep(this.dataset)
-
-      arr.forEach((d, i) => {
-        const start = d.time
-        const next = arr[i+1] ? arr[i+1].time : null
-        if (next) {
-          const mid = (next - start) / 2
-          d.displayTime = d.time + mid
-        }
-      })
-
-      const lastSecondItem = arr[arr.length - 2]
-      const lastItem = arr[arr.length - 1]
-      const mid = (lastItem.time - lastSecondItem.time) / 2
-      lastItem.displayTime = lastItem.time + mid
-
-      return arr
     },
     
     tableRowDomains() {
