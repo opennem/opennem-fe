@@ -210,6 +210,10 @@ export default {
       type: String,
       default: () => 'start' // like text-anchor: start, middle, end
     },
+    cursorType: {
+      type: String,
+      default: 'bar' // line
+    },
     drawIncompleteBucket: {
       type: Boolean,
       default: () => true
@@ -245,6 +249,10 @@ export default {
     positiveYBg: {
       type: String,
       default: 'rgba(255,255,255, 0.6)'
+    },
+    appendDatapoint: {
+      type: Boolean,
+      default: true
     }
   },
 
@@ -342,12 +350,13 @@ export default {
     },
     updatedDataset1() {
       if (this.dataset1.length > 0) {
-        const updated = _cloneDeep(this.dataset1)
         if (this.hasProjectionDataset) {
+          const updated = _cloneDeep(this.dataset1)
           const firstItem = _cloneDeep(this.projectionDataset[0])
           updated.push(firstItem)
           return updated
-        } else {
+        } else if (this.appendDatapoint) {
+          const updated = _cloneDeep(this.dataset1)
           const lastSecondItem = _cloneDeep(updated[updated.length - 2])
           const lastItem = _cloneDeep(updated[updated.length - 1])
           const hasItems = lastItem && lastSecondItem
@@ -363,6 +372,8 @@ export default {
           }
 
           return updated
+        } else {
+          return this.dataset1
         }
       }
       return []
@@ -980,14 +991,6 @@ export default {
       const nextXDate = this.x(nextDate)
       const bandwidth = Math.abs(nextXDate - xDate)
 
-      // Draw line
-      this.$cursorLine
-        .attr('x1', xDate)
-        .attr('y1', 0)
-        .attr('x2', xDate)
-        .attr('y2', this.height)
-        .style('stroke', 'transparent')
-
       if (this.showCursorDots) {
         if (dataPoint) {
           const dots = this.$cursorDotsGroup
@@ -1026,21 +1029,33 @@ export default {
       }
 
       // Draw bucket
-      if (bandwidth) {
-        let xPos = xDate
-        // if (this.cursorAnchor === 'middle') {
-        //   xPos = xDate - bandwidth / 2
-        // }
-        this.$cursorRect
-          .attr('x', xPos)
-          .attr('width', bandwidth)
-          .attr('height', this.height)
+      if (this.cursorType === 'bar') {
+        if (bandwidth) {
+          let xPos = xDate
+          // if (this.cursorAnchor === 'middle') {
+          //   xPos = xDate - bandwidth / 2
+          // }
+          this.$cursorRect
+            .attr('x', xPos)
+            .attr('width', bandwidth)
+            .attr('height', this.height)
+        }
+      } else if (this.cursorType === 'line') {
+        // Draw line
+        this.$cursorLine
+          .attr('x1', xDate)
+          .attr('y1', 0)
+          .attr('x2', xDate)
+          .attr('y2', this.height)
+          .style('stroke', '#c74523')
       } else {
         this.clearCursorLine()
       }
+      
     },
 
     clearCursorLine() {
+      this.$cursorLine.style('stroke', 'transparent')
       this.$cursorRect.attr('width', 0).attr('height', 0)
     },
 
