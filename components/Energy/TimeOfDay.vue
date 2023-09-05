@@ -271,16 +271,6 @@ export default {
 <style lang="scss" scoped>
 @import '~/assets/scss/variables.scss';
 
-.vis-wrapper {
-  header {
-    display: flex;
-    justify-content: space-between;
-    padding-left: 10px;
-    padding-top: 2px;
-    margin-bottom: 2px;
-  }
-}
-
 table.table {
   position: sticky;
   top: 0;

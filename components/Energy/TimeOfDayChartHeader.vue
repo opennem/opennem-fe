@@ -12,7 +12,15 @@
         <time>{{ tooltipValues.date }}</time>
       </div>
       <div class="value">
-        {{ tooltipValues.value | formatValue }}
+        <span
+          v-if="tooltipValues.fuelTechColour"
+          :style="{ 'background-color': tooltipValues.fuelTechColour }"
+          class="colour-square"
+        />
+        <span 
+          v-if="tooltipValues.fuelTech" 
+          style="font-weight: 400;">{{ tooltipValues.fuelTech }}</span>
+        <span>{{ tooltipValues.value | formatValue }}</span>
       </div>
     </div>
     <div 
@@ -48,6 +56,24 @@ export default {
 
 $radius: 4px;
 $hover-padding: 3px 6px 2px;
+
+header {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 10px;
+  padding-top: 2px;
+  margin-bottom: 2px;
+}
+
+.colour-square {
+  display: inline-block;
+  border: 1px solid transparent;
+  width: 10px;
+  height: 10px;
+  border-radius: 1px;
+  position: relative;
+  top: 1px;
+}
 
 .chart-title {
   font-size: 13px;

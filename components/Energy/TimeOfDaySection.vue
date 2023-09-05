@@ -3,39 +3,41 @@
     class="time-of-day-section" 
     style="margin-left: 1rem;">
 
-    <header>
-      <div class="chart-title">
-        An Average Day
-      </div>
-    </header>
+    <div class="vis-wrapper">
+      <TimeOfDayChartHeader
+        :title="'An average day'"
+        :tooltip-values="tooltipValues"
+      />
 
-    <MultiLine
-      :svg-height="400"
-      :domains1="currentDomainPowerEnergy"
-      :dataset1="averagesDataset"
-      :y1-max="averageYMax"
-      :y1-min="averageYMin"
-      :y1-ticks="yTicks"
-      :x-ticks="xTicks"
-      :curve="chartCurve"
-      :date-hovered="hoverDate"
-      :stacked="true"
-      :show-cursor-dots="false"
-      :cursor-type="'line'"
-      :margin-left="0"
-      :append-datapoint="false"
-      class="vis-chart"
-      @date-hover="(evt, date) => handleDateHover(date)"
-    />
-    <DateBrush
-      :dataset="averagesDataset"
-      :x-ticks="xTicks"
-      :tick-format="tickFormat"
-      :second-tick-format="secondTickFormat"
-      :margin-left="0"
-      :append-datapoint="false"
-      class="date-brush vis-chart"
-    />
+      <MultiLine
+        :svg-height="400"
+        :domains1="currentDomainPowerEnergy"
+        :dataset1="averagesDataset"
+        :y1-max="averageYMax"
+        :y1-min="averageYMin"
+        :y1-ticks="yTicks"
+        :x-ticks="xTicks"
+        :curve="chartCurve"
+        :date-hovered="hoverDate"
+        :stacked="true"
+        :show-cursor-dots="false"
+        :cursor-type="'line'"
+        :margin-left="0"
+        :append-datapoint="false"
+        class="vis-chart"
+        @date-hover="(evt, date) => handleDateHover(date)"
+        @domain-hover="handleDomainHover"
+      />
+      <DateBrush
+        :dataset="averagesDataset"
+        :x-ticks="xTicks"
+        :tick-format="tickFormat"
+        :second-tick-format="secondTickFormat"
+        :margin-left="0"
+        :append-datapoint="false"
+        class="date-brush vis-chart"
+      />
+    </div>
 
     <div 
       v-for="ds in datasets" 
@@ -73,6 +75,7 @@ import StackedArea from '../Vis/StackedArea.vue'
 import DateBrush from '@/components/Vis/DateBrush'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
 import TimeOfDay from './TimeOfDay.vue'
+import TimeOfDayChartHeader from './TimeOfDayChartHeader.vue'
 
 function getDay(d) {
   return utcFormat('%e %b %Y')(d)
@@ -127,7 +130,8 @@ export default {
     MultiLine,
     DateBrush,
     GroupSelector,
-    TimeOfDay
+    TimeOfDay,
+    TimeOfDayChartHeader
   },
 
   data() {
@@ -135,6 +139,7 @@ export default {
       selectedDomain: null,
       todayKey: null,
       hoverDate: null,
+      highlightFuelTech: null,
       xTicks: utcHour.every(2)
     }
   },
@@ -274,6 +279,24 @@ export default {
 
     dataset() {
       return this.getTimeBucket(this.selectedDomain)
+    },
+
+    tooltipValues() {
+      if (this.highlightFuelTech && this.hoverValues) {
+        const ft = this.currentDomainPowerEnergy.find(d => d.id === this.highlightFuelTech)
+        return {
+          date: `${this.hoverValues.x}`,
+          fuelTech: ft.label,
+          fuelTechColour: ft.colour,
+          value: this.hoverValues[this.highlightFuelTech]
+        }
+      }
+
+      return null
+    },
+
+    hoverValues() {
+      return this.hoverDate ? this.averagesDataset.find(d => d.time === this.hoverDate.getTime()) : null
     }
   },
 
@@ -296,6 +319,10 @@ export default {
   },
 
   methods: {
+    handleDomainHover(domain) {
+      this.highlightFuelTech = domain
+    },
+
     handleDateHover(date) {
       this.hoverDate = DateDisplay.getClosestDateByInterval(
         date,
