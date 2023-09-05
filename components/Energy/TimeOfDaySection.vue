@@ -142,6 +142,7 @@ export default {
   computed: {
     ...mapGetters({
       domainTemperature: 'regionEnergy/domainTemperature',
+      domainPrice: 'regionEnergy/domainPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       currentDataset: 'regionEnergy/currentDataset',
       range: 'range',
@@ -162,14 +163,16 @@ export default {
     },
 
     allDomains() {
+      const price = []
       if (!this.currentDomainPowerEnergy) return []
-      
+      if (this.domainPrice.length > 0) price.push(this.domainPrice[0])
+
       const filtered = this.currentDomainPowerEnergy.filter((domain) => {
         const ft = domain.fuelTech || domain.group
         return !this.hiddenFuelTechs.includes(ft)
       })
 
-      return [...filtered.reverse(), ...this.domainTemperature]
+      return [...filtered.reverse(), ...price, ...this.domainTemperature]
     },
 
     timeDomains() {

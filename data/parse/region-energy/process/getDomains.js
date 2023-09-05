@@ -51,7 +51,7 @@ export function getTemperatureDomains(data) {
 
 export function getPriceDomains(res) {
   let domains = res.map((d) => {
-    return { id: d.id, domain: d.id, type: d.type, colour: PRICE_COLOUR }
+    return { id: d.id, domain: d.id, type: d.type, colour: PRICE_COLOUR, label: 'Price' }
   })
   if (domains.length > 0) {
     domains = [...domains, ...getDerivedPriceDomains()]
