@@ -2,31 +2,10 @@
   <div class="energy-region">
 
     <div style="display: flex; align-items: center;">
-      <div 
-        class="field has-addons" 
-        style="margin-bottom: 0; margin-left: 1rem;">
-        <p class="control">
-          <button 
-            style="font-size: 11px;"
-            class="button is-rounded" 
-            :class="{ 'is-selected': view === 'main' }"
-            @click="() => view = 'main'">
-            <span>Combined</span>
-          </button>
-        </p>
-        <p class="control">
-          <button 
-            style="font-size: 11px;"
-            class="button is-rounded" 
-            :class="{ 'is-selected': view === 'time-of-day' }"
-            @click="() => view = 'time-of-day'">
-            <span>Time of day</span>
-          </button>
-        </p>
-      </div>
 
       <data-options-bar
         v-if="view === 'main'"
+        style="padding-right: 0.5rem;"
         :ranges="ranges"
         :intervals="intervals"
         :range="range"
@@ -40,6 +19,7 @@
       />
 
       <DataOptionsBarTimeOfDay
+        style="padding-right: 0;"
         v-if="view === 'time-of-day'"
         :view="view"
         :range="range"
@@ -47,6 +27,22 @@
         @rangeChange="handleRangeChange"
         @intervalChange="handleIntervalChange"
       />
+ 
+      <div
+        v-if="range === '3D' || range === '7D'"
+        class="field has-addons" 
+        style="margin-bottom: 0;">
+        <button 
+          class="button is-small"
+          style="border-radius: 20px;"
+          v-tooltip="view === 'time-of-day' ? 'Switch to discrete time view' : 'Switch to time of day view'"
+          :class="{ 'is-selected': view === 'time-of-day' }"
+          @click="() => view === 'time-of-day' ? view = 'main' : view = 'time-of-day'">
+          <span class="icon is-small">
+            <IconTimeOfDay :selected="view === 'time-of-day'" />
+          </span>
+        </button>
+      </div>
       
     </div>
     
@@ -142,6 +138,7 @@ import VisSection from '@/components/Energy/VisSection.vue'
 import SummarySection from '@/components/Energy/SummarySection.vue'
 import Divider from '@/components/Divider.vue'
 import TimeOfDaySection from '~/components/Energy/TimeOfDaySection.vue'
+import IconTimeOfDay from '~/components/Vis/IconTimeOfDay.vue'
 
 const minTableWidth = 420
 
@@ -192,7 +189,8 @@ export default {
     VisSection,
     SummarySection,
     Divider,
-    TimeOfDaySection
+    TimeOfDaySection,
+    IconTimeOfDay
   },
 
   data() {
