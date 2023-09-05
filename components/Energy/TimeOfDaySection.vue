@@ -141,6 +141,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      domainTemperature: 'regionEnergy/domainTemperature',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       currentDataset: 'regionEnergy/currentDataset',
       range: 'range',
@@ -168,7 +169,7 @@ export default {
         return !this.hiddenFuelTechs.includes(ft)
       })
 
-      return filtered.reverse()
+      return [...filtered.reverse(), ...this.domainTemperature]
     },
 
     timeDomains() {

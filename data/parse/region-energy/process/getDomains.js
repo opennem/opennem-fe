@@ -43,6 +43,7 @@ export function getTemperatureDomains(data) {
       id: d.id,
       domain: d.id,
       type: d.type,
+      label: 'Temperature',
       colour: '#e34a33'
     }
   })
