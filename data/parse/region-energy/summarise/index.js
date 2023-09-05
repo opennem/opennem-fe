@@ -97,7 +97,9 @@ export default function ({
     dataset[i]._netBattery =
       (d[batteryDischargingId] || 0) - (d[batteryChargingId] || 0)
     dataset[i]._netHydro = (d[hydroId] || 0) - (d[pumpsId] || 0)
-    dataset[i]._netImports = (Math.abs(d[importsId]) || 0) - (d[exportsId] || 0)
+
+    // * Note: imports are no longer negative values
+    dataset[i]._netImports = (d[importsId] || 0) - (d[exportsId] || 0)
 
     if (isNaN(dataset[i]._netBattery) || dataset[i]._netBattery < 0) {
       dataset[i]._netBattery = 0
@@ -135,9 +137,10 @@ export default function ({
         d[id] = negValue
       }
 
-      if (ft === FT.IMPORTS) {
-        d[id] = Math.abs(d[id])
-      }
+      // * Note: imports are no longer negative values
+      // if (ft === FT.IMPORTS) {
+      //   d[id] = Math.abs(d[id])
+      // }
 
       if (domain.category === FT.SOURCE) {
         totalSources += d[id] || 0
