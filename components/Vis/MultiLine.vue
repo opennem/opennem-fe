@@ -32,6 +32,11 @@
       <g 
         :transform="axisTransform" 
         class="x-shades" />
+
+      <g 
+        :transform="axisTransform" 
+        class="hover-group" />
+      
       
       <g 
         :transform="axisTransform" 
@@ -53,9 +58,6 @@
         class="y-axis-right-text" />
 
       
-      <g 
-        :transform="axisTransform" 
-        class="hover-group" />
       <g 
         :transform="axisTransform" 
         class="cursor-line-group" />
@@ -797,7 +799,7 @@ export default {
       this.$vis1Group.selectAll('path').on('pointermove', function (d) {
         const date = self.getXAxisDateByPointer(this)
         self.$emit('date-hover', this, date)
-        self.$emit('domain-hover', d)
+        self.$emit('domain-hover', d.key)
       })
 
       if (this.showY2) {
