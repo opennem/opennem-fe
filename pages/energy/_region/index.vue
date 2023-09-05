@@ -365,8 +365,6 @@ export default {
   },
 
   created() {
-    this.view = this.queryView || 'discrete-time'
-
     this.setXGuides([])
     this.setYGuides([])
 
@@ -421,6 +419,8 @@ export default {
       'resize',
       this.handleResize
     )
+
+    this.view = this.queryView || 'discrete-time'
   },
 
   beforeDestroy() {
