@@ -4,7 +4,7 @@
     <div style="display: flex; align-items: center;">
 
       <data-options-bar
-        v-if="view === 'main'"
+        v-if="view === 'discrete-time'"
         style="padding-right: 0.5rem;"
         :ranges="ranges"
         :intervals="intervals"
@@ -24,6 +24,7 @@
         :view="view"
         :range="range"
         :interval="interval"
+        @queryChange="handleQueryChange"
         @rangeChange="handleRangeChange"
         @intervalChange="handleIntervalChange"
       />
@@ -37,7 +38,7 @@
           style="border-radius: 20px;"
           v-tooltip="view === 'time-of-day' ? 'Switch to discrete time view' : 'Switch to time of day view'"
           :class="{ 'is-selected': view === 'time-of-day' }"
-          @click="() => view === 'time-of-day' ? view = 'main' : view = 'time-of-day'">
+          @click="() => view === 'time-of-day' ? view = 'discrete-time' : view = 'time-of-day'">
           <span class="icon is-small">
             <IconTimeOfDay :selected="view === 'time-of-day'" />
           </span>
@@ -78,7 +79,7 @@
       class="vis-table-container">
 
       <vis-section
-        v-if="view === 'main'"
+        v-if="view === 'discrete-time'"
         :date-hover="hoverDate"
         :on-hover="isHovering"
         :style="{ width: `${visWidth}${widthUnit}`}"
@@ -206,7 +207,7 @@ export default {
       tableWidth: 35,
       widthUnit: '%', // px
       dragging: false,
-      view: 'main' // main, time-of-day
+      view: 'discrete-time' // discrete-time, time-of-day
     }
   },
 
@@ -237,6 +238,11 @@ export default {
     regionId() {
       return this.$route.params.region
     },
+
+    queryView() {
+      return this.$route.query.view
+    },
+
     cardFilename() {
       return this.useDev
         ? `${this.baseUrl}opennem-dev.png`
@@ -352,10 +358,15 @@ export default {
     },
     hiddenFuelTechs() {
       this.updateEmissionsData()
+    },
+    view() {
+      this.handleQueryChange(this.query)
     }
   },
 
   created() {
+    this.view = this.queryView || 'discrete-time'
+
     this.setXGuides([])
     this.setYGuides([])
 
@@ -474,12 +485,16 @@ export default {
       this.isHovering = hover
     },
     handleQueryChange(query) {
+      const updatedQuery = {
+        ...query,
+        view: this.view
+      }
       this.$router.push({
         params: { region: this.regionId },
-        query
+        query: updatedQuery
       })
 
-      this.setQuery(query)
+      this.setQuery(updatedQuery)
     },
     handleRangeChange(range) {
       this.setRange(range)

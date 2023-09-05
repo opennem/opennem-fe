@@ -35,6 +35,9 @@
 </template>
 
 <script>
+import { getRangeQueryByRange } from '@/constants/range-queries.js'
+import { getIntervalQueryByInterval } from '@/constants/interval-queries.js'
+
 export default {
   props: {
     view: {
@@ -82,12 +85,23 @@ export default {
 
   methods: {
     handleRangeClick(range) {
+      this.updateQuery(range, this.interval)
       this.$emit('rangeChange', range)
     },
 
     handleIntervalClick(interval) {
+      this.updateQuery(this.range, interval)
       this.$emit('intervalChange', interval)
-    }
+    },
+
+    updateQuery(range, interval) {
+      const query = {
+        range: getRangeQueryByRange(range),
+        interval: getIntervalQueryByInterval(interval)
+      }
+
+      this.$emit('queryChange', query)
+    },
   }
 
 }
