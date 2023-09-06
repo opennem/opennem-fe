@@ -26,7 +26,7 @@
             style="font-weight: bold;"
             :style="{
               color: getTextColour(domain.id),
-              background: highlightRow === domain.id ? 'rgba(255,255,255, 0.8)' : 'none'
+              'background-color': highlightRow === domain.id ? 'rgba(255,255,255, 0.8)' : 'transparent'
             }"
             @mouseenter="() => handleMouseEnter(domain.id)"
             @mouseleave="() => handleMouseLeave()">
@@ -368,6 +368,10 @@ table.table {
     border-bottom: 1px solid #696969;
     padding-left: 0;
     vertical-align: bottom;
+  }
+
+  tbody tr:hover {
+    background-color: rgba(255,255,255, 0.8) !important;
   }
 
   tfoot tr th {
