@@ -180,6 +180,10 @@ export default {
       type: Boolean,
       default: () => true
     },
+    y1FirstTickText: {
+      type: Boolean,
+      default: () => false
+    },
     y1AxisUnit: {
       type: String,
       default: () => ''
@@ -750,7 +754,7 @@ export default {
         .append('rect')
         .attr('y', (d) => this.y1(d.start))
         .attr('width', this.width)
-        .attr('height', (d) => this.y1(d.end) - this.y1(d.start))
+        .attr('height', (d) => Math.abs(this.y1(d.end) - this.y1(d.start)))
         .style('fill', (d) => d.fill)
 
       this.$vis1Group.selectAll('path').remove()
@@ -829,7 +833,7 @@ export default {
       this.$xShadesGroup
         .selectAll('rect')
         .attr('x', (d) => this.x(d.start))
-        .attr('width', (d) => this.x(d.end) - this.x(d.start))
+        .attr('width', (d) => Math.abs(this.x(d.end) - this.x(d.start)))
     },
 
     drawProjectionLines() {
@@ -915,7 +919,10 @@ export default {
         })
         .attr('dx', 5)
         .attr('dy', -2)
-        .attr('opacity', this.y1TickText ? 1 : 0)
+        .attr('opacity', (d, i) => {
+          if (i === 0 && this.y1FirstTickText) return 1
+          return this.y1TickText ? 1 : 0
+        })
     },
 
     drawRightYAxisText(g) {
@@ -925,7 +932,10 @@ export default {
         .text((t) => `${t}${this.y2AxisUnit}`)
         .attr('dx', -5)
         .attr('dy', -2)
-        .attr('opacity', this.y1TickText ? 1 : 0)
+        .attr('opacity', (d, i) => {
+          if (i === 0 && this.y1FirstTickText) return 1
+          return this.y1TickText ? 1 : 0
+        })
     },
 
     drawProjectionVisPath(key) {
@@ -1017,7 +1027,7 @@ export default {
             .on('pointerleave', function() {
               self.$cursorDotsGroup.selectAll('circle').attr('r', (key) => {
                 const hasValue = self.y1(dataPoint[key]) || self.y1(dataPoint[key]) === 0
-                return hasValue ? 4 : 0
+                return hasValue ? 3 : 0
               })
               self.unHighlightPath()
               self.$emit('domain-hover', null)
