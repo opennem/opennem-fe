@@ -259,6 +259,10 @@ export default {
     appendDatapoint: {
       type: Boolean,
       default: true
+    },
+    strokeDasharray: {
+      type: String,
+      default: '1,0'
     }
   },
 
@@ -791,6 +795,7 @@ export default {
             return find ? find.pathStrokeWidth : this.pathStrokeWidth
           })
           // .style('filter', 'url(#shadow)')
+          .style('stroke-dasharray', this.strokeDasharray)
           .style('fill', 'transparent')
           .style('opacity', 0.9)
           .style('clip-path', this.clipPathUrl)
