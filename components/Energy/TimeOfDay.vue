@@ -53,8 +53,80 @@
         :title="title"
         :tooltip-values="tooltipValues"
       />
+
+      <div v-if="title === 'Price'">
+        <MultiLine
+          :svg-height="50"
+          :domains1="domainsWithColour"
+          :dataset1="dataset"
+          :y1-max="20000"
+          :y1-min="300"
+          :y1-ticks="[300, 2000, 6000, 10000, 14000]"
+          :y1-log="true"
+          :y1-tick-text="false"
+          :y1-first-tick-text="true"
+          :x-ticks="xTicks"
+          :curve="curve"
+          :date-hovered="hoverDate"
+          :highlight-domain="highlightDomain"
+          :positive-y-bg="'rgba(255,255,255, 0.2)'"
+          :cursor-type="'line'"
+          :append-datapoint="false"
+          class="vis-chart"
+          @date-hover="(evt, date) => $emit('date-hover', date)" 
+          @domain-hover="handleDomainHover"
+          @enter="handleVisEnter"
+          @leave="handleVisLeave"
+        />
+        <MultiLine
+          style="position: relative; top: -1px"
+          :svg-height="150"
+          :domains1="domainsWithColour"
+          :dataset1="dataset"
+          :y1-max="300"
+          :y1-min="0"
+          :y1-ticks="[0, 100, 200, 300]"
+          :x-ticks="xTicks"
+          :curve="curve"
+          :date-hovered="hoverDate"
+          :highlight-domain="highlightDomain"
+          :positive-y-bg="'rgba(255,255,255, 0.2)'"
+          :cursor-type="'line'"
+          :append-datapoint="false"
+          class="vis-chart"
+          @date-hover="(evt, date) => $emit('date-hover', date)" 
+          @domain-hover="handleDomainHover"
+          @enter="handleVisEnter"
+          @leave="handleVisLeave"
+        />
+        <MultiLine
+          style="position: relative; top: -1px"
+          :svg-height="35"
+          :domains1="domainsWithColour"
+          :dataset1="dataset"
+          :y1-max="-1100"
+          :y1-min="-0.1"
+          :y1-invert="true"
+          :y1-ticks="[-60, -400]"
+          :y1-log="true"
+          :y1-tick-text="false"
+          :x-ticks="xTicks"
+          :curve="curve"
+          :date-hovered="hoverDate"
+          :highlight-domain="highlightDomain"
+          :positive-y-bg="'rgba(255,255,255, 0.2)'"
+          :cursor-type="'line'"
+          :append-datapoint="false"
+          class="vis-chart"
+          @date-hover="(evt, date) => $emit('date-hover', date)" 
+          @domain-hover="handleDomainHover"
+          @enter="handleVisEnter"
+          @leave="handleVisLeave"
+        />
+      </div>
       
       <MultiLine
+        v-else
         :svg-height="chartHeight"
         :domains1="domainsWithColour"
         :dataset1="dataset"
@@ -62,7 +134,7 @@
         :y1-min="yMin"
         :y1-ticks="yTicks"
         :x-ticks="xTicks"
-        :curve="chartCurve"
+        :curve="curve"
         :date-hovered="hoverDate"
         :highlight-domain="highlightDomain"
         :positive-y-bg="'rgba(255,255,255, 0.2)'"
@@ -74,6 +146,8 @@
         @enter="handleVisEnter"
         @leave="handleVisLeave"
       />
+
+
       <DateBrush
         :dataset="dataset"
         :x-ticks="xTicks"
@@ -125,7 +199,7 @@ export default {
       type: Function,
       default: () => {}
     },
-    chartCurve: {
+    curve: {
       type: String,
       default: ''
     },
@@ -228,6 +302,7 @@ export default {
   methods: {
     handleDomainHover(domain) {
       this.highlightRow = domain
+      this.highlightDomain = domain
     },
     
     handleVisEnter() {
