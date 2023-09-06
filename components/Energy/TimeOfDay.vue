@@ -56,7 +56,7 @@
 
       <div v-if="title === 'Price'">
         <MultiLine
-          :svg-height="50"
+          :svg-height="chartHeightPositiveLogPrice"
           :domains1="domainsWithColour"
           :dataset1="dataset"
           :y1-max="20000"
@@ -72,6 +72,7 @@
           :positive-y-bg="'rgba(255,255,255, 0.2)'"
           :cursor-type="'line'"
           :append-datapoint="false"
+          :stroke-dasharray="'2,2'"
           class="vis-chart"
           @date-hover="(evt, date) => $emit('date-hover', date)" 
           @domain-hover="handleDomainHover"
@@ -80,7 +81,7 @@
         />
         <MultiLine
           style="position: relative; top: -1px"
-          :svg-height="150"
+          :svg-height="chartHeightPrice"
           :domains1="domainsWithColour"
           :dataset1="dataset"
           :y1-max="300"
@@ -101,7 +102,7 @@
         />
         <MultiLine
           style="position: relative; top: -1px"
-          :svg-height="35"
+          :svg-height="chartHeightNegativeLogPrice"
           :domains1="domainsWithColour"
           :dataset1="dataset"
           :y1-max="-1100"
@@ -117,6 +118,7 @@
           :positive-y-bg="'rgba(255,255,255, 0.2)'"
           :cursor-type="'line'"
           :append-datapoint="false"
+          :stroke-dasharray="'2,2'"
           class="vis-chart"
           @date-hover="(evt, date) => $emit('date-hover', date)" 
           @domain-hover="handleDomainHover"
@@ -245,6 +247,16 @@ export default {
 
     chartHeight() {
       return this.expand ? 400 : 200
+    },
+
+    chartHeightPrice() {
+      return this.expand ? 160 : 80
+    },
+    chartHeightPositiveLogPrice() {
+      return this.expand ? 130 : 65
+    },
+    chartHeightNegativeLogPrice() {
+      return this.expand ? 110 : 55
     },
 
     domainsWithColour() {
