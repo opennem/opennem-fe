@@ -17,7 +17,7 @@
         :y1-min="averageYMin"
         :y1-ticks="yTicks"
         :x-ticks="xTicks"
-        :curve="chartCurve"
+        :curve="curveSmooth"
         :date-hovered="hoverDate"
         :stacked="true"
         :show-cursor-dots="false"
@@ -50,7 +50,7 @@
         :y-ticks="yTicks"
         :tick-format="tickFormat"
         :second-tick-format="secondTickFormat"
-        :curve="chartCurve"
+        :curve="ds.label === 'Price' ? curveStep : curveSmooth"
         :y-min="ds.yMin"
         :y-max="ds.yMax"
         :hover-date="hoverDate"
@@ -68,7 +68,7 @@ import { utcHour } from 'd3-time'
 import { utcFormat } from 'd3-time-format'
 import addMinutes from 'date-fns/addMinutes'
 import subDays from 'date-fns/subDays'
-import { CHART_CURVE_SMOOTH } from '@/constants/chart-options.js'
+import { CHART_CURVE_SMOOTH, CHART_CURVE_STEP } from '@/constants/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import StackedArea from '../Vis/StackedArea.vue'
@@ -140,7 +140,9 @@ export default {
       todayKey: null,
       hoverDate: null,
       highlightFuelTech: null,
-      xTicks: utcHour.every(2)
+      xTicks: utcHour.every(2),
+      curveSmooth: CHART_CURVE_SMOOTH,
+      curveStep: CHART_CURVE_STEP
     }
   },
 
@@ -286,7 +288,7 @@ export default {
         const ft = this.currentDomainPowerEnergy.find(d => d.id === this.highlightFuelTech)
         return {
           date: `${this.hoverValues.x}`,
-          fuelTech: ft.label,
+          fuelTech: ft?.label,
           fuelTechColour: ft.colour,
           value: this.hoverValues[this.highlightFuelTech]
         }
@@ -305,7 +307,6 @@ export default {
     this.yTicks = []
     this.tickFormat = (d) => getTimeLabel(d)
     this.secondTickFormat = () => ''
-    this.chartCurve = CHART_CURVE_SMOOTH
 
     let utcCurrent = new Date()
     utcCurrent.setUTCDate(utcCurrent.getDate());
