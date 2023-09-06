@@ -123,7 +123,7 @@ export default function({
     
     const isValidEI = Number.isFinite(ei)
 
-    if ((ei < 0 || ei > 1500) || !isValidEI) {
+    if (ei < 0 || ei > 1500) {
       console.error(`EI out of range: ${ei}`)
     }
 
