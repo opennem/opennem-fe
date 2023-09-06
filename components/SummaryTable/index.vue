@@ -251,9 +251,22 @@
 
       <div 
         v-if="loadsOrder.length > 0" 
-        class="summary-column-headers">
+        class="summary-column-headers line-row"
+        @touchstart="() => handleTouchstart('chartEnergyNetLine')"
+        @touchend="handleTouchend"
+        @click.exact="() => handleTotalLineRowClicked('chartEnergyNetLine')"
+        @click.shift.exact="() => handleLineRowShiftClicked('chartEnergyNetLine')"
+      >
         <div class="summary-row last-row">
-          <div class="summary-col-label">Net</div>
+          <div class="summary-col-label">
+            <div
+              :class="{
+                on: chartEnergyNetLine
+              }"
+              class="line-icon net"
+            />
+            Net
+          </div>
 
           <div 
             class="summary-col-external-link-icon" 
@@ -300,11 +313,11 @@
       </div>
 
       <div
-        class="summary-column-headers renewable-row"
-        @touchstart="handleTouchstart"
+        class="summary-column-headers line-row"
+        @touchstart="() => handleTouchstart(chartEnergyRenewablesLine)"
         @touchend="handleTouchend"
-        @click.exact="handleRenewableRowClicked"
-        @click.shift.exact="handleRenewableRowShiftClicked"
+        @click.exact="() => handleTotalLineRowClicked('chartEnergyRenewablesLine')"
+        @click.shift.exact="() => handleLineRowShiftClicked('chartEnergyRenewablesLine')"
       >
         <div class="summary-row last-row">
           <div class="summary-col-label">
@@ -313,7 +326,7 @@
                 on: chartEnergyRenewablesLine,
                 'alt-colour': useAltRenewablesLineColour
               }"
-              class="renewable-line"
+              class="line-icon"
             />
             Renewables
           </div>
@@ -524,6 +537,8 @@ export default {
 
       chartEnergyRenewablesLine:
         'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+      chartEnergyNetLine:
+        'chartOptionsPowerEnergy/chartEnergyNetLine',
 
       chartType: 'chartOptionsPowerEnergy/chartType',
       chartEnergyYAxis: 'chartOptionsPowerEnergy/chartEnergyYAxis',
@@ -1398,7 +1413,8 @@ export default {
       if (
         this.sourcesOrder.length === sourcesHiddenLength &&
         this.loadsOrder.length === loadsHiddenLength &&
-        !this.chartEnergyRenewablesLine
+        !this.chartEnergyRenewablesLine &&
+        !this.chartEnergyNetLine
       ) {
         this.hiddenSources = []
         this.hiddenLoads = []
@@ -1458,9 +1474,9 @@ export default {
       }
     },
 
-    handleTouchstart() {
+    handleTouchstart(lineDomain) {
       this.mousedownDelay = setTimeout(() => {
-        this.handleRenewableRowShiftClicked()
+        this.handleLineRowShiftClicked(lineDomain)
       }, this.longPress)
     },
     handleTouchend() {
@@ -1471,16 +1487,16 @@ export default {
       this.mousedownDelay = null
     },
 
-    handleRenewableRowClicked() {
-      const rowToggle = !this.chartEnergyRenewablesLine
+    handleTotalLineRowClicked(lineDomain) {
+      const rowToggle = !this[lineDomain]
       this.$store.commit(
-        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+        `chartOptionsPowerEnergy/${lineDomain}`,
         rowToggle
       )
       this.emitHiddenFuelTechs()
     },
 
-    handleRenewableRowShiftClicked() {
+    handleLineRowShiftClicked(lineDomain) {
       if (this.fuelTechGroupName === 'Default') {
         const hiddenSources = Domain.getAllDomainObjs().filter(
           (d) => d.category === 'source'
@@ -1499,7 +1515,16 @@ export default {
       }
 
       this.$store.commit(
-        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+        `chartOptionsPowerEnergy/chartEnergyRenewablesLine`,
+        false
+      )
+      this.$store.commit(
+        `chartOptionsPowerEnergy/chartEnergyNetLine`,
+        false
+      )
+
+      this.$store.commit(
+        `chartOptionsPowerEnergy/${lineDomain}`,
         true
       )
       this.emitHiddenFuelTechs()
@@ -1550,7 +1575,7 @@ export default {
   }
 }
 
-.renewable-row {
+.line-row {
   cursor: pointer;
   &:hover {
     background-color: rgba(255, 255, 255, 0.7);
@@ -1561,7 +1586,7 @@ export default {
     align-items: center;
   }
 
-  .renewable-line {
+  .line-icon {
     width: 15px;
     height: 3px;
     background: #ddd;
@@ -1569,6 +1594,10 @@ export default {
 
     &.on {
       background: #52bca3;
+
+      &.net {
+        background: #e34a33;
+      }
 
       &.alt-colour {
         background: #e34a33;

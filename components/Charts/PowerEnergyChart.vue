@@ -85,6 +85,8 @@
       :unit="` ${chartDisplayPrefix}${chartUnit}`"
       :null-check-prop="'_total'"
       :filter-period="filterPeriod"
+      :show-total-line="chartEnergyNetLine"
+      :total-line-domain="'_total'"
       :class="{ dragging: dragging }"
       class="vis-chart"
       @dateOver="handleDateHover"
@@ -370,6 +372,8 @@ export default {
       chartPowerDisplayPrefix:
         'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
       chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
+      chartEnergyNetLine:
+        'chartOptionsPowerEnergy/chartEnergyNetLine',
       chartEnergyRenewablesLine:
         'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
 
@@ -759,7 +763,7 @@ export default {
           lowest = this.yMin
         }
 
-        return lowest + (lowest * 10) / 100
+        return lowest
       }
     },
     computedYMax() {
@@ -780,7 +784,7 @@ export default {
         highest = this.yMax
       }
 
-      return highest + (highest * 10) / 100
+      return highest
     },
     energyLineYMin() {
       return this.getMinValueByLowest(this.dataset)
@@ -808,7 +812,7 @@ export default {
       return m < 100 ? 100 : m
     },
     isRenewableLineOnly() {
-      return this.chartEnergyRenewablesLine && this.domains.length === 0
+      return this.chartEnergyRenewablesLine && this.domains.length === 0 && !this.chartEnergyNetLine
     },
 
     averageEnergy() {

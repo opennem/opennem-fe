@@ -155,7 +155,9 @@ export default {
       range: 'range',
       interval: 'interval',
       filterPeriod: 'filterPeriod',
-      hiddenFuelTechs: 'hiddenFuelTechs'
+      hiddenFuelTechs: 'hiddenFuelTechs',
+      chartEnergyRenewablesLine: 'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+      chartEnergyNetLine: 'chartOptionsPowerEnergy/chartEnergyNetLine'
     }),
     
     intervalVal() {
@@ -179,7 +181,30 @@ export default {
         return !this.hiddenFuelTechs.includes(ft)
       })
 
-      return [...filtered.reverse(), ...price, ...this.domainTemperature]
+      const domainTotalRenewables = []
+      if (this.chartEnergyRenewablesLine) {
+        domainTotalRenewables.push({
+          domain: '_totalRenewables',
+          id: '_totalRenewables',
+          label: 'Total Renewables'
+        })
+      }
+      const domainTotalNetGeneration = []
+      if (this.chartEnergyNetLine) {
+        domainTotalNetGeneration.push({
+          domain: '_total',
+          id: '_total',
+          label: 'Total Net'
+        })
+      }
+      
+      return [
+        ...filtered.reverse(),
+        ...price,
+        ...this.domainTemperature,
+        ...domainTotalNetGeneration,
+        ...domainTotalRenewables
+      ]
     },
 
     timeDomains() {
@@ -289,7 +314,7 @@ export default {
         return {
           date: `${this.hoverValues.x}`,
           fuelTech: ft?.label,
-          fuelTechColour: ft.colour,
+          fuelTechColour: ft?.colour,
           value: this.hoverValues[this.highlightFuelTech]
         }
       }
@@ -363,6 +388,7 @@ export default {
     },
 
     getTimeBucket(domain) {
+      // console.log('currentDataset', this.currentDataset)
       const dataset = this.currentDataset.map((d) => {
         return {
           date: d.date,
