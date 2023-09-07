@@ -315,17 +315,19 @@ export default {
       })
 
       console.log('interval change', interval, this.range)
-      if (this.range === '30D') {
-        this.doGetRegionDataByRangeInterval({
-          region: this.regionId,
-          range: this.range,
-          interval,
-          period: this.filterPeriod,
-          groupName: this.fuelTechGroupName
-        })
-      } else {
-        this.doUpdateDatasetByInterval({ range: this.range, interval })
-      }      
+      // TODO fix issue with 30D interval
+      this.doUpdateDatasetByInterval({ range: this.range, interval })
+      // if (this.range === '30D') {
+      //   this.doGetRegionDataByRangeInterval({
+      //     region: this.regionId,
+      //     range: this.range,
+      //     interval,
+      //     period: this.filterPeriod,
+      //     groupName: this.fuelTechGroupName
+      //   })
+      // } else {
+      //   this.doUpdateDatasetByInterval({ range: this.range, interval })
+      // }      
     },
     filteredDates(dates) {
       this.doUpdateXTicks({
