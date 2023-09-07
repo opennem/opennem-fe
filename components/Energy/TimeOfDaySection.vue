@@ -161,7 +161,6 @@ export default {
 
   data() {
     return {
-      selectedDomain: null,
       todayKey: null,
       hoverDate: null,
       highlightFuelTech: null,
@@ -234,24 +233,26 @@ export default {
     },
 
     timeDomains() {
-      const keys = Object.keys(this.dataset[0]).filter((key) => {
-        return key !== 'x' && key !== 'date' && key !== 'time'
-      })
+      const bucket = this.getDataBucket()
+      const keys = Object.keys(bucket[0]).filter((key) => {
+          return key !== 'x' && key !== 'date' && key !== 'time'
+        })
 
-      const getLabel = (key) => {
-        if (key === '_average') return 'Average'
-        return key
-      }
-
-      const datasetKeys = keys.map((key) => {
-        return {
-          domain: key,
-          id: key,
-          label: getLabel(key)
+        const getLabel = (key) => {
+          if (key === '_average') return 'Average'
+          return key
         }
-      })  
 
-      return datasetKeys
+        const datasetKeys = keys.map((key) => {
+          return {
+            domain: key,
+            id: key,
+            label: getLabel(key)
+          }
+        })  
+
+        return datasetKeys
+      
     },
 
     filteredTimeDomains() {
@@ -260,11 +261,11 @@ export default {
 
     datasets() {
       const datasets = this.allDomains.map(domain => {
-        const data = this.getTimeBucket(domain.id)
+        const data = this.getDataBucket(domain.id, domain.category)
         return {
           id: domain.id,
           label: domain.label,
-          data: this.getTimeBucket(domain.id),
+          data,
           yMin: this.getYMin(data),
           yMax: this.getYMax(data)
         }
@@ -332,10 +333,6 @@ export default {
       })
 
       return max
-    },
-
-    dataset() {
-      return this.getTimeBucket(this.selectedDomain)
     },
 
     tooltipValues() {
@@ -417,13 +414,12 @@ export default {
       return max
     },
 
-    getTimeBucket(domain) {
-      // console.log('currentDataset', this.currentDataset)
+    getDataBucket(domain, category) {
       const dataset = this.currentDataset.map((d) => {
         return {
           date: d.date,
           time: d.time,
-          value: d[domain],
+          value: category === 'load' ? -d[domain] : d[domain], // invert load values so it shows up as positive values
         }
       })
 
