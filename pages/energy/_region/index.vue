@@ -30,7 +30,7 @@
       />
  
       <div
-        v-if="range === '3D' || range === '7D'"
+        v-if="range === '3D' || range === '7D' || range === '30D'"
         class="field has-addons" 
         style="margin-bottom: 0;">
         <button 
@@ -313,7 +313,19 @@ export default {
         interval,
         filterPeriod: this.filterPeriod
       })
-      this.doUpdateDatasetByInterval({ range: this.range, interval })
+
+      console.log('interval change', interval, this.range)
+      if (this.range === '30D') {
+        this.doGetRegionDataByRangeInterval({
+          region: this.regionId,
+          range: this.range,
+          interval,
+          period: this.filterPeriod,
+          groupName: this.fuelTechGroupName
+        })
+      } else {
+        this.doUpdateDatasetByInterval({ range: this.range, interval })
+      }      
     },
     filteredDates(dates) {
       this.doUpdateXTicks({

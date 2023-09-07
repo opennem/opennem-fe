@@ -65,10 +65,10 @@ export default {
           label: '7D',
           value: '7D'
         },
-        // {
-        //   label: '28D',
-        //   value: '28D'
-        // }
+        {
+          label: '30D',
+          value: '30D'
+        }
       ],
       intervals: [
         {

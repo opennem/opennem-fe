@@ -2,6 +2,7 @@ import subDays from 'date-fns/subDays'
 import subYears from 'date-fns/subYears'
 
 import * as rangesJs from '~/constants/ranges.js'
+import { INTERVAL_30MIN } from '~/constants/interval-filters.js'
 
 function getYearPaths(prepend, regionId, oneYearAgo) {
   const today = new Date()
@@ -25,7 +26,7 @@ function getYearPaths(prepend, regionId, oneYearAgo) {
 }
 
 export default {
-  getEnergyUrls(region, range) {
+  getEnergyUrls(region, range, interval) {
     const prepend =
       region === 'wem' || region === 'nem' || region === 'au' ? '' : '/NEM'
     const regionId = region.toUpperCase()
@@ -40,9 +41,13 @@ export default {
         break
 
       case rangesJs.RANGE_30D:
-        const thirtyDaysAgo = subDays(new Date(), 30)
-        oneYearAgo = thirtyDaysAgo.getFullYear()
-        urls = getYearPaths(prepend, regionId, oneYearAgo)
+        if (interval === INTERVAL_30MIN) {
+          urls.push(`v3/stats/au${prepend}/${regionId}/power/30d.json`)
+        } else {
+          const thirtyDaysAgo = subDays(new Date(), 30)
+          oneYearAgo = thirtyDaysAgo.getFullYear()
+          urls = getYearPaths(prepend, regionId, oneYearAgo)
+        }
         break
 
       case rangesJs.RANGE_1Y:

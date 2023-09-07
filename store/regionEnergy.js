@@ -495,7 +495,7 @@ export const actions = {
 
     if (isValidRegion(region) && range !== '' && interval !== '') {
       const displayTz = rootGetters.displayTimeZone
-      const urls = Data.getEnergyUrls(region, range)
+      const urls = Data.getEnergyUrls(region, range, interval)
       currentRegion = region
       commit('ready', false)
       commit('isFetching', true)
