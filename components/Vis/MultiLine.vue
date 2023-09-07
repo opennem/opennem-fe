@@ -152,6 +152,10 @@ export default {
       type: Function,
       default: () => null
     },
+    xTickLine: {
+      type: Boolean,
+      default: () => true
+    },
     xShades: {
       type: Array,
       default: () => []
@@ -177,6 +181,10 @@ export default {
       default: () => false
     },
     y1TickText: {
+      type: Boolean,
+      default: () => true
+    },
+    y1TickLine: {
       type: Boolean,
       default: () => true
     },
@@ -900,16 +908,20 @@ export default {
     },
 
     drawXAxis(g) {
-      g.call(this.xAxis)
-      g.selectAll('.x-axis .tick text').remove()
+      if (this.xTickLine) {
+        g.call(this.xAxis)
+        g.selectAll('.x-axis .tick text').remove()
+      }
     },
 
     drawLeftYAxis(g) {
-      g.call(this.yAxisLeft)
-      g.selectAll('.y-axis .tick text').remove()
-      g.selectAll('.tick line').attr('class', (d) =>
-        d === 0 && this.yMinComputed !== 0 ? 'base' : ''
-      )
+      if (this.y1TickLine) {
+        g.call(this.yAxisLeft)
+        g.selectAll('.y-axis .tick text').remove()
+        g.selectAll('.tick line').attr('class', (d) =>
+          d === 0 && this.yMinComputed !== 0 ? 'base' : ''
+        )
+      }
     },
 
     drawLeftYAxisText(g) {
