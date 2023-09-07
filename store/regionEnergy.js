@@ -34,7 +34,6 @@ export const state = () => ({
   isFetching: false,
   isEnergyType: false,
   jsonResponses: null,
-  datasetFull: [],
   datasetFlat: [],
   currentDataset: [],
   changeSinceDataset: [],
@@ -67,7 +66,6 @@ export const getters = {
   isFetching: (state) => state.isFetching,
   isEnergyType: (state) => state.isEnergyType,
   datasetFlat: (state) => state.datasetFlat,
-  datasetFull: (state) => state.datasetFull,
   currentDataset: (state) => state.currentDataset,
   changeSinceDataset: (state) => state.changeSinceDataset,
   domainPowerEnergy: (state) => state.domainPowerEnergy,
@@ -126,9 +124,6 @@ export const mutations = {
   },
   jsonResponses(state, jsonResponses) {
     state.jsonResponses = _cloneDeep(jsonResponses)
-  },
-  datasetFull(state, datasetFull) {
-    state.datasetFull = datasetFull
   },
   datasetFlat(state, datasetFlat) {
     state.datasetFlat = _cloneDeep(datasetFlat)
@@ -228,7 +223,6 @@ export const actions = {
       console.info(`------ ${currentRegion} (start)`)
 
       const {
-        datasetFull,
         datasetFlat,
         currentDataset: dataset,
         dataPowerEnergyInterval,
@@ -507,7 +501,6 @@ export const actions = {
         console.info(`------ ${currentRegion} — ${range}/${interval} (start)`)
 
         const {
-          datasetFull,
           datasetFlat,
           currentDataset,
           dataPowerEnergyInterval,
@@ -527,14 +520,10 @@ export const actions = {
           units
         } = dataProcess(responses, range, interval, period, displayTz)
 
-        perf.timeEnd(
-          `------ ${currentRegion} — ${range}/${interval} (${dataCount} down to ${currentDataset.length})`
-        )
 
         commit('isFetching', false)
         commit('isEnergyType', dataType === 'energy')
 
-        commit('datasetFull', datasetFull)
         commit('datasetFlat', datasetFlat)
         commit('currentDataset', currentDataset)
         commit('dataPowerEnergyInterval', dataPowerEnergyInterval)
@@ -554,6 +543,10 @@ export const actions = {
         commit('currentDomainPowerEnergy', domainPowerEnergyGrouped[groupName])
         commit('currentDomainEmissions', domainEmissionsGrouped[groupName])
         commit('currentDomainMarketValue', domainMarketValueGrouped[groupName])
+
+        perf.timeEnd(
+          `------ ${currentRegion} — ${range}/${interval} (${dataCount} down to ${currentDataset.length})`
+        )
 
         // parse units
         let prefix = ''
@@ -640,7 +633,6 @@ export const actions = {
       console.info(`------ ${currentRegion} (start)`)
 
       const {
-        datasetFull,
         datasetFlat,
         currentDataset: dataset,
         dataPowerEnergyInterval,

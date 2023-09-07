@@ -529,7 +529,7 @@ export default {
 
   computed: {
     ...mapGetters({
-      datasetFull: 'regionEnergy/datasetFull',
+      datasetFlat: 'regionEnergy/datasetFlat',
       changeSinceDataset: 'regionEnergy/changeSinceDataset',
       domainPowerEnergyGrouped: 'regionEnergy/domainPowerEnergyGrouped',
       regionTimezoneString: 'regionEnergy/regionTimezoneString',
@@ -878,7 +878,6 @@ export default {
 
   methods: {
     calculateSummary(data) {
-      // console.log('Calculate summary')
       if (data.length > 0) {
         const isGeneration = this.percentContributionTo === 'generation'
         let totalEnergy = 0
@@ -967,7 +966,7 @@ export default {
         const end = data[data.length - 1]
         const startDate = start.date
         const endDate = end.date
-        const fullDatasetFiltered = this.datasetFull.filter(
+        const fullDatasetFiltered = this.datasetFlat.filter(
           (df) => df.time >= start.time && df.time <= end.time
         )
         const bucketSizeMins = differenceInMinutes(endDate, startDate) + 1
