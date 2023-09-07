@@ -31,8 +31,8 @@ const getBaseUrl = () => {
     baseUrl = process.env.DATA_BASE_URL
   }
 
-  // WORKAROUND: for testing in preview branch: https://feature-191-in-power-series.opennem-fe-bl7.pages.dev
-  if (host && host.startsWith('feature-191-in-power-series')) {
+  // for testing in preview branch
+  if (host && host.startsWith('feature-203-time-of-day-plot')) {
     baseUrl = `https://data.dev.opennem.org.au/`
   }
 
