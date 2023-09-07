@@ -39,6 +39,29 @@
       />
     </div>
 
+    <div style="display: flex; flex-wrap: wrap; gap: 1%;">
+      <div 
+        v-for="ds in datasets" 
+        :key="ds.id"
+        class="sparkline-button"
+        style="width: 24%; margin-bottom: 1%;">
+        <TimeOfDaySparkline
+          :title="ds.label"
+          :domains="filteredTimeDomains"
+          :dataset="ds.data"
+          :y-ticks="yTicks"
+          :tick-format="tickFormat"
+          :second-tick-format="secondTickFormat"
+          :curve="ds.label === 'Price' ? curveStep : curveSmooth"
+          :y-min="ds.yMin"
+          :y-max="ds.yMax"
+          :hover-date="hoverDate"
+          :today-key="todayKey"
+          @date-hover="handleDateHover"
+        />
+      </div>
+    </div>
+
     <div 
       v-for="ds in datasets" 
       :key="ds.id"
@@ -75,6 +98,7 @@ import StackedArea from '../Vis/StackedArea.vue'
 import DateBrush from '@/components/Vis/DateBrush'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
 import TimeOfDay from './TimeOfDay.vue'
+import TimeOfDaySparkline from './TimeOfDaySparkline.vue'
 import TimeOfDayChartHeader from './TimeOfDayChartHeader.vue'
 
 function getDay(d) {
@@ -131,6 +155,7 @@ export default {
     DateBrush,
     GroupSelector,
     TimeOfDay,
+    TimeOfDaySparkline,
     TimeOfDayChartHeader
   },
 
@@ -165,6 +190,7 @@ export default {
     },
 
     rangeVal() {
+      if (this.range === '30D') return 30
       if (this.range === '7D') return 7
       if (this.range === '3D') return 3
       if (this.range === '1D') return 1
@@ -186,7 +212,7 @@ export default {
         domainTotalRenewables.push({
           domain: '_totalRenewables',
           id: '_totalRenewables',
-          label: 'Total Renewables'
+          label: 'Renewables'
         })
       }
       const domainTotalNetGeneration = []
@@ -194,7 +220,7 @@ export default {
         domainTotalNetGeneration.push({
           domain: '_total',
           id: '_total',
-          label: 'Total Net'
+          label: 'Net'
         })
       }
       
@@ -226,6 +252,10 @@ export default {
       })  
 
       return datasetKeys
+    },
+
+    filteredTimeDomains() {
+      return this.timeDomains.filter(d => d.id === '_average' || d.id === this.todayKey)
     },
 
     datasets() {
