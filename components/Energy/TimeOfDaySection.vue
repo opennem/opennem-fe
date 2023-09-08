@@ -41,7 +41,7 @@
 
     <div style="display: flex; flex-wrap: wrap; gap: 1%;">
       <div 
-        v-for="ds in datasets" 
+        v-for="ds in datasetsWithPositiveLoads" 
         :key="ds.id"
         class="sparkline-button"
         style="width: 24%; margin-bottom: 1%;">
@@ -62,7 +62,7 @@
       </div>
     </div>
 
-    <div 
+    <!-- <div 
       v-for="ds in datasets" 
       :key="ds.id"
       style="padding-bottom: 1rem; margin-bottom: 1rem;">
@@ -80,7 +80,7 @@
         :today-key="todayKey"
         @date-hover="handleDateHover"
       />
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -261,7 +261,24 @@ export default {
 
     datasets() {
       const datasets = this.allDomains.map(domain => {
-        const data = this.getDataBucket(domain.id, domain.category)
+        const data = this.getDataBucket(domain.id, domain.category, false)
+        return {
+          id: domain.id,
+          label: domain.label,
+          data,
+          yMin: this.getYMin(data),
+          yMax: this.getYMax(data)
+        }
+      })
+
+      console.log('datasets', datasets)
+
+      return datasets
+    },
+
+    datasetsWithPositiveLoads() {
+      const datasets = this.allDomains.map(domain => {
+        const data = this.getDataBucket(domain.id, domain.category, true)
         return {
           id: domain.id,
           label: domain.label,
@@ -414,12 +431,12 @@ export default {
       return max
     },
 
-    getDataBucket(domain, category) {
+    getDataBucket(domain, category, positiveLoads) {
       const dataset = this.currentDataset.map((d) => {
         return {
           date: d.date,
           time: d.time,
-          value: category === 'load' ? -d[domain] : d[domain], // invert load values so it shows up as positive values
+          value: positiveLoads && category === 'load' ? -d[domain] : d[domain], // invert load values so it shows up as positive values
         }
       })
 
