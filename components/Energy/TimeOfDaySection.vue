@@ -3,7 +3,9 @@
     class="time-of-day-section" 
     style="margin-left: 1rem;">
 
-    <div class="vis-wrapper">
+    <div 
+      v-if="showStackedAverages" 
+      class="vis-wrapper">
       <TimeOfDayChartHeader
         :title="'An average day'"
         :tooltip-values="tooltipValues"
@@ -39,7 +41,9 @@
       />
     </div>
 
-    <div style="display: flex; flex-wrap: wrap; gap: 1%;">
+    <div 
+      v-if="showSparklines" 
+      style="display: flex; flex-wrap: wrap; gap: 1%;">
       <div 
         v-for="ds in datasetsWithPositiveLoads" 
         :key="ds.id"
@@ -103,9 +107,6 @@
 import { mapGetters } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import { utcHour } from 'd3-time'
-import { utcFormat } from 'd3-time-format'
-import addMinutes from 'date-fns/addMinutes'
-import subDays from 'date-fns/subDays'
 import { CHART_CURVE_SMOOTH, CHART_CURVE_STEP } from '@/constants/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
@@ -115,53 +116,7 @@ import GroupSelector from '~/components/ui/FuelTechGroupSelector'
 import TimeOfDay from './TimeOfDay.vue'
 import TimeOfDaySparkline from './TimeOfDaySparkline.vue'
 import TimeOfDayChartHeader from './TimeOfDayChartHeader.vue'
-
-function getDay(d) {
-  return utcFormat(`%e %b`)(d)
-}
-
-function getDayKeys(range) {
-  const keys = []
-  let utcCurrent = new Date()
-  utcCurrent.setUTCDate(utcCurrent.getDate());
-  utcCurrent.setUTCHours(0, 0, 0, 0)
-
-  for (let i = 0; i < range; i++) {
-    keys.push(getDay(utcCurrent))
-    utcCurrent = subDays(utcCurrent, 1)
-  }
-
-  return keys
-}
-
-function getTimeLabel(d) {
-  const date = new Date(d)
-  const hours = date.getUTCHours()
-  const minutes = date.getUTCMinutes()
-  const ampm = hours >= 12 ? 'pm' : 'am'
-  const hour = function() {
-    return hours === 0 || hours === 12 ? 12 : hours % 12
-  }()
-  const min = minutes === 0 ? '' : `:${(minutes + '').padStart(2, '0')}`
-  return `${hour}${min}${ampm}`
-}
-
-function getTimebucket(interval) {
-  let utcCurrent = new Date()
-  utcCurrent.setUTCDate(utcCurrent.getDate());
-  utcCurrent.setUTCHours(0, 0, 0, 0)
-  const b = []
-
-  let x = getTimeLabel(utcCurrent)
-
-  for (let i = 0; i < 1440 / interval; i++) {
-    b.push({ x, date: utcCurrent, time: utcCurrent.getTime() })
-    utcCurrent = addMinutes(utcCurrent, interval)
-    x = getTimeLabel(utcCurrent)
-  }
-
-  return b
-}
+import { getDataBucket, getTimeLabel, getDay } from '@/data/transform/time-of-day.js'
 
 export default {
   components: {
@@ -172,6 +127,17 @@ export default {
     TimeOfDay,
     TimeOfDaySparkline,
     TimeOfDayChartHeader
+  },
+
+  props: {
+    showStackedAverages: {
+      type: Boolean,
+      default: true
+    },
+    showSparklines: {
+      type: Boolean,
+      default: true
+    }
   },
 
   data() {
@@ -189,6 +155,8 @@ export default {
   computed: {
     ...mapGetters({
       wideScreenBreak: 'app/wideScreenBreak',
+      tabletBreak: 'app/tabletBreak',
+      widthBreak: 'app/widthBreak',
       domainTemperature: 'regionEnergy/domainTemperature',
       domainPrice: 'regionEnergy/domainPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
@@ -202,7 +170,7 @@ export default {
     }),
 
     sparklineButtonWidth() {
-      return this.wideScreenBreak ? '24%' : '19%';
+      return this.tabletBreak ? '24%' : this.widthBreak ? '19%' : '15.6%';
     },
     
     intervalVal() {
@@ -254,7 +222,7 @@ export default {
     },
 
     timeDomains() {
-      const bucket = this.getDataBucket()
+      const bucket = getDataBucket({ data: this.currentDataset, range: this.rangeVal, interval: this.intervalVal })
       const keys = Object.keys(bucket[0]).filter((key) => {
           return key !== 'x' && key !== 'date' && key !== 'time'
         })
@@ -282,7 +250,14 @@ export default {
 
     datasets() {
       const datasets = this.allDomains.map(domain => {
-        const data = this.getDataBucket(domain.id, domain.category, false)
+        const data = getDataBucket({
+          data: this.currentDataset,
+          domain: domain.id,
+          category: domain.category,
+          positiveLoads: false,
+          range: this.rangeVal,
+          interval: this.intervalVal
+        })
         return {
           id: domain.id,
           label: domain.label,
@@ -299,7 +274,14 @@ export default {
 
     datasetsWithPositiveLoads() {
       const datasets = this.allDomains.map(domain => {
-        const data = this.getDataBucket(domain.id, domain.category, true)
+        const data = getDataBucket({
+          data: this.currentDataset,
+          domain: domain.id,
+          category: domain.category,
+          positiveLoads: true,
+          range: this.rangeVal,
+          interval: this.intervalVal
+        })
         return {
           id: domain.id,
           label: domain.label,
@@ -449,41 +431,6 @@ export default {
       })
 
       return max
-    },
-
-    getDataBucket(domain, category, positiveLoads) {
-      const dataset = this.currentDataset.map((d) => {
-        return {
-          date: d.date,
-          time: d.time,
-          value: positiveLoads && category === 'load' ? -d[domain] : d[domain], // invert load values so it shows up as positive values
-        }
-      })
-
-      // TODO: maybe create dayKeys using dataset start/last time instead
-      const dayKeys = getDayKeys(this.rangeVal)
-      const timeBucket = getTimebucket(this.intervalVal)
-
-      dataset.forEach(d => {
-        const date = d.date
-        const day = getDay(date)
-        const x = getTimeLabel(date)
-        const find = timeBucket.find(b => b.x === x)
-        find[day] = d.value
-      })
-
-      timeBucket.forEach(b => {
-        let total = 0
-        let keyCount = 0
-        dayKeys.forEach(key => {
-          if (b[key] !== undefined && b[key] !== null) keyCount++
-          total += b[key] || 0
-        })
-
-        b._average = total / keyCount
-      })
-
-      return timeBucket
     }
   }
 }

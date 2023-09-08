@@ -94,7 +94,7 @@
         style="margin-right: 10px;"
         :style="{ width: `${visWidth}${widthUnit}`}"
         :class="{ dragging: dragging }">
-        <TimeOfDaySection />
+        <TimeOfDaySection :show-sparklines="false" />
       </div>
 
       <Divider 
@@ -119,6 +119,12 @@
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"
       />
+    </div>
+
+    <div 
+      v-if="ready && view === 'time-of-day'" 
+      style="margin-top: 2rem;">
+      <TimeOfDaySection :show-stacked-averages="false" />
     </div>
 
   </div>
@@ -514,7 +520,7 @@ export default {
     },
     handleRangeChange(range) {
       this.setRange(range)
-  },
+    },
     handleIntervalChange(interval) {
       this.setInterval(interval)
     },
