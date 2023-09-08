@@ -72,7 +72,7 @@
     <div 
       v-for="ds in selectedToDs"
       :key="ds.id"
-      style="width: 100%">
+      style="width: 100%; margin-top: 1rem;">
       <TimeOfDay
         :title="ds.label"
         :domains="timeDomains"

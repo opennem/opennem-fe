@@ -1,58 +1,6 @@
 <template>
   <div 
-    style="display: flex; flex-wrap: nowrap;">
-    <div style="width: 25%;">
-      <table 
-        style="font-size: 11px; table-layout: fixed;" 
-        class="table is-narrow is-fullwidth is-hoverable">
-        <thead>
-          <tr>
-            <!-- <th colspan="2">
-              <button 
-                class="button is-small" 
-                @click="handleTableToggle">
-                <i 
-                  class="fal fa-fw" 
-                  :class="{ 'fa-caret-right': !expand, 'fa-caret-down': expand }" />
-                {{ title }}
-              </button>
-            </th> -->
-
-            <th 
-              colspan="2" 
-              class="title">
-              {{ title }}
-            </th>
-
-            <!-- <th style="text-align:right; white-space: nowrap">{{ currentX }}</th> -->
-          </tr>
-        </thead>
-        <tbody>
-          <tr 
-            v-for="(domain, i) in tableRowDomains" 
-            :key="`${domain.id}-${i}`"
-            style="font-weight: bold;"
-            :style="{
-              color: getTextColour(domain.id),
-              'background-color': highlightRow === domain.id ? 'rgba(255,255,255, 0.8)' : 'transparent'
-            }"
-            @mouseenter="() => handleMouseEnter(domain.id)"
-            @mouseleave="() => handleMouseLeave()">
-            <td>{{ domain.label }}</td>
-            <td style="text-align: right;">{{ domain.value | formatValue }}</td>
-          </tr>
-        </tbody>
-
-        <tfoot>
-          <tr>
-            <th 
-              colspan="2"
-              style="text-align:right; white-space: nowrap; height: 23px;">{{ currentX }}</th>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-
+    style="display: flex; flex-wrap: nowrap; gap: 10px; padding-right: 1rem;">
     <div
       style="width: 75%" 
       class="vis-wrapper">
@@ -166,6 +114,58 @@
         :append-datapoint="false"
         class="date-brush vis-chart"
       />
+    </div>
+
+    <div style="width: 25%;">
+      <table 
+        style="font-size: 11px; table-layout: fixed;" 
+        class="table is-narrow is-fullwidth is-hoverable">
+        <thead>
+          <tr>
+            <!-- <th colspan="2">
+              <button 
+                class="button is-small" 
+                @click="handleTableToggle">
+                <i 
+                  class="fal fa-fw" 
+                  :class="{ 'fa-caret-right': !expand, 'fa-caret-down': expand }" />
+                {{ title }}
+              </button>
+            </th> -->
+
+            <th 
+              colspan="2" 
+              class="title">
+              {{ title }}
+            </th>
+
+            <!-- <th style="text-align:right; white-space: nowrap">{{ currentX }}</th> -->
+          </tr>
+        </thead>
+        <tbody>
+          <tr 
+            v-for="(domain, i) in tableRowDomains" 
+            :key="`${domain.id}-${i}`"
+            style="font-weight: bold;"
+            :style="{
+              color: getTextColour(domain.id),
+              'background-color': highlightRow === domain.id ? 'rgba(255,255,255, 0.8)' : 'transparent'
+            }"
+            @mouseenter="() => handleMouseEnter(domain.id)"
+            @mouseleave="() => handleMouseLeave()">
+            <td>{{ domain.label }}</td>
+            <td style="text-align: right;">{{ domain.value | formatValue }}</td>
+          </tr>
+        </tbody>
+
+        <tfoot>
+          <tr>
+            <th 
+              colspan="2"
+              style="text-align:right; white-space: nowrap; height: 23px;">{{ currentX }}</th>
+          </tr>
+        </tfoot>
+      </table>
     </div>
   </div>
 </template>
