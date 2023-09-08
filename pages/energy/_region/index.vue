@@ -109,6 +109,8 @@
         style="position: sticky; top: 0; height: 100%"
         :hover-date="hoverDate"
         :is-hovering="isHovering"
+        :show-donut-bar="view === 'discrete-time'"
+        :show-records="view === 'discrete-time'"
         :class="{ dragging: dragging }"
         :style="{
           width: `${tableWidth}${widthUnit}`
