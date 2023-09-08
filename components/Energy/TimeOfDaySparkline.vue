@@ -3,9 +3,13 @@
     style="width: 100%" 
     class="vis-wrapper sparkline-button">
 
-    <TimeOfDayChartHeader :title="title" />
+    <TimeOfDayChartHeader 
+      class="header" 
+      :title="title" />
 
-    <div v-if="title === 'Price'">
+    <div 
+      v-if="title === 'Price'" 
+      class="sparkline">
       <MultiLine
         :svg-height="chartHeightPositiveLogPrice"
         :domains1="domainsWithColour"
@@ -26,7 +30,7 @@
         :append-datapoint="false"
         :stroke-dasharray="'2,2'"
         class="vis-chart"
-        @date-hover="(evt, date) => $emit('date-hover', date)" 
+        @date-hover="(evt, date) => handleDateHover(date)" 
         @domain-hover="handleDomainHover"
         @enter="handleVisEnter"
         @leave="handleVisLeave"
@@ -50,7 +54,7 @@
         :cursor-type="'line'"
         :append-datapoint="false"
         class="vis-chart"
-        @date-hover="(evt, date) => $emit('date-hover', date)" 
+        @date-hover="(evt, date) => handleDateHover(date)" 
         @domain-hover="handleDomainHover"
         @enter="handleVisEnter"
         @leave="handleVisLeave"
@@ -77,43 +81,63 @@
         :append-datapoint="false"
         :stroke-dasharray="'2,2'"
         class="vis-chart"
-        @date-hover="(evt, date) => $emit('date-hover', date)" 
+        @date-hover="(evt, date) => handleDateHover(date)" 
         @domain-hover="handleDomainHover"
         @enter="handleVisEnter"
         @leave="handleVisLeave"
       />
     </div>
-      
-    <MultiLine
-      v-else
-      :svg-height="chartHeight"
-      :domains1="domainsWithColour"
-      :dataset1="dataset"
-      :y1-max="yMax"
-      :y1-min="yMin"
-      :y1-ticks="yTicks"
-      :y1-tick-line="false"
-      :y1-tick-text="false"
-      :x-ticks="null"
-      :x-tick-line="false"
-      :curve="curve"
-      :date-hovered="hoverDate"
-      :highlight-domain="highlightDomain"
-      :positive-y-bg="'transparent'"
-      :cursor-type="'line'"
-      :append-datapoint="false"
-      class="vis-chart"
-      @date-hover="(evt, date) => $emit('date-hover', date)" 
-      @domain-hover="handleDomainHover"
-      @enter="handleVisEnter"
-      @leave="handleVisLeave"
-    />
+
+    <div 
+      v-else 
+      class="sparkline">
+      <MultiLine
+        :svg-height="chartHeight"
+        :domains1="domainsWithColour"
+        :dataset1="dataset"
+        :y1-max="yMax"
+        :y1-min="yMin"
+        :y1-ticks="yTicks"
+        :y1-tick-line="false"
+        :y1-tick-text="false"
+        :x-ticks="null"
+        :x-tick-line="false"
+        :curve="curve"
+        :date-hovered="hoverDate"
+        :highlight-domain="highlightDomain"
+        :positive-y-bg="'transparent'"
+        :cursor-type="'line'"
+        :append-datapoint="false"
+        class="vis-chart"
+        @date-hover="(evt, date) => handleDateHover(date)" 
+        @domain-hover="handleDomainHover"
+        @enter="handleVisEnter"
+        @leave="handleVisLeave"
+      />
+    </div>
+
+    <footer>
+      <div 
+        v-if="tooltipValues" 
+        class="tooltip-container">
+        <span>{{ tooltipValues.date }} </span>
+        <span style="font-weight: bold;">{{ tooltipValues.value | formatValue }}</span>
+      </div>
+      <div v-else-if="hoverValues">
+        <span>{{ hoverValues.x }} </span>
+      </div>
+      <div 
+        v-else 
+        style="height: 16.5px;"/>
+    </footer>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { utcHour } from 'd3-time'
 import _cloneDeep from 'lodash.clonedeep'
+import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
 import TimeOfDayChartHeader from './TimeOfDayChartHeader.vue'
@@ -162,10 +186,6 @@ export default {
       type: Number,
       default: 0
     },
-    hoverDate: {
-      type: Date,
-      default: null
-    },
     todayKey: {
       type: String,
       default: ''
@@ -177,14 +197,18 @@ export default {
       expand: false,
       xTicks: utcHour.every(2),
       highlightDomain: null,
-      highlightRow: null
+      highlightRow: null,
+      hoverDate: null
     }
   },
 
   computed: {
+    ...mapGetters({
+      interval: 'interval'
+    }),
     tooltipValues() {
       if (this.highlightRow && this.hoverValues) {
-        const domainLabel = this.highlightRow === '_average' ? 'Average' : this.highlightRow
+        const domainLabel = this.highlightRow === '_average' ? 'Av' : this.highlightRow
         return {
           date: `${domainLabel}, ${this.hoverValues.x}`,
           value: this.hoverValues[this.highlightRow]
@@ -195,11 +219,11 @@ export default {
     },
 
     chartHeight() {
-      return this.expand ? 400 : 50
+      return this.expand ? 400 : 45
     },
 
     chartHeightPrice() {
-      return this.expand ? 160 : 25
+      return this.expand ? 160 : 20
     },
     chartHeightPositiveLogPrice() {
       return this.expand ? 130 : 15
@@ -265,6 +289,14 @@ export default {
       this.highlightRow = domain
       this.highlightDomain = domain
     },
+
+    handleDateHover(date) {
+      this.hoverDate = DateDisplay.getClosestDateByInterval(
+        date,
+        this.interval,
+        null
+      )
+    },
     
     handleVisEnter() {
       // this.$emit('isHovering', true)
@@ -306,47 +338,36 @@ export default {
 
 <style lang="scss" scoped>
 @import '~/assets/scss/variables.scss';
+$border-radius: 0.4rem;
+
 .sparkline-button {
   cursor: pointer;
-  border: 1px solid #ccc;
-  border-radius: 1rem;
-  padding: 0.3rem 0.6rem 0.3rem 0.1rem;
-  background-color: rgba(255,255,255, 0.5);
+  // border: 1px solid #ccc;
+  border-radius: $border-radius;
+  background-color: rgba(255,255,255, 0.3);
 
   &:hover {
     background-color: rgba(255,255,255, 0.8);
   }
 }
 
-table.table {
-  position: sticky;
-  top: 0;
-  background: none;
-  // border-bottom: 1px solid #696969;
-  
-  thead tr th {
-    border-bottom: 1px solid #696969;
-    padding-left: 0;
-    vertical-align: bottom;
-  }
+header {
+  padding-left: 0.3rem;
+}
 
-  tbody tr:hover {
-    background-color: rgba(255,255,255, 0.8) !important;
-  }
+.sparkline {
+  padding-right: 5px;
+  padding-top: 3px;
+}
 
-  tfoot tr th {
-    border-top: 1px solid #696969;
-  }
+footer {
+  padding: 3px 0.3rem 0;
+  font-size: 11px;
 
-  button.button {
-    background: transparent;
-    padding: 0;
-    color: #454545;
-    font-weight: bold;
-    font-size: 13px;
-    height: auto;
-    font-family: $header-font-family;
-    min-width: auto;
+  .tooltip-container {
+    display: flex;
+    justify-content: space-between;
   }
 }
+
 </style>

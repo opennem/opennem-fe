@@ -1,12 +1,13 @@
 <template>
-  <div style="display: flex; flex-wrap: nowrap;">
+  <div 
+    style="display: flex; flex-wrap: nowrap;">
     <div style="width: 25%;">
       <table 
         style="font-size: 11px; table-layout: fixed;" 
         class="table is-narrow is-fullwidth is-hoverable">
         <thead>
           <tr>
-            <th colspan="2">
+            <!-- <th colspan="2">
               <button 
                 class="button is-small" 
                 @click="handleTableToggle">
@@ -15,7 +16,14 @@
                   :class="{ 'fa-caret-right': !expand, 'fa-caret-down': expand }" />
                 {{ title }}
               </button>
+            </th> -->
+
+            <th 
+              colspan="2" 
+              class="title">
+              {{ title }}
             </th>
+
             <!-- <th style="text-align:right; white-space: nowrap">{{ currentX }}</th> -->
           </tr>
         </thead>
@@ -45,12 +53,12 @@
       </table>
     </div>
 
-    <div 
+    <div
       style="width: 75%" 
       class="vis-wrapper">
 
       <TimeOfDayChartHeader
-        :title="title"
+        :title="''"
         :tooltip-values="tooltipValues"
       />
 
@@ -225,7 +233,7 @@ export default {
 
   data() {
     return {
-      expand: false,
+      expand: true,
       xTicks: utcHour.every(2),
       highlightDomain: null,
       highlightRow: null
@@ -246,17 +254,17 @@ export default {
     },
 
     chartHeight() {
-      return this.expand ? 400 : 200
+      return 692
     },
 
     chartHeightPrice() {
-      return this.expand ? 160 : 80
+      return 392
     },
     chartHeightPositiveLogPrice() {
-      return this.expand ? 130 : 65
+      return 150
     },
     chartHeightNegativeLogPrice() {
-      return this.expand ? 110 : 55
+      return 150
     },
 
     domainsWithColour() {
@@ -387,6 +395,13 @@ table.table {
     height: auto;
     font-family: $header-font-family;
     min-width: auto;
+  }
+
+  .title {
+    color: #454545;
+    font-weight: bold;
+    font-size: 13px;
+    font-family: $header-font-family;
   }
 }
 </style>

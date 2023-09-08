@@ -44,7 +44,9 @@
         v-for="ds in datasetsWithPositiveLoads" 
         :key="ds.id"
         class="sparkline-button"
-        style="width: 24%; margin-bottom: 1%;">
+        style="margin-bottom: 1%;"
+        :style="{ width: sparklineButtonWidth }"
+        @click="() => selectedToD = ds">
         <TimeOfDaySparkline
           :title="ds.label"
           :domains="filteredTimeDomains"
@@ -55,32 +57,45 @@
           :curve="ds.label === 'Price' ? curveStep : curveSmooth"
           :y-min="ds.yMin"
           :y-max="ds.yMax"
-          :hover-date="hoverDate"
           :today-key="todayKey"
-          @date-hover="handleDateHover"
         />
       </div>
     </div>
 
-    <!-- <div 
-      v-for="ds in datasets" 
-      :key="ds.id"
-      style="padding-bottom: 1rem; margin-bottom: 1rem;">
-      <TimeOfDay
-        :title="ds.label"
-        :domains="timeDomains"
-        :dataset="ds.data"
-        :y-ticks="yTicks"
-        :tick-format="tickFormat"
-        :second-tick-format="secondTickFormat"
-        :curve="ds.label === 'Price' ? curveStep : curveSmooth"
-        :y-min="ds.yMin"
-        :y-max="ds.yMax"
-        :hover-date="hoverDate"
-        :today-key="todayKey"
-        @date-hover="handleDateHover"
-      />
-    </div> -->
+    <div 
+      v-show="selectedToD" 
+      class="time-of-day-detailed"
+      @click="() => (selectedToD = null)">
+      <div 
+        class="time-of-day-chart"
+        @click.stop>
+        <!-- <button
+          class="button is-primary"
+          @click="() => (selectedToD = null)"
+        >
+          Close
+        </button> -->
+
+        <div 
+          v-if="selectedToD"
+          style="width: 100%">
+          <TimeOfDay
+            :title="selectedToD.label"
+            :domains="timeDomains"
+            :dataset="selectedToD.data"
+            :y-ticks="yTicks"
+            :tick-format="tickFormat"
+            :second-tick-format="secondTickFormat"
+            :curve="selectedToD.label === 'Price' ? curveStep : curveSmooth"
+            :y-min="selectedToD.yMin"
+            :y-max="selectedToD.yMax"
+            :hover-date="hoverDate"
+            :today-key="todayKey"
+            @date-hover="handleDateHover"
+          />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -102,7 +117,7 @@ import TimeOfDaySparkline from './TimeOfDaySparkline.vue'
 import TimeOfDayChartHeader from './TimeOfDayChartHeader.vue'
 
 function getDay(d) {
-  return utcFormat('%e %b %Y')(d)
+  return utcFormat(`%e %b`)(d)
 }
 
 function getDayKeys(range) {
@@ -166,12 +181,14 @@ export default {
       highlightFuelTech: null,
       xTicks: utcHour.every(2),
       curveSmooth: CHART_CURVE_SMOOTH,
-      curveStep: CHART_CURVE_STEP
+      curveStep: CHART_CURVE_STEP,
+      selectedToD: null
     }
   },
 
   computed: {
     ...mapGetters({
+      wideScreenBreak: 'app/wideScreenBreak',
       domainTemperature: 'regionEnergy/domainTemperature',
       domainPrice: 'regionEnergy/domainPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
@@ -183,6 +200,10 @@ export default {
       chartEnergyRenewablesLine: 'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
       chartEnergyNetLine: 'chartOptionsPowerEnergy/chartEnergyNetLine'
     }),
+
+    sparklineButtonWidth() {
+      return this.wideScreenBreak ? '24%' : '19%';
+    },
     
     intervalVal() {
       return this.interval === '5m' ? 5 : 30
@@ -371,7 +392,6 @@ export default {
     }
   },
 
-
   created() {
     this.yTicks = []
     this.tickFormat = (d) => getTimeLabel(d)
@@ -475,5 +495,30 @@ export default {
   font-size: 13px;
   font-family: $header-font-family;
   font-weight: bold;
+}
+
+.time-of-day-detailed {
+  position: fixed;
+  top: 0;
+  left: 0; 
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+
+.time-of-day-chart {
+  width: 100%;
+  height: 780px;
+  background: $body-background-color;
+  overflow-y: auto;
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 </style>
