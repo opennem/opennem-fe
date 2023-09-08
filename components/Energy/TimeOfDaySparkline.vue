@@ -1,12 +1,15 @@
 <template>
   <div 
     style="width: 100%" 
-    class="vis-wrapper sparkline-button">
+    class="vis-wrapper sparkline-button"
+    :class=" { selected: selected }"
+  >
+    <span>{{ title }}</span>
 
-    <TimeOfDayChartHeader 
+    <!-- <TimeOfDayChartHeader 
       class="header" 
-      :title="title" />
-
+      :title="title" /> -->
+    <!-- 
     <div 
       v-if="title === 'Price'" 
       class="sparkline">
@@ -129,7 +132,7 @@
       <div 
         v-else 
         style="height: 16.5px;"/>
-    </footer>
+    </footer> -->
   </div>
 </template>
 
@@ -189,6 +192,10 @@ export default {
     todayKey: {
       type: String,
       default: ''
+    },
+    selected: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -340,11 +347,30 @@ export default {
 @import '~/assets/scss/variables.scss';
 $border-radius: 0.4rem;
 
+// .sparkline-button {
+//   cursor: pointer;
+//   border-radius: $border-radius;
+//   background-color: rgba(255,255,255, 0.3);
+
+//   &:hover {
+//     background-color: rgba(255,255,255, 0.8);
+//   }
+// }
+
 .sparkline-button {
   cursor: pointer;
-  // border: 1px solid #ccc;
   border-radius: $border-radius;
   background-color: rgba(255,255,255, 0.3);
+  padding: 0.3rem 0.6rem;
+
+  .selected {
+    background-color: $opennem-link-color;
+    color: #fff;
+
+    &:hover {
+      background-color: $opennem-link-color-dark;
+    }
+  }
 
   &:hover {
     background-color: rgba(255,255,255, 0.8);
@@ -352,7 +378,7 @@ $border-radius: 0.4rem;
 }
 
 header {
-  padding-left: 0.3rem;
+  // padding-left: 0.3rem;
 }
 
 .sparkline {

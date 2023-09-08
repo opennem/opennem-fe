@@ -254,17 +254,21 @@ export default {
     },
 
     chartHeight() {
-      return 688
+      // return 688
+      return 400
     },
 
     chartHeightPrice() {
-      return 392
+      // return 392
+      return 200
     },
     chartHeightPositiveLogPrice() {
-      return 150
+      // return 150
+      return 100
     },
     chartHeightNegativeLogPrice() {
-      return 150
+      // return 150
+      return 100
     },
 
     domainsWithColour() {

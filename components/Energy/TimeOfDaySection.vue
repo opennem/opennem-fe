@@ -41,16 +41,18 @@
       />
     </div>
 
+    <!-- :style="{
+          width: sparklineButtonWidth
+        }" -->
+
     <div 
       v-if="showSparklines" 
-      style="display: flex; flex-wrap: wrap; gap: 1%;">
+      style="display: flex; justify-content: center; flex-wrap: wrap; gap: 5px;">
       <div 
         v-for="ds in datasetsWithPositiveLoads" 
         :key="ds.id"
-        class="sparkline-button"
-        style="margin-bottom: 1%;"
-        :style="{ width: sparklineButtonWidth }"
-        @click="() => selectedToD = ds">
+        class="sparkline-button"        
+        @click="() => toggleSelected(ds)">
         <TimeOfDaySparkline
           :title="ds.label"
           :domains="filteredTimeDomains"
@@ -62,8 +64,29 @@
           :y-min="ds.yMin"
           :y-max="ds.yMax"
           :today-key="todayKey"
+          :selected="isSelected(ds.id)"
         />
       </div>
+    </div>
+
+    <div 
+      v-for="ds in selectedToDs"
+      :key="ds.id"
+      style="width: 100%">
+      <TimeOfDay
+        :title="ds.label"
+        :domains="timeDomains"
+        :dataset="ds.data"
+        :y-ticks="yTicks"
+        :tick-format="tickFormat"
+        :second-tick-format="secondTickFormat"
+        :curve="ds.label === 'Price' ? curveStep : curveSmooth"
+        :y-min="ds.yMin"
+        :y-max="ds.yMax"
+        :hover-date="hoverDate"
+        :today-key="todayKey"
+        @date-hover="handleDateHover"
+      />
     </div>
 
     <div 
@@ -148,7 +171,8 @@ export default {
       xTicks: utcHour.every(2),
       curveSmooth: CHART_CURVE_SMOOTH,
       curveStep: CHART_CURVE_STEP,
-      selectedToD: null
+      selectedToD: null,
+      selectedToDs: []
     }
   },
 
@@ -431,6 +455,20 @@ export default {
       })
 
       return max
+    },
+
+    isSelected(id) {
+      const find = this.selectedToDs.find(d => d.id === id)
+      return find
+    },
+
+    toggleSelected(ds) {
+      const find = this.selectedToDs.find(d => d.id === ds.id)
+      if (find) {
+        this.selectedToDs = this.selectedToDs.filter(d => d.id !== ds.id)
+      } else {
+        this.selectedToDs.push(ds)
+      }
     }
   }
 }
