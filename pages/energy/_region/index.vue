@@ -382,7 +382,11 @@ export default {
       this.updateEmissionsData()
     },
     view() {
-      this.handleQueryChange(this.query)
+      const query = { range: '7d', interval: '30m' }
+      this.handleQueryChange(query)
+
+      this.setRange('7D')
+      this.setInterval('30m')
     }
   },
 
