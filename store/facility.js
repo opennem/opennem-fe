@@ -14,7 +14,7 @@ import { mutateDate } from '@/services/datetime-helpers.js'
 import {
   DEFAULT_FUEL_TECH_COLOUR,
   FUEL_TECH_CATEGORY
-} from '@/constants/energy-fuel-techs/group-default.js'
+} from '@/constants/energy-fuel-techs/group-detailed.js'
 import { isPowerRange, RANGE_7D } from '@/constants/ranges.js'
 import { INTERVAL_30MIN } from '@/constants/interval-filters.js'
 import { MAP_STYLE_LIGHT } from '@/constants/facilities/map-styles.js'

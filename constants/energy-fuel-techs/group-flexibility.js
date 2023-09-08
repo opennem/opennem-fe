@@ -1,4 +1,4 @@
-import * as FT from './group-default.js'
+import * as FT from './group-detailed.js'
 
 export const GROUP_LABEL = 'Flexibility'
 export const GROUP_NAME = 'group.flexibility'

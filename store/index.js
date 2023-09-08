@@ -1,6 +1,6 @@
 import cloneDeep from 'lodash.clonedeep'
 import { lsSet } from '~/services/LocalStorage'
-import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
+import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-detailed.js'
 import { ENERGY_NEM } from '@/constants/energy-regions.js'
 import regionDisplayTzs from '@/constants/region-display-timezones.js'
 
@@ -10,7 +10,7 @@ export const state = () => ({
   nem: [],
   fuelTechMeta: null,
   fuelTechNames: null,
-  fuelTechGroupName: 'Default', // Default, Flexibility
+  fuelTechGroupName: FUEL_TECHS.GROUP_LABEL,
   fuelTechOrder: cloneDeep(FUEL_TECHS.DEFAULT_FUEL_TECH_ORDER),
   hiddenFuelTechs: [],
   energyDomains: [],

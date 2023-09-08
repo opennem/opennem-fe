@@ -58,7 +58,7 @@ import { utcFormat } from 'd3-time-format'
 import _includes from 'lodash.includes'
 
 import { getEnergyRegions } from '@/constants/energy-regions.js'
-import * as FT from '@/constants/energy-fuel-techs/group-default.js'
+import * as FT from '@/constants/energy-fuel-techs/group-detailed.js'
 import domToImage from '~/services/DomToImage.js'
 import { lsGet, lsSet } from '@/services/LocalStorage'
 import VisSection from '@/components/Energy/Export/VisSection.vue'
@@ -116,7 +116,7 @@ export default {
       return this.$route.params.region
     },
     property() {
-      return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+      return this.fuelTechGroupName === FT.GROUP_LABEL ? 'fuelTech' : 'group'
     },
     calculateByGeneration() {
       return this.percentContributionTo === 'generation'

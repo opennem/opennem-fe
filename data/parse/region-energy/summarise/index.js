@@ -1,4 +1,4 @@
-import * as FT from '@/constants/energy-fuel-techs/group-default.js'
+import * as FT from '@/constants/energy-fuel-techs/group-detailed.js'
 import {
   VW_PRICE,
   VW_PRICE_ABOVE_300,

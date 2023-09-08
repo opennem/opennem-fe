@@ -444,7 +444,7 @@
 import { mapGetters, mapActions } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import _uniq from 'lodash.uniq'
-import * as FT from '~/constants/energy-fuel-techs/group-default.js'
+import * as FT from '~/constants/energy-fuel-techs/group-detailed.js'
 import {
   FACILITY_OPERATING,
   FACILITY_RETIRED,

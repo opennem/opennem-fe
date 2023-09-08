@@ -1,3 +1,4 @@
+import { GROUP_DETAILED } from "~/constants/energy-fuel-techs"
 const perfLogMixin = {
   methods: {
     getPerfLabel() {
@@ -21,7 +22,7 @@ const perfLogMixin = {
     },
 
     getGroupPerfLabel() {
-      const group = this.fuelTechGroupName || 'Default'
+      const group = this.fuelTechGroupName || GROUP_DETAILED
       return `${this.regionId} — ${this.range}/${this.interval} (grouped ${group})`
     }
   }

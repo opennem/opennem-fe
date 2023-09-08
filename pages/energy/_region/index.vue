@@ -134,7 +134,7 @@ import {
   isValidRegion,
   getEnergyRegionLabel
 } from '@/constants/energy-regions.js'
-import * as FT from '@/constants/energy-fuel-techs/group-default.js'
+import * as FT from '@/constants/energy-fuel-techs/group-detailed.js'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import DataOptionsBarTimeOfDay from '~/components/Energy/DataOptionsBarTimeOfDay.vue'
 import VisSection from '@/components/Energy/VisSection.vue'
@@ -252,7 +252,7 @@ export default {
     },
 
     property() {
-      return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+      return this.fuelTechGroupName === FT.GROUP_LABEL ? 'fuelTech' : 'group'
     },
     calculateByGeneration() {
       return this.percentContributionTo === 'generation'

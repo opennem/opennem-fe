@@ -399,6 +399,7 @@ import differenceInMinutes from 'date-fns/differenceInMinutes'
 import { energy_sum } from '@opennem/energy-tools'
 
 import * as OPTIONS from '@/constants/chart-options.js'
+import { GROUP_DETAILED } from '@/constants/energy-fuel-techs'
 import EventBus from '@/plugins/eventBus'
 import Domain from '~/services/Domain.js'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
@@ -603,7 +604,7 @@ export default {
     },
 
     propRef() {
-      return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+      return this.fuelTechGroupName === GROUP_DETAILED ? 'fuelTech' : 'group'
     },
 
     percentContributionTo() {
@@ -1426,7 +1427,7 @@ export default {
     handleSourceFuelTechsHidden(hidden, hideOthers, onlyFt) {
       this.hiddenSources = hidden
       if (hideOthers) {
-        if (this.fuelTechGroupName === 'Default') {
+        if (this.fuelTechGroupName === GROUP_DETAILED) {
           const hiddenSources = Domain.getAllDomainObjs().filter(
             (d) => d.category === 'source' && d.fuelTech !== onlyFt.fuelTech
           )
@@ -1449,7 +1450,7 @@ export default {
     handleLoadFuelTechsHidden(hidden, hideOthers, onlyFt) {
       this.hiddenLoads = hidden
       if (hideOthers) {
-        if (this.fuelTechGroupName === 'Default') {
+        if (this.fuelTechGroupName === GROUP_DETAILED) {
           const hiddenSources = Domain.getAllDomainObjs().filter(
             (d) => d.category === 'source'
           )
@@ -1496,7 +1497,7 @@ export default {
     },
 
     handleLineRowShiftClicked(lineDomain) {
-      if (this.fuelTechGroupName === 'Default') {
+      if (this.fuelTechGroupName === GROUP_DETAILED) {
         const hiddenSources = Domain.getAllDomainObjs().filter(
           (d) => d.category === 'source'
         )

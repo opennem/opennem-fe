@@ -120,6 +120,7 @@ import _cloneDeep from 'lodash.clonedeep'
 import addYears from 'date-fns/addYears'
 
 import * as OPTIONS from '@/constants/chart-options.js'
+import { GROUP_DETAILED } from '@/constants/energy-fuel-techs'
 
 import DateDisplay from '@/services/DateDisplay.js'
 import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
@@ -218,7 +219,7 @@ export default {
     },
 
     propName() {
-      return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+      return this.fuelTechGroupName === GROUP_DETAILED ? 'fuelTech' : 'group'
     },
 
     incompleteIntervals() {

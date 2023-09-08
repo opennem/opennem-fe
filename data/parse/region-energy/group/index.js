@@ -1,4 +1,5 @@
 import _cloneDeep from 'lodash.clonedeep'
+import { GROUP_DETAILED } from '~/constants/energy-fuel-techs'
 import PerfTime from '@/plugins/perfTime.js'
 const perfTime = new PerfTime()
 
@@ -21,7 +22,7 @@ export default function ({
 
   dataset.forEach((d) => {
     Object.keys(groups).forEach((key) => {
-      if (key !== 'Default') {
+      if (key !== GROUP_DETAILED) {
         const groupDomains = groups[key]
         groupDomains.forEach((g) => {
           let groupValue = 0,

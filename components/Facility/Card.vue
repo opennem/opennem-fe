@@ -133,7 +133,7 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
-import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
+import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-detailed.js'
 import * as OPTIONS from '@/constants/chart-options.js'
 import { FacilityRegions } from '~/constants/facility-regions.js'
 import { RANGE_3D } from '@/constants/ranges.js'
