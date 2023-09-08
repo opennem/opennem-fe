@@ -254,7 +254,7 @@ export default {
     },
 
     chartHeight() {
-      return 692
+      return 688
     },
 
     chartHeightPrice() {
