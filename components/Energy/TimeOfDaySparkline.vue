@@ -4,12 +4,12 @@
     class="vis-wrapper sparkline-button"
     :class=" { selected: selected }"
   >
-    <span>{{ title }}</span>
+    <h6 style="font-size: 11px; padding: 3px 6px 0;">{{ title }}</h6>
 
     <!-- <TimeOfDayChartHeader 
       class="header" 
       :title="title" /> -->
-    <!-- 
+    
     <div 
       v-if="title === 'Price'" 
       class="sparkline">
@@ -33,10 +33,6 @@
         :append-datapoint="false"
         :stroke-dasharray="'2,2'"
         class="vis-chart"
-        @date-hover="(evt, date) => handleDateHover(date)" 
-        @domain-hover="handleDomainHover"
-        @enter="handleVisEnter"
-        @leave="handleVisLeave"
       />
       <MultiLine
         style="position: relative; top: -1px"
@@ -57,10 +53,6 @@
         :cursor-type="'line'"
         :append-datapoint="false"
         class="vis-chart"
-        @date-hover="(evt, date) => handleDateHover(date)" 
-        @domain-hover="handleDomainHover"
-        @enter="handleVisEnter"
-        @leave="handleVisLeave"
       />
       <MultiLine
         style="position: relative; top: -1px"
@@ -84,10 +76,6 @@
         :append-datapoint="false"
         :stroke-dasharray="'2,2'"
         class="vis-chart"
-        @date-hover="(evt, date) => handleDateHover(date)" 
-        @domain-hover="handleDomainHover"
-        @enter="handleVisEnter"
-        @leave="handleVisLeave"
       />
     </div>
 
@@ -112,27 +100,8 @@
         :cursor-type="'line'"
         :append-datapoint="false"
         class="vis-chart"
-        @date-hover="(evt, date) => handleDateHover(date)" 
-        @domain-hover="handleDomainHover"
-        @enter="handleVisEnter"
-        @leave="handleVisLeave"
       />
     </div>
-
-    <footer>
-      <div 
-        v-if="tooltipValues" 
-        class="tooltip-container">
-        <span>{{ tooltipValues.date }} </span>
-        <span style="font-weight: bold;">{{ tooltipValues.value | formatValue }}</span>
-      </div>
-      <div v-else-if="hoverValues">
-        <span>{{ hoverValues.x }} </span>
-      </div>
-      <div 
-        v-else 
-        style="height: 16.5px;"/>
-    </footer> -->
   </div>
 </template>
 
@@ -226,17 +195,17 @@ export default {
     },
 
     chartHeight() {
-      return this.expand ? 400 : 45
+      return 25
     },
 
     chartHeightPrice() {
-      return this.expand ? 160 : 20
+      return 10
     },
     chartHeightPositiveLogPrice() {
-      return this.expand ? 130 : 15
+      return 8
     },
     chartHeightNegativeLogPrice() {
-      return this.expand ? 110 : 10
+      return 6
     },
 
     domainsWithColour() {
@@ -293,8 +262,8 @@ export default {
 
   methods: {
     handleDomainHover(domain) {
-      this.highlightRow = domain
-      this.highlightDomain = domain
+      // this.highlightRow = domain
+      // this.highlightDomain = domain
     },
 
     handleDateHover(date) {
@@ -314,18 +283,18 @@ export default {
     },
 
     getChartColour(id) {
-      if (id === '_average') return '#DC3A33'
+      if (id === '_average') return this.selected ? '#ccc' : '#DC3A33'
       return this.todayKey === id ? '#333' : this.expand ? '#aaa' : '#ccc';
     },
 
     getTextColour(id) {
-      if (id === '_average') return '#DC3A33'
+      if (id === '_average') return this.selected ? '#ccc' : '#DC3A33'
       return this.todayKey === id ? '#333' : this.expand ? '#787878' : '#ddd';
     },
 
     getPathStrokeWidth(id) {
-      if (id === '_average') return 2
-      return this.todayKey === id ? 2 : 1;
+      if (id === '_average') return 1
+      return this.todayKey === id ? 1 : 1;
     },
 
     handleTableToggle() {
@@ -333,11 +302,11 @@ export default {
     },
 
     handleMouseEnter(id) {
-      this.highlightDomain = id
+      // this.highlightDomain = id
     },
 
     handleMouseLeave() {
-      this.highlightDomain = null
+      // this.highlightDomain = null
     }
   }
 }
@@ -361,14 +330,13 @@ $border-radius: 0.4rem;
   cursor: pointer;
   border-radius: $border-radius;
   background-color: rgba(255,255,255, 0.3);
-  padding: 0.3rem 0.6rem;
 
   .selected {
-    background-color: $opennem-link-color;
+    background-color: #c74523;
     color: #fff;
 
     &:hover {
-      background-color: $opennem-link-color-dark;
+      background-color: #963f29;
     }
   }
 
@@ -377,23 +345,9 @@ $border-radius: 0.4rem;
   }
 }
 
-header {
-  // padding-left: 0.3rem;
-}
-
 .sparkline {
   padding-right: 5px;
   padding-top: 3px;
+  padding-bottom: 5px;
 }
-
-footer {
-  padding: 3px 0.3rem 0;
-  font-size: 11px;
-
-  .tooltip-container {
-    display: flex;
-    justify-content: space-between;
-  }
-}
-
 </style>

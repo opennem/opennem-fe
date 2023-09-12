@@ -623,7 +623,7 @@ export default {
       this.y2Range = [this.height, 0]
       this.x = scaleTime().range([0, this.width])
       this.y1 = this.y1Log
-        ? scaleSymlog().range(this.y1Range)
+        ? scaleSymlog().range(this.y1Range).nice()
         : scaleLinear().range(this.y1Range).nice()
       this.y2 = scaleLinear().range(this.y2Range).nice()
       this.z = scaleOrdinal()
@@ -674,6 +674,9 @@ export default {
         .attr('height', this.height)
 
       this.$cursorLineGroup = $svg.select('.cursor-line-group')
+      this.$cursorLineGroup
+        .style('clip-path', this.clipPathUrl)
+        .style('-webkit-clip-path', this.clipPathUrl)
       if (!this.$cursorRect) {
         this.$cursorRect = this.$cursorLineGroup.append('rect')
       }

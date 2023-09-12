@@ -60,7 +60,6 @@ $hover-padding: 3px 6px 2px;
 header {
   display: flex;
   justify-content: space-between;
-  padding-left: 10px;
   padding-top: 2px;
   margin-bottom: 2px;
 }

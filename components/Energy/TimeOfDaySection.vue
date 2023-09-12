@@ -7,7 +7,7 @@
       v-if="showStackedAverages" 
       class="vis-wrapper">
       <TimeOfDayChartHeader
-        :title="'An average day'"
+        :title="'Average Time of Day'"
         :tooltip-values="tooltipValues"
       />
 
@@ -45,17 +45,38 @@
           width: sparklineButtonWidth
         }" -->
 
-    <div 
-      v-if="showSparklines" 
-      style="display: flex; justify-content: center; flex-wrap: wrap; gap: 5px;">
+
+    <div v-if="showSparklines">
+      <h4>Time of Day</h4>
+      <div style="display: flex; flex-wrap: wrap; gap: 5px; margin: 10px 0;">
+        <div 
+          v-for="ds in datasetsWithPositiveLoads" 
+          :key="ds.id"
+          class="sparkline-button"        
+          @click="() => toggleSelected(ds)">
+          <TimeOfDaySparkline
+            :title="ds.label"
+            :domains="filteredTimeDomains"
+            :dataset="ds.data"
+            :y-ticks="yTicks"
+            :tick-format="tickFormat"
+            :second-tick-format="secondTickFormat"
+            :curve="ds.label === 'Price' ? curveStep : curveSmooth"
+            :y-min="ds.yMin"
+            :y-max="ds.yMax"
+            :today-key="todayKey"
+            :selected="isSelected(ds.id)"
+          />
+        </div>
+      </div>
+
       <div 
-        v-for="ds in datasetsWithPositiveLoads" 
+        v-for="ds in selectedToDs"
         :key="ds.id"
-        class="sparkline-button"        
-        @click="() => toggleSelected(ds)">
-        <TimeOfDaySparkline
+        style="width: 100%; margin-top: 1rem;">
+        <TimeOfDay
           :title="ds.label"
-          :domains="filteredTimeDomains"
+          :domains="timeDomains"
           :dataset="ds.data"
           :y-ticks="yTicks"
           :tick-format="tickFormat"
@@ -63,64 +84,10 @@
           :curve="ds.label === 'Price' ? curveStep : curveSmooth"
           :y-min="ds.yMin"
           :y-max="ds.yMax"
+          :hover-date="hoverDate"
           :today-key="todayKey"
-          :selected="isSelected(ds.id)"
+          @date-hover="handleDateHover"
         />
-      </div>
-    </div>
-
-    <div 
-      v-for="ds in selectedToDs"
-      :key="ds.id"
-      style="width: 100%; margin-top: 1rem;">
-      <TimeOfDay
-        :title="ds.label"
-        :domains="timeDomains"
-        :dataset="ds.data"
-        :y-ticks="yTicks"
-        :tick-format="tickFormat"
-        :second-tick-format="secondTickFormat"
-        :curve="ds.label === 'Price' ? curveStep : curveSmooth"
-        :y-min="ds.yMin"
-        :y-max="ds.yMax"
-        :hover-date="hoverDate"
-        :today-key="todayKey"
-        @date-hover="handleDateHover"
-      />
-    </div>
-
-    <div 
-      v-show="selectedToD" 
-      class="time-of-day-detailed"
-      @click="() => (selectedToD = null)">
-      <div 
-        class="time-of-day-chart"
-        @click.stop>
-        <!-- <button
-          class="button is-primary"
-          @click="() => (selectedToD = null)"
-        >
-          Close
-        </button> -->
-
-        <div 
-          v-if="selectedToD"
-          style="width: 100%">
-          <TimeOfDay
-            :title="selectedToD.label"
-            :domains="timeDomains"
-            :dataset="selectedToD.data"
-            :y-ticks="yTicks"
-            :tick-format="tickFormat"
-            :second-tick-format="secondTickFormat"
-            :curve="selectedToD.label === 'Price' ? curveStep : curveSmooth"
-            :y-min="selectedToD.yMin"
-            :y-max="selectedToD.yMax"
-            :hover-date="hoverDate"
-            :today-key="todayKey"
-            @date-hover="handleDateHover"
-          />
-        </div>
       </div>
     </div>
   </div>
@@ -172,7 +139,9 @@ export default {
       curveSmooth: CHART_CURVE_SMOOTH,
       curveStep: CHART_CURVE_STEP,
       selectedToD: null,
-      selectedToDs: []
+      selectedToDs: [],
+      chartEnergyNetLine: true,
+      chartEnergyRenewablesLine: true
     }
   },
 
@@ -189,8 +158,8 @@ export default {
       interval: 'interval',
       filterPeriod: 'filterPeriod',
       hiddenFuelTechs: 'hiddenFuelTechs',
-      chartEnergyRenewablesLine: 'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
-      chartEnergyNetLine: 'chartOptionsPowerEnergy/chartEnergyNetLine'
+      // chartEnergyRenewablesLine: 'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+      // chartEnergyNetLine: 'chartOptionsPowerEnergy/chartEnergyNetLine'
     }),
 
     sparklineButtonWidth() {
@@ -237,11 +206,11 @@ export default {
       }
       
       return [
+        ...domainTotalNetGeneration,
+        ...domainTotalRenewables,
         ...filtered.reverse(),
         ...price,
-        ...this.domainTemperature,
-        ...domainTotalNetGeneration,
-        ...domainTotalRenewables
+        ...this.domainTemperature
       ]
     },
 
@@ -291,8 +260,6 @@ export default {
         }
       })
 
-      console.log('datasets', datasets)
-
       return datasets
     },
 
@@ -314,8 +281,6 @@ export default {
           yMax: this.getYMax(data)
         }
       })
-
-      console.log('datasets', datasets)
 
       return datasets
     },
@@ -341,8 +306,6 @@ export default {
           })
         })
       }
-
-      console.log('average datasets', averagesDs)
 
       return averagesDs
     },
@@ -398,6 +361,12 @@ export default {
     }
   },
 
+  watch: {
+    allDomains(val) {
+      console.log('changed', val)
+    }
+  },
+
   created() {
     this.yTicks = []
     this.tickFormat = (d) => getTimeLabel(d)
@@ -411,7 +380,8 @@ export default {
   },
 
   mounted() {
-    // console.log(this.currentDomainPowerEnergy)
+    const filtered = this.datasets.filter(d => d.id === '_total' || d.id === '_totalRenewables')
+    this.selectedToDs = filtered
   },
 
   methods: {
@@ -428,12 +398,12 @@ export default {
     },
 
     getYMin(dataset) {
-      let min = 0
+      let min = null
 
       dataset.forEach((d) => {
         this.timeDomains.forEach((domain) => {
           const val = d[domain.id]
-          if (val < min) {
+          if (min === null || val < min) {
             min = val
           }
         })
@@ -459,7 +429,7 @@ export default {
 
     isSelected(id) {
       const find = this.selectedToDs.find(d => d.id === id)
-      return find
+      return find ? true : false
     },
 
     toggleSelected(ds) {
@@ -476,6 +446,15 @@ export default {
 
 <style lang="scss" scoped>
 @import '~/assets/scss/variables.scss';
+
+h4 {
+  font-size: 16px;
+  font-family: $header-font-family;
+  font-weight: bold;
+  margin: 10px 0;
+  padding-top: 10px;
+  border-top: 1px solid #ddd;
+}
 .chart-title {
   font-size: 13px;
   font-family: $header-font-family;
@@ -505,5 +484,9 @@ export default {
   padding: 1rem;
   border-radius: 1rem;
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.sparkline-button {
+  width: 130px;
 }
 </style>

@@ -2,11 +2,11 @@
   <div 
     style="display: flex; flex-wrap: nowrap; gap: 10px; padding-right: 1rem;">
     <div
-      style="width: 75%" 
+      style="width: 66%" 
       class="vis-wrapper">
 
       <TimeOfDayChartHeader
-        :title="''"
+        :title="title"
         :tooltip-values="tooltipValues"
       />
 
@@ -29,6 +29,7 @@
           :cursor-type="'line'"
           :append-datapoint="false"
           :stroke-dasharray="'2,2'"
+          :margin-left="0"
           class="vis-chart"
           @date-hover="(evt, date) => $emit('date-hover', date)" 
           @domain-hover="handleDomainHover"
@@ -50,6 +51,7 @@
           :positive-y-bg="'rgba(255,255,255, 0.2)'"
           :cursor-type="'line'"
           :append-datapoint="false"
+          :margin-left="0"
           class="vis-chart"
           @date-hover="(evt, date) => $emit('date-hover', date)" 
           @domain-hover="handleDomainHover"
@@ -75,6 +77,7 @@
           :cursor-type="'line'"
           :append-datapoint="false"
           :stroke-dasharray="'2,2'"
+          :margin-left="0"
           class="vis-chart"
           @date-hover="(evt, date) => $emit('date-hover', date)" 
           @domain-hover="handleDomainHover"
@@ -98,6 +101,7 @@
         :positive-y-bg="'rgba(255,255,255, 0.2)'"
         :cursor-type="'line'"
         :append-datapoint="false"
+        :margin-left="0"
         class="vis-chart"
         @date-hover="(evt, date) => $emit('date-hover', date)" 
         @domain-hover="handleDomainHover"
@@ -105,24 +109,24 @@
         @leave="handleVisLeave"
       />
 
-
       <DateBrush
         :dataset="dataset"
         :x-ticks="xTicks"
         :tick-format="tickFormat"
         :second-tick-format="secondTickFormat"
         :append-datapoint="false"
+        :margin-left="0"
         class="date-brush vis-chart"
       />
     </div>
 
-    <div style="width: 25%;">
+    <div style="width: 34%;">
       <table 
         style="font-size: 11px; table-layout: fixed;" 
         class="table is-narrow is-fullwidth is-hoverable">
         <thead>
           <tr>
-            <!-- <th colspan="2">
+            <th colspan="2">
               <button 
                 class="button is-small" 
                 @click="handleTableToggle">
@@ -131,13 +135,13 @@
                   :class="{ 'fa-caret-right': !expand, 'fa-caret-down': expand }" />
                 {{ title }}
               </button>
-            </th> -->
+            </th>
 
-            <th 
+            <!-- <th 
               colspan="2" 
               class="title">
               {{ title }}
-            </th>
+            </th> -->
 
             <!-- <th style="text-align:right; white-space: nowrap">{{ currentX }}</th> -->
           </tr>
@@ -233,7 +237,7 @@ export default {
 
   data() {
     return {
-      expand: true,
+      expand: false,
       xTicks: utcHour.every(2),
       highlightDomain: null,
       highlightRow: null
@@ -254,21 +258,17 @@ export default {
     },
 
     chartHeight() {
-      // return 688
-      return 400
+      return this.expand ? this.tableRowDomainsCount > 29 ? 692 : 400 : 200
     },
 
     chartHeightPrice() {
-      // return 392
-      return 200
+      return this.expand ? this.tableRowDomainsCount > 29 ? 392 : 200 : 100
     },
     chartHeightPositiveLogPrice() {
-      // return 150
-      return 100
+      return this.expand ? this.tableRowDomainsCount > 29 ? 150 : 100 : 50
     },
     chartHeightNegativeLogPrice() {
-      // return 150
-      return 100
+      return this.expand ? this.tableRowDomainsCount > 29 ? 150 : 100 : 50
     },
 
     domainsWithColour() {
@@ -280,6 +280,10 @@ export default {
           pathStrokeWidth: this.getPathStrokeWidth(domain.id)
         }
       })
+    },
+
+    tableRowDomainsCount() {
+      return this.tableRowDomains.length
     },
     
     tableRowDomains() {
