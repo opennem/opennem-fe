@@ -363,7 +363,8 @@ export default {
 
   watch: {
     allDomains(val) {
-      console.log('changed', val)
+      const filtered = this.datasets.filter(d => d.id === '_total' || d.id === '_totalRenewables')
+      this.selectedToDs = filtered
     }
   },
 
