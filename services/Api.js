@@ -35,7 +35,8 @@ const http = axios.create({
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
-    'X-ONAU': process.env.NUXT_ENV_HEADER_X_ONUU
+    'X-ONAU': process.env.NUXT_ENV_HEADER_X_ONUU,
+    'Authorization': 'Bearer ' + process.env.API_KEY,
   }
 })
 
