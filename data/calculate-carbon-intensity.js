@@ -36,31 +36,8 @@ export default function({
 }) {
   
 
-  const addUp = (data, domain, hasSource) => {
-    // if (isCalculateByGeneration) {
-    //   // only if it's a source AND it's not imports
-    //   if (domain.category === 'source' && domain.fuelTech !== 'imports') {
-    //     return data[domain.id] || 0
-    //   }
-    // } else {
-    //   // it's not a load OR it's exports
-    //   if (domain.category !== 'load' || domain.fuelTech === 'exports') {
-    //     return Math.abs(data[domain.id]) || 0
-    //   }
-    // }
-
-    // if (hasSource) {
-    //   // only if it's a source AND it's not imports
-    //   if (domain.category === 'source' && domain.fuelTech !== 'imports') {
-    //     return data[domain.id] || 0
-    //   }
-    //   return 0
-    // } else {
-    //   // if all the selected domains are loads
-    //   return Math.abs(data[domain.id]) || 0
-    // }
-
-    return hasSource ? data[domain.id] || 0 : Math.abs(data[domain.id]) || 0
+  const dataValue = (data, domain) => {
+    return domain.category === 'load' ? Math.abs(data[domain.id] || 0) : data[domain.id] || 0
   }
   
   const batteryDischarging = domainPowerEnergy.find(
@@ -91,15 +68,15 @@ export default function({
     }
 
     emissionsDomains.forEach((domain) => {
-      totalEmissions += addUp(d, domain, hasSource)
+      totalEmissions += dataValue(d, domain)
 
       if (domain.category !== 'load') {
-        totalEmissionsMinusLoads += addUp(d, domain, hasSource)
+        totalEmissionsMinusLoads += dataValue(d, domain)
       }
     })
 
     powerEnergyDomains.forEach((domain) => {
-      totalPowerEnergy += addUp(d, domain, hasSource)
+      totalPowerEnergy += dataValue(d, domain)
     })
 
     const totalPowerEnergyMinusBatteryDischarging =
