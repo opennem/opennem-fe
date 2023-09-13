@@ -49,16 +49,18 @@ export default function({
     //   }
     // }
 
-    if (hasSource) {
-      // only if it's a source AND it's not imports
-      if (domain.category === 'source' && domain.fuelTech !== 'imports') {
-        return data[domain.id] || 0
-      }
-      return 0
-    } else {
-      // if all the selected domains are loads
-      return Math.abs(data[domain.id]) || 0
-    }
+    // if (hasSource) {
+    //   // only if it's a source AND it's not imports
+    //   if (domain.category === 'source' && domain.fuelTech !== 'imports') {
+    //     return data[domain.id] || 0
+    //   }
+    //   return 0
+    // } else {
+    //   // if all the selected domains are loads
+    //   return Math.abs(data[domain.id]) || 0
+    // }
+
+    return hasSource ? data[domain.id] || 0 : Math.abs(data[domain.id]) || 0
   }
   
   const batteryDischarging = domainPowerEnergy.find(
