@@ -329,19 +329,22 @@ $border-radius: 0.4rem;
 .sparkline-button {
   cursor: pointer;
   border-radius: $border-radius;
-  background-color: rgba(255,255,255, 0.3);
+  background-color: rgba(200,200,200, 0.3);
+  transition: all 0.2s ease-in-out;
 
   .selected {
     background-color: #c74523;
     color: #fff;
 
     &:hover {
-      background-color: #963f29;
+      background-color: #c74523;
     }
   }
 
   &:hover {
-    background-color: rgba(255,255,255, 0.8);
+    background-color: #fefefe;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(0,0,0,0.05);
   }
 }
 

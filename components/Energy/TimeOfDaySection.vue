@@ -37,6 +37,7 @@
         :cursor-type="'line'"
         :margin-left="0"
         :append-datapoint="false"
+        :positive-y-bg="'transparent'"
         class="vis-chart"
         @date-hover="(evt, date) => handleDateHover(date)"
         @domain-hover="handleDomainHover"
@@ -55,9 +56,11 @@
       />
     </div>
 
-    <div v-if="showSparklines">
+    <div 
+      v-if="showSparklines" 
+      style="background-color: rgba(255, 255, 255, 0.5); padding: 1rem;  margin-right: 1rem; border-radius: 1rem;">
       <h4>Time of Day</h4>
-      <div style="display: flex; flex-wrap: wrap; gap: 5px; margin: 10px 0;">
+      <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0 2rem;">
         <div 
           v-for="ds in datasetsWithPositiveLoads" 
           :key="ds.id"
@@ -195,6 +198,39 @@ export default {
       if (!this.currentDomainPowerEnergy) return []
       if (this.domainPrice.length > 0) price.push(this.domainPrice[0])
 
+      const domainPower = [...this.currentDomainPowerEnergy]
+
+      const domainTotalRenewables = []
+      if (this.chartEnergyRenewablesLine) {
+        domainTotalRenewables.push({
+          domain: '_totalRenewables',
+          id: '_totalRenewables',
+          label: 'Renewables'
+        })
+      }
+      const domainTotalNetGeneration = []
+      if (this.chartEnergyNetLine) {
+        domainTotalNetGeneration.push({
+          domain: '_total',
+          id: '_total',
+          label: 'Net'
+        })
+      }
+      
+      return [
+        ...domainTotalNetGeneration,
+        ...domainTotalRenewables,
+        ...domainPower.reverse(),
+        ...price,
+        ...this.domainTemperature
+      ]
+    },
+
+    averageStackedDomains() {
+      const price = []
+      if (!this.currentDomainPowerEnergy) return []
+      if (this.domainPrice.length > 0) price.push(this.domainPrice[0])
+
       const filtered = this.currentDomainPowerEnergy.filter((domain) => {
         const ft = domain.fuelTech || domain.group
         return !this.hiddenFuelTechs.includes(ft)
@@ -254,7 +290,7 @@ export default {
     },
 
     datasets() {
-      const datasets = this.allDomains.map(domain => {
+      const datasets = this.averageStackedDomains.map(domain => {
         const data = getDataBucket({
           data: this.currentDataset,
           domain: domain.id,
@@ -484,12 +520,10 @@ export default {
 @import '~/assets/scss/variables.scss';
 
 h4 {
-  font-size: 16px;
+  font-size: 18px;
   font-family: $header-font-family;
   font-weight: bold;
-  margin: 10px 0;
-  padding-top: 10px;
-  border-top: 1px solid #ddd;
+  margin: 0 0 1rem;
 }
 .chart-title {
   font-size: 13px;

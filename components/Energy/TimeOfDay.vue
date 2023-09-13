@@ -1,6 +1,6 @@
 <template>
   <div 
-    style="display: flex; flex-wrap: nowrap; gap: 10px; padding-right: 1rem;">
+    style="display: flex; flex-wrap: nowrap; gap: 1rem;">
     <div
       style="width: 66%; position: relative;" 
       class="vis-wrapper">
