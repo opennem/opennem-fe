@@ -5,11 +5,21 @@
 
     <div 
       v-if="showStackedAverages" 
-      class="vis-wrapper">
+      class="vis-wrapper"
+      style="position: relative"
+    >
       <TimeOfDayChartHeader
         :title="'Average Time of Day'"
         :tooltip-values="tooltipValues"
       />
+
+      <button
+        v-if="zoomRange.length > 0"
+        class="button is-rounded is-small reset-btn"
+        @click.stop="handleZoomReset"
+      >
+        Zoom Out
+      </button>
 
       <MultiLine
         :svg-height="400"
@@ -21,6 +31,7 @@
         :x-ticks="xTicks"
         :curve="curveSmooth"
         :date-hovered="hoverDate"
+        :zoom-range="zoomRange"
         :stacked="true"
         :show-cursor-dots="false"
         :cursor-type="'line'"
@@ -37,14 +48,12 @@
         :second-tick-format="secondTickFormat"
         :margin-left="0"
         :append-datapoint="false"
+        :zoom-range="zoomRange"
         class="date-brush vis-chart"
+        @date-hover="(evt, date) => handleDateHover(date)"
+        @date-filter="handleZoomRange"
       />
     </div>
-
-    <!-- :style="{
-          width: sparklineButtonWidth
-        }" -->
-
 
     <div v-if="showSparklines">
       <h4>Time of Day</h4>
@@ -86,7 +95,9 @@
           :y-max="ds.yMax"
           :hover-date="hoverDate"
           :today-key="todayKey"
+          :zoom-range="zoomRange"
           @date-hover="handleDateHover"
+          @date-filter="handleZoomRange"
         />
       </div>
     </div>
@@ -134,6 +145,7 @@ export default {
     return {
       todayKey: null,
       hoverDate: null,
+      zoomRange: [],
       highlightFuelTech: null,
       xTicks: utcHour.every(2),
       curveSmooth: CHART_CURVE_SMOOTH,
@@ -398,6 +410,29 @@ export default {
       )
     },
 
+    handleZoomRange(dateRange) {
+      let filteredDates = []
+      if (dateRange && dateRange.length > 0) {
+        let startTime = DateDisplay.snapToClosestInterval(
+          this.interval,
+          dateRange[0]
+        )
+        let endTime = DateDisplay.snapToClosestInterval(
+          this.interval,
+          dateRange[1]
+        )
+
+        filteredDates = [startTime, endTime]
+      } else {
+        filteredDates = []
+      }
+      this.zoomRange = filteredDates
+    },
+
+    handleZoomReset() {
+      this.zoomRange = []
+    },
+
     getYMin(dataset) {
       let min = null
 
@@ -489,5 +524,11 @@ h4 {
 
 .sparkline-button {
   width: 130px;
+}
+
+.reset-btn {
+  position: absolute;
+  top: 39px;
+  right: 24px;
 }
 </style>

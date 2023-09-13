@@ -2,13 +2,21 @@
   <div 
     style="display: flex; flex-wrap: nowrap; gap: 10px; padding-right: 1rem;">
     <div
-      style="width: 66%" 
+      style="width: 66%; position: relative;" 
       class="vis-wrapper">
 
       <TimeOfDayChartHeader
         :title="title"
         :tooltip-values="tooltipValues"
       />
+
+      <button
+        v-if="zoomRange.length > 0"
+        class="button is-rounded is-small reset-btn"
+        @click.stop="() => $emit('date-filter', [])"
+      >
+        Zoom Out
+      </button>
 
       <div v-if="title === 'Price'">
         <MultiLine
@@ -24,6 +32,7 @@
           :x-ticks="xTicks"
           :curve="curve"
           :date-hovered="hoverDate"
+          :zoom-range="zoomRange"
           :highlight-domain="highlightDomain"
           :positive-y-bg="'rgba(255,255,255, 0.2)'"
           :cursor-type="'line'"
@@ -47,6 +56,7 @@
           :x-ticks="xTicks"
           :curve="curve"
           :date-hovered="hoverDate"
+          :zoom-range="zoomRange"
           :highlight-domain="highlightDomain"
           :positive-y-bg="'rgba(255,255,255, 0.2)'"
           :cursor-type="'line'"
@@ -72,6 +82,7 @@
           :x-ticks="xTicks"
           :curve="curve"
           :date-hovered="hoverDate"
+          :zoom-range="zoomRange"
           :highlight-domain="highlightDomain"
           :positive-y-bg="'rgba(255,255,255, 0.2)'"
           :cursor-type="'line'"
@@ -97,6 +108,7 @@
         :x-ticks="xTicks"
         :curve="curve"
         :date-hovered="hoverDate"
+        :zoom-range="zoomRange"
         :highlight-domain="highlightDomain"
         :positive-y-bg="'rgba(255,255,255, 0.2)'"
         :cursor-type="'line'"
@@ -116,7 +128,10 @@
         :second-tick-format="secondTickFormat"
         :append-datapoint="false"
         :margin-left="0"
+        :zoom-range="zoomRange"
         class="date-brush vis-chart"
+        @date-hover="(evt, date) => $emit('date-hover', date)"
+        @date-filter="(dateRange) => $emit('date-filter', dateRange)"
       />
     </div>
 
@@ -228,6 +243,10 @@ export default {
     hoverDate: {
       type: Date,
       default: null
+    },
+    zoomRange: {
+      type: Array,
+      default: () => []
     },
     todayKey: {
       type: String,
@@ -411,5 +430,11 @@ table.table {
     font-size: 13px;
     font-family: $header-font-family;
   }
+}
+
+.reset-btn {
+  position: absolute;
+  top: 39px;
+  right: 24px;
 }
 </style>
