@@ -150,7 +150,6 @@ export default {
       hoverDate: null,
       zoomRange: [],
       highlightFuelTech: null,
-      xTicks: utcHour.every(2),
       curveSmooth: CHART_CURVE_SMOOTH,
       curveStep: CHART_CURVE_STEP,
       selectedToD: null,
@@ -176,6 +175,10 @@ export default {
       // chartEnergyRenewablesLine: 'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
       // chartEnergyNetLine: 'chartOptionsPowerEnergy/chartEnergyNetLine'
     }),
+
+    xTicks() {
+      return this.zoomRange.length > 0 ? null : utcHour.every(2)
+    },
 
     sparklineButtonWidth() {
       return this.tabletBreak ? '24%' : this.widthBreak ? '19%' : '15.6%';

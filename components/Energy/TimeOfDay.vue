@@ -257,13 +257,16 @@ export default {
   data() {
     return {
       expand: false,
-      xTicks: utcHour.every(2),
       highlightDomain: null,
       highlightRow: null
     }
   },
 
   computed: {
+    xTicks() {
+      return this.zoomRange.length > 0 ? null : utcHour.every(2)
+    },
+
     tooltipValues() {
       if (this.highlightRow && this.hoverValues) {
         const domainLabel = this.highlightRow === '_average' ? 'Average' : this.highlightRow
