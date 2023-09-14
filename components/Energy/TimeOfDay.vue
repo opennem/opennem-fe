@@ -8,6 +8,7 @@
       <TimeOfDayChartHeader
         :title="title"
         :tooltip-values="tooltipValues"
+        :average-value="averageValue"
       />
 
       <button
@@ -249,6 +250,10 @@ export default {
       default: () => []
     },
     todayKey: {
+      type: String,
+      default: ''
+    },
+    averageValue: {
       type: String,
       default: ''
     }

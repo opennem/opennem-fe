@@ -49,7 +49,29 @@ function getTimebucket(interval) {
   return b
 }
 
-export function getDataBucket({ data, domain, category, positiveLoads, range, interval }) {
+function getAverage({ data, domain, isPrice, demandDomain }) {
+  if (isPrice) {
+    const volWeightPrice = data.map((d, i) => {
+      const price = d[domain]
+      const total = d._total
+      return price * total
+    })
+    const volWeightPriceTotal = volWeightPrice.reduce((a, b) => a + b, 0) 
+    const demandPower = data.map((p) => {
+      return p[demandDomain] ? p[demandDomain] : null
+    })
+    const demandPowerTotal = demandPower.reduce((a, b) => a + b, 0)
+  
+    return volWeightPriceTotal / demandPowerTotal
+  }
+
+  const dataValueSum = data.reduce((acc, d) => acc + (d[domain] || 0), 0)
+  const dataCountWithValues = data.filter(d => d[domain] !== undefined && d[domain] !== null).length
+
+  return dataValueSum / dataCountWithValues
+}
+
+export function getDataBucket({ data, domain, demandDomain, isPrice, category, positiveLoads, range, interval }) {
   const dataset = data.map((d) => {
     return {
       date: d.date,
@@ -67,7 +89,9 @@ export function getDataBucket({ data, domain, category, positiveLoads, range, in
     const day = getDay(date)
     const x = getTimeLabel(date)
     const find = timeBucket.find(b => b.x === x)
-    find[day] = d.value
+    if (find) {
+      find[day] = d.value
+    }
   })
 
   timeBucket.forEach(b => {
@@ -81,5 +105,15 @@ export function getDataBucket({ data, domain, category, positiveLoads, range, in
     b._average = total / keyCount
   })
 
-  return timeBucket
+
+  // console.log('domain', domain, data)
+  // console.log('dataCountWithValues', dataCountWithValues)
+  // console.log('dataValueSum', dataValueSum)
+  // console.log('average', dataValueSum / dataCountWithValues)
+  // console.log('========')
+
+  return {
+    data: timeBucket,
+    average: getAverage({ data, domain, isPrice, demandDomain })
+  }
 }

@@ -26,12 +26,7 @@
     <div 
       v-else 
       class="chart-hover-values">
-      <!-- <div class="datetime">
-          <time>28 Aug 2023, 8pm</time>
-        </div>
-        <div class="value">
-          1234
-        </div> -->
+      <div>Av. {{ averageValue }}</div>
     </div>
   </header>
 </template>
@@ -46,6 +41,10 @@ export default {
     tooltipValues: {
       type: Object,
       default: () => null
+    },
+    averageValue: {
+      type: String,
+      default: ''
     }
   }
 }
@@ -84,7 +83,7 @@ header {
   display: flex;
   font-size: 10px;
   justify-content: flex-end;
-  align-content: center;
+  align-items: end;
   height: 20px;
   font-weight: bold;
 

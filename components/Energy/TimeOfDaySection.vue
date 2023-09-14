@@ -99,6 +99,10 @@
           :hover-date="hoverDate"
           :today-key="todayKey"
           :zoom-range="zoomRange"
+          :average-value="formatAverage({
+            value: ds.average,
+            type: ds.type
+          })"
           @date-hover="handleDateHover"
           @date-filter="handleZoomRange"
         />
@@ -166,6 +170,7 @@ export default {
       widthBreak: 'app/widthBreak',
       domainTemperature: 'regionEnergy/domainTemperature',
       domainPrice: 'regionEnergy/domainPrice',
+      domainDemandPower: 'regionEnergy/domainDemandPower',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       currentDataset: 'regionEnergy/currentDataset',
       range: 'range',
@@ -266,8 +271,8 @@ export default {
     },
 
     timeDomains() {
-      const bucket = getDataBucket({ data: this.currentDataset, range: this.rangeVal, interval: this.intervalVal })
-      const keys = Object.keys(bucket[0]).filter((key) => {
+      const { data } = getDataBucket({ data: this.currentDataset, range: this.rangeVal, interval: this.intervalVal })
+      const keys = Object.keys(data[0]).filter((key) => {
           return key !== 'x' && key !== 'date' && key !== 'time'
         })
 
@@ -294,9 +299,11 @@ export default {
 
     datasets() {
       const datasets = this.averageStackedDomains.map(domain => {
-        const data = getDataBucket({
+        const { data, average } = getDataBucket({
           data: this.currentDataset,
           domain: domain.id,
+          demandDomain: this.domainDemandPower[0].id,
+          isPrice: domain.type === 'price',
           category: domain.category,
           positiveLoads: false,
           range: this.rangeVal,
@@ -305,7 +312,9 @@ export default {
         return {
           id: domain.id,
           label: domain.label,
+          type: domain.type,
           data,
+          average,
           yMin: this.getYMin(data),
           yMax: this.getYMax(data)
         }
@@ -316,9 +325,11 @@ export default {
 
     datasetsWithPositiveLoads() {
       const datasets = this.allDomains.map(domain => {
-        const data = getDataBucket({
+        const { data, average } = getDataBucket({
           data: this.currentDataset,
           domain: domain.id,
+          demandDomain: this.domainDemandPower[0].id,
+          isPrice: domain.type === 'price',
           category: domain.category,
           positiveLoads: true,
           range: this.rangeVal,
@@ -327,7 +338,9 @@ export default {
         return {
           id: domain.id,
           label: domain.label,
+          type: domain.type,
           data,
+          average,
           yMin: this.getYMin(data),
           yMax: this.getYMax(data)
         }
@@ -415,7 +428,7 @@ export default {
   watch: {
     allDomains(val) {
       const filtered = this.datasets.filter(d => d.id === '_total' || d.id === '_totalRenewables')
-      this.selectedToDs = filtered
+      // this.selectedToDs = filtered
     }
   },
 
@@ -433,7 +446,7 @@ export default {
 
   mounted() {
     const filtered = this.datasets.filter(d => d.id === '_total' || d.id === '_totalRenewables')
-    this.selectedToDs = filtered
+    // this.selectedToDs = filtered
   },
 
   methods: {
@@ -514,6 +527,14 @@ export default {
       } else {
         this.selectedToDs.push(ds)
       }
+    },
+
+    formatAverage({ value, type }) {
+      console.log('type', type)
+      if (value === null) return '—'
+      if (type === 'price') return this.$options.filters.formatCurrency(value)
+      if (type === 'power') return this.$options.filters.formatValue(value)
+      return this.$options.filters.formatValue(value)
     }
   }
 }
