@@ -530,7 +530,6 @@ export default {
     },
 
     formatAverage({ value, type }) {
-      console.log('type', type)
       if (value === null) return '—'
       if (type === 'price') return this.$options.filters.formatCurrency(value)
       if (type === 'power') return this.$options.filters.formatValue(value)
