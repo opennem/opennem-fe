@@ -83,7 +83,7 @@ header {
   display: flex;
   font-size: 10px;
   justify-content: flex-end;
-  align-items: end;
+  align-items: flex-end;
   height: 20px;
   font-weight: bold;
 
