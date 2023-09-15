@@ -5,10 +5,6 @@
     :class=" { selected: selected }"
   >
     <h6 style="font-size: 11px; padding: 3px 6px 0;">{{ title }}</h6>
-
-    <!-- <TimeOfDayChartHeader 
-      class="header" 
-      :title="title" /> -->
     
     <div 
       v-if="title === 'Price'" 
@@ -112,13 +108,11 @@ import _cloneDeep from 'lodash.clonedeep'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
-import TimeOfDayChartHeader from './TimeOfDayChartHeader.vue'
 
 export default {
   components: {
     MultiLine,
-    DateBrush,
-    TimeOfDayChartHeader
+    DateBrush
   },
 
   props: {

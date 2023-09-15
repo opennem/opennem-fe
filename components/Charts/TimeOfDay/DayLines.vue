@@ -5,7 +5,7 @@
       style="width: 66%; position: relative;" 
       class="vis-wrapper">
 
-      <TimeOfDayChartHeader
+      <ChartHeader
         :title="title"
         :tooltip-values="tooltipValues"
         :average-value="averageValue"
@@ -195,13 +195,13 @@ import { utcHour } from 'd3-time'
 import _cloneDeep from 'lodash.clonedeep'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
-import TimeOfDayChartHeader from './TimeOfDayChartHeader.vue'
+import ChartHeader from './ChartHeader.vue'
 
 export default {
   components: {
     MultiLine,
     DateBrush,
-    TimeOfDayChartHeader
+    ChartHeader
   },
 
   props: {

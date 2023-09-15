@@ -146,7 +146,7 @@ import DataOptionsBarTimeOfDay from '~/components/Energy/DataOptionsBarTimeOfDay
 import VisSection from '@/components/Energy/VisSection.vue'
 import SummarySection from '@/components/Energy/SummarySection.vue'
 import Divider from '@/components/Divider.vue'
-import TimeOfDaySection from '~/components/Energy/TimeOfDaySection.vue'
+import TimeOfDaySection from '~/components/Charts/TimeOfDay/index.vue'
 import IconTimeOfDay from '~/components/Vis/IconTimeOfDay.vue'
 
 const minTableWidth = 420

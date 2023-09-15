@@ -8,7 +8,7 @@
       class="vis-wrapper"
       style="position: relative"
     >
-      <TimeOfDayChartHeader
+      <ChartHeader
         :title="'Average Time of Day'"
         :tooltip-values="tooltipValues"
       />
@@ -66,7 +66,7 @@
           :key="ds.id"
           class="sparkline-button"        
           @click="() => toggleSelected(ds)">
-          <TimeOfDaySparkline
+          <DaySparkLines
             :title="ds.label"
             :domains="filteredTimeDomains"
             :dataset="ds.data"
@@ -86,7 +86,7 @@
         v-for="ds in selectedToDs"
         :key="ds.id"
         style="width: 100%; margin-top: 1rem;">
-        <TimeOfDay
+        <DayLines
           :title="ds.label"
           :domains="timeDomains"
           :dataset="ds.data"
@@ -118,12 +118,12 @@ import { utcHour } from 'd3-time'
 import { CHART_CURVE_SMOOTH, CHART_CURVE_STEP } from '@/constants/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
-import StackedArea from '../Vis/StackedArea.vue'
+import StackedArea from '@/components/Vis/StackedArea.vue'
 import DateBrush from '@/components/Vis/DateBrush'
-import GroupSelector from '~/components/ui/FuelTechGroupSelector'
-import TimeOfDay from './TimeOfDay.vue'
-import TimeOfDaySparkline from './TimeOfDaySparkline.vue'
-import TimeOfDayChartHeader from './TimeOfDayChartHeader.vue'
+import GroupSelector from '@/components/ui/FuelTechGroupSelector'
+import DayLines from './DayLines.vue'
+import DaySparkLines from './DaySparkLines.vue'
+import ChartHeader from './ChartHeader.vue'
 import { getDataBucket, getTimeLabel, getDay } from '@/data/transform/time-of-day.js'
 
 export default {
@@ -132,9 +132,9 @@ export default {
     MultiLine,
     DateBrush,
     GroupSelector,
-    TimeOfDay,
-    TimeOfDaySparkline,
-    TimeOfDayChartHeader
+    DayLines,
+    DaySparkLines,
+    ChartHeader
   },
 
   props: {
