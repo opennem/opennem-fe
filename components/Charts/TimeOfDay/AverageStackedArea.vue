@@ -78,10 +78,6 @@ export default {
       type: Date,
       default: null
     },
-    // highlightFuelTech: {
-    //   type: String,
-    //   default: ''
-    // },
     yTicks: {
       type: Array,
       default: () => []
