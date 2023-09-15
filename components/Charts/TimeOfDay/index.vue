@@ -6,52 +6,16 @@
     <div 
       v-if="showStackedAverages" 
       class="vis-wrapper"
-      style="position: relative"
     >
-      <ChartHeader
-        :title="'Average Time of Day'"
-        :tooltip-values="tooltipValues"
-      />
-
-      <button
-        v-if="zoomRange.length > 0"
-        class="button is-rounded is-small reset-btn"
-        @click.stop="handleZoomReset"
-      >
-        Zoom Out
-      </button>
-
-      <MultiLine
-        :svg-height="400"
-        :domains1="currentDomainPowerEnergy"
-        :dataset1="averagesDataset"
-        :y1-max="averageYMax"
-        :y1-min="averageYMin"
-        :y1-ticks="yTicks"
-        :x-ticks="xTicks"
-        :curve="curveSmooth"
-        :date-hovered="hoverDate"
+      <AverageStackedArea
         :zoom-range="zoomRange"
-        :stacked="true"
-        :show-cursor-dots="false"
-        :cursor-type="'line'"
-        :margin-left="0"
-        :append-datapoint="false"
-        :positive-y-bg="'transparent'"
-        class="vis-chart"
-        @date-hover="(evt, date) => handleDateHover(date)"
-        @domain-hover="handleDomainHover"
-      />
-      <DateBrush
-        :dataset="averagesDataset"
+        :datasets="datasets"
+        :hover-date="hoverDate"
+        :y-ticks="yTicks"
         :x-ticks="xTicks"
         :tick-format="tickFormat"
         :second-tick-format="secondTickFormat"
-        :margin-left="0"
-        :append-datapoint="false"
-        :zoom-range="zoomRange"
-        class="date-brush vis-chart"
-        @date-hover="(evt, date) => handleDateHover(date)"
+        @date-hover="handleDateHover"
         @date-filter="handleZoomRange"
       />
     </div>
@@ -71,6 +35,7 @@
             :domains="filteredTimeDomains"
             :dataset="ds.data"
             :y-ticks="yTicks"
+            :x-ticks="xTicks"
             :tick-format="tickFormat"
             :second-tick-format="secondTickFormat"
             :curve="ds.label === 'Price' ? curveStep : curveSmooth"
@@ -91,6 +56,7 @@
           :domains="timeDomains"
           :dataset="ds.data"
           :y-ticks="yTicks"
+          :x-ticks="xTicks"
           :tick-format="tickFormat"
           :second-tick-format="secondTickFormat"
           :curve="ds.label === 'Price' ? curveStep : curveSmooth"
@@ -117,24 +83,16 @@ import _cloneDeep from 'lodash.clonedeep'
 import { utcHour } from 'd3-time'
 import { CHART_CURVE_SMOOTH, CHART_CURVE_STEP } from '@/constants/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
-import MultiLine from '@/components/Vis/MultiLine'
-import StackedArea from '@/components/Vis/StackedArea.vue'
-import DateBrush from '@/components/Vis/DateBrush'
-import GroupSelector from '@/components/ui/FuelTechGroupSelector'
 import DayLines from './DayLines.vue'
 import DaySparkLines from './DaySparkLines.vue'
-import ChartHeader from './ChartHeader.vue'
-import { getDataBucket, getTimeLabel, getDay } from '@/data/transform/time-of-day.js'
+import { getDataBucket, getTimeLabel } from '@/data/transform/time-of-day.js'
+import AverageStackedArea from './AverageStackedArea.vue'
 
 export default {
   components: {
-    StackedArea,
-    MultiLine,
-    DateBrush,
-    GroupSelector,
+    AverageStackedArea,
     DayLines,
-    DaySparkLines,
-    ChartHeader
+    DaySparkLines
   },
 
   props: {
@@ -150,22 +108,17 @@ export default {
 
   data() {
     return {
-      todayKey: null,
       hoverDate: null,
       zoomRange: [],
-      highlightFuelTech: null,
       curveSmooth: CHART_CURVE_SMOOTH,
       curveStep: CHART_CURVE_STEP,
       selectedToD: null,
-      selectedToDs: [],
-      chartEnergyNetLine: true,
-      chartEnergyRenewablesLine: true
+      selectedToDs: []
     }
   },
 
   computed: {
     ...mapGetters({
-      wideScreenBreak: 'app/wideScreenBreak',
       tabletBreak: 'app/tabletBreak',
       widthBreak: 'app/widthBreak',
       domainTemperature: 'regionEnergy/domainTemperature',
@@ -177,8 +130,8 @@ export default {
       interval: 'interval',
       filterPeriod: 'filterPeriod',
       hiddenFuelTechs: 'hiddenFuelTechs',
-      // chartEnergyRenewablesLine: 'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
-      // chartEnergyNetLine: 'chartOptionsPowerEnergy/chartEnergyNetLine'
+
+      todayKey: 'timeOfDay/todayKey'
     }),
 
     xTicks() {
@@ -209,21 +162,17 @@ export default {
       const domainPower = [...this.currentDomainPowerEnergy]
 
       const domainTotalRenewables = []
-      if (this.chartEnergyRenewablesLine) {
-        domainTotalRenewables.push({
-          domain: '_totalRenewables',
-          id: '_totalRenewables',
-          label: 'Renewables'
-        })
-      }
+      domainTotalRenewables.push({
+        domain: '_totalRenewables',
+        id: '_totalRenewables',
+        label: 'Renewables'
+      })
       const domainTotalNetGeneration = []
-      if (this.chartEnergyNetLine) {
-        domainTotalNetGeneration.push({
+      domainTotalNetGeneration.push({
           domain: '_total',
           id: '_total',
           label: 'Net'
         })
-      }
       
       return [
         ...domainTotalNetGeneration,
@@ -235,62 +184,41 @@ export default {
     },
 
     averageStackedDomains() {
-      const price = []
       if (!this.currentDomainPowerEnergy) return []
-      if (this.domainPrice.length > 0) price.push(this.domainPrice[0])
 
       const filtered = this.currentDomainPowerEnergy.filter((domain) => {
         const ft = domain.fuelTech || domain.group
         return !this.hiddenFuelTechs.includes(ft)
       })
-
-      const domainTotalRenewables = []
-      if (this.chartEnergyRenewablesLine) {
-        domainTotalRenewables.push({
-          domain: '_totalRenewables',
-          id: '_totalRenewables',
-          label: 'Renewables'
-        })
-      }
-      const domainTotalNetGeneration = []
-      if (this.chartEnergyNetLine) {
-        domainTotalNetGeneration.push({
-          domain: '_total',
-          id: '_total',
-          label: 'Net'
-        })
-      }
       
-      return [
-        ...domainTotalNetGeneration,
-        ...domainTotalRenewables,
-        ...filtered.reverse(),
-        ...price,
-        ...this.domainTemperature
-      ]
+      return [...filtered.reverse()]
     },
 
     timeDomains() {
-      const { data } = getDataBucket({ data: this.currentDataset, range: this.rangeVal, interval: this.intervalVal })
+      const { data } = getDataBucket({
+        data: this.currentDataset,
+        range: this.rangeVal,
+        interval: this.intervalVal
+      })
+
       const keys = Object.keys(data[0]).filter((key) => {
-          return key !== 'x' && key !== 'date' && key !== 'time'
-        })
+        return key !== 'x' && key !== 'date' && key !== 'time'
+      })
 
-        const getLabel = (key) => {
-          if (key === '_average') return 'Average'
-          return key
+      const getLabel = (key) => {
+        if (key === '_average') return 'Average'
+        return key
+      }
+
+      const datasetKeys = keys.map((key) => {
+        return {
+          domain: key,
+          id: key,
+          label: getLabel(key)
         }
+      })  
 
-        const datasetKeys = keys.map((key) => {
-          return {
-            domain: key,
-            id: key,
-            label: getLabel(key)
-          }
-        })  
-
-        return datasetKeys
-      
+      return datasetKeys
     },
 
     filteredTimeDomains() {
@@ -347,81 +275,6 @@ export default {
       })
 
       return datasets
-    },
-
-    averagesDataset() {
-      const averagesDs = []
-
-      if (this.datasets.length > 0) {
-        this.datasets.forEach(ds => {
-          const id = ds.id
-
-          ds.data.forEach((d, i) => {
-            if (averagesDs.length !== ds.data.length) {
-              averagesDs.push({
-                x: d.x,
-                date: d.date,
-                time: d.time
-              })
-              averagesDs[i][id] = d._average
-            } else {
-              averagesDs[i][id] = d._average
-            }
-          })
-        })
-      }
-
-      return averagesDs
-    },
-
-    averageYMin() {
-      let min = 0
-
-      this.averagesDataset.forEach((d) => {
-        this.currentDomainPowerEnergy.forEach((domain) => {
-          const val = d[domain.id]
-          if (val < min) {
-            min = val
-          }
-        })
-      })
-
-      return min
-    },
-
-    averageYMax() {
-      let max = 0
-
-      this.averagesDataset.forEach((d) => {
-        let sum = 0
-        this.currentDomainPowerEnergy.forEach((domain) => {
-          sum += d[domain.id] || 0      
-        })
-
-        if (sum > max) {
-          max = sum
-        }
-      })
-
-      return max
-    },
-
-    tooltipValues() {
-      if (this.highlightFuelTech && this.hoverValues) {
-        const ft = this.currentDomainPowerEnergy.find(d => d.id === this.highlightFuelTech)
-        return {
-          date: `${this.hoverValues.x}`,
-          fuelTech: ft?.label,
-          fuelTechColour: ft?.colour,
-          value: this.hoverValues[this.highlightFuelTech]
-        }
-      }
-
-      return null
-    },
-
-    hoverValues() {
-      return this.hoverDate ? this.averagesDataset.find(d => d.time === this.hoverDate.getTime()) : null
     }
   },
 
@@ -436,12 +289,6 @@ export default {
     this.yTicks = []
     this.tickFormat = (d) => getTimeLabel(d)
     this.secondTickFormat = () => ''
-
-    let utcCurrent = new Date()
-    utcCurrent.setUTCDate(utcCurrent.getDate());
-    utcCurrent.setUTCHours(0, 0, 0, 0)
-
-    this.todayKey = getDay(utcCurrent)
   },
 
   mounted() {
@@ -450,9 +297,6 @@ export default {
   },
 
   methods: {
-    handleDomainHover(domain) {
-      this.highlightFuelTech = domain
-    },
 
     handleDateHover(date) {
       this.hoverDate = DateDisplay.getClosestDateByInterval(
@@ -481,12 +325,8 @@ export default {
       this.zoomRange = filteredDates
     },
 
-    handleZoomReset() {
-      this.zoomRange = []
-    },
-
     getYMin(dataset) {
-      let min = null
+      let min = 0
 
       dataset.forEach((d) => {
         this.timeDomains.forEach((domain) => {
@@ -541,51 +381,13 @@ export default {
 
 <style lang="scss" scoped>
 @import '~/assets/scss/variables.scss';
-
 h4 {
   font-size: 18px;
   font-family: $header-font-family;
   font-weight: bold;
   margin: 0 0 1rem;
 }
-.chart-title {
-  font-size: 13px;
-  font-family: $header-font-family;
-  font-weight: bold;
-}
-
-.time-of-day-detailed {
-  position: fixed;
-  top: 0;
-  left: 0; 
-  width: 100%;
-  height: 100vh;
-  background-color: rgba(0,0,0,0.5);
-  z-index: 9999;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 30px;
-}
-
-.time-of-day-chart {
-  width: 100%;
-  height: 780px;
-  background: $body-background-color;
-  overflow-y: auto;
-  padding: 1rem;
-  border-radius: 1rem;
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
-}
-
 .sparkline-button {
   width: 130px;
-}
-
-.reset-btn {
-  position: absolute;
-  top: 39px;
-  right: 24px;
 }
 </style>

@@ -221,6 +221,10 @@ export default {
       type: Array,
       default: () => []
     },
+    xTicks: {
+      type: Function,
+      default: () => null
+    },
     tickFormat: {
       type: Function,
       default: () => {}
@@ -268,10 +272,6 @@ export default {
   },
 
   computed: {
-    xTicks() {
-      return this.zoomRange.length > 0 ? null : utcHour.every(2)
-    },
-
     tooltipValues() {
       if (this.highlightRow && this.hoverValues) {
         const domainLabel = this.highlightRow === '_average' ? 'Average' : this.highlightRow

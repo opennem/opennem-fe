@@ -11,7 +11,7 @@
       class="sparkline">
       <MultiLine
         :svg-height="chartHeightPositiveLogPrice"
-        :domains1="domainsWithColour"
+        :domains1="chartDomains"
         :dataset1="dataset"
         :y1-max="20000"
         :y1-min="300"
@@ -22,8 +22,6 @@
         :x-ticks="xTicks"
         :x-tick-line="false"
         :curve="curve"
-        :date-hovered="hoverDate"
-        :highlight-domain="highlightDomain"
         :positive-y-bg="'transparent'"
         :cursor-type="'line'"
         :append-datapoint="false"
@@ -33,7 +31,7 @@
       <MultiLine
         style="position: relative; top: -1px"
         :svg-height="chartHeightPrice"
-        :domains1="domainsWithColour"
+        :domains1="chartDomains"
         :dataset1="dataset"
         :y1-max="300"
         :y1-min="0"
@@ -43,8 +41,6 @@
         :x-ticks="xTicks"
         :x-tick-line="false"
         :curve="curve"
-        :date-hovered="hoverDate"
-        :highlight-domain="highlightDomain"
         :positive-y-bg="'transparent'"
         :cursor-type="'line'"
         :append-datapoint="false"
@@ -53,7 +49,7 @@
       <MultiLine
         style="position: relative; top: -1px"
         :svg-height="chartHeightNegativeLogPrice"
-        :domains1="domainsWithColour"
+        :domains1="chartDomains"
         :dataset1="dataset"
         :y1-max="-1100"
         :y1-min="-0.1"
@@ -65,8 +61,6 @@
         :x-ticks="xTicks"
         :x-tick-line="false"
         :curve="curve"
-        :date-hovered="hoverDate"
-        :highlight-domain="highlightDomain"
         :positive-y-bg="'transparent'"
         :cursor-type="'line'"
         :append-datapoint="false"
@@ -80,7 +74,7 @@
       class="sparkline">
       <MultiLine
         :svg-height="chartHeight"
-        :domains1="domainsWithColour"
+        :domains1="chartDomains"
         :dataset1="dataset"
         :y1-max="yMax"
         :y1-min="yMin"
@@ -90,8 +84,6 @@
         :x-ticks="null"
         :x-tick-line="false"
         :curve="curve"
-        :date-hovered="hoverDate"
-        :highlight-domain="highlightDomain"
         :positive-y-bg="'transparent'"
         :cursor-type="'line'"
         :append-datapoint="false"
@@ -102,10 +94,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import { utcHour } from 'd3-time'
 import _cloneDeep from 'lodash.clonedeep'
-import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
 
@@ -131,6 +120,10 @@ export default {
     yTicks: {
       type: Array,
       default: () => []
+    },
+    xTicks: {
+      type: Function,
+      default: () => null
     },
     tickFormat: {
       type: Function,
@@ -164,143 +157,29 @@ export default {
 
   data() {
     return {
-      expand: false,
-      xTicks: utcHour.every(2),
-      highlightDomain: null,
-      highlightRow: null,
-      hoverDate: null
+      chartHeight: 25,
+      chartHeightPrice: 10,
+      chartHeightPositiveLogPrice: 8,
+      chartHeightNegativeLogPrice: 6
     }
   },
 
   computed: {
-    ...mapGetters({
-      interval: 'interval'
-    }),
-    tooltipValues() {
-      if (this.highlightRow && this.hoverValues) {
-        const domainLabel = this.highlightRow === '_average' ? 'Av' : this.highlightRow
-        return {
-          date: `${domainLabel}, ${this.hoverValues.x}`,
-          value: this.hoverValues[this.highlightRow]
-        }
-      }
-
-      return null
-    },
-
-    chartHeight() {
-      return 25
-    },
-
-    chartHeightPrice() {
-      return 10
-    },
-    chartHeightPositiveLogPrice() {
-      return 8
-    },
-    chartHeightNegativeLogPrice() {
-      return 6
-    },
-
-    domainsWithColour() {
+    chartDomains() {
       return this.domains.map((domain) => {
         return {
           ...domain,
           colour: this.getChartColour(domain.id),
-          value: this.hoverValues ? this.hoverValues[domain.id] : null,
-          pathStrokeWidth: this.getPathStrokeWidth(domain.id)
+          pathStrokeWidth: 1
         }
       })
-    },
-    
-    tableRowDomains() {
-      return this.expand ? this.allRowsDomains : this.collapsedDomains
-    },
-
-    allRowsDomains() {
-      return this.domainsWithColour.map((domain) => {
-        return {
-          id: domain.id,
-          label: domain.label,
-          value: this.hoverValues ? this.hoverValues[domain.id] : null
-        }
-      }) 
-    },
-
-    collapsedDomains() {
-      const domains = this.domainsWithColour.filter(d => d.id === '_average' || d.id === this.todayKey)
-
-      return domains.map((domain) => {
-        return {
-          id: domain.id,
-          label: domain.label,
-          value: this.hoverValues ? this.hoverValues[domain.id] : null
-        }
-      })  
-    },
-
-    hoverValues() {
-      return this.hoverDate ? this.dataset.find(d => d.time === this.hoverDate.getTime()) : null
-    },
-
-    currentX() {
-      return this.hoverValues ? this.hoverValues.x : null
-    }
-  },
-
-  watch: {
-    yMax(val) {
-      // console.log(val)
     }
   },
 
   methods: {
-    handleDomainHover(domain) {
-      // this.highlightRow = domain
-      // this.highlightDomain = domain
-    },
-
-    handleDateHover(date) {
-      this.hoverDate = DateDisplay.getClosestDateByInterval(
-        date,
-        this.interval,
-        null
-      )
-    },
-    
-    handleVisEnter() {
-      // this.$emit('isHovering', true)
-    },
-
-    handleVisLeave() {
-      // this.$emit('isHovering', false)
-    },
-
     getChartColour(id) {
       if (id === '_average') return this.selected ? '#ccc' : '#DC3A33'
-      return this.todayKey === id ? '#333' : this.expand ? '#aaa' : '#ccc';
-    },
-
-    getTextColour(id) {
-      if (id === '_average') return this.selected ? '#ccc' : '#DC3A33'
-      return this.todayKey === id ? '#333' : this.expand ? '#787878' : '#ddd';
-    },
-
-    getPathStrokeWidth(id) {
-      if (id === '_average') return 1
-      return this.todayKey === id ? 1 : 1;
-    },
-
-    handleTableToggle() {
-      this.expand = !this.expand
-    },
-
-    handleMouseEnter(id) {
-      // this.highlightDomain = id
-    },
-
-    handleMouseLeave() {
-      // this.highlightDomain = null
+      return this.todayKey === id ? '#333' : '#ccc';
     }
   }
 }
@@ -309,16 +188,6 @@ export default {
 <style lang="scss" scoped>
 @import '~/assets/scss/variables.scss';
 $border-radius: 0.4rem;
-
-// .sparkline-button {
-//   cursor: pointer;
-//   border-radius: $border-radius;
-//   background-color: rgba(255,255,255, 0.3);
-
-//   &:hover {
-//     background-color: rgba(255,255,255, 0.8);
-//   }
-// }
 
 .sparkline-button {
   cursor: pointer;
