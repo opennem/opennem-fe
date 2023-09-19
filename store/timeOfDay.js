@@ -6,17 +6,19 @@ export const state = () => ({
     utcCurrent.setUTCDate(utcCurrent.getDate());
     utcCurrent.setUTCHours(0, 0, 0, 0)
     return getDay(utcCurrent)
-  }()
+  }(),
+  selectedToDs: []
 })
 
 export const getters = {
-  todayKey: (state) => state.todayKey
+  todayKey: (state) => state.todayKey,
+  selectedToDs: (state) => state.selectedToDs
 }
 
 export const mutations = {
-  // timeDomains(state, timeDomains) {
-  //   state.timeDomains = timeDomains
-  // }
+  selectedToDs(state, selectedToDs) {
+    state.selectedToDs = selectedToDs
+  }
 }
 
 export const actions = {}

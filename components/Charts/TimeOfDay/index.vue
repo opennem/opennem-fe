@@ -44,7 +44,7 @@
             :y-min="ds.yMin"
             :y-max="ds.yMax"
             :today-key="todayKey"
-            :selected="isSelected(ds.id)"
+            :selected="isSelected(ds)"
           />
         </div>
       </div>
@@ -119,7 +119,6 @@ export default {
       curveSmooth: CHART_CURVE_SMOOTH,
       curveStep: CHART_CURVE_STEP,
       selectedToD: null,
-      selectedToDs: []
     }
   },
 
@@ -138,6 +137,7 @@ export default {
       hiddenFuelTechs: 'hiddenFuelTechs',
 
       todayKey: 'timeOfDay/todayKey',
+      selectedToDs: 'timeOfDay/selectedToDs',
 
       chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
       chartPowerUnitPrefix: 'chartOptionsPowerEnergy/chartPowerUnitPrefix',
@@ -240,7 +240,7 @@ export default {
         const { data, average } = getDataBucket({
           data: this.currentDataset,
           domain: domain.id,
-          demandDomain: this.domainDemandPower[0].id,
+          demandDomain: this.domainDemandPower.length > 0 ? this.domainDemandPower[0].id : null,
           isPrice: domain.type === 'price',
           category: domain.category,
           positiveLoads: false,
@@ -251,6 +251,7 @@ export default {
           id: domain.id,
           label: domain.label,
           type: domain.type,
+          fuelTech: domain.fuelTech,
           data,
           average,
           yMin: this.getYMin(data),
@@ -266,7 +267,7 @@ export default {
         const { data, average } = getDataBucket({
           data: this.currentDataset,
           domain: domain.id,
-          demandDomain: this.domainDemandPower[0].id,
+          demandDomain: this.domainDemandPower.length > 0 ? this.domainDemandPower[0].id : null,
           isPrice: domain.type === 'price',
           category: domain.category,
           positiveLoads: true,
@@ -277,6 +278,7 @@ export default {
           id: domain.id,
           label: domain.label,
           type: domain.type,
+          fuelTech: domain.fuelTech,
           data,
           average,
           yMin: this.getYMin(data),
@@ -299,6 +301,22 @@ export default {
     this.yTicks = []
     this.tickFormat = (d) => getTimeLabel(d)
     this.secondTickFormat = () => ''
+
+    const updatedSelectedToDs = []
+    this.datasetsWithPositiveLoads.forEach(ds => {
+      const isPrice = ds.type === 'price'
+      const hasFuelTech = ds.fuelTech ? true : false
+      const find = hasFuelTech
+        ? this.selectedToDs.find(d => d.fuelTech === ds.fuelTech)
+        : isPrice 
+          ? this.selectedToDs.find(d => d.type === 'price') 
+          : this.selectedToDs.find(d => d.id === ds.id)
+      
+      if (find) {
+        updatedSelectedToDs.push(ds)
+      }
+    })
+    this.setSelectedToDs(updatedSelectedToDs)
   },
 
   mounted() {
@@ -308,7 +326,8 @@ export default {
 
   methods: {
     ...mapMutations({
-      setChartPowerDisplayPrefix: 'chartOptionsPowerEnergy/chartPowerDisplayPrefix'
+      setChartPowerDisplayPrefix: 'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
+      setSelectedToDs: 'timeOfDay/selectedToDs'
     }),
 
     handleDateHover(date) {
@@ -368,17 +387,24 @@ export default {
       return max
     },
 
-    isSelected(id) {
-      const find = this.selectedToDs.find(d => d.id === id)
+    isSelected(ds) {
+      const isPrice = ds.type === 'price'
+      const hasFuelTech = ds.fuelTech ? true : false
+      const find = hasFuelTech
+        ? this.selectedToDs.find(d => d.fuelTech === ds.fuelTech)
+        : isPrice 
+          ? this.selectedToDs.find(d => d.type === 'price') 
+          : this.selectedToDs.find(d => d.id === ds.id)
       return find ? true : false
     },
 
     toggleSelected(ds) {
+      console.log(ds)
       const find = this.selectedToDs.find(d => d.id === ds.id)
       if (find) {
-        this.selectedToDs = this.selectedToDs.filter(d => d.id !== ds.id)
+        this.setSelectedToDs(this.selectedToDs.filter(d => d.id !== ds.id))
       } else {
-        this.selectedToDs.push(ds)
+        this.setSelectedToDs([...this.selectedToDs, ds])
       }
     },
 
