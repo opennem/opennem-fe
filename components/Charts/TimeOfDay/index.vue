@@ -15,8 +15,10 @@
         :x-ticks="xTicks"
         :tick-format="tickFormat"
         :second-tick-format="secondTickFormat"
+        :convert-value="convertValue"
         @date-hover="handleDateHover"
         @date-filter="handleZoomRange"
+        @unit-click="handleUnitClick"
       />
     </div>
 
@@ -66,11 +68,14 @@
           :today-key="todayKey"
           :zoom-range="zoomRange"
           :average-value="formatAverage({
-            value: ds.average,
-            type: ds.type
+            value: ds.label === 'Price' ? ds.average : convertValue(ds.average),
+            type: ds.type,
+            unit: ds.label === 'Price' ? '$' : chartPowerCurrentUnit
           })"
+          :convert-value="convertValue"
           @date-hover="handleDateHover"
           @date-filter="handleZoomRange"
+          @unit-click="handleUnitClick"
         />
       </div>
     </div>
@@ -78,9 +83,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import { utcHour } from 'd3-time'
+import * as SI from '@/constants/si'
 import { CHART_CURVE_SMOOTH, CHART_CURVE_STEP } from '@/constants/chart-options.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import DayLines from './DayLines.vue'
@@ -131,7 +137,11 @@ export default {
       filterPeriod: 'filterPeriod',
       hiddenFuelTechs: 'hiddenFuelTechs',
 
-      todayKey: 'timeOfDay/todayKey'
+      todayKey: 'timeOfDay/todayKey',
+
+      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
+      chartPowerUnitPrefix: 'chartOptionsPowerEnergy/chartPowerUnitPrefix',
+      chartPowerDisplayPrefix: 'chartOptionsPowerEnergy/chartPowerDisplayPrefix'
     }),
 
     xTicks() {
@@ -297,6 +307,9 @@ export default {
   },
 
   methods: {
+    ...mapMutations({
+      setChartPowerDisplayPrefix: 'chartOptionsPowerEnergy/chartPowerDisplayPrefix'
+    }),
 
     handleDateHover(date) {
       this.hoverDate = DateDisplay.getClosestDateByInterval(
@@ -369,11 +382,23 @@ export default {
       }
     },
 
-    formatAverage({ value, type }) {
+    formatAverage({ value, type, unit }) {
       if (value === null) return '—'
       if (type === 'price') return this.$options.filters.formatCurrency(value)
-      if (type === 'power') return this.$options.filters.formatValue(value)
-      return this.$options.filters.formatValue(value)
+      return `${this.$options.filters.formatValue(value)} ${unit}`
+    },
+
+    handleUnitClick() {
+      const updatedPrefix = this.chartPowerDisplayPrefix === SI.MEGA ? SI.GIGA : SI.MEGA
+      this.setChartPowerDisplayPrefix(updatedPrefix)
+    },
+
+    convertValue(value) {
+      return SI.convertValue(
+        this.chartPowerUnitPrefix,
+        this.chartPowerDisplayPrefix,
+        value
+      )
     }
   }
 }

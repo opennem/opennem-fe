@@ -2,6 +2,8 @@
   <header>
     <div class="chart-title">
       {{ title }}
+
+      <slot name="chart-unit" />
     </div>
 
     <div 
@@ -20,13 +22,13 @@
         <span 
           v-if="tooltipValues.fuelTech" 
           style="font-weight: 400;">{{ tooltipValues.fuelTech }}</span>
-        <span>{{ tooltipValues.value | formatValue }}</span>
+        <span>{{ tooltipValues.value }}</span>
       </div>
     </div>
     <div 
       v-else 
       class="chart-hover-values">
-      <div>Av. {{ averageValue }}</div>
+      <span v-if="averageValue">Av. {{ averageValue }}</span>
     </div>
   </header>
 </template>

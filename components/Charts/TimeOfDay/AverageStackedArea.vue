@@ -3,7 +3,15 @@
     <ChartHeader
       :title="'Average Time of Day'"
       :tooltip-values="tooltipValues"
-    />
+    >
+      <template v-slot:chart-unit>
+        <button 
+          class="display-unit" 
+          @click="() => $emit('unit-click')">
+          {{ chartPowerCurrentUnit }}
+        </button>
+      </template>
+    </ChartHeader>
 
     <button
       v-if="zoomRange.length > 0"
@@ -30,6 +38,9 @@
       :margin-left="0"
       :append-datapoint="false"
       :positive-y-bg="'transparent'"
+      :should-convert-value="shouldConvertValue"
+      :convert-value="convertValue"
+      :display-prefix="chartPowerDisplayPrefix"
       class="vis-chart"
       @date-hover="(evt, date) => $emit('date-hover', date)"
       @domain-hover="(domain) => highlightFuelTech = domain"
@@ -51,9 +62,8 @@
 
 <script>
 import { mapGetters } from 'vuex'
-
 import { CHART_CURVE_SMOOTH } from '@/constants/chart-options.js'
-
+import * as SI from '@/constants/si'
 import ChartHeader from './ChartHeader.vue'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
@@ -94,6 +104,10 @@ export default {
       type: Function,
       default: () => {}
     },
+    convertValue: {
+      type: Function,
+      default: () => function () {}
+    }
   },
 
   data() {
@@ -106,7 +120,13 @@ export default {
   computed: {
     ...mapGetters({
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
+      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
+      chartPowerDisplayPrefix: 'chartOptionsPowerEnergy/chartPowerDisplayPrefix'
     }),
+
+    shouldConvertValue() {
+      return this.chartPowerDisplayPrefix === SI.GIGA
+    },
 
     averagesDataset() {
       const averagesDs = []
@@ -167,12 +187,16 @@ export default {
 
     tooltipValues() {
       if (this.highlightFuelTech && this.hoverValues) {
+        const formatValue = (value, unit) => {
+          return `${this.$options.filters.formatValue(value)} ${unit}`
+        }
         const ft = this.currentDomainPowerEnergy.find(d => d.id === this.highlightFuelTech)
+        const value = this.convertValue(this.hoverValues[this.highlightFuelTech])
         return {
           date: `${this.hoverValues.x}`,
           fuelTech: ft?.label,
           fuelTechColour: ft?.colour,
-          value: this.hoverValues[this.highlightFuelTech]
+          value: formatValue(value, this.chartPowerCurrentUnit)
         }
       }
 
@@ -183,7 +207,6 @@ export default {
       return this.hoverDate ? this.averagesDataset.find(d => d.time === this.hoverDate.getTime()) : null
     }
   }
-
 }
 </script>
 
@@ -195,5 +218,20 @@ section {
   position: absolute;
   top: 39px;
   right: 24px;
+}
+.display-unit {
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background-color: transparent;
+  font-size: 10px;
+  border: none;
+  color: #333;
+  position: relative;
+  top: -1px;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+  }
 }
 </style>

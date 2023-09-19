@@ -9,7 +9,17 @@
         :title="title"
         :tooltip-values="tooltipValues"
         :average-value="averageValue"
-      />
+      >
+        <template 
+          v-if="!isPrice" 
+          v-slot:chart-unit>
+          <button 
+            class="display-unit" 
+            @click="() => $emit('unit-click')">
+            {{ chartPowerCurrentUnit }}
+          </button>
+        </template>
+      </ChartHeader>
 
       <button
         v-if="zoomRange.length > 0"
@@ -19,7 +29,7 @@
         Zoom Out
       </button>
 
-      <div v-if="title === 'Price'">
+      <div v-if="isPrice">
         <MultiLine
           :svg-height="chartHeightPositiveLogPrice"
           :domains1="domainsWithColour"
@@ -115,6 +125,9 @@
         :cursor-type="'line'"
         :append-datapoint="false"
         :margin-left="0"
+        :should-convert-value="shouldConvertValue"
+        :convert-value="convertValue"
+        :display-prefix="chartPowerDisplayPrefix"
         class="vis-chart"
         @date-hover="(evt, date) => $emit('date-hover', date)" 
         @domain-hover="handleDomainHover"
@@ -142,7 +155,7 @@
         class="table is-narrow is-fullwidth is-hoverable">
         <thead>
           <tr>
-            <th colspan="2">
+            <th>
               <button 
                 class="button is-small" 
                 @click="handleTableToggle">
@@ -153,13 +166,7 @@
               </button>
             </th>
 
-            <!-- <th 
-              colspan="2" 
-              class="title">
-              {{ title }}
-            </th> -->
-
-            <!-- <th style="text-align:right; white-space: nowrap">{{ currentX }}</th> -->
+            <th style="text-align:right; white-space: nowrap">{{ isPrice ? '$/MWh' : chartPowerCurrentUnit }}</th>
           </tr>
         </thead>
         <tbody>
@@ -174,7 +181,14 @@
             @mouseenter="() => handleMouseEnter(domain.id)"
             @mouseleave="() => handleMouseLeave()">
             <td>{{ domain.label }}</td>
-            <td style="text-align: right;">{{ domain.value | formatValue }}</td>
+            <td style="text-align: right;">
+              <span v-if="isPrice">
+                {{ domain.value | formatCurrency }}
+              </span>
+              <span v-else>
+                {{ convertValue(domain.value) | formatValue }}
+              </span>
+            </td>
           </tr>
         </tbody>
 
@@ -191,8 +205,9 @@
 </template>
 
 <script>
-import { utcHour } from 'd3-time'
+import { mapGetters } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
+import * as SI from '@/constants/si'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
 import ChartHeader from './ChartHeader.vue'
@@ -260,6 +275,10 @@ export default {
     averageValue: {
       type: String,
       default: ''
+    },
+    convertValue: {
+      type: Function,
+      default: () => function () {}
     }
   },
 
@@ -272,12 +291,28 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
+      chartPowerDisplayPrefix: 'chartOptionsPowerEnergy/chartPowerDisplayPrefix'
+    }),
+
+    isPrice() {
+      return this.title === 'Price'
+    },
+
+    shouldConvertValue() {
+      return this.chartPowerDisplayPrefix === SI.GIGA
+    },
+
     tooltipValues() {
       if (this.highlightRow && this.hoverValues) {
         const domainLabel = this.highlightRow === '_average' ? 'Average' : this.highlightRow
+        const value = this.isPrice ? this.hoverValues[this.highlightRow] : this.convertValue(this.hoverValues[this.highlightRow])
+        const unit = this.isPrice ? '$/MWh' : this.chartPowerCurrentUnit
         return {
           date: `${domainLabel}, ${this.hoverValues.x}`,
-          value: this.hoverValues[this.highlightRow]
+          value: this.formatValue({value, type: this.isPrice ? 'price' : 'power', unit}),
+          unit
         }
       }
 
@@ -348,12 +383,6 @@ export default {
     }
   },
 
-  watch: {
-    yMax(val) {
-      // console.log(val)
-    }
-  },
-
   methods: {
     handleDomainHover(domain) {
       this.highlightRow = domain
@@ -393,7 +422,13 @@ export default {
 
     handleMouseLeave() {
       this.highlightDomain = null
-    }
+    },
+
+    formatValue({ value, type, unit }) {
+      if (value === null) return '—'
+      if (type === 'price') return this.$options.filters.formatCurrency(value)
+      return `${this.$options.filters.formatValue(value)} ${unit}`
+    },
   }
 }
 </script>
@@ -444,5 +479,21 @@ table.table {
   position: absolute;
   top: 39px;
   right: 24px;
+}
+
+.display-unit {
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background-color: transparent;
+  font-size: 10px;
+  border: none;
+  color: #333;
+  position: relative;
+  top: -1px;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+  }
 }
 </style>
