@@ -399,7 +399,6 @@ export default {
     },
 
     toggleSelected(ds) {
-      console.log(ds)
       const find = this.selectedToDs.find(d => d.id === ds.id)
       if (find) {
         this.setSelectedToDs(this.selectedToDs.filter(d => d.id !== ds.id))

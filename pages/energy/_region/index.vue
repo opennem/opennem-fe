@@ -4,14 +4,14 @@
     <div style="display: flex; align-items: center;">
 
       <data-options-bar
-        v-if="view === 'discrete-time'"
+        v-if="dashboardView === 'discrete-time'"
         style="padding-right: 0.5rem;"
         :ranges="ranges"
         :intervals="intervals"
         :range="range"
         :interval="interval"
         :filter-period="filterPeriod"
-        :view="view"
+        :view="dashboardView"
         @queryChange="handleQueryChange"
         @rangeChange="handleRangeChange"
         @intervalChange="handleIntervalChange"
@@ -20,8 +20,8 @@
 
       <DataOptionsBarTimeOfDay
         style="padding-right: 0;"
-        v-if="view === 'time-of-day'"
-        :view="view"
+        v-if="dashboardView === 'time-of-day'"
+        :view="dashboardView"
         :range="range"
         :interval="interval"
         @queryChange="handleQueryChange"
@@ -30,17 +30,16 @@
       />
  
       <div
-        v-if="range === '3D' || range === '7D' || range === '30D'"
         class="field has-addons" 
         style="margin-bottom: 0;">
         <button 
           class="button is-small"
           style="border-radius: 20px;"
-          v-tooltip="view === 'time-of-day' ? 'Switch to discrete time view' : 'Switch to time of day view'"
-          :class="{ 'is-selected': view === 'time-of-day' }"
-          @click="() => view === 'time-of-day' ? view = 'discrete-time' : view = 'time-of-day'">
+          v-tooltip="dashboardView === 'time-of-day' ? 'Switch to discrete time view' : 'Switch to time of day view'"
+          :class="{ 'is-selected': dashboardView === 'time-of-day' }"
+          @click="handleViewChange">
           <span class="icon is-small">
-            <IconTimeOfDay :selected="view === 'time-of-day'" />
+            <IconTimeOfDay :selected="dashboardView === 'time-of-day'" />
           </span>
         </button>
       </div>
@@ -79,7 +78,7 @@
       class="vis-table-container">
 
       <vis-section
-        v-if="view === 'discrete-time'"
+        v-if="dashboardView === 'discrete-time'"
         :date-hover="hoverDate"
         :on-hover="isHovering"
         :style="{ width: `${visWidth}${widthUnit}`}"
@@ -90,7 +89,7 @@
       />
 
       <div 
-        v-if="view === 'time-of-day'" 
+        v-if="dashboardView === 'time-of-day'" 
         style="margin-right: 10px;"
         :style="{ width: `${visWidth}${widthUnit}`}"
         :class="{ dragging: dragging }">
@@ -109,8 +108,8 @@
         style="position: sticky; top: 0; height: 100%"
         :hover-date="hoverDate"
         :is-hovering="isHovering"
-        :show-donut-bar="view === 'discrete-time'"
-        :show-records="view === 'discrete-time'"
+        :show-donut-bar="dashboardView === 'discrete-time'"
+        :show-records="dashboardView === 'discrete-time'"
         :class="{ dragging: dragging }"
         :style="{
           width: `${tableWidth}${widthUnit}`
@@ -122,7 +121,7 @@
     </div>
 
     <div 
-      v-if="ready && view === 'time-of-day'" 
+      v-if="ready && dashboardView === 'time-of-day'" 
       style="margin-top: 2rem;">
       <TimeOfDaySection :show-stacked-averages="false" />
     </div>
@@ -214,8 +213,7 @@ export default {
       visWidth: 65,
       tableWidth: 35,
       widthUnit: '%', // px
-      dragging: false,
-      view: 'discrete-time' // discrete-time, time-of-day
+      dragging: false
     }
   },
 
@@ -242,6 +240,16 @@ export default {
       showFeatureToggle: 'app/showFeatureToggle',
       isTouchDevice: 'app/isTouchDevice'
     }),
+
+    dashboardView: {
+      get() {
+        return this.$store.getters['app/dashboardView']
+      },
+
+      set(val) {
+        this.$store.commit('app/dashboardView', val)
+      }
+    },
     
     regionId() {
       return this.$route.params.region
@@ -249,6 +257,14 @@ export default {
 
     queryView() {
       return this.$route.query.view
+    },
+
+    queryRange() {
+      return this.$route.query.range
+    },
+
+    queryInterval() {
+      return this.$route.query.interval
     },
 
     cardFilename() {
@@ -380,13 +396,6 @@ export default {
     },
     hiddenFuelTechs() {
       this.updateEmissionsData()
-    },
-    view() {
-      const query = { range: '7d', interval: '30m' }
-      this.handleQueryChange(query)
-
-      this.setRange('7D')
-      this.setInterval('30m')
     }
   },
 
@@ -446,7 +455,13 @@ export default {
       this.handleResize
     )
 
-    this.view = this.queryView || 'discrete-time'
+    this.dashboardView = this.queryView || 'discrete-time'
+
+    this.handleQueryChange({
+      range: this.queryRange || '7d',
+      interval: this.queryInterval || '30m',
+      view: this.dashboardView
+    })
   },
 
   beforeDestroy() {
@@ -513,7 +528,7 @@ export default {
     handleQueryChange(query) {
       const updatedQuery = {
         ...query,
-        view: this.view
+        view: this.dashboardView
       }
       this.$router.push({
         params: { region: this.regionId },
@@ -530,6 +545,23 @@ export default {
     },
     handleFilterPeriodChange(period) {
       this.setFilterPeriod(period)
+    },
+    handleViewChange() {
+      if (this.dashboardView === 'time-of-day') {
+        this.dashboardView = 'discrete-time'
+        this.handleQueryChange(this.query || { range: '7d', interval: '30m' })
+      } else {
+        // if it's not 7D, switch to 7D and and then set view
+        this.dashboardView = 'time-of-day'
+
+        if (this.range !== '7D') {
+          this.setRange('7D')
+          this.setInterval('30m')
+          this.handleQueryChange({ range: '7d', interval: '30m' })
+        }  else {
+          this.handleQueryChange(this.query || { range: '7d', interval: '30m' })
+        }
+      }
     },
 
     onDragged({ clientX }) {
