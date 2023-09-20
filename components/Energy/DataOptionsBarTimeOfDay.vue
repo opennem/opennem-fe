@@ -46,29 +46,29 @@ export default {
     },
     range: {
       type: String,
-      default: '3D'
+      default: '7D'
     },
     interval: {
       type: String,
-      default: '5m'
+      default: '30m'
     }
   },
 
   data() {
     return {
       ranges: [
-        {
-          label: '3D',
-          value: '3D'
-        },
+        // {
+        //   label: '3D',
+        //   value: '3D'
+        // },
         {
           label: '7D',
           value: '7D'
         },
-        {
-          label: '30D',
-          value: '30D'
-        }
+        // {
+        //   label: '30D',
+        //   value: '30D'
+        // }
       ],
       intervals: [
         {
