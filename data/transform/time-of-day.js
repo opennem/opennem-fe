@@ -49,7 +49,7 @@ function getTimebucket(interval) {
   return b
 }
 
-function getAverage({ data, domain, isPrice, demandDomain }) {
+function getAverage({ data, domain, isPrice, demandDomain, category }) {
   if (isPrice) {
     const volWeightPrice = data.map((d, i) => {
       const price = d[domain]
@@ -65,7 +65,7 @@ function getAverage({ data, domain, isPrice, demandDomain }) {
     return volWeightPriceTotal / demandPowerTotal
   }
 
-  const dataValueSum = data.reduce((acc, d) => acc + (d[domain] || 0), 0)
+  const dataValueSum = data.reduce((acc, d) => acc + (category === 'load' ? -d[domain] : d[domain] || 0), 0)
   const dataCountWithValues = data.filter(d => d[domain] !== undefined && d[domain] !== null).length
 
   return dataValueSum / dataCountWithValues
@@ -114,6 +114,6 @@ export function getDataBucket({ data, domain, demandDomain, isPrice, category, p
 
   return {
     data: timeBucket,
-    average: getAverage({ data, domain, isPrice, demandDomain })
+    average: getAverage({ data, domain, isPrice, demandDomain, category })
   }
 }
