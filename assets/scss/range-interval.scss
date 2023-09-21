@@ -11,6 +11,7 @@
 
   @media screen and (min-width: $breakpoint) {
     padding: $app-padding / 2 1rem;
+    padding-left: 0.4rem;
     display: flex;
     align-items: center;
   }

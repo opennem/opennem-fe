@@ -1,7 +1,33 @@
 <template>
   <div class="energy-region">
 
-    <div style="display: flex; align-items: center;">
+    <div class="data-view-options">
+
+      <div class="dashboard-btns">
+
+        <button 
+          class="dashboard-view-btn"
+          style=""
+          v-tooltip="dashboardView === 'discrete-time' ? '' : 'Switch to discrete time view'"
+          :class="{ 'is-selected': dashboardView === 'discrete-time' }"
+          @click="() => handleViewChange('discrete-time')">
+          <span class="icon">
+            <IconDiscreteTime />
+          </span>
+        </button>
+
+        <button 
+          class="dashboard-view-btn"
+          style=""
+          v-tooltip="dashboardView === 'time-of-day' ? '' : 'Switch to time of day view'"
+          :class="{ 'is-selected': dashboardView === 'time-of-day' }"
+          @click="() => handleViewChange('time-of-day')">
+          <span class="icon">
+            <IconTimeOfDay />
+          </span>
+        </button>
+
+      </div>
 
       <data-options-bar
         v-if="dashboardView === 'discrete-time'"
@@ -29,20 +55,7 @@
         @intervalChange="handleIntervalChange"
       />
  
-      <div
-        class="field has-addons" 
-        style="margin-bottom: 0;">
-        <button 
-          class="button is-small"
-          style="border-radius: 20px;"
-          v-tooltip="dashboardView === 'time-of-day' ? 'Switch to discrete time view' : 'Switch to time of day view'"
-          :class="{ 'is-selected': dashboardView === 'time-of-day' }"
-          @click="handleViewChange">
-          <span class="icon is-small">
-            <IconTimeOfDay :selected="dashboardView === 'time-of-day'" />
-          </span>
-        </button>
-      </div>
+      
       
     </div>
     
@@ -147,6 +160,7 @@ import SummarySection from '@/components/Energy/SummarySection.vue'
 import Divider from '@/components/Divider.vue'
 import TimeOfDaySection from '~/components/Charts/TimeOfDay/index.vue'
 import IconTimeOfDay from '~/components/Vis/IconTimeOfDay.vue'
+import IconDiscreteTime from '~/components/Vis/IconDiscreteTime.vue'
 
 const minTableWidth = 420
 
@@ -198,7 +212,8 @@ export default {
     SummarySection,
     Divider,
     TimeOfDaySection,
-    IconTimeOfDay
+    IconTimeOfDay,
+    IconDiscreteTime
   },
 
   data() {
@@ -546,14 +561,11 @@ export default {
     handleFilterPeriodChange(period) {
       this.setFilterPeriod(period)
     },
-    handleViewChange() {
-      if (this.dashboardView === 'time-of-day') {
-        this.dashboardView = 'discrete-time'
-        this.handleQueryChange(this.query || { range: '7d', interval: '30m' })
-      } else {
-        // if it's not 7D, switch to 7D and and then set view
-        this.dashboardView = 'time-of-day'
+    handleViewChange(view) {
+      this.dashboardView = view
 
+      if (view === 'time-of-day') {
+        // if it's not 7D, switch to 7D and and then set view
         if (this.range !== '7D') {
           this.setRange('7D')
           this.setInterval('30m')
@@ -561,6 +573,8 @@ export default {
         }  else {
           this.handleQueryChange(this.query || { range: '7d', interval: '30m' })
         }
+      } else {
+        this.handleQueryChange(this.query || { range: '7d', interval: '30m' })
       }
     },
 
@@ -609,6 +623,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$breakpoint: 769px;
+
 .vis-table-container {
   user-select: none;
   transition: all 1s ease;
@@ -616,5 +632,65 @@ export default {
 .dragging {
   pointer-events: none;
   user-select: none;
+}
+
+.data-view-options {
+  display: flex;
+  gap: 2px;
+  padding-left: 0.5rem;
+
+  & > * {
+    width: 100%;
+  }
+
+  @media screen and (min-width: $breakpoint) {
+    display: flex;
+    align-items: center;
+    margin-left: 1rem;
+    padding-left: 0;
+  }
+}
+
+.dashboard-btns {
+  width: auto;
+  margin-bottom: 0;
+  border-radius: 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  height: 55px;
+  padding: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+
+  @media screen and (min-width: $breakpoint) {
+    flex-direction: row;
+    height: 30px;
+    border-radius: 4px;
+  }
+}
+
+.dashboard-view-btn {
+  cursor: pointer;
+  border: none;
+  border-radius: 2px;
+  border: 1px solid transparent;
+
+  .icon {
+    padding: 2px;
+    width: 20px;
+    height: 20px;
+    align-items: center;
+    display: flex;
+    pointer-events: none;
+  }
+
+  &.is-selected {
+    border: 1px solid #bbb;
+    background-color: #ddd;
+  }
+
+  &:hover {
+    background-color: #ddd;
+  }
 }
 </style>
