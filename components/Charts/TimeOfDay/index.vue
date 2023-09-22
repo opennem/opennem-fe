@@ -91,7 +91,7 @@ import { CHART_CURVE_SMOOTH, CHART_CURVE_STEP } from '@/constants/chart-options.
 import DateDisplay from '@/services/DateDisplay.js'
 import DayLines from './DayLines.vue'
 import DaySparkLines from './DaySparkLines.vue'
-import { getDataBucket, getTimeLabel } from '@/data/transform/time-of-day.js'
+import { getDataBucket, getTimeLabel, getDay } from '@/data/transform/time-of-day.js'
 import AverageStackedArea from './AverageStackedArea.vue'
 
 export default {
@@ -136,7 +136,6 @@ export default {
       filterPeriod: 'filterPeriod',
       hiddenFuelTechs: 'hiddenFuelTechs',
 
-      todayKey: 'timeOfDay/todayKey',
       selectedToDs: 'timeOfDay/selectedToDs',
 
       chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
@@ -162,6 +161,11 @@ export default {
       if (this.range === '3D') return 3
       if (this.range === '1D') return 1
       return 1
+    },
+
+    todayKey() {
+      const lastDate = this.currentDataset[this.currentDataset.length - 1].date
+      return getDay(lastDate)
     },
 
     allDomains() {
@@ -226,7 +230,7 @@ export default {
           id: key,
           label: getLabel(key)
         }
-      })  
+      })
 
       return datasetKeys
     },

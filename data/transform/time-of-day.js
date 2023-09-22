@@ -6,10 +6,9 @@ export function getDay(d) {
   return utcFormat(`%e %b`)(d)
 }
 
-function getDayKeys(range) {
+export function getDayKeys(range, jsDate) {
   const keys = []
-  let utcCurrent = new Date()
-  utcCurrent.setUTCDate(utcCurrent.getDate());
+  let utcCurrent = new Date(jsDate.getTime())
   utcCurrent.setUTCHours(0, 0, 0, 0)
 
   for (let i = 0; i < range; i++) {
@@ -32,9 +31,8 @@ export function getTimeLabel(d) {
   return `${hour}${min}${ampm}`
 }
 
-function getTimebucket(interval) {
-  let utcCurrent = new Date()
-  utcCurrent.setUTCDate(utcCurrent.getDate());
+function getTimebucket(interval, jsDate) {
+  let utcCurrent = new Date(jsDate.getTime())
   utcCurrent.setUTCHours(0, 0, 0, 0)
   const b = []
 
@@ -80,16 +78,17 @@ export function getDataBucket({ data, domain, demandDomain, isPrice, category, p
     }
   })
 
-  // TODO: maybe create dayKeys using dataset start/last time instead
-  const dayKeys = getDayKeys(range)
-  const timeBucket = getTimebucket(interval)
+  const lastPoint = dataset[dataset.length - 1]
+  const dayKeys = getDayKeys(range, lastPoint.date)
+  const timeBucket = getTimebucket(interval, lastPoint.date)
 
   dataset.forEach(d => {
     const date = d.date
     const day = getDay(date)
+    const findDay = dayKeys.find(k => k === day)
     const x = getTimeLabel(date)
     const find = timeBucket.find(b => b.x === x)
-    if (find) {
+    if (find && findDay) {
       find[day] = d.value
     }
   })
@@ -105,12 +104,13 @@ export function getDataBucket({ data, domain, demandDomain, isPrice, category, p
     b._average = total / keyCount
   })
 
-
   // console.log('domain', domain, data)
   // console.log('dataCountWithValues', dataCountWithValues)
   // console.log('dataValueSum', dataValueSum)
   // console.log('average', dataValueSum / dataCountWithValues)
   // console.log('========')
+
+  // console.log('average', getAverage({ data, domain, isPrice, demandDomain, category }))
 
   return {
     data: timeBucket,
