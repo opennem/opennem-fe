@@ -4,6 +4,8 @@ import subYears from 'date-fns/subYears'
 import * as rangesJs from '~/constants/ranges.js'
 import { INTERVAL_5MIN, INTERVAL_30MIN } from '~/constants/interval-filters.js'
 
+const version = 'v4'
+
 function getYearPaths(prepend, regionId, oneYearAgo) {
   const today = new Date()
   const thisFullYear = today.getFullYear()
@@ -14,12 +16,12 @@ function getYearPaths(prepend, regionId, oneYearAgo) {
   const is1Jan = thisDate === 1 && thisMonth === 0
 
   if (thisFullYear !== oneYearAgo) {
-    paths.push(`v3/stats/au${prepend}/${regionId}/energy/${oneYearAgo}.json`)
+    paths.push(`${version}/stats/au${prepend}/${regionId}/energy/${oneYearAgo}.json`)
   }
 
   // check it's not 1/1/yyyy since the new year won't be generated yet
   if (!is1Jan) {
-    paths.push(`v3/stats/au${prepend}/${regionId}/energy/${thisFullYear}.json`)
+    paths.push(`${version}/stats/au${prepend}/${regionId}/energy/${thisFullYear}.json`)
   }
 
   return paths
@@ -37,7 +39,7 @@ export default {
       case rangesJs.RANGE_1D:
       case rangesJs.RANGE_3D:
       case rangesJs.RANGE_7D:
-        urls.push(`v3/stats/au${prepend}/${regionId}/power/7d.json`)
+        urls.push(`${version}/stats/au${prepend}/${regionId}/power/7d.json`)
         break
 
       case rangesJs.RANGE_14D:
@@ -62,7 +64,7 @@ export default {
 
       case rangesJs.RANGE_ALL:
       case rangesJs.RANGE_ALL_12MTH_ROLLING:
-        urls.push(`v3/stats/au${prepend}/${regionId}/energy/all.json`)
+        urls.push(`${version}/stats/au${prepend}/${regionId}/energy/all.json`)
         break
       default:
     }
@@ -91,17 +93,17 @@ export default {
       region === 'wem' || region === 'nem' || region === 'au' ? '' : '/NEM'
     const regionId = region.toUpperCase()
 
-    return `v3/stats/au${prepend}/${regionId}/energy/${year}.json`
+    return `${version}/stats/au${prepend}/${regionId}/energy/${year}.json`
   },
 
   getRegionAllDailyPath(region) {
     // const prepend =
     //   region === 'wem' || region === 'nem' || region === 'au' ? '' : '/NEM'
     const regionId = region.toUpperCase()
-    return `v3/stats/au/${regionId}/daily.json`
+    return `${version}/stats/au/${regionId}/daily.json`
   },
 
   getAllMonthlyPath() {
-    return 'v3/stats/au/all/monthly.json'
+    return `${version}/stats/au/all/monthly.json`
   }
 }
