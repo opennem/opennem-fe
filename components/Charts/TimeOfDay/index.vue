@@ -298,6 +298,10 @@ export default {
 
         this.timeDomains = timeDomains
       }
+    },
+
+    interval(val) {
+      this.reassignSelectedToDs()
     }
   },
 
@@ -306,21 +310,7 @@ export default {
     this.tickFormat = (d) => getTimeLabel(d)
     this.secondTickFormat = () => ''
 
-    const updatedSelectedToDs = []
-    this.datasetsWithPositiveLoads.forEach(ds => {
-      const isPrice = ds.type === 'price'
-      const hasFuelTech = ds.fuelTech ? true : false
-      const find = hasFuelTech
-        ? this.selectedToDs.find(d => d.fuelTech === ds.fuelTech)
-        : isPrice 
-          ? this.selectedToDs.find(d => d.type === 'price') 
-          : this.selectedToDs.find(d => d.id === ds.id)
-      
-      if (find) {
-        updatedSelectedToDs.push(ds)
-      }
-    })
-    this.setSelectedToDs(updatedSelectedToDs)
+    this.reassignSelectedToDs()
   },
 
   mounted() {
@@ -333,6 +323,24 @@ export default {
       setChartPowerDisplayPrefix: 'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
       setSelectedToDs: 'timeOfDay/selectedToDs'
     }),
+
+    reassignSelectedToDs() {
+      const updatedSelectedToDs = []
+      this.datasetsWithPositiveLoads.forEach(ds => {
+        const isPrice = ds.type === 'price'
+        const hasFuelTech = ds.fuelTech ? true : false
+        const find = hasFuelTech
+          ? this.selectedToDs.find(d => d.fuelTech === ds.fuelTech)
+          : isPrice 
+            ? this.selectedToDs.find(d => d.type === 'price') 
+            : this.selectedToDs.find(d => d.id === ds.id)
+        
+        if (find) {
+          updatedSelectedToDs.push(ds)
+        }
+      })
+      this.setSelectedToDs(updatedSelectedToDs)
+    },
 
     handleDateHover(date) {
       this.hoverDate = DateDisplay.getClosestDateByInterval(
