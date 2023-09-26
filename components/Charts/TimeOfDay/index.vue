@@ -91,8 +91,9 @@ import { CHART_CURVE_SMOOTH, CHART_CURVE_STEP } from '@/constants/chart-options.
 import DateDisplay from '@/services/DateDisplay.js'
 import DayLines from './DayLines.vue'
 import DaySparkLines from './DaySparkLines.vue'
-import { getDataBucket, getTimeLabel, getDay } from '@/data/transform/time-of-day.js'
+import { getDataBucket, getTimeLabel, getDay, getDayKeys } from '@/data/transform/time-of-day.js'
 import AverageStackedArea from './AverageStackedArea.vue'
+import day from '~/data/helpers/time-groups/day'
 
 export default {
   components: {
@@ -119,6 +120,8 @@ export default {
       curveSmooth: CHART_CURVE_SMOOTH,
       curveStep: CHART_CURVE_STEP,
       selectedToD: null,
+      dayKeys: [],
+      timeDomains: []
     }
   },
 
@@ -208,33 +211,6 @@ export default {
       return [...filtered.reverse()]
     },
 
-    timeDomains() {
-      const { data } = getDataBucket({
-        data: this.currentDataset,
-        range: this.rangeVal,
-        interval: this.intervalVal
-      })
-
-      const keys = Object.keys(data[0]).filter((key) => {
-        return key !== 'x' && key !== 'date' && key !== 'time'
-      })
-
-      const getLabel = (key) => {
-        if (key === '_average') return 'Average'
-        return key
-      }
-
-      const datasetKeys = keys.map((key) => {
-        return {
-          domain: key,
-          id: key,
-          label: getLabel(key)
-        }
-      })
-
-      return datasetKeys
-    },
-
     filteredTimeDomains() {
       return this.timeDomains.filter(d => d.id === '_average' || d.id === this.todayKey)
     },
@@ -248,8 +224,8 @@ export default {
           isPrice: domain.type === 'price',
           category: domain.category,
           positiveLoads: false,
-          range: this.rangeVal,
-          interval: this.intervalVal
+          interval: this.intervalVal,
+          dayKeys: this.dayKeys
         })
         return {
           id: domain.id,
@@ -275,8 +251,8 @@ export default {
           isPrice: domain.type === 'price',
           category: domain.category,
           positiveLoads: true,
-          range: this.rangeVal,
-          interval: this.intervalVal
+          interval: this.intervalVal,
+          dayKeys: this.dayKeys
         })
         return {
           id: domain.id,
@@ -298,6 +274,30 @@ export default {
     allDomains(val) {
       const filtered = this.datasets.filter(d => d.id === '_total' || d.id === '_totalRenewables')
       // this.selectedToDs = filtered
+    },
+
+    currentDataset: {
+      immediate: true,
+      handler(val) {
+        const lastPoint = val[val.length - 1]
+        this.dayKeys = getDayKeys(this.rangeVal, lastPoint.date)
+
+        const timeDomains = this.dayKeys.map((key) => {
+          return {
+            domain: key,
+            id: key,
+            label: key
+          }
+        }).reverse()
+
+        timeDomains.push({
+          domain: '_average',
+          id: '_average',
+          label: 'Average'
+        })
+
+        this.timeDomains = timeDomains
+      }
     }
   },
 

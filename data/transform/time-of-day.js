@@ -6,12 +6,12 @@ export function getDay(d) {
   return utcFormat(`%e %b`)(d)
 }
 
-export function getDayKeys(range, jsDate) {
+export function getDayKeys(range, endDate) {
   const keys = []
-  let utcCurrent = new Date(jsDate.getTime())
+  let utcCurrent = new Date(endDate.getTime())
   utcCurrent.setUTCHours(0, 0, 0, 0)
 
-  for (let i = 0; i < range; i++) {
+  for (let i = 0; i <= range; i++) {
     keys.push(getDay(utcCurrent))
     utcCurrent = subDays(utcCurrent, 1)
   }
@@ -69,7 +69,7 @@ function getAverage({ data, domain, isPrice, demandDomain, category }) {
   return dataValueSum / dataCountWithValues
 }
 
-export function getDataBucket({ data, domain, demandDomain, isPrice, category, positiveLoads, range, interval }) {
+export function getDataBucket({ data, domain, demandDomain, isPrice, category, positiveLoads, interval, dayKeys }) {
   const dataset = data.map((d) => {
     return {
       date: d.date,
@@ -79,7 +79,6 @@ export function getDataBucket({ data, domain, demandDomain, isPrice, category, p
   })
 
   const lastPoint = dataset[dataset.length - 1]
-  const dayKeys = getDayKeys(range, lastPoint.date)
   const timeBucket = getTimebucket(interval, lastPoint.date)
 
   dataset.forEach(d => {
@@ -102,6 +101,12 @@ export function getDataBucket({ data, domain, demandDomain, isPrice, category, p
     })
 
     b._average = total / keyCount
+  })
+
+  timeBucket.forEach(b => { 
+    dayKeys.forEach(key => {
+      if (b[key] === undefined || b[key] === null) b[key] = undefined
+    })
   })
 
   // console.log('domain', domain, data)
