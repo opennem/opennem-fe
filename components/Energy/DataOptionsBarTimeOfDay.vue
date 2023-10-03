@@ -57,18 +57,18 @@ export default {
   data() {
     return {
       ranges: [
-        // {
-        //   label: '3D',
-        //   value: '3D'
-        // },
         {
           label: '7D',
           value: '7D'
         },
-        // {
-        //   label: '30D',
-        //   value: '30D'
-        // }
+        {
+          label: '14D',
+          value: '14D'
+        },
+        {
+          label: '28D',
+          value: '28D'
+        }
       ],
       intervals: [
         {
@@ -86,7 +86,7 @@ export default {
   methods: {
     handleRangeClick(range) {
       this.updateQuery(range, this.interval)
-      this.$emit('rangeChange', range)
+      this.$emit('rangeChange', range, true)
     },
 
     handleIntervalClick(interval) {

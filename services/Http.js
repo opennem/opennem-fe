@@ -32,9 +32,9 @@ const getBaseUrl = () => {
   }
 
   // for testing in preview branch
-  if (host && host.startsWith('feature-203-time-of-day-plot')) {
-    baseUrl = `https://data.dev.opennem.org.au/`
-  }
+  // if (host && host.startsWith('feature-203-time-of-day-plot')) {
+  //   baseUrl = `https://data.dev.opennem.org.au/`
+  // }
 
   console.info('baseUrl', baseUrl, host)
   console.info('host', host)

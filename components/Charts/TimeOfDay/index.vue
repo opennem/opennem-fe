@@ -160,6 +160,8 @@ export default {
 
     rangeVal() {
       if (this.range === '30D') return 30
+      if (this.range === '14D') return 14
+      if (this.range === '28D') return 28
       if (this.range === '7D') return 7
       if (this.range === '3D') return 3
       if (this.range === '1D') return 1
@@ -275,7 +277,7 @@ export default {
       const filtered = this.datasets.filter(d => d.id === '_total' || d.id === '_totalRenewables')
       // this.selectedToDs = filtered
     },
-
+    
     currentDataset: {
       immediate: true,
       handler(val) {

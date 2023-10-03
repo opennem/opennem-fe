@@ -30,7 +30,7 @@
       </div>
 
       <data-options-bar
-        v-if="dashboardView === 'discrete-time'"
+        v-show="dashboardView === 'discrete-time'"
         style="padding-right: 0.5rem;"
         :ranges="ranges"
         :intervals="intervals"
@@ -46,7 +46,7 @@
 
       <DataOptionsBarTimeOfDay
         style="padding-right: 0;"
-        v-if="dashboardView === 'time-of-day'"
+        v-show="dashboardView === 'time-of-day'"
         :view="dashboardView"
         :range="range"
         :interval="interval"
@@ -54,8 +54,6 @@
         @rangeChange="handleRangeChange"
         @intervalChange="handleIntervalChange"
       />
- 
-      
       
     </div>
     
@@ -228,7 +226,8 @@ export default {
       visWidth: 65,
       tableWidth: 35,
       widthUnit: '%', // px
-      dragging: false
+      dragging: false,
+      useCachedData: false
     }
   },
 
@@ -319,55 +318,33 @@ export default {
           range: this.range,
           interval: this.interval,
           period: this.filterPeriod,
-          groupName: this.fuelTechGroupName
+          groupName: this.fuelTechGroupName,
+          dashboardView: this.dashboardView
         })
       }
     },
-    range(curr, prev) {
-      this.setCompareDifference(false)
-      this.doUpdateTickFormats({
-        range: curr,
-        interval: this.interval,
-        filterPeriod: this.filterPeriod
-      })
-      if (isPowerRange(curr) && isPowerRange(prev)) {
-        this.doUpdateDatasetByFilterRange({
-          range: curr,
-          interval: this.interval
-        })
-      } else {
-        this.doGetRegionDataByRangeInterval({
-          region: this.regionId,
-          range: curr,
-          interval: this.interval,
-          period: this.filterPeriod,
-          groupName: this.fuelTechGroupName
-        })
-      }
-    },
-    interval(interval) {
-      this.setCompareDifference(false)
-      this.doUpdateTickFormats({
-        range: this.range,
-        interval,
-        filterPeriod: this.filterPeriod
-      })
 
-      console.log('interval change', interval, this.range)
-      // TODO fix issue with 30D interval
-      this.doUpdateDatasetByInterval({ range: this.range, interval })
-      // if (this.range === '30D') {
-      //   this.doGetRegionDataByRangeInterval({
-      //     region: this.regionId,
-      //     range: this.range,
-      //     interval,
-      //     period: this.filterPeriod,
-      //     groupName: this.fuelTechGroupName
-      //   })
-      // } else {
-      //   this.doUpdateDatasetByInterval({ range: this.range, interval })
-      // }      
+    range(curr, prev) {
+      if (this.dashboardView === 'discrete-time') {
+        this.getDiscreteTimeData({ curr, prev })
+      } else {
+        this.getTimeOfDayData({ curr, prev })
+      }
     },
+
+    interval(interval) {
+      if (this.dashboardView === 'discrete-time') {
+        this.setCompareDifference(false)
+        this.doUpdateTickFormats({
+          range: this.range,
+          interval,
+          filterPeriod: this.filterPeriod
+        })
+      }
+
+      this.doUpdateDatasetByInterval({ range: this.range, interval })  
+    },
+
     filteredDates(dates) {
       this.doUpdateXTicks({
         range: this.range,
@@ -432,7 +409,8 @@ export default {
         range: this.range,
         interval: this.interval,
         period: this.filterPeriod,
-        groupName: this.fuelTechGroupName
+        groupName: this.fuelTechGroupName,
+        dashboardView: this.dashboardView
       })
     } else {
       this.$router.push({
@@ -492,6 +470,7 @@ export default {
       doUpdateDatasetByFilterRange: 'regionEnergy/doUpdateDatasetByFilterRange',
       doUpdateDatasetByFilterPeriod:
         'regionEnergy/doUpdateDatasetByFilterPeriod',
+      doFilterDatasetByRange: 'regionEnergy/doFilterDatasetByRange',
       doUpdateEmissionIntensityDataset:
         'energy/emissions/doUpdateEmissionIntensityDataset',
       doUpdateXGuides: 'visInteract/doUpdateXGuides',
@@ -516,6 +495,54 @@ export default {
       setAllowResize: 'regionEnergy/allowResize'
     }),
 
+    getDiscreteTimeData({ curr, prev }) {
+      this.setCompareDifference(false)
+      this.doUpdateTickFormats({
+        range: curr,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod
+      })
+      if (isPowerRange(curr) && isPowerRange(prev)) {
+        this.doFilterDatasetByRange({
+          range: curr,
+          interval: this.interval
+        })
+      } else {
+        this.doGetRegionDataByRangeInterval({
+          region: this.regionId,
+          range: curr,
+          interval: this.interval,
+          period: this.filterPeriod,
+          groupName: this.fuelTechGroupName,
+          dashboardView: this.dashboardView
+        })
+      }
+    },
+
+    getTimeOfDayData({ curr, prev }) {
+      console.log('get time of day data')
+      this.doUpdateTickFormats({
+        range: this.range,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod
+      })
+
+      console.log('useCache', this.useCachedData, curr, prev)
+
+      if (this.useCachedData) {
+        this.doFilterDatasetByRange({ range: this.range, interval: this.interval })
+      } else {
+        this.doGetRegionDataByRangeInterval({
+          region: this.regionId,
+          range: this.range,
+          interval: this.interval,
+          period: this.filterPeriod,
+          groupName: this.fuelTechGroupName,
+          dashboardView: this.dashboardView
+        })
+      }
+    },
+    
     setVisTableWidthUnit(vis, table, unit) {
       this.visWidth = vis
       this.tableWidth = table
@@ -545,6 +572,7 @@ export default {
         ...query,
         view: this.dashboardView
       }
+
       this.$router.push({
         params: { region: this.regionId },
         query: updatedQuery
@@ -552,7 +580,8 @@ export default {
 
       this.setQuery(updatedQuery)
     },
-    handleRangeChange(range) {
+    handleRangeChange(range, useCache = false) {
+      this.useCachedData = useCache
       this.setRange(range)
     },
     handleIntervalChange(interval) {
@@ -561,20 +590,32 @@ export default {
     handleFilterPeriodChange(period) {
       this.setFilterPeriod(period)
     },
+
     handleViewChange(view) {
       this.dashboardView = view
 
       if (view === 'time-of-day') {
-        // if it's not 7D, switch to 7D and and then set view
-        if (this.range !== '7D') {
-          this.setRange('7D')
+        // if it's not 28D, switch to 28D and and then set view
+        if (this.range !== '28D') {
+          this.setRange('28D')
           this.setInterval('30m')
-          this.handleQueryChange({ range: '7d', interval: '30m' })
+          this.handleQueryChange({ range: '28d', interval: '30m' })
         }  else {
-          this.handleQueryChange(this.query || { range: '7d', interval: '30m' })
+          this.handleQueryChange(this.query || { range: '28d', interval: '30m' })
         }
       } else {
-        this.handleQueryChange(this.query || { range: '7d', interval: '30m' })
+
+        const query = {
+          range: '7d',
+          interval: '30m'
+        }
+
+        this.useCachedData = false
+
+        this.setRange('7D')
+        this.setInterval('30m')
+        
+        this.handleQueryChange(query)
       }
     },
 

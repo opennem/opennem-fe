@@ -40,6 +40,11 @@ export default {
         urls.push(`v3/stats/au${prepend}/${regionId}/power/7d.json`)
         break
 
+      case rangesJs.RANGE_14D:
+      case rangesJs.RANGE_28D:
+        urls.push(`v3/stats/au${prepend}/${regionId}/power/30d.json`)
+        break
+
       case rangesJs.RANGE_30D:
         if (interval === INTERVAL_5MIN || interval === INTERVAL_30MIN) {
           urls.push(`v3/stats/au${prepend}/${regionId}/power/30d.json`)
@@ -58,6 +63,23 @@ export default {
       case rangesJs.RANGE_ALL:
       case rangesJs.RANGE_ALL_12MTH_ROLLING:
         urls.push(`v3/stats/au${prepend}/${regionId}/energy/all.json`)
+        break
+      default:
+    }
+    return urls
+  },
+
+  getTimeOfDayUrls(region, range) {
+    const prepend =
+      region === 'wem' || region === 'nem' || region === 'au' ? '' : '/NEM'
+    const regionId = region.toUpperCase()
+    let urls = []
+
+    switch (range) {
+      case rangesJs.RANGE_7D:
+      case rangesJs.RANGE_14D:
+      case rangesJs.RANGE_28D:
+        urls.push(`v3/stats/au${prepend}/${regionId}/power/30d.json`)
         break
       default:
     }

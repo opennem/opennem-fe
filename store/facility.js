@@ -414,8 +414,8 @@ export const actions = {
       period = 'all&interval=1M'
     }
 
-    const type = isPowerRange(range) ? 'power' : 'energy'
-    const query = isPowerRange(range) ? '?period=7d' : `?period=${period}`
+    const type = isPowerRange(range, interval) ? 'power' : 'energy'
+    const query = isPowerRange(range, interval) ? '?period=7d' : `?period=${period}`
     const ref = statsPath(type, networkRegion, encode, query)
     // const ref = '/test-data/BAYSW_All_1M.json'
 

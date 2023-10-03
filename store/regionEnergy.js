@@ -1,4 +1,6 @@
 import _cloneDeep from 'lodash.clonedeep'
+import subDays from 'date-fns/subDays'
+
 import PerfTime from '@/plugins/perfTime.js'
 import http from '@/services/Http.js'
 import Data from '@/services/Data.js'
@@ -483,13 +485,15 @@ export const actions = {
 
   doGetRegionDataByRangeInterval(
     { commit, dispatch, rootGetters },
-    { region, range, interval, period, groupName }
+    { region, range, interval, period, groupName, dashboardView = 'discrete-time' }
   ) {
     dispatch('app/doClearError', null, { root: true })
 
+    const isDiscreteTime = dashboardView === 'discrete-time'
+
     if (isValidRegion(region) && range !== '' && interval !== '') {
       const displayTz = rootGetters.displayTimeZone
-      const urls = Data.getEnergyUrls(region, range, interval)
+      const urls = isDiscreteTime ? Data.getEnergyUrls(region, range, interval) : Data.getTimeOfDayUrls(region, range)
       currentRegion = region
       commit('ready', false)
       commit('isFetching', true)
@@ -502,6 +506,7 @@ export const actions = {
 
         const {
           datasetFlat,
+          datasetFull,
           currentDataset,
           dataPowerEnergyInterval,
           domainPowerEnergy,
@@ -520,14 +525,25 @@ export const actions = {
           units
         } = dataProcess(responses, range, interval, period, displayTz)
 
+        if (isDiscreteTime) {
+          commit('currentDataset', currentDataset)
+        } else {
+          const rangeVal = parseInt(range)
+          const lastDate = currentDataset[currentDataset.length - 1].date
+          const currentLastDate = subDays(lastDate, rangeVal)
+
+          const filteredCurrentDataset = currentDataset.filter(
+            (d) => d.time >= currentLastDate.getTime()
+          )
+          commit('currentDataset', filteredCurrentDataset)
+        }
+
+        commit('datasetFlat', datasetFlat)
 
         commit('isFetching', false)
         commit('isEnergyType', dataType === 'energy')
 
-        commit('datasetFlat', datasetFlat)
-        commit('currentDataset', currentDataset)
         commit('dataPowerEnergyInterval', dataPowerEnergyInterval)
-
         commit('domainPowerEnergy', domainPowerEnergy)
         commit('domainPowerEnergyGrouped', domainPowerEnergyGrouped)
         commit('domainEmissions', domainEmissions)
@@ -683,11 +699,24 @@ export const actions = {
   doUpdateDatasetByInterval({ state, commit }, { range, interval }) {
     // Ignore if data is still being fetched.
     if (!state.isFetching) {
+
+      let filtered = state.datasetFlat
+
+      if (!state.isEnergyType)  {
+        const rangeVal = parseInt(range)
+        const lastDate = state.datasetFlat[state.datasetFlat.length - 1].date
+        const currentLastDate = subDays(lastDate, rangeVal)
+
+        filtered = state.datasetFlat.filter(
+          (d) => d.time >= currentLastDate.getTime()
+        )
+      }
+      
       console.info(`------ ${currentRegion} — ${range}/${interval} (start)`)
 
       const { currentDataset } = dataRollUp({
         isEnergyType: state.isEnergyType,
-        datasetFlat: _cloneDeep(state.datasetFlat),
+        datasetFlat: _cloneDeep(filtered),
         domainPowerEnergy: state.domainPowerEnergy,
         domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
         domainEmissions: state.domainEmissions,
@@ -706,6 +735,44 @@ export const actions = {
       console.info(`------ ${currentRegion} — ${range}/${interval} (end)`)
       commit('currentDataset', currentDataset)
     }
+  },
+
+  doFilterDatasetByRange({ state, commit }, { range, interval }) {
+    let filtered = state.datasetFlat
+
+    if (!state.isEnergyType)  {
+      const rangeVal = parseInt(range)
+      const lastDate = state.datasetFlat[state.datasetFlat.length - 1].date
+      const currentLastDate = subDays(lastDate, rangeVal)
+
+      filtered = state.datasetFlat.filter(
+        (d) => d.time >= currentLastDate.getTime()
+      )
+    }
+
+    console.info(`------ ${currentRegion} — ${range}/${interval} (start)`)
+
+    const { currentDataset } = dataRollUp({
+      isEnergyType: state.isEnergyType,
+      datasetFlat: _cloneDeep(filtered),
+      domainPowerEnergy: state.domainPowerEnergy,
+      domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
+      domainEmissions: state.domainEmissions,
+      domainEmissionsGrouped: state.domainEmissionsGrouped,
+      domainMarketValue: state.domainMarketValue,
+      domainMarketValueGrouped: state.domainMarketValueGrouped,
+      domainPrice: state.domainPrice,
+      domainTemperature: state.domainTemperature,
+      domainDemandPrice: state.domainDemandPrice,
+      domainDemandEnergy: state.domainDemandEnergy,
+      domainDemandPower: state.domainDemandPower,
+      domainDemandMarketValue: state.domainDemandMarketValue,
+      range,
+      interval
+    })
+    console.info(`------ ${currentRegion} — ${range}/${interval} (end)`)
+
+    commit('currentDataset', currentDataset)
   },
 
   doUpdateDatasetByGroup({ state, commit }, { groupName }) {
