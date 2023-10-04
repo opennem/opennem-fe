@@ -295,7 +295,7 @@ export default {
         timeDomains.push({
           domain: '_average',
           id: '_average',
-          label: 'Average'
+          label: 'Average (current day excluded)'
         })
 
         this.timeDomains = timeDomains
