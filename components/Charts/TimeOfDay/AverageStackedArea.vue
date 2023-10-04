@@ -1,7 +1,7 @@
 <template>
   <section>
     <ChartHeader
-      :title="'Average Time of Day'"
+      :title="`Average over last ${parseInt(range)} full days`"
       :tooltip-values="tooltipValues"
     >
       <template v-slot:chart-unit>
@@ -119,6 +119,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      range: 'range',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
       chartPowerDisplayPrefix: 'chartOptionsPowerEnergy/chartPowerDisplayPrefix'
