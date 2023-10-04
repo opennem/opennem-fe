@@ -302,6 +302,10 @@ export default {
       }
     },
 
+    range(val) {
+      this.reassignSelectedToDs()
+    },
+
     interval(val) {
       this.reassignSelectedToDs()
     }
