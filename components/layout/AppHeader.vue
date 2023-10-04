@@ -30,7 +30,7 @@
         @close="closeDrawer" />
 
       <div 
-        v-if="!isFacilitiesView && isEnergyOrFacilitiesView" 
+        v-if="!isFacilitiesView && isEnergyOrFacilitiesView && !isTimeOfDayView" 
         :class="{ hide: tabletBreak }" 
         class="more-buttons">
         <consumption-generation-toggle />
@@ -63,7 +63,7 @@
       </div>
 
       <div 
-        v-if="!tabletBreak && isEnergyOrFacilitiesView" 
+        v-if="!tabletBreak && isEnergyOrFacilitiesView && !isTimeOfDayView" 
         class="s-button-wrapper">
         <button 
           v-on-clickaway="handleClickAway" 
@@ -153,6 +153,7 @@ export default {
     ...mapGetters({
       currentView: 'currentView',
       tabletBreak: 'app/tabletBreak',
+      dashboardView: 'app/dashboardView',
 
       compareCurrentDataset: 'compare/currentDataset',
       selectedMetricObj: 'stripes/selectedMetricObj',
@@ -192,6 +193,10 @@ export default {
 
     isEmissionsWorldRegion() {
       return this.$route.name === 'emissions-world'
+    },
+
+    isTimeOfDayView() {
+      return this.dashboardView === 'time-of-day'
     },
 
     range() {
