@@ -78,7 +78,13 @@ export function getDataBucket({ data, domain, demandDomain, isPrice, category, p
     }
   })
 
-  const lastPoint = dataset[dataset.length - 1]
+  const lastPoint = data[data.length - 1]
+  const utcCurrent = new Date(lastPoint.date.getTime())
+  utcCurrent.setUTCHours(0, 0, 0, 0)
+  const filterOutToday = data.filter(d => {
+    return d.time < utcCurrent.getTime()
+  })
+
   const timeBucket = getTimebucket(interval, lastPoint.date)
 
   dataset.forEach(d => {
@@ -95,9 +101,12 @@ export function getDataBucket({ data, domain, demandDomain, isPrice, category, p
   timeBucket.forEach(b => {
     let total = 0
     let keyCount = 0
-    dayKeys.forEach(key => {
-      if (b[key] !== undefined && b[key] !== null) keyCount++
-      total += b[key] || 0
+    dayKeys.forEach((key, index) => {
+      // ignore the current day which has incomplete data
+      if (index !== 0) {
+        if (b[key] !== undefined && b[key] !== null) keyCount++
+        total += b[key] || 0
+      }
     })
 
     b._average = total / keyCount
@@ -119,6 +128,6 @@ export function getDataBucket({ data, domain, demandDomain, isPrice, category, p
 
   return {
     data: timeBucket,
-    average: getAverage({ data, domain, isPrice, demandDomain, category })
+    average: getAverage({ data: filterOutToday, domain, isPrice, demandDomain, category })
   }
 }
