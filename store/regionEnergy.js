@@ -530,10 +530,11 @@ export const actions = {
         } else {
           const rangeVal = parseInt(range)
           const lastDate = currentDataset[currentDataset.length - 1].date
-          const currentLastDate = subDays(lastDate, rangeVal)
+          const until = subDays(lastDate, rangeVal)
+          until.setUTCHours(0, 0, 0, 0)
 
           const filteredCurrentDataset = currentDataset.filter(
-            (d) => d.time >= currentLastDate.getTime()
+            (d) => d.time >= until.getTime()
           )
           commit('currentDataset', filteredCurrentDataset)
         }
@@ -705,10 +706,11 @@ export const actions = {
       if (!state.isEnergyType)  {
         const rangeVal = parseInt(range)
         const lastDate = state.datasetFlat[state.datasetFlat.length - 1].date
-        const currentLastDate = subDays(lastDate, rangeVal)
+        const until = subDays(lastDate, rangeVal)
+        until.setUTCHours(0, 0, 0, 0)
 
         filtered = state.datasetFlat.filter(
-          (d) => d.time >= currentLastDate.getTime()
+          (d) => d.time >= until.getTime()
         )
       }
       
@@ -743,10 +745,11 @@ export const actions = {
     if (!state.isEnergyType)  {
       const rangeVal = parseInt(range)
       const lastDate = state.datasetFlat[state.datasetFlat.length - 1].date
-      const currentLastDate = subDays(lastDate, rangeVal)
+      const until = subDays(lastDate, rangeVal)
+      until.setUTCHours(0, 0, 0, 0)
 
       filtered = state.datasetFlat.filter(
-        (d) => d.time >= currentLastDate.getTime()
+        (d) => d.time >= until.getTime()
       )
     }
 
