@@ -20,9 +20,11 @@
     <transition name="slide-down-fade">
       <article 
         v-if="siteAnnouncement" 
-        class="message is-primary">
+        class="message is-primary"
+        style="font-size: 11px;">
         <div 
           class="message-body" 
+          style="padding: 10px"
           v-html="siteAnnouncement" />
       </article>
     </transition>

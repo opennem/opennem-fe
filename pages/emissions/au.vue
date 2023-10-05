@@ -171,7 +171,7 @@ import DateDisplay from '@/services/DateDisplay.js'
 import transformTo12MthRollingSum from '@/data/transform/emissions-quarter-12-month-rolling-sum'
 import { dataRollUp } from '@/data/parse/nggi-emissions/'
 
-import EmissionsChart from '@/components/Charts/EmissionsChart'
+import EmissionsChart from '@/components/Charts/EmissionsChartAu'
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import CompareChart from '@/components/Nggi/CompareChart'
 import DatesDisplay from '@/components/SummaryTable/DatesDisplay'
