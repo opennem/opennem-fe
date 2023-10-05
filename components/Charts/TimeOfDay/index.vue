@@ -19,6 +19,7 @@
         @date-hover="handleDateHover"
         @date-filter="handleZoomRange"
         @unit-click="handleUnitClick"
+        @is-hovering="(val) => $emit('is-hovering', val)"
       />
     </div>
 
@@ -129,6 +130,7 @@ export default {
     ...mapGetters({
       tabletBreak: 'app/tabletBreak',
       widthBreak: 'app/widthBreak',
+      domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
       domainTemperature: 'regionEnergy/domainTemperature',
       domainPrice: 'regionEnergy/domainPrice',
       domainDemandPower: 'regionEnergy/domainDemandPower',
@@ -354,6 +356,8 @@ export default {
         this.interval,
         this.filterPeriod
       )
+      this.$emit('dateHover', this.hoverDate)
+      this.$emit('is-hovering', true)
     },
 
     handleZoomRange(dateRange) {

@@ -1,5 +1,6 @@
 <template>
   <div class="summary-table">
+    {{ dashboardView }}
     <export-legend
       v-if="displayAsLegend"
       :domains="legendDomains"
@@ -532,6 +533,7 @@ export default {
     ...mapGetters({
       datasetFull: 'regionEnergy/datasetFull',
       changeSinceDataset: 'regionEnergy/changeSinceDataset',
+      domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
       domainPowerEnergyGrouped: 'regionEnergy/domainPowerEnergyGrouped',
       regionTimezoneString: 'regionEnergy/regionTimezoneString',
       isEnergyType: 'regionEnergy/isEnergyType',
@@ -566,8 +568,15 @@ export default {
 
       emissionIntensityData: 'energy/emissions/emissionIntensityData',
       averageEmissionIntensity: 'energy/emissions/averageEmissionIntensity',
-      sumEmissionsMinusLoads: 'energy/emissions/sumEmissionsMinusLoads'
+      sumEmissionsMinusLoads: 'energy/emissions/sumEmissionsMinusLoads',
+
+      dashboardView: 'app/dashboardView',
+      averagesDataset: 'timeOfDay/averagesDataset'
     }),
+
+    isTimeOfDayView() {
+      return this.dashboardView === 'time-of-day'
+    },
 
     chartUnit() {
       return this.isEnergy ? this.chartEnergyUnit : this.chartPowerUnit
@@ -1243,9 +1252,12 @@ export default {
       }
     },
 
-    calculatePointSummary(data, marketValueData) {
+    calculatePointSummary({ data, marketValueData }) {
+      let totalDemand = 0
       let totalSources = 0
       let totalGeneration = 0
+      let totalRenewables = 0
+      let totalEnergyForPercentageCalculation = 0
       let totalLoads = 0
       let totalPriceMarketValue = 0
       let hasLoadValue = false,
@@ -1255,9 +1267,25 @@ export default {
       this.pointSummaryLoads = {}
 
       if (!_isEmpty(this.pointSummary)) {
+        // if (this.isTimeOfDayView) {
+        //   this.domainPowerEnergy.forEach((ft) => {
+        //     if (ft.renewable) {
+        //       totalRenewables += data[ft.id] || 0
+        //     }
+        //   })
+        // }
+
         this.energyDomains.forEach((ft) => {
           const category = ft.category
           const value = this.pointSummary[ft.id]
+
+          if (category !== 'load' || _includes(ft.id, 'exports')) {
+            totalEnergyForPercentageCalculation += value || 0
+          }
+
+          if (ft.renewable) {
+            totalRenewables += data[ft.id] || 0
+          }
 
           if (category === 'source') {
             if (value || value === 0) {
@@ -1275,6 +1303,8 @@ export default {
             this.pointSummaryLoads[ft.id] = value
             totalLoads += value
           }
+
+          totalDemand += value || 0
         })
 
         if (!hasSourceValue) {
@@ -1346,15 +1376,29 @@ export default {
         }
         this.pointSummary._totalAverageValue = totalAverageValue
       }
+      this.pointSummary._totalEnergyForPercentageCalculation =
+        totalEnergyForPercentageCalculation
       this.pointSummarySources._total = totalSources
       this.pointSummarySources._totalGeneration = totalGeneration
       this.pointSummaryLoads._total = totalLoads
+
+      if (!this.pointSummary._total) {
+        this.pointSummary._total = totalDemand
+      }
+      if (!this.pointSummary._totalRenewables) {
+        this.pointSummary._totalRenewables = totalRenewables
+      }
     },
 
     updatePointSummary(date) {
       if (!date) return
 
-      const dataFound = this.dataset.find((d) => d.time === date.getTime())
+      // const dataFound = this.dataset.find((d) => d.time === date.getTime())
+      // const todDataFound = this.averagesDataset.find((d) => d.time === date.getTime())
+
+      const dataFound = this.isTimeOfDayView
+        ? this.averagesDataset.find((d) => d.time === date.getTime())
+        : this.dataset.find((d) => d.time === date.getTime())
 
       this.hoveredTemperature =
         dataFound && dataFound[this.temperatureId]
@@ -1377,7 +1421,10 @@ export default {
         // }
       }
 
-      this.calculatePointSummary(point, _cloneDeep(dataFound))
+      this.calculatePointSummary({
+        data: point,
+        marketValueData: _cloneDeep(dataFound)
+      })
     },
 
     handleSourcesOrderUpdate(newSourceOrder) {

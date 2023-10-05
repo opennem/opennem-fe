@@ -44,6 +44,9 @@
       class="vis-chart"
       @date-hover="(evt, date) => $emit('date-hover', date)"
       @domain-hover="(domain) => highlightFuelTech = domain"
+      @enter="handleVisEnter"
+      @leave="handleVisLeave"
+      
     />
     <DateBrush
       :dataset="averagesDataset"
@@ -56,12 +59,14 @@
       class="date-brush vis-chart"
       @date-hover="(evt, date) => $emit('date-hover', date)"
       @date-filter="(dateRange) => $emit('date-filter', dateRange)"
+      @enter="handleVisEnter"
+      @leave="handleVisLeave"
     />
   </section>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import { CHART_CURVE_SMOOTH } from '@/constants/chart-options.js'
 import * as SI from '@/constants/si'
 import ChartHeader from './ChartHeader.vue'
@@ -129,30 +134,60 @@ export default {
       return this.chartPowerDisplayPrefix === SI.GIGA
     },
 
-    averagesDataset() {
-      const averagesDs = []
+    averagesDataset: {
+      get() {
+        return this.$store.state.timeOfDay.averagesDataset
+      },
+      set(val) {
+        const averagesDs = []
 
-      if (this.datasets.length > 0) {
-        this.datasets.forEach(ds => {
-          const id = ds.id
+        if (val.length > 0) {
+          val.forEach(ds => {
+            const id = ds.id
 
-          ds.data.forEach((d, i) => {
-            if (averagesDs.length !== ds.data.length) {
-              averagesDs.push({
-                x: d.x,
-                date: d.date,
-                time: d.time
-              })
-              averagesDs[i][id] = d._average
-            } else {
-              averagesDs[i][id] = d._average
-            }
+            ds.data.forEach((d, i) => {
+              if (averagesDs.length !== ds.data.length) {
+                averagesDs.push({
+                  x: d.x,
+                  date: d.date,
+                  time: d.time
+                })
+                averagesDs[i][id] = d._average
+              } else {
+                averagesDs[i][id] = d._average
+              }
+            })
           })
-        })
-      }
+        }
 
-      return averagesDs
+        this.setAveragesDataset(averagesDs)
+      }
     },
+
+    // averagesDataset() {
+    //   const averagesDs = []
+
+    //   if (this.datasets.length > 0) {
+    //     this.datasets.forEach(ds => {
+    //       const id = ds.id
+
+    //       ds.data.forEach((d, i) => {
+    //         if (averagesDs.length !== ds.data.length) {
+    //           averagesDs.push({
+    //             x: d.x,
+    //             date: d.date,
+    //             time: d.time
+    //           })
+    //           averagesDs[i][id] = d._average
+    //         } else {
+    //           averagesDs[i][id] = d._average
+    //         }
+    //       })
+    //     })
+    //   }
+
+    //   return averagesDs
+    // },
 
     averageYMin() {
       let min = 0
@@ -206,6 +241,28 @@ export default {
 
     hoverValues() {
       return this.hoverDate ? this.averagesDataset.find(d => d.time === this.hoverDate.getTime()) : null
+    }
+  },
+
+  watch: {
+    datasets: {
+      immediate: true,
+      handler(val) {
+        this.averagesDataset = val
+      }
+    }
+  },
+
+  methods: {
+    ...mapMutations({
+      setAveragesDataset: 'timeOfDay/averagesDataset'
+    }),
+
+    handleVisEnter() {
+      this.$emit('is-hovering', true)
+    },
+    handleVisLeave() {
+      this.$emit('is-hovering', false)
     }
   }
 }

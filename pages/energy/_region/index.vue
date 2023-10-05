@@ -104,7 +104,10 @@
         style="margin-right: 10px;"
         :style="{ width: `${visWidth}${widthUnit}`}"
         :class="{ dragging: dragging }">
-        <TimeOfDaySection :show-sparklines="false" />
+        <TimeOfDaySection 
+          :show-sparklines="false" 
+          @dateHover="handleDateHover"
+          @is-hovering="handleIsHovering" />
       </div>
 
       <Divider 
