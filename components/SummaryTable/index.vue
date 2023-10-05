@@ -545,7 +545,7 @@ export default {
 
   computed: {
     ...mapGetters({
-      datasetFull: 'regionEnergy/datasetFull',
+      datasetFull: 'regionEnergy/datasetFlat',
       changeSinceDataset: 'regionEnergy/changeSinceDataset',
       domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
       domainPowerEnergyGrouped: 'regionEnergy/domainPowerEnergyGrouped',

@@ -37,7 +37,7 @@ export const state = () => ({
   isEnergyType: false,
   jsonResponses: null,
   datasetFlat: [],
-  datasetFull: [],
+  // datasetFull: [],
   currentDataset: [],
   changeSinceDataset: [],
   domainPowerEnergy: [],
@@ -69,7 +69,7 @@ export const getters = {
   isFetching: (state) => state.isFetching,
   isEnergyType: (state) => state.isEnergyType,
   datasetFlat: (state) => state.datasetFlat,
-  datasetFull: (state) => state.datasetFull,
+  // datasetFull: (state) => state.datasetFull,
   currentDataset: (state) => state.currentDataset,
   changeSinceDataset: (state) => state.changeSinceDataset,
   domainPowerEnergy: (state) => state.domainPowerEnergy,
@@ -133,9 +133,9 @@ export const mutations = {
   datasetFlat(state, datasetFlat) {
     state.datasetFlat = _cloneDeep(datasetFlat)
   },
-  datasetFull(state, datasetFull) {
-    state.datasetFull = _cloneDeep(datasetFull)
-  },
+  // datasetFull(state, datasetFull) {
+  //   state.datasetFull = _cloneDeep(datasetFull)
+  // },
   
   currentDataset(state, currentDataset) {
     state.currentDataset = _cloneDeep(currentDataset)
@@ -547,7 +547,7 @@ export const actions = {
         }
 
         commit('datasetFlat', datasetFlat)
-        commit('datasetFull', datasetFull)
+        // commit('datasetFull', datasetFull)
 
         commit('isFetching', false)
         commit('isEnergyType', dataType === 'energy')
