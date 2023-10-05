@@ -23,12 +23,12 @@ export function getTimeLabel(d) {
   const date = new Date(d)
   const hours = date.getUTCHours()
   const minutes = date.getUTCMinutes()
-  const ampm = hours >= 12 ? 'pm' : 'am'
+  const ampm = hours >= 12 ? 'PM' : 'AM'
   const hour = function() {
     return hours === 0 || hours === 12 ? 12 : hours % 12
   }()
   const min = minutes === 0 ? '' : `:${(minutes + '').padStart(2, '0')}`
-  return `${hour}${min}${ampm}`
+  return `${hour}${min} ${ampm}`
 }
 
 function getTimebucket(interval, jsDate) {

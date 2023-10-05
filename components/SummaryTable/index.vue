@@ -7,7 +7,19 @@
     />
 
     <div v-else>
+      <div v-if="isTimeOfDayView">
+        <DatesDisplayToD
+          :is-hovering="hoverOn"
+          :hovered-time="timeOfDayHoverTime"
+          :start-date="startDate"
+          :end-date="endDate"
+          :range="range"
+          :interval="interval"
+          :timezone-string="isEnergyType ? '' : regionTimezoneString"
+        />
+      </div>
       <dates-display
+        v-else
         :is-hovering="hoverOn"
         :hovered-date="hoveredDate"
         :focus-on="focusOn"
@@ -401,12 +413,14 @@ import { energy_sum } from '@opennem/energy-tools'
 import * as OPTIONS from '@/constants/chart-options.js'
 import { GROUP_DETAILED } from '@/constants/energy-fuel-techs'
 import EventBus from '@/plugins/eventBus'
+import { getTimeLabel } from '@/data/transform/time-of-day' 
 import Domain from '~/services/Domain.js'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
 import ColumnSelector from '~/components/ui/SummaryColumnSelector'
 import ExportLegend from '@/components/Energy/Export/Legend'
 import Items from './Items'
 import DatesDisplay from './DatesDisplay'
+import DatesDisplayToD from './DatesDisplayToD'
 
 export default {
   components: {
@@ -414,6 +428,7 @@ export default {
     ColumnSelector,
     Items,
     DatesDisplay,
+    DatesDisplayToD,
     ExportLegend
   },
 
@@ -575,6 +590,10 @@ export default {
 
     isTimeOfDayView() {
       return this.dashboardView === 'time-of-day'
+    },
+
+    timeOfDayHoverTime() {
+      return getTimeLabel(this.hoverDate)
     },
 
     chartUnit() {
