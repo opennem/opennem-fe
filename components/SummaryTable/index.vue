@@ -1,6 +1,5 @@
 <template>
   <div class="summary-table">
-    {{ dashboardView }}
     <export-legend
       v-if="displayAsLegend"
       :domains="legendDomains"
