@@ -414,6 +414,7 @@ import * as OPTIONS from '@/constants/chart-options.js'
 import { GROUP_DETAILED } from '@/constants/energy-fuel-techs'
 import EventBus from '@/plugins/eventBus'
 import { getTimeLabel } from '@/data/transform/time-of-day' 
+import groupDataset from '@/data/parse/region-energy/group'
 import Domain from '~/services/Domain.js'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
 import ColumnSelector from '~/components/ui/SummaryColumnSelector'
@@ -545,10 +546,12 @@ export default {
 
   computed: {
     ...mapGetters({
-      datasetFull: 'regionEnergy/datasetFlat',
+      datasetFlat: 'regionEnergy/datasetFlat',
       changeSinceDataset: 'regionEnergy/changeSinceDataset',
       domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
       domainPowerEnergyGrouped: 'regionEnergy/domainPowerEnergyGrouped',
+      domainEmissionsGrouped: 'regionEnergy/domainEmissionsGrouped',
+      domainMarketValueGrouped: 'regionEnergy/domainMarketValueGrouped',
       regionTimezoneString: 'regionEnergy/regionTimezoneString',
       isEnergyType: 'regionEnergy/isEnergyType',
 
@@ -994,16 +997,23 @@ export default {
         const end = data[data.length - 1]
         const startDate = start.date
         const endDate = end.date
-        const fullDatasetFiltered = this.datasetFull.filter(
+        const bucketSizeMins = differenceInMinutes(endDate, startDate) + 1
+
+        const datasetWithUpdatedSummary = this.datasetFlat.filter(
           (df) => df.time >= start.time && df.time <= end.time
         )
-        const bucketSizeMins = differenceInMinutes(endDate, startDate) + 1
+        groupDataset({
+          dataset: datasetWithUpdatedSummary,
+          domainPowerEnergyGrouped: this.domainPowerEnergyGrouped,
+          domainEmissionsGrouped: this.domainEmissionsGrouped,
+          domainMarketValueGrouped: this.domainMarketValueGrouped
+        })
 
         // Calculate Energy
         this.energyDomains.forEach((ft) => {
           const category = ft.category
-          const fullDomainData = fullDatasetFiltered.map((fd) => fd[ft.id])
-          const fullDomainDataMinusHidden = fullDatasetFiltered.map((fd) =>
+          const fullDomainData = datasetWithUpdatedSummary.map((fd) => fd[ft.id])
+          const fullDomainDataMinusHidden = datasetWithUpdatedSummary.map((fd) =>
             _includes(this.hiddenFuelTechs, ft[this.propRef]) ? 0 : fd[ft.id]
           )
 
@@ -1266,6 +1276,7 @@ export default {
         this.summary._averageEnergy = average
         this.summary._averageTemperature =
           totalTemperatureWithoutNulls / temperatureWithoutNulls.length
+
         this.$emit('summary-update', this.summary)
       }
     },
