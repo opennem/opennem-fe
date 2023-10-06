@@ -523,14 +523,11 @@ export default {
     },
 
     getTimeOfDayData({ curr, prev }) {
-      console.log('get time of day data')
       this.doUpdateTickFormats({
         range: this.range,
         interval: this.interval,
         filterPeriod: this.filterPeriod
       })
-
-      console.log('useCache', this.useCachedData, curr, prev)
 
       if (this.useCachedData) {
         this.doFilterDatasetByRange({ range: this.range, interval: this.interval })
