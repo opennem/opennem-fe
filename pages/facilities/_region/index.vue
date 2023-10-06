@@ -597,8 +597,8 @@ export default {
       width: 50%;
       position: fixed;
       right: 0;
-      top: 25px;
-      z-index: 99;
+      top: 53px;
+      z-index: 9999;
       padding: 0 1rem 0 0;
     }
   }
