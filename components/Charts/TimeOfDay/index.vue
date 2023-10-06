@@ -86,6 +86,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
+import _includes from 'lodash.includes'
 import { utcHour } from 'd3-time'
 import * as SI from '@/constants/si'
 import { CHART_CURVE_SMOOTH, CHART_CURVE_STEP } from '@/constants/chart-options.js'
@@ -140,6 +141,7 @@ export default {
       interval: 'interval',
       filterPeriod: 'filterPeriod',
       hiddenFuelTechs: 'hiddenFuelTechs',
+      fuelTechGroupName: 'fuelTechGroupName',
 
       selectedToDs: 'timeOfDay/selectedToDs',
 
@@ -183,11 +185,15 @@ export default {
       const domainPower = [...this.currentDomainPowerEnergy]
 
       const domainTotalRenewables = []
-      domainTotalRenewables.push({
-        domain: '_totalRenewables',
-        id: '_totalRenewables',
-        label: 'Renewables'
-      })
+      // Avoid duplicating Renewables charts
+      if (!_includes(this.fuelTechGroupName, 'Renewable')) {
+        domainTotalRenewables.push({
+          domain: '_totalRenewables',
+          id: '_totalRenewables',
+          label: 'Renewables'
+        })
+      }
+      
       const domainTotalNetGeneration = []
       domainTotalNetGeneration.push({
           domain: '_total',
