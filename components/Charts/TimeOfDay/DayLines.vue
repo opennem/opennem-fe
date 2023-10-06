@@ -390,11 +390,11 @@ export default {
     },
     
     handleVisEnter() {
-      // this.$emit('isHovering', true)
+      this.$emit('isHovering', true)
     },
 
     handleVisLeave() {
-      // this.$emit('isHovering', false)
+      this.$emit('isHovering', false)
     },
 
     getChartColour(id) {

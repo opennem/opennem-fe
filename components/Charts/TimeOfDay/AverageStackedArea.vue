@@ -164,31 +164,6 @@ export default {
       }
     },
 
-    // averagesDataset() {
-    //   const averagesDs = []
-
-    //   if (this.datasets.length > 0) {
-    //     this.datasets.forEach(ds => {
-    //       const id = ds.id
-
-    //       ds.data.forEach((d, i) => {
-    //         if (averagesDs.length !== ds.data.length) {
-    //           averagesDs.push({
-    //             x: d.x,
-    //             date: d.date,
-    //             time: d.time
-    //           })
-    //           averagesDs[i][id] = d._average
-    //         } else {
-    //           averagesDs[i][id] = d._average
-    //         }
-    //       })
-    //     })
-    //   }
-
-    //   return averagesDs
-    // },
-
     averageYMin() {
       let min = 0
 
