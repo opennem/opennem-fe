@@ -19,7 +19,7 @@
 
     <transition name="slide-down-fade">
       <article 
-        v-if="siteAnnouncement" 
+        v-if="siteAnnouncement && isAuOrWem && isEnergyPage" 
         class="message is-primary"
         style="font-size: 11px;">
         <div 
@@ -59,7 +59,21 @@ export default {
       errorMessage: 'app/errorMessage',
       tabletBreak: 'app/tabletBreak',
       siteAnnouncement: 'app/siteAnnouncement'
-    })
+    }),
+
+    routeName() {
+      return this.$route.name
+    },
+    regionId() {
+      return this.$route.params.region
+    },
+
+    isEnergyPage() {
+      return this.routeName === 'energy-region'
+    },
+    isAuOrWem() {
+      return this.regionId === 'au' || this.regionId === 'wem'
+    }
   },
 
   methods: {

@@ -103,7 +103,7 @@ export default {
     }),
 
     mapHeight() {
-      const offset = this.tabletBreak ? 79 :80
+      const offset = this.tabletBreak ? 26 :27
       return `${this.windowHeight - offset}px`
     },
     mapStyleUrl() {
