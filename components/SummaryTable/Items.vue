@@ -110,7 +110,7 @@ import _isEmpty from 'lodash.isempty'
 import _includes from 'lodash.includes'
 import _remove from 'lodash.remove'
 import _cloneDeep from 'lodash.clonedeep'
-import Data from '~/services/Data.js'
+import { GROUP_DETAILED } from '@/constants/energy-fuel-techs'
 
 export default {
   props: {
@@ -341,7 +341,7 @@ export default {
 
     getAverageValue(ft) {
       const property =
-        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+        this.fuelTechGroupName === GROUP_DETAILED ? 'fuelTech' : 'group'
       const find = this.marketValueOrder.find(
         (d) => d[property] === ft[property]
       )

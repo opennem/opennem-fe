@@ -70,7 +70,6 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-import debounce from 'lodash.debounce'
 import cloneDeep from 'lodash.clonedeep'
 import isSameDay from 'date-fns/isSameDay'
 import { format as numFormat } from 'd3-format'

@@ -106,6 +106,7 @@ import DonutVis from '~/components/Vis/Donut.vue'
 import EnergyBar from '~/components/Energy/Charts/EnergyBarChart.vue'
 
 import { TEMPERATURE, TEMPERATURE_MEAN } from '@/constants/data-types.js'
+import { GROUP_DETAILED } from '@/constants/energy-fuel-techs'
 import * as SI from '@/constants/si.js'
 
 export default {
@@ -197,7 +198,7 @@ export default {
     },
 
     property() {
-      return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+      return this.fuelTechGroupName === GROUP_DETAILED ? 'fuelTech' : 'group'
     },
     powerEnergyDomains() {
       return this.currentDomainPowerEnergy
@@ -222,7 +223,7 @@ export default {
     highlightId() {
       const domain = this.highlightDomain
       const property =
-        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+        this.fuelTechGroupName === GROUP_DETAILED ? 'fuelTech' : 'group'
       const find = this.domains.find((d) => d[property] === domain)
       return find ? find.id : ''
     },
@@ -261,7 +262,7 @@ export default {
     },
     handleSummaryRowMouseEnter(ft) {
       const property =
-        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+        this.fuelTechGroupName === GROUP_DETAILED ? 'fuelTech' : 'group'
       this.setHighlightDomain(ft[property])
     },
     handleSummaryRowMouseLeave() {

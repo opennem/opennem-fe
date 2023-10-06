@@ -14,7 +14,7 @@ import { mutateDate } from '@/services/datetime-helpers.js'
 import {
   DEFAULT_FUEL_TECH_COLOUR,
   FUEL_TECH_CATEGORY
-} from '@/constants/energy-fuel-techs/group-default.js'
+} from '@/constants/energy-fuel-techs/group-detailed.js'
 import { isPowerRange, RANGE_7D } from '@/constants/ranges.js'
 import { INTERVAL_30MIN } from '@/constants/interval-filters.js'
 import { MAP_STYLE_LIGHT } from '@/constants/facilities/map-styles.js'
@@ -414,8 +414,8 @@ export const actions = {
       period = 'all&interval=1M'
     }
 
-    const type = isPowerRange(range) ? 'power' : 'energy'
-    const query = isPowerRange(range) ? '?period=7d' : `?period=${period}`
+    const type = isPowerRange(range, interval) ? 'power' : 'energy'
+    const query = isPowerRange(range, interval) ? '?period=7d' : `?period=${period}`
     const ref = statsPath(type, networkRegion, encode, query)
     // const ref = '/test-data/BAYSW_All_1M.json'
 

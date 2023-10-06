@@ -1,4 +1,4 @@
-import * as FT from '@/constants/energy-fuel-techs/group-default.js'
+import * as FT from '@/constants/energy-fuel-techs/group-detailed.js'
 import {
   PRICE,
   PRICE_ABOVE_300,
@@ -43,6 +43,7 @@ export function getTemperatureDomains(data) {
       id: d.id,
       domain: d.id,
       type: d.type,
+      label: 'Temperature',
       colour: '#e34a33'
     }
   })
@@ -50,7 +51,7 @@ export function getTemperatureDomains(data) {
 
 export function getPriceDomains(res) {
   let domains = res.map((d) => {
-    return { id: d.id, domain: d.id, type: d.type, colour: PRICE_COLOUR }
+    return { id: d.id, domain: d.id, type: d.type, colour: PRICE_COLOUR, label: 'Price' }
   })
   if (domains.length > 0) {
     domains = [...domains, ...getDerivedPriceDomains()]

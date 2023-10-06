@@ -1,7 +1,7 @@
 import startOfQuarter from 'date-fns/startOfQuarter'
 import differenceInDays from 'date-fns/differenceInDays'
 import addDays from 'date-fns/addDays'
-import { BATTERY_DISCHARGING } from '@/constants/energy-fuel-techs/group-default.js'
+import { BATTERY_DISCHARGING } from '@/constants/energy-fuel-techs/group-detailed.js'
 
 export default function ({
   dataset,

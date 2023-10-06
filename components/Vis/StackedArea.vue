@@ -356,6 +356,10 @@ export default {
     useOffsetDiverge: {
       type: Boolean,
       default: false
+    },
+    totalLineDomain: {
+      type: String,
+      default: ''
     }
   },
 
@@ -471,13 +475,8 @@ export default {
           date: d.date,
           time: d.time,
           _isIncompleteBucket: d._isIncompleteBucket,
-          value: 0
+          value: d[this.totalLineDomain]
         }
-
-        this.domains.forEach((domain) => {
-          obj.value += d[domain.id]
-        })
-
         return obj
       })
     },
@@ -885,7 +884,7 @@ export default {
           : min(this.updatedDataset, (d) => d._min)
       this.yMinComputed = yMin
       const yMax =
-        this.yMax || this.yMax === 0
+        (this.yMax || this.yMax === 0) && this.domains.length > 0 && !this.showTotalLine
           ? this.yMax
           : max(this.updatedDataset, (d) => d._total)
       const xDomainExtent = this.dynamicExtent.length
@@ -893,11 +892,7 @@ export default {
         : this.datasetDateExtent
       this.x.domain(xDomainExtent)
 
-      if (this.domains.length === 0) {
-        this.y.range([this.height, 0]).domain([0, 100]).nice()
-      } else {
-        this.y.domain([yMin, yMax]).nice()
-      }
+      this.y.domain([yMin, yMax]).nice()
 
       this.z.range(this.domainColours).domain(this.domainIds)
 
@@ -911,21 +906,13 @@ export default {
       }
 
       this.$xAxisGroup.call(this.customXAxis)
-      if (this.domains.length === 0) {
-        this.$yAxisGroup
-          .call(this.yAxis)
-          .call((g) => g.selectAll('.y-axis .tick').style('opacity', '0'))
-        this.$yAxisTickGroup
-          .call(this.yAxis)
-          .call((g) => g.selectAll('.y-axis-tick .tick').style('opacity', '0'))
-      } else {
-        this.$yAxisGroup
+
+      this.$yAxisGroup
           .call(this.customYAxis)
           .call((g) => g.selectAll('.y-axis .tick').style('opacity', '1'))
         this.$yAxisTickGroup
           .call(this.customYAxis)
           .call((g) => g.selectAll('.y-axis-tick .tick').style('opacity', '1'))
-      }
 
       this.updateGuides()
 
@@ -1008,9 +995,9 @@ export default {
         .attr('class', 'line-path')
         .attr('d', this.totalLine)
         .style('stroke', '#c74523')
-        .style('stroke-width', 3)
+        .style('stroke-width', 1)
         .style('stroke-linecap', 'round')
-        .style('stroke-dasharray', '13,13')
+        // .style('stroke-dasharray', '13,13')
         .style('filter', 'url(#shadow)')
         .style('clip-path', this.clipPathUrl)
         .style('-webkit-clip-path', this.clipPathUrl)
@@ -1720,6 +1707,7 @@ export default {
 <style lang="scss" scoped>
 .stacked-area-vis {
   position: relative;
+  line-height: 0;
 }
 .reset-btn {
   position: absolute;

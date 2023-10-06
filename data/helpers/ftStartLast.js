@@ -10,7 +10,10 @@ export function getEarliestLatestDates(
 ) {
   let earliestEnergyStartDate = null,
     latestEnergyLastDate = null
+    
   domainPowerEnergy.forEach((domain) => {
+    // ignore solar rooftop when fetching earliest/latest dates
+    const isSolarRooftop = domain.fuelTech === 'solar_rooftop'
     const id = domain.id
     const find = dataset.find((d) => d.id === id)
     const start = new Date(
@@ -18,19 +21,21 @@ export function getEarliestLatestDates(
     )
     const last = new Date(mutateDate(find.history.last, displayTz, ignoreTime))
 
-    if (find) {
-      if (
-        !earliestEnergyStartDate ||
-        (earliestEnergyStartDate && isBefore(start, earliestEnergyStartDate))
-      ) {
-        earliestEnergyStartDate = start
-      }
-
-      if (
-        !latestEnergyLastDate ||
-        (latestEnergyLastDate && isAfter(last, latestEnergyLastDate))
-      ) {
-        latestEnergyLastDate = last
+    if (!isSolarRooftop) {
+      if (find) {
+        if (
+          !earliestEnergyStartDate ||
+          (earliestEnergyStartDate && isBefore(start, earliestEnergyStartDate))
+        ) {
+          earliestEnergyStartDate = start
+        }
+  
+        if (
+          !latestEnergyLastDate ||
+          (latestEnergyLastDate && isAfter(last, latestEnergyLastDate))
+        ) {
+          latestEnergyLastDate = last
+        }
       }
     }
   })

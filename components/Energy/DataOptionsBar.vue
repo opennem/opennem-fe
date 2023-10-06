@@ -228,8 +228,8 @@ export default {
         this.selectedFilter = this.filterPeriod
       }
 
-      let range = this.range
-      let interval = this.interval
+      let range = this.range || '7D'
+      let interval = this.interval || '30m'
       let filter = this.filterPeriod
 
       if (validRangeQuery && validIntervalQuery) {

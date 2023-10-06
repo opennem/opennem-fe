@@ -85,6 +85,8 @@
       :unit="` ${chartDisplayPrefix}${chartUnit}`"
       :null-check-prop="'_total'"
       :filter-period="filterPeriod"
+      :show-total-line="chartEnergyNetLine"
+      :total-line-domain="'_total'"
       :class="{ dragging: dragging }"
       class="vis-chart"
       @dateOver="handleDateHover"
@@ -137,6 +139,8 @@
       :display-prefix="chartDisplayPrefix"
       :should-convert-value="shouldConvertValue"
       :convert-value="convertValue"
+      :cursor-type="isEnergyType ? 'bar' : 'line'"
+      :append-datapoint="isEnergyType"
       :class="{ dragging: dragging }"
       class="vis-chart"
       @date-hover="handleDateHover"
@@ -155,7 +159,7 @@
       :read-only="readOnly"
       :interval="interval"
       :filter-period="filterPeriod"
-      :append-datapoint="isEnergyType || isTypeLine || isTypeChangeSinceLine"
+      :append-datapoint="isEnergyType"
       class="date-brush vis-chart"
       @date-hover="handleDateHover"
       @date-filter="handleZoomExtent"
@@ -185,7 +189,7 @@ import AxisTimeFormats from '@/services/axisTimeFormats.js'
 import * as OPTIONS from '@/constants/chart-options.js'
 import * as SI from '@/constants/si.js'
 import { RANGE_ALL_12MTH_ROLLING } from '@/constants/ranges.js'
-import { LOAD } from '@/constants/energy-fuel-techs/group-default.js'
+import { LOAD } from '@/constants/energy-fuel-techs/group-detailed.js'
 import EnergyToAveragePower from '@/data/transform/energy-to-average-power.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
@@ -368,6 +372,8 @@ export default {
       chartPowerDisplayPrefix:
         'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
       chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
+      chartEnergyNetLine:
+        'chartOptionsPowerEnergy/chartEnergyNetLine',
       chartEnergyRenewablesLine:
         'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
 
@@ -757,7 +763,7 @@ export default {
           lowest = this.yMin
         }
 
-        return lowest + (lowest * 10) / 100
+        return lowest
       }
     },
     computedYMax() {
@@ -778,7 +784,7 @@ export default {
         highest = this.yMax
       }
 
-      return highest + (highest * 10) / 100
+      return highest
     },
     energyLineYMin() {
       return this.getMinValueByLowest(this.dataset)
@@ -806,7 +812,7 @@ export default {
       return m < 100 ? 100 : m
     },
     isRenewableLineOnly() {
-      return this.chartEnergyRenewablesLine && this.domains.length === 0
+      return this.chartEnergyRenewablesLine && this.domains.length === 0 && !this.chartEnergyNetLine
     },
 
     averageEnergy() {

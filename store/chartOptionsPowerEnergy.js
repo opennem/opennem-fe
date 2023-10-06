@@ -18,6 +18,7 @@ export const state = () => ({
   chartPowerDisplayPrefix: SI.MEGA,
 
   chartEnergyRenewablesLine: false,
+  chartEnergyNetLine: false,
 
   displayUnit: '',
   chartDateAxis: true
@@ -45,6 +46,7 @@ export const getters = {
     `${state.chartPowerDisplayPrefix}${state.chartPowerUnit}`,
 
   chartEnergyRenewablesLine: (state) => state.chartEnergyRenewablesLine,
+  chartEnergyNetLine: (state) => state.chartEnergyNetLine,
 
   displayUnit: (state) => state.displayUnit,
 
@@ -96,6 +98,9 @@ export const mutations = {
 
   chartEnergyRenewablesLine(state, data) {
     state.chartEnergyRenewablesLine = data
+  },
+  chartEnergyNetLine(state, data) {
+    state.chartEnergyNetLine = data
   },
   displayUnit(state, data) {
     state.displayUnit = data

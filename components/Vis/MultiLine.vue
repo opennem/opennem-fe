@@ -32,12 +32,11 @@
       <g 
         :transform="axisTransform" 
         class="x-shades" />
-      <g 
-        :transform="axisTransform" 
-        class="cursor-line-group" />
+
       <g 
         :transform="axisTransform" 
         class="hover-group" />
+      
       
       <g 
         :transform="axisTransform" 
@@ -57,6 +56,12 @@
       <g 
         :transform="axisTransform" 
         class="y-axis-right-text" />
+
+      
+      <g 
+        :transform="axisTransform" 
+        class="cursor-line-group" />
+
     </svg>
   </div>
 </template>
@@ -147,6 +152,10 @@ export default {
       type: Function,
       default: () => null
     },
+    xTickLine: {
+      type: Boolean,
+      default: () => true
+    },
     xShades: {
       type: Array,
       default: () => []
@@ -175,6 +184,14 @@ export default {
       type: Boolean,
       default: () => true
     },
+    y1TickLine: {
+      type: Boolean,
+      default: () => true
+    },
+    y1FirstTickText: {
+      type: Boolean,
+      default: () => false
+    },
     y1AxisUnit: {
       type: String,
       default: () => ''
@@ -197,7 +214,7 @@ export default {
     },
     pathStrokeWidth: {
       type: Number,
-      default: () => 2
+      default: () => 1
     },
     showCursorDots: {
       type: Boolean,
@@ -206,6 +223,10 @@ export default {
     cursorAnchor: {
       type: String,
       default: () => 'start' // like text-anchor: start, middle, end
+    },
+    cursorType: {
+      type: String,
+      default: 'bar' // line
     },
     drawIncompleteBucket: {
       type: Boolean,
@@ -238,6 +259,18 @@ export default {
     annotations: {
       type: Array,
       default: () => []
+    },
+    positiveYBg: {
+      type: String,
+      default: 'rgba(255,255,255, 0.6)'
+    },
+    appendDatapoint: {
+      type: Boolean,
+      default: true
+    },
+    strokeDasharray: {
+      type: String,
+      default: '1,0'
     }
   },
 
@@ -335,12 +368,13 @@ export default {
     },
     updatedDataset1() {
       if (this.dataset1.length > 0) {
-        const updated = _cloneDeep(this.dataset1)
         if (this.hasProjectionDataset) {
+          const updated = _cloneDeep(this.dataset1)
           const firstItem = _cloneDeep(this.projectionDataset[0])
           updated.push(firstItem)
           return updated
-        } else {
+        } else if (this.appendDatapoint) {
+          const updated = _cloneDeep(this.dataset1)
           const lastSecondItem = _cloneDeep(updated[updated.length - 2])
           const lastItem = _cloneDeep(updated[updated.length - 1])
           const hasItems = lastItem && lastSecondItem
@@ -356,6 +390,8 @@ export default {
           }
 
           return updated
+        } else {
+          return this.dataset1
         }
       }
       return []
@@ -378,6 +414,14 @@ export default {
         return updated
       }
       return []
+    },
+
+    yShades() {
+      return [{
+        start: this.y1?.domain()[1],
+        end: 0,
+        fill: this.positiveYBg
+      }]
     }
   },
 
@@ -445,29 +489,9 @@ export default {
     },
     highlightDomain(domain) {
       if (domain) {
-        this.$vis1Group
-          .selectAll('path')
-          .style('opacity', (d) => (d === domain ? 1 : 0.1))
-          .style('stroke-width', (d) =>
-            d === domain ? this.pathStrokeWidth + 1 : this.pathStrokeWidth
-          )
-
-        this.$projectionVisGroup
-          .selectAll('path')
-          .style('opacity', (d) => (d === domain ? 1 : 0.1))
-          .style('stroke-width', (d) =>
-            d === domain ? this.pathStrokeWidth + 1 : this.pathStrokeWidth
-          )
+        this.highlightPath(domain)
       } else {
-        this.$vis1Group
-          .selectAll('path')
-          .style('opacity', 0.9)
-          .style('stroke-width', this.pathStrokeWidth)
-
-        this.$projectionVisGroup
-          .selectAll('path')
-          .style('opacity', 0.9)
-          .style('stroke-width', this.pathStrokeWidth)
+        this.unHighlightPath()
       }
     },
     curveType(type) {
@@ -499,6 +523,36 @@ export default {
   },
 
   methods: {
+    unHighlightPath() {
+      this.$vis1Group
+        .selectAll('path')
+        .style('opacity', 0.9)
+        .style('stroke-width', (d) => {
+          const find = this.domains1.find((domain) => domain.id === d)
+          return find ? find.pathStrokeWidth : this.pathStrokeWidth
+        })
+
+      this.$projectionVisGroup
+        .selectAll('path')
+        .style('opacity', 0.9)
+        .style('stroke-width', this.pathStrokeWidth)
+    },
+    highlightPath(domain) {
+      this.$vis1Group
+        .selectAll('path')
+        .style('opacity', (d) => (d === domain ? 1 : 0.3))
+        .style('stroke-width', (d) =>
+          d === domain ? this.pathStrokeWidth + 1 : this.pathStrokeWidth
+        )
+
+      this.$projectionVisGroup
+        .selectAll('path')
+        .style('opacity', (d) => (d === domain ? 1 : 0.3))
+        .style('stroke-width', (d) =>
+          d === domain ? this.pathStrokeWidth + 1 : this.pathStrokeWidth
+        )
+    },
+
     updateAnnotations(annotations) {
       return annotations.map((d) => {
         let value = 0
@@ -569,7 +623,7 @@ export default {
       this.y2Range = [this.height, 0]
       this.x = scaleTime().range([0, this.width])
       this.y1 = this.y1Log
-        ? scaleSymlog().range(this.y1Range)
+        ? scaleSymlog().range(this.y1Range).nice()
         : scaleLinear().range(this.y1Range).nice()
       this.y2 = scaleLinear().range(this.y2Range).nice()
       this.z = scaleOrdinal()
@@ -620,6 +674,9 @@ export default {
         .attr('height', this.height)
 
       this.$cursorLineGroup = $svg.select('.cursor-line-group')
+      this.$cursorLineGroup
+        .style('clip-path', this.clipPathUrl)
+        .style('-webkit-clip-path', this.clipPathUrl)
       if (!this.$cursorRect) {
         this.$cursorRect = this.$cursorLineGroup.append('rect')
       }
@@ -631,14 +688,14 @@ export default {
       }
 
       // Events
-      this.$hoverGroup.on('touchmove mousemove', function () {
-        const date = self.getXAxisDateByMouse(this)
+      this.$hoverGroup.on('pointermove', function () {
+        const date = self.getXAxisDateByPointer(this)
         self.$emit('date-hover', this, date)
       })
-      $svg.on('mouseenter', () => {
+      $svg.on('pointerenter', () => {
         this.handleSvgEnter()
       })
-      $svg.on('mouseleave', () => {
+      $svg.on('pointerleave', () => {
         this.handleSvgLeave()
       })
       $svg.on('click', () => {
@@ -704,21 +761,15 @@ export default {
         .attr('width', (d) => this.x(d.end) - this.x(d.start))
         .attr('height', this.height)
 
-      const yShades =  [{
-        start: this.y1.domain()[1],
-        end: 0,
-        fill: 'rgba(255,255,255, 0.6)'
-      }]
-
       this.$yShadesGroup.selectAll('rect').remove()
       this.$yShadesGroup
         .selectAll('rect')
-        .data(yShades)
+        .data(this.yShades)
         .enter()
         .append('rect')
         .attr('y', (d) => this.y1(d.start))
         .attr('width', this.width)
-        .attr('height', (d) => this.y1(d.end) - this.y1(d.start))
+        .attr('height', (d) => Math.abs(this.y1(d.end) - this.y1(d.start)))
         .style('fill', (d) => d.fill)
 
       this.$vis1Group.selectAll('path').remove()
@@ -740,7 +791,7 @@ export default {
           .attr('class', (key) => `${key}-path`)
           .attr('d', this.vis1)
           .attr('stroke-opacity', 0)
-          .attr('fill', (d) => this.colours1[d.key])
+          .attr('fill', (d) => `${this.colours1[d.key]}ee`)
           .style('clip-path', this.clipPathUrl)
           .style('-webkit-clip-path', this.clipPathUrl)
           .style('pointer-events', 'auto')
@@ -750,19 +801,25 @@ export default {
           .append('path')
           .attr('class', (key) => `${key}-path`)
           .style('stroke', (key) => this.colours1[key])
-          .style('stroke-width', this.pathStrokeWidth)
+          .style('stroke-width', (d) => {
+            const find = this.domains1.find((domain) => domain.id === d)
+            return find ? find.pathStrokeWidth : this.pathStrokeWidth
+          })
           // .style('filter', 'url(#shadow)')
+          .style('stroke-dasharray', this.strokeDasharray)
           .style('fill', 'transparent')
           .style('opacity', 0.9)
           .style('clip-path', this.clipPathUrl)
           .style('-webkit-clip-path', this.clipPathUrl)
+          .style('pointer-events', 'auto')
           .attr('d', this.drawVis1Path)
       }
 
-      this.$vis1Group.selectAll('path').on('mousemove touchmove', function (d) {
-        const date = self.getXAxisDateByMouse(this)
+      // TODO: remove this since it's been replaced by tracking the dots
+      this.$vis1Group.selectAll('path').on('pointermove', function (d) {
+        const date = self.getXAxisDateByPointer(this)
         self.$emit('date-hover', this, date)
-        self.$emit('domain-hover', d)
+        self.$emit('domain-hover', d.key)
       })
 
       if (this.showY2) {
@@ -792,7 +849,7 @@ export default {
       this.$xShadesGroup
         .selectAll('rect')
         .attr('x', (d) => this.x(d.start))
-        .attr('width', (d) => this.x(d.end) - this.x(d.start))
+        .attr('width', (d) => Math.abs(this.x(d.end) - this.x(d.start)))
     },
 
     drawProjectionLines() {
@@ -804,7 +861,10 @@ export default {
         .append('path')
         .attr('class', (key) => `${key}-path`)
         .style('stroke', (key) => this.colours1[key])
-        .style('stroke-width', this.pathStrokeWidth)
+        .style('stroke-width', (d) => {
+            const find = this.domains1.find((domain) => domain.id === d)
+            return find ? find.pathStrokeWidth : this.pathStrokeWidth
+          })
         // .style('filter', 'url(#shadow)')
         .style('fill', 'transparent')
         .style('opacity', 0.9)
@@ -815,8 +875,8 @@ export default {
 
       this.$projectionVisGroup
         .selectAll('path')
-        .on('mousemove touchmove', function (d) {
-          const date = self.getXAxisDateByMouse(this)
+        .on('pointermove', function (d) {
+          const date = self.getXAxisDateByPointer(this)
           self.$emit('date-hover', this, date)
           self.$emit('domain-hover', d)
         })
@@ -851,16 +911,20 @@ export default {
     },
 
     drawXAxis(g) {
-      g.call(this.xAxis)
-      g.selectAll('.x-axis .tick text').remove()
+      if (this.xTickLine) {
+        g.call(this.xAxis)
+        g.selectAll('.x-axis .tick text').remove()
+      }
     },
 
     drawLeftYAxis(g) {
-      g.call(this.yAxisLeft)
-      g.selectAll('.y-axis .tick text').remove()
-      g.selectAll('.tick line').attr('class', (d) =>
-        d === 0 && this.yMinComputed !== 0 ? 'base' : ''
-      )
+      if (this.y1TickLine) {
+        g.call(this.yAxisLeft)
+        g.selectAll('.y-axis .tick text').remove()
+        g.selectAll('.tick line').attr('class', (d) =>
+          d === 0 && this.yMinComputed !== 0 ? 'base' : ''
+        )
+      }
     },
 
     drawLeftYAxisText(g) {
@@ -875,7 +939,10 @@ export default {
         })
         .attr('dx', 5)
         .attr('dy', -2)
-        .attr('opacity', this.y1TickText ? 1 : 0)
+        .attr('opacity', (d, i) => {
+          if (i === 0 && this.y1FirstTickText) return 1
+          return this.y1TickText ? 1 : 0
+        })
     },
 
     drawRightYAxisText(g) {
@@ -885,7 +952,10 @@ export default {
         .text((t) => `${t}${this.y2AxisUnit}`)
         .attr('dx', -5)
         .attr('dy', -2)
-        .attr('opacity', this.y1TickText ? 1 : 0)
+        .attr('opacity', (d, i) => {
+          if (i === 0 && this.y1FirstTickText) return 1
+          return this.y1TickText ? 1 : 0
+        })
     },
 
     drawProjectionVisPath(key) {
@@ -937,6 +1007,7 @@ export default {
     },
 
     drawCursor(date) {
+      const self = this
       const xDate = this.x(date)
       let nextDate = null
       const dataPoint = this.withProjectionDataset.find((d, i) => {
@@ -952,14 +1023,6 @@ export default {
       const nextXDate = this.x(nextDate)
       const bandwidth = Math.abs(nextXDate - xDate)
 
-      // Draw line
-      this.$cursorLine
-        .attr('x1', xDate)
-        .attr('y1', 0)
-        .attr('x2', xDate)
-        .attr('y2', this.height)
-        .style('stroke', 'transparent')
-
       if (this.showCursorDots) {
         if (dataPoint) {
           const dots = this.$cursorDotsGroup
@@ -971,35 +1034,64 @@ export default {
             .merge(dots)
             .attr('cx', this.x(dataPoint.displayTime || dataPoint.date))
             .attr('cy', (key) => this.y1(dataPoint[key]))
-            .attr('r', 4)
+            .attr('r', (key) => {
+              const hasValue = this.y1(dataPoint[key]) || this.y1(dataPoint[key]) === 0
+              return hasValue ? 4 : 0
+            })
             .attr('fill', (key) => this.colours1[key])
+            .on('pointermove', function (d) {
+              select(this).attr('r', 6)
+              self.highlightPath(d)
+              self.$emit('domain-hover', d)              
+            })
+            .on('pointerleave', function() {
+              self.$cursorDotsGroup.selectAll('circle').attr('r', (key) => {
+                const hasValue = self.y1(dataPoint[key]) || self.y1(dataPoint[key]) === 0
+                return hasValue ? 3 : 0
+              })
+              self.unHighlightPath()
+              self.$emit('domain-hover', null)
+            })
             .exit()
             .remove()
+          
         } else {
           this.$cursorDotsGroup.selectAll('circle').remove()
         }
       }
 
       // Draw bucket
-      if (bandwidth) {
-        let xPos = xDate
-        // if (this.cursorAnchor === 'middle') {
-        //   xPos = xDate - bandwidth / 2
-        // }
-        this.$cursorRect
-          .attr('x', xPos)
-          .attr('width', bandwidth)
-          .attr('height', this.height)
+      if (this.cursorType === 'bar') {
+        if (bandwidth) {
+          let xPos = xDate
+          // if (this.cursorAnchor === 'middle') {
+          //   xPos = xDate - bandwidth / 2
+          // }
+          this.$cursorRect
+            .attr('x', xPos)
+            .attr('width', bandwidth)
+            .attr('height', this.height)
+        }
+      } else if (this.cursorType === 'line') {
+        // Draw line
+        this.$cursorLine
+          .attr('x1', xDate)
+          .attr('y1', 0)
+          .attr('x2', xDate)
+          .attr('y2', this.height)
+          .style('stroke', '#c74523')
       } else {
         this.clearCursorLine()
       }
+      
     },
 
     clearCursorLine() {
+      this.$cursorLine.style('stroke', 'transparent')
       this.$cursorRect.attr('width', 0).attr('height', 0)
     },
 
-    getXAxisDateByMouse(evt) {
+    getXAxisDateByPointer(evt) {
       const m = mouse(evt)
       const date = this.x.invert(m[0])
       return date
@@ -1009,6 +1101,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.multi-line-vis {
+  line-height: 0;
+}
 .multi-line-vis :deep(svg) {
   .y-axis-left-text .tick text {
     color: #000;

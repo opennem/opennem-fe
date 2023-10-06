@@ -54,6 +54,7 @@ import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 
 import * as OPTIONS from '@/constants/chart-options.js'
+import { GROUP_DETAILED } from '@/constants/energy-fuel-techs'
 import * as SI from '@/constants/si.js'
 import ColumnVis from '~/components/Vis/Column.vue'
 export default {
@@ -137,7 +138,7 @@ export default {
     },
     domains() {
       const property =
-        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+        this.fuelTechGroupName === GROUP_DETAILED ? 'fuelTech' : 'group'
       const domains = this.powerEnergyDomains
       const hidden = this.hiddenFuelTechs
       return domains.filter((d) => !_includes(hidden, d[property]))
@@ -216,7 +217,7 @@ export default {
     highlightId() {
       const domain = this.highlightDomain
       const property =
-        this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+        this.fuelTechGroupName === GROUP_DETAILED ? 'fuelTech' : 'group'
       const find = this.domains.find((d) => d[property] === domain)
       return find ? find.id : ''
     }

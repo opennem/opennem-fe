@@ -2,6 +2,7 @@ import subDays from 'date-fns/subDays'
 import subYears from 'date-fns/subYears'
 
 import * as rangesJs from '~/constants/ranges.js'
+import { INTERVAL_5MIN, INTERVAL_30MIN } from '~/constants/interval-filters.js'
 
 function getYearPaths(prepend, regionId, oneYearAgo) {
   const today = new Date()
@@ -25,7 +26,7 @@ function getYearPaths(prepend, regionId, oneYearAgo) {
 }
 
 export default {
-  getEnergyUrls(region, range) {
+  getEnergyUrls(region, range, interval) {
     const prepend =
       region === 'wem' || region === 'nem' || region === 'au' ? '' : '/NEM'
     const regionId = region.toUpperCase()
@@ -39,10 +40,19 @@ export default {
         urls.push(`v3/stats/au${prepend}/${regionId}/power/7d.json`)
         break
 
+      case rangesJs.RANGE_14D:
+      case rangesJs.RANGE_28D:
+        urls.push(`v3/stats/au${prepend}/${regionId}/power/30d.json`)
+        break
+
       case rangesJs.RANGE_30D:
-        const thirtyDaysAgo = subDays(new Date(), 30)
-        oneYearAgo = thirtyDaysAgo.getFullYear()
-        urls = getYearPaths(prepend, regionId, oneYearAgo)
+        if (interval === INTERVAL_5MIN || interval === INTERVAL_30MIN) {
+          urls.push(`v3/stats/au${prepend}/${regionId}/power/30d.json`)
+        } else {
+          const thirtyDaysAgo = subDays(new Date(), 30)
+          oneYearAgo = thirtyDaysAgo.getFullYear()
+          urls = getYearPaths(prepend, regionId, oneYearAgo)
+        }
         break
 
       case rangesJs.RANGE_1Y:
@@ -53,6 +63,23 @@ export default {
       case rangesJs.RANGE_ALL:
       case rangesJs.RANGE_ALL_12MTH_ROLLING:
         urls.push(`v3/stats/au${prepend}/${regionId}/energy/all.json`)
+        break
+      default:
+    }
+    return urls
+  },
+
+  getTimeOfDayUrls(region, range) {
+    const prepend =
+      region === 'wem' || region === 'nem' || region === 'au' ? '' : '/NEM'
+    const regionId = region.toUpperCase()
+    let urls = []
+
+    switch (range) {
+      case rangesJs.RANGE_7D:
+      case rangesJs.RANGE_14D:
+      case rangesJs.RANGE_28D:
+        urls.push(`v3/stats/au${prepend}/${regionId}/power/30d.json`)
         break
       default:
     }

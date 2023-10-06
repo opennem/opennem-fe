@@ -6,6 +6,7 @@ export const state = () => ({
   errorHeader: '',
   errorMessage: '',
   query: null,
+  dashboardView: 'discrete-time', // 'time-of-day'
   facilitiesQuery: null,
   showFeatureToggle: false,
   siteAnnouncement: process.env.SITEWIDE_ANNOUNCEMENT
@@ -22,6 +23,7 @@ export const getters = {
   errorHeader: (state) => state.errorHeader,
   errorMessage: (state) => state.errorMessage,
   query: (state) => state.query,
+  dashboardView: (state) => state.dashboardView,
   facilitiesQuery: (state) => state.facilitiesQuery,
   showFeatureToggle: (state) => state.showFeatureToggle,
   siteAnnouncement: (state) => state.siteAnnouncement
@@ -48,6 +50,9 @@ export const mutations = {
   },
   query(state, query) {
     state.query = query
+  },
+  dashboardView(state, dashboardView) {
+    state.dashboardView = dashboardView
   },
   facilitiesQuery(state, query) {
     state.facilitiesQuery = query

@@ -86,6 +86,7 @@ import { mapGetters } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 
 import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
+import { GROUP_DETAILED } from '@/constants/energy-fuel-techs'
 
 import PowerEnergyChart from '@/components/Charts/PowerEnergyChart'
 import EmissionsChart from '@/components/Charts/EmissionsChart'
@@ -154,7 +155,7 @@ export default {
       return this.percentContributionTo === 'generation'
     },
     propName() {
-      return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+      return this.fuelTechGroupName === GROUP_DETAILED ? 'fuelTech' : 'group'
     },
     incompleteIntervals() {
       return GetIncompleteIntervals({

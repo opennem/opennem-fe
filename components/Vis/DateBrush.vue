@@ -62,6 +62,11 @@ export default {
       default: () => null
     },
 
+    marginLeft: {
+      type: Number,
+      default: () => 10
+    },
+
     interval: {
       type: String,
       default: ''
@@ -97,10 +102,10 @@ export default {
       return `url(#${this.id}-clip)`
     },
     axisTransform() {
-      return `translate(${this.margin.left}, 0)`
+      return `translate(${this.marginLeft}, 0)`
     },
     brushTransform() {
-      return `translate(${this.margin.left}, 0)`
+      return `translate(${this.marginLeft}, 0)`
     },
     xExtent() {
       return extent(this.updatedDataset, (d) => new Date(d.date))
@@ -181,7 +186,7 @@ export default {
 
     setupWidthHeight() {
       const chartWidth = this.$el.offsetWidth
-      const width = chartWidth - this.margin.left - this.margin.right
+      const width = chartWidth - this.marginLeft - this.margin.right
       const height = this.svgHeight - this.margin.top - this.margin.bottom
 
       this.svgWidth = chartWidth

@@ -156,7 +156,7 @@
     />
     <Divider
       v-if="allowResize"    
-      style="transform: translateY(-14px); margin-left: 0.5rem;"
+      style="transform: translateY(-2px); margin-left: 0.5rem;"
       :allow-x="false" 
       :show="showDivider"
       @dragging="(d) => dragging = d" 
@@ -417,16 +417,16 @@ export default {
 }
 .price-vis {
   position: relative;
-  top: -7px;
+  top: -1px;
 }
 .price-neg-vis {
   position: relative;
-  top: -14px;
+  top: -2px;
 }
 
 .brush-vis {
   position: relative;
-  top: -14px;
+  top: -2px;
 }
 :deep(.price-vis .y-axis-guide-group .domain) {
   fill: rgba(255, 255, 255, 0.1);

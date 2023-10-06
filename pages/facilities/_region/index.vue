@@ -79,7 +79,7 @@ import _includes from 'lodash.includes'
 import _orderBy from 'lodash.orderby'
 import _cloneDeep from 'lodash.clonedeep'
 
-import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-default.js'
+import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-detailed.js'
 import {
   FACILITY_OPERATING,
   isValidFacilityStatus
@@ -597,8 +597,8 @@ export default {
       width: 50%;
       position: fixed;
       right: 0;
-      top: 25px;
-      z-index: 99;
+      top: 53px;
+      z-index: 9999;
       padding: 0 1rem 0 0;
     }
   }

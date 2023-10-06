@@ -1,4 +1,4 @@
-import * as FT from '@/constants/energy-fuel-techs/group-default.js'
+import * as FT from '@/constants/energy-fuel-techs/group-detailed.js'
 
 function calAverage(isEnergyType, isWemOrAu, dataset) {
   const totalEmissions = dataset.reduce(
@@ -123,7 +123,7 @@ export default function({
     
     const isValidEI = Number.isFinite(ei)
 
-    if ((ei < 0 || ei > 1500) || !isValidEI) {
+    if (ei < 0 || ei > 1500) {
       console.error(`EI out of range: ${ei}`)
     }
 

@@ -145,7 +145,7 @@ import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 
 import AxisTimeFormats from '@/services/axisTimeFormats.js'
-import * as FT from '@/constants/energy-fuel-techs/group-default.js'
+import * as FT from '@/constants/energy-fuel-techs/group-detailed.js'
 import * as OPTIONS from '@/constants/chart-options.js'
 import * as SI from '@/constants/si.js'
 import { EMISSIONS } from '@/constants/data-types.js'

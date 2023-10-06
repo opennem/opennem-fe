@@ -7,7 +7,19 @@
     />
 
     <div v-else>
+      <div v-if="isTimeOfDayView">
+        <DatesDisplayToD
+          :is-hovering="hoverOn"
+          :hovered-time="timeOfDayHoverTime"
+          :start-date="startDate"
+          :end-date="endDate"
+          :range="range"
+          :interval="interval"
+          :timezone-string="isEnergyType ? '' : regionTimezoneString"
+        />
+      </div>
       <dates-display
+        v-else
         :is-hovering="hoverOn"
         :hovered-date="hoveredDate"
         :focus-on="focusOn"
@@ -251,9 +263,22 @@
 
       <div 
         v-if="loadsOrder.length > 0" 
-        class="summary-column-headers">
+        class="summary-column-headers line-row"
+        @touchstart="() => handleTouchstart('chartEnergyNetLine')"
+        @touchend="handleTouchend"
+        @click.exact="() => handleTotalLineRowClicked('chartEnergyNetLine')"
+        @click.shift.exact="() => handleLineRowShiftClicked('chartEnergyNetLine')"
+      >
         <div class="summary-row last-row">
-          <div class="summary-col-label">Net</div>
+          <div class="summary-col-label">
+            <div
+              :class="{
+                on: chartEnergyNetLine
+              }"
+              class="line-icon net"
+            />
+            Net
+          </div>
 
           <div 
             class="summary-col-external-link-icon" 
@@ -300,11 +325,11 @@
       </div>
 
       <div
-        class="summary-column-headers renewable-row"
-        @touchstart="handleTouchstart"
+        class="summary-column-headers line-row"
+        @touchstart="() => handleTouchstart(chartEnergyRenewablesLine)"
         @touchend="handleTouchend"
-        @click.exact="handleRenewableRowClicked"
-        @click.shift.exact="handleRenewableRowShiftClicked"
+        @click.exact="() => handleTotalLineRowClicked('chartEnergyRenewablesLine')"
+        @click.shift.exact="() => handleLineRowShiftClicked('chartEnergyRenewablesLine')"
       >
         <div class="summary-row last-row">
           <div class="summary-col-label">
@@ -313,7 +338,7 @@
                 on: chartEnergyRenewablesLine,
                 'alt-colour': useAltRenewablesLineColour
               }"
-              class="renewable-line"
+              class="line-icon"
             />
             Renewables
           </div>
@@ -386,13 +411,17 @@ import differenceInMinutes from 'date-fns/differenceInMinutes'
 import { energy_sum } from '@opennem/energy-tools'
 
 import * as OPTIONS from '@/constants/chart-options.js'
+import { GROUP_DETAILED } from '@/constants/energy-fuel-techs'
 import EventBus from '@/plugins/eventBus'
+import { getTimeLabel } from '@/data/transform/time-of-day' 
+import groupDataset from '@/data/parse/region-energy/group'
 import Domain from '~/services/Domain.js'
 import GroupSelector from '~/components/ui/FuelTechGroupSelector'
 import ColumnSelector from '~/components/ui/SummaryColumnSelector'
 import ExportLegend from '@/components/Energy/Export/Legend'
 import Items from './Items'
 import DatesDisplay from './DatesDisplay'
+import DatesDisplayToD from './DatesDisplayToD'
 
 export default {
   components: {
@@ -400,6 +429,7 @@ export default {
     ColumnSelector,
     Items,
     DatesDisplay,
+    DatesDisplayToD,
     ExportLegend
   },
 
@@ -516,14 +546,19 @@ export default {
 
   computed: {
     ...mapGetters({
-      datasetFull: 'regionEnergy/datasetFull',
+      datasetFlat: 'regionEnergy/datasetFlat',
       changeSinceDataset: 'regionEnergy/changeSinceDataset',
+      domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
       domainPowerEnergyGrouped: 'regionEnergy/domainPowerEnergyGrouped',
+      domainEmissionsGrouped: 'regionEnergy/domainEmissionsGrouped',
+      domainMarketValueGrouped: 'regionEnergy/domainMarketValueGrouped',
       regionTimezoneString: 'regionEnergy/regionTimezoneString',
       isEnergyType: 'regionEnergy/isEnergyType',
 
       chartEnergyRenewablesLine:
         'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+      chartEnergyNetLine:
+        'chartOptionsPowerEnergy/chartEnergyNetLine',
 
       chartType: 'chartOptionsPowerEnergy/chartType',
       chartEnergyYAxis: 'chartOptionsPowerEnergy/chartEnergyYAxis',
@@ -550,8 +585,19 @@ export default {
 
       emissionIntensityData: 'energy/emissions/emissionIntensityData',
       averageEmissionIntensity: 'energy/emissions/averageEmissionIntensity',
-      sumEmissionsMinusLoads: 'energy/emissions/sumEmissionsMinusLoads'
+      sumEmissionsMinusLoads: 'energy/emissions/sumEmissionsMinusLoads',
+
+      dashboardView: 'app/dashboardView',
+      averagesDataset: 'timeOfDay/averagesDataset'
     }),
+
+    isTimeOfDayView() {
+      return this.dashboardView === 'time-of-day'
+    },
+
+    timeOfDayHoverTime() {
+      return getTimeLabel(this.hoverDate)
+    },
 
     chartUnit() {
       return this.isEnergy ? this.chartEnergyUnit : this.chartPowerUnit
@@ -588,7 +634,7 @@ export default {
     },
 
     propRef() {
-      return this.fuelTechGroupName === 'Default' ? 'fuelTech' : 'group'
+      return this.fuelTechGroupName === GROUP_DETAILED ? 'fuelTech' : 'group'
     },
 
     percentContributionTo() {
@@ -863,7 +909,6 @@ export default {
 
   methods: {
     calculateSummary(data) {
-      // console.log('Calculate summary')
       if (data.length > 0) {
         const isGeneration = this.percentContributionTo === 'generation'
         let totalEnergy = 0
@@ -952,16 +997,23 @@ export default {
         const end = data[data.length - 1]
         const startDate = start.date
         const endDate = end.date
-        const fullDatasetFiltered = this.datasetFull.filter(
+        const bucketSizeMins = differenceInMinutes(endDate, startDate) + 1
+
+        const datasetWithUpdatedSummary = this.datasetFlat.filter(
           (df) => df.time >= start.time && df.time <= end.time
         )
-        const bucketSizeMins = differenceInMinutes(endDate, startDate) + 1
+        groupDataset({
+          dataset: datasetWithUpdatedSummary,
+          domainPowerEnergyGrouped: this.domainPowerEnergyGrouped,
+          domainEmissionsGrouped: this.domainEmissionsGrouped,
+          domainMarketValueGrouped: this.domainMarketValueGrouped
+        })
 
         // Calculate Energy
         this.energyDomains.forEach((ft) => {
           const category = ft.category
-          const fullDomainData = fullDatasetFiltered.map((fd) => fd[ft.id])
-          const fullDomainDataMinusHidden = fullDatasetFiltered.map((fd) =>
+          const fullDomainData = datasetWithUpdatedSummary.map((fd) => fd[ft.id])
+          const fullDomainDataMinusHidden = datasetWithUpdatedSummary.map((fd) =>
             _includes(this.hiddenFuelTechs, ft[this.propRef]) ? 0 : fd[ft.id]
           )
 
@@ -1224,13 +1276,17 @@ export default {
         this.summary._averageEnergy = average
         this.summary._averageTemperature =
           totalTemperatureWithoutNulls / temperatureWithoutNulls.length
+
         this.$emit('summary-update', this.summary)
       }
     },
 
-    calculatePointSummary(data, marketValueData) {
+    calculatePointSummary({ data, marketValueData }) {
+      let totalDemand = 0
       let totalSources = 0
       let totalGeneration = 0
+      let totalRenewables = 0
+      let totalEnergyForPercentageCalculation = 0
       let totalLoads = 0
       let totalPriceMarketValue = 0
       let hasLoadValue = false,
@@ -1240,9 +1296,25 @@ export default {
       this.pointSummaryLoads = {}
 
       if (!_isEmpty(this.pointSummary)) {
+        // if (this.isTimeOfDayView) {
+        //   this.domainPowerEnergy.forEach((ft) => {
+        //     if (ft.renewable) {
+        //       totalRenewables += data[ft.id] || 0
+        //     }
+        //   })
+        // }
+
         this.energyDomains.forEach((ft) => {
           const category = ft.category
           const value = this.pointSummary[ft.id]
+
+          if (category !== 'load' || _includes(ft.id, 'exports')) {
+            totalEnergyForPercentageCalculation += value || 0
+          }
+
+          if (ft.renewable) {
+            totalRenewables += data[ft.id] || 0
+          }
 
           if (category === 'source') {
             if (value || value === 0) {
@@ -1260,6 +1332,8 @@ export default {
             this.pointSummaryLoads[ft.id] = value
             totalLoads += value
           }
+
+          totalDemand += value || 0
         })
 
         if (!hasSourceValue) {
@@ -1331,15 +1405,29 @@ export default {
         }
         this.pointSummary._totalAverageValue = totalAverageValue
       }
+      this.pointSummary._totalEnergyForPercentageCalculation =
+        totalEnergyForPercentageCalculation
       this.pointSummarySources._total = totalSources
       this.pointSummarySources._totalGeneration = totalGeneration
       this.pointSummaryLoads._total = totalLoads
+
+      if (!this.pointSummary._total) {
+        this.pointSummary._total = totalDemand
+      }
+      if (!this.pointSummary._totalRenewables) {
+        this.pointSummary._totalRenewables = totalRenewables
+      }
     },
 
     updatePointSummary(date) {
       if (!date) return
 
-      const dataFound = this.dataset.find((d) => d.time === date.getTime())
+      // const dataFound = this.dataset.find((d) => d.time === date.getTime())
+      // const todDataFound = this.averagesDataset.find((d) => d.time === date.getTime())
+
+      const dataFound = this.isTimeOfDayView
+        ? this.averagesDataset.find((d) => d.time === date.getTime())
+        : this.dataset.find((d) => d.time === date.getTime())
 
       this.hoveredTemperature =
         dataFound && dataFound[this.temperatureId]
@@ -1362,7 +1450,10 @@ export default {
         // }
       }
 
-      this.calculatePointSummary(point, _cloneDeep(dataFound))
+      this.calculatePointSummary({
+        data: point,
+        marketValueData: _cloneDeep(dataFound)
+      })
     },
 
     handleSourcesOrderUpdate(newSourceOrder) {
@@ -1398,7 +1489,8 @@ export default {
       if (
         this.sourcesOrder.length === sourcesHiddenLength &&
         this.loadsOrder.length === loadsHiddenLength &&
-        !this.chartEnergyRenewablesLine
+        !this.chartEnergyRenewablesLine &&
+        !this.chartEnergyNetLine
       ) {
         this.hiddenSources = []
         this.hiddenLoads = []
@@ -1411,7 +1503,7 @@ export default {
     handleSourceFuelTechsHidden(hidden, hideOthers, onlyFt) {
       this.hiddenSources = hidden
       if (hideOthers) {
-        if (this.fuelTechGroupName === 'Default') {
+        if (this.fuelTechGroupName === GROUP_DETAILED) {
           const hiddenSources = Domain.getAllDomainObjs().filter(
             (d) => d.category === 'source' && d.fuelTech !== onlyFt.fuelTech
           )
@@ -1434,7 +1526,7 @@ export default {
     handleLoadFuelTechsHidden(hidden, hideOthers, onlyFt) {
       this.hiddenLoads = hidden
       if (hideOthers) {
-        if (this.fuelTechGroupName === 'Default') {
+        if (this.fuelTechGroupName === GROUP_DETAILED) {
           const hiddenSources = Domain.getAllDomainObjs().filter(
             (d) => d.category === 'source'
           )
@@ -1458,9 +1550,9 @@ export default {
       }
     },
 
-    handleTouchstart() {
+    handleTouchstart(lineDomain) {
       this.mousedownDelay = setTimeout(() => {
-        this.handleRenewableRowShiftClicked()
+        this.handleLineRowShiftClicked(lineDomain)
       }, this.longPress)
     },
     handleTouchend() {
@@ -1471,17 +1563,17 @@ export default {
       this.mousedownDelay = null
     },
 
-    handleRenewableRowClicked() {
-      const rowToggle = !this.chartEnergyRenewablesLine
+    handleTotalLineRowClicked(lineDomain) {
+      const rowToggle = !this[lineDomain]
       this.$store.commit(
-        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+        `chartOptionsPowerEnergy/${lineDomain}`,
         rowToggle
       )
       this.emitHiddenFuelTechs()
     },
 
-    handleRenewableRowShiftClicked() {
-      if (this.fuelTechGroupName === 'Default') {
+    handleLineRowShiftClicked(lineDomain) {
+      if (this.fuelTechGroupName === GROUP_DETAILED) {
         const hiddenSources = Domain.getAllDomainObjs().filter(
           (d) => d.category === 'source'
         )
@@ -1499,7 +1591,16 @@ export default {
       }
 
       this.$store.commit(
-        'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+        `chartOptionsPowerEnergy/chartEnergyRenewablesLine`,
+        false
+      )
+      this.$store.commit(
+        `chartOptionsPowerEnergy/chartEnergyNetLine`,
+        false
+      )
+
+      this.$store.commit(
+        `chartOptionsPowerEnergy/${lineDomain}`,
         true
       )
       this.emitHiddenFuelTechs()
@@ -1550,7 +1651,7 @@ export default {
   }
 }
 
-.renewable-row {
+.line-row {
   cursor: pointer;
   &:hover {
     background-color: rgba(255, 255, 255, 0.7);
@@ -1561,7 +1662,7 @@ export default {
     align-items: center;
   }
 
-  .renewable-line {
+  .line-icon {
     width: 15px;
     height: 3px;
     background: #ddd;
@@ -1569,6 +1670,10 @@ export default {
 
     &.on {
       background: #52bca3;
+
+      &.net {
+        background: #e34a33;
+      }
 
       &.alt-colour {
         background: #e34a33;

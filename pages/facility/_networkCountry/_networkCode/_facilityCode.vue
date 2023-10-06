@@ -361,7 +361,7 @@ import isBefore from 'date-fns/isBefore'
 import isAfter from 'date-fns/isAfter'
 import addYears from 'date-fns/addYears'
 
-import * as FT from '~/constants/energy-fuel-techs/group-default.js'
+import * as FT from '~/constants/energy-fuel-techs/group-detailed.js'
 import * as SI from '@/constants/si'
 import * as OPTIONS from '@/constants/chart-options.js'
 import {

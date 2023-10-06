@@ -2,19 +2,11 @@
   <header>
     <time v-if="isHovering">
       {{
-        hoveredDate
-          | customFormatDate({ range, interval, showIntervalRange: true })
+        hoveredTime
       }}
     </time>
 
-    <time v-if="!isHovering && focusOn">
-      {{
-        focusDate
-          | customFormatDate({ range, interval, showIntervalRange: true })
-      }}
-    </time>
-
-    <span v-if="!isHovering && !focusOn">
+    <span v-if="!isHovering">
       <time>
         {{ startDate | customFormatDate({ range, interval, isStart: true }) }}
       </time>
@@ -40,10 +32,7 @@ export default {
       type: Boolean,
       default: () => false
     },
-    focusOn: {
-      type: Boolean,
-      default: () => false
-    },
+    
     startDate: {
       type: Number,
       default: () => 0
@@ -52,14 +41,11 @@ export default {
       type: Number,
       default: () => 0
     },
-    hoveredDate: {
-      type: Number,
-      default: () => 0
+    hoveredTime: {
+      type: String,
+      default: ''
     },
-    focusDate: {
-      type: Number,
-      default: () => 0
-    },
+    
     range: {
       type: String,
       default: () => ''
