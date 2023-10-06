@@ -280,12 +280,10 @@ export default {
     }
   },
 
-  watch: {
-    allDomains(val) {
-      const filtered = this.datasets.filter(d => d.id === '_total' || d.id === '_totalRenewables')
-      // this.selectedToDs = filtered
-    },
-    
+  watch: {  
+    fuelTechGroupName() {
+      this.setSelectedToDs([])
+    }, 
     currentDataset: {
       immediate: true,
       handler(val) {
@@ -325,11 +323,6 @@ export default {
     this.secondTickFormat = () => ''
 
     this.reassignSelectedToDs()
-  },
-
-  mounted() {
-    const filtered = this.datasets.filter(d => d.id === '_total' || d.id === '_totalRenewables')
-    // this.selectedToDs = filtered
   },
 
   methods: {
