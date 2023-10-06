@@ -65,7 +65,7 @@ export default {
 <style lang="scss" scoped>
 header {
   text-align: right;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 300;
   color: #000;
   padding-bottom: 1rem / 5;
