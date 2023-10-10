@@ -328,6 +328,19 @@ export default {
   created() {
     this.setRange(RANGE_3D)
     this.setInterval(INTERVAL_30MIN)
+
+    this.doUpdateXTicks({
+      range: this.range,
+      interval: this.interval,
+      isZoomed: false,
+      filterPeriod: this.filterPeriod
+    })
+    this.doUpdateTickFormats({
+      range: this.range,
+      interval: this.interval,
+      filterPeriod: this.filterPeriod
+    })
+    
     this.getFacility()
   },
 
@@ -345,7 +358,8 @@ export default {
       doGetStationStats: 'facility/doGetStationStats',
 
       doUpdateXGuides: 'visInteract/doUpdateXGuides',
-      doUpdateXTicks: 'visInteract/doUpdateXTicks'
+      doUpdateXTicks: 'visInteract/doUpdateXTicks',
+      doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
     }),
 
     async getFacility() {
@@ -437,7 +451,7 @@ export default {
   right: 0;
   bottom: 0;
   margin-left: 0;
-  z-index: 100;
+  z-index: 10000;
   padding: 2rem 2rem 2rem 20px;
   border-radius: 10px;
 

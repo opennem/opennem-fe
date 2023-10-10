@@ -370,9 +370,11 @@ export default {
         filterPeriod: period
       })
     },
+
     fuelTechGroupName(groupName) {
       this.doUpdateDatasetByGroup({ groupName })
     },
+
     currentDataset(dataset) {
       if (dataset.length > 0) {
         this.doUpdateXGuides({
@@ -482,6 +484,7 @@ export default {
       doSetChartEnergyUnitPrefix:
         'chartOptionsPowerEnergy/doSetChartEnergyUnitPrefix'
     }),
+
     ...mapMutations({
       setCompareDifference: 'compareDifference',
       setRange: 'range',
