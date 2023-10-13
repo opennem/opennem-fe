@@ -237,8 +237,12 @@ export default {
 
     hoverValue() {
       if (this.hoverData) {
+        // console.log(this.hoverData.time)
+        const emissions = this.hoverData._totalEmissions?.toFixed(4)
+        const powerEnergy = this.hoverData._totalPowerEnergy?.toFixed(2)
+        const intensity = this.hoverData._emissionIntensity?.toFixed(2)
         console.log(
-          `emissions: ${this.hoverData._totalEmissions}, power/energy: ${this.hoverData._totalPowerEnergy}, intensity: ${this.hoverData._emissionIntensity}`
+          `${this.hoverData.time} emissions: ${emissions}, power/energy: ${powerEnergy}, intensity: ${intensity}`
         )
       }
       return this.hoverData ? this.hoverData._emissionIntensity : null
