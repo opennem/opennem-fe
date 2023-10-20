@@ -36,7 +36,7 @@
 
   .chart-title {
     font-size: 11px;
-    user-select: none;
+    // user-select: none;
     padding-left: 10px;
     height: 45px;
 
@@ -207,9 +207,8 @@
 
 .summary-list {
   .item {
-    // cursor: move;
     cursor: pointer;
-    user-select: none;
+    // user-select: none;
 
     &.drag-placeholder {
       opacity: 0.1;

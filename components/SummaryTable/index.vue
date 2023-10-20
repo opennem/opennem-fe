@@ -865,6 +865,9 @@ export default {
         this.updatePointSummary(this.focusDate)
       }
     },
+    focusDate() {
+      this.handlePointCopy()
+    },
     hiddenFuelTechs(updated) {
       this.calculateSummary(this.dataset)
     },
@@ -1626,6 +1629,36 @@ export default {
 
     handleDomainClick(domain) {
       this.$emit('domain-click', domain)
+    },
+
+    handlePointCopy() {
+      let tableText = `fuelTech,power/energy,emissions,intensity\n`
+      const domains = _cloneDeep(this.domainPowerEnergy).reverse()
+      const format = (val, p = 2) => val ? val.toFixed(p) : 0
+      domains.forEach((d) => {
+        // console.log(d.id, this.pointSummary[d.id])
+        const emissionsId = this.isEnergyType
+          ? d.id.replace('.energy', '.emissions')
+          : d.id.replace('.power', '.emissions')
+        // console.log(emissionsId, this.pointSummary[emissionsId])
+        const powerenergy = this.pointSummary[d.id]
+        const emissionsVolume = this.pointSummary[emissionsId] || 0
+        let ei = emissionsVolume ? emissionsVolume / Math.abs(powerenergy) : null
+        if (!this.isEnergyType) {
+          ei = ei * 1000 * 12
+        }
+        tableText += `${d.fuelTech},${format(powerenergy)},${format(emissionsVolume)},${format(ei)}\n`
+      })
+      console.log(tableText)
+      const copyContent = async () => {
+        try {
+          await navigator.clipboard.writeText(tableText);
+          console.log('Content copied to clipboard');
+        } catch (err) {
+          console.error('Failed to copy: ', err);
+        }
+      }
+      copyContent()
     }
   }
 }
@@ -1686,7 +1719,7 @@ export default {
   .summary-row {
     font-family: $header-font-family;
     font-weight: 700;
-    user-select: none;
+    // user-select: none;
   }
 }
 

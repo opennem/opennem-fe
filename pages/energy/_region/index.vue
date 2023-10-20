@@ -670,7 +670,7 @@ export default {
 $breakpoint: 769px;
 
 .vis-table-container {
-  user-select: none;
+  // user-select: none;
   transition: all 1s ease;
 }
 .dragging {
