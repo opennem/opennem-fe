@@ -164,7 +164,7 @@ export default {
 
 .column-selector-wrapper {
   position: relative;
-  // user-select: none;
+  user-select: none;
 
   .column-selector {
     padding: 0 4px;

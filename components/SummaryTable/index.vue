@@ -548,7 +548,6 @@ export default {
     ...mapGetters({
       datasetFlat: 'regionEnergy/datasetFlat',
       changeSinceDataset: 'regionEnergy/changeSinceDataset',
-      domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
       domainPowerEnergyGrouped: 'regionEnergy/domainPowerEnergyGrouped',
       domainEmissionsGrouped: 'regionEnergy/domainEmissionsGrouped',
       domainMarketValueGrouped: 'regionEnergy/domainMarketValueGrouped',
@@ -1279,7 +1278,6 @@ export default {
         this.summary._averageEnergy = average
         this.summary._averageTemperature =
           totalTemperatureWithoutNulls / temperatureWithoutNulls.length
-
         this.$emit('summary-update', this.summary)
       }
     },
@@ -1719,7 +1717,7 @@ export default {
   .summary-row {
     font-family: $header-font-family;
     font-weight: 700;
-    // user-select: none;
+    user-select: none;
   }
 }
 
