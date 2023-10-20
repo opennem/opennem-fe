@@ -132,7 +132,7 @@
 
       @include tablet {
         width: auto;
-        border-radius: 20px 0 0 20px;
+        border-radius: 1px;
       }
       @include mobile {
         width: auto;
@@ -162,7 +162,7 @@
 
       @include tablet {
         width: auto;
-        border-radius: 0 20px 20px 0;
+        border-radius: 1px;
       }
     }
 

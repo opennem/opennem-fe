@@ -628,7 +628,7 @@ export default {
     },
 
     hoverValue() {
-      return this.hoverData
+      return this.hoverData && this.hoverDomain
         ? this.shouldConvertValue
           ? this.valueFormatter
             ? this.valueFormatter(this.hoverData[this.hoverDomain])
