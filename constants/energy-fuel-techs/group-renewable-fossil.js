@@ -1,6 +1,6 @@
 import * as FT from './group-detailed.js'
 
-export const GROUP_LABEL = 'Renewable/Fossil'
+export const GROUP_LABEL = 'Renewables/Fossils'
 export const GROUP_NAME = 'group.renewable-fossil'
 
 export const PUMPS = `${GROUP_NAME}.pumps`

@@ -10,7 +10,7 @@ export const GROUP_DETAILED = 'Detailed'
 export const GROUP_SIMPLIFIED = 'Simplified'
 export const GROUP_COAL_GAS_RENEWABLES = 'Coal/Gas/Renewables'
 export const GROUP_FLEXIBILITY = 'Flexibility'
-export const GROUP_RENEWABLE_FOSSIL = 'Renewable/Fossil'
+export const GROUP_RENEWABLE_FOSSIL = 'Renewables/Fossils'
 export const GROUP_VRE_RESIDUAL = 'VRE/Residual'
 
 export const GROUP_DEFAULT = GROUP_DETAILED // default group is detailed
