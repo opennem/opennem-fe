@@ -314,6 +314,16 @@ export default {
 
     interval(val) {
       this.reassignSelectedToDs()
+    },
+
+    datasets: {
+      immediate: true,
+      handler(val) {
+        // TODO need to update when interval changed as well
+        if (this.fuelTechGroupName === 'Detailed') {
+          this.setDetailedAveragesDataset(val)
+        }
+      }
     }
   },
 
@@ -328,7 +338,9 @@ export default {
   methods: {
     ...mapMutations({
       setChartPowerDisplayPrefix: 'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
-      setSelectedToDs: 'timeOfDay/selectedToDs'
+      setSelectedToDs: 'timeOfDay/selectedToDs',
+      setFilteredDates: 'timeOfDay/filteredDates',
+      setDetailedAveragesDataset: 'timeOfDay/detailedAveragesDataset',
     }),
 
     reassignSelectedToDs() {
@@ -376,6 +388,7 @@ export default {
         filteredDates = []
       }
       this.zoomRange = filteredDates
+      this.setFilteredDates(filteredDates)
     },
 
     getYMin(dataset) {

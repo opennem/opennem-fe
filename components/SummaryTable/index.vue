@@ -588,7 +588,9 @@ export default {
       sumEmissionsMinusLoads: 'energy/emissions/sumEmissionsMinusLoads',
 
       dashboardView: 'app/dashboardView',
-      averagesDataset: 'timeOfDay/averagesDataset'
+      averagesDataset: 'timeOfDay/averagesDataset',
+      filteredAveragesDataset: 'timeOfDay/filteredAveragesDataset',
+      filteredDates: 'timeOfDay/filteredDates',
     }),
 
     isTimeOfDayView() {
@@ -718,15 +720,29 @@ export default {
     },
 
     renewablesValue() {
+      // console.log('renewablesValue', this.filteredDates, bucketSizeMins)
+      // console.log(this.filteredAveragesDataset, this.dataset)
       const isSummary = !this.hoverOn && !this.focusOn
-      const totalRenewables = isSummary
-        ? this.dataset.reduce((a, b) => a + b._totalRenewables, 0)
-        : this.pointSummary._totalRenewables
-      const mins = this.interval === '30m' ? 30 : 5
-
-      return this.isEnergy || !isSummary
-        ? totalRenewables
-        : (totalRenewables * mins) / 60 / 1000
+      const fullDataset = this.isTimeOfDayView ? this.filteredAveragesDataset : this.dataset
+      const bucketSizeMins = differenceInMinutes(
+        fullDataset[fullDataset.length - 1].date  ,
+        fullDataset[0].date
+      ) + 1
+      if (this.isEnergy) {
+        if (isSummary) {
+          return fullDataset.reduce((a, b) => a + b._totalRenewables, 0)
+        } else {
+          return this.pointSummary._totalRenewables
+        }
+      } else {
+        if (isSummary) {
+          const renewablesArray = fullDataset.map((d) => d._totalRenewables)
+          const total = energy_sum(renewablesArray, bucketSizeMins)
+          return total / 1000
+        } else {
+          return this.pointSummary._totalRenewables
+        }
+      }
     },
 
     renewablesPercentage() {
@@ -844,6 +860,11 @@ export default {
     dataset(updated) {
       this.calculateSummary(updated)
     },
+
+    filteredAveragesDataset(updated) {
+      this.calculateSummary(updated)
+    },
+
     energyDomains(updated) {
       this.calculateSummary(this.dataset)
     },
@@ -911,7 +932,9 @@ export default {
   },
 
   methods: {
-    calculateSummary(data) {
+    calculateSummary(dataset) {
+      const data = this.isTimeOfDayView ? this.filteredAveragesDataset : dataset
+      const dataFlat = this.isTimeOfDayView ? this.averagesDataset : this.datasetFlat
       if (data.length > 0) {
         const isGeneration = this.percentContributionTo === 'generation'
         let totalEnergy = 0
@@ -1002,16 +1025,19 @@ export default {
         const endDate = end.date
         const bucketSizeMins = differenceInMinutes(endDate, startDate) + 1
 
-        const datasetWithUpdatedSummary = this.datasetFlat.filter(
+        const datasetWithUpdatedSummary = dataFlat.filter(
           (df) => df.time >= start.time && df.time <= end.time
         )
-        groupDataset({
-          dataset: datasetWithUpdatedSummary,
-          domainPowerEnergyGrouped: this.domainPowerEnergyGrouped,
-          domainEmissionsGrouped: this.domainEmissionsGrouped,
-          domainMarketValueGrouped: this.domainMarketValueGrouped
-        })
 
+        if (!this.isTimeOfDayView) {
+          groupDataset({
+            dataset: datasetWithUpdatedSummary,
+            domainPowerEnergyGrouped: this.domainPowerEnergyGrouped,
+            domainEmissionsGrouped: this.domainEmissionsGrouped,
+            domainMarketValueGrouped: this.domainMarketValueGrouped
+          })
+        }
+        
         // Calculate Energy
         this.energyDomains.forEach((ft) => {
           const category = ft.category
@@ -1281,6 +1307,15 @@ export default {
           totalTemperatureWithoutNulls / temperatureWithoutNulls.length
 
         this.$emit('summary-update', this.summary)
+      } else {        
+        const energySummary = this.averagesDataset.map((d) => {
+          let p = 0
+          this.energyDomains.forEach((ft) => {
+            p += d[ft.id] || 0
+          })
+          return p
+        })
+        console.log('energySummary', this.energyDomains, energySummary)
       }
     },
 
@@ -1649,7 +1684,6 @@ export default {
         }
         tableText += `${d.fuelTech},${format(powerenergy)},${format(emissionsVolume)},${format(ei)}\n`
       })
-      console.log(tableText)
       const copyContent = async () => {
         try {
           await navigator.clipboard.writeText(tableText);

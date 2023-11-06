@@ -125,9 +125,11 @@ export default {
   computed: {
     ...mapGetters({
       range: 'range',
+      domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
-      chartPowerDisplayPrefix: 'chartOptionsPowerEnergy/chartPowerDisplayPrefix'
+      chartPowerDisplayPrefix: 'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
+      detailedAveragesDataset: 'timeOfDay/detailedAveragesDataset'
     }),
 
     shouldConvertValue() {
@@ -140,6 +142,24 @@ export default {
       },
       set(val) {
         const averagesDs = []
+        const detailedAverages = []
+
+        this.detailedAveragesDataset.forEach(ds => {
+          const id = ds.id
+
+          ds.data.forEach((d, i) => {
+            if (detailedAverages.length !== ds.data.length) {
+              detailedAverages.push({
+                x: d.x,
+                date: d.date,
+                time: d.time
+              })
+              detailedAverages[i][id] = d._average
+            } else {
+              detailedAverages[i][id] = d._average
+            }
+          })
+        })
 
         if (val.length > 0) {
           val.forEach(ds => {
@@ -158,6 +178,21 @@ export default {
               }
             })
           })
+
+          detailedAverages.forEach((d, i) => {
+            let total = 0
+            this.domainPowerEnergy.forEach(domain => {
+              if (domain.renewable) {
+                // console.log('domain', domain.id, d[domain.id])
+                total += d[domain.id] || 0
+              }
+            })
+            averagesDs[i]._totalRenewables = total
+          })
+
+          // const domain = this.currentDomainPowerEnergy.find(d => d.id === id)
+          // console.log(id, domain.renewable, ds.data)
+
         }
 
         this.setAveragesDataset(averagesDs)
