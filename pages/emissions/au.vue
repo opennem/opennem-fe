@@ -994,7 +994,7 @@ header {
 }
 
 h1 {
-  font-family: Playfair Display, Georgia, Times New Roman, Times, serif;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 700;
   font-size: 1.3rem;
   margin: 0;

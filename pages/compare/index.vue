@@ -259,7 +259,7 @@ export default {
           offset: 10,
           'dominant-baseline': 'hanging',
           'text-anchor': 'end',
-          'font-family': 'Playfair Display',
+          'font-family': 'DM Sans',
           fill: '#666'
         }, {
           label: '－ Exports',
@@ -267,7 +267,7 @@ export default {
           offset: -10,
           'dominant-baseline': 'auto',
           'text-anchor': 'end',
-          'font-family': 'Playfair Display',
+          'font-family': 'DM Sans',
           fill: '#666'
         }]
       }
