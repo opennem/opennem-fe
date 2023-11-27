@@ -29,6 +29,7 @@
       </article>
     </transition>
 
+    <NewAppHeader />
     <app-header />
     <nuxt />
     <app-footer v-if="!tabletBreak" />
@@ -39,11 +40,13 @@
 import { mapGetters, mapActions } from 'vuex'
 import AppHeader from '~/components/layout/AppHeader'
 import AppFooter from '~/components/layout/AppFooter'
+import NewAppHeader from '~/components/layout/NewAppHeader.vue'
 
 export default {
   components: {
     AppHeader,
-    AppFooter
+    AppFooter,
+    NewAppHeader
   },
 
   data() {
