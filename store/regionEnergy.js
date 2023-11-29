@@ -33,6 +33,7 @@ function getDataCount(responses) {
 
 export const state = () => ({
   ready: false,
+  useCachedData: false,
   isFetching: false,
   isEnergyType: false,
   jsonResponses: null,
@@ -65,6 +66,7 @@ export const state = () => ({
 
 export const getters = {
   ready: (state) => state.ready,
+  useCachedData: (state) => state.useCachedData,
   isFetching: (state) => state.isFetching,
   isEnergyType: (state) => state.isEnergyType,
   datasetFlat: (state) => state.datasetFlat,
@@ -117,6 +119,9 @@ export const getters = {
 export const mutations = {
   ready(state, ready) {
     state.ready = ready
+  },
+  useCachedData(state, useCachedData) {
+    state.useCachedData = useCachedData
   },
   isFetching(state, isFetching) {
     state.isFetching = isFetching

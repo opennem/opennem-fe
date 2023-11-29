@@ -30,7 +30,8 @@
     </transition>
 
     <NewAppHeader />
-    <app-header />
+    <Toolbar />
+    <!-- <app-header /> -->
     <nuxt />
     <app-footer v-if="!tabletBreak" />
   </div>
@@ -39,6 +40,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import AppHeader from '~/components/layout/AppHeader'
+import Toolbar from '~/components/layout/Toolbar'
 import AppFooter from '~/components/layout/AppFooter'
 import NewAppHeader from '~/components/layout/NewAppHeader.vue'
 
@@ -46,6 +48,7 @@ export default {
   components: {
     AppHeader,
     AppFooter,
+    Toolbar,
     NewAppHeader
   },
 
@@ -120,7 +123,7 @@ export default {
   }
 
   .message {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0;
   }
 
   .message-body {

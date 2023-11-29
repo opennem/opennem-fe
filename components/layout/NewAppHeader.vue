@@ -60,9 +60,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~/assets/scss/variables.scss';
+
 header {
   background-color: #fff;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid $border-colour;
   padding: 1rem 30px;
   display: flex;
   align-items: center;

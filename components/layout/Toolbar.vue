@@ -1,9 +1,12 @@
 <template>
-  <header :class="{ 'facilities-header': isFacilitiesView }">
+  <div 
+    class="toolbar" 
+    :class="{ 'facilities-header': isFacilitiesView }">
+
     <div 
       v-if="ready" 
       class="header-dropdowns">
-      <div 
+      <!-- <div 
         class="logo-wrapper" 
         @click="toggleDrawer">
         <i 
@@ -11,7 +14,7 @@
           class="fal fa-ellipsis-v" />
         <app-logo class="header-logo" />
         <h1 v-if="ready && tabletBreak">{{ regionLabel }}</h1>
-      </div>
+      </div> -->
       <view-dropdown 
         v-if="!tabletBreak" 
         class="selection" />
@@ -23,7 +26,28 @@
         class="selection" />
     </div>
 
-    <div v-if="ready">
+    <div 
+      v-if="ready"
+      class="data-options-bar">
+
+      <div>
+        <EnergyDataOptions />
+      </div>
+
+      <div 
+        v-if="!isFacilitiesView && isEnergyOrFacilitiesView && !isTimeOfDayView" 
+        :class="{ hide: tabletBreak }">
+        <consumption-generation-toggle />
+      </div>
+    </div>
+
+    <div 
+      class="export-bar" 
+      v-if="ready">
+      <p>Export</p>
+    </div>
+
+    <!-- <div v-if="ready">
       <app-drawer 
         v-if="tabletBreak" 
         :open="openDrawer" 
@@ -35,14 +59,6 @@
         class="more-buttons">
         <consumption-generation-toggle />
 
-        <!-- <button
-        v-if="(focusOn || compareDifference) && isEnergy"
-        :class="{ 'is-selected': compareDifference }"
-        class="compare-button button is-rounded"
-        @click="handleCompareClick"
-      >
-        Compare
-      </button> -->
       </div>
 
       <div v-if="isCompareView">
@@ -106,8 +122,8 @@
         v-if="tabletBreak && !openDrawer && isFacilitiesView" 
         :view="selectedView"
         @viewSelect="(v) => (selectedView = v)" />
-    </div>
-  </header>
+    </div> -->
+  </div>
 </template>
 
 <script>
@@ -126,6 +142,8 @@ import EmissionsRegionDropdown from '~/components/Emissions/EmissionsRegionDropd
 import AppDrawer from '~/components/layout/Drawer'
 import FacilityViewToggle from '~/components/Facility/ViewToggle'
 
+import EnergyDataOptions from '../Toolbar/EnergyDataOptions.vue'
+
 export default {
   components: {
     DownloadCsv,
@@ -135,7 +153,9 @@ export default {
     ConsumptionGenerationToggle,
     AppDrawer,
     FacilityViewToggle,
-    EmissionsRegionDropdown
+    EmissionsRegionDropdown,
+
+    EnergyDataOptions
   },
   mixins: [clickaway],
 
@@ -400,26 +420,35 @@ export default {
 @import '~/assets/scss/variables.scss';
 @import '~/assets/scss/responsive-mixins.scss';
 
-header {
+.toolbar {
   color: #000;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $app-padding / 2;
   position: relative;
   z-index: 998;
+  border-bottom: 1px solid $border-colour;
+  height: 56px;
 
-  @include desktop {
-    margin-top: $app-padding;
+  .header-dropdowns {
+    display: flex;
+    align-items: center;
+    padding: $toolbar-padding;
   }
 
-  h1 {
-    font-family: $header-font-family;
-    font-weight: 700;
-    color: #000;
-    font-size: 1.2rem;
-    position: relative;
-    top: 3px;
+  .data-options-bar {
+    width: 100%;
+    height: 100%;
+    border-left: 1px solid $border-colour;
+    border-right: 1px solid $border-colour;
+    padding: $toolbar-padding / 2 $toolbar-padding;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .export-bar {
+    padding: $toolbar-padding / 2 $toolbar-padding;
   }
 
   .header-logo {
@@ -440,16 +469,6 @@ header {
     color: $opennem-link-color;
     position: relative;
     top: 3px;
-  }
-
-  .header-dropdowns {
-    display: flex;
-    align-items: center;
-
-    .selection {
-      position: relative;
-      top: 3px;
-    }
   }
 
   .s-button-wrapper {
