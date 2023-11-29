@@ -1,17 +1,20 @@
 <template>
-  <div class="consumption-generation-toggle buttons has-addons">
-    <span
-      :class="{ 'is-selected': isConsumption }"
-      class="button is-small"
-      @click="handlePercentContributionToClick"
-    >Consumption</span
-    >
-    <span
-      :class="{ 'is-selected': isGeneration }"
-      class="button is-small"
-      @click="handlePercentContributionToClick"
-    >Generation</span
-    >
+  <div class="button-group has-addons">
+    <div class="buttons">
+      <span
+        :class="{ 'is-selected': isConsumption }"
+        class="button is-small"
+        @click="handlePercentContributionToClick"
+      >Consumption</span
+      >
+      <span
+        :class="{ 'is-selected': isGeneration }"
+        class="button is-small"
+        @click="handlePercentContributionToClick"
+      >Generation</span
+      >
+    </div>
+    
   </div>
 </template>
 
@@ -39,12 +42,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.consumption-generation-toggle {
-  .button:first-child {
-    position: relative;
-    left: 2px;
-  }
-}
-</style>

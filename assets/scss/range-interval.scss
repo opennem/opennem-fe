@@ -1,56 +1,76 @@
-.range-interval-selectors {
-  $breakpoint: 769px;
+.button-group {
+  $border-radius: 4px;
+
+  display: flex;
+  align-items: center;
 
   .buttons {
-    background-color: rgba(255, 255, 255, 0.5);
-
-    @media screen and (min-width: $breakpoint) {
-      background-color: transparent;
-    }
-  }
-
-  @media screen and (min-width: $breakpoint) {
-    padding: $app-padding / 2 1rem;
-    padding-left: 0.4rem;
-    display: flex;
-    align-items: center;
+    background-color: $buttons-background;
+    border: 1px solid #c6c6c6;
+    border-radius: $border-radius;
   }
 
   .button {
-    font-size: 11px;
+    font-size: 0.9rem;
     border-radius: 0;
     position: relative;
-
-    &.is-rounded {
-      min-width: 40px;
-    }
-
-    @media screen and (min-width: $breakpoint) {
-      border-radius: 290486px;
-    }
+    color: #6a6a6a;
+    min-width: 40px;
 
     .filter-caret {
       margin-left: 5px;
     }
+
+    &:hover {
+      color: #000;
+      background-color: transparent;
+    }
+
+    &.is-selected {
+      background-color: #fff;
+      color: #000;
+      border: 1px solid #000;
+      border-radius: $border-radius;
+      transform: scale(1.05);
+      box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+    }
+
+    &:first-child {
+      border-top-left-radius: $border-radius;
+      border-bottom-left-radius: $border-radius;
+    }
+
+    &:last-child {
+      border-top-right-radius: $border-radius;
+      border-bottom-right-radius: $border-radius;
+    }
+
+    &:focus:not(:active) {
+      box-shadow: none;
+    }
+
+    &:active {
+      box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+    }
+
+    &:not(:last-child) {
+      margin-right: 0 !important;
+    }
   }
 
   .range-buttons {
-    @media screen and (min-width: $breakpoint) {
-      margin-bottom: 0;
-      margin-right: 0.4rem;
-    }
+    margin-bottom: 0;
+    margin-right: 0.4rem;
   }
 
   .filter-period-buttons {
-    @media screen and (min-width: $breakpoint) {
-      margin-left: 1rem;
-    }
+    margin-left: 1rem;
   }
 
   .dropdown-item {
     &.is-selected {
-      background-color: #c74523;
-      color: #fff;
+      background-color: #fff;
+      color: #000;
     }
   }
 

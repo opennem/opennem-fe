@@ -51,8 +51,8 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { isPowerRange, RANGES, RANGE_INTERVALS } from '@/constants/ranges.js'
+import { mapGetters, mapMutations } from 'vuex'
+import { RANGES, RANGE_INTERVALS } from '@/constants/ranges.js'
 
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import DataOptionsBarTimeOfDay from '~/components/Energy/DataOptionsBarTimeOfDay.vue'

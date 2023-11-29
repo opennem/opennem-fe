@@ -429,6 +429,7 @@ export default {
   z-index: 998;
   border-bottom: 1px solid $border-colour;
   height: 56px;
+  background-color: #fff;
 
   .header-dropdowns {
     display: flex;

@@ -1,5 +1,5 @@
 <template>
-  <div class="range-interval-selectors">
+  <div class="button-group">
     <div 
       v-if="use12MthRollingToggle" 
       class="range-buttons buttons has-addons">

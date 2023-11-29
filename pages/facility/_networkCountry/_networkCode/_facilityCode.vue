@@ -1347,7 +1347,7 @@ header {
   }
 }
 
-:deep(.range-interval-selectors) {
+:deep(.button-group) {
   padding-left: 0;
 }
 

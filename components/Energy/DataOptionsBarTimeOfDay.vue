@@ -1,5 +1,5 @@
 <template>
-  <div class="range-interval-selectors">
+  <div class="button-group">
     <div 
       class="field has-addons range-buttons buttons has-addons" 
       style="margin-bottom: 0;">
