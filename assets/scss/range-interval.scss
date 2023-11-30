@@ -29,10 +29,9 @@
     &.is-selected {
       background-color: #fff;
       color: #000;
-      border: 1px solid #000;
+      border: 1px solid #6A6A6A;
       border-radius: $border-radius;
-      transform: scale(1.05);
-      box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+      // box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
     }
 
     &:first-child {
@@ -56,6 +55,17 @@
     &:not(:last-child) {
       margin-right: 0 !important;
     }
+
+    & > span {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .dropdown-trigger-icon {
+      font-size: 10px;
+    }
   }
 
   .range-buttons {
@@ -66,17 +76,41 @@
   .filter-period-buttons {
     margin-left: 1rem;
   }
+    
+}
 
-  .dropdown-item {
-    &.is-selected {
-      background-color: #fff;
-      color: #000;
-    }
+.filter-menu {
+  display: block;
+  margin-top: 2px;
+
+  .dropdown-menu {
+    display: block;
+    font-size: 1rem;
   }
 
-  .filter-menu {
-    min-width: 80px;
-    text-align: left;
-    display: block;
+  .dropdown-content {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid $border-colour;
+    gap: 2px;
+    padding: 4px;
+
+    button {
+      border: 0;
+      background: none;
+      cursor: pointer;
+      text-align: left;
+      padding: 8px 16px;
+      border-radius: 4px;
+  
+      &:hover {
+        background: $buttons-background;
+      }
+
+      &.is-selected {
+        background: $opennem-link-color;
+        color: #fff;
+      }
+    }
   }
 }

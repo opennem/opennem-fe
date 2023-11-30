@@ -24,7 +24,6 @@
 
     <DataOptionsBar
       v-show="dashboardView === 'discrete-time'"
-      style="padding-right: 0.5rem;"
       :ranges="ranges"
       :intervals="intervals"
       :range="range"
@@ -166,11 +165,13 @@ export default {
 
 
 <style lang="scss" scoped>
+@import '~/assets/scss/variables.scss';
+
 $breakpoint: 769px;
 
 .data-view-options {
   display: flex;
-  gap: 2px;
+  gap: 16px;
   padding-left: 0.5rem;
 
   & > * {
@@ -188,19 +189,13 @@ $breakpoint: 769px;
 .dashboard-btns {
   width: auto;
   margin-bottom: 0;
-  border-radius: 0px;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  height: 55px;
-  padding: 2px;
-  background-color: rgba(255, 255, 255, 0.5);
-
-  @media screen and (min-width: $breakpoint) {
-    flex-direction: row;
-    height: 30px;
-    border-radius: 4px;
-  }
+  flex-direction: row;
+  border-radius: 4px;
+  border: 1px solid #bbb;
+  background-color: $buttons-background;
+  border: 1px solid #c6c6c6;
+  border-radius: 4px;
 }
 
 .dashboard-view-btn {
@@ -208,23 +203,24 @@ $breakpoint: 769px;
   background: none;
   border-radius: 2px;
   border: 1px solid transparent;
+  min-width: 40px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  padding: 4px;
 
   .icon {
     padding: 2px;
-    width: 20px;
-    height: 20px;
-    align-items: center;
-    display: flex;
     pointer-events: none;
   }
 
   &.is-selected {
-    border: 1px solid #bbb;
-    background-color: #ddd;
+    border: 1px solid #6A6A6A;
+    background-color: #fff;
   }
 
   &:hover {
-    background-color: #ddd;
+    background-color: #fff;
   }
 }
 </style>

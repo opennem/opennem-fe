@@ -1,5 +1,7 @@
 <template>
-  <div class="button-group">
+  <div 
+    class="button-group" 
+    style="gap: 5px;">
     <div 
       v-if="use12MthRollingToggle" 
       class="range-buttons buttons has-addons">
@@ -22,62 +24,51 @@
         class="button is-rounded"
         @click.stop="handleRangeClick(r)"
       >
-        <div v-if="isString(r)">{{ r }}</div>
-        <div v-if="!isString(r)">
-          {{ getSelectedRangeLabel(r) }}
-        </div>
-        <i 
-          v-if="hasRangeFilter(r)" 
-          class="filter-caret fal fa-chevron-down" />
-        <div 
-          v-show="showRangeOptions(r)" 
-          class="filter-menu dropdown-menu">
-          <div class="dropdown-content">
-            <a
-              v-for="(range, rIndex) in r"
-              :key="`rangeOption${rIndex}`"
-              :class="{ 'is-selected': range === selectedRange }"
-              class="dropdown-item"
-              @click.stop="handleRangeOptionClick(range)"
-            >
-              {{ range }}
-            </a>
+        <span>
+          <div v-if="isString(r)">{{ r }}</div>
+          <div v-if="!isString(r)">
+            {{ getSelectedRangeLabel(r) }}
           </div>
-        </div>
+          <!-- <i 
+          v-if="hasRangeFilter(r)" 
+          class="filter-caret dropdown-trigger-icon fal fa-chevron-down" /> -->
+          <i
+            v-if="hasRangeFilter(r)"
+            :class="[
+              'fal dropdown-trigger-icon',
+              showRangeOptions(r) ? 'fa-chevron-up' : 'fa-chevron-down'
+            ]"
+          />
+          <div 
+            v-show="showRangeOptions(r)" 
+            class="filter-menu dropdown-menu">
+            <div class="dropdown-content">
+              <button
+                v-for="(range, rIndex) in r"
+                :key="`rangeOption${rIndex}`"
+                :class="{ 'is-selected': range === selectedRange }"
+                @click="handleRangeOptionClick(range)"
+              >
+                {{ range }}
+              </button>
+            </div>
+          </div>
+        </span>
       </button>
     </div>
 
-    <div class="interval-buttons buttons has-addons">
-      <button
-        v-on-clickaway="handleClickAway"
-        v-for="(interval, i) in selectedRangeIntervals"
-        :key="i"
-        :class="{ 'is-selected': interval === selectedInterval }"
-        class="button is-rounded"
-        @click.stop="handleIntervalChange(interval)"
-      >
-        <div v-if="!hasFilter(interval)">{{ getIntervalLabel(interval) }}</div>
-        <div v-if="hasFilter(interval)">{{ intervalLabel(interval) }}</div>
-        <i
-          v-if="hasFilter(interval)"
-          class="filter-caret fal fa-chevron-down"
-        />
-        <div 
-          v-show="showFilter(interval)" 
-          class="filter-menu dropdown-menu">
-          <div class="dropdown-content">
-            <a
-              v-for="(f, i) in filters"
-              :key="`filter${i}`"
-              :class="{ 'is-selected': f === selectedFilter }"
-              class="dropdown-item"
-              @click.stop="handleFilterPeriodClick(f)"
-            >
-              {{ f }}
-            </a>
-          </div>
-        </div>
-      </button>
+    <div class="interval-dropdowns">
+      <IntervalDropdown
+        :show-caret="selectedRangeIntervals.length > 1"
+        :selected="selectedInterval" 
+        :options="selectedRangeIntervals"
+        @option-change="handleIntervalChange" />
+
+      <IntervalDropdown
+        v-if="filters.length > 0"
+        :selected="selectedFilter" 
+        :options="filters"
+        @option-change="handleFilterPeriodClick" />
     </div>
   </div>
 </template>
@@ -86,6 +77,7 @@
 import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
 import _includes from 'lodash.includes'
+import IntervalDropdown from './IntervalDropdown.vue'
 
 import {
   RANGE_1D,
@@ -127,6 +119,10 @@ import {
 
 export default {
   mixins: [clickaway],
+
+  components: {
+    IntervalDropdown
+  },
 
   props: {
     ranges: {
@@ -538,7 +534,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.interval-buttons {
-  flex-wrap: nowrap;
+.interval-dropdowns {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 </style>
