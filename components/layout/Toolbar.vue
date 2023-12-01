@@ -44,85 +44,29 @@
     <div 
       class="export-bar" 
       v-if="ready">
-      <p>Export</p>
+      <div class="button-group has-addons">
+        <div class="buttons">
+          <button 
+            class="button is-small">
+            <download-csv 
+              :data="exportData" 
+              :name="`${filename}.csv`">
+              <i class="fal fa-download" />
+            </download-csv>
+          </button>
+        </div>
+      </div>
+
+      <div class="button-group has-addons">
+        <div class="buttons">
+          <button 
+            class="button is-small" 
+            @click="handleExportImage">
+            <i class="fal fa-share-alt" />
+          </button>
+        </div>
+      </div>
     </div>
-
-    <!-- <div v-if="ready">
-      <app-drawer 
-        v-if="tabletBreak" 
-        :open="openDrawer" 
-        @close="closeDrawer" />
-
-      <div 
-        v-if="!isFacilitiesView && isEnergyOrFacilitiesView && !isTimeOfDayView" 
-        :class="{ hide: tabletBreak }" 
-        class="more-buttons">
-        <consumption-generation-toggle />
-
-      </div>
-
-      <div v-if="isCompareView">
-        <a 
-          :class="{ 'is-loading is-primary': generating }"
-          class="s-button button"
-          @click="handleExportDataClick">
-          <download-csv 
-            :data="compareExportData" 
-            :name="`${compareFilename}.csv`">
-            <i 
-              class="fal fa-fw fa-table" 
-              style="margin-right: 5px;" />
-            <span class="label-image">Export CSV</span>
-          </download-csv>
-          
-        </a>
-      </div>
-
-      <div 
-        v-if="!tabletBreak && isEnergyOrFacilitiesView && !isTimeOfDayView" 
-        class="s-button-wrapper">
-        <button 
-          v-on-clickaway="handleClickAway" 
-          :class="{ 'is-loading is-primary': generating }"
-          class="s-button button" 
-          @click="handleShareButtonClicked">
-          <img 
-            src="~/assets/img/share-icon.svg" 
-            alt="Share icon">
-          <span class="label-image">Export</span>
-        </button>
-        <transition name="slide-down-fade">
-          <div 
-            v-if="showShareMenu" 
-            class="s-menu dropdown-menu">
-            <div class="dropdown-content">
-              <a 
-                v-if="!isFacilitiesView" 
-                class="dropdown-item button" 
-                @click="handleExportImage">
-                <i class="fal fa-fw fa-chart-bar" />
-                <span class="label-image">PNG</span>
-              </a>
-              <a 
-                class="dropdown-item button" 
-                @click="handleExportDataClick">
-                <download-csv 
-                  :data="exportData" 
-                  :name="`${filename}.csv`">
-                  <i class="fal fa-fw fa-table" />
-                  <span class="label-csv">CSV</span>
-                </download-csv>
-              </a>
-            </div>
-          </div>
-        </transition>
-      </div>
-
-      <FacilityViewToggle 
-        v-if="tabletBreak && !openDrawer && isFacilitiesView" 
-        :view="selectedView"
-        @viewSelect="(v) => (selectedView = v)" />
-    </div> -->
   </div>
 </template>
 
@@ -300,7 +244,7 @@ export default {
         const ei = this.emissionIntensityData.find(
           (e) => e.time === d.time
         )
-        obj['Emissions Intensity - kgCO₂e/MWh'] = format(ei._emissionIntensity)
+        obj['Emissions Intensity - kgCO₂e/MWh'] = ei ? format(ei._emissionIntensity) : 0
 
         if (this.isEnergyType) {
           if (this.demandPriceDomains.length) {
@@ -451,6 +395,18 @@ export default {
 
   .export-bar {
     padding: $toolbar-padding / 2 $toolbar-padding;
+    display: flex;
+    gap: 4px;
+
+    .buttons {
+      background-color: transparent;
+      border-radius: 0;
+    }
+
+    button {
+      background-color: #000;
+      color: #fff;
+    }
   }
 
   .header-logo {
