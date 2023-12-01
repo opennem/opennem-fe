@@ -1,20 +1,19 @@
 <template>
   <div class="button-group has-addons">
     <div class="buttons">
-      <span
+      <button
         :class="{ 'is-selected': isConsumption }"
         class="button is-small"
         @click="handlePercentContributionToClick"
-      >Consumption</span
+      >Consumption</button
       >
-      <span
+      <button
         :class="{ 'is-selected': isGeneration }"
         class="button is-small"
         @click="handlePercentContributionToClick"
-      >Generation</span
+      >Generation</button
       >
     </div>
-    
   </div>
 </template>
 
@@ -42,3 +41,18 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.button-group .buttons {
+  .button {
+    margin-right: -1px;
+
+    &.is-selected {
+      z-index: 99;
+    }
+  }
+  .button:last-child {
+    margin-right: 0;
+  }
+}
+</style>

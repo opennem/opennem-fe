@@ -6,7 +6,6 @@
 
   .buttons {
     background-color: $buttons-background;
-    border: 1px solid #c6c6c6;
     border-radius: $border-radius;
   }
 
@@ -16,6 +15,7 @@
     position: relative;
     color: #6a6a6a;
     min-width: 40px;
+    border: 1px solid #dddddd;
 
     .filter-caret {
       margin-left: 5px;
@@ -31,7 +31,6 @@
       color: #000;
       border: 1px solid #6A6A6A;
       border-radius: $border-radius;
-      // box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
     }
 
     &:first-child {
@@ -48,14 +47,6 @@
       box-shadow: none;
     }
 
-    &:active {
-      box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
-    }
-
-    &:not(:last-child) {
-      margin-right: 0 !important;
-    }
-
     & > span {
       display: flex;
       justify-content: space-between;
@@ -66,11 +57,6 @@
     .dropdown-trigger-icon {
       font-size: 10px;
     }
-  }
-
-  .range-buttons {
-    margin-bottom: 0;
-    margin-right: 0.4rem;
   }
 
   .filter-period-buttons {

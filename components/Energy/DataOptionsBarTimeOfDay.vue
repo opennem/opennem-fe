@@ -1,5 +1,7 @@
 <template>
-  <div class="button-group">
+  <div 
+    class="button-group" 
+    style="gap: 8px;">
     <div 
       class="range-buttons buttons has-addons" 
       style="margin-bottom: 0;">

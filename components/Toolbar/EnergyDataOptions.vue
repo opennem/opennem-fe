@@ -1,25 +1,27 @@
 <template>
   <div class="data-view-options">
-    <div class="dashboard-btns">
-      <button 
-        class="dashboard-view-btn"
-        v-tooltip="dashboardView === 'discrete-time' ? '' : 'Switch to discrete time view'"
-        :class="{ 'is-selected': dashboardView === 'discrete-time' }"
-        @click="() => handleViewChange('discrete-time')">
-        <span class="icon">
-          <IconDiscreteTime />
-        </span>
-      </button>
+    <div class="button-group has-addons">
+      <div class="buttons">
+        <button 
+          class="button is-small"
+          v-tooltip="dashboardView === 'discrete-time' ? '' : 'Switch to discrete time view'"
+          :class="{ 'is-selected': dashboardView === 'discrete-time' }"
+          @click="() => handleViewChange('discrete-time')">
+          <span class="icon">
+            <IconDiscreteTime />
+          </span>
+        </button>
 
-      <button 
-        class="dashboard-view-btn"
-        v-tooltip="dashboardView === 'time-of-day' ? '' : 'Switch to time of day view'"
-        :class="{ 'is-selected': dashboardView === 'time-of-day' }"
-        @click="() => handleViewChange('time-of-day')">
-        <span class="icon">
-          <IconTimeOfDay />
-        </span>
-      </button>
+        <button 
+          class="button is-small"
+          v-tooltip="dashboardView === 'time-of-day' ? '' : 'Switch to time of day view'"
+          :class="{ 'is-selected': dashboardView === 'time-of-day' }"
+          @click="() => handleViewChange('time-of-day')">
+          <span class="icon">
+            <IconTimeOfDay />
+          </span>
+        </button>
+      </div>
     </div>
 
     <DataOptionsBar
@@ -171,56 +173,20 @@ $breakpoint: 769px;
 
 .data-view-options {
   display: flex;
-  gap: 16px;
-  padding-left: 0.5rem;
-
-  & > * {
-    width: 100%;
-  }
-
-  @media screen and (min-width: $breakpoint) {
-    display: flex;
-    align-items: center;
-    margin-left: 1rem;
-    padding-left: 0;
-  }
-}
-
-.dashboard-btns {
-  width: auto;
-  margin-bottom: 0;
-  display: flex;
-  flex-direction: row;
-  border-radius: 4px;
-  border: 1px solid #bbb;
-  background-color: $buttons-background;
-  border: 1px solid #c6c6c6;
-  border-radius: 4px;
-}
-
-.dashboard-view-btn {
-  cursor: pointer;
-  background: none;
-  border-radius: 2px;
-  border: 1px solid transparent;
-  min-width: 40px;
+  gap: 8px;
   align-items: center;
-  justify-content: center;
-  display: flex;
-  padding: 4px;
+}
 
-  .icon {
-    padding: 2px;
-    pointer-events: none;
+.button-group .buttons {
+  .button {
+    margin-right: -1px;
+
+    &.is-selected {
+      z-index: 99;
+    }
   }
-
-  &.is-selected {
-    border: 1px solid #6A6A6A;
-    background-color: #fff;
-  }
-
-  &:hover {
-    background-color: #fff;
+  .button:last-child {
+    margin-right: 0;
   }
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div 
     class="button-group" 
-    style="gap: 5px;">
+    style="gap: 8px;">
     <div 
       v-if="use12MthRollingToggle" 
       class="range-buttons buttons has-addons">
@@ -59,7 +59,7 @@
 
     <div class="interval-dropdowns">
       <IntervalDropdown
-        :show-caret="selectedRangeIntervals.length > 1"
+        :show-caret="selectedRangeIntervals && selectedRangeIntervals.length > 1"
         :selected="selectedInterval" 
         :options="selectedRangeIntervals"
         @option-change="handleIntervalChange" />
