@@ -1,24 +1,36 @@
 <template>
-  <div class="button-group has-addons">
-    <div class="buttons">
-      <button
-        :class="{ 'is-selected': isConsumption }"
-        class="button is-small"
-        @click="handlePercentContributionToClick">
-        Consumption
-      </button>
-      <button
-        :class="{ 'is-selected': isGeneration }"
-        class="button is-small"
-        @click="handlePercentContributionToClick">
-        Generation
-      </button>
+  <div>
+    <label v-if="mobile">Contribution:</label>
+
+    <div 
+      :class="{ mobile: mobile }" 
+      class="button-group has-addons">
+      <div class="buttons">
+        <button
+          :class="{ 'is-selected': isConsumption }"
+          class="button is-small"
+          @click="handlePercentContributionToClick">
+          Consumption
+        </button>
+        <button
+          :class="{ 'is-selected': isGeneration }"
+          class="button is-small"
+          @click="handlePercentContributionToClick">
+          Generation
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 export default {
+  props: {
+    mobile: {
+      type: Boolean,
+      default: false
+    }
+  },
   computed: {
     percentContributionTo() {
       return this.$store.getters.percentContributionTo
@@ -69,5 +81,32 @@ $border-radius: 8px;
   .button:last-child {
     margin-right: 0;
   }
+}
+
+.mobile {
+  .buttons {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+  }
+
+  button {
+    display: flex;
+    min-width: auto;
+    width: 50%;
+    height: auto;
+    padding: 8px;
+    gap: 8px;
+    align-items: center;
+  }
+}
+
+label {
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 500;
+  display: block;
+  color: #353535;
+  margin-bottom: 4px;
 }
 </style>

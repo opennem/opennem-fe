@@ -1,6 +1,7 @@
 <template>
   <div 
-    class="button-group" 
+    :class="{ mobile: mobile }"
+    class="button-group"
     style="gap: 8px;">
     <div 
       v-if="use12MthRollingToggle" 
@@ -13,62 +14,75 @@
       </button>
     </div>
 
-    <div 
-      v-else 
-      class="range-buttons buttons has-addons">
-      <button
-        v-on-clickaway="handleClickAway"
-        v-for="(r, i) in ranges"
-        :key="i"
-        :class="{ 'is-selected': isRangeSelected(r) }"
-        class="button is-rounded"
-        @click.stop="handleRangeClick(r)"
-      >
-        <span>
-          <div v-if="isString(r)">{{ r }}</div>
-          <div v-if="!isString(r)">
-            {{ getSelectedRangeLabel(r) }}
-          </div>
-          <!-- <i 
+    <div>
+      <label 
+        v-if="mobile" 
+        style="margin-top: 8px;">Range:</label>
+      <div 
+        v-if="!use12MthRollingToggle" 
+        :class="{ mobile: mobile }"
+        class="range-buttons buttons has-addons">
+        <button
+          v-on-clickaway="handleClickAway"
+          v-for="(r, i) in ranges"
+          :key="i"
+          :class="{ 'is-selected': isRangeSelected(r) }"
+          class="button is-rounded"
+          @click.stop="handleRangeClick(r)"
+        >
+          <span>
+            <div v-if="isString(r)">{{ r }}</div>
+            <div v-if="!isString(r)">
+              {{ getSelectedRangeLabel(r) }}
+            </div>
+            <!-- <i 
           v-if="hasRangeFilter(r)" 
           class="filter-caret dropdown-trigger-icon fal fa-chevron-down" /> -->
-          <i
-            v-if="hasRangeFilter(r)"
-            :class="[
-              'fal dropdown-trigger-icon',
-              showRangeOptions(r) ? 'fa-chevron-up' : 'fa-chevron-down'
-            ]"
-          />
-          <div 
-            v-show="showRangeOptions(r)" 
-            class="filter-menu dropdown-menu">
-            <div class="dropdown-content">
-              <button
-                v-for="(range, rIndex) in r"
-                :key="`rangeOption${rIndex}`"
-                :class="{ 'is-selected': range === selectedRange }"
-                @click="handleRangeOptionClick(range)"
-              >
-                {{ range }}
-              </button>
+            <i
+              v-if="hasRangeFilter(r)"
+              :class="[
+                'fal dropdown-trigger-icon',
+                showRangeOptions(r) ? 'fa-chevron-up' : 'fa-chevron-down'
+              ]"
+            />
+            <div 
+              v-show="showRangeOptions(r)" 
+              class="filter-menu dropdown-menu">
+              <div class="dropdown-content">
+                <button
+                  v-for="(range, rIndex) in r"
+                  :key="`rangeOption${rIndex}`"
+                  :class="{ 'is-selected': range === selectedRange }"
+                  @click="handleRangeOptionClick(range)"
+                >
+                  {{ range }}
+                </button>
+              </div>
             </div>
-          </div>
-        </span>
-      </button>
+          </span>
+        </button>
+      </div>
     </div>
 
-    <div class="interval-dropdowns">
-      <IntervalDropdown
-        :show-caret="selectedRangeIntervals && selectedRangeIntervals.length > 1"
-        :selected="selectedInterval" 
-        :options="selectedRangeIntervals"
-        @option-change="handleIntervalChange" />
+    <div>
+      <label 
+        v-if="mobile" 
+        style="margin-top: 16px;">Time Interval:</label>
+      <div class="interval-dropdowns">
+        <IntervalDropdown
+          :show-caret="selectedRangeIntervals && selectedRangeIntervals.length > 1"
+          :selected="selectedInterval" 
+          :options="selectedRangeIntervals"
+          :mobile="mobile"
+          @option-change="handleIntervalChange" />
 
-      <IntervalDropdown
-        v-if="filters.length > 0"
-        :selected="selectedFilter" 
-        :options="filters"
-        @option-change="handleFilterPeriodClick" />
+        <IntervalDropdown
+          v-if="filters.length > 0"
+          :selected="selectedFilter" 
+          :options="filters"
+          :mobile="mobile"
+          @option-change="handleFilterPeriodClick" />
+      </div>
     </div>
   </div>
 </template>
@@ -146,6 +160,10 @@ export default {
       default: null
     },
     use12MthRollingToggle: {
+      type: Boolean,
+      default: false
+    },
+    mobile: {
       type: Boolean,
       default: false
     }
@@ -534,6 +552,29 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.button-group.mobile {
+  display: block;
+}
+
+label {
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 500;
+  display: block;
+  color: #353535;
+  margin-bottom: 4px;
+}
+
+.range-buttons.mobile {
+  width: 100%;
+  flex-wrap: nowrap;
+
+  button {
+    min-width: auto;
+    width: 100%;
+  }
+}
+
 .interval-dropdowns {
   display: flex;
   align-items: center;

@@ -1,26 +1,34 @@
 <template>
-  <div class="data-view-options">
-    <div class="button-group has-addons">
-      <div class="buttons">
-        <button 
-          class="button is-small"
-          v-tooltip="dashboardView === 'discrete-time' ? '' : 'Switch to discrete time view'"
-          :class="{ 'is-selected': dashboardView === 'discrete-time' }"
-          @click="() => handleViewChange('discrete-time')">
-          <span class="icon">
-            <IconDiscreteTime />
-          </span>
-        </button>
+  <div 
+    :class="{ mobile: mobile }" 
+    class="data-view-options">
 
-        <button 
-          class="button is-small"
-          v-tooltip="dashboardView === 'time-of-day' ? '' : 'Switch to time of day view'"
-          :class="{ 'is-selected': dashboardView === 'time-of-day' }"
-          @click="() => handleViewChange('time-of-day')">
-          <span class="icon">
-            <IconTimeOfDay />
-          </span>
-        </button>
+    <div>
+      <label v-if="mobile">View:</label>
+      <div class="button-group has-addons">
+        <div class="buttons">
+          <button 
+            class="button"
+            v-tooltip="dashboardView === 'discrete-time' ? '' : 'Switch to discrete time view'"
+            :class="{ 'is-selected': dashboardView === 'discrete-time' }"
+            @click="() => handleViewChange('discrete-time')">
+            <span class="icon">
+              <IconDiscreteTime />
+            </span>
+            <span v-if="mobile">Discrete</span>
+          </button>
+
+          <button 
+            class="button"
+            v-tooltip="dashboardView === 'time-of-day' ? '' : 'Switch to time of day view'"
+            :class="{ 'is-selected': dashboardView === 'time-of-day' }"
+            @click="() => handleViewChange('time-of-day')">
+            <span class="icon">
+              <IconTimeOfDay />
+            </span>
+            <span v-if="mobile">Time of Day</span>            
+          </button>
+        </div>
       </div>
     </div>
 
@@ -32,6 +40,7 @@
       :interval="interval"
       :filter-period="filterPeriod"
       :view="dashboardView"
+      :mobile="mobile"
       @queryChange="handleQueryChange"
       @rangeChange="handleRangeChange"
       @intervalChange="handleIntervalChange"
@@ -66,6 +75,13 @@ export default {
     DataOptionsBarTimeOfDay,
     IconTimeOfDay,
     IconDiscreteTime
+  },
+
+  props: {
+    mobile: {
+      type: Boolean,
+      default: false
+    }
   },
 
   data() {
@@ -174,7 +190,36 @@ $breakpoint: 769px;
 .data-view-options {
   display: flex;
   gap: 8px;
-  align-items: center;
+  align-content: center;
+
+  &.mobile {
+    flex-direction: column;
+
+    label {
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 500;
+      display: block;
+      color: #353535;
+      margin-bottom: 4px;
+    }
+
+    .buttons {
+      display: flex;
+      width: 100%;
+      justify-content: center;
+    }
+
+    button {
+      display: flex;
+      min-width: auto;
+      width: 50%;
+      height: auto;
+      padding: 8px;
+      gap: 8px;
+      align-items: center;
+    }
+  }
 }
 
 .button-group .buttons {

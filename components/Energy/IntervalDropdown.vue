@@ -1,6 +1,6 @@
 <template>
   <div 
-    :class="{ 'is-active': dropdownActive }" 
+    :class="{ 'is-active': dropdownActive, 'mobile': mobile }" 
     class="dropdown">
     <button
       v-on-clickaway="handleClickAway"
@@ -55,6 +55,10 @@ export default {
     showCaret: {
       type: Boolean,
       default: true
+    },
+    mobile: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -92,5 +96,30 @@ export default {
 
 button.button.is-selected {
   box-shadow: none;
+}
+
+.mobile {
+  &.dropdown {
+    width: 100%;
+    display: block;
+  }
+
+  button.dropdown-trigger {
+    display: block;
+    min-width: auto;
+    width: 100%;
+    border: 1px solid #6A6A6A;
+    color: #353535;
+
+    &:focus:not(:active) {
+      box-shadow: none;
+    }
+    
+    span {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
 }
 </style>

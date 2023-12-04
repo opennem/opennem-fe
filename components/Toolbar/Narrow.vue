@@ -5,53 +5,79 @@
     <div 
       v-if="ready" 
       class="header-dropdowns">
-      <view-dropdown 
-        v-if="!tabletBreak" />
-      <region-dropdown 
-        v-show="!tabletBreak && !isEmissionsView && !isCompareView" />
-      <EmissionsRegionDropdown 
-        v-show="!tabletBreak && isEmissionsView" />
+      <ViewDropdown />
     </div>
 
-    <div 
-      v-if="ready"
-      class="data-options-bar">
-
-      <div>
-        <EnergyDataOptions />
+    <div class="options">
+      <div class="button-group has-addons">
+        <div class="buttons">
+          <button 
+            class="button"
+            @click="() => showFilters = true">
+            <i class="fal fa-fw fa-sliders-h" />
+          </button>
+        </div>
       </div>
 
       <div 
-        v-if="!isFacilitiesView && isEnergyOrFacilitiesView && !isTimeOfDayView" 
-        :class="{ hide: tabletBreak }">
-        <consumption-generation-toggle />
+        :class="{ 'is-active': dropdownActive }" 
+        class="dropdown export-bar">
+        <button
+          v-on-clickaway="handleClickAway"
+          class="dropdown-trigger button inverted is-selected"
+          @click="() => dropdownActive = !dropdownActive"
+        >
+          <i class="fal fa-fw fa-share-alt" />
+        </button>
+
+        <transition name="slide-down-fade">
+          <div 
+            v-if="dropdownActive" 
+            class="filter-menu dropdown-menu">
+            <div class="dropdown-content">
+              <button 
+                @click="() => dropdownActive = false">
+                <download-csv 
+                  :data="exportData" 
+                  :name="`${filename}.csv`">
+                  Download CSV
+                </download-csv>
+              </button>
+
+              <button @click="handleExportImage">
+                Export as PNG
+              </button>
+            </div>
+          </div>
+        </transition>
       </div>
     </div>
 
     <div 
-      class="export-bar" 
-      v-if="ready">
-      <div class="button-group has-addons">
-        <div class="buttons">
-          <button 
-            class="button is-small">
-            <download-csv 
-              :data="exportData" 
-              :name="`${filename}.csv`">
-              <i class="fal fa-fw fa-download" />
-            </download-csv>
-          </button>
-        </div>
+      v-if="showFilters" 
+      class="options-panel">
+      <div class="options-header">
+        <span>Filters</span>
+
+        <button>Clear</button>
       </div>
 
-      <div class="button-group has-addons">
-        <div class="buttons">
-          <button 
-            class="button is-small" 
-            @click="handleExportImage">
-            <i class="fal fa-fw fa-share-alt" />
-          </button>
-        </div>
+      <div class="options-wrapper">
+        <label>
+          <span>Region:</span>
+          <RegionDropdown :full-width="true" />
+        </label>
+
+        <EnergyDataOptions :mobile="true" />
+
+        <ConsumptionGenerationToggle :mobile="true" />
+      </div>
+
+      <div class="options-footer">
+        <button 
+          class="button" 
+          @click="() => showFilters = false">Cancel</button>
+        <button class="button cta">Apply</button>
       </div>
     </div>
   </div>
@@ -59,6 +85,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { mixin as clickaway } from 'vue-clickaway'
 import { timeFormat as d3TimeFormat, utcFormat } from 'd3-time-format'
 import { format as d3Format } from 'd3-format'
 import DownloadCsv from 'vue-json-csv'
@@ -72,6 +99,8 @@ import EnergyDataOptions from '../Toolbar/EnergyDataOptions.vue'
 
 
 export default {
+  mixins: [clickaway],
+
   components: {
     DownloadCsv,
     ViewDropdown,
@@ -85,6 +114,8 @@ export default {
   data() {
     return {
       ready: false,
+      dropdownActive: false,
+      showFilters: false,
       regions: getEnergyRegions()
     }
   },
@@ -252,6 +283,10 @@ export default {
       this.$router.push({
         path: `/energy/${this.regionId}/export/`
       })
+    },
+
+    handleClickAway() {
+      this.dropdownActive = false
     }
   }
 }
@@ -278,33 +313,107 @@ export default {
     padding: $toolbar-padding;
   }
 
-  .data-options-bar {
-    width: 100%;
-    height: 100%;
-    border-left: 1px solid $border-colour;
-    border-right: 1px solid $border-colour;
+  .options {
     padding: $toolbar-padding / 2 $toolbar-padding;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
+    gap: 6px;
   }
 
   .export-bar {
-    padding: $toolbar-padding / 2 $toolbar-padding;
-    display: flex;
-    gap: 4px;
-
     .buttons {
       background-color: transparent;
       border-radius: 0;
     }
 
-    button {
+    .dropdown-trigger.button {
       background-color: #000;
       color: #fff;
+      min-width: auto;
+      font-size: 0.9rem;
+    }
+
+    .dropdown-menu {
+      min-width: 10rem;
+      padding-top: 0;
+      margin-top: 5px;
+      right: 0;
+      left: auto;
     }
   }
-  
+}
+
+.options-panel {
+  $padding: 18px;
+
+  position: fixed;
+  top: 0;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-content: space-between;
+
+  label {
+    span {
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 500;
+      display: block;
+      color: #353535;
+      margin-bottom: 4px;
+    }
+  }
+
+  .options-header {
+    padding: $padding;
+    font-weight: bold;
+    font-size: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    button {
+      border: 0;
+      text-decoration: underline;
+      background: transparent;
+      cursor: pointer;
+      color: #353535;
+      font-weight: bold;
+      font-size: 16px;
+    }
+  }
+
+  .options-wrapper {
+    padding: $padding;
+    border-bottom: 1px solid #e0e0e0;
+    border-top: 1px solid #e0e0e0;
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .options-footer {
+    padding: $padding;
+    display: flex;
+    justify-content: space-evenly;
+    gap: 8px;
+    
+    button {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #353535;
+      color: #000;
+      font-weight: bold;
+
+      &.cta {
+        background-color: #353535;
+        color: #fff;
+      }
+    }
+  }
 }
 </style>

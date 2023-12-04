@@ -19,6 +19,7 @@ export const getters = {
   wideScreenBreak: (state) => state.windowWidth < 1450,
   widthBreak: (state) => state.windowWidth < 1024,
   tabletBreak: (state) => state.windowWidth < 769,
+  toolbarBreak: (state) => state.windowWidth < 1412,
   showError: (state) => state.showError,
   errorHeader: (state) => state.errorHeader,
   errorMessage: (state) => state.errorMessage,
