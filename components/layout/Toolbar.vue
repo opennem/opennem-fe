@@ -1,7 +1,7 @@
 <template>
   <div>
-    <ToolbarNarrow v-if="toolbarBreak" />
-    <ToolbarWide v-else />
+    <ToolbarNarrow v-show="toolbarBreak" />
+    <ToolbarWide v-show="!toolbarBreak" />
   </div>
 </template>
 
