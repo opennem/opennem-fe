@@ -1,6 +1,6 @@
 <template>
   <div 
-    :class="{ mobile: mobile }"
+    :class="{ mobile: tabletBreak }"
     class="button-group"
     style="gap: 8px;">
     <div 
@@ -14,13 +14,21 @@
       </button>
     </div>
 
-    <div>
+    <div v-if="rangeDropdownBreak">
+      <RangeDropdown
+        :selected="selectedRange" 
+        :options="ranges.flat()"
+        :mobile="mobile"
+        @option-change="handleRangeDropdownClick" />
+    </div>
+
+    <div v-if="!rangeDropdownBreak">
       <label 
-        v-if="mobile" 
+        v-if="tabletBreak" 
         style="margin-top: 8px;">Range:</label>
       <div 
         v-if="!use12MthRollingToggle" 
-        :class="{ mobile: mobile }"
+        :class="{ mobile: tabletBreak }"
         class="range-buttons buttons has-addons">
         <button
           v-on-clickaway="handleClickAway"
@@ -66,21 +74,21 @@
 
     <div>
       <label 
-        v-if="mobile" 
+        v-if="tabletBreak" 
         style="margin-top: 16px;">Time Interval:</label>
       <div class="interval-dropdowns">
         <IntervalDropdown
           :show-caret="selectedRangeIntervals && selectedRangeIntervals.length > 1"
           :selected="selectedInterval" 
           :options="selectedRangeIntervals"
-          :mobile="mobile"
+          :mobile="tabletBreak"
           @option-change="handleIntervalChange" />
 
         <IntervalDropdown
           v-if="filters.length > 0"
           :selected="selectedFilter" 
           :options="filters"
-          :mobile="mobile"
+          :mobile="tabletBreak"
           @option-change="handleFilterPeriodClick" />
       </div>
     </div>
@@ -92,6 +100,7 @@ import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
 import _includes from 'lodash.includes'
 import IntervalDropdown from './IntervalDropdown.vue'
+import RangeDropdown from './RangeDropdown.vue'
 
 import {
   RANGE_1D,
@@ -135,6 +144,7 @@ export default {
   mixins: [clickaway],
 
   components: {
+    RangeDropdown,
     IntervalDropdown
   },
 
@@ -192,7 +202,8 @@ export default {
 
   computed: {
     ...mapGetters({
-      tabletBreak: 'app/tabletBreak'
+      tabletBreak: 'app/tabletBreak',
+      rangeDropdownBreak: 'app/rangeDropdownBreak'
     }),
     regionId() {
       return this.$route.params.region
@@ -406,6 +417,18 @@ export default {
           }
         }
       }
+    },
+
+    handleRangeDropdownClick(r) {
+      console.log('range', r)
+      this.hideAllPopups()
+
+      if (r === RANGE_ALL_12MTH_ROLLING) {
+        this.handleRangeOptionClick(r)
+      } else {
+        this.handleRangeChange(r)
+      }
+
     },
 
     handleRangeChange(range) {

@@ -25,6 +25,7 @@
         class="filter-menu dropdown-menu">
         <div class="dropdown-content">
           <button 
+            class="dropdown-item"
             v-for="option in options"
             :key="option"
             :class="{ 'is-selected': option === selected }"

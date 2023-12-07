@@ -59,7 +59,7 @@
       <div class="options-header">
         <span>Filters</span>
 
-        <button>Clear</button>
+        <!-- <button>Clear</button> -->
       </div>
 
       <div class="options-wrapper">
@@ -75,9 +75,8 @@
 
       <div class="options-footer">
         <button 
-          class="button" 
-          @click="() => showFilters = false">Cancel</button>
-        <button class="button cta">Apply</button>
+          class="button cta" 
+          @click="() => showFilters = false">Close</button>
       </div>
     </div>
   </div>
