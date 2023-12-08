@@ -25,72 +25,74 @@
       @date-axis="(visible) => showDateAxis = visible"
     />
 
-    <button
-      v-if="
-        showDateAxis && chartShown &&
-          zoomExtent.length > 0 &&
-          !readOnly
-      "
-      class="button is-rounded is-small reset-btn"
-      @click.stop="handleZoomReset"
-    >
-      Zoom Out
-    </button>
+    <div class="chart-border">
+      <button
+        v-if="
+          showDateAxis && chartShown &&
+            zoomExtent.length > 0 &&
+            !readOnly
+        "
+        class="button is-rounded is-small reset-btn"
+        @click.stop="handleZoomReset"
+      >
+        Zoom Out
+      </button>
 
-    <line-vis
-      v-if="chartShown"
-      :read-only="readOnly"
-      :domain-id="temperatureMeanDomain"
-      :min-domain-id="temperatureMinDomain"
-      :max-domain-id="temperatureMaxDomain"
-      :domain-colour="lineColour"
-      :dataset="temperatureDataset"
-      :dynamic-extent="zoomExtent"
-      :hover-date="hoverDate"
-      :hover-on="hoverOn"
-      :focus-date="focusDate"
-      :focus-on="focusOn"
-      :range="range"
-      :interval="interval"
-      :curve="chartCurve"
-      :y-axis-log="false"
-      :y-min="0"
-      :show-x-axis="false"
-      :show-tooltip="false"
-      :show-point-on-hover="true"
-      :vis-height="chartHeight"
-      :show-zoom-out="false"
-      :x-guides="xGuides"
-      :y-axis-ticks="3"
-      :filter-period="filterPeriod"
-      :zoomed="zoomExtent.length > 0"
-      :class="{ dragging: dragging }"
-      class="temperature-vis vis-chart"
-      @dateOver="handleDateHover"
-      @svgClick="handleSvgClick"
-      @enter="handleVisEnter"
-      @leave="handleVisLeave"
-    />
-    <date-brush
-      v-if="showDateAxis && chartShown"
-      :dataset="temperatureDataset"
-      :zoom-range="zoomExtent"
-      :read-only="readOnly"
-      :interval="interval"
-      :filter-period="filterPeriod"
-      :x-ticks="xTicks"
-      :tick-format="tickFormat"
-      :second-tick-format="secondTickFormat"
-      :append-datapoint="isEnergyType ? true : false"
-      class="date-brush vis-chart"
-      @date-hover="handleDateHover"
-      @date-filter="handleZoomExtent"
-      @enter="handleVisEnter"
-      @leave="handleVisLeave"
-    />
+      <line-vis
+        v-if="chartShown"
+        :read-only="readOnly"
+        :domain-id="temperatureMeanDomain"
+        :min-domain-id="temperatureMinDomain"
+        :max-domain-id="temperatureMaxDomain"
+        :domain-colour="lineColour"
+        :dataset="temperatureDataset"
+        :dynamic-extent="zoomExtent"
+        :hover-date="hoverDate"
+        :hover-on="hoverOn"
+        :focus-date="focusDate"
+        :focus-on="focusOn"
+        :range="range"
+        :interval="interval"
+        :curve="chartCurve"
+        :y-axis-log="false"
+        :y-min="0"
+        :show-x-axis="false"
+        :show-tooltip="false"
+        :show-point-on-hover="true"
+        :vis-height="chartHeight"
+        :show-zoom-out="false"
+        :x-guides="xGuides"
+        :y-axis-ticks="3"
+        :filter-period="filterPeriod"
+        :zoomed="zoomExtent.length > 0"
+        :class="{ dragging: dragging }"
+        class="temperature-vis vis-chart"
+        @dateOver="handleDateHover"
+        @svgClick="handleSvgClick"
+        @enter="handleVisEnter"
+        @leave="handleVisLeave"
+      />
+      <date-brush
+        v-if="showDateAxis && chartShown"
+        :dataset="temperatureDataset"
+        :zoom-range="zoomExtent"
+        :read-only="readOnly"
+        :interval="interval"
+        :filter-period="filterPeriod"
+        :x-ticks="xTicks"
+        :tick-format="tickFormat"
+        :second-tick-format="secondTickFormat"
+        :append-datapoint="isEnergyType ? true : false"
+        class="date-brush vis-chart"
+        @date-hover="handleDateHover"
+        @date-filter="handleZoomExtent"
+        @enter="handleVisEnter"
+        @leave="handleVisLeave"
+      />
+    </div>
+
     <Divider
       v-if="allowResize"
-      style="margin-left: 0.5rem;"
       :allow-x="false" 
       :show="showDivider"
       @dragging="(d) => dragging = d" 

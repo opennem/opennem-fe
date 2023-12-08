@@ -30,7 +30,8 @@
     <div 
       v-if="ready"
       ref="visTableContainer"
-      class="vis-table-container">
+      class="vis-table-container"
+      :style="{ 'padding-left': tabletBreak ? '0' : '1rem' }">
 
       <vis-section
         v-if="dashboardView === 'discrete-time'"
@@ -189,7 +190,8 @@ export default {
 
       query: 'app/query',
       showFeatureToggle: 'app/showFeatureToggle',
-      isTouchDevice: 'app/isTouchDevice'
+      isTouchDevice: 'app/isTouchDevice',
+      tabletBreak: 'app/tabletBreak'
     }),
 
     dashboardView: {

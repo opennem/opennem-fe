@@ -31,52 +31,53 @@
         :timezone-string="isEnergyType ? '' : regionTimezoneString"
       />
 
-      <div class="summary-column-headers">
-        <div class="summary-row">
-          <div 
-            class="summary-col-label" 
-            style="padding-top: 3px">
-            <group-selector v-if="groupSelection" />
+      <div class="chart-border">
+        <div class="summary-column-headers">
+          <div class="summary-row">
+            <div 
+              class="summary-col-label" 
+              style="padding-top: 3px">
+              <group-selector v-if="groupSelection" />
+            </div>
+
+            <div 
+              class="summary-col-external-link-icon" 
+              style="width: 20px" />
+
+            <div
+              v-if="isEnergy"
+              class="summary-col-energy cell-toggle"
+              @click="handleUnitCellClicked"
+            >
+              <span v-if="isTypeChangeSinceLine">
+                Change since <small>{{ displayUnit }}</small>
+              </span>
+              <span v-else>
+                Energy <small>{{ chartCurrentUnit }}</small>
+              </span>
+            </div>
+            <div 
+              v-else 
+              class="summary-col-energy">
+              <span v-if="hoverOn || focusOn">
+                Power <small>{{ chartCurrentUnit }}</small>
+              </span>
+              <span v-else> Energy <small>GWh</small> </span>
+            </div>
+
+            <div
+              class="summary-col-contribution cell-toggle"
+              @click="handlePercentContributionToClick"
+            >
+              Contribution <small>to {{ percentContributionTo }}</small>
+            </div>
+            <div class="summary-col-av-value">
+              <column-selector />
+            </div>
           </div>
 
-          <div 
-            class="summary-col-external-link-icon" 
-            style="width: 20px" />
-
-          <div
-            v-if="isEnergy"
-            class="summary-col-energy cell-toggle"
-            @click="handleUnitCellClicked"
-          >
-            <span v-if="isTypeChangeSinceLine">
-              Change since <small>{{ displayUnit }}</small>
-            </span>
-            <span v-else>
-              Energy <small>{{ chartCurrentUnit }}</small>
-            </span>
-          </div>
-          <div 
-            v-else 
-            class="summary-col-energy">
-            <span v-if="hoverOn || focusOn">
-              Power <small>{{ chartCurrentUnit }}</small>
-            </span>
-            <span v-else> Energy <small>GWh</small> </span>
-          </div>
-
-          <div
-            class="summary-col-contribution cell-toggle"
-            @click="handlePercentContributionToClick"
-          >
-            Contribution <small>to {{ percentContributionTo }}</small>
-          </div>
-          <div class="summary-col-av-value">
-            <column-selector />
-          </div>
-        </div>
-
-        <div class="summary-row">
-          <div class="summary-col-label">Sources</div>
+          <div class="summary-row">
+            <div class="summary-col-label">Sources</div>
 
           <!-- <div
             class="summary-col-external-link-icon" 
@@ -167,45 +168,64 @@
               {{ emissionIntensityHoverValue | formatValue }}
             </span>
           </div> -->
+          </div>
         </div>
-      </div>
 
-      <items
-        :group="'ft-sources'"
-        :hidden-fuel-techs="hiddenSources"
-        :original-order="sourcesOrder"
-        :market-value-order="sourcesMarketValueOrder"
-        :show-point-summary="hoverOn || focusOn"
-        :point-summary="pointSummarySources"
-        :point-summary-total="pointSummarySourcesTotal"
-        :summary="summarySources"
-        :summary-total="summarySourcesTotal"
-        :domain-toggleable="domainToggleable"
-        :energy-domains="energyDomains"
-        :emissions-domains="emissionsDomains"
-        :is-year-interval="isYearInterval"
-        @update="handleSourcesOrderUpdate"
-        @fuelTechsHidden="handleSourceFuelTechsHidden"
-        @mouse-enter="handleMouseEnter"
-        @mouse-leave="handleMouseLeave"
-        @domain-click="handleDomainClick"
-      />
+        <items
+          :group="'ft-sources'"
+          :hidden-fuel-techs="hiddenSources"
+          :original-order="sourcesOrder"
+          :market-value-order="sourcesMarketValueOrder"
+          :show-point-summary="hoverOn || focusOn"
+          :point-summary="pointSummarySources"
+          :point-summary-total="pointSummarySourcesTotal"
+          :summary="summarySources"
+          :summary-total="summarySourcesTotal"
+          :domain-toggleable="domainToggleable"
+          :energy-domains="energyDomains"
+          :emissions-domains="emissionsDomains"
+          :is-year-interval="isYearInterval"
+          @update="handleSourcesOrderUpdate"
+          @fuelTechsHidden="handleSourceFuelTechsHidden"
+          @mouse-enter="handleMouseEnter"
+          @mouse-leave="handleMouseLeave"
+          @domain-click="handleDomainClick"
+        />
 
-      <div 
-        v-if="loadsOrder.length > 0" 
-        class="summary-column-headers">
-        <div class="summary-row">
-          <div class="summary-col-label">Loads</div>
+        <div 
+          v-if="loadsOrder.length > 0" 
+          class="summary-column-headers">
+          <div class="summary-row">
+            <div class="summary-col-label">Loads</div>
 
-          <div 
-            class="summary-col-external-link-icon" 
-            style="width: 20px" />
+            <div 
+              class="summary-col-external-link-icon" 
+              style="width: 20px" />
 
-          <div 
-            v-if="isEnergy" 
-            class="summary-col-energy cell-value">
-            <div v-if="isTypeChangeSinceLine">–</div>
-            <div v-else>
+            <div 
+              v-if="isEnergy" 
+              class="summary-col-energy cell-value">
+              <div v-if="isTypeChangeSinceLine">–</div>
+              <div v-else>
+                <span v-if="hoverOn || focusOn">
+                  {{
+                    pointSummaryLoads._total
+                      | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                      | formatValue
+                  }}
+                </span>
+                <span v-else>
+                  {{
+                    summaryLoads._totalEnergy
+                      | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                      | formatValue
+                  }}
+                </span>
+              </div>
+            </div>
+            <div 
+              v-else 
+              class="summary-col-energy cell-value">
               <span v-if="hoverOn || focusOn">
                 {{
                   pointSummaryLoads._total
@@ -214,189 +234,172 @@
                 }}
               </span>
               <span v-else>
+                {{ summaryLoads._totalEnergy | formatValue }}
+              </span>
+            </div>
+
+            <div class="summary-col-contribution cell-value" />
+            <div class="summary-col-av-value cell-value" />
+          </div>
+        </div>
+
+        <items
+          :group="'ft-loads'"
+          :hidden-fuel-techs="hiddenLoads"
+          :original-order="loadsOrder"
+          :market-value-order="loadsMarketValueOrder"
+          :show-point-summary="hoverOn || focusOn"
+          :point-summary="pointSummaryLoads"
+          :point-summary-total="pointSummary._totalEnergyForPercentageCalculation"
+          :summary="summaryLoads"
+          :summary-total="summary._totalEnergyForPercentageCalculation"
+          :is-year-interval="isYearInterval"
+          :energy-domains="energyDomains"
+          :emissions-domains="emissionsDomains"
+          @update="handleLoadsOrderUpdate"
+          @fuelTechsHidden="handleLoadFuelTechsHidden"
+          @mouse-enter="handleMouseEnter"
+          @mouse-leave="handleMouseLeave"
+        />
+
+        <div 
+          v-if="loadsOrder.length > 0" 
+          class="summary-column-headers line-row"
+          @touchstart="() => handleTouchstart('chartEnergyNetLine')"
+          @touchend="handleTouchend"
+          @click.exact="() => handleTotalLineRowClicked('chartEnergyNetLine')"
+          @click.shift.exact="() => handleLineRowShiftClicked('chartEnergyNetLine')"
+        >
+          <div class="summary-row last-row">
+            <div class="summary-col-label">
+              <div
+                :class="{
+                  on: chartEnergyNetLine
+                }"
+                class="line-icon net"
+              />
+              Net
+            </div>
+
+            <div 
+              class="summary-col-external-link-icon" 
+              style="width: 20px" />
+
+            <div 
+              v-if="isEnergy" 
+              class="summary-col-energy cell-value">
+              <span v-if="hoverOn || focusOn">
                 {{
-                  summaryLoads._totalEnergy
+                  pointSummary._total
+                    | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                    | formatValue
+                }}
+              </span>
+              <span v-else-if="isTypeChangeSinceLine"> – </span>
+              <span v-else>
+                {{
+                  summary._totalEnergy
                     | convertValue(chartUnitPrefix, chartDisplayPrefix)
                     | formatValue
                 }}
               </span>
             </div>
-          </div>
-          <div 
-            v-else 
-            class="summary-col-energy cell-value">
-            <span v-if="hoverOn || focusOn">
-              {{
-                pointSummaryLoads._total
-                  | convertValue(chartUnitPrefix, chartDisplayPrefix)
-                  | formatValue
-              }}
-            </span>
-            <span v-else>
-              {{ summaryLoads._totalEnergy | formatValue }}
-            </span>
-          </div>
+            <div 
+              v-else 
+              class="summary-col-energy cell-value">
+              <span v-if="hoverOn || focusOn">
+                {{
+                  pointSummary._total
+                    | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                    | formatValue
+                }}
+              </span>
+              <span v-else-if="isTypeChangeSinceLine"> – </span>
+              <span v-else>
+                {{ summary._totalEnergy | formatValue }}
+              </span>
+            </div>
 
-          <div class="summary-col-contribution cell-value" />
-          <div class="summary-col-av-value cell-value" />
+            <div class="summary-col-contribution cell-value" />
+            <div class="summary-col-av-value cell-value" />
+          </div>
         </div>
-      </div>
 
-      <items
-        :group="'ft-loads'"
-        :hidden-fuel-techs="hiddenLoads"
-        :original-order="loadsOrder"
-        :market-value-order="loadsMarketValueOrder"
-        :show-point-summary="hoverOn || focusOn"
-        :point-summary="pointSummaryLoads"
-        :point-summary-total="pointSummary._totalEnergyForPercentageCalculation"
-        :summary="summaryLoads"
-        :summary-total="summary._totalEnergyForPercentageCalculation"
-        :is-year-interval="isYearInterval"
-        :energy-domains="energyDomains"
-        :emissions-domains="emissionsDomains"
-        @update="handleLoadsOrderUpdate"
-        @fuelTechsHidden="handleLoadFuelTechsHidden"
-        @mouse-enter="handleMouseEnter"
-        @mouse-leave="handleMouseLeave"
-      />
+        <div
+          class="summary-column-headers line-row"
+          @touchstart="() => handleTouchstart(chartEnergyRenewablesLine)"
+          @touchend="handleTouchend"
+          @click.exact="() => handleTotalLineRowClicked('chartEnergyRenewablesLine')"
+          @click.shift.exact="() => handleLineRowShiftClicked('chartEnergyRenewablesLine')"
+        >
+          <div class="summary-row last-row">
+            <div class="summary-col-label">
+              <div
+                :class="{
+                  on: chartEnergyRenewablesLine,
+                  'alt-colour': useAltRenewablesLineColour
+                }"
+                class="line-icon"
+              />
+              Renewables
+            </div>
 
-      <div 
-        v-if="loadsOrder.length > 0" 
-        class="summary-column-headers line-row"
-        @touchstart="() => handleTouchstart('chartEnergyNetLine')"
-        @touchend="handleTouchend"
-        @click.exact="() => handleTotalLineRowClicked('chartEnergyNetLine')"
-        @click.shift.exact="() => handleLineRowShiftClicked('chartEnergyNetLine')"
-      >
-        <div class="summary-row last-row">
-          <div class="summary-col-label">
+            <div 
+              class="summary-col-external-link-icon" 
+              style="width: 20px" />
+
+            <div 
+              v-if="isEnergy" 
+              class="summary-col-energy cell-value">
+              <span v-if="hoverOn || focusOn">
+                {{
+                  renewablesValue
+                    | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                    | formatValue
+                }}
+              </span>
+              <span v-else-if="isTypeChangeSinceLine"> – </span>
+              <span v-else>
+                {{
+                  renewablesValue
+                    | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                    | formatValue
+                }}
+              </span>
+            </div>
+            <div 
+              v-else 
+              class="summary-col-energy cell-value">
+              <span v-if="hoverOn || focusOn">
+                {{
+                  renewablesValue
+                    | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                    | formatValue
+                }}
+              </span>
+              <span v-else-if="isTypeChangeSinceLine"> – </span>
+              <span v-else>
+                {{ renewablesValue | formatValue }}
+              </span>
+            </div>
+
             <div
-              :class="{
-                on: chartEnergyNetLine
-              }"
-              class="line-icon net"
-            />
-            Net
-          </div>
-
-          <div 
-            class="summary-col-external-link-icon" 
-            style="width: 20px" />
-
-          <div 
-            v-if="isEnergy" 
-            class="summary-col-energy cell-value">
-            <span v-if="hoverOn || focusOn">
-              {{
-                pointSummary._total
-                  | convertValue(chartUnitPrefix, chartDisplayPrefix)
-                  | formatValue
-              }}
-            </span>
-            <span v-else-if="isTypeChangeSinceLine"> – </span>
-            <span v-else>
-              {{
-                summary._totalEnergy
-                  | convertValue(chartUnitPrefix, chartDisplayPrefix)
-                  | formatValue
-              }}
-            </span>
-          </div>
-          <div 
-            v-else 
-            class="summary-col-energy cell-value">
-            <span v-if="hoverOn || focusOn">
-              {{
-                pointSummary._total
-                  | convertValue(chartUnitPrefix, chartDisplayPrefix)
-                  | formatValue
-              }}
-            </span>
-            <span v-else-if="isTypeChangeSinceLine"> – </span>
-            <span v-else>
-              {{ summary._totalEnergy | formatValue }}
-            </span>
-          </div>
-
-          <div class="summary-col-contribution cell-value" />
-          <div class="summary-col-av-value cell-value" />
-        </div>
-      </div>
-
-      <div
-        class="summary-column-headers line-row"
-        @touchstart="() => handleTouchstart(chartEnergyRenewablesLine)"
-        @touchend="handleTouchend"
-        @click.exact="() => handleTotalLineRowClicked('chartEnergyRenewablesLine')"
-        @click.shift.exact="() => handleLineRowShiftClicked('chartEnergyRenewablesLine')"
-      >
-        <div class="summary-row last-row">
-          <div class="summary-col-label">
+              v-if="!hoverOn && !focusOn"
+              class="summary-col-contribution cell-value"
+            >
+              {{ renewablesPercentage | percentageFormatNumber }}
+            </div>
             <div
-              :class="{
-                on: chartEnergyRenewablesLine,
-                'alt-colour': useAltRenewablesLineColour
-              }"
-              class="line-icon"
-            />
-            Renewables
+              v-if="hoverOn || focusOn"
+              class="summary-col-contribution cell-value"
+            >
+              {{ pointRenewablesPercentage | percentageFormatNumber }}
+            </div>
+            <div class="summary-col-av-value cell-value" />
           </div>
-
-          <div 
-            class="summary-col-external-link-icon" 
-            style="width: 20px" />
-
-          <div 
-            v-if="isEnergy" 
-            class="summary-col-energy cell-value">
-            <span v-if="hoverOn || focusOn">
-              {{
-                renewablesValue
-                  | convertValue(chartUnitPrefix, chartDisplayPrefix)
-                  | formatValue
-              }}
-            </span>
-            <span v-else-if="isTypeChangeSinceLine"> – </span>
-            <span v-else>
-              {{
-                renewablesValue
-                  | convertValue(chartUnitPrefix, chartDisplayPrefix)
-                  | formatValue
-              }}
-            </span>
-          </div>
-          <div 
-            v-else 
-            class="summary-col-energy cell-value">
-            <span v-if="hoverOn || focusOn">
-              {{
-                renewablesValue
-                  | convertValue(chartUnitPrefix, chartDisplayPrefix)
-                  | formatValue
-              }}
-            </span>
-            <span v-else-if="isTypeChangeSinceLine"> – </span>
-            <span v-else>
-              {{ renewablesValue | formatValue }}
-            </span>
-          </div>
-
-          <div
-            v-if="!hoverOn && !focusOn"
-            class="summary-col-contribution cell-value"
-          >
-            {{ renewablesPercentage | percentageFormatNumber }}
-          </div>
-          <div
-            v-if="hoverOn || focusOn"
-            class="summary-col-contribution cell-value"
-          >
-            {{ pointRenewablesPercentage | percentageFormatNumber }}
-          </div>
-          <div class="summary-col-av-value cell-value" />
         </div>
       </div>
+      
     </div>
   </div>
 </template>
