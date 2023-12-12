@@ -1,34 +1,34 @@
 <template>
   <section>
-    <table class="table is-fullwidth">
-      <caption>
-        Stats
+    <header>
+      <h5>Stats</h5>
 
-        <div>
-          <span>
-            <time>
-              {{
-                startDate | customFormatDate({ range, interval, isStart: true })
-              }}
-            </time>
-            –
-            <time>
-              {{
-                endDate
-                  | customFormatDate({
-                    range,
-                    interval,
-                    showYear: true,
-                    isEnd: true
-                  })
-              }}
-            </time>
-          </span>
-          <small>
-            {{ timezoneString }}
-          </small>
-        </div>
-      </caption>
+      <div>
+        <span>
+          <time>
+            {{
+              startDate | customFormatDate({ range, interval, isStart: true })
+            }}
+          </time>
+          –
+          <time>
+            {{
+              endDate
+                | customFormatDate({
+                  range,
+                  interval,
+                  showYear: true,
+                  isEnd: true
+                })
+            }}
+          </time>
+        </span>
+        <small>
+          {{ timezoneString }}
+        </small>
+      </div>
+    </header>
+    <table class="table is-fullwidth">
       <thead>
         <tr>
           <th />
@@ -600,28 +600,27 @@ export default {
 <style lang="scss" scoped>
 @import '~/assets/scss/variables.scss';
 
-.table {
-  background-color: transparent;
-  font-size: 0.8em;
+header {
+  border-bottom: 1px solid #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-  caption {
-    border-bottom: 1px solid #333;
-    text-align: left;
-    font-family: $header-font-family;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 1.2em;
-
-    & > div {
-      font-size: 0.9em;
-      font-family: $family-primary;
-      float: right;
-      position: relative;
-      top: 3px;
-      text-transform: none;
-      color: #444;
-      font-weight: 500;
-    }
+  h5 {
+    font-weight: bold;
+    font-size: 16px;
   }
+
+  & > div {
+    font-size: 12px;
+    color: #6A6A6A;
+    font-weight: 400;
+  }
+}
+
+.table {
+  font-size: 0.8em;
+  border: 1px solid #E0DFDC;
+  background-color: #fff;
 }
 </style>
