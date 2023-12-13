@@ -5,7 +5,7 @@
     <div
       v-for="ft in order"
       :key="ft.id"
-      class="item summary-row"
+      class="item summary-row hoverable"
       @mouseenter="handleMouseEnter(ft)"
       @mouseleave="handleMouseLeave"
       @touchstart="handleTouchstart(ft)"
