@@ -127,6 +127,9 @@ export const mutations = {
 export const getters = {
   hostEnv: (state) => state.hostEnv,
   currentView: (state) => state.currentView,
+  isEnergyView: (state) => state.currentView === 'energy',
+  isFacilitiesView: (state) => state.currentView === 'facilities',
+  
   nemLength: (state) => state.nem.length,
   nemData: (state) => state.nem,
   fuelTechMeta: (state) => state.fuelTechMeta,

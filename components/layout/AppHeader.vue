@@ -212,7 +212,7 @@ export default {
       return this.$store.getters.dateFilter
     },
     isFacilitiesView() {
-      return this.$store.getters.currentView === 'facilities'
+      return this.$store.getters.isFacilitiesView
     },
     chartUnit() {
       return this.$store.getters.chartUnit
