@@ -151,12 +151,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '~/assets/scss/variables.scss';
-tr.divider {
-  th,
-  td {
-    border-bottom-color: #666;
-  }
-}
+
 th {
   font-family: $header-font-family;
 
@@ -188,7 +183,7 @@ tr.has-date-focus {
 
 .table tbody tr:last-child td,
 .table tbody tr:last-child th {
-  border-bottom-width: 1px;
+  border-bottom-width: 0;
 }
 
 time {

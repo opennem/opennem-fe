@@ -28,139 +28,145 @@
         </small>
       </div>
     </header>
-    <table class="table is-fullwidth">
-      <thead>
-        <tr>
-          <th />
-          <th class="has-text-right">Min.</th>
-          <th class="has-text-right">Max.</th>
-        </tr>
-      </thead>
-      <tbody>
-        <energy-record
-          v-if="showSelectedRow"
-          :row-label="'Selected'"
-          :row-unit="` ${chartCurrentUnit}`"
-          :min-date="minSelectedDate"
-          :min-value="convertValue(minSelected)"
-          :max-date="maxSelectedDate"
-          :max-value="convertValue(maxSelected)"
-          :range="range"
-          :interval="interval"
-          :record-select-date="recordSelectDate"
-          :divider="true"
-          @recordSelect="handleRecordSelect"
-          @recordDeselect="handleRecordDeselect"
-          @recordMouseEnter="handleRecordEnter"
-          @recordMouseLeave="handleRecordLeave"
-        />
 
-        <energy-record
-          v-if="isContributionDemand"
-          :row-label="'Demand'"
-          :row-unit="` ${chartCurrentUnit}`"
-          :min-date="minDemandDate"
-          :min-value="convertValue(minDemand)"
-          :max-date="maxDemandDate"
-          :max-value="convertValue(maxDemand)"
-          :range="range"
-          :interval="interval"
-          :record-select-date="recordSelectDate"
-          @recordSelect="handleRecordSelect"
-          @recordDeselect="handleRecordDeselect"
-          @recordMouseEnter="handleRecordEnter"
-          @recordMouseLeave="handleRecordLeave"
-        />
+    <div 
+      class="chart-border" 
+      style="padding: 6px 6px 0;">
+      <table class="table is-fullwidth">
+        <thead>
+          <tr>
+            <th />
+            <th class="has-text-right">Min.</th>
+            <th class="has-text-right">Max.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <energy-record
+            v-if="showSelectedRow"
+            :row-label="'Selected'"
+            :row-unit="` ${chartCurrentUnit}`"
+            :min-date="minSelectedDate"
+            :min-value="convertValue(minSelected)"
+            :max-date="maxSelectedDate"
+            :max-value="convertValue(maxSelected)"
+            :range="range"
+            :interval="interval"
+            :record-select-date="recordSelectDate"
+            :divider="true"
+            @recordSelect="handleRecordSelect"
+            @recordDeselect="handleRecordDeselect"
+            @recordMouseEnter="handleRecordEnter"
+            @recordMouseLeave="handleRecordLeave"
+          />
 
-        <energy-record
-          v-if="isContributionDemand"
-          :row-label="'Renewables'"
-          :row-unit="'%'"
-          :min-date="minDemandRenewablesDate"
-          :min-value="minDemandRenewables"
-          :max-date="maxDemandRenewablesDate"
-          :max-value="maxDemandRenewables"
-          :range="range"
-          :interval="interval"
-          :divider="true"
-          :record-select-date="recordSelectDate"
-          @recordSelect="handleRecordSelect"
-          @recordDeselect="handleRecordDeselect"
-          @recordMouseEnter="handleRecordEnter"
-          @recordMouseLeave="handleRecordLeave"
-        />
+          <energy-record
+            v-if="isContributionDemand"
+            :row-label="'Demand'"
+            :row-unit="` ${chartCurrentUnit}`"
+            :min-date="minDemandDate"
+            :min-value="convertValue(minDemand)"
+            :max-date="maxDemandDate"
+            :max-value="convertValue(maxDemand)"
+            :range="range"
+            :interval="interval"
+            :record-select-date="recordSelectDate"
+            @recordSelect="handleRecordSelect"
+            @recordDeselect="handleRecordDeselect"
+            @recordMouseEnter="handleRecordEnter"
+            @recordMouseLeave="handleRecordLeave"
+          />
 
-        <energy-record
-          v-if="isContributionGeneration"
-          :row-label="'Generation'"
-          :row-unit="` ${chartCurrentUnit}`"
-          :min-date="minGenerationDate"
-          :min-value="convertValue(minGeneration)"
-          :max-date="maxGenerationDate"
-          :max-value="convertValue(maxGeneration)"
-          :range="range"
-          :interval="interval"
-          :record-select-date="recordSelectDate"
-          @recordSelect="handleRecordSelect"
-          @recordDeselect="handleRecordDeselect"
-          @recordMouseEnter="handleRecordEnter"
-          @recordMouseLeave="handleRecordLeave"
-        />
+          <energy-record
+            v-if="isContributionDemand"
+            :row-label="'Renewables'"
+            :row-unit="'%'"
+            :min-date="minDemandRenewablesDate"
+            :min-value="minDemandRenewables"
+            :max-date="maxDemandRenewablesDate"
+            :max-value="maxDemandRenewables"
+            :range="range"
+            :interval="interval"
+            :divider="true"
+            :record-select-date="recordSelectDate"
+            @recordSelect="handleRecordSelect"
+            @recordDeselect="handleRecordDeselect"
+            @recordMouseEnter="handleRecordEnter"
+            @recordMouseLeave="handleRecordLeave"
+          />
 
-        <energy-record
-          v-if="isContributionGeneration"
-          :row-label="'Renewables'"
-          :row-unit="'%'"
-          :min-date="minGenerationRenewablesDate"
-          :min-value="minGenerationRenewables"
-          :max-date="maxGenerationRenewablesDate"
-          :max-value="maxGenerationRenewables"
-          :range="range"
-          :interval="interval"
-          :divider="true"
-          :record-select-date="recordSelectDate"
-          @recordSelect="handleRecordSelect"
-          @recordDeselect="handleRecordDeselect"
-          @recordMouseEnter="handleRecordEnter"
-          @recordMouseLeave="handleRecordLeave"
-        />
+          <energy-record
+            v-if="isContributionGeneration"
+            :row-label="'Generation'"
+            :row-unit="` ${chartCurrentUnit}`"
+            :min-date="minGenerationDate"
+            :min-value="convertValue(minGeneration)"
+            :max-date="maxGenerationDate"
+            :max-value="convertValue(maxGeneration)"
+            :range="range"
+            :interval="interval"
+            :record-select-date="recordSelectDate"
+            @recordSelect="handleRecordSelect"
+            @recordDeselect="handleRecordDeselect"
+            @recordMouseEnter="handleRecordEnter"
+            @recordMouseLeave="handleRecordLeave"
+          />
 
-        <energy-record
-          v-if="priceId"
-          :row-label="'Price'"
-          :row-unit="'$/MWh'"
-          :min-date="minPriceDate"
-          :min-value="minPrice"
-          :max-date="maxPriceDate"
-          :max-value="maxPrice"
-          :range="range"
-          :interval="interval"
-          :is-currency="true"
-          :record-select-date="recordSelectDate"
-          @recordSelect="handleRecordSelect"
-          @recordDeselect="handleRecordDeselect"
-          @recordMouseEnter="handleRecordEnter"
-          @recordMouseLeave="handleRecordLeave"
-        />
+          <energy-record
+            v-if="isContributionGeneration"
+            :row-label="'Renewables'"
+            :row-unit="'%'"
+            :min-date="minGenerationRenewablesDate"
+            :min-value="minGenerationRenewables"
+            :max-date="maxGenerationRenewablesDate"
+            :max-value="maxGenerationRenewables"
+            :range="range"
+            :interval="interval"
+            :divider="true"
+            :record-select-date="recordSelectDate"
+            @recordSelect="handleRecordSelect"
+            @recordDeselect="handleRecordDeselect"
+            @recordMouseEnter="handleRecordEnter"
+            @recordMouseLeave="handleRecordLeave"
+          />
 
-        <energy-record
-          v-if="temperatureId"
-          :row-label="'Temperature'"
-          :row-unit="'°C'"
-          :min-date="minTemperatureDate"
-          :min-value="minTemperature"
-          :max-date="maxTemperatureDate"
-          :max-value="maxTemperature"
-          :range="range"
-          :interval="interval"
-          :record-select-date="recordSelectDate"
-          @recordSelect="handleRecordSelect"
-          @recordDeselect="handleRecordDeselect"
-          @recordMouseEnter="handleRecordEnter"
-          @recordMouseLeave="handleRecordLeave"
-        />
-      </tbody>
-    </table>
+          <energy-record
+            v-if="priceId"
+            :row-label="'Price'"
+            :row-unit="'$/MWh'"
+            :min-date="minPriceDate"
+            :min-value="minPrice"
+            :max-date="maxPriceDate"
+            :max-value="maxPrice"
+            :range="range"
+            :interval="interval"
+            :is-currency="true"
+            :record-select-date="recordSelectDate"
+            @recordSelect="handleRecordSelect"
+            @recordDeselect="handleRecordDeselect"
+            @recordMouseEnter="handleRecordEnter"
+            @recordMouseLeave="handleRecordLeave"
+          />
+
+          <energy-record
+            v-if="temperatureId"
+            :row-label="'Temperature'"
+            :row-unit="'°C'"
+            :min-date="minTemperatureDate"
+            :min-value="minTemperature"
+            :max-date="maxTemperatureDate"
+            :max-value="maxTemperature"
+            :range="range"
+            :interval="interval"
+            :record-select-date="recordSelectDate"
+            @recordSelect="handleRecordSelect"
+            @recordDeselect="handleRecordDeselect"
+            @recordMouseEnter="handleRecordEnter"
+            @recordMouseLeave="handleRecordLeave"
+          />
+        </tbody>
+      </table>
+    </div>
+    
   </section>
 </template>
 
@@ -620,7 +626,9 @@ header {
 
 .table {
   font-size: 0.8em;
-  border: 1px solid #E0DFDC;
-  background-color: #fff;
+
+  th {
+    border: 0;
+  }
 }
 </style>
