@@ -6,6 +6,7 @@
       v-if="ready" 
       class="header-dropdowns">
       <ViewDropdown />
+      <RegionDropdown />
     </div>
 
     <div class="options">
@@ -63,10 +64,10 @@
       </div>
 
       <div class="options-wrapper">
-        <label>
+        <!-- <label>
           <span>Region:</span>
           <RegionDropdown :full-width="true" />
-        </label>
+        </label> -->
 
         <EnergyDataOptions :mobile="true" />
 
@@ -307,11 +308,15 @@ export default {
   .header-dropdowns {
     display: flex;
     align-items: center;
-    padding: $toolbar-padding;
+    padding: 6px;
+
+    .dropdown {
+      font-size: 1rem;
+    }
   }
 
   .options {
-    padding: $toolbar-padding / 2 $toolbar-padding;
+    padding: 6px 12px 6px;
     display: flex;
     gap: 6px;
   }
