@@ -1,6 +1,10 @@
 <template>
   <header>
-    <OpenElectricityLogo />
+    <a 
+      class="home-link" 
+      href="https://openelectricity.org.au">
+      <OpenElectricityLogo />
+    </a>
 
     <nav>
       <a 
@@ -72,6 +76,11 @@ header {
   position: relative;
   z-index: 100;
   height: 70px;
+
+  .home-link {
+    display: flex;
+    align-items: center;
+  }
 }
 
 nav {
