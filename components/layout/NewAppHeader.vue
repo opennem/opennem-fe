@@ -15,11 +15,17 @@
         {{ link.name }}
       </a>
     </nav>
+
+    <BurgerButton 
+      class="mobile-nav"
+      :active="mobileNavActive" 
+      @click="() => mobileNavActive = !mobileNavActive" />
   </header>
 </template>
 
 <script>
 import OpenElectricityLogo from '../ui/OpenElectricityLogo.vue';
+import BurgerButton from './BurgerButton.vue';
 
 const topLevelLinks = [
   {
@@ -52,12 +58,14 @@ const topLevelLinks = [
 
 export default {
   components: {
-    OpenElectricityLogo
+    OpenElectricityLogo,
+    BurgerButton
   },
 
   data() {
     return {
-      links: topLevelLinks
+      links: topLevelLinks,
+      mobileNavActive: false
     };
   },
 }
@@ -88,6 +96,10 @@ nav {
   justify-content: space-between;
   gap: 2rem;
 
+  @media screen and (max-width: 1036px) {
+    display: none;
+  }
+
   a {
     display: flex;
     align-items: center;
@@ -113,6 +125,13 @@ nav {
       background-color: #c74523;
       opacity: 1;
     }
+  }
+}
+
+.mobile-nav {
+  display: none;
+  @media screen and (max-width: 1036px) {
+    display: block;
   }
 }
 </style>
