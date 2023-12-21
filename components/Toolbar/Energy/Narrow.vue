@@ -308,7 +308,7 @@ export default {
   .header-dropdowns {
     display: flex;
     align-items: center;
-    padding: 6px;
+    padding: 10px;
 
     .dropdown {
       font-size: 1rem;
@@ -316,9 +316,9 @@ export default {
   }
 
   .options {
-    padding: 6px 12px 6px;
+    padding: 10px;
     display: flex;
-    gap: 6px;
+    gap: 10px;
   }
 
   .export-bar {

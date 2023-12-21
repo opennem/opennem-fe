@@ -6,7 +6,7 @@
       <OpenElectricityLogo />
     </a>
 
-    <nav>
+    <nav :class="{ active: mobileNavActive }">
       <a 
         v-for="link in links" 
         :key="link.name"
@@ -64,10 +64,20 @@ export default {
 
   data() {
     return {
-      links: topLevelLinks,
-      mobileNavActive: false
+      links: topLevelLinks
     };
   },
+
+  computed: {
+    mobileNavActive: {
+      get() {
+        return this.$store.state.app.mobileNavActive;
+      },
+      set(value) {
+        this.$store.commit('app/mobileNavActive', value);
+      }
+    }
+  }
 }
 </script>
 
@@ -89,6 +99,16 @@ header {
     display: flex;
     align-items: center;
   }
+
+  @media screen and (max-width: 1036px) {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    border-bottom: 0;
+    z-index: 1000;
+  }
 }
 
 nav {
@@ -97,7 +117,24 @@ nav {
   gap: 2rem;
 
   @media screen and (max-width: 1036px) {
+    flex-direction: column;
+    gap: 20px;
+    position: fixed;
+    justify-content: flex-start;
+    top: 70px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1001;
+    background-color: #fff;
+    font-weight: 500;
+    font-size: 20px;
+    padding: 20px;
     display: none;
+
+    &.active {
+      display: flex;
+    }
   }
 
   a {

@@ -9,7 +9,8 @@ export const state = () => ({
   dashboardView: 'discrete-time', // 'time-of-day'
   facilitiesQuery: null,
   showFeatureToggle: false,
-  siteAnnouncement: process.env.SITEWIDE_ANNOUNCEMENT
+  siteAnnouncement: process.env.SITEWIDE_ANNOUNCEMENT,
+  mobileNavActive: false
 })
 
 export const getters = {
@@ -28,7 +29,8 @@ export const getters = {
   dashboardView: (state) => state.dashboardView,
   facilitiesQuery: (state) => state.facilitiesQuery,
   showFeatureToggle: (state) => state.showFeatureToggle,
-  siteAnnouncement: (state) => state.siteAnnouncement
+  siteAnnouncement: (state) => state.siteAnnouncement,
+  mobileNavActive: (state) => state.mobileNavActive
 }
 
 export const mutations = {
@@ -61,6 +63,9 @@ export const mutations = {
   },
   showFeatureToggle(state, showFeatureToggle) {
     state.showFeatureToggle = showFeatureToggle
+  },
+  mobileNavActive(state, mobileNavActive) {
+    state.mobileNavActive = mobileNavActive
   }
 }
 

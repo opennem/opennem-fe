@@ -30,9 +30,13 @@
     </transition>
 
     <NewAppHeader />
-    <Toolbar />
-    <!-- <app-header /> -->
-    <nuxt />
+
+    <div style="border-top: 1px solid #e5e5e5">
+      <Toolbar />
+      <!-- <app-header /> -->
+      <nuxt />
+    </div>
+    
     <app-footer v-if="!tabletBreak" />
   </div>
 </template>
