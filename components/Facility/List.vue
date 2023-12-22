@@ -597,8 +597,8 @@ export default {
       }
 
       return !(
-        ftBoolArr.reduce((a, b) => a && b) &&
-        statusBoolArr.reduce((a, b) => a && b)
+        ftBoolArr.reduce((a, b) => a && b, 0) &&
+        statusBoolArr.reduce((a, b) => a && b, 0)
       )
     },
     isSelected(stationId) {

@@ -15,10 +15,18 @@
       v-if="ready"
       class="data-options-bar">
 
-      <!-- <div>
-        <EnergyDataOptions />
+      <div>
+        <FacilityFilters
+          :selected-techs="selectedTechs"
+          :selected-statuses="selectedStatuses"
+          :selected-sizes="selectedSizes"
+          @techsSelect="(d) => selectedTechs = d"
+          @selectedStatuses="(d) => selectedStatuses = d"
+          @selectedSizes="(d) => selectedSizes = d"
+          @facilityNameFilter="(d) => filterString = d"
+        />
       </div>
- -->
+
       
     </div>
 
@@ -50,11 +58,13 @@
 import { mapGetters } from 'vuex'
 import ViewDropdown from '~/components/ui/ViewDropdown'
 import RegionDropdown from '~/components/ui/RegionDropdown'
+import FacilityFilters from '~/components/Facility/Filters.vue'
 
 export default {
   components: {
     ViewDropdown,
     RegionDropdown,
+    FacilityFilters
   },
 
   data() {
@@ -66,7 +76,43 @@ export default {
   computed: {
     ...mapGetters({
       tabletBreak: 'app/tabletBreak'
-    })
+    }),
+
+    filterString: {
+      get() {
+        return this.$store.getters['facility/filterString']
+      },
+      set(val) {
+        this.$store.commit('facility/filterString', val)
+      }
+    },
+
+    selectedSizes: {
+      get() {
+        return this.$store.getters['facility/selectedSizes']
+      },
+      set(val) {
+        this.$store.commit('facility/selectedSizes', val)
+      }
+    },
+
+    selectedStatuses: {
+      get() {
+        return this.$store.getters['facility/selectedStatuses']
+      },
+      set(val) {
+        this.$store.commit('facility/selectedStatuses', val)
+      }
+    },
+
+    selectedTechs: {
+      get() {
+        return this.$store.getters['facility/selectedTechs']
+      },
+      set(val) {
+        this.$store.commit('facility/selectedTechs', val)
+      }
+    }
   },
 
   mounted() {
