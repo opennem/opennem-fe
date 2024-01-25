@@ -272,6 +272,10 @@ export default {
     emissionsOptions: {
       type: Object,
       default: () => emissionsOptions
+    },
+    isEnergyType: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -706,6 +710,12 @@ export default {
     this.$emit('changeDataset', this.changeSinceDataset)
     this.chartHeight = this.visHeight
     this.handleTypeClick()
+
+    if (this.isEnergyType) {
+      this.$store.commit('chartOptionsEmissionsVolume/chartCurve', 'step')
+    } else {
+      this.$store.commit('chartOptionsEmissionsVolume/chartCurve', 'smooth')
+    }
   },
 
   methods: {
