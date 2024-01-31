@@ -16,7 +16,6 @@ export default function (data, keys) {
     keys.forEach((k) => {
       const id = k.id
       const isTemperatureKey = isTemperature(k.type)
-      const isImportsEnergy = k.fuelTech === 'imports' && k.type === 'energy'
       
       let sum = d[id] || 0
       let index = x - 1
@@ -33,11 +32,7 @@ export default function (data, keys) {
             hasNulls = true
           }
 
-          if (isImportsEnergy) {
-            sum += Math.abs(data[index][id] || 0)
-          } else {
-            sum += data[index][id] || 0
-          }
+          sum += data[index][id] || 0
 
           index--
           count++
