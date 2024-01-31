@@ -36,7 +36,7 @@ export default function({
   isWemOrAu
 }) {
 
-  console.log('calculate EI', emissionsDomains, powerEnergyDomains, domainPowerEnergy)
+  // console.log('calculate EI', emissionsDomains, powerEnergyDomains, domainPowerEnergy)
 
   const timeCheck = 1696140000000
   const shouldTimeCheck = false
@@ -186,7 +186,9 @@ export default function({
     : Math.abs(sumEmissions / dataset.length)
   
   if (averageEmissions < 0) {
-    console.log(`averageEmissions < 0: ${averageEmissions}`)
+    // console.log(`averageEmissions < 0: ${averageEmissions}`)
+  } else {
+    // console.log(`emissions intensity... ${averageEmissions}`, hasSource, sumEmissionsMinusLoads, dataset.length, powerEnergyDomains, emissionsDomains)
   }
 
   return {
