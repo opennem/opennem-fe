@@ -44,5 +44,13 @@ export default function (responses) {
     }
   })
 
+  // WORKAROUND for imports energy sign flipped in 2016
+  data.forEach((d) => {
+    const isImportsEnergy = d.fuel_tech === 'imports' && d.type === 'energy'
+    if (isImportsEnergy) {
+      d.history.data = d.history.data.map((v) =>Math.abs(v))
+    }
+  })
+
   return data
 }
