@@ -42,12 +42,12 @@ export default function (data, keys) {
           }
         }
         
-        // if there are nulls in the rolling sum, set the value to null
+        // for temperature, if there are nulls in the rolling sum, set the value to null
         // average for temperature, sum for everything else
         if (isTemperatureKey) {
           data[x][id] = hasNulls ? null : sum / count
         } else {
-          data[x][id] = hasNulls ? null : sum
+          data[x][id] = sum
         }
       }
     })
