@@ -149,6 +149,11 @@
       @leave="handleVisLeave"
     />
 
+    <div v-if="isTypeGrowthStackedArea">
+      {{ growthDataset.length }}
+    
+    </div>
+
     <date-brush
       v-if="showDateAxis && chartShown"
       :dataset="dataset"
@@ -218,7 +223,8 @@ const energyOptions = {
     OPTIONS.CHART_STACKED,
     OPTIONS.CHART_PROPORTION,
     OPTIONS.CHART_LINE,
-    OPTIONS.CHART_CHANGE_SINCE_LINE
+    OPTIONS.CHART_CHANGE_SINCE_LINE,
+    OPTIONS.CHART_GROWTH_STACKED_AREA
   ],
   curve: [
     OPTIONS.CHART_CURVE_SMOOTH,
@@ -381,6 +387,7 @@ export default {
       isTypeProportion: 'chartOptionsPowerEnergy/isTypeProportion',
       isTypeLine: 'chartOptionsPowerEnergy/isTypeLine',
       isTypeChangeSinceLine: 'chartOptionsPowerEnergy/isTypeChangeSinceLine',
+      isTypeGrowthStackedArea: 'chartOptionsPowerEnergy/isTypeGrowthStackedArea',
       allowResize: 'regionEnergy/allowResize'
     }),
 
@@ -532,6 +539,14 @@ export default {
       }
       this.$emit('displayUnit', unit)
       return unit
+    },
+
+    growthDataset() {
+      if (this.isTypeGrowthStackedArea) {
+        console.log('growthDataset', this.stackedAreaDataset)
+      }
+
+      return []
     },
 
     energyPercentDataset() {
