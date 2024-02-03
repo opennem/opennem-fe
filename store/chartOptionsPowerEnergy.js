@@ -55,6 +55,8 @@ export const getters = {
   isTypeLine: (state) => state.chartType === OPTIONS.CHART_LINE,
   isTypeChangeSinceLine: (state) =>
     state.chartType === OPTIONS.CHART_CHANGE_SINCE_LINE,
+  isTypeGrowthStackedArea: (state) =>
+    state.chartType === OPTIONS.CHART_GROWTH_STACKED_AREA,
 
   chartDateAxis: (state) => state.chartDateAxis
 }
