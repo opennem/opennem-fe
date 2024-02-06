@@ -49,6 +49,61 @@
       @date-axis="(visible) => showDateAxis = visible"
     />
 
+    <div 
+      v-if="isTypeGrowthStackedArea" 
+      style="position: absolute; top: 3rem; left: 3rem; font-style: italic;">
+      {{ growthDataset.length }}
+    </div>
+
+
+    <stacked-area-vis
+      v-if="chartShown && (isTypeGrowthStackedArea)"
+      :read-only="readOnly"
+      :domains="domains"
+      :dataset="growthDataset"
+      :range="range"
+      :interval="interval"
+      :curve="chartCurve"
+      :y-min="computedGrowthYMin"
+      :y-max="computedGrowthYMax"
+      :vis-height="visHeight"
+      :hover-on="hoverOn"
+      :hover-date="hoverDate"
+      :dynamic-extent="zoomExtent"
+      :zoomed="zoomExtent.length > 0"
+      :x-guides="xGuides"
+      :y-guides="yGuides"
+      :x-axis-dy="tabletBreak ? 8 : 12"
+      :y-axis-ticks="5"
+      :show-x-axis="false"
+      :compare-dates="compareDates"
+      :focus-date="focusDate"
+      :focus-on="focusOn"
+      :incomplete-intervals="incompleteIntervals"
+      :dataset-two="
+        chartEnergyRenewablesLine ? renewablesPercentageDataset : []
+      "
+      :dataset-two-colour="renewablesLineColour"
+      :highlight-domain="highlightId"
+      :mobile-screen="tabletBreak"
+      :display-prefix="chartDisplayPrefix"
+      :should-convert-value="false"
+      :unit="` ${chartDisplayPrefix}${chartUnit}`"
+      :null-check-prop="'_total'"
+      :filter-period="filterPeriod"
+      :show-total-line="chartEnergyNetLine"
+      :total-line-domain="'_total'"
+      :class="{ dragging: dragging }"
+      :use-offset-diverge="true"
+      class="vis-chart"
+      @dateOver="handleDateHover"
+      @domainOver="handleDomainHover"
+      @svgClick="handleSvgClick"
+      @enter="handleVisEnter"
+      @leave="handleVisLeave"
+      @zoomExtent="handleZoomExtent"
+    />
+
     <stacked-area-vis
       v-if="chartShown && (isTypeArea || isTypeProportion)"
       :read-only="readOnly"
@@ -148,11 +203,6 @@
       @enter="handleVisEnter"
       @leave="handleVisLeave"
     />
-
-    <div v-if="isTypeGrowthStackedArea">
-      {{ growthDataset.length }}
-    
-    </div>
 
     <date-brush
       v-if="showDateAxis && chartShown"
@@ -343,7 +393,9 @@ export default {
       visHeight: 330,
       draggedHeight: 330,
       dragging: false,
-      showDivider: false
+      showDivider: false,
+
+      growthDataset: []
     }
   },
 
@@ -541,14 +593,6 @@ export default {
       return unit
     },
 
-    growthDataset() {
-      if (this.isTypeGrowthStackedArea) {
-        console.log('growthDataset', this.stackedAreaDataset)
-      }
-
-      return []
-    },
-
     energyPercentDataset() {
       const dataset = _cloneDeep(this.powerEnergyDataset)
       dataset.forEach((d, i) => {
@@ -727,6 +771,7 @@ export default {
       this.$emit('selectedDataset', ds)
       return ds
     },
+
     // yMin() {
     //   const loadDomains = this.domains.filter((d) => d.category === LOAD)
     //   if (loadDomains.length === 0) {
@@ -756,6 +801,51 @@ export default {
     //   })
     //   return max(dataset, d => d._stackedTotalMax)
     // },
+    computedGrowthYMin() {
+      let lowest = 0
+
+      console.log('computedGrowthYMin', this.powerEnergyDomains)
+
+      const loadDomains = this.powerEnergyDomains.filter((d) => d.category === LOAD)
+      if (loadDomains.length === 0) {
+        console.log('computedGrowthYMin', lowest)
+        return lowest
+      } else {
+        this.growthDataset.forEach((d) => {
+          let total = 0
+          loadDomains.forEach((domain) => {
+            total += d[domain.id] || 0
+          })
+
+          if (total < lowest) {
+            lowest = total
+          }
+        })
+
+        console.log('computedGrowthYMin', lowest)
+
+        return -10
+      }
+    },
+    computedGrowthYMax() {
+      let highest = 0
+
+      this.growthDataset.forEach((d) => {
+        let total = 0
+        this.powerEnergyDomains.forEach((domain) => {
+          total += d[domain.id] || 0
+        })
+
+        if (total > highest) {
+          highest = total
+        }
+      })
+
+      console.log('computedGrowthYMax', highest)
+
+      return 10
+    },
+
     computedYMin() {
       let lowest = 0
 
@@ -956,8 +1046,41 @@ export default {
     chartUnitPrefix() {
       this.$emit('selectedDataset', this.dataset)
     },
+
     interval() {
       this.handleTypeClick()
+
+      if (this.isTypeGrowthStackedArea) {
+        this.growthDataset = this.zoomExtent.length > 0 ? this.getGrowthDataset().filter((d) => {
+          return d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
+        }) : this.getGrowthDataset()
+
+        console.log('growthDataset zoomExtent', this.growthDataset)
+      }
+    },
+
+    zoomExtent(val) {
+      console.log('zoomExtent', val, this.stackedAreaDataset)
+
+      if (this.isTypeGrowthStackedArea) {
+        this.growthDataset = val.length > 0 ? this.getGrowthDataset().filter((d) => {
+          return d.date >= val[0] && d.date < val[1]
+        }) : this.getGrowthDataset()
+
+        console.log('growthDataset zoomExtent', this.growthDataset)
+      }
+    },
+
+    isTypeGrowthStackedArea(val) {
+      console.log('isTypeGrowthStackedArea', val)
+
+      if (val) {
+        this.growthDataset = this.zoomExtent.length > 0 ? this.getGrowthDataset().filter((d) => {
+          return d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
+        }) : this.getGrowthDataset()
+
+        console.log('growthDataset isTypeGrowthStackedArea', this.growthDataset)
+      }
     }
   },
 
@@ -1061,6 +1184,35 @@ export default {
       })
 
       return newDataset
+    },
+
+    getGrowthDataset() {
+      const dataset= []
+
+      this.stackedAreaDataset.forEach((d, i) => {
+        const obj = {
+          date: d.date,
+          time: d.time
+        }
+
+        this.powerEnergyDomains.forEach((domain) => {
+          const ftId = domain.id
+
+          if (i === 0) {
+            obj[ftId] = 0
+          } else {
+            obj[ftId] = d[ftId] - this.stackedAreaDataset[i - 1][ftId]
+          }
+
+        })
+
+        dataset.push(obj)
+
+      })
+
+      console.log('growthDataset end', dataset)
+
+      return dataset
     },
 
     handleDomainHover(domain) {
