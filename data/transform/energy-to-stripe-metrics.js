@@ -1,6 +1,7 @@
 import startOfQuarter from 'date-fns/startOfQuarter'
 import differenceInDays from 'date-fns/differenceInDays'
 import addDays from 'date-fns/addDays'
+import isBefore from 'date-fns/isBefore'
 import { BATTERY_DISCHARGING } from '@/constants/energy-fuel-techs/group-detailed.js'
 
 export default function ({
@@ -16,7 +17,8 @@ export default function ({
   domainDemandMarketValue,
   domainInflation,
   topUp,
-  bucket
+  bucket,
+  regionId
 }) {
   if (bucket) {
     const data = bucket.map((d) => {
@@ -31,7 +33,8 @@ export default function ({
         domainTemperature,
         domainPrice,
         domainMarketValue,
-        domainInflation
+        domainInflation,
+        regionId
       )
     })
 
@@ -49,7 +52,8 @@ export default function ({
       domainTemperature,
       domainPrice,
       domainMarketValue,
-      domainInflation
+      domainInflation,
+      regionId
     )
   })
 
@@ -104,7 +108,8 @@ function updateMetricObject(
   domainTemperature,
   domainPrice,
   domainMarketValue,
-  domainInflation
+  domainInflation,
+  regionId
 ) {
   if (d) {
     let totalEmissions = 0,
@@ -155,6 +160,7 @@ function updateMetricObject(
       }
     })
 
+    // deprecated
     const totalPowerEnergyMinusBatteryDischarging =
       totalPowerEnergy - totalBatteryDischarging
 
@@ -196,7 +202,17 @@ function updateMetricObject(
       }
     }
 
-    obj.carbonIntensity = isValidEI ? ei : null
+    function setCarbonIntensity(ei, isValidEI) {
+      // nulled out EI data before jan 2009 and only for nem regions (exclude nem, au and wem)
+      const affectedRegions = regionId !== 'nem' && regionId !== 'au' && regionId !== 'wem'
+      if (affectedRegions && isBefore(d.date, new Date(2009, 0, 1))) {
+        return null
+      }
+       
+      return isValidEI ? ei : null
+    }
+
+    obj.carbonIntensity = setCarbonIntensity(ei, isValidEI)
     obj.renewablesProportion =
       d._totalDemandRenewablesPercentage < 0
         ? 0

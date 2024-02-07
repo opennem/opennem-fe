@@ -563,7 +563,8 @@ export default {
         powerEnergyDomains: this.powerEnergyDomains,
         domainPowerEnergy: this.domainPowerEnergy,
         isEnergyType: this.isEnergyType,
-        isWemOrAu: this.isWemOrAu
+        isWemOrAu: this.isWemOrAu,
+        regionId: this.regionId
       })
     },
 
