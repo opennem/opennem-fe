@@ -122,9 +122,8 @@ function updateMetricObject(
       if (d[domain.id] || d[domain.id] === 0) {
         hasEmissionsValue = true
       }
-      if (domain.category !== 'load' || domain.fuelTech !== 'exports') {
-        totalEmissions += d[domain.id] || 0
-      }
+      const value = domain.fuelTech === 'exports' ? -d[domain.id] || 0 : d[domain.id] || 0
+      totalEmissions += value
     })
 
     domainTemperature.forEach((domain) => {
@@ -143,9 +142,8 @@ function updateMetricObject(
       const ft = domain.fuelTech
       const id = domain.id
 
-      if (domain.category !== 'load' || ft === 'exports') {
-        totalPowerEnergy += d[id] || 0
-      }
+      totalPowerEnergy += d[id] || 0
+
       if (ft === BATTERY_DISCHARGING) {
         totalBatteryDischarging += d[id] || 0
       }
@@ -160,7 +158,7 @@ function updateMetricObject(
     const totalPowerEnergyMinusBatteryDischarging =
       totalPowerEnergy - totalBatteryDischarging
 
-    const ei = hasEmissionsValue ? totalEmissions / totalPowerEnergyMinusBatteryDischarging : null
+    const ei = hasEmissionsValue ? totalEmissions / totalPowerEnergy : null
     const isValidEI = Number.isFinite(ei)
 
     // if no value
