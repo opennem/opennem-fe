@@ -49,12 +49,6 @@
       @date-axis="(visible) => showDateAxis = visible"
     />
 
-    <div 
-      v-if="isTypeGrowthStackedArea" 
-      style="position: absolute; top: 3rem; left: 3rem; font-style: italic;">
-      {{ growthDataset.length }}
-    </div>
-
     <stacked-area-vis
       v-if="chartShown && (isTypeGrowthStackedArea)"
       :read-only="readOnly"
@@ -1091,6 +1085,14 @@ export default {
 
   mounted() {
     this.visHeight = this.chartHeight
+
+    if (this.isTypeGrowthStackedArea) {
+      this.growthDataset = this.zoomExtent.length > 0 ? this.getGrowthDataset().filter((d) => {
+        return d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
+      }) : this.getGrowthDataset()
+
+      console.log('growthDataset powerEnergyDataset', this.growthDataset)
+    }
   },
 
   methods: {
@@ -1212,7 +1214,6 @@ export default {
           } else {
             obj[ftId] = d[ftId] - this.powerEnergyDataset[i - 1][ftId]
           }
-
         })
 
         dataset.push(obj)
