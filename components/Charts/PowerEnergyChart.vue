@@ -1193,14 +1193,15 @@ export default {
 
     getGrowthDataset() {
       const dataset = []
-      const filtered = this.powerEnergyDataset.filter(d => !d._isIncompleteBucket)
+      // const filtered = this.powerEnergyDataset.filter(d => !d._isIncompleteBucket)
 
       console.log('getGrowthDataset start', this.powerEnergyDataset, this.domains)
 
-      filtered.forEach((d, i) => {
+      this.powerEnergyDataset.forEach((d, i) => {
         const obj = {
           date: d.date,
-          time: d.time
+          time: d.time,
+          _isIncompleteBucket: d._isIncompleteBucket
         }
 
         this.domains.forEach((domain) => {
@@ -1209,7 +1210,7 @@ export default {
           if (i === 0) {
             obj[ftId] = 0
           } else {
-            obj[ftId] = d[ftId] - filtered[i - 1][ftId]
+            obj[ftId] = d[ftId] - this.powerEnergyDataset[i - 1][ftId]
           }
 
         })
