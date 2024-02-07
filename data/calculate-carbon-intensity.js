@@ -36,11 +36,6 @@ export default function({
   isWemOrAu
 }) {
 
-  // console.log('calculate EI', emissionsDomains, powerEnergyDomains, domainPowerEnergy)
-
-  const timeCheck = 1696140000000
-  const shouldTimeCheck = false
-
   /**
     when viewing generation:
     sum(all emissions from visible sources except imports) / energy from all of the above
@@ -73,15 +68,6 @@ export default function({
   }
 
   const getPowerEnergy = (data, domain) => {
-    // return value if category is source or exports
-    // if (domain.category === 'source' || _includes(domain.id, 'exports')) {
-    //   return data[domain.id] || 0
-    // }
-    return data[domain.id] || 0
-  }
-
-  const getPowerEnergy2 = (data, domain) => {
-    // test only
     return data[domain.id] || 0
   }
   
@@ -116,10 +102,6 @@ export default function({
     emissionsDomains.forEach((domain) => {
       totalEmissions += getEmissions(d, domain)
 
-      if (shouldTimeCheck && d.time === timeCheck) {
-        console.log(`emissions,${domain.id},${getEmissions(d, domain)}`)
-      }
-
       if (domain.category !== 'load') {
         totalEmissionsMinusLoads += getEmissions(d, domain)
       }
@@ -127,16 +109,7 @@ export default function({
 
     powerEnergyDomains.forEach((domain) => {
       totalPowerEnergy += getPowerEnergy(d, domain)
-
-      if (shouldTimeCheck && d.time === timeCheck) {
-        console.log(`power,${domain.id},${getPowerEnergy2(d, domain)}`)
-      }
     })
-
-    if (shouldTimeCheck && d.time === timeCheck) {
-      console.log('totalEmissions', totalEmissions)
-      console.log('totalPowerEnergy', totalPowerEnergy)
-    }
 
     const totalPowerEnergyMinusBatteryDischarging =
       totalPowerEnergy - totalBatteryDischarging
@@ -157,10 +130,6 @@ export default function({
       } else {
         ei = ei * 12
       }
-    }
-
-    if (shouldTimeCheck && d.time === timeCheck) {
-      console.log('EI', ei)
     }
 
     const isValidEI = Number.isFinite(ei)
