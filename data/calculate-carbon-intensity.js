@@ -1,4 +1,5 @@
 import _includes from 'lodash/includes'
+import { isBefore } from 'date-fns';
 import * as FT from '@/constants/energy-fuel-techs/group-detailed.js'
 
 function calAverage(isEnergyType, isWemOrAu, dataset) {
@@ -33,7 +34,8 @@ export default function({
   powerEnergyDomains,
   domainPowerEnergy,
   isEnergyType,
-  isWemOrAu
+  isWemOrAu,
+  regionId
 }) {
 
   /**
@@ -142,6 +144,15 @@ export default function({
     return obj
   })
 
+  // nulled out EI data before jan 2009 and only for nem regions (exclude nem, au and wem)
+  if (regionId !== 'nem' && regionId !== 'au' && regionId !== 'wem') {
+    dataset.forEach(d => {
+      if (isBefore(d.date, new Date(2009, 0, 1))) {
+        d._emissionIntensity = null
+      }
+    })
+  }
+
   const sumEmissionsMinusLoads = dataset.reduce(
     (prev, cur) => prev + cur._totalEmissionsMinusLoads,
     0
@@ -159,6 +170,8 @@ export default function({
   } else {
     // console.log(`emissions intensity... ${averageEmissions}`, hasSource, sumEmissionsMinusLoads, dataset.length, powerEnergyDomains, emissionsDomains)
   }
+
+  
 
   return {
     emissionIntensityData: dataset,
