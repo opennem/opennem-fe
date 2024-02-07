@@ -55,7 +55,6 @@
       {{ growthDataset.length }}
     </div>
 
-
     <stacked-area-vis
       v-if="chartShown && (isTypeGrowthStackedArea)"
       :read-only="readOnly"
@@ -206,7 +205,7 @@
 
     <date-brush
       v-if="showDateAxis && chartShown"
-      :dataset="dataset"
+      :dataset="isTypeGrowthStackedArea ? growthDataset : dataset"
       :zoom-range="zoomExtent"
       :x-ticks="xTicks"
       :tick-format="tickFormat"
@@ -402,6 +401,8 @@ export default {
   computed: {
     ...mapGetters({
       percentContributionTo: 'percentContributionTo',
+      fuelTechGroupName: 'fuelTechGroupName',
+
       tabletBreak: 'app/tabletBreak',
 
       hoverDomain: 'visInteract/hoverDomain',
@@ -804,29 +805,21 @@ export default {
     computedGrowthYMin() {
       let lowest = 0
 
-      console.log('computedGrowthYMin', this.powerEnergyDomains)
+      this.growthDataset.forEach((d) => {
+        let total = 0
 
-      const loadDomains = this.powerEnergyDomains.filter((d) => d.category === LOAD)
-      if (loadDomains.length === 0) {
-        console.log('computedGrowthYMin', lowest)
-        return lowest
-      } else {
-        this.growthDataset.forEach((d) => {
-          let total = 0
-          loadDomains.forEach((domain) => {
-            total += d[domain.id] || 0
-          })
-
-          if (total < lowest) {
-            lowest = total
-          }
+        this.powerEnergyDomains.forEach((domain) => {
+          total += d[domain.id] || 0
         })
 
-        console.log('computedGrowthYMin', lowest)
+        if (total < lowest) {
+          lowest = total
+        }
+      })
 
-        return -10
-      }
+      return lowest * 1.1
     },
+
     computedGrowthYMax() {
       let highest = 0
 
@@ -843,7 +836,7 @@ export default {
 
       console.log('computedGrowthYMax', highest)
 
-      return 10
+      return highest
     },
 
     computedYMin() {
@@ -1047,6 +1040,18 @@ export default {
       this.$emit('selectedDataset', this.dataset)
     },
 
+    fuelTechGroupName(val) {
+      console.log('fuelTechGroupName', val)
+
+      if (this.isTypeGrowthStackedArea) {
+        this.growthDataset = this.zoomExtent.length > 0 ? this.getGrowthDataset().filter((d) => {
+          return d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
+        }) : this.getGrowthDataset()
+
+        console.log('growthDataset fuelTechGroupName', this.growthDataset)
+      }
+    },
+
     interval() {
       this.handleTypeClick()
 
@@ -1059,17 +1064,17 @@ export default {
       }
     },
 
-    zoomExtent(val) {
-      console.log('zoomExtent', val, this.stackedAreaDataset)
+    // zoomExtent(val) {
+    //   console.log('zoomExtent', val, this.stackedAreaDataset)
 
-      if (this.isTypeGrowthStackedArea) {
-        this.growthDataset = val.length > 0 ? this.getGrowthDataset().filter((d) => {
-          return d.date >= val[0] && d.date < val[1]
-        }) : this.getGrowthDataset()
+    //   if (this.isTypeGrowthStackedArea) {
+    //     this.growthDataset = val.length > 0 ? this.getGrowthDataset().filter((d) => {
+    //       return d.date >= val[0] && d.date < val[1]
+    //     }) : this.getGrowthDataset()
 
-        console.log('growthDataset zoomExtent', this.growthDataset)
-      }
-    },
+    //     console.log('growthDataset zoomExtent', this.growthDataset)
+    //   }
+    // },
 
     isTypeGrowthStackedArea(val) {
       console.log('isTypeGrowthStackedArea', val)
@@ -1187,21 +1192,24 @@ export default {
     },
 
     getGrowthDataset() {
-      const dataset= []
+      const dataset = []
+      const filtered = this.powerEnergyDataset.filter(d => !d._isIncompleteBucket)
 
-      this.stackedAreaDataset.forEach((d, i) => {
+      console.log('getGrowthDataset start', this.powerEnergyDataset, this.domains)
+
+      filtered.forEach((d, i) => {
         const obj = {
           date: d.date,
           time: d.time
         }
 
-        this.powerEnergyDomains.forEach((domain) => {
+        this.domains.forEach((domain) => {
           const ftId = domain.id
 
           if (i === 0) {
             obj[ftId] = 0
           } else {
-            obj[ftId] = d[ftId] - this.stackedAreaDataset[i - 1][ftId]
+            obj[ftId] = d[ftId] - filtered[i - 1][ftId]
           }
 
         })
@@ -1211,6 +1219,8 @@ export default {
       })
 
       console.log('growthDataset end', dataset)
+
+      this.handleTypeClick()
 
       return dataset
     },
