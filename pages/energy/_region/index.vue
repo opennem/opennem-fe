@@ -298,9 +298,7 @@ export default {
     },
 
     emissionsDomains() {
-      const domains = this.currentDomainEmissions.filter(
-        (d) => d.category !== FT.LOAD || d.fuelTech === FT.EXPORTS
-      )
+      const domains = this.currentDomainEmissions
       const hidden = this.hiddenFuelTechs
       return domains
         ? domains.filter((d) => !_includes(hidden, d[this.property]))
@@ -355,6 +353,7 @@ export default {
         isZoomed: dates.length > 0,
         filterPeriod: this.filterPeriod
       })
+      this.updateEmissionsData()
     },
     filterPeriod(period) {
       this.doUpdateDatasetByFilterPeriod({
@@ -553,8 +552,12 @@ export default {
     },
 
     updateEmissionsData() {
+      const filteredTimes = this.filteredDates.map(d => d.getTime())
+      const dataset = filteredTimes.length
+        ? this.currentDataset.filter(d => d.time >= filteredTimes[0] && d.time < filteredTimes[filteredTimes.length - 1])
+        : this.currentDataset
       this.doUpdateEmissionIntensityDataset({
-        datasetAll: this.currentDataset,
+        datasetAll: dataset,
         isCalculateByGeneration: this.calculateByGeneration,
         emissionsDomains: this.emissionsDomains,
         powerEnergyDomains: this.powerEnergyDomains,

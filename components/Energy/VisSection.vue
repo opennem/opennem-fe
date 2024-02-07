@@ -45,6 +45,7 @@
       :prop-name="propName"
       :incomplete-intervals="incompleteIntervals"
       :filter-period="filterPeriod"
+      :is-energy-type="isEnergyType"
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
@@ -255,7 +256,7 @@ export default {
 
   created() {
     this.clearHoverFocus()
-    this.setEmissionsStepCurve()
+    // this.setEmissionsStepCurve()
     this.zoomExtent = this.filteredDates
   },
 
