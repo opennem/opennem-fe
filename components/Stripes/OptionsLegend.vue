@@ -80,17 +80,13 @@ export default {
 
   computed: {
     ...mapGetters({
-      featureEmissions: 'feature/emissions',
       featureComparePrice: 'feature/comparePrice',
       selectedMetric: 'stripes/selectedMetric',
       selectedMetricObj: 'stripes/selectedMetricObj'
     }),
 
     metrics() {
-      if (this.featureEmissions) {
-        return metrics
-      }
-      return metrics.filter((d) => d.value !== 'carbonIntensity')
+      return metrics
     }
   },
 

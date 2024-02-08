@@ -21,8 +21,7 @@
       v-if="
         ready &&
           domainEmissions.length > 0 &&
-          exportEmissionsVolume &&
-          featureEmissions
+          exportEmissionsVolume
       "
       :read-only="true"
       :zoom-extent="filteredDates"
@@ -42,8 +41,7 @@
       v-if="
         ready &&
           domainEmissions.length > 0 &&
-          exportEmissionIntensity &&
-          featureEmissions
+          exportEmissionIntensity
       "
       :read-only="true"
       :zoom-extent="filteredDates"
@@ -136,8 +134,6 @@ export default {
 
       averageEmissions: 'energy/emissions/averageEmissions',
       emissionIntensityData: 'energy/emissions/emissionIntensityData',
-
-      featureEmissions: 'feature/emissions',
 
       exportPowerEnergy: 'export/powerEnergy',
       exportEmissionsVolume: 'export/emissionsVolume',

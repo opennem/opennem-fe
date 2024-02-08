@@ -6,12 +6,6 @@
       @click="handleDoneClick"
     />
     <div class="panel-heading">Features</div>
-    <label class="panel-block">
-      <input 
-        v-model="featureEmissions" 
-        type="checkbox">
-      Emissions Charts
-    </label>
 
     <label class="panel-block">
       <input
@@ -26,15 +20,6 @@
 <script>
 export default {
   computed: {
-    featureEmissions: {
-      get: function () {
-        return this.$store.getters['feature/emissions']
-      },
-      set: function (newValue) {
-        this.$store.commit('feature/emissions', newValue)
-      }
-    },
-
     featureComparePrice: {
       get: function () {
         return this.$store.getters['feature/comparePrice']
@@ -45,9 +30,6 @@ export default {
     }
   },
   watch: {
-    featureEmissions() {
-      this.$emit('done')
-    },
     featureComparePrice() {
       this.$emit('done')
     }

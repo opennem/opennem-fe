@@ -32,7 +32,7 @@
     />
 
     <emissions-chart
-      v-if="ready && domainEmissions.length > 0 && featureEmissions"
+      v-if="ready && domainEmissions.length > 0"
       :emissions-dataset="currentDataset"
       :domain-emissions="currentDomainEmissions"
       :range="range"
@@ -53,7 +53,7 @@
     />
 
     <emission-intensity-chart
-      v-if="ready && domainEmissions.length > 0 && featureEmissions"
+      v-if="ready && domainEmissions.length > 0"
       :emission-intensity-dataset="emissionIntensityData"
       :range="range"
       :interval="interval"
@@ -193,9 +193,7 @@ export default {
       emissionIntensityData: 'energy/emissions/emissionIntensityData',
       averageEmissionIntensity: 'energy/emissions/averageEmissionIntensity',
 
-      chartType: 'chartOptionsPowerEnergy/chartType',
-
-      featureEmissions: 'feature/emissions'
+      chartType: 'chartOptionsPowerEnergy/chartType'
     }),
 
     domains() {
