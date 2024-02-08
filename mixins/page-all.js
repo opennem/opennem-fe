@@ -2,7 +2,6 @@ import { mapMutations } from 'vuex'
 import _debounce from 'lodash.debounce'
 import { lsGet, lsSet } from '~/services/LocalStorage'
 import {
-  FEATURE_TOGGLE_EMISSIONS,
   FEATURE_TOGGLE_COMPARE_PRICE
 } from '@/constants/mutation-types/features.js'
 import hostEnv from '@/services/HostEnv.js'
@@ -17,7 +16,6 @@ export default {
 
   mounted() {
     if (process.client) {
-      this.getSetFeature(FEATURE_TOGGLE_EMISSIONS, this.setEmissions)
       this.getSetFeature(FEATURE_TOGGLE_COMPARE_PRICE, this.setComparePrice)
 
       const exportAttribution = lsGet('exportAttribution') || '@name'
@@ -48,7 +46,6 @@ export default {
       setWindowWidth: 'app/windowWidth',
       setIsTouchDevice: 'app/isTouchDevice',
 
-      setEmissions: 'feature/emissions',
       setComparePrice: 'feature/comparePrice',
 
       setExportAttribution: 'exportAttribution',

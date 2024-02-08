@@ -3,7 +3,6 @@
     class="select is-rounded">
     <select v-model="selectedMetric">
       <option 
-        v-if="featureEmissions" 
         value="carbonIntensity">
         Carbon intensity
       </option>
@@ -45,13 +44,8 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
   export default {
     computed: {
-      ...mapGetters({
-        featureEmissions: 'feature/emissions'
-      }),
-
       selectedMetric: {
       get() {
         return this.$store.getters['stripes/selectedMetric']

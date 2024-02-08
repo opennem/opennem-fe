@@ -106,8 +106,6 @@ export default {
       domainTemperature: 'regionEnergy/domainTemperature',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
 
-      featureEmissions: 'feature/emissions',
-
       exportCharts: 'export/charts',
       exportPowerEnergy: 'export/powerEnergy',
       exportEmissionsVolume: 'export/emissionsVolume',
@@ -127,7 +125,7 @@ export default {
     chartButtons() {
       return this.exportCharts.filter(
         (c) =>
-          (this.hasEmissions && this.featureEmissions
+          (this.hasEmissions
             ? true
             : c.name !== 'exportEmissionsVolume' &&
               c.name !== 'exportEmissionIntensity') &&

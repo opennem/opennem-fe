@@ -2,8 +2,7 @@
   <div class="column-selector-wrapper">
     <div
       v-on-clickaway="handleClickAway"
-      :class="{ 'has-hover': featureEmissions }"
-      class="column-selector"
+      class="column-selector has-hover"
       @touchstart="handleTouchstart"
       @touchend="handleTouchend"
       @mousedown="handleMousedown"
@@ -73,7 +72,6 @@ export default {
 
   computed: {
     ...mapGetters({
-      featureEmissions: 'feature/emissions',
       chartEmissionsVolumeCurrentUnit:
         'chartOptionsEmissionsVolume/chartCurrentUnit'
     }),
@@ -117,14 +115,12 @@ export default {
       this.clearTimeout()
     },
     handleMousedown() {
-      if (this.featureEmissions) {
-        this.mousedownDelay = setTimeout(() => {
-          this.showMenu = true
-        }, this.longPress)
-      }
+      this.mousedownDelay = setTimeout(() => {
+        this.showMenu = true
+      }, this.longPress)
     },
     handleMouseup() {
-      if (!this.showMenu && this.featureEmissions) {
+      if (!this.showMenu) {
         switch (this.selected) {
           case 'av-value':
             this.selected = 'emissions-volume'
@@ -140,11 +136,9 @@ export default {
       this.clearTimeout()
     },
     handleTouchstart() {
-      if (this.featureEmissions) {
-        this.mousedownDelay = setTimeout(() => {
-          this.showMenu = true
-        }, this.longPress)
-      }
+      this.mousedownDelay = setTimeout(() => {
+        this.showMenu = true
+      }, this.longPress)
     },
     handleTouchend() {
       this.clearTimeout()
