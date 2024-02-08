@@ -34,6 +34,8 @@
       :hidden-domains="hiddenFuelTechs"
       :prop-name="propName"
       :incomplete-intervals="incompleteIntervals"
+      :is-energy-type="isEnergyType"
+      :filter-period="filterPeriod"
     />
 
     <emission-intensity-chart
@@ -48,6 +50,7 @@
       :emission-intensity-dataset="emissionIntensityData"
       :range="range"
       :interval="interval"
+      :filter-period="filterPeriod"
     />
 
     <price-chart
@@ -58,6 +61,7 @@
       :domain-price="domainPrice"
       :range="range"
       :interval="interval"
+      :filter-period="filterPeriod"
     />
 
     <price-chart
@@ -71,6 +75,7 @@
       :zoom-extent="filteredDates"
       :use-demand="true"
       :read-only="true"
+      :filter-period="filterPeriod"
     />
 
     <temperature-chart
