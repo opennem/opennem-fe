@@ -49,6 +49,7 @@
       :range="range"
       :interval="interval"
       :filter-period="filterPeriod"
+      :is-energy-type="isEnergyType"
     />
 
     <price-chart
