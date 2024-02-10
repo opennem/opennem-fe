@@ -80,7 +80,11 @@ export const getters = {
   emissionsVolume: (state) => state.emissionsVolume,
   emissionIntensity: (state) => state.emissionIntensity,
   price: (state) => state.price,
-  temperature: (state) => state.temperature
+  temperature: (state) => state.temperature,
+
+  hasGenerationOrEmissionsVolumeSelected: (state) => {
+    return state.powerEnergy || state.emissionsVolume
+  }
 }
 
 export const actions = {
