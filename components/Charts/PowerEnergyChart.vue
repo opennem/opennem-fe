@@ -832,7 +832,8 @@ export default {
         let total = 0
 
         this.powerEnergyDomains.forEach((domain) => {
-          total += d[domain.id] || 0
+          const value = d[domain.id] || 0
+          total += value < 0 ? value : 0
         })
 
         if (total < lowest) {
@@ -840,9 +841,7 @@ export default {
         }
       })
 
-      console.log('computedGrowthYMin', lowest)
-
-      return lowest < -10000 ? lowest * 2 : lowest * 1.1
+      return lowest
     },
 
     computedGrowthYMax() {
@@ -860,7 +859,8 @@ export default {
       filteredDataset.forEach((d) => {
         let total = 0
         this.powerEnergyDomains.forEach((domain) => {
-          total += d[domain.id] || 0
+          const value = d[domain.id] || 0
+          total += value > 0 ? value : 0
         })
 
         if (total > highest) {
@@ -868,9 +868,7 @@ export default {
         }
       })
 
-      console.log('computedGrowthYMax', highest)
-
-      return highest < 10000 ? highest * 2 : highest * 1.1
+      return highest
     },
 
     computedYMin() {
