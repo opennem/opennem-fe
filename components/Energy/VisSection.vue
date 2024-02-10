@@ -62,6 +62,7 @@
       :zoom-extent="zoomExtent"
       :average-emission-intensity="averageEmissionIntensity"
       :filter-period="filterPeriod"
+      :is-energy-type="isEnergyType"
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
