@@ -21,6 +21,7 @@
       :is-type-proportion="isTypeProportion"
       :is-type-line="isTypeLine"
       :is-type-change-since-line="isTypeChangeSinceLine"
+      :is-type-growth-stacked-area="isTypeGrowthStackedArea"
       :is-y-axis-absolute="isYAxisAbsolute"
       :is-y-axis-percentage="isYAxisPercentage"
       :is-y-axis-average-power="isYAxisAveragePower"
@@ -50,7 +51,7 @@
     />
 
     <stacked-area-vis
-      v-if="chartShown && (isTypeGrowthStackedArea)"
+      v-if="chartShown && isTypeGrowthStackedArea"
       :read-only="readOnly"
       :domains="domains"
       :dataset="growthDataset"
@@ -80,7 +81,8 @@
       :highlight-domain="highlightId"
       :mobile-screen="tabletBreak"
       :display-prefix="chartDisplayPrefix"
-      :should-convert-value="false"
+      :should-convert-value="shouldConvertValue"
+      :convert-value="convertValue"
       :unit="` ${chartDisplayPrefix}${chartUnit}`"
       :null-check-prop="'_total'"
       :filter-period="filterPeriod"
@@ -136,6 +138,7 @@
       :show-total-line="chartEnergyNetLine"
       :total-line-domain="'_total'"
       :class="{ dragging: dragging }"
+      :use-offset-diverge="false"
       class="vis-chart"
       @dateOver="handleDateHover"
       @domainOver="handleDomainHover"
@@ -198,8 +201,25 @@
     />
 
     <date-brush
-      v-if="showDateAxis && chartShown"
-      :dataset="isTypeGrowthStackedArea ? growthDataset : dataset"
+      v-if="showDateAxis && chartShown && isTypeGrowthStackedArea"
+      :dataset="growthDataset"
+      :zoom-range="zoomExtent"
+      :x-ticks="xTicks"
+      :tick-format="tickFormat"
+      :second-tick-format="secondTickFormat"
+      :read-only="readOnly"
+      :interval="interval"
+      :filter-period="filterPeriod"
+      :append-datapoint="isEnergyType"
+      class="date-brush vis-chart"
+      @date-hover="handleDateHover"
+      @date-filter="handleZoomExtent"
+      @enter="handleVisEnter"
+      @leave="handleVisLeave"
+    />
+    <date-brush
+      v-if="showDateAxis && chartShown && !isTypeGrowthStackedArea"
+      :dataset="dataset"
       :zoom-range="zoomExtent"
       :x-ticks="xTicks"
       :tick-format="tickFormat"
@@ -488,7 +508,7 @@ export default {
     shouldConvertValue() {
       return (
         this.isTypeArea ||
-        ((this.isTypeLine || this.isTypeChangeSinceLine) &&
+        ((this.isTypeLine || this.isTypeChangeSinceLine || this.isTypeGrowthStackedArea) &&
           !this.isYAxisPercentage)
       )
     },
@@ -799,7 +819,16 @@ export default {
     computedGrowthYMin() {
       let lowest = 0
 
-      this.growthDataset.forEach((d) => {
+      const filteredDataset =
+        this.zoomExtent.length > 0
+          ? this.growthDataset.filter(
+              (d) =>
+                d.time >= this.zoomExtent[0].getTime() &&
+                d.time <= this.zoomExtent[1].getTime() - 1
+            )
+          : this.growthDataset
+
+      filteredDataset.forEach((d) => {
         let total = 0
 
         this.powerEnergyDomains.forEach((domain) => {
@@ -811,13 +840,24 @@ export default {
         }
       })
 
+      console.log('computedGrowthYMin', this.zoomExtent)
+
       return lowest * 1.1
     },
 
     computedGrowthYMax() {
       let highest = 0
 
-      this.growthDataset.forEach((d) => {
+      const filteredDataset =
+        this.zoomExtent.length > 0
+          ? this.growthDataset.filter(
+              (d) =>
+                d.time >= this.zoomExtent[0].getTime() &&
+                d.time <= this.zoomExtent[1].getTime() - 1
+            )
+          : this.growthDataset
+
+      filteredDataset.forEach((d) => {
         let total = 0
         this.powerEnergyDomains.forEach((domain) => {
           total += d[domain.id] || 0
@@ -830,7 +870,7 @@ export default {
 
       console.log('computedGrowthYMax', highest)
 
-      return highest
+      return highest * 1.1
     },
 
     computedYMin() {
@@ -1195,11 +1235,9 @@ export default {
 
     getGrowthDataset() {
       const dataset = []
-      // const filtered = this.powerEnergyDataset.filter(d => !d._isIncompleteBucket)
+      const ds = _cloneDeep(this.powerEnergyDataset)
 
-      console.log('getGrowthDataset start', this.powerEnergyDataset, this.domains)
-
-      this.powerEnergyDataset.forEach((d, i) => {
+      ds.forEach((d, i) => {
         const obj = {
           date: d.date,
           time: d.time,
@@ -1212,15 +1250,13 @@ export default {
           if (i === 0) {
             obj[ftId] = 0
           } else {
-            obj[ftId] = d[ftId] - this.powerEnergyDataset[i - 1][ftId]
+            obj[ftId] = d[ftId] - ds[i - 1][ftId]
           }
         })
 
         dataset.push(obj)
 
       })
-
-      console.log('growthDataset end', dataset)
 
       this.handleTypeClick()
 
