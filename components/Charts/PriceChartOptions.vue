@@ -39,7 +39,7 @@
     </template>
 
     <template v-slot:hover-values>
-      <span class="ft-value">
+      <span>
         <strong>{{ hoverValue | formatCurrency }}</strong>
       </span>
     </template>

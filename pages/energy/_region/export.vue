@@ -36,6 +36,7 @@
         <div class="vis-table-container">
           <vis-section class="vis-container" />
           <summary-legend-section
+            v-show="hasGenerationOrEmissionsVolumeSelected"
             :show-summary="summary"
             :show-legend="legend"
             :show-percent="percentDisplay"
@@ -107,7 +108,9 @@ export default {
       domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
       isEnergyType: 'regionEnergy/isEnergyType',
 
-      showChartTemperature: 'chartOptionsTemperature/chartShown'
+      showChartTemperature: 'chartOptionsTemperature/chartShown',
+
+      hasGenerationOrEmissionsVolumeSelected: 'export/hasGenerationOrEmissionsVolumeSelected'
     }),
     showBomSource() {
       return this.domainTemperature.length > 0 && this.showChartTemperature
