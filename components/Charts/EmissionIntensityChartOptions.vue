@@ -34,9 +34,7 @@
       {{ hoverDisplayDate }}
     </template>
     <template v-slot:hover-values>
-      <span 
-        v-if="hoverValue" 
-        class="ft-value">
+      <span v-if="hoverValue">
         <strong>{{ hoverValue | formatValue }} kgCO₂e/MWh</strong>
       </span>
     </template>
