@@ -840,9 +840,9 @@ export default {
         }
       })
 
-      console.log('computedGrowthYMin', this.zoomExtent)
+      console.log('computedGrowthYMin', lowest)
 
-      return lowest * 1.1
+      return lowest < -10000 ? lowest * 2 : lowest * 1.1
     },
 
     computedGrowthYMax() {
@@ -870,7 +870,7 @@ export default {
 
       console.log('computedGrowthYMax', highest)
 
-      return highest * 1.1
+      return highest < 10000 ? highest * 2 : highest * 1.1
     },
 
     computedYMin() {
@@ -990,7 +990,9 @@ export default {
         return null
       }
       const time = date.getTime()
-      return this.dataset.find((d) => d.time === time)
+      return this.isTypeGrowthStackedArea
+        ? this.growthDataset.find((d) => d.time === time)
+        : this.dataset.find((d) => d.time === time)
     },
     hoverValue() {
       let value = null
@@ -1037,6 +1039,7 @@ export default {
     hoverTotal() {
       let total = 0
       let allNulls = true
+
       if (this.hoverData) {
         this.domains.forEach((d) => {
           const value = this.hoverData[d.id]
