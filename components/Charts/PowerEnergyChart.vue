@@ -1076,14 +1076,8 @@ export default {
     },
 
     fuelTechGroupName(val) {
-      console.log('fuelTechGroupName', val)
-
       if (this.isTypeGrowthStackedArea) {
-        this.growthDataset = this.zoomExtent.length > 0 ? this.getGrowthDataset().filter((d) => {
-          return d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
-        }) : this.getGrowthDataset()
-
-        console.log('growthDataset fuelTechGroupName', this.growthDataset)
+        this.updateGrowDataset()
       }
     },
 
@@ -1091,35 +1085,19 @@ export default {
       this.handleTypeClick()
 
       if (this.isTypeGrowthStackedArea) {
-        this.growthDataset = this.zoomExtent.length > 0 ? this.getGrowthDataset().filter((d) => {
-          return d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
-        }) : this.getGrowthDataset()
-
-        console.log('growthDataset zoomExtent', this.growthDataset)
+        this.updateGrowDataset()
       }
     },
 
-    // zoomExtent(val) {
-    //   console.log('zoomExtent', val, this.stackedAreaDataset)
-
-    //   if (this.isTypeGrowthStackedArea) {
-    //     this.growthDataset = val.length > 0 ? this.getGrowthDataset().filter((d) => {
-    //       return d.date >= val[0] && d.date < val[1]
-    //     }) : this.getGrowthDataset()
-
-    //     console.log('growthDataset zoomExtent', this.growthDataset)
-    //   }
-    // },
-
     isTypeGrowthStackedArea(val) {
-      console.log('isTypeGrowthStackedArea', val)
-
       if (val) {
-        this.growthDataset = this.zoomExtent.length > 0 ? this.getGrowthDataset().filter((d) => {
-          return d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
-        }) : this.getGrowthDataset()
+        this.updateGrowDataset()
+      }
+    },
 
-        console.log('growthDataset isTypeGrowthStackedArea', this.growthDataset)
+    hiddenDomains() {
+      if (this.isTypeGrowthStackedArea) {
+        this.updateGrowDataset()
       }
     }
   },
@@ -1128,11 +1106,7 @@ export default {
     this.visHeight = this.chartHeight
 
     if (this.isTypeGrowthStackedArea) {
-      this.growthDataset = this.zoomExtent.length > 0 ? this.getGrowthDataset().filter((d) => {
-        return d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
-      }) : this.getGrowthDataset()
-
-      console.log('growthDataset powerEnergyDataset', this.growthDataset)
+      this.updateGrowDataset()
     }
   },
 
@@ -1145,6 +1119,12 @@ export default {
       doUpdateXTicks: 'visInteract/doUpdateXTicks',
       doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
     }),
+
+    updateGrowDataset() {
+      this.growthDataset = this.zoomExtent.length > 0 ? this.getGrowthDataset().filter((d) => {
+          return d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
+        }) : this.getGrowthDataset()
+    },
 
     convertValue(value) {
       return SI.convertValue(
