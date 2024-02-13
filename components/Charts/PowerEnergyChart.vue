@@ -51,15 +51,15 @@
     />
 
     <stacked-area-vis
-      v-if="chartShown && isTypeGrowthStackedArea"
+      v-if="chartShown && (isTypeArea || isTypeProportion || isTypeGrowthStackedArea)"
       :read-only="readOnly"
       :domains="domains"
-      :dataset="growthDataset"
+      :dataset="isTypeGrowthStackedArea ? growthDataset : stackedAreaDataset"
       :range="range"
       :interval="interval"
       :curve="chartCurve"
-      :y-min="computedGrowthYMin"
-      :y-max="computedGrowthYMax"
+      :y-min="isTypeGrowthStackedArea ? computedGrowthYMin : isTypeArea ? computedYMin : 0"
+      :y-max="isTypeGrowthStackedArea ? computedGrowthYMax : isTypeArea ? computedYMax : 100"
       :vis-height="visHeight"
       :hover-on="hoverOn"
       :hover-date="hoverDate"
@@ -89,56 +89,7 @@
       :show-total-line="chartEnergyNetLine"
       :total-line-domain="'_total'"
       :class="{ dragging: dragging }"
-      :use-offset-diverge="true"
-      class="vis-chart"
-      @dateOver="handleDateHover"
-      @domainOver="handleDomainHover"
-      @svgClick="handleSvgClick"
-      @enter="handleVisEnter"
-      @leave="handleVisLeave"
-      @zoomExtent="handleZoomExtent"
-    />
-
-    <stacked-area-vis
-      v-if="chartShown && (isTypeArea || isTypeProportion)"
-      :read-only="readOnly"
-      :domains="domains"
-      :dataset="stackedAreaDataset"
-      :range="range"
-      :interval="interval"
-      :curve="chartCurve"
-      :y-min="isTypeArea ? computedYMin : 0"
-      :y-max="isTypeArea ? computedYMax : 100"
-      :vis-height="visHeight"
-      :hover-on="hoverOn"
-      :hover-date="hoverDate"
-      :dynamic-extent="zoomExtent"
-      :zoomed="zoomExtent.length > 0"
-      :x-guides="xGuides"
-      :y-guides="yGuides"
-      :x-axis-dy="tabletBreak ? 8 : 12"
-      :y-axis-ticks="5"
-      :show-x-axis="false"
-      :compare-dates="compareDates"
-      :focus-date="focusDate"
-      :focus-on="focusOn"
-      :incomplete-intervals="incompleteIntervals"
-      :dataset-two="
-        chartEnergyRenewablesLine ? renewablesPercentageDataset : []
-      "
-      :dataset-two-colour="renewablesLineColour"
-      :highlight-domain="highlightId"
-      :mobile-screen="tabletBreak"
-      :display-prefix="chartDisplayPrefix"
-      :should-convert-value="shouldConvertValue"
-      :convert-value="convertValue"
-      :unit="` ${chartDisplayPrefix}${chartUnit}`"
-      :null-check-prop="'_total'"
-      :filter-period="filterPeriod"
-      :show-total-line="chartEnergyNetLine"
-      :total-line-domain="'_total'"
-      :class="{ dragging: dragging }"
-      :use-offset-diverge="false"
+      :use-offset-diverge="isTypeGrowthStackedArea ? true : false"
       class="vis-chart"
       @dateOver="handleDateHover"
       @domainOver="handleDomainHover"
@@ -1075,7 +1026,13 @@ export default {
       this.$emit('selectedDataset', this.dataset)
     },
 
-    fuelTechGroupName(val) {
+    zoomExtent() {
+      if (this.isTypeGrowthStackedArea) {
+        this.updateGrowDataset()
+      }
+    },
+
+    fuelTechGroupName() {
       if (this.isTypeGrowthStackedArea) {
         this.updateGrowDataset()
       }
