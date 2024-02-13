@@ -1218,26 +1218,56 @@ export default {
       const dataset = []
       const ds = _cloneDeep(this.powerEnergyDataset)
 
-      ds.forEach((d, i) => {
-        const obj = {
-          date: d.date,
-          time: d.time,
-          _isIncompleteBucket: d._isIncompleteBucket
+      if (this.isRollingSumRange) {
+        let rollingSum = 12
+        if (this.interval === 'Season' || this.interval === 'Quarter') {
+          rollingSum = 4
+        } else if (this.interval === 'Half Year') {
+          rollingSum = 2
         }
 
-        this.domains.forEach((domain) => {
-          const ftId = domain.id
-
-          if (i === 0) {
-            obj[ftId] = 0
-          } else {
-            obj[ftId] = d[ftId] - ds[i - 1][ftId]
+        ds.forEach((d, i) => {
+          const obj = {
+            date: d.date,
+            time: d.time,
+            _isIncompleteBucket: d._isIncompleteBucket
           }
+
+          this.domains.forEach((domain) => {
+            const ftId = domain.id
+
+            if (i === 0) {
+              obj[ftId] = 0
+            } else {
+              if (ds[i - rollingSum]) {
+                obj[ftId] = d[ftId] - ds[i - rollingSum][ftId]
+              }
+            }
+          })
+
+          dataset.push(obj)
         })
+      } else {
+        ds.forEach((d, i) => {
+          const obj = {
+            date: d.date,
+            time: d.time,
+            _isIncompleteBucket: d._isIncompleteBucket
+          }
 
-        dataset.push(obj)
+          this.domains.forEach((domain) => {
+            const ftId = domain.id
 
-      })
+            if (i === 0) {
+              obj[ftId] = 0
+            } else {
+              obj[ftId] = d[ftId] - ds[i - 1][ftId]
+            }
+          })
+
+          dataset.push(obj)
+        })
+      }
 
       this.handleTypeClick()
 
