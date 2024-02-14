@@ -1072,6 +1072,13 @@ export default {
     if (this.isTypeGrowthStackedArea) {
       this.updateGrowDataset()
     }
+
+    if (!this.isEnergyType && this.isTypeGrowthStackedArea) {
+      this.$store.commit(
+        'chartOptionsPowerEnergy/chartType',
+        OPTIONS.CHART_STACKED
+      )
+    }
   },
 
   methods: {
