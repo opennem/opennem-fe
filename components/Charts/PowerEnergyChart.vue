@@ -1193,6 +1193,8 @@ export default {
           compareIndex = 4
         } else if (this.interval === 'Half Year') {
           compareIndex = 2
+        } else {
+          compareIndex = 12
         }
       }
 
