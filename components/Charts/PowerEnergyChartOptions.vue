@@ -155,6 +155,10 @@ export default {
       type: Boolean,
       default: false
     },
+    isTypeGrowthStackedArea: {
+      type: Boolean,
+      default: false
+    },
     isYAxisAbsolute: {
       type: Boolean,
       default: false
@@ -246,7 +250,7 @@ export default {
       return (
         !this.isRenewableLineOnly &&
         (this.isTypeArea ||
-          ((this.isTypeLine || this.isTypeChangeSinceLine) &&
+          ((this.isTypeLine || this.isTypeChangeSinceLine || this.isTypeGrowthStackedArea) &&
             !this.isYAxisPercentage))
       )
     },
@@ -279,8 +283,8 @@ export default {
       let options = []
       if (this.isEnergyType) {
         options = this.energyOptions
-        if (this.isTypeLine || this.isTypeChangeSinceLine) {
-          if (this.isTypeChangeSinceLine) {
+        if (this.isTypeLine || this.isTypeChangeSinceLine || this.isTypeGrowthStackedArea) {
+          if (this.isTypeChangeSinceLine || this.isTypeGrowthStackedArea) {
             options.yAxis = [
               OPTIONS.CHART_YAXIS_ENERGY,
               OPTIONS.CHART_YAXIS_AVERAGE_POWER
@@ -427,7 +431,7 @@ export default {
       if (!this.isRenewableLineOnly) {
         if (
           this.isTypeArea ||
-          ((this.isTypeLine || this.isTypeChangeSinceLine) &&
+          ((this.isTypeLine || this.isTypeChangeSinceLine || this.isTypeGrowthStackedArea) &&
             !this.isYAxisPercentage)
         ) {
           const updatedPrefix = this.togglePrefix(this.chartDisplayPrefix)

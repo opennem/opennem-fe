@@ -568,6 +568,16 @@ export default {
   },
 
   watch: {
+    yMin() {
+      this.update()
+    },
+    yMax() {
+      this.update()
+    },
+    useOffsetDiverge() {
+      this.setup()
+    },
+
     showXAxis() {
       this.handleResize()
     },
