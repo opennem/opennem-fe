@@ -210,6 +210,7 @@ import * as SI from '@/constants/si.js'
 import { RANGE_ALL_12MTH_ROLLING } from '@/constants/ranges.js'
 import { LOAD } from '@/constants/energy-fuel-techs/group-detailed.js'
 import EnergyToAveragePower from '@/data/transform/energy-to-average-power.js'
+import transformToGrowthTimeSeries from '~/data/transform/growth-series.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
@@ -1032,6 +1033,12 @@ export default {
       }
     },
 
+    filterPeriod() {
+      if (this.isTypeGrowthStackedArea) {
+        this.updateGrowDataset()
+      }
+    },
+
     fuelTechGroupName() {
       if (this.isTypeGrowthStackedArea) {
         this.updateGrowDataset()
@@ -1172,59 +1179,17 @@ export default {
     },
 
     getGrowthDataset() {
-      const dataset = []
-      const ds = _cloneDeep(this.powerEnergyDataset)
-
+      let compareIndex = 1
+      
       if (this.isRollingSumRange) {
-        let rollingSum = 12
         if (this.interval === 'Season' || this.interval === 'Quarter') {
-          rollingSum = 4
+          compareIndex = 4
         } else if (this.interval === 'Half Year') {
-          rollingSum = 2
+          compareIndex = 2
         }
-
-        ds.forEach((d, i) => {
-          const obj = {
-            date: d.date,
-            time: d.time,
-            _isIncompleteBucket: d._isIncompleteBucket
-          }
-
-          this.domains.forEach((domain) => {
-            const ftId = domain.id
-
-            if (i === 0) {
-              obj[ftId] = 0
-            } else {
-              if (ds[i - rollingSum]) {
-                obj[ftId] = d[ftId] - ds[i - rollingSum][ftId]
-              }
-            }
-          })
-
-          dataset.push(obj)
-        })
-      } else {
-        ds.forEach((d, i) => {
-          const obj = {
-            date: d.date,
-            time: d.time,
-            _isIncompleteBucket: d._isIncompleteBucket
-          }
-
-          this.domains.forEach((domain) => {
-            const ftId = domain.id
-
-            if (i === 0) {
-              obj[ftId] = 0
-            } else {
-              obj[ftId] = d[ftId] - ds[i - 1][ftId]
-            }
-          })
-
-          dataset.push(obj)
-        })
       }
+
+      const dataset = transformToGrowthTimeSeries(this.powerEnergyDataset, this.domains, compareIndex)
 
       this.handleTypeClick()
 
