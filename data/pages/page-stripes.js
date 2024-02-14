@@ -91,7 +91,7 @@ export async function getRegionStripesData(fetchFunc, regions) {
           domainInflation: rData.inflation ? rData.inflation.domain : null,
           topUp: false,
           bucket: allBucket,
-          regionId: region.id
+          regionId: r.id
         })
       })
     })
