@@ -728,8 +728,12 @@ export default {
     },
 
     changeSinceLabel() {
-      console.log('changeSinceLabel', this.zoomExtent)
       const ds = this.isTypeGrowthStackedArea ? this.growthDataset : this.stackedAreaDataset
+
+      if (ds.length === 0) {
+        return ''
+      }
+
       if (this.zoomExtent.length > 0) {
         return DateDisplay.specialDateFormats(
           this.zoomExtent[0].getTime(),
@@ -1053,6 +1057,12 @@ export default {
       this.$emit('selectedDataset', this.dataset)
     },
 
+    isYAxisAveragePower() {
+      if (this.isTypeGrowthStackedArea) {
+        this.updateGrowDataset()
+      }
+    },
+
     zoomExtent() {
       if (this.isTypeGrowthStackedArea) {
         this.updateGrowDataset()
@@ -1224,7 +1234,11 @@ export default {
         }
       }
 
-      const dataset = transformToGrowthTimeSeries(this.powerEnergyDataset, this.domains, compareIndex)
+      const ds = this.isYAxisAbsolute
+        ? this.powerEnergyDataset
+        : this.averagePowerDataset
+
+      const dataset = transformToGrowthTimeSeries(ds, this.domains, compareIndex)
 
       this.handleTypeClick()
 
