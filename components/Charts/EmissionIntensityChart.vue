@@ -164,6 +164,10 @@ export default {
     averageEmissionIntensity: {
       type: Number,
       default: 0
+    },
+    isEnergyType: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -282,6 +286,12 @@ export default {
   mounted() {
     if (this.tabletBreak) {
       this.chartHeight = 200
+    }
+
+    if (this.isEnergyType) {
+      this.$store.commit('chartOptionsEmissionIntensity/chartCurve', 'step')
+    } else {
+      this.$store.commit('chartOptionsEmissionIntensity/chartCurve', 'smooth')
     }
   },
 

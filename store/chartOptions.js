@@ -68,6 +68,6 @@ export const actions = {
     commit('chartDisplayPrefix', SI.BASE)
   },
   setStepCurve({ commit }) {
-    commit('chartCurve', OPTIONS.CHART_CURVE_SMOOTH)
+    commit('chartCurve', OPTIONS.CHART_CURVE_STEP)
   }
 }

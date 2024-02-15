@@ -32,7 +32,7 @@
     />
 
     <emissions-chart
-      v-if="ready && domainEmissions.length > 0 && featureEmissions"
+      v-if="ready && domainEmissions.length > 0"
       :emissions-dataset="currentDataset"
       :domain-emissions="currentDomainEmissions"
       :range="range"
@@ -45,6 +45,7 @@
       :prop-name="propName"
       :incomplete-intervals="incompleteIntervals"
       :filter-period="filterPeriod"
+      :is-energy-type="isEnergyType"
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
@@ -52,7 +53,7 @@
     />
 
     <emission-intensity-chart
-      v-if="ready && domainEmissions.length > 0 && featureEmissions"
+      v-if="ready && domainEmissions.length > 0"
       :emission-intensity-dataset="emissionIntensityData"
       :range="range"
       :interval="interval"
@@ -61,6 +62,7 @@
       :zoom-extent="zoomExtent"
       :average-emission-intensity="averageEmissionIntensity"
       :filter-period="filterPeriod"
+      :is-energy-type="isEnergyType"
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
@@ -192,9 +194,7 @@ export default {
       emissionIntensityData: 'energy/emissions/emissionIntensityData',
       averageEmissionIntensity: 'energy/emissions/averageEmissionIntensity',
 
-      chartType: 'chartOptionsPowerEnergy/chartType',
-
-      featureEmissions: 'feature/emissions'
+      chartType: 'chartOptionsPowerEnergy/chartType'
     }),
 
     domains() {
@@ -255,7 +255,7 @@ export default {
 
   created() {
     this.clearHoverFocus()
-    this.setEmissionsStepCurve()
+    // this.setEmissionsStepCurve()
     this.zoomExtent = this.filteredDates
   },
 

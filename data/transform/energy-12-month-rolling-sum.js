@@ -8,6 +8,7 @@ const perfTime = new PerfTime()
 
 export default function (data, keys) {
   perfTime.time()
+  // console.log('keys', keys)
   for (let x = data.length - 1; x >= 0; x--) {
     const d = data[x]
     const last = subMonths(data[x].date, 12)
@@ -15,6 +16,7 @@ export default function (data, keys) {
     keys.forEach((k) => {
       const id = k.id
       const isTemperatureKey = isTemperature(k.type)
+      
       let sum = d[id] || 0
       let index = x - 1
       let hasNulls = false
@@ -40,12 +42,12 @@ export default function (data, keys) {
           }
         }
         
-        // if there are nulls in the rolling sum, set the value to null
+        // for temperature, if there are nulls in the rolling sum, set the value to null
         // average for temperature, sum for everything else
         if (isTemperatureKey) {
           data[x][id] = hasNulls ? null : sum / count
         } else {
-          data[x][id] = hasNulls ? null : sum
+          data[x][id] = sum
         }
       }
     })

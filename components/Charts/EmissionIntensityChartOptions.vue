@@ -1,5 +1,7 @@
 <template>
-  <chart-header :chart-shown="chartShown">
+  <chart-header 
+    :chart-shown="chartShown" 
+    :has-hover-date="hoverDisplayDate.length > 0">
     <template 
       v-slot:options 
       v-if="!readOnly">
@@ -20,7 +22,12 @@
 
     <template v-slot:label-unit>
       <strong>Emission Intensity</strong>
-      <small v-if="chartShown">kgCO₂e/MWh</small>
+      <div 
+        v-show="chartShown" 
+        style="display: flex; gap: 5px; align-items: center;">
+        <small v-if="is12MthRollingSum">(12-month rolling)</small>
+        <small>kgCO₂e/MWh</small>
+      </div>
     </template>
     <template 
       v-slot:average-value 
@@ -32,9 +39,7 @@
       {{ hoverDisplayDate }}
     </template>
     <template v-slot:hover-values>
-      <span 
-        v-if="hoverValue" 
-        class="ft-value">
+      <span v-if="hoverValue">
         <strong>{{ hoverValue | formatValue }} kgCO₂e/MWh</strong>
       </span>
     </template>
@@ -103,6 +108,11 @@ export default {
     return {
       showChartOptions: false
     }
+  },
+  computed: {
+    ...mapGetters({
+      is12MthRollingSum: 'is12MthRollingSum'
+    })
   },
   methods: {
     handleTypeClick(type) {

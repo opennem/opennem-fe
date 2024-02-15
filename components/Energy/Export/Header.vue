@@ -20,8 +20,9 @@
       </div>
     </section>
     <section 
-      v-if="ready" 
-      class="widget-buttons">
+      v-show="ready" 
+      class="widget-buttons"
+    >
       <div>
         <a
           v-for="chart in chartButtons"
@@ -38,25 +39,30 @@
         </a>
         <hr >
 
-        <span class="tag-group">
-          <a
-            v-for="table in tables"
-            :key="table.name"
-            :class="{ 'is-primary': isEnabled(table.name) }"
-            class="tag is-rounded is-white"
-            @click="handleTableToggle(table.name)"
-          >
-            {{ table.label }}
-          </a>
-        </span>
+        <div :class="{ disabled: !hasGenerationOrEmissionsVolumeSelected }">
+          <span class="tag-group">
+            <a
+              v-for="table in tables"
+              :key="table.name"
+              :class="{ 'is-primary': isEnabled(table.name) }"
+              class="tag is-rounded is-white"
+              @click="handleTableToggle(table.name)"
+            >
+              {{ table.label }}
+            </a>
+          </span>
 
-        <a
-          v-if="legend"
-          :class="{ 'is-primary': percentDisplay }"
-          class="tag is-rounded is-white"
-          @click="handlePercentDisplay()"
-        >Show %</a
-        >
+          <a
+            v-if="legend"
+            :class="{ 'is-primary': percentDisplay }"
+            class="tag is-rounded is-white"
+            @click="handlePercentDisplay()"
+          >
+            Show %
+          </a>
+        </div>
+
+        
       </div>
     </section>
   </header>
@@ -106,14 +112,13 @@ export default {
       domainTemperature: 'regionEnergy/domainTemperature',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
 
-      featureEmissions: 'feature/emissions',
-
       exportCharts: 'export/charts',
       exportPowerEnergy: 'export/powerEnergy',
       exportEmissionsVolume: 'export/emissionsVolume',
       exportEmissionIntensity: 'export/emissionIntensity',
       exportPrice: 'export/price',
-      exportTemperature: 'export/temperature'
+      exportTemperature: 'export/temperature',
+      hasGenerationOrEmissionsVolumeSelected: 'export/hasGenerationOrEmissionsVolumeSelected'
     }),
     hasEmissions() {
       return this.currentDomainEmissions.length > 0
@@ -127,7 +132,7 @@ export default {
     chartButtons() {
       return this.exportCharts.filter(
         (c) =>
-          (this.hasEmissions && this.featureEmissions
+          (this.hasEmissions
             ? true
             : c.name !== 'exportEmissionsVolume' &&
               c.name !== 'exportEmissionIntensity') &&
@@ -226,6 +231,11 @@ header {
   margin: 0.5rem;
   border-radius: 0.5rem;
 
+  .disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
   a.tag {
     text-decoration: none;
     user-select: none;
@@ -246,4 +256,6 @@ header {
     }
   }
 }
+
+
 </style>

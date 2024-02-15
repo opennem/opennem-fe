@@ -21,8 +21,7 @@
       v-if="
         ready &&
           domainEmissions.length > 0 &&
-          exportEmissionsVolume &&
-          featureEmissions
+          exportEmissionsVolume
       "
       :read-only="true"
       :zoom-extent="filteredDates"
@@ -34,20 +33,23 @@
       :hidden-domains="hiddenFuelTechs"
       :prop-name="propName"
       :incomplete-intervals="incompleteIntervals"
+      :is-energy-type="isEnergyType"
+      :filter-period="filterPeriod"
     />
 
     <emission-intensity-chart
       v-if="
         ready &&
           domainEmissions.length > 0 &&
-          exportEmissionIntensity &&
-          featureEmissions
+          exportEmissionIntensity
       "
       :read-only="true"
       :zoom-extent="filteredDates"
       :emission-intensity-dataset="emissionIntensityData"
       :range="range"
       :interval="interval"
+      :filter-period="filterPeriod"
+      :is-energy-type="isEnergyType"
     />
 
     <price-chart
@@ -58,6 +60,7 @@
       :domain-price="domainPrice"
       :range="range"
       :interval="interval"
+      :filter-period="filterPeriod"
     />
 
     <price-chart
@@ -71,6 +74,7 @@
       :zoom-extent="filteredDates"
       :use-demand="true"
       :read-only="true"
+      :filter-period="filterPeriod"
     />
 
     <temperature-chart
@@ -131,8 +135,6 @@ export default {
 
       averageEmissions: 'energy/emissions/averageEmissions',
       emissionIntensityData: 'energy/emissions/emissionIntensityData',
-
-      featureEmissions: 'feature/emissions',
 
       exportPowerEnergy: 'export/powerEnergy',
       exportEmissionsVolume: 'export/emissionsVolume',

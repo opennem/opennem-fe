@@ -1,5 +1,7 @@
 <template>
-  <chart-header :chart-shown="chartShown">
+  <chart-header 
+    :chart-shown="chartShown" 
+    :has-hover-date="hoverDisplayDate.length > 0">
     <template 
       v-slot:options 
       v-if="!readOnly">
@@ -25,13 +27,20 @@
 
     <template v-slot:label-unit>
       <strong>Emissions Volume</strong>
-      <small v-if="chartShown && isPercentage"> {{ displayUnit }}</small>
-      <small
-        v-if="chartShown && !isPercentage"
-        class="display-unit"
-        @click.stop="handleUnitClick"
-      >{{ displayUnit }}/{{ interval | intervalLabel }}</small
-      >
+
+      <div 
+        v-show="chartShown" 
+        style="display: flex; gap: 1px; align-items: center;">
+        <small v-if="is12MthRollingSum">(12-month rolling)</small>
+        <small v-if="isPercentage"> {{ displayUnit }}</small>
+        <small
+          v-if="!isPercentage"
+          class="display-unit"
+          @click.stop="handleUnitClick"
+        >
+          {{ displayUnit }}/{{ interval | intervalLabel }}
+        </small>
+      </div>
     </template>
     <template
       v-slot:average-value
@@ -70,6 +79,7 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import ChartHeader from '@/components/Vis/ChartHeader'
 import ChartOptions from '@/components/Vis/ChartOptions'
@@ -183,6 +193,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      is12MthRollingSum: 'is12MthRollingSum'
+    }),
+
     options() {
       let options = _cloneDeep(this.emissionsOptions)
       if (this.isTypeArea) {

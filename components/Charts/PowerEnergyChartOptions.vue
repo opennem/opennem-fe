@@ -29,12 +29,19 @@
 
     <template v-slot:label-unit>
       <strong>{{ displayTitle }}</strong>
-      <small
-        v-if="chartShown"
-        :class="{ 'display-unit': allowDisplayHover }"
-        @click.stop="handleUnitClick"
-      >{{ displayUnit }}</small
-      >
+      <div 
+        v-show="chartShown" 
+        style="display: flex; gap: 1px; align-items: center;">
+        <small v-if="is12MthRollingSum">(12-month rolling)</small>
+        <small
+          :class="{ 'display-unit': allowDisplayHover }"
+          @click.stop="handleUnitClick"
+        >
+          {{ displayUnit }}
+        </small>
+        <small v-if="isTypeChangeSinceLine">(change since {{ changeSinceLabel }})</small>
+        <small v-if="isTypeGrowthStackedArea">(growth year-on-year)</small>
+      </div>
     </template>
 
     <template 
@@ -96,6 +103,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import EventBus from '@/plugins/eventBus'
 import ChartHeader from '@/components/Vis/ChartHeader'
 import ChartOptions from '@/components/Vis/ChartOptions'
@@ -152,6 +160,10 @@ export default {
       default: false
     },
     isTypeChangeSinceLine: {
+      type: Boolean,
+      default: false
+    },
+    isTypeGrowthStackedArea: {
       type: Boolean,
       default: false
     },
@@ -234,6 +246,10 @@ export default {
     showDateAxis: {
       type: Boolean,
       default: () => false
+    },
+    changeSinceLabel: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -242,11 +258,15 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      is12MthRollingSum: 'is12MthRollingSum'
+    }),
+
     allowDisplayHover() {
       return (
         !this.isRenewableLineOnly &&
         (this.isTypeArea ||
-          ((this.isTypeLine || this.isTypeChangeSinceLine) &&
+          ((this.isTypeLine || this.isTypeChangeSinceLine || this.isTypeGrowthStackedArea) &&
             !this.isYAxisPercentage))
       )
     },
@@ -279,8 +299,8 @@ export default {
       let options = []
       if (this.isEnergyType) {
         options = this.energyOptions
-        if (this.isTypeLine || this.isTypeChangeSinceLine) {
-          if (this.isTypeChangeSinceLine) {
+        if (this.isTypeLine || this.isTypeChangeSinceLine || this.isTypeGrowthStackedArea) {
+          if (this.isTypeChangeSinceLine || this.isTypeGrowthStackedArea) {
             options.yAxis = [
               OPTIONS.CHART_YAXIS_ENERGY,
               OPTIONS.CHART_YAXIS_AVERAGE_POWER
@@ -427,7 +447,7 @@ export default {
       if (!this.isRenewableLineOnly) {
         if (
           this.isTypeArea ||
-          ((this.isTypeLine || this.isTypeChangeSinceLine) &&
+          ((this.isTypeLine || this.isTypeChangeSinceLine || this.isTypeGrowthStackedArea) &&
             !this.isYAxisPercentage)
         ) {
           const updatedPrefix = this.togglePrefix(this.chartDisplayPrefix)

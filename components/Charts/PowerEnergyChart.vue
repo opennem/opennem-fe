@@ -21,6 +21,7 @@
       :is-type-proportion="isTypeProportion"
       :is-type-line="isTypeLine"
       :is-type-change-since-line="isTypeChangeSinceLine"
+      :is-type-growth-stacked-area="isTypeGrowthStackedArea"
       :is-y-axis-absolute="isYAxisAbsolute"
       :is-y-axis-percentage="isYAxisPercentage"
       :is-y-axis-average-power="isYAxisAveragePower"
@@ -45,21 +46,22 @@
       :single-domain-colour="singleDomainColour"
       :single-domain-label="singleDomainLabel"
       :show-date-axis="showDateAxis"
+      :change-since-label="changeSinceLabel"
       @type-click="handleTypeClick"
       @date-axis="(visible) => showDateAxis = visible"
     />
 
     <div class="chart-border">
       <stacked-area-vis
-        v-if="chartShown && (isTypeArea || isTypeProportion)"
+        v-if="chartShown && (isTypeArea || isTypeProportion || isTypeGrowthStackedArea)"
         :read-only="readOnly"
         :domains="domains"
-        :dataset="stackedAreaDataset"
+        :dataset="isTypeGrowthStackedArea ? growthDataset : stackedAreaDataset"
         :range="range"
         :interval="interval"
         :curve="chartCurve"
-        :y-min="isTypeArea ? computedYMin : 0"
-        :y-max="isTypeArea ? computedYMax : 100"
+        :y-min="isTypeGrowthStackedArea ? computedGrowthYMin : isTypeArea ? computedYMin : 0"
+        :y-max="isTypeGrowthStackedArea ? computedGrowthYMax : isTypeArea ? computedYMax : 100"
         :vis-height="visHeight"
         :hover-on="hoverOn"
         :hover-date="hoverDate"
@@ -89,6 +91,7 @@
         :show-total-line="chartEnergyNetLine"
         :total-line-domain="'_total'"
         :class="{ dragging: dragging }"
+        :use-offset-diverge="isTypeGrowthStackedArea ? true : false"
         class="vis-chart"
         @dateOver="handleDateHover"
         @domainOver="handleDomainHover"
@@ -97,6 +100,7 @@
         @leave="handleVisLeave"
         @zoomExtent="handleZoomExtent"
       />
+    
 
       <button
         v-if="
@@ -151,7 +155,24 @@
       />
 
       <date-brush
-        v-if="showDateAxis && chartShown"
+        v-if="showDateAxis && chartShown && isTypeGrowthStackedArea"
+        :dataset="growthDataset"
+        :zoom-range="zoomExtent"
+        :x-ticks="xTicks"
+        :tick-format="tickFormat"
+        :second-tick-format="secondTickFormat"
+        :read-only="readOnly"
+        :interval="interval"
+        :filter-period="filterPeriod"
+        :append-datapoint="isEnergyType"
+        class="date-brush vis-chart"
+        @date-hover="handleDateHover"
+        @date-filter="handleZoomExtent"
+        @enter="handleVisEnter"
+        @leave="handleVisLeave"
+      />
+      <date-brush
+        v-if="showDateAxis && chartShown && !isTypeGrowthStackedArea"
         :dataset="dataset"
         :zoom-range="zoomExtent"
         :x-ticks="xTicks"
@@ -168,7 +189,6 @@
         @leave="handleVisLeave"
       />
     </div>
-    
 
     <Divider
       v-if="allowResize"
@@ -193,6 +213,7 @@ import * as SI from '@/constants/si.js'
 import { RANGE_ALL_12MTH_ROLLING } from '@/constants/ranges.js'
 import { LOAD } from '@/constants/energy-fuel-techs/group-detailed.js'
 import EnergyToAveragePower from '@/data/transform/energy-to-average-power.js'
+import transformToGrowthTimeSeries from '~/data/transform/growth-series.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
@@ -220,7 +241,8 @@ const energyOptions = {
     OPTIONS.CHART_STACKED,
     OPTIONS.CHART_PROPORTION,
     OPTIONS.CHART_LINE,
-    OPTIONS.CHART_CHANGE_SINCE_LINE
+    OPTIONS.CHART_CHANGE_SINCE_LINE,
+    OPTIONS.CHART_GROWTH_STACKED_AREA
   ],
   curve: [
     OPTIONS.CHART_CURVE_SMOOTH,
@@ -339,13 +361,17 @@ export default {
       visHeight: 330,
       draggedHeight: 330,
       dragging: false,
-      showDivider: false
+      showDivider: false,
+
+      growthDataset: []
     }
   },
 
   computed: {
     ...mapGetters({
       percentContributionTo: 'percentContributionTo',
+      fuelTechGroupName: 'fuelTechGroupName',
+
       tabletBreak: 'app/tabletBreak',
 
       hoverDomain: 'visInteract/hoverDomain',
@@ -383,6 +409,7 @@ export default {
       isTypeProportion: 'chartOptionsPowerEnergy/isTypeProportion',
       isTypeLine: 'chartOptionsPowerEnergy/isTypeLine',
       isTypeChangeSinceLine: 'chartOptionsPowerEnergy/isTypeChangeSinceLine',
+      isTypeGrowthStackedArea: 'chartOptionsPowerEnergy/isTypeGrowthStackedArea',
       allowResize: 'regionEnergy/allowResize'
     }),
 
@@ -436,7 +463,7 @@ export default {
     shouldConvertValue() {
       return (
         this.isTypeArea ||
-        ((this.isTypeLine || this.isTypeChangeSinceLine) &&
+        ((this.isTypeLine || this.isTypeChangeSinceLine || this.isTypeGrowthStackedArea) &&
           !this.isYAxisPercentage)
       )
     },
@@ -702,6 +729,30 @@ export default {
       }
     },
 
+    changeSinceLabel() {
+      const ds = this.isTypeGrowthStackedArea ? this.growthDataset : this.stackedAreaDataset
+      if (this.zoomExtent.length > 0) {
+        return DateDisplay.specialDateFormats(
+          this.zoomExtent[0].getTime(),
+          this.range,
+          this.interval,
+          false,
+          false,
+          false,
+          true
+        )
+      }
+      return DateDisplay.specialDateFormats(
+          ds[0].time,
+          this.range,
+          this.interval,
+          false,
+          false,
+          false,
+          true
+        )
+    },
+
     dataset() {
       let ds = null
       if (this.isTypeLine) {
@@ -714,6 +765,7 @@ export default {
       this.$emit('selectedDataset', ds)
       return ds
     },
+
     // yMin() {
     //   const loadDomains = this.domains.filter((d) => d.category === LOAD)
     //   if (loadDomains.length === 0) {
@@ -743,6 +795,61 @@ export default {
     //   })
     //   return max(dataset, d => d._stackedTotalMax)
     // },
+    computedGrowthYMin() {
+      let lowest = 0
+
+      const filteredDataset =
+        this.zoomExtent.length > 0
+          ? this.growthDataset.filter(
+              (d) =>
+                d.time >= this.zoomExtent[0].getTime() &&
+                d.time <= this.zoomExtent[1].getTime() - 1
+            )
+          : this.growthDataset
+
+      filteredDataset.forEach((d) => {
+        let total = 0
+
+        this.powerEnergyDomains.forEach((domain) => {
+          const value = d[domain.id] || 0
+          total += value < 0 ? value : 0
+        })
+
+        if (total < lowest) {
+          lowest = total
+        }
+      })
+
+      return lowest
+    },
+
+    computedGrowthYMax() {
+      let highest = 0
+
+      const filteredDataset =
+        this.zoomExtent.length > 0
+          ? this.growthDataset.filter(
+              (d) =>
+                d.time >= this.zoomExtent[0].getTime() &&
+                d.time <= this.zoomExtent[1].getTime() - 1
+            )
+          : this.growthDataset
+
+      filteredDataset.forEach((d) => {
+        let total = 0
+        this.powerEnergyDomains.forEach((domain) => {
+          const value = d[domain.id] || 0
+          total += value > 0 ? value : 0
+        })
+
+        if (total > highest) {
+          highest = total
+        }
+      })
+
+      return highest
+    },
+
     computedYMin() {
       let lowest = 0
 
@@ -860,7 +967,9 @@ export default {
         return null
       }
       const time = date.getTime()
-      return this.dataset.find((d) => d.time === time)
+      return this.isTypeGrowthStackedArea
+        ? this.growthDataset.find((d) => d.time === time)
+        : this.dataset.find((d) => d.time === time)
     },
     hoverValue() {
       let value = null
@@ -907,6 +1016,7 @@ export default {
     hoverTotal() {
       let total = 0
       let allNulls = true
+
       if (this.hoverData) {
         this.domains.forEach((d) => {
           const value = this.hoverData[d.id]
@@ -943,13 +1053,59 @@ export default {
     chartUnitPrefix() {
       this.$emit('selectedDataset', this.dataset)
     },
+
+    zoomExtent() {
+      if (this.isTypeGrowthStackedArea) {
+        this.updateGrowDataset()
+      }
+    },
+
+    filterPeriod() {
+      if (this.isTypeGrowthStackedArea) {
+        this.updateGrowDataset()
+      }
+    },
+
+    fuelTechGroupName() {
+      if (this.isTypeGrowthStackedArea) {
+        this.updateGrowDataset()
+      }
+    },
+
     interval() {
       this.handleTypeClick()
+
+      if (this.isTypeGrowthStackedArea) {
+        this.updateGrowDataset()
+      }
+    },
+
+    isTypeGrowthStackedArea(val) {
+      if (val) {
+        this.updateGrowDataset()
+      }
+    },
+
+    hiddenDomains() {
+      if (this.isTypeGrowthStackedArea) {
+        this.updateGrowDataset()
+      }
     }
   },
 
   mounted() {
     this.visHeight = this.chartHeight
+
+    if (this.isTypeGrowthStackedArea) {
+      this.updateGrowDataset()
+    }
+
+    if (!this.isEnergyType && this.isTypeGrowthStackedArea) {
+      this.$store.commit(
+        'chartOptionsPowerEnergy/chartType',
+        OPTIONS.CHART_STACKED
+      )
+    }
   },
 
   methods: {
@@ -961,6 +1117,12 @@ export default {
       doUpdateXTicks: 'visInteract/doUpdateXTicks',
       doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
     }),
+
+    updateGrowDataset() {
+      this.growthDataset = this.zoomExtent.length > 0 ? this.getGrowthDataset().filter((d) => {
+          return d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
+        }) : this.getGrowthDataset()
+    },
 
     convertValue(value) {
       return SI.convertValue(
@@ -1048,6 +1210,26 @@ export default {
       })
 
       return newDataset
+    },
+
+    getGrowthDataset() {
+      let compareIndex = 1
+      
+      if (this.isRollingSumRange) {
+        if (this.interval === 'Season' || this.interval === 'Quarter') {
+          compareIndex = 4
+        } else if (this.interval === 'Half Year') {
+          compareIndex = 2
+        } else {
+          compareIndex = 12
+        }
+      }
+
+      const dataset = transformToGrowthTimeSeries(this.powerEnergyDataset, this.domains, compareIndex)
+
+      this.handleTypeClick()
+
+      return dataset
     },
 
     handleDomainHover(domain) {

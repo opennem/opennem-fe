@@ -33,7 +33,8 @@ export async function getRegionCompareData(dataset, regions, interval, filterPer
       domainDemandMarketValue: rData.domainDemandMarketValue,
       domainInflation: rData.inflation ? rData.inflation.domain : null,
       topUp: false,
-      bucket
+      bucket,
+      regionId: region.id
     })
 
     regionData.push({
@@ -89,7 +90,8 @@ export async function getRegionStripesData(fetchFunc, regions) {
           domainDemandMarketValue: rData.domainDemandMarketValue,
           domainInflation: rData.inflation ? rData.inflation.domain : null,
           topUp: false,
-          bucket: allBucket
+          bucket: allBucket,
+          regionId: r.id
         })
       })
     })
@@ -98,7 +100,7 @@ export async function getRegionStripesData(fetchFunc, regions) {
   return regionData
 }
 
-function transformStripesDataset(d) {
+function transformStripesDataset(d, regionId) {
   const data = []
   getEachYearOfInterval.forEach((year, yIndex) => {
     const yearInt = parseInt(year)
@@ -121,7 +123,8 @@ function transformStripesDataset(d) {
           domainDemandMarketValue: d.domainDemandMarketValue,
           domainInflation: d.inflation ? d.inflation.domain : null,
           topUp: true,
-          bucket: getEachDayOfInterval(yearInt)
+          bucket: getEachDayOfInterval(yearInt),
+          regionId
         })
       })
     }
@@ -141,7 +144,7 @@ export function getYearlyStripesData(fetchFunc, regions) {
           resolve({
             region: r.label,
             regionId: r.id,
-            yearlyData: transformStripesDataset(d)
+            yearlyData: transformStripesDataset(d, r.id)
           })
         })
       })

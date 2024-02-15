@@ -1,5 +1,7 @@
 <template>
-  <chart-header :chart-shown="chartShown">
+  <chart-header 
+    :chart-shown="chartShown" 
+    :has-hover-date="hoverDisplayDate.length > 0">
     <template 
       v-slot:options 
       v-if="!readOnly">
@@ -20,7 +22,12 @@
 
     <template v-slot:label-unit>
       <strong>Temperature</strong>
-      <small v-if="chartShown">°C</small>
+      <div 
+        v-show="chartShown" 
+        style="display: flex; gap: 5px; align-items: center;">
+        <small v-if="is12MthRollingSum">(12-month rolling)</small>
+        <small>°C</small>
+      </div>
     </template>
     <template 
       v-slot:average-value 
@@ -118,6 +125,11 @@ export default {
     return {
       showChartOptions: false
     }
+  },
+  computed: {
+    ...mapGetters({
+      is12MthRollingSum: 'is12MthRollingSum'
+    })
   },
   methods: {
     handleTypeClick(type) {
