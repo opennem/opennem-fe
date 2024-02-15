@@ -2,6 +2,7 @@ import cloneDeep from 'lodash.clonedeep'
 import { lsSet } from '~/services/LocalStorage'
 import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-detailed.js'
 import { ENERGY_NEM } from '@/constants/energy-regions.js'
+import { RANGE_ALL_12MTH_ROLLING } from '@/constants/ranges'
 import regionDisplayTzs from '@/constants/region-display-timezones.js'
 
 export const state = () => ({
@@ -199,7 +200,9 @@ export const getters = {
   isContributionGeneration: (state) =>
     state.percentContributionTo === 'generation',
 
-  displayTimeZone: (state) => state.displayTimeZone
+  displayTimeZone: (state) => state.displayTimeZone,
+
+  is12MthRollingSum: (state) => state.range === RANGE_ALL_12MTH_ROLLING
 }
 
 export const actions = {

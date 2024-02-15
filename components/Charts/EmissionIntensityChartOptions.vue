@@ -22,7 +22,12 @@
 
     <template v-slot:label-unit>
       <strong>Emission Intensity</strong>
-      <small v-if="chartShown">kgCO₂e/MWh</small>
+      <div 
+        v-show="chartShown" 
+        style="display: flex; gap: 5px; align-items: center;">
+        <small v-if="is12MthRollingSum">(12-month rolling)</small>
+        <small>kgCO₂e/MWh</small>
+      </div>
     </template>
     <template 
       v-slot:average-value 
@@ -103,6 +108,11 @@ export default {
     return {
       showChartOptions: false
     }
+  },
+  computed: {
+    ...mapGetters({
+      is12MthRollingSum: 'is12MthRollingSum'
+    })
   },
   methods: {
     handleTypeClick(type) {

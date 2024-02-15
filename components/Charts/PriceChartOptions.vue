@@ -22,7 +22,12 @@
 
     <template v-slot:label-unit>
       <strong>Price</strong>
-      <small v-if="chartShown">$/MWh</small>
+      <div 
+        v-show="chartShown" 
+        style="display: flex; gap: 5px; align-items: center;">
+        <small v-if="is12MthRollingSum">(12-month rolling)</small>
+        <small>$/MWh</small>
+      </div>
     </template>
 
     <template 
@@ -108,6 +113,11 @@ export default {
     return {
       showChartOptions: false
     }
+  },
+  computed: {
+    ...mapGetters({
+      is12MthRollingSum: 'is12MthRollingSum'
+    }),
   },
   methods: {
     handleTypeClick(type) {

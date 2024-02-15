@@ -46,6 +46,7 @@
       :single-domain-colour="singleDomainColour"
       :single-domain-label="singleDomainLabel"
       :show-date-axis="showDateAxis"
+      :change-since-label="changeSinceLabel"
       @type-click="handleTypeClick"
       @date-axis="(visible) => showDateAxis = visible"
     />
@@ -724,6 +725,31 @@ export default {
         // return proportions dataset
         return this.energyPercentDataset
       }
+    },
+
+    changeSinceLabel() {
+      console.log('changeSinceLabel', this.zoomExtent)
+      const ds = this.isTypeGrowthStackedArea ? this.growthDataset : this.stackedAreaDataset
+      if (this.zoomExtent.length > 0) {
+        return DateDisplay.specialDateFormats(
+          this.zoomExtent[0].getTime(),
+          this.range,
+          this.interval,
+          false,
+          false,
+          false,
+          true
+        )
+      }
+      return DateDisplay.specialDateFormats(
+          ds[0].time,
+          this.range,
+          this.interval,
+          false,
+          false,
+          false,
+          true
+        )
     },
 
     dataset() {
