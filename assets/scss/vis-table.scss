@@ -57,7 +57,6 @@
       cursor: pointer;
       padding: 3px 5px;
       margin-right: 5px;
-      margin-left: -10px;
       border-radius: 3px;
 
       &:hover {
@@ -66,14 +65,9 @@
     }
 
     .chart-label {
-      padding: 2px 0.5rem;
+      padding: 2px;
       display: flex;
       align-items: center;
-
-      small {
-        position: relative;
-        left: 3px;
-      }
     }
 
     .hover-date-value {

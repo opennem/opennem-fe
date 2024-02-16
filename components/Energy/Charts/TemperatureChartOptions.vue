@@ -21,14 +21,14 @@
     </template>
 
     <template v-slot:label-unit>
-      <strong>Temperature</strong>
-      <div 
-        v-show="chartShown" 
-        style="display: flex; gap: 5px; align-items: center;">
-        <small v-if="is12MthRollingSum">(12-month rolling)</small>
+      <strong v-show="!chartShown">Temperature</strong>
+      <div v-show="chartShown">
+        <strong>Temperature</strong>
+        <small v-if="is12MthRollingSum">12-month rolling</small>
         <small>°C</small>
       </div>
     </template>
+
     <template 
       v-slot:average-value 
       v-if="!readOnly">

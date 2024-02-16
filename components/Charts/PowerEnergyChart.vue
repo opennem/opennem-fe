@@ -47,6 +47,7 @@
       :single-domain-label="singleDomainLabel"
       :show-date-axis="showDateAxis"
       :change-since-label="changeSinceLabel"
+      :growth-label="growthLabel"
       @type-click="handleTypeClick"
       @date-axis="(visible) => showDateAxis = visible"
     />
@@ -754,6 +755,12 @@ export default {
           false,
           true
         )
+    },
+
+    growthLabel() {
+      if (this.isRollingSumRange) return `year by year`
+      const label = this.interval.toLowerCase()
+      return `${label} by ${label}`
     },
 
     dataset() {

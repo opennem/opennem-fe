@@ -21,11 +21,10 @@
     </template>
 
     <template v-slot:label-unit>
-      <strong>Price</strong>
-      <div 
-        v-show="chartShown" 
-        style="display: flex; gap: 5px; align-items: center;">
-        <small v-if="is12MthRollingSum">(12-month rolling)</small>
+      <strong v-show="!chartShown">Price</strong>
+      <div v-show="chartShown">
+        <strong>Price</strong>
+        <small v-if="is12MthRollingSum">12-month rolling</small>
         <small>$/MWh</small>
       </div>
     </template>
