@@ -1249,6 +1249,13 @@ export default {
 
       this.handleTypeClick()
 
+      if (this.isRollingSumRange) {
+        // only return the data where there are values
+        return dataset.slice(compareIndex, dataset.length - 1)
+      }
+
+      // remove first null period
+      dataset.shift()
       return dataset
     },
 
