@@ -33,6 +33,7 @@ import { extent } from 'd3-array'
 import { brushX } from 'd3-brush'
 import EventBus from '~/plugins/eventBus.js'
 import { onBrush, onBrushEnded } from './shared/brushEvents'
+import { getNextDateByInterval } from '@/services/datetime-helpers.js'
 import * as CONFIG from './shared/config.js'
 
 export default {
@@ -114,19 +115,25 @@ export default {
       if (this.dataset.length > 0) {
         if (this.appendDatapoint) {
           const updated = _cloneDeep(this.dataset)
-          const lastSecondItem = _cloneDeep(updated[updated.length - 2])
           const lastItem = _cloneDeep(updated[updated.length - 1])
-          const intervalTime = lastItem.time - lastSecondItem.time
-          lastItem.time = lastItem.time + intervalTime
-          lastItem.date = new Date(lastItem.time)
+
+          const nextDate = getNextDateByInterval(
+            lastItem.date,
+            this.interval,
+            this.filterPeriod !== 'All'
+          )
+          lastItem.date = nextDate
+          lastItem.time = nextDate.getTime()
+
           updated.push(lastItem)
           return updated
-        } else {
-          return this.dataset
         }
+
+        return this.dataset
       }
       return []
     },
+    
     datasetDateExtent() {
       return extent(this.updatedDataset, (d) => new Date(d.date))
     }
