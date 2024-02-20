@@ -758,9 +758,12 @@ export default {
     },
 
     growthLabel() {
-      if (this.isRollingSumRange) return `year by year`
       const label = this.interval.toLowerCase()
-      return `${label} by ${label}`
+
+      if (this.isRollingSumRange) {
+        return `${label}-on-previous-year-${label}`
+      }
+      return `${label}-on-${label}`
     },
 
     dataset() {
