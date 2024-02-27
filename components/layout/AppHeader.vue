@@ -280,7 +280,7 @@ export default {
         const ei = this.emissionIntensityData.find(
           (e) => e.time === d.time
         )
-        obj['Emissions Intensity - kgCO₂e/MWh'] = format(ei._emissionIntensity)
+        obj['Emissions Intensity - kgCO₂e/MWh'] = ei ? format(ei._emissionIntensity) : ''
 
         if (this.isEnergyType) {
           if (this.demandPriceDomains.length) {

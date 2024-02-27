@@ -383,8 +383,7 @@ export default {
           dateRange[1]
         )
         if (this.interval === 'Fin Year') {
-          startTime = addYears(startTime, 2)
-          endTime = addYears(endTime, 1)
+          startTime = addYears(startTime, 1)
         }
 
         filteredDates = [startTime, endTime]

@@ -28,19 +28,16 @@
     </template>
 
     <template v-slot:label-unit>
-      <strong>{{ displayTitle }}</strong>
-      <div 
-        v-show="chartShown" 
-        style="display: flex; gap: 1px; align-items: center;">
-        <small v-if="is12MthRollingSum">(12-month rolling)</small>
+      <strong v-show="!chartShown">{{ displayTitle }}</strong>
+      <div v-show="chartShown">
+        <strong>{{ displayTitle }}</strong>
+        <small v-if="is12MthRollingSum">12-month rolling</small>
         <small
           :class="{ 'display-unit': allowDisplayHover }"
           @click.stop="handleUnitClick"
-        >
-          {{ displayUnit }}
-        </small>
-        <small v-if="isTypeChangeSinceLine">(change since {{ changeSinceLabel }})</small>
-        <small v-if="isTypeGrowthStackedArea">(growth year-on-year)</small>
+        >{{ displayUnit }}</small>
+        <small v-if="isTypeChangeSinceLine">change since {{ changeSinceLabel }}</small>
+        <small v-if="isTypeGrowthStackedArea">growth {{ growthLabel }}</small>
       </div>
     </template>
 
@@ -248,6 +245,10 @@ export default {
       default: () => false
     },
     changeSinceLabel: {
+      type: String,
+      default: ''
+    },
+    growthLabel: {
       type: String,
       default: ''
     }
@@ -462,11 +463,10 @@ export default {
 <style lang="scss" scoped>
 .display-unit {
   cursor: pointer;
-  padding: 2px 4px 1px;
-  border-radius: 4px;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.7);
+    text-decoration: underline;
+    color: black;
   }
 }
 </style>

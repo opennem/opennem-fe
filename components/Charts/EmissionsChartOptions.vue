@@ -26,12 +26,10 @@
     </template>
 
     <template v-slot:label-unit>
-      <strong>Emissions Volume</strong>
-
-      <div 
-        v-show="chartShown" 
-        style="display: flex; gap: 1px; align-items: center;">
-        <small v-if="is12MthRollingSum">(12-month rolling)</small>
+      <strong v-show="!chartShown">Emissions Volume</strong>
+      <div v-show="chartShown">
+        <strong>Emissions Volume</strong>
+        <small v-if="is12MthRollingSum">12-month rolling</small>
         <small v-if="isPercentage"> {{ displayUnit }}</small>
         <small
           v-if="!isPercentage"
@@ -40,8 +38,10 @@
         >
           {{ displayUnit }}/{{ interval | intervalLabel }}
         </small>
+        <small v-if="isTypeChangeSinceLine">change since {{ changeSinceLabel }}</small>
       </div>
     </template>
+
     <template
       v-slot:average-value
       v-if="!readOnly && !isPercentage && showAverageValue"
@@ -185,6 +185,10 @@ export default {
     showDateAxis: {
       type: Boolean,
       default: () => false
+    },
+    changeSinceLabel: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -268,11 +272,10 @@ export default {
 <style lang="scss" scoped>
 .display-unit {
   cursor: pointer;
-  padding: 2px 4px 1px;
-  border-radius: 4px;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.7);
+    text-decoration: underline;
+    color: black;
   }
 }
 </style>

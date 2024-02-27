@@ -47,6 +47,7 @@
       :single-domain-label="singleDomainLabel"
       :show-date-axis="showDateAxis"
       :change-since-label="changeSinceLabel"
+      :growth-label="growthLabel"
       @type-click="handleTypeClick"
       @date-axis="(visible) => showDateAxis = visible"
     />
@@ -731,6 +732,11 @@ export default {
 
     changeSinceLabel() {
       const ds = this.isTypeGrowthStackedArea ? this.growthDataset : this.stackedAreaDataset
+
+      if (ds.length === 0) {
+        return ''
+      }
+
       if (this.zoomExtent.length > 0) {
         return DateDisplay.specialDateFormats(
           this.zoomExtent[0].getTime(),
@@ -751,6 +757,15 @@ export default {
           false,
           true
         )
+    },
+
+    growthLabel() {
+      const label = this.interval.toLowerCase()
+
+      if (this.isRollingSumRange) {
+        return `${label}-on-previous-year-${label}`
+      }
+      return `${label}-on-${label}`
     },
 
     dataset() {
@@ -1054,6 +1069,12 @@ export default {
       this.$emit('selectedDataset', this.dataset)
     },
 
+    isYAxisAveragePower() {
+      if (this.isTypeGrowthStackedArea) {
+        this.updateGrowDataset()
+      }
+    },
+
     zoomExtent() {
       if (this.isTypeGrowthStackedArea) {
         this.updateGrowDataset()
@@ -1225,10 +1246,21 @@ export default {
         }
       }
 
-      const dataset = transformToGrowthTimeSeries(this.powerEnergyDataset, this.domains, compareIndex)
+      const ds = this.isYAxisAbsolute
+        ? this.powerEnergyDataset
+        : this.averagePowerDataset
+
+      const dataset = transformToGrowthTimeSeries(ds, this.domains, compareIndex)
 
       this.handleTypeClick()
 
+      if (this.isRollingSumRange) {
+        // only return the data where there are values
+        return dataset.slice(compareIndex, dataset.length - 1)
+      }
+
+      // remove first null period
+      dataset.shift()
       return dataset
     },
 

@@ -31,6 +31,7 @@
       :show-average-value="showAverageValue"
       :emissions-options="emissionsOptions"
       :show-date-axis="showDateAxis"
+      :change-since-label="changeSinceLabel"
       @type-click="handleTypeClick"
       @date-axis="(visible) => showDateAxis = visible"
     />
@@ -696,6 +697,35 @@ export default {
         })
       }
       return this.convertValue(total)
+    },
+
+    changeSinceLabel() {
+      const ds = this.dataset
+
+      if (ds.length === 0) {
+        return ''
+      }
+
+      if (this.zoomExtent.length > 0) {
+        return DateDisplay.specialDateFormats(
+          this.zoomExtent[0].getTime(),
+          this.range,
+          this.interval,
+          false,
+          false,
+          false,
+          true
+        )
+      }
+      return DateDisplay.specialDateFormats(
+          ds[0].time,
+          this.range,
+          this.interval,
+          false,
+          false,
+          false,
+          true
+        )
     }
   },
 

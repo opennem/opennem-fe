@@ -21,14 +21,14 @@
     </template>
 
     <template v-slot:label-unit>
-      <strong>Emission Intensity</strong>
-      <div 
-        v-show="chartShown" 
-        style="display: flex; gap: 5px; align-items: center;">
-        <small v-if="is12MthRollingSum">(12-month rolling)</small>
+      <strong v-show="!chartShown">Emission Intensity</strong>
+      <div v-show="chartShown">
+        <strong>Emission Intensity</strong>
+        <small v-if="is12MthRollingSum">12-month rolling</small>
         <small>kgCO₂e/MWh</small>
       </div>
     </template>
+
     <template 
       v-slot:average-value 
       v-if="!readOnly">
