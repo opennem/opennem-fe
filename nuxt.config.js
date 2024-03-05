@@ -172,7 +172,6 @@ module.exports = {
       }
     ],
     script: [
-      { src: 'https://cdn.polyfill.io/v2/polyfill.min.js?features=default' },
       { async: true, src: 'https://www.googletagmanager.com/gtag/js?id=G-FYYXTDCEND"' },
       { src: '/scripts/ga.js' }
     ]
