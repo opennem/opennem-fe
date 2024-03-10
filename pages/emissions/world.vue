@@ -558,7 +558,7 @@ export default {
     getEmissions() {
       // const url = '/data/country-emissions.csv'
       const url =
-        'https://data.opennem.org.au/v1/emissions/world/country-emissions-20221213.csv'
+        'https://data.opennem.org.au/v1/emissions/world/country-emissions.csv'
 
       const keyArea = 'area (ISO3)'
       const keyCategory = 'category (IPCC2006_PRIMAP)'

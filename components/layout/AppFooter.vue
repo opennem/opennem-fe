@@ -44,9 +44,8 @@
         class="sources">
         <a 
           target="_blank" 
-          href="https://zenodo.org/record/7179775#.Y5WC4OxxU0E"
-          title="Link to dataset used by this visualisation">Gütschow, J.; Pflüger, M. (2022): The PRIMAP-hist national
-          historical emissions time series v2.4 (1750-2021).</a>
+          href="https://zenodo.org/records/10705513"
+          title="Link to dataset used by this visualisation">Gütschow, J.; Pflüger, M.; Busch, D. (2023): The PRIMAP-hist national historical emissions time series v2.5.1 (1750-2022). zenodo. doi:10.5281/zenodo.10705513.</a>
       </div>
 
       <div 
