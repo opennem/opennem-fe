@@ -50,7 +50,7 @@
     "lodash.sortby": "^4.7.0",
     "lodash.uniq": "^4.5.0",
     "lodash.uniqby": "^4.7.0",
-    "mapbox-gl": "2.5.1",
+    "mapbox-gl": "3.2.0",
     "mapbox-gl-animated-popup": "0.2.1",
     "nuxt": "^2.15.8",
     "papaparse": "^5.3.1",
