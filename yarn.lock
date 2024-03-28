@@ -9810,7 +9810,7 @@ relateurl@^0.2.7:
   resolved "https://registry.yarnpkg.com/relateurl/-/relateurl-0.2.7.tgz#54dbf377e51440aca90a4cd274600d3ff2d888a9"
   integrity sha512-G08Dxvm4iDN3MLM0EsP62EDV9IuhXPR6blNz6Utcp7zyV3tr4HVNINt6MpaRWbxoOHT3Q7YN2P+jaHX8vUbgog==
 
-release-it@^14.0.2:
+release-it@^14.14.3:
   version "14.14.3"
   resolved "https://registry.yarnpkg.com/release-it/-/release-it-14.14.3.tgz#f398030bc07d91bf3616b680dcb4140e1023dd9c"
   integrity sha512-CU3ySDOzkcdpaJmzKG7QXhimWVOkh9dVqVMr5tBWXhAd5oWvUdH8Lo4Tq37eYOhcVLxoukRR2vrY8mt7wSULSw==
