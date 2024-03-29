@@ -214,13 +214,16 @@ export default {
           if (showIntervalRange) {
             const sixDayslater = newTime + 518400000
 
+            const timeDate = new Date(time)
+            const timeSixDaysLater = new Date(sixDayslater)
+
             // check year
-            const startYear = new Date(time).getFullYear()
-            const endYear = new Date(sixDayslater).getFullYear()
+            const startYear = timeDate.getFullYear()
+            const endYear = timeSixDaysLater.getFullYear()
 
             // check month
-            const startMonth = new Date(time).getMonth()
-            const endMonth = new Date(sixDayslater).getMonth()
+            const startMonth = timeDate.getMonth()
+            const endMonth = timeSixDaysLater.getMonth()
 
             const sDate =
               startYear === endYear
