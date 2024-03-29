@@ -218,9 +218,15 @@ export default {
             const startYear = new Date(time).getFullYear()
             const endYear = new Date(sixDayslater).getFullYear()
 
+            // check month
+            const startMonth = new Date(time).getMonth()
+            const endMonth = new Date(sixDayslater).getMonth()
+
             const sDate =
               startYear === endYear
-                ? timeFormat('%-d')(newTime)
+                ? startMonth === endMonth 
+                  ? timeFormat('%-d')(newTime) 
+                  : timeFormat('%-d %b')(newTime)
                 : timeFormat(formatString)(newTime)
             const eDate = timeFormat(formatString)(sixDayslater)
             display = `${sDate} – ${eDate}`
