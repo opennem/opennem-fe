@@ -268,7 +268,7 @@ module.exports = {
     /*
      ** You can extend webpack config here
      */
-    // publicPath: `/_nuxt_${timestamp}/`,
+    // publicPath: `/nuxt_${timestamp}/`,
     publicPath: `/js/`,
     plugins: [
       new webpack.IgnorePlugin({
