@@ -228,7 +228,8 @@ export default {
         domainPowerEnergy: this.domainPowerEnergy,
         isEnergyType: this.isEnergyType,
         isWemOrAu: this.isWemOrAu,
-        regionId: this.regionId
+        regionId: this.regionId,
+        interval: this.interval
       })
     },
 

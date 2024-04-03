@@ -19,8 +19,6 @@ function calAverage(isEnergyType, isWemOrAu, dataset) {
 
     if (isWemOrAu) {
       ei = ei * 2
-    } else {
-      ei = ei * 12
     }
   }
 
@@ -35,7 +33,8 @@ export default function({
   domainPowerEnergy,
   isEnergyType,
   isWemOrAu,
-  regionId
+  regionId,
+  interval
 }) {
 
   /**
@@ -70,7 +69,14 @@ export default function({
   }
 
   const getPowerEnergy = (data, domain) => {
-    return data[domain.id] || 0
+    if (isEnergyType) {
+      return data[domain.id] || 0
+    } else {
+      if (data[`${domain.id}_to_energy`]) {
+        return data[`${domain.id}_to_energy`] || 0
+      }
+      return data[domain.id] || 0
+    }
   }
   
   const batteryDischarging = domainPowerEnergy.find(
@@ -109,7 +115,7 @@ export default function({
       }
     })
 
-    powerEnergyDomains.forEach((domain) => {
+    powerEnergyDomains.forEach((domain) => {      
       totalPowerEnergy += getPowerEnergy(d, domain)
     })
 
@@ -129,9 +135,7 @@ export default function({
 
       if (isWemOrAu) {
         ei = ei * 2
-      } else {
-        ei = ei * 12
-      }
+      } 
     }
 
     const isValidEI = Number.isFinite(ei)
