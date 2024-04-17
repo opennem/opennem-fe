@@ -39,12 +39,12 @@ const topLevelLinks = [
   },
   {
     name: 'Future Scenarios',
-    path: 'https://openelectricity.org.au/isp'
+    path: 'https://openelectricity.org.au/future-scenarios'
   },
-  {
-    name: 'Latest Records',
-    path: 'https://openelectricity.org.au/records'
-  },
+  // {
+  //   name: 'Latest Records',
+  //   path: 'https://openelectricity.org.au/records'
+  // },
   {
     name: 'Analysis',
     path: 'https://openelectricity.org.au/analysis',
