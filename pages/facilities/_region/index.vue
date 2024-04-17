@@ -1,16 +1,6 @@
 <template>
   <div>
-    <facility-filters
-      :selected-techs="selectedTechs"
-      :selected-statuses="selectedStatuses"
-      :selected-sizes="selectedSizes"
-      class="facility-filters"
-      @techsSelect="handleTechsSelected"
-      @selectedStatuses="handleStatusesSelected"
-      @selectedSizes="handleSizesSelected"
-      @facilityNameFilter="handleFacilityNameFilter"
-    />
-
+    
     <transition name="fade">
       <div 
         v-if="!ready" 
@@ -32,7 +22,8 @@
 
     <div 
       v-if="ready" 
-      class="facility-list-map-container">
+      class="facility-list-map-container"
+    >
       <facility-list
         v-if="!tabletBreak || (tabletBreak && selectedView === 'list')"
         :filtered-facilities="filteredFacilities"
@@ -160,13 +151,9 @@ export default {
   data() {
     return {
       ready: false,
-      filterString: '',
       facilityData: [],
       selectedFacility: null,
       hoveredFacility: null,
-      selectedStatuses: [],
-      selectedTechs: [],
-      selectedSizes: [],
       sortBy: 'displayName',
       orderBy: ASCENDING,
       totalFacilities: 0,
@@ -238,15 +225,46 @@ export default {
     facilityOrderBy() {
       return this.$store.getters['facility/orderBy']
     },
-    facilitySelectedStatuses() {
-      return this.$store.getters['facility/selectedStatuses']
-    },
-    facilitySelectedTechs() {
-      return this.$store.getters['facility/selectedTechs']
-    },
     facilitySelectedView() {
       return this.$store.getters['facility/selectedView']
     },
+
+    filterString: {
+      get() {
+        return this.$store.getters['facility/filterString']
+      },
+      set(val) {
+        this.$store.commit('facility/filterString', val)
+      }
+    },
+
+    selectedSizes: {
+      get() {
+        return this.$store.getters['facility/selectedSizes']
+      },
+      set(val) {
+        this.$store.commit('facility/selectedSizes', val)
+      }
+    },
+
+    selectedStatuses: {
+      get() {
+        return this.$store.getters['facility/selectedStatuses']
+      },
+      set(val) {
+        this.$store.commit('facility/selectedStatuses', val)
+      }
+    },
+
+    selectedTechs: {
+      get() {
+        return this.$store.getters['facility/selectedTechs']
+      },
+      set(val) {
+        this.$store.commit('facility/selectedTechs', val)
+      }
+    },
+
     cardFilename() {
       return this.useDev
         ? `${this.baseUrl}opennem-facilities-dev.png`
@@ -283,7 +301,6 @@ export default {
     this.$store.dispatch('currentView', 'facilities')
     this.sortBy = this.facilitySortBy
     this.orderBy = this.facilityOrderBy
-    // this.selectedStatuses = this.facilitySelectedStatuses
     this.selectedStatuses = this.queryStatus
     this.selectedTechs = this.queryTech
     this.selectedSizes = this.querySize
@@ -414,6 +431,8 @@ export default {
         regionIds = getNEMRegionArray()
       }
 
+      this.updateQuery()
+
       async function updateFilter() {
         return filtered.filter(
           (g) =>
@@ -459,14 +478,6 @@ export default {
       return order === ASCENDING ? DESCENDING : ASCENDING
     },
 
-    setFilterString(string) {
-      this.filterString = string
-      this.updateFacilitiesData()
-    },
-
-    handleFacilityNameFilter(string) {
-      this.filterString = string
-    },
     handleOrderChange(orderName) {
       if (this.sortBy === orderName) {
         this.orderBy = this.toggleOrder(this.orderBy)
@@ -527,21 +538,6 @@ export default {
         query
       })
     },
-    handleTechsSelected(techs) {
-      this.selectedTechs = techs
-      this.$store.dispatch('facility/selectedTechs', techs)
-      this.updateQuery()
-    },
-    handleStatusesSelected(statuses) {
-      this.selectedStatuses = statuses
-      this.$store.dispatch('facility/selectedStatuses', statuses)
-      this.updateQuery()
-    },
-    handleSizesSelected(sizes) {
-      this.selectedSizes = sizes
-      this.$store.dispatch('facility/selectedSizes', sizes)
-      this.updateQuery()
-    },
     handleCloseDetail() {
       this.selectedFacility = null
     },
@@ -597,8 +593,8 @@ export default {
       width: 50%;
       position: fixed;
       right: 0;
-      top: 0;
-      z-index: 9999;
+      top: 126px;
+      z-index: 99;
       padding: 0 1rem 0 0;
     }
   }

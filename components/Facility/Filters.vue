@@ -51,7 +51,7 @@
         <button
           :class="{ 'is-inverted': selectedTechGroups.length === 0 }"
           class="dropdown-trigger button is-rounded is-small is-primary"
-          @click="techDropdownActive = !techDropdownActive"
+          @click="handleTechDropdownClick"
         >
           <div 
             :class="{ truncate: tabletBreak }" 
@@ -208,6 +208,10 @@ export default {
     selectedSizes: {
       type: Array,
       default: () => []
+    },
+    mobile: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -310,6 +314,12 @@ export default {
     },
     onClickAway() {
       this.techDropdownActive = false
+      this.$emit('dropdownActive', false)
+    },
+    handleTechDropdownClick() {
+      this.techDropdownActive = !this.techDropdownActive
+      console.log('handleTechDropdownClick', this.techDropdownActive)
+      this.$emit('dropdownActive', this.techDropdownActive)
     },
     toggleSearch() {
       this.searchOn = !this.searchOn

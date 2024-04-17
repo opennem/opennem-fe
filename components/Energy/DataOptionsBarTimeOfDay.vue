@@ -1,13 +1,13 @@
 <template>
-  <div class="range-interval-selectors">
+  <div 
+    class="button-group" 
+    style="gap: 8px;">
     <div 
-      class="field has-addons range-buttons buttons has-addons" 
+      class="range-buttons buttons has-addons" 
       style="margin-bottom: 0;">
-        
       <button 
         v-for="d in ranges"
         :key="d.value"
-        style="font-size: 11px;"
         class="button is-rounded" 
         :class="{ 'is-selected': range === d.value }"
         @click="() => handleRangeClick(d.value)">
@@ -16,20 +16,12 @@
         
     </div>
 
-    <div 
-      class="field has-addons range-buttons buttons has-addons" 
-      style="margin-bottom: 0;">
-        
-      <button
-        v-for="d in intervals"
-        :key="d.value" 
-        style="font-size: 11px;"
-        class="button is-rounded" 
-        :class="{ 'is-selected': interval === d.value }"
-        @click="() => handleIntervalClick(d.value)">
-        <span>{{ d.label }}</span>
-      </button>
-        
+    <div class="interval-dropdowns">
+      <IntervalDropdown
+        :show-caret="intervals.length > 1"
+        :selected="interval" 
+        :options="intervals.map(d => d.value)"
+        @option-change="handleIntervalClick" />
     </div>
   </div>
 </template>
@@ -37,8 +29,13 @@
 <script>
 import { getRangeQueryByRange } from '@/constants/range-queries.js'
 import { getIntervalQueryByInterval } from '@/constants/interval-queries.js'
+import IntervalDropdown from '@/components/Energy/IntervalDropdown.vue'
 
 export default {
+  components: {
+    IntervalDropdown
+  },
+
   props: {
     view: {
       type: String,

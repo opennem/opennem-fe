@@ -1,6 +1,6 @@
 <template>
   <div 
-    :class="{ 'is-active': dropdownActive }" 
+    :class="{ 'is-active': dropdownActive, 'full-width': fullWidth }" 
     class="dropdown">
     <button
       v-on-clickaway="handleClickAway"
@@ -67,6 +67,13 @@ import regionDisplayTzs from '@/constants/region-display-timezones.js'
 
 export default {
   mixins: [clickaway],
+
+  props: {
+    fullWidth: {
+      type: Boolean,
+      default: false
+    }
+  },
 
   data() {
     return {
@@ -201,6 +208,31 @@ $dropdown-border-colour-hover: #999;
 
   &.dropdown-item-last-child::before {
     bottom: 17px;
+  }
+}
+
+.full-width {
+  &.dropdown {
+    width: 100%;
+    display: block;
+  }
+
+  button {
+    display: block;
+    min-width: auto;
+    width: 100%;
+    border: 1px solid #6A6A6A;
+    color: #353535;
+
+    &:focus:not(:active) {
+      box-shadow: none;
+    }
+    
+    span {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
   }
 }
 </style>

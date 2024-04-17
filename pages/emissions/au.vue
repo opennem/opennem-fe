@@ -971,8 +971,8 @@ export default {
 @import '~/assets/scss/responsive-mixins.scss';
 
 .wrapper {
-  padding-right: 0;
   margin-bottom: 4.5rem;
+  padding: 0 0.5rem;
 
   @include desktop {
     padding-right: 10px;
@@ -1000,7 +1000,7 @@ header {
 }
 
 h1 {
-  font-family: Playfair Display, Georgia, Times New Roman, Times, serif;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 700;
   font-size: 1.3rem;
   margin: 0;

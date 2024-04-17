@@ -52,145 +52,147 @@
       @date-axis="(visible) => showDateAxis = visible"
     />
 
-    <stacked-area-vis
-      v-if="chartShown && (isTypeArea || isTypeProportion || isTypeGrowthStackedArea)"
-      :read-only="readOnly"
-      :domains="domains"
-      :dataset="isTypeGrowthStackedArea ? growthDataset : stackedAreaDataset"
-      :range="range"
-      :interval="interval"
-      :curve="chartCurve"
-      :y-min="isTypeGrowthStackedArea ? computedGrowthYMin : isTypeArea ? computedYMin : 0"
-      :y-max="isTypeGrowthStackedArea ? computedGrowthYMax : isTypeArea ? computedYMax : 100"
-      :vis-height="visHeight"
-      :hover-on="hoverOn"
-      :hover-date="hoverDate"
-      :dynamic-extent="zoomExtent"
-      :zoomed="zoomExtent.length > 0"
-      :x-guides="xGuides"
-      :y-guides="yGuides"
-      :x-axis-dy="tabletBreak ? 8 : 12"
-      :y-axis-ticks="5"
-      :show-x-axis="false"
-      :compare-dates="compareDates"
-      :focus-date="focusDate"
-      :focus-on="focusOn"
-      :incomplete-intervals="incompleteIntervals"
-      :dataset-two="
-        chartEnergyRenewablesLine ? renewablesPercentageDataset : []
-      "
-      :dataset-two-colour="renewablesLineColour"
-      :highlight-domain="highlightId"
-      :mobile-screen="tabletBreak"
-      :display-prefix="chartDisplayPrefix"
-      :should-convert-value="shouldConvertValue"
-      :convert-value="convertValue"
-      :unit="` ${chartDisplayPrefix}${chartUnit}`"
-      :null-check-prop="'_total'"
-      :filter-period="filterPeriod"
-      :show-total-line="chartEnergyNetLine"
-      :total-line-domain="'_total'"
-      :class="{ dragging: dragging }"
-      :use-offset-diverge="isTypeGrowthStackedArea ? true : false"
-      class="vis-chart"
-      @dateOver="handleDateHover"
-      @domainOver="handleDomainHover"
-      @svgClick="handleSvgClick"
-      @enter="handleVisEnter"
-      @leave="handleVisLeave"
-      @zoomExtent="handleZoomExtent"
-    />
+    <div class="chart-border">
+      <stacked-area-vis
+        v-if="chartShown && (isTypeArea || isTypeProportion || isTypeGrowthStackedArea)"
+        :read-only="readOnly"
+        :domains="domains"
+        :dataset="isTypeGrowthStackedArea ? growthDataset : stackedAreaDataset"
+        :range="range"
+        :interval="interval"
+        :curve="chartCurve"
+        :y-min="isTypeGrowthStackedArea ? computedGrowthYMin : isTypeArea ? computedYMin : 0"
+        :y-max="isTypeGrowthStackedArea ? computedGrowthYMax : isTypeArea ? computedYMax : 100"
+        :vis-height="visHeight"
+        :hover-on="hoverOn"
+        :hover-date="hoverDate"
+        :dynamic-extent="zoomExtent"
+        :zoomed="zoomExtent.length > 0"
+        :x-guides="xGuides"
+        :y-guides="yGuides"
+        :x-axis-dy="tabletBreak ? 8 : 12"
+        :y-axis-ticks="5"
+        :show-x-axis="false"
+        :compare-dates="compareDates"
+        :focus-date="focusDate"
+        :focus-on="focusOn"
+        :incomplete-intervals="incompleteIntervals"
+        :dataset-two="
+          chartEnergyRenewablesLine ? renewablesPercentageDataset : []
+        "
+        :dataset-two-colour="renewablesLineColour"
+        :highlight-domain="highlightId"
+        :mobile-screen="tabletBreak"
+        :display-prefix="chartDisplayPrefix"
+        :should-convert-value="shouldConvertValue"
+        :convert-value="convertValue"
+        :unit="` ${chartDisplayPrefix}${chartUnit}`"
+        :null-check-prop="'_total'"
+        :filter-period="filterPeriod"
+        :show-total-line="chartEnergyNetLine"
+        :total-line-domain="'_total'"
+        :class="{ dragging: dragging }"
+        :use-offset-diverge="isTypeGrowthStackedArea ? true : false"
+        class="vis-chart"
+        @dateOver="handleDateHover"
+        @domainOver="handleDomainHover"
+        @svgClick="handleSvgClick"
+        @enter="handleVisEnter"
+        @leave="handleVisLeave"
+        @zoomExtent="handleZoomExtent"
+      />
+    
 
-    <button
-      v-if="
-        chartShown &&
-          (isTypeLine || isTypeChangeSinceLine) &&
-          zoomExtent.length > 0 &&
-          !readOnly
-      "
-      class="button is-rounded is-small reset-btn"
-      @click.stop="handleZoomReset"
-    >
-      Zoom Out
-    </button>
-    <multi-line
-      v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
-      :svg-height="visHeight"
-      :domains1="domains"
-      :dataset1="dataset"
-      :domains2="[
-        {
-          label: 'Renewables',
-          domain: 'value',
-          colour: renewablesLineColour
-        }
-      ]"
-      :dataset2="renewablesPercentageDataset"
-      :show-y2="chartEnergyRenewablesLine"
-      :y2-max="renewablesMax"
-      :y2-min="0"
-      :y2-axis-unit="'%'"
-      :y1-max="energyLineYMax"
-      :y1-min="energyLineYMin"
-      :x-ticks="xTicks"
-      :y1-axis-unit="isYAxisPercentage ? '%' : ''"
-      :curve="chartCurve"
-      :date-hovered="hoverDate"
-      :zoom-range="zoomExtent"
-      :draw-incomplete-bucket="true"
-      :x-shades="xGuides"
-      :highlight-domain="highlightId"
-      :display-prefix="chartDisplayPrefix"
-      :should-convert-value="shouldConvertValue"
-      :convert-value="convertValue"
-      :cursor-type="isEnergyType ? 'bar' : 'line'"
-      :append-datapoint="isEnergyType"
-      :class="{ dragging: dragging }"
-      class="vis-chart"
-      @date-hover="handleDateHover"
-      @domain-hover="handleDomainHover"
-      @enter="handleVisEnter"
-      @leave="handleVisLeave"
-    />
+      <button
+        v-if="
+          chartShown &&
+            (isTypeLine || isTypeChangeSinceLine) &&
+            zoomExtent.length > 0 &&
+            !readOnly
+        "
+        class="button is-rounded is-small reset-btn"
+        @click.stop="handleZoomReset"
+      >
+        Zoom Out
+      </button>
+      <multi-line
+        v-if="chartShown && (isTypeLine || isTypeChangeSinceLine)"
+        :svg-height="visHeight"
+        :domains1="domains"
+        :dataset1="dataset"
+        :domains2="[
+          {
+            label: 'Renewables',
+            domain: 'value',
+            colour: renewablesLineColour
+          }
+        ]"
+        :dataset2="renewablesPercentageDataset"
+        :show-y2="chartEnergyRenewablesLine"
+        :y2-max="renewablesMax"
+        :y2-min="0"
+        :y2-axis-unit="'%'"
+        :y1-max="energyLineYMax"
+        :y1-min="energyLineYMin"
+        :x-ticks="xTicks"
+        :y1-axis-unit="isYAxisPercentage ? '%' : ''"
+        :curve="chartCurve"
+        :date-hovered="hoverDate"
+        :zoom-range="zoomExtent"
+        :draw-incomplete-bucket="true"
+        :x-shades="xGuides"
+        :highlight-domain="highlightId"
+        :display-prefix="chartDisplayPrefix"
+        :should-convert-value="shouldConvertValue"
+        :convert-value="convertValue"
+        :cursor-type="isEnergyType ? 'bar' : 'line'"
+        :append-datapoint="isEnergyType"
+        :class="{ dragging: dragging }"
+        class="vis-chart"
+        @date-hover="handleDateHover"
+        @domain-hover="handleDomainHover"
+        @enter="handleVisEnter"
+        @leave="handleVisLeave"
+      />
 
-    <date-brush
-      v-if="showDateAxis && chartShown && isTypeGrowthStackedArea"
-      :dataset="growthDataset"
-      :zoom-range="zoomExtent"
-      :x-ticks="xTicks"
-      :tick-format="tickFormat"
-      :second-tick-format="secondTickFormat"
-      :read-only="readOnly"
-      :interval="interval"
-      :filter-period="filterPeriod"
-      :append-datapoint="isEnergyType"
-      class="date-brush vis-chart"
-      @date-hover="handleDateHover"
-      @date-filter="handleZoomExtent"
-      @enter="handleVisEnter"
-      @leave="handleVisLeave"
-    />
-    <date-brush
-      v-if="showDateAxis && chartShown && !isTypeGrowthStackedArea"
-      :dataset="dataset"
-      :zoom-range="zoomExtent"
-      :x-ticks="xTicks"
-      :tick-format="tickFormat"
-      :second-tick-format="secondTickFormat"
-      :read-only="readOnly"
-      :interval="interval"
-      :filter-period="filterPeriod"
-      :append-datapoint="isEnergyType"
-      class="date-brush vis-chart"
-      @date-hover="handleDateHover"
-      @date-filter="handleZoomExtent"
-      @enter="handleVisEnter"
-      @leave="handleVisLeave"
-    />
+      <date-brush
+        v-if="showDateAxis && chartShown && isTypeGrowthStackedArea"
+        :dataset="growthDataset"
+        :zoom-range="zoomExtent"
+        :x-ticks="xTicks"
+        :tick-format="tickFormat"
+        :second-tick-format="secondTickFormat"
+        :read-only="readOnly"
+        :interval="interval"
+        :filter-period="filterPeriod"
+        :append-datapoint="isEnergyType"
+        class="date-brush vis-chart"
+        @date-hover="handleDateHover"
+        @date-filter="handleZoomExtent"
+        @enter="handleVisEnter"
+        @leave="handleVisLeave"
+      />
+      <date-brush
+        v-if="showDateAxis && chartShown && !isTypeGrowthStackedArea"
+        :dataset="dataset"
+        :zoom-range="zoomExtent"
+        :x-ticks="xTicks"
+        :tick-format="tickFormat"
+        :second-tick-format="secondTickFormat"
+        :read-only="readOnly"
+        :interval="interval"
+        :filter-period="filterPeriod"
+        :append-datapoint="isEnergyType"
+        class="date-brush vis-chart"
+        @date-hover="handleDateHover"
+        @date-filter="handleZoomExtent"
+        @enter="handleVisEnter"
+        @leave="handleVisLeave"
+      />
+    </div>
 
     <Divider
       v-if="allowResize"
-      style="margin-left: 0.5rem;"
       :allow-x="false"
       :show="showDivider"
       @dragging="(d) => dragging = d" 

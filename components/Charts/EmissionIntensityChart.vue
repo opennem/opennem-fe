@@ -22,71 +22,72 @@
       @date-axis="(visible) => showDateAxis = visible"
     />
 
-    <button
-      v-if="
-        showDateAxis && chartShown &&
-          zoomExtent.length > 0 &&
-          !readOnly
-      "
-      class="button is-rounded is-small reset-btn"
-      @click.stop="handleZoomReset"
-    >
-      Zoom Out
-    </button>
+    <div class="chart-border">
+      <button
+        v-if="
+          showDateAxis && chartShown &&
+            zoomExtent.length > 0 &&
+            !readOnly
+        "
+        class="button is-rounded is-small reset-btn"
+        @click.stop="handleZoomReset"
+      >
+        Zoom Out
+      </button>
 
-    <line-vis
-      v-if="chartShown"
-      :read-only="readOnly"
-      :domain-id="'_emissionIntensity'"
-      :domain-colour="lineColour"
-      :dataset="emissionIntensityDataset"
-      :dynamic-extent="zoomExtent"
-      :hover-date="hoverDate"
-      :hover-on="hoverOn"
-      :focus-date="focusDate"
-      :focus-on="focusOn"
-      :range="range"
-      :interval="interval"
-      :curve="chartCurve"
-      :y-axis-log="false"
-      :y-min="-50"
-      :y-max="yMax"
-      :show-x-axis="false"
-      :show-tooltip="false"
-      :show-point-on-hover="true"
-      :vis-height="chartHeight"
-      :show-zoom-out="showDateAxis"
-      :x-guides="xGuides"
-      :y-axis-ticks="3"
-      :filter-period="filterPeriod"
-      :class="{ dragging: dragging }"
-      class="emission-intensity-vis vis-chart"
-      @dateOver="handleDateHover"
-      @svgClick="handleSvgClick"
-      @enter="handleVisEnter"
-      @leave="handleVisLeave"
-    />
+      <line-vis
+        v-if="chartShown"
+        :read-only="readOnly"
+        :domain-id="'_emissionIntensity'"
+        :domain-colour="lineColour"
+        :dataset="emissionIntensityDataset"
+        :dynamic-extent="zoomExtent"
+        :hover-date="hoverDate"
+        :hover-on="hoverOn"
+        :focus-date="focusDate"
+        :focus-on="focusOn"
+        :range="range"
+        :interval="interval"
+        :curve="chartCurve"
+        :y-axis-log="false"
+        :y-min="-50"
+        :y-max="yMax"
+        :show-x-axis="false"
+        :show-tooltip="false"
+        :show-point-on-hover="true"
+        :vis-height="chartHeight"
+        :show-zoom-out="showDateAxis"
+        :x-guides="xGuides"
+        :y-axis-ticks="3"
+        :filter-period="filterPeriod"
+        :class="{ dragging: dragging }"
+        class="emission-intensity-vis vis-chart"
+        @dateOver="handleDateHover"
+        @svgClick="handleSvgClick"
+        @enter="handleVisEnter"
+        @leave="handleVisLeave"
+      />
 
-    <date-brush
-      v-if="showDateAxis && chartShown"
-      :dataset="emissionIntensityDataset"
-      :zoom-range="zoomExtent"
-      :read-only="readOnly"
-      :interval="interval"
-      :filter-period="filterPeriod"
-      :x-ticks="xTicks"
-      :tick-format="tickFormat"
-      :second-tick-format="secondTickFormat"
-      class="date-brush vis-chart"
-      @date-hover="handleDateHover"
-      @date-filter="handleZoomExtent"
-      @enter="handleVisEnter"
-      @leave="handleVisLeave"
-    />
+      <date-brush
+        v-if="showDateAxis && chartShown"
+        :dataset="emissionIntensityDataset"
+        :zoom-range="zoomExtent"
+        :read-only="readOnly"
+        :interval="interval"
+        :filter-period="filterPeriod"
+        :x-ticks="xTicks"
+        :tick-format="tickFormat"
+        :second-tick-format="secondTickFormat"
+        class="date-brush vis-chart"
+        @date-hover="handleDateHover"
+        @date-filter="handleZoomExtent"
+        @enter="handleVisEnter"
+        @leave="handleVisLeave"
+      />
+    </div>
 
     <Divider 
       v-if="allowResize"
-      style="margin-left: 0.5rem;"
       :allow-x="false" 
       :show="showDivider"
       @dragging="(d) => dragging = d" 

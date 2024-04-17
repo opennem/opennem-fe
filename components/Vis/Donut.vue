@@ -270,7 +270,7 @@ export default {
         .sort(null)
         .value((d) => d.value)
       this.arc = d3Arc()
-        .innerRadius(this.radius * 0.5)
+        .innerRadius(this.radius * 0.75)
         .outerRadius(this.radius - 1)
       this.colour = d3ScaleOrdinal()
 
@@ -354,6 +354,7 @@ export default {
   &.total-label {
     fill: #666;
     font-size: 12px;
+    font-weight: lighter;
   }
 }
 .vis-tooltip {

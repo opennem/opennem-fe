@@ -65,7 +65,7 @@ export default {
 
     marginLeft: {
       type: Number,
-      default: () => 10
+      default: () => 0
     },
 
     interval: {
@@ -87,7 +87,7 @@ export default {
       svgHeight: 30,
       width: 0,
       height: 0,
-      margin: { left: 10, right: 1, top: 20, bottom: 10 },
+      margin: { left: 0, right: 0, top: 20, bottom: 10 },
       x: null,
       brushX: null,
       xAxis: null,

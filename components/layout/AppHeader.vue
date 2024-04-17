@@ -212,7 +212,7 @@ export default {
       return this.$store.getters.dateFilter
     },
     isFacilitiesView() {
-      return this.$store.getters.currentView === 'facilities'
+      return this.$store.getters.isFacilitiesView
     },
     chartUnit() {
       return this.$store.getters.chartUnit
@@ -406,7 +406,6 @@ header {
   align-items: center;
   justify-content: space-between;
   padding: $app-padding / 2;
-  background-color: $background-alpha;
   position: relative;
   z-index: 998;
 

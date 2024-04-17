@@ -1,5 +1,8 @@
 <template>
-  <div class="range-interval-selectors">
+  <div 
+    :class="{ mobile: tabletBreak }"
+    class="button-group"
+    style="gap: 8px;">
     <div 
       v-if="use12MthRollingToggle" 
       class="range-buttons buttons has-addons">
@@ -11,73 +14,83 @@
       </button>
     </div>
 
-    <div 
-      v-else 
-      class="range-buttons buttons has-addons">
-      <button
-        v-on-clickaway="handleClickAway"
-        v-for="(r, i) in ranges"
-        :key="i"
-        :class="{ 'is-selected': isRangeSelected(r) }"
-        class="button is-rounded"
-        @click.stop="handleRangeClick(r)"
-      >
-        <div v-if="isString(r)">{{ r }}</div>
-        <div v-if="!isString(r)">
-          {{ getSelectedRangeLabel(r) }}
-        </div>
-        <i 
-          v-if="hasRangeFilter(r)" 
-          class="filter-caret fal fa-chevron-down" />
-        <div 
-          v-show="showRangeOptions(r)" 
-          class="filter-menu dropdown-menu">
-          <div class="dropdown-content">
-            <a
-              v-for="(range, rIndex) in r"
-              :key="`rangeOption${rIndex}`"
-              :class="{ 'is-selected': range === selectedRange }"
-              class="dropdown-item"
-              @click.stop="handleRangeOptionClick(range)"
-            >
-              {{ range }}
-            </a>
-          </div>
-        </div>
-      </button>
+    <div v-if="rangeDropdownBreak">
+      <RangeDropdown
+        :selected="selectedRange" 
+        :options="ranges.flat()"
+        :mobile="mobile"
+        @option-change="handleRangeDropdownClick" />
     </div>
 
-    <div class="interval-buttons buttons has-addons">
-      <button
-        v-on-clickaway="handleClickAway"
-        v-for="(interval, i) in selectedRangeIntervals"
-        :key="i"
-        :class="{ 'is-selected': interval === selectedInterval }"
-        class="button is-rounded"
-        @click.stop="handleIntervalChange(interval)"
-      >
-        <div v-if="!hasFilter(interval)">{{ getIntervalLabel(interval) }}</div>
-        <div v-if="hasFilter(interval)">{{ intervalLabel(interval) }}</div>
-        <i
-          v-if="hasFilter(interval)"
-          class="filter-caret fal fa-chevron-down"
-        />
-        <div 
-          v-show="showFilter(interval)" 
-          class="filter-menu dropdown-menu">
-          <div class="dropdown-content">
-            <a
-              v-for="(f, i) in filters"
-              :key="`filter${i}`"
-              :class="{ 'is-selected': f === selectedFilter }"
-              class="dropdown-item"
-              @click.stop="handleFilterPeriodClick(f)"
-            >
-              {{ f }}
-            </a>
-          </div>
-        </div>
-      </button>
+    <div v-if="!rangeDropdownBreak">
+      <label 
+        v-if="tabletBreak" 
+        style="margin-top: 8px;">Range:</label>
+      <div 
+        v-if="!use12MthRollingToggle" 
+        :class="{ mobile: tabletBreak }"
+        class="range-buttons buttons has-addons">
+        <button
+          v-on-clickaway="handleClickAway"
+          v-for="(r, i) in ranges"
+          :key="i"
+          :class="{ 'is-selected': isRangeSelected(r) }"
+          class="button is-rounded"
+          @click.stop="handleRangeClick(r)"
+        >
+          <span>
+            <div v-if="isString(r)">{{ r }}</div>
+            <div v-if="!isString(r)">
+              {{ getSelectedRangeLabel(r) }}
+            </div>
+            <!-- <i 
+          v-if="hasRangeFilter(r)" 
+          class="filter-caret dropdown-trigger-icon fal fa-chevron-down" /> -->
+            <i
+              v-if="hasRangeFilter(r)"
+              :class="[
+                'fal dropdown-trigger-icon',
+                showRangeOptions(r) ? 'fa-chevron-up' : 'fa-chevron-down'
+              ]"
+            />
+            <div 
+              v-show="showRangeOptions(r)" 
+              class="filter-menu dropdown-menu">
+              <div class="dropdown-content">
+                <button
+                  v-for="(range, rIndex) in r"
+                  :key="`rangeOption${rIndex}`"
+                  :class="{ 'is-selected': range === selectedRange }"
+                  @click="handleRangeOptionClick(range)"
+                >
+                  {{ range }}
+                </button>
+              </div>
+            </div>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <label 
+        v-if="tabletBreak" 
+        style="margin-top: 16px;">Time Interval:</label>
+      <div class="interval-dropdowns">
+        <IntervalDropdown
+          :show-caret="selectedRangeIntervals && selectedRangeIntervals.length > 1"
+          :selected="selectedInterval" 
+          :options="selectedRangeIntervals"
+          :mobile="tabletBreak"
+          @option-change="handleIntervalChange" />
+
+        <IntervalDropdown
+          v-if="filters.length > 0"
+          :selected="selectedFilter" 
+          :options="filters"
+          :mobile="tabletBreak"
+          @option-change="handleFilterPeriodClick" />
+      </div>
     </div>
   </div>
 </template>
@@ -86,6 +99,8 @@
 import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
 import _includes from 'lodash.includes'
+import IntervalDropdown from './IntervalDropdown.vue'
+import RangeDropdown from './RangeDropdown.vue'
 
 import {
   RANGE_1D,
@@ -128,6 +143,11 @@ import {
 export default {
   mixins: [clickaway],
 
+  components: {
+    RangeDropdown,
+    IntervalDropdown
+  },
+
   props: {
     ranges: {
       type: Array,
@@ -150,6 +170,10 @@ export default {
       default: null
     },
     use12MthRollingToggle: {
+      type: Boolean,
+      default: false
+    },
+    mobile: {
       type: Boolean,
       default: false
     }
@@ -178,7 +202,8 @@ export default {
 
   computed: {
     ...mapGetters({
-      tabletBreak: 'app/tabletBreak'
+      tabletBreak: 'app/tabletBreak',
+      rangeDropdownBreak: 'app/rangeDropdownBreak'
     }),
     regionId() {
       return this.$route.params.region
@@ -394,6 +419,18 @@ export default {
       }
     },
 
+    handleRangeDropdownClick(r) {
+      console.log('range', r)
+      this.hideAllPopups()
+
+      if (r === RANGE_ALL_12MTH_ROLLING) {
+        this.handleRangeOptionClick(r)
+      } else {
+        this.handleRangeChange(r)
+      }
+
+    },
+
     handleRangeChange(range) {
       this.$store.commit('regionEnergy/filteredDates', [])
       this.selectedFilter = FILTER_NONE
@@ -538,7 +575,33 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.interval-buttons {
+.button-group.mobile {
+  display: block;
+}
+
+label {
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 500;
+  display: block;
+  color: #353535;
+  margin-bottom: 4px;
+}
+
+.range-buttons.mobile {
+  width: 100%;
   flex-wrap: nowrap;
+
+  button {
+    min-width: auto;
+    width: 100%;
+  }
+}
+
+.interval-dropdowns {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 </style>

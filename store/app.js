@@ -9,7 +9,8 @@ export const state = () => ({
   dashboardView: 'discrete-time', // 'time-of-day'
   facilitiesQuery: null,
   showFeatureToggle: false,
-  siteAnnouncement: process.env.SITEWIDE_ANNOUNCEMENT
+  siteAnnouncement: process.env.SITEWIDE_ANNOUNCEMENT,
+  mobileNavActive: false
 })
 
 export const getters = {
@@ -19,6 +20,8 @@ export const getters = {
   wideScreenBreak: (state) => state.windowWidth < 1450,
   widthBreak: (state) => state.windowWidth < 1024,
   tabletBreak: (state) => state.windowWidth < 769,
+  toolbarBreak: (state) => state.windowWidth < 1160,
+  rangeDropdownBreak: (state) => state.windowWidth < 1470 && state.windowWidth >= 1160,
   showError: (state) => state.showError,
   errorHeader: (state) => state.errorHeader,
   errorMessage: (state) => state.errorMessage,
@@ -26,7 +29,8 @@ export const getters = {
   dashboardView: (state) => state.dashboardView,
   facilitiesQuery: (state) => state.facilitiesQuery,
   showFeatureToggle: (state) => state.showFeatureToggle,
-  siteAnnouncement: (state) => state.siteAnnouncement
+  siteAnnouncement: (state) => state.siteAnnouncement,
+  mobileNavActive: (state) => state.mobileNavActive
 }
 
 export const mutations = {
@@ -59,6 +63,9 @@ export const mutations = {
   },
   showFeatureToggle(state, showFeatureToggle) {
     state.showFeatureToggle = showFeatureToggle
+  },
+  mobileNavActive(state, mobileNavActive) {
+    state.mobileNavActive = mobileNavActive
   }
 }
 

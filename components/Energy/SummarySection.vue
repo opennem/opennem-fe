@@ -28,15 +28,15 @@
 
     <section 
       v-if="showDonutBar" 
-      class="bar-donut-wrapper">
-      <header>
-        <div class="buttons has-addons">
+      class="bar-donut-wrapper chart-border">
+      <header class="button-group">
+        <div class="range-buttons buttons has-addons">
           <button
             :class="{ 'is-selected': !chartSummaryPie }"
             class="button is-rounded"
             @click="handleChartSummaryClick('bar')"
           >
-            <i class="fal fa-chart-bar" />
+            <i class="fal fa-list" />
           </button>
           <button
             :class="{ 'is-selected': chartSummaryPie }"
@@ -317,9 +317,11 @@ export default {
 
 <style lang="scss" scoped>
 .bar-donut-wrapper {
-  margin-bottom: 1rem;
+  margin: 32px 0;
+  padding-bottom: 1rem;
   header {
     margin: 1rem 0;
+    justify-content: center;
     .buttons {
       justify-content: center;
     }

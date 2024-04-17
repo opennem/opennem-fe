@@ -54,6 +54,7 @@ export const state = () => ({
   selectedView: 'list',
   selectedMapStyle: MAP_STYLE_LIGHT,
   filteredFacilities: [],
+  filterString: '',
 
   previousPath: '',
   fetchingFacility: false,
@@ -104,6 +105,9 @@ export const mutations = {
   },
   filteredFacilities(state, data) {
     state.filteredFacilities = data
+  },
+  filterString(state, data) {
+    state.filterString = data
   },
 
   previousPath(state, data) {
@@ -178,6 +182,7 @@ export const getters = {
   selectedView: (state) => state.selectedView,
   selectedMapStyle: (state) => state.selectedMapStyle,
   filteredFacilities: (state) => state.filteredFacilities,
+  filterString: (state) => state.filterString,
 
   previousPath: (state) => state.previousPath,
   fetchingFacility: (state) => state.fetchingFacility,

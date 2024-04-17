@@ -11,24 +11,25 @@
 
   .dropdown-trigger-icon {
     font-size: 0.8rem;
-    color: $opennem-link-color;
-    position: relative;
-    top: -3px;
   }
 
   .dropdown-trigger {
     background-color: transparent;
-    height: 2.25rem;
     font-family: $header-font-family;
     font-weight: 700;
     font-size: inherit;
-    margin-right: $app-padding / 2;
-    padding: $app-padding / 8 $app-padding / 2;
-    color: #000;
-    border-radius: $header-hover-radius;
+    padding: 4px 8px;
+    color: $dark-grey;
+    height: auto;
+    
+    span {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
-    &:hover {
-      background-color: $row-hover;
+    &:hover strong {
+      color: $opennem-link-color;
     }
   }
 
@@ -40,4 +41,8 @@
       color: #fff;
     }
   }
+}
+
+.dropdown-menu {
+  z-index: 9999;
 }

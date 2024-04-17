@@ -293,7 +293,7 @@ ${this.description}
     padding: 10px;
     border-radius: 6px 6px 0 0;
     font-weight: 700;
-    font-family: 'Playfair Display', Georgia, 'Times New Roman', Times, serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 16px;
 
     i.fal {
@@ -321,7 +321,7 @@ ${this.description}
   label {
     display: block;
     font-weight: 700;
-    font-family: 'Playfair Display', Georgia, 'Times New Roman', Times, serif;
+    font-family: 'DM Sans', sans-serif;
     margin-top: 1rem;
     font-size: 0.9em;
 

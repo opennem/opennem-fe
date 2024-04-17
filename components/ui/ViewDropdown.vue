@@ -31,10 +31,12 @@
               class="dropdown-divider"
               v-if="view.id === 'divider'">
 
+            <!-- range=all-12-mth-rolling&interval=1M&metric=renewablesProportion -->
+
             <nuxt-link
               v-else
               v-show="shouldShow(view.id)"
-              :to="`/${view.id}${getRegionId(view.id)}`"
+              :to="`/${view.id}${getRegionId(view.id)}${appendQuery(view.id)}`"
               :class="{ 'nuxt-link-active': view.id === currentView }"
               class="dropdown-item"
               @click.native="handleViewClick(view.id)"
@@ -80,14 +82,23 @@ export default {
   },
 
   methods: {
+    appendQuery(id) {
+      console.log(id)
+      if (id === 'compare') return '?range=all-12-mth-rolling&interval=1M&metric=renewablesProportion'
+      if (id === 'energy') return '?range=7d&interval=30m&view=discrete-time'
+      if (id === 'emissions') return '??interval=Year&projections=false&history=false'
+      return ''
+    },
     handleClick() {
       this.dropdownActive = !this.dropdownActive
+      this.$emit('dropdownActive', this.dropdownActive)
     },
     handleViewClick(view) {
       this.$store.dispatch('currentView', view)
     },
     handleClickAway() {
       this.dropdownActive = false
+      this.$emit('dropdownActive', this.dropdownActive)
     },
     getRegionId(viewId) {
       if (viewId === 'compare') return '/'

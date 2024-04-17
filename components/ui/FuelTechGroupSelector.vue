@@ -1,5 +1,5 @@
 <template>
-  <div class="select is-rounded">
+  <div class="select">
     <select v-model="selected">
       <option 
         v-for="(g, index) in groups" 
@@ -52,3 +52,18 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.select:not(.is-multiple):not(.is-loading)::after {
+  border-color: #333;
+  border-radius: 0;
+  border-width: 1px;
+}
+
+.select {
+  select:active, select:focus {
+    border-color: #333;
+    box-shadow: none;
+  }
+}
+</style>

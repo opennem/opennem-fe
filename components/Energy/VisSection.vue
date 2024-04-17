@@ -409,3 +409,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+section {
+  margin-left: 1rem;
+}
+</style>

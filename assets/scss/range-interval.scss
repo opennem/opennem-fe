@@ -1,62 +1,102 @@
-.range-interval-selectors {
-  $breakpoint: 769px;
+.button-group {
+  $border-radius: 4px;
+
+  display: flex;
+  align-items: center;
 
   .buttons {
-    background-color: rgba(255, 255, 255, 0.5);
-
-    @media screen and (min-width: $breakpoint) {
-      background-color: transparent;
-    }
-  }
-
-  @media screen and (min-width: $breakpoint) {
-    padding: $app-padding / 2 1rem;
-    padding-left: 0.4rem;
-    display: flex;
-    align-items: center;
+    background-color: $buttons-background;
+    border-radius: $border-radius;
   }
 
   .button {
-    font-size: 11px;
+    font-size: 0.9rem;
     border-radius: 0;
     position: relative;
-
-    &.is-rounded {
-      min-width: 40px;
-    }
-
-    @media screen and (min-width: $breakpoint) {
-      border-radius: 290486px;
-    }
+    color: #6a6a6a;
+    min-width: 40px;
+    border: 1px solid #dddddd;
 
     .filter-caret {
       margin-left: 5px;
     }
-  }
 
-  .range-buttons {
-    @media screen and (min-width: $breakpoint) {
-      margin-bottom: 0;
-      margin-right: 0.4rem;
+    &:hover {
+      color: #000;
+      background-color: transparent;
+    }
+
+    &.is-selected {
+      background-color: #fff;
+      color: #000;
+      border: 1px solid #6A6A6A;
+      border-radius: $border-radius;
+    }
+
+    &:first-child {
+      border-top-left-radius: $border-radius;
+      border-bottom-left-radius: $border-radius;
+    }
+
+    &:last-child {
+      border-top-right-radius: $border-radius;
+      border-bottom-right-radius: $border-radius;
+    }
+
+    &:focus:not(:active) {
+      box-shadow: none;
+    }
+
+    & > span {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .dropdown-trigger-icon {
+      font-size: 10px;
     }
   }
 
   .filter-period-buttons {
-    @media screen and (min-width: $breakpoint) {
-      margin-left: 1rem;
-    }
+    margin-left: 1rem;
   }
+    
+}
 
-  .dropdown-item {
-    &.is-selected {
-      background-color: #c74523;
-      color: #fff;
-    }
-  }
+.filter-menu {
+  display: block;
+  margin-top: 2px;
 
-  .filter-menu {
-    min-width: 80px;
-    text-align: left;
+  .dropdown-menu {
     display: block;
+    font-size: 1rem;
+  }
+
+  .dropdown-content {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid $border-colour;
+    gap: 2px;
+    padding: 4px;
+
+    button {
+      border: 0;
+      background: none;
+      cursor: pointer;
+      text-align: left;
+      padding: 8px 16px;
+      border-radius: 4px;
+  
+      &:hover {
+        background: $buttons-background;
+      }
+
+      &.is-selected {
+        background: $opennem-link-color;
+        color: #fff;
+      }
+    }
   }
 }
