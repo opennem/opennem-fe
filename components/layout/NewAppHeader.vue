@@ -11,7 +11,7 @@
         v-for="link in links" 
         :key="link.name"
         :href="link.path"
-        :class="{ active: link.active }">
+        :class="{ active: checkActive(link.name) }">
         {{ link.name }}
       </a>
     </nav>
@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex';
 import OpenElectricityLogo from '../ui/OpenElectricityLogo.vue';
 import BurgerButton from './BurgerButton.vue';
 
@@ -35,7 +36,7 @@ const topLevelLinks = [
   },
   {
     name: 'Facilities Map',
-    path: '/facilities/nem'
+    path: '/facilities/nem/?status=operating'
   },
   {
     name: 'Future Scenarios',
@@ -69,6 +70,10 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      isEnergyView: 'isEnergyView',
+      isFacilitiesView: 'isFacilitiesView'
+    }),
     mobileNavActive: {
       get() {
         return this.$store.state.app.mobileNavActive;
@@ -76,6 +81,17 @@ export default {
       set(value) {
         this.$store.commit('app/mobileNavActive', value);
       }
+    }
+  },
+
+  methods: {
+    checkActive(name) {
+      if (this.isFacilitiesView && name === 'Facilities Map') {
+        return true;
+      } else if (this.isEnergyView && name === 'Data Tracker') {
+        return true;
+      } 
+      return false
     }
   }
 }
