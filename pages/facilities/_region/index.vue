@@ -22,7 +22,8 @@
 
     <div 
       v-if="ready" 
-      class="facility-list-map-container">
+      class="facility-list-map-container"
+    >
       <facility-list
         v-if="!tabletBreak || (tabletBreak && selectedView === 'list')"
         :filtered-facilities="filteredFacilities"

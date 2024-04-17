@@ -130,6 +130,9 @@ export const getters = {
   currentView: (state) => state.currentView,
   isEnergyView: (state) => state.currentView === 'energy',
   isFacilitiesView: (state) => state.currentView === 'facilities',
+  isCompareView: (state) => state.currentView === 'compare',
+  isStripesView: (state) => state.currentView === 'stripes',
+  isEmissionsView: (state) => state.currentView === 'emissions',
   
   nemLength: (state) => state.nem.length,
   nemData: (state) => state.nem,

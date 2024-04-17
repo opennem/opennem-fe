@@ -12,7 +12,7 @@
         :range="range"
         :interval="interval"
         :filter-period="filterPeriod"
-        :use12-mth-rolling-toggle="true"
+        :use12-mth-rolling-toggle="false"
         @rangeIntervalChange="handleRangeIntervalChange"
       />
     </div>

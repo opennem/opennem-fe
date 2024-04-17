@@ -2,7 +2,8 @@ import { mapMutations } from 'vuex'
 import _debounce from 'lodash.debounce'
 import { lsGet, lsSet } from '~/services/LocalStorage'
 import {
-  FEATURE_TOGGLE_COMPARE_PRICE
+  FEATURE_TOGGLE_COMPARE_PRICE,
+  SHOW_BANNER
 } from '@/constants/mutation-types/features.js'
 import hostEnv from '@/services/HostEnv.js'
 
@@ -17,6 +18,13 @@ export default {
   mounted() {
     if (process.client) {
       this.getSetFeature(FEATURE_TOGGLE_COMPARE_PRICE, this.setComparePrice)
+
+      if (lsGet(SHOW_BANNER) === null) {
+        this.setShowBanner(true)
+        lsSet(SHOW_BANNER, true)
+      } else {
+        this.setShowBanner(lsGet(SHOW_BANNER))
+      }
 
       const exportAttribution = lsGet('exportAttribution') || '@name'
       this.setExportAttribution(exportAttribution)
@@ -47,6 +55,8 @@ export default {
       setIsTouchDevice: 'app/isTouchDevice',
 
       setComparePrice: 'feature/comparePrice',
+
+      setShowBanner: 'feature/showBanner',
 
       setExportAttribution: 'exportAttribution',
 

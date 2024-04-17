@@ -52,7 +52,7 @@ const topLevelLinks = [
   },
   {
     name: 'About',
-    path: 'https://openelectricity.org.au/content/about'
+    path: 'https://openelectricity.org.au/about'
   }
 ];
 

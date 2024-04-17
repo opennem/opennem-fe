@@ -2,16 +2,15 @@
   <div class="facilities-options">
     <div class="filter-bar">
       <div class="field filter-station">
-        <button
+        <!-- <button
           v-if="tabletBreak && !searchOn"
           class="search-button button is-rounded is-small is-dark is-inverted"
           @click="toggleSearch"
         >
           <i class="fal fa-search" />
-        </button>
+        </button> -->
 
         <p
-          v-if="!tabletBreak || (tabletBreak && searchOn)"
           class="control has-icons-left has-icons-right"
         >
           <input
@@ -30,31 +29,22 @@
             <i class="fal fa-search" />
           </span>
 
-          <button
-            v-if="
-              (filterFacilityName && !tabletBreak) || (tabletBreak && searchOn)
-            "
-            class="close-button button is-rounded is-small is-dark is-inverted"
-            @click="tabletBreak ? toggleSearch() : clearFilter()"
-          >
-            <i class="fal fa-times" />
-          </button>
         </p>
       </div>
 
       <div
         v-on-clickaway="onClickAway"
-        v-if="!searchOn"
         :class="{ 'is-active': techDropdownActive }"
         class="filter-tech dropdown"
+        style="margin-top: 1rem;"
       >
         <button
           :class="{ 'is-inverted': selectedTechGroups.length === 0 }"
-          class="dropdown-trigger button is-rounded is-small is-primary"
+          class="dropdown-trigger button is-rounded is-small is-primary is-fullwidth"
+          style="border: 1px solid;"
           @click="handleTechDropdownClick"
         >
           <div 
-            :class="{ truncate: tabletBreak }" 
             class="dropdown-label">
             <strong>{{ techLabel }}</strong>
           </div>
@@ -151,20 +141,21 @@
       </div>
 
       <DropdownSelection
-        v-if="!searchOn"
+        style="margin-top: 1rem;"
         :name="'Status'"
         :initial-selections="selectedStatuses"
         :selections="statuses"
+        :is-full-width="true"
         class="filter-status"
         @selected="handleStatusesSelected"
       />
 
       <DropdownSelection
-        v-if="!searchOn"
+        style="margin-top: 1rem;"
         :name="'Size'"
         :initial-selections="selectedSizes"
         :selections="sizes"
-        :align-right-menu="true"
+        :is-full-width="true"
         class="filter-size"
         @selected="handleSizesSelected"
       />
@@ -440,6 +431,12 @@ export default {
   width: 100%;
   padding: 3px 0;
 }
+
+.dropdown {
+  display: flex;
+  margin-bottom: 1rem;
+  width: 100%;
+}
 .dropdown-label {
   font-family: $family-primary;
   margin-right: 0.5rem;
@@ -490,7 +487,7 @@ export default {
   }
 }
 .filter-bar {
-  display: flex;
+  display: block;
   margin: 5px 0 5px 10px;
   align-items: center;
 
@@ -500,16 +497,8 @@ export default {
   }
 
   .filter-station-input {
-    width: 200px;
+    width: 100%;
 
-    @include tablet {
-      width: 170px;
-      margin-right: 10px;
-    }
-    @include desktop {
-      width: 230px;
-      margin-right: 10px;
-    }
   }
 
   .filter-tech,

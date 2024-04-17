@@ -5,8 +5,9 @@
     class="dropdown"
   >
     <button
-      :class="{ 'is-inverted': selected.length === 0 }"
+      :class="{ 'is-inverted': selected.length === 0, 'is-fullwidth': isFullWidth }"
       class="dropdown-trigger button is-small is-rounded is-primary"
+      style="border: 1px solid;"
       @click="dropdownActive = !dropdownActive"
     >
       <div 
@@ -79,6 +80,10 @@ export default {
       default: () => []
     },
     alignRightMenu: {
+      type: Boolean,
+      default: false
+    },
+    isFullWidth: {
       type: Boolean,
       default: false
     }

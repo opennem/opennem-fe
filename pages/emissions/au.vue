@@ -971,8 +971,8 @@ export default {
 @import '~/assets/scss/responsive-mixins.scss';
 
 .wrapper {
-  padding-right: 0;
   margin-bottom: 4.5rem;
+  padding: 0 0.5rem;
 
   @include desktop {
     padding-right: 10px;

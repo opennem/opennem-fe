@@ -82,12 +82,14 @@ export default {
   methods: {
     handleClick() {
       this.dropdownActive = !this.dropdownActive
+      this.$emit('dropdownActive', this.dropdownActive)
     },
     handleViewClick(view) {
       this.$store.dispatch('currentView', view)
     },
     handleClickAway() {
       this.dropdownActive = false
+      this.$emit('dropdownActive', this.dropdownActive)
     },
     getRegionId(viewId) {
       if (viewId === 'compare') return '/'

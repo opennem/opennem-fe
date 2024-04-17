@@ -1,16 +1,6 @@
 <template>
   <div 
-    class="toolbar"
-  >
-
-    <!-- <div 
-      v-if="ready" 
-      class="header-dropdowns">
-      <view-dropdown 
-        v-if="!tabletBreak" />
-      <region-dropdown 
-        v-show="!tabletBreak" />
-    </div> -->
+    class="toolbar">
 
     <div 
       v-if="ready" 
@@ -19,7 +9,57 @@
       <RegionDropdown />
     </div>
 
+    <div class="options">
+      <div class="button-group has-addons">
+        <div class="buttons">
+          <button 
+            class="button"
+            @click="() => showFilters = true">
+            <i class="fal fa-fw fa-sliders-h" />
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div 
+      v-if="showFilters" 
+      class="options-panel">
+      <div class="options-header">
+        <span>Filters</span>
+
+        <!-- <button>Clear</button> -->
+      </div>
+
+      <div class="options-wrapper">
+        <!-- <label>
+          <span>Region:</span>
+          <RegionDropdown :full-width="true" />
+        </label> -->
+
+        <!-- <EnergyDataOptions :mobile="true" /> -->
+        <FacilityFilters
+          :selected-techs="selectedTechs"
+          :selected-statuses="selectedStatuses"
+          :selected-sizes="selectedSizes"
+          :mobile="true"
+          @techsSelect="(d) => selectedTechs = d"
+          @selectedStatuses="(d) => selectedStatuses = d"
+          @selectedSizes="(d) => selectedSizes = d"
+          @facilityNameFilter="(d) => filterString = d"
+          @dropdownActive="(val) => techDropDownActive = val"
+        />
+
+        <!-- <ConsumptionGenerationToggle :mobile="true" /> -->
+      </div>
+
+      <div class="options-footer">
+        <button 
+          class="button cta" 
+          @click="() => showFilters = false">Close</button>
+      </div>
+    </div>
+
+    <!-- <div 
       v-if="ready"
       class="data-options-bar">
 
@@ -37,7 +77,7 @@
       </div>
 
       
-    </div>
+    </div> -->
 
     <!-- <div 
       class="export-bar" 
@@ -67,7 +107,7 @@
 import { mapGetters } from 'vuex'
 import ViewDropdown from '~/components/ui/ViewDropdown'
 import RegionDropdown from '~/components/ui/RegionDropdown'
-import FacilityFilters from '~/components/Facility/Filters.vue'
+import FacilityFilters from '~/components/Facility/FiltersPanel.vue'
 
 export default {
   components: {
@@ -79,8 +119,7 @@ export default {
   data() {
     return {
       ready: false,
-      viewDropDownActive: false,
-      techDropDownActive: false
+      showFilters: false
     }
   },
 
@@ -155,7 +194,17 @@ export default {
   .header-dropdowns {
     display: flex;
     align-items: center;
-    padding: $toolbar-padding;
+    padding: 10px;
+
+    .dropdown {
+      font-size: 1rem;
+    }
+  }
+
+  .options {
+    padding: 10px;
+    display: flex;
+    gap: 10px;
   }
 
   .data-options-bar {
@@ -186,5 +235,81 @@ export default {
     }
   }
   
+}
+
+.options-panel {
+  $padding: 18px;
+
+  position: fixed;
+  top: 70px;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-content: space-between;
+  z-index: 9999;
+
+  label {
+    span {
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 500;
+      display: block;
+      color: #353535;
+      margin-bottom: 4px;
+    }
+  }
+
+  .options-header {
+    padding: $padding;
+    font-weight: bold;
+    font-size: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    button {
+      border: 0;
+      text-decoration: underline;
+      background: transparent;
+      cursor: pointer;
+      color: #353535;
+      font-weight: bold;
+      font-size: 16px;
+    }
+  }
+
+  .options-wrapper {
+    padding: $padding;
+    border-bottom: 1px solid #e0e0e0;
+    border-top: 1px solid #e0e0e0;
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .options-footer {
+    padding: $padding;
+    display: flex;
+    justify-content: space-evenly;
+    gap: 8px;
+    
+    button {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #353535;
+      color: #000;
+      font-weight: bold;
+
+      &.cta {
+        background-color: #353535;
+        color: #fff;
+      }
+    }
+  }
 }
 </style>

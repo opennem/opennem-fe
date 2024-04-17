@@ -1,5 +1,7 @@
 <template>
-  <div class="card-wrapper">
+  <div 
+    class="card-wrapper" 
+    ref="listBox">
     <div class="column-headers">
       <div class="info-button-col col-header" />
 
@@ -52,161 +54,165 @@
       </div>
     </div>
 
-    <div
-      v-for="(facility, index) in filteredFacilities"
-      :id="facility.stationId"
-      :key="index"
-      :class="{
-        'is-selected': isSelected(facility.stationId),
-        'is-inactive': !active(facility.status)
-      }"
-      class="card"
-      @mouseover="
-        isTouchDevice ? handleRowClick(facility) : handleRowHover(facility)
-      "
-      @mouseout="handleRowOut"
-      @click="
-        isTouchDevice
-          ? handleRowDoubleClick(facility)
-          : handleRowClick(facility)
-      "
-      @dblclick="handleRowDoubleClick(facility)"
-    >
+    <div :style="`height: ${windowHeight - 266}px; overflow-y: scroll;`">
       <div
-        class="bar-left"
-        style="display: flex; position: absolute; left: 0; height: 100%"
+        v-for="(facility, index) in filteredFacilities"
+        :id="facility.stationId"
+        :key="index"
+        :class="{
+          'is-selected': isSelected(facility.stationId),
+          'is-inactive': !active(facility.status)
+        }"
+        class="card"
+        @mouseover="
+          isTouchDevice ? handleRowClick(facility) : handleRowHover(facility)
+        "
+        @mouseout="handleRowOut"
+        @click="
+          isTouchDevice
+            ? handleRowDoubleClick(facility)
+            : handleRowClick(facility)
+        "
+        @dblclick="handleRowDoubleClick(facility)"
       >
-        <span
-          v-for="(ft, ftIndex) in facility.fuelTechs"
-          :key="ftIndex"
-          :style="{
-            backgroundColor: getColour(ft),
-            backgroundImage: getBgImage(facility.status),
-            backgroundSize: '5px 5px',
-            opacity: getOpacity(ft)
-          }"
-          class="source-colour-side"
-        />
-      </div>
-
-      <div class="facility-detail">
-        <div class="info-button-col">
-          <a
-            v-tooltip="'View facility info'"
-            class="facility-info-link"
-            @click="handleRowDoubleClick(facility)"
-          >
-            <i class="fal fa-external-link-square" />
-          </a>
-        </div>
-
         <div
-          :style="{ width: hideRegionColumn ? '60%' : '50%' }"
-          class="name-col"
+          class="bar-left"
+          style="display: flex; position: absolute; left: 0; height: 100%"
         >
-          <h2 class="station-name">
-            {{ facility.displayName }}
-          </h2>
           <span
-            v-if="!facility.hasLocation"
-            class="has-location-icon fa-stack fa-1x"
-          >
-            <i class="fal fa-map-marker-alt fa-stack-1x" />
-            <i class="fal fa-ban fa-stack-2x" />
-          </span>
+            v-for="(ft, ftIndex) in facility.fuelTechs"
+            :key="ftIndex"
+            :style="{
+              backgroundColor: getColour(ft),
+              backgroundImage: getBgImage(facility.status),
+              backgroundSize: '5px 5px',
+              opacity: getOpacity(ft)
+            }"
+            class="source-colour-side"
+          />
         </div>
 
-        <div 
-          v-show="!hideRegionColumn" 
-          class="region-col">
-          <small style="color: #666">{{
-            getRegionLabel(facility.regionId)
-          }}</small>
-        </div>
-
-        <div class="tech-col stat">
-          <div 
-            v-if="facility.genFuelTechs.length" 
-            class="stat-value">
-            <span
-              v-for="(ft, genFtIndex) in facility.genFuelTechs"
-              :key="genFtIndex"
-              :style="{ opacity: getOpacity(ft) }"
+        <div class="facility-detail">
+          <div class="info-button-col">
+            <a
+              v-tooltip="'View facility info'"
+              class="facility-info-link"
+              @click="handleRowDoubleClick(facility)"
             >
-              {{ getFtLabel(ft) }}
-              <small v-if="facility.genFuelTechs.length > 1">
-                ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber
-                }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span
-                ><span v-else>MW</span>)
-              </small>
-              <span 
-                v-if="genFtIndex !== facility.genFuelTechs.length - 1"
-              ><br
-              ></span>
+              <i class="fal fa-external-link-square" />
+            </a>
+          </div>
+
+          <div
+            :style="{ width: hideRegionColumn ? '60%' : '50%' }"
+            class="name-col"
+          >
+            <h2 class="station-name">
+              {{ facility.displayName }}
+            </h2>
+            <span
+              v-if="!facility.hasLocation"
+              class="has-location-icon fa-stack fa-1x"
+            >
+              <i class="fal fa-map-marker-alt fa-stack-1x" />
+              <i class="fal fa-ban fa-stack-2x" />
             </span>
           </div>
-          <div 
-            v-if="facility.loadFuelTechs.length" 
-            class="stat-value">
-            <em
-              v-for="(ft, loadFtIndex) in facility.loadFuelTechs"
-              :key="loadFtIndex"
-              :style="{ opacity: getOpacity(ft) }"
-            >
-              {{ getFtLabel(ft) }}
-              <small
-              >({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber
-              }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span
-              ><span v-else>MW</span>)</small
-              >
-              <span 
-                v-if="loadFtIndex !== facility.loadFuelTechs.length - 1"
-              ><br
-              ></span>
-            </em>
-          </div>
-        </div>
 
-        <div class="cap-col stat">
           <div 
-            v-show="facility.generatorCap" 
-            class="stat-value has-text-right">
-            <span
-              v-tooltip.auto="{
-                content: getFacilityInfoTooltip(facility),
-                trigger: tabletBreak ? 'click' : 'hover'
-              }"
-              v-if="hasHiddenCapacity(facility)"
-              class="has-hidden-capacity"
-            ><i 
-              class="fal fa-info-circle"
-            /></span>
-            {{ getGeneratorCap(facility) | facilityFormatNumber }}
-            <span
-              v-if="
-                getGeneratorCap(facility) !== 0 && getGeneratorCap(facility) < 1
-              "
-              class="unit"
-            >kW</span
-            >
-            <span
-              v-if="
-                getGeneratorCap(facility) !== 0 &&
-                  getGeneratorCap(facility) >= 1
-              "
-              class="unit"
-            >MW</span
-            >
+            v-show="!hideRegionColumn" 
+            class="region-col">
+            <small style="color: #666">{{
+              getRegionLabel(facility.regionId)
+            }}</small>
           </div>
-          <div
-            v-show="!facility.generatorCap"
-            class="stat-value has-text-right"
-          >
-            –
+
+          <div class="tech-col stat">
+            <div 
+              v-if="facility.genFuelTechs.length" 
+              class="stat-value">
+              <span
+                v-for="(ft, genFtIndex) in facility.genFuelTechs"
+                :key="genFtIndex"
+                :style="{ opacity: getOpacity(ft) }"
+              >
+                {{ getFtLabel(ft) }}
+                <small v-if="facility.genFuelTechs.length > 1">
+                  ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber
+                  }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span
+                  ><span v-else>MW</span>)
+                </small>
+                <span 
+                  v-if="genFtIndex !== facility.genFuelTechs.length - 1"
+                ><br
+                ></span>
+              </span>
+            </div>
+            <div 
+              v-if="facility.loadFuelTechs.length" 
+              class="stat-value">
+              <em
+                v-for="(ft, loadFtIndex) in facility.loadFuelTechs"
+                :key="loadFtIndex"
+                :style="{ opacity: getOpacity(ft) }"
+              >
+                {{ getFtLabel(ft) }}
+                <small
+                >({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber
+                }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span
+                ><span v-else>MW</span>)</small
+                >
+                <span 
+                  v-if="loadFtIndex !== facility.loadFuelTechs.length - 1"
+                ><br
+                ></span>
+              </em>
+            </div>
+          </div>
+
+          <div class="cap-col stat">
+            <div 
+              v-show="facility.generatorCap" 
+              class="stat-value has-text-right">
+              <!-- <span
+                v-tooltip.auto="{
+                  content: getFacilityInfoTooltip(facility),
+                  trigger: tabletBreak ? 'click' : 'hover'
+                }"
+                v-if="hasHiddenCapacity(facility)"
+                class="has-hidden-capacity"
+              ><i 
+                class="fal fa-info-circle"
+              /></span> -->
+              {{ getGeneratorCap(facility) | facilityFormatNumber }}
+              <span
+                v-if="
+                  getGeneratorCap(facility) !== 0 && getGeneratorCap(facility) < 1
+                "
+                class="unit"
+              >kW</span
+              >
+              <span
+                v-if="
+                  getGeneratorCap(facility) !== 0 &&
+                    getGeneratorCap(facility) >= 1
+                "
+                class="unit"
+              >MW</span
+              >
+            </div>
+            <div
+              v-show="!facility.generatorCap"
+              class="stat-value has-text-right"
+            >
+              –
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    
 
     <totals
       :position="totalsPosition"
@@ -374,11 +380,17 @@ export default {
       this.windowHeight = window.innerHeight
       this.divWidth = this.calculateDivWidth()
 
+      
+
+      
+
       window.addEventListener(
         'resize',
         _debounce(() => {
           this.windowHeight = window.innerHeight
           this.divWidth = this.calculateDivWidth()
+
+          console.log('mounted', this.windowHeight, this.$refs.listBox.clientHeight)
         }, 200)
       )
 
@@ -566,6 +578,7 @@ export default {
       return `Capacity that is excluded by filter:<div class="tooltip-list">${string}</div>`
     },
     hasHiddenCapacity(facility) {
+
       const ftBoolArr = []
       if (this.selectedTechs.length > 0) {
         facility.fuelTechs.forEach((ft) => {

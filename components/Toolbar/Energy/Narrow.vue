@@ -348,7 +348,7 @@ export default {
   $padding: 18px;
 
   position: fixed;
-  top: 0;
+  top: 70px;
   bottom: 20px;
   left: 0;
   right: 0;
@@ -356,6 +356,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-content: space-between;
+  z-index: 9999;
 
   label {
     span {
