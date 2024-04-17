@@ -24,15 +24,25 @@ export default function ({
     Object.keys(groups).forEach((key) => {
       if (key !== GROUP_DETAILED) {
         const groupDomains = groups[key]
+
         groupDomains.forEach((g) => {
           let groupValue = 0,
-            allNulls = true
+            allNulls = true,
+            groupPowerToEnergy = 0
+
           g.domainIds.forEach((dId) => {
             groupValue += d[dId]
+            groupPowerToEnergy += d[`${dId}_to_energy`] || 0
+
             if (d[dId] || d[dId] === 0) {
               allNulls = false
             }
           })
+
+          if (g.type === 'power') {
+            d[`${g.id}_to_energy`] = groupPowerToEnergy
+          }
+
           d[g.id] = allNulls ? null : groupValue
         })
       }

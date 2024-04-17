@@ -4,6 +4,7 @@ import eachDayOfInterval from 'date-fns/eachDayOfInterval'
 import eachMonthOfInterval from 'date-fns/eachMonthOfInterval'
 import addMinutes from 'date-fns/addMinutes'
 import { mutateDate } from '@/services/datetime-helpers.js'
+import { isLoad } from '@/constants/energy-fuel-techs/group-detailed.js'
 import * as DT from '@/constants/data-types.js'
 import interpolateDataset from './interpolateDataset.js'
 
@@ -225,8 +226,28 @@ export default function (isPowerData, dataInterval, dataAll, displayTz) {
   })
 
   // interpolate and create pos/neg price props
+  // convert power to energy
   if (isPowerData) {
     interpolateDataset(dataAll, allArr)
+    const powerData = dataAll.filter((d) => d.type === 'power')
+    const powerIds = powerData.map((d) => { return {
+      id: d.id,
+      fuelTech: d.fuel_tech
+    }})
+
+    allArr.forEach((d) => {
+      let totalEnergy = 0
+      powerIds.forEach(({id, fuelTech}) => {
+        d[`${id}_to_energy`] = d[id] * 5 / 60
+
+        if (isLoad(fuelTech)) {
+          d[`${id}_to_energy`] = -d[`${id}_to_energy`]
+        }
+        
+        totalEnergy += d[`${id}_to_energy`]
+      })
+      d._totalPowerToEnergy = totalEnergy
+    })
 
     const priceObj = dataAll.find((d) => d.type === 'price')
     if (priceObj) {

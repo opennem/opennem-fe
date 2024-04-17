@@ -39,6 +39,7 @@ export const state = () => ({
   jsonResponses: null,
   datasetFlat: [],
   currentDataset: [],
+  _rolledUpDataset: [],
   changeSinceDataset: [],
   domainPowerEnergy: [],
   domainPowerEnergyGrouped: [],
@@ -71,6 +72,7 @@ export const getters = {
   isEnergyType: (state) => state.isEnergyType,
   datasetFlat: (state) => state.datasetFlat,
   currentDataset: (state) => state.currentDataset,
+  _rolledUpDataset: (state) => state._rolledUpDataset,
   changeSinceDataset: (state) => state.changeSinceDataset,
   domainPowerEnergy: (state) => state.domainPowerEnergy,
   domainPowerEnergyGrouped: (state) => state.domainPowerEnergyGrouped,
@@ -139,6 +141,9 @@ export const mutations = {
   
   currentDataset(state, currentDataset) {
     state.currentDataset = _cloneDeep(currentDataset)
+  },
+  _rolledUpDataset(state, _rolledUpDataset) {
+    state._rolledUpDataset = _cloneDeep(_rolledUpDataset)
   },
   changeSinceDataset(state, changeSinceDataset) {
     state.changeSinceDataset = _cloneDeep(changeSinceDataset)
@@ -825,6 +830,7 @@ export const actions = {
       interval,
       period
     })
+    commit('_rolledUpDataset', currentDataset)
     commit('currentDataset', filteredDatasetFlat)
   },
 

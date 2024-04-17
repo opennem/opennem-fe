@@ -210,18 +210,36 @@ export default {
           display = timeFormat(formatString)(time)
         } else if (interval === INTERVAL_WEEK) {
           formatString = '%-d %b %Y'
+          
           const newTime = d3TimeMonday.every(1).floor(time).getTime()
           if (showIntervalRange) {
             const sixDayslater = newTime + 518400000
 
-            // check year
-            const startYear = new Date(time).getFullYear()
-            const endYear = new Date(sixDayslater).getFullYear()
+            const timeDate = new Date(time)
+            const timeSixDaysLater = new Date(sixDayslater)
 
-            const sDate =
-              startYear === endYear
-                ? timeFormat('%-d')(newTime)
-                : timeFormat(formatString)(newTime)
+            // check year
+            const startYear = timeDate.getFullYear()
+            const endYear = timeSixDaysLater.getFullYear()
+
+            // check month
+            const startMonth = timeDate.getMonth()
+            const endMonth = timeSixDaysLater.getMonth()
+
+            let sDate = ''
+            const dayString = '%-d'
+            const dayMonthString = '%-d %b'
+
+            if (startYear === endYear) {
+              if (startMonth === endMonth) {
+                sDate = timeFormat(dayString)(newTime) 
+              } else {
+                sDate = timeFormat(dayMonthString)(newTime) 
+              }
+            } else {
+              sDate = timeFormat(formatString)(newTime)
+            }
+
             const eDate = timeFormat(formatString)(sixDayslater)
             display = `${sDate} – ${eDate}`
           } else {

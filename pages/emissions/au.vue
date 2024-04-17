@@ -145,6 +145,7 @@ import parse from 'date-fns/parse'
 import subMonths from 'date-fns/subMonths'
 import subDays from 'date-fns/subDays'
 import isAfter from 'date-fns/isAfter'
+import isValid from 'date-fns/isValid'
 import Papa from 'papaparse'
 import _cloneDeep from 'lodash.clonedeep'
 import _includes from 'lodash.includes'
@@ -619,7 +620,12 @@ export default {
           const data = jData.map((d) => {
             let total = 0
             const obj = {}
-            const date = subMonths(parse(d.Quarter, 'MMM-yyyy', new Date()), 2)
+
+            let parsed = parse(d.Quarter, 'MMM-yy', new Date())
+            if (!isValid(parsed)) {
+              parsed = parse(d.Quarter, 'MMM-yyyy', new Date())
+            } 
+            const date = subMonths(parsed, 2)
 
             obj.date = date
             obj.time = obj.date.getTime()

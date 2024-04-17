@@ -214,7 +214,8 @@ import * as SI from '@/constants/si.js'
 import { RANGE_ALL_12MTH_ROLLING } from '@/constants/ranges.js'
 import { LOAD } from '@/constants/energy-fuel-techs/group-detailed.js'
 import EnergyToAveragePower from '@/data/transform/energy-to-average-power.js'
-import transformToGrowthTimeSeries from '~/data/transform/growth-series.js'
+import transformToGrowthTimeSeries from '@/data/transform/growth-series.js'
+import { dataFilterByPeriod } from '@/data/parse/region-energy'
 import DateDisplay from '@/services/DateDisplay.js'
 import MultiLine from '@/components/Vis/MultiLine'
 import DateBrush from '@/components/Vis/DateBrush'
@@ -411,7 +412,8 @@ export default {
       isTypeLine: 'chartOptionsPowerEnergy/isTypeLine',
       isTypeChangeSinceLine: 'chartOptionsPowerEnergy/isTypeChangeSinceLine',
       isTypeGrowthStackedArea: 'chartOptionsPowerEnergy/isTypeGrowthStackedArea',
-      allowResize: 'regionEnergy/allowResize'
+      allowResize: 'regionEnergy/allowResize',
+      _rolledUpDataset: 'regionEnergy/_rolledUpDataset'
     }),
 
     showDateAxis: {
@@ -1235,7 +1237,8 @@ export default {
 
     getGrowthDataset() {
       let compareIndex = 1
-      
+      let dataset
+
       if (this.isRollingSumRange) {
         if (this.interval === 'Season' || this.interval === 'Quarter') {
           compareIndex = 4
@@ -1246,21 +1249,34 @@ export default {
         }
       }
 
-      const ds = this.isYAxisAbsolute
-        ? this.powerEnergyDataset
-        : this.averagePowerDataset
+      if (this.filterPeriod === 'All') {
+        const ds = this.isYAxisAbsolute
+          ? this.powerEnergyDataset
+          : this.averagePowerDataset
 
-      const dataset = transformToGrowthTimeSeries(ds, this.domains, compareIndex)
+        dataset = transformToGrowthTimeSeries(ds, this.domains, compareIndex)
+      } else {
+        const ds = this.isYAxisAbsolute
+          ? this._rolledUpDataset
+          : EnergyToAveragePower({
+            data: this._rolledUpDataset,
+            domains: this.domains,
+            range: this.range,
+            interval: this.interval,
+            exponent: this.chartEnergyUnitPrefix,
+            isRollingSum: this.isRollingSumRange
+          })
+        const transformedToGrowth = transformToGrowthTimeSeries(ds, this.domains, compareIndex)
+        const { filteredDatasetFlat } = dataFilterByPeriod({
+          currentDataset: transformedToGrowth,
+          interval: this.interval,
+          period: this.filterPeriod
+        })
+        dataset = filteredDatasetFlat
+      }
 
       this.handleTypeClick()
 
-      if (this.isRollingSumRange) {
-        // only return the data where there are values
-        return dataset.slice(compareIndex, dataset.length - 1)
-      }
-
-      // remove first null period
-      dataset.shift()
       return dataset
     },
 
