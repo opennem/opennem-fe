@@ -60,7 +60,7 @@ module.exports = {
       {
         hid: 'twitter:image:src',
         name: 'twitter:image:src',
-        content: 'https://opennem.org.au/images/screens/opennem-nem.png'
+        content: 'https://openelectricity.org.au/img/preview.jpg'
       },
       // Facebook
       {
@@ -79,7 +79,7 @@ module.exports = {
       {
         hid: 'og:image',
         property: 'og:image',
-        content: 'https://opennem.org.au/images/screens/opennem-nem.png'
+        content: 'https://openelectricity.org.au/img/preview.jpg'
       },
       { hid: 'og:image:width', property: 'og:image:width', content: '1447' },
       { hid: 'og:image:height', property: 'og:image:height', content: '932' }
