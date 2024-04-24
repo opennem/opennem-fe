@@ -1,73 +1,122 @@
-export const GROUP_LABEL = 'Detailed'
-export const GROUP_NAME = 'detailed'
+import * as FT from './group-detailed.js'
 
-export const PUMPS = 'pumps'
-export const BATTERY_CHARGING = 'battery_charging'
-export const EXPORTS = 'exports'
-export const IMPORTS = 'imports'
-export const COAL_BROWN = 'coal_brown'
-export const COAL_BLACK = 'coal_black'
-export const BIOENERGY_BIOMASS = 'bioenergy_biomass'
-export const BIOENERGY_BIOGAS = 'bioenergy_biogas'
-export const DISTILLATE = 'distillate'
-export const GAS_STEAM = 'gas_steam'
-export const GAS_CCGT = 'gas_ccgt'
-export const GAS_OCGT = 'gas_ocgt'
-export const GAS_RECIP = 'gas_recip'
-export const GAS_LFG = 'gas_lfg' // deprecate
-export const GAS_WCMG = 'gas_wcmg'
-export const BATTERY_DISCHARGING = 'battery_discharging'
-export const HYDRO = 'hydro'
-export const WIND = 'wind'
-export const SOLAR_UTILITY = 'solar_utility'
-export const SOLAR_ROOFTOP = 'solar_rooftop'
+export const GROUP_LABEL = 'Detailed (Prev)'
+export const GROUP_NAME = 'group.detailed-prev'
+
+export const PUMPS = `${GROUP_NAME}.pumps`
+export const BATTERY_CHARGING = `${GROUP_NAME}.battery_charging`
+export const EXPORTS = `${GROUP_NAME}.exports`
+export const IMPORTS = `${GROUP_NAME}.imports`
+export const COAL_BROWN = `${GROUP_NAME}.coal_brown`
+export const COAL_BLACK = `${GROUP_NAME}.coal_black`
+export const BIOENERGY_BIOMASS = `${GROUP_NAME}.bioenergy_biomass`
+export const BIOENERGY_BIOGAS = `${GROUP_NAME}.bioenergy_biogas`
+export const DISTILLATE = `${GROUP_NAME}.distillate`
+export const GAS_STEAM = `${GROUP_NAME}.gas_steam`
+export const GAS_CCGT = `${GROUP_NAME}.gas_ccgt`
+export const GAS_OCGT = `${GROUP_NAME}.gas_ocgt`
+export const GAS_RECIP = `${GROUP_NAME}.gas_recip`
+export const GAS_LFG = `${GROUP_NAME}.gas_lfg' // deprecat`
+export const GAS_WCMG = `${GROUP_NAME}.gas_wcmg`
+export const BATTERY_DISCHARGING = `${GROUP_NAME}.battery_discharging`
+export const HYDRO = `${GROUP_NAME}.hydro`
+export const WIND = `${GROUP_NAME}.wind`
+export const SOLAR_UTILITY = `${GROUP_NAME}.solar_utility`
+export const SOLAR_ROOFTOP = `${GROUP_NAME}.solar_rooftop`
+
+export const FUEL_TECH_GROUP = {}
+FUEL_TECH_GROUP[PUMPS] = [FT.PUMPS]
+FUEL_TECH_GROUP[BATTERY_CHARGING] = [FT.BATTERY_CHARGING]
+FUEL_TECH_GROUP[EXPORTS] = [FT.EXPORTS]
+FUEL_TECH_GROUP[IMPORTS] = [FT.IMPORTS]
+FUEL_TECH_GROUP[BIOENERGY_BIOMASS] = [FT.BIOENERGY_BIOMASS]
+FUEL_TECH_GROUP[BIOENERGY_BIOGAS] = [FT.BIOENERGY_BIOGAS]
+FUEL_TECH_GROUP[DISTILLATE] = [FT.DISTILLATE]
+FUEL_TECH_GROUP[BATTERY_DISCHARGING] = [FT.BATTERY_DISCHARGING]
+FUEL_TECH_GROUP[HYDRO] = [FT.HYDRO]
+FUEL_TECH_GROUP[WIND] = [FT.WIND]
+
+FUEL_TECH_GROUP[COAL_BROWN] = [
+  FT.COAL_BROWN,
+]
+FUEL_TECH_GROUP[COAL_BLACK] = [
+  FT.COAL_BLACK
+]
+
+FUEL_TECH_GROUP[GAS_STEAM] = [
+  FT.GAS_STEAM
+]
+FUEL_TECH_GROUP[GAS_CCGT] = [
+  FT.GAS_CCGT
+]
+FUEL_TECH_GROUP[GAS_OCGT] = [
+  FT.GAS_OCGT
+]
+FUEL_TECH_GROUP[GAS_RECIP] = [
+  FT.GAS_RECIP
+]
+FUEL_TECH_GROUP[GAS_LFG] = [
+  FT.GAS_LFG
+]
+FUEL_TECH_GROUP[GAS_WCMG] = [
+  FT.GAS_WCMG
+]
+
+FUEL_TECH_GROUP[SOLAR_UTILITY] = [
+  FT.SOLAR_UTILITY
+]
+FUEL_TECH_GROUP[SOLAR_ROOFTOP] = [
+  FT.SOLAR_ROOFTOP
+]
 
 // Fuel tech default order
-export const DEFAULT_FUEL_TECH_ORDER = [
-  SOLAR_ROOFTOP,
-  SOLAR_UTILITY,
-  WIND,
-  HYDRO,
-  BATTERY_DISCHARGING,
-  GAS_WCMG,
-  GAS_LFG,
-  GAS_RECIP,
-  GAS_OCGT,
-  GAS_CCGT,
-  GAS_STEAM,
-  DISTILLATE,
-  BIOENERGY_BIOMASS,
-  BIOENERGY_BIOGAS,
-  COAL_BLACK,
-  COAL_BROWN,
-  IMPORTS,
-  EXPORTS,
+export const FUEL_TECH_ORDER = [
+  
+  BATTERY_CHARGING,
   PUMPS,
-  BATTERY_CHARGING
+  EXPORTS,
+  IMPORTS,
+  COAL_BROWN,
+  COAL_BLACK,
+  BIOENERGY_BIOGAS,
+  BIOENERGY_BIOMASS,
+  DISTILLATE,
+  GAS_STEAM,
+  GAS_CCGT,
+  GAS_OCGT,
+  GAS_RECIP,
+  GAS_LFG,
+  GAS_WCMG,
+  BATTERY_DISCHARGING,
+  HYDRO,
+  WIND,
+  SOLAR_UTILITY,
+  SOLAR_ROOFTOP
+
 ]
 
 // Fuel tech colour
-export const DEFAULT_FUEL_TECH_COLOUR = {}
-DEFAULT_FUEL_TECH_COLOUR[PUMPS] = '#88AFD0'
-DEFAULT_FUEL_TECH_COLOUR[BATTERY_CHARGING] = '#B2DAEF'
-DEFAULT_FUEL_TECH_COLOUR[EXPORTS] = '#977AB1'
-DEFAULT_FUEL_TECH_COLOUR[IMPORTS] = '#44146F'
-DEFAULT_FUEL_TECH_COLOUR[COAL_BROWN] = '#8B572A'
-DEFAULT_FUEL_TECH_COLOUR[COAL_BLACK] = '#121212'
-DEFAULT_FUEL_TECH_COLOUR[BIOENERGY_BIOGAS] = '#4CB9B9'
-DEFAULT_FUEL_TECH_COLOUR[BIOENERGY_BIOMASS] = '#1D7A7A'
-DEFAULT_FUEL_TECH_COLOUR[DISTILLATE] = '#F35020'
-DEFAULT_FUEL_TECH_COLOUR[GAS_STEAM] = '#F48E1B'
-DEFAULT_FUEL_TECH_COLOUR[GAS_CCGT] = '#FDB462'
-DEFAULT_FUEL_TECH_COLOUR[GAS_OCGT] = '#FFCD96'
-DEFAULT_FUEL_TECH_COLOUR[GAS_RECIP] = '#F9DCBC'
-DEFAULT_FUEL_TECH_COLOUR[GAS_LFG] = '#DD8018'
-DEFAULT_FUEL_TECH_COLOUR[GAS_WCMG] = '#B46813'
-DEFAULT_FUEL_TECH_COLOUR[BATTERY_DISCHARGING] = '#00A2FA'
-DEFAULT_FUEL_TECH_COLOUR[HYDRO] = '#4582B4'
-DEFAULT_FUEL_TECH_COLOUR[WIND] = '#417505'
-DEFAULT_FUEL_TECH_COLOUR[SOLAR_UTILITY] = '#FED500'
-DEFAULT_FUEL_TECH_COLOUR[SOLAR_ROOFTOP] = '#FFE03D'
+export const FUEL_TECH_GROUP_COLOUR = {}
+FUEL_TECH_GROUP_COLOUR[PUMPS] = '#88AFD0'
+FUEL_TECH_GROUP_COLOUR[BATTERY_CHARGING] = '#B2DAEF'
+FUEL_TECH_GROUP_COLOUR[EXPORTS] = '#977AB1'
+FUEL_TECH_GROUP_COLOUR[IMPORTS] = '#44146F'
+FUEL_TECH_GROUP_COLOUR[COAL_BROWN] = '#8B572A'
+FUEL_TECH_GROUP_COLOUR[COAL_BLACK] = '#121212'
+FUEL_TECH_GROUP_COLOUR[BIOENERGY_BIOGAS] = '#4CB9B9'
+FUEL_TECH_GROUP_COLOUR[BIOENERGY_BIOMASS] = '#1D7A7A'
+FUEL_TECH_GROUP_COLOUR[DISTILLATE] = '#F35020'
+FUEL_TECH_GROUP_COLOUR[GAS_STEAM] = '#F48E1B'
+FUEL_TECH_GROUP_COLOUR[GAS_CCGT] = '#FDB462'
+FUEL_TECH_GROUP_COLOUR[GAS_OCGT] = '#FFCD96'
+FUEL_TECH_GROUP_COLOUR[GAS_RECIP] = '#F9DCBC'
+FUEL_TECH_GROUP_COLOUR[GAS_LFG] = '#DD8018'
+FUEL_TECH_GROUP_COLOUR[GAS_WCMG] = '#B46813'
+FUEL_TECH_GROUP_COLOUR[BATTERY_DISCHARGING] = '#00A2FA'
+FUEL_TECH_GROUP_COLOUR[HYDRO] = '#4582B4'
+FUEL_TECH_GROUP_COLOUR[WIND] = '#417505'
+FUEL_TECH_GROUP_COLOUR[SOLAR_UTILITY] = '#FED500'
+FUEL_TECH_GROUP_COLOUR[SOLAR_ROOFTOP] = '#FFE03D'
 
 // Fuel tech type
 export const LOAD = 'load'
@@ -93,28 +142,6 @@ FUEL_TECH_CATEGORY[HYDRO] = SOURCE
 FUEL_TECH_CATEGORY[WIND] = SOURCE
 FUEL_TECH_CATEGORY[SOLAR_UTILITY] = SOURCE
 FUEL_TECH_CATEGORY[SOLAR_ROOFTOP] = SOURCE
-
-export const FUEL_TECH_RENEWABLE = {}
-FUEL_TECH_RENEWABLE[PUMPS] = false
-FUEL_TECH_RENEWABLE[BATTERY_CHARGING] = false
-FUEL_TECH_RENEWABLE[EXPORTS] = false
-FUEL_TECH_RENEWABLE[IMPORTS] = false
-FUEL_TECH_RENEWABLE[COAL_BROWN] = false
-FUEL_TECH_RENEWABLE[COAL_BLACK] = false
-FUEL_TECH_RENEWABLE[BIOENERGY_BIOGAS] = true
-FUEL_TECH_RENEWABLE[BIOENERGY_BIOMASS] = true
-FUEL_TECH_RENEWABLE[DISTILLATE] = false
-FUEL_TECH_RENEWABLE[GAS_STEAM] = false
-FUEL_TECH_RENEWABLE[GAS_CCGT] = false
-FUEL_TECH_RENEWABLE[GAS_OCGT] = false
-FUEL_TECH_RENEWABLE[GAS_RECIP] = false
-FUEL_TECH_RENEWABLE[GAS_LFG] = false
-FUEL_TECH_RENEWABLE[GAS_WCMG] = false
-FUEL_TECH_RENEWABLE[BATTERY_DISCHARGING] = false
-FUEL_TECH_RENEWABLE[HYDRO] = true
-FUEL_TECH_RENEWABLE[WIND] = true
-FUEL_TECH_RENEWABLE[SOLAR_UTILITY] = true
-FUEL_TECH_RENEWABLE[SOLAR_ROOFTOP] = true
 
 // Fuel tech label
 export const FUEL_TECH_LABEL = {}
@@ -143,74 +170,3 @@ export const FUEL_TECH_SHORT_LABEL = {}
 FUEL_TECH_SHORT_LABEL[BATTERY_CHARGING] = 'Charging'
 FUEL_TECH_SHORT_LABEL[BATTERY_DISCHARGING] = 'Discharging'
 
-export function getFuelTechObjs(fuelTechs, type) {
-  return Object.keys(fuelTechs).map((ft) => {
-    return {
-      id: fuelTechs[ft],
-      domain: fuelTechs[ft],
-      fuelTech: ft,
-      label: FUEL_TECH_LABEL[ft],
-      colour: DEFAULT_FUEL_TECH_COLOUR[ft],
-      category: FUEL_TECH_CATEGORY[ft],
-      renewable: FUEL_TECH_RENEWABLE[ft],
-      type
-    }
-  })
-}
-
-export function isNetFuelTech(fuelTech) {
-  return (
-    fuelTech === BATTERY_CHARGING ||
-    fuelTech === BATTERY_DISCHARGING ||
-    fuelTech === HYDRO ||
-    fuelTech === PUMPS ||
-    fuelTech === EXPORTS ||
-    fuelTech === IMPORTS
-  )
-}
-
-export function isCoal(fuelTech) {
-  return (
-    fuelTech === COAL_BROWN ||
-    fuelTech === COAL_BLACK
-  )
-}
-
-export function isGas(fuelTech) {
-  return (
-    fuelTech === GAS_STEAM ||
-    fuelTech === GAS_CCGT ||
-    fuelTech === GAS_OCGT ||
-    fuelTech === GAS_RECIP ||
-    fuelTech === GAS_LFG ||
-    fuelTech === GAS_WCMG
-  )
-}
-
-export function isWind(fuelTech) {
-  return fuelTech === WIND
-}
-
-export function isHydro(fuelTech) {
-  return fuelTech === HYDRO
-}
-
-export function isSolar(fuelTech) {
-  return (
-    fuelTech === SOLAR_UTILITY ||
-    fuelTech === SOLAR_ROOFTOP
-  )
-}
-
-export function isLoad(fuelTech) {
-  return (
-    fuelTech === BATTERY_CHARGING ||
-    fuelTech === PUMPS ||
-    fuelTech === IMPORTS ||
-    fuelTech === EXPORTS
-  )
-}
-
-export function isValidFuelTech(fuelTech) {
-  return FUEL_TECH_LABEL[fuelTech] !== undefined
-}
