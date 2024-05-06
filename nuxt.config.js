@@ -18,6 +18,7 @@ module.exports = {
 
   env: {
     SITEWIDE_ANNOUNCEMENT: process.env.SITEWIDE_ANNOUNCEMENT,
+    API_KEY: process.env.API_KEY,
     mapboxToken: process.env.MAPBOX_TOKEN || '',
     DATA_BASE_URL: useDev
       ? 'https://data.dev.opennem.org.au/'
