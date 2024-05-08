@@ -6,6 +6,14 @@
         value="carbonIntensity">
         Carbon intensity
       </option>
+
+      <optgroup label="Generation">
+        <option value="renewables">Renewables generation</option>
+        <option value="solar">Solar generation</option>
+        <option value="wind">Wind generation</option>
+        <option value="gas">Gas generation</option>
+        <option value="coal">Coal generation</option>
+      </optgroup>
             
       <optgroup label="Proportion of demand">
         <option value="netInterconnectorFlow">

@@ -213,6 +213,7 @@ function updateMetricObject(
     }
 
     obj.carbonIntensity = setCarbonIntensity(ei, isValidEI)
+
     obj.renewablesProportion =
       d._totalDemandRenewablesPercentage < 0
         ? 0
@@ -226,7 +227,13 @@ function updateMetricObject(
     obj.coal = d._totalCoal
     obj.gasProportion =
       d._totalDemandGasProportion < 0 ? 0 : d._totalDemandGasProportion
+
     obj.gas = d._totalGas
+    obj.wind = d._totalWind
+    obj.solar = d._totalSolar
+    obj.renewables = d._totalRenewables
+    obj.coal = d._totalCoal
+
     obj.temperature = temperature
     obj.maxTemperature = maxTemperature
     obj.minTemperature = minTemperature
