@@ -285,6 +285,18 @@ export default {
           metric: val
         }
       })
+
+      this.doUpdateXTicks({
+        range: this.range,
+        interval: this.interval,
+        isZoomed: this.zoomExtent.length > 0,
+        filterPeriod: this.filterPeriod
+      })
+      this.doUpdateTickFormats({
+        range: this.range,
+        interval: this.interval,
+        filterPeriod: this.filterPeriod
+      })
     },
     
     rangeIntervalsQuery(val) {
@@ -338,7 +350,9 @@ export default {
       doGetAllMonthlyData: 'regionEnergy/doGetAllMonthlyData',
       doUpdateAllRegionDatasetByInterval: 'regionEnergy/doUpdateAllRegionDatasetByInterval',
       doUpdateTickFormats: 'visInteract/doUpdateTickFormats',
-      doUpdateXGuides: 'visInteract/doUpdateXGuides'
+      doUpdateXGuides: 'visInteract/doUpdateXGuides',
+      doUpdateXTicks: 'visInteract/doUpdateXTicks',
+      doUpdateTickFormats: 'visInteract/doUpdateTickFormats'
     }),
     ...mapMutations({
       setHighlightDomain: 'visInteract/highlightDomain',

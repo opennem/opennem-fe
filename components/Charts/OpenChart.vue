@@ -112,6 +112,7 @@
       :convert-value="convertValue"
       :pad-y-axis="padYAxis"
       :annotations="annotations"
+      :path-stroke-width="2"
       class="vis-chart"
       @date-hover="handleDateHover"
       @domain-hover="handleDomainHover"

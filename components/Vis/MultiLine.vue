@@ -529,7 +529,7 @@ export default {
         .style('opacity', 0.9)
         .style('stroke-width', (d) => {
           const find = this.domains1.find((domain) => domain.id === d)
-          return find ? find.pathStrokeWidth : this.pathStrokeWidth
+          return find && find.pathStrokeWidth ? find.pathStrokeWidth : this.pathStrokeWidth
         })
 
       this.$projectionVisGroup
@@ -803,7 +803,7 @@ export default {
           .style('stroke', (key) => this.colours1[key])
           .style('stroke-width', (d) => {
             const find = this.domains1.find((domain) => domain.id === d)
-            return find ? find.pathStrokeWidth : this.pathStrokeWidth
+            return find && find.pathStrokeWidth ? find.pathStrokeWidth : this.pathStrokeWidth
           })
           // .style('filter', 'url(#shadow)')
           .style('stroke-dasharray', this.strokeDasharray)
@@ -863,7 +863,7 @@ export default {
         .style('stroke', (key) => this.colours1[key])
         .style('stroke-width', (d) => {
             const find = this.domains1.find((domain) => domain.id === d)
-            return find ? find.pathStrokeWidth : this.pathStrokeWidth
+            return find && find.pathStrokeWidth ? find.pathStrokeWidth : this.pathStrokeWidth
           })
         // .style('filter', 'url(#shadow)')
         .style('fill', 'transparent')

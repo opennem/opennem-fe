@@ -45,7 +45,7 @@ const EnergyRegions = [
     id: ENERGY_SA,
     abbr: 'SA',
     label: 'South Australia',
-    colour: '#F8D35B',
+    colour: '#f7c41d',
     timezoneString: 'AEST',
     parentRegion: ENERGY_NEM
   },

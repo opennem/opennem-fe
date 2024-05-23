@@ -57,6 +57,16 @@ export const metrics = [
     legendType: 'ramp'
   },
   {
+    label: 'Solar + Wind proportion (of demand)',
+    value: 'solarWindProportion',
+    divisor: 100,
+    domain: [0, 0.5, 1],
+    range: ['#fff', '#52BCA3', 'darkgreen'],
+    unit: '%',
+    numberFormatString: ',.0f',
+    legendType: 'ramp'
+  },
+  {
     label: 'Wind proportion (of demand)',
     value: 'windProportion',
     divisor: 100,
@@ -110,6 +120,67 @@ export const metrics = [
     domainLabel: ['Export', 'Import'],
     unit: '%',
     numberFormatString: ',.0f',
+    legendType: 'ramp'
+  },
+
+  {
+    label: 'Renewables generation',
+    value: 'renewables',
+    divisor: 100,
+    domain: [0, 0.5, 1],
+    range: ['#fff', '#52BCA3', 'darkgreen'],
+    unit: 'GWh',
+    numberFormatString: '',
+    legendType: 'ramp'
+  },
+  {
+    label: 'Solar + Wind generation',
+    value: 'solarWind',
+    divisor: 100,
+    domain: [0, 0.5, 1],
+    range: ['#fff', '#52BCA3', 'darkgreen'],
+    unit: 'GWh',
+    numberFormatString: '',
+    legendType: 'ramp'
+  },
+  {
+    label: 'Solar generation',
+    value: 'solar',
+    divisor: 100,
+    domain: [0, 0.5, 1],
+    range: ['#fff', '#F3E13E', '#F0D800'],
+    unit: 'GWh',
+    numberFormatString: '',
+    legendType: 'ramp'
+  },
+  {
+    label: 'Wind generation',
+    value: 'wind',
+    divisor: 100,
+    domain: [0, 0.5, 1],
+    range: ['#fff', '#88B653', '#417505'],
+    unit: 'GWh',
+    numberFormatString: '',
+    legendType: 'ramp'
+  },
+  {
+    label: 'Gas generation',
+    value: 'gas',
+    divisor: 100,
+    domain: [0, 0.5, 1],
+    range: ['#52BCA3', '#ccc', '#F48E1B'],
+    unit: 'GWh',
+    numberFormatString: '',
+    legendType: 'ramp'
+  },
+  {
+    label: 'Coal generation',
+    value: 'coal',
+    divisor: 100,
+    domain: [0, 0.5, 1],
+    range: ['#52BCA3', '#ccc', '#131313'],
+    unit: 'GWh',
+    numberFormatString: '',
     legendType: 'ramp'
   },
 
