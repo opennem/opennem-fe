@@ -57,6 +57,16 @@ export const metrics = [
     legendType: 'ramp'
   },
   {
+    label: 'Solar + Wind proportion (of demand)',
+    value: 'solarWindProportion',
+    divisor: 100,
+    domain: [0, 0.5, 1],
+    range: ['#fff', '#52BCA3', 'darkgreen'],
+    unit: '%',
+    numberFormatString: ',.0f',
+    legendType: 'ramp'
+  },
+  {
     label: 'Wind proportion (of demand)',
     value: 'windProportion',
     divisor: 100,
@@ -116,6 +126,16 @@ export const metrics = [
   {
     label: 'Renewables generation',
     value: 'renewables',
+    divisor: 100,
+    domain: [0, 0.5, 1],
+    range: ['#fff', '#52BCA3', 'darkgreen'],
+    unit: 'GWh',
+    numberFormatString: '',
+    legendType: 'ramp'
+  },
+  {
+    label: 'Solar + Wind generation',
+    value: 'solarWind',
     divisor: 100,
     domain: [0, 0.5, 1],
     range: ['#fff', '#52BCA3', 'darkgreen'],

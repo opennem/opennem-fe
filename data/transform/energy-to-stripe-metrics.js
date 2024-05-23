@@ -222,6 +222,7 @@ function updateMetricObject(
       d._totalDemandWindProportion < 0 ? 0 : d._totalDemandWindProportion
     obj.solarProportion =
       d._totalDemandSolarProportion < 0 ? 0 : d._totalDemandSolarProportion
+    obj.solarWindProportion = obj.windProportion + obj.solarProportion
     obj.coalProportion =
       d._totalDemandCoalProportion < 0 ? 0 : d._totalDemandCoalProportion
     obj.coal = d._totalCoal
@@ -231,6 +232,7 @@ function updateMetricObject(
     obj.gas = d._totalGas
     obj.wind = d._totalWind
     obj.solar = d._totalSolar
+    obj.solarWind = d._totalSolar + d._totalWind
     obj.renewables = d._totalRenewables
     obj.coal = d._totalCoal
 

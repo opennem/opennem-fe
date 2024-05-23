@@ -7,8 +7,11 @@
         Carbon intensity
       </option>
 
-      <optgroup label="Generation">
+      <optgroup 
+        label="Generation" 
+        v-if="isCompareView">
         <option value="renewables">Renewables generation</option>
+        <option value="solarWind">Solar + Wind generation</option>
         <option value="solar">Solar generation</option>
         <option value="wind">Wind generation</option>
         <option value="gas">Gas generation</option>
@@ -21,6 +24,9 @@
         </option>
         <option value="renewablesProportion">
           Renewables proportion
+        </option>
+        <option value="solarWindProportion">
+          Solar + Wind proportion
         </option>
         <option value="solarProportion">
           Solar proportion
@@ -52,17 +58,25 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
   export default {
     computed: {
+      ...mapGetters({
+        currentView: 'currentView',
+      }),
       selectedMetric: {
-      get() {
-        return this.$store.getters['stripes/selectedMetric']
-      },
+        get() {
+          return this.$store.getters['stripes/selectedMetric']
+        },
 
-      set(val) {
-        this.$store.commit('stripes/selectedMetric', val)
-      }
-    },
+        set(val) {
+          this.$store.commit('stripes/selectedMetric', val)
+        }
+      },
+      isCompareView() {
+        return this.currentView === 'compare'
+      },
     }
   }
 </script>
