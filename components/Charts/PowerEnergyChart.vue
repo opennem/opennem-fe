@@ -314,7 +314,7 @@ export default {
     },
     renewablesLineColour: {
       type: String,
-      default: '#52BCA3'
+      default: '#52A960'
     },
     propName: {
       type: String,

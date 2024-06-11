@@ -1716,7 +1716,7 @@ export default {
     margin-right: 5px;
 
     &.on {
-      background: #52bca3;
+      background: #52A960;
 
       &.net {
         background: #e34a33;

@@ -51,7 +51,7 @@ export const metrics = [
     value: 'renewablesProportion',
     divisor: 100,
     domain: [0, 0.5, 1],
-    range: ['#fff', '#52BCA3', 'darkgreen'],
+    range: ['#fff', '#52A960', 'darkgreen'],
     unit: '%',
     numberFormatString: ',.0f',
     legendType: 'ramp'
@@ -61,7 +61,7 @@ export const metrics = [
     value: 'solarWindProportion',
     divisor: 100,
     domain: [0, 0.5, 1],
-    range: ['#fff', '#52BCA3', 'darkgreen'],
+    range: ['#fff', '#52A960', 'darkgreen'],
     unit: '%',
     numberFormatString: ',.0f',
     legendType: 'ramp'
@@ -92,7 +92,7 @@ export const metrics = [
     value: 'coalProportion',
     divisor: 100,
     domain: [0, 0.001, 0.9],
-    range: ['#52BCA3', '#ccc', '#131313'],
+    range: ['#52A960', '#ccc', '#131313'],
     unit: '%',
     numberFormatString: ',.0f',
     legendType: 'ramp',
@@ -103,7 +103,7 @@ export const metrics = [
     value: 'gasProportion',
     divisor: 100,
     domain: [0, 0.001, 0.5],
-    range: ['#52BCA3', '#ccc', '#F48E1B'],
+    range: ['#52A960', '#ccc', '#F48E1B'],
     unit: '%',
     numberFormatString: ',.0f',
     legendType: 'ramp',
@@ -128,7 +128,7 @@ export const metrics = [
     value: 'renewables',
     divisor: 100,
     domain: [0, 0.5, 1],
-    range: ['#fff', '#52BCA3', 'darkgreen'],
+    range: ['#fff', '#52A960', 'darkgreen'],
     unit: 'GWh',
     numberFormatString: '',
     legendType: 'ramp'
@@ -138,7 +138,7 @@ export const metrics = [
     value: 'solarWind',
     divisor: 100,
     domain: [0, 0.5, 1],
-    range: ['#fff', '#52BCA3', 'darkgreen'],
+    range: ['#fff', '#52A960', 'darkgreen'],
     unit: 'GWh',
     numberFormatString: '',
     legendType: 'ramp'
@@ -168,7 +168,7 @@ export const metrics = [
     value: 'gas',
     divisor: 100,
     domain: [0, 0.5, 1],
-    range: ['#52BCA3', '#ccc', '#F48E1B'],
+    range: ['#52A960', '#ccc', '#F48E1B'],
     unit: 'GWh',
     numberFormatString: '',
     legendType: 'ramp'
@@ -178,7 +178,7 @@ export const metrics = [
     value: 'coal',
     divisor: 100,
     domain: [0, 0.5, 1],
-    range: ['#52BCA3', '#ccc', '#131313'],
+    range: ['#52A960', '#ccc', '#131313'],
     unit: 'GWh',
     numberFormatString: '',
     legendType: 'ramp'

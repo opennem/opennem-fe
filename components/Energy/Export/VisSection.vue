@@ -151,7 +151,7 @@ export default {
       return this.fuelTechGroupName === 'Renewable/Fossil' ||
         this.fuelTechGroupName === 'Flexibility'
         ? '#e34a33'
-        : '#52BCA3'
+        : '#52A960'
     },
     byGeneration() {
       return this.percentContributionTo === 'generation'
