@@ -35,12 +35,12 @@ const topLevelLinks = [
     active: true
   },
   {
-    name: 'Facilities Map',
+    name: 'Map',
     path: '/facilities/nem/?status=operating'
   },
   {
-    name: 'Future Scenarios',
-    path: 'https://openelectricity.org.au/future-scenarios'
+    name: 'Scenarios',
+    path: 'https://openelectricity.org.au/scenarios'
   },
   // {
   //   name: 'Latest Records',
