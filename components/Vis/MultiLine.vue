@@ -214,7 +214,7 @@ export default {
     },
     pathStrokeWidth: {
       type: Number,
-      default: () => 1
+      default: () => 1.5
     },
     showCursorDots: {
       type: Boolean,
