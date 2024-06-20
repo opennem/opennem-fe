@@ -186,7 +186,7 @@ export default {
     text-align: left;
 
     @include tablet {
-      padding: 10px;
+      padding: 14px 10px;
       display: flex;
       justify-content: center;
       align-items: center;
