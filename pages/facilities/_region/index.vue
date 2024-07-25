@@ -328,7 +328,8 @@ export default {
     }),
     fetchData() {
       const urls = []
-      urls.push('/v3/geo/au_facilities.json')
+      const version = 'v3'
+      urls.push(`/${version}/geo/au_facilities.json`)
 
       if (urls.length > 0) {
         Http(urls)
