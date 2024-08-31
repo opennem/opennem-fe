@@ -608,11 +608,11 @@ export default {
       dataset.forEach((d) => {
         let total = 0
 
-        this.emissionsDomains.forEach((e) => {
+        this.domains.forEach((e) => {
           total += d[e.id]
         })
 
-        this.emissionsDomains.forEach((e) => {
+        this.domains.forEach((e) => {
           const value = d[e.id]
           d[e.id] = (value / total) * 100
         })
