@@ -701,11 +701,11 @@ export default {
     changeSinceLabel() {
       const ds = this.dataset
 
-      if (ds.length === 0) {
+      if (!ds || ds.length === 0) {
         return ''
       }
 
-      if (this.zoomExtent.length > 0) {
+      if (this.zoomExtent && this.zoomExtent.length > 0) {
         return DateDisplay.specialDateFormats(
           this.zoomExtent[0].getTime(),
           this.range,
