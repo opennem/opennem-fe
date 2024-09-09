@@ -1,8 +1,8 @@
 <template>
   <div>
     <svg 
-      width="236" 
-      height="28" 
+      width="200" 
+      height="24" 
       viewBox="0 0 236 28" 
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
@@ -72,6 +72,7 @@
 div {
   display: flex;
   gap: 1.4rem;
+  align-items: center;
 }
 </style>
 
