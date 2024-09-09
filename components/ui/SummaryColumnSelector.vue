@@ -186,7 +186,7 @@ export default {
     text-align: right;
     padding-right: 1rem;
     &.is-selected {
-      background-color: $opennem-link-color;
+      background-color: black;
       color: #fff;
     }
   }

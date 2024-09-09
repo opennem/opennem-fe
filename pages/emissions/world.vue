@@ -139,7 +139,7 @@ export default {
         {
           hid: 'twitter:title',
           name: 'twitter:title',
-          content: `OpenNEM: Emissions by country`
+          content: `Open Electricity: Emissions by country`
         },
         {
           hid: 'twitter:image:src',
@@ -149,7 +149,7 @@ export default {
         {
           hid: 'og:title',
           property: 'og:title',
-          content: `OpenNEM: Emissions by country`
+          content: `Open Electricity: Emissions by country`
         },
         {
           hid: 'og:image',

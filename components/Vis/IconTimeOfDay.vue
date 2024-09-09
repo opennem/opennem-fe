@@ -45,7 +45,7 @@ export default {
       return this.selected ? '#eee' : '#000'
     },
     averageColour() {
-      return this.selected ? '#fff' : '#C74523'
+      return this.selected ? '#fff' : '#000'
     }
   }
 }

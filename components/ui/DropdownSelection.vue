@@ -181,7 +181,7 @@ export default {
     font-size: 12px;
 
     &.is-selected {
-      background-color: $opennem-link-color;
+      background-color: black;
       color: white;
     }
   }

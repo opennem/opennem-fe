@@ -49,7 +49,7 @@ export default {
   left: 0;
   right: 0;
   z-index: 89;
-  background-color: #c74523;
+  background-color: #353535;
   color: #fff;
   padding: 3px 6px;
   font-size: 10px;

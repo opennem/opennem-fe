@@ -43,7 +43,7 @@ export default {
       return this.selected ? '#AF7C7C' : '#c3c3c3'
     },
     highlightColour() {
-      return this.selected ? '#8D2B11' : '#8D2B11'
+      return this.selected ? '#000' : '#000'
     }
   }
 }

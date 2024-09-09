@@ -97,7 +97,7 @@ const ASCENDING = 'asc'
 const DESCENDING = 'desc'
 
 export default {
-  layout: 'main',
+  layout: 'facility-main',
 
   head() {
     return {
@@ -106,7 +106,7 @@ export default {
         {
           hid: 'twitter:title',
           name: 'twitter:title',
-          content: `OpenNEM Facilities: ${getFacilityRegionLabel(
+          content: `Open Electricity Facilities: ${getFacilityRegionLabel(
             this.regionId
           )}`
         },
@@ -118,7 +118,7 @@ export default {
         {
           hid: 'og:title',
           property: 'og:title',
-          content: `OpenNEM Facilities: ${getFacilityRegionLabel(
+          content: `Open Electricity Facilities: ${getFacilityRegionLabel(
             this.regionId
           )}`
         },

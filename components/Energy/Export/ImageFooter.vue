@@ -117,7 +117,7 @@ export default {
   }
 }
 strong {
-  color: $opennem-link-color;
+  color: black;
   display: inline;
 
   &[contenteditable] {
@@ -140,7 +140,7 @@ strong {
   .licence {
     text-align: right;
     font-size: 1.2rem;
-    color: $opennem-link-color;
+    color: black;
   }
 }
 </style>

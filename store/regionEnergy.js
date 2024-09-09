@@ -312,7 +312,7 @@ export const actions = {
 
         if (!e) {
           message =
-            'There is an issue processing the responses. Please check the developer console and contact OpenNEM.'
+            'There is an issue processing the responses. Please check the developer console and contact Open Electricity.'
         } else {
           const error = e.toJSON()
           header = `${error.message}`
@@ -405,7 +405,7 @@ export const actions = {
 
         if (!e) {
           message =
-            'There is an issue processing the responses. Please check the developer console and contact OpenNEM.'
+            'There is an issue processing the responses. Please check the developer console and contact Open Electricity.'
         } else {
           const error = e.toJSON()
           header = `${error.message}`
@@ -483,7 +483,7 @@ export const actions = {
 
           if (!e) {
             message =
-              'There is an issue processing the responses. Please check the developer console and contact OpenNEM.'
+              'There is an issue processing the responses. Please check the developer console and contact Open Electricity.'
           } else {
             const error = e.toJSON()
             header = `${error.message}`
@@ -629,7 +629,7 @@ export const actions = {
 
           if (!e) {
             message =
-              'There is an issue processing the responses. Please check the developer console and contact OpenNEM.'
+              'There is an issue processing the responses. Please check the developer console and contact Open Electricity.'
           } else {
             const error = e.toJSON()
             header = `${error.message}`

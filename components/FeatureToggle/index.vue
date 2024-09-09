@@ -83,6 +83,6 @@ export default {
   }
 }
 .button.is-primary {
-  border: 1px solid $opennem-link-color;
+  border: 1px solid black;
 }
 </style>

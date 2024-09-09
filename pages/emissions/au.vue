@@ -355,7 +355,7 @@ export default {
         {
           hid: 'twitter:title',
           name: 'twitter:title',
-          content: `OpenNEM: Australia’s latest greenhouse gas emissions`
+          content: `Open Electricity: Australia’s latest greenhouse gas emissions`
         },
         {
           hid: 'twitter:image:src',
@@ -365,7 +365,7 @@ export default {
         {
           hid: 'og:title',
           property: 'og:title',
-          content: `OpenNEM: Australia’s latest greenhouse gas emissions`
+          content: `Open Electricity: Australia’s latest greenhouse gas emissions`
         },
         {
           hid: 'og:image',

@@ -4,35 +4,38 @@
       class="back-link" 
       @click="$router.go(-1)">&larr; back</a>
 
-    <h1>
-      <nuxt-link to="/">
-        <app-logo class="logo" />
-      </nuxt-link>
-      An Open Platform for National Electricity Market Data
+    <h1 style="margin-top: 70px;">
+      <div>
+        <nuxt-link to="/">
+          <span>Open Electricity</span>
+        </nuxt-link>
+      </div>
+      
+      An open platform for tracking Australia’s electricity transition.
     </h1>
 
     <section class="about-section intro-section">
       <p>
-        The
-        <strong>OpenNEM project</strong> aims to make the wealth of public
-        <strong>National Electricity Market</strong> (NEM) data more accessible
-        to a wider audience.
-      </p>
-      <p>
-        We hope that improved access will facilitate
-        <strong>better public understanding of the market</strong>,
-        <strong>improve energy literacy</strong> and help facilitate a more
-        <strong>informed national discussion</strong> on Australia’s energy
-        transition in the long term interests of consumers.
-      </p>
-      <p>
-        By providing a
-        <strong>clear</strong> window on the data, we hope to address the
-        information asymmetry between stakeholders and improve the productivity
-        of those engaged in energy market discussions.
+        Formerly OpenNEM, Open Electricity aims to make the wealth of public
+        National Electricity Market (NEM) and Wholesale Electricity Market (WEM)
+        data more accessible to a wider audience.
       </p>
 
-      <p class="credits">
+      <p>
+        We hope that improved access will facilitate better public understanding
+        of the market, improve energy literacy and help facilitate a more informed
+        national discussion on Australia’s energy transition in the long term
+        interests of consumers.
+      </p>
+
+      <p>
+        By providing a <strong>clear</strong> window on the data, we aim to address the information
+        asymmetry between stakeholders and improve the productivity of those
+        engaged in energy market discussions.
+      </p>
+
+
+      <!-- <p class="credits">
         By
         <a
           href="https://twitter.com/dylanjmcconnell"
@@ -59,22 +62,22 @@
           rel="external"
         >Nik Cubrilovic</a
         >
-      </p>
+      </p> -->
 
       <p class="social-links">
         <a
-          v-tooltip="`OpenNEM's twitter page`"
+          v-tooltip="`Open Electricity's twitter page`"
           class="icon-link"
-          title="OpenNEM's twitter page"
+          title="Open Electricity's twitter page"
           rel="external"
           href="https://twitter.com/opennem"
         >
           <i class="fab fa-lg fa-twitter" />
         </a>
         <a
-          v-tooltip="`OpenNEM's github page`"
+          v-tooltip="`Open Electricity's github page`"
           class="icon-link"
-          title="OpenNEM's github page"
+          title="Open Electricity's github page"
           rel="external"
           href="https://github.com/opennem"
         >
@@ -93,7 +96,7 @@
       </p>
     </section>
 
-    <div class="sponsors">
+    <!-- <div class="sponsors">
       <section class="about-section eca-section">
         <img
           class="about-logos eca-logo"
@@ -134,7 +137,7 @@
           >.
         </p>
       </section>
-    </div>
+    </div> -->
 
     <section
       class="about-section"
@@ -147,7 +150,7 @@
     >
       <div class="dev-links">
         <a
-          v-tooltip="'OpenNEM status page'"
+          v-tooltip="'Open Electricity status page'"
           rel="external"
           class="icon-link"
           target="_blank"
@@ -218,14 +221,16 @@
 
 <script>
 import AppLogo from '~/components/ui/Logo'
+import OpenElectricityLogo from '~/components/ui/OpenElectricityLogo.vue';
 
 export default {
   components: {
-    AppLogo
+    AppLogo,
+    OpenElectricityLogo
   },
 
   head: {
-    titleTemplate: 'About OpenNEM'
+    titleTemplate: 'About Open Electricity'
   }
 }
 </script>
@@ -238,7 +243,7 @@ export default {
   padding: 1rem;
 
   a {
-    border-bottom: 1px dashed $opennem-link-color;
+    border-bottom: 1px dashed black;
 
     &:hover {
       border-bottom-style: solid;

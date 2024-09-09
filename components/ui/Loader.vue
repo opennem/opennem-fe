@@ -7,7 +7,7 @@
       <path
         class="sine-wave"
         fill="none"
-        stroke="#C74523"
+        stroke="black"
         stroke-width="4"
         stroke-linecap="square"
       />

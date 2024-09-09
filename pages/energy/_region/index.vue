@@ -116,7 +116,7 @@ export default {
         {
           hid: 'twitter:title',
           name: 'twitter:title',
-          content: `OpenNEM: ${getEnergyRegionLabel(this.regionId)}`
+          content: `Open Electricity: ${getEnergyRegionLabel(this.regionId)}`
         },
         {
           hid: 'twitter:image:src',
@@ -126,7 +126,7 @@ export default {
         {
           hid: 'og:title',
           property: 'og:title',
-          content: `OpenNEM: ${getEnergyRegionLabel(this.regionId)}`
+          content: `Open Electricity: ${getEnergyRegionLabel(this.regionId)}`
         },
         {
           hid: 'og:image',

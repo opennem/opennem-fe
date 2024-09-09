@@ -255,7 +255,7 @@ export default {
         date = d3TimeFormat('%Y%m%d')(this.energyExportData[0].date)
       }
       if (this.regionId === 'nem') {
-        region = 'OpenNEM'
+        region = 'Open Electricity'
       }
       return `${date} ${region}`
     },
