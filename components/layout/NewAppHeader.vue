@@ -30,12 +30,12 @@ import BurgerButton from './BurgerButton.vue';
 
 const topLevelLinks = [
   {
-    name: 'Data Tracker',
+    name: 'Tracker',
     path: '/energy',
     active: true
   },
   {
-    name: 'Map',
+    name: 'Facilities',
     path: '/facilities/nem/?status=operating'
   },
   {
@@ -86,9 +86,9 @@ export default {
 
   methods: {
     checkActive(name) {
-      if (this.isFacilitiesView && name === 'Facilities Map') {
+      if (this.isFacilitiesView && name === 'Facilities') {
         return true;
-      } else if (this.isEnergyView && name === 'Data Tracker') {
+      } else if (this.isEnergyView && name === 'Tracker') {
         return true;
       } 
       return false
@@ -173,11 +173,11 @@ nav {
   a.active {
     font-weight: 700;
 
-    &::after {
+    /** &::after {
       border-color: #c74523;
       background-color: #c74523;
       opacity: 1;
-    }
+    }*/
   }
 }
 
