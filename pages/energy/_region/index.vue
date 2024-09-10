@@ -220,6 +220,10 @@ export default {
       return this.$route.query.interval
     },
 
+    queryGroup() {
+      return this.$route.query.group
+    },
+
     cardFilename() {
       return this.useDev
         ? `${this.baseUrl}opennem-dev.png`
@@ -393,7 +397,8 @@ export default {
     this.handleQueryChange({
       range: this.queryRange || '7d',
       interval: this.queryInterval || '30m',
-      view: this.dashboardView
+      view: this.dashboardView,
+      group: this.queryGroup || 'Detailed'
     })
   },
 

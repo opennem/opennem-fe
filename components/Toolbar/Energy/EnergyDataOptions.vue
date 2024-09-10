@@ -90,12 +90,22 @@ export default {
       intervals: RANGE_INTERVALS,
     }
   },
+  watch: {
+    fuelTechGroupName() {
+      const query = {
+          range: this.range,
+          interval: this.interval
+        }
+      this.handleQueryChange(query)
+    }
+  },
 
   computed: {
     ...mapGetters({
       range: 'range',
       interval: 'interval',
       filterPeriod: 'filterPeriod',
+      fuelTechGroupName: 'fuelTechGroupName',
       query: 'app/query',
     }),
 
@@ -154,7 +164,8 @@ export default {
     handleQueryChange(query) {
       const updatedQuery = {
         ...query,
-        view: this.dashboardView
+        view: this.dashboardView,
+        group: this.fuelTechGroupName
       }
 
       this.$router.push({

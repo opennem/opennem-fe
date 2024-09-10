@@ -29,6 +29,9 @@ export default {
     }),
     regionId() {
       return this.$route.params.region
+    },
+    queryGroup() {
+      return this.$route.query.group
     }
   },
 
@@ -42,7 +45,7 @@ export default {
   },
 
   mounted() {
-    this.selected = this.fuelTechGroupName
+    this.selected = this.queryGroup || this.fuelTechGroupName
   },
 
   methods: {
