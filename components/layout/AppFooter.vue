@@ -111,9 +111,7 @@
         <i class="fab fa-fw fa-brands fa-creative-commons" />
         <i class="fab fa-fw fa-brands fa-creative-commons-by" />
       </a>
-      <nuxt-link 
-        to="/about/" 
-        class="about-link">About Open Electricity</nuxt-link>
+      
     </div>
   </footer>
 </template>
