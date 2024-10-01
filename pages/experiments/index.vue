@@ -13,7 +13,7 @@ export default {
   },
 
   head: {
-    titleTemplate: 'OpenNEM Experiments'
+    titleTemplate: 'Open Electricity Experiments'
   }
 }
 </script>

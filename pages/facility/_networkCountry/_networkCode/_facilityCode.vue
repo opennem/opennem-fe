@@ -445,7 +445,7 @@ export default {
         {
           hid: 'twitter:title',
           name: 'twitter:title',
-          content: `OpenNEM Facility: ${this.facilityName}`
+          content: `Open Electricity Facility: ${this.facilityName}`
         },
         {
           hid: 'twitter:image:src',
@@ -455,7 +455,7 @@ export default {
         {
           hid: 'og:title',
           property: 'og:title',
-          content: `OpenNEM Facility: ${this.facilityName}`
+          content: `Open Electricity Facility: ${this.facilityName}`
         },
         {
           hid: 'og:image',

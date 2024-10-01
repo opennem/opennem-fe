@@ -527,7 +527,7 @@ export default {
     padding: 3px 6px 2px;
     width: 20px;
     height: 20px;
-    color: $opennem-link-color;
+    color: black;
     min-width: 0;
   }
 
@@ -536,7 +536,7 @@ export default {
     padding: 2px 6px;
     width: 28px;
     height: 28px;
-    color: $opennem-link-color;
+    color: black;
     min-width: 0;
   }
 

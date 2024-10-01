@@ -19,7 +19,7 @@ export const GROUP_DEFAULT = GROUP_DETAILED // default group is detailed
 
 export const Groups = {}
 Groups[GROUP_DETAILED] = DetailedGroup // default group is just the root power/energy
-Groups[GROUP_OLD_DETAILED] = OldDetailedGroup // default group is just the root power/energy
+// Groups[GROUP_OLD_DETAILED] = OldDetailedGroup // default group is just the root power/energy
 Groups[GROUP_SIMPLIFIED] = SimplifiedGroup
 Groups[GROUP_COAL_GAS_RENEWABLES] = CoalGasRenewablesGroup
 Groups[GROUP_FLEXIBILITY] = FlexibilityGroup

@@ -13,7 +13,7 @@ $button-hover-background: hsla(0, 0%, 100%, 0.9);
   border: none;
   background-color: $button-background;
   font-weight: 400;
-  color: $opennem-link-color;
+  color: black;
   min-width: 62px;
 
   &.is-primary.is-inverted {
@@ -27,12 +27,12 @@ $button-hover-background: hsla(0, 0%, 100%, 0.9);
 
   &:hover {
     background-color: $button-hover-background;
-    color: $opennem-link-color;
+    color: black;
   }
 
   &.is-selected {
-    border-color: $opennem-link-color;
-    background-color: $opennem-link-color;
+    border-color: black;
+    background-color: black;
     color: #fff;
   }
 }

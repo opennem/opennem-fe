@@ -116,7 +116,7 @@ export default {
         {
           hid: 'twitter:title',
           name: 'twitter:title',
-          content: `OpenNEM: ${getEnergyRegionLabel(this.regionId)}`
+          content: `Open Electricity: ${getEnergyRegionLabel(this.regionId)}`
         },
         {
           hid: 'twitter:image:src',
@@ -126,7 +126,7 @@ export default {
         {
           hid: 'og:title',
           property: 'og:title',
-          content: `OpenNEM: ${getEnergyRegionLabel(this.regionId)}`
+          content: `Open Electricity: ${getEnergyRegionLabel(this.regionId)}`
         },
         {
           hid: 'og:image',
@@ -218,6 +218,10 @@ export default {
 
     queryInterval() {
       return this.$route.query.interval
+    },
+
+    queryGroup() {
+      return this.$route.query.group
     },
 
     cardFilename() {
@@ -393,7 +397,8 @@ export default {
     this.handleQueryChange({
       range: this.queryRange || '7d',
       interval: this.queryInterval || '30m',
-      view: this.dashboardView
+      view: this.dashboardView,
+      group: this.queryGroup || 'Detailed'
     })
   },
 

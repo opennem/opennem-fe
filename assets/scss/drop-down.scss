@@ -29,7 +29,7 @@
     }
 
     &:hover strong {
-      color: $opennem-link-color;
+      color: black;
     }
   }
 
@@ -37,7 +37,7 @@
     font-size: 1.2rem;
 
     &.nuxt-link-active {
-      background-color: $opennem-link-color;
+      background-color: black;
       color: #fff;
     }
   }

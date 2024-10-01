@@ -632,7 +632,7 @@ export default {
 @import '~/assets/scss/variables.scss';
 
 .card-wrapper {
-  margin-bottom: 2rem;
+  margin-bottom: 4rem;
   position: relative;
   padding: 0 10px;
 
@@ -666,11 +666,11 @@ export default {
   }
 
   &.is-selected {
-    box-shadow: 0 0 5px rgba(100, 100, 100, 0.2);
+    // box-shadow: 0 0 5px rgba(100, 100, 100, 0.2);
     opacity: 1;
-    transform: scale(1.02);
+    // transform: scale(1.02);
     z-index: 10;
-    border: 1px solid $opennem-link-color;
+    border: 1px solid black;
 
     .facility-info-link {
       visibility: visible;

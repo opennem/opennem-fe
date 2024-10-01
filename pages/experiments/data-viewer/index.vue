@@ -94,7 +94,7 @@ import DataTable from '@/components/Vis/DataTable'
 export default {
   layout: 'no-container',
   head: {
-    titleTemplate: 'OpenNEM Experiments: Data viewer'
+    titleTemplate: 'Open Electricity Experiments: Data viewer'
   },
 
   components: {

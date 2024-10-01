@@ -10,7 +10,7 @@
 
       <div class="version">
         <a 
-          v-tooltip="'OpenNEM status page'" 
+          v-tooltip="'Open Electricity status page'" 
           rel="external" 
           class="icon-link" 
           target="_blank"
@@ -111,9 +111,7 @@
         <i class="fab fa-fw fa-brands fa-creative-commons" />
         <i class="fab fa-fw fa-brands fa-creative-commons-by" />
       </a>
-      <nuxt-link 
-        to="/about/" 
-        class="about-link">About OpenNEM</nuxt-link>
+      
     </div>
   </footer>
 </template>
@@ -196,7 +194,7 @@ footer {
   justify-content: space-between;
   font-size: 11px;
   display: none;
-  background-color: $opennem-link-color-dark;
+  background-color: black;
   color: #fff;
 
   strong {

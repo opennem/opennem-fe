@@ -76,7 +76,23 @@
       <label 
         v-if="tabletBreak" 
         style="margin-top: 16px;">Time Interval:</label>
-      <div class="interval-dropdowns">
+
+      <div 
+        v-if="(isPowerRange && !periodDropdownBreak) || (is1yRange && !periodDropdownBreak)" 
+        class="period-buttons buttons has-addons">
+        <button
+          v-on-clickaway="handleClickAway"
+          v-for="(p, i) in selectedRangeIntervals"
+          :key="i"
+          :class="{ 'is-selected': p === selectedInterval }"
+          class="button is-rounded"
+          @click.stop="handleIntervalChange(p)"
+        >{{ p }}</button>
+      </div>
+
+      <div 
+        v-else 
+        class="interval-dropdowns">
         <IntervalDropdown
           :show-caret="selectedRangeIntervals && selectedRangeIntervals.length > 1"
           :selected="selectedInterval" 
@@ -203,7 +219,8 @@ export default {
   computed: {
     ...mapGetters({
       tabletBreak: 'app/tabletBreak',
-      rangeDropdownBreak: 'app/rangeDropdownBreak'
+      rangeDropdownBreak: 'app/rangeDropdownBreak',
+      periodDropdownBreak: 'app/periodDropdownBreak'
     }),
     regionId() {
       return this.$route.params.region
@@ -225,6 +242,11 @@ export default {
         this.selectedRange === RANGE_1D ||
         this.selectedRange === RANGE_3D ||
         this.selectedRange === RANGE_7D
+      )
+    },
+    is1yRange() {
+      return (
+        this.selectedRange === RANGE_1Y
       )
     }
   },

@@ -101,7 +101,7 @@ export default {
       const id = this.regionId
       const find = this.regions.find((region) => region.id === id)
       if (id === 'nem') {
-        return 'OpenNEM'
+        return 'Open Electricity'
       }
       if (find) {
         return find.label
@@ -158,7 +158,7 @@ export default {
 h3 {
   font-weight: bold;
   font-size: 1.3rem;
-  color: $opennem-link-color;
+  color: black;
 }
 h5 {
   color: #000;

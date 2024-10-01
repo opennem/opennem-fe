@@ -609,11 +609,11 @@ export default {
       dataset.forEach((d) => {
         let total = 0
 
-        this.emissionsDomains.forEach((e) => {
+        this.domains.forEach((e) => {
           total += d[e.id]
         })
 
-        this.emissionsDomains.forEach((e) => {
+        this.domains.forEach((e) => {
           const value = d[e.id]
           d[e.id] = (value / total) * 100
         })
@@ -702,11 +702,11 @@ export default {
     changeSinceLabel() {
       const ds = this.dataset
 
-      if (ds.length === 0) {
+      if (!ds || ds.length === 0) {
         return ''
       }
-
-      if (this.zoomExtent.length > 0) {
+      
+      if (this.zoomExtent && this.zoomExtent.length > 0) {
         return DateDisplay.specialDateFormats(
           this.zoomExtent[0].getTime(),
           this.range,

@@ -111,7 +111,7 @@ export default {
         {
           hid: 'twitter:title',
           name: 'twitter:title',
-          content: `OpenNEM: Compare Regions`
+          content: `Open Electricity: Compare Regions`
         },
         {
           hid: 'twitter:image:src',
@@ -121,7 +121,7 @@ export default {
         {
           hid: 'og:title',
           property: 'og:title',
-          content: `OpenNEM: Compare Regions`
+          content: `Open Electricity: Compare Regions`
         },
         {
           hid: 'og:image',

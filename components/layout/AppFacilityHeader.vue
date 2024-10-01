@@ -5,7 +5,6 @@
       class="back-link" 
       @click.prevent="backToFacilities">
       <i class="fal fa-chevron-left" />
-      <AppLogo class="logo" />
       <h1>Facilities</h1>
     </a>
 
@@ -230,7 +229,7 @@ header {
 
   &:hover {
     i {
-      color: $opennem-link-color;
+      color: black;
     }
     background-color: rgba(255, 255, 255, 0.55);
   }

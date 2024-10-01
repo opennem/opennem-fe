@@ -258,7 +258,7 @@ $menu-border-colour-hover: #999;
   .close-button {
     padding: 0.7rem 1.5rem;
     font-size: 1.5rem;
-    color: $opennem-link-color;
+    color: black;
   }
 
   &.open {
@@ -336,8 +336,8 @@ $menu-border-colour-hover: #999;
 
     &.nuxt-link-active {
       font-weight: 600;
-      border-right: 6px solid $opennem-link-color;
-      color: $opennem-link-color;
+      border-right: 6px solid black;
+      color: black;
 
       .icon {
         display: none;
@@ -374,7 +374,7 @@ $menu-border-colour-hover: #999;
     }
 
     &.nuxt-link-active::after {
-      border-color: $opennem-link-color;
+      border-color: black;
     }
 
     &:hover::before,

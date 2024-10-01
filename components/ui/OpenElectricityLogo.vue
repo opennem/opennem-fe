@@ -1,8 +1,8 @@
 <template>
   <div>
     <svg 
-      width="236" 
-      height="28" 
+      width="200" 
+      height="24" 
       viewBox="0 0 236 28" 
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
@@ -59,12 +59,6 @@
         d="M95.0645 21.4092V1.22656H108.039V4.68644H98.8703V9.50144H107.232V12.9613H98.8703V17.9493H108.212V21.4092H95.0645Z" 
         fill="#353535"/>
     </svg>
-
-    <img
-      src="~/assets/img/public-beta.png"
-      alt="Public Beta"
-      style="width: 100px; height: 28px;"
-    >
   </div>
 </template>
 
@@ -72,6 +66,7 @@
 div {
   display: flex;
   gap: 1.4rem;
+  align-items: center;
 }
 </style>
 

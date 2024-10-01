@@ -30,12 +30,12 @@ import BurgerButton from './BurgerButton.vue';
 
 const topLevelLinks = [
   {
-    name: 'Data Tracker',
+    name: 'Tracker',
     path: '/energy',
     active: true
   },
   {
-    name: 'Map',
+    name: 'Facilities',
     path: '/facilities/nem/?status=operating'
   },
   {
@@ -86,9 +86,9 @@ export default {
 
   methods: {
     checkActive(name) {
-      if (this.isFacilitiesView && name === 'Facilities Map') {
+      if (this.isFacilitiesView && name === 'Facilities') {
         return true;
-      } else if (this.isEnergyView && name === 'Data Tracker') {
+      } else if (this.isEnergyView && name === 'Tracker') {
         return true;
       } 
       return false
@@ -130,7 +130,7 @@ header {
 nav {
   display: flex;
   justify-content: space-between;
-  gap: 2rem;
+  gap: 40px;
 
   @media screen and (max-width: 1036px) {
     flex-direction: column;
@@ -157,27 +157,32 @@ nav {
     display: flex;
     align-items: center;
     font-weight: 500;
-    color: rgb(53, 53, 53);
+    color: #6A6A6A;
 
-    &::after {
-      content: "";
-      display: block;
-      width: 8px;
-      height: 8px;
-      border: .1rem solid #000000;
-      margin-left: 10px;
-      opacity: 0;
+    &:hover {
+      text-decoration: underline;
     }
+
+    // &::after {
+    //   content: "";
+    //   display: block;
+    //   width: 8px;
+    //   height: 8px;
+    //   border: .1rem solid #000000;
+    //   margin-left: 10px;
+    //   opacity: 0;
+    // }
   }
 
   a.active {
     font-weight: 700;
+    color: #000;
 
-    &::after {
+    /** &::after {
       border-color: #c74523;
       background-color: #c74523;
       opacity: 1;
-    }
+    }*/
   }
 }
 

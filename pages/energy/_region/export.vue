@@ -254,7 +254,7 @@ export default {
         date = utcFormat('%Y%m%d')(this.filteredCurrentDataset[0].date)
       }
       if (this.regionId === 'nem') {
-        region = 'OpenNEM'
+        region = 'Open Electricity'
       }
       domToImage
         .toBlob(document.getElementById('export-container'))
