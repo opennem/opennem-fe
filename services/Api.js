@@ -18,7 +18,7 @@ const getApiBaseUrl = () => {
     apiBaseUrl = `/api`
   }
 
-  if (host && host.startsWith('dev')) {
+  if (host && (host.startsWith('feature-dev-testing-only') || host.startsWith('dev'))) {
     apiBaseUrl = `https://api.dev.opennem.org.au`
   }
 

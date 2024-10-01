@@ -328,7 +328,7 @@ export default {
     }),
     fetchData() {
       const urls = []
-      const version = 'v3'
+      const version = 'v4'
       urls.push(`/${version}/geo/au_facilities.json`)
 
       if (urls.length > 0) {
