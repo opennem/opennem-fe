@@ -3,14 +3,10 @@ export default function () {
   if (typeof window !== 'undefined') {
     const host = window.location.host
 
-    if (host === 'opennem.org.au') {
-      hostEnv = 'prod'
-    }
-    if (host === 'dev.opennem.org.au') {
+    if (host && (host.startsWith('feature-dev-testing-only') || host.startsWith('dev'))) {
       hostEnv = 'dev'
-    }
-    if (host === 'staging.opennem.org.au') {
-      hostEnv = 'staging'
+    } else {
+      hostEnv = 'prod'
     }
   }
   return hostEnv
