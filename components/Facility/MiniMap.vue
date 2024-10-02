@@ -87,7 +87,7 @@ export default {
       default: 200
     },
     point: {
-      type: Object,
+      type: Array,
       default: () => null
     },
     boundary: {
@@ -131,7 +131,7 @@ export default {
 
   computed: {
     coordinates() {
-      return this.point ? this.point.coordinates : null
+      return this.point || null
     },
 
     bounds() {

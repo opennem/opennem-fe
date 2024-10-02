@@ -23,10 +23,10 @@
         () => handleFieldClick('Facility default map', facilityLocation.geom)
       "
     >
+      <!-- :boundary="facilityLocation.boundary" -->
       <MiniMap
         :has-location="hasLocation"
-        :boundary="facilityLocation.boundary"
-        :point="facilityLocation.geom"
+        :point="point"
         :fit-bounds="false"
         class="map"
       />
@@ -38,11 +38,12 @@
         () => handleFieldClick('Facility satellite map', facilityLocation.geom)
       "
     >
+      <!-- :boundary="facilityLocation.boundary" -->
+
       <MiniMap
         :has-location="hasLocation"
         :zoom="13"
-        :boundary="facilityLocation.boundary"
-        :point="facilityLocation.geom"
+        :point="point"
         :map-style="'mapbox://styles/mapbox/satellite-streets-v11'"
         :show-marker="false"
         :is-dark="true"
@@ -94,10 +95,15 @@ export default {
       showFields: 'feedback/showFields'
     }),
     hasLocation() {
-      return this.facilityLocation &&
-        (this.facilityLocation.geom || this.facilityLocation.boundary)
+      return this.facilityLocation 
         ? true
         : false
+    },
+    point() {
+      if (this.hasLocation) 
+      return this.hasLocation
+        ? [this.facilityLocation.lng, this.facilityLocation.lat]
+        : null
     }
   },
 

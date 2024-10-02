@@ -30,9 +30,11 @@ import { getVolWeightedPriceDomains } from '@/data/parse/region-energy/process/g
 let request = null
 
 const stationPath = (country, network, facility) =>
-  `/station/${country}/${network}/${facility}`
+  `/v4/facility/${country}/${network}/${facility}`
 const statsPath = (type, networkRegion, code, query) =>
-  `/stats/${type}/station/${networkRegion}/${code}${query}`
+  `/v4/stats/${type}/station/${networkRegion}/${code}${query}`
+
+// https://api.dev.opennem.org.au/v4/stats/power/station/{network_code}/{station_code}
 
 function getUnitColour(fuelTech) {
   const unknownColour = '#ccc'
@@ -209,8 +211,8 @@ export const getters = {
   facilityLocation: (state) =>
     state.selectedFacility ? state.selectedFacility.location : null,
   facilityNetworkRegion: (state) =>
-    state.selectedFacility && state.selectedFacility.network
-      ? state.selectedFacility.network.code || state.selectedFacility.network
+    state.selectedFacility && state.selectedFacility.network_id
+      ? state.selectedFacility.network_id
       : '',
   facilityDescription: (state) =>
     state.selectedFacility && state.selectedFacility.description
@@ -225,10 +227,10 @@ export const getters = {
           type: 'website',
           url: state.selectedFacility.website_url
         }
-      } else if (state.selectedFacility.wikipedia_link) {
+      } else if (state.selectedFacility.wikipedia) {
         link = {
           type: 'wikipedia',
-          url: state.selectedFacility.wikipedia_link
+          url: state.selectedFacility.wikipedia
         }
       }
     }
@@ -347,7 +349,6 @@ export const actions = {
   },
 
   doGetFacilityByCode({ commit }, { countryCode, networkCode, facilityCode }) {
-    console.log('fetching', countryCode, networkCode, facilityCode)
     const ref = stationPath(
       encodeURIComponent(countryCode),
       encodeURIComponent(networkCode),
@@ -362,11 +363,11 @@ export const actions = {
 
     http
       .get(ref)
-      .then((response) => {
-        const networkCode = response.data.network
-          ? response.data.network.code || response.data.network
-          : ''
-        commit('selectedFacility', response.data)
+      .then((res) => {
+        const response = res.data.data[0]
+        const networkCode = response.network_id || ''
+          
+        commit('selectedFacility', response)
         commit('selectedFacilityNetworkRegion', networkCode)
 
         // Error handling

@@ -274,7 +274,7 @@ export default {
       facilityName: 'facility/facilityName',
       facilityUnits: 'facility/facilityUnits',
       facilityLocation: 'facility/facilityLocation',
-      facilityNetworkRegion: 'facility/facilityNetworkRegion',
+      // facilityNetworkRegion: 'facility/facilityNetworkRegion',
       facilityDescription: 'facility/facilityDescription',
       facilityWikiLink: 'facility/facilityWikiLink',
       facilityFuelTechsColours: 'facility/facilityFuelTechsColours'
@@ -347,8 +347,8 @@ export default {
     },
 
     facilityNetworkRegion() {
-      return this.facility && this.facility.network
-        ? this.facility.network.code || this.facility.network
+      return this.facility && this.facility.network_id
+        ? this.facility.network_id
         : ''
     },
 

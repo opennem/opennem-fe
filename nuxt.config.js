@@ -271,7 +271,7 @@ module.exports = {
 
   proxy: {
     '/api': {
-      target: process.env.API_BASE_URL || 'https://api.opennem.org.au',
+      target: process.env.API_BASE_URL || 'https://api.dev.opennem.org.au',
       pathRewrite: {
         '^/api': '/'
       }
