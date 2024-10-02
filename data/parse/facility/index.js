@@ -1,5 +1,6 @@
 import _uniq from 'lodash.uniq'
 import _isEmpty from 'lodash.isempty'
+import parseISO from 'date-fns/parseISO'
 import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-detailed.js'
 
 let emptyIdCount = 0
@@ -305,6 +306,8 @@ function transformV4FacilityData(data) {
 
     let units = []
     let generatorCap = 0
+    let maximumCap = 0
+    let batteryStorageCap = 0
     const unitStatuses = []
     const fuelTechRegisteredCap = {}
     const unitStatusRegisteredCap = {}
@@ -318,22 +321,28 @@ function transformV4FacilityData(data) {
         const name = unit.code
         const regCap = unit.capacity_registered
         const maxCap = unit.capacity_maximum
-        const storageCap = unit.capacity_storage
+        const storageCap = unit.storage_capacity
+
+        if (unit.storage_capacity) {
+          console.log('storage unit', d.name, unit.storage_capacity)
+        }
 
         const fuelTech = unit.fueltech_id
         const status = unit.status_id
         const dispatchType = unit.dispatch_type
         const type = FUEL_TECHS.FUEL_TECH_CATEGORY[fuelTech] || ''
         
-        const dateCommenced = unit.commencement_date || ''
-        const dateExpectedClosure = unit.expected_closure_date || ''
-        const dateClosure = unit.closure_date || ''
+        const dateCommenced = unit.commencement_date ? parseISO(unit.commencement_date) : null
+        const dateExpectedClosure = unit.expected_closure_date ? parseISO(unit.expected_closure_date) : null
+        const dateClosure = unit.closure_date ? parseISO(unit.closure_date) : null
 
         // side effects
         unitStatuses.push(status)
 
         if (type === 'source') {
           generatorCap += regCap || 0
+          maximumCap += maxCap || 0
+          batteryStorageCap += storageCap || 0
         }
 
         if (fuelTech) {
@@ -396,6 +405,8 @@ function transformV4FacilityData(data) {
       unitNum: d.units.length,
       unitStatuses: _uniq(unitStatuses).sort(),
       generatorCap,
+      maximumCap,
+      batteryStorageCap,
 
       fuelTechs: _uniq(fuelTechs).sort(),
       genFuelTechs: _uniq(genFuelTechs).sort(),
