@@ -121,7 +121,9 @@ export default {
         }
         d.properties = {
           colour: d.colour,
-          radius: this.getRadius(d.generatorCap)
+          radius: this.getRadius(d.generatorCap),
+          facility_id: d.facilityId,
+          displayName: d.displayName
         }
       })
 
@@ -199,7 +201,7 @@ export default {
         this.map.getCanvas().style.cursor = 'pointer'
 
         const coordinates = e.features[0].geometry.coordinates.slice()
-        const name = e.features[0].properties.name
+        const name = e.features[0].properties.displayName
         const id = e.features[0].properties.facility_id
 
         // Ensure that if the map is zoomed out such that multiple
