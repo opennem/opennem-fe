@@ -1,5 +1,6 @@
 import _uniq from 'lodash.uniq'
 import _isEmpty from 'lodash.isempty'
+import parseISO from 'date-fns/parseISO'
 import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-detailed.js'
 
 let emptyIdCount = 0
@@ -232,18 +233,23 @@ function transformV3FacilityData(data) {
       state,
       regionId,
       location,
+
       network,
       country,
       hasLocation,
+
       units,
       unitStatuses: _uniq(unitStatuses).sort(),
       generatorCap,
       unitNum: dispatchUnits.length,
+
       fuelTechs: _uniq(fuelTechs).sort(),
       genFuelTechs: _uniq(genFuelTechs).sort(),
       loadFuelTechs: _uniq(loadFuelTechs).sort(),
+
       fuelTechRegisteredCap,
       unitStatusRegisteredCap,
+
       jsonData: d
     }
   })
@@ -261,6 +267,161 @@ function transformV3FacilityData(data) {
   return transformed
 }
 
+function transformV4FacilityData(data) {
+  console.log('transformV4FacilityData', data)
+
+  const transformed = data ? data.map((d) => {
+    if (!d.code) {
+      console.log('no code', d.code)
+    }
+
+    let hasLocation = false
+    let location = {
+      latitude: null,
+      longitude: null
+    }
+    if (d.location && d.location.lat && d.location.lng) {
+      // console.log('location', d.location)
+      hasLocation = true
+      location = {
+        latitude: d.location.lat,
+        longitude: d.location.lng
+      }
+    } else {
+      console.log('no location for ', d.code, d.name)
+    }
+
+    let state = ''
+    if (d.network_region && d.network_region.length > 2) {
+      // if string contains 1 at the end, remove it and assign to state
+      state = d.network_region.replace(/1$/, '')
+    }
+
+    // if at least 1 unit status is operating, then facility is operating
+    // else use first unit status
+    const status = d.units.some((u) => u.status_id === 'operating')
+      ? 'operating'
+      : d.units[0].status_id
+
+
+    let units = []
+    let generatorCap = 0
+    let maximumCap = 0
+    let batteryStorageCap = 0
+    const unitStatuses = []
+    const fuelTechRegisteredCap = {}
+    const unitStatusRegisteredCap = {}
+    const fuelTechs = []
+    const genFuelTechs = []
+    const loadFuelTechs = []
+
+    if (d.units) {
+
+      units = d.units.map((unit) => {
+        const name = unit.code
+        const regCap = unit.capacity_registered
+        const maxCap = unit.capacity_maximum
+        const storageCap = unit.storage_capacity
+
+        if (unit.storage_capacity) {
+          console.log('storage unit', d.name, unit.storage_capacity)
+        }
+
+        const fuelTech = unit.fueltech_id
+        const status = unit.status_id
+        const dispatchType = unit.dispatch_type
+        const type = FUEL_TECHS.FUEL_TECH_CATEGORY[fuelTech] || ''
+        
+        const dateCommenced = unit.commencement_date ? parseISO(unit.commencement_date) : null
+        const dateExpectedClosure = unit.expected_closure_date ? parseISO(unit.expected_closure_date) : null
+        const dateClosure = unit.closure_date ? parseISO(unit.closure_date) : null
+
+        // side effects
+        unitStatuses.push(status)
+
+        if (type === 'source') {
+          generatorCap += regCap || 0
+          maximumCap += maxCap || 0
+          batteryStorageCap += storageCap || 0
+        }
+
+        if (fuelTech) {
+          if (!fuelTechRegisteredCap[fuelTech]) {
+            fuelTechRegisteredCap[fuelTech] = 0
+          }
+          fuelTechRegisteredCap[fuelTech] += regCap
+        }
+
+        if (status) {
+          if (!unitStatusRegisteredCap[status]) {
+            unitStatusRegisteredCap[status] = 0
+          }
+          unitStatusRegisteredCap[status] += regCap
+        }
+
+        if (fuelTech !== 'battery_charging') {
+          fuelTechs.push(fuelTech)
+          if (type === 'source') {
+            genFuelTechs.push(fuelTech)
+          } else if (type === 'load') {
+            loadFuelTechs.push(fuelTech)
+          }
+        }
+
+        return {
+          name,
+          regCap,
+          maxCap,
+          storageCap,
+          fuelTech,
+          status,
+          dispatchType,
+          type,
+          dateCommenced,
+          dateExpectedClosure,
+          dateClosure,
+
+          jsonData: unit
+        }
+      })
+    }
+
+    return {
+      stationId: d.code,
+      facilityId: d.code,
+      displayName: d.name,
+
+      status,
+
+      state,
+      regionId: d.network_region || '',
+      network: d.network_id || '',
+      country: 'au',
+
+      location,
+      hasLocation,
+
+      units,
+      unitNum: d.units.length,
+      unitStatuses: _uniq(unitStatuses).sort(),
+      generatorCap,
+      maximumCap,
+      batteryStorageCap,
+
+      fuelTechs: _uniq(fuelTechs).sort(),
+      genFuelTechs: _uniq(genFuelTechs).sort(),
+      loadFuelTechs: _uniq(loadFuelTechs).sort(),
+
+      fuelTechRegisteredCap,
+      unitStatusRegisteredCap,
+
+      jsonData: d
+    }
+  }) : [];
+  
+  return transformed
+}
+
 export default {
   flatten(data) {
     const promise = new Promise((resolve) => {
@@ -274,6 +435,15 @@ export default {
   flattenV3(data) {
     const promise = new Promise((resolve) => {
       let flatData = transformV3FacilityData(data)
+      resolve(flatData)
+    })
+
+    return promise
+  },
+
+  flattenV4(data) {
+    const promise = new Promise((resolve) => {
+      let flatData = transformV4FacilityData(data)
       resolve(flatData)
     })
 

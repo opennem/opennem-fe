@@ -110,19 +110,24 @@ export default {
       return MAP_STYLE_URLS[this.selectedMapStyle]
     },
     updatedData() {
-      // @TODO: move this out of component
       const data = _cloneDeep(this.data)
-      data.forEach((d) => {
-        const properties = d.jsonData.properties
-        d.jsonData.type = 'Feature'
-        if (d.jsonData.geometry) {
-          d.jsonData.geometry.type = 'Point'
+  
+      // add geojson properties to data
+      data.forEach(d => {
+        d.type = 'Feature'
+        d.geometry = {
+          type: 'Point',
+          coordinates: [d.location.longitude, d.location.latitude]
         }
-        properties.generatorCap = d.generatorCap
-        properties.colour = d.colour
-        properties.radius = this.getRadius(d.generatorCap)
+        d.properties = {
+          colour: d.colour,
+          radius: this.getRadius(d.generatorCap),
+          facility_id: d.facilityId,
+          displayName: d.displayName
+        }
       })
-      return _orderBy(data, ['generatorCap'], ['desc'])
+
+      return _orderBy(data, ['generatorCap'])
     },
     isDarkMap() {
       return this.selectedMapStyle === MAP_STYLE_SATELLITE
@@ -196,7 +201,7 @@ export default {
         this.map.getCanvas().style.cursor = 'pointer'
 
         const coordinates = e.features[0].geometry.coordinates.slice()
-        const name = e.features[0].properties.name
+        const name = e.features[0].properties.displayName
         const id = e.features[0].properties.facility_id
 
         // Ensure that if the map is zoomed out such that multiple
@@ -256,8 +261,8 @@ export default {
 
     setMapBounds(features) {
       features.forEach((f) => {
-        if (f.geometry && f.geometry.coordinates) {
-          this.bounds.extend(f.geometry.coordinates)
+        if (f.hasLocation) {
+          this.bounds.extend([f.location.longitude, f.location.latitude])
         }
       })
     },
@@ -265,7 +270,7 @@ export default {
     getFeaturesFromData() {
       return this.updatedData
         .filter((d) => d.hasLocation)
-        .map((d) => d.jsonData)
+        .map((d) => d)
     },
 
     updateMapSource() {
@@ -333,8 +338,8 @@ export default {
 
     displayPopup(val, ctx, flyTo) {
       const find = this.findPoint(val)
-      const coordinates = find.jsonData.geometry
-        ? find.jsonData.geometry.coordinates.slice()
+      const coordinates = find.hasLocation
+        ? [find.location.longitude, find.location.latitude]
         : null
       const name = find.displayName
 

@@ -311,7 +311,7 @@ export default {
       this.updateQuery()
     }
 
-    if (this.facilityDataset.length > 0) {
+    if (this.facilityDataset && this.facilityDataset.length > 0) {
       this.facilityData = this.facilityDataset
       this.ready = true
     } else {
@@ -328,12 +328,17 @@ export default {
     }),
     fetchData() {
       const urls = []
-      urls.push('/v3/geo/au_facilities.json')
+      const path = 'https://data.openelectricity.org.au//v4/facilities/au_facilities.json'
+      urls.push(path)
 
       if (urls.length > 0) {
         Http(urls)
           .then((responses) => {
-            this.handleResponses(responses)
+            if (responses[0].features) {
+              this.handleResponses(responses)
+              return
+            }
+            this.handleV4Response(responses[0])
           })
           .catch((e) => {
             console.error(e)
@@ -349,6 +354,20 @@ export default {
           this.facilityData = res
           this.ready = true
           this.$store.dispatch('facility/dataset', res)
+        })
+
+      } else {
+        console.warn('There is an issue parsing the response.')
+      }
+    },
+
+    handleV4Response(response) {
+      if (response.success) {
+        FacilityDataParse.flattenV4(response.data).then((dataset) => {
+          console.log('resolved', dataset)
+          this.facilityData = dataset
+          this.ready = true
+          this.$store.dispatch('facility/dataset', dataset)
         })
       } else {
         console.warn('There is an issue parsing the response.')
