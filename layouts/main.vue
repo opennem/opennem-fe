@@ -19,7 +19,7 @@
       </article>
     </transition>
 
-    <article 
+    <!-- <article 
       v-if="showBanner && !mobileNavActive"
       class="message" 
       style="background-color: black; border-radius: 0; position: relative;"
@@ -39,6 +39,22 @@
       <button 
         class="banner-close" 
         @click="handleClick"><i class="fal fa-times"/></button>
+    </article> -->
+
+    <article 
+      v-if="showBanner && !mobileNavActive"
+      class="message" 
+      style="background-color: black; border-radius: 0; position: relative;"
+    >
+      <div 
+        class="message-body open-electricity-banner" 
+        style="padding: 10px 30px; justify-content: start;"
+      >
+        Due to recent changes to data conventions for reporting battery charge and discharge,
+        OpenElectricty is currently under-reporting activity for some batteries.
+        <br>
+        We are working to resolve this as soon as possible.
+      </div>
     </article>
 
     <transition name="slide-down-fade">
