@@ -52,6 +52,10 @@
           class="fal"
         />
       </div>
+
+      <!-- <div class="cap-col col-header" >
+        Storage
+      </div> -->
     </div>
 
     <div :style="`height: ${windowHeight - 266}px; overflow-y: scroll;`">
@@ -117,6 +121,13 @@
               <i class="fal fa-map-marker-alt fa-stack-1x" />
               <i class="fal fa-ban fa-stack-2x" />
             </span>
+
+            <div 
+              v-if="hasStorage(facility)" 
+              style="border-top: 1px solid #eee; margin-right: 1rem;">
+              <span>max: {{ facility.maximumCap }} MW</span> /
+              <span>storage: {{ facility.batteryStorageCap }} MWh</span>
+            </div>
           </div>
 
           <div 
@@ -147,6 +158,10 @@
                 ><br
                 ></span>
               </span>
+
+              
+
+              
             </div>
             <div 
               v-if="facility.loadFuelTechs.length" 
@@ -207,7 +222,11 @@
             >
               –
             </div>
+
+            
           </div>
+
+          
         </div>
       </div>
     </div>
@@ -380,10 +399,6 @@ export default {
       this.windowHeight = window.innerHeight
       this.divWidth = this.calculateDivWidth()
 
-      
-
-      
-
       window.addEventListener(
         'resize',
         _debounce(() => {
@@ -409,6 +424,12 @@ export default {
   },
 
   methods: {
+    hasStorage(facility) {
+      // return facility.fuelTechs.includes(FUEL_TECHS.BATTERY_DISCHARGING)
+      // console.log('hasStorage', facility, facility.batteryStorageCap, facility.maximumCap)
+      return facility.batteryStorageCap
+    },
+
     listenToNavKeys(e) {
       const isUp = e.keyCode === 38
       const isRight = e.keyCode === 39
@@ -516,6 +537,9 @@ export default {
     },
     getColour(fuelTech) {
       const ftColour = FUEL_TECHS.DEFAULT_FUEL_TECH_COLOUR[fuelTech]
+      if (!ftColour) {
+        console.log('no colour', fuelTech)
+      }
       return ftColour || 'transparent'
     },
     getBgImage(status) {

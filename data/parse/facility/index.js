@@ -359,7 +359,7 @@ function transformV4FacilityData(data) {
           unitStatusRegisteredCap[status] += regCap
         }
 
-        if (fuelTech !== 'battery_charging') {
+        if (fuelTech !== 'battery_charging' && fuelTech !== 'battery') {
           fuelTechs.push(fuelTech)
           if (type === 'source') {
             genFuelTechs.push(fuelTech)
