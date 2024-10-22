@@ -328,8 +328,8 @@ export default {
     }),
     fetchData() {
       const urls = []
-      const version = 'v4'
-      urls.push(`/${version}/facilities/au_facilities.json`)
+      const path = 'https://data.openelectricity.org.au//v4/facilities/au_facilities.json'
+      urls.push(path)
 
       if (urls.length > 0) {
         Http(urls)
