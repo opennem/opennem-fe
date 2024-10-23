@@ -121,13 +121,6 @@
               <i class="fal fa-map-marker-alt fa-stack-1x" />
               <i class="fal fa-ban fa-stack-2x" />
             </span>
-
-            <div 
-              v-if="hasStorage(facility)" 
-              style="border-top: 1px solid #eee; margin-right: 1rem;">
-              <span>max: {{ facility.maximumCap }} MW</span> /
-              <span>storage: {{ facility.batteryStorageCap }} MWh</span>
-            </div>
           </div>
 
           <div 
@@ -148,20 +141,26 @@
                 :style="{ opacity: getOpacity(ft) }"
               >
                 {{ getFtLabel(ft) }}
-                <small v-if="facility.genFuelTechs.length > 1">
-                  ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber
-                  }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span
-                  ><span v-else>MW</span>)
+
+                <div 
+                  v-if="hasStorage(facility) && ft === 'battery_discharging'" 
+                  style="display: contents;">
+                  (<small>{{ facility.maximumCap | facilityFormatNumber }} MW</small> /
+                  <small>{{ facility.batteryStorageCap | facilityFormatNumber }} MWh</small>)
+                </div>
+
+                <small v-else-if="facility.genFuelTechs.length > 1">
+                  ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}
+                  <span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span>
+                  <span v-else>MW</span>)
                 </small>
+
                 <span 
                   v-if="genFtIndex !== facility.genFuelTechs.length - 1"
-                ><br
-                ></span>
-              </span>
-
-              
-
-              
+                >
+                  <br>
+                </span>
+              </span>              
             </div>
             <div 
               v-if="facility.loadFuelTechs.length" 
