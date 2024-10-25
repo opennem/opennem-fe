@@ -145,14 +145,12 @@
                 <div 
                   v-if="hasStorage(facility) && ft === 'battery_discharging'" 
                   style="display: contents;">
-                  (<small>{{ facility.maximumCap | facilityFormatNumber }} MW</small> /
-                  <small>{{ facility.batteryStorageCap | facilityFormatNumber }} MWh</small>)
+                  (<small>{{ facility.maximumCap | facilityFormatNumber }}&nbsp;MW</small> /
+                  <small>{{ facility.batteryStorageCap | facilityFormatNumber }}&nbsp;MWh</small>)
                 </div>
 
                 <small v-else-if="facility.genFuelTechs.length > 1">
-                  ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}
-                  <span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span>
-                  <span v-else>MW</span>)
+                  ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}&nbsp;<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span><span v-else>MW</span>)
                 </small>
 
                 <span 
@@ -173,13 +171,10 @@
                 {{ getFtLabel(ft) }}
                 <small
                 >({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber
-                }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span
-                ><span v-else>MW</span>)</small
-                >
-                <span 
+                }}&nbsp;<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span
+                ><span v-else>MW</span>)</small><span 
                   v-if="loadFtIndex !== facility.loadFuelTechs.length - 1"
-                ><br
-                ></span>
+                ><br></span>
               </em>
             </div>
           </div>
@@ -198,22 +193,18 @@
               ><i 
                 class="fal fa-info-circle"
               /></span> -->
-              {{ getGeneratorCap(facility) | facilityFormatNumber }}
-              <span
+              {{ getGeneratorCap(facility) | facilityFormatNumber }}&nbsp;<span
                 v-if="
                   getGeneratorCap(facility) !== 0 && getGeneratorCap(facility) < 1
                 "
                 class="unit"
-              >kW</span
-              >
-              <span
+              >kW</span><span
                 v-if="
                   getGeneratorCap(facility) !== 0 &&
                     getGeneratorCap(facility) >= 1
                 "
                 class="unit"
-              >MW</span
-              >
+              >MW</span>
             </div>
             <div
               v-show="!facility.generatorCap"
