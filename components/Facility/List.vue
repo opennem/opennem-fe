@@ -52,6 +52,10 @@
           class="fal"
         />
       </div>
+
+      <!-- <div class="cap-col col-header" >
+        Storage
+      </div> -->
     </div>
 
     <div :style="`height: ${windowHeight - 266}px; overflow-y: scroll;`">
@@ -137,16 +141,26 @@
                 :style="{ opacity: getOpacity(ft) }"
               >
                 {{ getFtLabel(ft) }}
-                <small v-if="facility.genFuelTechs.length > 1">
-                  ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber
-                  }}<span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span
-                  ><span v-else>MW</span>)
+
+                <div 
+                  v-if="hasStorage(facility) && ft === 'battery_discharging'" 
+                  style="display: contents;">
+                  (<small>{{ facility.maximumCap | facilityFormatNumber }} MW</small> /
+                  <small>{{ facility.batteryStorageCap | facilityFormatNumber }} MWh</small>)
+                </div>
+
+                <small v-else-if="facility.genFuelTechs.length > 1">
+                  ({{ facility.fuelTechRegisteredCap[ft] | facilityFormatNumber }}
+                  <span v-if="facility.fuelTechRegisteredCap[ft] < 1">kW</span>
+                  <span v-else>MW</span>)
                 </small>
+
                 <span 
                   v-if="genFtIndex !== facility.genFuelTechs.length - 1"
-                ><br
-                ></span>
-              </span>
+                >
+                  <br>
+                </span>
+              </span>              
             </div>
             <div 
               v-if="facility.loadFuelTechs.length" 
@@ -207,7 +221,11 @@
             >
               –
             </div>
+
+            
           </div>
+
+          
         </div>
       </div>
     </div>
@@ -380,10 +398,6 @@ export default {
       this.windowHeight = window.innerHeight
       this.divWidth = this.calculateDivWidth()
 
-      
-
-      
-
       window.addEventListener(
         'resize',
         _debounce(() => {
@@ -409,6 +423,12 @@ export default {
   },
 
   methods: {
+    hasStorage(facility) {
+      // return facility.fuelTechs.includes(FUEL_TECHS.BATTERY_DISCHARGING)
+      // console.log('hasStorage', facility, facility.batteryStorageCap, facility.maximumCap)
+      return facility.batteryStorageCap
+    },
+
     listenToNavKeys(e) {
       const isUp = e.keyCode === 38
       const isRight = e.keyCode === 39
@@ -516,6 +536,9 @@ export default {
     },
     getColour(fuelTech) {
       const ftColour = FUEL_TECHS.DEFAULT_FUEL_TECH_COLOUR[fuelTech]
+      if (!ftColour) {
+        console.log('no colour', fuelTech)
+      }
       return ftColour || 'transparent'
     },
     getBgImage(status) {
