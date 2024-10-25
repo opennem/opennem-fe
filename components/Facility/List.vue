@@ -222,21 +222,18 @@
               –
             </div>
 
-            
           </div>
-
-          
         </div>
       </div>
     </div>
 
-    
-
     <totals
+      :facilities="filteredFacilities"
       :position="totalsPosition"
       :div-width="divWidth"
       :total-facilities="totalFacilities"
       :total-cap="totalCap"
+      :show-storage="isBatterySelectedOnly"
       class="facilities-total"
     />
   </div>
@@ -343,6 +340,9 @@ export default {
     totalFacilities() {
       return this.filteredFacilities.length
     },
+    isBatterySelectedOnly() {
+      return this.selectedTechs.length === 1 && this.selectedTechs[0] === 'battery_discharging'
+    },
     totalCap() {
       let total = 0
       this.filteredFacilities.forEach((facility) => {
@@ -403,8 +403,6 @@ export default {
         _debounce(() => {
           this.windowHeight = window.innerHeight
           this.divWidth = this.calculateDivWidth()
-
-          console.log('mounted', this.windowHeight, this.$refs.listBox.clientHeight)
         }, 200)
       )
 

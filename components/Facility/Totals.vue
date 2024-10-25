@@ -8,19 +8,32 @@
   >
     <span 
       class="total-facilities"
-    >Facilities: <strong>{{ totalFacilities }}</strong></span
     >
-    <span 
+      Facilities: <strong>{{ totalFacilities }}</strong>
+    </span>
+    <div 
       class="total-cap"
-    >Capacity: <strong>{{ totalCap | facilityFormatNumber }}</strong>
-    <span v-if="totalCap < 1">kW</span><span v-else>MW</span></span
     >
+      Capacity: <strong>{{ totalCap | facilityFormatNumber }}</strong>
+      <span v-if="totalCap < 1">kW</span>
+      <span v-else>MW</span>  
+
+      <span v-if="showStorage">
+        /
+        <strong>{{ totalStorage | facilityFormatNumber }}</strong>
+        <span>MWh</span>
+      </span>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   props: {
+    facilities: {
+      type: Array,
+      default: () => []
+    },
     position: {
       type: String,
       default: () => ''
@@ -36,8 +49,28 @@ export default {
     divWidth: {
       type: Number,
       default: () => 0
+    },
+    showStorage: {
+      type: Boolean,
+      default: () => false
+    }
+  },
+
+  computed: {
+    totalStorage() {
+      let totalStorageCap = 0
+
+      if (this.showStorage) {
+        this.facilities.forEach(facility => {
+          if (facility.batteryStorageCap) {
+            totalStorageCap += facility.batteryStorageCap
+          }
+        })
+      } 
+      return totalStorageCap
     }
   }
+
 }
 </script>
 
