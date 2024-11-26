@@ -15,13 +15,12 @@
       class="total-cap"
     >
       Capacity: <strong>{{ totalCap | facilityFormatNumber }}</strong>
-      <span v-if="totalCap < 1">kW</span>
-      <span v-else>MW</span>  
+      <span v-if="totalCap < 1">&nbsp;kW</span>
+      <span v-else>&nbsp;MW</span>  
 
       <span v-if="showStorage">
         /
-        <strong>{{ totalStorage | facilityFormatNumber }}</strong>
-        <span>MWh</span>
+        <strong>{{ totalStorage | facilityFormatNumber }}</strong>&nbsp;<span>MWh</span>
       </span>
     </div>
   </div>

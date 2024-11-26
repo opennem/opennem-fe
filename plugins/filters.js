@@ -96,9 +96,9 @@ Vue.filter('customFormatValue', (value) => {
   return isFinite(value) && value ? f(value) : '–'
 })
 
-Vue.filter('percentageFormatNumber', (value) => {
-  let fString = smartFormatString(value)
-  if (fString === ',.0f') {
+Vue.filter('percentageFormatNumber', (value, customFString = null) => {
+  let fString = customFString || smartFormatString(value)
+  if (!customFString && fString === ',.0f') {
     fString = ',.1f'
   }
   const f = d3Format(fString)

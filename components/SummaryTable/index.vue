@@ -392,18 +392,20 @@
                 </span>
               </div>
 
-              <div
+              <button
                 v-if="!hoverOn && !focusOn"
-                class="summary-col-contribution cell-value"
+                class="value-btn summary-col-contribution cell-value"
+                @click.stop="handleValueButtonClicked"
               >
-                {{ renewablesPercentage | percentageFormatNumber }}
-              </div>
-              <div
+                {{ renewablesPercentage | percentageFormatNumber(renewablesCustomFString) }}
+              </button>
+              <button
                 v-if="hoverOn || focusOn"
-                class="summary-col-contribution cell-value"
+                class="value-btn summary-col-contribution cell-value"
+                @click.stop="handleValueButtonClicked"
               >
-                {{ pointRenewablesPercentage | percentageFormatNumber }}
-              </div>
+                {{ pointRenewablesPercentage | percentageFormatNumber(renewablesCustomFString) }}
+              </button>
               <div class="summary-col-av-value cell-value" />
             </div>
           </div>
@@ -554,7 +556,8 @@ export default {
       hiddenLoads: [],
       hoveredTemperature: 0,
       mousedownDelay: null,
-      longPress: 500
+      longPress: 500,
+      renewablesCustomFString: ',.1f' // ',.3f'
     }
   },
 
@@ -925,6 +928,14 @@ export default {
   },
 
   methods: {
+    handleValueButtonClicked() {
+      if (this.renewablesCustomFString === ',.1f') {
+        this.renewablesCustomFString = ',.3f'
+      } else {
+        this.renewablesCustomFString = ',.1f'
+      }  
+    },
+
     calculateSummary(data) {
       if (data.length > 0) {
         const isGeneration = this.percentContributionTo === 'generation'
@@ -1681,6 +1692,17 @@ export default {
 <style lang="scss" scoped>
 @import '~/assets/scss/responsive-mixins.scss';
 @import '~/assets/scss/variables.scss';
+
+.value-btn {
+  font-size: 11px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
 
 .summary-table {
   color: #333;
