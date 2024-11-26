@@ -24,7 +24,8 @@ export default function (data, displayTz) {
       code: d.code,
       type,
       units,
-      history
+      history,
+      fuelTech: d.fueltech_id || '',
     }
   }
 

@@ -204,10 +204,11 @@ export const getters = {
     state.selectedFacility && state.selectedFacility.name
       ? state.selectedFacility.name
       : '',
-  facilityUnits: (state) =>
-    state.selectedFacility
-      ? _sortBy(state.selectedFacility.facilities, ['status.code', 'code'])
-      : [],
+  facilityUnits: (state) => {
+    return state.selectedFacility
+      ? _sortBy(state.selectedFacility.units, ['code'])
+      : []
+  },
   facilityLocation: (state) =>
     state.selectedFacility ? state.selectedFacility.location : null,
   facilityNetworkRegion: (state) =>
@@ -237,7 +238,7 @@ export const getters = {
     return link
   },
   facilityFuelTechsColours: (state, getters) => {
-    const fuelTechs = getters.facilityUnits.map((d) => d.fueltech)
+    const fuelTechs = getters.facilityUnits.map((d) => d.fueltech_id)
 
     // get only unique fuel techs
     const uniqFuelTechs = _uniq(fuelTechs.filter((d) => d !== '')).sort()
@@ -263,10 +264,11 @@ export const getters = {
 
     // apply each colour variation to facility unit
     const obj = {}
+
     uniqFuelTechs.forEach((ft) => {
       const filter = getters.facilityUnits.filter((d) => {
-        const fuelTechCode = d.fueltech.code || d.fueltech
-        return d.fueltech && fuelTechCode === ft
+        const fuelTechCode = d.fueltech_id
+        return fuelTechCode && fuelTechCode === ft
       })
       filter.forEach((f, i) => {
         obj[f.code] = colours[ft][i]
@@ -280,6 +282,7 @@ export const getters = {
       const find = state.domainPowerEnergy.find(
         (domain) => domain.code === d.code
       )
+
       const findMarketValue = state.domainMarketValue.find(
         (domain) => domain.code === d.code
       )
@@ -287,7 +290,7 @@ export const getters = {
       const marketValueId = findMarketValue ? findMarketValue.id : null
       const emissionIntensity = d.emissions_factor_co2 * 1000 // kgCO₂e/MWh
       const displayTz =
-        regionDisplayTzs[state.selectedFacility.network.toLowerCase()]
+        regionDisplayTzs[state.selectedFacility.network_region.toLowerCase()]
       const dataFirstSeen = d.data_first_seen
         ? mutateDate(d.data_first_seen, displayTz)
         : null
@@ -304,9 +307,9 @@ export const getters = {
         code: d.code,
         label: d.code,
         registeredCapacity: d.capacity_registered,
-        status: d.status ? d.status.label || d.status : '',
-        fuelTechLabel: d.fueltech,
-        category: FUEL_TECH_CATEGORY[d.fueltech],
+        status: d.status_id,
+        fuelTechLabel: d.fueltech_id,
+        category: FUEL_TECH_CATEGORY[d.fueltech_id],
         dispatchType: d.dispatch_type,
         hasEmissionsFactor: d.emissions_factor_co2,
         dataFirstSeen,
