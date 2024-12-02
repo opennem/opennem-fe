@@ -1,6 +1,6 @@
 <template>
   <div class="row-bar-wrapper">
-    <div
+    <!-- <div
       v-if="isValidContribution"
       :style="{
         width: `${width}px`,
@@ -8,7 +8,7 @@
         opacity: 0.4
       }"
       class="row-bar"
-    />
+    /> -->
 
     <div 
       v-if="isValidContribution" 
