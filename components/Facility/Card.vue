@@ -274,7 +274,7 @@ export default {
       facilityName: 'facility/facilityName',
       facilityUnits: 'facility/facilityUnits',
       facilityLocation: 'facility/facilityLocation',
-      // facilityNetworkRegion: 'facility/facilityNetworkRegion',
+      selectedFacilityNetworkRegion: 'facility/selectedFacilityNetworkRegion',
       facilityDescription: 'facility/facilityDescription',
       facilityWikiLink: 'facility/facilityWikiLink',
       facilityFuelTechsColours: 'facility/facilityFuelTechsColours'
@@ -450,7 +450,7 @@ export default {
     },
 
     getFacilityStats() {
-      const networkRegion = this.facilityNetworkRegion
+      const networkRegion = this.selectedFacilityNetworkRegion
       const facilityCode = this.facility.facilityId
       const facilityFuelTechsColours = this.facilityFuelTechsColours
       this.doGetStationStats({
