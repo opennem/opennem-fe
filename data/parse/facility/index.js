@@ -299,9 +299,14 @@ function transformV4FacilityData(data) {
 
     // if at least 1 unit status is operating, then facility is operating
     // else use first unit status
-    const status = d.units.some((u) => u.status_id === 'operating')
+
+    if (!d.units || d.units.length === 0) {
+      console.warn('Facility has no units', d)
+    }
+
+    const status = d.units && d.units.length ? d.units.some((u) => u.status_id === 'operating')
       ? 'operating'
-      : d.units[0].status_id
+      : d.units[0].status_id : ''
 
 
     let units = []
