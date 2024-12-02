@@ -268,10 +268,10 @@
 
         <th class="align-right cell-value">
           <span v-if="hasLoads">
-            {{ operatingSourceUnitsTotalCapacity }}/{{ operatingLoadUnitsTotalCapacity }}
+            {{ operatingSourceUnitsTotalCapacity | formatValue }}/{{ operatingLoadUnitsTotalCapacity | formatValue }}
           </span>
           <span v-else>
-            {{ operatingUnitsTotalCapacity }}
+            {{ operatingUnitsTotalCapacity | formatValue }}
           </span>
         </th>
 
