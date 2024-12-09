@@ -363,10 +363,10 @@ export default {
 
     checkYearIsWithinRange(year) {
       const yearInt = parseInt(year, 10)
-      if (yearInt >= 1990 && yearInt <= 2021) {
+      if (yearInt >= 1990 && yearInt <= 2023) {
         return true
       } else {
-        throw new RangeError('The year must be between 1990 and 2021.')
+        throw new RangeError('The year must be between 1990 and 2023.')
       }
     },
 
@@ -558,7 +558,7 @@ export default {
     getEmissions() {
       // const url = '/data/country-emissions.csv'
       const url =
-        'https://data.opennem.org.au/v1/emissions/world/country-emissions.csv'
+        'https://data.opennem.org.au/v1/emissions/world/country-emissions-20241209.csv'
 
       const keyArea = 'area (ISO3)'
       const keyCategory = 'category (IPCC2006_PRIMAP)'
