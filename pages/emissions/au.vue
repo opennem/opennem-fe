@@ -561,13 +561,16 @@ export default {
     let projections = this.queryProjections
     let history = this.queryHistory
 
+    this.setEmissionsVolumePrefix(SI.BASE)
+    this.setEmissionsVolumeDisplayPrefix(SI.MEGA)
+
     if (!this.queryInterval) {
       interval = INTERVAL_QUARTER
     }
     if (interval === INTERVAL_QUARTER) {
       this.handleQuarterViewSelect()
       this.getQuarterData()
-      this.setEmissionsVolumePrefix(SI.MEGA)
+      
     } else {
       if (history && history === 'true') this.addHistory = true
       if (projections && projections === 'true') this.addProjections = true
@@ -595,6 +598,7 @@ export default {
       setSourceUrl: 'emissionsPage/footerSourceUrl',
 
       setEmissionsVolumePrefix: 'chartOptionsEmissionsVolume/chartUnitPrefix',
+      setEmissionsVolumeDisplayPrefix: 'chartOptionsEmissionsVolume/chartDisplayPrefix',
 
       setAllowResize: 'regionEnergy/allowResize'
     }),

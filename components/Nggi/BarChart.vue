@@ -88,7 +88,7 @@
       <div 
         class="row-value" 
         role="cell">
-        {{ total | formatValue }}
+        {{ this.convertValue(total) | formatValue }}
       </div>
 
       <div 
@@ -99,9 +99,12 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { scaleLinear as d3ScaleLinear } from 'd3-scale'
 import _includes from 'lodash.includes'
 import _debounce from 'lodash.debounce'
+import * as SI from '@/constants/si.js'
+
 
 export default {
   props: {
@@ -159,6 +162,11 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      chartUnitPrefix: 'chartOptionsEmissionsVolume/chartUnitPrefix',
+      chartDisplayPrefix: 'chartOptionsEmissionsVolume/chartDisplayPrefix',
+      chartCurrentUnit: 'chartOptionsEmissionsVolume/chartCurrentUnit',
+    }),
     barDataset() {
       const domains = this.xDomains.filter((d) => !_includes(this.hidden, d.id))
       const dataset = this.dataset
@@ -228,6 +236,13 @@ export default {
   },
 
   methods: {
+    convertValue(value) {
+      return SI.convertValue(
+        this.chartUnitPrefix,
+        this.chartDisplayPrefix,
+        value
+      )
+    },
     getWidth(id) {
       const find = this.barDataset.find((d) => d.name === id)
       if (find) {
@@ -238,7 +253,7 @@ export default {
     },
     getValue(id) {
       const find = this.barDataset.find((d) => d.name === id)
-      return find ? find.value : '—'
+      return find ? this.convertValue(find.value) : '—'
     },
     getContribution(id) {
       const find = this.barDataset.find((d) => d.name === id)

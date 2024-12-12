@@ -1698,10 +1698,7 @@ export default {
   border: 0;
   background: none;
   cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
+  color: black;
 }
 
 .summary-table {
