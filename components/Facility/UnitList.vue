@@ -949,14 +949,12 @@ export default {
 
     getCellValue(d) {
       if (this.hoverOn) {
-        console.log('hovering', this.getHoverValue(d.id))
         return this.getHoverValue(d.id)
       }
       if (!this.hoverOn && this.focusOn) {
         return this.getFocusValue(d.id)
       }
       if (!this.hoverOn && !this.focusOn) {
-        console.log('not hovering', this.summary[d.id].energy)
         return this.summary[d.id].energy
       }
     },
