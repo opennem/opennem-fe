@@ -5,15 +5,15 @@ export const FACILITY_RETIRED = 'retired'
 export const FacilityStatus = [
   {
     id: FACILITY_COMMITTED,
-    label: 'Committed'
+    label: 'committed'
   },
   {
     id: FACILITY_OPERATING,
-    label: 'Operating'
+    label: 'operating'
   },
   {
     id: FACILITY_RETIRED,
-    label: 'Retired'
+    label: 'retired'
   }
 ]
 

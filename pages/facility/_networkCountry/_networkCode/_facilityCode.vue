@@ -930,7 +930,6 @@ export default {
   watch: {
     facility(update) {
       if (update) {
-        console.log('facility-watch')
         if (!this.queryRange && this.isFacilityRetired) {
           this.setRange(RANGE_ALL)
           this.setInterval(INTERVAL_MONTH)
@@ -1124,6 +1123,7 @@ export default {
       const networkRegion = this.facilityNetworkRegion
       const facilityCode = this.facilityCode
       const facilityFuelTechsColours = this.facilityFuelTechsColours
+
       this.doGetStationStats({
         networkRegion,
         facilityCode,

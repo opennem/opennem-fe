@@ -14,7 +14,7 @@
         <VueperSlide
           v-for="(photo, index) in photos"
           :key="`photo${index}`"
-          :image="photo.photo_url"
+          :image="photo.url"
         />
       </VueperSlides>
     </transition>
@@ -32,6 +32,21 @@
         v-else 
         class="fal fa-expand" />
     </button>
+
+    <v-popover
+      v-if="hasPhotos && currentPhoto.caption"
+      class="wiki-link-text"
+      placement="auto"
+    >
+      <i class="fal fa-info-circle" />
+      <template slot="popover">
+        <i class="fal fa-fw fa-camera" />
+        <strong>
+          {{ currentPhoto.caption }}
+        </strong>
+       
+      </template>
+    </v-popover>
 
     <v-popover
       v-if="hasPhotos && hasPhotoAuthor(currentPhoto.author)"

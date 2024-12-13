@@ -283,11 +283,6 @@ export default {
         range = getRangeByRangeQuery(this.queryRange)
         interval = getIntervalByIntervalQuery(this.queryInterval)
 
-        if (this.isWemOrAu && interval === INTERVAL_5MIN) {
-          interval = INTERVAL_30MIN
-          this.updateQuery(range, interval, filter)
-        }
-
         if (!isValidRangeInterval(range, interval)) {
           interval = getDefaultIntervalByRange(range)
           this.updateQuery(range, interval, filter)
@@ -342,9 +337,7 @@ export default {
     setSelectedRangeIntervals(selected) {
       if (selected !== '') {
         let intervals = this.intervals[selected]
-        if (this.isWemOrAu && this.isPowerRange) {
-          intervals = ['30m']
-        }
+
         this.selectedRangeIntervals = intervals
       }
     },
@@ -480,10 +473,6 @@ export default {
           break
         default:
           console.log('nothing yet')
-      }
-
-      if (this.isWemOrAu && isPower) {
-        interval = '30m'
       }
 
       this.updateSelections(range, interval)

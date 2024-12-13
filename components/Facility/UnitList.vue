@@ -62,14 +62,14 @@
           </span>
         </th>
 
-        <th 
+        <!-- <th 
           v-if="units.length > 1" 
           style="width: 150px">
           <span>
             Proportion
             <small>%</small>
           </span>
-        </th>
+        </th> -->
 
         <th 
           class="data-col align-right hover-cell" 
@@ -166,7 +166,7 @@
           </span>
         </td>
 
-        <td v-if="units.length > 1">
+        <!-- <td v-if="units.length > 1">
           <UnitListBar 
             v-if="ready" 
             :bar-width="150" 
@@ -175,7 +175,7 @@
             " 
             :value="getCellValue(d)" 
             :total="getCellTotalValue(d)" />
-        </td>
+        </td> -->
 
         <td class="align-right hover-cell">
           <span v-if="hoverOn">
@@ -268,10 +268,10 @@
 
         <th class="align-right cell-value">
           <span v-if="hasLoads">
-            {{ operatingSourceUnitsTotalCapacity }}/{{ operatingLoadUnitsTotalCapacity }}
+            {{ operatingSourceUnitsTotalCapacity | formatValue }}/{{ operatingLoadUnitsTotalCapacity | formatValue }}
           </span>
           <span v-else>
-            {{ operatingUnitsTotalCapacity }}
+            {{ operatingUnitsTotalCapacity | formatValue }}
           </span>
         </th>
 
@@ -339,7 +339,7 @@
           </div>
         </th>
 
-        <th v-if="units.length > 1" />
+        <!-- <th v-if="units.length > 1" /> -->
 
         <th class="align-right hover-cell cell-value">
           <div v-if="hasLoads">

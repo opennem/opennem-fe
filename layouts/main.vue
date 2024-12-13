@@ -19,7 +19,7 @@
       </article>
     </transition>
 
-    <!-- <article 
+    <article 
       v-if="showBanner && !mobileNavActive"
       class="message" 
       style="background-color: black; border-radius: 0; position: relative;"
@@ -39,9 +39,9 @@
       <button 
         class="banner-close" 
         @click="handleClick"><i class="fal fa-times"/></button>
-    </article> -->
+    </article>
 
-    <article 
+    <!-- <article 
       v-if="showBanner && !mobileNavActive"
       class="message" 
       style="background-color: black; border-radius: 0; position: relative;"
@@ -55,7 +55,7 @@
         <br>
         We are working to resolve this as soon as possible.
       </div>
-    </article>
+    </article> -->
 
     <transition name="slide-down-fade">
       <article 

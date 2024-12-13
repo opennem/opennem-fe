@@ -12,8 +12,8 @@ module.exports = {
     version: pkg.version,
     useDev,
     url: useDev // this is to get the right social media card images for prod and dev
-      ? 'https://dev.opennem.org.au'
-      : 'https://opennem.org.au'
+      ? 'https://explore.openelectricity.org.au'
+      : 'https://explore.openelectricity.org.au'
   },
 
   env: {
@@ -21,7 +21,7 @@ module.exports = {
     API_KEY: process.env.API_KEY,
     mapboxToken: process.env.MAPBOX_TOKEN || '',
     DATA_BASE_URL: useDev
-      ? 'https://data.dev.opennem.org.au/'
+      ? 'https://data.dev.openelectricity.org.au/'
       : process.env.DATA_BASE_URL
   },
 
@@ -271,7 +271,7 @@ module.exports = {
 
   proxy: {
     '/api': {
-      target: process.env.API_BASE_URL || 'https://api.opennem.org.au',
+      target: process.env.API_BASE_URL || 'https://api.openelectricity.org.au',
       pathRewrite: {
         '^/api': '/'
       }

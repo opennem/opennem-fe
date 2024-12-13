@@ -62,7 +62,7 @@
       </div>
 
       <div class="capacity-wrapper">
-        <span class="capacity-label">Generator capacity</span>
+        <span class="capacity-label">Generator capacity (registered)</span>
         <div v-show="facility.generatorCap">
           {{ generatorCap | facilityFormatNumber }}
           <span 
@@ -76,8 +76,53 @@
           >MW</span
           >
         </div>
-        <div v-show="!facility.generatorCap">–</div>
+       
       </div>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr style="background-color: #efefef;">
+            <th 
+              style="text-align: center; border-bottom: 0.5px dotted #999"/>
+            <th 
+              colspan="
+              3" 
+              style="text-align: center; border-bottom: 0.5px dotted #999">
+              Capacity
+            </th>
+            <th 
+              colspan="3" 
+              style="text-align: center; border-bottom: 0.5px dotted #999">
+              Dates
+            </th>
+          </tr>
+          <tr style="background-color: #efefef;">
+            <th>Unit</th>
+            <th style="text-align: right;">Registered</th>
+            <th style="text-align: right;">Maximum</th>
+            <th style="text-align: right;">Storage</th>
+            <th>Commenced</th>
+            <th>Expected Closure</th>
+            <th>Closure</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr 
+            v-for="unit in facility.units" 
+            :key="unit.name"
+          >
+            <td>{{ unit.name }}</td>
+            <td style="text-align: right;">{{ unit.regCap }}</td>
+            <td style="text-align: right;">{{ unit.maxCap }}</td>
+            <td style="text-align: right;">{{ unit.storageCap || '—' }}</td>
+            <td>{{ unit.dateCommenced | formatDate('%d/%m/%Y') }}</td>
+            <td>{{ unit.dateExpectedClosure | formatDate('%d/%m/%Y') }}</td>
+            <td>{{ unit.dateClosure | formatDate('%d/%m/%Y') }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <!-- :hover-on="isHovering"
@@ -195,7 +240,7 @@ export default {
       facilityName: 'facility/facilityName',
       facilityUnits: 'facility/facilityUnits',
       facilityLocation: 'facility/facilityLocation',
-      facilityNetworkRegion: 'facility/facilityNetworkRegion',
+      selectedFacilityNetworkRegion: 'facility/selectedFacilityNetworkRegion',
       facilityDescription: 'facility/facilityDescription',
       facilityWikiLink: 'facility/facilityWikiLink',
       facilityFuelTechsColours: 'facility/facilityFuelTechsColours'
@@ -268,8 +313,8 @@ export default {
     },
 
     facilityNetworkRegion() {
-      return this.facility && this.facility.network
-        ? this.facility.network.code || this.facility.network
+      return this.facility && this.facility.network_id
+        ? this.facility.network_id
         : ''
     },
 
@@ -371,7 +416,7 @@ export default {
     },
 
     getFacilityStats() {
-      const networkRegion = this.facilityNetworkRegion
+      const networkRegion = this.selectedFacilityNetworkRegion
       const facilityCode = this.facility.facilityId
       const facilityFuelTechsColours = this.facilityFuelTechsColours
       this.doGetStationStats({
@@ -446,7 +491,7 @@ export default {
   box-shadow: -10px 0 15px rgba(100, 100, 100, 0.1);
   background-color: #fff;
   position: fixed;
-  height: 420px;
+  height: 500px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -454,6 +499,7 @@ export default {
   z-index: 10000;
   padding: 2rem 2rem 2rem 20px;
   border-radius: 10px;
+  overflow: auto;
 
   @include tablet {
     left: 50vw;
@@ -546,6 +592,19 @@ export default {
   }
   span {
     font-size: 0.9em;
+  }
+}
+
+.table-container {
+  table {
+    width: 100%; margin: 0 auto; font-size: 0.8rem;
+  }
+  th, td {
+    padding: 0.2rem;
+    text-align: left;
+  }
+  tbody tr {
+    border-bottom: 1px solid #efefef
   }
 }
 </style>

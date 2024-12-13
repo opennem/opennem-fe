@@ -3,7 +3,7 @@ import axios from 'axios'
 const apiKey = process.env.API_KEY
 
 const getApiBaseUrl = () => {
-  let apiBaseUrl = `https://api.opennem.org.au`
+  let apiBaseUrl = `https://api.openelectricity.org.au`
   let host = undefined
   if (typeof window !== 'undefined') {
     host = window.location.host
@@ -18,8 +18,8 @@ const getApiBaseUrl = () => {
     apiBaseUrl = `/api`
   }
 
-  if (host && host.startsWith('dev')) {
-    apiBaseUrl = `https://api.dev.opennem.org.au`
+  if (host && (host.startsWith('feature-dev-testing-only') || host.startsWith('dev'))) {
+    apiBaseUrl = `https://api.dev.openelectricity.org.au`
   }
 
   if (process.env.API_BASE_URL !== undefined) {
