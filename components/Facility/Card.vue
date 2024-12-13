@@ -76,41 +76,7 @@
           >MW</span
           >
         </div>
-
-        <!-- <span 
-          v-show="facility.maximumCap" 
-          class="capacity-label">Maximum capacity</span>
-        <div v-show="facility.maximumCap">
-          {{ maximumCap | facilityFormatNumber }}
-          <span 
-            v-if="maximumCap !== 0 && maximumCap < 1" 
-            class="unit"
-          >kW</span
-          >
-          <span 
-            v-if="maximumCap !== 0 && maximumCap >= 1" 
-            class="unit"
-          >MW</span
-          >
-        </div>
-
-        <span 
-          v-show="facility.batteryStorageCap" 
-          class="capacity-label">Storage capacity</span>
-        <div v-show="facility.batteryStorageCap">
-          {{ batteryStorageCap | facilityFormatNumber }}
-          <span 
-            v-if="batteryStorageCap !== 0 && batteryStorageCap < 1" 
-            class="unit"
-          >kW</span
-          >
-          <span 
-            v-if="batteryStorageCap !== 0 && batteryStorageCap >= 1" 
-            class="unit"
-          >MW</span
-          >
-        </div> -->
-        <!-- <div v-show="!facility.generatorCap">–</div> -->
+       
       </div>
     </div>
 
