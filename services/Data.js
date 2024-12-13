@@ -104,6 +104,6 @@ export default {
   },
 
   getAllMonthlyPath() {
-    return '${version}/stats/au/all/monthly.json'
+    return `v3/stats/au/all/monthly.json`
   }
 }
