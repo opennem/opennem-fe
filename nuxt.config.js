@@ -246,7 +246,7 @@ module.exports = {
 
   router: {
     base: '/',
-    trailingSlash: true
+    trailingSlash: false
   },
 
   /*
