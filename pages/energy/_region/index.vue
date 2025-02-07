@@ -344,10 +344,6 @@ export default {
       this.setEmissionsVolumePrefix('')
       this.setEmissionsVolumeDisplayPrefix(SI.BASE)
 
-      this.isWemOrAu = this.regionId === 'wem' || this.regionId === 'au'
-      if (this.sWemOrAu && !this.isEnergyType) {
-        this.setInterval('30m')
-      }
       this.doGetRegionDataByRangeInterval({
         region: this.regionId,
         range: this.range,
