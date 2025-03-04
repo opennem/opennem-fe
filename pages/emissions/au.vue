@@ -561,7 +561,7 @@ export default {
     let projections = this.queryProjections
     let history = this.queryHistory
 
-    this.setEmissionsVolumePrefix(SI.BASE)
+    this.setEmissionsVolumePrefix(SI.MEGA)
     this.setEmissionsVolumeDisplayPrefix(SI.MEGA)
 
     if (!this.queryInterval) {
