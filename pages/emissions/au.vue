@@ -561,8 +561,6 @@ export default {
     let projections = this.queryProjections
     let history = this.queryHistory
 
-    this.setEmissionsVolumePrefix(SI.MEGA)
-    this.setEmissionsVolumeDisplayPrefix(SI.MEGA)
 
     if (!this.queryInterval) {
       interval = INTERVAL_QUARTER
@@ -917,6 +915,9 @@ export default {
     },
 
     handleQuarterViewSelect() {
+      this.setEmissionsVolumePrefix(SI.MEGA)
+      this.setEmissionsVolumeDisplayPrefix(SI.MEGA)
+
       this.datasetView = INTERVAL_QUARTER
       this.addProjections = false
       this.addHistory = false
@@ -924,6 +925,9 @@ export default {
     },
 
     handleYearViewSelect() {
+      this.setEmissionsVolumePrefix(SI.BASE)
+      this.setEmissionsVolumeDisplayPrefix(SI.MEGA)
+
       this.datasetView = INTERVAL_YEAR
       this.updateQueries()
     },
