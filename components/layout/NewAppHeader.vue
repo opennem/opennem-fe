@@ -42,10 +42,10 @@ const topLevelLinks = [
     name: 'Scenarios',
     path: 'https://openelectricity.org.au/scenarios'
   },
-  // {
-  //   name: 'Latest Records',
-  //   path: 'https://openelectricity.org.au/records'
-  // },
+  {
+    name: 'Records',
+    path: 'https://openelectricity.org.au/records'
+  },
   {
     name: 'Analysis',
     path: 'https://openelectricity.org.au/analysis',
