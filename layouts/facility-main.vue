@@ -19,28 +19,6 @@
       </article>
     </transition>
 
-    <article 
-      v-if="showBanner && !mobileNavActive"
-      class="message" 
-      style="background-color: black; border-radius: 0; position: relative;"
-    >
-      <div 
-        class="message-body open-electricity-banner" 
-      >
-        <div>
-          <strong>OpenNEM</strong> is now
-          <strong>Open Electricity</strong>.
-        </div>
-        <div>
-          <a href="https://openelectricity.org.au/analysis/welcome-open-electricity">Read</a> about the update.
-        </div>
-      </div>
-
-      <button 
-        class="banner-close" 
-        @click="handleClick"><i class="fal fa-times"/></button>
-    </article>
-
     <transition name="slide-down-fade">
       <article 
         v-if="siteAnnouncement && isAuOrWem && isEnergyPage" 
