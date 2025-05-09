@@ -139,7 +139,7 @@ export default {
     },
 
     exportData() {
-      const timeFormat = this.isEnergy
+      const timeFormat = this.isEnergy && !this.isTimeOfDayView
         ? d3TimeFormat('%Y-%m-%d')
         : utcFormat('%Y-%m-%d %H:%M')
       const format = d3Format('.2f')
