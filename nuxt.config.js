@@ -200,8 +200,9 @@ module.exports = {
       { src: '/scripts/ga.js' },
       {
         defer: true,
-        'data-domain': 'openelectricity.org.au',
-        src: 'https://plausible.io/js/script.js'
+        'data-spa': 'auto',
+        'data-site': 'VZODQVAG',
+        src: 'https://cdn.usefathom.com/script.js'
       }
     ]
   },
