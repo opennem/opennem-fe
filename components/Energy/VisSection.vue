@@ -1,5 +1,6 @@
 <template>
   <section>
+
     <power-energy-chart
       v-if="ready"
       :power-energy-dataset="currentDataset"

@@ -4,6 +4,10 @@ export default [
     label: 'Energy'
   },
   {
+    id: 'capacity',
+    label: 'Capacity'
+  },
+  {
     id: 'facilities',
     label: 'Facilities'
   },

@@ -5,6 +5,10 @@
       <ToolbarEnergyWide v-show="!toolbarBreak" />
     </div>
 
+    <div v-if="isCapacityView">
+      <ToolbarCapacityWide />
+    </div>
+
     <div v-if="isFacilitiesView">
       <ToolbarFacilitiesNarrow v-show="toolbarBreak" />
       <ToolbarFacilitiesWide v-show="!toolbarBreak" />
@@ -34,6 +38,7 @@ import ToolbarFacilitiesNarrow from '@/components/Toolbar/Facilities/Narrow'
 import ToolbarCompareWide from '@/components/Toolbar/Compare/Wide'
 import ToolbarStripesWide from '@/components/Toolbar/Stripes/Wide'
 import ToolbarEmissionsWide from '@/components/Toolbar/Emissions/Wide'
+import ToolbarCapacityWide from '@/components/Toolbar/Capacity/Wide'
 
 export default {
   components: {
@@ -43,12 +48,14 @@ export default {
     ToolbarFacilitiesNarrow,
     ToolbarCompareWide,
     ToolbarStripesWide,
-    ToolbarEmissionsWide
+    ToolbarEmissionsWide,
+    ToolbarCapacityWide
   },
 
   computed: {
     ...mapGetters({
       isEnergyView: 'isEnergyView',
+      isCapacityView: 'isCapacityView',
       isFacilitiesView: 'isFacilitiesView',
       isCompareView: 'isCompareView',
       isStripesView: 'isStripesView',

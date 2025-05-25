@@ -187,6 +187,8 @@ export function dataProcess(res, range, interval, period, displayTz) {
     })
   }
 
+  console.log('dataset', dataset, currentDataset)
+
   return {
     dataType: type,
     datasetFull,

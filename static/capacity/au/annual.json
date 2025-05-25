@@ -1,0 +1,233 @@
+{
+  "version": "4.2",
+  "created_at": "2024-07-16T05:54:27+1000",
+  "messages": [
+    "historical capacity derived from facilities data and APVI APIs"
+  ],
+  "data": [
+    {
+      "id": "au.fuel_tech.battery.capacity",
+      "type": "capacity",
+      "fuel_tech": "battery",
+      "units": "MW",
+      "invalid_count": 13,
+      "invalid_capacity": 1137.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 180.0, 240.0, 265.0, 291.3, 803.3, 803.3, 803.3]
+      }
+    },
+    {
+      "id": "au.fuel_tech.bioenergy_biogas.capacity",
+      "type": "capacity",
+      "fuel_tech": "bioenergy_biogas",
+      "units": "MW",
+      "invalid_count": 38,
+      "invalid_capacity": 199.6,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 15.2, 15.2, 15.2, 15.2, 15.2, 16.5, 23.1, 23.1, 23.1, 25.1, 25.1, 25.1, 25.1, 25.1, 25.1, 25.1, 25.1, 25.1]
+      }
+    },
+    {
+      "id": "au.fuel_tech.bioenergy_biomass.capacity",
+      "type": "capacity",
+      "fuel_tech": "bioenergy_biomass",
+      "units": "MW",
+      "invalid_count": 6,
+      "invalid_capacity": 162.5,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 148.0, 148.0, 148.0, 148.0, 148.0, 148.0, 148.0, 148.0, 148.0, 148.0, 148.0, 148.0, 148.0, 148.0]
+      }
+    },
+    {
+      "id": "au.fuel_tech.coal_black.capacity",
+      "type": "capacity",
+      "fuel_tech": "coal_black",
+      "units": "MW",
+      "invalid_count": 6,
+      "invalid_capacity": 640.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [17826.0, 17826.0, 18822.0, 19668.0, 20111.0, 20111.0, 20111.0, 20111.0, 21987.9, 21987.9, 22204.9, 22421.9, 22391.9, 22141.9, 21955.9, 20105.9, 19955.9, 19955.9, 19955.9, 19955.9, 19955.9, 19955.9, 19925.9, 19925.9, 17730.1, 17730.1]
+      }
+    },
+    {
+      "id": "au.fuel_tech.coal_brown.capacity",
+      "type": "capacity",
+      "fuel_tech": "coal_brown",
+      "units": "MW",
+      "invalid_count": 2,
+      "invalid_capacity": 200.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [7620.0, 7620.0, 7620.0, 7620.0, 7620.0, 7620.0, 7620.0, 7620.0, 7620.0, 7620.0, 7620.0, 7620.0, 7620.0, 7620.0, 7620.0, 7380.0, 7275.0, 6490.0, 4850.0, 4850.0, 4850.0, 4850.0, 4850.0, 4850.0, 4850.0, 4850.0]
+      }
+    },
+    {
+      "id": "au.fuel_tech.distillate.capacity",
+      "type": "capacity",
+      "fuel_tech": "distillate",
+      "units": "MW",
+      "invalid_count": 16,
+      "invalid_capacity": 254.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [389.0, 389.0, 439.0, 439.0, 439.0, 439.0, 489.0, 489.0, 553.5, 553.5, 553.5, 684.5, 757.5, 767.4, 839.1, 839.1, 839.1, 1155.7, 1015.7, 1292.7, 1292.7, 1292.7, 1292.7, 1138.7, 1015.7, 1015.7]
+      }
+    },
+    {
+      "id": "au.fuel_tech.gas_ccgt.capacity",
+      "type": "capacity",
+      "fuel_tech": "gas_ccgt",
+      "units": "MW",
+      "invalid_count": 1,
+      "invalid_capacity": 128.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [236.0, 416.0, 894.0, 1279.0, 1279.0, 1279.0, 1361.0, 1361.0, 1610.7, 2385.7, 2737.3, 3012.3, 3012.3, 3012.3, 3012.3, 3012.3, 3012.3, 3012.3, 3012.3, 3012.3, 3012.3, 3012.3, 3012.3, 3012.3, 3012.3, 3012.3]
+      }
+    },
+    {
+      "id": "au.fuel_tech.gas_ocgt.capacity",
+      "type": "capacity",
+      "fuel_tech": "gas_ocgt",
+      "units": "MW",
+      "invalid_count": 7,
+      "invalid_capacity": 608.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [758.0, 1120.0, 1166.0, 2000.0, 2000.0, 2000.0, 2000.0, 2609.0, 4305.7, 5164.9, 6790.7, 7248.7, 7248.7, 8021.1, 8113.7, 8113.7, 8425.7, 8425.7, 8425.7, 8425.7, 8425.7, 8425.7, 8425.7, 8425.7, 8425.7, 8425.7]
+      }
+    },
+    {
+      "id": "au.fuel_tech.gas_recip.capacity",
+      "type": "capacity",
+      "fuel_tech": "gas_recip",
+      "units": "MW",
+      "invalid_count": 8,
+      "invalid_capacity": 103.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 211.0, 211.0, 211.0, 211.0, 211.0]
+      }
+    },
+    {
+      "id": "au.fuel_tech.gas_steam.capacity",
+      "type": "capacity",
+      "fuel_tech": "gas_steam",
+      "units": "MW",
+      "invalid_count": 0,
+      "invalid_capacity": 0.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [1780.0, 1780.0, 1780.0, 1780.0, 1780.0, 1780.0, 2020.0, 2020.0, 2020.0, 2020.0, 2020.0, 2020.0, 1780.0, 1780.0, 1780.0, 1780.0, 1780.0, 1780.0, 1780.0, 1780.0, 1780.0, 1780.0, 1780.0, 1780.0, 1780.0, 1780.0]
+      }
+    },
+    {
+      "id": "au.fuel_tech.gas_wcmg.capacity",
+      "type": "capacity",
+      "fuel_tech": "gas_wcmg",
+      "units": "MW",
+      "invalid_count": 8,
+      "invalid_capacity": 169.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 45.0, 108.0, 108.0, 108.0, 108.0, 108.0, 108.0, 108.0, 108.0, 108.0, 108.0]
+      }
+    },
+    {
+      "id": "au.fuel_tech.hydro.capacity",
+      "type": "capacity",
+      "fuel_tech": "hydro",
+      "units": "MW",
+      "invalid_count": 30,
+      "invalid_capacity": 1759.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [2175.0, 2146.0, 5902.0, 5206.0, 5206.0, 5206.0, 7380.0, 7380.0, 7380.0, 7380.0, 7380.0, 7380.0, 7578.0, 7578.0, 7578.0, 7528.0, 7528.0, 7528.0, 7528.0, 7528.0, 7528.0, 7528.0, 7528.0, 7528.0, 7528.0, 7528.0]
+      }
+    },
+    {
+      "id": "au.fuel_tech.pumps.capacity",
+      "type": "capacity",
+      "fuel_tech": "pumps",
+      "units": "MW",
+      "invalid_count": 1,
+      "invalid_capacity": 70.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [1320.0, 1320.0, 1320.0, 1320.0, 1320.0, 1320.0, 1320.0, 1320.0, 1320.0, 1320.0, 1320.0, 1320.0, 1320.0, 1320.0, 1320.0, 1320.0, 1320.0, 1320.0, 1320.0, 1320.0, 1320.0, 1390.0, 1390.0, 1390.0, 1390.0, 1390.0]
+      }
+    },
+    {
+      "id": "au.fuel_tech.solar_rooftop.capacity",
+      "type": "capacity",
+      "fuel_tech": "solar_rooftop",
+      "units": "MW",
+      "invalid_count": 0,
+      "invalid_capacity": 0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.2, 12.4, 51.2, 243.4, 1059.5, 1889.1, 2805.3, 3576.0, 4345.5, 5040.2, 5942.6, 7350.2, 9340.9, 12037.3, 15378.1, 18264.1, 21333.7, 23588.7]
+      }
+    },
+    {
+      "id": "au.fuel_tech.solar_utility.capacity",
+      "type": "capacity",
+      "fuel_tech": "solar_utility",
+      "units": "MW",
+      "invalid_count": 26,
+      "invalid_capacity": 2086.3,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0, 112.0, 216.0, 238.0, 1314.0, 2877.7, 3507.7, 4730.7, 4745.7, 4745.7, 4745.7]
+      }
+    },
+    {
+      "id": "au.fuel_tech.wind.capacity",
+      "type": "capacity",
+      "fuel_tech": "wind",
+      "units": "MW",
+      "invalid_count": 24,
+      "invalid_capacity": 1832.9,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 349.7, 543.7, 671.7, 671.7, 2394.7, 2530.4, 3202.1, 3773.1, 4098.7, 4442.3, 4544.3, 5550.2, 7162.6, 7765.6, 9045.8, 9089.0, 9089.0, 9089.0]
+      }
+    }
+  ]
+}

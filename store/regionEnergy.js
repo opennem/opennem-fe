@@ -10,6 +10,8 @@ import {
   dataRollUp,
   dataFilterByPeriod
 } from '@/data/parse/region-energy'
+import { dataRollUp as dataRollUpCapacity } from '@/data/parse/region-capacity'
+import { dataProcess as dataProcessCapacity } from '@/data/parse/region-capacity'
 import { isValidRegion } from '@/constants/energy-regions.js'
 
 let currentRegion = ''
@@ -41,6 +43,10 @@ export const state = () => ({
   currentDataset: [],
   _rolledUpDataset: [],
   changeSinceDataset: [],
+  capacityData: [],
+  domainCapacity: [],
+  domainCapacityGrouped: [],
+  domainUnits: '',
   domainPowerEnergy: [],
   domainPowerEnergyGrouped: [],
   domainEmissions: [],
@@ -55,6 +61,7 @@ export const state = () => ({
   domainDemandMarketValue: [],
   currentDomainPowerEnergy: [],
   currentDomainEmissions: [],
+  currentDomainCapacity: [],
   currentDomainMarketValue: [],
   filteredDates: [],
   summary: null,
@@ -89,6 +96,7 @@ export const getters = {
   currentDomainPowerEnergy: (state) => state.currentDomainPowerEnergy,
   currentDomainEmissions: (state) => state.currentDomainEmissions,
   currentDomainMarketValue: (state) => state.currentDomainMarketValue,
+  currentDomainCapacity: (state) => state.currentDomainCapacity,
   summary: (state) => state.summary,
   powerEnergyPrefix: (state) => state.powerEnergyPrefix,
   dataPowerEnergyInterval: (state) => state.dataPowerEnergyInterval,
@@ -114,8 +122,22 @@ export const getters = {
     }
   },
 
+  filteredCurrentDatasetCapacity: (state) => {
+    return state.filteredDates.length > 0
+        ? state.capacityData.filter(
+            (d) =>
+              d.time >= state.filteredDates[0].getTime() &&
+              d.time <= state.filteredDates[1].getTime()
+          )
+        : state.capacityData
+  },
+
   compareResponse: (state) => state.compareResponse,
-  allowResize: (state) => state.allowResize
+  allowResize: (state) => state.allowResize,
+  capacityData: (state) => state.capacityData,
+  domainCapacity: (state) => state.domainCapacity,
+  domainCapacityGrouped: (state) => state.domainCapacityGrouped,
+  domainUnits: (state) => state.domainUnits
 }
 
 export const mutations = {
@@ -185,6 +207,9 @@ export const mutations = {
   currentDomainMarketValue(state, currentDomainMarketValue) {
     state.currentDomainMarketValue = _cloneDeep(currentDomainMarketValue)
   },
+  currentDomainCapacity(state, currentDomainCapacity) {
+    state.currentDomainCapacity = _cloneDeep(currentDomainCapacity)
+  },
   summary(state, summary) {
     state.summary = _cloneDeep(summary)
   },
@@ -217,6 +242,18 @@ export const mutations = {
   },
   allowResize(state, allowResize) {
     state.allowResize = allowResize
+  },
+  capacityData(state, capacityData) {
+    state.capacityData = _cloneDeep(capacityData)
+  },
+  domainCapacity(state, domainCapacity) {
+    state.domainCapacity = _cloneDeep(domainCapacity)
+  },
+  domainCapacityGrouped(state, domainCapacityGrouped) {
+    state.domainCapacityGrouped = _cloneDeep(domainCapacityGrouped)
+  },
+  domainUnits(state, domainUnits) {
+    state.domainUnits = domainUnits
   }
 }
 
@@ -499,6 +536,7 @@ export const actions = {
     { commit, dispatch, rootGetters },
     { region, range, interval, period, groupName, dashboardView = 'discrete-time' }
   ) {
+
     dispatch('app/doClearError', null, { root: true })
 
     const isDiscreteTime = dashboardView === 'discrete-time'
@@ -607,7 +645,7 @@ export const actions = {
       }
 
       return http(urls)
-        .then((res) => {
+        .then(async (res) => {
           const check = res.length > 0 ? (res[0].data ? true : false) : false
           let responses = check
             ? res.map((d) => {
@@ -648,6 +686,103 @@ export const actions = {
         })
     } else {
       console.log('not processing data')
+    }
+  },
+
+  async doGetRegionCapacityDataByRangeInterval(
+    { commit, dispatch, rootGetters },
+    { region, range, interval, period, groupName, dashboardView = 'discrete-time' }
+  ) {
+
+    dispatch('app/doClearError', null, { root: true })
+
+    const isDiscreteTime = dashboardView === 'discrete-time'
+
+    if (isValidRegion(region) && range !== '' && interval !== '') {
+      const displayTz = rootGetters.displayTimeZone
+      currentRegion = region
+      commit('ready', false)
+      commit('isFetching', true)
+
+      function processCapacityResponses(responses) {
+
+        if (!responses) {
+          commit('capacityData', [])
+          commit('domainCapacity', [])
+          commit('domainCapacityGrouped', [])
+          commit('domainUnits', '')
+          commit('currentDomainCapacity', [])
+          return
+        }
+
+        const { dataset, domainCapacity, domainCapacityGrouped, units } = 
+          dataProcessCapacity(responses.data, range, interval, period, displayTz)
+
+        commit('capacityData', dataset)
+        commit('domainCapacity', domainCapacity)
+        commit('domainCapacityGrouped', domainCapacityGrouped)
+        commit('domainUnits', units)
+        commit('currentDomainCapacity', domainCapacityGrouped[groupName])
+      }
+
+      if (range === 'ALL') {
+        let capacityRegion = ''
+        switch(region) {
+          case 'nem':
+            capacityRegion = 'au/nem'
+            break
+          case 'nsw1':
+            capacityRegion = 'au/nem/nsw1'
+            break
+          case 'vic1':
+            capacityRegion = 'au/nem/vic1'
+            break
+          case 'sa1':
+            capacityRegion = 'au/nem/sa1'
+            break
+          case 'tas1':
+            capacityRegion = 'au/nem/tas1'
+            break
+          case 'wem':
+            capacityRegion = 'au/wem'
+            break
+          default:
+            capacityRegion = 'au'
+        }
+
+        const res2 = await fetch(`/capacity/${capacityRegion}/monthly.json`)
+        const data2 = await res2.json()
+        commit('ready', true)
+        commit('isFetching', false)
+        return processCapacityResponses(data2)
+      } else {
+        commit('isFetching', false)
+        return processCapacityResponses(null)
+      }
+      
+
+    } else {
+      console.log('not processing data')
+    }
+  },
+
+  doUpdateCapacityDatasetByInterval({ state, commit }, { range, interval }) {
+    console.log('doUpdateCapacityDatasetByInterval', range, interval)
+    // Ignore if data is still being fetched.
+    if (!state.isFetching) {
+      // commit('currentDomainCapacity', state.domainCapacityGrouped[groupName])
+
+      if (range === 'ALL') {
+        const currentDataset = dataRollUpCapacity({
+          datasetFlat: state.capacityData,
+          domainCapacity: state.domainCapacity,
+          domainCapacityGrouped: state.domainCapacityGrouped,
+          units: state.domainUnits
+        })
+
+        console.log('currentDataset capacity', currentDataset)
+        commit('capacityData', currentDataset)
+      }
     }
   },
 
@@ -710,6 +845,7 @@ export const actions = {
   },
 
   doUpdateDatasetByInterval({ state, commit }, { range, interval }) {
+    console.log('doUpdateDatasetByInterval', range, interval)
     // Ignore if data is still being fetched.
     if (!state.isFetching) {
 
@@ -790,6 +926,11 @@ export const actions = {
     commit('currentDataset', currentDataset)
   },
 
+  doUpdateCapacityDatasetByGroup({ state, commit }, { groupName }) {
+    console.log('doUpdateCapacityDatasetByGroup', groupName, state.domainCapacityGrouped[groupName])
+    commit('currentDomainCapacity', state.domainCapacityGrouped[groupName])
+  },
+
   doUpdateDatasetByGroup({ state, commit }, { groupName }) {
     commit(
       'currentDomainPowerEnergy',
@@ -800,6 +941,29 @@ export const actions = {
       'currentDomainMarketValue',
       state.domainMarketValueGrouped[groupName]
     )
+  },
+
+  doUpdateCapacityDatasetByFilterPeriod(
+    { state, commit },
+    { range, interval, period }
+  ) {
+    console.log('****** doUpdateCapacityDatasetByFilterPeriod')
+    
+    const currentDataset = dataRollUpCapacity({
+      datasetFlat: state.capacityData,
+      domainCapacity: state.domainCapacity,
+      domainCapacityGrouped: state.domainCapacityGrouped,
+      units: state.domainUnits
+    })
+
+    console.log('currentDataset capacity', currentDataset)
+
+    const { filteredDatasetFlat } = dataFilterByPeriod({
+      currentDataset,
+      interval,
+      period
+    })
+    commit('capacityData', filteredDatasetFlat)
   },
 
   doUpdateDatasetByFilterPeriod(

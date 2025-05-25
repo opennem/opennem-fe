@@ -1,0 +1,219 @@
+{
+  "version": "4.2",
+  "network": "nem",
+  "region": "NSW1",
+  "created_at": "2024-07-16T05:54:27+1000",
+  "messages": [
+    "historical capacity derived from facilities data and APVI APIs"
+  ],
+  "data": [
+    {
+      "id": "au.nem.nsw1.fuel_tech.battery.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "NSW1",
+      "fuel_tech": "battery",
+      "units": "MW",
+      "invalid_count": 6,
+      "invalid_capacity": 346.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      }
+    },
+    {
+      "id": "au.nem.nsw1.fuel_tech.bioenergy_biogas.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "NSW1",
+      "fuel_tech": "bioenergy_biogas",
+      "units": "MW",
+      "invalid_count": 14,
+      "invalid_capacity": 115.6,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      }
+    },
+    {
+      "id": "au.nem.nsw1.fuel_tech.coal_black.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "NSW1",
+      "fuel_tech": "coal_black",
+      "units": "MW",
+      "invalid_count": 0,
+      "invalid_capacity": 0.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [11840.0, 11840.0, 11990.0, 11990.0, 11990.0, 11990.0, 11990.0, 11990.0, 11990.0, 11990.0, 11990.0, 11990.0, 11990.0, 11990.0, 11990.0, 10390.0, 10240.0, 10240.0, 10240.0, 10240.0, 10240.0, 10240.0, 10240.0, 10240.0, 8240.0, 8240.0]
+      }
+    },
+    {
+      "id": "au.nem.nsw1.fuel_tech.distillate.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "NSW1",
+      "fuel_tech": "distillate",
+      "units": "MW",
+      "invalid_count": 7,
+      "invalid_capacity": 64.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 100.0, 100.0, 142.0, 142.0, 142.0, 142.0, 142.0, 142.0, 142.0, 142.0, 142.0, 142.0, 142.0, 142.0]
+      }
+    },
+    {
+      "id": "au.nem.nsw1.fuel_tech.gas_ccgt.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "NSW1",
+      "fuel_tech": "gas_ccgt",
+      "units": "MW",
+      "invalid_count": 0,
+      "invalid_capacity": 0.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [39.0, 39.0, 39.0, 39.0, 39.0, 39.0, 39.0, 39.0, 39.0, 479.0, 479.0, 479.0, 479.0, 479.0, 479.0, 479.0, 479.0, 479.0, 479.0, 479.0, 479.0, 479.0, 479.0, 479.0, 479.0, 479.0]
+      }
+    },
+    {
+      "id": "au.nem.nsw1.fuel_tech.gas_ocgt.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "NSW1",
+      "fuel_tech": "gas_ocgt",
+      "units": "MW",
+      "invalid_count": 2,
+      "invalid_capacity": 380.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 664.0, 1388.0, 1388.0, 1388.0, 1388.0, 1388.0, 1388.0, 1388.0, 1388.0, 1388.0, 1388.0, 1388.0, 1388.0, 1388.0, 1388.0, 1388.0, 1388.0]
+      }
+    },
+    {
+      "id": "au.nem.nsw1.fuel_tech.gas_recip.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "NSW1",
+      "fuel_tech": "gas_recip",
+      "units": "MW",
+      "invalid_count": 3,
+      "invalid_capacity": 26.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      }
+    },
+    {
+      "id": "au.nem.nsw1.fuel_tech.gas_wcmg.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "NSW1",
+      "fuel_tech": "gas_wcmg",
+      "units": "MW",
+      "invalid_count": 5,
+      "invalid_capacity": 118.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      }
+    },
+    {
+      "id": "au.nem.nsw1.fuel_tech.hydro.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "NSW1",
+      "fuel_tech": "hydro",
+      "units": "MW",
+      "invalid_count": 18,
+      "invalid_capacity": 1633.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [965.0, 965.0, 3221.0, 2525.0, 2525.0, 2525.0, 2525.0, 2525.0, 2525.0, 2525.0, 2525.0, 2525.0, 2575.0, 2575.0, 2575.0, 2525.0, 2525.0, 2525.0, 2525.0, 2525.0, 2525.0, 2525.0, 2525.0, 2525.0, 2525.0, 2525.0]
+      }
+    },
+    {
+      "id": "au.nem.nsw1.fuel_tech.pumps.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "NSW1",
+      "fuel_tech": "pumps",
+      "units": "MW",
+      "invalid_count": 1,
+      "invalid_capacity": 70.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [840.0, 840.0, 840.0, 840.0, 840.0, 840.0, 840.0, 840.0, 840.0, 840.0, 840.0, 840.0, 840.0, 840.0, 840.0, 840.0, 840.0, 840.0, 840.0, 840.0, 840.0, 910.0, 910.0, 910.0, 910.0, 910.0]
+      }
+    },
+    {
+      "id": "au.nem.nsw1.fuel_tech.solar_rooftop.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "NSW1",
+      "fuel_tech": "solar_rooftop",
+      "units": "MW",
+      "invalid_count": 0,
+      "invalid_capacity": 0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 3.1, 12.3, 71.1, 365.1, 474.6, 614.7, 768.6, 966.3, 1141.1, 1360.5, 1737.9, 2274.2, 3086.4, 4197.7, 5101.1, 6159.1, 6998.0]
+      }
+    },
+    {
+      "id": "au.nem.nsw1.fuel_tech.solar_utility.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "NSW1",
+      "fuel_tech": "solar_utility",
+      "units": "MW",
+      "invalid_count": 9,
+      "invalid_capacity": 973.3,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 102.0, 206.0, 218.0, 335.0, 797.0, 1173.0, 1816.0, 1816.0, 1816.0, 1816.0]
+      }
+    },
+    {
+      "id": "au.nem.nsw1.fuel_tech.wind.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "NSW1",
+      "fuel_tech": "wind",
+      "units": "MW",
+      "invalid_count": 5,
+      "invalid_capacity": 415.8,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 265.0, 265.0, 265.0, 430.0, 649.0, 649.0, 649.0, 1292.0, 1501.0, 1501.0, 2056.6, 2056.6, 2056.6, 2056.6]
+      }
+    }
+  ]
+}
