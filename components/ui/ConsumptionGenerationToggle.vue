@@ -9,12 +9,14 @@
         <button
           :class="{ 'is-selected': isConsumption }"
           class="button is-small"
+          :style="{ fontSize: fontSize }"
           @click="handlePercentContributionToClick">
           Consumption
         </button>
         <button
           :class="{ 'is-selected': isGeneration }"
           class="button is-small"
+          :style="{ fontSize: fontSize }"
           @click="handlePercentContributionToClick">
           Generation
         </button>
@@ -40,6 +42,12 @@ export default {
     },
     isGeneration() {
       return this.percentContributionTo === 'generation'
+    },
+    rangeDropdownBreak() {
+      return this.$store.getters['app/rangeDropdownBreak']
+    },
+    fontSize() {
+      return this.rangeDropdownBreak ? '8px' : '12px'
     }
   },
   methods: {
