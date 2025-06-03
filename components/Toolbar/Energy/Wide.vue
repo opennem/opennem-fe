@@ -4,7 +4,8 @@
 
     <div 
       v-if="ready" 
-      class="header-dropdowns">
+      class="header-dropdowns"
+      :style="{ padding: padding }">
       <view-dropdown 
         v-if="!tabletBreak" />
       <region-dropdown 
@@ -15,7 +16,9 @@
 
     <div 
       v-if="ready"
-      class="data-options-bar">
+      class="data-options-bar"
+      :style="{ padding: padding }"
+    >
 
       <div>
         <EnergyDataOptions />
@@ -29,7 +32,8 @@
     </div>
 
     <div 
-      class="export-bar" 
+      class="export-bar"
+      :style="{ padding: padding }"
       v-if="ready">
       <div class="button-group has-addons">
         <div class="buttons">
@@ -107,6 +111,14 @@ export default {
       marketValueDomains: 'regionEnergy/currentDomainMarketValue',
       emissionIntensityData: 'energy/emissions/emissionIntensityData'
     }),
+
+    rangeDropdownBreak() {
+      return this.$store.getters['app/rangeDropdownBreak']
+    },
+    padding() {
+      return this.rangeDropdownBreak ? '10px' : '24px'
+    },
+
 
     isEmissionsView() {
       return this.currentView === 'emissions'

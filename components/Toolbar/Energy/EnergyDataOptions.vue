@@ -5,12 +5,15 @@
 
     <div>
       <label v-if="mobile">View:</label>
-      <div class="button-group has-addons">
-        <div class="buttons">
+      <div class="button-group has-addons" >
+        <div 
+          class="buttons" 
+          style="display: flex; width: 100%;">
           <button 
             class="button"
             v-tooltip="dashboardView === 'discrete-time' ? '' : 'Switch to discrete time view'"
             :class="{ 'is-selected': dashboardView === 'discrete-time' }"
+            :style="{ padding: padding }"
             @click="() => handleViewChange('discrete-time')">
             <span class="icon">
               <IconDiscreteTime />
@@ -22,6 +25,7 @@
             class="button"
             v-tooltip="dashboardView === 'time-of-day' ? '' : 'Switch to time of day view'"
             :class="{ 'is-selected': dashboardView === 'time-of-day' }"
+            :style="{ padding: padding }"
             @click="() => handleViewChange('time-of-day')">
             <span class="icon">
               <IconTimeOfDay />
@@ -108,6 +112,14 @@ export default {
       fuelTechGroupName: 'fuelTechGroupName',
       query: 'app/query',
     }),
+
+    rangeDropdownBreak() {
+      return this.$store.getters['app/rangeDropdownBreak']
+    },
+    padding() {
+      console.log('rangeDropdownBreak', this.rangeDropdownBreak)
+      return this.rangeDropdownBreak ? '0' : '0'
+    },
 
     dashboardView: {
       get() {
