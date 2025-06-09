@@ -1,36 +1,97 @@
 <template>
   <div>
-    <label v-if="mobile">Contribution:</label>
+    <div v-if="mobile">
+      <label>Contribution:</label>
+
+      <div 
+        :class="{ mobile: mobile }" 
+        class="button-group has-addons">
+        <div class="buttons">
+          <button
+            :class="{ 'is-selected': isConsumption }"
+            class="button is-small"
+            :style="{ fontSize: fontSize }"
+            @click="handlePercentContributionToClick">
+            Consumption
+          </button>
+          <button
+            :class="{ 'is-selected': isGeneration }"
+            class="button is-small"
+            :style="{ fontSize: fontSize }"
+            @click="handlePercentContributionToClick">
+            Generation
+          </button>
+        </div>
+      </div>
+    </div>
 
     <div 
-      :class="{ mobile: mobile }" 
-      class="button-group has-addons">
-      <div class="buttons">
+      v-else
+      class="button-group">
+      <div 
+        :class="{ 'is-active': dropdownActive }" 
+        class="dropdown">
         <button
-          :class="{ 'is-selected': isConsumption }"
-          class="button is-small"
-          @click="handlePercentContributionToClick">
-          Consumption
+          v-on-clickaway="handleClickAway"
+          class="dropdown-trigger button inverted is-selected"
+          :style="{ fontSize: fontSize }"
+          @click="handleClick"
+        >
+          <span class="selected">
+            {{ isConsumption ? 'Consumption' : 'Generation' }}
+            <i
+              :class="[
+                'fal dropdown-trigger-icon',
+                dropdownActive ? 'fa-chevron-up' : 'fa-chevron-down'
+              ]"
+            />
+          </span>
         </button>
-        <button
-          :class="{ 'is-selected': isGeneration }"
-          class="button is-small"
-          @click="handlePercentContributionToClick">
-          Generation
-        </button>
+
+        <transition name="slide-down-fade">
+          <div 
+            v-if="dropdownActive" 
+            class="filter-menu dropdown-menu">
+            <div class="dropdown-content">
+              <button 
+                class="dropdown-item"
+                :class="{ 'is-selected': isConsumption }"
+                @click="() => handleOptionClick('demand')">
+                Consumption
+              </button>
+              <button 
+                class="dropdown-item"
+                :class="{ 'is-selected': isGeneration }"
+                @click="() => handleOptionClick('generation')">
+                Generation
+              </button>
+            </div>
+          </div>
+        </transition>
+
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mixin as clickaway } from 'vue-clickaway'
+
 export default {
+  mixins: [clickaway],
   props: {
     mobile: {
       type: Boolean,
       default: false
     }
   },
+
+  data() {
+    return {
+      dropdownActive: false
+    }
+  },
+
   computed: {
     percentContributionTo() {
       return this.$store.getters.percentContributionTo
@@ -40,6 +101,12 @@ export default {
     },
     isGeneration() {
       return this.percentContributionTo === 'generation'
+    },
+    rangeDropdownBreak() {
+      return this.$store.getters['app/rangeDropdownBreak']
+    },
+    fontSize() {
+      return this.rangeDropdownBreak ? '12px' : '12px'
     }
   },
   methods: {
@@ -49,12 +116,26 @@ export default {
       } else {
         this.$store.dispatch('percentContributionTo', 'demand')
       }
+    },
+
+    handleClick() {
+      this.dropdownActive = !this.dropdownActive
+    },
+
+    handleOptionClick(option) {
+      this.$store.dispatch('percentContributionTo', option)
+    },
+
+    handleClickAway() {
+      this.dropdownActive = false
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@import '~/assets/scss/variables.scss';
+
 $border-radius: 8px;
 .button-group .buttons {
   border-radius: $border-radius;
