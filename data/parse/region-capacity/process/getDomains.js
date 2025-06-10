@@ -3,7 +3,7 @@ import * as FT from '@/constants/capacity-fuel-techs/group-detailed.js'
 export function getFuelTechInOrder(data) {
   const fuelTechs = {}
   FT.DEFAULT_FUEL_TECH_ORDER.forEach((ft) => {
-    const find = data.find((d) => d.fuel_tech === ft)
+    const find = data.find((d) => d.fueltech === ft)
     if (find) {
       fuelTechs[ft] = find.id
     }

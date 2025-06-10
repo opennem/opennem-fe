@@ -38,9 +38,7 @@ export function dataProcess(res, range, interval, period, displayTz) {
 
   const dataCapacityInterval =
     dataCapacity.length > 0
-      ? dataCapacity[0].history
-        ? dataCapacity[0].history.interval
-        : null
+      ? dataCapacity[0].interval
       : null
 
   const fuelTechIdTypes = getFuelTechInOrder(dataCapacity)

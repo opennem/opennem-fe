@@ -13,6 +13,7 @@ import {
 import { dataRollUp as dataRollUpCapacity } from '@/data/parse/region-capacity'
 import { dataProcess as dataProcessCapacity } from '@/data/parse/region-capacity'
 import { isValidRegion } from '@/constants/energy-regions.js'
+import { DEFAULT_FUEL_TECH_ORDER as capacityFuelTechOrder } from '@/constants/capacity-fuel-techs/group-detailed.js'
 
 let currentRegion = ''
 
@@ -691,12 +692,36 @@ export const actions = {
 
   async doGetRegionCapacityDataByRangeInterval(
     { commit, dispatch, rootGetters },
-    { region, range, interval, period, groupName, dashboardView = 'discrete-time' }
+    { region, range, interval, period, groupName }
   ) {
 
-    dispatch('app/doClearError', null, { root: true })
+    function combineData(regionId, data) {
+      let newData = []
 
-    const isDiscreteTime = dashboardView === 'discrete-time'
+      capacityFuelTechOrder.forEach(fuelTech => {
+        const fuelTechData = data.filter(d => d.fueltech === fuelTech)
+        if (fuelTechData.length > 0) {
+          const firstData = fuelTechData[0]
+          const newObj = {
+            ...firstData,
+            region: regionId,
+            id: `capacity.${regionId}.${fuelTech}`,
+            data: firstData.data.map(() => 0)
+          }
+
+          fuelTechData.forEach((d) => {
+            d.data.forEach((d2, i) => {
+              newObj.data[i] += d2
+            })
+          })
+
+          newData.push(newObj)
+        }
+      })
+      return newData
+    }
+
+    dispatch('app/doClearError', null, { root: true })
 
     if (isValidRegion(region) && range !== '' && interval !== '') {
       const displayTz = rootGetters.displayTimeZone
@@ -704,8 +729,13 @@ export const actions = {
       commit('ready', false)
       commit('isFetching', true)
 
-      function processCapacityResponses(responses) {
+      // https://data.oedev.org/v4/stats/capacity_history.json
+      const res = await fetch(`https://data.oedev.org/v4/stats/capacity_history.json`)
+      const data = await res.json()
+      let capacityData = []
 
+      
+      function processCapacityResponses(responses) {
         if (!responses) {
           commit('capacityData', [])
           commit('domainCapacity', [])
@@ -716,7 +746,7 @@ export const actions = {
         }
 
         const { dataset, domainCapacity, domainCapacityGrouped, units } = 
-          dataProcessCapacity(responses.data, range, interval, period, displayTz)
+          dataProcessCapacity(responses, range, interval, period, displayTz)
 
         commit('capacityData', dataset)
         commit('domainCapacity', domainCapacity)
@@ -726,35 +756,36 @@ export const actions = {
       }
 
       if (range === 'ALL') {
-        let capacityRegion = ''
         switch(region) {
           case 'nem':
-            capacityRegion = 'au/nem'
+            const nemRegions = ['NSW1', 'QLD1', 'SA1', 'TAS1', 'VIC1']
+            const nemData = data.data.filter(d => nemRegions.includes(d.region)).filter(d => d.fueltech !== 'battery_charging')
+            capacityData = combineData('nem', nemData)
+
             break
           case 'nsw1':
-            capacityRegion = 'au/nem/nsw1'
+            capacityData = data.data.filter(d => d.region === 'NSW1').filter(d => d.fueltech !== 'battery_charging')
             break
           case 'vic1':
-            capacityRegion = 'au/nem/vic1'
+            capacityData = data.data.filter(d => d.region === 'VIC1').filter(d => d.fueltech !== 'battery_charging')
             break
           case 'sa1':
-            capacityRegion = 'au/nem/sa1'
+            capacityData = data.data.filter(d => d.region === 'SA1').filter(d => d.fueltech !== 'battery_charging')
             break
           case 'tas1':
-            capacityRegion = 'au/nem/tas1'
+            capacityData = data.data.filter(d => d.region === 'TAS1').filter(d => d.fueltech !== 'battery_charging')
             break
           case 'wem':
-            capacityRegion = 'au/wem'
+            capacityData = data.data.filter(d => d.region === 'WEM').filter(d => d.fueltech !== 'battery_charging')
             break
           default:
-            capacityRegion = 'au'
+            const allRegions = ['NSW1', 'QLD1', 'SA1', 'TAS1', 'VIC1', 'WEM']
+            const allRegionsData = data.data.filter(d => allRegions.includes(d.region)).filter(d => d.fueltech !== 'battery_charging')
+            capacityData = combineData('all', allRegionsData)
         }
-
-        const res2 = await fetch(`/capacity/${capacityRegion}/monthly.json`)
-        const data2 = await res2.json()
         commit('ready', true)
         commit('isFetching', false)
-        return processCapacityResponses(data2)
+        return processCapacityResponses(capacityData)
       } else {
         commit('isFetching', false)
         return processCapacityResponses(null)

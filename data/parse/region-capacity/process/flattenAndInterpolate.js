@@ -9,58 +9,58 @@ import PerfTime from '@/plugins/perfTime.js'
 
 const perfTime = new PerfTime()
 
-const getStartLastDates = (data, prop, displayTz, ignoreTime) => {
-  let start, last
+// const getStartLastDates = (data, prop, displayTz, ignoreTime) => {
+//   let start, last
 
 
-  data.forEach((d) => {
-    if (d[prop]) {
-      const startDate = mutateDate2(d[prop].start, displayTz, ignoreTime)
-      const lastDate = mutateDate2(d[prop].last, displayTz, ignoreTime)
+//   data.forEach((d) => {
+//     if (d[prop]) {
+//       const startDate = mutateDate2(d[prop].start, displayTz, ignoreTime)
+//       const lastDate = mutateDate2(d[prop].last, displayTz, ignoreTime)
 
-      if (start) {
-        if (isBefore(startDate, start)) {
-          start = startDate
-        }
-      } else {
-        start = startDate
-      }
+//       if (start) {
+//         if (isBefore(startDate, start)) {
+//           start = startDate
+//         }
+//       } else {
+//         start = startDate
+//       }
 
-      if (last) {
-        if (isAfter(lastDate, last)) {
-          last = lastDate
-        }
-      } else {
-        last = lastDate
-      }
-    }
-  })
+//       if (last) {
+//         if (isAfter(lastDate, last)) {
+//           last = lastDate
+//         }
+//       } else {
+//         last = lastDate
+//       }
+//     }
+//   })
 
-  return {
-    start,
-    last
-  }
-}
+//   return {
+//     start,
+//     last
+//   }
+// }
 
-const getMinuteTimeIndices = (start, last, mins) => {
-  const obj = {}
-  for (let x = start; isBefore(x, last); x = addMinutes(x, mins)) {
-    const time = x.getTime()
-    obj[time] = {
-      time,
-      date: x
-    }
-  }
+// const getMinuteTimeIndices = (start, last, mins) => {
+//   const obj = {}
+//   for (let x = start; isBefore(x, last); x = addMinutes(x, mins)) {
+//     const time = x.getTime()
+//     obj[time] = {
+//       time,
+//       date: x
+//     }
+//   }
 
-  // for instantaneous data
-  const lastTime = last.getTime()
-  obj[lastTime] = {
-    time: lastTime,
-    date: last
-  }
+//   // for instantaneous data
+//   const lastTime = last.getTime()
+//   obj[lastTime] = {
+//     time: lastTime,
+//     date: last
+//   }
 
-  return obj
-}
+//   return obj
+// }
 
 const getTimeIndices = (start, end, intervalFunc) => {
   const obj = {}
@@ -77,27 +77,30 @@ const getTimeIndices = (start, end, intervalFunc) => {
 
 const getAllObj = (dataAll, dataInterval, displayTz, ignoreTime, prop) => {
   let allObj = null
-  const { start, last } = getStartLastDates(
-    dataAll,
-    prop,
-    displayTz,
-    ignoreTime
-  )
+  // const { start, last } = getStartLastDates(
+  //   dataAll,
+  //   prop,
+  //   displayTz,
+  //   ignoreTime
+  // )
+
+  const start = mutateDate2(dataAll[0].period.start, displayTz, ignoreTime)
+  const last = mutateDate2(dataAll[0].period.end, displayTz, ignoreTime)
+
 
   if (start && last) {
-
     if (dataInterval === '1M') {
       allObj = getTimeIndices(start, last, eachMonthOfInterval)
     }
   }
 
   dataAll.forEach((d) => {
-    if (d[prop]) {
-      const dStartDate = mutateDate2(d[prop].start, displayTz, ignoreTime)
-      const dLastDate = mutateDate2(d[prop].last, displayTz, ignoreTime)
+    if (d.data) {
+      const dStartDate = mutateDate2(d.period.start, displayTz, ignoreTime)
+      const dLastDate = mutateDate2(d.period.end, displayTz, ignoreTime)
 
-      const dInterval = d[prop].interval
-      const dData = d[prop].data
+      const dInterval = d.interval
+      const dData = d.data
 
       const updateAllObj = (arr) => {
         let curr = null
@@ -109,7 +112,6 @@ const getAllObj = (dataAll, dataInterval, displayTz, ignoreTime, prop) => {
         })
       }
 
-      
       if (dInterval === '1M') {
         const dMonthsArr = eachMonthOfInterval({
           start: dStartDate,
@@ -134,10 +136,8 @@ export default function (dataInterval, dataAll, displayTz) {
     dataInterval,
     displayTz,
     true,
-    'history'
+    'data'
   )
-
-
 
   // convert to array
   const allArr = Object.keys(allHistory).map((o) => allHistory[o])

@@ -240,8 +240,7 @@ export default {
           range: this.range,
           interval: this.interval,
           period: this.filterPeriod,
-          groupName: this.fuelTechGroupName,
-          dashboardView: this.dashboardView
+          groupName: this.fuelTechGroupName
         })
       }
     },
@@ -317,8 +316,7 @@ export default {
         range: this.range,
         interval: this.interval,
         period: this.filterPeriod,
-        groupName: this.fuelTechGroupName,
-        dashboardView: this.dashboardView
+        groupName: this.fuelTechGroupName
       })
     } else {
       this.$router.push({
@@ -413,8 +411,7 @@ export default {
         range: curr,
         interval: this.interval,
         period: this.filterPeriod,
-        groupName: this.fuelTechGroupName,
-        dashboardView: this.dashboardView
+        groupName: this.fuelTechGroupName
       })
     },
     
