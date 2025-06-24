@@ -6,7 +6,8 @@
     </div>
 
     <div v-if="isCapacityView">
-      <ToolbarCapacityWide />
+      <ToolbarCapacityNarrow v-show="toolbarBreak" />
+      <ToolbarCapacityWide v-show="!toolbarBreak" />
     </div>
 
     <div v-if="isFacilitiesView">
@@ -39,6 +40,7 @@ import ToolbarCompareWide from '@/components/Toolbar/Compare/Wide'
 import ToolbarStripesWide from '@/components/Toolbar/Stripes/Wide'
 import ToolbarEmissionsWide from '@/components/Toolbar/Emissions/Wide'
 import ToolbarCapacityWide from '@/components/Toolbar/Capacity/Wide'
+import ToolbarCapacityNarrow from '@/components/Toolbar/Capacity/Narrow'
 
 export default {
   components: {
@@ -49,7 +51,8 @@ export default {
     ToolbarCompareWide,
     ToolbarStripesWide,
     ToolbarEmissionsWide,
-    ToolbarCapacityWide
+    ToolbarCapacityWide,
+    ToolbarCapacityNarrow
   },
 
   computed: {
