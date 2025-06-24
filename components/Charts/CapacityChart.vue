@@ -241,7 +241,7 @@ export default {
     },
     visHeight: {
       type: Number,
-      default: 400
+      default: 490
     },
     incompleteIntervals: {
       type: Array,
@@ -283,8 +283,8 @@ export default {
 
   data() {
     return {
-      chartHeight: 400,
-      draggedHeight: 400,
+      chartHeight: 500,
+      draggedHeight: 500,
       dragging: false,
       showDivider: false
     }
