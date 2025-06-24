@@ -68,7 +68,7 @@
           }}
         </span>
         <span v-else>
-          {{ getValue(ft.id) | formatValue }}
+          {{ getValue(ft.id) | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
         </span>
       </div>
 
@@ -190,6 +190,9 @@ export default {
 
       domainCapacity: 'regionEnergy/domainCapacity',
 
+      chartUnitPrefix: 'chartOptionsCapacity/chartUnitPrefix',
+      chartDisplayPrefix: 'chartOptionsCapacity/chartDisplayPrefix',
+
       isTypeChangeSinceLine: 'chartOptionsPowerEnergy/isTypeChangeSinceLine',
       chartEnergyRenewablesLine:
         'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
@@ -213,16 +216,16 @@ export default {
     regionId() {
       return this.$route.params.region
     },
-    chartUnitPrefix() {
-      return this.isEnergyType
-        ? this.chartEnergyUnitPrefix
-        : this.chartPowerUnitPrefix
-    },
-    chartDisplayPrefix() {
-      return this.isEnergyType
-        ? this.chartEnergyDisplayPrefix
-        : this.chartPowerDisplayPrefix
-    },
+    // chartUnitPrefix() {
+    //   return this.isEnergyType
+    //     ? this.chartEnergyUnitPrefix
+    //     : this.chartPowerUnitPrefix
+    // },
+    // chartDisplayPrefix() {
+    //   return this.isEnergyType
+    //     ? this.chartEnergyDisplayPrefix
+    //     : this.chartPowerDisplayPrefix
+    // },
     showSummaryColumn() {
       return this.$store.getters.showSummaryColumn
     },
