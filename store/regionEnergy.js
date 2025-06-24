@@ -766,6 +766,9 @@ export const actions = {
           case 'nsw1':
             capacityData = data.data.filter(d => d.region === 'NSW1').filter(d => d.fueltech !== 'battery_charging')
             break
+          case 'qld1':
+            capacityData = data.data.filter(d => d.region === 'QLD1').filter(d => d.fueltech !== 'battery_charging')
+            break
           case 'vic1':
             capacityData = data.data.filter(d => d.region === 'VIC1').filter(d => d.fueltech !== 'battery_charging')
             break
