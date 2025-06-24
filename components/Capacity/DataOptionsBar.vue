@@ -3,7 +3,7 @@
     :class="{ mobile: tabletBreak }"
     class="button-group"
     style="gap: 8px;">
-    <div 
+    <!-- <div 
       v-if="use12MthRollingToggle" 
       class="range-buttons buttons has-addons">
       <button 
@@ -20,9 +20,9 @@
         :options="ranges.flat()"
         :mobile="mobile"
         @option-change="handleRangeDropdownClick" />
-    </div>
+    </div> -->
 
-    <div v-if="!rangeDropdownBreak">
+    <!-- <div v-if="!rangeDropdownBreak">
       <label 
         v-if="tabletBreak" 
         style="margin-top: 8px;">Range:</label>
@@ -43,9 +43,6 @@
             <div v-if="!isString(r)">
               {{ getSelectedRangeLabel(r) }}
             </div>
-            <!-- <i 
-          v-if="hasRangeFilter(r)" 
-          class="filter-caret dropdown-trigger-icon fal fa-chevron-down" /> -->
             <i
               v-if="hasRangeFilter(r)"
               :class="[
@@ -70,7 +67,7 @@
           </span>
         </button>
       </div>
-    </div>
+    </div> -->
 
     <div>
       <label 
