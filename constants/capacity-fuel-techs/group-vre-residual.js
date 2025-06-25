@@ -3,7 +3,7 @@ import * as FT from './group-detailed.js'
 export const GROUP_LABEL = 'VRE/Residual'
 export const GROUP_NAME = 'group.vre-residual'
 
-export const PUMPS = `${GROUP_NAME}.pumps`
+// export const PUMPS = `${GROUP_NAME}.pumps`
 export const BATTERY_CHARGING = `${GROUP_NAME}.battery_charging`
 export const EXPORTS = `${GROUP_NAME}.exports`
 
@@ -30,7 +30,7 @@ FUEL_TECH_GROUP[OTHER] = [
   FT.COAL_BROWN,
   FT.COAL_BLACK,
   FT.HYDRO,
-  FT.PUMPS,
+  // FT.PUMPS,
   FT.BIOENERGY_BIOMASS,
   FT.BIOENERGY_BIOGAS,
   FT.IMPORTS
@@ -71,6 +71,6 @@ FUEL_TECH_CATEGORY[OTHER] = SOURCE
 export const FUEL_TECH_LABEL = {}
 FUEL_TECH_LABEL[BATTERY_CHARGING] = 'Battery (Charging)'
 FUEL_TECH_LABEL[EXPORTS] = 'Exports'
-FUEL_TECH_LABEL[BATTERY_DISCHARGING] = 'Battery (Discharging)'
+FUEL_TECH_LABEL[BATTERY_DISCHARGING] = 'Battery'
 FUEL_TECH_LABEL[VRE] = 'VRE'
 FUEL_TECH_LABEL[OTHER] = 'Residual'

@@ -2,7 +2,7 @@ import * as FT from './group-detailed.js'
 
 export const GROUP_NAME = 'group.coal-gas-renewables'
 
-export const PUMPS = `${GROUP_NAME}.pumps`
+// export const PUMPS = `${GROUP_NAME}.pumps`
 export const BATTERY_CHARGING = `${GROUP_NAME}.battery_charging`
 export const EXPORTS = `${GROUP_NAME}.exports`
 export const IMPORTS = `${GROUP_NAME}.imports`
@@ -22,7 +22,7 @@ FUEL_TECH_GROUP[RENEWABLES] = [
   FT.SOLAR_ROOFTOP,
   FT.WIND,
   FT.HYDRO,
-  FT.PUMPS,
+  // FT.PUMPS,
   FT.BIOENERGY_BIOMASS,
   FT.BIOENERGY_BIOGAS
 ]
@@ -85,5 +85,5 @@ FUEL_TECH_LABEL[IMPORTS] = 'Imports'
 FUEL_TECH_LABEL[COAL] = 'Coal'
 FUEL_TECH_LABEL[DISTILLATE] = 'Distillate'
 FUEL_TECH_LABEL[GAS] = 'Gas'
-FUEL_TECH_LABEL[BATTERY_DISCHARGING] = 'Battery (Discharging)'
+FUEL_TECH_LABEL[BATTERY_DISCHARGING] = 'Battery'
 FUEL_TECH_LABEL[RENEWABLES] = 'Renewables'

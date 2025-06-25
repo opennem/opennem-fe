@@ -3,7 +3,7 @@ import * as FT from './group-detailed.js'
 export const GROUP_LABEL = 'Flexibility'
 export const GROUP_NAME = 'group.flexibility'
 
-export const PUMPS = `${GROUP_NAME}.pumps`
+// export const PUMPS = `${GROUP_NAME}.pumps`
 export const BATTERY_CHARGING = `${GROUP_NAME}.battery_charging`
 export const EXPORTS = `${GROUP_NAME}.exports`
 export const IMPORTS = `${GROUP_NAME}.imports`
@@ -23,7 +23,7 @@ FUEL_TECH_GROUP[VARIABLE] = [
 ]
 FUEL_TECH_GROUP[FAST_FLEXIBLE] = [
   FT.HYDRO,
-  FT.PUMPS,
+  // FT.PUMPS,
   FT.GAS_RECIP,
   FT.GAS_OCGT,
   FT.GAS_CCGT,

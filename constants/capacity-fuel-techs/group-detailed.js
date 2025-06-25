@@ -1,7 +1,7 @@
 export const GROUP_LABEL = 'Detailed'
 export const GROUP_NAME = 'detailed'
 
-export const PUMPS = 'pumps'
+// export const PUMPS = 'pumps'
 export const BATTERY_CHARGING = 'battery_charging'
 export const EXPORTS = 'exports'
 export const IMPORTS = 'imports'
@@ -29,7 +29,7 @@ export const DEFAULT_FUEL_TECH_ORDER = [
   SOLAR_UTILITY,
   WIND,
   HYDRO,
-  PUMPS,
+  // PUMPS,
   BATTERY_DISCHARGING,
   BATTERY,
   GAS_WCMG,
@@ -50,7 +50,7 @@ export const DEFAULT_FUEL_TECH_ORDER = [
 
 // Fuel tech colour
 export const DEFAULT_FUEL_TECH_COLOUR = {}
-DEFAULT_FUEL_TECH_COLOUR[PUMPS] = '#88AFD0' // 00A5F1
+// DEFAULT_FUEL_TECH_COLOUR[PUMPS] = '#88AFD0' // 00A5F1
 DEFAULT_FUEL_TECH_COLOUR[BATTERY_CHARGING] = '#577CFF'
 DEFAULT_FUEL_TECH_COLOUR[EXPORTS] = '#927BAD' // 722AF7
 DEFAULT_FUEL_TECH_COLOUR[IMPORTS] = '#521986' // CFA7FF
@@ -76,7 +76,7 @@ DEFAULT_FUEL_TECH_COLOUR[SOLAR_ROOFTOP] = '#FFF58D'
 export const LOAD = 'load'
 export const SOURCE = 'source'
 export const FUEL_TECH_CATEGORY = {}
-FUEL_TECH_CATEGORY[PUMPS] = SOURCE
+// FUEL_TECH_CATEGORY[PUMPS] = SOURCE
 FUEL_TECH_CATEGORY[BATTERY_CHARGING] = LOAD
 FUEL_TECH_CATEGORY[EXPORTS] = LOAD
 FUEL_TECH_CATEGORY[IMPORTS] = SOURCE
@@ -99,7 +99,7 @@ FUEL_TECH_CATEGORY[SOLAR_UTILITY] = SOURCE
 FUEL_TECH_CATEGORY[SOLAR_ROOFTOP] = SOURCE
 
 export const FUEL_TECH_RENEWABLE = {}
-FUEL_TECH_RENEWABLE[PUMPS] = true
+// FUEL_TECH_RENEWABLE[PUMPS] = true
 FUEL_TECH_RENEWABLE[BATTERY_CHARGING] = false
 FUEL_TECH_RENEWABLE[EXPORTS] = false
 FUEL_TECH_RENEWABLE[IMPORTS] = false
@@ -123,7 +123,7 @@ FUEL_TECH_RENEWABLE[SOLAR_ROOFTOP] = true
 
 // Fuel tech label
 export const FUEL_TECH_LABEL = {}
-FUEL_TECH_LABEL[PUMPS] = 'Pumps'
+// FUEL_TECH_LABEL[PUMPS] = 'Pumps'
 FUEL_TECH_LABEL[BATTERY_CHARGING] = 'Battery (Charging)'
 FUEL_TECH_LABEL[EXPORTS] = 'Exports'
 FUEL_TECH_LABEL[IMPORTS] = 'Imports'
@@ -138,7 +138,7 @@ FUEL_TECH_LABEL[GAS_OCGT] = 'Gas (OCGT)'
 FUEL_TECH_LABEL[GAS_RECIP] = 'Gas (Reciprocating)'
 FUEL_TECH_LABEL[GAS_LFG] = 'Gas (Landfill)'
 FUEL_TECH_LABEL[GAS_WCMG] = 'Gas (Waste Coal Mine)'
-FUEL_TECH_LABEL[BATTERY_DISCHARGING] = 'Battery (Discharging)'
+FUEL_TECH_LABEL[BATTERY_DISCHARGING] = 'Battery'
 FUEL_TECH_LABEL[BATTERY] = 'Battery'
 FUEL_TECH_LABEL[HYDRO] = 'Hydro'
 FUEL_TECH_LABEL[WIND] = 'Wind'
@@ -170,7 +170,7 @@ export function isNetFuelTech(fuelTech) {
     fuelTech === BATTERY_DISCHARGING ||
     fuelTech === BATTERY ||
     fuelTech === HYDRO ||
-    fuelTech === PUMPS ||
+    // fuelTech === PUMPS ||
     fuelTech === EXPORTS ||
     fuelTech === IMPORTS
   )

@@ -7,7 +7,7 @@ import * as CoalGasRenewablesGroup from './group-coal-gas-renewables.js'
 import * as VreResidualGroup from './group-vre-residual.js'
 
 export const GROUP_DETAILED = 'Detailed'
-export const GROUP_OLD_DETAILED = 'Detailed (Prev)'
+// export const GROUP_OLD_DETAILED = 'Detailed (Prev)'
 export const GROUP_SIMPLIFIED = 'Simplified'
 export const GROUP_COAL_GAS_RENEWABLES = 'Coal/Gas/Renewables'
 export const GROUP_FLEXIBILITY = 'Flexibility'
