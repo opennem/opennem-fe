@@ -9,7 +9,7 @@ export const state = () => ({
 
   chartUnit: 'W',
   chartUnitPrefix: SI.MEGA,
-  chartDisplayPrefix: SI.MEGA,
+  chartDisplayPrefix: SI.GIGA,
 
   chartDateAxis: true
 })
