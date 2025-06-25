@@ -62,10 +62,9 @@
             </div> -->
           </div>
 
-          <!-- <div class="summary-row summary-heading-row">
+          <div class="summary-row summary-heading-row">
             <div class="summary-col-label">Sources</div>
-
-          </div> -->
+          </div>
         </div>
 
         <div style="margin-left: 8px; border-top: 1px solid #ddd">
@@ -1132,6 +1131,7 @@ export default {
   display: flex;
   font-size: 1em;
   padding: 6px 8px;
+  justify-content: space-between;
 
   &.hoverable:hover {
     background-color: #FAF9F6;

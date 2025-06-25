@@ -15,7 +15,8 @@
     >
       <div 
         v-tooltip.auto="fuelTechList(ft)" 
-        class="summary-col-label">
+        class="summary-col-label"
+      >
         <div
           :style="{
             'background-color': ft.hidden ? 'transparent' : ft.colour,
@@ -25,15 +26,17 @@
         />
 
         <div class="ft-label">{{ ft.label }}</div>
-      </div>
-
-      <div class="summary-col-external-link-icon">
-        <a
-          v-if="validDomainToEmit(ft)"
-          @click.stop="handleFacilitiesLinkClick(ft)"
+        <div 
+          class="summary-col-external-link-icon" 
+          style="margin-left: 10px"
         >
-          <i class="fal fa-external-link-square" />
-        </a>
+          <a
+            v-if="validDomainToEmit(ft)"
+            @click.stop="handleFacilitiesLinkClick(ft)"
+          >
+            <i class="fal fa-external-link-square" />
+          </a>
+        </div>
       </div>
 
       <div 
