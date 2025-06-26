@@ -961,7 +961,6 @@ export const actions = {
   },
 
   doUpdateCapacityDatasetByGroup({ state, commit }, { groupName }) {
-    console.log('doUpdateCapacityDatasetByGroup', groupName, state.domainCapacityGrouped[groupName])
     commit('currentDomainCapacity', state.domainCapacityGrouped[groupName])
   },
 

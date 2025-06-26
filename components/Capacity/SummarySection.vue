@@ -10,7 +10,6 @@
       :demand-power-domains="domainDemandPower"
       :demand-market-value-domains="domainDemandMarketValue"
       :price-id="domainPrice.length > 0 ? domainPrice[0].id : ''"
-
       :capacity-domains="capacityDomains"
       :dataset="filteredCurrentDatasetCapacity"
       :hover-date="hoverDate"

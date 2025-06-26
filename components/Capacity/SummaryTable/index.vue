@@ -161,15 +161,10 @@
         </div> -->
 
         <div style="padding-left: 8px; padding-top: 8px; border-top: 1px solid #333; margin-top: 8px;">
-          <!-- <div 
-            v-if="loadsOrder.length > 0" 
-            class="summary-column-headers line-row"
-            @touchstart="() => handleTouchstart('chartEnergyNetLine')"
-            @touchend="handleTouchend"
-            @click.exact="() => handleTotalLineRowClicked('chartEnergyNetLine')"
-            @click.shift.exact="() => handleLineRowShiftClicked('chartEnergyNetLine')"
+          <div 
+            class="summary-column-headers"
           >
-            <div class="summary-row last-row hoverable">
+            <div class="summary-row last-row">
               <div class="summary-col-label">
                 <div
                   :class="{
@@ -177,52 +172,27 @@
                   }"
                   class="line-icon net"
                 />
-                Net
+                Total
               </div>
 
+              
               <div 
-                class="summary-col-external-link-icon" 
-                style="width: 20px" />
-
-              <div 
-                v-if="isEnergy" 
                 class="summary-col-energy cell-value">
-                <span v-if="hoverOn || focusOn">
+                <!-- <span v-if="hoverOn || focusOn">
                   {{
                     pointSummary._total
                       | convertValue(chartUnitPrefix, chartDisplayPrefix)
                       | formatValue
                   }}
-                </span>
-                <span v-else-if="isTypeChangeSinceLine"> – </span>
+                </span> -->
+                <span v-if="isTypeChangeSinceLine"> – </span>
                 <span v-else>
-                  {{
-                    summary._totalEnergy
-                      | convertValue(chartUnitPrefix, chartDisplayPrefix)
-                      | formatValue
-                  }}
-                </span>
-              </div>
-              <div 
-                v-else 
-                class="summary-col-energy cell-value">
-                <span v-if="hoverOn || focusOn">
-                  {{
-                    pointSummary._total
-                      | convertValue(chartUnitPrefix, chartDisplayPrefix)
-                      | formatValue
-                  }}
-                </span>
-                <span v-else-if="isTypeChangeSinceLine"> – </span>
-                <span v-else>
-                  {{ summary._totalEnergy | formatValue }}
+                  {{ total | convertValue(chartCapacityUnitPrefix, chartCapacityDisplayPrefix) | formatValue }}
                 </span>
               </div>
 
-              <div class="summary-col-contribution cell-value" />
-              <div class="summary-col-av-value cell-value" />
             </div>
-          </div> -->
+          </div>
 
           <!-- <div
             class="summary-column-headers line-row"
@@ -449,7 +419,8 @@ export default {
       hoveredTemperature: 0,
       mousedownDelay: null,
       longPress: 500,
-      renewablesCustomFString: ',.1f' // ',.3f'
+      renewablesCustomFString: ',.1f', // ',.3f'
+      total: 0
     }
   },
 
@@ -484,9 +455,8 @@ export default {
         'chartOptionsPowerEnergy/chartPowerDisplayPrefix',
       chartPowerCurrentUnit: 'chartOptionsPowerEnergy/chartPowerCurrentUnit',
 
-      chartCapacityUnit: 'chartOptionsCapacity/chartCapacityUnit',
-      chartCapacityUnitPrefix: 'chartOptionsCapacity/chartCapacityUnitPrefix',
-      chartCapacityDisplayPrefix: 'chartOptionsCapacity/chartCapacityDisplayPrefix',
+      chartCapacityUnitPrefix: 'chartOptionsCapacity/chartUnitPrefix',
+      chartCapacityDisplayPrefix: 'chartOptionsCapacity/chartDisplayPrefix',
       chartCapacityCurrentUnit: 'chartOptionsCapacity/chartCurrentUnit',
       chartCapacityYAxis: 'chartOptionsCapacity/chartCapacityYAxis',
 
@@ -824,12 +794,27 @@ export default {
         const latestSummary = _cloneDeep(latestData)
 
         this.summary = latestSummary
+
+        let total = 0
+        this.capacityDomains.forEach((d) => {
+          total += this.summary[d.id]
+        })
+        this.total = total
+
         this.$emit('summary-update', this.summary)
       }
     },
 
     calculatePointSummary({ data }) {
       this.pointSummary = _cloneDeep(data)
+
+      if (this.pointSummary) {
+        let total = 0
+        this.capacityDomains.forEach((d) => {
+          total += this.pointSummary[d.id]
+        })
+        this.total = total
+      }
     },
 
     updatePointSummary(date) {
@@ -963,12 +948,12 @@ export default {
     },
 
     handleTotalLineRowClicked(lineDomain) {
-      const rowToggle = !this[lineDomain]
-      this.$store.commit(
-        `chartOptionsPowerEnergy/${lineDomain}`,
-        rowToggle
-      )
-      this.emitHiddenFuelTechs()
+      // const rowToggle = !this[lineDomain]
+      // this.$store.commit(
+      //   `chartOptionsPowerEnergy/${lineDomain}`,
+      //   rowToggle
+      // )
+      // this.emitHiddenFuelTechs()
     },
 
     handleLineRowShiftClicked(lineDomain) {
