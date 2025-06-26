@@ -691,7 +691,7 @@ export const actions = {
   },
 
   async doGetRegionCapacityDataByRangeInterval(
-    { commit, dispatch, rootGetters },
+    { commit, dispatch, rootGetters, state },
     { region, range, interval, period, groupName }
   ) {
 
@@ -723,7 +723,7 @@ export const actions = {
 
     dispatch('app/doClearError', null, { root: true })
 
-    if (isValidRegion(region) && range !== '' && interval !== '') {
+    if (isValidRegion(region) && range !== '' && interval !== '' && !state.isFetching) {
       const displayTz = rootGetters.displayTimeZone
       currentRegion = region
       commit('ready', false)

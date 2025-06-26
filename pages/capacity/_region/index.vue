@@ -233,17 +233,17 @@ export default {
   },
 
   watch: {
-    showFeatureToggle(show) {
-      if (!show) {
-        this.doGetRegionCapacityDataByRangeInterval({
-          region: this.regionId,
-          range: this.range,
-          interval: this.interval,
-          period: this.filterPeriod,
-          groupName: this.fuelTechGroupName
-        })
-      }
-    },
+    // showFeatureToggle(show) {
+    //   if (!show) {
+    //     this.doGetRegionCapacityDataByRangeInterval({
+    //       region: this.regionId,
+    //       range: this.range,
+    //       interval: this.interval,
+    //       period: this.filterPeriod,
+    //       groupName: this.fuelTechGroupName
+    //     })
+    //   }
+    // },
 
     range(curr, prev) {
       this.getDiscreteTimeData({ curr, prev })
