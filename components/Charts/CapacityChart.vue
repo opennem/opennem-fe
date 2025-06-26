@@ -743,11 +743,8 @@ export default {
     this.chartHeight = this.visHeight
     this.handleTypeClick()
 
-    if (this.isEnergyType) {
-      this.$store.commit('chartOptionsCapacity/chartCurve', 'step')
-    } else {
-      this.$store.commit('chartOptionsCapacity/chartCurve', 'smooth')
-    }
+    this.$store.commit('chartOptionsCapacity/chartCurve', 'step')
+
   },
 
   methods: {

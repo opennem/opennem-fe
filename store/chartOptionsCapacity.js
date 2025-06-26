@@ -5,7 +5,7 @@ export const state = () => ({
   chartDefaultType: OPTIONS.CHART_STACKED,
   chartType: OPTIONS.CHART_STACKED,
   chartYAxis: OPTIONS.CHART_YAXIS_EMISSIONS_VOL,
-  chartCurve: OPTIONS.CHART_CURVE_SMOOTH,
+  chartCurve: OPTIONS.CHART_CURVE_STEP,
 
   chartUnit: 'W',
   chartUnitPrefix: SI.MEGA,
@@ -63,9 +63,9 @@ export const actions = {
   reset({ commit }) {
     commit('chartType', OPTIONS.CHART_STACKED)
     commit('chartYAxis', OPTIONS.CHART_YAXIS_EMISSIONS_VOL)
-    commit('chartCurve', OPTIONS.CHART_CURVE_SMOOTH)
+    commit('chartCurve', OPTIONS.CHART_CURVE_STEP)
     commit('chartUnitPrefix', SI.MEGA)
-    commit('chartDisplayPrefix', SI.MEGA)
+    commit('chartDisplayPrefix', SI.GIGA)
   },
   setStepCurve({ commit }) {
     commit('chartCurve', OPTIONS.CHART_CURVE_STEP)
