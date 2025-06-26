@@ -36,7 +36,7 @@
           class="display-unit"
           @click.stop="handleUnitClick"
         >
-          {{ displayUnit }}
+          {{ displayUnit }} at end of {{ interval | intervalLabel }}
         </small>
         <small v-if="isTypeChangeSinceLine">change since {{ changeSinceLabel }}</small>
       </div>
