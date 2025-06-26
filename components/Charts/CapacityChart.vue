@@ -376,14 +376,15 @@ export default {
     hoverCapacityDomain() {
       const domain = this.hoverDomain
       if (domain) {
-        const split = domain.split('.')
+        return domain
+        // const split = domain.split('.')
 
-        if (split.length > 1) {
-          split.pop()
-          return `${split.join('.')}.${CAPACITY}`
-        } else {
-          return domain
-        }
+        // if (split.length > 1) {
+        //   split.pop()
+        //   return `${split.join('.')}.${CAPACITY}`
+        // } else {
+        //   return domain
+        // }
       }
       return ''
     },
