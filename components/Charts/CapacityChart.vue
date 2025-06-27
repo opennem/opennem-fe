@@ -743,7 +743,7 @@ export default {
     this.chartHeight = this.visHeight
     this.handleTypeClick()
 
-    this.$store.commit('chartOptionsCapacity/chartCurve', 'step')
+    // this.$store.commit('chartOptionsCapacity/chartCurve', 'step')
 
   },
 
