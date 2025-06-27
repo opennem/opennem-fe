@@ -4,7 +4,7 @@ import * as SI from '@/constants/si'
 export const state = () => ({
   chartDefaultType: OPTIONS.CHART_STACKED,
   chartType: OPTIONS.CHART_STACKED,
-  chartYAxis: OPTIONS.CHART_YAXIS_EMISSIONS_VOL,
+  chartYAxis: OPTIONS.CHART_YAXIS_ABSOLUTE,
   chartCurve: OPTIONS.CHART_CURVE_STEP,
 
   chartUnit: 'W',
@@ -62,7 +62,7 @@ export const actions = {
   },
   reset({ commit }) {
     commit('chartType', OPTIONS.CHART_STACKED)
-    commit('chartYAxis', OPTIONS.CHART_YAXIS_EMISSIONS_VOL)
+    commit('chartYAxis', OPTIONS.CHART_YAXIS_ABSOLUTE)
     commit('chartCurve', OPTIONS.CHART_CURVE_STEP)
     commit('chartUnitPrefix', SI.MEGA)
     commit('chartDisplayPrefix', SI.GIGA)
