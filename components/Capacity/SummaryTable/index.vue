@@ -178,16 +178,16 @@
               
               <div 
                 class="summary-col-energy cell-value">
-                <!-- <span v-if="hoverOn || focusOn">
+                <span v-if="hoverOn || focusOn">
                   {{
                     pointSummary._total
-                      | convertValue(chartUnitPrefix, chartDisplayPrefix)
+                      | convertValue(chartCapacityUnitPrefix, chartCapacityDisplayPrefix)
                       | formatValue
                   }}
-                </span> -->
-                <span v-if="isTypeChangeSinceLine"> – </span>
+                </span>
+                <span v-else-if="isTypeChangeSinceLine"> – </span>
                 <span v-else>
-                  {{ total | convertValue(chartCapacityUnitPrefix, chartCapacityDisplayPrefix) | formatValue }}
+                  {{ summary._total | convertValue(chartCapacityUnitPrefix, chartCapacityDisplayPrefix) | formatValue }}
                 </span>
               </div>
 
@@ -420,7 +420,6 @@ export default {
       mousedownDelay: null,
       longPress: 500,
       renewablesCustomFString: ',.1f', // ',.3f'
-      total: 0
     }
   },
 
@@ -793,27 +792,28 @@ export default {
         const latestData = data[data.length - 1]
         const latestSummary = _cloneDeep(latestData)
 
-        this.summary = latestSummary
-
         let total = 0
         this.capacityDomains.forEach((d) => {
-          total += this.summary[d.id]
+          total += latestSummary[d.id]
         })
-        this.total = total
+        latestSummary._total = total
+        this.summary = latestSummary
 
         this.$emit('summary-update', this.summary)
       }
     },
 
     calculatePointSummary({ data }) {
-      this.pointSummary = _cloneDeep(data)
+      if (data) {
+        const latestPointSummary = _cloneDeep(data)
 
-      if (this.pointSummary) {
         let total = 0
         this.capacityDomains.forEach((d) => {
-          total += this.pointSummary[d.id]
+          total += latestPointSummary[d.id]
         })
-        this.total = total
+        latestPointSummary._total = total
+
+        this.pointSummary = latestPointSummary
       }
     },
 
@@ -832,7 +832,6 @@ export default {
         )
 
         point = _cloneDeep(changeSinceData)
-
       }
 
       this.calculatePointSummary({
