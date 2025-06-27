@@ -45,6 +45,7 @@ export const state = () => ({
   _rolledUpDataset: [],
   changeSinceDataset: [],
   capacityData: [],
+  capacityDataFlat: [],
   domainCapacity: [],
   domainCapacityGrouped: [],
   domainUnits: '',
@@ -136,6 +137,7 @@ export const getters = {
   compareResponse: (state) => state.compareResponse,
   allowResize: (state) => state.allowResize,
   capacityData: (state) => state.capacityData,
+  capacityDataFlat: (state) => state.capacityDataFlat,
   domainCapacity: (state) => state.domainCapacity,
   domainCapacityGrouped: (state) => state.domainCapacityGrouped,
   domainUnits: (state) => state.domainUnits
@@ -246,6 +248,9 @@ export const mutations = {
   },
   capacityData(state, capacityData) {
     state.capacityData = _cloneDeep(capacityData)
+  },
+  capacityDataFlat(state, capacityDataFlat) {
+    state.capacityDataFlat = _cloneDeep(capacityDataFlat)
   },
   domainCapacity(state, domainCapacity) {
     state.domainCapacity = _cloneDeep(domainCapacity)
@@ -738,6 +743,7 @@ export const actions = {
       function processCapacityResponses(responses) {
         if (!responses) {
           commit('capacityData', [])
+          commit('capacityDataFlat', [])
           commit('domainCapacity', [])
           commit('domainCapacityGrouped', [])
           commit('domainUnits', '')
@@ -749,6 +755,7 @@ export const actions = {
           dataProcessCapacity(responses, range, interval, period, displayTz)
 
         commit('capacityData', dataset)
+        commit('capacityDataFlat', dataset)
         commit('domainCapacity', domainCapacity)
         commit('domainCapacityGrouped', domainCapacityGrouped)
         commit('domainUnits', units)
@@ -801,20 +808,18 @@ export const actions = {
   },
 
   doUpdateCapacityDatasetByInterval({ state, commit }, { range, interval }) {
-    console.log('doUpdateCapacityDatasetByInterval', range, interval)
     // Ignore if data is still being fetched.
     if (!state.isFetching) {
       // commit('currentDomainCapacity', state.domainCapacityGrouped[groupName])
 
       if (range === 'ALL') {
         const currentDataset = dataRollUpCapacity({
-          datasetFlat: state.capacityData,
+          datasetFlat: state.capacityDataFlat,
           domainCapacity: state.domainCapacity,
           domainCapacityGrouped: state.domainCapacityGrouped,
           units: state.domainUnits
         })
 
-        console.log('currentDataset capacity', currentDataset)
         commit('capacityData', currentDataset)
       }
     }
@@ -980,22 +985,20 @@ export const actions = {
     { state, commit },
     { range, interval, period }
   ) {
-    console.log('****** doUpdateCapacityDatasetByFilterPeriod')
     
     const currentDataset = dataRollUpCapacity({
-      datasetFlat: state.capacityData,
+      datasetFlat: state.capacityDataFlat,
       domainCapacity: state.domainCapacity,
       domainCapacityGrouped: state.domainCapacityGrouped,
       units: state.domainUnits
     })
-
-    console.log('currentDataset capacity', currentDataset)
 
     const { filteredDatasetFlat } = dataFilterByPeriod({
       currentDataset,
       interval,
       period
     })
+
     commit('capacityData', filteredDatasetFlat)
   },
 
