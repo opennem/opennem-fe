@@ -31,6 +31,25 @@
       </article>
     </transition>
 
+    <!-- showBanner -->
+    <article 
+      v-if="!mobileNavActive"
+      class="message" 
+      style="background-color: black; border-radius: 0; position: relative;"
+    >
+      <div 
+        class="message-body open-electricity-banner" 
+        style="padding: 10px 30px; justify-content: center;"
+      >
+        <p>
+          We're updating our Facilities page and your feedback helps! Take our
+          <a 
+            href="https://docs.google.com/forms/d/1k8nNb08uqDcmTcwU8tu6ckN0KpJu8nTkASJfBnyuvso/edit?ts=68621610" 
+            target="_blank">survey</a>.
+        </p>
+      </div>
+    </article>
+
     <NewAppHeader />
 
     <div style="border-top: 1px solid #e5e5e5">
