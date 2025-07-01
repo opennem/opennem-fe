@@ -32,7 +32,7 @@
     </transition>
 
     <!-- showBanner -->
-    <article 
+    <!-- <article 
       v-if="!mobileNavActive"
       class="message" 
       style="background-color: black; border-radius: 0; position: relative;"
@@ -48,7 +48,7 @@
             target="_blank">survey</a>.
         </p>
       </div>
-    </article>
+    </article> -->
 
     <NewAppHeader />
 

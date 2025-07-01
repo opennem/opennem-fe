@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <!-- showBanner -->
-    <article 
+    <!-- <article 
       class="message" 
       style="background-color: black; color: white; border-radius: 0; position: relative;"
     >
@@ -16,7 +16,7 @@
             target="_blank">survey</a>.
         </p>
       </div>
-    </article>
+    </article> -->
 
     <!-- <h1>
       You are viewing data and features that are still in
