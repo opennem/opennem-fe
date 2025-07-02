@@ -1,9 +1,27 @@
 <template>
   <div class="container-fluid">
-    <h1>
+    <!-- showBanner -->
+    <article 
+      class="message" 
+      style="background-color: black; color: white; border-radius: 0; position: relative;"
+    >
+      <div 
+        class="message-body open-electricity-banner" 
+        style="display: flex; padding: 10px 30px; justify-content: center;"
+      >
+        <p style="color: white;">
+          We're updating our Facilities page and your feedback helps! Take our
+          <a 
+            href="https://docs.google.com/forms/d/e/1FAIpQLSfhGRg43hUUV4d229e44GfLFtEmS_vsJ8FaBOoS5MdHk-VNFw/viewform?usp=sharing&ouid=105526448285097294979" 
+            target="_blank">survey</a>.
+        </p>
+      </div>
+    </article>
+
+    <!-- <h1>
       You are viewing data and features that are still in
       <strong>development</strong>.
-    </h1>
+    </h1> -->
 
     <app-header />
     <nuxt />

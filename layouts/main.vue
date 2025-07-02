@@ -19,22 +19,24 @@
       </article>
     </transition>
 
-
-    <!-- <article 
-      v-if="showBanner && !mobileNavActive"
+    <!-- showBanner -->
+    <article 
+      v-if="!mobileNavActive"
       class="message" 
       style="background-color: black; border-radius: 0; position: relative;"
     >
       <div 
         class="message-body open-electricity-banner" 
-        style="padding: 10px 30px; justify-content: start;"
+        style="padding: 10px 30px; justify-content: center;"
       >
-        Due to recent changes to data conventions for reporting battery charge and discharge,
-        OpenElectricty is currently under-reporting activity for some batteries.
-        <br>
-        We are working to resolve this as soon as possible.
+        <p>
+          We're updating our Facilities page and your feedback helps! Take our
+          <a 
+            href="https://docs.google.com/forms/d/e/1FAIpQLSfhGRg43hUUV4d229e44GfLFtEmS_vsJ8FaBOoS5MdHk-VNFw/viewform?usp=sharing&ouid=105526448285097294979" 
+            target="_blank">survey</a>.
+        </p>
       </div>
-    </article> -->
+    </article>
 
     <transition name="slide-down-fade">
       <article 
