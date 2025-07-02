@@ -164,6 +164,7 @@ export default {
       domainDemandEnergy: 'regionEnergy/domainDemandEnergy',
       domainDemandPower: 'regionEnergy/domainDemandPower',
       domainDemandMarketValue: 'regionEnergy/domainDemandMarketValue',
+      domainCapacity: 'regionEnergy/domainCapacity',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       currentDomainMarketValue: 'regionEnergy/currentDomainMarketValue',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
@@ -304,7 +305,7 @@ export default {
       let fuelTechs = []
       if (domain.domainIds) {
         domain.domainIds.forEach((d) => {
-          const find = this.domainPowerEnergy.find(
+          const find = this.domainCapacity.find(
             (peDomain) => peDomain.id === d
           )
           fuelTechs.push(find.fuelTech)

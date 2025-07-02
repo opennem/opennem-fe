@@ -26,7 +26,7 @@
         />
 
         <div class="ft-label">{{ ft.label }}</div>
-        <!-- <div 
+        <div 
           class="summary-col-external-link-icon" 
           style="margin-left: 10px"
         >
@@ -36,7 +36,7 @@
           >
             <i class="fal fa-external-link-square" />
           </a>
-        </div> -->
+        </div>
       </div>
 
       <!-- <div 
