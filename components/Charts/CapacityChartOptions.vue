@@ -39,6 +39,7 @@
           {{ displayUnit }} at end of {{ interval | intervalLabel }}
         </small>
         <small v-if="isTypeChangeSinceLine">change since {{ changeSinceLabel }}</small>
+        <small v-if="isTypeGrowthStackedArea">growth {{ growthLabel }}</small>
       </div>
     </template>
 
@@ -175,6 +176,10 @@ export default {
       type: Boolean,
       default: false
     },
+    isTypeGrowthStackedArea: {
+      type: Boolean,
+      default: false
+    },
     showAverageValue: {
       type: Boolean,
       default: true
@@ -188,6 +193,10 @@ export default {
       default: () => false
     },
     changeSinceLabel: {
+      type: String,
+      default: ''
+    },
+    growthLabel: {
       type: String,
       default: ''
     }
@@ -266,7 +275,7 @@ export default {
 
     handleUnitClick() {
       if (
-        this.isTypeArea ||
+        this.isTypeArea || this.isTypeGrowthStackedArea ||
         ((this.isTypeLine || this.isTypeChangeSinceLine) && !this.isPercentage)
       ) {
         const updatedPrefix = this.togglePrefix(this.chartDisplayPrefix)

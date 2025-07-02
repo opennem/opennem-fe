@@ -21,6 +21,7 @@
       :is-type-proportion="isTypeProportion"
       :is-type-line="isTypeLine"
       :is-type-change-since-line="isTypeChangeSinceLine"
+      :is-type-growth-stacked-area="isTypeGrowthStackedArea"
       :interval="customInterval === '' ? interval : customInterval"
       :average-capacity="convertValue(averageCapacity)"
       :hover-display-date="hoverDisplayDate"
@@ -32,22 +33,23 @@
       :capacity-options="capacityOptions"
       :show-date-axis="showDateAxis"
       :change-since-label="changeSinceLabel"
+      :growth-label="growthLabel"
       @type-click="handleTypeClick"
       @date-axis="(visible) => showDateAxis = visible"
     />
 
     <div class="chart-border">
       <stacked-area-vis
-        v-if="chartShown && (isTypeArea || isTypeProportion)"
+        v-if="chartShown && (isTypeArea || isTypeProportion || isTypeGrowthStackedArea)"
         :read-only="readOnly"
         :domains="domains"
-        :dataset="dataset"
+        :dataset="isTypeGrowthStackedArea ? growthDataset : dataset"
         :projection-dataset="projectionDataset"
         :range="range"
         :interval="interval"
         :curve="chartCurve"
-        :y-min="isTypeArea ? yMin : 0"
-        :y-max="isTypeArea ? yMax : 100"
+        :y-min="isTypeGrowthStackedArea ? computedGrowthYMin : isTypeArea ? yMin : 0"
+        :y-max="isTypeGrowthStackedArea ? computedGrowthYMax : isTypeArea ? yMax : 100"
         :vis-height="chartHeight"
         :show-x-axis="false"
         :show-tooltip="false"
@@ -71,7 +73,7 @@
         :filter-period="filterPeriod"
         :compare-dates="compareDates"
         :show-total-line="showTotalLine"
-        :use-offset-diverge="useOffsetDiverge"
+        :use-offset-diverge="isTypeGrowthStackedArea ? true : false"
         :class="{ dragging: dragging }"
         class="vis-chart"
         @dateOver="handleDateHover"
@@ -120,7 +122,23 @@
         @leave="handleVisLeave"
       />
       <date-brush
-        v-if="showDateAxis && chartShown"
+        v-if="showDateAxis && chartShown && isTypeGrowthStackedArea"
+        :dataset="growthDataset"
+        :zoom-range="zoomExtent"
+        :x-ticks="xTicks"
+        :tick-format="tickFormat"
+        :second-tick-format="secondTickFormat"
+        :read-only="readOnly"
+        :interval="interval"
+        :filter-period="filterPeriod"
+        class="date-brush vis-chart"
+        @date-hover="handleDateHover"
+        @date-filter="handleZoomExtent"
+        @enter="handleVisEnter"
+        @leave="handleVisLeave"
+      />
+      <date-brush
+        v-if="showDateAxis && chartShown && !isTypeGrowthStackedArea"
         :dataset="[...dataset, ...projectionDataset]"
         :zoom-range="zoomExtent"
         :x-ticks="xTicks"
@@ -153,6 +171,10 @@ import { min, max } from 'd3-array'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
 
+import {
+  filterDatasetByPeriod
+} from '@/data/helpers/filter'
+import transformToGrowthTimeSeries from '@/data/transform/growth-series.js'
 import AxisTimeFormats from '@/services/axisTimeFormats.js'
 import * as FT from '@/constants/capacity-fuel-techs/group-detailed.js'
 import * as OPTIONS from '@/constants/chart-options.js'
@@ -171,7 +193,8 @@ const capacityOptions = {
     OPTIONS.CHART_STACKED,
     OPTIONS.CHART_PROPORTION,
     OPTIONS.CHART_LINE,
-    OPTIONS.CHART_CHANGE_SINCE_LINE
+    OPTIONS.CHART_CHANGE_SINCE_LINE,
+    OPTIONS.CHART_GROWTH_STACKED_AREA
   ],
   curve: [
     OPTIONS.CHART_CURVE_SMOOTH,
@@ -259,10 +282,6 @@ export default {
       type: Boolean,
       default: false
     },
-    useOffsetDiverge: {
-      type: Boolean,
-      default: false
-    },
     customInterval: {
       type: String,
       default: ''
@@ -286,7 +305,9 @@ export default {
       chartHeight: 500,
       draggedHeight: 500,
       dragging: false,
-      showDivider: false
+      showDivider: false,
+
+      growthDataset: []
     }
   },
 
@@ -325,7 +346,7 @@ export default {
 
     shouldConvertValue() {
       return (
-        this.isTypeArea ||
+        this.isTypeArea || this.isTypeGrowthStackedArea ||
         ((this.isTypeLine || this.isTypeChangeSinceLine) &&
           this.chartYAxis === OPTIONS.CHART_YAXIS_ABSOLUTE)
       )
@@ -343,6 +364,9 @@ export default {
     isTypeChangeSinceLine() {
       return this.chartType === OPTIONS.CHART_CHANGE_SINCE_LINE
     },
+    isTypeGrowthStackedArea() {
+      return this.chartType === OPTIONS.CHART_GROWTH_STACKED_AREA
+    },
     isYAxisAbsolute() {
       return this.chartYAxis === OPTIONS.CHART_YAXIS_ABSOLUTE
     },
@@ -359,6 +383,12 @@ export default {
 
     secondTickFormat() {
       return AxisTimeFormats[this.visSecondTickFormat]
+    },
+
+    growthLabel() {
+      const label = this.interval.toLowerCase()
+
+      return `${label}-on-${label}`
     },
 
     displayUnit() {
@@ -393,6 +423,62 @@ export default {
       const find = this.domains.find((d) => d[this.propName] === domain)
       return find ? find.id : domain
     },
+
+    computedGrowthYMin() {
+      let lowest = 0
+
+      const filteredDataset =
+        this.zoomExtent.length > 0
+          ? this.growthDataset.filter(
+              (d) =>
+                d.time >= this.zoomExtent[0].getTime() &&
+                d.time <= this.zoomExtent[1].getTime() - 1
+            )
+          : this.growthDataset
+
+      filteredDataset.forEach((d) => {
+        let total = 0
+
+        this.domains.forEach((domain) => {
+          const value = d[domain.id] || 0
+          total += value < 0 ? value : 0
+        })
+
+        if (total < lowest) {
+          lowest = total
+        }
+      })
+
+      return lowest
+    },
+
+    computedGrowthYMax() {
+      let highest = 0
+
+      const filteredDataset =
+        this.zoomExtent.length > 0
+          ? this.growthDataset.filter(
+              (d) =>
+                d.time >= this.zoomExtent[0].getTime() &&
+                d.time <= this.zoomExtent[1].getTime() - 1
+            )
+          : this.growthDataset
+
+      filteredDataset.forEach((d) => {
+        let total = 0
+        this.domains.forEach((domain) => {
+          const value = d[domain.id] || 0
+          total += value > 0 ? value : 0
+        })
+
+        if (total > highest) {
+          highest = total
+        }
+      })
+
+      return highest
+    },
+
     yMax() {
       const dataset = _cloneDeep(this.withProjectionDataset)
       dataset.forEach((d) => {
@@ -402,7 +488,9 @@ export default {
         })
         d._stackedTotalCapacityMax = stackedMax
       })
-      return max(dataset, (d) => d._stackedTotalCapacityMax)
+      // plus 10%
+      const maxValue = max(dataset, (d) => d._stackedTotalCapacityMax)
+      return maxValue * 1.1
     },
     yMin() {
       const dataset = _cloneDeep(this.withProjectionDataset)
@@ -651,11 +739,9 @@ export default {
       }
       const time = date.getTime()
 
-      let data = this.withProjectionDataset
-        ? this.withProjectionDataset.find((d) => d.time === time)
-        : null
-
-      return data
+      return this.isTypeGrowthStackedArea
+        ? this.growthDataset.find((d) => d.time === time)
+        : this.withProjectionDataset.find((d) => d.time === time)
     },
 
     hoverValue() {
@@ -701,7 +787,7 @@ export default {
     },
 
     changeSinceLabel() {
-      const ds = this.dataset
+      const ds = this.isTypeGrowthStackedArea ? this.growthDataset : this.dataset
 
       if (!ds || ds.length === 0) {
         return ''
@@ -735,12 +821,64 @@ export default {
       if (curr.length !== prev.length) {
         this.$emit('changeDataset', this.changeSinceDataset)
       }
+    },
+    isYAxisAveragePower() {
+      if (this.isTypeGrowthStackedArea) {
+        this.updateGrowDataset()
+      }
+    },
+
+    zoomExtent() {
+      if (this.isTypeGrowthStackedArea) {
+        this.updateGrowDataset()
+      }
+    },
+
+    filterPeriod() {
+      if (this.isTypeGrowthStackedArea) {
+        this.updateGrowDataset()
+      }
+    },
+
+    fuelTechGroupName() {
+      if (this.isTypeGrowthStackedArea) {
+        this.updateGrowDataset()
+      }
+    },
+
+    interval() {
+      this.handleTypeClick()
+
+      if (this.isTypeGrowthStackedArea) {
+        this.updateGrowDataset()
+      }
+    },
+
+    isTypeGrowthStackedArea(val) {
+      if (val) {
+        this.updateGrowDataset()
+      }
+    },
+
+    hiddenDomains() {
+      if (this.isTypeGrowthStackedArea) {
+        this.updateGrowDataset()
+        this.$store.commit(
+          'chartOptionsCapacity/chartType',
+          OPTIONS.CHART_STACKED
+        )
+      }
     }
   },
 
   mounted() {
     this.$emit('changeDataset', this.changeSinceDataset)
     this.chartHeight = this.visHeight
+
+    if (this.isTypeGrowthStackedArea) {
+      this.updateGrowDataset()
+    }
+
     this.handleTypeClick()
 
     // this.$store.commit('chartOptionsCapacity/chartCurve', 'step')
@@ -806,6 +944,47 @@ export default {
       } else {
         this.chartHeight = 50
       }
+    },
+
+    updateGrowDataset() {
+      this.growthDataset = this.zoomExtent.length > 0 ? this.getGrowthDataset().filter((d) => {
+          return d.date >= this.zoomExtent[0] && d.date < this.zoomExtent[1]
+        }) : this.getGrowthDataset()
+    },
+
+    getGrowthDataset() {
+      let compareIndex = 1
+      let newDataset
+
+      // if (this.isRollingSumRange) {
+      //   if (this.interval === 'Season' || this.interval === 'Quarter') {
+      //     compareIndex = 4
+      //   } else if (this.interval === 'Half Year') {
+      //     compareIndex = 2
+      //   } else {
+      //     compareIndex = 12
+      //   }
+      // }
+
+      if (this.filterPeriod === 'All') {
+        const ds = this.stackedDataset
+
+        newDataset = transformToGrowthTimeSeries(ds, this.domains, compareIndex)
+      } else {
+        const ds = this.stackedDataset
+        const transformedToGrowth = transformToGrowthTimeSeries(ds, this.domains, compareIndex)
+        const filteredDatasetFlat = filterDatasetByPeriod(
+          transformedToGrowth,
+          this.interval,
+          this.filterPeriod
+        )
+        newDataset = filteredDatasetFlat
+        
+      }
+
+      this.handleTypeClick()
+
+      return newDataset
     },
 
     getChangeSinceDataset(dataset, calculateProportion) {

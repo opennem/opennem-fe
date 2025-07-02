@@ -295,7 +295,7 @@ import { GROUP_DETAILED } from '@/constants/capacity-fuel-techs'
 import EventBus from '@/plugins/eventBus'
 import { getTimeLabel } from '@/data/transform/time-of-day' 
 import groupDataset from '@/data/parse/region-energy/group'
-import Domain from '~/services/Domain.js'
+import Domain from '~/services/CapacityDomain.js'
 import GroupSelector from '~/components/ui/CapacityFuelTechGroupSelector'
 import ColumnSelector from '~/components/ui/SummaryColumnSelector'
 import ExportLegend from '@/components/Energy/Export/Legend'
@@ -894,40 +894,37 @@ export default {
           const hiddenSources = Domain.getAllDomainObjs().filter(
             (d) => d.category === 'source' && d.fuelTech !== onlyFt.fuelTech
           )
-          const hiddenLoads = Domain.getAllDomainObjs().filter(
-            (d) => d.category === 'load'
-          )
+          
           this.hiddenSources = hiddenSources.map((d) => d.fuelTech)
-          this.hiddenLoads = hiddenLoads.map((d) => d.fuelTech)
         } else {
-          const hiddenLoads = this.domainPowerEnergyGrouped[
-            this.fuelTechGroupName
-          ].filter((d) => d.category === 'load')
-          this.hiddenLoads = hiddenLoads.map((d) => d[this.propRef])
+          // const hiddenLoads = this.domainPowerEnergyGrouped[
+          //   this.fuelTechGroupName
+          // ].filter((d) => d.category === 'load')
+          // this.hiddenLoads = hiddenLoads.map((d) => d[this.propRef])
           // this.hiddenLoads = this.loadsOrder.map(d => d[property])
         }
       }
       this.emitHiddenFuelTechs()
     },
 
-    handleLoadFuelTechsHidden(hidden, hideOthers, onlyFt) {
-      this.hiddenLoads = hidden
-      if (hideOthers) {
-        if (this.fuelTechGroupName === GROUP_DETAILED) {
-          const hiddenSources = Domain.getAllDomainObjs().filter(
-            (d) => d.category === 'source'
-          )
-          const hiddenLoads = Domain.getAllDomainObjs().filter(
-            (d) => d.category === 'load' && d.fuelTech !== onlyFt.fuelTech
-          )
-          this.hiddenSources = hiddenSources.map((d) => d.fuelTech)
-          this.hiddenLoads = hiddenLoads.map((d) => d.fuelTech)
-        } else {
-          this.hiddenSources = this.sourcesOrder.map((d) => d[this.propRef])
-        }
-      }
-      this.emitHiddenFuelTechs()
-    },
+    // handleLoadFuelTechsHidden(hidden, hideOthers, onlyFt) {
+    //   this.hiddenLoads = hidden
+    //   if (hideOthers) {
+    //     if (this.fuelTechGroupName === GROUP_DETAILED) {
+    //       const hiddenSources = Domain.getAllDomainObjs().filter(
+    //         (d) => d.category === 'source'
+    //       )
+    //       const hiddenLoads = Domain.getAllDomainObjs().filter(
+    //         (d) => d.category === 'load' && d.fuelTech !== onlyFt.fuelTech
+    //       )
+    //       this.hiddenSources = hiddenSources.map((d) => d.fuelTech)
+    //       this.hiddenLoads = hiddenLoads.map((d) => d.fuelTech)
+    //     } else {
+    //       this.hiddenSources = this.sourcesOrder.map((d) => d[this.propRef])
+    //     }
+    //   }
+    //   this.emitHiddenFuelTechs()
+    // },
 
     handlePercentContributionToClick() {
       if (this.percentContributionTo === 'demand') {
