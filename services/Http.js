@@ -8,28 +8,28 @@ if (typeof window !== 'undefined') {
 }
 
 const getBaseUrl = () => {
-  let baseUrl = `https://data.opennem.org.au`
+  let baseUrl = `https://data.openelectricity.org.au/`
   let host = undefined
 
-  if (typeof window !== 'undefined') {
-    host = window.location.host
-  }
+  // if (typeof window !== 'undefined') {
+  //   host = window.location.host
+  // }
 
-  if (host && host.startsWith('127')) {
-    baseUrl = `http://127.0.0.1:8000/static/`
-  }
+  // if (host && host.startsWith('127')) {
+  //   baseUrl = `http://127.0.0.1:8000/static/`
+  // }
 
-  if (host && host.startsWith('dev')) {
-    baseUrl = `https://data.dev.opennem.org.au/`
-  }
+  // if (host && host.startsWith('dev')) {
+  //   baseUrl = `https://data.dev.opennem.org.au/`
+  // }
 
-  if (host && host.startsWith('staging')) {
-    baseUrl = `https://data.staging.opennem.org.au/`
-  }
+  // if (host && host.startsWith('staging')) {
+  //   baseUrl = `https://data.staging.opennem.org.au/`
+  // }
 
-  if (process.env.DATA_BASE_URL !== undefined) {
-    baseUrl = process.env.DATA_BASE_URL
-  }
+  // if (process.env.DATA_BASE_URL !== undefined) {
+  //   baseUrl = process.env.DATA_BASE_URL
+  // }
 
   // for testing in preview branch
   // if (host && host.startsWith('feature-203-time-of-day-plot')) {
@@ -38,7 +38,7 @@ const getBaseUrl = () => {
 
   console.info('baseUrl', baseUrl, host)
   console.info('host', host)
-  console.info('env', process.env.DATA_BASE_URL)
+  // console.info('env', process.env.DATA_BASE_URL)
 
   return baseUrl
 }

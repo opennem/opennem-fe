@@ -39,7 +39,7 @@ export default {
       case rangesJs.RANGE_1D:
       case rangesJs.RANGE_3D:
       case rangesJs.RANGE_7D:
-        urls.push(`${version}/stats/au${prepend}/${regionId}/power/7d.json`)
+        urls.push(`${version}/stats/au${prepend}/${regionId}/power/30d.json`)
         break
 
       case rangesJs.RANGE_14D:
