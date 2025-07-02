@@ -39,7 +39,7 @@
         </div> -->
       </div>
 
-      <div 
+      <!-- <div 
         v-if="isEnergyType" 
         class="summary-col-energy" 
         style="width: 40%">
@@ -58,20 +58,23 @@
               | formatValue
           }}
         </span>
-      </div>
+      </div> -->
       <div 
-        v-else 
         class="summary-col-energy" 
         style="width: 40%">
         <span v-if="showPointSummary">
           {{
             getValue(ft.id)
               | convertValue(chartUnitPrefix, chartDisplayPrefix)
-              | formatValue
+              | formatCapacityValue(chartDisplayPrefix)
           }}
         </span>
         <span v-else>
-          {{ getValue(ft.id) | convertValue(chartUnitPrefix, chartDisplayPrefix) | formatValue }}
+          {{ 
+            getValue(ft.id) 
+              | convertValue(chartUnitPrefix, chartDisplayPrefix) 
+              | formatCapacityValue(chartDisplayPrefix) 
+          }}
         </span>
       </div>
 

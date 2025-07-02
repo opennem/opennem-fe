@@ -182,12 +182,16 @@
                   {{
                     pointSummary._total
                       | convertValue(chartCapacityUnitPrefix, chartCapacityDisplayPrefix)
-                      | formatValue
+                      | formatCapacityValue(chartCapacityDisplayPrefix)
                   }}
                 </span>
                 <span v-else-if="isTypeChangeSinceLine"> – </span>
                 <span v-else>
-                  {{ summary._total | convertValue(chartCapacityUnitPrefix, chartCapacityDisplayPrefix) | formatValue }}
+                  {{ 
+                    summary._total 
+                      | convertValue(chartCapacityUnitPrefix, chartCapacityDisplayPrefix) 
+                      | formatCapacityValue(chartCapacityDisplayPrefix) 
+                  }}
                 </span>
               </div>
 

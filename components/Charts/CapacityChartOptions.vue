@@ -67,12 +67,12 @@
         <strong v-if="isPercentage">{{ hoverValue | formatValue2 }}%</strong>
         <strong 
           v-else
-        >{{ hoverValue | formatValue2 }} {{ displayUnit }}</strong
+        >{{ hoverValue | formatCapacityValue(chartDisplayPrefix) }} {{ displayUnit }}</strong
         >
       </span>
       <span v-if="!isPercentage">
         Total
-        <strong>{{ hoverTotal | formatValue2 }} {{ displayUnit }}</strong>
+        <strong>{{ hoverTotal | formatCapacityValue(chartDisplayPrefix) }} {{ displayUnit }}</strong>
       </span>
     </template>
   </chart-header>
