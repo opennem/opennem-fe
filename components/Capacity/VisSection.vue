@@ -15,6 +15,7 @@
       :incomplete-intervals="incompleteIntervals"
       :filter-period="filterPeriod"
       :is-energy-type="isEnergyType"
+      :compare-dates="compareDates"
       @dateHover="handleDateHover"
       @isHovering="handleIsHovering"
       @zoomExtent="handleZoomExtent"
@@ -60,6 +61,7 @@
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import _cloneDeep from 'lodash.clonedeep'
 import addYears from 'date-fns/addYears'
+import addMonths from 'date-fns/addMonths'
 
 import * as OPTIONS from '@/constants/chart-options.js'
 import { GROUP_DETAILED } from '@/constants/capacity-fuel-techs'
@@ -67,7 +69,7 @@ import { GROUP_DETAILED } from '@/constants/capacity-fuel-techs'
 import DateDisplay from '@/services/DateDisplay.js'
 import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
 import PowerEnergyChart from '@/components/Charts/PowerEnergyChart'
-import EnergyCompare from '@/components/Energy/Charts/CompareChart'
+import EnergyCompare from '@/components/Energy/Charts/CapacityCompareChart'
 import CapacityChart from '@/components/Charts/CapacityChart'
 
 export default {
@@ -224,13 +226,15 @@ export default {
     updateCompareData() {
       if (this.compareDates.length === 2) {
         const firstData = this.getDataByTime(
-          this.selectedDataset,
+          this.capacityData,
           this.compareDates[0]
         )
         const secondData = this.getDataByTime(
-          this.selectedDataset,
+          this.capacityData,
           this.compareDates[1]
         )
+        console.log('firstData', firstData)
+        console.log('secondData', secondData)
         this.compareData = [firstData, secondData]
       }
     },
@@ -251,8 +255,9 @@ export default {
         this.$store.dispatch('compareDifference', true)
         const hoverTime = this.hoverDate ? this.hoverDate.getTime() : 0
         const focusTime = this.focusDate ? this.focusDate.getTime() : 0
-        const firstData = this.getDataByTime(this.selectedDataset, focusTime)
-        const secondData = this.getDataByTime(this.selectedDataset, hoverTime)
+        const firstData = this.getDataByTime(this.capacityData, focusTime)
+        const secondData = this.getDataByTime(this.capacityData, hoverTime)
+
 
         setTimeout(() => {
           this.$store.dispatch('compareDates', [focusTime, hoverTime])
@@ -285,11 +290,11 @@ export default {
 
           if (compareDates.length === 2) {
             const firstData = this.getDataByTime(
-              this.selectedDataset,
+              this.capacityData,
               compareDates[0]
             )
             const secondData = this.getDataByTime(
-              this.selectedDataset,
+              this.capacityData,
               compareDates[1]
             )
             this.compareData = [firstData, secondData]
@@ -321,6 +326,9 @@ export default {
           this.interval,
           dateRange[1]
         )
+        // if (this.interval === 'Season') {
+        //   endTime = addMonths(endTime, 3)
+        // }
         if (this.interval === 'Fin Year') {
           startTime = addYears(startTime, 1)
         }
@@ -331,20 +339,9 @@ export default {
       }
 
       this.updateFilteredDates(filteredDates)
-    },
-
-    handleSelectedDatasetChange(ds) {
-      if (this.isTypeChangeSinceLine) {
-        this.setChangeSinceDataset(ds)
-      }
-      this.selectedDataset = ds
-      this.updateCompareData()
-    },
-
-    handleDisplayUnitChange(unit) {
-      this.setPowerEnergyDisplayUnit(unit)
-      this.selectedUnit = unit
     }
+
+    
   }
 }
 </script>
