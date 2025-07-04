@@ -5,6 +5,14 @@
       :height="svgHeight" 
       :id="id" 
       class="column-chart">
+      
+      <g 
+        :transform="columnTransform" 
+        class="column-group" />
+      <g 
+        :transform="columnTransform" 
+        class="column-label-group" />
+
       <g 
         :transform="gTransform" 
         class="axis-line-group">
@@ -14,12 +22,6 @@
 
         <g :class="yAxisClass" />
       </g>
-      <g 
-        :transform="columnTransform" 
-        class="column-group" />
-      <g 
-        :transform="columnTransform" 
-        class="column-label-group" />
     </svg>
   </div>
 </template>
@@ -263,8 +265,19 @@ export default {
     },
 
     customXAxis(g) {
+      g.selectAll('.tick').remove()
       g.call(this.xAxis)
+      g.selectAll('.tick')
+        .classed('compare-col', true)
+        .append('rect')
+        .attr('x', -this.x.bandwidth() / 2 )
+        .attr('y', -this.height - 20)
+        .attr('height', this.height + 20)
+        .attr('width', this.x.bandwidth())
+        .attr('fill', '#ccc')
+  
       g.selectAll('.tick text')
+        .classed('compare-col-label', true)
         .style('text-anchor', 'middle')
         .text((t) => {
           const label = this.domains.find((d) => d.id === t).label
@@ -294,13 +307,14 @@ export default {
         .attr('width', this.x.bandwidth())
         .attr('fill', (d) => this.z(d.name))
         .attr('class', (d) => `${d.name}`)
+        .style('pointer-events', 'none')
 
-      this.$columnGroup.selectAll('rect').on('mouseenter', (d) => {
-        this.$emit('domainOver', d.name)
-      })
-      this.$columnGroup.selectAll('rect').on('mouseleave', (d) => {
-        this.$emit('domainOver', '')
-      })
+      // this.$columnGroup.selectAll('rect').on('mouseenter', (d) => {
+      //   this.$emit('domainOver', d.name)
+      // })
+      // this.$columnGroup.selectAll('rect').on('mouseleave', (d) => {
+      //   this.$emit('domainOver', '')
+      // })
     },
 
     drawColumnLabels() {
@@ -308,7 +322,7 @@ export default {
 
       const mainLabel = (d) => {
         if (d.value === 0) {
-          return 'No change'
+          return '—'
         }
 
         const format = (val) => this.formatValue(val)
@@ -392,4 +406,28 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss">
+.compare-col {
+  fill: #000;
+
+  .compare-col-label {
+    display: none;
+  }
+
+  rect {
+    opacity: 0;
+  }
+
+  &:hover {
+    .compare-col-label {
+      display: block;
+    }
+
+    rect {
+      opacity: 0.2;
+    }
+  }
+}
+
+
+</style>
