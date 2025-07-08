@@ -52,6 +52,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
 import VIEWS from '~/constants/views.js'
 
@@ -61,11 +62,14 @@ export default {
   data() {
     return {
       dropdownActive: false,
-      views: VIEWS
+      defaultViews: VIEWS
     }
   },
 
   computed: {
+    ...mapGetters({
+      featureCapacityCharts: 'feature/capacityCharts'
+    }),
     regionId() {
       return this.$route.params.region
     },
@@ -78,6 +82,9 @@ export default {
     viewLabel() {
       const view = this.views.find((d) => d.id === this.currentView)
       return view ? view.label : ''
+    },
+    views() {
+      return this.featureCapacityCharts ? this.defaultViews : this.defaultViews.filter((d) => d.id !== 'capacity')
     }
   },
 

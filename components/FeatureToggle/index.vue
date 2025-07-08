@@ -14,6 +14,14 @@
       >
       Show Compare VWP before 2009
     </label>
+
+    <label class="panel-block">
+      <input
+        v-model="featureCapacityCharts"
+        type="checkbox"
+      >
+      Show Capacity Charts
+    </label>
   </div>
 </template>
 
@@ -27,10 +35,21 @@ export default {
       set: function (newValue) {
         this.$store.commit('feature/comparePrice', newValue)
       }
+    },
+    featureCapacityCharts: {
+      get: function () {
+        return this.$store.getters['feature/capacityCharts']
+      },
+      set: function (newValue) {
+        this.$store.commit('feature/capacityCharts', newValue)
+      }
     }
   },
   watch: {
     featureComparePrice() {
+      this.$emit('done')
+    },
+    featureCapacityCharts() {
       this.$emit('done')
     }
   },
