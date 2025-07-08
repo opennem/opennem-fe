@@ -7,19 +7,8 @@
     />
 
     <div v-else>
-      <div v-if="isTimeOfDayView">
-        <DatesDisplayToD
-          :is-hovering="hoverOn"
-          :hovered-time="timeOfDayHoverTime"
-          :start-date="startDate"
-          :end-date="endDate"
-          :range="range"
-          :interval="interval"
-          :timezone-string="isEnergyType ? '' : regionTimezoneString"
-        />
-      </div>
+      
       <dates-display
-        v-else
         :is-hovering="hoverOn"
         :hovered-date="hoveredDate"
         :focus-on="focusOn"
@@ -432,7 +421,7 @@ import EventBus from '@/plugins/eventBus'
 import { getTimeLabel } from '@/data/transform/time-of-day' 
 import groupDataset from '@/data/parse/region-energy/group'
 import Domain from '~/services/Domain.js'
-import GroupSelector from '~/components/ui/FuelTechGroupSelector'
+import GroupSelector from '~/components/ui/CapacityFuelTechGroupSelector'
 import ColumnSelector from '~/components/ui/SummaryColumnSelector'
 import ExportLegend from '@/components/Energy/Export/Legend'
 import Items from './Items'

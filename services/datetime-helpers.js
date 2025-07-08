@@ -4,6 +4,7 @@ import addWeeks from 'date-fns/addWeeks'
 import addMonths from 'date-fns/addMonths'
 import addQuarters from 'date-fns/addQuarters'
 import addYears from 'date-fns/addYears'
+import startOfMonth from 'date-fns/startOfMonth'
 import { getTimezoneOffset } from 'date-fns-tz'
 
 import {
@@ -60,5 +61,17 @@ export const mutateDate = (dateString, displayTzOffset, ignoreTime) => {
   // get the new date
   const updatedDate = new Date(updatedTime)
 
+  return updatedDate
+}
+
+export const mutateDate2 = (dateString, displayTzOffset) => {
+  // get original offset in milliseconds from the datestring (i.e., +10:00 in milliseconds)
+  const dataTzOffset = getTimezoneOffset('+10:00')
+  const date = startOfMonth(parseISO(dateString))
+  // change the time to match the timezone you want to display on the app
+  const updatedTime = date.getTime() - dataTzOffset + displayTzOffset
+
+  // get the new date
+  const updatedDate = new Date(updatedTime)
   return updatedDate
 }

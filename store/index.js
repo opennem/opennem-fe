@@ -129,6 +129,7 @@ export const getters = {
   hostEnv: (state) => state.hostEnv,
   currentView: (state) => state.currentView,
   isEnergyView: (state) => state.currentView === 'energy',
+  isCapacityView: (state) => state.currentView === 'capacity',
   isFacilitiesView: (state) => state.currentView === 'facilities',
   isCompareView: (state) => state.currentView === 'compare',
   isStripesView: (state) => state.currentView === 'stripes',

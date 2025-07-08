@@ -1,0 +1,33 @@
+import { sum, mean, rollups } from 'd3-array'
+import * as DT from '@/constants/data-types.js'
+
+function reducer(a, domains) {
+  let obj = {}
+
+  domains.forEach((domain) => {
+    const id = domain.id
+    obj[id] = a[a.length - 1][id]
+  })
+
+  return obj
+}
+
+export default function (domains, data) {
+  const entries = rollups(
+    data,
+    (v) => reducer(v, domains),
+    (d) => d._rollUpDate
+  )
+
+  return entries.map((e) => {
+    const object = {
+      time: e[0],
+      date: new Date(e[0])
+    }
+
+    Object.keys(e[1]).forEach((k) => {
+      object[k] = e[1][k]
+    })
+    return object
+  })
+}

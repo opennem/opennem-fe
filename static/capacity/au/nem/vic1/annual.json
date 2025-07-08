@@ -1,0 +1,171 @@
+{
+  "version": "4.2",
+  "network": "nem",
+  "region": "VIC1",
+  "created_at": "2024-07-16T05:54:27+1000",
+  "messages": [
+    "historical capacity derived from facilities data and APVI APIs"
+  ],
+  "data": [
+    {
+      "id": "au.nem.vic1.fuel_tech.battery.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "VIC1",
+      "fuel_tech": "battery",
+      "units": "MW",
+      "invalid_count": 2,
+      "invalid_capacity": 207.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 60.0, 60.0, 80.0, 440.0, 440.0, 440.0]
+      }
+    },
+    {
+      "id": "au.nem.vic1.fuel_tech.bioenergy_biogas.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "VIC1",
+      "fuel_tech": "bioenergy_biogas",
+      "units": "MW",
+      "invalid_count": 12,
+      "invalid_capacity": 52.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      }
+    },
+    {
+      "id": "au.nem.vic1.fuel_tech.coal_brown.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "VIC1",
+      "fuel_tech": "coal_brown",
+      "units": "MW",
+      "invalid_count": 0,
+      "invalid_capacity": 0.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [6850.0, 6850.0, 6850.0, 6850.0, 6850.0, 6850.0, 6850.0, 6850.0, 6850.0, 6850.0, 6850.0, 6850.0, 6850.0, 6850.0, 6850.0, 6850.0, 6745.0, 6490.0, 4850.0, 4850.0, 4850.0, 4850.0, 4850.0, 4850.0, 4850.0, 4850.0]
+      }
+    },
+    {
+      "id": "au.nem.vic1.fuel_tech.gas_ocgt.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "VIC1",
+      "fuel_tech": "gas_ocgt",
+      "units": "MW",
+      "invalid_count": 2,
+      "invalid_capacity": 44.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [432.0, 432.0, 478.0, 994.0, 994.0, 994.0, 994.0, 994.0, 994.0, 994.0, 994.0, 994.0, 994.0, 1560.0, 1560.0, 1560.0, 1872.0, 1872.0, 1872.0, 1872.0, 1872.0, 1872.0, 1872.0, 1872.0, 1872.0, 1872.0]
+      }
+    },
+    {
+      "id": "au.nem.vic1.fuel_tech.gas_recip.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "VIC1",
+      "fuel_tech": "gas_recip",
+      "units": "MW",
+      "invalid_count": 2,
+      "invalid_capacity": 11.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      }
+    },
+    {
+      "id": "au.nem.vic1.fuel_tech.gas_steam.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "VIC1",
+      "fuel_tech": "gas_steam",
+      "units": "MW",
+      "invalid_count": 0,
+      "invalid_capacity": 0.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0]
+      }
+    },
+    {
+      "id": "au.nem.vic1.fuel_tech.hydro.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "VIC1",
+      "fuel_tech": "hydro",
+      "units": "MW",
+      "invalid_count": 5,
+      "invalid_capacity": 31.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [496.0, 467.0, 1967.0, 1967.0, 1967.0, 1967.0, 1967.0, 1967.0, 1967.0, 1967.0, 1967.0, 1967.0, 2009.0, 2009.0, 2009.0, 2009.0, 2009.0, 2009.0, 2009.0, 2009.0, 2009.0, 2009.0, 2009.0, 2009.0, 2009.0, 2009.0]
+      }
+    },
+    {
+      "id": "au.nem.vic1.fuel_tech.solar_rooftop.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "VIC1",
+      "fuel_tech": "solar_rooftop",
+      "units": "MW",
+      "invalid_count": 0,
+      "invalid_capacity": 0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 2.4, 6.9, 41.7, 158.4, 317.8, 485.7, 638.6, 809.4, 955.5, 1122.0, 1396.5, 1863.6, 2418.2, 3084.2, 3675.8, 4284.3, 4701.9]
+      }
+    },
+    {
+      "id": "au.nem.vic1.fuel_tech.solar_utility.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "VIC1",
+      "fuel_tech": "solar_utility",
+      "units": "MW",
+      "invalid_count": 1,
+      "invalid_capacity": 126.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 125.0, 400.0, 400.0, 950.0, 950.0, 950.0, 950.0]
+      }
+    },
+    {
+      "id": "au.nem.vic1.fuel_tech.wind.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "VIC1",
+      "fuel_tech": "wind",
+      "units": "MW",
+      "invalid_count": 12,
+      "invalid_capacity": 371.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 422.0, 489.0, 929.0, 1060.0, 1166.6, 1408.2, 1408.2, 1659.2, 1969.2, 2313.2, 2643.8, 2643.8, 2643.8, 2643.8]
+      }
+    }
+  ]
+}

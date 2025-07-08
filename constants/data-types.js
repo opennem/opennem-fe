@@ -1,4 +1,5 @@
 export const POWER = 'power'
+export const CAPACITY = 'capacity'
 export const ENERGY = 'energy'
 export const DEMAND = 'demand'
 export const EMISSIONS = 'emissions'
@@ -43,6 +44,7 @@ export function isEmissions(name) {
 export function isValidDataType(name) {
   return (
     name === POWER ||
+    name === CAPACITY ||
     name === ENERGY ||
     name === DEMAND ||
     name === EMISSIONS ||
