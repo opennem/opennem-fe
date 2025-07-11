@@ -67,7 +67,7 @@ import * as OPTIONS from '@/constants/chart-options.js'
 import { GROUP_DETAILED } from '@/constants/capacity-fuel-techs'
 
 import DateDisplay from '@/services/DateDisplay.js'
-import GetIncompleteIntervals from '@/services/incompleteIntervals.js'
+import GetIncompleteIntervals from '@/services/capacity-incompleteIntervals.js'
 import PowerEnergyChart from '@/components/Charts/PowerEnergyChart'
 import EnergyCompare from '@/components/Energy/Charts/CapacityCompareChart'
 import CapacityChart from '@/components/Charts/CapacityChart'
@@ -165,7 +165,7 @@ export default {
 
     incompleteIntervals() {
       return GetIncompleteIntervals({
-        dataset: this.currentDataset,
+        dataset: this.capacityData,
         range: this.range,
         interval: this.interval,
         filterPeriod: this.filterPeriod
