@@ -213,7 +213,7 @@ export default {
 
     options() {
       let options = _cloneDeep(this.capacityOptions )
-      if (this.isTypeArea) {
+      if (this.isTypeArea || this.isTypeGrowthStackedArea) {
         options.si = capacitySI
       }
       if (this.isTypeLine || this.isTypeChangeSinceLine) {
