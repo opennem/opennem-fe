@@ -360,6 +360,10 @@ export default {
     totalLineDomain: {
       type: String,
       default: ''
+    },
+    xTicks: {
+      type: Function,
+      default: null
     }
   },
 
@@ -721,9 +725,15 @@ export default {
       this.z = scaleOrdinal() // Colour
 
       // Set up where x, y axis appears
-      this.xAxis = axisBottom(this.x)
+      if (this.xTicks) {
+        this.xAxis = axisBottom(this.x).tickSize(this.height).ticks(this.xTicks)
+      } else {
+        this.xAxis = axisBottom(this.x)
         .tickSize(-this.height)
         .tickFormat((d, i) => this.timeFormats(d, i === 0))
+      }
+
+      
       this.yAxis = axisRight(this.y)
         .tickSize(this.width)
         .ticks(this.yAxisTicks)
@@ -1552,6 +1562,7 @@ export default {
       this.$emit('zoomExtent', dateRange)
     },
 
+
     customXAxis(g) {
       let tickLength = null
       let className = ''
@@ -1666,7 +1677,7 @@ export default {
         this.xAxis.tickFormat((d, i) => this.timeFormats(d, i === 0))
       }
 
-      this.xAxis.ticks(tickLength)
+      this.xAxis.ticks(this.xTicks || tickLength)
 
       // add secondary x axis tick label here
       const insertSecondaryAxisTick = function (d, i) {

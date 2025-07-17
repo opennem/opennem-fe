@@ -71,7 +71,9 @@ export default function (range, interval, isZoomed, filterPeriod, mobileScreen) 
       return null
     }
 
-    return timeYear.every(mobileScreen ? 2 : 1)
+    return null
+
+    // return timeYear.every(mobileScreen ? 2 : 2)
   }
   if (range === '12 Mth Rolling') {
     return timeYear.every(mobileScreen ? 2 : 1)

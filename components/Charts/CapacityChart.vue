@@ -139,7 +139,7 @@
       />
       <date-brush
         v-if="showDateAxis && chartShown && !isTypeGrowthStackedArea"
-        :dataset="[...dataset, ...projectionDataset]"
+        :dataset="dataset"
         :zoom-range="zoomExtent"
         :x-ticks="xTicks"
         :tick-format="tickFormat"
