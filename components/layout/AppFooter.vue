@@ -86,7 +86,7 @@
         <i class="fal fa-fw fa-vial" />
       </a>
 
-      <a 
+      <!-- <a 
         v-tooltip="'Twitter'" 
         rel="external" 
         class="icon-link" 
@@ -101,7 +101,7 @@
         target="_blank" 
         href="https://github.com/opennem">
         <i class="fab fa-fw fa-github" />
-      </a>
+      </a> -->
       <a 
         v-tooltip="'Creative Commons Attribution 4.0 International License (CC BY 4.0)'" 
         rel="external" 
@@ -233,6 +233,15 @@ footer {
       height: auto;
       margin-right: 5px;
     }
+  }
+
+  @include mobile {
+    display: flex;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
   }
 
   @include tablet {
