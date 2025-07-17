@@ -863,10 +863,6 @@ export default {
     hiddenDomains() {
       if (this.isTypeGrowthStackedArea) {
         this.updateGrowDataset()
-        this.$store.commit(
-          'chartOptionsCapacity/chartType',
-          OPTIONS.CHART_STACKED
-        )
       }
     }
   },
