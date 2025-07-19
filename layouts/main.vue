@@ -38,6 +38,22 @@
       </div>
     </article> -->
 
+    <article 
+      class="message" 
+      style="background-color: black; border-radius: 0; position: relative;"
+    >
+      <div 
+        class="message-body open-electricity-banner" 
+        style="padding: 10px 20px; justify-content: center;"
+      >
+        <p style="text-align: center;">
+          ⚡️ Sign up for Open Electricity updates - direct to your inbox 📬.
+          <a 
+          href="https://openelectricity.org.au/newsletter">Subscribe now</a>.
+        </p>
+      </div>
+    </article>
+
     <transition name="slide-down-fade">
       <article 
         v-if="siteAnnouncement && isAuOrWem && isEnergyPage" 
