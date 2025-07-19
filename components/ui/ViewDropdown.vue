@@ -67,9 +67,6 @@ export default {
   },
 
   computed: {
-    ...mapGetters({
-      featureCapacityCharts: 'feature/capacityCharts'
-    }),
     regionId() {
       return this.$route.params.region
     },
@@ -84,7 +81,7 @@ export default {
       return view ? view.label : ''
     },
     views() {
-      return this.featureCapacityCharts ? this.defaultViews : this.defaultViews.filter((d) => d.id !== 'capacity')
+      return this.defaultViews
     }
   },
 
