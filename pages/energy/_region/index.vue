@@ -291,7 +291,8 @@ export default {
         range: this.range,
         interval: this.interval,
         isZoomed: dates.length > 0,
-        filterPeriod: this.filterPeriod
+        filterPeriod: this.filterPeriod,
+        filteredDates: dates
       })
       this.updateEmissionsData()
     },
@@ -306,7 +307,8 @@ export default {
         range: this.range,
         interval: this.interval,
         isZoomed: this.filteredDates.length > 0,
-        filterPeriod: period
+        filterPeriod: period,
+        filteredDates: this.filteredDates
       })
     },
 
@@ -380,7 +382,8 @@ export default {
       range: this.range,
       interval: this.interval,
       isZoomed: this.filteredDates.length > 0,
-      filterPeriod: this.filterPeriod
+      filterPeriod: this.filterPeriod,
+      filteredDates: this.filteredDates
     })
 
     window.addEventListener(

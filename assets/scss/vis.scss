@@ -87,10 +87,10 @@ path.line-path {
 .x-axis .tick text {
   color: #666;
   text-anchor: start;
-  font-size: 7px;
+  font-size: 9px;
 
   @include tablet {
-    font-size: 9px;
+    font-size: 10px;
   }
 }
 

@@ -290,7 +290,8 @@ export default {
         range: this.range,
         interval: this.interval,
         isZoomed: this.zoomExtent.length > 0,
-        filterPeriod: this.filterPeriod
+        filterPeriod: this.filterPeriod,
+        filteredDates: this.zoomExtent
       })
       this.doUpdateTickFormats({
         range: this.range,

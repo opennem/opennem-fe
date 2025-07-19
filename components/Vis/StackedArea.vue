@@ -597,6 +597,7 @@ export default {
       this.update()
       this.drawCompare(this.compareDates)
     },
+    
     updatedDataset() {
       // this.zoomed = false
       this.update()
@@ -657,6 +658,10 @@ export default {
       } else {
         this.$totalLineGroup.selectAll('path').remove()
       }
+    },
+
+    xTicks(data) {
+      this.resizeRedraw()
     }
   },
   created() {
@@ -1596,24 +1601,26 @@ export default {
           }
         } else if (this.range === 'ALL') {
           const every = this.mobileScreen ? 2 : 1
-          tickLength = d3TimeYear.every(every)
+          tickLength = null
 
           if (this.interval === INTERVAL_SEASON) {
             className = 'interval-season'
             const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
             if (isFilter && periodMonth) {
-              tickLength = d3TimeMonth.filter(
-                (d) => d.getMonth() === periodMonth
-              )
+              // tickLength = d3TimeMonth.filter(
+              //   (d) => d.getMonth() === periodMonth
+              // )
             }
+            tickLength = d3TimeMonth.filter((d) => d.getMonth() === 11 && d.getFullYear() % 3 === 0)
           } else if (this.interval === INTERVAL_QUARTER) {
             className = 'interval-quarter'
             const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
             if (isFilter && periodMonth) {
-              tickLength = d3TimeMonth.filter(
-                (d) => d.getMonth() === periodMonth
-              )
+                // tickLength = d3TimeMonth.filter(
+                //   (d) => d.getMonth() === periodMonth
+                // )
             }
+            tickLength = d3TimeMonth.filter((d) => d.getMonth() === 0 && d.getFullYear() % 2 === 0)
           } else if (this.interval === INTERVAL_HALFYEAR) {
             className = 'interval-half-year'
             const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
@@ -1625,9 +1632,15 @@ export default {
           } else if (this.interval === INTERVAL_YEAR) {
             className = 'interval-year'
           } else if (this.interval === INTERVAL_FINYEAR) {
-            tickLength = d3TimeMonth.filter((d) => {
-              return d.getMonth() === 6
-            })
+            if (isFilter) {
+              tickLength = d3TimeMonth.filter((d) => {
+                return d.getMonth() === 6 
+              })
+            } else {
+              tickLength = d3TimeMonth.filter((d) => {
+                return d.getMonth() === 6 && d.getFullYear() % 2 === 0
+              })
+            }
             className = 'interval-fin-year'
           }
         } else if (this.range === '12 Mth Rolling') {

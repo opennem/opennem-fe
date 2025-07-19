@@ -264,7 +264,7 @@ export default {
     },
     visHeight: {
       type: Number,
-      default: 490
+      default: 550
     },
     incompleteIntervals: {
       type: Array,
@@ -302,8 +302,8 @@ export default {
 
   data() {
     return {
-      chartHeight: 500,
-      draggedHeight: 500,
+      chartHeight: 550,
+      draggedHeight: 550,
       dragging: false,
       showDivider: false,
 
@@ -382,7 +382,10 @@ export default {
     },
 
     secondTickFormat() {
-      return AxisTimeFormats[this.visSecondTickFormat]
+      if (typeof this.visSecondTickFormat === 'string') {
+        return AxisTimeFormats[this.visSecondTickFormat]
+      }
+      return this.visSecondTickFormat
     },
 
     growthLabel() {
@@ -925,7 +928,8 @@ export default {
         range: this.range,
         interval: this.interval,
         isZoomed: this.zoomExtent.length > 0,
-        filterPeriod: this.filterPeriod
+        filterPeriod: this.filterPeriod,
+        filteredDates: this.filteredDates
       })
       this.doUpdateTickFormats({
         range: this.range,

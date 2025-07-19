@@ -432,7 +432,10 @@ export default {
       return this.visTickFormat
     },
     secondTickFormat() {
-      return AxisTimeFormats[this.visSecondTickFormat]
+      if (typeof this.visSecondTickFormat === 'string') {
+        return AxisTimeFormats[this.visSecondTickFormat]
+      }
+      return this.visSecondTickFormat
     },
 
     chartYAxis() {

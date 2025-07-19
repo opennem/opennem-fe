@@ -267,7 +267,8 @@ export default {
         range: this.range,
         interval: this.interval,
         isZoomed: dates.length > 0,
-        filterPeriod: this.filterPeriod
+        filterPeriod: this.filterPeriod,
+        filteredDates: dates
       })
     },
     filterPeriod(period) {
@@ -281,7 +282,8 @@ export default {
         range: this.range,
         interval: this.interval,
         isZoomed: this.filteredDates.length > 0,
-        filterPeriod: period
+        filterPeriod: period,
+        filteredDates: this.filteredDates
       })
     },
 
@@ -346,6 +348,7 @@ export default {
       range: this.range,
       interval: this.interval,
       isZoomed: this.filteredDates.length > 0,
+      filteredDates: this.filteredDates,
       filterPeriod: this.filterPeriod
     })
 
