@@ -56,7 +56,7 @@
     >
       <div 
         class="message-body open-electricity-banner" 
-        style="padding: 10px 20px; justify-content: center;"
+        style="padding: 13px 20px; justify-content: center;"
       >
         <p style="text-align: center;">
           ⚡️ Sign up for Open Electricity updates - direct to your inbox 📬.
