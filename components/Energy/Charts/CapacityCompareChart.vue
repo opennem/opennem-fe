@@ -1,5 +1,8 @@
 <template>
-  <div class="compare-container">
+  <div 
+    class="compare-container"
+    @mouseenter="() => showDivider = true"
+    @mouseleave="() => showDivider = false">
     <div class="compare-header">
       <div class="chart-label">
         <strong>{{
@@ -14,7 +17,7 @@
       </div>
     </div>
     <div class="compare-chart-legend">
-      <div class="compare-legend">
+      <!-- <div class="compare-legend">
         <div
           v-for="(domain, index) in domains"
           :key="`domain-${index}`"
@@ -29,7 +32,7 @@
           />
           {{ domain.label }}
         </div>
-      </div>
+      </div> -->
       <div class="compare-chart">
         <div class="compare-chart-unit">{{ unit }}</div>
         <column-vis
@@ -45,6 +48,14 @@
         />
       </div>
     </div>
+
+    <Divider
+      v-if="allowResize"
+      :allow-x="false"
+      :show="showDivider"
+      @dragging="(d) => dragging = d" 
+      @dragged="onDragged"
+      @last-drag="() => draggedHeight = visHeight" />
   </div>
 </template>
 
@@ -52,6 +63,7 @@
 import { mapGetters } from 'vuex'
 import _includes from 'lodash.includes'
 import _cloneDeep from 'lodash.clonedeep'
+import Divider from '@/components/Divider.vue'
 
 import * as OPTIONS from '@/constants/chart-options.js'
 import { GROUP_DETAILED } from '@/constants/capacity-fuel-techs'
@@ -59,7 +71,8 @@ import * as SI from '@/constants/si.js'
 import ColumnVis from '~/components/Vis/Column.vue'
 export default {
   components: {
-    ColumnVis
+    ColumnVis,
+    Divider
   },
 
   props: {
@@ -76,7 +89,10 @@ export default {
   data() {
     return {
       updatedCompareData: [],
-      visHeight: 200
+      visHeight: 300,
+      showDivider: false,
+      draggedHeight: 300,
+      dragging: false
     }
   },
 
@@ -86,7 +102,7 @@ export default {
       hiddenFuelTechs: 'hiddenFuelTechs',
 
       currentDomainCapacity: 'regionEnergy/currentDomainCapacity',
-
+      allowResize: 'regionEnergy/allowResize',
       highlightDomain: 'visInteract/highlightDomain',
 
       chartYAxis: 'chartOptionsCapacity/chartYAxis',
@@ -177,8 +193,8 @@ export default {
   },
 
   mounted() {
-    const $height = this.$el.offsetHeight < 200 ? 200 : this.$el.offsetHeight
-    this.visHeight = $height
+    // const $height = this.$el.offsetHeight < 200 ? 200 : this.$el.offsetHeight
+    // this.visHeight = $height
   },
 
   methods: {
@@ -201,6 +217,13 @@ export default {
         this.chartDisplayPrefix,
         value
       )
+    },
+    onDragged({ offsetY }) {
+      if (this.draggedHeight + offsetY > 50) {
+        this.visHeight = this.draggedHeight + offsetY
+      } else {
+        this.visHeight = 50
+      }
     }
   }
 }
@@ -211,13 +234,9 @@ export default {
   text-align: center;
 }
 .compare-chart-legend {
-  padding: 0.5rem 1rem;
-  margin: 0 0.5rem 0.5rem;
-  background-color: rgba(0, 0, 0, 0.05);
-  box-shadow: inset 0 1px 10px rgba(0, 0, 0, 0.05);
-  border-radius: 3px;
   display: flex;
   align-items: center;
+  border: 1px solid #E0DFDC;
 
   .compare-legend {
     width: 20%;
@@ -230,7 +249,7 @@ export default {
     }
   }
   .compare-chart {
-    width: 80%;
+    width: 100%;
   }
   .compare-chart-unit {
     font-size: 9px;

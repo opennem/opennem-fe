@@ -36,6 +36,8 @@ import { axisBottom, axisLeft } from 'd3-axis'
 import { format as d3Format } from 'd3-format'
 import { select as d3Select } from 'd3-selection'
 import { extent as d3Extent } from 'd3-array'
+import EventBus from '~/plugins/eventBus.js'
+
 
 import * as CONFIG from './shared/config.js'
 
@@ -160,7 +162,11 @@ export default {
       } else {
         this.$columnGroup.selectAll('rect').attr('opacity', 1)
       }
-    }
+    },
+    visHeight(newValue) {
+      this.svgHeight = newValue
+      this.handleResize()
+    },
   },
 
   created() {
@@ -172,6 +178,9 @@ export default {
       'resize',
       _debounce(this.handleResize, CONFIG.DEBOUNCE_MILLISECONDS)
     )
+
+    EventBus.$on('vis-resize', this.handleResize)
+
     this.setupWidthHeight()
     this.setup()
     if (this.updatedDataset) {
@@ -182,6 +191,7 @@ export default {
 
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize)
+    EventBus.$off('vis-resize', this.handleResize)
   },
 
   methods: {
@@ -230,7 +240,10 @@ export default {
       this.yAxis = axisLeft(this.y)
         .tickSize(-this.width)
         .ticks(5)
-        .tickFormat((d) => d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d))
+        .tickFormat((d) => {
+          console.log('d', d)
+          return d3Format(CONFIG.Y_AXIS_FORMAT_STRING)(d)
+        })
     },
 
     update() {
@@ -259,6 +272,15 @@ export default {
       if (this.showXAxis) {
         this.$xAxisGroup.call(this.customXAxis)
       }
+
+      const yMaxConverted = Math.abs(this.convertValue(yExtent[1]))
+
+      if (yMaxConverted <= 10) {
+        this.yAxis.tickFormat((d) => d3Format(',.1f')(this.convertValue(d)))
+      } else {
+        this.yAxis.tickFormat((d) => d3Format(',.0f')(this.convertValue(d)))
+      }
+
       this.$yAxisGroup.call(this.customYAxis)
       this.drawColumns()
       this.drawColumnLabels()
@@ -288,7 +310,7 @@ export default {
     customYAxis(g) {
       g.call(this.yAxis)
       g.selectAll('.tick text')
-        .text((t) => this.formatValue(this.convertValue(t)))
+        // .text((t) => this.formatValue(this.convertValue(t)))
         .attr('x', 4)
         .attr('dy', -4)
       g.selectAll('.tick line').attr('class', (d) => (d === 0 ? 'base' : ''))
@@ -364,7 +386,9 @@ export default {
           d.value > 0 ? -2 : Math.abs(this.y(0) - this.y(d.value)) + 12
         )
         .style('text-anchor', this.usePercentage ? 'end' : 'start')
-        .style('font-size', this.tabletBreak ? '11px' : '11px')
+        .style('font-size', this.tabletBreak ? '8px' : '9px')
+        .style('font-weight', 'normal')
+        .style('color', '#aaa')
         .text((d) => mainLabel(d))
 
       this.$columnLabelGroup
@@ -379,8 +403,10 @@ export default {
         )
         .attr('dy', (d) => (d.value > 0 ? -12 : 12))
         .style('fill', '#444')
-        .style('font-size', '11px')
+        .style('font-size', this.tabletBreak ? '9px' : '10px')
         .style('text-anchor', this.usePercentage ? 'end' : 'start')
+        .style('font-weight', 'bold')
+        .style('color', '#888')
         .text((d) => secondaryLabel(d))
     },
 
@@ -390,6 +416,10 @@ export default {
       this.yAxis.tickSize(-this.width)
 
       this.$yAxisGroup.call(this.customYAxis)
+
+      if (this.showXAxis) {
+        this.$xAxisGroup.call(this.customXAxis)
+      }
       this.drawColumns()
       this.drawColumnLabels()
     },
@@ -427,6 +457,8 @@ export default {
       opacity: 0.2;
     }
   }
+
+  
 }
 
 
