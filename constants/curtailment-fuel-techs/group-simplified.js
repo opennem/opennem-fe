@@ -1,7 +1,7 @@
 import * as FT from './group-detailed.js'
 
 export const GROUP_LABEL = 'Simplified'
-export const GROUP_NAME = 'group.simplified'
+export const GROUP_NAME = 'group.curtailment.simplified'
 
 export const CURTAILMENT_WIND = `${GROUP_NAME}.curtailment_wind`
 export const CURTAILMENT_SOLAR = `${GROUP_NAME}.curtailment_solar`

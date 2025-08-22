@@ -2,6 +2,7 @@
   <section>
     <summary-table
       :energy-domains="powerEnergyDomains"
+      :curtailment-domains="curtailmentDomains"
       :temperature-domains="domainTemperature"
       :market-value-domains="currentDomainMarketValue"
       :emissions-domains="currentDomainEmissions"
@@ -166,6 +167,7 @@ export default {
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       currentDomainMarketValue: 'regionEnergy/currentDomainMarketValue',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
+      currentDomainCurtailment: 'regionEnergy/currentDomainCurtailment',
 
       chartEnergyUnitPrefix: 'chartOptionsPowerEnergy/chartEnergyUnitPrefix',
       chartEnergyDisplayPrefix:
@@ -203,6 +205,11 @@ export default {
     powerEnergyDomains() {
       return this.currentDomainPowerEnergy
         ? _cloneDeep(this.currentDomainPowerEnergy).reverse()
+        : []
+    },
+    curtailmentDomains() {
+      return this.currentDomainCurtailment
+        ? _cloneDeep(this.currentDomainCurtailment).reverse()
         : []
     },
     domains() {

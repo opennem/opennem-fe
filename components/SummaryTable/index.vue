@@ -259,6 +259,35 @@
           />
         </div>
 
+        <div
+          v-if="curtailmentDomains.length > 0"
+          class="summary-column-headers">
+          <div class="summary-row summary-heading-row">
+            <div
+              class="summary-col-label"
+              style="font-weight: bold;">Curtailment</div>
+          </div>
+        </div>
+
+        <div
+          v-if="curtailmentDomains.length > 0"
+          style="margin-left: 8px; border-top: 1px solid #ddd;">
+          <curtailment-items
+            :group="'ft-curtailment'"
+            :hidden-fuel-techs="hiddenFuelTechs"
+            :original-order="curtailmentDomains"
+            :show-point-summary="hoverOn || focusOn"
+            :point-summary="pointSummaryCurtailment"
+            :summary="summaryCurtailment"
+            :domain-toggleable="domainToggleable"
+            @update="handleSourcesOrderUpdate"
+            @fuelTechsHidden="handleSourceFuelTechsHidden"
+            @mouse-enter="handleMouseEnter"
+            @mouse-leave="handleMouseLeave"
+            @domain-click="handleDomainClick"
+          />
+        </div>
+
         <div style="padding-left: 8px; padding-top: 8px; border-top: 1px solid #333; margin-top: 8px;">
           <div 
             v-if="loadsOrder.length > 0" 
@@ -399,6 +428,8 @@
             </div>
           </div>
         </div>
+
+        
         
       </div>
       
@@ -425,6 +456,7 @@ import GroupSelector from '~/components/ui/CapacityFuelTechGroupSelector'
 import ColumnSelector from '~/components/ui/SummaryColumnSelector'
 import ExportLegend from '@/components/Energy/Export/Legend'
 import Items from './Items'
+import CurtailmentItems from './CurtailmentItems'
 import DatesDisplay from './DatesDisplay'
 import DatesDisplayToD from './DatesDisplayToD'
 
@@ -433,6 +465,7 @@ export default {
     GroupSelector,
     ColumnSelector,
     Items,
+    CurtailmentItems,
     DatesDisplay,
     DatesDisplayToD,
     ExportLegend
@@ -448,6 +481,10 @@ export default {
       default: () => false
     },
     energyDomains: {
+      type: Array,
+      default: () => []
+    },
+    curtailmentDomains: {
       type: Array,
       default: () => []
     },
@@ -538,11 +575,14 @@ export default {
       summary: {},
       summarySources: {},
       summaryLoads: {},
+      summaryCurtailment: {},
       pointSummary: {},
       pointSummarySources: {},
       pointSummaryLoads: {},
+      pointSummaryCurtailment: {},
       hiddenSources: [],
       hiddenLoads: [],
+      hiddenCurtailment: [],
       hoveredTemperature: 0,
       mousedownDelay: null,
       longPress: 500,
@@ -558,6 +598,7 @@ export default {
       domainPowerEnergyGrouped: 'regionEnergy/domainPowerEnergyGrouped',
       domainEmissionsGrouped: 'regionEnergy/domainEmissionsGrouped',
       domainMarketValueGrouped: 'regionEnergy/domainMarketValueGrouped',
+      domainCurtailmentGrouped: 'regionEnergy/domainCurtailmentGrouped',
       regionTimezoneString: 'regionEnergy/regionTimezoneString',
       isEnergyType: 'regionEnergy/isEnergyType',
 
@@ -694,6 +735,10 @@ export default {
       return this.energyDomains.filter(
         (d) => d.category === 'source' || d.category === 'load'
       ).length
+    },
+
+    curtailmentOrder() {
+      return this.curtailmentDomains.filter((d) => d)
     },
 
     sourcesOrder() {
@@ -841,6 +886,7 @@ export default {
       // clear hidden fuel techs when grouping is changed
       this.hiddenSources = []
       this.hiddenLoads = []
+      this.hiddenCurtailment = []
       this.emitHiddenFuelTechs()
 
       if (this.focusOn) {
@@ -905,7 +951,12 @@ export default {
       const find = this.energyDomains.find(
         (domain) => domain[this.propRef] === fuelTech
       )
-      if (find) {
+      const findCurtailment = this.curtailmentDomains.find(
+        (domain) => domain[this.propRef] === fuelTech
+      )
+      if (findCurtailment) {
+        this.hiddenCurtailment.push(fuelTech)
+      } else if (find) {
         if (find.category === 'source') {
           this.hiddenSources.push(fuelTech)
         } else {
@@ -942,6 +993,7 @@ export default {
         this.summary = {}
         this.summarySources = {}
         this.summaryLoads = {}
+        this.summaryCurtailment = {}
 
         const energySummary = data.map((d) => {
           let p = 0
@@ -1023,8 +1075,22 @@ export default {
           dataset: datasetWithUpdatedSummary,
           domainPowerEnergyGrouped: this.domainPowerEnergyGrouped,
           domainEmissionsGrouped: this.domainEmissionsGrouped,
-          domainMarketValueGrouped: this.domainMarketValueGrouped
+          domainMarketValueGrouped: this.domainMarketValueGrouped,
+          domainCurtailmentGrouped: this.domainCurtailmentGrouped
         })
+
+        this.curtailmentDomains.forEach((ft) => {
+          const fullDomainData = datasetWithUpdatedSummary.map((fd) => fd[ft.id])
+          const dataEnergy = dataEnergyMap(ft)
+          // For Power, calculate using trapezoid, then convert to GWh
+          const dataEnergySum = this.isEnergyType
+            ? sumMap(ft, dataEnergy)
+            : energy_sum(fullDomainData, bucketSizeMins) / 1000
+          
+
+          this.summaryCurtailment[ft.id] = dataEnergySum
+        })
+
 
         // Calculate Energy
         this.energyDomains.forEach((ft) => {
@@ -1311,6 +1377,7 @@ export default {
       this.pointSummary = data || {} // pointSummary._total is already calculated
       this.pointSummarySources = {}
       this.pointSummaryLoads = {}
+      this.pointSummaryCurtailment = {}
 
       if (!_isEmpty(this.pointSummary)) {
         // if (this.isTimeOfDayView) {
@@ -1320,6 +1387,11 @@ export default {
         //     }
         //   })
         // }
+
+        this.curtailmentDomains.forEach((ft) => {
+          const value = this.pointSummary[ft.id]
+          this.pointSummaryCurtailment[ft.id] = value
+        })
 
         this.energyDomains.forEach((ft) => {
           const category = ft.category

@@ -43,7 +43,8 @@ export function getFuelTechObjs(fuelTechs, type) {
       colour: DEFAULT_FUEL_TECH_COLOUR[ft],
       category: FUEL_TECH_CATEGORY[ft],
       renewable: FUEL_TECH_RENEWABLE[ft],
-      type
+      type,
+      curtailment: true
     }
   })
 }

@@ -1,7 +1,7 @@
 import * as FT from './group-detailed.js'
 
 export const GROUP_LABEL = 'VRE/Residual'
-export const GROUP_NAME = 'group.vre-residual'
+export const GROUP_NAME = 'group.curtailment.vre-residual'
 
 export const VRE = `${GROUP_NAME}.vre`
 

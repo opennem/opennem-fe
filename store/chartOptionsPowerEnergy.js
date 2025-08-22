@@ -18,7 +18,7 @@ export const state = () => ({
   chartPowerDisplayPrefix: SI.MEGA,
 
   chartEnergyRenewablesLine: false,
-  chartEnergyNetLine: false,
+  chartEnergyNetLine: true,
 
   displayUnit: '',
   chartDateAxis: true

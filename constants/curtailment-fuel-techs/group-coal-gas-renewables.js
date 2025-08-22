@@ -1,7 +1,7 @@
 import * as FT from './group-detailed.js'
 
 export const GROUP_LABEL = 'Coal/Gas/Renewables'
-export const GROUP_NAME = 'group.coal-gas-renewables'
+export const GROUP_NAME = 'group.curtailment.coal-gas-renewables'
 
 export const RENEWABLES = `${GROUP_NAME}.renewables`
 

@@ -276,6 +276,10 @@ export default {
       type: Array,
       default: () => []
     },
+    domainCurtailment: {
+      type: Array,
+      default: () => []
+    },
     hiddenDomains: {
       type: Array,
       default: () => []
@@ -497,9 +501,16 @@ export default {
       )
     },
     powerEnergyDomains() {
-      return this.domainPowerEnergy
-        ? _cloneDeep(this.domainPowerEnergy).reverse()
-        : []
+      if (this.domainCurtailment.length > 0) {
+        return [
+          ...this.domainPowerEnergy,
+          ...this.domainCurtailment
+        ].reverse()
+      } else {
+        return this.domainPowerEnergy
+          ? _cloneDeep(this.domainPowerEnergy).reverse()
+          : []
+      }
     },
     energyPercentDomains() {
       return this.powerEnergyDomains.filter((d) => d.category === 'source')

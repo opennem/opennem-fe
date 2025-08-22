@@ -46,6 +46,28 @@
             y2="10" />
         </pattern>
 
+        <!-- Curtailment patterns for each domain -->
+        <pattern
+          v-for="domain in currentDomainCurtailment"
+          :key="`pattern-${domain.id}`"
+          :id="`${id}-curtailment-pattern-${domain.id}`"
+          width="4"
+          height="4"
+          patternUnits="userSpaceOnUse"
+          patternTransform="rotate(45)"
+        >
+          <rect 
+            width="10" 
+            height="10" 
+            :fill="domain.colour" 
+            :opacity="1" />
+          <line 
+            stroke="rgba(236, 233, 230, 0.4)" 
+            stroke-width="3px" 
+            y2="20" />
+        </pattern>
+
+
         <filter id="shadow">
           <feDropShadow
             dx="0"
@@ -444,6 +466,9 @@ export default {
   },
 
   computed: {
+    currentDomainCurtailment() {
+      return this.$store.getters['regionEnergy/currentDomainCurtailment'] || null
+    },
     compareDifference() {
       return this.$store.getters.compareDifference
     },
@@ -911,6 +936,17 @@ export default {
       const yMax =
         (this.yMax || this.yMax === 0) && this.domains.length > 0 && !this.showTotalLine
           ? this.yMax
+          : this.showTotalLine
+          ? max(this.updatedDataset, (d) => {
+              let totalWithCurtailment = d._total || 0
+              // Add curtailment values to the total when showing total line
+              if (this.currentDomainCurtailment && this.currentDomainCurtailment.length > 0) {
+                this.currentDomainCurtailment.forEach(curtailmentDomain => {
+                  totalWithCurtailment += d[curtailmentDomain.id] || 0
+                })
+              }
+              return totalWithCurtailment
+            })
           : max(this.updatedDataset, (d) => d._total)
       const xDomainExtent = this.dynamicExtent.length
         ? this.dynamicExtent
@@ -985,7 +1021,11 @@ export default {
         .attr('stroke-width', 1)
         .attr('stroke', '#000')
         .attr('fill', (d) => {
-          // return `url(#${d.key})`
+          // Check if this domain is a curtailment domain
+          const domain = this.currentDomainCurtailment.find(domain => domain.id === d.key)
+          if (domain) {
+            return `url(#${this.id}-curtailment-pattern-${domain.id})`
+          }
           return this.z(d.key)
         })
         .style('clip-path', this.clipPathUrl)
@@ -1022,8 +1062,8 @@ export default {
         .style('stroke', '#c74523')
         .style('stroke-width', 1)
         .style('stroke-linecap', 'round')
-        // .style('stroke-dasharray', '13,13')
-        .style('filter', 'url(#shadow)')
+        .style('stroke-dasharray', '3,3')
+        // .style('filter', 'url(#shadow)')
         .style('clip-path', this.clipPathUrl)
         .style('-webkit-clip-path', this.clipPathUrl)
     },
@@ -1052,7 +1092,7 @@ export default {
         .attr('class', 'line-path')
         .attr('d', this.line)
         .style('stroke', this.datasetTwoColour)
-        .style('stroke-width', 2)
+        .style('stroke-width', 1)
         .style('filter', 'url(#shadow)')
         .style('clip-path', this.clipPathUrl)
         .style('-webkit-clip-path', this.clipPathUrl)
