@@ -89,7 +89,7 @@
         :unit="` ${chartDisplayPrefix}${chartUnit}`"
         :null-check-prop="'_total'"
         :filter-period="filterPeriod"
-        :show-total-line="chartEnergyNetLine"
+        :show-total-line="chartEnergyNetLine && !isTypeProportion"
         :total-line-domain="'_total'"
         :class="{ dragging: dragging }"
         :use-offset-diverge="isTypeGrowthStackedArea ? true : false"
