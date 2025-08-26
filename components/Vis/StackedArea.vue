@@ -1045,7 +1045,7 @@ export default {
         })
 
       if (this.showTotalLine) {
-        this.totalLine.curve(curveMonotoneX)
+        this.totalLine.curve(this.curveType)
         this.$totalLineGroup.selectAll('path').remove()
 
         this.drawTotalLine()
