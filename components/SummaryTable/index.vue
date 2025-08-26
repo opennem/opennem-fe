@@ -279,6 +279,8 @@
             :show-point-summary="hoverOn || focusOn"
             :point-summary="pointSummaryCurtailment"
             :summary="summaryCurtailment"
+            :point-summary-total="pointSummarySourcesTotal"
+            :summary-total="summarySourcesTotal"
             :domain-toggleable="domainToggleable"
             @update="handleSourcesOrderUpdate"
             @fuelTechsHidden="handleSourceFuelTechsHidden"
@@ -1126,6 +1128,7 @@ export default {
           totalPowerMinusHidden += dataPowerMinusHiddenSum
 
           if (category !== 'load' || _includes(ft.id, 'exports')) {
+            // exclude curtailment, pumps and battery charging
             totalEnergyForPercentageCalculation += dataEnergySum
           }
 

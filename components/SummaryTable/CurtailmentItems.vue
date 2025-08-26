@@ -71,9 +71,9 @@
       </div>
 
       <div class="summary-col-contribution">
-        <!-- <span v-show="showContribution(ft)">
+        <span>
           {{ getContribution(ft.id) | percentageFormatNumber }}
-        </span> -->
+        </span>
       </div>
 
       <div 
@@ -116,18 +116,18 @@ export default {
       type: Object,
       default: () => {}
     },
-    // pointSummaryTotal: {
-    //   type: Number,
-    //   default: () => 0
-    // },
+    pointSummaryTotal: {
+      type: Number,
+      default: () => 0
+    },
     summary: {
       type: Object,
       default: () => {}
     },
-    // summaryTotal: {
-    //   type: Number,
-    //   default: () => 0
-    // },
+    summaryTotal: {
+      type: Number,
+      default: () => 0
+    },
     showPointSummary: {
       type: Boolean,
       default: () => false
@@ -296,6 +296,17 @@ export default {
 
     getValue(key) {
       return this.showPointSummary ? this.pointSummary[key] : this.summary[key]
+    },
+
+    getContribution(key) {
+      const rowValue = this.showPointSummary
+        ? this.pointSummary[key]
+        : this.summary[key] || 0
+      const total = this.showPointSummary
+        ? this.pointSummaryTotal
+        : this.summaryTotal
+
+      return (rowValue / total) * 100
     },
 
     handleTouchstart(ft) {
