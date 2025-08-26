@@ -18,7 +18,7 @@
         class="summary-col-label">
         <div
           :style="{
-            'background-color': ft.hidden ? 'transparent' : ft.colour,
+            'background': ft.hidden ? 'transparent' : `repeating-linear-gradient(-45deg, ${ft.colour}, ${ft.colour} 2px, ${ft.colour}99 2px, ${ft.colour}99 4px)`,
             'border-color': ft.hidden ? '#bbb' : ft.colour
           }"
           class="colour-square"

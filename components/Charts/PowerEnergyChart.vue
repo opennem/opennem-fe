@@ -48,6 +48,7 @@
       :show-date-axis="showDateAxis"
       :change-since-label="changeSinceLabel"
       :growth-label="growthLabel"
+      :is-curtailment-hover="isCurtailmentHover"
       @type-click="handleTypeClick"
       @date-axis="(visible) => showDateAxis = visible"
     />
@@ -979,6 +980,11 @@ export default {
       return this.convertValue(average)
     },
 
+    isCurtailmentHover() {
+      const domain = this.hoverDomain
+      return domain && domain.includes('curtailment')
+    },
+
     hoverPowerEnergyDomain() {
       const domain = this.hoverDomain
       const type = this.isEnergyType ? 'energy' : 'power'
@@ -1031,12 +1037,28 @@ export default {
         : ''
     },
     hoverDomainLabel() {
+      if (this.isCurtailmentHover) {
+        const find = this.domainCurtailment.find(
+          (d) => d.id === this.hoverDomain
+        )
+
+        return find ? find.label + ' (curtailed)' : '—'
+      }
+
       const find = this.domainPowerEnergy.find(
         (d) => d.id === this.hoverPowerEnergyDomain
       )
       return find ? find.label : '—'
     },
     hoverDomainColour() {
+      if (this.isCurtailmentHover) {
+        const find = this.domainCurtailment.find(
+          (d) => d.id === this.hoverDomain
+        )
+
+        return find ? find.colour : '—'
+      }
+
       const find = this.domainPowerEnergy
         ? this.domainPowerEnergy.find(
             (d) => d.id === this.hoverPowerEnergyDomain
