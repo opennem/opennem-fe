@@ -60,7 +60,7 @@
             width="10" 
             height="10" 
             :fill="domain.colour" 
-            :opacity="1" />
+            :opacity="0.7" />
           <line 
             stroke="rgba(236, 233, 230, 0.4)" 
             stroke-width="3px" 
@@ -1060,9 +1060,9 @@ export default {
         .attr('class', 'line-path')
         .attr('d', this.totalLine)
         .style('stroke', '#c74523')
-        .style('stroke-width', 1)
+        .style('stroke-width', 1.5)
         .style('stroke-linecap', 'round')
-        .style('stroke-dasharray', '3,3')
+        // .style('stroke-dasharray', '3,3')
         // .style('filter', 'url(#shadow)')
         .style('clip-path', this.clipPathUrl)
         .style('-webkit-clip-path', this.clipPathUrl)
