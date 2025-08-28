@@ -15,6 +15,7 @@ export default function ({
   isEnergyType,
   currentDataset,
   domainPowerEnergy,
+  domainCurtailment,
   domainEmissions,
   domainPrice,
   domainInflation,
@@ -124,6 +125,10 @@ export default function ({
           totalNetGeneration += d[id]
         }
       }
+    })
+
+    domainCurtailment.forEach((domain) => {
+      d[domain.id] = d[domain.id] || 0
     })
 
     domainPowerEnergy.forEach((domain) => {

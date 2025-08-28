@@ -48,6 +48,7 @@
       :show-date-axis="showDateAxis"
       :change-since-label="changeSinceLabel"
       :growth-label="growthLabel"
+      :is-curtailment-hover="isCurtailmentHover"
       @type-click="handleTypeClick"
       @date-axis="(visible) => showDateAxis = visible"
     />
@@ -89,7 +90,7 @@
         :unit="` ${chartDisplayPrefix}${chartUnit}`"
         :null-check-prop="'_total'"
         :filter-period="filterPeriod"
-        :show-total-line="chartEnergyNetLine"
+        :show-total-line="chartEnergyNetLine && !isTypeProportion"
         :total-line-domain="'_total'"
         :class="{ dragging: dragging }"
         :use-offset-diverge="isTypeGrowthStackedArea ? true : false"
@@ -276,6 +277,10 @@ export default {
       type: Array,
       default: () => []
     },
+    domainCurtailment: {
+      type: Array,
+      default: () => []
+    },
     hiddenDomains: {
       type: Array,
       default: () => []
@@ -413,7 +418,9 @@ export default {
       isTypeChangeSinceLine: 'chartOptionsPowerEnergy/isTypeChangeSinceLine',
       isTypeGrowthStackedArea: 'chartOptionsPowerEnergy/isTypeGrowthStackedArea',
       allowResize: 'regionEnergy/allowResize',
-      _rolledUpDataset: 'regionEnergy/_rolledUpDataset'
+      _rolledUpDataset: 'regionEnergy/_rolledUpDataset',
+
+      curtailmentSeriesEnabled: 'feature/curtailmentSeries'
     }),
 
     showDateAxis: {
@@ -492,14 +499,22 @@ export default {
         this.isTypeArea || this.isTypeChangeSinceLine
           ? this.powerEnergyDomains
           : this.energyPercentDomains
+      
       return domains.filter(
         (d) => !_includes(this.hiddenDomains, d[this.propName])
       )
     },
     powerEnergyDomains() {
-      return this.domainPowerEnergy
-        ? _cloneDeep(this.domainPowerEnergy).reverse()
-        : []
+      if (this.curtailmentSeriesEnabled && this.domainCurtailment.length > 0) {
+        return [
+          ...this.domainPowerEnergy,
+          ...this.domainCurtailment
+        ].reverse()
+      } else {
+        return this.domainPowerEnergy
+          ? _cloneDeep(this.domainPowerEnergy).reverse()
+          : []
+      }
     },
     energyPercentDomains() {
       return this.powerEnergyDomains.filter((d) => d.category === 'source')
@@ -968,6 +983,11 @@ export default {
       return this.convertValue(average)
     },
 
+    isCurtailmentHover() {
+      const domain = this.hoverDomain
+      return domain && domain.includes('curtailment')
+    },
+
     hoverPowerEnergyDomain() {
       const domain = this.hoverDomain
       const type = this.isEnergyType ? 'energy' : 'power'
@@ -995,7 +1015,11 @@ export default {
       let value = null
 
       if (this.hoverData) {
-        value = this.hoverData[this.hoverPowerEnergyDomain]
+        if (this.isCurtailmentHover) {
+          value = this.hoverData[this.hoverDomain]
+        } else {
+          value = this.hoverData[this.hoverPowerEnergyDomain]
+        }
       }
       return this.isTypeProportion ||
         (this.isTypeLine && this.isYAxisPercentage)
@@ -1020,12 +1044,27 @@ export default {
         : ''
     },
     hoverDomainLabel() {
+      if (this.isCurtailmentHover) {
+        const find = this.domainCurtailment.find(
+          (d) => d.id === this.hoverDomain
+        )
+        return find ? find.label + ' (curtailed)' : '—'
+      }
+
       const find = this.domainPowerEnergy.find(
         (d) => d.id === this.hoverPowerEnergyDomain
       )
       return find ? find.label : '—'
     },
     hoverDomainColour() {
+      if (this.isCurtailmentHover) {
+        const find = this.domainCurtailment.find(
+          (d) => d.id === this.hoverDomain
+        )
+
+        return find ? find.colour : '—'
+      }
+
       const find = this.domainPowerEnergy
         ? this.domainPowerEnergy.find(
             (d) => d.id === this.hoverPowerEnergyDomain

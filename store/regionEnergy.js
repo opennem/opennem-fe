@@ -51,6 +51,8 @@ export const state = () => ({
   domainUnits: '',
   domainPowerEnergy: [],
   domainPowerEnergyGrouped: [],
+  domainCurtailment: [],
+  domainCurtailmentGrouped: [],
   domainEmissions: [],
   domainEmissionsGrouped: [],
   domainMarketValue: [],
@@ -65,6 +67,7 @@ export const state = () => ({
   currentDomainEmissions: [],
   currentDomainCapacity: [],
   currentDomainMarketValue: [],
+  currentDomainCurtailment: [],
   filteredDates: [],
   summary: null,
   powerEnergyPrefix: '',
@@ -85,6 +88,8 @@ export const getters = {
   changeSinceDataset: (state) => state.changeSinceDataset,
   domainPowerEnergy: (state) => state.domainPowerEnergy,
   domainPowerEnergyGrouped: (state) => state.domainPowerEnergyGrouped,
+  domainCurtailment: (state) => state.domainCurtailment,
+  domainCurtailmentGrouped: (state) => state.domainCurtailmentGrouped,
   domainEmissions: (state) => state.domainEmissions,
   domainEmissionsGrouped: (state) => state.domainEmissionsGrouped,
   domainMarketValue: (state) => state.domainMarketValue,
@@ -99,6 +104,7 @@ export const getters = {
   currentDomainEmissions: (state) => state.currentDomainEmissions,
   currentDomainMarketValue: (state) => state.currentDomainMarketValue,
   currentDomainCapacity: (state) => state.currentDomainCapacity,
+  currentDomainCurtailment: (state) => state.currentDomainCurtailment,
   summary: (state) => state.summary,
   powerEnergyPrefix: (state) => state.powerEnergyPrefix,
   dataPowerEnergyInterval: (state) => state.dataPowerEnergyInterval,
@@ -179,6 +185,12 @@ export const mutations = {
   domainPowerEnergyGrouped(state, domainPowerEnergyGrouped) {
     state.domainPowerEnergyGrouped = _cloneDeep(domainPowerEnergyGrouped)
   },
+  domainCurtailment(state, domainCurtailment) {
+    state.domainCurtailment = _cloneDeep(domainCurtailment)
+  },
+  domainCurtailmentGrouped(state, domainCurtailmentGrouped) {
+    state.domainCurtailmentGrouped = _cloneDeep(domainCurtailmentGrouped)
+  },
   domainEmissions(state, domainEmissions) {
     state.domainEmissions = _cloneDeep(domainEmissions)
   },
@@ -212,6 +224,9 @@ export const mutations = {
   },
   currentDomainCapacity(state, currentDomainCapacity) {
     state.currentDomainCapacity = _cloneDeep(currentDomainCapacity)
+  },
+  currentDomainCurtailment(state, currentDomainCurtailment) {
+    state.currentDomainCurtailment = _cloneDeep(currentDomainCurtailment)
   },
   summary(state, summary) {
     state.summary = _cloneDeep(summary)
@@ -285,6 +300,8 @@ export const actions = {
         dataPowerEnergyInterval,
         domainPowerEnergy,
         domainPowerEnergyGrouped,
+        domainCurtailment,
+        domainCurtailmentGrouped,
         domainEmissions,
         domainEmissionsGrouped,
         domainMarketValue,
@@ -307,6 +324,8 @@ export const actions = {
       return {
         dataset,
         domainPowerEnergy,
+        domainCurtailment,
+        domainCurtailmentGrouped,
         domainEmissions,
         domainTemperature,
         domainPrice,
@@ -567,6 +586,8 @@ export const actions = {
           dataPowerEnergyInterval,
           domainPowerEnergy,
           domainPowerEnergyGrouped,
+          domainCurtailment,
+          domainCurtailmentGrouped,
           domainEmissions,
           domainEmissionsGrouped,
           domainMarketValue,
@@ -603,6 +624,8 @@ export const actions = {
         commit('dataPowerEnergyInterval', dataPowerEnergyInterval)
         commit('domainPowerEnergy', domainPowerEnergy)
         commit('domainPowerEnergyGrouped', domainPowerEnergyGrouped)
+        commit('domainCurtailment', domainCurtailment)
+        commit('domainCurtailmentGrouped', domainCurtailmentGrouped)
         commit('domainEmissions', domainEmissions)
         commit('domainEmissionsGrouped', domainEmissionsGrouped)
         commit('domainMarketValue', domainMarketValue)
@@ -614,6 +637,7 @@ export const actions = {
         commit('domainDemandPower', domainDemandPower)
         commit('domainDemandMarketValue', domainDemandMarketValue)
         commit('currentDomainPowerEnergy', domainPowerEnergyGrouped[groupName])
+        commit('currentDomainCurtailment', domainCurtailmentGrouped[groupName])
         commit('currentDomainEmissions', domainEmissionsGrouped[groupName])
         commit('currentDomainMarketValue', domainMarketValueGrouped[groupName])
 
@@ -645,6 +669,7 @@ export const actions = {
           currentDataset,
           currentDomainPowerEnergy: domainPowerEnergyGrouped[groupName],
           currentDomainEmissions: domainEmissionsGrouped[groupName],
+          currentDomainCurtailment: domainCurtailmentGrouped[groupName],
           domainTemperature,
           domainPrice
         }
@@ -843,6 +868,8 @@ export const actions = {
         dataPowerEnergyInterval,
         domainPowerEnergy,
         domainPowerEnergyGrouped,
+        domainCurtailment,
+        domainCurtailmentGrouped,
         domainEmissions,
         domainEmissionsGrouped,
         domainMarketValue,
@@ -865,6 +892,7 @@ export const actions = {
       return {
         dataset,
         domainPowerEnergy,
+        domainCurtailment,
         domainEmissions,
         domainTemperature,
         domainPrice,
@@ -910,6 +938,8 @@ export const actions = {
         datasetFlat: _cloneDeep(filtered),
         domainPowerEnergy: state.domainPowerEnergy,
         domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
+        domainCurtailment: state.domainCurtailment,
+        domainCurtailmentGrouped: state.domainCurtailmentGrouped,
         domainEmissions: state.domainEmissions,
         domainEmissionsGrouped: state.domainEmissionsGrouped,
         domainMarketValue: state.domainMarketValue,
@@ -917,7 +947,7 @@ export const actions = {
         domainPrice: state.domainPrice,
         domainTemperature: state.domainTemperature,
         domainDemandPrice: state.domainDemandPrice,
-        domainDemandEnergy: state.domainDemandEnergy,
+        domainDemandEnergy: state.domainDemandEnergy, 
         domainDemandPower: state.domainDemandPower,
         domainDemandMarketValue: state.domainDemandMarketValue,
         range,
@@ -949,6 +979,8 @@ export const actions = {
       datasetFlat: _cloneDeep(filtered),
       domainPowerEnergy: state.domainPowerEnergy,
       domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
+      domainCurtailment: state.domainCurtailment,
+      domainCurtailmentGrouped: state.domainCurtailmentGrouped,
       domainEmissions: state.domainEmissions,
       domainEmissionsGrouped: state.domainEmissionsGrouped,
       domainMarketValue: state.domainMarketValue,
@@ -976,6 +1008,7 @@ export const actions = {
       'currentDomainPowerEnergy',
       state.domainPowerEnergyGrouped[groupName]
     )
+    commit('currentDomainCurtailment', state.domainCurtailmentGrouped[groupName])
     commit('currentDomainEmissions', state.domainEmissionsGrouped[groupName])
     commit(
       'currentDomainMarketValue',
@@ -1009,11 +1042,14 @@ export const actions = {
     { range, interval, period }
   ) {
     // console.log('****** doUpdateDatasetByFilterPeriod')
+
     const { currentDataset } = dataRollUp({
       isEnergyType: state.isEnergyType,
       datasetFlat: _cloneDeep(state.datasetFlat),
       domainPowerEnergy: state.domainPowerEnergy,
       domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
+      domainCurtailment: state.domainCurtailment,
+      domainCurtailmentGrouped: state.domainCurtailmentGrouped,
       domainEmissions: state.domainEmissions,
       domainEmissionsGrouped: state.domainEmissionsGrouped,
       domainMarketValue: state.domainMarketValue,
@@ -1042,6 +1078,8 @@ export const actions = {
       datasetFlat: _cloneDeep(state.datasetFlat),
       domainPowerEnergy: state.domainPowerEnergy,
       domainPowerEnergyGrouped: state.domainPowerEnergyGrouped,
+      domainCurtailment: state.domainCurtailment,
+      domainCurtailmentGrouped: state.domainCurtailmentGrouped,
       domainEmissions: state.domainEmissions,
       domainEmissionsGrouped: state.domainEmissionsGrouped,
       domainMarketValue: state.domainMarketValue,

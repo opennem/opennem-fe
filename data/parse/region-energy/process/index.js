@@ -12,6 +12,8 @@ import {
   getFuelTechWithTypeDomains,
   getFuelTechInOrder,
   getFuelTechDomains,
+  getCurtailmentDomains,
+  getCurtailmentInOrder,
   getTemperatureDomains,
   getPriceDomains,
   getVolWeightedPriceDomains,
@@ -27,6 +29,7 @@ export default function (data, displayTz) {
   const {
     dataAll,
     dataPowerEnergy,
+    dataCurtailment,
     dataEmissions,
     dataPriceMarketValue,
     dataTemperature,
@@ -55,6 +58,12 @@ export default function (data, displayTz) {
     fuelTechIdTypes,
     fuelTechDataType
   )
+
+  const domainCurtailment = getCurtailmentDomains(
+    getCurtailmentInOrder(dataCurtailment),
+    fuelTechDataType
+  )
+
   const domainEmissions = getFuelTechDomains(
     getFuelTechInOrder(dataEmissions),
     EMISSIONS
@@ -157,6 +166,7 @@ export default function (data, displayTz) {
     datasetFlat,
     datasetInflation,
     domainPowerEnergy,
+    domainCurtailment,
     domainEmissions,
     domainMarketValue,
     domainPrice,

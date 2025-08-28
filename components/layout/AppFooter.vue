@@ -78,7 +78,7 @@
       </transition>
 
       <a 
-        v-tooltip="'Experimental features'" 
+        v-tooltip="'Feature toggle'" 
         ref="featureElement" 
         class="icon-link" 
         target="_blank"

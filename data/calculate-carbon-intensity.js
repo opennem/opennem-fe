@@ -131,7 +131,7 @@ export default function({
     const isValidEI = Number.isFinite(ei)
 
     if (ei < 0 || ei > 1500) {
-      console.error(`EI out of range: ${ei}`)
+      console.log(`EI out of range: ${ei}`)
     }
 
     obj._emissionIntensity = isValidEI ? Math.abs(ei) : null
