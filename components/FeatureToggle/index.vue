@@ -15,6 +15,14 @@
       Show Compare VWP before 2009
     </label>
 
+    <label class="panel-block">
+      <input
+        v-model="featureCurtailmentSeries"
+        type="checkbox"
+      >
+      Curtailment series
+    </label>
+
   </div>
 </template>
 
@@ -28,10 +36,21 @@ export default {
       set: function (newValue) {
         this.$store.commit('feature/comparePrice', newValue)
       }
+    },
+    featureCurtailmentSeries: {
+      get: function () {
+        return this.$store.getters['feature/curtailmentSeries']
+      },
+      set: function (newValue) {
+        this.$store.commit('feature/curtailmentSeries', newValue)
+      }
     }
   },
   watch: {
     featureComparePrice() {
+      this.$emit('done')
+    },
+    featureCurtailmentSeries() {
       this.$emit('done')
     }
   },

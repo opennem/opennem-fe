@@ -469,6 +469,9 @@ export default {
     currentDomainCurtailment() {
       return this.$store.getters['regionEnergy/currentDomainCurtailment'] || null
     },
+    curtailmentSeriesEnabled() {
+      return this.$store.getters['feature/curtailmentSeries']
+    },
     compareDifference() {
       return this.$store.getters.compareDifference
     },
@@ -940,7 +943,7 @@ export default {
           ? max(this.updatedDataset, (d) => {
               let totalWithCurtailment = d._total || 0
               // Add curtailment values to the total when showing total line
-              if (this.currentDomainCurtailment && this.currentDomainCurtailment.length > 0) {
+              if (this.curtailmentSeriesEnabled && this.currentDomainCurtailment && this.currentDomainCurtailment.length > 0) {
                 this.currentDomainCurtailment.forEach(curtailmentDomain => {
                   totalWithCurtailment += d[curtailmentDomain.id] || 0
                 })
@@ -1021,10 +1024,12 @@ export default {
         .attr('stroke-width', 1)
         .attr('stroke', '#000')
         .attr('fill', (d) => {
-          // Check if this domain is a curtailment domain
-          const domain = this.currentDomainCurtailment.find(domain => domain.id === d.key)
-          if (domain) {
-            return `url(#${this.id}-curtailment-pattern-${domain.id})`
+          if (this.curtailmentSeriesEnabled) {
+            // Check if this domain is a curtailment domain
+            const domain = this.currentDomainCurtailment.find(domain => domain.id === d.key)
+            if (domain) {
+              return `url(#${this.id}-curtailment-pattern-${domain.id})`
+            }
           }
           return this.z(d.key)
         })

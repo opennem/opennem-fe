@@ -1,16 +1,19 @@
 import { lsSet } from '~/services/LocalStorage'
 import {
   FEATURE_TOGGLE_COMPARE_PRICE,
+  FEATURE_TOGGLE_CURTAILMENT_SERIES,
   SHOW_BANNER
 } from '@/constants/mutation-types/features.js'
 
 export const state = () => ({
   comparePrice: false,
+  curtailmentSeries: false,
   showBanner: true
 })
 
 export const getters = {
   comparePrice: (state) => state.comparePrice,
+  curtailmentSeries: (state) => state.curtailmentSeries,
   showBanner: (state) => state.showBanner
 }
 
@@ -18,6 +21,10 @@ export const mutations = {
   comparePrice(state, comparePrice) {
     lsSet(FEATURE_TOGGLE_COMPARE_PRICE, comparePrice)
     state.comparePrice = comparePrice
+  },
+  curtailmentSeries(state, curtailmentSeries) {
+    lsSet(FEATURE_TOGGLE_CURTAILMENT_SERIES, curtailmentSeries)
+    state.curtailmentSeries = curtailmentSeries
   },
   showBanner(state, showBanner) {
     lsSet(SHOW_BANNER, showBanner)
