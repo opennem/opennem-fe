@@ -497,6 +497,7 @@ export default {
         this.isTypeArea || this.isTypeChangeSinceLine
           ? this.powerEnergyDomains
           : this.energyPercentDomains
+      
       return domains.filter(
         (d) => !_includes(this.hiddenDomains, d[this.propName])
       )
@@ -1012,7 +1013,11 @@ export default {
       let value = null
 
       if (this.hoverData) {
-        value = this.hoverData[this.hoverPowerEnergyDomain]
+        if (this.isCurtailmentHover) {
+          value = this.hoverData[this.hoverDomain]
+        } else {
+          value = this.hoverData[this.hoverPowerEnergyDomain]
+        }
       }
       return this.isTypeProportion ||
         (this.isTypeLine && this.isYAxisPercentage)
@@ -1041,7 +1046,6 @@ export default {
         const find = this.domainCurtailment.find(
           (d) => d.id === this.hoverDomain
         )
-
         return find ? find.label + ' (curtailed)' : '—'
       }
 
