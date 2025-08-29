@@ -80,7 +80,6 @@ export default {
 
   computed: {
     ...mapGetters({
-      featureComparePrice: 'feature/comparePrice',
       selectedMetric: 'stripes/selectedMetric',
       selectedMetricObj: 'stripes/selectedMetricObj'
     }),

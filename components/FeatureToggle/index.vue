@@ -9,14 +9,6 @@
 
     <label class="panel-block">
       <input
-        v-model="featureComparePrice"
-        type="checkbox"
-      >
-      Show Compare VWP before 2009
-    </label>
-
-    <label class="panel-block">
-      <input
         v-model="featureCurtailmentSeries"
         type="checkbox"
       >
@@ -29,14 +21,6 @@
 <script>
 export default {
   computed: {
-    featureComparePrice: {
-      get: function () {
-        return this.$store.getters['feature/comparePrice']
-      },
-      set: function (newValue) {
-        this.$store.commit('feature/comparePrice', newValue)
-      }
-    },
     featureCurtailmentSeries: {
       get: function () {
         return this.$store.getters['feature/curtailmentSeries']
@@ -47,9 +31,6 @@ export default {
     }
   },
   watch: {
-    featureComparePrice() {
-      this.$emit('done')
-    },
     featureCurtailmentSeries() {
       this.$emit('done')
     }

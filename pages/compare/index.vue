@@ -169,8 +169,7 @@ export default {
 
   computed: {
     ...mapGetters({
-      focusDate: 'visInteract/focusDate',
-      featureComparePrice: 'feature/comparePrice'
+      focusDate: 'visInteract/focusDate'
     }),
 
     chartTitle() {
@@ -326,10 +325,6 @@ export default {
       } else {
         this.tableDataset = {}
       }
-    },
-
-    featureComparePrice() {
-      this.updateDataWithInterval()
     }
   },
 
@@ -433,17 +428,6 @@ export default {
       })
 
       getRegionCompareData(dataset, regions, this.interval, this.filterPeriod).then(r => {
-        if (!this.featureComparePrice) {
-          // null out vwp before 2009
-          r.regionData.forEach(region => {
-            region.data.forEach(d => {
-              if (d.date.getFullYear() < 2009) {
-                d.inflatedPrice = null
-                d.price = null
-              }
-            })
-          })
-        }
 
         this.regionData = r.regionData
         this.bucket = r.bucket
