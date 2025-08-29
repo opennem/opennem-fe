@@ -428,7 +428,6 @@ export default {
       })
 
       getRegionCompareData(dataset, regions, this.interval, this.filterPeriod).then(r => {
-
         this.regionData = r.regionData
         this.bucket = r.bucket
         this.fetching = false

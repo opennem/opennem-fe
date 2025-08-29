@@ -27,6 +27,7 @@
         </div>
       </div>
     </transition>
+    
     <div 
       v-if="ready"
       ref="visTableContainer"
@@ -43,7 +44,6 @@
         @dateHover="handleDateHover"
         @isHovering="handleIsHovering"
       />
-
 
       <Divider 
         v-if="allowResize"
