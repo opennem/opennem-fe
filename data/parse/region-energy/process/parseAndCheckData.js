@@ -18,10 +18,9 @@ export default function (response, displayTz) {
   let demandEnergy = [], demandPower = [], demandMarketValue = []
   // filter out each type to its own array
 
-  console.log('parseAndCheckData', data)
   data.forEach((d) => {
     const typeProp = typeof d.data_type === 'undefined' ? 'type' : 'data_type'
-    const isCurtailment = d.id.includes('curtailment')
+    const isCurtailment = d.fuel_tech?.includes('curtailment')
     if (DT.isValidDataType(d[typeProp])) {
       dataAll.push(d)
     }
