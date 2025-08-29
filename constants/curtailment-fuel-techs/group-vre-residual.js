@@ -8,7 +8,7 @@ export const VRE = `${GROUP_NAME}.vre`
 export const FUEL_TECH_GROUP = {}
 FUEL_TECH_GROUP[VRE] = [
   FT.CURTAILMENT_WIND,
-  FT.CURTAILMENT_SOLAR,
+  FT.CURTAILMENT_SOLAR_UTILITY,
 ]
 
 // Fuel tech group order
