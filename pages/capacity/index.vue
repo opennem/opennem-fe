@@ -1,7 +1,7 @@
 <script>
 export default {
   asyncData({ redirect }) {
-    return redirect('/capacity/nem')
+    return redirect('/capacity/nem/')
   }
 }
 </script>
