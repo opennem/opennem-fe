@@ -256,7 +256,8 @@ export default {
         } else {
           hidden.push(ft[property])
         }
-        this.order = this.updateOrder(this.originalOrder)
+        // this.order = this.updateOrder(this.originalOrder)
+
         this.$emit('fuelTechsHidden', hidden, false)
       }
     },
@@ -268,7 +269,8 @@ export default {
           (d) => d[property] !== ft[property]
         )
         const hidden = hiddenObjs.map((d) => d[property])
-        this.order = this.updateOrder(this.originalOrder)
+        // this.order = this.updateOrder(this.originalOrder)
+
         this.$emit('fuelTechsHidden', hidden, true, ft)
       }
     },

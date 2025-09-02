@@ -274,7 +274,7 @@
           style="margin-left: 8px; border-top: 1px solid #ddd;">
           <curtailment-items
             :group="'ft-curtailment'"
-            :hidden-fuel-techs="hiddenFuelTechs"
+            :hidden-fuel-techs="hiddenCurtailment"
             :original-order="curtailmentDomains"
             :show-point-summary="hoverOn || focusOn"
             :point-summary="pointSummaryCurtailment"
@@ -282,8 +282,7 @@
             :point-summary-total="pointSummarySourcesTotal"
             :summary-total="summarySourcesTotal"
             :domain-toggleable="domainToggleable"
-            @update="handleSourcesOrderUpdate"
-            @fuelTechsHidden="handleSourceFuelTechsHidden"
+            @fuelTechsHidden="handleCurtailmentFuelTechsHidden"
             @mouse-enter="handleMouseEnter"
             @mouse-leave="handleMouseLeave"
             @domain-click="handleDomainClick"
@@ -292,7 +291,7 @@
 
         <div style="padding-left: 8px; padding-top: 8px; border-top: 1px solid #333; margin-top: 8px;">
           <div 
-            v-if="loadsOrder.length > 0" 
+            v-if="sourcesOrder.length > 0" 
             class="summary-column-headers line-row"
             @touchstart="() => handleTouchstart('chartEnergyNetLine')"
             @touchend="handleTouchend"
@@ -934,6 +933,7 @@ export default {
 
   mounted() {
     let hiddenFuelTechs = this.hiddenFuelTechs
+    let totalDomainLength = this.energyDomains.length + this.curtailmentDomains.length
 
     // if all is hidden, then unhide all
     let hiddenLength = 0
@@ -942,8 +942,13 @@ export default {
         hiddenLength += 1
       }
     })
+    this.curtailmentDomains.forEach((d) => {
+      if (_includes(hiddenFuelTechs, d[this.propRef])) {
+        hiddenLength += 1
+      }
+    })
 
-    if (this.energyDomains.length === hiddenLength) {
+    if (totalDomainLength === hiddenLength) {
       this.hiddenSources = []
       this.hiddenLoads = []
       hiddenFuelTechs = []
@@ -1566,7 +1571,7 @@ export default {
     },
 
     emitHiddenFuelTechs() {
-      let hiddenFuelTechs = [...this.hiddenSources, ...this.hiddenLoads]
+      let hiddenFuelTechs = [...this.hiddenSources, ...this.hiddenLoads, ...this.hiddenCurtailment]
       // if all is hidden, then unhide all
       let sourcesHiddenLength = 0
       this.sourcesOrder.forEach((d) => {
@@ -1580,18 +1585,47 @@ export default {
           loadsHiddenLength += 1
         }
       })
+      let curtailmentHiddenLength = 0
+      this.curtailmentDomains.forEach((d) => {
+        if (_includes(this.hiddenCurtailment, d[this.propRef])) {
+          curtailmentHiddenLength += 1
+        }
+      })
       if (
         this.sourcesOrder.length === sourcesHiddenLength &&
         this.loadsOrder.length === loadsHiddenLength &&
+        this.curtailmentDomains.length === curtailmentHiddenLength &&
         !this.chartEnergyRenewablesLine &&
         !this.chartEnergyNetLine
       ) {
         this.hiddenSources = []
         this.hiddenLoads = []
+        this.hiddenCurtailment = []
         hiddenFuelTechs = []
       }
 
       this.$emit('fuelTechsHidden', hiddenFuelTechs)
+    },
+
+    handleCurtailmentFuelTechsHidden(hidden, hideOthers, onlyFt) {
+      this.hiddenCurtailment = hidden
+      if (hideOthers) {
+        if (this.fuelTechGroupName === GROUP_DETAILED) {
+          const hiddenSources = Domain.getAllDomainObjs().filter(
+            (d) => d.category === 'source'
+          )
+          const hiddenLoads = Domain.getAllDomainObjs().filter(
+            (d) => d.category === 'load'
+          )
+       
+          this.hiddenSources = hiddenSources.map((d) => d.fuelTech)
+          this.hiddenLoads = hiddenLoads.map((d) => d.fuelTech)
+        } else {
+          this.hiddenSources = this.sourcesOrder.map((d) => d[this.propRef])
+          this.hiddenLoads = this.loadsOrder.map((d) => d[this.propRef])
+        }
+      } 
+      this.emitHiddenFuelTechs()
     },
 
     handleSourceFuelTechsHidden(hidden, hideOthers, onlyFt) {
@@ -1604,13 +1638,17 @@ export default {
           const hiddenLoads = Domain.getAllDomainObjs().filter(
             (d) => d.category === 'load'
           )
+       
           this.hiddenSources = hiddenSources.map((d) => d.fuelTech)
           this.hiddenLoads = hiddenLoads.map((d) => d.fuelTech)
+          this.hiddenCurtailment = this.curtailmentDomains.map((d) => d.fuelTech)
         } else {
           const hiddenLoads = this.domainPowerEnergyGrouped[
             this.fuelTechGroupName
           ].filter((d) => d.category === 'load')
+          
           this.hiddenLoads = hiddenLoads.map((d) => d[this.propRef])
+          this.hiddenCurtailment = this.curtailmentDomains.map((d) => d[this.propRef])
           // this.hiddenLoads = this.loadsOrder.map(d => d[property])
         }
       }
@@ -1629,8 +1667,11 @@ export default {
           )
           this.hiddenSources = hiddenSources.map((d) => d.fuelTech)
           this.hiddenLoads = hiddenLoads.map((d) => d.fuelTech)
+          this.hiddenCurtailment = this.curtailmentDomains.map((d) => d.fuelTech)
+
         } else {
           this.hiddenSources = this.sourcesOrder.map((d) => d[this.propRef])
+          this.hiddenCurtailment = this.curtailmentDomains.map((d) => d[this.propRef])
         }
       }
       this.emitHiddenFuelTechs()
