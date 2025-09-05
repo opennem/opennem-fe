@@ -453,7 +453,7 @@ import EventBus from '@/plugins/eventBus'
 import { getTimeLabel } from '@/data/transform/time-of-day' 
 import groupDataset from '@/data/parse/region-energy/group'
 import Domain from '~/services/Domain.js'
-import GroupSelector from '~/components/ui/CapacityFuelTechGroupSelector'
+import GroupSelector from '~/components/ui/FuelTechGroupSelector'
 import ColumnSelector from '~/components/ui/SummaryColumnSelector'
 import ExportLegend from '@/components/Energy/Export/Legend'
 import Items from './Items'
@@ -885,17 +885,17 @@ export default {
   },
 
   watch: {
-    fuelTechGroupName() {
-      // clear hidden fuel techs when grouping is changed
-      this.hiddenSources = []
-      this.hiddenLoads = []
-      this.hiddenCurtailment = []
-      this.emitHiddenFuelTechs()
+    // fuelTechGroupName() {
+    //   // clear hidden fuel techs when grouping is changed
+    //   this.hiddenSources = []
+    //   this.hiddenLoads = []
+    //   this.hiddenCurtailment = []
+    //   this.emitHiddenFuelTechs()
 
-      if (this.focusOn) {
-        this.updatePointSummary(this.focusDate)
-      }
-    },
+    //   if (this.focusOn) {
+    //     this.updatePointSummary(this.focusDate)
+    //   }
+    // },
     dataset(updated) {
       this.calculateSummary(updated)
     },
@@ -924,11 +924,37 @@ export default {
       this.handlePointCopy()
     },
     hiddenFuelTechs(updated) {
+      // console.log('hiddenFuelTechs updated', updated)
+      updated.forEach((fuelTech) => {
+        const find = this.energyDomains.find(
+          (domain) => domain[this.propRef] === fuelTech
+        )
+        const findCurtailment = this.curtailmentDomains.find(
+          (domain) => domain[this.propRef] === fuelTech
+        )
+        if (findCurtailment) {
+          this.hiddenCurtailment.push(fuelTech)
+        } else if (find) {
+          if (find.category === 'source') {
+            this.hiddenSources.push(fuelTech)
+          } else {
+            this.hiddenLoads.push(fuelTech)
+          }
+        }
+      })
+
       this.calculateSummary(this.dataset)
     },
     percentContributionTo(updated) {
       this.calculateSummary(this.dataset)
     }
+  },
+
+  created() {
+    EventBus.$on('fueltechgroup.changed', this.handleFuelTechGroupChanged)
+  },
+  beforeDestroy() {
+    EventBus.$off('fueltechgroup.changed')
   },
 
   mounted() {
@@ -973,10 +999,22 @@ export default {
         }
       }
     })
+
     this.calculateSummary(this.dataset)
   },
 
   methods: {
+    handleFuelTechGroupChanged(group) {
+      // clear hidden fuel techs when grouping is changed
+      this.hiddenSources = []
+      this.hiddenLoads = []
+      this.hiddenCurtailment = []
+      this.emitHiddenFuelTechs()
+
+      if (this.focusOn) {
+        this.updatePointSummary(this.focusDate)
+      }
+    },
     handleValueButtonClicked() {
       if (this.renewablesCustomFString === ',.1f') {
         this.renewablesCustomFString = ',.3f'
@@ -1604,6 +1642,7 @@ export default {
         hiddenFuelTechs = []
       }
 
+      console.log('emitHiddenFuelTechs hiddenFuelTechs', hiddenFuelTechs)
       this.$emit('fuelTechsHidden', hiddenFuelTechs)
     },
 

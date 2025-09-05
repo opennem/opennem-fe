@@ -67,6 +67,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex'
 import { RANGES, RANGE_INTERVALS } from '@/constants/ranges.js'
+import { GROUP_LABEL } from '@/constants/energy-fuel-techs/group-detailed.js'
 
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import DataOptionsBarTimeOfDay from '~/components/Energy/DataOptionsBarTimeOfDay.vue'
@@ -96,11 +97,11 @@ export default {
   },
   watch: {
     fuelTechGroupName() {
-      const query = {
-          range: this.range,
-          interval: this.interval
-        }
-      this.handleQueryChange(query)
+      // const query = {
+      //     range: this.range,
+      //     interval: this.interval
+      //   }
+      // this.handleQueryChange(query)
     }
   },
 
@@ -110,7 +111,10 @@ export default {
       interval: 'interval',
       filterPeriod: 'filterPeriod',
       fuelTechGroupName: 'fuelTechGroupName',
+      hiddenFuelTechs: 'hiddenFuelTechs',
       query: 'app/query',
+      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
+      currentDomainCurtailment: 'regionEnergy/currentDomainCurtailment'
     }),
 
     rangeDropdownBreak() {
@@ -119,6 +123,10 @@ export default {
     padding() {
       console.log('rangeDropdownBreak', this.rangeDropdownBreak)
       return this.rangeDropdownBreak ? '0' : '0'
+    },
+
+    property() {
+      return this.fuelTechGroupName === GROUP_LABEL ? 'fuelTech' : 'group'
     },
 
     dashboardView: {
@@ -133,6 +141,13 @@ export default {
 
     regionId() {
       return this.$route.params.region
+    },
+
+    hiddenPowerEnergyWithCurtailment() {
+      const hiddenPowerEnergy = this.currentDomainPowerEnergy.filter((d) => _includes(this.hiddenFuelTechs, d[this.property]))
+      const hiddenCurtailment = this.currentDomainCurtailment.filter((d) => _includes(this.hiddenFuelTechs, d[this.property]))
+      const hidden = [...hiddenPowerEnergy, ...hiddenCurtailment]
+      return hidden
     },
   },
 

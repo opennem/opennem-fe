@@ -19,6 +19,7 @@ export default {
             const domain = domains.find((d) => d.fuelTech === g)
             if (domain) domainIds.push(domain.id)
           })
+
           groupDomains.push({
             id: `${id}.${type}`,
             domain: `${id}.${type}`,
@@ -27,6 +28,7 @@ export default {
             category: dict.FUEL_TECH_CATEGORY[id],
             type: find.type,
             group: id,
+            nameFuelTech: dict.NAME_FUEL_TECH_GROUP[id],
             domainIds
           })
         }

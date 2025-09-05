@@ -184,9 +184,13 @@ export default {
       filteredDates: 'regionEnergy/filteredDates',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
+      currentDomainCurtailment: 'regionEnergy/currentDomainCurtailment',
       domainPowerEnergy: 'regionEnergy/domainPowerEnergy',
       allowResize: 'regionEnergy/allowResize',
       useCachedData: 'regionEnergy/useCachedData',
+
+      chartEnergyRenewablesLine: 'chartOptionsPowerEnergy/chartEnergyRenewablesLine',
+      chartEnergyNetLine: 'chartOptionsPowerEnergy/chartEnergyNetLine',
 
       query: 'app/query',
       showFeatureToggle: 'app/showFeatureToggle',
@@ -224,6 +228,16 @@ export default {
       return this.$route.query.group
     },
 
+    // comma separated list of fuel techs to hide
+    queryHide() {
+      return this.$route.query.hide
+    },
+
+    // comma separated list of curtailment fuel techs and net / renewable lines to show
+    queryShow() {
+      return this.$route.query.show
+    },
+      
     cardFilename() {
       return this.useDev
         ? `${this.baseUrl}opennem-dev.png`
@@ -248,10 +262,78 @@ export default {
       const domains = this.currentDomainPowerEnergy
       const hidden = this.hiddenFuelTechs
       return domains.filter((d) => !_includes(hidden, d[this.property]))
-    }
+    },
+
+    hiddenPowerEnergyWithCurtailment() {
+      const hiddenPowerEnergy = this.currentDomainPowerEnergy.filter((d) => _includes(this.hiddenFuelTechs, d[this.property]))
+      const hiddenCurtailment = this.currentDomainCurtailment.filter((d) => _includes(this.hiddenFuelTechs, d[this.property]))
+      const hidden = [...hiddenPowerEnergy, ...hiddenCurtailment]
+      return hidden
+    },
+
+    shownNetRenewablesLine() {
+      // const shown = this.currentDomainCurtailment.filter((d) => !_includes(this.hiddenFuelTechs, d[this.property])).map((d) => d[this.property])
+      const shown = []
+      if (this.chartEnergyRenewablesLine) {
+        shown.push('chartEnergyRenewablesLine')
+      }
+      if (this.chartEnergyNetLine) {
+        shown.push('chartEnergyNetLine')
+      }
+      return shown
+    },
   },
 
   watch: {
+    currentDomainPowerEnergy(val) {
+      if (this.queryHide) {
+        const hide = this.queryHide.split(',')
+        const isFuelTechProperty = this.queryGroup === 'Detailed'
+
+        const hiddenPowerEnergy = val.filter((d) => _includes(hide, isFuelTechProperty ? d.fuelTech : d.nameFuelTech))
+        const hiddenCurtailment = this.currentDomainCurtailment.filter((d) => _includes(hide, isFuelTechProperty ? d.fuelTech : d.nameFuelTech))
+        const hidden = [...hiddenPowerEnergy, ...hiddenCurtailment]
+
+        this.$store.dispatch('hiddenFuelTechs', hidden.map((d) => d[this.property]))
+      }
+    },
+
+    currentDomainCurtailment(val) {
+      if (this.queryHide) {
+        const hide = this.queryHide.split(',')
+        const isFuelTechProperty = this.queryGroup === 'Detailed'
+
+        const hiddenPowerEnergy = this.currentDomainPowerEnergy.filter((d) => _includes(hide, isFuelTechProperty ? d.fuelTech : d.nameFuelTech))
+        const hiddenCurtailment = val.filter((d) => _includes(hide, isFuelTechProperty ? d.fuelTech : d.nameFuelTech))
+        const hidden = [...hiddenPowerEnergy, ...hiddenCurtailment]
+
+        this.$store.dispatch('hiddenFuelTechs', hidden.map((d) => d[this.property]))
+      }
+    },
+
+    hiddenPowerEnergyWithCurtailment(val) {
+      const show = this.shownNetRenewablesLine
+      const options = {
+        range: this.queryRange,
+        interval: this.queryInterval,
+        view: this.dashboardView,
+        group: this.fuelTechGroupName
+      }
+
+      if (val.length > 0) {
+        options.hide = this.property === 'fuelTech'
+          ? val.map((d) => d.fuelTech).join(',')
+          : val.map((d) => d.nameFuelTech).join(',')
+      }
+
+      if (show.length > 0) {
+        options.show = show.join(',')
+      }
+
+      this.handleQueryChange(options)
+    },
+
+
     showFeatureToggle(show) {
       if (!show) {
         this.doGetRegionDataByRangeInterval({
@@ -355,6 +437,7 @@ export default {
         dashboardView: this.dashboardView
       })
     } else {
+      console.log('created push nem', this.query)
       this.$router.push({
         params: { region: 'nem' },
         query: this.query
@@ -393,12 +476,12 @@ export default {
 
     this.dashboardView = this.queryView || 'discrete-time'
 
-    this.handleQueryChange({
-      range: this.queryRange || '7d',
-      interval: this.queryInterval || '30m',
-      view: this.dashboardView,
-      group: this.queryGroup || 'Detailed'
-    })
+    if (this.queryShow) {
+      const show = this.queryShow.split(',')
+      this.$store.commit('chartOptionsPowerEnergy/chartEnergyRenewablesLine', show.includes('chartEnergyRenewablesLine'))
+      this.$store.commit('chartOptionsPowerEnergy/chartEnergyNetLine', show.includes('chartEnergyNetLine'))
+    }
+
   },
 
   beforeDestroy() {

@@ -3,7 +3,12 @@ import * as FT from './group-detailed.js'
 export const GROUP_LABEL = 'Flexibility'
 export const GROUP_NAME = 'group.curtailment.flexibility'
 
-export const VARIABLE = `${GROUP_NAME}.variable`
+export const NAME_VARIABLE = `curtailment_variable`
+
+export const VARIABLE = `${GROUP_NAME}.${NAME_VARIABLE}`
+
+export const NAME_FUEL_TECH_GROUP = {}
+NAME_FUEL_TECH_GROUP[VARIABLE] = NAME_VARIABLE
 
 export const FUEL_TECH_GROUP = {}
 FUEL_TECH_GROUP[VARIABLE] = [

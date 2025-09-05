@@ -3,13 +3,27 @@ import * as FT from './group-detailed.js'
 export const GROUP_LABEL = 'VRE/Residual'
 export const GROUP_NAME = 'group.vre-residual'
 
-export const PUMPS = `${GROUP_NAME}.pumps`
-export const BATTERY_CHARGING = `${GROUP_NAME}.battery_charging`
-export const EXPORTS = `${GROUP_NAME}.exports`
+export const NAME_PUMPS = `pumps`
+export const NAME_BATTERY_CHARGING = `battery_charging`
+export const NAME_EXPORTS = `exports`
+export const NAME_VRE = `vre`
+export const NAME_OTHER = `other`
+export const NAME_BATTERY_DISCHARGING = `battery_discharging`
 
-export const VRE = `${GROUP_NAME}.vre`
-export const OTHER = `${GROUP_NAME}.other`
-export const BATTERY_DISCHARGING = `${GROUP_NAME}.battery_discharging`
+export const PUMPS = `${GROUP_NAME}.${NAME_PUMPS}`
+export const BATTERY_CHARGING = `${GROUP_NAME}.${NAME_BATTERY_CHARGING}`
+export const EXPORTS = `${GROUP_NAME}.${NAME_EXPORTS}`
+export const VRE = `${GROUP_NAME}.${NAME_VRE}`
+export const OTHER = `${GROUP_NAME}.${NAME_OTHER}`
+export const BATTERY_DISCHARGING = `${GROUP_NAME}.${NAME_BATTERY_DISCHARGING}`
+
+export const NAME_FUEL_TECH_GROUP = {}
+NAME_FUEL_TECH_GROUP[PUMPS] = NAME_PUMPS
+NAME_FUEL_TECH_GROUP[BATTERY_CHARGING] = NAME_BATTERY_CHARGING
+NAME_FUEL_TECH_GROUP[EXPORTS] = NAME_EXPORTS
+NAME_FUEL_TECH_GROUP[VRE] = NAME_VRE
+NAME_FUEL_TECH_GROUP[OTHER] = NAME_OTHER
+NAME_FUEL_TECH_GROUP[BATTERY_DISCHARGING] = NAME_BATTERY_DISCHARGING
 
 export const FUEL_TECH_GROUP = {}
 FUEL_TECH_GROUP[PUMPS] = [FT.PUMPS]

@@ -3,8 +3,15 @@ import * as FT from './group-detailed.js'
 export const GROUP_LABEL = 'Simplified'
 export const GROUP_NAME = 'group.curtailment.simplified'
 
-export const CURTAILMENT_WIND = `${GROUP_NAME}.curtailment_wind`
-export const CURTAILMENT_SOLAR = `${GROUP_NAME}.curtailment_solar`
+export const NAME_CURTAILMENT_WIND = `curtailment_wind`
+export const NAME_CURTAILMENT_SOLAR = `curtailment_solar`
+
+export const CURTAILMENT_WIND = `${GROUP_NAME}.${NAME_CURTAILMENT_WIND}`
+export const CURTAILMENT_SOLAR = `${GROUP_NAME}.${NAME_CURTAILMENT_SOLAR}`
+
+export const NAME_FUEL_TECH_GROUP = {}
+NAME_FUEL_TECH_GROUP[CURTAILMENT_WIND] = NAME_CURTAILMENT_WIND
+NAME_FUEL_TECH_GROUP[CURTAILMENT_SOLAR] = NAME_CURTAILMENT_SOLAR
 
 export const FUEL_TECH_GROUP = {}
 FUEL_TECH_GROUP[CURTAILMENT_WIND] = [FT.CURTAILMENT_WIND]

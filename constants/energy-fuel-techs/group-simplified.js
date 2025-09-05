@@ -3,20 +3,49 @@ import * as FT from './group-detailed.js'
 export const GROUP_LABEL = 'Simplified'
 export const GROUP_NAME = 'group.simplified'
 
-export const PUMPS = `${GROUP_NAME}.pumps`
-export const BATTERY_CHARGING = `${GROUP_NAME}.battery_charging`
-export const EXPORTS = `${GROUP_NAME}.exports`
-export const IMPORTS = `${GROUP_NAME}.imports`
+export const NAME_PUMPS = `pumps`
+export const NAME_BATTERY_CHARGING = `battery_charging`
+export const NAME_EXPORTS = `exports`
+export const NAME_IMPORTS = `imports`
+export const NAME_BIOENERGY = `bioenergy`
+export const NAME_DISTILLATE = `distillate`
+export const NAME_BATTERY_DISCHARGING = `battery_discharging`
+export const NAME_BATTERY = `battery`
+export const NAME_HYDRO = `hydro`
+export const NAME_WIND = `wind`
+export const NAME_COAL = `coal`
+export const NAME_GAS = `gas`
+export const NAME_SOLAR = `solar`
 
-export const BIOENERGY = `${GROUP_NAME}.bioenergy`
-export const DISTILLATE = `${GROUP_NAME}.distillate`
-export const BATTERY_DISCHARGING = `${GROUP_NAME}.battery_discharging`
-export const BATTERY = `${GROUP_NAME}.battery`
-export const HYDRO = `${GROUP_NAME}.hydro`
-export const WIND = `${GROUP_NAME}.wind`
-export const COAL = `${GROUP_NAME}.coal`
-export const GAS = `${GROUP_NAME}.gas`
-export const SOLAR = `${GROUP_NAME}.solar`
+export const PUMPS = `${GROUP_NAME}.${NAME_PUMPS}`
+export const BATTERY_CHARGING = `${GROUP_NAME}.${NAME_BATTERY_CHARGING}`
+export const EXPORTS = `${GROUP_NAME}.${NAME_EXPORTS}`
+export const IMPORTS = `${GROUP_NAME}.${NAME_IMPORTS}`
+
+export const BIOENERGY = `${GROUP_NAME}.${NAME_BIOENERGY}`
+export const DISTILLATE = `${GROUP_NAME}.${NAME_DISTILLATE}`
+export const BATTERY_DISCHARGING = `${GROUP_NAME}.${NAME_BATTERY_DISCHARGING}`
+export const BATTERY = `${GROUP_NAME}.${NAME_BATTERY}`
+export const HYDRO = `${GROUP_NAME}.${NAME_HYDRO}`
+export const WIND = `${GROUP_NAME}.${NAME_WIND}`
+export const COAL = `${GROUP_NAME}.${NAME_COAL}`
+export const GAS = `${GROUP_NAME}.${NAME_GAS}`
+export const SOLAR = `${GROUP_NAME}.${NAME_SOLAR}`
+
+export const NAME_FUEL_TECH_GROUP = {}
+NAME_FUEL_TECH_GROUP[PUMPS] = NAME_PUMPS
+NAME_FUEL_TECH_GROUP[BATTERY_CHARGING] = NAME_BATTERY_CHARGING
+NAME_FUEL_TECH_GROUP[EXPORTS] = NAME_EXPORTS
+NAME_FUEL_TECH_GROUP[IMPORTS] = NAME_IMPORTS
+NAME_FUEL_TECH_GROUP[BIOENERGY] = NAME_BIOENERGY
+NAME_FUEL_TECH_GROUP[DISTILLATE] = NAME_DISTILLATE
+NAME_FUEL_TECH_GROUP[BATTERY_DISCHARGING] = NAME_BATTERY_DISCHARGING
+NAME_FUEL_TECH_GROUP[BATTERY] = NAME_BATTERY
+NAME_FUEL_TECH_GROUP[HYDRO] = NAME_HYDRO
+NAME_FUEL_TECH_GROUP[WIND] = NAME_WIND
+NAME_FUEL_TECH_GROUP[COAL] = NAME_COAL
+NAME_FUEL_TECH_GROUP[GAS] = NAME_GAS
+NAME_FUEL_TECH_GROUP[SOLAR] = NAME_SOLAR
 
 export const FUEL_TECH_GROUP = {}
 FUEL_TECH_GROUP[PUMPS] = [FT.PUMPS]
