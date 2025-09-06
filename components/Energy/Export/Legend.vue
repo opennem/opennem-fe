@@ -18,6 +18,27 @@
         {{ domain.contribution | percentageFormatNumber }}
       </strong>
     </div>
+
+    <div
+      v-for="(domain, index) in curtailmentDomains"
+      :key="`curtailment-domain-${index}`"
+      class="legend-item"
+    >
+      <span
+        :style="{
+          'background': `repeating-linear-gradient(-45deg, ${domain.colour}, ${domain.colour} 2px, ${domain.colour}99 2px, ${domain.colour}99 4px)`,
+          'border-color': domain.colour
+        }"
+        class="colour-square"
+      />
+      {{ domain.label }} (Curtailment)
+      <strong
+        v-if="showPercent && (domain.contribution || domain.contribution === 0)"
+      >
+        {{ domain.contribution | percentageFormatNumber }}
+      </strong>
+    </div>
+
     <div 
       v-if="chartEnergyRenewablesLine" 
       class="legend-item">
@@ -41,6 +62,10 @@ export default {
       type: Array,
       default: () => []
     },
+    curtailmentDomains: {
+      type: Array,
+      default: () => []
+    },
     showPercent: {
       type: Boolean,
       default: false
@@ -57,6 +82,12 @@ export default {
         this.fuelTechGroupName === 'Flexibility'
         ? '#e34a33'
         : '#52A960'
+    }
+  },
+
+  watch: {
+    domains() {
+      console.log('domains', this.domains)
     }
   }
 }

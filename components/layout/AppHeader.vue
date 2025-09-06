@@ -167,6 +167,7 @@ export default {
       energyExportData: 'regionEnergy/filteredCurrentDataset',
       energyDomains: 'regionEnergy/currentDomainPowerEnergy',
       emissionDomains: 'regionEnergy/currentDomainEmissions',
+      curtailmentDomains: 'regionEnergy/currentDomainCurtailment',
       priceDomains: 'regionEnergy/domainPrice',
       demandPriceDomains: 'regionEnergy/domainDemandPrice',
       temperatureDomains: 'regionEnergy/domainTemperature',
@@ -251,12 +252,16 @@ export default {
       if (this.isFacilitiesView) {
         return this.$store.getters.facilityExportData
       }
+
       return this.energyExportData.map((d) => {
         let obj = {
           date: `${timeFormat(d.date)}`
         }
         this.energyDomains.forEach((domain) => {
           obj[`${domain.label} - ${this.chartUnit}`] = format(d[domain.id])
+        })
+        this.curtailmentDomains.forEach((domain) => {
+          obj[`${domain.label} (Curtailment) - ${this.chartUnit}`] = format(d[domain.id])
         })
         this.temperatureDomains.forEach((domain) => {
           let label = 'Temperature'

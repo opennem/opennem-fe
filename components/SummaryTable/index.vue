@@ -3,11 +3,11 @@
     <export-legend
       v-if="displayAsLegend"
       :domains="legendDomains"
+      :curtailment-domains="legendCurtailmentDomains"
       :show-percent="showPercentInLegend"
     />
 
     <div v-else>
-      
       <dates-display
         :is-hovering="hoverOn"
         :hovered-date="hoveredDate"
@@ -428,12 +428,8 @@
               <div class="summary-col-av-value cell-value" />
             </div>
           </div>
-        </div>
-
-        
-        
+        </div>        
       </div>
-      
     </div>
   </div>
 </template>
@@ -767,6 +763,14 @@ export default {
       )
       domains.forEach((d) => {
         d.contribution = this.getContribution(d.id)
+      })
+      return domains
+    },
+
+    legendCurtailmentDomains() {
+      const domains = this.curtailmentDomains.filter((d) => !_includes(this.hiddenFuelTechs, d[this.propRef]))
+      domains.forEach((d) => {
+        d.contribution = this.getCurtailmentContribution(d.id)
       })
       return domains
     },
@@ -1795,6 +1799,12 @@ export default {
       const rowValue = this.summary[key] || 0
       const total = this.summary._totalEnergyForPercentageCalculation
 
+      return (rowValue / total) * 100
+    },
+
+    getCurtailmentContribution(key) {
+      const rowValue = this.summaryCurtailment[key] || 0
+      const total = this.summary._totalEnergyForPercentageCalculation
       return (rowValue / total) * 100
     },
 

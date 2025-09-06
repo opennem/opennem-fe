@@ -104,6 +104,7 @@ export default {
       isEnergyType: 'regionEnergy/isEnergyType',
       energyExportData: 'regionEnergy/filteredCurrentDataset',
       energyDomains: 'regionEnergy/currentDomainPowerEnergy',
+      curtailmentDomains: 'regionEnergy/currentDomainCurtailment',
       emissionDomains: 'regionEnergy/currentDomainEmissions',
       priceDomains: 'regionEnergy/domainPrice',
       demandPriceDomains: 'regionEnergy/domainDemandPrice',
@@ -164,6 +165,9 @@ export default {
         }
         this.energyDomains.forEach((domain) => {
           obj[`${domain.label} - ${this.chartUnit}`] = format(d[domain.id])
+        })
+        this.curtailmentDomains.forEach((domain) => {
+          obj[`${domain.label} (Curtailment) - ${this.chartUnit}`] = format(d[domain.id])
         })
         this.temperatureDomains.forEach((domain) => {
           let label = 'Temperature'

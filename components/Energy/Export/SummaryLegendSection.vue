@@ -4,6 +4,7 @@
       :display-as-legend="showLegend"
       :show-percent-in-legend="showPercent"
       :energy-domains="powerEnergyDomains"
+      :curtailment-domains="curtailmentDomains"
       :temperature-domains="domainTemperature"
       :market-value-domains="currentDomainMarketValue"
       :price-id="domainPrice.length > 0 ? domainPrice[0].id : ''"
@@ -58,11 +59,17 @@ export default {
       domainTemperature: 'regionEnergy/domainTemperature',
       domainPrice: 'regionEnergy/domainPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
+      currentDomainCurtailment: 'regionEnergy/currentDomainCurtailment',
       currentDomainMarketValue: 'regionEnergy/currentDomainMarketValue'
     }),
     powerEnergyDomains() {
       return this.currentDomainPowerEnergy
         ? _cloneDeep(this.currentDomainPowerEnergy).reverse()
+        : []
+    },
+    curtailmentDomains() {
+      return this.currentDomainCurtailment
+        ? _cloneDeep(this.currentDomainCurtailment).reverse()
         : []
     },
     property() {
