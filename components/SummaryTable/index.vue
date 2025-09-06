@@ -1646,7 +1646,6 @@ export default {
         hiddenFuelTechs = []
       }
 
-      console.log('emitHiddenFuelTechs hiddenFuelTechs', hiddenFuelTechs)
       this.$emit('fuelTechsHidden', hiddenFuelTechs)
     },
 

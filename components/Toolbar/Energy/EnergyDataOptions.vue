@@ -121,7 +121,6 @@ export default {
       return this.$store.getters['app/rangeDropdownBreak']
     },
     padding() {
-      console.log('rangeDropdownBreak', this.rangeDropdownBreak)
       return this.rangeDropdownBreak ? '0' : '0'
     },
 
@@ -141,14 +140,7 @@ export default {
 
     regionId() {
       return this.$route.params.region
-    },
-
-    hiddenPowerEnergyWithCurtailment() {
-      const hiddenPowerEnergy = this.currentDomainPowerEnergy.filter((d) => _includes(this.hiddenFuelTechs, d[this.property]))
-      const hiddenCurtailment = this.currentDomainCurtailment.filter((d) => _includes(this.hiddenFuelTechs, d[this.property]))
-      const hidden = [...hiddenPowerEnergy, ...hiddenCurtailment]
-      return hidden
-    },
+    }
   },
 
   methods: {

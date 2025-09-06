@@ -264,16 +264,17 @@ export default {
       return domains.filter((d) => !_includes(hidden, d[this.property]))
     },
 
-    hiddenPowerEnergyWithCurtailment() {
+    hiddenPowerEnergy() {
       const hiddenPowerEnergy = this.currentDomainPowerEnergy.filter((d) => _includes(this.hiddenFuelTechs, d[this.property]))
-      const hiddenCurtailment = this.currentDomainCurtailment.filter((d) => _includes(this.hiddenFuelTechs, d[this.property]))
-      const hidden = [...hiddenPowerEnergy, ...hiddenCurtailment]
-      return hidden
+      return hiddenPowerEnergy
     },
 
     shownNetRenewablesLine() {
-      // const shown = this.currentDomainCurtailment.filter((d) => !_includes(this.hiddenFuelTechs, d[this.property])).map((d) => d[this.property])
-      const shown = []
+      const isFuelTechProperty = this.queryGroup === 'Detailed'
+      const prop = isFuelTechProperty ? 'fuelTech' : 'nameFuelTech'
+      const shown = this.currentDomainCurtailment.filter(
+        (d) => !_includes(this.hiddenFuelTechs, d[this.property])).map((d) => d[prop]
+      )
       if (this.chartEnergyRenewablesLine) {
         shown.push('chartEnergyRenewablesLine')
       }
@@ -287,11 +288,12 @@ export default {
   watch: {
     currentDomainPowerEnergy(val) {
       if (this.queryHide) {
+        const show = this.queryShow ? this.queryShow.split(',') : []
         const hide = this.queryHide.split(',')
         const isFuelTechProperty = this.queryGroup === 'Detailed'
 
         const hiddenPowerEnergy = val.filter((d) => _includes(hide, isFuelTechProperty ? d.fuelTech : d.nameFuelTech))
-        const hiddenCurtailment = this.currentDomainCurtailment.filter((d) => _includes(hide, isFuelTechProperty ? d.fuelTech : d.nameFuelTech))
+        const hiddenCurtailment = this.currentDomainCurtailment.filter((d) => !_includes(show, isFuelTechProperty ? d.fuelTech : d.nameFuelTech))
         const hidden = [...hiddenPowerEnergy, ...hiddenCurtailment]
 
         this.$store.dispatch('hiddenFuelTechs', hidden.map((d) => d[this.property]))
@@ -299,19 +301,18 @@ export default {
     },
 
     currentDomainCurtailment(val) {
-      if (this.queryHide) {
-        const hide = this.queryHide.split(',')
-        const isFuelTechProperty = this.queryGroup === 'Detailed'
+      const show = this.queryShow ? this.queryShow.split(',') : []
+      const hide = this.queryHide ? this.queryHide.split(',') : []
+      const isFuelTechProperty = this.queryGroup === 'Detailed'
 
-        const hiddenPowerEnergy = this.currentDomainPowerEnergy.filter((d) => _includes(hide, isFuelTechProperty ? d.fuelTech : d.nameFuelTech))
-        const hiddenCurtailment = val.filter((d) => _includes(hide, isFuelTechProperty ? d.fuelTech : d.nameFuelTech))
-        const hidden = [...hiddenPowerEnergy, ...hiddenCurtailment]
+      const hiddenPowerEnergy = this.currentDomainPowerEnergy.filter((d) => _includes(hide, isFuelTechProperty ? d.fuelTech : d.nameFuelTech))
+      const hiddenCurtailment = val.filter((d) => !_includes(show, isFuelTechProperty ? d.fuelTech : d.nameFuelTech))
+      const hidden = [...hiddenPowerEnergy, ...hiddenCurtailment]
 
-        this.$store.dispatch('hiddenFuelTechs', hidden.map((d) => d[this.property]))
-      }
+      this.$store.dispatch('hiddenFuelTechs', hidden.map((d) => d[this.property]))
     },
 
-    hiddenPowerEnergyWithCurtailment(val) {
+    hiddenPowerEnergy(val) {
       const show = this.shownNetRenewablesLine
       const options = {
         range: this.queryRange,
@@ -437,7 +438,6 @@ export default {
         dashboardView: this.dashboardView
       })
     } else {
-      console.log('created push nem', this.query)
       this.$router.push({
         params: { region: 'nem' },
         query: this.query
