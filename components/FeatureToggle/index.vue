@@ -7,13 +7,6 @@
     />
     <div class="panel-heading">Features</div>
 
-    <label class="panel-block">
-      <input
-        v-model="featureCurtailmentSeries"
-        type="checkbox"
-      >
-      Curtailment series
-    </label>
 
   </div>
 </template>
@@ -21,19 +14,19 @@
 <script>
 export default {
   computed: {
-    featureCurtailmentSeries: {
-      get: function () {
-        return this.$store.getters['feature/curtailmentSeries']
-      },
-      set: function (newValue) {
-        this.$store.commit('feature/curtailmentSeries', newValue)
-      }
-    }
+    // featureCurtailmentSeries: {
+    //   get: function () {
+    //     return this.$store.getters['feature/curtailmentSeries']
+    //   },
+    //   set: function (newValue) {
+    //     this.$store.commit('feature/curtailmentSeries', newValue)
+    //   }
+    // }
   },
   watch: {
-    featureCurtailmentSeries() {
-      this.$emit('done')
-    }
+    // featureCurtailmentSeries() {
+    //   this.$emit('done')
+    // }
   },
   methods: {
     handleDoneClick() {

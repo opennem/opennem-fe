@@ -260,7 +260,7 @@
         </div>
 
         <div
-          v-if="curtailmentDomains.length > 0 && curtailmentSeriesEnabled"
+          v-if="curtailmentDomains.length > 0"
           class="summary-column-headers">
           <div class="summary-row summary-heading-row">
             <div
@@ -270,7 +270,7 @@
         </div>
 
         <div
-          v-if="curtailmentDomains.length > 0 && curtailmentSeriesEnabled"
+          v-if="curtailmentDomains.length > 0"
           style="margin-left: 8px; border-top: 1px solid #ddd;">
           <curtailment-items
             :group="'ft-curtailment'"
@@ -632,9 +632,7 @@ export default {
       sumEmissionsMinusLoads: 'energy/emissions/sumEmissionsMinusLoads',
 
       dashboardView: 'app/dashboardView',
-      averagesDataset: 'timeOfDay/averagesDataset',
-
-      curtailmentSeriesEnabled: 'feature/curtailmentSeries'
+      averagesDataset: 'timeOfDay/averagesDataset'
     }),
 
     isTimeOfDayView() {

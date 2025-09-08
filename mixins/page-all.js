@@ -2,8 +2,6 @@ import { mapMutations } from 'vuex'
 import _debounce from 'lodash.debounce'
 import { lsGet, lsSet } from '~/services/LocalStorage'
 import {
-  FEATURE_TOGGLE_CURTAILMENT_SERIES,
-  FEATURE_TOGGLE_CAPACITY_CHARTS,
   SHOW_BANNER
 } from '@/constants/mutation-types/features.js'
 import hostEnv from '@/services/HostEnv.js'
@@ -18,7 +16,7 @@ export default {
 
   mounted() {
     if (process.client) {
-      this.getSetFeature(FEATURE_TOGGLE_CURTAILMENT_SERIES, this.setCurtailmentSeries)
+      // this.getSetFeature(FEATURE_TOGGLE_CURTAILMENT_SERIES, this.setCurtailmentSeries)
 
       if (lsGet(SHOW_BANNER) === null) {
         this.setShowBanner(true)
@@ -55,7 +53,6 @@ export default {
       setWindowWidth: 'app/windowWidth',
       setIsTouchDevice: 'app/isTouchDevice',
 
-      setCurtailmentSeries: 'feature/curtailmentSeries',
       setShowBanner: 'feature/showBanner',
 
       setExportAttribution: 'exportAttribution',

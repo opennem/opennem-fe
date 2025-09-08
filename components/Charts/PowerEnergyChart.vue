@@ -418,9 +418,8 @@ export default {
       isTypeChangeSinceLine: 'chartOptionsPowerEnergy/isTypeChangeSinceLine',
       isTypeGrowthStackedArea: 'chartOptionsPowerEnergy/isTypeGrowthStackedArea',
       allowResize: 'regionEnergy/allowResize',
-      _rolledUpDataset: 'regionEnergy/_rolledUpDataset',
+      _rolledUpDataset: 'regionEnergy/_rolledUpDataset'
 
-      curtailmentSeriesEnabled: 'feature/curtailmentSeries'
     }),
 
     showDateAxis: {
@@ -505,7 +504,7 @@ export default {
       )
     },
     powerEnergyDomains() {
-      if (this.curtailmentSeriesEnabled && this.domainCurtailment.length > 0) {
+      if (this.domainCurtailment.length > 0) {
         return [
           ...this.domainPowerEnergy,
           ...this.domainCurtailment

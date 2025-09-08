@@ -77,14 +77,14 @@
           @done="setShowFeatureToggle(false)" />
       </transition>
 
-      <a 
+      <!-- <a 
         v-tooltip="'Feature toggle'" 
         ref="featureElement" 
         class="icon-link" 
         target="_blank"
         @click.stop="handleFeatureToggleClick">
         <i class="fal fa-fw fa-vial" />
-      </a>
+      </a> -->
 
       <!-- <a 
         v-tooltip="'Twitter'" 
