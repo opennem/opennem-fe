@@ -3,6 +3,13 @@ import * as FT from './group-detailed.js'
 export const GROUP_LABEL = 'Renewables/Fossils'
 export const GROUP_NAME = 'group.renewable-fossil'
 
+export const NAME_BATTERY_CHARGING = `battery_charging`
+export const NAME_EXPORTS = `exports`
+export const NAME_IMPORTS = `imports`
+export const NAME_RENEWABLES = `renewables`
+export const NAME_FOSSILS = `fossils`
+export const NAME_BATTERY_DISCHARGING = `battery_discharging`
+
 // export const PUMPS = `${GROUP_NAME}.pumps`
 export const BATTERY_CHARGING = `${GROUP_NAME}.battery_charging`
 export const EXPORTS = `${GROUP_NAME}.exports`
@@ -11,6 +18,14 @@ export const IMPORTS = `${GROUP_NAME}.imports`
 export const RENEWABLES = `${GROUP_NAME}.renewables`
 export const FOSSILS = `${GROUP_NAME}.fossils`
 export const BATTERY_DISCHARGING = `${GROUP_NAME}.battery_discharging`
+
+export const NAME_FUEL_TECH_GROUP = {}
+NAME_FUEL_TECH_GROUP[BATTERY_CHARGING] = NAME_BATTERY_CHARGING
+NAME_FUEL_TECH_GROUP[EXPORTS] = NAME_EXPORTS
+NAME_FUEL_TECH_GROUP[IMPORTS] = NAME_IMPORTS
+NAME_FUEL_TECH_GROUP[RENEWABLES] = NAME_RENEWABLES
+NAME_FUEL_TECH_GROUP[FOSSILS] = NAME_FOSSILS
+NAME_FUEL_TECH_GROUP[BATTERY_DISCHARGING] = NAME_BATTERY_DISCHARGING
 
 export const FUEL_TECH_GROUP = {}
 FUEL_TECH_GROUP[BATTERY_CHARGING] = [FT.BATTERY_CHARGING]

@@ -3,6 +3,19 @@ import * as FT from './group-detailed.js'
 export const GROUP_LABEL = 'Simplified'
 export const GROUP_NAME = 'group.simplified'
 
+export const NAME_BATTERY_CHARGING = `battery_charging`
+export const NAME_EXPORTS = `exports`
+export const NAME_IMPORTS = `imports`
+export const NAME_BIOENERGY = `bioenergy`
+export const NAME_DISTILLATE = `distillate`
+export const NAME_BATTERY_DISCHARGING = `battery_discharging`
+export const NAME_BATTERY = `battery`
+export const NAME_HYDRO = `hydro`
+export const NAME_WIND = `wind`
+export const NAME_COAL = `coal`
+export const NAME_GAS = `gas`
+export const NAME_SOLAR = `solar`
+
 // export const PUMPS = `${GROUP_NAME}.pumps`
 export const BATTERY_CHARGING = `${GROUP_NAME}.battery_charging`
 export const EXPORTS = `${GROUP_NAME}.exports`
@@ -17,6 +30,20 @@ export const WIND = `${GROUP_NAME}.wind`
 export const COAL = `${GROUP_NAME}.coal`
 export const GAS = `${GROUP_NAME}.gas`
 export const SOLAR = `${GROUP_NAME}.solar`
+
+export const NAME_FUEL_TECH_GROUP = {}
+NAME_FUEL_TECH_GROUP[BATTERY_CHARGING] = NAME_BATTERY_CHARGING
+NAME_FUEL_TECH_GROUP[EXPORTS] = NAME_EXPORTS
+NAME_FUEL_TECH_GROUP[IMPORTS] = NAME_IMPORTS
+NAME_FUEL_TECH_GROUP[BIOENERGY] = NAME_BIOENERGY
+NAME_FUEL_TECH_GROUP[DISTILLATE] = NAME_DISTILLATE
+NAME_FUEL_TECH_GROUP[BATTERY_DISCHARGING] = NAME_BATTERY_DISCHARGING
+NAME_FUEL_TECH_GROUP[BATTERY] = NAME_BATTERY
+NAME_FUEL_TECH_GROUP[HYDRO] = NAME_HYDRO
+NAME_FUEL_TECH_GROUP[WIND] = NAME_WIND
+NAME_FUEL_TECH_GROUP[COAL] = NAME_COAL
+NAME_FUEL_TECH_GROUP[GAS] = NAME_GAS
+NAME_FUEL_TECH_GROUP[SOLAR] = NAME_SOLAR
 
 export const FUEL_TECH_GROUP = {}
 // FUEL_TECH_GROUP[PUMPS] = [FT.PUMPS]
