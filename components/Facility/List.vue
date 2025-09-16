@@ -136,7 +136,7 @@
 
           <div class="commenced-date-col">
             <small class="facility-commencement-date">
-              {{ facility.facilityCommencementDate | formatLocalDate('%d/%m/%Y') }}
+              {{ facility.facilityCommencementDate | formatLocalDate('%d %b %Y') }}
             </small>
           </div>
 
