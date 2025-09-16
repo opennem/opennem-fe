@@ -21,6 +21,23 @@ function smartFormatString(v) {
   return fString
 }
 
+function capacitySmartFormatString(v) {
+  const value = Math.abs(v)
+  let fString = ',.1f'
+  if (value === 0) {
+    fString = ',.0f'
+  } else if (value < 30 && value > 0.1) {
+    fString = ',.1f'
+  } else if (value < 0.1 && value > 0.01) {
+    fString = ',.2f'
+  } else if (value < 0.01 && value > 0.001) {
+    fString = ',.3f'
+  } else if (value < 0.001) {
+    fString = ',.4f'
+  }
+  return fString
+}
+
 Vue.filter(
   'customFormatDate',
   (
@@ -73,6 +90,13 @@ Vue.filter('formatValue2', (value) => {
   const f = d3Format(fString)
   const fValue = f(value)
   return isFinite(value) && value ? fValue : '0'
+})
+
+Vue.filter('formatCapacityValue', (value, displayPrefix = '') => {
+  const fString = displayPrefix === 'G' ? capacitySmartFormatString(value) : smartFormatString(value)
+  const f = d3Format(fString)
+  const fValue = f(value)
+  return isFinite(value) && value !== null ? `${fValue}` : '–'
 })
 
 Vue.filter('facilityFormatNumber', (value) => {

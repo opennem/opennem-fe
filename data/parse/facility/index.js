@@ -6,6 +6,7 @@ import * as FUEL_TECHS from '~/constants/energy-fuel-techs/group-detailed.js'
 let emptyIdCount = 0
 
 function transformFacilityData(data) {
+  console.log('transformFacilityData v1')
   const stationIds = Object.keys(data)
   const stations = stationIds.map((d) => data[d])
 
@@ -106,6 +107,7 @@ function transformFacilityData(data) {
 }
 
 function transformV3FacilityData(data) {
+  console.log('transformV3FacilityData')
   const emptyProperties = []
   const emptyGeometries = []
   const operatingCount = []
@@ -313,6 +315,7 @@ function transformV4FacilityData(data) {
     let generatorCap = 0
     let maximumCap = 0
     let batteryStorageCap = 0
+    let facilityCommencementDate = null
     const unitStatuses = []
     const fuelTechRegisteredCap = {}
     const unitStatusRegisteredCap = {}
@@ -329,13 +332,14 @@ function transformV4FacilityData(data) {
         const storageCap = unit.storage_capacity
 
         if (unit.storage_capacity) {
-          console.log('storage unit', d.name, unit.storage_capacity)
+          // console.log('storage unit', d.name, unit.storage_capacity)
         }
 
         const fuelTech = unit.fueltech_id
         const status = unit.status_id
         const dispatchType = unit.dispatch_type
         const type = FUEL_TECHS.FUEL_TECH_CATEGORY[fuelTech] || ''
+        const isOperating = status === 'operating'
         
         const dateCommenced = unit.commencement_date ? parseISO(unit.commencement_date) : null
         const dateExpectedClosure = unit.expected_closure_date ? parseISO(unit.expected_closure_date) : null
@@ -344,24 +348,31 @@ function transformV4FacilityData(data) {
         // side effects
         unitStatuses.push(status)
 
+        // check with facility commencement date and compare with unit commencement date, the earliest commencement date is the facility commencement date
+        if (dateCommenced && facilityCommencementDate) {
+          facilityCommencementDate = dateCommenced < facilityCommencementDate ? dateCommenced : facilityCommencementDate
+        } else if (dateCommenced) {
+          facilityCommencementDate = dateCommenced
+        }
+
         if (type === 'source') {
-          generatorCap += regCap || 0
-          maximumCap += maxCap || 0
-          batteryStorageCap += storageCap || 0
+          generatorCap += isOperating ? regCap || 0 : 0
+          maximumCap += isOperating ? maxCap || 0 : 0
+          batteryStorageCap += isOperating ? storageCap || 0 : 0
         }
 
         if (fuelTech) {
           if (!fuelTechRegisteredCap[fuelTech]) {
             fuelTechRegisteredCap[fuelTech] = 0
           }
-          fuelTechRegisteredCap[fuelTech] += regCap
+          fuelTechRegisteredCap[fuelTech] += isOperating ? regCap || 0 : 0
         }
 
         if (status) {
           if (!unitStatusRegisteredCap[status]) {
             unitStatusRegisteredCap[status] = 0
           }
-          unitStatusRegisteredCap[status] += regCap
+          unitStatusRegisteredCap[status] += isOperating ? regCap || 0 : 0
         }
 
         if (fuelTech !== 'battery_charging' && fuelTech !== 'battery') {
@@ -419,6 +430,8 @@ function transformV4FacilityData(data) {
 
       fuelTechRegisteredCap,
       unitStatusRegisteredCap,
+
+      facilityCommencementDate,
 
       jsonData: d
     }

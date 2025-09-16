@@ -117,9 +117,9 @@
             <td style="text-align: right;">{{ unit.regCap }}</td>
             <td style="text-align: right;">{{ unit.maxCap }}</td>
             <td style="text-align: right;">{{ unit.storageCap || '—' }}</td>
-            <td>{{ unit.dateCommenced | formatDate('%d/%m/%Y') }}</td>
-            <td>{{ unit.dateExpectedClosure | formatDate('%d/%m/%Y') }}</td>
-            <td>{{ unit.dateClosure | formatDate('%d/%m/%Y') }}</td>
+            <td>{{ unit.dateCommenced | formatLocalDate('%d/%m/%Y') }}</td>
+            <td>{{ unit.dateExpectedClosure | formatLocalDate('%d/%m/%Y') }}</td>
+            <td>{{ unit.dateClosure | formatLocalDate('%d/%m/%Y') }}</td>
           </tr>
         </tbody>
       </table>
@@ -186,6 +186,9 @@ import { INTERVAL_30MIN } from '@/constants/interval-filters.js'
 import DateDisplay from '@/services/DateDisplay.js'
 import PowerEnergyChart from '@/components/Charts/PowerEnergyChart'
 import Loader from '@/components/ui/Loader'
+import {
+  FACILITY_OPERATING
+} from '~/constants/facility-status.js'
 
 const powerOptions = {
   type: [OPTIONS.CHART_HIDDEN, OPTIONS.CHART_STACKED],
@@ -254,7 +257,7 @@ export default {
       const domains = this.powerEnergyDomains.filter(d => !FUEL_TECHS.isLoad(d.fuelTechLabel))
       return domains.length > 0
         ? domains.reduce(
-            (acc, cur) => acc + (cur.registeredCapacity || 0),
+            (acc, cur) => acc + (cur.status === FACILITY_OPERATING ? cur.registeredCapacity || 0 : 0),
             0
           )
         : 0
@@ -264,7 +267,7 @@ export default {
       const domains = this.powerEnergyDomains.filter(d => FUEL_TECHS.isLoad(d.fuelTechLabel))
       return domains.length > 0
         ? domains.reduce(
-            (acc, cur) => acc + (cur.registeredCapacity || 0),
+            (acc, cur) => acc + (cur.status === FACILITY_OPERATING ? cur.registeredCapacity || 0 : 0),
             0
           )
         : 0

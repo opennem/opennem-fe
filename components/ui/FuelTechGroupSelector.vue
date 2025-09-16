@@ -1,6 +1,8 @@
 <template>
   <div class="select">
-    <select v-model="selected">
+    <select
+      v-model="selected"
+      @change="handleChange">
       <option 
         v-for="(g, index) in groups" 
         :key="index" 
@@ -13,6 +15,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import EventBus from '@/plugins/eventBus'
 import { ftGroups } from '@/constants/energy-fuel-techs/'
 
 export default {
@@ -51,6 +54,10 @@ export default {
   methods: {
     triggerGroupChange() {
       this.$store.dispatch('fuelTechGroupName', this.selected)
+    },
+
+    handleChange() {
+      EventBus.$emit('fueltechgroup.changed', this.selected)
     }
   }
 }

@@ -1,4 +1,5 @@
 import * as FT from '@/constants/energy-fuel-techs/group-detailed.js'
+import * as CFT from '@/constants/curtailment-fuel-techs/group-detailed.js'
 import {
   PRICE,
   PRICE_ABOVE_300,
@@ -24,6 +25,21 @@ export function getFuelTechInOrder(data) {
 
 export function getFuelTechDomains(ids, type) {
   return ids ? FT.getFuelTechObjs(ids, type).reverse() : []
+}
+
+export function getCurtailmentInOrder(data) {
+  const fuelTechs = {}
+  CFT.DEFAULT_FUEL_TECH_ORDER.forEach((ft) => {
+    const find = data.find((d) => d.fuel_tech === ft)
+    if (find) {
+      fuelTechs[ft] = find.id
+    }
+  })
+  return fuelTechs
+}
+
+export function getCurtailmentDomains(ids, type) {
+  return ids ? CFT.getFuelTechObjs(ids, type).reverse() : []
 }
 
 export function getFuelTechWithTypeDomains(ids, type) {

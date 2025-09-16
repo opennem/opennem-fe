@@ -34,14 +34,10 @@ function getAUSeasonStartMonth(month) {
 }
 
 function startOfSeason(date, currentMonth, seasonStartMonth) {
-  if (currentMonth === 0 || currentMonth === 1) {
-    return set(date, {
-      month: seasonStartMonth,
-      date: 1,
-      year: getYear(date) - 1
-    })
-  }
-  return set(date, { month: seasonStartMonth, date: 1 })
+  let year = (currentMonth === 0 || currentMonth === 1) ? getYear(date) - 1 : getYear(date)
+  let startSeasonDate = new Date(year, seasonStartMonth, 1)
+
+  return startSeasonDate
 }
 
 export default function (domains, data, rollUp) {

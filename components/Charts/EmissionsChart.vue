@@ -358,7 +358,10 @@ export default {
     },
 
     secondTickFormat() {
-      return AxisTimeFormats[this.visSecondTickFormat]
+      if (typeof this.visSecondTickFormat === 'string') {
+        return AxisTimeFormats[this.visSecondTickFormat]
+      }
+      return this.visSecondTickFormat
     },
 
     displayUnit() {

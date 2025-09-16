@@ -3,14 +3,31 @@ import * as FT from './group-detailed.js'
 export const GROUP_LABEL = 'Flexibility'
 export const GROUP_NAME = 'group.flexibility'
 
-export const PUMPS = `${GROUP_NAME}.pumps`
-export const BATTERY_CHARGING = `${GROUP_NAME}.battery_charging`
-export const EXPORTS = `${GROUP_NAME}.exports`
-export const IMPORTS = `${GROUP_NAME}.imports`
+export const NAME_PUMPS = `pumps`
+export const NAME_BATTERY_CHARGING = `battery_charging`
+export const NAME_EXPORTS = `exports`
+export const NAME_IMPORTS = `imports`
+export const NAME_VARIABLE = `variable`
+export const NAME_FAST_FLEXIBLE = `fast_flexible`
+export const NAME_SLOW_FLEXIBLE = `slow_flexible`
 
-export const VARIABLE = `${GROUP_NAME}.variable`
-export const FAST_FLEXIBLE = `${GROUP_NAME}.fast_flexible`
-export const SLOW_FLEXIBLE = `${GROUP_NAME}.slow_flexible`
+export const PUMPS = `${GROUP_NAME}.${NAME_PUMPS}`
+export const BATTERY_CHARGING = `${GROUP_NAME}.${NAME_BATTERY_CHARGING}`
+export const EXPORTS = `${GROUP_NAME}.${NAME_EXPORTS}`
+export const IMPORTS = `${GROUP_NAME}.${NAME_IMPORTS}`
+
+export const VARIABLE = `${GROUP_NAME}.${NAME_VARIABLE}`
+export const FAST_FLEXIBLE = `${GROUP_NAME}.${NAME_FAST_FLEXIBLE}`
+export const SLOW_FLEXIBLE = `${GROUP_NAME}.${NAME_SLOW_FLEXIBLE}`
+
+export const NAME_FUEL_TECH_GROUP = {}
+NAME_FUEL_TECH_GROUP[PUMPS] = NAME_PUMPS
+NAME_FUEL_TECH_GROUP[BATTERY_CHARGING] = NAME_BATTERY_CHARGING
+NAME_FUEL_TECH_GROUP[EXPORTS] = NAME_EXPORTS
+NAME_FUEL_TECH_GROUP[IMPORTS] = NAME_IMPORTS
+NAME_FUEL_TECH_GROUP[VARIABLE] = NAME_VARIABLE
+NAME_FUEL_TECH_GROUP[FAST_FLEXIBLE] = NAME_FAST_FLEXIBLE
+NAME_FUEL_TECH_GROUP[SLOW_FLEXIBLE] = NAME_SLOW_FLEXIBLE
 
 export const FUEL_TECH_GROUP = {}
 FUEL_TECH_GROUP[PUMPS] = [FT.PUMPS]
@@ -30,7 +47,8 @@ FUEL_TECH_GROUP[FAST_FLEXIBLE] = [
   FT.GAS_LFG,
   FT.GAS_WCMG,
   FT.DISTILLATE,
-  FT.BATTERY_DISCHARGING
+  FT.BATTERY_DISCHARGING,
+  FT.BATTERY
 ]
 FUEL_TECH_GROUP[SLOW_FLEXIBLE] = [
   FT.COAL_BROWN,

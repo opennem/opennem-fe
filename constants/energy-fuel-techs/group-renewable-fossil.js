@@ -3,14 +3,31 @@ import * as FT from './group-detailed.js'
 export const GROUP_LABEL = 'Renewables/Fossils'
 export const GROUP_NAME = 'group.renewable-fossil'
 
-export const PUMPS = `${GROUP_NAME}.pumps`
-export const BATTERY_CHARGING = `${GROUP_NAME}.battery_charging`
-export const EXPORTS = `${GROUP_NAME}.exports`
-export const IMPORTS = `${GROUP_NAME}.imports`
+export const NAME_PUMPS = `pumps`
+export const NAME_BATTERY_CHARGING = `battery_charging`
+export const NAME_EXPORTS = `exports`
+export const NAME_IMPORTS = `imports`
+export const NAME_RENEWABLES = `renewables`
+export const NAME_FOSSILS = `fossils`
+export const NAME_BATTERY_DISCHARGING = `battery_discharging`
 
-export const RENEWABLES = `${GROUP_NAME}.renewables`
-export const FOSSILS = `${GROUP_NAME}.fossils`
-export const BATTERY_DISCHARGING = `${GROUP_NAME}.battery_discharging`
+export const PUMPS = `${GROUP_NAME}.${NAME_PUMPS}`
+export const BATTERY_CHARGING = `${GROUP_NAME}.${NAME_BATTERY_CHARGING}`
+export const EXPORTS = `${GROUP_NAME}.${NAME_EXPORTS}`
+export const IMPORTS = `${GROUP_NAME}.${NAME_IMPORTS}`
+
+export const RENEWABLES = `${GROUP_NAME}.${NAME_RENEWABLES}`
+export const FOSSILS = `${GROUP_NAME}.${NAME_FOSSILS}`
+export const BATTERY_DISCHARGING = `${GROUP_NAME}.${NAME_BATTERY_DISCHARGING}`
+
+export const NAME_FUEL_TECH_GROUP = {}
+NAME_FUEL_TECH_GROUP[PUMPS] = NAME_PUMPS
+NAME_FUEL_TECH_GROUP[BATTERY_CHARGING] = NAME_BATTERY_CHARGING
+NAME_FUEL_TECH_GROUP[EXPORTS] = NAME_EXPORTS
+NAME_FUEL_TECH_GROUP[IMPORTS] = NAME_IMPORTS
+NAME_FUEL_TECH_GROUP[RENEWABLES] = NAME_RENEWABLES
+NAME_FUEL_TECH_GROUP[FOSSILS] = NAME_FOSSILS
+NAME_FUEL_TECH_GROUP[BATTERY_DISCHARGING] = NAME_BATTERY_DISCHARGING
 
 export const FUEL_TECH_GROUP = {}
 FUEL_TECH_GROUP[PUMPS] = [FT.PUMPS]
@@ -36,7 +53,7 @@ FUEL_TECH_GROUP[FOSSILS] = [
   FT.COAL_BROWN,
   FT.COAL_BLACK
 ]
-FUEL_TECH_GROUP[BATTERY_DISCHARGING] = [FT.BATTERY_DISCHARGING]
+FUEL_TECH_GROUP[BATTERY_DISCHARGING] = [FT.BATTERY_DISCHARGING, FT.BATTERY]
 
 // Fuel tech group order
 export const FUEL_TECH_ORDER = [

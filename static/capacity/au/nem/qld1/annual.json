@@ -1,0 +1,235 @@
+{
+  "version": "4.2",
+  "network": "nem",
+  "region": "QLD1",
+  "created_at": "2024-07-16T05:54:27+1000",
+  "messages": [
+    "historical capacity derived from facilities data and APVI APIs"
+  ],
+  "data": [
+    {
+      "id": "au.nem.qld1.fuel_tech.battery.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "QLD1",
+      "fuel_tech": "battery",
+      "units": "MW",
+      "invalid_count": 2,
+      "invalid_capacity": 184.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 152.0, 152.0, 152.0]
+      }
+    },
+    {
+      "id": "au.nem.qld1.fuel_tech.bioenergy_biogas.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "QLD1",
+      "fuel_tech": "bioenergy_biogas",
+      "units": "MW",
+      "invalid_count": 6,
+      "invalid_capacity": 14.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      }
+    },
+    {
+      "id": "au.nem.qld1.fuel_tech.bioenergy_biomass.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "QLD1",
+      "fuel_tech": "bioenergy_biomass",
+      "units": "MW",
+      "invalid_count": 5,
+      "invalid_capacity": 122.5,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 148.0, 148.0, 148.0, 148.0, 148.0, 148.0, 148.0, 148.0, 148.0, 148.0, 148.0, 148.0, 148.0, 148.0]
+      }
+    },
+    {
+      "id": "au.nem.qld1.fuel_tech.coal_black.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "QLD1",
+      "fuel_tech": "coal_black",
+      "units": "MW",
+      "invalid_count": 0,
+      "invalid_capacity": 0.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [5986.0, 5986.0, 6832.0, 7678.0, 8121.0, 8121.0, 8121.0, 8121.0, 8865.0, 8865.0, 8865.0, 8865.0, 8835.0, 8585.0, 8399.0, 8149.0, 8149.0, 8149.0, 8149.0, 8149.0, 8149.0, 8149.0, 8119.0, 8119.0, 8119.0, 8119.0]
+      }
+    },
+    {
+      "id": "au.nem.qld1.fuel_tech.distillate.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "QLD1",
+      "fuel_tech": "distillate",
+      "units": "MW",
+      "invalid_count": 1,
+      "invalid_capacity": 1.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [318.0, 318.0, 318.0, 318.0, 318.0, 318.0, 318.0, 318.0, 318.0, 318.0, 318.0, 449.0, 449.0, 449.0, 449.0, 449.0, 449.0, 449.0, 449.0, 449.0, 449.0, 449.0, 449.0, 449.0, 449.0, 449.0]
+      }
+    },
+    {
+      "id": "au.nem.qld1.fuel_tech.gas_ccgt.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "QLD1",
+      "fuel_tech": "gas_ccgt",
+      "units": "MW",
+      "invalid_count": 0,
+      "invalid_capacity": 0.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [197.0, 197.0, 197.0, 582.0, 582.0, 582.0, 664.0, 664.0, 664.0, 664.0, 807.0, 1082.0, 1082.0, 1082.0, 1082.0, 1082.0, 1082.0, 1082.0, 1082.0, 1082.0, 1082.0, 1082.0, 1082.0, 1082.0, 1082.0, 1082.0]
+      }
+    },
+    {
+      "id": "au.nem.qld1.fuel_tech.gas_ocgt.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "QLD1",
+      "fuel_tech": "gas_ocgt",
+      "units": "MW",
+      "invalid_count": 1,
+      "invalid_capacity": 5.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [80.0, 362.0, 362.0, 362.0, 362.0, 362.0, 362.0, 866.0, 866.0, 866.0, 1385.0, 1385.0, 1385.0, 1385.0, 1385.0, 1385.0, 1385.0, 1385.0, 1385.0, 1385.0, 1385.0, 1385.0, 1385.0, 1385.0, 1385.0, 1385.0]
+      }
+    },
+    {
+      "id": "au.nem.qld1.fuel_tech.gas_recip.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "QLD1",
+      "fuel_tech": "gas_recip",
+      "units": "MW",
+      "invalid_count": 3,
+      "invalid_capacity": 66.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      }
+    },
+    {
+      "id": "au.nem.qld1.fuel_tech.gas_wcmg.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "QLD1",
+      "fuel_tech": "gas_wcmg",
+      "units": "MW",
+      "invalid_count": 3,
+      "invalid_capacity": 51.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 45.0, 108.0, 108.0, 108.0, 108.0, 108.0, 108.0, 108.0, 108.0, 108.0, 108.0]
+      }
+    },
+    {
+      "id": "au.nem.qld1.fuel_tech.hydro.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "QLD1",
+      "fuel_tech": "hydro",
+      "units": "MW",
+      "invalid_count": 2,
+      "invalid_capacity": 12.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0, 714.0]
+      }
+    },
+    {
+      "id": "au.nem.qld1.fuel_tech.pumps.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "QLD1",
+      "fuel_tech": "pumps",
+      "units": "MW",
+      "invalid_count": 0,
+      "invalid_capacity": 0.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0, 480.0]
+      }
+    },
+    {
+      "id": "au.nem.qld1.fuel_tech.solar_rooftop.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "QLD1",
+      "fuel_tech": "solar_rooftop",
+      "units": "MW",
+      "invalid_count": 0,
+      "invalid_capacity": 0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 1.8, 11.9, 61.5, 264.4, 548.4, 938.2, 1162.1, 1380.2, 1566.9, 1814.5, 2190.0, 2695.6, 3396.5, 4232.2, 4977.1, 5758.2, 6333.1]
+      }
+    },
+    {
+      "id": "au.nem.qld1.fuel_tech.solar_utility.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "QLD1",
+      "fuel_tech": "solar_utility",
+      "units": "MW",
+      "invalid_count": 7,
+      "invalid_capacity": 742.5,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 709.0, 1419.0, 1573.0, 1603.0, 1618.0, 1618.0, 1618.0]
+      }
+    },
+    {
+      "id": "au.nem.qld1.fuel_tech.wind.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "QLD1",
+      "fuel_tech": "wind",
+      "units": "MW",
+      "invalid_count": 3,
+      "invalid_capacity": 348.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 632.0, 632.0, 632.0, 675.2, 675.2, 675.2]
+      }
+    }
+  ]
+}

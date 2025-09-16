@@ -6,7 +6,7 @@
       <div class="info-button-col col-header" />
 
       <div
-        :style="{ width: hideRegionColumn ? '60%' : '50%' }"
+        :style="{ width: hideRegionColumn ? '40%' : '30%' }"
         class="name-col col-header"
         @click="sort('displayName')"
       >
@@ -16,6 +16,17 @@
           :class="getColumnIcon('displayName')"
           class="fal"
         />
+      </div>
+
+      <div class="commenced-date-col col-header">
+        <span @click="sort('facilityCommencementDate')">
+          Commenced
+          <i
+            v-if="sortBy === 'facilityCommencementDate'"
+            :class="getColumnIcon('facilityCommencementDate')"
+            class="fal"
+          />
+        </span>
       </div>
 
       <div 
@@ -33,7 +44,7 @@
 
       <div class="tech-col col-header">
         <span @click="sort('fuelTechs')">
-          {{ techHeaderName }}
+          Tech
           <i
             v-if="sortBy === 'fuelTechs'"
             :class="getColumnIcon('fuelTechs')"
@@ -45,7 +56,7 @@
       <div 
         class="cap-col col-header" 
         @click="sort('generatorCap')">
-        Gen. Capacity
+        Capacity
         <i
           v-if="sortBy === 'generatorCap'"
           :class="getColumnIcon('generatorCap')"
@@ -108,7 +119,7 @@
           </div>
 
           <div
-            :style="{ width: hideRegionColumn ? '60%' : '50%' }"
+            :style="{ width: hideRegionColumn ? '40%' : '30%' }"
             class="name-col"
           >
             <h2 class="station-name">
@@ -123,12 +134,20 @@
             </span>
           </div>
 
+          <div class="commenced-date-col">
+            <small class="facility-commencement-date">
+              {{ facility.facilityCommencementDate | formatLocalDate('%d/%m/%Y') }}
+            </small>
+          </div>
+
           <div 
             v-show="!hideRegionColumn" 
             class="region-col">
-            <small style="color: #666">{{
-              getRegionLabel(facility.regionId)
-            }}</small>
+            <small style="color: #666">
+              {{
+                getRegionLabel(facility.regionId)
+              }}
+            </small>
           </div>
 
           <div class="tech-col stat">
@@ -322,9 +341,7 @@ export default {
     queryFacilityId() {
       return this.$route.query.selected
     },
-    techHeaderName() {
-      return this.tabletBreak ? 'Tech' : 'Technology'
-    },
+
     totalsPosition() {
       return this.divHeight > this.windowHeight ? 'fixed' : 'static'
     },
@@ -795,7 +812,32 @@ export default {
   padding-top: 5px;
 
   @include tablet {
-    font-size: 11px;
+    font-size: 9px;
+  }
+}
+
+.name-col {
+  width: 10%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 10px;
+}
+
+.commenced-date-col {
+  width: 13%;
+  margin-right: 10px;
+  
+  &.col-header {
+    white-space: nowrap;
+  }
+}
+
+.region-col {
+  width: 11%;
+
+  &.col-header {
+    white-space: nowrap;
   }
 }
 
@@ -807,7 +849,7 @@ export default {
   }
 }
 .tech-col {
-  width: 25%;
+  width: 20%;
 
   .stat-value {
     font-size: 8px;
@@ -823,7 +865,7 @@ export default {
 }
 
 .cap-col {
-  width: 20%;
+  width: 15%;
   text-align: right;
   margin-right: 15px;
 

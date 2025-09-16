@@ -46,6 +46,28 @@
             y2="10" />
         </pattern>
 
+        <!-- Curtailment patterns for each domain -->
+        <pattern
+          v-for="domain in currentDomainCurtailment"
+          :key="`pattern-${domain.id}`"
+          :id="`${id}-curtailment-pattern-${domain.id}`"
+          width="4"
+          height="4"
+          patternUnits="userSpaceOnUse"
+          patternTransform="rotate(45)"
+        >
+          <rect 
+            width="10" 
+            height="10" 
+            :fill="domain.colour" 
+            :opacity="0.7" />
+          <line 
+            stroke="rgba(236, 233, 230, 0.4)" 
+            stroke-width="3px" 
+            y2="20" />
+        </pattern>
+
+
         <filter id="shadow">
           <feDropShadow
             dx="0"
@@ -360,6 +382,10 @@ export default {
     totalLineDomain: {
       type: String,
       default: ''
+    },
+    xTicks: {
+      type: Function,
+      default: null
     }
   },
 
@@ -440,6 +466,9 @@ export default {
   },
 
   computed: {
+    currentDomainCurtailment() {
+      return this.$store.getters['regionEnergy/currentDomainCurtailment'] || null
+    },
     compareDifference() {
       return this.$store.getters.compareDifference
     },
@@ -593,6 +622,7 @@ export default {
       this.update()
       this.drawCompare(this.compareDates)
     },
+    
     updatedDataset() {
       // this.zoomed = false
       this.update()
@@ -653,6 +683,10 @@ export default {
       } else {
         this.$totalLineGroup.selectAll('path').remove()
       }
+    },
+
+    xTicks(data) {
+      this.resizeRedraw()
     }
   },
   created() {
@@ -721,9 +755,15 @@ export default {
       this.z = scaleOrdinal() // Colour
 
       // Set up where x, y axis appears
-      this.xAxis = axisBottom(this.x)
+      if (this.xTicks) {
+        this.xAxis = axisBottom(this.x).tickSize(this.height).ticks(this.xTicks)
+      } else {
+        this.xAxis = axisBottom(this.x)
         .tickSize(-this.height)
         .tickFormat((d, i) => this.timeFormats(d, i === 0))
+      }
+
+      
       this.yAxis = axisRight(this.y)
         .tickSize(this.width)
         .ticks(this.yAxisTicks)
@@ -896,6 +936,17 @@ export default {
       const yMax =
         (this.yMax || this.yMax === 0) && this.domains.length > 0 && !this.showTotalLine
           ? this.yMax
+          : this.showTotalLine
+          ? max(this.updatedDataset, (d) => {
+              let totalWithCurtailment = d._total || 0
+              // Add curtailment values to the total when showing total line
+              if (this.currentDomainCurtailment && this.currentDomainCurtailment.length > 0) {
+                this.currentDomainCurtailment.forEach(curtailmentDomain => {
+                  totalWithCurtailment += d[curtailmentDomain.id] || 0
+                })
+              }
+              return totalWithCurtailment
+            })
           : max(this.updatedDataset, (d) => d._total)
       const xDomainExtent = this.dynamicExtent.length
         ? this.dynamicExtent
@@ -970,7 +1021,11 @@ export default {
         .attr('stroke-width', 1)
         .attr('stroke', '#000')
         .attr('fill', (d) => {
-          // return `url(#${d.key})`
+          // Check if this domain is a curtailment domain
+          const domain = this.currentDomainCurtailment.find(domain => domain.id === d.key)
+          if (domain) {
+            return `url(#${this.id}-curtailment-pattern-${domain.id})`
+          }
           return this.z(d.key)
         })
         .style('clip-path', this.clipPathUrl)
@@ -990,7 +1045,7 @@ export default {
         })
 
       if (this.showTotalLine) {
-        this.totalLine.curve(curveMonotoneX)
+        this.totalLine.curve(this.curveType)
         this.$totalLineGroup.selectAll('path').remove()
 
         this.drawTotalLine()
@@ -1005,10 +1060,10 @@ export default {
         .attr('class', 'line-path')
         .attr('d', this.totalLine)
         .style('stroke', '#c74523')
-        .style('stroke-width', 1)
+        .style('stroke-width', 1.5)
         .style('stroke-linecap', 'round')
-        // .style('stroke-dasharray', '13,13')
-        .style('filter', 'url(#shadow)')
+        // .style('stroke-dasharray', '3,3')
+        // .style('filter', 'url(#shadow)')
         .style('clip-path', this.clipPathUrl)
         .style('-webkit-clip-path', this.clipPathUrl)
     },
@@ -1037,7 +1092,7 @@ export default {
         .attr('class', 'line-path')
         .attr('d', this.line)
         .style('stroke', this.datasetTwoColour)
-        .style('stroke-width', 2)
+        .style('stroke-width', 1)
         .style('filter', 'url(#shadow)')
         .style('clip-path', this.clipPathUrl)
         .style('-webkit-clip-path', this.clipPathUrl)
@@ -1552,6 +1607,7 @@ export default {
       this.$emit('zoomExtent', dateRange)
     },
 
+
     customXAxis(g) {
       let tickLength = null
       let className = ''
@@ -1585,24 +1641,26 @@ export default {
           }
         } else if (this.range === 'ALL') {
           const every = this.mobileScreen ? 2 : 1
-          tickLength = d3TimeYear.every(every)
+          tickLength = null
 
           if (this.interval === INTERVAL_SEASON) {
             className = 'interval-season'
             const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
             if (isFilter && periodMonth) {
-              tickLength = d3TimeMonth.filter(
-                (d) => d.getMonth() === periodMonth
-              )
+              // tickLength = d3TimeMonth.filter(
+              //   (d) => d.getMonth() === periodMonth
+              // )
             }
+            tickLength = d3TimeMonth.filter((d) => d.getMonth() === 11 && d.getFullYear() % 3 === 0)
           } else if (this.interval === INTERVAL_QUARTER) {
             className = 'interval-quarter'
             const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
             if (isFilter && periodMonth) {
-              tickLength = d3TimeMonth.filter(
-                (d) => d.getMonth() === periodMonth
-              )
+                // tickLength = d3TimeMonth.filter(
+                //   (d) => d.getMonth() === periodMonth
+                // )
             }
+            tickLength = d3TimeMonth.filter((d) => d.getMonth() === 0 && d.getFullYear() % 2 === 0)
           } else if (this.interval === INTERVAL_HALFYEAR) {
             className = 'interval-half-year'
             const periodMonth = DateDisplay.getPeriodMonth(this.filterPeriod)
@@ -1614,9 +1672,15 @@ export default {
           } else if (this.interval === INTERVAL_YEAR) {
             className = 'interval-year'
           } else if (this.interval === INTERVAL_FINYEAR) {
-            tickLength = d3TimeMonth.filter((d) => {
-              return d.getMonth() === 6
-            })
+            if (isFilter) {
+              tickLength = d3TimeMonth.filter((d) => {
+                return d.getMonth() === 6 
+              })
+            } else {
+              tickLength = d3TimeMonth.filter((d) => {
+                return d.getMonth() === 6 && d.getFullYear() % 2 === 0
+              })
+            }
             className = 'interval-fin-year'
           }
         } else if (this.range === '12 Mth Rolling') {
@@ -1666,7 +1730,7 @@ export default {
         this.xAxis.tickFormat((d, i) => this.timeFormats(d, i === 0))
       }
 
-      this.xAxis.ticks(tickLength)
+      this.xAxis.ticks(this.xTicks || tickLength)
 
       // add secondary x axis tick label here
       const insertSecondaryAxisTick = function (d, i) {

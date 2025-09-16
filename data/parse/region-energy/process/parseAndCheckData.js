@@ -13,19 +13,23 @@ export default function (response, displayTz) {
     dataEmissions = [],
     dataPriceMarketValue = [],
     dataTemperature = [],
-    dataInflation = []
+    dataInflation = [],
+    dataCurtailment = []
   let demandEnergy = [], demandPower = [], demandMarketValue = []
   // filter out each type to its own array
+
   data.forEach((d) => {
     const typeProp = typeof d.data_type === 'undefined' ? 'type' : 'data_type'
+    const isCurtailment = d.fuel_tech?.includes('curtailment')
     if (DT.isValidDataType(d[typeProp])) {
       dataAll.push(d)
     }
 
     switch (d.type) {
       case DT.POWER:
-        // set demand as a separate series
-        if (d.id.includes('demand')) {
+        if (isCurtailment) {
+          dataCurtailment.push(d)
+        } else if (d.id.includes('demand')) {
           demandPower = [d]
         } else {
           dataPower.push(d)
@@ -33,8 +37,9 @@ export default function (response, displayTz) {
         }
         break
       case DT.ENERGY:
-        // set demand as a separate series
-        if (d.id.includes('demand')) {
+        if (isCurtailment) {
+          dataCurtailment.push(d)
+        } else if (d.id.includes('demand')) {
           demandEnergy = [d]
         } else {
           dataEnergy.push(d)
@@ -80,6 +85,7 @@ export default function (response, displayTz) {
   return {
     dataAll,
     dataPowerEnergy,
+    dataCurtailment,
     dataEmissions,
     dataPriceMarketValue,
     dataTemperature,

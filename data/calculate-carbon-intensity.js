@@ -16,10 +16,6 @@ function calAverage(isEnergyType, isWemOrAu, dataset) {
 
   if (!isEnergyType) {
     ei = ei * 1000
-
-    if (isWemOrAu) {
-      ei = ei * 2
-    }
   }
 
   return ei
@@ -63,8 +59,6 @@ export default function({
         return data[domain.id] || 0
       }
     }
-
-    // else return 0
     return 0
   }
 
@@ -132,16 +126,12 @@ export default function({
     
     if (!isEnergyType) {
       ei = ei * 1000
-
-      if (isWemOrAu) {
-        ei = ei * 2
-      } 
     }
 
     const isValidEI = Number.isFinite(ei)
 
     if (ei < 0 || ei > 1500) {
-      console.error(`EI out of range: ${ei}`)
+      console.log(`EI out of range: ${ei}`)
     }
 
     obj._emissionIntensity = isValidEI ? Math.abs(ei) : null

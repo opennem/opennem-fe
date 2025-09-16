@@ -1,0 +1,139 @@
+{
+  "version": "4.2",
+  "network": "nem",
+  "region": "TAS1",
+  "created_at": "2024-07-16T05:54:27+1000",
+  "messages": [
+    "historical capacity derived from facilities data and APVI APIs"
+  ],
+  "data": [
+    {
+      "id": "au.nem.tas1.fuel_tech.bioenergy_biogas.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "TAS1",
+      "fuel_tech": "bioenergy_biogas",
+      "units": "MW",
+      "invalid_count": 1,
+      "invalid_capacity": 2.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      }
+    },
+    {
+      "id": "au.nem.tas1.fuel_tech.distillate.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "TAS1",
+      "fuel_tech": "distillate",
+      "units": "MW",
+      "invalid_count": 0,
+      "invalid_capacity": 0.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 188.0, 48.0, 48.0, 48.0, 48.0, 48.0, 48.0, 48.0, 48.0]
+      }
+    },
+    {
+      "id": "au.nem.tas1.fuel_tech.gas_ccgt.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "TAS1",
+      "fuel_tech": "gas_ccgt",
+      "units": "MW",
+      "invalid_count": 0,
+      "invalid_capacity": 0.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 208.6, 208.6, 208.6, 208.6, 208.6, 208.6, 208.6, 208.6, 208.6, 208.6, 208.6, 208.6, 208.6, 208.6, 208.6, 208.6]
+      }
+    },
+    {
+      "id": "au.nem.tas1.fuel_tech.gas_ocgt.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "TAS1",
+      "fuel_tech": "gas_ocgt",
+      "units": "MW",
+      "invalid_count": 0,
+      "invalid_capacity": 0.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 105.0, 105.0, 105.0, 163.0, 163.0, 163.0, 163.0, 163.0, 163.0, 163.0, 163.0, 163.0, 163.0, 163.0, 163.0, 163.0, 163.0, 163.0, 163.0]
+      }
+    },
+    {
+      "id": "au.nem.tas1.fuel_tech.gas_steam.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "TAS1",
+      "fuel_tech": "gas_steam",
+      "units": "MW",
+      "invalid_count": 0,
+      "invalid_capacity": 0.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 240.0, 240.0, 240.0, 240.0, 240.0, 240.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      }
+    },
+    {
+      "id": "au.nem.tas1.fuel_tech.hydro.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "TAS1",
+      "fuel_tech": "hydro",
+      "units": "MW",
+      "invalid_count": 4,
+      "invalid_capacity": 81.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2174.0, 2174.0, 2174.0, 2174.0, 2174.0, 2174.0, 2280.0, 2280.0, 2280.0, 2280.0, 2280.0, 2280.0, 2280.0, 2280.0, 2280.0, 2280.0, 2280.0, 2280.0, 2280.0, 2280.0]
+      }
+    },
+    {
+      "id": "au.nem.tas1.fuel_tech.solar_rooftop.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "TAS1",
+      "fuel_tech": "solar_rooftop",
+      "units": "MW",
+      "invalid_count": 0,
+      "invalid_capacity": 0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.5, 3.8, 8.7, 19.3, 45.0, 74.4, 86.3, 97.2, 109.6, 129.5, 149.4, 175.1, 205.1, 237.8, 280.0, 315.7]
+      }
+    },
+    {
+      "id": "au.nem.tas1.fuel_tech.wind.capacity",
+      "type": "capacity",
+      "network": "nem",
+      "region": "TAS1",
+      "fuel_tech": "wind",
+      "units": "MW",
+      "invalid_count": 0,
+      "invalid_capacity": 0.0,
+      "history": {
+        "start": "1999-07-01",
+        "last": "2024-07-01",
+        "interval": "1Y",
+        "data": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 140.0, 140.0, 308.0, 308.0, 308.0, 308.0, 308.0, 308.0, 308.0, 567.0, 567.0, 567.0, 567.0, 567.0]
+      }
+    }
+  ]
+}

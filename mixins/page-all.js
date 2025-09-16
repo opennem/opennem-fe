@@ -2,7 +2,6 @@ import { mapMutations } from 'vuex'
 import _debounce from 'lodash.debounce'
 import { lsGet, lsSet } from '~/services/LocalStorage'
 import {
-  FEATURE_TOGGLE_COMPARE_PRICE,
   SHOW_BANNER
 } from '@/constants/mutation-types/features.js'
 import hostEnv from '@/services/HostEnv.js'
@@ -17,7 +16,7 @@ export default {
 
   mounted() {
     if (process.client) {
-      this.getSetFeature(FEATURE_TOGGLE_COMPARE_PRICE, this.setComparePrice)
+      // this.getSetFeature(FEATURE_TOGGLE_CURTAILMENT_SERIES, this.setCurtailmentSeries)
 
       if (lsGet(SHOW_BANNER) === null) {
         this.setShowBanner(true)
@@ -53,8 +52,6 @@ export default {
     ...mapMutations({
       setWindowWidth: 'app/windowWidth',
       setIsTouchDevice: 'app/isTouchDevice',
-
-      setComparePrice: 'feature/comparePrice',
 
       setShowBanner: 'feature/showBanner',
 

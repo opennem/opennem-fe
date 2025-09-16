@@ -7,32 +7,26 @@
     />
     <div class="panel-heading">Features</div>
 
-    <label class="panel-block">
-      <input
-        v-model="featureComparePrice"
-        type="checkbox"
-      >
-      Show Compare VWP before 2009
-    </label>
+
   </div>
 </template>
 
 <script>
 export default {
   computed: {
-    featureComparePrice: {
-      get: function () {
-        return this.$store.getters['feature/comparePrice']
-      },
-      set: function (newValue) {
-        this.$store.commit('feature/comparePrice', newValue)
-      }
-    }
+    // featureCurtailmentSeries: {
+    //   get: function () {
+    //     return this.$store.getters['feature/curtailmentSeries']
+    //   },
+    //   set: function (newValue) {
+    //     this.$store.commit('feature/curtailmentSeries', newValue)
+    //   }
+    // }
   },
   watch: {
-    featureComparePrice() {
-      this.$emit('done')
-    }
+    // featureCurtailmentSeries() {
+    //   this.$emit('done')
+    // }
   },
   methods: {
     handleDoneClick() {

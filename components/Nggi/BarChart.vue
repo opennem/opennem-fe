@@ -51,6 +51,7 @@
       <div 
         v-if="!isHidden(domain.id)" 
         class="row-bar-wrapper" 
+        style="padding-left: 10px;"
         role="cell">
         <div
           :style="{
@@ -370,12 +371,12 @@ export default {
     }
   }
   .row-value {
-    width: 40px;
+    width: 60px;
     font-size: 0.8em;
     text-align: right;
   }
   .row-bar-wrapper {
-    width: 200px;
+    width: 180px;
     margin-left: 0.5rem;
     display: flex;
     align-items: center;

@@ -3,23 +3,12 @@
     <export-legend
       v-if="displayAsLegend"
       :domains="legendDomains"
+      :curtailment-domains="legendCurtailmentDomains"
       :show-percent="showPercentInLegend"
     />
 
     <div v-else>
-      <div v-if="isTimeOfDayView">
-        <DatesDisplayToD
-          :is-hovering="hoverOn"
-          :hovered-time="timeOfDayHoverTime"
-          :start-date="startDate"
-          :end-date="endDate"
-          :range="range"
-          :interval="interval"
-          :timezone-string="isEnergyType ? '' : regionTimezoneString"
-        />
-      </div>
       <dates-display
-        v-else
         :is-hovering="hoverOn"
         :hovered-date="hoveredDate"
         :focus-on="focusOn"
@@ -270,9 +259,39 @@
           />
         </div>
 
+        <div
+          v-if="curtailmentDomains.length > 0"
+          class="summary-column-headers">
+          <div class="summary-row summary-heading-row">
+            <div
+              class="summary-col-label"
+              style="font-weight: bold;">Curtailment</div>
+          </div>
+        </div>
+
+        <div
+          v-if="curtailmentDomains.length > 0"
+          style="margin-left: 8px; border-top: 1px solid #ddd;">
+          <curtailment-items
+            :group="'ft-curtailment'"
+            :hidden-fuel-techs="hiddenCurtailment"
+            :original-order="curtailmentDomains"
+            :show-point-summary="hoverOn || focusOn"
+            :point-summary="pointSummaryCurtailment"
+            :summary="summaryCurtailment"
+            :point-summary-total="pointSummarySourcesTotal"
+            :summary-total="summarySourcesTotal"
+            :domain-toggleable="domainToggleable"
+            @fuelTechsHidden="handleCurtailmentFuelTechsHidden"
+            @mouse-enter="handleMouseEnter"
+            @mouse-leave="handleMouseLeave"
+            @domain-click="handleDomainClick"
+          />
+        </div>
+
         <div style="padding-left: 8px; padding-top: 8px; border-top: 1px solid #333; margin-top: 8px;">
           <div 
-            v-if="loadsOrder.length > 0" 
+            v-if="sourcesOrder.length > 0" 
             class="summary-column-headers line-row"
             @touchstart="() => handleTouchstart('chartEnergyNetLine')"
             @touchend="handleTouchend"
@@ -409,10 +428,8 @@
               <div class="summary-col-av-value cell-value" />
             </div>
           </div>
-        </div>
-        
+        </div>        
       </div>
-      
     </div>
   </div>
 </template>
@@ -436,6 +453,7 @@ import GroupSelector from '~/components/ui/FuelTechGroupSelector'
 import ColumnSelector from '~/components/ui/SummaryColumnSelector'
 import ExportLegend from '@/components/Energy/Export/Legend'
 import Items from './Items'
+import CurtailmentItems from './CurtailmentItems'
 import DatesDisplay from './DatesDisplay'
 import DatesDisplayToD from './DatesDisplayToD'
 
@@ -444,6 +462,7 @@ export default {
     GroupSelector,
     ColumnSelector,
     Items,
+    CurtailmentItems,
     DatesDisplay,
     DatesDisplayToD,
     ExportLegend
@@ -459,6 +478,10 @@ export default {
       default: () => false
     },
     energyDomains: {
+      type: Array,
+      default: () => []
+    },
+    curtailmentDomains: {
       type: Array,
       default: () => []
     },
@@ -549,11 +572,14 @@ export default {
       summary: {},
       summarySources: {},
       summaryLoads: {},
+      summaryCurtailment: {},
       pointSummary: {},
       pointSummarySources: {},
       pointSummaryLoads: {},
+      pointSummaryCurtailment: {},
       hiddenSources: [],
       hiddenLoads: [],
+      hiddenCurtailment: [],
       hoveredTemperature: 0,
       mousedownDelay: null,
       longPress: 500,
@@ -569,6 +595,7 @@ export default {
       domainPowerEnergyGrouped: 'regionEnergy/domainPowerEnergyGrouped',
       domainEmissionsGrouped: 'regionEnergy/domainEmissionsGrouped',
       domainMarketValueGrouped: 'regionEnergy/domainMarketValueGrouped',
+      domainCurtailmentGrouped: 'regionEnergy/domainCurtailmentGrouped',
       regionTimezoneString: 'regionEnergy/regionTimezoneString',
       isEnergyType: 'regionEnergy/isEnergyType',
 
@@ -707,6 +734,10 @@ export default {
       ).length
     },
 
+    curtailmentOrder() {
+      return this.curtailmentDomains.filter((d) => d)
+    },
+
     sourcesOrder() {
       return this.energyDomains.filter((d) => d.category === 'source')
     },
@@ -730,6 +761,14 @@ export default {
       )
       domains.forEach((d) => {
         d.contribution = this.getContribution(d.id)
+      })
+      return domains
+    },
+
+    legendCurtailmentDomains() {
+      const domains = this.curtailmentDomains.filter((d) => !_includes(this.hiddenFuelTechs, d[this.propRef]))
+      domains.forEach((d) => {
+        d.contribution = this.getCurtailmentContribution(d.id)
       })
       return domains
     },
@@ -848,16 +887,17 @@ export default {
   },
 
   watch: {
-    fuelTechGroupName() {
-      // clear hidden fuel techs when grouping is changed
-      this.hiddenSources = []
-      this.hiddenLoads = []
-      this.emitHiddenFuelTechs()
+    // fuelTechGroupName() {
+    //   // clear hidden fuel techs when grouping is changed
+    //   this.hiddenSources = []
+    //   this.hiddenLoads = []
+    //   this.hiddenCurtailment = []
+    //   this.emitHiddenFuelTechs()
 
-      if (this.focusOn) {
-        this.updatePointSummary(this.focusDate)
-      }
-    },
+    //   if (this.focusOn) {
+    //     this.updatePointSummary(this.focusDate)
+    //   }
+    // },
     dataset(updated) {
       this.calculateSummary(updated)
     },
@@ -886,6 +926,25 @@ export default {
       this.handlePointCopy()
     },
     hiddenFuelTechs(updated) {
+      // console.log('hiddenFuelTechs updated', updated)
+      updated.forEach((fuelTech) => {
+        const find = this.energyDomains.find(
+          (domain) => domain[this.propRef] === fuelTech
+        )
+        const findCurtailment = this.curtailmentDomains.find(
+          (domain) => domain[this.propRef] === fuelTech
+        )
+        if (findCurtailment) {
+          this.hiddenCurtailment.push(fuelTech)
+        } else if (find) {
+          if (find.category === 'source') {
+            this.hiddenSources.push(fuelTech)
+          } else {
+            this.hiddenLoads.push(fuelTech)
+          }
+        }
+      })
+
       this.calculateSummary(this.dataset)
     },
     percentContributionTo(updated) {
@@ -893,8 +952,16 @@ export default {
     }
   },
 
+  created() {
+    EventBus.$on('fueltechgroup.changed', this.handleFuelTechGroupChanged)
+  },
+  beforeDestroy() {
+    EventBus.$off('fueltechgroup.changed')
+  },
+
   mounted() {
     let hiddenFuelTechs = this.hiddenFuelTechs
+    let totalDomainLength = this.energyDomains.length + this.curtailmentDomains.length
 
     // if all is hidden, then unhide all
     let hiddenLength = 0
@@ -903,8 +970,13 @@ export default {
         hiddenLength += 1
       }
     })
+    this.curtailmentDomains.forEach((d) => {
+      if (_includes(hiddenFuelTechs, d[this.propRef])) {
+        hiddenLength += 1
+      }
+    })
 
-    if (this.energyDomains.length === hiddenLength) {
+    if (totalDomainLength === hiddenLength) {
       this.hiddenSources = []
       this.hiddenLoads = []
       hiddenFuelTechs = []
@@ -916,7 +988,12 @@ export default {
       const find = this.energyDomains.find(
         (domain) => domain[this.propRef] === fuelTech
       )
-      if (find) {
+      const findCurtailment = this.curtailmentDomains.find(
+        (domain) => domain[this.propRef] === fuelTech
+      )
+      if (findCurtailment) {
+        this.hiddenCurtailment.push(fuelTech)
+      } else if (find) {
         if (find.category === 'source') {
           this.hiddenSources.push(fuelTech)
         } else {
@@ -924,10 +1001,22 @@ export default {
         }
       }
     })
+
     this.calculateSummary(this.dataset)
   },
 
   methods: {
+    handleFuelTechGroupChanged(group) {
+      // clear hidden fuel techs when grouping is changed
+      this.hiddenSources = []
+      this.hiddenLoads = []
+      this.hiddenCurtailment = []
+      this.emitHiddenFuelTechs()
+
+      if (this.focusOn) {
+        this.updatePointSummary(this.focusDate)
+      }
+    },
     handleValueButtonClicked() {
       if (this.renewablesCustomFString === ',.1f') {
         this.renewablesCustomFString = ',.3f'
@@ -953,6 +1042,7 @@ export default {
         this.summary = {}
         this.summarySources = {}
         this.summaryLoads = {}
+        this.summaryCurtailment = {}
 
         const energySummary = data.map((d) => {
           let p = 0
@@ -1034,8 +1124,22 @@ export default {
           dataset: datasetWithUpdatedSummary,
           domainPowerEnergyGrouped: this.domainPowerEnergyGrouped,
           domainEmissionsGrouped: this.domainEmissionsGrouped,
-          domainMarketValueGrouped: this.domainMarketValueGrouped
+          domainMarketValueGrouped: this.domainMarketValueGrouped,
+          domainCurtailmentGrouped: this.domainCurtailmentGrouped
         })
+
+        this.curtailmentDomains.forEach((ft) => {
+          const fullDomainData = datasetWithUpdatedSummary.map((fd) => fd[ft.id])
+          const dataEnergy = dataEnergyMap(ft)
+          // For Power, calculate using trapezoid, then convert to GWh
+          const dataEnergySum = this.isEnergyType
+            ? sumMap(ft, dataEnergy)
+            : energy_sum(fullDomainData, bucketSizeMins) / 1000
+          
+
+          this.summaryCurtailment[ft.id] = dataEnergySum
+        })
+
 
         // Calculate Energy
         this.energyDomains.forEach((ft) => {
@@ -1071,6 +1175,7 @@ export default {
           totalPowerMinusHidden += dataPowerMinusHiddenSum
 
           if (category !== 'load' || _includes(ft.id, 'exports')) {
+            // exclude curtailment, pumps and battery charging
             totalEnergyForPercentageCalculation += dataEnergySum
           }
 
@@ -1322,6 +1427,7 @@ export default {
       this.pointSummary = data || {} // pointSummary._total is already calculated
       this.pointSummarySources = {}
       this.pointSummaryLoads = {}
+      this.pointSummaryCurtailment = {}
 
       if (!_isEmpty(this.pointSummary)) {
         // if (this.isTimeOfDayView) {
@@ -1331,6 +1437,11 @@ export default {
         //     }
         //   })
         // }
+
+        this.curtailmentDomains.forEach((ft) => {
+          const value = this.pointSummary[ft.id]
+          this.pointSummaryCurtailment[ft.id] = value
+        })
 
         this.energyDomains.forEach((ft) => {
           const category = ft.category
@@ -1500,7 +1611,7 @@ export default {
     },
 
     emitHiddenFuelTechs() {
-      let hiddenFuelTechs = [...this.hiddenSources, ...this.hiddenLoads]
+      let hiddenFuelTechs = [...this.hiddenSources, ...this.hiddenLoads, ...this.hiddenCurtailment]
       // if all is hidden, then unhide all
       let sourcesHiddenLength = 0
       this.sourcesOrder.forEach((d) => {
@@ -1514,18 +1625,47 @@ export default {
           loadsHiddenLength += 1
         }
       })
+      let curtailmentHiddenLength = 0
+      this.curtailmentDomains.forEach((d) => {
+        if (_includes(this.hiddenCurtailment, d[this.propRef])) {
+          curtailmentHiddenLength += 1
+        }
+      })
       if (
         this.sourcesOrder.length === sourcesHiddenLength &&
         this.loadsOrder.length === loadsHiddenLength &&
+        this.curtailmentDomains.length === curtailmentHiddenLength &&
         !this.chartEnergyRenewablesLine &&
         !this.chartEnergyNetLine
       ) {
         this.hiddenSources = []
         this.hiddenLoads = []
+        this.hiddenCurtailment = []
         hiddenFuelTechs = []
       }
 
       this.$emit('fuelTechsHidden', hiddenFuelTechs)
+    },
+
+    handleCurtailmentFuelTechsHidden(hidden, hideOthers, onlyFt) {
+      this.hiddenCurtailment = hidden
+      if (hideOthers) {
+        if (this.fuelTechGroupName === GROUP_DETAILED) {
+          const hiddenSources = Domain.getAllDomainObjs().filter(
+            (d) => d.category === 'source'
+          )
+          const hiddenLoads = Domain.getAllDomainObjs().filter(
+            (d) => d.category === 'load'
+          )
+       
+          this.hiddenSources = hiddenSources.map((d) => d.fuelTech)
+          this.hiddenLoads = hiddenLoads.map((d) => d.fuelTech)
+        } else {
+          this.hiddenSources = this.sourcesOrder.map((d) => d[this.propRef])
+          this.hiddenLoads = this.loadsOrder.map((d) => d[this.propRef])
+        }
+      } 
+      this.emitHiddenFuelTechs()
     },
 
     handleSourceFuelTechsHidden(hidden, hideOthers, onlyFt) {
@@ -1538,13 +1678,17 @@ export default {
           const hiddenLoads = Domain.getAllDomainObjs().filter(
             (d) => d.category === 'load'
           )
+       
           this.hiddenSources = hiddenSources.map((d) => d.fuelTech)
           this.hiddenLoads = hiddenLoads.map((d) => d.fuelTech)
+          this.hiddenCurtailment = this.curtailmentDomains.map((d) => d.fuelTech)
         } else {
           const hiddenLoads = this.domainPowerEnergyGrouped[
             this.fuelTechGroupName
           ].filter((d) => d.category === 'load')
+          
           this.hiddenLoads = hiddenLoads.map((d) => d[this.propRef])
+          this.hiddenCurtailment = this.curtailmentDomains.map((d) => d[this.propRef])
           // this.hiddenLoads = this.loadsOrder.map(d => d[property])
         }
       }
@@ -1563,8 +1707,11 @@ export default {
           )
           this.hiddenSources = hiddenSources.map((d) => d.fuelTech)
           this.hiddenLoads = hiddenLoads.map((d) => d.fuelTech)
+          this.hiddenCurtailment = this.curtailmentDomains.map((d) => d.fuelTech)
+
         } else {
           this.hiddenSources = this.sourcesOrder.map((d) => d[this.propRef])
+          this.hiddenCurtailment = this.curtailmentDomains.map((d) => d[this.propRef])
         }
       }
       this.emitHiddenFuelTechs()
@@ -1649,6 +1796,12 @@ export default {
       const rowValue = this.summary[key] || 0
       const total = this.summary._totalEnergyForPercentageCalculation
 
+      return (rowValue / total) * 100
+    },
+
+    getCurtailmentContribution(key) {
+      const rowValue = this.summaryCurtailment[key] || 0
+      const total = this.summary._totalEnergyForPercentageCalculation
       return (rowValue / total) * 100
     },
 

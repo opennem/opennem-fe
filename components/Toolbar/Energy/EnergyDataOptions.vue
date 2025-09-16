@@ -5,12 +5,15 @@
 
     <div>
       <label v-if="mobile">View:</label>
-      <div class="button-group has-addons">
-        <div class="buttons">
+      <div class="button-group has-addons" >
+        <div 
+          class="buttons" 
+          style="display: flex; width: 100%;">
           <button 
             class="button"
             v-tooltip="dashboardView === 'discrete-time' ? '' : 'Switch to discrete time view'"
             :class="{ 'is-selected': dashboardView === 'discrete-time' }"
+            :style="{ padding: padding }"
             @click="() => handleViewChange('discrete-time')">
             <span class="icon">
               <IconDiscreteTime />
@@ -22,6 +25,7 @@
             class="button"
             v-tooltip="dashboardView === 'time-of-day' ? '' : 'Switch to time of day view'"
             :class="{ 'is-selected': dashboardView === 'time-of-day' }"
+            :style="{ padding: padding }"
             @click="() => handleViewChange('time-of-day')">
             <span class="icon">
               <IconTimeOfDay />
@@ -63,6 +67,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex'
 import { RANGES, RANGE_INTERVALS } from '@/constants/ranges.js'
+import { GROUP_LABEL } from '@/constants/energy-fuel-techs/group-detailed.js'
 
 import DataOptionsBar from '@/components/Energy/DataOptionsBar.vue'
 import DataOptionsBarTimeOfDay from '~/components/Energy/DataOptionsBarTimeOfDay.vue'
@@ -92,11 +97,11 @@ export default {
   },
   watch: {
     fuelTechGroupName() {
-      const query = {
-          range: this.range,
-          interval: this.interval
-        }
-      this.handleQueryChange(query)
+      // const query = {
+      //     range: this.range,
+      //     interval: this.interval
+      //   }
+      // this.handleQueryChange(query)
     }
   },
 
@@ -106,8 +111,22 @@ export default {
       interval: 'interval',
       filterPeriod: 'filterPeriod',
       fuelTechGroupName: 'fuelTechGroupName',
+      hiddenFuelTechs: 'hiddenFuelTechs',
       query: 'app/query',
+      currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
+      currentDomainCurtailment: 'regionEnergy/currentDomainCurtailment'
     }),
+
+    rangeDropdownBreak() {
+      return this.$store.getters['app/rangeDropdownBreak']
+    },
+    padding() {
+      return this.rangeDropdownBreak ? '0' : '0'
+    },
+
+    property() {
+      return this.fuelTechGroupName === GROUP_LABEL ? 'fuelTech' : 'group'
+    },
 
     dashboardView: {
       get() {
@@ -121,7 +140,7 @@ export default {
 
     regionId() {
       return this.$route.params.region
-    },
+    }
   },
 
   methods: {

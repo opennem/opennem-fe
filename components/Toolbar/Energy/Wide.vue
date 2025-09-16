@@ -4,7 +4,8 @@
 
     <div 
       v-if="ready" 
-      class="header-dropdowns">
+      class="header-dropdowns"
+      :style="{ padding: padding }">
       <view-dropdown 
         v-if="!tabletBreak" />
       <region-dropdown 
@@ -15,7 +16,9 @@
 
     <div 
       v-if="ready"
-      class="data-options-bar">
+      class="data-options-bar"
+      :style="{ padding: padding }"
+    >
 
       <div>
         <EnergyDataOptions />
@@ -29,7 +32,8 @@
     </div>
 
     <div 
-      class="export-bar" 
+      class="export-bar"
+      :style="{ padding: padding }"
       v-if="ready">
       <div class="button-group has-addons">
         <div class="buttons">
@@ -100,6 +104,7 @@ export default {
       isEnergyType: 'regionEnergy/isEnergyType',
       energyExportData: 'regionEnergy/filteredCurrentDataset',
       energyDomains: 'regionEnergy/currentDomainPowerEnergy',
+      curtailmentDomains: 'regionEnergy/currentDomainCurtailment',
       emissionDomains: 'regionEnergy/currentDomainEmissions',
       priceDomains: 'regionEnergy/domainPrice',
       demandPriceDomains: 'regionEnergy/domainDemandPrice',
@@ -107,6 +112,14 @@ export default {
       marketValueDomains: 'regionEnergy/currentDomainMarketValue',
       emissionIntensityData: 'energy/emissions/emissionIntensityData'
     }),
+
+    rangeDropdownBreak() {
+      return this.$store.getters['app/rangeDropdownBreak']
+    },
+    padding() {
+      return this.rangeDropdownBreak ? '10px' : '24px'
+    },
+
 
     isEmissionsView() {
       return this.currentView === 'emissions'
@@ -139,7 +152,7 @@ export default {
     },
 
     exportData() {
-      const timeFormat = this.isEnergy
+      const timeFormat = this.isEnergy && !this.isTimeOfDayView
         ? d3TimeFormat('%Y-%m-%d')
         : utcFormat('%Y-%m-%d %H:%M')
       const format = d3Format('.2f')
@@ -152,6 +165,9 @@ export default {
         }
         this.energyDomains.forEach((domain) => {
           obj[`${domain.label} - ${this.chartUnit}`] = format(d[domain.id])
+        })
+        this.curtailmentDomains.forEach((domain) => {
+          obj[`${domain.label} (Curtailment) - ${this.chartUnit}`] = format(d[domain.id])
         })
         this.temperatureDomains.forEach((domain) => {
           let label = 'Temperature'

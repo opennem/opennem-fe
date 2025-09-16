@@ -59,6 +59,12 @@
         v-if="hoverValue" 
         class="ft-value">
         <em
+          v-if="isCurtailmentHover"
+          :style="{ 'background': `repeating-linear-gradient(-45deg, ${hoverDomainColour}, ${hoverDomainColour} 2px, ${hoverDomainColour}99 2px, ${hoverDomainColour}99 4px)` }"
+          class="colour-square"
+        />
+        <em 
+          v-else
           :style="{ 'background-color': hoverDomainColour }"
           class="colour-square"
         />
@@ -77,6 +83,7 @@
         class="renewables-value">
         <strong>{{ hoverRenewables | percentageFormatNumber }}</strong>
       </span>
+
       <span
         v-else-if="!isTypeProportion && !(isTypeLine && isYAxisPercentage)"
         class="total-value"
@@ -251,6 +258,10 @@ export default {
     growthLabel: {
       type: String,
       default: ''
+    },
+    isCurtailmentHover: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

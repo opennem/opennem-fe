@@ -19,43 +19,40 @@
       </article>
     </transition>
 
-    <article 
-      v-if="showBanner && !mobileNavActive"
-      class="message" 
-      style="background-color: black; border-radius: 0; position: relative;"
-    >
-      <div 
-        class="message-body open-electricity-banner" 
-      >
-        <div>
-          <strong>OpenNEM</strong> is now
-          <strong>Open Electricity</strong>.
-        </div>
-        <div>
-          <a href="https://openelectricity.org.au/analysis/welcome-open-electricity">Read</a> about the update.
-        </div>
-      </div>
-
-      <button 
-        class="banner-close" 
-        @click="handleClick"><i class="fal fa-times"/></button>
-    </article>
-
+    <!-- showBanner -->
     <!-- <article 
-      v-if="showBanner && !mobileNavActive"
+      v-if="!mobileNavActive"
       class="message" 
       style="background-color: black; border-radius: 0; position: relative;"
     >
       <div 
         class="message-body open-electricity-banner" 
-        style="padding: 10px 30px; justify-content: start;"
+        style="padding: 10px 30px; justify-content: center;"
       >
-        Due to recent changes to data conventions for reporting battery charge and discharge,
-        OpenElectricty is currently under-reporting activity for some batteries.
-        <br>
-        We are working to resolve this as soon as possible.
+        <p>
+          We're updating our Facilities page and your feedback helps! Take our
+          <a 
+            href="https://docs.google.com/forms/d/e/1FAIpQLSfhGRg43hUUV4d229e44GfLFtEmS_vsJ8FaBOoS5MdHk-VNFw/viewform?usp=sharing&ouid=105526448285097294979" 
+            target="_blank">survey</a>.
+        </p>
       </div>
     </article> -->
+
+    <article 
+      class="message" 
+      style="background-color: black; border-radius: 0; position: relative;"
+    >
+      <div 
+        class="message-body open-electricity-banner" 
+        style="padding: 13px 20px; justify-content: center;"
+      >
+        <p style="text-align: center;">
+          ⚡️ Sign up for Open Electricity updates - direct to your inbox 📬.
+          <a 
+          href="https://openelectricity.org.au/newsletter">Subscribe now</a>.
+        </p>
+      </div>
+    </article>
 
     <transition name="slide-down-fade">
       <article 

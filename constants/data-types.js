@@ -1,4 +1,5 @@
 export const POWER = 'power'
+export const CAPACITY = 'capacity'
 export const ENERGY = 'energy'
 export const DEMAND = 'demand'
 export const EMISSIONS = 'emissions'
@@ -14,6 +15,7 @@ export const TEMPERATURE_MIN = 'temperature_min'
 export const TEMPERATURE_MEAN = 'temperature_mean'
 export const TEMPERATURE_MAX = 'temperature_max'
 export const CPI = 'cpi'
+export const CURTAILMENT = 'curtailment'
 
 export function isTemperature(name) {
   return (
@@ -43,6 +45,7 @@ export function isEmissions(name) {
 export function isValidDataType(name) {
   return (
     name === POWER ||
+    name === CAPACITY ||
     name === ENERGY ||
     name === DEMAND ||
     name === EMISSIONS ||
@@ -51,6 +54,7 @@ export function isValidDataType(name) {
     name === TEMPERATURE ||
     name === TEMPERATURE_MIN ||
     name === TEMPERATURE_MEAN ||
-    name === TEMPERATURE_MAX
+    name === TEMPERATURE_MAX ||
+    name === CURTAILMENT
   )
 }

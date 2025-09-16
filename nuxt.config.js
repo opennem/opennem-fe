@@ -197,7 +197,13 @@ module.exports = {
     ],
     script: [
       { async: true, src: 'https://www.googletagmanager.com/gtag/js?id=G-FYYXTDCEND"' },
-      { src: '/scripts/ga.js' }
+      { src: '/scripts/ga.js' },
+      {
+        defer: true,
+        'data-spa': 'auto',
+        'data-site': 'VZODQVAG',
+        src: 'https://cdn.usefathom.com/script.js'
+      }
     ]
   },
 
@@ -221,6 +227,15 @@ module.exports = {
       '/energy/tas1/',
       '/energy/vic1/',
       '/energy/wem/',
+      '/capacity/',
+      '/capacity/au/',
+      '/capacity/nem/',
+      '/capacity/nsw1/',
+      '/capacity/qld1/',
+      '/capacity/sa1/',
+      '/capacity/tas1/',
+      '/capacity/vic1/',
+      '/capacity/wem/',
       '/facilities/au/',
       '/facilities/nem/',
       '/facilities/nsw1/',

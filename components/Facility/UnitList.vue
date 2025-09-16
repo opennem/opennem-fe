@@ -1001,7 +1001,7 @@ export default {
       let total = null
       units.forEach((u) => {
         const value = u.registeredCapacity
-        if (value || value === 0) {
+        if (u.status === FACILITY_OPERATING && (value || value === 0)) {
           total += value
         }
       })

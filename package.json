@@ -1,6 +1,6 @@
 {
   "name": "opennem",
-  "version": "4.39.1",
+  "version": "4.50.1",
   "description": "An Open Platform for National Electricity Market Data",
   "author": "Steven Tan",
   "private": true,
@@ -17,7 +17,14 @@
     "release": "dotenv release-it --",
     "fix": "yarn fix:eslint && yarn fix:prettier",
     "fix:eslint": "eslint --fix \"**/*.*\"",
-    "fix:prettier": "prettier --write \"**/*.*\""
+    "fix:prettier": "prettier --write \"**/*.*\"",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up",
+    "docker:dev": "docker-compose up --build",
+    "docker:down": "docker-compose down",
+    "docker:exec": "docker-compose exec opennem-fe",
+    "docker:logs": "docker-compose logs -f opennem-fe",
+    "docker:clean": "docker-compose down -v --remove-orphans && docker system prune -f"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.0.0",

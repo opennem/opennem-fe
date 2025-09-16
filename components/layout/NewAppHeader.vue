@@ -20,6 +20,12 @@
       class="mobile-nav"
       :active="mobileNavActive" 
       @click="() => mobileNavActive = !mobileNavActive" />
+
+    <div 
+      class="footer-links" 
+    >
+      <AppFooter />
+    </div>
   </header>
 </template>
 
@@ -27,6 +33,7 @@
 import {mapGetters} from 'vuex';
 import OpenElectricityLogo from '../ui/OpenElectricityLogo.vue';
 import BurgerButton from './BurgerButton.vue';
+import AppFooter from './AppFooter.vue';
 
 const topLevelLinks = [
   {
@@ -42,10 +49,10 @@ const topLevelLinks = [
     name: 'Scenarios',
     path: 'https://openelectricity.org.au/scenarios'
   },
-  // {
-  //   name: 'Latest Records',
-  //   path: 'https://openelectricity.org.au/records'
-  // },
+  {
+    name: 'Records',
+    path: 'https://openelectricity.org.au/records'
+  },
   {
     name: 'Analysis',
     path: 'https://openelectricity.org.au/analysis',
@@ -60,7 +67,8 @@ const topLevelLinks = [
 export default {
   components: {
     OpenElectricityLogo,
-    BurgerButton
+    BurgerButton,
+    AppFooter
   },
 
   data() {
@@ -191,5 +199,12 @@ nav {
   @media screen and (max-width: 1036px) {
     display: block;
   }
+}
+
+.footer-links {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 </style>

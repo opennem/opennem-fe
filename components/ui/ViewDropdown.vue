@@ -52,6 +52,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { mixin as clickaway } from 'vue-clickaway'
 import VIEWS from '~/constants/views.js'
 
@@ -61,7 +62,7 @@ export default {
   data() {
     return {
       dropdownActive: false,
-      views: VIEWS
+      defaultViews: VIEWS
     }
   },
 
@@ -78,15 +79,18 @@ export default {
     viewLabel() {
       const view = this.views.find((d) => d.id === this.currentView)
       return view ? view.label : ''
+    },
+    views() {
+      return this.defaultViews
     }
   },
 
   methods: {
     appendQuery(id) {
-      console.log(id)
       if (id === 'compare') return '?range=all-12-mth-rolling&interval=1M&metric=renewablesProportion'
       if (id === 'energy') return '?range=7d&interval=30m&view=discrete-time'
       if (id === 'emissions') return '??interval=Year&projections=false&history=false'
+      if (id === 'capacity') return '?range=all&interval=1M'
       return ''
     },
     handleClick() {

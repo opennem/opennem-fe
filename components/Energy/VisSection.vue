@@ -1,9 +1,11 @@
 <template>
   <section>
+
     <power-energy-chart
       v-if="ready"
       :power-energy-dataset="currentDataset"
       :domain-power-energy="currentDomainPowerEnergy"
+      :domain-curtailment="currentDomainCurtailment"
       :hidden-domains="hiddenFuelTechs"
       :range="range"
       :interval="interval"
@@ -189,6 +191,7 @@ export default {
       domainPrice: 'regionEnergy/domainPrice',
       currentDomainPowerEnergy: 'regionEnergy/currentDomainPowerEnergy',
       currentDomainEmissions: 'regionEnergy/currentDomainEmissions',
+      currentDomainCurtailment: 'regionEnergy/currentDomainCurtailment',
 
       averageEmissions: 'energy/emissions/averageEmissions',
       emissionIntensityData: 'energy/emissions/emissionIntensityData',

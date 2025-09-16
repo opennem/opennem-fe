@@ -33,6 +33,7 @@ export default function (domains, data, rollUp) {
     isIncompleteStart,
     isIncompleteEnd,
     incompleteStartDate,
-    incompleteEndDate
+    incompleteEndDate,
+    'month'
   )
 }

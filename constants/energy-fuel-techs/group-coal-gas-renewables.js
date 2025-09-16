@@ -2,16 +2,37 @@ import * as FT from './group-detailed.js'
 
 export const GROUP_NAME = 'group.coal-gas-renewables'
 
-export const PUMPS = `${GROUP_NAME}.pumps`
-export const BATTERY_CHARGING = `${GROUP_NAME}.battery_charging`
-export const EXPORTS = `${GROUP_NAME}.exports`
-export const IMPORTS = `${GROUP_NAME}.imports`
+export const NAME_PUMPS = `pumps`
+export const NAME_BATTERY_CHARGING = `battery_charging`
+export const NAME_EXPORTS = `exports`
+export const NAME_IMPORTS = `imports`
+export const NAME_RENEWABLES = `renewables`
+export const NAME_DISTILLATE = `distillate`
+export const NAME_BATTERY_DISCHARGING = `battery_discharging`
+export const NAME_COAL = `coal`
+export const NAME_GAS = `gas`
 
-export const RENEWABLES = `${GROUP_NAME}.renewables`
-export const DISTILLATE = `${GROUP_NAME}.distillate`
-export const BATTERY_DISCHARGING = `${GROUP_NAME}.battery_discharging`
-export const COAL = `${GROUP_NAME}.coal`
-export const GAS = `${GROUP_NAME}.gas`
+export const PUMPS = `${GROUP_NAME}.${NAME_PUMPS}`
+export const BATTERY_CHARGING = `${GROUP_NAME}.${NAME_BATTERY_CHARGING}`
+export const EXPORTS = `${GROUP_NAME}.${NAME_EXPORTS}`
+export const IMPORTS = `${GROUP_NAME}.${NAME_IMPORTS}`
+
+export const RENEWABLES = `${GROUP_NAME}.${NAME_RENEWABLES}`
+export const DISTILLATE = `${GROUP_NAME}.${NAME_DISTILLATE}`
+export const BATTERY_DISCHARGING = `${GROUP_NAME}.${NAME_BATTERY_DISCHARGING}`
+export const COAL = `${GROUP_NAME}.${NAME_COAL}`
+export const GAS = `${GROUP_NAME}.${NAME_GAS}`
+
+export const NAME_FUEL_TECH_GROUP = {}
+NAME_FUEL_TECH_GROUP[PUMPS] = NAME_PUMPS
+NAME_FUEL_TECH_GROUP[BATTERY_CHARGING] = NAME_BATTERY_CHARGING
+NAME_FUEL_TECH_GROUP[EXPORTS] = NAME_EXPORTS
+NAME_FUEL_TECH_GROUP[IMPORTS] = NAME_IMPORTS
+NAME_FUEL_TECH_GROUP[RENEWABLES] = NAME_RENEWABLES
+NAME_FUEL_TECH_GROUP[DISTILLATE] = NAME_DISTILLATE
+NAME_FUEL_TECH_GROUP[BATTERY_DISCHARGING] = NAME_BATTERY_DISCHARGING
+NAME_FUEL_TECH_GROUP[COAL] = NAME_COAL
+NAME_FUEL_TECH_GROUP[GAS] = NAME_GAS
 
 export const FUEL_TECH_GROUP = {}
 FUEL_TECH_GROUP[PUMPS] = [FT.PUMPS]
@@ -27,7 +48,7 @@ FUEL_TECH_GROUP[RENEWABLES] = [
   FT.BIOENERGY_BIOGAS
 ]
 FUEL_TECH_GROUP[DISTILLATE] = [FT.DISTILLATE]
-FUEL_TECH_GROUP[BATTERY_DISCHARGING] = [FT.BATTERY_DISCHARGING]
+FUEL_TECH_GROUP[BATTERY_DISCHARGING] = [FT.BATTERY_DISCHARGING, FT.BATTERY]
 FUEL_TECH_GROUP[COAL] = [
   FT.COAL_BROWN,
   FT.COAL_BLACK

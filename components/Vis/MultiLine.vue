@@ -98,15 +98,15 @@ export default {
     },
     marginRight: {
       type: Number,
-      default: () => 1
+      default: () => 0
     },
     marginBottom: {
       type: Number,
-      default: () => 1
+      default: () => 0
     },
     marginLeft: {
       type: Number,
-      default: () => 10
+      default: () => 0
     },
     domains1: {
       type: Array,

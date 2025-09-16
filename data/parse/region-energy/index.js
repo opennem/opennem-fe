@@ -1,5 +1,6 @@
 import _cloneDeep from 'lodash.clonedeep'
 import { getAllGroups } from '@/constants/energy-fuel-techs'
+import { getAllGroups as getAllCurtailmentGroups } from '@/constants/curtailment-fuel-techs'
 import { EMISSIONS, MARKET_VALUE } from '@/constants/data-types'
 import { RANGE_ALL_12MTH_ROLLING } from '@/constants/ranges.js'
 import process from './process'
@@ -23,6 +24,7 @@ export function simpleDataProcess(res, displayTz) {
     domainMarketValue,
     domainPrice,
     domainPowerEnergy,
+    domainCurtailment,
     domainEmissions,
     domainTemperature,
     domainInflation,
@@ -39,6 +41,7 @@ export function simpleDataProcess(res, displayTz) {
     currentDataset: datasetFlat,
     datasetInflation,
     domainPowerEnergy,
+    domainCurtailment,
     domainEmissions,
     domainPrice: isEnergyType ? domainMarketValue : domainPrice,
     domainInflation,
@@ -78,6 +81,7 @@ export function dataProcess(res, range, interval, period, displayTz) {
     domainDemandPower,
     domainDemandMarketValue,
     domainPowerEnergy,
+    domainCurtailment,
     domainTemperature,
     domainEmissions,
     dataPowerEnergyInterval,
@@ -102,6 +106,7 @@ export function dataProcess(res, range, interval, period, displayTz) {
 
   const domains = [
     ...domainPowerEnergy,
+    ...domainCurtailment,
     ...domainEmissions,
     ...domainMarketValue,
     ...domainPrice,
@@ -148,11 +153,13 @@ export function dataProcess(res, range, interval, period, displayTz) {
   const domainPowerEnergyGrouped = getAllGroups(domainPowerEnergy, type)
   const domainEmissionsGrouped = getAllGroups(domainEmissions, EMISSIONS)
   const domainMarketValueGrouped = getAllGroups(domainMarketValue, MARKET_VALUE)
+  const domainCurtailmentGrouped = getAllCurtailmentGroups(domainCurtailment, type)
 
   summariseDataset({
     isEnergyType,
     currentDataset,
     domainPowerEnergy,
+    domainCurtailment,
     domainEmissions,
     domainDemandPrice,
     domainDemandEnergy,
@@ -162,11 +169,13 @@ export function dataProcess(res, range, interval, period, displayTz) {
     datasetInflation,
     domainInflation
   })
+
   groupDataset({
     dataset: currentDataset,
     domainPowerEnergyGrouped,
     domainEmissionsGrouped,
-    domainMarketValueGrouped
+    domainMarketValueGrouped,
+    domainCurtailmentGrouped
   })
 
   // summarise and group original dataset for power data
@@ -175,6 +184,7 @@ export function dataProcess(res, range, interval, period, displayTz) {
       isEnergyType,
       currentDataset: dataset,
       domainPowerEnergy,
+      domainCurtailment,
       domainEmissions,
       domainDemandPower,
       domainPrice: domainPrice
@@ -183,7 +193,8 @@ export function dataProcess(res, range, interval, period, displayTz) {
       dataset: dataset,
       domainPowerEnergyGrouped,
       domainEmissionsGrouped,
-      domainMarketValueGrouped
+      domainMarketValueGrouped,
+      domainCurtailmentGrouped
     })
   }
 
@@ -194,6 +205,8 @@ export function dataProcess(res, range, interval, period, displayTz) {
     dataPowerEnergyInterval,
     domainPowerEnergy,
     domainPowerEnergyGrouped,
+    domainCurtailment,
+    domainCurtailmentGrouped,
     domainEmissions,
     domainEmissionsGrouped,
     domainMarketValue,
@@ -217,6 +230,8 @@ export function dataRollUp({
   datasetFlat,
   domainPowerEnergy,
   domainPowerEnergyGrouped,
+  domainCurtailment,
+  domainCurtailmentGrouped,
   domainEmissions,
   domainEmissionsGrouped,
   domainMarketValue,
@@ -233,9 +248,11 @@ export function dataRollUp({
 }) {
   let currentDataset = null
 
+
   const domains = [
     ...domainPowerEnergy,
     ...domainEmissions,
+    ...domainCurtailment,
     ...domainMarketValue,
     ...domainPrice,
     ...domainTemperature,
@@ -270,6 +287,7 @@ export function dataRollUp({
       isEnergyType,
       currentDataset,
       domainPowerEnergy,
+      domainCurtailment,
       domainEmissions,
       domainDemandPrice,
       domainDemandEnergy,
@@ -282,6 +300,7 @@ export function dataRollUp({
       currentDataset,
       domainPowerEnergy,
       domainDemandPower,
+      domainCurtailment,
       domainEmissions,
       domainPrice: isEnergyType ? domainMarketValue : domainPrice
     })
@@ -291,7 +310,8 @@ export function dataRollUp({
     dataset: currentDataset,
     domainPowerEnergyGrouped,
     domainEmissionsGrouped,
-    domainMarketValueGrouped
+    domainMarketValueGrouped,
+    domainCurtailmentGrouped
   })
 
   return {
@@ -302,6 +322,7 @@ export function dataRollUp({
 export function simpleDataRollUp({
   datasetFlat,
   domainPowerEnergy,
+  domainCurtailment,
   domainEmissions,
   domainMarketValue,
   domainPrice,
@@ -353,6 +374,7 @@ export function simpleDataRollUp({
       isEnergyType,
       currentDataset,
       domainPowerEnergy,
+      domainCurtailment,
       domainEmissions,
       domainDemandPrice,
       domainDemandEnergy,
@@ -365,6 +387,7 @@ export function simpleDataRollUp({
       currentDataset,
       domainPowerEnergy,
       domainDemandPower,
+      domainCurtailment,
       domainEmissions,
       domainPrice: isEnergyType ? domainMarketValue : domainPrice
     })

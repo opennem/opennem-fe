@@ -82,8 +82,8 @@ export const mutations = {
 }
 
 export const actions = {
-  doUpdateXTicks({ commit, rootGetters }, { range, interval, isZoomed, filterPeriod }) {
-    commit('xTicks', AxisTicks(range, interval, isZoomed, filterPeriod, rootGetters['app/tabletBreak']))
+  doUpdateXTicks({ commit, rootGetters }, { range, interval, isZoomed, filterPeriod, filteredDates }) {
+    commit('xTicks', AxisTicks(range, interval, isZoomed, filterPeriod, rootGetters['app/tabletBreak'], filteredDates))
   },
 
   doUpdateXGuides({ commit }, { interval, start, end }) {
@@ -120,9 +120,56 @@ export const actions = {
           return `FY${year.substr(2, 2)}`
         }
         break
-      case INTERVAL_HALFYEAR:
-      case INTERVAL_SEASON:
       case INTERVAL_QUARTER:
+        tickFormat = (d) => {
+          const year = d.getFullYear().toString().substr(2, 2)
+          const month = d.getMonth()
+          if (month === 0) {
+            return `Q1 '${year}`
+          } else if (month === 3) {
+            return `Q2 '${year}`
+          } else if (month === 6) {
+            return `Q3 '${year}`
+          } else if (month === 9) {
+            return `Q4 '${year}`
+          }
+          return ''
+        }
+        break
+      case INTERVAL_SEASON:
+        console.log('interval season')
+      tickFormat = (d) => {
+            const month = d.getMonth()
+            if (month === 11 || month === 0 || month === 1) {
+              return `☀️` 
+            } else if (month === 2 || month === 3 || month === 4) {
+              return `🍁`
+            } else if (month === 5 || month === 6 || month === 7) {
+              return `❄️`
+            } else if (month === 8 || month === 9 || month === 10) {
+              return `🌸`
+            }
+            return ''
+          }
+          
+          secondTickFormat = (d) => {
+            const year = d.getFullYear().toString()
+            const month = d.getMonth()
+            if (month === 11 || month === 0 || month === 1) {
+              return `${year}/${(d.getFullYear() + 1).toString().substr(2, 2)}` 
+            } else if (month === 2 || month === 3 || month === 4) {
+              return `${year}`
+            } else if (month === 5 || month === 6 || month === 7) {
+              return `${year}`
+            } else if (month === 8 || month === 9 || month === 10) {
+              return `${year}`
+            }
+            return ''
+          }
+
+          break
+          
+      case INTERVAL_HALFYEAR:
         tickFormat = (d) => {
           const year = d.getFullYear() + ''
           const nextYear = d.getFullYear() + 1 + ''

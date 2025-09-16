@@ -615,7 +615,7 @@ export default {
       const domains = this.powerEnergyDomains.filter(d => !FT.isLoad(d.fuelTechLabel))
       return domains.length > 0
         ? domains.reduce(
-            (acc, cur) => acc + (cur.registeredCapacity || 0),
+            (acc, cur) => acc + (cur.status === FACILITY_OPERATING ? cur.registeredCapacity || 0 : 0),
             0
           )
         : 0
@@ -625,7 +625,7 @@ export default {
       const domains = this.powerEnergyDomains.filter(d => FT.isLoad(d.fuelTechLabel))
       return domains.length > 0
         ? domains.reduce(
-            (acc, cur) => acc + (cur.registeredCapacity || 0),
+            (acc, cur) => acc + (cur.status === FACILITY_OPERATING ? cur.registeredCapacity || 0 : 0),
             0
           )
         : 0
