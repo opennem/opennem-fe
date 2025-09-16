@@ -315,6 +315,7 @@ function transformV4FacilityData(data) {
     let generatorCap = 0
     let maximumCap = 0
     let batteryStorageCap = 0
+    let facilityCommencementDate = null
     const unitStatuses = []
     const fuelTechRegisteredCap = {}
     const unitStatusRegisteredCap = {}
@@ -346,6 +347,13 @@ function transformV4FacilityData(data) {
 
         // side effects
         unitStatuses.push(status)
+
+        // check with facility commencement date and compare with unit commencement date, the earliest commencement date is the facility commencement date
+        if (dateCommenced && facilityCommencementDate) {
+          facilityCommencementDate = dateCommenced < facilityCommencementDate ? dateCommenced : facilityCommencementDate
+        } else if (dateCommenced) {
+          facilityCommencementDate = dateCommenced
+        }
 
         if (type === 'source') {
           generatorCap += isOperating ? regCap || 0 : 0
@@ -422,6 +430,8 @@ function transformV4FacilityData(data) {
 
       fuelTechRegisteredCap,
       unitStatusRegisteredCap,
+
+      facilityCommencementDate,
 
       jsonData: d
     }
