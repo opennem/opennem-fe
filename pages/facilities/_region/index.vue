@@ -219,6 +219,14 @@ export default {
       return sizes.filter((t) => isValidFacilitySize(t))
     },
 
+    querySortBy() {
+      return this.$route.query.sortBy
+    },
+
+    queryOrderBy() {
+      return this.$route.query.orderBy
+    },
+
     facilitySortBy() {
       return this.$store.getters['facility/sortBy']
     },
@@ -304,6 +312,8 @@ export default {
     this.selectedStatuses = this.queryStatus
     this.selectedTechs = this.queryTech
     this.selectedSizes = this.querySize
+    this.sortBy = this.querySortBy
+    this.orderBy = this.queryOrderBy
 
     if (this.$route.query.status === undefined) {
       // set default to operating
@@ -525,7 +535,7 @@ export default {
     handleFacilityOut() {
       this.hoveredFacility = null
     },
-    getQuery(selectedFacility, techs, statuses, sizes) {
+    getQuery(selectedFacility, techs, statuses, sizes, sortBy, orderBy) {
       const join = (arr) => (arr.length > 0 ? arr.join(',') : '')
       const query = {}
 
@@ -541,6 +551,12 @@ export default {
       if (sizes.length) {
         query.size = join(sizes)
       }
+      if (sortBy) {
+        query.sortBy = sortBy
+      }
+      if (orderBy) {
+        query.orderBy = orderBy
+      }
 
       return query
     },
@@ -549,7 +565,9 @@ export default {
         this.selectedFacility,
         this.selectedTechs,
         this.selectedStatuses,
-        this.selectedSizes
+        this.selectedSizes,
+        this.sortBy,
+        this.orderBy
       )
 
       this.setQuery(query)
