@@ -117,9 +117,9 @@
             <td style="text-align: right;">{{ unit.regCap }}</td>
             <td style="text-align: right;">{{ unit.maxCap }}</td>
             <td style="text-align: right;">{{ unit.storageCap || '—' }}</td>
-            <td>{{ unit.dateCommenced | formatDate('%d/%m/%Y') }}</td>
-            <td>{{ unit.dateExpectedClosure | formatDate('%d/%m/%Y') }}</td>
-            <td>{{ unit.dateClosure | formatDate('%d/%m/%Y') }}</td>
+            <td>{{ unit.dateCommenced | formatLocalDate('%d/%m/%Y') }}</td>
+            <td>{{ unit.dateExpectedClosure | formatLocalDate('%d/%m/%Y') }}</td>
+            <td>{{ unit.dateClosure | formatLocalDate('%d/%m/%Y') }}</td>
           </tr>
         </tbody>
       </table>
