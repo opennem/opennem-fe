@@ -159,7 +159,8 @@ export default {
       totalFacilities: 0,
       shouldZoomWhenSelected: false,
       baseUrl: `${this.$config.url}/images/screens/`,
-      useDev: this.$config.useDev
+      useDev: this.$config.useDev,
+      listView: 'status' // name, status
     }
   },
 
@@ -376,6 +377,12 @@ export default {
       if (response.success) {
         FacilityDataParse.flattenV4(response.data).then((dataset) => {
           console.log('resolved', dataset)
+
+          // Log unique unit statuses
+          const allUnitStatuses = dataset.flatMap(facility => facility.unitStatuses || [])
+          const uniqueUnitStatuses = [...new Set(allUnitStatuses)]
+          console.log('Unique unit statuses:', uniqueUnitStatuses)
+
           this.facilityData = dataset
           this.ready = true
           this.$store.dispatch('facility/dataset', dataset)
@@ -472,7 +479,7 @@ export default {
             (regionIds.length === 0 ||
               (regionIds.length > 0 &&
                 _includes(regionIds, g.regionId.toLowerCase()))) &&
-            (that.selectedStatuses.length <= 0 ||
+            (that.selectedStatuses.length <= 0  || that.listView === 'status' ||
               g.unitStatuses.some((r) => that.selectedStatuses.includes(r))) &&
             (that.selectedTechs.length <= 0 ||
               g.fuelTechs.some((r) => that.selectedTechs.includes(r)))

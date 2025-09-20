@@ -2,7 +2,125 @@
   <div 
     class="card-wrapper" 
     ref="listBox">
-    <div class="column-headers">
+
+    <div 
+      v-if="listView === 'status'" 
+      class="box-container">
+      <div class="facility-status-container">
+        <h3>Committed</h3>
+
+        <table style="width: 100%;">
+          <thead>
+            <tr>
+              <th>Facility</th>
+              <th>Tech</th>
+              <th>Commenced</th>
+              <!-- <th>Status</th> -->
+              <th>Reg.</th>
+              <th>Max.</th>
+              <th>Storage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="unit in committedUnits"
+              :key="`${unit.name}-committed`"   
+            >
+              <td>
+                <span class="facility-name">
+                  {{ unit.facility.displayName }}
+                </span>
+                <span class="unit-name">
+                  {{ unit.name }}
+                </span>
+              </td>
+              <td>{{ unit.fuelTech }}</td>
+              <td>{{ unit.dateCommenced | formatLocalDate('%d %b %Y') }}</td>
+              <!-- <td>{{ unit.status }}</td> -->
+              <td>{{ unit.regCap }}</td>
+              <td>{{ unit.maxCap }}</td>
+              <td>{{ unit.storageCap }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="facility-status-container">
+        <h3>Operating</h3>
+        <table style="width: 100%;">
+          <thead>
+            <tr>
+              <th>Facility</th>
+              <th>Tech</th>
+              <th>Commenced</th>
+              <!-- <th>Status</th> -->
+              <th>Reg.</th>
+              <th>Max.</th>
+              <th>Storage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="unit in operatingUnits"
+              :key="`${unit.name}-operating`">
+              <td>
+                <span class="facility-name">
+                  {{ unit.facility.displayName }}
+                </span>
+                <span class="unit-name">
+                  {{ unit.name }}
+                </span>
+              </td>
+              <td>{{ unit.fuelTech }}</td>
+              <td>{{ unit.dateCommenced | formatLocalDate('%d %b %Y') }}</td>
+              <!-- <td>{{ unit.status }}</td> -->
+              <td>{{ unit.regCap }}</td>
+              <td>{{ unit.maxCap }}</td>
+              <td>{{ unit.storageCap }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="facility-status-container">
+        <h3>Retired</h3>
+        <table style="width: 100%;">
+          <thead>
+            <tr>
+              <th>Facility</th>
+              <th>Tech</th>
+              <th>Commenced</th>
+              <!-- <th>Status</th> -->
+              <th>Reg.</th>
+              <th>Max.</th>
+              <th>Storage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="unit in retiredUnits"
+              :key="`${unit.name}-retired`">
+              <td>
+                <span class="facility-name">
+                  {{ unit.facility.displayName }}
+                </span>
+                <span class="unit-name">
+                  {{ unit.name }}
+                </span>
+              </td>
+              <td>{{ unit.fuelTech }}</td>
+              <td>{{ unit.dateCommenced | formatLocalDate('%d %b %Y') }}</td>
+              <!-- <td>{{ unit.status }}</td> -->
+              <td>{{ unit.regCap }}</td>
+              <td>{{ unit.maxCap }}</td>
+              <td>{{ unit.storageCap }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div
+      v-if="listView === 'list'"
+      class="column-headers">
       <div class="info-button-col col-header" />
 
       <div
@@ -69,7 +187,9 @@
       </div> -->
     </div>
 
-    <div :style="`height: ${windowHeight - 266}px; overflow-y: scroll;`">
+    <div 
+      v-if="listView === 'list'"
+      :style="`height: ${windowHeight - 266}px; overflow-y: scroll;`">
       <div
         v-for="(facility, index) in filteredFacilities"
         :id="facility.stationId"
@@ -291,6 +411,10 @@ export default {
   },
 
   props: {
+    listView: {
+      type: String,
+      default: 'status'
+    },
     filteredFacilities: {
       type: Array,
       default: () => []
@@ -328,7 +452,10 @@ export default {
       divWidth: 0,
       divHeight: 0,
       windowHeight: 0,
-      waitForDblClickCB: false
+      waitForDblClickCB: false,
+      committedUnits: [],
+      operatingUnits: [],
+      retiredUnits: []
     }
   },
 
@@ -385,19 +512,26 @@ export default {
       }
     },
 
-    filteredFacilities() {
+    filteredFacilities(val) {
       this.$nextTick(() => {
         this.divHeight = this.$el.offsetHeight
       })
 
+      // side effect to filter facilities with statuses
+      this.updateFacilitiesWithStatuses(val)
+
       if (this.queryFacilityId) {
-        const find = this.filteredFacilities.find(
+        const find = val.find(
           (f) => f.facilityId === this.queryFacilityId
         )
         if (find) {
           this.handleRowClick(find)
         }
       }
+    },
+
+    selectedTechs() {
+      this.updateFacilitiesWithStatuses(this.filteredFacilities)
     }
   },
 
@@ -429,6 +563,71 @@ export default {
   },
 
   methods: {
+    updateFacilitiesWithStatuses(val) {
+      const committedUnits = []
+      const operatingUnits = []
+      const retiredUnits = []
+
+      console.log('updateFacilitiesWithStatuses', this.selectedTechs)
+      const selectedTechs = [...this.selectedTechs]
+      const hasBattery = this.selectedTechs.includes(FUEL_TECHS.BATTERY_DISCHARGING)
+
+      if (hasBattery) {
+        selectedTechs.push(FUEL_TECHS.BATTERY_CHARGING)
+        selectedTechs.push(FUEL_TECHS.BATTERY)
+      }
+
+      console.log('selectedTechs', selectedTechs)
+
+      val.forEach((facility) => {
+        facility.units.forEach((unit) => {
+          if (unit.status === 'committed') {
+            if (!committedUnits.find(u => u.name === unit.name)) {
+              if (selectedTechs.includes(unit.fuelTech) || selectedTechs.length === 0) {
+                committedUnits.push({
+                  ...unit,
+                  facility
+                })
+              }
+            }
+          }
+          if (unit.status === 'operating') {
+            if (!operatingUnits.find(u => u.name === unit.name)) {
+              if (selectedTechs.includes(unit.fuelTech) || selectedTechs.length === 0) {
+                operatingUnits.push({
+                  ...unit,
+                  facility
+                })
+              }
+            }
+          }
+          if (unit.status === 'retired') {
+            if (!retiredUnits.find(u => u.name === unit.name)) {
+              if (selectedTechs.includes(unit.fuelTech) || selectedTechs.length === 0) {
+                retiredUnits.push({
+                  ...unit,
+                  facility
+                })
+              }
+            }
+          }
+        })
+      })
+
+      // sort by commenced date, latest first for each
+      committedUnits.sort((a, b) => new Date(b.dateCommenced) - new Date(a.dateCommenced))
+      operatingUnits.sort((a, b) => new Date(b.dateCommenced) - new Date(a.dateCommenced))
+      retiredUnits.sort((a, b) => new Date(b.dateCommenced) - new Date(a.dateCommenced))
+
+      this.committedUnits = committedUnits
+      this.operatingUnits = operatingUnits
+      this.retiredUnits = retiredUnits
+
+      console.log('committedUnits', this.committedUnits)
+      console.log('operatingUnits', this.operatingUnits)
+      console.log('retiredUnits', this.retiredUnits)
+    },
+    
     hasStorage(facility) {
       // return facility.fuelTechs.includes(FUEL_TECHS.BATTERY_DISCHARGING)
       // console.log('hasStorage', facility, facility.batteryStorageCap, facility.maximumCap)
@@ -501,6 +700,7 @@ export default {
     }, 200),
     // eslint-disable-next-line
     handleRowHover: _debounce(function (facility) {
+      console.log('handleRowHover', facility)
       this.$emit('facilityHover', facility, true)
     }, 200),
     // eslint-disable-next-line
@@ -708,6 +908,47 @@ export default {
 
   .card-content {
     padding: 0;
+  }
+}
+
+.box-container {
+  background-color: #efefef;
+  border-radius: 10px;
+}
+
+.facility-status-container {
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 10;
+
+  h3 {
+    font-family: $space-grotesk-font-family;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    position: sticky;
+    top: 0;
+    background-color: #efefef;
+    z-index: 10;
+    border-bottom: 1px solid #333;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    border-bottom: 1px solid #ddd;
+  }
+
+  .unit-name {
+    font-size: 10px;
+    color: #666;
+    font-family: $space-grotesk-font-family;
   }
 }
 
