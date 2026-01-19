@@ -38,7 +38,7 @@
       </div>
     </article> -->
 
-    <article 
+    <!-- <article 
       class="message" 
       style="background-color: black; border-radius: 0; position: relative;"
     >
@@ -52,7 +52,7 @@
           href="https://openelectricity.org.au/newsletter">Subscribe now</a>.
         </p>
       </div>
-    </article>
+    </article> -->
 
     <transition name="slide-down-fade">
       <article 
