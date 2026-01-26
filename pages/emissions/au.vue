@@ -29,7 +29,7 @@
           :class="{ 'is-selected': addProjections }" 
           class="button"
           @click="handleProjectionsToggle">
-          Projections <strong>FY {{ this.projectionStartYear }} — 2035</strong>
+          Projections <strong>FY {{ this.projectionStartYear }} — 2040</strong>
         </button>
       </div>
     </div>
@@ -700,7 +700,7 @@ export default {
           this.projectionsInterval = [
             {
               start: new Date(this.projectionStartYear, 0, 1),
-              end: new Date(2035, 11, 31)
+              end: new Date(2040, 11, 31)
             }
           ]
 
