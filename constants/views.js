@@ -8,10 +8,6 @@ export default [
     label: 'Capacity'
   },
   {
-    id: 'facilities',
-    label: 'Facilities'
-  },
-  { 
     id: 'compare',
     label: 'Compare Regions'
   },

@@ -308,15 +308,17 @@ export default {
       } else {
         fuelTechs.push(domain.fuelTech)
       }
-      const query = {
-        tech: fuelTechs.join(','),
-        status: 'operating'
-      }
 
-      this.$router.push({
-        path: `/facilities/${this.regionId}/`,
-        query
+      // Transform fuel techs for external URL
+      fuelTechs = fuelTechs.map((ft) => {
+        if (ft === 'solar_utility' || ft === 'solar_rooftop') return 'solar'
+        if (ft === 'battery_charging' || ft === 'battery_discharging') return 'battery'
+        return ft
       })
+      fuelTechs = [...new Set(fuelTechs)]
+
+      const url = `https://openelectricity.org.au/facilities?view=timeline&statuses=operating,commissioning&regions=&fuel_techs=${fuelTechs.join(',')}&sizes=&fullscreen=true&view=list`
+      window.open(url, '_blank')
     }
   }
 }

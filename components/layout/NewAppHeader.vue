@@ -101,7 +101,7 @@ const topLevelLinks = [
   },
   {
     name: 'Facilities',
-    path: '/facilities/nem/?status=operating'
+    path: 'https://openelectricity.org.au/facilities'
   },
   {
     name: 'Scenarios',
