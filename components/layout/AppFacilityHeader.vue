@@ -1,9 +1,8 @@
 <template>
   <header>
-    <a 
-      :href="path" 
-      class="back-link" 
-      @click.prevent="backToFacilities">
+    <a
+      :href="facilitiesUrl"
+      class="back-link">
       <i class="fal fa-chevron-left" />
       <h1>Facilities</h1>
     </a>
@@ -65,6 +64,9 @@ export default {
     facilityCode() {
       return this.$route.params.facilityCode
     },
+    facilitiesUrl() {
+      return `https://openelectricity.org.au/facilities?view=list&statuses=operating,commissioning&regions=&fuel_techs=&sizes=&fullscreen=true&facility=${this.facilityCode}`
+    },
     path() {
       const selected = `?selected=${this.facilityCode}`
       return this.previousPath === ''
@@ -110,7 +112,7 @@ export default {
         }
       } else if (isLeft) {
         e.preventDefault()
-        this.$router.push({ path: this.path, query: this.facilitiesQuery })
+        window.location.href = this.facilitiesUrl
       }
     },
     updatePaths() {

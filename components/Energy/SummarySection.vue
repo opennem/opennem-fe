@@ -317,7 +317,7 @@ export default {
       })
       fuelTechs = [...new Set(fuelTechs)]
 
-      const url = `https://openelectricity.org.au/facilities?view=timeline&statuses=operating,commissioning&regions=&fuel_techs=${fuelTechs.join(',')}&sizes=&fullscreen=true&view=list`
+      const url = `https://openelectricity.org.au/facilities?view=list&statuses=operating,commissioning&regions=&fuel_techs=${fuelTechs.join(',')}&sizes=&fullscreen=true`
       window.open(url, '_blank')
     }
   }
