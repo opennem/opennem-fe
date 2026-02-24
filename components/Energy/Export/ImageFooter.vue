@@ -27,7 +27,7 @@
 
       <div class="licence">
         <a
-          v-tooltip="'Licence'"
+          v-tooltip="'License'"
           rel="external"
           target="_blank"
           href="https://platform.openelectricity.org.au/license">

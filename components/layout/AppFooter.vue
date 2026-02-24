@@ -103,7 +103,7 @@
         <i class="fab fa-fw fa-github" />
       </a> -->
       <a
-        v-tooltip="'Licence'"
+        v-tooltip="'License'"
         rel="external"
         class="icon-link"
         target="_blank"

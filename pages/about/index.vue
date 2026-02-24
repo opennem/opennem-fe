@@ -85,7 +85,7 @@
         </a>
 
         <a 
-          v-tooltip="'Licence'"
+          v-tooltip="'License'"
           rel="external"
           class="icon-link"
           target="_blank"
