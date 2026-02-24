@@ -26,10 +26,13 @@
       </div>
 
       <div class="licence">
-        <span v-tooltip="'Creative Commons Attribution 4.0 International License (CC BY 4.0)'">
-          <i class="fab fa-brands fa-creative-commons" />
-          <i class="fab fa-brands fa-creative-commons-by" />
-        </span>
+        <a
+          v-tooltip="'Licence'"
+          rel="external"
+          target="_blank"
+          href="https://platform.openelectricity.org.au/license">
+          <i class="fal fa-file-contract" />
+        </a>
       </div>
     </div>
    

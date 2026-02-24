@@ -85,13 +85,12 @@
         </a>
 
         <a 
-          v-tooltip="'Creative Commons Attribution 4.0 International License (CC BY 4.0)'" 
-          rel="external" 
-          class="icon-link" 
-          target="_blank" 
-          href="https://creativecommons.org/licenses/by/4.0/">
-          <i class="fab fa-fw fa-brands fa-creative-commons" />
-          <i class="fab fa-fw fa-brands fa-creative-commons-by" />
+          v-tooltip="'Licence'"
+          rel="external"
+          class="icon-link"
+          target="_blank"
+          href="https://platform.openelectricity.org.au/license">
+          <i class="fal fa-fw fa-file-contract" />
         </a>
       </p>
     </section>
