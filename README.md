@@ -1,6 +1,6 @@
 # OpenNEM Energy Market Platform
 
-![logo](https://developers.opennem.org.au/_static/logo.png)
+![logo](https://docs.openelectricity.org.au/_static/logo.png)
 
 **NOTE: This is the frontend project** For the core project and any issues see [opennem/opennem](https://github.com/opennem/opennem)
 

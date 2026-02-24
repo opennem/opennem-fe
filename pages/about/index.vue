@@ -150,20 +150,20 @@
     >
       <div class="dev-links">
         <a
-          v-tooltip="'Open Electricity status page'"
+          v-tooltip="'Open Electricity Platform'"
           rel="external"
           class="icon-link"
           target="_blank"
-          href="https://status.opennem.org.au/"
+          href="https://platform.openelectricity.org.au/"
         >
-          <i class="fal fa-lg fa-clipboard-list-check" />
+          <i class="fal fa-lg fa-window-restore" />
         </a>
         <a
           v-tooltip="'Developer documentation'"
           rel="external"
           class="icon-link"
           target="_blank"
-          href="https://developers.opennem.org.au/"
+          href="https://docs.openelectricity.org.au/"
         >
           <i class="fal fa-lg fa-book" />
         </a>

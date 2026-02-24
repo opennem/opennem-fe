@@ -9,20 +9,20 @@
       </div>
 
       <div class="version">
-        <a 
-          v-tooltip="'Open Electricity status page'" 
-          rel="external" 
-          class="icon-link" 
+        <a
+          v-tooltip="'Open Electricity Platform'"
+          rel="external"
+          class="icon-link"
           target="_blank"
-          href="https://status.opennem.org.au/">
-          <i class="fal fa-fw fa-clipboard-list-check" />
+          href="https://platform.openelectricity.org.au/">
+          <i class="fal fa-fw fa-window-restore" />
         </a>
-        <a 
-          v-tooltip="'Developer documentation'" 
-          rel="external" 
-          class="icon-link" 
+        <a
+          v-tooltip="'Developer documentation'"
+          rel="external"
+          class="icon-link"
           target="_blank"
-          href="https://developers.opennem.org.au/">
+          href="https://docs.openelectricity.org.au/">
           <i class="fal fa-fw fa-book" />
         </a>
         <strong v-show="hasAPIversion && !isEmissionsAuRegion">API: {{ apiVersion }}</strong>
