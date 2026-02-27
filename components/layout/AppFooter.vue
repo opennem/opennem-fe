@@ -25,6 +25,17 @@
           href="https://docs.openelectricity.org.au/">
           <i class="fal fa-fw fa-book" />
         </a>
+        <a
+          v-if="apiStatus"
+          v-tooltip="apiStatus.statusLabel"
+          class="status-indicator"
+          rel="external"
+          target="_blank"
+          href="https://status.openelectricity.org.au/">
+          <span
+            class="status-dot"
+            :style="{ backgroundColor: apiStatus.statusColor }" />
+        </a>
         <strong v-show="hasAPIversion && !isEmissionsAuRegion">API: {{ apiVersion }}</strong>
       </div>
 
@@ -126,8 +137,13 @@ export default {
 
   data() {
     return {
-      version: this.$config.version
+      version: this.$config.version,
+      apiStatus: null
     }
+  },
+
+  mounted() {
+    this.fetchApiStatus()
   },
 
   computed: {
@@ -164,6 +180,14 @@ export default {
     }),
     handleFeatureToggleClick() {
       this.setShowFeatureToggle(true)
+    },
+    async fetchApiStatus() {
+      try {
+        const res = await fetch('https://status.openelectricity.org.au/api/summary')
+        this.apiStatus = await res.json()
+      } catch (e) {
+        // silently fail — status indicator simply won't show
+      }
     }
   }
 }
@@ -231,6 +255,20 @@ footer {
       font-weight: 700;
       height: auto;
       margin-right: 5px;
+    }
+  }
+
+  .status-indicator {
+    border-bottom: none !important;
+    margin-right: 5px;
+    display: inline-flex;
+    align-items: center;
+
+    .status-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
     }
   }
 
