@@ -762,7 +762,7 @@ export const actions = {
       // https://data.oedev.org/v4/stats/capacity_history.json
       // const res = await fetch(`https://data.oedev.org/v4/stats/capacity_history.json`)
       // const data = await res.json()
-      const res = await http([`v4/stats/capacity_history.json`])
+      const res = await http([`v4/stats/capacity_history.json?t=${Date.now()}`])
       const data = res[0]
       let capacityData = []
 
