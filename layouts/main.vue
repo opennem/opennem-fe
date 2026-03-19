@@ -1,29 +1,29 @@
 <template>
-  <div 
-    class="container-fluid" 
+  <div
+    class="container-fluid"
     :style="`margin-bottom: ${isFacilityPage ? 0 : '7rem'}`">
     <transition name="slide-down-fade">
-      <article 
-        v-if="showError" 
+      <article
+        v-if="showError"
         class="error-message message is-warning">
         <div class="message-header">
           <p>{{ errorHeader }}</p>
-          <button 
-            class="delete" 
-            aria-label="delete" 
+          <button
+            class="delete"
+            aria-label="delete"
             @click="doClearError" />
         </div>
-        <div 
-          class="message-body" 
+        <div
+          class="message-body"
           v-html="errorMessage" />
       </article>
     </transition>
 
     <!-- showBanner -->
     <article
-      v-if="!mobileNavActive"
+      v-if="!mobileNavActive && !bannerDismissed"
       class="message"
-      style="background-color: black; border-radius: 0; position: relative;"
+      style="background-color: black; border-radius: 0; position: relative; padding-top: 4px; padding-bottom: 4px;"
     >
       <div
         class="message-body open-electricity-banner"
@@ -35,31 +35,36 @@
             target="_blank">Have your say</a> on the future of Open Electricity
         </p>
       </div>
+      <button
+        class="banner-close"
+        aria-label="Close banner"
+        @click="dismissBanner"
+      >✕</button>
     </article>
 
-    <!-- <article 
-      class="message" 
+    <!-- <article
+      class="message"
       style="background-color: black; border-radius: 0; position: relative;"
     >
-      <div 
-        class="message-body open-electricity-banner" 
+      <div
+        class="message-body open-electricity-banner"
         style="padding: 13px 20px; justify-content: center;"
       >
         <p style="text-align: center;">
           ⚡️ Sign up for Open Electricity updates - direct to your inbox 📬.
-          <a 
+          <a
           href="https://openelectricity.org.au/newsletter">Subscribe now</a>.
         </p>
       </div>
     </article> -->
 
     <transition name="slide-down-fade">
-      <article 
-        v-if="siteAnnouncement && isAuOrWem && isEnergyPage" 
+      <article
+        v-if="siteAnnouncement && isAuOrWem && isEnergyPage"
         class="message is-primary"
         style="font-size: 11px;">
-        <div 
-          class="message-body" 
+        <div
+          class="message-body"
           style="padding: 10px"
           v-html="siteAnnouncement" />
       </article>
@@ -72,7 +77,7 @@
       <!-- <app-header /> -->
       <nuxt />
     </div>
-    
+
     <app-footer v-if="!tabletBreak" />
   </div>
 </template>
@@ -94,7 +99,20 @@ export default {
 
   data() {
     return {
-      bannerText: 'Error'
+      bannerText: 'Error',
+      bannerDismissed: false
+    }
+  },
+
+  mounted() {
+    const dismissed = localStorage.getItem('bannerDismissed')
+    if (dismissed) {
+      const expiry = parseInt(dismissed, 10)
+      if (Date.now() < expiry) {
+        this.bannerDismissed = true
+      } else {
+        localStorage.removeItem('bannerDismissed')
+      }
     }
   },
 
@@ -145,6 +163,12 @@ export default {
 
     handleClick() {
       this.setShowBanner(false)
+    },
+
+    dismissBanner() {
+      const oneMonth = 30 * 24 * 60 * 60 * 1000
+      localStorage.setItem('bannerDismissed', String(Date.now() + oneMonth))
+      this.bannerDismissed = true
     }
   }
 }
@@ -209,17 +233,19 @@ export default {
   .banner-close {
     cursor: pointer;
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 10px;
     z-index: 1;
     background: none;
-    border: 0; 
+    border: 0;
     color: white;
-    font-size: 18px;
+    font-size: 13px;
+    padding: 2px 6px;
+    line-height: 1;
 
-    @include tablet {
-      right: 8px;
-      top: 8px;
+    &:hover {
+      color: white;
     }
   }
 }
