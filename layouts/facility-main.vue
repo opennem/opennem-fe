@@ -32,7 +32,7 @@
     </transition>
 
     <!-- showBanner -->
-    <article
+    <!-- <article
       v-if="!mobileNavActive"
       class="message"
       style="background-color: black; border-radius: 0; position: relative;"
@@ -47,7 +47,7 @@
             target="_blank">Have your say</a> on the future of Open Electricity
         </p>
       </div>
-    </article>
+    </article> -->
 
     <!-- <article 
       class="message" 

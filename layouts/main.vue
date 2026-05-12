@@ -20,7 +20,7 @@
     </transition>
 
     <!-- showBanner -->
-    <article
+    <!-- <article
       v-if="!mobileNavActive && !bannerDismissed"
       class="message"
       style="background-color: black; border-radius: 0; position: relative; padding-top: 4px; padding-bottom: 4px;"
@@ -40,7 +40,7 @@
         aria-label="Close banner"
         @click="dismissBanner"
       >✕</button>
-    </article>
+    </article> -->
 
     <!-- <article
       class="message"

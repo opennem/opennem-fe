@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <!-- showBanner -->
-    <article
+    <!-- <article
       class="message"
       style="background-color: black; color: white; border-radius: 0; position: relative;"
     >
@@ -15,7 +15,7 @@
             target="_blank">Have your say</a> on the future of Open Electricity
         </p>
       </div>
-    </article>
+    </article> -->
 
     <!-- <h1>
       You are viewing data and features that are still in
