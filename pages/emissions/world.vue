@@ -512,8 +512,10 @@ export default {
     getCategories() {
       const url = `${process.env.EDGE_DATA_BASE_URL}/data/emissions/world/categories.csv`
 
-      return this.$axios.get(url).then((res) => {
-          const csvData = Papa.parse(res.data, { header: true })
+      return fetch(url)
+        .then((res) => res.text())
+        .then((text) => {
+          const csvData = Papa.parse(text, { header: true })
           return csvData.data
         })
     },
@@ -521,8 +523,10 @@ export default {
     getAreaCodes() {
       const url = `${process.env.EDGE_DATA_BASE_URL}/data/emissions/world/country-codes-all.csv`
 
-      return this.$axios.get(url).then((res) => {
-          const csvData = Papa.parse(res.data, { header: true })
+      return fetch(url)
+        .then((res) => res.text())
+        .then((text) => {
+          const csvData = Papa.parse(text, { header: true })
           const codeDict = {}
           const alpha2AreaDict = {}
           const areaDict = {}
@@ -553,8 +557,10 @@ export default {
       const keyArea = 'area (ISO3)'
       const keyCategory = 'category (IPCC2006_PRIMAP)'
 
-      return this.$axios.get(url).then((res) => {
-          const csvData = Papa.parse(res.data, { header: true })
+      return fetch(url)
+        .then((res) => res.text())
+        .then((text) => {
+          const csvData = Papa.parse(text, { header: true })
 
           let years = []
 
