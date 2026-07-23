@@ -510,26 +510,18 @@ export default {
     },
 
     getCategories() {
-      // const url = '/data/categories.csv'
-      const url =
-        'https://data.opennem.org.au/v1/emissions/world/categories.csv'
+      const url = `${process.env.EDGE_DATA_BASE_URL}/data/emissions/world/categories.csv`
 
-      return this.$axios
-        .get(url, { headers: { 'Content-Type': 'text/csv' } })
-        .then((res) => {
+      return this.$axios.get(url).then((res) => {
           const csvData = Papa.parse(res.data, { header: true })
           return csvData.data
         })
     },
 
     getAreaCodes() {
-      // const url = '/data/country-codes.csv'
-      const url =
-        'https://data.opennem.org.au/v1/emissions/world/country-codes-all.csv'
+      const url = `${process.env.EDGE_DATA_BASE_URL}/data/emissions/world/country-codes-all.csv`
 
-      return this.$axios
-        .get(url, { headers: { 'Content-Type': 'text/csv' } })
-        .then((res) => {
+      return this.$axios.get(url).then((res) => {
           const csvData = Papa.parse(res.data, { header: true })
           const codeDict = {}
           const alpha2AreaDict = {}
@@ -556,16 +548,12 @@ export default {
     },
 
     getEmissions() {
-      // const url = '/data/country-emissions.csv'
-      const url =
-        'https://data.opennem.org.au/v1/emissions/world/country-emissions-20241209.csv'
+      const url = `${process.env.EDGE_DATA_BASE_URL}/data/emissions/world/country-emissions-20241209.csv`
 
       const keyArea = 'area (ISO3)'
       const keyCategory = 'category (IPCC2006_PRIMAP)'
 
-      return this.$axios
-        .get(url, { headers: { 'Content-Type': 'text/csv' } })
-        .then((res) => {
+      return this.$axios.get(url).then((res) => {
           const csvData = Papa.parse(res.data, { header: true })
 
           let years = []

@@ -71,6 +71,15 @@ docker-compose down
 ## API
 Connects to OpenNEM API for live electricity market data at opennem.org.au
 
+The national emissions charts on `/emissions/au` are the exception: they fetch
+per-sector emissions data (`quarter` and `year`) from the Open Electricity app —
+`${EDGE_DATA_BASE_URL}/api/emissions/au/{quarter,year}` — not the OpenNEM API.
+`EDGE_DATA_BASE_URL` is configured in `nuxt.config.js` (default
+`https://openelectricity.org.au`; override via `.env`), and the calls live in
+`pages/emissions/au.vue`. This replaced the retired `opennem-edge-data` Netlify
+service; the endpoints are documented on the provider side in the Open Electricity
+repo at `src/routes/api/emissions/README.md`.
+
 ## Deployment
 - Production: https://opennem.org.au
 - Development server runs on http://localhost:3000

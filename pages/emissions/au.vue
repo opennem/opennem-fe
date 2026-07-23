@@ -605,8 +605,7 @@ export default {
       console.log('get Quarter data')
 
       if (!this.fetching) {
-        const jsonUrl =
-          'https://opennem-edge-data.netlify.app/data/au/emissions/quarter.json'
+        const jsonUrl = `${process.env.EDGE_DATA_BASE_URL}/api/emissions/au/quarter`
 
         this.fetching = true
 
@@ -683,8 +682,7 @@ export default {
     async getYearData() {
       console.log('get year data')
       if (!this.fetching) {
-        const jsonUrl =
-          'https://opennem-edge-data.netlify.app/data/au/emissions/year.json'
+        const jsonUrl = `${process.env.EDGE_DATA_BASE_URL}/api/emissions/au/year`
 
         this.fetching = true
 

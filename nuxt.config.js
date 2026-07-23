@@ -23,7 +23,11 @@ module.exports = {
     mapboxToken: process.env.MAPBOX_TOKEN || '',
     DATA_BASE_URL: useDev
       ? 'https://data.dev.openelectricity.org.au/'
-      : process.env.DATA_BASE_URL
+      : process.env.DATA_BASE_URL,
+    // Origin serving the national emissions endpoints (/api/emissions/au/*),
+    // recreated from the retired opennem-edge-data Netlify service.
+    EDGE_DATA_BASE_URL:
+      process.env.EDGE_DATA_BASE_URL || 'https://openelectricity.org.au'
   },
 
   server: {
