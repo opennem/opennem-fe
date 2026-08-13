@@ -2,6 +2,11 @@ import _includes from 'lodash/includes'
 import { isBefore } from 'date-fns';
 import * as FT from '@/constants/energy-fuel-techs/group-detailed.js'
 
+// Ceiling for a believable emission intensity, in kg CO2e/MWh. Brown coal, the dirtiest
+// thing on the grid, runs about 1,200-1,400. Anything above this is a divide-by-almost-
+// zero artefact rather than a measurement, and is shown as a gap.
+const MAX_EMISSION_INTENSITY_KG_PER_MWH = 1500
+
 function calAverage(isEnergyType, isWemOrAu, dataset) {
   const totalEmissions = dataset.reduce(
     (prev, cur) => prev + cur._totalEmissions,
@@ -128,13 +133,20 @@ export default function({
       ei = ei * 1000
     }
 
-    const isValidEI = Number.isFinite(ei)
+    // A bucket where the visible sources contribute almost nothing gives a tiny
+    // denominator and a huge but *finite* ratio, which Number.isFinite accepts, so the
+    // chart drew a spike instead of a gap. Hiding every source but one is enough to
+    // trigger it: the denominator is the visible set, not the whole network.
+    //
+    // The range check has to happen in one unit. `ei` is t/MWh on energy views and
+    // kg/MWh on power views, so the old `ei > 1500` could only ever fire on power
+    // views, which is why the monthly energy chart spiked unchecked. It also only
+    // logged, and kept the value regardless.
+    const intensity = Math.abs(ei)
+    const intensityKgPerMWh = isEnergyType ? intensity * 1000 : intensity
+    const isValidEI = Number.isFinite(ei) && intensityKgPerMWh <= MAX_EMISSION_INTENSITY_KG_PER_MWH
 
-    if (ei < 0 || ei > 1500) {
-      console.log(`EI out of range: ${ei}`)
-    }
-
-    obj._emissionIntensity = isValidEI ? Math.abs(ei) : null
+    obj._emissionIntensity = isValidEI ? intensity : null
     return obj
   })
 
