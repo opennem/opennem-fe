@@ -19,44 +19,25 @@
       </article>
     </transition>
 
-    <!-- showBanner -->
-    <!-- <article
-      v-if="!mobileNavActive && !bannerDismissed"
-      class="message"
-      style="background-color: black; border-radius: 0; position: relative; padding-top: 4px; padding-bottom: 4px;"
-    >
-      <div
-        class="message-body open-electricity-banner"
-        style="padding: 10px 30px; justify-content: center;"
-      >
-        <p>
-          🔮 <a
-            href="https://forms.gle/oHzViVX2ePhHtaFX6"
-            target="_blank">Have your say</a> on the future of Open Electricity
-        </p>
-      </div>
-      <button
-        class="banner-close"
-        aria-label="Close banner"
-        @click="dismissBanner"
-      >✕</button>
-    </article> -->
-
-    <!-- <article
-      class="message"
-      style="background-color: black; border-radius: 0; position: relative;"
-    >
-      <div
-        class="message-body open-electricity-banner"
-        style="padding: 13px 20px; justify-content: center;"
-      >
-        <p style="text-align: center;">
-          ⚡️ Sign up for Open Electricity updates - direct to your inbox 📬.
-          <a
-          href="https://openelectricity.org.au/newsletter">Subscribe now</a>.
-        </p>
-      </div>
-    </article> -->
+    <aside
+      v-if="!mobileNavActive"
+      class="tracker-banner"
+      aria-label="New electricity tracker">
+      <p>
+        ⚡️
+        <span class="copy-long">
+          The next version of the Tracker is almost ready — be one of the
+          first to explore it.
+        </span>
+        <span class="copy-short">The next Tracker is almost here.</span>
+        <a
+          href="https://openelectricity.org.au/tracker"
+          target="_blank"
+          rel="noopener noreferrer">
+          Try it now <span aria-hidden="true">→</span>
+        </a>
+      </p>
+    </aside>
 
     <transition name="slide-down-fade">
       <article
@@ -83,7 +64,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions, mapMutations } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import AppHeader from '~/components/layout/AppHeader'
 import Toolbar from '~/components/layout/Toolbar'
 import AppFooter from '~/components/layout/AppFooter'
@@ -97,37 +78,17 @@ export default {
     NewAppHeader
   },
 
-  data() {
-    return {
-      bannerText: 'Error',
-      bannerDismissed: false
-    }
-  },
-
-  mounted() {
-    const dismissed = localStorage.getItem('bannerDismissed')
-    if (dismissed) {
-      const expiry = parseInt(dismissed, 10)
-      if (Date.now() < expiry) {
-        this.bannerDismissed = true
-      } else {
-        localStorage.removeItem('bannerDismissed')
-      }
-    }
-  },
-
   computed: {
     ...mapGetters({
       showError: 'app/showError',
       errorHeader: 'app/errorHeader',
       errorMessage: 'app/errorMessage',
       tabletBreak: 'app/tabletBreak',
-      siteAnnouncement: 'app/siteAnnouncement',
-      showBanner: 'feature/showBanner'
+      siteAnnouncement: 'app/siteAnnouncement'
     }),
 
     mobileNavActive() {
-      return this.$store.state.app.mobileNavActive;
+      return this.$store.state.app.mobileNavActive
     },
 
     currentView() {
@@ -155,21 +116,7 @@ export default {
   methods: {
     ...mapActions({
       doClearError: 'app/doClearError'
-    }),
-
-    ...mapMutations({
-      setShowBanner: 'feature/showBanner'
-    }),
-
-    handleClick() {
-      this.setShowBanner(false)
-    },
-
-    dismissBanner() {
-      const oneMonth = 30 * 24 * 60 * 60 * 1000
-      localStorage.setItem('bannerDismissed', String(Date.now() + oneMonth))
-      this.bannerDismissed = true
-    }
+    })
   }
 }
 </script>
@@ -215,37 +162,38 @@ export default {
     text-align: center;
   }
 
-  .open-electricity-banner {
+  .tracker-banner {
+    background-color: black;
     color: white;
-    padding: 10px 20px;
-    display: block;
-    text-align: left;
+    padding: 12px 20px;
+    text-align: center;
 
-    @include tablet {
-      padding: 14px 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 0.45rem;
+    .copy-long {
+      @include mobile {
+        display: none;
+      }
     }
-  }
 
-  .banner-close {
-    cursor: pointer;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    right: 10px;
-    z-index: 1;
-    background: none;
-    border: 0;
-    color: white;
-    font-size: 13px;
-    padding: 2px 6px;
-    line-height: 1;
+    .copy-short {
+      @include tablet {
+        display: none;
+      }
+    }
 
-    &:hover {
+    a {
       color: white;
+      font-weight: 600;
+      text-decoration: underline;
+      white-space: nowrap;
+
+      &:hover {
+        text-decoration-thickness: 2px;
+      }
+
+      &:focus-visible {
+        outline: 2px solid white;
+        outline-offset: 4px;
+      }
     }
   }
 }
